@@ -29,9 +29,9 @@ class ProReminderVenueCreationEmailTest:
         send_reminder_venue_creation_to_pro(offerer)
         # then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
             TransactionalEmail.REMINDER_VENUE_CREATION_TO_PRO.value
         )
-        assert mails_testing.outbox[0].sent_data["To"] == user_offerer.user.email
-        assert mails_testing.outbox[0].sent_data["params"]["PRO_URL"] == PRO_URL
-        assert mails_testing.outbox[0].sent_data["params"]["OFFERER_ID"] == offerer.id
+        assert mails_testing.outbox[0]["To"] == user_offerer.user.email
+        assert mails_testing.outbox[0]["params"]["PRO_URL"] == PRO_URL
+        assert mails_testing.outbox[0]["params"]["OFFERER_ID"] == offerer.id

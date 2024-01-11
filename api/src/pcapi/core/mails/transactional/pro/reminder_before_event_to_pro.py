@@ -22,9 +22,9 @@ def get_reminder_7_days_before_event_email_data(stock: Stock) -> models.Transact
     )
 
 
-def send_reminder_7_days_before_event_to_pro(stock: Stock) -> bool:
+def send_reminder_7_days_before_event_to_pro(stock: Stock) -> None:
     recipient = stock.offer.bookingEmail or stock.offer.venue.bookingEmail
     if not recipient:
-        return True
+        return
     data = get_reminder_7_days_before_event_email_data(stock)
-    return mails.send(recipients=[recipient], data=data)
+    mails.send(recipients=[recipient], data=data)

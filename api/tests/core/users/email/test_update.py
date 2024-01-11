@@ -67,10 +67,8 @@ class EmailUpdateConfirmationTest:
         # Confirmation email is sent
         assert len(mails_testing.outbox) == 1
         email_sent = mails_testing.outbox[0]
-        assert email_sent.sent_data["To"] == email_update_request.newEmail
-        assert email_sent.sent_data["template"] == dataclasses.asdict(
-            TransactionalEmail.EMAIL_CHANGE_CONFIRMATION.value
-        )
+        assert email_sent["To"] == email_update_request.newEmail
+        assert email_sent["template"] == dataclasses.asdict(TransactionalEmail.EMAIL_CHANGE_CONFIRMATION.value)
 
         # Token is deleted
         assert not token_utils.Token.token_exists(token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION, user.id)

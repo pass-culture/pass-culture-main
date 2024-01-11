@@ -21,10 +21,10 @@ def get_reset_password_to_pro_email_data(token: token_utils.Token) -> models.Tra
     )
 
 
-def send_reset_password_email_to_pro(token: token_utils.Token) -> bool:
+def send_reset_password_email_to_pro(token: token_utils.Token) -> None:
     user = users_models.User.query.get(token.user_id)
     data = get_reset_password_to_pro_email_data(token)
-    return mails.send(recipients=[user.email], data=data)
+    mails.send(recipients=[user.email], data=data)
 
 
 def get_reset_password_from_connected_pro_email_data(user: users_models.User) -> models.TransactionalEmailData:
@@ -39,8 +39,8 @@ def get_reset_password_from_connected_pro_email_data(user: users_models.User) ->
     )
 
 
-def send_reset_password_email_to_connected_pro(user: users_models.User) -> bool:
+def send_reset_password_email_to_connected_pro(user: users_models.User) -> None:
     # Users can change their password without an email link when
     # they were connected to the app.
     data = get_reset_password_from_connected_pro_email_data(user)
-    return mails.send(recipients=[user.email], data=data)
+    mails.send(recipients=[user.email], data=data)

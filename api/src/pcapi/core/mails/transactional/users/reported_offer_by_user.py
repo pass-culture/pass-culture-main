@@ -8,12 +8,12 @@ from pcapi.core.users.models import User
 from pcapi.utils.urls import build_pc_pro_offer_link
 
 
-def send_email_reported_offer_by_user(user: User, offer: Offer, reason: Reason, custom_reason: str | None) -> bool:
+def send_email_reported_offer_by_user(user: User, offer: Offer, reason: Reason, custom_reason: str | None) -> None:
     data = get_reported_offer_email_data(user, offer, reason, custom_reason)
     recipients = [settings.REPORT_OFFER_EMAIL_ADDRESS]
     if reason == Reason.OTHER:
         recipients = [settings.SUPPORT_EMAIL_ADDRESS]
-    return mails.send(recipients=recipients, data=data)
+    mails.send(recipients=recipients, data=data)
 
 
 def get_reported_offer_email_data(

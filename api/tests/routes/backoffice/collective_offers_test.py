@@ -418,7 +418,7 @@ class BatchCollectiveOffersValidateTest(PostEndpointHelper):
 
         assert len(mails_testing.outbox) == 3
 
-        received_dict = {email.sent_data["To"]: email.sent_data["template"] for email in mails_testing.outbox}
+        received_dict = {email["To"]: email["template"] for email in mails_testing.outbox}
         expected_dict = {
             collective_offers[0].venue.bookingEmail: asdict(TransactionalEmail.OFFER_APPROVAL_TO_PRO.value),
             collective_offers[1].venue.bookingEmail: asdict(TransactionalEmail.OFFER_APPROVAL_TO_PRO.value),
@@ -471,7 +471,7 @@ class BatchCollectiveOffersRejectTest(PostEndpointHelper):
 
         assert len(mails_testing.outbox) == 3
 
-        received_dict = {email.sent_data["To"]: email.sent_data["template"] for email in mails_testing.outbox}
+        received_dict = {email["To"]: email["template"] for email in mails_testing.outbox}
         expected_dict = {
             collective_offers[0].venue.bookingEmail: asdict(TransactionalEmail.OFFER_PENDING_TO_REJECTED_TO_PRO.value),
             collective_offers[1].venue.bookingEmail: asdict(TransactionalEmail.OFFER_PENDING_TO_REJECTED_TO_PRO.value),

@@ -284,7 +284,7 @@ class RunIntegrationTest:
         )
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 679  # complete subscription
+        assert mails_testing.outbox[0]["template"]["id_prod"] == 679  # complete subscription
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_makes_user_beneficiary(self, get_applications_with_details):
@@ -351,7 +351,7 @@ class RunIntegrationTest:
         assert len(push_testing.requests) == 4
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 96  # accepted as beneficiary email
+        assert mails_testing.outbox[0]["template"]["id_prod"] == 96  # accepted as beneficiary email
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_makes_user_beneficiary_after_19_birthday(self, get_applications_with_details):
@@ -428,7 +428,7 @@ class RunIntegrationTest:
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.EMAIL
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["params"] == {"DUPLICATE_BENEFICIARY_EMAIL": "joh***@example.com"}
+        assert mails_testing.outbox[0]["params"] == {"DUPLICATE_BENEFICIARY_EMAIL": "joh***@example.com"}
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_with_existing_user_with_the_same_id_number(self, get_applications_with_details, mocker):
@@ -496,7 +496,7 @@ class RunIntegrationTest:
         assert user.postalCode == "67200"
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
             TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
         )
 
@@ -528,7 +528,7 @@ class RunIntegrationTest:
 
         assert len(mails_testing.outbox) == 1
         assert (
-            mails_testing.outbox[0].sent_data["template"]
+            mails_testing.outbox[0]["template"]
             == TransactionalEmail.PRE_SUBSCRIPTION_DMS_ERROR_TO_BENEFICIARY.value.__dict__
         )
 
@@ -562,7 +562,7 @@ class RunIntegrationTest:
 
         assert len(mails_testing.outbox) == 1
         assert (
-            mails_testing.outbox[0].sent_data["template"]
+            mails_testing.outbox[0]["template"]
             == TransactionalEmail.PRE_SUBSCRIPTION_DMS_ERROR_TO_BENEFICIARY.value.__dict__
         )
 
@@ -718,7 +718,7 @@ class GraphQLSourceProcessApplicationTest:
         import_all_updated_dms_applications(6712558)
 
         assert len(user.beneficiaryFraudChecks) == 3  # profile, DMS, honor statement
-        assert mails_testing.outbox[0].sent_data["subject"] == "Revue manuelle nécessaire"
+        assert mails_testing.outbox[0]["subject"] == "Revue manuelle nécessaire"
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_process_accepted_application_user_not_eligible(self, get_applications_with_details):
@@ -772,7 +772,7 @@ class GraphQLSourceProcessApplicationTest:
 
         assert len(mails_testing.outbox) == 1
         assert (
-            mails_testing.outbox[0].sent_data["template"]
+            mails_testing.outbox[0]["template"]
             == TransactionalEmail.PRE_SUBSCRIPTION_DMS_ERROR_TO_BENEFICIARY.value.__dict__
         )
 

@@ -93,21 +93,19 @@ class Returns200Test:
         assert response.status_code == 200
         assert len(mails_testing.outbox) == 3
 
-        outbox = sorted(mails_testing.outbox, key=lambda mail: mail.sent_data["params"]["OFFER_TOKEN"])
+        outbox = sorted(mails_testing.outbox, key=lambda mail: mail["params"]["OFFER_TOKEN"])
         bookings.sort(key=lambda b: b.activationCode.code if getattr(b, "activationCode") else b.token)
-        assert [mail.sent_data["To"] for mail in outbox] == [b.user.email for b in bookings]
-        assert [mail.sent_data["params"]["USER_FIRST_NAME"] for mail in outbox] == [b.user.firstName for b in bookings]
-        assert [mail.sent_data["params"]["OFFER_NAME"] for mail in outbox] == [b.stock.offer.name for b in bookings]
-        assert [mail.sent_data["params"]["OFFER_TOKEN"] for mail in outbox] == [
+        assert [mail["To"] for mail in outbox] == [b.user.email for b in bookings]
+        assert [mail["params"]["USER_FIRST_NAME"] for mail in outbox] == [b.user.firstName for b in bookings]
+        assert [mail["params"]["OFFER_NAME"] for mail in outbox] == [b.stock.offer.name for b in bookings]
+        assert [mail["params"]["OFFER_TOKEN"] for mail in outbox] == [
             b.activationCode.code if b.activationCode else b.token for b in bookings
         ]
-        assert [mail.sent_data["params"]["OFFER_WITHDRAWAL_DELAY"] for mail in outbox] == [None] * 3
-        assert [mail.sent_data["params"]["OFFER_WITHDRAWAL_DETAILS"] for mail in outbox] == [
-            "conditions de retrait"
-        ] * 3
-        assert [mail.sent_data["params"]["OFFER_WITHDRAWAL_TYPE"] for mail in outbox] == ["no_ticket"] * 3
-        assert [mail.sent_data["params"]["OFFERER_NAME"] for mail in outbox] == [offer.venue.managingOfferer.name] * 3
-        assert [mail.sent_data["params"]["VENUE_ADDRESS"] for mail in outbox] == [
+        assert [mail["params"]["OFFER_WITHDRAWAL_DELAY"] for mail in outbox] == [None] * 3
+        assert [mail["params"]["OFFER_WITHDRAWAL_DETAILS"] for mail in outbox] == ["conditions de retrait"] * 3
+        assert [mail["params"]["OFFER_WITHDRAWAL_TYPE"] for mail in outbox] == ["no_ticket"] * 3
+        assert [mail["params"]["OFFERER_NAME"] for mail in outbox] == [offer.venue.managingOfferer.name] * 3
+        assert [mail["params"]["VENUE_ADDRESS"] for mail in outbox] == [
             f"{offer.venue.address} {offer.venue.postalCode} {offer.venue.city}"
         ] * 3
 

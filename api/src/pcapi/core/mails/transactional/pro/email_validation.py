@@ -15,6 +15,6 @@ def get_email_validation_to_pro_email_data(token: token_utils.Token) -> models.T
     )
 
 
-def send_email_validation_to_pro_email(user: User, token: token_utils.Token) -> bool:
+def send_email_validation_to_pro_email(user: User, token: token_utils.Token) -> None:
     data = get_email_validation_to_pro_email_data(token)
-    return mails.send(recipients=[user.email], data=data)
+    mails.send(recipients=[user.email], data=data)

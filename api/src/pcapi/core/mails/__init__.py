@@ -14,15 +14,14 @@ def send(
     recipients: Iterable[str],
     data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData,
     bcc_recipients: Iterable[str] = (),
-) -> bool:
-    """Try to send an email and return whether it was successful."""
+) -> None:
+    """Asynchronously send an email."""
     if isinstance(recipients, str):
         if settings.IS_RUNNING_TESTS:
             raise ValueError("Recipients should be a sequence, not a single string.")
         recipients = [recipients]
     backend = _get_backend(data)
-    result = backend().send_mail(recipients=recipients, bcc_recipients=bcc_recipients, data=data)
-    return result.successful
+    backend().send_mail(recipients=recipients, bcc_recipients=bcc_recipients, data=data)
 
 
 def create_contact(payload: sendinblue_tasks.UpdateSendinblueContactRequest) -> None:

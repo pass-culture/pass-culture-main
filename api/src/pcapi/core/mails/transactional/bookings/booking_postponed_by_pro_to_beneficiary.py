@@ -9,16 +9,14 @@ from pcapi.utils.mailing import get_event_datetime
 from pcapi.utils.urls import booking_app_link
 
 
-def send_batch_booking_postponement_email_to_users(bookings: list[Booking]) -> bool:
-    success = True
+def send_batch_booking_postponement_email_to_users(bookings: list[Booking]) -> None:
     for booking in bookings:
-        success &= send_booking_postponement_email_to_users(booking)
-    return success
+        send_booking_postponement_email_to_users(booking)
 
 
-def send_booking_postponement_email_to_users(booking: Booking) -> bool:
+def send_booking_postponement_email_to_users(booking: Booking) -> None:
     data = get_booking_postponed_by_pro_to_beneficiary_email_data(booking)
-    return mails.send(recipients=[booking.email], data=data)
+    mails.send(recipients=[booking.email], data=data)
 
 
 def get_booking_postponed_by_pro_to_beneficiary_email_data(

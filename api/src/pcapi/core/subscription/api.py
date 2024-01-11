@@ -85,9 +85,7 @@ def activate_beneficiary_for_eligibility(
     db.session.commit()
     logger.info("Activated beneficiary and created deposit", extra={"user": user.id, "source": deposit.source})
 
-    is_email_sent = transactional_mails.send_accepted_as_beneficiary_email(user=user)
-    if not is_email_sent:
-        logger.warning("Could not send accepted as beneficiary email to user", extra={"user": user.id})
+    transactional_mails.send_accepted_as_beneficiary_email(user=user)
 
     external_attributes_api.update_external_user(user)
     batch.track_deposit_activated_event(user.id, deposit)

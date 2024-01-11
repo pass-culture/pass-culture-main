@@ -15,13 +15,10 @@ def get_frobulation_email_data(user) -> TransactionalEmailData:
         },
     )
 
-def send_frobulation_email(user) -> bool:
+def send_frobulation_email(user) -> None:
     data = get_frobulation_email_data(user)
-    return pcapi.core.mails.send(recipients=[user.email], data=data)
+    pcapi.core.mails.send(recipients=[user.email], data=data)
 ```
-
-En cas de succès comme d'échec, les données du mail sont sauvegardées
-en base de données via le modèle `pcapi.core.mails.models.Email`.
 
 
 ## Format des données pour les modèles Sendinblue
@@ -97,7 +94,7 @@ def test_frobulation():
     send_frobulation_email(user)
 
     assert len(mails_testing.outbox) == 1
-    assert mails_testing.outbox[0].sent_data["params"]["FIRSTNAME"] == user.firstName
+    assert mails_testing.outbox[0]["params"]["FIRSTNAME"] == user.firstName
 ```
 
 
@@ -115,5 +112,3 @@ Définissez les variables d'environnement suivantes :
 
 
 Si le mail n'est pas reçu, regarder le dashboard de Sendinblue (section 'Transactional > Logs') pour plus ample informations.
-
-

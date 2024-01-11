@@ -274,8 +274,8 @@ class NotifyUsersOfExpiredBookingsTest:
 
         outbox = mails_testing.outbox
         email_recaps = {
-            (outbox[0].sent_data["To"], outbox[0].sent_data["params"]["BOOKINGS"][0]["offer_name"]),
-            (outbox[1].sent_data["To"], outbox[1].sent_data["params"]["BOOKINGS"][0]["offer_name"]),
+            (outbox[0]["To"], outbox[0]["params"]["BOOKINGS"][0]["offer_name"]),
+            (outbox[1]["To"], outbox[1]["params"]["BOOKINGS"][0]["offer_name"]),
         }
 
         dvd_user_email = expired_today_dvd_booking.user.email
@@ -375,14 +375,11 @@ class NotifyOfferersOfExpiredBookingsTest:
 
         # Then
         assert len(mails_testing.outbox) == 2
-        assert (
-            mails_testing.outbox[0].sent_data["template"]
-            == TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION.value.__dict__
-        )
-        assert mails_testing.outbox[0].sent_data["To"] == "test@mail.com"
-        assert mails_testing.outbox[0].sent_data["Bcc"] == "test2@mail.com"
+        assert mails_testing.outbox[0]["template"] == TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION.value.__dict__
+        assert mails_testing.outbox[0]["To"] == "test@mail.com"
+        assert mails_testing.outbox[0]["Bcc"] == "test2@mail.com"
 
-        assert mails_testing.outbox[0].sent_data["params"] == {
+        assert mails_testing.outbox[0]["params"] == {
             "OFFER_NAME": "Ma première offre expirée",
             "EDUCATIONAL_INSTITUTION_NAME": institution.name,
             "VENUE_NAME": stock_one.collectiveOffer.venue.name,
@@ -398,9 +395,9 @@ class NotifyOfferersOfExpiredBookingsTest:
         }
 
         second_educational_institution = second_expired_booking.educationalInstitution
-        assert mails_testing.outbox[1].sent_data["To"] == "new_test@mail.com"
-        assert mails_testing.outbox[1].sent_data["Bcc"] == "newer_test@mail.com"
-        assert mails_testing.outbox[1].sent_data["params"] == {
+        assert mails_testing.outbox[1]["To"] == "new_test@mail.com"
+        assert mails_testing.outbox[1]["Bcc"] == "newer_test@mail.com"
+        assert mails_testing.outbox[1]["params"] == {
             "OFFER_NAME": "Ma deuxième offre expirée",
             "EDUCATIONAL_INSTITUTION_NAME": second_educational_institution.name,
             "VENUE_NAME": stock_two.collectiveOffer.venue.name,

@@ -15,10 +15,4 @@ def send_booking_cancellation_emails_to_user_and_offerer_job(booking_id: int) ->
     if not booking:
         logger.error("Booking with id:%s not found", booking_id)
         return
-    if not transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(
-        booking, booking.cancellationReason
-    ):
-        logger.warning(
-            "Could not send booking cancellation emails",
-            extra={"booking": booking.id},
-        )
+    transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)

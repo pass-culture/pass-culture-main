@@ -78,13 +78,13 @@ class SendinblueSuspiciousLoginEmailTest:
                 self.user, self.login_info, self.account_suspension_token, self.reset_password_token
             )
 
-            assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
-            assert mails_testing.outbox[0].sent_data["To"] == self.user.email
-            assert mails_testing.outbox[0].sent_data["params"]["LOCATION"] == "Paris"
-            assert mails_testing.outbox[0].sent_data["params"]["SOURCE"] == "iPhone 13"
-            assert mails_testing.outbox[0].sent_data["params"]["OS"] == "iOS"
-            assert mails_testing.outbox[0].sent_data["params"]["LOGIN_DATE"] == "29/05/2023"
-            assert mails_testing.outbox[0].sent_data["params"]["LOGIN_TIME"] == "19h05"
+            assert mails_testing.outbox[0]["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
+            assert mails_testing.outbox[0]["To"] == self.user.email
+            assert mails_testing.outbox[0]["params"]["LOCATION"] == "Paris"
+            assert mails_testing.outbox[0]["params"]["SOURCE"] == "iPhone 13"
+            assert mails_testing.outbox[0]["params"]["OS"] == "iOS"
+            assert mails_testing.outbox[0]["params"]["LOGIN_DATE"] == "29/05/2023"
+            assert mails_testing.outbox[0]["params"]["LOGIN_TIME"] == "19h05"
 
     def should_send_suspicious_login_email_account_securing_link(self):
         reset_password_token = token_utils.Token.create(
@@ -98,7 +98,7 @@ class SendinblueSuspiciousLoginEmailTest:
             }
         )
         send_suspicious_login_email(self.user, self.login_info, self.account_suspension_token, reset_password_token)
-        assert mails_testing.outbox[0].sent_data["params"]["ACCOUNT_SECURING_LINK"] == ACCOUNT_SECURING_LINK
+        assert mails_testing.outbox[0]["params"]["ACCOUNT_SECURING_LINK"] == ACCOUNT_SECURING_LINK
 
     @freeze_time("2023-06-08 14:10:00")
     def should_send_suspicious_login_email_with_date_when_no_login_info(self):
@@ -110,10 +110,10 @@ class SendinblueSuspiciousLoginEmailTest:
                 reset_password_token=self.reset_password_token,
             )
 
-            assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
-            assert mails_testing.outbox[0].sent_data["To"] == self.user.email
-            assert mails_testing.outbox[0].sent_data["params"]["LOGIN_DATE"] == "08/06/2023"
-            assert mails_testing.outbox[0].sent_data["params"]["LOGIN_TIME"] == "16h10"
+            assert mails_testing.outbox[0]["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
+            assert mails_testing.outbox[0]["To"] == self.user.email
+            assert mails_testing.outbox[0]["params"]["LOGIN_DATE"] == "08/06/2023"
+            assert mails_testing.outbox[0]["params"]["LOGIN_TIME"] == "16h10"
 
     def should_send_suspicious_login_email_for_user_living_in_domtom(self):
         with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
@@ -122,13 +122,13 @@ class SendinblueSuspiciousLoginEmailTest:
                 self.user, self.login_info, self.account_suspension_token, self.reset_password_token
             )
 
-            assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
-            assert mails_testing.outbox[0].sent_data["To"] == self.user.email
-            assert mails_testing.outbox[0].sent_data["params"]["LOCATION"] == "Paris"
-            assert mails_testing.outbox[0].sent_data["params"]["SOURCE"] == "iPhone 13"
-            assert mails_testing.outbox[0].sent_data["params"]["OS"] == "iOS"
-            assert mails_testing.outbox[0].sent_data["params"]["LOGIN_DATE"] == "29/05/2023"
-            assert mails_testing.outbox[0].sent_data["params"]["LOGIN_TIME"] == "07h05"
+            assert mails_testing.outbox[0]["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
+            assert mails_testing.outbox[0]["To"] == self.user.email
+            assert mails_testing.outbox[0]["params"]["LOCATION"] == "Paris"
+            assert mails_testing.outbox[0]["params"]["SOURCE"] == "iPhone 13"
+            assert mails_testing.outbox[0]["params"]["OS"] == "iOS"
+            assert mails_testing.outbox[0]["params"]["LOGIN_DATE"] == "29/05/2023"
+            assert mails_testing.outbox[0]["params"]["LOGIN_TIME"] == "07h05"
 
     @freeze_time("2023-06-08 3:15:00")
     def should_send_suspicious_login_email_for_user_living_in_domtom_with_date_when_no_login_info(self):
@@ -141,7 +141,7 @@ class SendinblueSuspiciousLoginEmailTest:
                 reset_password_token=self.reset_password_token,
             )
 
-            assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
-            assert mails_testing.outbox[0].sent_data["To"] == self.user.email
-            assert mails_testing.outbox[0].sent_data["params"]["LOGIN_DATE"] == "07/06/2023"
-            assert mails_testing.outbox[0].sent_data["params"]["LOGIN_TIME"] == "23h15"
+            assert mails_testing.outbox[0]["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
+            assert mails_testing.outbox[0]["To"] == self.user.email
+            assert mails_testing.outbox[0]["params"]["LOGIN_DATE"] == "07/06/2023"
+            assert mails_testing.outbox[0]["params"]["LOGIN_TIME"] == "23h15"

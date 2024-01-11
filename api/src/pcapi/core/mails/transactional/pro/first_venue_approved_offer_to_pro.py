@@ -45,9 +45,9 @@ def get_first_venue_approved_offer_email_data(offer: Offer) -> models.Transactio
     )
 
 
-def send_first_venue_approved_offer_email_to_pro(offer: Offer) -> bool:
+def send_first_venue_approved_offer_email_to_pro(offer: Offer) -> None:
     recipient = offer.venue.bookingEmail
     if not recipient:
-        return True
+        return
     data = get_first_venue_approved_offer_email_data(offer)
-    return mails.send(recipients=[recipient], data=data)
+    mails.send(recipients=[recipient], data=data)

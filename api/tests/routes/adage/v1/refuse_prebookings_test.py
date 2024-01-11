@@ -63,14 +63,11 @@ class Returns200Test:
         collective_offer = collective_stock.collectiveOffer
         educational_institution = refused_collective_booking.educationalInstitution
         assert len(mails_testing.outbox) == 1
-        assert (
-            mails_testing.outbox[0].sent_data["template"]
-            == TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION.value.__dict__
-        )
-        assert mails_testing.outbox[0].sent_data["To"] == "test_collective@mail.com"
-        assert mails_testing.outbox[0].sent_data["Bcc"] == "test2_collective@mail.com"
+        assert mails_testing.outbox[0]["template"] == TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION.value.__dict__
+        assert mails_testing.outbox[0]["To"] == "test_collective@mail.com"
+        assert mails_testing.outbox[0]["Bcc"] == "test2_collective@mail.com"
 
-        assert mails_testing.outbox[0].sent_data["params"] == {
+        assert mails_testing.outbox[0]["params"] == {
             "OFFER_NAME": collective_offer.name,
             "EDUCATIONAL_INSTITUTION_NAME": educational_institution.name,
             "VENUE_NAME": collective_offer.venue.name,

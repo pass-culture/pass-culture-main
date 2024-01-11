@@ -15,8 +15,8 @@ def get_permanent_venue_needs_picture_data(venue: offerer_models.Venue) -> model
     )
 
 
-def send_permanent_venue_needs_picture(venue: offerer_models.Venue) -> bool:
+def send_permanent_venue_needs_picture(venue: offerer_models.Venue) -> None:
     data = get_permanent_venue_needs_picture_data(venue)
     if not venue.bookingEmail:
-        return True
-    return mails.send(recipients=[venue.bookingEmail], data=data)
+        return
+    mails.send(recipients=[venue.bookingEmail], data=data)

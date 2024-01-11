@@ -96,11 +96,10 @@ class SendinblueSendFirstVenueOfferEmailTest:
         # Then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert (
-            mails_testing.outbox[0].sent_data["template"]
-            == TransactionalEmail.FIRST_VENUE_APPROVED_OFFER_TO_PRO.value.__dict__
+            mails_testing.outbox[0]["template"] == TransactionalEmail.FIRST_VENUE_APPROVED_OFFER_TO_PRO.value.__dict__
         )
-        assert mails_testing.outbox[0].sent_data["To"] == "venue@bookingEmail.com"
-        assert mails_testing.outbox[0].sent_data["params"] == {
+        assert mails_testing.outbox[0]["To"] == "venue@bookingEmail.com"
+        assert mails_testing.outbox[0]["params"] == {
             "OFFER_NAME": offer.name,
             "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
             "VENUE_NAME": venue.name,

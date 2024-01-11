@@ -212,14 +212,14 @@ class SendUbbleKoReminderReminderTest:
 
         # Then
         assert len(mails_testing.outbox) == 2
-        assert mails_testing.outbox[0].sent_data["To"] == user1.email
+        assert mails_testing.outbox[0]["To"] == user1.email
         assert (
-            mails_testing.outbox[0].sent_data["template"]
+            mails_testing.outbox[0]["template"]
             == sendinblue_template.TransactionalEmail.UBBLE_KO_REMINDER_ID_CHECK_NOT_AUTHENTIC.value.__dict__
         )
-        assert mails_testing.outbox[1].sent_data["To"] == user2.email
+        assert mails_testing.outbox[1]["To"] == user2.email
         assert (
-            mails_testing.outbox[1].sent_data["template"]
+            mails_testing.outbox[1]["template"]
             == sendinblue_template.TransactionalEmail.UBBLE_KO_REMINDER_ID_CHECK_UNPROCESSABLE.value.__dict__
         )
 
@@ -244,16 +244,16 @@ class SendUbbleKoReminderReminderTest:
 
         assert len(mails_testing.outbox) == 2
 
-        user1_index = 0 if mails_testing.outbox[0].sent_data["To"] == user1.email else 1
-        user2_index = 0 if mails_testing.outbox[0].sent_data["To"] == user2.email else 1
+        user1_index = 0 if mails_testing.outbox[0]["To"] == user1.email else 1
+        user2_index = 0 if mails_testing.outbox[0]["To"] == user2.email else 1
 
         assert (
-            mails_testing.outbox[user1_index].sent_data["template"]
+            mails_testing.outbox[user1_index]["template"]
             == sendinblue_template.TransactionalEmail.UBBLE_KO_REMINDER_ID_CHECK_NOT_SUPPORTED.value.__dict__
         )
 
         assert (
-            mails_testing.outbox[user2_index].sent_data["template"]
+            mails_testing.outbox[user2_index]["template"]
             == sendinblue_template.TransactionalEmail.UBBLE_KO_REMINDER_ID_CHECK_EXPIRED.value.__dict__
         )
 
@@ -286,7 +286,7 @@ class SendUbbleKoReminderReminderTest:
 
         # Then
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["To"] == user.email
+        assert mails_testing.outbox[0]["To"] == user.email
         self._test_push_has_ko_ubble_status_has_been_sent([user.id], reason_code.value)
 
     @override_settings(DAYS_BEFORE_UBBLE_QUICK_ACTION_REMINDER=7)
@@ -300,7 +300,7 @@ class SendUbbleKoReminderReminderTest:
 
         # Then
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["To"] == user.email
+        assert mails_testing.outbox[0]["To"] == user.email
         self._test_push_has_ko_ubble_status_has_been_sent([user.id], reason_code.value)
 
     @override_settings(DAYS_BEFORE_UBBLE_LONG_ACTION_REMINDER=21)
@@ -316,7 +316,7 @@ class SendUbbleKoReminderReminderTest:
 
         # Then
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["To"] == user.email
+        assert mails_testing.outbox[0]["To"] == user.email
         self._test_push_has_ko_ubble_status_has_been_sent([user.id], reason_code.value)
 
     @override_settings(DAYS_BEFORE_UBBLE_QUICK_ACTION_REMINDER=7)
@@ -333,7 +333,7 @@ class SendUbbleKoReminderReminderTest:
 
         # Then
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["To"] == user.email
+        assert mails_testing.outbox[0]["To"] == user.email
         self._test_push_has_ko_ubble_status_has_been_sent([user.id], reason_code.value)
 
     @override_settings(DAYS_BEFORE_UBBLE_LONG_ACTION_REMINDER=21)
@@ -353,7 +353,7 @@ class SendUbbleKoReminderReminderTest:
 
         # Then
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["To"] == user.email
+        assert mails_testing.outbox[0]["To"] == user.email
         self._test_push_has_ko_ubble_status_has_been_sent([user.id], reason_code.value)
 
     @override_settings(DAYS_BEFORE_UBBLE_LONG_ACTION_REMINDER=7)

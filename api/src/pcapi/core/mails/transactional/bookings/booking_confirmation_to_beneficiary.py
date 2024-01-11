@@ -12,9 +12,9 @@ from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.urls import booking_app_link
 
 
-def send_individual_booking_confirmation_email_to_beneficiary(booking: Booking) -> bool:
+def send_individual_booking_confirmation_email_to_beneficiary(booking: Booking) -> None:
     data = get_booking_confirmation_to_beneficiary_email_data(booking)
-    return mails.send(recipients=[booking.user.email], data=data)
+    mails.send(recipients=[booking.user.email], data=data)
 
 
 def get_booking_confirmation_to_beneficiary_email_data(

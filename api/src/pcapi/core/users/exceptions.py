@@ -25,10 +25,6 @@ class IncompleteDataException(Exception):
     pass
 
 
-class EmailNotSent(Exception):
-    pass
-
-
 class UserDoesNotExist(Exception):
     pass
 

@@ -91,11 +91,10 @@ class SendinblueSendSoonToBeExpiredBookingsEmailToBeneficiaryTest:
 
         # then
         assert len(mails_testing.outbox) == 2  # test number of emails sent
-        assert (
-            mails_testing.outbox[0].sent_data["template"]
-            == TransactionalEmail.BOOKING_SOON_TO_BE_EXPIRED_TO_BENEFICIARY.value.__dict__
-        )
-        assert mails_testing.outbox[0].sent_data["params"] == {
+        email1, email2 = mails_testing.outbox  # pylint: disable=unbalanced-tuple-unpacking
+        email1 = mails_testing.outbox[0]
+        assert email1["template"] == TransactionalEmail.BOOKING_SOON_TO_BE_EXPIRED_TO_BENEFICIARY.value.__dict__
+        assert email1["params"] == {
             "FIRSTNAME": user.firstName,
             "BOOKINGS": [
                 {
@@ -106,13 +105,10 @@ class SendinblueSendSoonToBeExpiredBookingsEmailToBeneficiaryTest:
             "DAYS_BEFORE_CANCEL": 5,
             "DAYS_FROM_BOOKING": 5,
         }
-        assert mails_testing.outbox[0].sent_data["To"] == email
+        assert email1["To"] == email
 
-        assert (
-            mails_testing.outbox[1].sent_data["template"]
-            == TransactionalEmail.BOOKING_SOON_TO_BE_EXPIRED_TO_BENEFICIARY.value.__dict__
-        )
-        assert mails_testing.outbox[1].sent_data["params"] == {
+        assert email2["template"] == TransactionalEmail.BOOKING_SOON_TO_BE_EXPIRED_TO_BENEFICIARY.value.__dict__
+        assert email2["params"] == {
             "FIRSTNAME": user.firstName,
             "BOOKINGS": [
                 {
@@ -127,4 +123,4 @@ class SendinblueSendSoonToBeExpiredBookingsEmailToBeneficiaryTest:
             "DAYS_BEFORE_CANCEL": 7,
             "DAYS_FROM_BOOKING": 23,
         }
-        assert mails_testing.outbox[1].sent_data["To"] == email
+        assert email2["To"] == email

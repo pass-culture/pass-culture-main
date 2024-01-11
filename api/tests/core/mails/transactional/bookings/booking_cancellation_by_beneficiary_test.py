@@ -28,12 +28,10 @@ class SendSendiblueBeneficiaryBookingCancellationEmailTest:
         send_booking_cancellation_by_beneficiary_email(booking)
 
         # then
-        assert (
-            mails_testing.outbox[0].sent_data["template"]
-            == TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY.value.__dict__
-        )
-        assert mails_testing.outbox[0].sent_data["To"] == booking.user.email
-        params_key_list = [
+        email = mails_testing.outbox[0]
+        assert email["template"] == TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY.value.__dict__
+        assert email["To"] == booking.user.email
+        params = [
             "CAN_BOOK_AGAIN",
             "EVENT_DATE",
             "EVENT_HOUR",
@@ -44,8 +42,8 @@ class SendSendiblueBeneficiaryBookingCancellationEmailTest:
             "USER_FIRST_NAME",
             "OFFER_LINK",
         ]
-        for params_key in params_key_list:
-            assert params_key in mails_testing.outbox[0].sent_data["params"].keys()
+        for param in params:
+            assert param in email["params"]
 
 
 @pytest.mark.usefixtures("db_session")

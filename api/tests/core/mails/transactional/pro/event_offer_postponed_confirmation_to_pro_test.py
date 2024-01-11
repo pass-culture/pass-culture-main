@@ -36,11 +36,11 @@ class SendEventOfferPosponedConfirmationToProEmailTest:
 
         # Then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["To"] == "venue@postponed.net"
-        assert mails_testing.outbox[0].sent_data["template"] == asdict(
+        assert mails_testing.outbox[0]["To"] == "venue@postponed.net"
+        assert mails_testing.outbox[0]["template"] == asdict(
             TransactionalEmail.EVENT_OFFER_POSTPONED_CONFIRMATION_TO_PRO.value
         )
-        assert mails_testing.outbox[0].sent_data["params"] == {
+        assert mails_testing.outbox[0]["params"] == {
             "OFFER_NAME": offer.name,
             "VENUE_NAME": venue.name,
             "EVENT_DATE": "mardi 1 mars 2022",

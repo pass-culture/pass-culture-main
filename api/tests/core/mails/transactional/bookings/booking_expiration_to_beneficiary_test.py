@@ -29,11 +29,8 @@ class SendExpiredBookingsEmailToBeneficiarySendinblueTest:
         send_expired_bookings_to_beneficiary_email(amnesiac_user, [expired_today_book_booking])
 
         assert len(mails_testing.outbox) == 1
-        assert (
-            mails_testing.outbox[0].sent_data["template"]
-            == TransactionalEmail.EXPIRED_BOOKING_TO_BENEFICIARY.value.__dict__
-        )
-        assert mails_testing.outbox[0].sent_data["params"]["WITHDRAWAL_PERIOD"] == 10
+        assert mails_testing.outbox[0]["template"] == TransactionalEmail.EXPIRED_BOOKING_TO_BENEFICIARY.value.__dict__
+        assert mails_testing.outbox[0]["params"]["WITHDRAWAL_PERIOD"] == 10
 
     def test_should_send_email_to_beneficiary_when_expired_others_bookings_cancelled(self):
         amnesiac_user = users_factories.BeneficiaryGrant18Factory(email="dory@example.com")
@@ -46,11 +43,8 @@ class SendExpiredBookingsEmailToBeneficiarySendinblueTest:
         send_expired_bookings_to_beneficiary_email(amnesiac_user, [expired_today_cd_booking, expired_today_dvd_booking])
 
         assert len(mails_testing.outbox) == 1
-        assert (
-            mails_testing.outbox[0].sent_data["template"]
-            == TransactionalEmail.EXPIRED_BOOKING_TO_BENEFICIARY.value.__dict__
-        )
-        assert mails_testing.outbox[0].sent_data["params"]["WITHDRAWAL_PERIOD"] == 30
+        assert mails_testing.outbox[0]["template"] == TransactionalEmail.EXPIRED_BOOKING_TO_BENEFICIARY.value.__dict__
+        assert mails_testing.outbox[0]["params"]["WITHDRAWAL_PERIOD"] == 30
 
     def test_should_send_two_emails_to_beneficiary_when_expired_books_and_other_bookings_cancelled(self):
         amnesiac_user = users_factories.BeneficiaryGrant18Factory(email="dory@example.com")
@@ -65,8 +59,8 @@ class SendExpiredBookingsEmailToBeneficiarySendinblueTest:
         )
 
         assert len(mails_testing.outbox) == 2
-        assert mails_testing.outbox[0].sent_data["params"]["WITHDRAWAL_PERIOD"] == 10
-        assert mails_testing.outbox[1].sent_data["params"]["WITHDRAWAL_PERIOD"] == 30
+        assert mails_testing.outbox[0]["params"]["WITHDRAWAL_PERIOD"] == 10
+        assert mails_testing.outbox[1]["params"]["WITHDRAWAL_PERIOD"] == 30
 
     def test_should_get_correct_data_when_expired_bookings_cancelled(self):
         now = datetime.utcnow()

@@ -43,16 +43,16 @@ def retrieve_data_for_offerer_attachment_invitation_accepted(user: users_models.
 
 def send_offerer_attachment_invitation(
     recipient_emails: list[str], offerer: offerers_models.Offerer, user: users_models.User | None = None
-) -> bool:
+) -> None:
     if user and not user.isEmailValidated:
         data = retrieve_data_for_offerer_attachment_invitation_existing_user_with_not_validated_email(offerer, user)
     elif user:
         data = retrieve_data_for_offerer_attachment_invitation_existing_user_with_validated_email(offerer)
     else:
         data = retrieve_data_for_offerer_attachment_invitation_new_user(offerer)
-    return mails.send(recipients=recipient_emails, data=data)
+    mails.send(recipients=recipient_emails, data=data)
 
 
-def send_offerer_attachment_invitation_accepted(invited_user: users_models.User, receipient_email: str) -> bool:
+def send_offerer_attachment_invitation_accepted(invited_user: users_models.User, receipient_email: str) -> None:
     offerer_attachment_invitation_accepted_data = retrieve_data_for_offerer_attachment_invitation_accepted(invited_user)
-    return mails.send(recipients=[receipient_email], data=offerer_attachment_invitation_accepted_data)
+    mails.send(recipients=[receipient_email], data=offerer_attachment_invitation_accepted_data)

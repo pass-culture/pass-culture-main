@@ -461,7 +461,7 @@ class BatchCollectiveOfferTemplatesValidateTest(PostEndpointHelper):
             assert collective_offer_template.validation is OfferValidationStatus.APPROVED
             assert collective_offer_template.lastValidationAuthor == legit_user
 
-        received_dict = {email.sent_data["To"]: email.sent_data["template"] for email in mails_testing.outbox}
+        received_dict = {email["To"]: email["template"] for email in mails_testing.outbox}
         expected_dict = {
             collective_offer_templates[0].venue.bookingEmail: asdict(TransactionalEmail.OFFER_APPROVAL_TO_PRO.value),
             collective_offer_templates[1].venue.bookingEmail: asdict(TransactionalEmail.OFFER_APPROVAL_TO_PRO.value),
@@ -518,7 +518,7 @@ class BatchCollectiveOfferTemplatesRejectTest(PostEndpointHelper):
 
         assert len(mails_testing.outbox) == 3
 
-        received_dict = {email.sent_data["To"]: email.sent_data["template"] for email in mails_testing.outbox}
+        received_dict = {email["To"]: email["template"] for email in mails_testing.outbox}
         expected_dict = {
             collective_offer_templates[0].venue.bookingEmail: asdict(
                 TransactionalEmail.OFFER_PENDING_TO_REJECTED_TO_PRO.value

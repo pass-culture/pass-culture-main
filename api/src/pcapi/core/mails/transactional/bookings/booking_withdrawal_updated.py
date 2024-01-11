@@ -67,7 +67,7 @@ def send_booking_withdrawal_updated(
     offer_withdrawal_type: str | None,
     offerer_name: str,
     venue_address: str,
-) -> bool:
+) -> None:
     data = get_booking_withdrawal_updated_email_data(
         user_first_name,
         offer_name,
@@ -78,7 +78,7 @@ def send_booking_withdrawal_updated(
         offerer_name,
         venue_address,
     )
-    return mails.send(recipients=recipients, data=data)
+    mails.send(recipients=recipients, data=data)
 
 
 def get_booking_withdrawal_updated_email_data(

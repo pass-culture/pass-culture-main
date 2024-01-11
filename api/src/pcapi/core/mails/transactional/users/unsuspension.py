@@ -4,6 +4,6 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.users.models import User
 
 
-def send_unsuspension_email(user: User) -> bool:
+def send_unsuspension_email(user: User) -> None:
     data = models.TransactionalEmailData(template=TransactionalEmail.ACCOUNT_UNSUSPENDED.value)
-    return mails.send(recipients=[user.email], data=data)
+    mails.send(recipients=[user.email], data=data)

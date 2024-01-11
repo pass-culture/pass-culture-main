@@ -44,7 +44,7 @@ def _build_link_for_email_change_action(
     return generate_firebase_dynamic_link(path, params)
 
 
-def generate_and_send_beneficiary_confirmation_email_for_email_change(user: models.User, new_email: str) -> bool:
+def generate_and_send_beneficiary_confirmation_email_for_email_change(user: models.User, new_email: str) -> None:
     """Generate a Token
     Generate a link with the token
     Send an email with the link"""
@@ -71,14 +71,14 @@ def generate_and_send_beneficiary_confirmation_email_for_email_change(user: mode
         expiration_date,
         token=encoded_token,
     )
-    return transactional_mails.send_confirmation_email_change_email(
+    transactional_mails.send_confirmation_email_change_email(
         user,
         link_for_email_change_confirmation,
         link_for_email_change_cancellation,
     )
 
 
-def generate_and_send_beneficiary_validation_email_for_email_change(user: models.User, new_email: str) -> bool:
+def generate_and_send_beneficiary_validation_email_for_email_change(user: models.User, new_email: str) -> None:
     expiration_date = generate_email_change_token_expiration_date()
     encoded_token = token_utils.Token.create(
         token_utils.TokenType.EMAIL_CHANGE_VALIDATION,
@@ -94,7 +94,7 @@ def generate_and_send_beneficiary_validation_email_for_email_change(user: models
         token=encoded_token,
     )
 
-    return transactional_mails.send_validation_email_change_email(
+    transactional_mails.send_validation_email_change_email(
         user,
         new_email,
         link_for_email_change_validation,

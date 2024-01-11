@@ -7,6 +7,6 @@ def get_bank_account_validated_email_data() -> models.TransactionalEmailData:
     return models.TransactionalEmailData(template=TransactionalEmail.BANK_ACCOUNT_VALIDATED.value)
 
 
-def send_bank_account_validated_email(email: str) -> bool:
+def send_bank_account_validated_email(email: str) -> None:
     data = get_bank_account_validated_email_data()
-    return mails.send(recipients=[email], data=data)
+    mails.send(recipients=[email], data=data)

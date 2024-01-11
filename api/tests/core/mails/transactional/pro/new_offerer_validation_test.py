@@ -18,9 +18,9 @@ class SendNewOffererValidationEmailTest:
         new_offerer_validation.send_new_offerer_validation_email_to_pro(offerer)
 
         # Then
-        assert mails_testing.outbox[0].sent_data["To"] == "test@example.com"
-        assert mails_testing.outbox[0].sent_data["template"] == asdict(TransactionalEmail.NEW_OFFERER_VALIDATION.value)
-        assert mails_testing.outbox[0].sent_data["params"] == {"OFFERER_NAME": offerer.name}
+        assert mails_testing.outbox[0]["To"] == "test@example.com"
+        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.NEW_OFFERER_VALIDATION.value)
+        assert mails_testing.outbox[0]["params"] == {"OFFERER_NAME": offerer.name}
 
 
 @pytest.mark.usefixtures("db_session")
@@ -33,6 +33,6 @@ class SendNewOffererRejectionEmailTest:
         new_offerer_validation.send_new_offerer_rejection_email_to_pro(offerer)
 
         # Then
-        assert mails_testing.outbox[0].sent_data["To"] == "test@example.com"
-        assert mails_testing.outbox[0].sent_data["template"] == asdict(TransactionalEmail.NEW_OFFERER_REJECTION.value)
-        assert mails_testing.outbox[0].sent_data["params"] == {"OFFERER_NAME": offerer.name}
+        assert mails_testing.outbox[0]["To"] == "test@example.com"
+        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.NEW_OFFERER_REJECTION.value)
+        assert mails_testing.outbox[0]["params"] == {"OFFERER_NAME": offerer.name}

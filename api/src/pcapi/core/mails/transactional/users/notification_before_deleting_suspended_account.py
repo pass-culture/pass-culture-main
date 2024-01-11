@@ -13,6 +13,6 @@ def get_send_email_before_deletion_of_suspended_account_data(user: users_models.
     )
 
 
-def send_email_before_deletion_of_suspended_account(user: users_models.User) -> bool:
+def send_email_before_deletion_of_suspended_account(user: users_models.User) -> None:
     data = get_send_email_before_deletion_of_suspended_account_data(user)
-    return mails.send(recipients=[user.email], data=data)
+    mails.send(recipients=[user.email], data=data)

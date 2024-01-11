@@ -19,14 +19,12 @@ class TestingBackend(BaseBackend):
         recipients: Iterable[str],
         data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData,
         bcc_recipients: Iterable[str] = (),
-    ) -> models.MailResult:
+    ) -> None:
         sent_data = asdict(data)
         sent_data["To"] = ", ".join(recipients)
         if bcc_recipients:
             sent_data["Bcc"] = ", ".join(bcc_recipients)
-        result = models.MailResult(sent_data=sent_data, successful=True)
-        testing.outbox.append(result)
-        return result
+        testing.outbox.append(sent_data)
 
     def create_contact(self, payload: sendinblue_tasks.UpdateSendinblueContactRequest) -> None:
         users_testing.sendinblue_requests.append(

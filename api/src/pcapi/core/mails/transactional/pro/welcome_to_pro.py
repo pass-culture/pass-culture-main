@@ -13,6 +13,6 @@ def get_welcome_to_pro_email_data(venue: Venue) -> models.TransactionalEmailData
     )
 
 
-def send_welcome_to_pro_email(user: User, venue: Venue) -> bool:
+def send_welcome_to_pro_email(user: User, venue: Venue) -> None:
     data = get_welcome_to_pro_email_data(venue)
-    return mails.send(recipients=[user.email], data=data)
+    mails.send(recipients=[user.email], data=data)

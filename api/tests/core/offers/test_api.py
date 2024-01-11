@@ -696,7 +696,7 @@ class DeleteStockTest:
         assert booking4.pricings[0].status == finance_models.PricingStatus.PROCESSED  # unchanged
 
         assert len(mails_testing.outbox) == 3
-        assert {outbox.sent_data["To"] for outbox in mails_testing.outbox} == {
+        assert {email_data["To"] for email_data in mails_testing.outbox} == {
             booking1.email,
             booking3.email,
             offerer_email,

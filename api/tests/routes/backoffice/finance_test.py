@@ -1222,11 +1222,11 @@ class CancelDebitNoteTest(PostEndpointHelper):
 
         assert len(mails_testing.outbox) == 1
         assert (
-            mails_testing.outbox[0].sent_data["template"]
+            mails_testing.outbox[0]["template"]
             == TransactionalEmail.RETRIEVE_INCIDENT_AMOUNT_ON_INDIVIDUAL_BOOKINGS.value.__dict__
         )
-        assert mails_testing.outbox[0].sent_data["To"] == "pro@example.com"
-        assert mails_testing.outbox[0].sent_data["params"] == {
+        assert mails_testing.outbox[0]["To"] == "pro@example.com"
+        assert mails_testing.outbox[0]["params"] == {
             "VENUE_NAME": venue.publicName,
             "OFFER_NAME": booking.stock.offer.name,
         }

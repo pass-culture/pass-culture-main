@@ -27,7 +27,7 @@ class SendEventReminderEmailToBeneficiaryTest:
         send_individual_booking_event_reminder_email_to_beneficiary(booking)
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
             TransactionalEmail.BOOKING_EVENT_REMINDER_TO_BENEFICIARY.value
         )
 
@@ -38,7 +38,7 @@ class SendEventReminderEmailToBeneficiaryTest:
         send_individual_booking_event_reminder_email_to_beneficiary(booking)
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
             TransactionalEmail.BOOKING_EVENT_REMINDER_TO_BENEFICIARY_WITH_METADATA.value
         )
 

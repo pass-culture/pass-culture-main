@@ -27,13 +27,13 @@ def test_send_withdrawalchanged_email():
 
     assert len(mails_testing.outbox) == 1
     email = mails_testing.outbox[0]
-    assert email.sent_data["To"] == "georges@example.com"
-    assert email.sent_data["template"] == dataclasses.asdict(TransactionalEmail.OFFER_WITHDRAWAL_UPDATED_BY_PRO.value)
-    assert email.sent_data["params"]["OFFER_NAME"] == "my awesome offer"
-    assert email.sent_data["params"]["OFFER_TOKEN"] == "XXXXXX"
-    assert email.sent_data["params"]["OFFER_WITHDRAWAL_DELAY"] == "2 semaines"
-    assert email.sent_data["params"]["OFFER_WITHDRAWAL_DETAILS"] == "my withdrawal details"
-    assert email.sent_data["params"]["OFFER_WITHDRAWAL_TYPE"] == "no_ticket"
-    assert email.sent_data["params"]["OFFERER_NAME"] == "my offerer name"
-    assert email.sent_data["params"]["USER_FIRST_NAME"] == "Georges"
-    assert email.sent_data["params"]["VENUE_ADDRESS"] == "my awesome address"
+    assert email["To"] == "georges@example.com"
+    assert email["template"] == dataclasses.asdict(TransactionalEmail.OFFER_WITHDRAWAL_UPDATED_BY_PRO.value)
+    assert email["params"]["OFFER_NAME"] == "my awesome offer"
+    assert email["params"]["OFFER_TOKEN"] == "XXXXXX"
+    assert email["params"]["OFFER_WITHDRAWAL_DELAY"] == "2 semaines"
+    assert email["params"]["OFFER_WITHDRAWAL_DETAILS"] == "my withdrawal details"
+    assert email["params"]["OFFER_WITHDRAWAL_TYPE"] == "no_ticket"
+    assert email["params"]["OFFERER_NAME"] == "my offerer name"
+    assert email["params"]["USER_FIRST_NAME"] == "Georges"
+    assert email["params"]["VENUE_ADDRESS"] == "my awesome address"

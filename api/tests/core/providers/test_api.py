@@ -399,8 +399,8 @@ class DeleteVenueProviderTest:
         api.delete_venue_provider(venue_provider, author=user)
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["To"] == venue.bookingEmail
-        assert mails_testing.outbox[0].sent_data["template"] == asdict(TransactionalEmail.VENUE_SYNC_DELETED.value)
+        assert mails_testing.outbox[0]["To"] == venue.bookingEmail
+        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.VENUE_SYNC_DELETED.value)
 
         assert not venue.venueProviders
         mocked_update_all_offers_active_status_job.assert_called_once_with(venue.id, venue_provider.providerId, False)
@@ -424,5 +424,5 @@ class DisableVenueProviderTest:
         api.update_venue_provider(venue_provider, request)
 
         assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["To"] == venue.bookingEmail
-        assert mails_testing.outbox[0].sent_data["template"] == asdict(TransactionalEmail.VENUE_SYNC_DISABLED.value)
+        assert mails_testing.outbox[0]["To"] == venue.bookingEmail
+        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.VENUE_SYNC_DISABLED.value)

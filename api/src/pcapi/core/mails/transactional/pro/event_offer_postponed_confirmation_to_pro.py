@@ -7,12 +7,12 @@ from pcapi.core.offers.models import Stock
 from pcapi.utils.mailing import get_event_datetime
 
 
-def send_event_offer_postponement_confirmation_email_to_pro(stock: Stock, booking_count: int) -> bool:
+def send_event_offer_postponement_confirmation_email_to_pro(stock: Stock, booking_count: int) -> None:
     offerer_booking_email = stock.offer.venue.bookingEmail
     if not offerer_booking_email:
-        return True
+        return
     data = get_event_offer_postponed_confirmation_to_pro_email_data(stock, booking_count)
-    return mails.send(recipients=[offerer_booking_email], data=data)
+    mails.send(recipients=[offerer_booking_email], data=data)
 
 
 def get_event_offer_postponed_confirmation_to_pro_email_data(

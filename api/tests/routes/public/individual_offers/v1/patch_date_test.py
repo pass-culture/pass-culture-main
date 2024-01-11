@@ -90,14 +90,14 @@ class PatchDateTest:
         assert event_stock.price == price_category.price
         assert event_stock.priceCategory == price_category
         assert event_stock.quantity == 25
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
             sendinblue_template_ids.TransactionalEmail.EVENT_OFFER_POSTPONED_CONFIRMATION_TO_PRO.value
         )
-        assert mails_testing.outbox[0].sent_data["To"] == "venue@email.com"
-        assert mails_testing.outbox[1].sent_data["template"] == dataclasses.asdict(
+        assert mails_testing.outbox[0]["To"] == "venue@email.com"
+        assert mails_testing.outbox[1]["template"] == dataclasses.asdict(
             sendinblue_template_ids.TransactionalEmail.BOOKING_POSTPONED_BY_PRO_TO_BENEFICIARY.value
         )
-        assert mails_testing.outbox[1].sent_data["To"] == "benefeciary@email.com"
+        assert mails_testing.outbox[1]["To"] == "benefeciary@email.com"
 
     def test_update_all_fields_on_date_with_price_category(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()

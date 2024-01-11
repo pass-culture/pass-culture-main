@@ -21,11 +21,9 @@ class SendinblueProAvailableInvoiceEmailDataTest:
         send_invoice_available_to_pro_email(invoice, batch)
 
         assert len(mails_testing.outbox) == 1
-        assert (
-            mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.INVOICE_AVAILABLE_TO_PRO.value.__dict__
-        )
-        assert mails_testing.outbox[0].sent_data["To"] == "pro@example.com"
-        assert mails_testing.outbox[0].sent_data["params"] == {
+        assert mails_testing.outbox[0]["template"] == TransactionalEmail.INVOICE_AVAILABLE_TO_PRO.value.__dict__
+        assert mails_testing.outbox[0]["To"] == "pro@example.com"
+        assert mails_testing.outbox[0]["params"] == {
             "MONTANT_REMBOURSEMENT": 10,
             "PERIODE_DEBUT": "16-02-2023",
             "PERIODE_FIN": "28-02-2023",
@@ -39,11 +37,9 @@ class SendinblueProAvailableInvoiceEmailDataTest:
         send_invoice_available_to_pro_email(invoice, batch)
 
         assert len(mails_testing.outbox) == 1
-        assert (
-            mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.INVOICE_AVAILABLE_TO_PRO.value.__dict__
-        )
-        assert mails_testing.outbox[0].sent_data["To"] == "pro@example.com"
-        assert mails_testing.outbox[0].sent_data["params"] == {
+        assert mails_testing.outbox[0]["template"] == TransactionalEmail.INVOICE_AVAILABLE_TO_PRO.value.__dict__
+        assert mails_testing.outbox[0]["To"] == "pro@example.com"
+        assert mails_testing.outbox[0]["params"] == {
             "MONTANT_REMBOURSEMENT": 10,
             "PERIODE_DEBUT": "01-07-2023",
             "PERIODE_FIN": "15-07-2023",

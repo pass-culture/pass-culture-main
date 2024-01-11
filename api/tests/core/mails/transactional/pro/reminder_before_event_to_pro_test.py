@@ -32,11 +32,11 @@ class Reminder7DaysBeforeEventToProEmailTest:
 
         # Then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["To"] == "offer@bookingEmail.com"
-        assert mails_testing.outbox[0].sent_data["template"] == asdict(
+        assert mails_testing.outbox[0]["To"] == "offer@bookingEmail.com"
+        assert mails_testing.outbox[0]["template"] == asdict(
             TransactionalEmail.REMINDER_7_DAYS_BEFORE_EVENT_TO_PRO.value
         )
-        assert mails_testing.outbox[0].sent_data["params"] == {
+        assert mails_testing.outbox[0]["params"] == {
             "OFFER_NAME": offer.name,
             "VENUE_NAME": venue.name,
             "EVENT_DATE": "dimanche 1 mai 2022",
@@ -59,11 +59,11 @@ class Reminder7DaysBeforeEventToProEmailTest:
 
         # Then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["To"] == "venue@bookingEmail.com"
-        assert mails_testing.outbox[0].sent_data["template"] == asdict(
+        assert mails_testing.outbox[0]["To"] == "venue@bookingEmail.com"
+        assert mails_testing.outbox[0]["template"] == asdict(
             TransactionalEmail.REMINDER_7_DAYS_BEFORE_EVENT_TO_PRO.value
         )
-        assert mails_testing.outbox[0].sent_data["params"] == {
+        assert mails_testing.outbox[0]["params"] == {
             "OFFER_NAME": offer.name,
             "VENUE_NAME": venue.name,
             "EVENT_DATE": "dimanche 1 mai 2022",

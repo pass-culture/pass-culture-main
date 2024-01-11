@@ -5,12 +5,6 @@ from pcapi import settings
 
 
 @dataclasses.dataclass
-class MailResult:
-    sent_data: dict
-    successful: bool
-
-
-@dataclasses.dataclass
 class EmailInfo:
     email: str
     name: str

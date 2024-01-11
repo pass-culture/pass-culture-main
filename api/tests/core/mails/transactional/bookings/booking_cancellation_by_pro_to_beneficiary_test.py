@@ -31,11 +31,11 @@ class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
 
         # Then
         assert (
-            mails_testing.outbox[0].sent_data["template"]
+            mails_testing.outbox[0]["template"]
             == TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY.value.__dict__
         )
-        assert mails_testing.outbox[0].sent_data["To"] == "user@example.com"
-        assert mails_testing.outbox[0].sent_data["params"] == {
+        assert mails_testing.outbox[0]["To"] == "user@example.com"
+        assert mails_testing.outbox[0]["params"] == {
             "EVENT_DATE": None,
             "EVENT_HOUR": None,
             "IS_EVENT": False,

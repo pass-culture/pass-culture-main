@@ -5,13 +5,13 @@ from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 
 
-def send_new_request_made_by_redactor_to_pro(request: educational_models.CollectiveOfferRequest) -> bool:
+def send_new_request_made_by_redactor_to_pro(request: educational_models.CollectiveOfferRequest) -> None:
     emails = request.collectiveOfferTemplate.bookingEmails
     if not emails:
-        return True
+        return
     data = get_data_request_made_by_redactor_to_pro(request)
     main_recipient, bcc_recipients = emails[0], emails[1:]
-    return mails.send(recipients=main_recipient, bcc_recipients=bcc_recipients, data=data)
+    mails.send(recipients=main_recipient, bcc_recipients=bcc_recipients, data=data)
 
 
 def get_data_request_made_by_redactor_to_pro(

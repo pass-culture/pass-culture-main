@@ -1201,7 +1201,7 @@ class UbbleWebhookTest:
         assert len(fraud_check.user.deposits) == 1
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["To"] == fraud_check.user.email
+        assert mails_testing.outbox[0]["To"] == fraud_check.user.email
 
         content = fraud_models.UbbleContent(**fraud_check.resultContent)
         document = list(filter(lambda included: included.type == "documents", ubble_identification_response.included))[
@@ -1543,8 +1543,8 @@ class UbbleWebhookTest:
 
     def _assert_email_sent(self, user, id_prod):
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == id_prod
-        assert mails_testing.outbox[0].sent_data["To"] == user.email
+        assert mails_testing.outbox[0]["template"]["id_prod"] == id_prod
+        assert mails_testing.outbox[0]["To"] == user.email
 
     @pytest.mark.parametrize(
         "age,reason_code,reason,in_app_message",
@@ -1711,7 +1711,7 @@ class UbbleWebhookTest:
         assert message.call_to_action.title == "Contacter le support"
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["params"] == {"DUPLICATE_BENEFICIARY_EMAIL": "sho***@me.com"}
+        assert mails_testing.outbox[0]["params"] == {"DUPLICATE_BENEFICIARY_EMAIL": "sho***@me.com"}
 
     def test_decision_duplicate_id_piece_number(self, client, ubble_mocker):
         users_factories.BeneficiaryGrant18Factory(
@@ -1786,7 +1786,7 @@ class UbbleWebhookTest:
         assert message.call_to_action.title == "Contacter le support"
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["params"] == {"DUPLICATE_BENEFICIARY_EMAIL": "pre***@me.com"}
+        assert mails_testing.outbox[0]["params"] == {"DUPLICATE_BENEFICIARY_EMAIL": "pre***@me.com"}
 
         assert not user.has_beneficiary_role
 
@@ -2215,7 +2215,7 @@ class UbbleWebhookTest:
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 760
+        assert mails_testing.outbox[0]["template"]["id_prod"] == 760
 
     @pytest.mark.usefixtures("db_session")
     @pytest.mark.parametrize("code_number", [1301, 2103, 1320, 1201, 2304, 1901, 1305, 1304])
@@ -2319,7 +2319,7 @@ class UbbleWebhookTest:
         assert message.call_to_action.title == "Accéder au site Démarches-Simplifiées"
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 760
+        assert mails_testing.outbox[0]["template"]["id_prod"] == 760
 
     @pytest.mark.parametrize(
         "expiry_score", [ubble_fraud_models.UbbleScore.VALID.value, ubble_fraud_models.UbbleScore.UNDECIDABLE.value]

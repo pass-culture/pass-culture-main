@@ -17,11 +17,8 @@ class SendinblueSubscriptionDocumentErrorEmailTest:
         code = fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH
         send_subscription_document_error_email(email, code)
 
-        assert (
-            mails_testing.outbox[0].sent_data["template"]
-            == TransactionalEmail.SUBSCRIPTION_INFORMATION_ERROR.value.__dict__
-        )
-        assert mails_testing.outbox[0].sent_data["To"] == email
+        assert mails_testing.outbox[0]["template"] == TransactionalEmail.SUBSCRIPTION_INFORMATION_ERROR.value.__dict__
+        assert mails_testing.outbox[0]["To"] == email
 
     def test_send_unreadable_document_error_email(self) -> None:
         email = "123@test.com"
@@ -29,10 +26,10 @@ class SendinblueSubscriptionDocumentErrorEmailTest:
         send_subscription_document_error_email(email, code)
 
         assert (
-            mails_testing.outbox[0].sent_data["template"]
+            mails_testing.outbox[0]["template"]
             == TransactionalEmail.SUBSCRIPTION_UNREADABLE_DOCUMENT_ERROR.value.__dict__
         )
-        assert mails_testing.outbox[0].sent_data["To"] == email
+        assert mails_testing.outbox[0]["To"] == email
 
     def test_send_invalid_document_error_email(self) -> None:
         email = "123@test.com"
@@ -40,10 +37,9 @@ class SendinblueSubscriptionDocumentErrorEmailTest:
         send_subscription_document_error_email(email, code)
 
         assert (
-            mails_testing.outbox[0].sent_data["template"]
-            == TransactionalEmail.SUBSCRIPTION_INVALID_DOCUMENT_ERROR.value.__dict__
+            mails_testing.outbox[0]["template"] == TransactionalEmail.SUBSCRIPTION_INVALID_DOCUMENT_ERROR.value.__dict__
         )
-        assert mails_testing.outbox[0].sent_data["To"] == email
+        assert mails_testing.outbox[0]["To"] == email
 
     def test_send_foreign_document_error_email(self) -> None:
         email = "123@test.com"
@@ -51,18 +47,14 @@ class SendinblueSubscriptionDocumentErrorEmailTest:
         send_subscription_document_error_email(email, code)
 
         assert (
-            mails_testing.outbox[0].sent_data["template"]
-            == TransactionalEmail.SUBSCRIPTION_FOREIGN_DOCUMENT_ERROR.value.__dict__
+            mails_testing.outbox[0]["template"] == TransactionalEmail.SUBSCRIPTION_FOREIGN_DOCUMENT_ERROR.value.__dict__
         )
-        assert mails_testing.outbox[0].sent_data["To"] == email
+        assert mails_testing.outbox[0]["To"] == email
 
     def test_send_information_document_error_email(self) -> None:
         email = "123@test.com"
         code = fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH
         send_subscription_document_error_email(email, code)
 
-        assert (
-            mails_testing.outbox[0].sent_data["template"]
-            == TransactionalEmail.SUBSCRIPTION_INFORMATION_ERROR.value.__dict__
-        )
-        assert mails_testing.outbox[0].sent_data["To"] == email
+        assert mails_testing.outbox[0]["template"] == TransactionalEmail.SUBSCRIPTION_INFORMATION_ERROR.value.__dict__
+        assert mails_testing.outbox[0]["To"] == email
