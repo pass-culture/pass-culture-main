@@ -64,7 +64,7 @@ describe('OffererDetails', () => {
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
   })
 
-  it('should not allow user to update offerer informations when user attachment to offerer is not yet validated', async () => {
+  it('should not allow user to update offerer informations when user attachment to offerer is not yet validated', () => {
     renderOffererDetails({ isUserOffererValidated: false })
 
     const offererUpdateButton = screen.getByText('Modifier')

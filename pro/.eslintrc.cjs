@@ -75,10 +75,11 @@ module.exports = {
             ],
           },
         ],
+        'require-await': 'error',
+
         // TODO turn into errors
         '@typescript-eslint/no-floating-promises': 'warn',
         '@typescript-eslint/await-thenable': 'warn',
-        'require-await': 'warn',
         'react/prop-types': 'warn',
         'react-hooks/exhaustive-deps': 'warn',
       },

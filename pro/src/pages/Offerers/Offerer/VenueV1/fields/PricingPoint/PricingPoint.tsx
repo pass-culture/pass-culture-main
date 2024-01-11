@@ -43,7 +43,7 @@ const PricingPoint = ({
     setCanSubmit(!pricingPointSelectField.value)
   }, [pricingPointSelectField.value])
 
-  const handleClick = async () => {
+  const handleClick = () => {
     const pricingPointId = pricingPointSelectField.value
     if (venue?.id) {
       api
