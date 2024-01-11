@@ -46,6 +46,7 @@ def save_test_cases_sandbox() -> None:
     create_offers_with_more_extra_data()
     create_venues_with_gmaps_image()
     create_app_beneficiary()
+    create_venues_with_practical_info_graphical_edge_cases()
 
 
 def create_offers_with_gtls() -> None:
@@ -506,7 +507,7 @@ def create_venues_with_gmaps_image() -> None:
         venue=venue_without_user_image_and_with_gmaps_image,
     )
     venue_with_no_images = offerers_factories.VenueFactory(
-        name="venue_with_no_images",
+        name="Lieu sans image",
         _bannerUrl=None,
         isPermanent=True,
     )
@@ -548,4 +549,98 @@ def create_app_beneficiary() -> None:
         firstName=Fake.first_name(),
         lastName=Fake.last_name(),
         needsToFillCulturalSurvey=False,
+    )
+
+
+def create_venues_with_practical_info_graphical_edge_cases() -> None:
+    offerers_factories.VenueFactory(
+        name="Lieu avec un nom très long, qui atteint presque la limite de caractères en base de données et qui prend vraiment toute la place sur l'écran",
+        isPermanent=True,
+    )
+    offerers_factories.VenueFactory(
+        name="Lieu avec une adresse trop longue",
+        address=(
+            "50 rue de l'adresse la plus longue qui a presque atteint la limite de caractères en base de données, "
+            "une adresse vraiment très longue qui prend toute la place sur l'écran, bâtiment B, étage 3, salle 4"
+        ),
+        isPermanent=True,
+    )
+    offerers_factories.VenueFactory(
+        name="Lieu avec toutes les informations pratiques bien remplies",
+        description=Fake.paragraph(nb_sentences=5, variable_nb_sentences=True),
+        audioDisabilityCompliant=True,
+        mentalDisabilityCompliant=False,
+        motorDisabilityCompliant=False,
+        visualDisabilityCompliant=True,
+        withdrawalDetails="Venir récupérer l'offre sur place",
+        isPermanent=True,
+    )
+    offerers_factories.VenueFactory(
+        name="Lieu avec aucune information pratique",
+        description=None,
+        audioDisabilityCompliant=None,
+        mentalDisabilityCompliant=None,
+        motorDisabilityCompliant=None,
+        visualDisabilityCompliant=None,
+        contact=None,
+        isPermanent=True,
+    )
+    offerers_factories.VenueFactory(
+        name="Lieu avec aucun critère d’accessibilité rempli",
+        audioDisabilityCompliant=None,
+        mentalDisabilityCompliant=None,
+        motorDisabilityCompliant=None,
+        visualDisabilityCompliant=None,
+        isPermanent=True,
+    )
+    offerers_factories.VenueFactory(
+        name="Lieu avec tous les critères d’accessibilité remplis",
+        audioDisabilityCompliant=True,
+        mentalDisabilityCompliant=True,
+        motorDisabilityCompliant=True,
+        visualDisabilityCompliant=True,
+        isPermanent=True,
+    )
+    offerers_factories.VenueFactory(
+        name="Lieu avec seulement une description dans les informations pratiques",
+        description=Fake.paragraph(nb_sentences=5, variable_nb_sentences=True),
+        audioDisabilityCompliant=None,
+        mentalDisabilityCompliant=None,
+        motorDisabilityCompliant=None,
+        visualDisabilityCompliant=None,
+        contact=None,
+        isPermanent=True,
+    )
+    offerers_factories.VenueFactory(
+        name="Lieu qui a renseigné une adresse mail, un numéro de téléphone et un site web",
+        isPermanent=True,
+    )
+    offerers_factories.VenueFactory(
+        name="Lieu qui n’a renseigné aucun moyen de le contacter",
+        contact=None,
+        isPermanent=True,
+    )
+    offerers_factories.VenueFactory(
+        name="Lieu avec seulement les modalités de retrait dans les informations pratiques",
+        audioDisabilityCompliant=None,
+        mentalDisabilityCompliant=None,
+        motorDisabilityCompliant=None,
+        visualDisabilityCompliant=None,
+        contact=None,
+        description=None,
+        withdrawalDetails="Venir récupérer l'offre sur place",
+        isPermanent=True,
+    )
+    partial_contact_venue = offerers_factories.VenueFactory(
+        name="Lieu qui a renseigné seulement un site internet",
+        description=None,
+        audioDisabilityCompliant=None,
+        mentalDisabilityCompliant=None,
+        motorDisabilityCompliant=None,
+        visualDisabilityCompliant=None,
+        contact=None,
+        isPermanent=True,
+    )
+    offerers_factories.VenueContactFactory(
+        venue=partial_contact_venue, email=None, website="https://example.com", phone_number=None
     )
