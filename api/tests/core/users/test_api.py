@@ -2071,8 +2071,6 @@ class AnonymizeBeneficiaryUsersTest:
                 assert beneficiary_fraud_check.reason == "Anonymized"
                 assert beneficiary_fraud_check.dateCreated.day == 1
                 assert beneficiary_fraud_check.dateCreated.month == 1
-                assert beneficiary_fraud_check.updatedAt.day == 1
-                assert beneficiary_fraud_check.updatedAt.month == 1
 
             for beneficiary_fraud_review in user_to_anonymize.beneficiaryFraudReviews:
                 assert beneficiary_fraud_review.reason == "Anonymized"

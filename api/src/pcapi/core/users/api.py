@@ -1565,7 +1565,6 @@ def anonymize_user(user: users_models.User, *, force: bool = False) -> None:
         beneficiary_fraud_check.resultContent = None
         beneficiary_fraud_check.reason = "Anonymized"
         beneficiary_fraud_check.dateCreated = beneficiary_fraud_check.dateCreated.replace(day=1, month=1)
-        beneficiary_fraud_check.updatedAt = beneficiary_fraud_check.updatedAt.replace(day=1, month=1)
 
     for beneficiary_fraud_review in user.beneficiaryFraudReviews:
         beneficiary_fraud_review.reason = "Anonymized"
