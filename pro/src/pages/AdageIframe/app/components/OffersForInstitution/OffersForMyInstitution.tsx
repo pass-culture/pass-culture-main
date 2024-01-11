@@ -44,6 +44,33 @@ const OffersForMyInstitution = (): JSX.Element => {
         distinct={false}
       />
       <AnalyticsContextProvider>
+        <h1>Pour mon établissement</h1>
+        <Callout
+          className={styles['my-institution-callout']}
+          links={[
+            {
+              href: `${document.referrer}adage/passculture/index`,
+              isExternal: true,
+              icon: fullLinkIcon,
+              linkTitle: 'Voir la page “Suivi pass Culture”',
+              svgAlt: 'Nouvelle fenêtre',
+            },
+          ]}
+        >
+          <p className={styles['callout-text']}>
+            Retrouvez sur cette page les offres destinées aux professeurs de
+            votre établissement et rédigées par les acteurs culturels
+            partenaires de l’établissement scolaire.
+          </p>
+          <p>
+            Processus : vous cliquez sur “Préréserver” l’offre qui vous est
+            destinée. L’offre va disparaitre de cette page, mais vous pourrez la
+            retrouver dans la page “Suivi pass Culture”. Puis, vous associerez
+            l’offre à votre projet pédagogique dans la page “Les projets”.
+            Enfin, votre chef d’établissement confirmera la réservation de
+            l’offre dans “Suivi pass Culture”.
+          </p>
+        </Callout>
         {offersCount === 0 ? (
           <div className={styles['no-results']}>
             <SvgIcon
@@ -69,40 +96,7 @@ const OffersForMyInstitution = (): JSX.Element => {
             </div>
           </div>
         ) : (
-          <>
-            <h1>Pour mon établissement</h1>
-            <Callout
-              className={styles['my-institution-callout']}
-              links={[
-                {
-                  href: `${document.referrer}adage/passculture/index`,
-                  isExternal: true,
-                  icon: fullLinkIcon,
-                  linkTitle: 'Voir la page “Suivi pass Culture”',
-                },
-              ]}
-            >
-              <p className={styles['callout-text']}>
-                Retrouvez sur cette page les offres destinées aux professeurs de
-                votre établissement et rédigées par les acteurs culturels
-                partenaires de l’établissement scolaire.
-              </p>
-              <p className={styles['callout-text']}>
-                Le contenu, la date et le montant de chaque offre ont été
-                définis lors d’échanges entre un professeur et la structure
-                culturelle concernée.
-              </p>
-              <p>
-                Processus : vous cliquez sur “Préréserver” l’offre qui vous est
-                destinée. L’offre va disparaitre de cette page, mais vous
-                pourrez la retrouver dans la page “Suivi pass Culture”. Puis,
-                vous associerez l’offre à votre projet pédagogique dans la page
-                “Les projets”. Enfin, votre chef d’établissement confirmera la
-                réservation de l’offre dans “Suivi pass Culture”.
-              </p>
-            </Callout>
-            <Offers displayStats={false} />
-          </>
+          <Offers displayStats={false} />
         )}
       </AnalyticsContextProvider>
     </InstantSearch>
