@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { useLocation, useSearchParams } from 'react-router-dom'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
 import RedirectDialog from 'components/Dialog/RedirectDialog'
@@ -21,8 +21,6 @@ import styles from './Offerers.module.scss'
 import { PartnerPages } from './PartnerPages'
 import { VenueCreationLinks } from './VenueCreationLinks'
 
-export const CREATE_OFFERER_SELECT_ID = 'creation'
-
 export interface OfferersProps {
   selectedOfferer?: GetOffererResponseModel | null
   isLoading: boolean
@@ -40,23 +38,12 @@ const Offerers = ({
   const [openSuccessDialog, setOpenSuccessDialog] = useState(false)
 
   const location = useLocation()
-  const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const { logEvent } = useAnalytics()
 
   useEffect(() => {
     location.search === '?success' && setOpenSuccessDialog(true)
   }, [])
-
-  const handleChangeOfferer = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newOffererId = event.target.value
-    if (newOffererId === CREATE_OFFERER_SELECT_ID) {
-      navigate('/structures/creation')
-    } else if (newOffererId !== selectedOfferer?.id.toString()) {
-      searchParams.set('structure', newOffererId)
-      setSearchParams(searchParams)
-    }
-  }
 
   if (isLoading) {
     return (
@@ -121,7 +108,6 @@ const Offerers = ({
           )}
 
           <OffererDetails
-            handleChangeOfferer={handleChangeOfferer}
             isUserOffererValidated={isUserOffererValidated}
             offererOptions={offererOptions}
             selectedOfferer={selectedOfferer}
