@@ -3,6 +3,7 @@ import logging
 
 import sqlalchemy as sa
 
+from pcapi.core import search
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
@@ -69,6 +70,11 @@ def create_collective_stock(
     logger.info(
         "Collective stock has been created",
         extra={"collective_offer": collective_offer.id, "collective_stock_id": collective_stock.id},
+    )
+
+    search.async_index_collective_offer_ids(
+        [collective_offer.id],
+        reason=search.IndexationReason.STOCK_CREATION,
     )
 
     return collective_stock
@@ -139,6 +145,10 @@ def edit_collective_stock(
         db.session.commit()
 
     logger.info("Stock has been updated", extra={"stock": stock.id})
+    search.async_index_collective_offer_ids(
+        [stock.collectiveOfferId],
+        reason=search.IndexationReason.STOCK_UPDATE,
+    )
 
     notify_educational_redactor_on_collective_offer_or_stock_edit(
         stock.collectiveOffer.id,
