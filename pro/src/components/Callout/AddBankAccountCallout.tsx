@@ -21,6 +21,7 @@ const AddBankAccountCallout = ({
   const location = useLocation()
   const displayBankAccountBanner =
     offerer &&
+    !offerer.hasPendingBankAccount &&
     !offerer.hasValidBankAccount &&
     offerer.venuesWithNonFreeOffersWithoutBankAccounts.length > 0
 

@@ -16,7 +16,7 @@ describe('AddBankAccountCallout', () => {
   const props: AddBankAccountCalloutProps = {
     titleOnly: false,
   }
-  it('should not render AddBankAccountCallout without FF', () => {
+  it('should not render AddBankAccountCallout without WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY FF', () => {
     renderWithProviders(<AddBankAccountCallout {...props} />)
 
     expect(
@@ -36,31 +36,56 @@ describe('AddBankAccountCallout', () => {
     ).not.toBeInTheDocument()
   })
 
-  describe('With FF enabled', () => {
-    it.each([
-      {
+  describe('With WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY FF enabled', () => {
+    it(`should not render the add bank account banner when the user has no valid bank account`, () => {
+      props.offerer = {
         ...defaultGetOffererResponseModel,
         hasValidBankAccount: false,
         venuesWithNonFreeOffersWithoutBankAccounts: [],
-      },
+      }
+      renderWithProviders(<AddBankAccountCallout {...props} />, {
+        features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
+      })
+
+      expect(
+        screen.queryByText(
+          'Ajoutez un compte bancaire pour percevoir vos remboursements'
+        )
+      ).not.toBeInTheDocument()
+    })
+
+    it(`should not render the add bank account banner when the user has a valid bank account and venues with non free offers to link`, () => {
+      props.offerer = {
+        ...defaultGetOffererResponseModel,
+        hasValidBankAccount: true,
+        venuesWithNonFreeOffersWithoutBankAccounts: [1],
+      }
+      renderWithProviders(<AddBankAccountCallout {...props} />, {
+        features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
+      })
+
+      expect(
+        screen.queryByText(
+          'Ajoutez un compte bancaire pour percevoir vos remboursements'
+        )
+      ).not.toBeInTheDocument()
+    })
+
+    it.each([
       {
         ...defaultGetOffererResponseModel,
-        id: 2,
+        id: 3,
         venuesWithNonFreeOffersWithoutBankAccounts: [1],
-        hasValidBankAccount: true,
+        hasPendingBankAccount: true,
       },
     ])(
-      `should not render the add bank account banner when hasValidBankAccount = $hasValidBankAccount and venuesWithNonFreeOffersWithoutBankAccounts = $venuesWithNonFreeOffersWithoutBankAccounts`,
-      ({
-        hasValidBankAccount,
-        venuesWithNonFreeOffersWithoutBankAccounts,
-        ...rest
-      }) => {
+      `should not render the add bank account banner if the offerer has no valid bank account and some unlinked venues but a pending bank account`,
+      () => {
         props.offerer = {
-          hasValidBankAccount: hasValidBankAccount,
-          venuesWithNonFreeOffersWithoutBankAccounts:
-            venuesWithNonFreeOffersWithoutBankAccounts,
-          ...rest,
+          ...defaultGetOffererResponseModel,
+          hasValidBankAccount: false,
+          venuesWithNonFreeOffersWithoutBankAccounts: [1],
+          hasPendingBankAccount: true,
         }
         renderWithProviders(<AddBankAccountCallout {...props} />, {
           features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
