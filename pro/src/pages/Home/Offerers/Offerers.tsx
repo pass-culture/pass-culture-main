@@ -1,25 +1,19 @@
 import React, { useEffect, useState } from 'react'
-import {
-  useLoaderData,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
 import RedirectDialog from 'components/Dialog/RedirectDialog'
 import SoftDeletedOffererWarning from 'components/SoftDeletedOffererWarning'
 import { Events } from 'core/FirebaseEvents/constants'
+import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import fullWaitIcon from 'icons/full-wait.svg'
 import strokePartyIcon from 'icons/stroke-party.svg'
 import { VenueList } from 'pages/Home/Venues/VenueList'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import { sortByLabel } from 'utils/strings'
 
 import { Card } from '../Card'
-import { HomepageLoaderData } from '../Homepage'
 
 import OffererCreationLinks from './OffererCreationLinks'
 import { OffererDetails } from './OffererDetails'
@@ -30,21 +24,18 @@ import { VenueCreationLinks } from './VenueCreationLinks'
 export const CREATE_OFFERER_SELECT_ID = 'creation'
 
 export interface OfferersProps {
-  onSelectedOffererChange: (offererId: string) => void
-  cancelLoading: () => void
   selectedOfferer?: GetOffererResponseModel | null
   isLoading: boolean
   isUserOffererValidated: boolean
+  offererOptions: SelectOption[]
 }
 
 const Offerers = ({
-  onSelectedOffererChange,
-  cancelLoading,
+  offererOptions,
   selectedOfferer,
   isLoading,
   isUserOffererValidated,
 }: OfferersProps) => {
-  const { offererNames } = useLoaderData() as HomepageLoaderData
   const isPartnerPageActive = useActiveFeature('WIP_PARTNER_PAGE')
   const [openSuccessDialog, setOpenSuccessDialog] = useState(false)
 
@@ -52,23 +43,6 @@ const Offerers = ({
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const { logEvent } = useAnalytics()
-
-  const offererId = searchParams.get('structure')
-
-  const offererOptions = sortByLabel(
-    offererNames.map((item) => ({
-      value: item['id'].toString(),
-      label: item['name'],
-    }))
-  )
-
-  useEffect(() => {
-    if (offererOptions.length > 0) {
-      onSelectedOffererChange(offererId ?? offererOptions[0].value)
-    } else {
-      cancelLoading()
-    }
-  }, [offererId, offererOptions])
 
   useEffect(() => {
     location.search === '?success' && setOpenSuccessDialog(true)
@@ -79,7 +53,6 @@ const Offerers = ({
     if (newOffererId === CREATE_OFFERER_SELECT_ID) {
       navigate('/structures/creation')
     } else if (newOffererId !== selectedOfferer?.id.toString()) {
-      onSelectedOffererChange(newOffererId)
       searchParams.set('structure', newOffererId)
       setSearchParams(searchParams)
     }
