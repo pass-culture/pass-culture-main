@@ -33,9 +33,57 @@ def _get_eta(end: int, current: int, elapsed_per_batch: list) -> str:
 @click.argument("end", type=int, required=True)
 def full_index_collective_offers(start: int, end: int) -> None:
     """Reindex all active collective offers."""
-    # TODO(jeremieb): to remove, once we are sure that removing this
-    # function won't break anything (eg. deactivate cron tasks)
-    pass  # pylint: disable=unnecessary-pass
+    if start > end:
+        raise ValueError('"start" must be less than "end"')
+    backend = algolia.AlgoliaBackend()
+
+    queue: list = []
+
+    def enqueue_or_index(
+        q: list,
+        collective_offer: collective_offers_models.CollectiveOffer | None,
+        force_index: bool = False,
+    ) -> None:
+        if collective_offer is not None:
+            q.append(collective_offer)
+        if force_index or len(q) > BATCH_SIZE:
+            try:
+                backend.index_collective_offers(q)
+            except Exception as exc:  # pylint: disable=broad-except
+                logger.exception(
+                    "Full collective offer reindexation: error while reindexing from %d to %d: %s",
+                    q[0][0].id,
+                    q[-1][0].id,
+                    exc,
+                )
+            q.clear()
+
+    to_report = 0
+    elapsed_per_batch = []
+
+    while start <= end:
+        start_time = time.perf_counter()
+        collective_offers = (
+            search.get_base_query_for_collective_offer_indexation()
+            .filter(
+                collective_offers_models.CollectiveOffer.isActive.is_(True),
+                collective_offers_models.CollectiveOffer.id.between(start, min(start + BATCH_SIZE, end)),
+            )
+            .order_by(collective_offers_models.CollectiveOffer.id)
+        )
+
+        for collective_offer in collective_offers:
+            if collective_offer.is_eligible_for_search:
+                enqueue_or_index(queue, collective_offer)
+        elapsed_per_batch.append(int(time.perf_counter() - start_time))
+        start = start + BATCH_SIZE
+        eta = _get_eta(end, start, elapsed_per_batch)
+        to_report += BATCH_SIZE
+        if to_report >= REPORT_EVERY:
+            to_report = 0
+            print(f"  => OK: {start} | eta = {eta}")
+    enqueue_or_index(queue, collective_offer=None, force_index=True)
+    print("Done")
 
 
 @blueprint.cli.command("full_index_collective_template_offers")

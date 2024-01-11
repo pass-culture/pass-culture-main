@@ -385,9 +385,10 @@ class AlgoliaBackend(base.SearchBackend):
         self,
         collective_offers: Iterable[educational_models.CollectiveOffer],
     ) -> None:
-        # TODO(jeremieb): to remove, once we are sure that removing this
-        # function won't break anything
-        pass
+        if not collective_offers:
+            return
+        objects = [self.serialize_collective_offer(collective_offer) for collective_offer in collective_offers]
+        self.algolia_collective_offers_client.save_objects(objects)
 
     def index_collective_offer_templates(
         self,
