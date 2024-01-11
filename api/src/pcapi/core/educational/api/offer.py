@@ -438,7 +438,10 @@ def update_collective_offer_educational_institution(
             raise exceptions.EducationalRedactorNotFound()
 
     db.session.commit()
-
+    search.async_index_collective_offer_ids(
+        [offer_id],
+        reason=search.IndexationReason.OFFER_UPDATE,
+    )
     if educational_institution_id is not None and offer.validation == offer_mixin.OfferValidationStatus.APPROVED:
         adage_client.notify_institution_association(serialize_collective_offer(offer))
 
@@ -536,6 +539,10 @@ def create_collective_offer_public(
     db.session.add(collective_offer)
     db.session.add(collective_stock)
     db.session.commit()
+    search.async_index_collective_offer_ids(
+        [collective_offer.id],
+        reason=search.IndexationReason.OFFER_CREATION,
+    )
     logger.info(
         "Collective offer has been created",
         extra={"offerId": collective_offer.id},
@@ -637,6 +644,11 @@ def edit_collective_offer_public(
 
     db.session.commit()
 
+    search.async_index_collective_offer_ids(
+        [offer.id],
+        reason=search.IndexationReason.OFFER_UPDATE,
+    )
+
     notify_educational_redactor_on_collective_offer_or_stock_edit(
         offer.id,
         updated_fields,
@@ -651,6 +663,10 @@ def publish_collective_offer(
 
     if offer.validation == offer_mixin.OfferValidationStatus.DRAFT:
         update_offer_fraud_information(offer, user)
+        search.async_index_collective_offer_ids(
+            [offer.id],
+            reason=search.IndexationReason.OFFER_PUBLICATION,
+        )
 
     return offer
 

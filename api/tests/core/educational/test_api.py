@@ -7,6 +7,7 @@ from flask import current_app
 from freezegun.api import freeze_time
 import pytest
 
+from pcapi.core import search
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import booking as educational_api_booking
@@ -16,6 +17,7 @@ from pcapi.core.educational.api.offer import unindex_expired_collective_offers_t
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.offers import exceptions as offers_exceptions
+import pcapi.core.search.testing as search_testing
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -48,6 +50,9 @@ class CreateCollectiveOfferStocksTest:
         assert stock.price == 1200
         assert stock.numberOfTickets == 35
         assert stock.stockId is None
+
+        search.index_collective_offers_in_queue()
+        assert offer.id in search_testing.search_store["collective-offers"]
 
     def should_set_booking_limit_datetime_to_beginning_datetime_when_not_provided(self) -> None:
         # Given
