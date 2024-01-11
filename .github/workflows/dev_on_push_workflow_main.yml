@@ -12,9 +12,9 @@ on:
 permissions: write-all
 
 concurrency:
-  # cancel previous workflow of the same branch, except on master
-  group: ${{ github.workflow }}-${{ github.head_ref && github.ref || github.run_id }}
-  cancel-in-progress: true
+  # cancel previous workflow of the same branch except on master
+  group: ${{ github.ref }}
+  cancel-in-progress: ${{ github.ref == 'refs/heads/master' && false || true }}
 
 jobs:
   check-api:
@@ -174,10 +174,6 @@ jobs:
 
   deploy-to-testing:
     name: "Deploy to testing"
-    # helm can only run one upgrade at a time,
-    concurrency:
-      group: deploy-to-testing
-      cancel-in-progress: false
     needs: [test-api, test-pro]
     if: |
       always() &&
