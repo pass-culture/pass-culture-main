@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
 
-import { GetOffererVenueResponseModel } from 'apiClient/v1'
+import {
+  GetOffererResponseModel,
+  GetOffererVenueResponseModel,
+} from 'apiClient/v1'
 import { SelectOption } from 'custom_types/form'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared'
@@ -9,11 +12,11 @@ import { PartnerPage } from './PartnerPage'
 import styles from './PartnerPages.module.scss'
 
 export interface PartnerPagesProps {
-  offererId: string
+  offerer: GetOffererResponseModel
   venues: GetOffererVenueResponseModel[]
 }
 
-export const PartnerPages = ({ venues, offererId }: PartnerPagesProps) => {
+export const PartnerPages = ({ venues, offerer }: PartnerPagesProps) => {
   const venuesOptions: SelectOption[] = venues.map((venue) => ({
     label: venue.name,
     value: venue.id.toString(),
@@ -49,9 +52,7 @@ export const PartnerPages = ({ venues, offererId }: PartnerPagesProps) => {
         </>
       )}
 
-      {selectedVenue && (
-        <PartnerPage offererId={offererId} venue={selectedVenue} />
-      )}
+      {selectedVenue && <PartnerPage offerer={offerer} venue={selectedVenue} />}
     </section>
   )
 }

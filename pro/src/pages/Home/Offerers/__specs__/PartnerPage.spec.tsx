@@ -7,7 +7,10 @@ import { DMSApplicationstatus, VenueTypeCode } from 'apiClient/v1'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { defaultGetOffererVenueResponseModel } from 'utils/apiFactories'
+import {
+  defaultGetOffererResponseModel,
+  defaultGetOffererVenueResponseModel,
+} from 'utils/apiFactories'
 import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -15,8 +18,14 @@ import { PartnerPage, PartnerPageProps } from '../PartnerPage'
 
 const mockLogEvent = vi.fn()
 
-const renderPartnerPages = (props: PartnerPageProps) => {
-  renderWithProviders(<PartnerPage {...props} />)
+const renderPartnerPages = (props: Partial<PartnerPageProps>) => {
+  renderWithProviders(
+    <PartnerPage
+      offerer={{ ...defaultGetOffererResponseModel }}
+      venue={{ ...defaultGetOffererVenueResponseModel }}
+      {...props}
+    />
+  )
 }
 
 vi.mock('react-router-dom', async () => ({
@@ -41,7 +50,6 @@ describe('PartnerPages', () => {
         ...defaultGetOffererVenueResponseModel,
         venueTypeCode: VenueTypeCode.FESTIVAL,
       },
-      offererId: '1',
     })
 
     expect(screen.getByText(/Ajouter une image/)).toBeInTheDocument()
@@ -71,7 +79,6 @@ describe('PartnerPages', () => {
           },
         },
       },
-      offererId: '1',
     })
 
     expect(screen.getByAltText('Prévisualisation de l’image')).toHaveAttribute(
@@ -86,7 +93,6 @@ describe('PartnerPages', () => {
         ...defaultGetOffererVenueResponseModel,
         collectiveDmsApplications: [],
       },
-      offererId: '1',
     })
 
     expect(screen.getByText('Non référencé sur ADAGE')).toBeInTheDocument()
@@ -103,7 +109,6 @@ describe('PartnerPages', () => {
           },
         ],
       },
-      offererId: '1',
     })
 
     expect(screen.getByText('Non référencé sur ADAGE')).toBeInTheDocument()
@@ -120,7 +125,6 @@ describe('PartnerPages', () => {
           },
         ],
       },
-      offererId: '1',
     })
 
     expect(screen.getByText('Référencement en cours')).toBeInTheDocument()
@@ -137,7 +141,6 @@ describe('PartnerPages', () => {
           },
         ],
       },
-      offererId: '1',
     })
 
     expect(screen.getByText('Référencé sur ADAGE')).toBeInTheDocument()
