@@ -1,7 +1,7 @@
 {% macro build_base_search() %}
   <div class="row">
-    <div class="col-3"></div>
-    <div class="col-6 mt-5">
+    <div class="col-2"></div>
+    <div class="col-8 mt-5">
       <div class="mt-5">
         <p class="text-center fs-1 text-primary">
           <i class="bi bi-search display-3"></i>
@@ -15,7 +15,7 @@
         <form action="{{ dst }}"
               name="{{ dst | action_to_name }}"
               method="get">
-          <div class="row col-10 translate-middle-x position-relative start-50 ">
+          <div class="row col-12 mx-0 translate-middle-x position-relative start-50 ">
             <div class="input-group mb-3">
               {% set full_row_fields = [] %}
               {% set hidden_fields = [] %}
@@ -39,6 +39,6 @@
         </form>
       </div>
     </div>
-    <div class="col-3"></div>
+    <div class="col-2"></div>
   </div>
 {% endmacro %}

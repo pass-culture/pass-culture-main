@@ -64,6 +64,10 @@ input {
   }
 }
 
+form[name="public_accounts_search"] .pc-field-filter {
+  min-width: 190px !important
+}
+
 form[name="pro_search"] .pc-field-departments {
   min-width: 40% !important
 }
