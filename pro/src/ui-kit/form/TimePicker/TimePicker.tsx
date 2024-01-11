@@ -6,7 +6,7 @@ import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
 
 import { BaseTimePicker } from './BaseTimePicker'
 
-export type TimePickerProps = FieldLayoutBaseProps & {
+type TimePickerProps = FieldLayoutBaseProps & {
   disabled?: boolean
   dateTime?: Date
   value?: Date | null | ''
