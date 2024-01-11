@@ -43,6 +43,7 @@ if typing.TYPE_CHECKING:
     from pcapi.core.criteria.models import Criterion
     from pcapi.core.educational.models import CollectiveOffer
     from pcapi.core.educational.models import CollectiveOfferTemplate
+    from pcapi.core.geography.models import PointOfInterest
     from pcapi.core.offerers.models import Offerer
     from pcapi.core.offerers.models import Venue
     from pcapi.core.providers.models import Provider
@@ -467,6 +468,10 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     withdrawalDelay = sa.Column(sa.BigInteger, nullable=True)
     withdrawalDetails = sa.Column(sa.Text, nullable=True)
     withdrawalType = sa.Column(sa.Enum(WithdrawalTypeEnum), nullable=True)
+    pointOfInterestId = sa.Column(sa.Integer, sa.ForeignKey("point_of_interest.id", ondelete="SET NULL"), nullable=True)
+    pointOfInterest: sa.orm.Mapped["PointOfInterest"] = sa.orm.relationship(
+        "PointOfInterest", foreign_keys=[pointOfInterestId]
+    )
 
     sa.Index("idx_offer_trgm_name", name, postgresql_using="gin")
     sa.Index("offer_idAtProvider", idAtProvider)
