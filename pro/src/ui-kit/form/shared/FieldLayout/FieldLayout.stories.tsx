@@ -1,4 +1,4 @@
-import type { Story } from '@storybook/react'
+import type { StoryObj } from '@storybook/react'
 import React from 'react'
 
 import { BaseInput } from '../'
@@ -10,30 +10,16 @@ export default {
   component: FieldLayout,
 }
 
-const Template: Story<{
-  label: string
-  name: string
-  className: string
-  showError: boolean
-  error: string
-  count: number
-  maxLength: number
-  isOptional: boolean
-}> = (args) => (
-  <FieldLayout {...args}>
-    <BaseInput type="text" />
-  </FieldLayout>
-)
-
-export const Default = Template.bind({})
-
-Default.args = {
-  label: 'Votre numéro de téléphone',
-  name: 'string',
-  className: 'string',
-  showError: true,
-  error: 'error message',
-  count: 10,
-  maxLength: 100,
-  isOptional: true,
+export const Default: StoryObj<typeof FieldLayout> = {
+  args: {
+    label: 'Votre numéro de téléphone',
+    name: 'string',
+    className: 'string',
+    showError: true,
+    error: 'error message',
+    count: 10,
+    maxLength: 100,
+    isOptional: true,
+    children: <BaseInput type="text" />,
+  },
 }
