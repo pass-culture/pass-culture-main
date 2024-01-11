@@ -14,8 +14,10 @@ import PendingBankAccountCallout from 'components/Callout/PendingBankAccountCall
 import { Newsletter } from 'components/Newsletter'
 import TutorialDialog from 'components/TutorialDialog'
 import { hasStatusCode } from 'core/OfferEducational'
+import { SelectOption } from 'custom_types/form'
 import useRemoteConfig from 'hooks/useRemoteConfig'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
+import { localStorageAvailable } from 'utils/localStorageAvailable'
 import { sortByLabel } from 'utils/strings'
 
 import styles from './Homepage.module.scss'
@@ -28,6 +30,24 @@ import {
   getPhysicalVenuesFromOfferer,
   getVirtualVenueFromOfferer,
 } from './venueUtils'
+
+export const SAVED_OFFERER_ID_KEY = 'homepageSelectedOffererId'
+const getSavedOffererId = (offererOptions: SelectOption[]): string | null => {
+  const isLocalStorageAvailable = localStorageAvailable()
+  if (!isLocalStorageAvailable) {
+    return null
+  }
+
+  const savedOffererId = localStorage.getItem(SAVED_OFFERER_ID_KEY)
+  if (
+    !savedOffererId ||
+    !offererOptions.map((option) => option.value).includes(savedOffererId)
+  ) {
+    return null
+  }
+
+  return savedOffererId
+}
 
 export const Homepage = (): JSX.Element => {
   const profileRef = useRef<HTMLElement>(null)
@@ -55,7 +75,10 @@ export const Homepage = (): JSX.Element => {
     }))
   )
   const selectedOffererId =
-    searchParams.get('structure') ?? offererOptions[0]?.value ?? ''
+    searchParams.get('structure') ??
+    getSavedOffererId(offererOptions) ??
+    offererOptions[0]?.value ??
+    ''
 
   useEffect(() => {
     async function loadOfferer(offererId: string) {
