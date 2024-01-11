@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-
 import {
-  GetOffererResponseModel,
-  GetOfferersNamesResponseModel,
-} from 'apiClient/v1'
+  useLoaderData,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom'
+
+import { GetOffererResponseModel } from 'apiClient/v1'
 import RedirectDialog from 'components/Dialog/RedirectDialog'
 import SoftDeletedOffererWarning from 'components/SoftDeletedOffererWarning'
 import { Events } from 'core/FirebaseEvents/constants'
-import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import fullWaitIcon from 'icons/full-wait.svg'
@@ -18,6 +19,7 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 import { sortByLabel } from 'utils/strings'
 
 import { Card } from '../Card'
+import { HomepageLoaderData } from '../Homepage'
 
 import OffererCreationLinks from './OffererCreationLinks'
 import { OffererDetails } from './OffererDetails'
@@ -25,10 +27,9 @@ import styles from './Offerers.module.scss'
 import { PartnerPages } from './PartnerPages'
 import { VenueCreationLinks } from './VenueCreationLinks'
 
-const CREATE_OFFERER_SELECT_ID = 'creation'
+export const CREATE_OFFERER_SELECT_ID = 'creation'
 
 export interface OfferersProps {
-  receivedOffererNames?: GetOfferersNamesResponseModel | null
   onSelectedOffererChange: (offererId: string) => void
   cancelLoading: () => void
   selectedOfferer?: GetOffererResponseModel | null
@@ -37,15 +38,14 @@ export interface OfferersProps {
 }
 
 const Offerers = ({
-  receivedOffererNames,
   onSelectedOffererChange,
   cancelLoading,
   selectedOfferer,
   isLoading,
   isUserOffererValidated,
 }: OfferersProps) => {
+  const { offererNames } = useLoaderData() as HomepageLoaderData
   const isPartnerPageActive = useActiveFeature('WIP_PARTNER_PAGE')
-  const [offererOptions, setOffererOptions] = useState<SelectOption[]>([])
   const [openSuccessDialog, setOpenSuccessDialog] = useState(false)
 
   const location = useLocation()
@@ -55,28 +55,20 @@ const Offerers = ({
 
   const offererId = searchParams.get('structure')
 
+  const offererOptions = sortByLabel(
+    offererNames.map((item) => ({
+      value: item['id'].toString(),
+      label: item['name'],
+    }))
+  )
+
   useEffect(() => {
-    if (receivedOffererNames) {
-      if (receivedOffererNames.offerersNames.length > 0) {
-        const initialOffererOptions = sortByLabel(
-          receivedOffererNames.offerersNames.map((item) => ({
-            value: item['id'].toString(),
-            label: item['name'],
-          }))
-        )
-        onSelectedOffererChange(offererId ?? initialOffererOptions[0].value)
-        setOffererOptions([
-          ...initialOffererOptions,
-          {
-            label: '+ Ajouter une structure',
-            value: CREATE_OFFERER_SELECT_ID,
-          },
-        ])
-      } else {
-        cancelLoading()
-      }
+    if (offererOptions.length > 0) {
+      onSelectedOffererChange(offererId ?? offererOptions[0].value)
+    } else {
+      cancelLoading()
     }
-  }, [offererId, receivedOffererNames])
+  }, [offererId, offererOptions])
 
   useEffect(() => {
     location.search === '?success' && setOpenSuccessDialog(true)
