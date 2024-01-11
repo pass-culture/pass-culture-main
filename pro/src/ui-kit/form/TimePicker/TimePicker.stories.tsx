@@ -1,35 +1,45 @@
-import type { Story } from '@storybook/react'
+import { StoryObj } from '@storybook/react'
 import { Formik } from 'formik'
-import React from 'react'
 
-import TimePicker, { TimePickerProps } from './TimePicker'
+import TimePicker from './TimePicker'
 
 export default {
   title: 'ui-kit/forms/TimePicker',
   component: TimePicker,
+  decorators: [
+    (Story: any) => (
+      <Formik initialValues={{ time: null }} onSubmit={() => {}}>
+        <Story />
+      </Formik>
+    ),
+  ],
 }
 
-const Template: Story<TimePickerProps> = (props) => (
-  <Formik initialValues={{ time: null }} onSubmit={() => {}}>
-    <TimePicker {...props} name="time" />
-  </Formik>
-)
-
-export const WithoutLabel = Template.bind({})
-
-export const WithLabel = Template.bind({})
-WithLabel.args = { label: 'Horaire' }
-
-export const WithClearButton = Template.bind({})
-WithClearButton.args = {
-  label: 'Horaire',
-  clearButtonProps: {
-    tooltip: "Supprimer l'horaire",
-    onClick: () => alert('Clear !'),
+export const WithClearButton: StoryObj<typeof TimePicker> = {
+  args: {
+    name: 'time',
+    label: 'Horaire',
+    clearButtonProps: {
+      tooltip: "Supprimer l'horaire",
+      onClick: () => alert('Clear !'),
+    },
   },
 }
 
-export const FilterVariant = Template.bind({})
-FilterVariant.args = {
-  filterVariant: true,
+export const WithoutLabel: StoryObj<typeof TimePicker> = {
+  args: { name: 'time' },
+}
+
+export const WithLabel: StoryObj<typeof TimePicker> = {
+  args: {
+    name: 'time',
+    label: 'Horaire',
+  },
+}
+
+export const FilterVariant: StoryObj<typeof TimePicker> = {
+  args: {
+    name: 'time',
+    filterVariant: true,
+  },
 }
