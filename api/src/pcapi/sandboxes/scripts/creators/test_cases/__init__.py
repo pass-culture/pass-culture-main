@@ -10,7 +10,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.providers import factories as providers_factory
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.users import factories as users_factories
-from pcapi.domain.movie_types import MOVIE_TYPES
+from pcapi.domain.movie_types import movie_types
 from pcapi.domain.music_types import music_types
 from pcapi.domain.show_types import show_types
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_gdpr_users import create_industrial_gdpr_users
@@ -437,7 +437,7 @@ def creat_cine_offer_with_cast(venue: offerers_models.Venue) -> None:
         extra_data={
             "cast": [Fake.name() for _ in range(random.randint(1, 10))],
             "releaseDate": Fake.date(),
-            "genres": [MOVIE_TYPES[random.choice(list(MOVIE_TYPES))] for _ in range(random.randint(1, 4))],
+            "genres": [random.choice(movie_types).label for _ in range(random.randint(1, 4))],
             "stageDirector": Fake.name(),
         },
         subcategory=subcategories_v2.SEANCE_CINE,

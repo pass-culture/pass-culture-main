@@ -129,6 +129,29 @@ def test_public_api(client):
                     "title": "BookOfferResponse",
                     "type": "object",
                 },
+                "BookSubType": {
+                    "properties": {
+                        "gtls": {"items": {"$ref": "#/components/schemas/GTL"}, "title": "Gtls", "type": "array"},
+                        "label": {"title": "Label", "type": "string"},
+                    },
+                    "required": ["label", "gtls"],
+                    "title": "BookSubType",
+                    "type": "object",
+                },
+                "BookType": {
+                    "properties": {
+                        "children": {
+                            "items": {"$ref": "#/components/schemas/BookSubType"},
+                            "title": "Children",
+                            "type": "array",
+                        },
+                        "gtls": {"items": {"$ref": "#/components/schemas/GTL"}, "title": "Gtls", "type": "array"},
+                        "label": {"title": "Label", "type": "string"},
+                    },
+                    "required": ["children", "gtls", "label"],
+                    "title": "BookType",
+                    "type": "object",
+                },
                 "BookingActivationCodeResponse": {
                     "properties": {
                         "code": {"title": "Code", "type": "string"},
@@ -708,6 +731,16 @@ def test_public_api(client):
                     "title": "FavoritesCountResponse",
                     "type": "object",
                 },
+                "GTL": {
+                    "properties": {
+                        "code": {"title": "Code", "type": "string"},
+                        "label": {"title": "Label", "type": "string"},
+                        "level": {"title": "Level", "type": "integer"},
+                    },
+                    "required": ["code", "label", "level"],
+                    "title": "GTL",
+                    "type": "object",
+                },
                 "GenreType": {
                     "description": "An enumeration.",
                     "enum": ["BOOK", "MUSIC", "SHOW", "MOVIE"],
@@ -725,13 +758,22 @@ def test_public_api(client):
                 "GenreTypeModel": {
                     "properties": {
                         "name": {"$ref": "#/components/schemas/GenreType"},
+                        "trees": {
+                            "anyOf": [
+                                {"items": {"$ref": "#/components/schemas/BookType"}, "type": "array"},
+                                {"items": {"$ref": "#/components/schemas/MusicType"}, "type": "array"},
+                                {"items": {"$ref": "#/components/schemas/ShowType"}, "type": "array"},
+                                {"items": {"$ref": "#/components/schemas/MovieType"}, "type": "array"},
+                            ],
+                            "title": "Trees",
+                        },
                         "values": {
                             "items": {"$ref": "#/components/schemas/GenreTypeContentModel"},
                             "title": "Values",
                             "type": "array",
                         },
                     },
-                    "required": ["name", "values"],
+                    "required": ["name", "values", "trees"],
                     "title": "GenreTypeModel",
                     "type": "object",
                 },
@@ -803,6 +845,40 @@ def test_public_api(client):
                     "description": "An enumeration.",
                     "enum": ["with-dms", "without-dms"],
                     "title": "MaintenancePageType",
+                },
+                "MovieType": {
+                    "properties": {
+                        "children": {"items": {}, "nullable": True, "title": "Children", "type": "array"},
+                        "label": {"title": "Label", "type": "string"},
+                        "name": {"title": "Name", "type": "string"},
+                    },
+                    "required": ["label", "name"],
+                    "title": "MovieType",
+                    "type": "object",
+                },
+                "MusicSubType": {
+                    "properties": {
+                        "code": {"title": "Code", "type": "integer"},
+                        "label": {"title": "Label", "type": "string"},
+                        "slug": {"title": "Slug", "type": "string"},
+                    },
+                    "required": ["code", "label", "slug"],
+                    "title": "MusicSubType",
+                    "type": "object",
+                },
+                "MusicType": {
+                    "properties": {
+                        "children": {
+                            "items": {"$ref": "#/components/schemas/MusicSubType"},
+                            "title": "Children",
+                            "type": "array",
+                        },
+                        "code": {"title": "Code", "type": "integer"},
+                        "label": {"title": "Label", "type": "string"},
+                    },
+                    "required": ["code", "label", "children"],
+                    "title": "MusicType",
+                    "type": "object",
                 },
                 "NativeCategoryIdEnumv2": {
                     "description": "An enumeration.",
@@ -1299,6 +1375,30 @@ def test_public_api(client):
                     "properties": {"phoneNumber": {"title": "Phonenumber", "type": "string"}},
                     "required": ["phoneNumber"],
                     "title": "SendPhoneValidationRequest",
+                    "type": "object",
+                },
+                "ShowSubType": {
+                    "properties": {
+                        "code": {"title": "Code", "type": "integer"},
+                        "label": {"title": "Label", "type": "string"},
+                        "slug": {"title": "Slug", "type": "string"},
+                    },
+                    "required": ["code", "label", "slug"],
+                    "title": "ShowSubType",
+                    "type": "object",
+                },
+                "ShowType": {
+                    "properties": {
+                        "children": {
+                            "items": {"$ref": "#/components/schemas/ShowSubType"},
+                            "title": "Children",
+                            "type": "array",
+                        },
+                        "code": {"title": "Code", "type": "integer"},
+                        "label": {"title": "Label", "type": "string"},
+                    },
+                    "required": ["children", "code", "label"],
+                    "title": "ShowType",
                     "type": "object",
                 },
                 "SettingsResponse": {

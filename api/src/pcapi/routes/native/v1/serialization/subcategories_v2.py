@@ -1,5 +1,9 @@
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2
+from pcapi.domain.book_types import BookType
+from pcapi.domain.movie_types import MovieType
+from pcapi.domain.music_types import MusicType
+from pcapi.domain.show_types import ShowType
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 
@@ -63,6 +67,7 @@ class GenreTypeContentModel(BaseModel):
 class GenreTypeModel(BaseModel):
     name: subcategories_v2.GenreType
     values: list[GenreTypeContentModel]
+    trees: list[BookType] | list[MusicType] | list[ShowType] | list[MovieType]
 
     class Config:
         alias_generator = to_camel
