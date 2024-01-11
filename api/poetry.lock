@@ -35,13 +35,13 @@ requests = ">=2.21,<3.0"
 
 [[package]]
 name = "amplitude-analytics"
-version = "1.1.3"
+version = "1.1.4"
 description = "The official Amplitude backend Python SDK for server-side instrumentation."
 optional = false
 python-versions = ">=3.6, <4"
 files = [
-    {file = "amplitude-analytics-1.1.3.tar.gz", hash = "sha256:98a1f17607795c81f3bd9fb85d419c718687c7f2307a3c50da87d4273a7c0b37"},
-    {file = "amplitude_analytics-1.1.3-py3-none-any.whl", hash = "sha256:74a0d257a733c296fa7cd064a1c909286750c232850ebfd605a8049dadafc7f1"},
+    {file = "amplitude-analytics-1.1.4.tar.gz", hash = "sha256:9f05dc461459cfef15df8795895971745193fb74ab4e8a561e96bb208f11860e"},
+    {file = "amplitude_analytics-1.1.4-py3-none-any.whl", hash = "sha256:802d9b3a20d095d49074610dcd7e8834e5fcaff5c99d25d3153c03a163d73889"},
 ]
 
 [[package]]
@@ -5880,4 +5880,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "bcc954e864bb021c3b863abf27bf87f2ac051fe014ee009537c042e841c6b98f"
+content-hash = "45cf2492834293e5e3e1cd9eaf8344c690b13bcbbf5cc3dbf4dfbeed88f3d5f1"
