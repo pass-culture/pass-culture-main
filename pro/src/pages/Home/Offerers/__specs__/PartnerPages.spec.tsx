@@ -3,7 +3,10 @@ import React from 'react'
 import * as router from 'react-router-dom'
 
 import { VenueTypeCode } from 'apiClient/v1'
-import { defaultGetOffererVenueResponseModel } from 'utils/apiFactories'
+import {
+  defaultGetOffererResponseModel,
+  defaultGetOffererVenueResponseModel,
+} from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { PartnerPages, PartnerPagesProps } from '../PartnerPages'
@@ -32,7 +35,7 @@ describe('PartnerPages', () => {
           venueTypeCode: VenueTypeCode.FESTIVAL,
         },
       ],
-      offererId: '1',
+      offerer: defaultGetOffererResponseModel,
     })
 
     expect(
@@ -52,7 +55,7 @@ describe('PartnerPages', () => {
         defaultGetOffererVenueResponseModel,
         { ...defaultGetOffererVenueResponseModel, id: 1 },
       ],
-      offererId: '1',
+      offerer: defaultGetOffererResponseModel,
     })
 
     expect(

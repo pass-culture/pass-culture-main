@@ -4,6 +4,7 @@ import { useLoaderData } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import {
   DMSApplicationstatus,
+  GetOffererResponseModel,
   GetOffererVenueResponseModel,
 } from 'apiClient/v1'
 import { ImageUploader, UploadImageValues } from 'components/ImageUploader'
@@ -34,11 +35,11 @@ import { VenueOfferSteps } from '../VenueOfferSteps/VenueOfferSteps'
 import styles from './PartnerPage.module.scss'
 
 export interface PartnerPageProps {
-  offererId: string
+  offerer: GetOffererResponseModel
   venue: GetOffererVenueResponseModel
 }
 
-export const PartnerPage = ({ offererId, venue }: PartnerPageProps) => {
+export const PartnerPage = ({ offerer, venue }: PartnerPageProps) => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const { venueTypes } = useLoaderData() as HomepageLoaderData
@@ -155,7 +156,7 @@ export const PartnerPage = ({ offererId, venue }: PartnerPageProps) => {
             variant={ButtonVariant.SECONDARY}
             className={styles['venue-button']}
             link={{
-              to: `/structures/${offererId}/lieux/${venue.id}?modification`,
+              to: `/structures/${offerer.id}/lieux/${venue.id}?modification`,
               isExternal: false,
               'aria-label': `Gérer la page de ${venue.name}`,
             }}
@@ -167,6 +168,7 @@ export const PartnerPage = ({ offererId, venue }: PartnerPageProps) => {
 
       <VenueOfferSteps
         className={styles['venue-offer-steps']}
+        offerer={offerer}
         venue={venue}
         hasVenue
         isInsidePartnerBlock

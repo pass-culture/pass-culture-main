@@ -171,7 +171,7 @@ export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
         </div>
       </div>
 
-      {isToggleOpen && shouldShowVenueOfferSteps && (
+      {isToggleOpen && shouldShowVenueOfferSteps && offerer && (
         <div className={styles['offer-steps']}>
           <VenueOfferSteps
             offerer={offerer}

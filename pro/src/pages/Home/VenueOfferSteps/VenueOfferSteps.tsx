@@ -25,7 +25,7 @@ import { shouldDisplayEACInformationSectionForVenue } from '../venueUtils'
 import styles from './VenueOfferSteps.module.scss'
 
 export interface VenueOfferStepsProps {
-  offerer?: GetOffererResponseModel | null
+  offerer: GetOffererResponseModel
   venue?: GetOffererVenueResponseModel
   hasVenue: boolean
   isFirstVenue?: boolean
@@ -48,7 +48,7 @@ export const VenueOfferSteps = ({
   )
 
   const venueCreationUrl = isVenueCreationAvailable
-    ? `/structures/${offerer?.id}/lieux/creation`
+    ? `/structures/${offerer.id}/lieux/creation`
     : UNAVAILABLE_ERROR_PAGE
   const shouldDisplayEACInformationSection =
     venue && shouldDisplayEACInformationSectionForVenue(venue)
@@ -145,7 +145,7 @@ export const VenueOfferSteps = ({
                 variant={ButtonVariant.BOX}
                 icon={fullNextIcon}
                 link={{
-                  to: `/offre/creation?lieu=${venue?.id}&structure=${offerer?.id}`,
+                  to: `/offre/creation?lieu=${venue?.id}&structure=${offerer.id}`,
                   isExternal: false,
                 }}
               >
@@ -161,12 +161,12 @@ export const VenueOfferSteps = ({
                   variant={ButtonVariant.BOX}
                   icon={fullNextIcon}
                   link={{
-                    to: `/structures/${offerer?.id}/lieux/${venue?.id}#reimbursement`,
+                    to: `/structures/${offerer.id}/lieux/${venue.id}#reimbursement`,
                     isExternal: false,
                   }}
                   onClick={() => {
                     logEvent?.(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
-                      venue_id: venue?.id || '',
+                      venue_id: venue.id || '',
                       from: OFFER_FORM_NAVIGATION_IN.HOME,
                     })
                   }}
@@ -183,7 +183,7 @@ export const VenueOfferSteps = ({
                   variant={ButtonVariant.BOX}
                   icon={fullNextIcon}
                   link={{
-                    to: `remboursements/informations-bancaires?structure=${offerer?.id}`,
+                    to: `remboursements/informations-bancaires?structure=${offerer.id}`,
                     isExternal: false,
                   }}
                   onClick={() => {
@@ -203,7 +203,7 @@ export const VenueOfferSteps = ({
                 variant={ButtonVariant.BOX}
                 icon={fullNextIcon}
                 link={{
-                  to: `/structures/${offerer?.id}/lieux/${venue?.id}/eac`,
+                  to: `/structures/${offerer.id}/lieux/${venue.id}/eac`,
                   isExternal: false,
                 }}
               >
@@ -227,7 +227,7 @@ export const VenueOfferSteps = ({
                 variant={ButtonVariant.BOX}
                 icon={fullNextIcon}
                 link={{
-                  to: `/structures/${offerer?.id}/lieux/${venue?.id}#venue-collective-data`,
+                  to: `/structures/${offerer.id}/lieux/${venue.id}#venue-collective-data`,
                   isExternal: false,
                 }}
                 onClick={() => {
