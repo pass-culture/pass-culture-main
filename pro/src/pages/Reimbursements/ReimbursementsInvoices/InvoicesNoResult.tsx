@@ -5,6 +5,7 @@ import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
+import styles from './InvoicesNoResult.module.scss'
 import { FiltersType } from './types'
 
 interface InvoicesNoResultsProps {
@@ -29,23 +30,22 @@ const InvoicesNoResult = ({
   }
 
   return (
-    <div className="no-refunds">
+    <div className={styles['no-refunds']}>
       <SvgIcon
         src={strokeSearchIcon}
         alt=""
-        className="no-refunds-icon"
+        className={styles['no-refunds-icon']}
         width="124"
       />
-      <p className="no-refunds-title">
+      <p className={styles['no-refunds-title']}>
         Aucun justificatif de remboursement trouvé pour votre recherche
       </p>
-      <p className="no-refunds-description">
+      <p className={styles['no-refunds-description']}>
         Vous pouvez modifier votre recherche ou
         <br />
         <Button
           disabled={areFiltersDefault}
           onClick={resetFilters}
-          type="button"
           variant={ButtonVariant.TERNARYPINK}
         >
           Réinitialiser les filtres

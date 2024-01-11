@@ -1,0 +1,11 @@
+@use "src/styles/variables/_colors.scss" as colors;
+
+.format-mention {
+  text-align: center;
+}
+
+.no-refunds {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
