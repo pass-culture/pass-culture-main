@@ -173,11 +173,13 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
                 visual_disability_compliant=body.accessibility.visual_disability_compliant,
                 withdrawal_details=body.withdrawal_details,
             )
-            db.session.add(created_offer)
 
             if body.image:
                 utils.save_image(body.image, created_offer)
 
+            # To create stocks or publishing the offer we need to flush
+            # the session to get the offer id
+            db.session.flush()
             if body.stock:
                 offers_api.create_stock(
                     offer=created_offer,
