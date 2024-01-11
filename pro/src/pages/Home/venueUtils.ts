@@ -26,10 +26,10 @@ export const hasOffererAtLeastOnePhysicalVenue = (
   offerer?.managedVenues?.some((venue) => !venue.isVirtual && venue.id) ?? false
 
 export const shouldDisplayEACInformationSectionForVenue = (
-  venue: GetOffererVenueResponseModel
+  venue?: GetOffererVenueResponseModel
 ): boolean => {
   const dmsInformations = getLastCollectiveDmsApplication(
-    venue.collectiveDmsApplications
+    venue?.collectiveDmsApplications ?? []
   )
 
   return (
@@ -38,3 +38,20 @@ export const shouldDisplayEACInformationSectionForVenue = (
       dmsInformations?.state === DMSApplicationstatus.EN_CONSTRUCTION)
   )
 }
+
+export const shouldDisplayPendingBankInformationApplicationForVenue = (
+  isNewBankDetailsJourneyEnabled: boolean,
+  venue?: GetOffererVenueResponseModel
+) =>
+  !isNewBankDetailsJourneyEnabled && venue?.hasPendingBankInformationApplication
+
+export const shouldShowVenueOfferStepsForVenue = (
+  isNewBankDetailsJourneyEnabled: boolean,
+  venue?: GetOffererVenueResponseModel
+) =>
+  shouldDisplayEACInformationSectionForVenue(venue) ||
+  shouldDisplayPendingBankInformationApplicationForVenue(
+    isNewBankDetailsJourneyEnabled,
+    venue
+  ) ||
+  !venue?.hasCreatedOffer

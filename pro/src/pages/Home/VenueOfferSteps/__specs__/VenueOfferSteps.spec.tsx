@@ -57,7 +57,10 @@ describe('VenueOfferSteps', () => {
   })
 
   it('should display offer creation link if user has no offer on venue', () => {
-    props.hasVenue = false
+    props.venue = {
+      ...defaultGetOffererVenueResponseModel,
+      hasCreatedOffer: false,
+    }
     renderVenueOfferSteps(props)
     expect(screen.getByText('Créer une offre')).toBeInTheDocument()
   })
@@ -279,14 +282,9 @@ describe('VenueOfferSteps', () => {
   })
 
   it('should display venueOfferSteps if condition to display it', () => {
-    vi.spyOn(
-      venueUtils,
-      'shouldDisplayEACInformationSectionForVenue'
-    ).mockReturnValue(true)
-    props.venue = { ...defaultGetOffererVenueResponseModel }
     props.venue = {
       ...defaultGetOffererVenueResponseModel,
-      hasCreatedOffer: true,
+      hasCreatedOffer: false,
     }
 
     renderVenueOfferSteps(props)

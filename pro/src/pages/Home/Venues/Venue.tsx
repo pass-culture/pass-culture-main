@@ -20,7 +20,7 @@ import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
 import { Card } from '../Card'
 import { VenueOfferSteps } from '../VenueOfferSteps/VenueOfferSteps'
-import { shouldDisplayEACInformationSectionForVenue } from '../venueUtils'
+import { shouldShowVenueOfferStepsForVenue } from '../venueUtils'
 
 import styles from './Venue.module.scss'
 
@@ -31,10 +31,13 @@ export interface VenueProps {
 }
 
 export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
-  const shouldShowVenueOfferSteps =
-    shouldDisplayEACInformationSectionForVenue(venue) ||
-    !venue.hasCreatedOffer ||
-    venue.hasPendingBankInformationApplication
+  const isNewBankDetailsJourneyEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
+  )
+  const shouldShowVenueOfferSteps = shouldShowVenueOfferStepsForVenue(
+    isNewBankDetailsJourneyEnabled,
+    venue
+  )
 
   const [prevInitialOpenState, setPrevInitialOpenState] = useState(
     shouldShowVenueOfferSteps
@@ -42,9 +45,6 @@ export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
   const [prevOffererId, setPrevOffererId] = useState(offerer?.id)
   const [isToggleOpen, setIsToggleOpen] = useState(shouldShowVenueOfferSteps)
   const { logEvent } = useAnalytics()
-  const isNewBankDetailsJourneyEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
-  )
 
   const venueIdTrackParam = {
     venue_id: venue.id,
