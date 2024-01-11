@@ -74,6 +74,7 @@ import strokeHomeIcon from 'icons/stroke-home.svg'
 import strokeHourglassIcon from 'icons/stroke-hourglass.svg'
 import strokeInfoIcon from 'icons/stroke-info.svg'
 import strokeLeftIcon from 'icons/stroke-left.svg'
+import strokeLessIcon from 'icons/stroke-less.svg'
 import strokeLibraryIcon from 'icons/stroke-library.svg'
 import strokeLikeIcon from 'icons/stroke-like.svg'
 import strokeLinkIcon from 'icons/stroke-link.svg'
@@ -172,6 +173,7 @@ export const strokeIcons: IconListItem[] = [
   { src: strokeValidIcon },
   { src: strokeWrongIcon },
   { src: strokeMoreIcon },
+  { src: strokeLessIcon },
   { src: strokeCheckIcon },
   { src: strokeDoubleCheckIcon },
   { src: strokeOffersIcon },
