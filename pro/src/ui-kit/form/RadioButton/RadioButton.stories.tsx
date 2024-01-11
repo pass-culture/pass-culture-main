@@ -11,11 +11,17 @@ export default {
   component: RadioButton,
 }
 
-const Template: Story<{
+interface TemplateProps {
   label1: JSX.Element | string
   label2: JSX.Element | string
   withBorder?: boolean
-}> = ({ withBorder, label1, label2 }) => (
+}
+
+const Template: Story<TemplateProps> = ({
+  withBorder,
+  label1,
+  label2,
+}: TemplateProps) => (
   <Formik initialValues={{}} onSubmit={() => {}}>
     {({ getFieldProps }) => {
       return (

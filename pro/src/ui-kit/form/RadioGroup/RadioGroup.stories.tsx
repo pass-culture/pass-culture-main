@@ -31,7 +31,7 @@ const Template: Story<RadioGroupProps> = ({
   group,
   legend,
   withBorder,
-}) => (
+}: RadioGroupProps) => (
   <Formik
     initialValues={{
       question: {},
