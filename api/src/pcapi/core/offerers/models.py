@@ -70,6 +70,7 @@ from . import constants
 
 if typing.TYPE_CHECKING:
     import pcapi.core.criteria.models as criteria_models
+    from pcapi.core.geography.models import PointOfInterest
     import pcapi.core.offers.models as offers_models
     import pcapi.core.providers.models as providers_models
     from pcapi.core.providers.models import Provider
@@ -401,6 +402,13 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
     bankAccountLinks: list["VenueBankAccountLink"] = relationship(
         "VenueBankAccountLink", back_populates="venue", passive_deletes=True
+    )
+
+    pointOfInterestId: int = sa.Column(
+        sa.Integer, sa.ForeignKey("point_of_interest.id", ondelete="SET NULL"), nullable=True
+    )
+    pointOfInterest: sa.orm.Mapped["PointOfInterest"] = sa.orm.relationship(
+        "PointOfInterest", foreign_keys=[pointOfInterestId]
     )
 
     # FIXME: ogeber 27.11 uncomment once all permanent venues have a ban_id (cf ticket 25999)
