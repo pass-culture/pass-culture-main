@@ -612,7 +612,9 @@ const StocksEventList = ({
                     <td className={styles['data']}>{bookingLimitDate}</td>
 
                     <td className={styles['data']}>
-                      {stock.quantity === null ? 'Illimité' : stock.quantity}
+                      {stock.quantity === null
+                        ? 'Illimité'
+                        : new Intl.NumberFormat('fr-FR').format(stock.quantity)}
                     </td>
 
                     {readonly ? (
