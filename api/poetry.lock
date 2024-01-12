@@ -755,22 +755,22 @@ colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
 name = "click-option-group"
-version = "0.5.5"
+version = "0.5.6"
 description = "Option groups missing in Click"
 optional = false
 python-versions = ">=3.6,<4"
 files = [
-    {file = "click-option-group-0.5.5.tar.gz", hash = "sha256:78ee474f07a0ca0ef6c0317bb3ebe79387aafb0c4a1e03b1d8b2b0be1e42fc78"},
-    {file = "click_option_group-0.5.5-py3-none-any.whl", hash = "sha256:0f8ca79bc9b1d6fcaafdbe194b17ba1a2dde44ddf19087235c3efed2ad288143"},
+    {file = "click-option-group-0.5.6.tar.gz", hash = "sha256:97d06703873518cc5038509443742b25069a3c7562d1ea72ff08bfadde1ce777"},
+    {file = "click_option_group-0.5.6-py3-none-any.whl", hash = "sha256:38a26d963ee3ad93332ddf782f9259c5bdfe405e73408d943ef5e7d0c3767ec7"},
 ]
 
 [package.dependencies]
 Click = ">=7.0,<9"
 
 [package.extras]
-docs = ["Pallets-Sphinx-Themes", "m2r2", "sphinx (>=3.0,<6)"]
+docs = ["Pallets-Sphinx-Themes", "m2r2", "sphinx"]
 tests = ["pytest"]
-tests-cov = ["coverage (<6)", "coveralls", "pytest", "pytest-cov"]
+tests-cov = ["coverage", "coveralls", "pytest", "pytest-cov"]
 
 [[package]]
 name = "click-plugins"
@@ -5897,4 +5897,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "c3349e3c39f9aa57fe4f108e387a75769d2ef74d5b20d9e284389086735b8bee"
+content-hash = "c08d57e70a8ca3e394c9a372f3ee7846138f6fe43533798078adbf822bc5d7fa"
