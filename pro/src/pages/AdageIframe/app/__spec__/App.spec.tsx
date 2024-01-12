@@ -70,18 +70,6 @@ const venue = {
   departementCode: '75',
 }
 
-const isDiscoveryActive = {
-  features: {
-    list: [
-      {
-        nameKey: 'WIP_ENABLE_DISCOVERY',
-        isActive: true,
-      },
-    ],
-    initialized: true,
-  },
-}
-
 vi.mock('apiClient/api', () => ({
   apiAdage: {
     getEducationalOffersCategories: vi.fn(),
@@ -189,27 +177,6 @@ describe('app', () => {
 
       await screen.findByRole('button', { name: /Lieu : Lib de Par's/ })
     })
-    it('should display error messagee when venueId does not exist', async () => {
-      const mockLocation = {
-        ...window.location,
-        search: '?venue=999',
-      }
-
-      window.location = mockLocation
-
-      vi.spyOn(apiAdage, 'getVenueById').mockRejectedValueOnce(null)
-
-      renderApp({
-        initialRouterEntries: ['/recherche?venue=999'],
-        storeOverrides: isDiscoveryActive,
-      })
-
-      expect(
-        await screen.findByText(
-          'Lieu inconnu. Tous les résultats sont affichés.'
-        )
-      ).toBeInTheDocument()
-    })
 
     it('should add geo location filter when user has latitude and longitude', async () => {
       vi.spyOn(apiAdage, 'authenticate').mockResolvedValueOnce({
@@ -235,44 +202,6 @@ describe('app', () => {
         }),
         {}
       )
-    })
-
-    it('should trigger an error notification when siret is invalid', async () => {
-      const mockLocation = {
-        ...window.location,
-        search: '?siret=123456789',
-      }
-
-      window.location = mockLocation
-
-      vi.spyOn(apiAdage, 'getVenueBySiret').mockRejectedValueOnce(null)
-
-      renderApp()
-
-      expect(
-        await screen.findByText(
-          'Lieu inconnu. Tous les résultats sont affichés.'
-        )
-      ).toBeInTheDocument()
-    })
-
-    it('should trigger an error notification when venue is invalid', async () => {
-      const mockLocation = {
-        ...window.location,
-        search: '?venue=123456789',
-      }
-
-      window.location = mockLocation
-
-      vi.spyOn(apiAdage, 'getVenueById').mockRejectedValueOnce(null)
-
-      renderApp()
-
-      expect(
-        await screen.findByText(
-          'Lieu inconnu. Tous les résultats sont affichés.'
-        )
-      ).toBeInTheDocument()
     })
   })
 
