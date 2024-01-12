@@ -40,7 +40,7 @@ const IndivualOfferLayout = ({
       >
         <div>
           <h1>{title}</h1>
-          {offer && <h4 className={styles['offer-title']}>{offer.name}</h4>}
+          {offer && <h2 className={styles['offer-title']}>{offer.name}</h2>}
         </div>
         {shouldDisplayActionOnStatus && (
           <div className={styles['right']}>
