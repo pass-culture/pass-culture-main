@@ -201,7 +201,7 @@ const routes: RouteConfig[] = [
   {
     lazy: () => import('pages/CollectiveOfferEdition/CollectiveOfferEdition'),
     path: '/offre/:offerId/collectif/edition',
-    title: 'Détails - Modifier une offre réservable',
+    title: 'Détails - Modifier une offre collective réservable',
   },
   {
     lazy: () =>
@@ -209,13 +209,13 @@ const routes: RouteConfig[] = [
         'pages/CollectiveOfferSummaryEdition/CollectiveOfferSummaryEdition'
       ),
     path: '/offre/:offerId/collectif/recapitulatif',
-    title: 'Edition d’une offre collective',
+    title: 'Récapitulatif - Modifier une offre collective réservable',
   },
   {
     lazy: () =>
       import('pages/CollectiveOfferStockEdition/CollectiveOfferStockEdition'),
     path: '/offre/:offerId/collectif/stocks/edition',
-    title: 'Date et prix - Modifier une offre réservable',
+    title: 'Date et prix - Modifier une offre collective réservable',
   },
   {
     lazy: () =>
@@ -223,7 +223,7 @@ const routes: RouteConfig[] = [
         'pages/CollectiveOfferVisibility/CollectiveOfferEditionVisibility'
       ),
     path: '/offre/:offerId/collectif/visibilite/edition',
-    title: 'Visibilité - Modifier une offre réservable',
+    title: 'Visibilité - Modifier une offre collective réservable',
   },
   {
     lazy: () =>
