@@ -27,9 +27,9 @@ jobs:
         with:
           secrets: |-
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
-      - name: "Retrieve pull request URL"
-        id: "pr-url"
-        uses: kceb/pull-request-url-action@v2
+      - name: "Retrieve pull request informations"
+        id: "pr"
+        uses: pass-culture-github-actions/pull-request@v1.0.0
       - name: "Slack Notification"
         uses: slackapi/slack-github-action@v1.24.0
         with:
@@ -37,20 +37,20 @@ jobs:
           channel-id: "C02THUWQR89"
           payload: |
             {
-            "attachments": [
-              {
-                "mrkdwn_in": ["text"],
-                "color": "#A30002",
-                "author_name": "${{ github.actor }}",
-                "author_link": "https://github.com/${{ github.actor }}",
-                "author_icon": "https://github.com/${{ github.actor }}.png",
-                "title": "Pull Request base de données",
-                "title_link": "${{ steps.pr-url.outputs.url }}",
-                "text": "Nouvelle PR avec une migration db ou une colonne en cours de suppression"
-              }
-            ],
-            "unfurl_links": false,
-            "unfurl_media": false
+              "attachments": [
+                {
+                  "mrkdwn_in": ["text"],
+                  "color": "#A30002",
+                  "author_name": "${{ github.actor }}",
+                  "author_link": "https://github.com/${{ github.actor }}",
+                  "author_icon": "https://github.com/${{ github.actor }}.png",
+                  "title": "Pull Request base de données",
+                  "title_link": "${{ steps.pr.outputs.url }}",
+                  "text": "${{ steps.pr.outputs.title }}"
+                }
+              ],
+              "unfurl_links": false,
+              "unfurl_media": false
             }
         env:
           SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
