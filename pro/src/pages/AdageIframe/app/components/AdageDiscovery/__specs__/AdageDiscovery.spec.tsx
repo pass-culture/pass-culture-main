@@ -16,6 +16,13 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import { AdageDiscovery } from '../AdageDiscovery'
 import { DOMAINS_PLAYLIST } from '../constant'
 
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: () => ({
+    matches: true,
+  }),
+})
+
 vi.mock('apiClient/api', () => ({
   apiAdage: {
     logHasSeenAllPlaylist: vi.fn(),
