@@ -1,11 +1,12 @@
-"""Squashing migrations - POST
+"""Squashing migrations - PRE
 """
 
-# pre/post deployment: post
+
+# pre/post deployment: pre
 # revision identifiers, used by Alembic.
-revision = "06ebfa9392fa"
+revision = "025c622f64f8"
 down_revision = "f460dc2c9f93"
-branch_labels = ("post",)
+branch_labels = ("pre",)
 depends_on = None
 
 
