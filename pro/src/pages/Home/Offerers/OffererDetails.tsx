@@ -57,7 +57,7 @@ export const OffererDetails = ({
             name="offererId"
             options={[...offererOptions, addOffererOption]}
             value={selectedOfferer.id.toString()}
-            aria-label="Sélectionner une structure"
+            aria-label="Structure"
           />
         </div>
 

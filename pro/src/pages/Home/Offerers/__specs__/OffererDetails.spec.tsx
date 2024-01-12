@@ -81,7 +81,7 @@ describe('OffererDetails', () => {
     renderOffererDetails()
 
     await userEvent.selectOptions(
-      screen.getByLabelText('Sélectionner une structure'),
+      screen.getByLabelText('Structure'),
       '+ Ajouter une structure'
     )
 
