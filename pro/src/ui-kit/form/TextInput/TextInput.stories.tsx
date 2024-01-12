@@ -1,30 +1,43 @@
-import type { Story } from '@storybook/react'
+import type { StoryObj } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
 import strokeSearch from 'icons/stroke-search.svg'
 
-import TextInput, { TextInputProps } from './TextInput'
+import TextInput from './TextInput'
 
 export default {
   title: 'ui-kit/forms/TextInput',
   component: TextInput,
+  decorators: [
+    (Story: any) => (
+      <Formik initialValues={{ email: '' }} onSubmit={() => {}}>
+        <Story />
+      </Formik>
+    ),
+  ],
 }
 
-const Template: Story<TextInputProps> = (props) => (
-  <Formik initialValues={{ email: '' }} onSubmit={() => {}}>
-    {({ getFieldProps }) => (
-      <TextInput
-        {...getFieldProps('email')}
-        placeholder="input placeholder"
-        {...props}
-      />
-    )}
-  </Formik>
-)
+export const WithoutLabel: StoryObj<typeof TextInput> = {
+  args: {
+    name: 'email',
+    placeholder: 'Input placeholder',
+  },
+}
 
-export const WithoutLabel = Template.bind({})
-export const WithLabel = Template.bind({})
-WithLabel.args = { label: 'Email' }
-export const WithLeftIcon = Template.bind({})
-WithLeftIcon.args = { leftIcon: strokeSearch }
+export const WithLabel: StoryObj<typeof TextInput> = {
+  args: {
+    name: 'email',
+    label: 'Email',
+    placeholder: 'Input placeholder',
+  },
+}
+
+export const WithLeftIcon: StoryObj<typeof TextInput> = {
+  args: {
+    name: 'email',
+    label: 'Email',
+    placeholder: 'Input placeholder',
+    leftIcon: strokeSearch,
+  },
+}

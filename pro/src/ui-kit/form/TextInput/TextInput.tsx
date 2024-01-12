@@ -6,7 +6,7 @@ import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
 
 import styles from './TextInput.module.scss'
 
-export type TextInputProps = React.InputHTMLAttributes<HTMLInputElement> &
+type TextInputProps = React.InputHTMLAttributes<HTMLInputElement> &
   FieldLayoutBaseProps & {
     readOnly?: boolean
     type?: 'text' | 'number' | 'email' | 'url' | 'password' | 'tel' | 'search'
