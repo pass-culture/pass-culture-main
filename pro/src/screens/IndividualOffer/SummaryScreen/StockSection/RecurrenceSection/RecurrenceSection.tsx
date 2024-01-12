@@ -3,6 +3,7 @@ import React from 'react'
 import { StockStatsResponseModel } from 'apiClient/v1'
 import { SummaryLayout } from 'components/SummaryLayout'
 import { FORMAT_DD_MM_YYYY } from 'utils/date'
+import { pluralizeString } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
 interface RecurrenceSectionProps {
@@ -18,13 +19,11 @@ const RecurrenceSection = ({
     return null
   }
 
-  function formatCapacity(capacity: number): string {
-    return capacity <= 1 ? `${capacity} place` : `${capacity} places`
-  }
-
   const totalCapacity =
     stocksStats.remainingQuantity || stocksStats.remainingQuantity === 0
-      ? formatCapacity(stocksStats.remainingQuantity)
+      ? new Intl.NumberFormat('fr-FR').format(stocksStats.remainingQuantity) +
+        ' ' +
+        pluralizeString('place', stocksStats.remainingQuantity)
       : 'Illimitée'
 
   let periodText = ''
