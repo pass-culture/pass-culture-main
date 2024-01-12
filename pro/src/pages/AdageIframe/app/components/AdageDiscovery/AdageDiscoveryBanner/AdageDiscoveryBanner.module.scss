@@ -1,0 +1,70 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/variables/_size.scss" as size;
+
+.discovery-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: rem.torem(131px);
+  position: relative;
+
+  &-title {
+    margin: 0;
+    color: colors.$white;
+    font-size: rem.torem(24px);
+    font-style: normal;
+    font-weight: 800;
+    text-align: center;
+    line-height: normal;
+    position: relative;
+    z-index: 1;
+
+    &-highlight {
+      color: colors.$adage-purple;
+      padding: rem.torem(2px);
+      background-color: colors.$white;
+      border-radius: rem.torem(8px);
+      white-space: nowrap;
+    }
+  }
+
+  &-background {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background-color: colors.$adage-purple;
+    background-image: linear-gradient(
+      to right,
+      colors.$secondary,
+      colors.$tertiary 80%
+    );
+
+    .discovery-banner-svg-oval {
+      fill: colors.$tertiary;
+    }
+
+    .discovery-banner-svg-cross {
+      fill: rgba(colors.$grey-light, 0.4);
+    }
+
+    .discovery-banner-svg-circle {
+      fill: rgba(colors.$grey-light, 0.3);
+    }
+  }
+}
+
+@media (min-width: size.$tablet) {
+  .discovery-banner {
+    &-title {
+      font-size: rem.torem(32px);
+
+      &-highlight {
+        padding: rem.torem(4px);
+      }
+    }
+  }
+}

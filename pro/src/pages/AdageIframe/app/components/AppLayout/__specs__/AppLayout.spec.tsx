@@ -15,6 +15,13 @@ import {
 
 import { AppLayout } from '../AppLayout'
 
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: () => ({
+    matches: true,
+  }),
+})
+
 vi.mock(
   '../../OffersInstantSearch/OffersSearch/Autocomplete/Autocomplete',
   () => {
