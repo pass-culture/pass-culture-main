@@ -11,6 +11,7 @@ import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './AdageDiscovery.module.scss'
+import AdageDiscoveryBanner from './AdageDiscoveryBanner/AdageDiscoveryBanner'
 import Carousel from './Carousel/Carousel'
 import { DOMAINS_PLAYLIST } from './constant'
 import circles from './DomainsCard/assets/circles.svg'
@@ -105,11 +106,7 @@ export const AdageDiscovery = () => {
 
   return (
     <div className={styles['discovery']}>
-      <div className={styles['discovery-banner']}>
-        <h1 className={styles['discovery-banner-title']}>
-          Découvrez <span>la part collective</span> du pass Culture
-        </h1>
-      </div>
+      <AdageDiscoveryBanner />
 
       <div className={styles['discovery-playlists']}>
         <div className={styles['discovery-playlist']}>
