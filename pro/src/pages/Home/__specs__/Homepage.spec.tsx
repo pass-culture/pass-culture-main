@@ -196,7 +196,7 @@ describe('Homepage', () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValueOnce(newOfferer)
 
     await userEvent.selectOptions(
-      screen.getByLabelText('Sélectionner une structure'),
+      screen.getByLabelText('Structure'),
       'Structure 2'
     )
 
