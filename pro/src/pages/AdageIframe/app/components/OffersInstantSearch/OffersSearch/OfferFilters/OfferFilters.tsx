@@ -417,7 +417,7 @@ export const OfferFilters = ({
                     isOpen={modalOpenStatus['students']}
                     sortOptions={(options, selectedOptions) => {
                       //  Implement custom sort to not sort results alphabetically
-                      return options.sort((option1, option2) => {
+                      return [...options].sort((option1, option2) => {
                         const isSelected1 = selectedOptions.includes(
                           option1.value
                         )
