@@ -39,4 +39,18 @@ describe('offer summary', () => {
       screen.queryByText('Le mardi 24 octobre 2023')
     ).not.toBeInTheDocument()
   })
+
+  it('should show that the offer is permanent when there are no dates on a template offer', () => {
+    const offer: HydratedCollectiveOfferTemplate = {
+      ...defaultCollectiveTemplateOffer,
+      dates: undefined,
+      isTemplate: true,
+    }
+    renderOfferSummary({ offer })
+    expect(
+      screen.queryByText(
+        'Tout au long de l’année scolaire (l’offre est permanente)'
+      )
+    ).toBeInTheDocument()
+  })
 })

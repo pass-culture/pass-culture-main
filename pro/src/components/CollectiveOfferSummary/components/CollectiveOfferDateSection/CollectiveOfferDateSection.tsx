@@ -11,21 +11,18 @@ export type CollectiveOfferDateSectionProps = {
 export default function CollectiveOfferDateSection({
   offer,
 }: CollectiveOfferDateSectionProps) {
-  if (!offer.dates?.start || !offer.dates?.end) {
-    return null
+  let description = 'Tout au long de l’année scolaire (l’offre est permanente)'
+
+  if (offer.dates?.start && offer.dates?.end) {
+    const startDateWithoutTz = toDateStrippedOfTimezone(offer.dates.start)
+    const endDateWithoutTz = toDateStrippedOfTimezone(offer.dates.end)
+
+    description = getRangeToFrenchText(startDateWithoutTz, endDateWithoutTz)
   }
-
-  const startDateWithoutTz = toDateStrippedOfTimezone(offer.dates.start)
-  const endDateWithoutTz = toDateStrippedOfTimezone(offer.dates.end)
-
-  const datesFormatted = getRangeToFrenchText(
-    startDateWithoutTz,
-    endDateWithoutTz
-  )
 
   return (
     <SummaryLayout.SubSection title="Date et heure">
-      <SummaryLayout.Row description={datesFormatted} />
+      <SummaryLayout.Row description={description} />
     </SummaryLayout.SubSection>
   )
 }
