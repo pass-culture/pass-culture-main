@@ -75,7 +75,7 @@
     "@storybook/addon-a11y": "^7.6.8",
     "@storybook/addon-controls": "^7.6.7",
     "@storybook/preset-scss": "^1.0.3",
-    "@storybook/react": "^7.6.4",
+    "@storybook/react": "^7.6.8",
     "@storybook/react-vite": "^7.6.7",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^14.1.2",
