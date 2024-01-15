@@ -37,6 +37,10 @@ describe('CollectiveOfferDateSection', () => {
       ...props,
       offer,
     })
-    expect(screen.queryByText('Date et heure')).not.toBeInTheDocument()
+    expect(
+      screen.queryByText(
+        'Tout au long de l’année scolaire (l’offre est permanente)'
+      )
+    ).toBeInTheDocument()
   })
 })
