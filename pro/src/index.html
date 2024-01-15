@@ -25,13 +25,6 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'self' blob: data: https: http: gap://ready https://*.hotjar.com:* https://*.hotjar.io wss://*.hotjar.com https://*.getbeamer.com/; style-src 'self' https://app.getbeamer.com/styles/beamer-embed.css https://fonts.googleapis.com/css 'unsafe-inline'"
     />
-    <!--
-        CSP report only to detect csp errors and help us clean the policy
-      -->
-    <meta
-      http-equiv="Content-Security-Policy-Report-Only"
-      content="default-src 'self'; report-uri %CSP_REPORT_URI%; report-to %CSP_REPORT_URI%"
-    />
     <% } %>
     <link rel="manifest" href="/manifest.json" />
     <link rel="icon" href="/favicon.ico" />
