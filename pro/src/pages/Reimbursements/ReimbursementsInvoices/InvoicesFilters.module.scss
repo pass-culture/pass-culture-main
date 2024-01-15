@@ -1,6 +1,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 @use "src/styles/variables/_colors.scss" as colors;
+@use "styles/variables/_size.scss" as size;
 
 .reset-filters {
   margin-top: rem.torem(30px);
@@ -19,7 +20,7 @@
 }
 
 .button-group {
-  margin-bottom: rem.torem(16px);
+  margin-top: rem.torem(16px);
   position: relative;
 
   &-separator {
@@ -27,5 +28,21 @@
     position: absolute;
     top: 50%;
     width: 100%;
+  }
+}
+
+@media (min-width: size.$tablet) {
+  .button-group {
+    margin-top: 0;
+
+    // margin-bottom: rem.torem(16px);
+    position: relative;
+
+    &-separator {
+      border-bottom: rem.torem(1px) solid colors.$grey-medium;
+      position: absolute;
+      top: 50%;
+      width: 100%;
+    }
   }
 }
