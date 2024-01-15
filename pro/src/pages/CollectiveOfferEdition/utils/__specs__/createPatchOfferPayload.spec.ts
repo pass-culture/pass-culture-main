@@ -46,6 +46,7 @@ describe('createPatchOfferPayload', () => {
     interventionArea: ['2A'],
     beginningDate: '2021-09-01',
     endingDate: '2021-09-30',
+    datesType: 'specific_dates',
     hour: '10:00',
     isTemplate: false,
   }
@@ -81,6 +82,7 @@ describe('createPatchOfferPayload', () => {
     nationalProgramId: '1',
     beginningDate: '2021-09-01',
     endingDate: '2021-09-30',
+    datesType: 'specific_dates',
     hour: '10:00',
     isTemplate: false,
     formats: [EacFormat.ATELIER_DE_PRATIQUE],
@@ -133,14 +135,20 @@ describe('createPatchOfferPayload', () => {
   })
   it('should return the correct patch offer payload for a template offer when dates are empty', () => {
     const payload = createPatchOfferTemplatePayload(
-      { ...offer, priceDetail: '123', isTemplate: true, beginningDate: '' },
+      {
+        ...offer,
+        priceDetail: '123',
+        isTemplate: true,
+        beginningDate: '',
+        datesType: 'permanent',
+      },
       initialValues
     )
 
     expect(payload).toMatchObject({
       venueId: venueId,
       priceDetail: '123',
-      dates: undefined,
+      dates: null,
     })
   })
 })

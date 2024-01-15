@@ -45,6 +45,7 @@ export const DEFAULT_EAC_FORM_VALUES: OfferEducationalFormValues = {
   imageCredit: '',
   nationalProgramId: '',
   isTemplate: false,
+  datesType: 'permanent',
   beginningDate: '',
   endingDate: '',
   hour: '',

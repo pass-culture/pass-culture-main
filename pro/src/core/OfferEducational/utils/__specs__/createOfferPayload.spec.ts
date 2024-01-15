@@ -24,6 +24,7 @@ describe('createOfferPayload', () => {
           ...DEFAULT_EAC_FORM_VALUES,
           beginningDate: '2021-09-01',
           endingDate: '2021-09-10',
+          datesType: 'specific_dates',
         },
         true,
         false
