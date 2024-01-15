@@ -72,12 +72,13 @@ const OfferSummary = ({ offer }: OfferSummaryProps): JSX.Element => {
 
   const formattedDates =
     isCollectiveOfferTemplate(offer) &&
-    offer.dates?.start &&
-    offer.dates?.end &&
-    getRangeToFrenchText(
-      toDateStrippedOfTimezone(offer.dates.start),
-      toDateStrippedOfTimezone(offer.dates.end)
-    )
+    ((offer.dates?.start &&
+      offer.dates?.end &&
+      getRangeToFrenchText(
+        toDateStrippedOfTimezone(offer.dates.start),
+        toDateStrippedOfTimezone(offer.dates.end)
+      )) ||
+      'Tout au long de l’année scolaire (l’offre est permanente)')
 
   if (offerVenue) {
     if (offerVenue.addressType === OfferAddressType.OTHER) {
