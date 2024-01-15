@@ -271,6 +271,8 @@ class SaveVenueBankInformationsV5(SaveVenueBankInformationsMixin):
             return None
 
         bank_information = self.bank_informations_repository.get_by_application(application_details.application_id)
+        if not bank_information:
+            bank_information = self.bank_informations_repository.find_by_venue(venue.id)
 
         if bank_information:
             check_new_bank_information_older_than_saved_one(
