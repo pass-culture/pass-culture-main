@@ -73,7 +73,7 @@
   },
   "devDependencies": {
     "@storybook/addon-a11y": "^7.6.8",
-    "@storybook/addon-controls": "^7.6.7",
+    "@storybook/addon-controls": "^7.6.8",
     "@storybook/preset-scss": "^1.0.3",
     "@storybook/react": "^7.6.4",
     "@storybook/react-vite": "^7.6.8",
