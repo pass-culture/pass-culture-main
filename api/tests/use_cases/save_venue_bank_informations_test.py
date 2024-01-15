@@ -1459,3 +1459,49 @@ class NewBankAccountJourneyTest:
 
         assert history_models.ActionHistory.query.count() == 1
         assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
+
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
+    def test_bank_information_are_updated_by_new_journey_accordingly_to_the_old_journey(
+        self, mock_archive_dossier, mock_update_text_annotation, mock_dms_graphql_client
+    ):
+        siret = "85331845900049"
+        siren = siret[:9]
+        venue_with_bank_information = offerers_factories.VenueFactory(
+            pricing_point="self", managingOfferer__siren=siren
+        )
+        old_application_id = 8
+        finance_factories.BankInformationFactory(
+            applicationId=old_application_id,
+            venue=venue_with_bank_information,
+            status=finance_models.BankInformationStatus.DRAFT,
+        )
+
+        mock_dms_graphql_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
+            state=GraphQLApplicationStates.accepted.value
+        )
+        # We should erased the old bank information, and replace it with the new one
+        update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
+
+        newly_bank_information = finance_models.BankInformation.query.one()
+        assert newly_bank_information.venue == venue_with_bank_information
+        assert newly_bank_information.applicationId != old_application_id
+        assert newly_bank_information.bic == "BICAGRIFRPP"
+        assert newly_bank_information.iban == "FR7630006000011234567890189"
+        assert newly_bank_information.status == finance_models.BankInformationStatus.ACCEPTED
+        assert newly_bank_information.venue == venue_with_bank_information
+
+        # New journey
+        bank_account = finance_models.BankAccount.query.one()
+        assert bank_account.bic == "BICAGRIFRPP"
+        assert bank_account.iban == "FR7630006000011234567890189"
+        assert bank_account.offerer == venue_with_bank_information.managingOfferer
+        assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
+        assert bank_account.label == "Intitulé du compte bancaire"
+        assert bank_account.dsApplicationId == self.dsv5_application_id
+
+        link = offerers_models.VenueBankAccountLink.query.one()
+        assert link.venue == venue_with_bank_information
+        assert link.bankAccount == bank_account
+
+        assert history_models.ActionHistory.query.count() == 1
+        assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
