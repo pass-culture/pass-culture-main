@@ -351,7 +351,7 @@ def css_font_http_request_mock():
 
     def fake_urlopen(request, *args, **kwargs):
         assert request.host == "fonts.googleapis.com"
-        return FakeResponse(request.full_url, content="")
+        return FakeResponse(request.full_url, content=b"")  # return a bytes-like object to avoid TypeError
 
     with patch("weasyprint.urls.urlopen", fake_urlopen):
         yield
