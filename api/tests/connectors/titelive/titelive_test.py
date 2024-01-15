@@ -7,6 +7,7 @@ import pytest
 from pcapi.connectors import titelive
 from pcapi.connectors.titelive import GtlIdError
 from pcapi.core.categories import subcategories_v2 as subcategories
+import pcapi.core.providers.constants as providers_constants
 from pcapi.core.testing import override_settings
 from pcapi.domain.titelive import parse_things_date_to_string
 
@@ -54,7 +55,7 @@ class TiteliveTest:
         assert product.thumbCount == article["image"]
         assert product.name == oeuvre["titre"]
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
-        assert product.extraData["author"] == oeuvre["auteurs"]
+        assert product.lastProvider.name == providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME
         assert product.extraData["author"] == oeuvre["auteurs"]
         assert product.extraData["ean"] == ean
         assert product.extraData["prix_livre"] == article["prix"]
