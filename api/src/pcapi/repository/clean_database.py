@@ -49,6 +49,7 @@ tables_to_clean: list[flask_sqlalchemy.Model] = [
     finance_models.CustomReimbursementRule,
     finance_models.BookingFinanceIncident,
     finance_models.FinanceIncident,
+    educational_models.CollectivePlaylist,
     educational_models.CollectiveOfferDomain,
     educational_models.CollectiveOfferTemplateDomain,
     educational_models.EducationalDomain,
