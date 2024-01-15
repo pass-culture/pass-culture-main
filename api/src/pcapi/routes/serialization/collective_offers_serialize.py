@@ -639,10 +639,6 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
 class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):
     priceDetail: PriceDetail | None
     domains: list[int] | None
-
-    # TODO(jeremieb) | None is temporary
-    # when the frontend clients are up to date, dateRange should
-    # become mandatory
     dates: DateRangeModel | None
 
     @validator("domains")

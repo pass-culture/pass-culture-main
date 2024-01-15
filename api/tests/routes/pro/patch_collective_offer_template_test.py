@@ -122,6 +122,27 @@ class Returns200Test:
 
         assert response.status_code == 200
 
+    def test_without_dates_does_not_update_offer(self, pro_client, offer, template_end):
+        assert offer.dateRange.lower
+        assert offer.dateRange.upper
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            endpoint = url_for("Private API.edit_collective_offer_template", offer_id=offer.id)
+            response = pro_client.patch(endpoint, json={})
+        assert response.status_code == 200
+        updated_offer = CollectiveOfferTemplate.query.filter(CollectiveOfferTemplate.id == offer.id).one()
+        assert updated_offer.dateRange.lower
+        assert updated_offer.dateRange.upper
+
+    def test_with_empty_dates_updates_offer(self, pro_client, offer, template_end):
+        assert offer.dateRange.lower
+        assert offer.dateRange.upper
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            endpoint = url_for("Private API.edit_collective_offer_template", offer_id=offer.id)
+            response = pro_client.patch(endpoint, json={"dates": None})
+        assert response.status_code == 200
+        updated_offer = CollectiveOfferTemplate.query.filter(CollectiveOfferTemplate.id == offer.id).one()
+        assert updated_offer.dateRange is None
+
 
 class Returns400Test:
     def test_non_approved_offer_fails(self, pro_client, user):
