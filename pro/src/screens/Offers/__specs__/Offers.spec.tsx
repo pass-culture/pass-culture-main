@@ -23,8 +23,8 @@ import { Audience } from 'core/shared'
 import * as useNotification from 'hooks/useNotification'
 import { offererFactory } from 'utils/apiFactories'
 import {
-  RenderWithProvidersOptions,
   renderWithProviders,
+  RenderWithProvidersOptions,
 } from 'utils/renderWithProviders'
 
 import Offers, { OffersProps } from '../Offers'
@@ -570,7 +570,7 @@ describe('screen Offers', () => {
   it('should load offers on click on search button with default filters when no changes where made', async () => {
     renderOffers(props)
 
-    await userEvent.click(screen.getByText('Lancer la recherche'))
+    await userEvent.click(screen.getByText('Rechercher'))
 
     expect(props.loadAndUpdateOffers).toHaveBeenCalledWith({
       nameOrIsbn: DEFAULT_SEARCH_FILTERS.nameOrIsbn,
@@ -762,7 +762,7 @@ describe('screen Offers', () => {
       screen.getByRole('option', { name: 'Concert' })
     )
 
-    const searchButton = screen.getByText('Lancer la recherche')
+    const searchButton = screen.getByText('Rechercher')
 
     await userEvent.click(searchButton)
 

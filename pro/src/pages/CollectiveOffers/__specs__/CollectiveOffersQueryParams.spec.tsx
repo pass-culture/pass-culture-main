@@ -164,7 +164,7 @@ describe('route CollectiveOffers', () => {
         screen.getByPlaceholderText('Rechercher par nom d’offre'),
         'AnyWord'
       )
-      await userEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.click(screen.getByText('Rechercher'))
       // Then
       expect(mockNavigate).toHaveBeenCalledWith(
         '/offres/collectives?nom-ou-isbn=AnyWord'
@@ -178,7 +178,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.clear(
         screen.getByPlaceholderText('Rechercher par nom d’offre')
       )
-      await userEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.click(screen.getByText('Rechercher'))
       // Then
       expect(mockNavigate).toHaveBeenCalledWith('/offres/collectives')
     })
@@ -192,7 +192,7 @@ describe('route CollectiveOffers', () => {
       const venueSelect = screen.getByLabelText('Lieu')
       // When
       await userEvent.selectOptions(venueSelect, firstVenueOption)
-      await userEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.click(screen.getByText('Rechercher'))
       // Then
       expect(mockNavigate).toHaveBeenCalledWith(
         `/offres/collectives?lieu=${proVenues[0].id}`
@@ -237,7 +237,7 @@ describe('route CollectiveOffers', () => {
       const typeSelect = screen.getByDisplayValue(ALL_CATEGORIES_OPTION.label)
       // When
       await userEvent.selectOptions(typeSelect, firstTypeOption)
-      await userEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.click(screen.getByText('Rechercher'))
 
       // Then
       expect(mockNavigate).toHaveBeenCalledWith(
@@ -339,7 +339,7 @@ describe('route CollectiveOffers', () => {
         offersRecap
       )
       await renderOffers(store)
-      screen.getByText('Lancer la recherche')
+      screen.getByText('Rechercher')
       const individualAudienceLink = screen.getByText('Offres individuelles', {
         selector: 'span',
       })

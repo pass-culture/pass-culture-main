@@ -131,7 +131,7 @@ describe('route CollectiveOffers', () => {
       it('should display only selectable categories eligible for EAC on filters', async () => {
         // When
         await renderOffers(store)
-        screen.getByText('Lancer la recherche')
+        screen.getByText('Rechercher')
 
         // Then
         expect(
@@ -232,7 +232,7 @@ describe('route CollectiveOffers', () => {
               ALL_VENUES
             )
             // When
-            await userEvent.click(screen.getByText('Lancer la recherche'))
+            await userEvent.click(screen.getByText('Rechercher'))
             // Then
             expect(
               screen.getByRole('button', {
@@ -267,7 +267,7 @@ describe('route CollectiveOffers', () => {
               ALL_VENUES
             )
             // When
-            await userEvent.click(screen.getByText('Lancer la recherche'))
+            await userEvent.click(screen.getByText('Rechercher'))
             // Then
             expect(
               screen.getByRole('button', {
@@ -391,7 +391,7 @@ describe('route CollectiveOffers', () => {
             'Any word'
           )
           // When
-          await userEvent.click(screen.getByText('Lancer la recherche'))
+          await userEvent.click(screen.getByText('Rechercher'))
           // Then
           expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             'Any word',
@@ -415,7 +415,7 @@ describe('route CollectiveOffers', () => {
           )
           // When
           await userEvent.type(searchInput, 'search string')
-          await userEvent.click(screen.getByText('Lancer la recherche'))
+          await userEvent.click(screen.getByText('Rechercher'))
           // Then
           expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             'search string',
@@ -440,7 +440,7 @@ describe('route CollectiveOffers', () => {
           const venueSelect = screen.getByLabelText('Lieu')
           await userEvent.selectOptions(venueSelect, firstVenueOption)
           // When
-          await userEvent.click(screen.getByText('Lancer la recherche'))
+          await userEvent.click(screen.getByText('Rechercher'))
           // Then
           expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             undefined,
@@ -467,7 +467,7 @@ describe('route CollectiveOffers', () => {
           )
           await userEvent.selectOptions(typeSelect, firstTypeOption)
           // When
-          await userEvent.click(screen.getByText('Lancer la recherche'))
+          await userEvent.click(screen.getByText('Rechercher'))
           // Then
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
@@ -491,7 +491,7 @@ describe('route CollectiveOffers', () => {
             '2020-12-25'
           )
 
-          await userEvent.click(screen.getByText('Lancer la recherche'))
+          await userEvent.click(screen.getByText('Rechercher'))
 
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
@@ -514,7 +514,7 @@ describe('route CollectiveOffers', () => {
             '2020-12-27'
           )
 
-          await userEvent.click(screen.getByText('Lancer la recherche'))
+          await userEvent.click(screen.getByText('Rechercher'))
 
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
@@ -536,7 +536,7 @@ describe('route CollectiveOffers', () => {
           const offerTypeSelect = screen.getByLabelText('Type de l’offre')
           await userEvent.selectOptions(offerTypeSelect, 'template')
           // When
-          await userEvent.click(screen.getByText('Lancer la recherche'))
+          await userEvent.click(screen.getByText('Rechercher'))
           // Then
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
@@ -661,7 +661,7 @@ describe('route CollectiveOffers', () => {
         undefined
       )
 
-      await userEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.click(screen.getByText('Rechercher'))
 
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(2)
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
@@ -729,7 +729,7 @@ describe('route CollectiveOffers', () => {
         undefined
       )
 
-      await userEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.click(screen.getByText('Rechercher'))
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(2)
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         2,
