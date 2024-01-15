@@ -113,7 +113,6 @@ def create_offers_with_gtl_id(gtl_id: str, size_per_gtl: int, venue: offerers_mo
         description=product.description,
         size=size_per_gtl,
         venue=venue,
-        extraData={"gtl_id": gtl_id, "author": Fake.name(), "ean": ean, "editeur": Fake.name()},
     )
     for offer in offers:
         offers_factories.StockFactory(offer=offer)
@@ -148,10 +147,6 @@ def create_offers_with_same_ean() -> None:
                     city=venue_data["city"],
                     departementCode=venue_data["departementCode"],
                 ),
-                extraData={
-                    "ean": ean,
-                    "author": author,
-                },
             )
         )
         for offer in offers:
@@ -174,7 +169,6 @@ def create_offer_with_ean(ean: str, venue: offerers_models.Venue, author: str) -
         name=product.name,
         subcategoryId=product.subcategoryId,
         description=product.description,
-        extraData={"ean": ean, "author": author},
         venue=venue,
     )
     offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
@@ -303,7 +297,6 @@ def create_book_in_multiple_venues(venues: list[offerers_models.Venue]) -> None:
             name=product.name,
             description=product.description,
             subcategoryId=product.subcategoryId,
-            extraData={"ean": ean, "author": author},
             venue=venue,
         )
         offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
@@ -325,7 +318,6 @@ def create_books_with_the_same_author_duplicated_in_multiple_venues(venues: list
                 name=product.name,
                 subcategoryId=product.subcategoryId,
                 description=product.description,
-                extraData={"ean": ean, "author": author},
                 venue=venue,
             )
             offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
@@ -342,7 +334,6 @@ def create_books_with_the_same_author_duplicated_in_multiple_venues(venues: list
             name=product.name,
             subcategoryId=product.subcategoryId,
             description=product.description,
-            extraData={"ean": ean, "author": author},
             venue=venues[3],
         )
         offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
@@ -362,7 +353,6 @@ def create_multiauthors_books(venues: list[offerers_models.Venue]) -> None:
         name=product.name,
         subcategoryId=product.subcategoryId,
         description=product.description,
-        extraData={"ean": ean, "author": ", ".join(authors)},
         venue=venues[0],
     )
     offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
@@ -371,7 +361,6 @@ def create_multiauthors_books(venues: list[offerers_models.Venue]) -> None:
         for _ in range(4):
             create_offer_with_ean(Fake.ean13(), random.choice(venues), author=author)
 
-    # author "collectif"
     author = "collectif"
     for _ in range(3):
         create_offer_with_ean(Fake.ean13(), random.choice(venues), author=author)
