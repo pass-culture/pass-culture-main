@@ -453,25 +453,23 @@ def uncancel_collective_booking(
     )
 
 
-def notify_reimburse_collective_booking(booking_id: int, reason: str, value: float, details: str) -> None:
-    booking = educational_repository.find_collective_booking_by_id(booking_id)
-    if not booking:
-        print(f"Collective booking {booking_id} not found")
-        return
-    price = booking.collectiveStock.price
-    if value > price:
-        print(f"Collective booking {booking_id} is priced at {price}. We cannot reimburse more than that.")
-        return
+def notify_reimburse_collective_booking(
+    collective_booking: educational_models.CollectiveBooking, reason: str, value: float | None = None, details: str = ""
+) -> None:
+    price = collective_booking.collectiveStock.price
     value = value or price
+    if value > price:
+        raise ValueError(
+            f"Collective booking {collective_booking.id} is priced at {price}. We cannot reimburse more than that."
+        )
     adage_client.notify_reimburse_collective_booking(
         data=serialize_reibursement_notification(
-            collective_booking=booking,
+            collective_booking=collective_booking,
             reason=reason,
             value=value,
             details=details,
         ),
     )
-    return
 
 
 def update_collective_bookings_for_new_institution(
