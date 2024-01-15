@@ -26,10 +26,14 @@ $action-gap: rem.torem(10px);
   background: colors.$primary;
   cursor: pointer;
 
-  &:hover,
-  &:focus {
+  &:hover {
     background-color: colors.$primary-dark;
     border-color: colors.$primary-dark;
+  }
+
+  &:focus-visible {
+    outline: rem.torem(1px) solid colors.$input-text-color;
+    outline-offset: rem.torem(2px);
   }
 
   @include fonts.button;
@@ -85,8 +89,7 @@ $action-gap: rem.torem(10px);
         background: colors.$white;
         color: colors.$primary;
 
-        &:hover,
-        &:focus {
+        &:hover {
           color: colors.$white;
           background-color: colors.$primary-dark;
           border-color: colors.$primary-dark;
@@ -141,8 +144,7 @@ $action-gap: rem.torem(10px);
       pointer-events: none;
     }
 
-    &:hover,
-    &:focus {
+    &:hover {
       color: colors.$white;
       background-color: colors.$primary-dark;
       border-color: colors.$primary-dark;
@@ -164,8 +166,8 @@ $action-gap: rem.torem(10px);
       }
     }
 
-    &-input:focus + .orejime-AppItem-label .orejime-AppItem-slider {
-      border-color: colors.$primary-dark;
+    &-input:focus-visible + .orejime-AppItem-label .orejime-AppItem-slider {
+      outline: rem.torem(1px) solid colors.$input-text-color;
       outline-offset: 0;
     }
 
