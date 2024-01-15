@@ -13,6 +13,7 @@ from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.educational.api.adage import synchronize_adage_ids_on_venues
 from pcapi.core.educational.api.dms import import_dms_applications
 import pcapi.core.educational.api.institution as institution_api
+import pcapi.core.educational.api.playlists as playlists_api
 import pcapi.core.educational.models as educational_models
 from pcapi.core.educational.utils import create_adage_jwt_fake_valid_token
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
@@ -197,3 +198,9 @@ def notify_reimburse_collective_booking(booking_id: int, reason: str, value: flo
 @log_cron_with_transaction
 def synchronise_rurality_level() -> None:
     institution_api.synchronise_rurality_level()
+
+
+@blueprint.cli.command("synchronise_collective_playlists")
+@log_cron_with_transaction
+def synchronise_collective_playlists() -> None:
+    playlists_api.synchronize_classroom_playlists()
