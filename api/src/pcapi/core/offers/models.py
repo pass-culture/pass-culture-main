@@ -33,7 +33,6 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import ValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
-from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
 
 
 logger = logging.getLogger(__name__)
@@ -167,7 +166,7 @@ class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Deactivab
     thumb_path_component = "mediations"
 
 
-class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
+class Stock(PcObject, Base, Model, ProvidableMixin):
     __tablename__ = "stock"
 
     MAX_STOCK_QUANTITY = 1_000_000
@@ -180,19 +179,20 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     )
     dateModified: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
     dnBookedQuantity: int = sa.Column(sa.BigInteger, nullable=False, server_default=sa.text("0"))
+    features: list[str] = sa.Column(postgresql.ARRAY(sa.Text), nullable=False, server_default=sa.text("'{}'::text[]"))
+    isSoftDeleted: bool = sa.Column(sa.Boolean, nullable=False, default=False, server_default=sa.sql.expression.false())
     offer: sa_orm.Mapped["Offer"] = sa.orm.relationship("Offer", backref="stocks")
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
     price: decimal.Decimal = sa.Column(
         sa.Numeric(10, 2), sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False
     )
+    priceCategory: sa_orm.Mapped["PriceCategory | None"] = sa.orm.relationship("PriceCategory", back_populates="stocks")
     priceCategoryId: int | None = sa.Column(
         sa.BigInteger, sa.ForeignKey("price_category.id"), index=True, nullable=True
     )
-    priceCategory: sa_orm.Mapped["PriceCategory | None"] = sa.orm.relationship("PriceCategory", back_populates="stocks")
     quantity: int | None = sa.Column(sa.Integer, nullable=True)
     # FIXME: mageoffray (2024-01-05) : remove this column when Provider API is not used anymore
     rawProviderQuantity = sa.Column(sa.Integer, nullable=True)
-    features: list[str] = sa.Column(postgresql.ARRAY(sa.Text), nullable=False, server_default=sa.text("'{}'::text[]"))
 
     __table_args__ = (
         sa.Index(

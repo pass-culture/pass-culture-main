@@ -7,6 +7,7 @@ from datetime import datetime
 from decimal import Decimal
 import enum
 from operator import attrgetter
+import secrets
 import typing
 from uuid import UUID
 
@@ -30,7 +31,6 @@ from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
-from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import crypto
@@ -178,11 +178,14 @@ class AccountState(enum.Enum):
         return self == AccountState.DELETED
 
 
-class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
+class User(PcObject, Base, Model, DeactivableMixin):
     __tablename__ = "user"
 
     activity = sa.Column(sa.String(128), nullable=True)
     address = sa.Column(sa.Text, nullable=True)
+    backoffice_profile: orm.Mapped["BackOfficeUserProfile"] = orm.relationship(
+        "BackOfficeUserProfile", uselist=False, back_populates="user"
+    )
     city = sa.Column(sa.String(100), nullable=True)
     civility = sa.Column(sa.VARCHAR(length=20), nullable=True)
     clearTextPassword = None
@@ -220,6 +223,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     _phoneNumber = sa.Column(sa.String(20), nullable=True, index=True, name="phoneNumber")
     phoneValidationStatus = sa.Column(sa.Enum(PhoneValidationStatusType, create_constraint=False), nullable=True)
     postalCode = sa.Column(sa.String(5), nullable=True)
+    pro_flags: UserProFlags = orm.relationship("UserProFlags", back_populates="user", uselist=False)
     recreditAmountToShow = sa.Column(sa.Numeric(10, 2), nullable=True)
     UserOfferers: list["UserOfferer"] = orm.relationship("UserOfferer", back_populates="user")
     roles: list[UserRole] = sa.Column(
@@ -232,11 +236,9 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     login_device_history: list["LoginDeviceHistory"] = orm.relationship("LoginDeviceHistory", back_populates="user")
     single_sign_ons: list["SingleSignOn"] = orm.relationship("SingleSignOn", back_populates="user")
     validatedBirthDate = sa.Column(sa.Date, nullable=True)  # validated by an Identity Provider
-    backoffice_profile: orm.Mapped["BackOfficeUserProfile"] = orm.relationship(
-        "BackOfficeUserProfile", uselist=False, back_populates="user"
-    )
+    validationToken = sa.Column(sa.String(27), unique=True, nullable=True)
+
     sa.Index("ix_user_validatedBirthDate", validatedBirthDate)
-    pro_flags: UserProFlags = orm.relationship("UserProFlags", back_populates="user", uselist=False)
 
     def __init__(self, **kwargs: typing.Any) -> None:
         kwargs.setdefault("roles", [])
@@ -318,6 +320,17 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     @property
     def is_anonymous(self) -> bool:  # required by flask-login
         return False
+
+    @hybrid_property
+    def isValidated(self) -> bool:
+        return self.validationToken is None
+
+    @isValidated.expression  # type: ignore [no-redef]
+    def isValidated(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+        return cls.validationToken.is_(None)
+
+    def generate_validation_token(self) -> None:
+        self.validationToken = secrets.token_urlsafe(20)
 
     def get_id(self) -> str:  # required by flask-login
         return str(self.id)
