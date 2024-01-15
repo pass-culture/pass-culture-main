@@ -38,7 +38,7 @@ jobs:
       - name: "Get changed files"
         id: "files"
         if: ${{ inputs.TRIGGER_ONLY_ON_DEPENDENCY_CHANGE }}
-        uses: jitterbit/get-changed-files@v1
+        uses: Ana06/get-changed-files@v1.2
       - name: "Check if dependencies changed"
         id: check-dependency-change
         run: |
