@@ -66,6 +66,7 @@ class GetOffererTest:
             "hasDigitalVenueAtLeastOneOffer": False,
             "hasValidBankAccount": False,
             "hasPendingBankAccount": False,
+            "hasActiveOffer": False,
             "venuesWithNonFreeOffersWithoutBankAccounts": [],
             "hasNonFreeOffer": False,
             "isActive": offerer.isActive,
