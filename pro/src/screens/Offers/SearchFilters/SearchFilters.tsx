@@ -246,9 +246,7 @@ const SearchFilters = ({
         </div>
         <div className={styles['search-separator']}>
           <div className={styles['separator']} />
-          <SubmitButton disabled={disableAllFilters}>
-            Lancer la recherche
-          </SubmitButton>
+          <SubmitButton disabled={disableAllFilters}>Rechercher</SubmitButton>
           <div className={styles['separator']} />
         </div>
       </form>

@@ -1,7 +1,7 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { ListOffersOfferResponseModel, OfferStatus } from 'apiClient/v1'
@@ -244,7 +244,7 @@ describe('route Offers', () => {
               ALL_VENUES
             )
 
-            await userEvent.click(screen.getByText('Lancer la recherche'))
+            await userEvent.click(screen.getByText('Rechercher'))
 
             expect(
               screen.getByRole('button', {
@@ -276,7 +276,7 @@ describe('route Offers', () => {
               ALL_VENUES
             )
 
-            await userEvent.click(screen.getByText('Lancer la recherche'))
+            await userEvent.click(screen.getByText('Rechercher'))
 
             expect(
               screen.getByRole('button', {
@@ -399,7 +399,7 @@ describe('route Offers', () => {
             'Any word'
           )
 
-          await userEvent.click(screen.getByText('Lancer la recherche'))
+          await userEvent.click(screen.getByText('Rechercher'))
 
           expect(api.listOffers).toHaveBeenCalledWith(
             'Any word',
@@ -421,7 +421,7 @@ describe('route Offers', () => {
           const venueSelect = screen.getByLabelText('Lieu')
           await userEvent.selectOptions(venueSelect, firstVenueOption)
 
-          await userEvent.click(screen.getByText('Lancer la recherche'))
+          await userEvent.click(screen.getByText('Rechercher'))
 
           expect(api.listOffers).toHaveBeenCalledWith(
             undefined,
@@ -445,7 +445,7 @@ describe('route Offers', () => {
           )
           await userEvent.selectOptions(typeSelect, firstTypeOption)
 
-          await userEvent.click(screen.getByText('Lancer la recherche'))
+          await userEvent.click(screen.getByText('Rechercher'))
 
           expect(api.listOffers).toHaveBeenLastCalledWith(
             undefined,
@@ -468,7 +468,7 @@ describe('route Offers', () => {
             String(importedCreationMode)
           )
 
-          await userEvent.click(screen.getByText('Lancer la recherche'))
+          await userEvent.click(screen.getByText('Rechercher'))
 
           expect(api.listOffers).toHaveBeenLastCalledWith(
             undefined,
@@ -490,7 +490,7 @@ describe('route Offers', () => {
             '2020-12-25'
           )
 
-          await userEvent.click(screen.getByText('Lancer la recherche'))
+          await userEvent.click(screen.getByText('Rechercher'))
 
           expect(api.listOffers).toHaveBeenLastCalledWith(
             undefined,
@@ -511,7 +511,7 @@ describe('route Offers', () => {
             screen.getByLabelText('Fin de la période'),
             '2020-12-27'
           )
-          await userEvent.click(screen.getByText('Lancer la recherche'))
+          await userEvent.click(screen.getByText('Rechercher'))
 
           expect(api.listOffers).toHaveBeenLastCalledWith(
             undefined,
@@ -549,7 +549,7 @@ describe('route Offers', () => {
       )
 
       await userEvent.type(searchInput, 'search string')
-      await userEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.click(screen.getByText('Rechercher'))
 
       expect(api.listOffers).toHaveBeenCalledWith(
         'search string',
@@ -569,7 +569,7 @@ describe('route Offers', () => {
       await userEvent.clear(
         screen.getByPlaceholderText('Rechercher par nom d’offre ou par EAN-13')
       )
-      await userEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.click(screen.getByText('Rechercher'))
 
       expect(api.listOffers).toHaveBeenCalledWith(
         undefined,
@@ -591,7 +591,7 @@ describe('route Offers', () => {
       const venueSelect = screen.getByLabelText('Lieu')
 
       await userEvent.selectOptions(venueSelect, firstVenueOption)
-      await userEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.click(screen.getByText('Rechercher'))
 
       expect(api.listOffers).toHaveBeenCalledWith(
         undefined,
@@ -624,7 +624,7 @@ describe('route Offers', () => {
       const typeSelect = screen.getByDisplayValue(ALL_CATEGORIES_OPTION.label)
 
       await userEvent.selectOptions(typeSelect, firstTypeOption)
-      await userEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.click(screen.getByText('Rechercher'))
 
       expect(api.listOffers).toHaveBeenCalledWith(
         undefined,
@@ -734,7 +734,7 @@ describe('route Offers', () => {
       await renderOffers(store)
 
       await userEvent.selectOptions(screen.getByDisplayValue('Tous'), 'manual')
-      await userEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.click(screen.getByText('Rechercher'))
 
       expect(api.listOffers).toHaveBeenCalledWith(
         undefined,
@@ -750,7 +750,7 @@ describe('route Offers', () => {
 
     it('should have creation mode value be removed when user ask for all creation modes', async () => {
       await renderOffers(store)
-      const searchButton = screen.getByText('Lancer la recherche')
+      const searchButton = screen.getByText('Rechercher')
       await userEvent.selectOptions(screen.getByDisplayValue('Tous'), 'manual')
       await userEvent.click(searchButton)
 
@@ -777,7 +777,7 @@ describe('route Offers', () => {
     it('should redirect to collective offers when user click on collective offer link', async () => {
       vi.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
       await renderOffers(store)
-      screen.getByText('Lancer la recherche')
+      screen.getByText('Rechercher')
       const collectiveAudienceLink = screen.getByText('Offres collectives', {
         selector: 'span',
       })
@@ -866,7 +866,7 @@ describe('route Offers', () => {
       const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.label)
 
       await userEvent.selectOptions(venueSelect, firstVenueOption)
-      await userEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.click(screen.getByText('Rechercher'))
 
       expect(api.listOffers).toHaveBeenCalledTimes(1)
       expect(api.listOffers).toHaveBeenNthCalledWith(
@@ -913,7 +913,7 @@ describe('route Offers', () => {
       const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.label)
 
       await userEvent.selectOptions(venueSelect, venueOptionToSelect)
-      await userEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.click(screen.getByText('Rechercher'))
 
       expect(api.listOffers).toHaveBeenCalledTimes(1)
       expect(api.listOffers).toHaveBeenNthCalledWith(
