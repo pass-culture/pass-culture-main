@@ -333,3 +333,12 @@ class EducationalInstitutionProgramFactory(BaseFactory):
     # constraint error.
     id = factory.Sequence(lambda n: n + 1_000)
     name = factory.Sequence("Program {}".format)
+
+
+class PlaylistFactory(BaseFactory):
+    class Meta:
+        model = models.CollectivePlaylist
+
+    type = models.PlaylistType.CLASSROOM
+    institution = factory.SubFactory(EducationalInstitutionFactory)
+    collective_offer_template = factory.SubFactory(CollectiveOfferTemplateFactory)
