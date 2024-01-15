@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { RouteObject, useLoaderData, useSearchParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -84,6 +84,7 @@ export const Homepage = (): JSX.Element => {
             isActive: false,
             isValidated: false,
             managedVenues: [],
+            hasActiveOffer: false,
             name: '',
             id: Number(offererId) ?? 0,
             postalCode: '',
@@ -123,7 +124,7 @@ export const Homepage = (): JSX.Element => {
         <PendingBankAccountCallout offerer={selectedOfferer} />
       </div>
 
-      {selectedOfferer !== null && (
+      {selectedOfferer?.isValidated && selectedOfferer?.isActive && (
         <>
           <OffererBanners
             isUserOffererValidated={isUserOffererValidated}

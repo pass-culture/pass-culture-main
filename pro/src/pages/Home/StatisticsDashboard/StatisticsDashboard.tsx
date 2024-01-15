@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import { format } from 'date-fns'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import {
@@ -40,10 +40,6 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadStats()
   }, [offerer.id])
-
-  const hasAtLeastOneOffer = Boolean(
-    offerer.managedVenues?.some((venue) => venue.hasCreatedOffer)
-  )
 
   return (
     <>
@@ -90,7 +86,7 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
                 width="42"
               />
 
-              {hasAtLeastOneOffer
+              {offerer.hasActiveOffer
                 ? 'Les statistiques de consultation de vos offres seront bientôt disponibles.'
                 : 'Créez vos premières offres grand public pour être visible par les bénéficiaires'}
             </div>
