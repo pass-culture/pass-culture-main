@@ -115,7 +115,7 @@
                       type="button">
                 <i class="bi bi-trash3-fill"></i>
               </button>
-              {{ build_lazy_modal(url_for("backoffice_web.venue.get_remove_siret_form", venue_id=venue.id), "remove-venue-siret") }}
+              {{ build_lazy_modal(url_for("backoffice_web.venue.get_remove_siret_form", venue_id=venue.id) , "remove-venue-siret") }}
             {% endif %}
           </p>
           <div class="row pt-3">
@@ -337,12 +337,20 @@
                 </a>
               </p>
               <p class="mb-1">
+                <span class="fw-bold">Offres BO :</span>
                 <a href="{{ url_for("backoffice_web.offer.list_offers", **{"search-0-search_field": "VENUE",  "search-0-venue": venue.id, "search-0-operator": "IN"}) }}"
-                   class="fw-bold link-primary">Offres BO</a>
+                   class="link-primary">individuelles</a> |
+                <a href="{{ url_for("backoffice_web.collective_offer.list_collective_offers", venue=venue.id) }}"
+                   class="link-primary">collectives</a> |
+                <a href="{{ url_for("backoffice_web.collective_offer_template.list_collective_offer_templates", venue=venue.id) }}"
+                   class="link-primary">vitrine</a>
               </p>
               <p class="mb-1">
+                <span class="fw-bold">Réservations BO :</span>
                 <a href="{{ url_for("backoffice_web.individual_bookings.list_individual_bookings", venue=venue.id) }}"
-                   class="fw-bold link-primary">Réservations BO</a>
+                   class="link-primary">individuelles</a> |
+                <a href="{{ url_for("backoffice_web.collective_bookings.list_collective_bookings", venue=venue.id) }}"
+                   class="link-primary">collectives</a>
               </p>
               <div>
                 {% if zendesk_sell_synchronisation_form %}
