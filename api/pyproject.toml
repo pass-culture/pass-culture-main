@@ -36,7 +36,6 @@ google-cloud-bigquery = "3.16.0"
 gql = {extras = ["requests"], version = "^3.5.0"}
 gunicorn = "20.0.4"
 ipaddress = "^1.0.23"
-itsdangerous = "2.1.2"
 jinja2 = "3.0.3"
 markupsafe = "2.1.3"
 notion-client = "1.0.0"
