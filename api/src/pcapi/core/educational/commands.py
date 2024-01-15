@@ -164,22 +164,26 @@ def import_eac_dms_application(ignore_previous: bool = False) -> None:
 @click.option(
     "--reason",
     type=click.Choice(("MISSING_PEOPLE", "MISSING_DATE", "NO_EVENT"), case_sensitive=False),
-    help="Reason of the reibursement.",
+    help="Reason of the reimbursement.",
     required=True,
 )
 @click.option(
     "--value",
     type=float,
-    default=0.0,
-    help="Value reimbursed. It must be lower than the booking value. If omited it is set to the booking's value.",
+    default=None,
+    help="Value reimbursed. It must be lower than the booking value. If omitted it is set to the booking value.",
 )
 @click.option(
     "--details",
     type=str,
     default="",
-    help="Free text with details about the reibursement.",
+    help="Free text with details about the reimbursement.",
 )
 def notify_reimburse_collective_booking(booking_id: int, reason: str, value: float, details: str) -> None:
+    collective_booking = educational_repository.find_collective_booking_by_id(booking_id)
+    if not collective_booking:
+        print(f"Collective booking {booking_id} not found")
+        return
     educational_api_booking.notify_reimburse_collective_booking(
-        booking_id=booking_id, reason=reason.upper(), value=value, details=details
+        collective_booking=collective_booking, reason=reason.upper(), value=value, details=details
     )

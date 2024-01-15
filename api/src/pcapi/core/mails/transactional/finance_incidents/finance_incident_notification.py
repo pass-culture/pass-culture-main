@@ -6,13 +6,14 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.offers import models as offers_models
 
 
-def send_finance_incident_emails(
-    finance_incident: finance_models.FinanceIncident,
-) -> bool:
+def send_finance_incident_emails(finance_incident: finance_models.FinanceIncident) -> None:
     venue = finance_incident.venue
 
     if not venue.current_reimbursement_point or not venue.current_reimbursement_point.bookingEmail:
-        return True
+        return
+
+    if finance_incident.forceDebitNote:
+        return
 
     offers = set()
     for booking_finance_incident in finance_incident.booking_finance_incidents:
@@ -43,5 +44,3 @@ def send_finance_incident_emails(
             recipients=[venue.current_reimbursement_point.bookingEmail],
             data=data,
         )
-
-    return True
