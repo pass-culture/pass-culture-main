@@ -1223,6 +1223,57 @@ def test_generate_reimbursement_points_file():
 
 
 @clean_temporary_files
+def test_generate_bank_accounts_file():
+    now = datetime.datetime.utcnow()
+    offerer = offerers_factories.OffererFactory(name="Nom de la structure")
+    venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer)
+    venue_2 = offerers_factories.VenueFactory(
+        name='Name1\n "with double quotes"   ', siret='siret 1 "t"', managingOfferer=offerer
+    )
+    venue_3 = offerers_factories.VenueFactory(managingOfferer=offerer)
+    bank_account_1 = factories.BankAccountFactory(
+        label="old-label", iban="older-iban", bic="older-bic", offerer=offerer
+    )
+    bank_account_2 = factories.BankAccountFactory(label="some-label", iban="some-iban", bic="some-bic", offerer=offerer)
+    bank_account_3 = factories.BankAccountFactory(
+        label="newer-label", iban="newer-iban", bic="newer-bic", offerer=offerer
+    )
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue_1,
+        bankAccount=bank_account_1,
+        timespan=[now - datetime.timedelta(days=30), now - datetime.timedelta(days=3)],
+    )
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue_2,
+        bankAccount=bank_account_2,
+        timespan=[now - datetime.timedelta(days=3), now - datetime.timedelta(days=1)],
+    )
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue_3,
+        bankAccount=bank_account_3,
+        timespan=[
+            now - datetime.timedelta(days=1),
+        ],
+    )
+
+    n_queries = 1  # select reimbursement point data
+    with assert_num_queries(n_queries):
+        path = api._generate_bank_accounts_file(datetime.datetime.utcnow() - datetime.timedelta(days=2))
+
+    with path.open(encoding="utf-8") as fp:
+        reader = csv.DictReader(fp, quoting=csv.QUOTE_NONNUMERIC)
+        rows = list(reader)
+    assert len(rows) == 1
+    assert rows[0] == {
+        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_2.id),
+        "SIRET": "siret 1 t",
+        "Nom de la structure - Libellé des coordonnées bancaires": "Nom de la structure - some-label",
+        "IBAN": "some-iban",
+        "BIC": "some-bic",
+    }
+
+
+@clean_temporary_files
 def test_generate_payments_file():
     used_date = datetime.datetime(2020, 1, 2)
     # This pricing belongs to a reimbursement point that is the venue

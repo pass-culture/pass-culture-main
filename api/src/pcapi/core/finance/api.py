@@ -68,6 +68,7 @@ import pcapi.core.users.constants as users_constants
 import pcapi.core.users.models as users_models
 from pcapi.domain import reimbursement
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
 from pcapi.tasks import finance_tasks
 from pcapi.utils import human_ids
@@ -1043,6 +1044,7 @@ def generate_payment_files(batch: models.CashflowBatch) -> None:
     """Generate all payment files that are related to the requested
     CashflowBatch and mark all related Cashflow as ``UNDER_REVIEW``.
     """
+    is_new_bank_account_journey_active = FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active()
     logger.info("Generating payment files")
     not_pending_cashflows = models.Cashflow.query.filter(
         models.Cashflow.batchId == batch.id,
@@ -1055,8 +1057,13 @@ def generate_payment_files(batch: models.CashflowBatch) -> None:
         )
 
     file_paths = {}
-    logger.info("Generating reimbursement points file")
-    file_paths["reimbursement_points"] = _generate_reimbursement_points_file(batch.cutoff)
+    if is_new_bank_account_journey_active:
+        logger.info("Generating bank accounts file")
+        file_paths["bank_accounts"] = _generate_bank_accounts_file(batch.cutoff)
+    else:
+        logger.info("Generating reimbursement points file")
+        file_paths["reimbursement_points"] = _generate_reimbursement_points_file(batch.cutoff)
+
     logger.info("Generating payments file")
     file_paths["payments"] = _generate_payments_file(batch.id)
     logger.info(
@@ -1199,6 +1206,44 @@ def _generate_reimbursement_points_file(cutoff: datetime.datetime) -> pathlib.Pa
         _clean_for_accounting(row.bic),
     )
     return _write_csv("reimbursement_points", header, rows=query, row_formatter=row_formatter)
+
+
+def _generate_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
+    header = (
+        "Identifiant des coordonnées bancaires",
+        "SIRET",
+        "Nom de la structure - Libellé des coordonnées bancaires",
+        "IBAN",
+        "BIC",
+    )
+    query = (
+        offerers_models.Venue.query.join(
+            offerers_models.VenueBankAccountLink,
+            sqla.and_(
+                offerers_models.Venue.id == offerers_models.VenueBankAccountLink.venueId,
+                offerers_models.VenueBankAccountLink.timespan.contains(cutoff),
+            ),
+        )
+        .join(models.BankAccount, offerers_models.VenueBankAccountLink.bankAccountId == models.BankAccount.id)
+        .join(offerers_models.Venue.managingOfferer)
+        .order_by(offerers_models.Venue.id)
+        .with_entities(
+            models.BankAccount.id,
+            offerers_models.Venue.siret,
+            offerers_models.Offerer.name,
+            models.BankAccount.label.label("label"),
+            models.BankAccount.iban.label("iban"),
+            models.BankAccount.bic.label("bic"),
+        )
+    )
+    row_formatter = lambda row: (
+        human_ids.humanize(row.id),
+        _clean_for_accounting(row.siret),
+        _clean_for_accounting(f"{row.name} - {row.label}"),
+        _clean_for_accounting(row.iban),
+        _clean_for_accounting(row.bic),
+    )
+    return _write_csv("bank_accounts", header, rows=query, row_formatter=row_formatter)
 
 
 def _clean_for_accounting(value: str) -> str:
