@@ -265,9 +265,10 @@ class DigitalOffersTestSendinblue:
 
     def test_hide_cancellation_policy_on_bookings_with_activation_code_sendinblue(self):
         offer = offers_factories.OfferFactory(
+            name="Super offre numérique",
+            url="http://example.com",
             venue__name="Lieu de l'offreur",
             venue__managingOfferer__name="Théâtre du coin",
-            product=offers_factories.DigitalProductFactory(name="Super offre numérique", url="http://example.com"),
         )
         digital_stock = offers_factories.StockWithActivationCodesFactory()
         first_activation_code = digital_stock.activationCodes[0]

@@ -30,7 +30,7 @@ def create_industrial_thing_products() -> dict[str, offers_models.Product]:
 
     thing_products_by_name = {}
 
-    thing_subcategories = [s for s in subcategories_v2.ALL_SUBCATEGORIES if not s.is_event]
+    thing_subcategories = [s for s in subcategories_v2.ALL_SUBCATEGORIES if not s.is_event and s.is_selectable]
 
     id_at_providers = 1234
     provider = providers_factories.PublicApiProviderFactory(name="ThingMusicProvider")
@@ -41,18 +41,14 @@ def create_industrial_thing_products() -> dict[str, offers_models.Product]:
             mock_index = (product_creation_counter + thing_subcategories_list_index) % len(MOCK_NAMES)
 
             name = "{} / {}".format(thing_subcategory.id, MOCK_NAMES[mock_index])
-            is_online_only = thing_subcategory.is_online_only
-            url = "https://ilestencoretemps.fr/" if is_online_only else None
 
             thing_product = offers_factories.ProductFactory(
                 lastProvider=provider,
                 extraData={"author": MOCK_AUTHOR_NAMES[mock_index]},
                 description=MOCK_DESCRIPTIONS[mock_index],
                 idAtProviders=str(id_at_providers),
-                isNational=is_online_only,
                 name=MOCK_NAMES[mock_index],
                 subcategoryId=thing_subcategory.id,
-                url=url,
             )
 
             extraData = {}

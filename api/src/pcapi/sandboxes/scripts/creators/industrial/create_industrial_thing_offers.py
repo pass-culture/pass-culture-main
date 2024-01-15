@@ -55,7 +55,7 @@ def create_industrial_thing_offers(
                 venue=thing_venue,
                 subcategoryId=thing_product.subcategoryId,
                 isActive=is_active,
-                url="http://example.com" if thing_product.isDigital else None,
+                url="http://example.com" if thing_product.subcategory.is_online_only else "",
                 idAtProvider=str(id_at_provider),
                 extraData=thing_product.extraData,
             )

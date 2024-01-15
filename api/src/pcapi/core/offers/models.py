@@ -129,7 +129,6 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     durationMinutes = sa.Column(sa.Integer, nullable=True)
     extraData: OfferExtraData | None = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
     isGcuCompatible: bool = sa.Column(sa.Boolean, default=True, server_default=sa.true(), nullable=False)
-    isNational: bool = sa.Column(sa.Boolean, server_default=sa.false(), default=False, nullable=False)
     isSynchronizationCompatible: bool = sa.Column(sa.Boolean, default=True, server_default=sa.true(), nullable=False)
     last_30_days_booking = sa.Column(sa.Integer, nullable=True)
     name: str = sa.Column(sa.String(140), nullable=False)
@@ -137,7 +136,6 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     owningOffererId = sa.Column(sa.Integer, sa.ForeignKey("offerer.id"), nullable=True)
     subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
     thumb_path_component = "products"
-    url = sa.Column(sa.String(255), nullable=True)
 
     sa.Index("product_ean_idx", extraData["ean"].astext)
     sa.Index("product_allocineId_idx", extraData["allocineId"].cast(sa.Integer))
@@ -147,10 +145,6 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
         if self.subcategoryId not in subcategories_v2.ALL_SUBCATEGORIES_DICT:
             raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for product {self.id}")
         return subcategories_v2.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
-
-    @property
-    def isDigital(self) -> bool:
-        return self.url is not None and self.url != ""
 
     @hybrid_property
     def can_be_synchronized(self) -> bool:

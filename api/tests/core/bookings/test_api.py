@@ -254,7 +254,7 @@ class BookOfferTest:
         assert event.motive == finance_models.FinanceEventMotive.BOOKING_USED
 
     def test_booking_on_digital_offer_without_activation_stock(self):
-        offer = offers_factories.OfferFactory(product=offers_factories.DigitalProductFactory())
+        offer = offers_factories.DigitalOfferFactory()
         stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5, offer=offer)
         beneficiary = users_factories.BeneficiaryGrant18Factory()
 
@@ -1365,7 +1365,7 @@ class MarkAsUnusedTest:
         assert len(push_testing.requests) == 2
 
     def test_mark_as_unused_digital_offer(self):
-        offer = offers_factories.OfferFactory(product=offers_factories.DigitalProductFactory())
+        offer = offers_factories.DigitalOfferFactory()
         booking = bookings_factories.UsedBookingFactory(stock__offer=offer)
         api.mark_as_unused(booking)
         assert booking.status is not BookingStatus.USED

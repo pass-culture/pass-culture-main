@@ -10,7 +10,6 @@ import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as providers_models
 from pcapi.local_providers.local_provider import _upload_thumb
 from pcapi.local_providers.providable_info import ProvidableInfo
-from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 
@@ -189,24 +188,6 @@ class CreateObjectTest:
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert product.lastProviderId == provider.id
 
-    def test_raises_api_errors_exception_when_errors_occur_on_model_and_log_error(self):
-        # Given
-        providers_factories.AllocineProviderFactory(localClass="TestLocalProviderWithApiErrors")
-        providable_info = ProvidableInfo()
-        local_provider = provider_test_utils.TestLocalProviderWithApiErrors()
-
-        # When
-        with pytest.raises(ApiErrors) as api_errors:
-            local_provider._create_object(providable_info)
-
-        # Then
-        assert api_errors.value.errors["url"] == [
-            "Un produit de sous-catégorie ACHAT_INSTRUMENT ne peut pas être numérique"
-        ]
-        assert offers_models.Product.query.count() == 0
-        provider_event = providers_models.LocalProviderEvent.query.one()
-        assert provider_event.type == providers_models.LocalProviderEventType.SyncError
-
 
 @pytest.mark.usefixtures("db_session")
 class HandleUpdateTest:
@@ -229,29 +210,6 @@ class HandleUpdateTest:
         product = offers_models.Product.query.one()
         assert product.name == "New Product"
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
-
-    def test_raises_api_errors_exception_when_errors_occur_on_model(self):
-        # Given
-        provider = providers_factories.AllocineProviderFactory(localClass="TestLocalProviderWithApiErrors")
-        providable_info = ProvidableInfo()
-        product = offers_factories.ThingProductFactory(
-            name="Old product name",
-            subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
-            idAtProviders=providable_info.id_at_providers,
-            lastProvider=provider,
-        )
-        local_provider = provider_test_utils.TestLocalProviderWithApiErrors()
-
-        # When
-        with pytest.raises(ApiErrors) as api_errors:
-            local_provider._handle_update(product, providable_info)
-
-        # Then
-        assert api_errors.value.errors["url"] == [
-            "Un produit de sous-catégorie ACHAT_INSTRUMENT ne peut pas être numérique"
-        ]
-        provider_event = providers_models.LocalProviderEvent.query.one()
-        assert provider_event.type == providers_models.LocalProviderEventType.SyncError
 
 
 @pytest.mark.usefixtures("db_session")

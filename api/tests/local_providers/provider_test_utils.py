@@ -24,23 +24,6 @@ class TestLocalProvider(LocalProvider):
         pass
 
 
-class TestLocalProviderWithApiErrors(LocalProvider):
-    name = "LocalProvider Test"
-    can_create = True
-
-    def __init__(self, venue_provider: VenueProvider = None):
-        super().__init__(venue_provider)
-        self.venue_provider = venue_provider
-
-    def fill_object_attributes(self, obj):
-        obj.name = "New Product"
-        obj.subcategoryId = subcategories.ACHAT_INSTRUMENT.id
-        obj.url = "http://url.com"
-
-    def __next__(self):
-        pass
-
-
 class TestLocalProviderNoCreation(LocalProvider):
     name = "LocalProvider Test No Creation"
     can_create = False
