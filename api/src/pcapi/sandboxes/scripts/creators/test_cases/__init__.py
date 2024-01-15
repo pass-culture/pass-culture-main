@@ -22,6 +22,9 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_gdpr_users im
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import (
     create_specific_cashflow_batch_without_invoice,
 )
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import (
+    create_specific_invoice_with_bank_account,
+)
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import create_specific_invoice
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_validation_rules import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_with_custom_reimbursement_rule import (
@@ -47,6 +50,7 @@ def save_test_cases_sandbox() -> None:
     create_industrial_gdpr_users()
     create_industrial_offerer_with_custom_reimbursement_rule()
     create_specific_invoice()
+    create_specific_invoice_with_bank_account()
     create_specific_cashflow_batch_without_invoice()
     create_venue_labels(sandbox=True)
     create_venues_with_gmaps_image()
