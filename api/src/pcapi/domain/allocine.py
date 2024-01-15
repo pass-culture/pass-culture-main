@@ -30,7 +30,12 @@ def get_movie_list() -> list[allocine_serializers.AllocineMovie]:
 
 
 def get_movies_showtimes(theater_id: str) -> Iterator[allocine_serializers.AllocineMovieShowtime]:
-    movie_showtime_list_response = api_allocine.get_movies_showtimes_from_allocine(theater_id)
+    try:
+        movie_showtime_list_response = api_allocine.get_movies_showtimes_from_allocine(theater_id)
+    except api_allocine.AllocineException as exc:
+        logger.error("Could not get movies showtimes for theater %s. Error: '%s'", theater_id, str(exc))
+        return iter([])
+
     movie_showtime_list = movie_showtime_list_response.movieShowtimeList
     movies_number = movie_showtime_list.totalCount
     filtered_movies_showtimes = _exclude_empty_movies_and_special_events(movie_showtime_list.moviesShowtimes)

@@ -62,7 +62,12 @@ def get_movies_showtimes_from_allocine(theater_id: str) -> allocine_serializers.
     if response.status_code != 200:
         raise AllocineException(f"Error getting API Allocine DATA for theater {theater_id}")
 
-    return allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(response.json())
+    try:
+        validated_response = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(response.json())
+    except pydantic.ValidationError as exc:
+        raise AllocineException(f"Error validating Allocine response. Error: {str(exc)}")
+
+    return validated_response
 
 
 def get_movie_poster_from_allocine(poster_url: str) -> bytes:
