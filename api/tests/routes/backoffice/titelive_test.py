@@ -280,6 +280,30 @@ class AddProductWhitelistTest(PostEndpointHelper):
 
         assert "n'existe pas chez Titelive" in alert
 
+    @override_settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com")
+    @override_settings(TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
+    def test_fail_no_gtl_id(self, requests_mock, authenticated_client):
+        requests_mock.post(
+            "https://login.epagine.fr/v1/login/test@example.com/token",
+            json={"token": "XYZ"},
+        )
+        requests_mock.get(
+            f"https://catsearch.epagine.fr/v1/ean/{fixtures.NO_GTL_IN_RESULT_FIXTURE['ean']}",
+            json=fixtures.NO_GTL_IN_RESULT_FIXTURE,
+            status_code=200,
+        )
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=self.form_data,
+            ean=fixtures.NO_GTL_IN_RESULT_FIXTURE["ean"],
+            title=fixtures.NO_GTL_IN_RESULT_FIXTURE["oeuvre"]["titre"],
+        )
+        assert response.status_code == 303
+        response_redirect = authenticated_client.get(response.location)
+        alert = html_parser.extract_alert(response_redirect.data)
+
+        assert alert == "L'EAN 9791030204704 n'a pas de GTL ID chez Titelive"
+
     @patch("pcapi.core.search.async_index_offer_ids")
     @patch("pcapi.routes.backoffice.titelive.blueprint.get_by_ean13")
     @patch("pcapi.routes.backoffice.titelive.blueprint.offers_api.whitelist_product")
