@@ -1,0 +1,56 @@
+{% import "components/links.html" as links %}
+<turbo-frame id="bank_account_invoices_frame">
+{% if invoices %}
+  <div class="btn-group btn-group-sm"
+       data-toggle="pc-batch-confirm-btn-group"
+       data-toggle-id="table-container-download-reimbursement-details-btn-group"
+       data-pc-table-multi-select-id="table-container-download-reimbursement-details"
+       data-input-ids-name="object_ids">
+    <button disabled
+            type="button"
+            class="btn btn-outline-primary"
+            data-url="{{ url_for("backoffice_web.bank_account.download_reimbursement_details", bank_account_id=bank_account_id) }}"
+            data-use-confirmation-modal="false">Téléchargement des détails de remboursements</button>
+  </div>
+  <table class="table table-hover my-4"
+         data-table-multi-select-id="table-container-download-reimbursement-details">
+    <thead>
+      <tr>
+        <th scope="col">
+          <input class="form-check-input"
+                 type="checkbox"
+                 name="pc-table-multi-select-check-all" />
+        </th>
+        <th scope="col">Date du justificatif</th>
+        <th scope="col">N° du justificatif</th>
+        <th scope="col">N° de virement</th>
+        <th scope="col">Montant remboursé</th>
+        <th scope="col">Justificatif</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for invoice in invoices %}
+        <tr>
+          <td scope="col">
+            <input type="checkbox"
+                   class="form-check-input"
+                   name="pc-table-multi-select-check-{invoice.id}"
+                   data-id="{{ invoice.id }}" />
+          </td>
+          <td>{{ invoice.date | format_date }}</td>
+          <td>{{ invoice.reference }}</td>
+          <td>{{ invoice.cashflows | map(attribute="batch.label") | join(", ") | escape }}</td>
+          <td>{{ -invoice.amount | format_cents }}</td>
+          <td>
+            <a class="link-primary"
+               download
+               href="{{ invoice.url }}"><i class="bi bi-cloud-download-fill"></i> PDF</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <div class="text-center mx-4 my-4">Aucun remboursement à ce jour</div>
+{% endif %}
+</turbo-frame>

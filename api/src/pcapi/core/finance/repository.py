@@ -201,10 +201,15 @@ def find_all_offerers_payments(
 
 def find_all_invoices_finance_details(invoice_ids: list[int]) -> list[tuple]:
     results = []
+    if FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
+        results.extend(_get_collective_reimbursement_details_from_invoices(invoice_ids))
+        results.extend(_get_individual_reimbursement_details_from_invoices(invoice_ids))
+        # There are no legacy payments on BO (yet)
 
-    results.extend(_get_collective_reimbursement_details_from_invoices(invoice_ids))
-    results.extend(_get_individual_reimbursement_details_from_invoices(invoice_ids))
-    # There are no legacy payments on BO (yet)
+    else:
+        results.extend(_get_collective_reimbursement_details_from_invoices_legacy(invoice_ids))
+        results.extend(_get_individual_reimbursement_details_from_invoices_legacy(invoice_ids))
+        # There are no legacy payments on BO (yet)
 
     return results
 
@@ -452,13 +457,188 @@ def _get_reimbursement_details_from_invoices_base_query(invoice_ids: list[int]) 
                 models.Pricing.status == models.PricingStatus.INVOICED,
             ),
         )
+        .join(models.Cashflow.bankAccount)
+        .join(models.Cashflow.batch)
+        .outerjoin(models.Pricing.customRule)
+    )
+
+
+def _get_collective_booking_reimbursement_data(query: BaseQuery) -> list[tuple]:
+    return (
+        query.join(models.Pricing.event)
+        .join(educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock)
+        .join(educational_models.CollectiveOffer, educational_models.CollectiveStock.collectiveOffer)
+        .join(offerers_models.Venue, educational_models.CollectiveOffer.venue)
+        .join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
+        .join(
+            educational_models.EducationalRedactor,
+            educational_models.CollectiveBooking.educationalRedactor,
+        )
+        .join(
+            educational_models.EducationalInstitution,
+            educational_models.CollectiveBooking.educationalInstitution,
+        )
+        .order_by(
+            educational_models.CollectiveBooking.dateUsed.desc(),
+            educational_models.CollectiveBooking.id.desc(),
+        )
+        .with_entities(
+            educational_models.EducationalRedactor.firstName.label("redactor_firstname"),
+            educational_models.EducationalRedactor.lastName.label("redactor_lastname"),
+            educational_models.EducationalInstitution.name.label("institution_name"),
+            _truncate_milliseconds(educational_models.CollectiveBooking.dateUsed).label("booking_used_date"),
+            educational_models.CollectiveStock.price.label("booking_amount"),
+            educational_models.CollectiveStock.beginningDatetime.label("event_date"),
+            educational_models.CollectiveOffer.name.label("offer_name"),
+            offerers_models.Venue.name.label("venue_name"),
+            offerers_models.Venue.common_name.label("venue_common_name"),  # type: ignore[attr-defined]
+            # Sometimes, a venue has a postal code and a city, but no address, and the offerer's address
+            # is in another city. Now, we only check the postal code to keep either the venue's full address
+            # or the offerer's one
+            sqla.case(
+                (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.address),
+                else_=offerers_models.Offerer.address,
+            ).label("venue_address"),
+            sqla.case(
+                (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.postalCode),
+                else_=offerers_models.Offerer.postalCode,
+            ).label("venue_postal_code"),
+            sqla.case(
+                (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.city),
+                else_=offerers_models.Offerer.city,
+            ).label("venue_city"),
+            offerers_models.Venue.siret.label("venue_siret"),
+            offerers_models.Venue.departementCode.label("venue_departement_code"),
+            # See note about `amount` in `core/finance/models.py`.
+            (-models.Pricing.amount).label("amount"),
+            models.Pricing.standardRule.label("rule_name"),
+            models.Pricing.customRuleId.label("rule_id"),
+            models.Pricing.collectiveBookingId.label("collective_booking_id"),
+            sqla.cast(models.Invoice.date, sqla.Date).label("invoice_date"),
+            models.Invoice.reference.label("invoice_reference"),
+            models.CashflowBatch.cutoff.label("cashflow_batch_cutoff"),
+            models.CashflowBatch.label.label("cashflow_batch_label"),
+            models.BankAccount.label.label("bank_account_label"),
+            models.BankAccount.iban.label("iban"),
+            sqla.case((models.FinanceEvent.bookingFinanceIncidentId.is_(None), False), else_=True).label("is_incident"),
+        )
+    ).all()
+
+
+def _get_collective_reimbursement_details_from_invoices(invoice_ids: list[int]) -> list[tuple]:
+    collective_details = _get_collective_booking_reimbursement_data(
+        _get_reimbursement_details_from_invoices_base_query(invoice_ids).join(
+            educational_models.CollectiveBooking, models.Pricing.collectiveBooking
+        )
+    )
+    collective_details.extend(
+        _get_collective_booking_reimbursement_data(
+            _get_reimbursement_details_from_invoices_base_query(invoice_ids)
+            .join(models.Pricing.event)
+            .join(models.FinanceEvent.bookingFinanceIncident)
+            .join(models.BookingFinanceIncident.collectiveBooking)
+        )
+    )
+
+    return collective_details
+
+
+def _get_individual_booking_reimbursement_data(query: BaseQuery) -> list[tuple]:
+    return (
+        query.join(models.Pricing.event)
+        .join(bookings_models.Booking.offerer)
+        .join(bookings_models.Booking.stock)
+        .join(offers_models.Stock.offer)
+        .join(bookings_models.Booking.venue)
+        .order_by(bookings_models.Booking.dateUsed.desc(), bookings_models.Booking.id.desc())
+        .with_entities(
+            bookings_models.Booking.token.label("booking_token"),
+            _truncate_milliseconds(bookings_models.Booking.dateUsed).label("booking_used_date"),
+            bookings_models.Booking.quantity.label("booking_quantity"),
+            bookings_models.Booking.priceCategoryLabel.label("booking_price_category_label"),
+            bookings_models.Booking.amount.label("booking_amount"),
+            offers_models.Offer.name.label("offer_name"),
+            offerers_models.Venue.name.label("venue_name"),
+            offerers_models.Venue.common_name.label("venue_common_name"),  # type: ignore[attr-defined]
+            # Sometimes, a venue has a postal code and a city, but no address, and the offerer's address
+            # is in another city. Now, we only check the postal code to keep either the venue's full address
+            # or the offerer's one
+            sqla.case(
+                (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.address),
+                else_=offerers_models.Offerer.address,
+            ).label("venue_address"),
+            sqla.case(
+                (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.postalCode),
+                else_=offerers_models.Offerer.postalCode,
+            ).label("venue_postal_code"),
+            sqla.case(
+                (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.city),
+                else_=offerers_models.Offerer.city,
+            ).label("venue_city"),
+            offerers_models.Venue.siret.label("venue_siret"),
+            # See note about `amount` in `core/finance/models.py`.
+            (-models.Pricing.amount).label("amount"),
+            models.Pricing.standardRule.label("rule_name"),
+            models.Pricing.customRuleId.label("rule_id"),
+            models.Pricing.collectiveBookingId.label("collective_booking_id"),
+            sqla.cast(models.Invoice.date, sqla.Date).label("invoice_date"),
+            models.Invoice.reference.label("invoice_reference"),
+            models.CashflowBatch.cutoff.label("cashflow_batch_cutoff"),
+            models.CashflowBatch.label.label("cashflow_batch_label"),
+            models.BankAccount.iban.label("iban"),
+            models.BankAccount.label.label("bank_account_label"),
+            sqla.case((models.FinanceEvent.bookingFinanceIncidentId.is_(None), False), else_=True).label("is_incident"),
+        )
+    ).all()
+
+
+def _get_individual_reimbursement_details_from_invoices(invoice_ids: list[int]) -> list[tuple]:
+    individual_details = _get_individual_booking_reimbursement_data(
+        _get_reimbursement_details_from_invoices_base_query(invoice_ids).join(models.Pricing.booking)
+    )
+    # Finance incident data
+    individual_details.extend(
+        _get_individual_booking_reimbursement_data(
+            _get_reimbursement_details_from_invoices_base_query(invoice_ids)
+            .join(models.Pricing.event)
+            .join(models.FinanceEvent.bookingFinanceIncident)
+            .join(models.BookingFinanceIncident.booking)
+        )
+    )
+
+    return individual_details
+
+
+### BACKOFFICE REIMBURSEMENT DETAILS LEGACY ###
+
+
+def _get_reimbursement_details_from_invoices_base_query_legacy(invoice_ids: list[int]) -> BaseQuery:
+    return (
+        models.Invoice.query.filter(
+            models.Invoice.id.in_(invoice_ids),
+            # Complementary invoices (that end with ".2") are linked
+            # to the same bookings as the original invoices they
+            # complement. We don't want these bookings to be listed
+            # twice.
+            models.Invoice.reference.not_like("%.2"),
+        )
+        .join(models.InvoiceCashflow, models.InvoiceCashflow.invoiceId == models.Invoice.id)
+        .join(models.Cashflow, models.Cashflow.id == models.InvoiceCashflow.cashflowId)
+        .join(models.CashflowPricing, models.CashflowPricing.cashflowId == models.Cashflow.id)
+        .join(
+            models.Pricing,
+            sqla.and_(
+                models.Pricing.id == models.CashflowPricing.pricingId,
+                models.Pricing.status == models.PricingStatus.INVOICED,
+            ),
+        )
         .join(models.Cashflow.bankInformation)
         .join(models.Cashflow.batch)
         .outerjoin(models.Pricing.customRule)
     )
 
 
-def _get_collective_booking_reimbursement_data(query: BaseQuery) -> list:
+def _get_collective_booking_reimbursement_data_legacy(query: BaseQuery) -> list:
     ReimbursementPoint = sqla_orm.aliased(offerers_models.Venue)
     return (
         query.join(models.Pricing.event)
@@ -536,15 +716,15 @@ def _get_collective_booking_reimbursement_data(query: BaseQuery) -> list:
     ).all()
 
 
-def _get_collective_reimbursement_details_from_invoices(invoice_ids: list[int]) -> list[tuple]:
-    collective_details = _get_collective_booking_reimbursement_data(
-        _get_reimbursement_details_from_invoices_base_query(invoice_ids).join(
+def _get_collective_reimbursement_details_from_invoices_legacy(invoice_ids: list[int]) -> list[tuple]:
+    collective_details = _get_collective_booking_reimbursement_data_legacy(
+        _get_reimbursement_details_from_invoices_base_query_legacy(invoice_ids).join(
             educational_models.CollectiveBooking, models.Pricing.collectiveBooking
         )
     )
     collective_details.extend(
-        _get_collective_booking_reimbursement_data(
-            _get_reimbursement_details_from_invoices_base_query(invoice_ids)
+        _get_collective_booking_reimbursement_data_legacy(
+            _get_reimbursement_details_from_invoices_base_query_legacy(invoice_ids)
             .join(models.Pricing.event)
             .join(models.FinanceEvent.bookingFinanceIncident)
             .join(models.BookingFinanceIncident.collectiveBooking)
@@ -554,7 +734,7 @@ def _get_collective_reimbursement_details_from_invoices(invoice_ids: list[int]) 
     return collective_details
 
 
-def _get_individual_booking_reimbursement_data(query: BaseQuery) -> list:
+def _get_individual_booking_reimbursement_data_legacy(query: BaseQuery) -> list:
     ReimbursementPoint = sqla_orm.aliased(offerers_models.Venue)
     return (
         query.join(models.Pricing.event)
@@ -619,14 +799,14 @@ def _get_individual_booking_reimbursement_data(query: BaseQuery) -> list:
     ).all()
 
 
-def _get_individual_reimbursement_details_from_invoices(invoice_ids: list[int]) -> list[tuple]:
-    individual_details = _get_individual_booking_reimbursement_data(
-        _get_reimbursement_details_from_invoices_base_query(invoice_ids).join(models.Pricing.booking)
+def _get_individual_reimbursement_details_from_invoices_legacy(invoice_ids: list[int]) -> list[tuple]:
+    individual_details = _get_individual_booking_reimbursement_data_legacy(
+        _get_reimbursement_details_from_invoices_base_query_legacy(invoice_ids).join(models.Pricing.booking)
     )
     # Finance incident data
     individual_details.extend(
-        _get_individual_booking_reimbursement_data(
-            _get_reimbursement_details_from_invoices_base_query(invoice_ids)
+        _get_individual_booking_reimbursement_data_legacy(
+            _get_reimbursement_details_from_invoices_base_query_legacy(invoice_ids)
             .join(models.Pricing.event)
             .join(models.FinanceEvent.bookingFinanceIncident)
             .join(models.BookingFinanceIncident.booking)
