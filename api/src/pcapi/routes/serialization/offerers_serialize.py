@@ -110,6 +110,7 @@ class GetOffererResponseModel(BaseModel):
     hasPendingBankAccount: bool
     hasNonFreeOffer: bool
     venuesWithNonFreeOffersWithoutBankAccounts: list[int]
+    hasActiveOffer: bool
 
     @classmethod
     def from_orm(cls, row: Row) -> "GetOffererResponseModel":
@@ -140,6 +141,7 @@ class GetOffererResponseModel(BaseModel):
         offerer.hasValidBankAccount = row.hasValidBankAccount
         offerer.hasPendingBankAccount = row.hasPendingBankAccount
         offerer.hasNonFreeOffer = row.hasNonFreeOffer
+        offerer.hasActiveOffer = row.hasActiveOffer
 
         # We would like the response attribute to be called
         # `managedVenues` but we don't want to use the
