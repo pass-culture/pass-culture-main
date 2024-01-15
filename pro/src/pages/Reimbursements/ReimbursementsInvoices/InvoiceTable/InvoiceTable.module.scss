@@ -1,50 +1,27 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_size.scss" as size;
 
+.invoices-table {
+  margin-top: rem.torem(32px);
+}
 
 .row {
-  align-items: center;
-  display: flex;
-  justify-content: flex-start;
+  display: block;
 }
 
-.header {
+.data {
+  display: flex;
+  justify-content: space-between;
+  padding: rem.torem(12px) rem.torem(8px);
+  align-items: center;
+}
+
+.data::before {
   @include fonts.caption;
 
-  text-align: left;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: rem.torem(8px);
-}
-
-.data,
-.header {
-  padding: rem.torem(20px) rem.torem(8px);
-  width: rem.torem(120px);
-}
-
-.date-column {
-  width: rem.torem(120px);
-}
-
-.document-type-column {
-  width: rem.torem(230px);
-}
-
-.reference-column {
-  width: rem.torem(130px);
-}
-
-.label-column {
-  width: rem.torem(70px);
-}
-
-.amount-column {
-  cursor: default;
-  text-align: right;
-  width: rem.torem(140px);
+  content: attr(data-label);
 }
 
 .body .row:nth-child(n + 1):nth-child(odd) {
@@ -53,13 +30,15 @@
 
 .date-data {
   @include fonts.bold;
-
-  padding-left: rem.torem(16px);
 }
 
-.document-type-data {
+.document-type-content {
   display: flex;
   gap: rem.torem(8px);
+
+  // FIXME: made in order to make icon + text be to the right
+  // otherwise the text go to the right but not the icon
+  width: min-content;
 }
 
 .more-icon {
@@ -72,16 +51,68 @@
   flex-shrink: 0;
 }
 
-.amount-data {
-  text-align: right;
-}
-
 .negative-amount {
   color: colors.$red-warning;
 }
 
-.invoice-data {
-  text-align: right;
-  margin-right: rem.torem(8px);
-}
 
+@media (min-width: size.$tablet) {
+  .invoices-table {
+    margin-top: 0;
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+  }
+
+  .header {
+    @include fonts.caption;
+
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .data,
+  .header {
+    padding: rem.torem(20px) rem.torem(8px);
+
+  }
+
+  .data::before {
+    content: none;
+    display: none;
+  }
+
+  .date-column {
+    width: rem.torem(120px);
+  }
+
+  .document-type-column {
+    width: rem.torem(230px);
+  }
+
+  .reference-column {
+    width: rem.torem(130px);
+  }
+
+  .label-column {
+    width: rem.torem(120px);
+  }
+
+  .amount-column {
+    cursor: default;
+    text-align: right;
+    width: rem.torem(140px);
+    justify-content: flex-end;
+  }
+
+  .invoice-data {
+    justify-content: flex-end;
+    margin-right: rem.torem(8px);
+  }
+}
