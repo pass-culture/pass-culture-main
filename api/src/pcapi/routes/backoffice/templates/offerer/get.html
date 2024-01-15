@@ -55,10 +55,10 @@
               {% endif %}
               {% if has_permission("PRO_FRAUD_ACTIONS") %}
                 {% if offerer.isActive %}
-                  {{ build_modal_form("suspend", url_for("backoffice_web.offerer.suspend_offerer", offerer_id=offerer.id),
+                  {{ build_modal_form("suspend", url_for("backoffice_web.offerer.suspend_offerer", offerer_id=offerer.id) ,
                   suspension_form, "Suspendre la structure", "Confirmer la suspension") }}
                 {% else %}
-                  {{ build_modal_form("unsuspend", url_for("backoffice_web.offerer.unsuspend_offerer", offerer_id=offerer.id),
+                  {{ build_modal_form("unsuspend", url_for("backoffice_web.offerer.unsuspend_offerer", offerer_id=offerer.id) ,
                   suspension_form, "Réactiver la structure", "Confirmer la réactivation") }}
                 {% endif %}
               {% endif %}
@@ -180,12 +180,20 @@
                 </a>
               </p>
               <p class="mb-1">
+                <span class="fw-bold">Offres BO :</span>
                 <a href="{{ url_for("backoffice_web.offer.list_offers", offerer=offerer.id) }}"
-                   class="fw-bold link-primary">Offres BO</a>
+                   class="link-primary">individuelles</a> |
+                <a href="{{ url_for("backoffice_web.collective_offer.list_collective_offers", offerer=offerer.id) }}"
+                   class="link-primary">collectives</a> |
+                <a href="{{ url_for("backoffice_web.collective_offer_template.list_collective_offer_templates", offerer=offerer.id) }}"
+                   class="link-primary">vitrine</a>
               </p>
               <p class="mb-1">
+                <span class="fw-bold">Réservations BO :</span>
                 <a href="{{ url_for("backoffice_web.individual_bookings.list_individual_bookings", offerer=offerer.id) }}"
-                   class="fw-bold link-primary">Réservations BO</a>
+                   class="link-primary">individuelles</a> |
+                <a href="{{ url_for("backoffice_web.collective_bookings.list_collective_bookings", offerer=offerer.id) }}"
+                   class="link-primary">collectives</a>
               </p>
               <div>
                 {% if zendesk_sell_synchronisation_form %}
