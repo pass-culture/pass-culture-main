@@ -50,12 +50,15 @@ import sqlalchemy.sql.functions as sqla_func
 from pcapi import settings
 from pcapi.connectors import googledrive
 import pcapi.core.bookings.models as bookings_models
+from pcapi.core.educational.api import booking as educational_api_booking
 import pcapi.core.educational.models as educational_models
 import pcapi.core.external.attributes.api as external_attributes_api
 from pcapi.core.history import api as history_api
 import pcapi.core.history.models as history_models
 from pcapi.core.logging import log_elapsed
 import pcapi.core.mails.transactional as transactional_mails
+from pcapi.core.mails.transactional import send_booking_cancellation_by_pro_to_beneficiary_email
+from pcapi.core.mails.transactional.finance_incidents.finance_incident_notification import send_finance_incident_emails
 from pcapi.core.object_storage import store_public_object
 from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offerers.models as offerers_models
@@ -2554,7 +2557,6 @@ def _create_finance_events_from_incident(
 
 
 def validate_finance_incident(finance_incident: models.FinanceIncident, force_debit_note: bool) -> None:
-    # TODO (cmorel): send mail to beneficiary / educational redactor
     incident_validation_date = datetime.datetime.utcnow()
     finance_events = []
     for booking_incident in finance_incident.booking_finance_incidents:
@@ -2603,6 +2605,19 @@ def validate_finance_incident(finance_incident: models.FinanceIncident, force_de
     )
 
     db.session.commit()
+
+    # send mail to pro
+    send_finance_incident_emails(finance_incident)
+
+    # send mail to beneficiaries or educational redactor
+    for booking_incident in finance_incident.booking_finance_incidents:
+        if not booking_incident.is_partial:
+            if booking_incident.collectiveBooking:
+                educational_api_booking.notify_reimburse_collective_booking(
+                    collective_booking=booking_incident.collectiveBooking, reason="NO_EVENT"
+                )
+            else:
+                send_booking_cancellation_by_pro_to_beneficiary_email(booking_incident.booking)
 
 
 def cancel_finance_incident(incident: models.FinanceIncident, comment: str) -> None:
