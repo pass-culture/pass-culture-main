@@ -5,9 +5,10 @@ from sqlalchemy.orm import exc as orm_exc
 import pcapi.core.categories.subcategories_v2 as subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
-from pcapi.core.educational.api import favorites as educational_api_favorites
-from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.educational.api.categories import get_educational_categories
+import pcapi.core.educational.api.favorites as educational_api_favorites
+import pcapi.core.educational.api.institution as educational_institution_api
+import pcapi.core.educational.api.offer as educational_api_offer
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import EducationalRedactor
@@ -194,3 +195,34 @@ def _get_offer_venue(offer: CollectiveOffer | CollectiveOfferTemplate) -> Venue 
     if offer_venue_id:
         return get_venue_by_id(offer_venue_id)
     return None
+
+
+@blueprint.adage_iframe.route("/collective/offers/my_institution", methods=["GET"])
+@spectree_serialize(
+    on_success_status=200, response_model=serializers.ListCollectiveOffersResponseModel, api=blueprint.api
+)
+@adage_jwt_required
+def get_collective_offers_for_my_institution(
+    authenticated_information: AuthenticatedInformation,
+) -> serializers.ListCollectiveOffersResponseModel:
+    if authenticated_information.uai is None:
+        raise ApiErrors({"institutionId": "institutionId is required"}, status_code=400)
+
+    redactor = _get_redactor(authenticated_information)
+
+    offers = [
+        offer
+        for offer in educational_institution_api.get_offers_for_my_institution(authenticated_information.uai).all()
+        if offer.isBookable
+    ]
+
+    current_user_favorite_offers = educational_repository.get_user_favorite_offers_from_uai(
+        redactor_id=redactor.id if redactor else None, uai=authenticated_information.uai
+    )
+
+    serialized_favorite_offers = [
+        serialize_collective_offer(offer=offer, is_favorite=offer.id in current_user_favorite_offers)
+        for offer in offers
+    ]
+
+    return serializers.ListCollectiveOffersResponseModel(collectiveOffers=serialized_favorite_offers)

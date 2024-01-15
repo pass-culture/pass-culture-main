@@ -202,6 +202,21 @@ export class DefaultService {
     });
   }
   /**
+   * get_collective_offers_for_my_institution <GET>
+   * @returns ListCollectiveOffersResponseModel OK
+   * @throws ApiError
+   */
+  public getCollectiveOffersForMyInstitution(): CancelablePromise<ListCollectiveOffersResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/adage-iframe/collective/offers/my_institution',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
    * get_collective_offer <GET>
    * @param offerId
    * @returns CollectiveOfferResponseModel OK

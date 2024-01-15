@@ -1,6 +1,9 @@
 from datetime import datetime
 from decimal import Decimal
 
+from flask_sqlalchemy import BaseQuery
+import sqlalchemy as sa
+
 from pcapi.connectors.big_query.queries import InstitutionRuralLevelQuery
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import exceptions as educational_exceptions
@@ -11,6 +14,7 @@ from pcapi.core.educational.adage_backends.serialize import AdageEducationalInst
 from pcapi.core.educational.constants import INSTITUTION_TYPES
 from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.repository import find_educational_year_by_date
+import pcapi.core.offerers.models as offerers_models
 from pcapi.models import db
 from pcapi.repository import repository
 import pcapi.utils.postal_code as postal_code_utils
@@ -206,3 +210,40 @@ def synchronise_rurality_level() -> None:
             ).update({"ruralLevel": educational_models.InstitutionRuralLevel(rural_level)})
 
     db.session.commit()
+
+
+def get_offers_count_for_my_institution(uai: str) -> int:
+    offer_query = (
+        educational_models.CollectiveOffer.query.join(
+            educational_models.EducationalInstitution, educational_models.CollectiveOffer.institution
+        )
+        .options(
+            sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
+                educational_models.CollectiveStock.collectiveBookings
+            ),
+        )
+        .filter(educational_models.EducationalInstitution.institutionId == uai)
+    )
+    offer_count = len([query for query in offer_query if query.isBookable])
+    return offer_count
+
+
+def get_offers_for_my_institution(uai: str) -> BaseQuery:
+    return (
+        educational_models.CollectiveOffer.query.join(
+            educational_models.EducationalInstitution, educational_models.CollectiveOffer.institution
+        )
+        .options(
+            sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
+                educational_models.CollectiveStock.collectiveBookings
+            ),
+            sa.orm.joinedload(educational_models.CollectiveOffer.venue).joinedload(
+                offerers_models.Venue.managingOfferer
+            ),
+            sa.orm.joinedload(educational_models.CollectiveOffer.institution),
+            sa.orm.joinedload(educational_models.CollectiveOffer.teacher),
+            sa.orm.joinedload(educational_models.CollectiveOffer.nationalProgram),
+            sa.orm.joinedload(educational_models.CollectiveOffer.domains),
+        )
+        .filter(educational_models.EducationalInstitution.institutionId == uai)
+    )
