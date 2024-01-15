@@ -11,6 +11,8 @@ from pcapi.core import logging as core_logging
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offers import exceptions as offers_exceptions
 import pcapi.core.offers.models as offers_models
+import pcapi.core.providers.constants as providers_constants
+import pcapi.core.providers.repository as providers_repository
 from pcapi.domain.titelive import parse_things_date_to_string
 from pcapi.utils import date as date_utils
 from pcapi.utils import requests
@@ -158,8 +160,10 @@ def get_new_product_from_ean13(ean: str) -> offers_models.Product:
 
     csr = get_closest_csr(gtl_id)
 
+    provider = providers_repository.get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
     return offers_models.Product(
         idAtProviders=ean,
+        lastProvider=provider,
         description=html.unescape(article["resume"]) if "resume" in article else None,
         name=html.unescape(oeuvre["titre"]),
         subcategoryId=subcategories.LIVRE_PAPIER.id,
