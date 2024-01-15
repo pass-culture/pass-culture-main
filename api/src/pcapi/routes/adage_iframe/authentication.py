@@ -2,6 +2,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import favorites as educational_api_favorite
 from pcapi.core.educational.api.institution import get_educational_institution_department_code
+from pcapi.core.educational.api.institution import get_offers_count_for_my_institution
 from pcapi.core.educational.exceptions import MissingRequiredRedactorInformation
 from pcapi.core.educational.repository import find_educational_institution_by_uai_code
 from pcapi.routes.adage_iframe import blueprint
@@ -13,7 +14,6 @@ from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFr
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedResponse
 from pcapi.routes.adage_iframe.serialization.adage_authentication import EducationalInstitutionProgramModel
-from pcapi.routes.adage_iframe.serialization.adage_authentication import get_offers_count
 from pcapi.routes.adage_iframe.serialization.redactor import RedactorPreferences
 from pcapi.serialization.decorator import spectree_serialize
 
@@ -34,7 +34,7 @@ def authenticate(authenticated_information: AuthenticatedInformation) -> Authent
         redactor = _get_redactor(authenticated_information)
         preferences = _get_preferences(redactor)
         favorites_count = _get_favorites_count(redactor)
-        offer_count = get_offers_count(authenticated_information)
+        offer_count = get_offers_count_for_my_institution(authenticated_information.uai)
         programs = _get_programs(institution)
 
         return AuthenticatedResponse(
