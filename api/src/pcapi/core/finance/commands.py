@@ -14,6 +14,7 @@ import pcapi.core.finance.utils as finance_utils
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi.models.feature import FeatureToggle
+from pcapi.notifications.internal import send_internal_message
 import pcapi.scheduled_tasks.decorators as cron_decorators
 from pcapi.utils.blueprint import Blueprint
 import pcapi.utils.date as date_utils
@@ -58,6 +59,20 @@ def generate_invoices(batch_id: int) -> None:
         return
 
     finance_api.generate_invoices(batch)
+    if settings.SLACK_GENERATE_INVOICES_FINISHED_CHANNEL:
+        send_internal_message(
+            channel=settings.SLACK_GENERATE_INVOICES_FINISHED_CHANNEL,
+            blocks=[
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": f"La Génération de factures ({batch.label}) est terminée avec succès",
+                    },
+                }
+            ],
+            icon_emoji=":large_green_circle:",
+        )
 
 
 @blueprint.cli.command("add_custom_offer_reimbursement_rule")
