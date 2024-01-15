@@ -1,5 +1,4 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
-import React from 'react'
 
 import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
@@ -36,6 +35,7 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
       hasPendingBankAccount: false,
       venuesWithNonFreeOffersWithoutBankAccounts: [],
       hasNonFreeOffer: true,
+      hasActiveOffer: true,
       isValidated: true,
       isActive: true,
       managedVenues: [

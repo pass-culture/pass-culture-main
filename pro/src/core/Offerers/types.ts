@@ -19,6 +19,7 @@ export interface Offerer {
   hasValidBankAccount: boolean
   hasPendingBankAccount: boolean
   hasNonFreeOffer: boolean
+  hasActiveOffer: boolean
   venuesWithNonFreeOffersWithoutBankAccounts: Array<number>
   idAtProviders?: string | null
   isActive: boolean

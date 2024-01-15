@@ -173,6 +173,58 @@ describe('Homepage', () => {
     })
   })
 
+  describe('render statistics dashboard', () => {
+    it('should display statistics dashboard when selected offerer is active and validated', async () => {
+      vi.spyOn(api, 'getOfferer').mockResolvedValue({
+        ...defaultGetOffererResponseModel,
+        id: 3,
+        name: 'Structure 3',
+        hasValidBankAccount: true,
+        isValidated: true,
+        isActive: true,
+      })
+
+      renderHomePage(store)
+
+      expect(
+        await screen.findByText('Présence sur le pass Culture')
+      ).toBeInTheDocument()
+    })
+
+    it('should not display statistics dashboard when selected offerer is active but not validated', async () => {
+      vi.spyOn(api, 'getOfferer').mockResolvedValue({
+        ...defaultGetOffererResponseModel,
+        id: 3,
+        name: 'Structure 3',
+        hasValidBankAccount: true,
+        isValidated: false,
+        isActive: true,
+      })
+      renderHomePage(store)
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+      expect(
+        screen.queryByText('Présence sur le pass Culture')
+      ).not.toBeInTheDocument()
+    })
+    it('should not display statistics dashboard when selected offerer is validated but not active', async () => {
+      vi.spyOn(api, 'getOfferer').mockResolvedValue({
+        ...defaultGetOffererResponseModel,
+        id: 3,
+        name: 'Structure 3',
+        hasValidBankAccount: true,
+        isValidated: true,
+        isActive: false,
+      })
+      renderHomePage(store)
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+      expect(
+        screen.queryByText('Présence sur le pass Culture')
+      ).not.toBeInTheDocument()
+    })
+  })
+
   it('should display new offerer venues informations when selected offerer change', async () => {
     renderHomePage(store)
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))

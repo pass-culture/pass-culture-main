@@ -18,17 +18,22 @@ vi.mock('apiClient/api', () => ({
 }))
 
 const renderStatisticsDashboard = (
+  hasActiveOffer = true,
   props: Partial<StatisticsDashboardProps> = {}
 ) =>
   renderWithProviders(
     <StatisticsDashboard
-      offerer={{ ...defaultGetOffererResponseModel, isValidated: true }}
+      offerer={{
+        ...defaultGetOffererResponseModel,
+        isValidated: true,
+        hasActiveOffer: hasActiveOffer,
+      }}
       {...props}
     />
   )
 
 describe('StatisticsDashboard', () => {
-  it('should render empty state when no statistics', async () => {
+  it('should render empty state when offerer has no offers', async () => {
     vi.spyOn(api, 'getOffererStats').mockResolvedValueOnce({
       jsonData: { dailyViews: [], topOffers: [], totalViewsLast30Days: 0 },
       syncDate: null,
@@ -41,12 +46,38 @@ describe('StatisticsDashboard', () => {
       pendingEducationalOffers: 0,
     })
 
-    renderStatisticsDashboard()
+    renderStatisticsDashboard(false)
 
     expect(screen.getByText('Présence sur le pass Culture')).toBeInTheDocument()
     expect(
       await screen.findByText(
         'Créez vos premières offres grand public pour être visible par les bénéficiaires'
+      )
+    ).toBeInTheDocument()
+    expect(screen.getByText('Dernière mise à jour :')).toBeInTheDocument()
+
+    expect(screen.getByText('Vos offres publiées')).toBeInTheDocument()
+  })
+
+  it('should render statistics dashboard with statistics coming soon message', async () => {
+    vi.spyOn(api, 'getOffererStats').mockResolvedValueOnce({
+      jsonData: { dailyViews: [], topOffers: [], totalViewsLast30Days: 0 },
+      syncDate: null,
+      offererId: 1,
+    })
+    vi.spyOn(api, 'getOffererV2Stats').mockResolvedValueOnce({
+      publishedPublicOffers: 1,
+      publishedEducationalOffers: 0,
+      pendingPublicOffers: 0,
+      pendingEducationalOffers: 0,
+    })
+
+    renderStatisticsDashboard()
+
+    expect(screen.getByText('Présence sur le pass Culture')).toBeInTheDocument()
+    expect(
+      await screen.findByText(
+        'Les statistiques de consultation de vos offres seront bientôt disponibles.'
       )
     ).toBeInTheDocument()
     expect(screen.getByText('Dernière mise à jour :')).toBeInTheDocument()
