@@ -115,7 +115,7 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
   )
 
   return (
-    <table>
+    <table className={styles['invoices-table']}>
       <thead>
         <tr className={styles['row']}>
           <th
@@ -224,19 +224,17 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
                   styles['date-column'],
                   styles['date-data']
                 )}
+                data-label="Date du justificatif"
               >
                 {format(new Date(invoice.date.replace('-', '/')), 'dd/MM/yyyy')}
               </td>
               {isFinanceIncidentEnabled ? (
                 <td
-                  className={cn(
-                    styles['data'],
-                    styles['document-type-column'],
-                    styles['document-type-data']
-                  )}
+                  className={cn(styles['data'], styles['document-type-column'])}
+                  data-label="Type de document"
                 >
                   {invoice.amount >= 0 ? (
-                    <>
+                    <span className={styles['document-type-content']}>
                       <SvgIcon
                         src={strokeMoreIcon}
                         alt=""
@@ -244,48 +242,54 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
                         width="16"
                       />
                       Justificatif de remboursement
-                    </>
+                    </span>
                   ) : (
-                    <>
+                    <span className={styles['document-type-content']}>
                       <SvgIcon
                         src={strokeLessIcon}
                         alt=""
                         className={styles['less-icon']}
                         width="16"
                       />
-                      Justificatif de trop perçu
-                    </>
+                      Justificatif de&nbsp;trop&nbsp;perçu
+                    </span>
                   )}
                 </td>
               ) : (
                 <td
                   className={cn(styles['data'], styles['document-type-column'])}
+                  data-label="Point de remboursement"
                 >
                   {invoice.reimbursementPointName}
                 </td>
               )}
-              <td className={cn(styles['data'], styles['reference-column'])}>
+              <td
+                className={cn(styles['data'], styles['reference-column'])}
+                data-label="N° du justificatif"
+              >
                 {invoice.reference}
               </td>
               {/* For now only one label is possible by invoice. */}
-              <td className={cn(styles['data'], styles['label-column'])}>
+              <td
+                className={cn(styles['data'], styles['label-column'])}
+                data-label="N° de virement"
+              >
                 {invoice.amount >= 0 ? invoice.cashflowLabels[0] : 'N/A'}
               </td>
               <td
-                className={cn(
-                  styles['data'],
-                  styles['amount-column'],
-                  styles['amount-data'],
-                  {
-                    [styles['negative-amount']]: invoice.amount < 0,
-                  }
-                )}
+                className={cn(styles['data'], styles['amount-column'], {
+                  [styles['negative-amount']]: invoice.amount < 0,
+                })}
+                data-label="Montant remboursé"
               >
                 {formatPrice(invoice.amount, {
                   signDisplay: 'always',
                 })}
               </td>
-              <td className={cn(styles['data'], styles['invoice-data'])}>
+              <td
+                className={cn(styles['data'], styles['invoice-data'])}
+                data-label="Télécharger le PDF"
+              >
                 <ButtonLink
                   link={{
                     isExternal: true,
