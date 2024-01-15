@@ -27,6 +27,8 @@ export type EducationalCategories = {
   educationalSubCategories: EducationalSubCategory[]
 }
 
+export type OfferDatesType = 'permanent' | 'specific_dates'
+
 export type OfferEducationalFormValues = {
   category: string
   subCategory?: SubcategoryIdEnum
@@ -55,6 +57,7 @@ export type OfferEducationalFormValues = {
   imageCredit?: string
   nationalProgramId?: string
   isTemplate: boolean
+  datesType?: OfferDatesType
   beginningDate?: string
   endingDate?: string
   hour?: string
