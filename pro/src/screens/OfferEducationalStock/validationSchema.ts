@@ -1,4 +1,4 @@
-import { isBefore, isSameDay } from 'date-fns'
+import { isSameDay } from 'date-fns'
 import * as yup from 'yup'
 
 import { MAX_DETAILS_LENGTH } from 'core/OfferEducational'
@@ -67,8 +67,14 @@ export const generateValidationSchema = (
         then: (schema) =>
           schema.test({
             name: 'is-before-current-time',
-            test: (eventTime: string) =>
-              isBefore(new Date(), new Date(eventTime)),
+            test: (eventTime: string) => {
+              const date = new Date()
+              const [hours, minutes] = eventTime.split(':')
+              date.setHours(Number(hours))
+              date.setMinutes(Number(minutes))
+
+              return new Date().getTime() < date.getTime()
+            },
             message: "L'heure doit être postérieure à l'heure actuelle",
           }),
       }),
