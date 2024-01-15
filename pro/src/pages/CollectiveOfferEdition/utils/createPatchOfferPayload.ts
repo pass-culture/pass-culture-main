@@ -136,6 +136,7 @@ export const createPatchOfferTemplatePayload = (
     'imageCredit',
     'beginningDate',
     'endingDate',
+    'datesType',
     'hour',
     'isTemplate',
   ]
@@ -156,9 +157,10 @@ export const createPatchOfferTemplatePayload = (
   changedValues.contactPhone = offer.phone || null
   changedValues.nationalProgramId = Number(offer.nationalProgramId) || null
   changedValues.dates =
-    offer.beginningDate && offer.endingDate
+    offer.datesType === 'specific_dates' &&
+    offer.beginningDate &&
+    offer.endingDate
       ? serializeDates(offer.beginningDate, offer.endingDate, offer.hour)
-      : undefined
-
+      : null
   return changedValues
 }

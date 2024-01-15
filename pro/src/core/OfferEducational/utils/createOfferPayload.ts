@@ -80,7 +80,10 @@ export const createCollectiveOfferPayload = (
     priceDetail: isTemplate ? offer.priceDetail : undefined,
     nationalProgramId: Number(offer.nationalProgramId),
     dates:
-      isTemplate && offer.beginningDate && offer.endingDate
+      isTemplate &&
+      offer.datesType === 'specific_dates' &&
+      offer.beginningDate &&
+      offer.endingDate
         ? serializeDates(offer.beginningDate, offer.endingDate, offer.hour)
         : undefined,
     formats: isFormatActive ? offer.formats : null,

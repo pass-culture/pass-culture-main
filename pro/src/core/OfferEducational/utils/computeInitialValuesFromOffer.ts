@@ -198,6 +198,11 @@ export const computeInitialValuesFromOffer = (
     'search-interventionArea': '',
     nationalProgramId: offer.nationalProgram?.id?.toString() || '',
     isTemplate: offer.isTemplate,
+    datesType: isCollectiveOfferTemplate(offer)
+      ? offer.dates
+        ? 'specific_dates'
+        : 'permanent'
+      : undefined,
     beginningDate:
       isCollectiveOfferTemplate(offer) && offer.dates
         ? format(
