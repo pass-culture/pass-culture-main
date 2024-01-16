@@ -1,6 +1,8 @@
 import logging
 import traceback
+import typing
 
+import pydantic.v1 as pydantic_v1
 from pydantic.v1 import parse_obj_as
 
 from pcapi import settings
@@ -216,7 +218,7 @@ class AdageHttpClient(AdageClient):
 
         return parse_obj_as(list[serialize.AdageEducationalInstitution], institutions)
 
-    def get_adage_educational_redactor_from_uai(self, uai: str) -> list[dict[str, str]]:
+    def get_adage_educational_redactor_from_uai(self, uai: str) -> typing.Sequence[serialize.AdagePlainRedactor]:
         api_url = f"{self.base_url}/v1/redacteurs-projets/{uai}"
         try:
             api_response = requests.get(
@@ -251,7 +253,22 @@ class AdageHttpClient(AdageClient):
                 )
             raise exceptions.EducationalRedactorNotFound("No educational redactor found for the given UAI")
 
-        return redactors
+        try:
+            return [
+                serialize.AdagePlainRedactor(
+                    nom=row["nom"], prenom=row["prenom"], civilite=row["civilite"], mail=row["mail"]
+                )
+                for row in redactors
+            ]
+        except pydantic_v1.ValidationError as err:
+            logger.error(
+                "Failed to serialize redactors",
+                extra={
+                    "error": str(err),
+                    "response": api_response.content,
+                },
+            )
+            raise exceptions.EducationalRedactorNotFound("Missing or malformed data")
 
     def notify_reimburse_collective_booking(self, data: prebooking.AdageReibursementNotification) -> None:
         api_url = f"{self.base_url}/v1/reservation-remboursement"

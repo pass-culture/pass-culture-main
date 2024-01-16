@@ -1,7 +1,9 @@
 import datetime
+import typing
 
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational import exceptions
+from pcapi.core.educational.adage_backends import serialize
 from pcapi.core.educational.adage_backends.base import AdageClient
 from pcapi.core.educational.adage_backends.serialize import AdageCollectiveOffer
 from pcapi.core.educational.adage_backends.serialize import AdageCollectiveRequest
@@ -146,29 +148,29 @@ class AdageSpyClient(AdageClient):
             ),
         ]
 
-    def get_adage_educational_redactor_from_uai(self, uai: str) -> list[dict[str, str]]:
+    def get_adage_educational_redactor_from_uai(self, uai: str) -> typing.Sequence[serialize.AdagePlainRedactor]:
         api_url = f"{self.base_url}/v1/redacteurs-projets/{uai}"
         testing.adage_requests.append({"url": api_url, "sent_data": ""})
         if uai == "0470009E":
             return [
-                {
-                    "civilite": "Mme.",
-                    "nom": "SKLODOWSKA",
-                    "prenom": "MARIA",
-                    "mail": "maria.sklodowska@example.com",
-                },
-                {
-                    "civilite": "M.",
-                    "nom": "POINTCARE",
-                    "prenom": "HENRI",
-                    "mail": "henri.pointcare@example.com",
-                },
-                {
-                    "civilite": "M.",
-                    "nom": "HENMAR",
-                    "prenom": "CONFUSION",
-                    "mail": "confusion.raymar@example.com",
-                },
+                serialize.AdagePlainRedactor(
+                    civilite="Mme.",
+                    nom="SKLODOWSKA",
+                    prenom="MARIA",
+                    mail="maria.sklodowska@example.com",
+                ),
+                serialize.AdagePlainRedactor(
+                    civilite="M.",
+                    nom="POINTCARE",
+                    prenom="HENRI",
+                    mail="henri.pointcare@example.com",
+                ),
+                serialize.AdagePlainRedactor(
+                    civilite="M.",
+                    nom="HENMAR",
+                    prenom="CONFUSION",
+                    mail="confusion.raymar@example.com",
+                ),
             ]
         raise exceptions.EducationalRedactorNotFound("No educational redactor found for the given UAI")
 

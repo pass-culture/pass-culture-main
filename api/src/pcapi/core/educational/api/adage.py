@@ -8,6 +8,7 @@ from pydantic.v1 import parse_obj_as
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational.adage_backends import serialize
 from pcapi.core.educational.api.venue import get_relative_venues_by_siret
 from pcapi.core.mails.transactional import send_eac_offerer_activation_email
 from pcapi.core.offerers import models as offerers_models
@@ -131,13 +132,15 @@ def _remove_venue_from_eac(venue: offerers_models.Venue) -> None:
     venue.adageInscriptionDate = None
 
 
-def get_adage_educational_redactors_for_uai(uai: str, *, force_update: bool = False) -> list[dict[str, str]]:
+def get_adage_educational_redactors_for_uai(
+    uai: str, *, force_update: bool = False
+) -> typing.Sequence[serialize.AdagePlainRedactor]:
     EDUCATIONAL_REDACTORS_CACHE_TIMEOUT = 60 * 60  # 1h in seconds
     educational_redactors_cache_key = f"api:adage_educational_redactor_for_uai:{uai}"
 
     def _get_adage_educational_redactors_for_uai(uai_code: str) -> str:
-        adage_data = adage_client.get_adage_educational_redactor_from_uai(uai_code)
-        return json.dumps(adage_data)
+        redactors = adage_client.get_adage_educational_redactor_from_uai(uai_code)
+        return json.dumps([redactor.dict() for redactor in redactors])
 
     educational_redactors_json = get_from_cache(
         key_template=educational_redactors_cache_key,
@@ -147,25 +150,24 @@ def get_adage_educational_redactors_for_uai(uai: str, *, force_update: bool = Fa
         force_update=force_update,
     )
 
-    educational_redactors_json = typing.cast(str, educational_redactors_json)
-    educational_redactors = json.loads(educational_redactors_json)
-    return educational_redactors
+    raw_data = json.loads(typing.cast(str, educational_redactors_json))
+    return parse_obj_as(list[serialize.AdagePlainRedactor], raw_data)
 
 
 def autocomplete_educational_redactor_for_uai(
     uai: str, candidate: str, use_email: bool = False
-) -> list[dict[str, str]]:
+) -> typing.Sequence[serialize.AdagePlainRedactor]:
     redactors = get_adage_educational_redactors_for_uai(uai=uai)
     unaccented_candidate = clean_accents(candidate).upper()
     result = []
     for redactor in redactors:
-        if unaccented_candidate in f'{redactor["nom"]} {redactor["prenom"]}'.upper():
+        if unaccented_candidate in f"{redactor.nom} {redactor.prenom}".upper():
             result.append(redactor)
             continue
-        if unaccented_candidate in f'{redactor["prenom"]} {redactor["nom"]}'.upper():
+        if unaccented_candidate in f"{redactor.prenom} {redactor.nom}".upper():
             result.append(redactor)
             continue
-        if use_email and unaccented_candidate in redactor["mail"].upper():
+        if use_email and unaccented_candidate in redactor.mail.upper():
             result.append(redactor)
             continue
     return result
