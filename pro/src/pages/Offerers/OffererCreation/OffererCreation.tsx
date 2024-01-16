@@ -118,7 +118,10 @@ export const OffererCreation = (): JSX.Element => {
                   </ButtonLink>
                 </div>
                 <div>
-                  <SubmitButton variant={ButtonVariant.PRIMARY}>
+                  <SubmitButton
+                    variant={ButtonVariant.PRIMARY}
+                    disabled={formik.isSubmitting}
+                  >
                     Créer
                   </SubmitButton>
                 </div>
