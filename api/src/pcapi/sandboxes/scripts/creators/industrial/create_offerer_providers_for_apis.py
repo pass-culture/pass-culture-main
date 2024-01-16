@@ -65,8 +65,8 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
     offerer, provider = create_offerer_provider(name, provider_name="TaylorManager", with_charlie_url=True)
     user = users_factories.ProFactory(
         email=user_email,
-        firstName="taylor",
-        lastName="young",
+        firstName="Pro",
+        lastName="Api",
         phoneNumber="+33100000000",
     )
     offerers_factories.UserOffererFactory(offerer=offerer, user=user)
@@ -134,7 +134,7 @@ def create_offerer_providers_for_apis() -> None:
     create_offerer_provider("TicketBusters")
     create_offerer_provider("MangaMania")
     create_offerer_provider("VinylVibes")
-    create_offerer_provider_with_offers("Structure avec lieux synchronisés billetterie", "taylor@example.com")
+    create_offerer_provider_with_offers("Structure avec lieux synchronisés billetterie", "api@example.com")
 
     create_offerer_provider("Private distributor", isActive=True, enabledForPro=False)
     create_offerer_provider("Malicious RiotRecords", isActive=False, enabledForPro=True)
