@@ -403,14 +403,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
         "VenueBankAccountLink", back_populates="venue", passive_deletes=True
     )
 
-    # FIXME: ogeber 27.11 uncomment once all permanent venues have a ban_id (cf ticket 25999)
-    # __table_args__ = (
-    #     CheckConstraint(
-    #         "(isPermanent = FALSE OR (isPermanent = TRUE AND banId IS NOT NULL))",
-    #         name="check_ban_id_is_non_nullable_when_venue_is_permanent"
-    #     ),
-    # )
-
     def _get_type_banner_url(self) -> str | None:
         elligible_banners: tuple[str, ...] = VENUE_TYPE_DEFAULT_BANNERS.get(self.venueTypeCode, tuple())
         try:
