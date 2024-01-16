@@ -417,6 +417,10 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
         "VenueBankAccountLink", back_populates="venue", passive_deletes=True
     )
 
+    accessibilityProvider: sa_orm.Mapped["AccessibilityProvider | None"] = relationship(
+        "AccessibilityProvider", back_populates="venue", uselist=False
+    )
+
     def _get_type_banner_url(self) -> str | None:
         elligible_banners: tuple[str, ...] = VENUE_TYPE_DEFAULT_BANNERS.get(self.venueTypeCode, tuple())
         try:
@@ -705,6 +709,42 @@ class GooglePlacesInfo(PcObject, Base, Model):
     placeId = Column(Text, nullable=False, unique=True)
     bannerUrl: str | None = Column(Text, nullable=True, name="bannerUrl")
     bannerMeta: dict | None = Column(MutableDict.as_mutable(JSONB), nullable=True)
+
+
+class AccessibilityProvider(PcObject, Base, Model):
+    venueId: int = Column(BigInteger, ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False)
+    venue: sa_orm.Mapped[Venue] = relationship("Venue", foreign_keys=[venueId], back_populates="accessibilityProvider")
+    externalAccessibilityId: str | None = Column(
+        Text,
+        nullable=True,
+    )
+    externalAccessibilityData: dict | None = sa.Column(MutableDict.as_mutable(JSONB), nullable=True)
+    lastUpdateAtProvider: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
+
+    def _build_provider_url(self) -> str:
+        """
+        returns providers url
+        """
+        raise NotImplementedError()
+
+    def match_external_venue(self) -> None:
+        """
+        Try to find a venue at our accessibility provider that matches our venue
+        """
+        raise NotImplementedError()
+
+    def update_venue_accessibility(self) -> None:
+        """
+        From the uuid at the provider, we collect accessibility data and transform them into
+        the 4 criteriums in our AccessibilityMixin
+        """
+        raise NotImplementedError()
+
+    def get_last_update_at_provider(self) -> None:
+        """
+        Request API to get latest update
+        """
+        raise NotImplementedError()
 
 
 class VenueLabel(PcObject, Base, Model):
