@@ -136,6 +136,11 @@ class Booking(PcObject, Base, Model):
         ),
         nullable=True,
     )
+    Index(
+        "ix_booking_cancellation_reason",
+        cancellationReason,
+        postgresql_where=cancellationReason.is_not(None),
+    )
 
     status: BookingStatus = Column(Enum(BookingStatus), nullable=False, default=BookingStatus.CONFIRMED)
     Index("ix_booking_status", status)
