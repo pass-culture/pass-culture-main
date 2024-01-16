@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import Callout from 'components/Callout/Callout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { OfferAppPreview } from 'components/OfferAppPreview'
 import { SummaryLayout } from 'components/SummaryLayout'
@@ -21,7 +22,6 @@ import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
 import { RedirectToBankAccountDialog } from 'screens/Offers/RedirectToBankAccountDialog'
-import Banner from 'ui-kit/Banners/Banner/Banner'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
@@ -130,14 +130,14 @@ const SummaryScreen = () => {
     <>
       {mode === OFFER_WIZARD_MODE.CREATION && (
         <div className={styles['offer-preview-banners']}>
-          <Banner type="notification-info">
+          <Callout>
             <strong>Vous y êtes presque !</strong>
             <br />
             Vérifiez les informations ci-dessous avant de publier votre offre.
             <br />
             Si vous souhaitez la publier plus tard, vous pouvez retrouver votre
             brouillon dans la liste de vos offres.
-          </Banner>
+          </Callout>
         </div>
       )}
 
