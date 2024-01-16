@@ -91,7 +91,7 @@
     "@types/react-redux": "^7.1.33",
     "@types/react-router-dom": "^5.3.3",
     "@typescript-eslint/eslint-plugin": "^6.19.0",
-    "@typescript-eslint/parser": "^6.18.1",
+    "@typescript-eslint/parser": "^6.19.0",
     "@vitejs/plugin-react": "^4.2.1",
     "@vitest/coverage-v8": "^1.2.0",
     "cypress": "^13.6.2",
