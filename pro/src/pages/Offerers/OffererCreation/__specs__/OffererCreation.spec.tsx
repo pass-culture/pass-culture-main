@@ -193,4 +193,39 @@ describe('src | components | OffererCreation', () => {
       screen.getByText('Le code SIREN saisi n’est pas valide.')
     ).toBeInTheDocument()
   })
+
+  it('should disable creation button while submitting', async () => {
+    vi.spyOn(api, 'getSirenInfo').mockResolvedValue({
+      name: 'Ma Petite structure',
+      siren: '881457238',
+      address: {
+        street: '4 rue du test',
+        city: 'Plessix-Balisson',
+        postalCode: '22350',
+      },
+      ape_code: '',
+    })
+
+    vi.spyOn(api, 'createOfferer').mockRejectedValueOnce({
+      id: 1,
+    } as PostOffererResponseModel)
+
+    renderOffererCreation({})
+
+    await userEvent.type(screen.getByLabelText('SIREN'), '881457238')
+    await userEvent.tab()
+
+    const creationButton = screen.getByRole('button', { name: 'Créer' })
+    expect(creationButton).toBeEnabled()
+
+    // Here we dont wait userEvent.click because we want to test the state of the button before the call end
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    userEvent.click(screen.getByRole('button', { name: 'Créer' }))
+    await waitFor(() => {
+      expect(creationButton).toBeDisabled()
+    })
+    await waitFor(() => {
+      expect(creationButton).toBeEnabled()
+    })
+  })
 })
