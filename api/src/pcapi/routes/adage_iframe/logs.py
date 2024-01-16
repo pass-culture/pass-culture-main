@@ -146,6 +146,7 @@ def log_consult_playlist_element(
             "offerId": body.elementId if body.playlistType == serialization.AdagePlaylistType.OFFER else None,
             "venueId": body.elementId if body.playlistType == serialization.AdagePlaylistType.VENUE else None,
             "domainId": body.elementId if body.playlistType == serialization.AdagePlaylistType.DOMAIN else None,
+            "index": body.index,
             "playlistId": body.playlistId,
             "from": body.iframeFrom,
             "queryId": body.queryId,
@@ -154,7 +155,6 @@ def log_consult_playlist_element(
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
     )
-    return
 
 
 @blueprint.adage_iframe.route("/logs/fav-offer/", methods=["POST"])
