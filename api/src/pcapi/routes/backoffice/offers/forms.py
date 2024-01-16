@@ -12,6 +12,8 @@ import wtforms
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers import models as offerers_models
+from pcapi.domain import music_types
+from pcapi.domain import show_types
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.backoffice import autocomplete
@@ -58,6 +60,10 @@ class SearchAttributes(enum.Enum):
     OFFERER = "Structure"
     TAG = "Tag"
     VISA = "Visa d'exploitation"
+    MUSIC_TYPE = "Type de musique"
+    MUSIC_SUB_TYPE = "Sous-type de musique"
+    SHOW_TYPE = "Type de spectacle"
+    SHOW_SUB_TYPE = "Sous-type de spectacle"
 
 
 operator_no_require_value = ["NOT_EXIST"]
@@ -97,6 +103,10 @@ form_field_configuration = {
     "VENUE": {"field": "venue", "operator": ["IN", "NOT_IN"]},
     "VALIDATION": {"field": "validation", "operator": ["IN", "NOT_IN"]},
     "VISA": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "STR_EQUALS", "STR_NOT_EQUALS"]},
+    "MUSIC_TYPE": {"field": "music_type", "operator": ["IN", "NOT_IN"]},
+    "MUSIC_SUB_TYPE": {"field": "music_sub_type", "operator": ["IN", "NOT_IN"]},
+    "SHOW_TYPE": {"field": "show_type", "operator": ["IN", "NOT_IN"]},
+    "SHOW_SUB_TYPE": {"field": "show_sub_type", "operator": ["IN", "NOT_IN"]},
 }
 
 
@@ -146,6 +156,10 @@ class OfferAdvancedSearchSubForm(utils.PCForm):
                 "subcategory",
                 "venue",
                 "validation",
+                "music_type",
+                "music_sub_type",
+                "show_type",
+                "show_sub_type",
             ],
             "sub_rule_type_field_name": "search_field",
             "operator_field_name": "operator",
@@ -257,6 +271,32 @@ class OfferAdvancedSearchSubForm(utils.PCForm):
             OfferStatus,
             formatter=filters.format_offer_status,
         ),
+        search_inline=True,
+        field_list_compatibility=True,
+    )
+    music_type = fields.PCSelectMultipleField(
+        "Type de musique",
+        choices=[(str(s), music_types.MUSIC_TYPES_LABEL_BY_CODE[s]) for s in music_types.MUSIC_TYPES_LABEL_BY_CODE],
+        search_inline=True,
+        field_list_compatibility=True,
+    )
+    music_sub_type = fields.PCSelectMultipleField(
+        "Sous-type de musique",
+        choices=[
+            (str(s), music_types.MUSIC_SUB_TYPES_LABEL_BY_CODE[s]) for s in music_types.MUSIC_SUB_TYPES_LABEL_BY_CODE
+        ],
+        search_inline=True,
+        field_list_compatibility=True,
+    )
+    show_type = fields.PCSelectMultipleField(
+        "Type de spectacle",
+        choices=[(str(s), show_types.SHOW_TYPES_LABEL_BY_CODE[s]) for s in show_types.SHOW_TYPES_LABEL_BY_CODE],
+        search_inline=True,
+        field_list_compatibility=True,
+    )
+    show_sub_type = fields.PCSelectMultipleField(
+        "Sous-type de spectacle",
+        choices=[(str(s), show_types.SHOW_SUB_TYPES_LABEL_BY_CODE[s]) for s in show_types.SHOW_SUB_TYPES_LABEL_BY_CODE],
         search_inline=True,
         field_list_compatibility=True,
     )

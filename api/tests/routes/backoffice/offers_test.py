@@ -56,6 +56,7 @@ def offers_fixture(criteria) -> tuple:
         venue__departementCode="47",
         subcategoryId=subcategories.MATERIEL_ART_CREATIF.id,
         author=users_factories.ProFactory(),
+        extraData={"musicType": 501, "musicSubType": 510},
     )
     offer_with_limited_stock = offers_factories.EventOfferFactory(
         name="A Very Specific Name",
@@ -64,7 +65,7 @@ def offers_fixture(criteria) -> tuple:
         venue__departementCode="974",
         subcategoryId=subcategories.FESTIVAL_LIVRE.id,
         validation=offers_models.OfferValidationStatus.APPROVED,
-        extraData={"visa": "2023123456"},
+        extraData={"visa": "2023123456", "showType": 100, "showSubType": 104},
     )
     offer_with_two_criteria = offers_factories.OfferFactory(
         name="A Very Specific Name That Is Longer",
@@ -91,6 +92,13 @@ def offers_fixture(criteria) -> tuple:
         beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3),
     )
     return offer_with_unlimited_stock, offer_with_limited_stock, offer_with_two_criteria
+
+
+@pytest.fixture(scope="function", name="offers_not_taken")
+def offers_not_taken_fixture(criteria) -> offers_factories.OfferFactory:
+    offers_factories.OfferFactory(
+        extraData={"musicType": 870, "musicSubType": 871, "showType": 1510, "showSubType": 1511},
+    )
 
 
 class ListOffersTest(GetEndpointHelper):
@@ -474,6 +482,62 @@ class ListOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert {int(row["ID"]) for row in rows} == {offers[1].id, offers[2].id}
+
+    def test_list_offers_advanced_search_by_music_type(self, authenticated_client, offers, offers_not_taken):
+        query_args = {
+            "search-3-search_field": "MUSIC_TYPE",
+            "search-3-operator": "IN",
+            "search-3-music_type": ["501", "520", "800"],
+        }
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        row = html_parser.extract_table_rows(response.data)
+        assert int(row[0]["ID"]) == offers[0].id
+
+    def test_list_offers_advanced_search_by_music_sub_type(self, authenticated_client, offers, offers_not_taken):
+        query_args = {
+            "search-0-search_field": "MUSIC_SUB_TYPE",
+            "search-0-operator": "IN",
+            "search-0-music_sub_type": ["510", "511", "512"],
+        }
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        row = html_parser.extract_table_rows(response.data)
+        assert int(row[0]["ID"]) == offers[0].id
+
+    def test_list_offers_advanced_search_by_show_type(self, authenticated_client, offers, offers_not_taken):
+        query_args = {
+            "search-3-search_field": "SHOW_TYPE",
+            "search-3-operator": "IN",
+            "search-3-show_type": ["200", "100", "300"],
+        }
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        row = html_parser.extract_table_rows(response.data)
+        assert int(row[0]["ID"]) == offers[1].id
+
+    def test_list_offers_advanced_search_by_show_sub_type(self, authenticated_client, offers, offers_not_taken):
+        query_args = {
+            "search-3-search_field": "SHOW_SUB_TYPE",
+            "search-3-operator": "IN",
+            "search-3-show_sub_type": ["104", "105", "106"],
+        }
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        row = html_parser.extract_table_rows(response.data)
+        assert int(row[0]["ID"]) == offers[1].id
 
     def test_list_offers_advanced_search_by_venue(self, authenticated_client, offers):
         venue_id = offers[1].venueId

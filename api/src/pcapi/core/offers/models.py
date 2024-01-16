@@ -472,6 +472,18 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     sa.Index("offer_idAtProvider", idAtProvider)
     sa.Index("offer_ean_idx", extraData["ean"].astext)
     sa.Index("offer_visa_idx", extraData["visa"].astext)
+    sa.Index("offer_music_type_idx", extraData["musicType"].astext, postgresql_where=extraData["musicType"] is not None)
+    sa.Index(
+        "offer_music_sub_type_idx",
+        extraData["musicSubType"].astext,
+        postgresql_where=extraData["musicSubType"] is not None,
+    )
+    sa.Index("offer_show_type_idx", extraData["showType"].astext, postgresql_where=extraData["showType"] is not None)
+    sa.Index(
+        "offer_show_sub_type_idx",
+        extraData["showSubType"].astext,
+        postgresql_where=extraData["showSubType"] is not None,
+    )
 
     # FIXME: We shoud be able to remove the index on `venueId`, since this composite index
     #  can be used by PostgreSQL when filtering on the `venueId` column only.
