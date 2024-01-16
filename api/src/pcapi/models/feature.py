@@ -120,6 +120,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_MARSEILLE = "Activer Marseille en grand"
     WIP_GOOGLE_MAPS_VENUE_IMAGES = "Activer l'affichage des images des lieux importées depuis Google Maps"
     WIP_PARTNER_PAGE = 'Activer la nouvelle version des pages "Partenaire"'
+    WIP_ENABLE_PRO_SIDE_NAV = "Refonte de la navigation de l'app pro"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -186,6 +187,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_GOOGLE_MAPS_VENUE_IMAGES,  # FIXME Abdelmoujib: remove when feature is ready https://passculture.atlassian.net/browse/PC-26459
     FeatureToggle.WIP_PARTNER_PAGE,
     FeatureToggle.ENABLE_CRON_TO_UPDATE_OFFERER_STATS,
+    FeatureToggle.WIP_ENABLE_PRO_SIDE_NAV,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
