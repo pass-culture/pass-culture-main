@@ -48,12 +48,3 @@ def track_event(
     backend().track_event(
         user_id, event.value, event_payload, can_be_asynchronously_retried=can_be_asynchronously_retried
     )
-
-
-def bulk_track_events(
-    user_ids: list[int], event: BatchEvent, event_payload: dict, can_be_asynchronously_retried: bool = False
-) -> None:
-    backend = import_string(settings.PUSH_NOTIFICATION_BACKEND)
-    backend().bulk_track_events(
-        user_ids, event.value, event_payload, can_be_asynchronously_retried=can_be_asynchronously_retried
-    )
