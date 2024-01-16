@@ -34,15 +34,15 @@ class LogsTest:
         }
 
     @pytest.mark.parametrize(
-        "playlist_type,element_id,offer_id,venue_id,domain_id",
+        "playlist_type,element_id,index,offer_id,venue_id,domain_id",
         [
-            ("offer", 34, 34, None, None),
-            ("venue", 45, None, 45, None),
-            ("domain", 56, None, None, 56),
+            ("offer", 34, 1, 34, None, None),
+            ("venue", 45, 2, None, 45, None),
+            ("domain", 56, None, None, None, 56),
         ],
     )
     def test_log_consult_playlist_element(
-        self, client, caplog, playlist_type, element_id, offer_id, venue_id, domain_id
+        self, client, caplog, playlist_type, element_id, index, offer_id, venue_id, domain_id
     ):
         # given
         adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="test@mail.com")
@@ -57,6 +57,7 @@ class LogsTest:
                     "iframeFrom": "for_my_institution",
                     "queryId": "1234a",
                     "elementId": element_id,
+                    "index": index,
                     "playlistId": 99,
                     "playlistType": playlist_type,
                 },
@@ -76,6 +77,7 @@ class LogsTest:
             "offerId": offer_id,
             "venueId": venue_id,
             "domainId": domain_id,
+            "index": index,
         }
 
     def test_log_has_seen_whole_playlist(self, client, caplog):

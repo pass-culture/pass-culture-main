@@ -36,6 +36,7 @@ class PlaylistBody(AdageBaseModel):
     playlistType: AdagePlaylistType
     playlistId: int
     elementId: int | None
+    index: int | None
 
 
 class SearchBody(AdageBaseModel):
