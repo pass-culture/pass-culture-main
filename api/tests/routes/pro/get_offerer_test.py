@@ -108,6 +108,7 @@ class GetOffererTest:
                     "hasPendingBankInformationApplication": venue.hasPendingBankInformationApplication,
                     "hasCreatedOffer": venue.has_individual_offers or venue.has_collective_offers,
                     "isVirtual": venue.isVirtual,
+                    "isVisibleInApp": venue.isVisibleInApp,
                     "mentalDisabilityCompliant": False,
                     "motorDisabilityCompliant": False,
                     "name": venue.name,
