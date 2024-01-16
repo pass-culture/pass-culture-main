@@ -23,7 +23,7 @@ class SearchGroups(Enum):
     CD_VINYLE_MUSIQUE_EN_LIGNE = "CD, vinyles, musique en ligne"
     CONCERTS_FESTIVALS = "Concerts & festivals"
     EVENEMENTS_EN_LIGNE = "Évènements en ligne"
-    FILMS_SERIES_CINEMA = "Films, séries, cinéma"
+    FILMS_SERIES_CINEMA = "Cinéma, films et séries"
     INSTRUMENTS = "Instruments de musique"
     JEUX_JEUX_VIDEOS = "Jeux & jeux vidéos"
     LIVRES = "Livres"
