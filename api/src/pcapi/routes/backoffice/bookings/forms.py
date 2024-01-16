@@ -151,6 +151,13 @@ class GetCollectiveBookingListForm(BaseBookingListForm):
 
 
 class GetIndividualBookingListForm(BaseBookingListForm):
+    cancellation_reason = fields.PCSelectMultipleField(
+        "Raison d'annulation",
+        choices=utils.choices_from_enum(
+            bookings_models.BookingCancellationReasons, formatter=filters.format_booking_cancellation_reason
+        ),
+    )
+
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
         super().__init__(*args, **kwargs)
         self.q.label.text = "Code contremarque ou liste, Nom, email ou ID (offre, bénéficiaire ou résa)"
@@ -160,14 +167,15 @@ class GetIndividualBookingListForm(BaseBookingListForm):
         self._fields.move_to_end("venue")
         self._fields.move_to_end("category")
         self._fields.move_to_end("status")
+        self._fields.move_to_end("cancellation_reason")
         self._fields.move_to_end("cashflow_batches")
 
     def is_empty(self) -> bool:
-        return super().is_empty() and not self.category.data
+        return super().is_empty() and not self.category.data and not self.cancellation_reason.data
 
     @property
     def is_single_venue_with_optional_dates(self) -> bool:
-        return super().is_single_venue_with_optional_dates and not self.category.data
+        return super().is_single_venue_with_optional_dates and not self.category.data and not self.cancellation_reason
 
     category = fields.PCSelectMultipleField(
         "Catégories", choices=utils.choices_from_enum(categories.CategoryIdLabelEnum)

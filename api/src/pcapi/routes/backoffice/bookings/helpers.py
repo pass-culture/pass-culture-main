@@ -105,6 +105,9 @@ def get_bookings(
         )
         base_query = base_query.filter(finance_models.Cashflow.batchId.in_(form.cashflow_batches.data))
 
+    if hasattr(form, "cancellation_reason") and form.cancellation_reason.data:
+        base_query = base_query.filter(booking_class.cancellationReason.in_(form.cancellation_reason.data))  # type: ignore [union-attr]
+
     if form.q.data:
         search_query = form.q.data
 

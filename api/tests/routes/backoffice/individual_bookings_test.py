@@ -1,6 +1,7 @@
 import datetime
 from io import BytesIO
 
+import factory
 from flask import url_for
 import openpyxl
 import pytest
@@ -335,6 +336,27 @@ class ListIndividualBookingsTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert set(row["Contremarque"] for row in rows) == expected_tokens
+
+    def test_list_bookings_by_cancellation_reason(self, authenticated_client):
+        bookings_factories.CancelledBookingFactory.create_batch(
+            size=3,
+            token=factory.Iterator(["CNCL01", "CNCL02", "CNCL03"]),
+            cancellationReason=factory.Iterator(
+                [
+                    bookings_models.BookingCancellationReasons.OFFERER.value,
+                    bookings_models.BookingCancellationReasons.BENEFICIARY.value,
+                    bookings_models.BookingCancellationReasons.FRAUD.value,
+                ]
+            ),
+        )
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, cancellation_reason=["OFFERER", "FRAUD"]))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+
+        assert {row["Contremarque"] for row in rows} == {"CNCL01", "CNCL03"}
 
     def test_list_bookings_by_date(self, authenticated_client, bookings):
         date_from = datetime.date.today() - datetime.timedelta(days=3)
