@@ -290,6 +290,8 @@
             <th>Lieux</th>
             <th>Montant des réservations validées (TTC)</th>
             <th>Montant de la contribution offreur (TTC)</th>
+            <th>Incidents (TTC)</th>
+            <th>Contribution offreur incidents (TTC)</th>
             <th class="coloredSection">Montant remboursé (TTC)</th>
             <th class="minimizedCell">Dont offres individuelles (TTC)</th>
             <th class="minimizedCell">Dont offres collectives (TTC)</th>
@@ -301,9 +303,11 @@
             <td>{{ venue.venue_name }}</td>
             <td>{{ venue.validated_booking_amount|fr_currency_opposite }} €</td>
             <td>{{ (venue.validated_booking_amount - venue.reimbursed_amount)|fr_currency_opposite }} €</td>
-            <td class="coloredSection">{{ venue.reimbursed_amount|fr_currency_opposite }} €</td>
-            <td>{{ venue.individual_amount|fr_currency_opposite }} €</td>
-            <td>{{ (venue.reimbursed_amount - venue.individual_amount)|fr_currency_opposite }} €</td>
+            <td>{{ (venue.finance_incident_amount + venue.finance_incident_contribution)|fr_currency }} €</td>
+            <td>{{ venue.finance_incident_contribution|fr_currency }} €</td>
+            <td class="coloredSection">{{ (venue.reimbursed_amount + venue.finance_incident_amount)|fr_currency_opposite }} €</td>
+            <td>{{ (venue.individual_amount + venue.individual_incident_amount)|fr_currency_opposite }} €</td>
+            <td>{{ (venue.reimbursed_amount - venue.individual_amount + (venue.finance_incident_amount - venue.individual_incident_amount))|fr_currency_opposite }} €</td>
         </tr>
 {% endfor %}
     </tbody>
