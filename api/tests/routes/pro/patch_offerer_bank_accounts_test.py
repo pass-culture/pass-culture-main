@@ -165,9 +165,9 @@ class OffererPatchBankAccountsTest:
         first_venue, second_venue, third_venue = offerers_factories.VenueFactory.create_batch(
             3, managingOfferer=offerer, pricing_point="self"
         )
-        offerers_factories.VenueBankAccountLinkFactory(venueId=first_venue.id, bankAccountId=bank_account.id)
-        offerers_factories.VenueBankAccountLinkFactory(venueId=second_venue.id, bankAccountId=bank_account.id)
-        offerers_factories.VenueBankAccountLinkFactory(venueId=third_venue.id, bankAccountId=bank_account.id)
+        offerers_factories.VenueBankAccountLinkFactory(venue=first_venue, bankAccount=bank_account)
+        offerers_factories.VenueBankAccountLinkFactory(venue=second_venue, bankAccount=bank_account)
+        offerers_factories.VenueBankAccountLinkFactory(venue=third_venue, bankAccount=bank_account)
 
         assert len(bank_account.venueLinks) == 3
         assert (
@@ -276,8 +276,8 @@ class OffererPatchBankAccountsTest:
         )
 
         first_history_link = offerers_factories.VenueBankAccountLinkFactory(
-            venueId=first_venue.id,
-            bankAccountId=bank_account.id,
+            venue=first_venue,
+            bankAccount=bank_account,
             timespan=(
                 datetime.datetime.utcnow() - datetime.timedelta(days=365),
                 datetime.datetime.utcnow() - datetime.timedelta(days=10),
@@ -285,8 +285,8 @@ class OffererPatchBankAccountsTest:
         )
         first_timespan = first_history_link.timespan
         second_history_link = offerers_factories.VenueBankAccountLinkFactory(
-            venueId=second_venue.id,
-            bankAccountId=bank_account.id,
+            venue=second_venue,
+            bankAccount=bank_account,
             timespan=(
                 datetime.datetime.utcnow() - datetime.timedelta(days=365),
                 datetime.datetime.utcnow() - datetime.timedelta(days=10),
@@ -390,14 +390,14 @@ class OffererPatchBankAccountsTest:
         )
 
         first_current_link = offerers_factories.VenueBankAccountLinkFactory(
-            venueId=first_venue.id,
-            bankAccountId=bank_account.id,
+            venue=first_venue,
+            bankAccount=bank_account,
             timespan=(datetime.datetime.utcnow() - datetime.timedelta(days=365),),
         )
         first_timespan = first_current_link.timespan
         second_current_link = offerers_factories.VenueBankAccountLinkFactory(
-            venueId=second_venue.id,
-            bankAccountId=bank_account.id,
+            venue=second_venue,
+            bankAccount=bank_account,
             timespan=(datetime.datetime.utcnow() - datetime.timedelta(days=365),),
         )
         second_timespan = second_current_link.timespan
@@ -497,7 +497,7 @@ class OffererPatchBankAccountsTest:
         foreign_bank_account = finance_factories.BankAccountFactory(offerer=foreign_offerer)
         foreign_venue = offerers_factories.VenueFactory(managingOfferer=foreign_offerer, pricing_point="self")
         foreign_link = offerers_factories.VenueBankAccountLinkFactory(
-            venueId=foreign_venue.id, bankAccountId=foreign_bank_account.id, timespan=(datetime.datetime.utcnow(),)
+            venue=foreign_venue, bankAccount=foreign_bank_account, timespan=(datetime.datetime.utcnow(),)
         )
 
         assert not bank_account.venueLinks

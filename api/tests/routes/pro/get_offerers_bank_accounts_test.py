@@ -147,7 +147,7 @@ class OfferersBankAccountTest:
         offers_factories.StockFactory(offer=offer_bis)
         expected_bank_account = finance_factories.BankAccountFactory(offerer=offerer)
         offerers_factories.VenueBankAccountLinkFactory(
-            venueId=expected_venue.id, bankAccountId=expected_bank_account.id, timespan=(datetime.datetime.utcnow(),)
+            venue=expected_venue, bankAccount=expected_bank_account, timespan=(datetime.datetime.utcnow(),)
         )
 
         # When
@@ -264,7 +264,7 @@ class OfferersBankAccountTest:
             ),
         )
         offerers_factories.VenueBankAccountLinkFactory(
-            venueId=venue_linked.id, bankAccountId=second_bank_account.id, timespan=(datetime.datetime.utcnow(), None)
+            venue=venue_linked, bankAccount=second_bank_account, timespan=(datetime.datetime.utcnow(), None)
         )
 
         venue_not_linked_with_free_offer = offerers_factories.VenueWithoutSiretFactory(managingOfferer=offerer)

@@ -376,7 +376,7 @@ class DeleteVenueTest:
         # Given
         bank_account = finance_factories.BankAccountFactory()
         venue_to_delete = offerers_factories.VenueFactory()
-        offerers_factories.VenueBankAccountLinkFactory(venueId=venue_to_delete.id, bankAccountId=bank_account.id)
+        offerers_factories.VenueBankAccountLinkFactory(venue=venue_to_delete, bankAccount=bank_account)
         bank_account_id = bank_account.id
 
         # When

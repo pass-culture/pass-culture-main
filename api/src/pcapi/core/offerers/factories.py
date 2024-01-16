@@ -12,6 +12,10 @@ from . import api
 from . import models
 
 
+if typing.TYPE_CHECKING:
+    from pcapi.core.finance.models import BankAccount
+
+
 class OffererFactory(BaseFactory):
     class Meta:
         model = models.Offerer
@@ -105,6 +109,17 @@ class VenueFactory(BaseFactory):
             reimbursementPoint=reimbursement_point,
         )
 
+    @factory.post_generation
+    def bank_account(
+        self: models.Venue, create: bool, extracted: "BankAccount | None", **kwargs: typing.Any
+    ) -> models.VenueBankAccountLink | None:
+        if not create:
+            return None
+        bank_account = extracted
+        if not bank_account:
+            return None
+        return VenueBankAccountLinkFactory(venue=self, bankAccount=bank_account)
+
 
 class CollectiveVenueFactory(VenueFactory):
     venueTypeCode = models.VenueTypeCode.PERFORMING_ARTS
@@ -196,6 +211,10 @@ class VenueBankAccountLinkFactory(BaseFactory):
     class Meta:
         model = models.VenueBankAccountLink
 
+    venue = factory.SubFactory(VenueFactory)
+    bankAccount = factory.SubFactory(
+        "pcapi.core.finance.factories.BankAccountFactory", offerer=factory.SelfAttribute("..venue.managingOfferer")
+    )
     timespan = factory.LazyFunction(lambda: [datetime.datetime.utcnow() - datetime.timedelta(days=365), None])
 
 
