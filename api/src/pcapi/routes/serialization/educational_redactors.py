@@ -22,7 +22,7 @@ class EducationalRedactorQueryModel(BaseModel):
 class EducationalRedactor(BaseModel):
     name: str
     surname: str
-    gender: str
+    gender: str | None
     email: str
 
 
