@@ -298,6 +298,8 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     publicName = Column(String(255), nullable=True)
     sa.Index("idx_venue_trgm_public_name", publicName, postgresql_using="gin")
 
+    isVisibleInApp = Column(Boolean, nullable=False, default=True, server_default=sa.sql.expression.true())
+
     isVirtual: bool = Column(
         Boolean,
         CheckConstraint(CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS, name="check_is_virtual_xor_has_address"),

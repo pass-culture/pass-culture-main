@@ -33,6 +33,7 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     hasCreatedOffer: bool
     hasAdageId: bool
     isVirtual: bool
+    isVisibleInApp: bool = True
     name: str
     id: int
     postalCode: str | None
