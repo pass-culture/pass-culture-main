@@ -148,6 +148,22 @@ SEARCH_FIELD_TO_PYTHON = {
         "column": offers_models.Offer.extraData["visa"].astext,
         "special": string_utils.format_ean_or_visa,
     },
+    "MUSIC_TYPE": {
+        "field": "music_type",
+        "column": offers_models.Offer.extraData["musicType"].astext,
+    },
+    "MUSIC_SUB_TYPE": {
+        "field": "music_sub_type",
+        "column": offers_models.Offer.extraData["musicSubType"].astext,
+    },
+    "SHOW_TYPE": {
+        "field": "show_type",
+        "column": offers_models.Offer.extraData["showType"].astext,
+    },
+    "SHOW_SUB_TYPE": {
+        "field": "show_sub_type",
+        "column": offers_models.Offer.extraData["showSubType"].astext,
+    },
 }
 
 JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
