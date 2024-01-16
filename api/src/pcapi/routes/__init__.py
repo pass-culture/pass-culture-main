@@ -19,6 +19,7 @@ def install_all_routes(app: Flask) -> None:
     from . import adage_iframe
     from . import error_handlers  # pylint: disable=unused-import
     from . import external
+    from . import institutional
     from . import internal
     from . import native
     from . import pro
@@ -36,6 +37,7 @@ def install_all_routes(app: Flask) -> None:
     shared.install_routes(app)
     adage_iframe.install_routes(app)
     pcapi.tasks.install_handlers(app)
+    institutional.install_routes(app)
 
     app.register_blueprint(adage_v1_blueprint, url_prefix="/adage/v1")
     app.register_blueprint(native_v1_blueprint, url_prefix="/native/v1")
