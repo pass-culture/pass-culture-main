@@ -125,8 +125,9 @@ export const Offers = ({
           } catch (e) {
             Sentry.withScope((scope) => {
               scope.setTag('custom-error-type', 'api')
-              Sentry.captureException(
-                `error when retrieving adage offer ${hit.objectID} ${e}`
+              Sentry.captureMessage(
+                `error when retrieving adage offer ${hit.objectID} ${e}`,
+                'error'
               )
             })
             return {}
@@ -157,7 +158,10 @@ export const Offers = ({
       .catch((e) => {
         Sentry.withScope((scope) => {
           scope.setTag('custom-error-type', 'data-processing')
-          Sentry.captureException(`error when filtering offer results ${e}`)
+          Sentry.captureMessage(
+            `error when filtering offer results ${e}`,
+            'error'
+          )
         })
       })
       .finally(() => {
