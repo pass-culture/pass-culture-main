@@ -376,16 +376,16 @@ class GetOffererTest:
         collective_factories.CollectiveStockFactory(collectiveOffer=free_collective_offer, price=0)
         expected_bank_account = finance_factories.BankAccountFactory(offerer=offerer)
         _up_to_date_link = offerers_factories.VenueBankAccountLinkFactory(
-            venueId=venue_linked.id,
-            bankAccountId=expected_bank_account.id,
+            venue=venue_linked,
+            bankAccount=expected_bank_account,
             timespan=(datetime.datetime.utcnow(), None),
         )
         offerers_factories.VenueBankAccountLinkFactory(
-            venueId=expected_venue.id, bankAccountId=expected_bank_account.id, timespan=(datetime.datetime.utcnow(),)
+            venue=expected_venue, bankAccount=expected_bank_account, timespan=(datetime.datetime.utcnow(),)
         )
         offerers_factories.VenueBankAccountLinkFactory(
-            venueId=non_linked_venue.id,
-            bankAccountId=expected_bank_account.id,
+            venue=non_linked_venue,
+            bankAccount=expected_bank_account,
             timespan=(
                 datetime.datetime.utcnow() - datetime.timedelta(days=365),
                 datetime.datetime.utcnow() - datetime.timedelta(days=10),
@@ -469,12 +469,12 @@ class GetOffererTest:
         collective_factories.CollectiveStockFactory(collectiveOffer=collective_offer)
         expected_bank_account = finance_factories.BankAccountFactory(offerer=offerer)
         _up_to_date_link = offerers_factories.VenueBankAccountLinkFactory(
-            venueId=venue_linked.id,
-            bankAccountId=expected_bank_account.id,
+            venue=venue_linked,
+            bankAccount=expected_bank_account,
             timespan=(datetime.datetime.utcnow(), None),
         )
         offerers_factories.VenueBankAccountLinkFactory(
-            venueId=expected_venue.id, bankAccountId=expected_bank_account.id, timespan=(datetime.datetime.utcnow(),)
+            venue=expected_venue, bankAccount=expected_bank_account, timespan=(datetime.datetime.utcnow(),)
         )
 
         # When
