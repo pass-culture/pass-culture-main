@@ -31,7 +31,7 @@ google-api-python-client = "2.113.0"
 google-cloud-storage = "2.14.0"
 google-cloud-tasks = "2.15.0"
 google-cloud-bigquery = "3.16.0"
-gql = {extras = ["requests"], version = "^3.5.0"}
+gql = { extras = ["requests"], version = "^3.5.0" }
 gunicorn = "20.0.4"
 ipaddress = "^1.0.23"
 jinja2 = "3.0.3"
@@ -43,8 +43,8 @@ phonenumberslite = "==8.13.*"
 pillow = ">=8.1.1"
 prometheus-flask-exporter = "^0.23.0"
 psycopg2 = "^2.9.9"
-pydantic = {version = "==2.*", extras = ["email"]}
-pyjwt = {version = "2.8.0", extras = ["crypto"]}
+pydantic = { version = "==2.*", extras = ["email"] }
+pyjwt = { version = "2.8.0", extras = ["crypto"] }
 pysaml2 = "^7.4.2"
 python-dotenv = "1.0.0"
 pyyaml = "6.0.1"
@@ -52,13 +52,13 @@ requests = "2.31.0"
 rq = "1.15.1"
 schwifty = "2024.1.1.post0"
 semver = "3.0.2"
-sentry-sdk = {version = "1.39.2", extras = ["flask"]}
+sentry-sdk = { version = "1.39.2", extras = ["flask"] }
 sib-api-v3-sdk = "^7.6.0"
 spectree = "1.2.1"
 # FIXME (dbaty, 2023-01-04): do not use 1.4.46 that has a new
 # deprecation warning for which we're not ready
 # (https://docs.sqlalchemy.org/en/20/changelog/changelog_14.html#change-e67bfa1efbe52ae40aa842124bc40c51).
-sqlalchemy = {version = "1.4.45", extras = ["mypy"]}
+sqlalchemy = { version = "1.4.45", extras = ["mypy"] }
 slack-sdk = "3.26.2"
 weasyprint = "57.2"
 werkzeug = "2.0.3"
@@ -146,7 +146,7 @@ show_column_numbers = true
 warn_unused_ignores = true
 show_error_codes = true
 warn_redundant_casts = true
-plugins="sqlalchemy.ext.mypy.plugin, pydantic.mypy"
+plugins = "sqlalchemy.ext.mypy.plugin, pydantic.mypy"
 exclude = """
 (?x)(
     tests/.*
@@ -212,8 +212,8 @@ disable = [
     "unused-argument",
     "use-dict-literal",
     "useless-return",
-    "wrong-import-order",    # we have a custom isort config, which pylint can't grok
-    "wrong-import-position",  # same reason
+    "wrong-import-order", # we have a custom isort config, which pylint can't grok
+    "wrong-import-position", # same reason
 ]
 
 [tool.pylint.REPORTS]
@@ -230,12 +230,11 @@ addopts = [
     "--disable-socket",
     # FIXME (dbaty, 2022-12-01): use network range 172.16.0.0/12 once pytest-socket
     # supports it.
-    "--allow-hosts=127.0.0.1,::1,172.18.0.2,172.18.0.3,172.18.0.4,172.19.0.2,172.19.0.3,172.19.0.4,172.20.0.2,172.20.0.3,172.20.0.4,172.21.0.2,192.168.16.2",  # allow connections to local Redis
+    "--allow-hosts=127.0.0.1,::1,172.18.0.2,172.18.0.3,172.18.0.4,172.19.0.2,172.19.0.3,172.19.0.4,172.20.0.2,172.20.0.3,172.20.0.4,172.21.0.2,192.168.16.2", # allow connections to local Redis
 ]
 filterwarnings = [
     # Mark warnings as errors
     "error",
-
     # -------------- Temporary ignored warnings due to SLQAlchemy bump to 1.4 -------------- #
     # FIXME (lixxday, 2022/06/09)
     # Warning on deprecated sqla function as_scalar()
