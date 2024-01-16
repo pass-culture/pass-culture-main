@@ -566,5 +566,5 @@ class VenueBankAccountLinkTest:
         bank_account = finance_factories.BankAccountFactory()
 
         with pytest.raises(IntegrityError):
-            factories.VenueBankAccountLinkFactory(venueId=venue.id, bankAccountId=bank_account.id)
-            factories.VenueBankAccountLinkFactory(venueId=venue.id, bankAccountId=bank_account.id)
+            factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
+            factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
