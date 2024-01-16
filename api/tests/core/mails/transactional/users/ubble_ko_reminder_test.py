@@ -188,15 +188,6 @@ class SendUbbleKoReminderReminderTest:
             and set(request1["user_ids"]) == set(request2["user_ids"])
         )
 
-    def _test_push_has_ko_ubble_status_has_been_sent(self, user_ids: list, error_code: str):
-        request = {
-            "can_be_asynchronously_retried": True,
-            "event_name": "has_ubble_ko_status",
-            "event_payload": {"error_code": error_code},
-            "user_ids": user_ids,
-        }
-        assert any(map(lambda req: self._are_requests_equal(req, request), push_testing.requests))
-
     @override_settings(DAYS_BEFORE_UBBLE_QUICK_ACTION_REMINDER=7)
     def should_send_7_days_reminders(self):
         # Given
@@ -221,13 +212,6 @@ class SendUbbleKoReminderReminderTest:
         assert (
             mails_testing.outbox[1]["template"]
             == sendinblue_template.TransactionalEmail.UBBLE_KO_REMINDER_ID_CHECK_UNPROCESSABLE.value.__dict__
-        )
-
-        self._test_push_has_ko_ubble_status_has_been_sent(
-            [user1.id], fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC.value
-        )
-        self._test_push_has_ko_ubble_status_has_been_sent(
-            [user2.id], fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE.value
         )
 
     @override_settings(DAYS_BEFORE_UBBLE_LONG_ACTION_REMINDER=21)
@@ -257,13 +241,6 @@ class SendUbbleKoReminderReminderTest:
             == sendinblue_template.TransactionalEmail.UBBLE_KO_REMINDER_ID_CHECK_EXPIRED.value.__dict__
         )
 
-        self._test_push_has_ko_ubble_status_has_been_sent(
-            [user1.id], fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED.value
-        )
-        self._test_push_has_ko_ubble_status_has_been_sent(
-            [user2.id], fraud_models.FraudReasonCode.ID_CHECK_EXPIRED.value
-        )
-
     @override_settings(DAYS_BEFORE_UBBLE_QUICK_ACTION_REMINDER=7)
     @pytest.mark.parametrize(
         "reason_code",
@@ -287,7 +264,6 @@ class SendUbbleKoReminderReminderTest:
         # Then
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["To"] == user.email
-        self._test_push_has_ko_ubble_status_has_been_sent([user.id], reason_code.value)
 
     @override_settings(DAYS_BEFORE_UBBLE_QUICK_ACTION_REMINDER=7)
     @pytest.mark.parametrize("reason_code", ubble_constants.REASON_CODES_FOR_QUICK_ACTION_REMINDERS)
@@ -301,7 +277,6 @@ class SendUbbleKoReminderReminderTest:
         # Then
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["To"] == user.email
-        self._test_push_has_ko_ubble_status_has_been_sent([user.id], reason_code.value)
 
     @override_settings(DAYS_BEFORE_UBBLE_LONG_ACTION_REMINDER=21)
     @pytest.mark.parametrize("reason_code", ubble_constants.REASON_CODES_FOR_LONG_ACTION_REMINDERS)
@@ -317,7 +292,6 @@ class SendUbbleKoReminderReminderTest:
         # Then
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["To"] == user.email
-        self._test_push_has_ko_ubble_status_has_been_sent([user.id], reason_code.value)
 
     @override_settings(DAYS_BEFORE_UBBLE_QUICK_ACTION_REMINDER=7)
     @pytest.mark.parametrize("reason_code", ubble_constants.REASON_CODES_FOR_QUICK_ACTION_REMINDERS)
@@ -334,7 +308,6 @@ class SendUbbleKoReminderReminderTest:
         # Then
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["To"] == user.email
-        self._test_push_has_ko_ubble_status_has_been_sent([user.id], reason_code.value)
 
     @override_settings(DAYS_BEFORE_UBBLE_LONG_ACTION_REMINDER=21)
     @pytest.mark.parametrize("reason_code", ubble_constants.REASON_CODES_FOR_LONG_ACTION_REMINDERS)
@@ -354,7 +327,6 @@ class SendUbbleKoReminderReminderTest:
         # Then
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["To"] == user.email
-        self._test_push_has_ko_ubble_status_has_been_sent([user.id], reason_code.value)
 
     @override_settings(DAYS_BEFORE_UBBLE_LONG_ACTION_REMINDER=7)
     @pytest.mark.parametrize(
@@ -379,21 +351,3 @@ class SendUbbleKoReminderReminderTest:
         # Then
         assert not mails_testing.outbox
         assert not push_testing.requests
-
-    @override_settings(DAYS_BEFORE_UBBLE_LONG_ACTION_REMINDER=21)
-    def should_notify_users_after_sending_an_email(self):
-        twenty_one_days_ago = datetime.datetime.utcnow() - relativedelta(days=21)
-        user1 = build_user_with_ko_retryable_ubble_fraud_check(
-            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED], ubble_date_created=twenty_one_days_ago
-        )
-        user2 = build_user_with_ko_retryable_ubble_fraud_check(
-            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_EXPIRED], ubble_date_created=twenty_one_days_ago
-        )
-        user3 = build_user_with_ko_retryable_ubble_fraud_check(
-            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED], ubble_date_created=twenty_one_days_ago
-        )
-
-        send_reminders()
-
-        self._test_push_has_ko_ubble_status_has_been_sent([user1.id, user3.id], "id_check_not_supported")
-        self._test_push_has_ko_ubble_status_has_been_sent([user2.id], "id_check_expired")

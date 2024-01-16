@@ -107,12 +107,3 @@ def track_ubble_ko_event(user_id: int, reason_code: fraud_models.FraudReasonCode
         event_name=event_name, event_payload={"error_code": reason_code.value}, user_id=user_id
     )
     batch_tasks.track_event_task.delay(payload)
-
-
-def bulk_track_ubble_ko_events(users_per_code: dict[fraud_models.FraudReasonCode, list[int]]) -> None:
-    event_name = push_notifications.BatchEvent.HAS_UBBLE_KO_STATUS
-    for reason_code, user_ids in users_per_code.items():
-        payload = batch_tasks.TrackBatchBulkEventRequest(
-            event_name=event_name, event_payload={"error_code": reason_code.value}, user_ids=user_ids
-        )
-        batch_tasks.bulk_track_events_task.delay(payload)

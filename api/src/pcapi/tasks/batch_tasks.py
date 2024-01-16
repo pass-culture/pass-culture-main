@@ -4,7 +4,6 @@ import logging
 
 from pcapi import settings
 import pcapi.notifications.push as push_notifications
-from pcapi.notifications.push import bulk_track_events
 from pcapi.notifications.push import delete_user_attributes
 from pcapi.notifications.push import send_transactional_notification
 from pcapi.notifications.push import track_event
@@ -33,12 +32,6 @@ class TrackBatchEventRequest(BaseModel):
     event_payload: dict
 
 
-class TrackBatchBulkEventRequest(BaseModel):
-    user_ids: list[int]
-    event_name: push_notifications.BatchEvent
-    event_payload: dict
-
-
 @task(settings.GCP_BATCH_CUSTOM_DATA_ANDROID_QUEUE_NAME, "/batch/android/update_user_attributes")  # type: ignore [arg-type]
 def update_user_attributes_android_task(payload: UpdateBatchAttributesRequest) -> None:
     update_user_attributes(BatchAPI.ANDROID, payload.user_id, payload.attributes, can_be_asynchronously_retried=True)
@@ -62,8 +55,3 @@ def send_transactional_notification_task(payload: TransactionalNotificationData)
 @task(settings.GCP_BATCH_CUSTOM_EVENT_QUEUE_NAME, "/batch/track_event")
 def track_event_task(payload: TrackBatchEventRequest) -> None:
     track_event(payload.user_id, payload.event_name, payload.event_payload, can_be_asynchronously_retried=True)
-
-
-@task(settings.GCP_BATCH_CUSTOM_EVENT_QUEUE_NAME, "/batch/bulk_track_events")
-def bulk_track_events_task(payload: TrackBatchBulkEventRequest) -> None:
-    bulk_track_events(payload.user_ids, payload.event_name, payload.event_payload, can_be_asynchronously_retried=True)
