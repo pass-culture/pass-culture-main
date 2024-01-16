@@ -33,7 +33,7 @@ const NoBookingsForPreFiltersMessage = ({
       icon={fullRefresh}
       onClick={resetPreFilters}
     >
-      Afficher toutes les réservations
+      Réinitialiser les filtres
     </Button>
   </div>
 )
