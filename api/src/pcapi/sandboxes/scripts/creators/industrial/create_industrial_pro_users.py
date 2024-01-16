@@ -10,14 +10,6 @@ from pcapi.sandboxes.scripts.mocks.educational_siren_mocks import MOCK_ADAGE_ELI
 logger = logging.getLogger(__name__)
 
 
-PROS_COUNT = 1
-
-pro_users_config = [
-    {"departement_code": "93", "has_adage_eligible_siren": True},
-    {"departement_code": "97", "has_adage_eligible_siren": False},
-]
-
-
 def create_industrial_pro_users(offerers_by_name: dict) -> dict[str, User]:
     logger.info("create_industrial_pro_users")
 
@@ -25,27 +17,35 @@ def create_industrial_pro_users(offerers_by_name: dict) -> dict[str, User]:
 
     offerers = list(offerers_by_name.values())
     adage_eligible_offerers = [offerer for offerer in offerers if offerer.siren == str(MOCK_ADAGE_ELIGIBLE_SIREN)]
-    adage_not_eligible_offerers = [offerer for offerer in offerers if offerer.siren != str(MOCK_ADAGE_ELIGIBLE_SIREN)]
 
-    for _, pro_user_config in enumerate(pro_users_config):
-        for pro_count in range(PROS_COUNT):
-            departement_code = pro_user_config["departement_code"]
-            email = "pctest.pro{}.{}@example.com".format(departement_code, pro_count)
-            user = users_factories.ProFactory(
-                dateOfBirth=None,
-                departementCode=str(departement_code),
-                email=email,
-                firstName="PC Test Pro",
-                lastName="{} {}".format(departement_code, pro_count),
-                postalCode="{}100".format(departement_code),
-            )
-            users_by_name["pro{} {}".format(departement_code, pro_count)] = user
-            user_offerer = (
-                adage_eligible_offerers[0]
-                if pro_user_config["has_adage_eligible_siren"]
-                else adage_not_eligible_offerers[0]
-            )
-            UserOffererFactory(offerer=user_offerer, user=user)
+    pro_retention = users_factories.ProFactory(
+        lastName="PRO",
+        firstName="Retention",
+        email="retention@example.com",
+    )
+    pro_retention_structures = users_factories.ProFactory(
+        lastName="PRO",
+        firstName="Retention Structures",
+        email="retention_structures@example.com",
+    )
+    pro_adage_eligible = users_factories.ProFactory(
+        lastName="PC Test Pro",
+        firstName="97 0",
+        departementCode="97",
+        postalCode="97100",
+        email="pro_adage_eligible@example.com",
+    )
+    # Attach all structures to the retention_structures user
+    for offerer in offerers:
+        UserOffererFactory(offerer=offerer, user=pro_retention_structures)
+    # Pro retention user for only 1 structure
+    UserOffererFactory(offerer=offerers[-1], user=pro_retention)
+    # Pro user with adage eligible structure
+    UserOffererFactory(offerer=adage_eligible_offerers[0], user=pro_adage_eligible)
+
+    users_by_name["pro retention"] = pro_retention
+    users_by_name["pro retention structures"] = pro_retention_structures
+    users_by_name["pro pro adage eligible"] = pro_adage_eligible
 
     repository.save(*users_by_name.values())
 

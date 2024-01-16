@@ -21,10 +21,10 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_iris import c
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_mediations import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_validation_rules import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_tags import create_industrial_offerer_tags
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerers import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerers_stats import (
     create_industrial_offerers_stats,
 )
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerers_with_pro_users import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_pro_users import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_pro_users_api_keys import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_search_objects import (
@@ -58,7 +58,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_offers_with_status impor
 
 def save_industrial_sandbox() -> None:
     create_iris()
-    (offerers_by_name, pro_users_by_name) = create_industrial_offerers_with_pro_users()
+    offerers_by_name = create_industrial_offerers()
 
     admin_users_by_name = create_industrial_admin_users()
     pro_users_by_name = create_industrial_pro_users(offerers_by_name)

@@ -5,7 +5,7 @@ describe('Create an individual offer (thing)', () => {
       Math.floor(1000000000000 + Math.random() * 9000000000000)
     )
     cy.login({
-      email: 'pctest.pro93.0@example.com',
+      email: 'pro_adage_eligible@example.com',
       password: 'user@AZERTY123',
     })
 
