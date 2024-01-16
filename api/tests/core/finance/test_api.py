@@ -2548,16 +2548,24 @@ class GenerateInvoiceHtmlTest:
         )
         api.price_event(incident_booking2_event)
 
+        incident_collective_booking_event = factories.UsedCollectiveBookingFinanceEventFactory(
+            collectiveBooking__collectiveStock__price=30,
+            collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
+            pricingOrderingDate=datetime.datetime.utcnow(),
+        )
+        api.price_event(incident_collective_booking_event)
+
         # Mark incident bookings as already invoiced
         incident_booking1_event.booking.pricings[0].status = models.PricingStatus.INVOICED
         incident_booking2_event.booking.pricings[0].status = models.PricingStatus.INVOICED
+        incident_collective_booking_event.pricings[0].status = models.PricingStatus.INVOICED
 
         incident_events = []
         # create total overpayment incident (30 €)
         booking_total_incident = factories.IndividualBookingFinanceIncidentFactory(
             incident__status=models.IncidentStatus.VALIDATED,
             booking=incident_booking1_event.booking,
-            newTotalAmount=-incident_booking1_event.booking.total_amount * 100,
+            newTotalAmount=0,
         )
         incident_events += api._create_finance_events_from_incident(
             booking_total_incident, datetime.datetime.utcnow(), commit=True
@@ -2571,6 +2579,16 @@ class GenerateInvoiceHtmlTest:
         )
         incident_events += api._create_finance_events_from_incident(
             booking_partial_incident, datetime.datetime.utcnow(), commit=True
+        )
+
+        # create collective total overpayment incident (30 €)
+        collective_booking_total_incident = factories.CollectiveBookingFinanceIncidentFactory(
+            incident__status=models.IncidentStatus.VALIDATED,
+            collectiveBooking=incident_collective_booking_event.collectiveBooking,
+            newTotalAmount=0,
+        )
+        incident_events += api._create_finance_events_from_incident(
+            collective_booking_total_incident, datetime.datetime.utcnow(), commit=True
         )
 
         for event in incident_events:
@@ -2626,18 +2644,21 @@ class GenerateInvoiceHtmlTest:
             collectiveBooking__collectiveStock__collectiveOffer__venue=only_educational_venue,
             collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime.utcnow()
             - datetime.timedelta(days=1),
+            collectiveBooking__venue=only_educational_venue,
         )
         collective_booking_finance_event1 = factories.UsedCollectiveBookingFinanceEventFactory(
             collectiveBooking__collectiveStock__price=5000,
             collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
             collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime.utcnow()
             - datetime.timedelta(days=1),
+            collectiveBooking__venue=venue,
         )
         collective_booking_finance_event2 = factories.UsedCollectiveBookingFinanceEventFactory(
             collectiveBooking__collectiveStock__price=250,
             collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
             collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime.utcnow()
             - datetime.timedelta(days=1),
+            collectiveBooking__venue=venue,
         )
         api.price_event(only_collective_booking_finance_event)
         api.price_event(collective_booking_finance_event1)

@@ -2131,6 +2131,25 @@ def get_reimbursements_by_venue(
         .join(bookings_models.Booking.venue)
         .order_by(offerers_models.Venue.id, offerers_models.Venue.common_name)
     )
+    incident_query = (
+        pricing_query.with_entities(
+            *common_columns,
+            sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
+            models.BookingFinanceIncident.newTotalAmount.label("incident_new_total_amount"),
+            bookings_models.Booking.quantity.label("booking_quantity"),
+            bookings_models.Booking.amount.label("booking_unit_amount"),
+        )
+        .join(models.Pricing.event)
+        .join(models.FinanceEvent.bookingFinanceIncident)
+        .join(models.BookingFinanceIncident.booking)
+        .join(bookings_models.Booking.venue)
+        .group_by(
+            offerers_models.Venue.id,
+            offerers_models.Venue.common_name,
+            models.BookingFinanceIncident.id,
+            bookings_models.Booking.id,
+        )
+    )
     collective_query = (
         pricing_query.with_entities(
             *common_columns,
@@ -2143,8 +2162,36 @@ def get_reimbursements_by_venue(
         .group_by(offerers_models.Venue.id, offerers_models.Venue.common_name)
         .order_by(offerers_models.Venue.id, offerers_models.Venue.common_name)
     )
+    collective_incident_query = (
+        pricing_query.with_entities(
+            *common_columns,
+            sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
+            models.BookingFinanceIncident.newTotalAmount.label("incident_new_total_amount"),
+            educational_models.CollectiveStock.price.label("booking_amount"),
+        )
+        .join(models.Pricing.event)
+        .join(models.FinanceEvent.bookingFinanceIncident)
+        .join(models.BookingFinanceIncident.collectiveBooking)
+        .join(educational_models.CollectiveBooking.venue)
+        .join(educational_models.CollectiveBooking.collectiveStock)
+        .group_by(
+            offerers_models.Venue.id,
+            offerers_models.Venue.common_name,
+            models.BookingFinanceIncident.id,
+            educational_models.CollectiveStock.id,
+        )
+    )
 
     reimbursements_by_venue = {}
+    venue_info_base = {
+        "venue_name": "",
+        "reimbursed_amount": 0,
+        "validated_booking_amount": 0,
+        "individual_amount": 0,
+        "finance_incident_amount": 0,
+        "finance_incident_contribution": 0,
+        "individual_incident_amount": 0,
+    }
     for (venue_id, venue_common_name), bookings in itertools.groupby(query, lambda x: (x.venue_id, x.common_name)):
         validated_booking_amount = decimal.Decimal(0)
         reimbursed_amount = 0
@@ -2158,6 +2205,9 @@ def get_reimbursements_by_venue(
             "reimbursed_amount": reimbursed_amount,
             "validated_booking_amount": -utils.to_eurocents(validated_booking_amount),
             "individual_amount": individual_amount,
+            "finance_incident_amount": 0,
+            "finance_incident_contribution": 0,
+            "individual_incident_amount": 0,
         }
 
     for venue_pricing_info in collective_query:
@@ -2174,7 +2224,43 @@ def get_reimbursements_by_venue(
                 "reimbursed_amount": reimbursed_amount,
                 "validated_booking_amount": booking_amount,
                 "individual_amount": 0,
+                "finance_incident_amount": 0,
+                "finance_incident_contribution": 0,
+                "individual_incident_amount": 0,
             }
+
+    for (venue_id, venue_common_name), bookings in itertools.groupby(
+        incident_query, lambda x: (x.venue_id, x.common_name)
+    ):
+        total_pricing_amount = 0
+        incident_amount = 0
+        for booking in bookings:
+            incident_amount += (
+                booking.booking_unit_amount * booking.booking_quantity * 100
+            ) - booking.incident_new_total_amount
+            total_pricing_amount += booking.pricing_amount
+
+        if venue_id not in reimbursements_by_venue:
+            reimbursements_by_venue[venue_id] = venue_info_base
+            reimbursements_by_venue[venue_id]["venue_name"] = venue_common_name
+        reimbursements_by_venue[venue_id]["finance_incident_amount"] += total_pricing_amount
+        reimbursements_by_venue[venue_id]["finance_incident_contribution"] += incident_amount - total_pricing_amount
+        reimbursements_by_venue[venue_id]["individual_incident_amount"] += total_pricing_amount
+
+    for (venue_id, venue_common_name), bookings in itertools.groupby(
+        collective_incident_query, lambda x: (x.venue_id, x.common_name)
+    ):
+        total_pricing_amount = 0
+        incident_amount = 0
+        for booking in bookings:
+            incident_amount += (booking.booking_amount * 100) - booking.incident_new_total_amount
+            total_pricing_amount += booking.pricing_amount
+
+        if venue_id not in reimbursements_by_venue:
+            reimbursements_by_venue[venue_id] = venue_info_base
+            reimbursements_by_venue[venue_id]["venue_name"] = venue_common_name
+        reimbursements_by_venue[venue_id]["finance_incident_amount"] += total_pricing_amount
+        reimbursements_by_venue[venue_id]["finance_incident_contribution"] += incident_amount - total_pricing_amount
 
     return reimbursements_by_venue.values()
 
