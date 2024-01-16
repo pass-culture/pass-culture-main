@@ -129,7 +129,7 @@ def create_offers_base_list(
                 collectiveOffer__venue=next(venue_iterator),
                 collectiveOffer__nationalProgram=next(national_program_iterator),
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
-                collectiveOffer__author=user_factory.ProFactory(),
+                collectiveOffer__author=user_factory.ProFactory(email="eac_1_lieu@example.com"),
                 collectiveOffer__formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
                 beginningDatetime=datetime.utcnow() + timedelta(days=60),
             )
@@ -252,7 +252,7 @@ def create_offers_base_list(
                 venue=next(venue_iterator),
                 bookingEmails=["toto@totoland.com"],
                 nationalProgram=next(national_program_iterator),
-                author=user_factory.ProFactory(),
+                author=user_factory.ProFactory(email="eac_1_lieu@example.com"),
                 formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
             )
             templates.append(template)

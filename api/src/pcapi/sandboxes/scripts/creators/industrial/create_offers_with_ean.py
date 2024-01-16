@@ -31,7 +31,10 @@ def create_offers_with_ean() -> None:
         )
 
     user_offerer = offerers_factories.UserOffererFactory(
-        user__firstName="Super", user__lastName="Libraire", offerer__name="Réseau de librairies"
+        user__firstName="Super",
+        user__lastName="Libraire",
+        offerer__name="Réseau de librairies",
+        user__email="retention_structures@example.com",
     )
 
     for i in range(1, 11):

@@ -1,7 +1,7 @@
 describe('Create an individual offer (event)', () => {
   it('should create an individual offer', () => {
     cy.login({
-      email: 'pctest.pro93.0@example.com',
+      email: 'pro_adage_eligible@example.com',
       password: 'user@AZERTY123',
     })
 

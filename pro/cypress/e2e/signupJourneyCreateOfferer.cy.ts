@@ -102,7 +102,7 @@ describe.skip('Signup journey', () => {
 
   it('should ask offerer attachment to a user and create new offerer', () => {
     cy.login({
-      email: 'pctest.pro97.0@example.com',
+      email: 'retention@example.com',
       password: 'user@AZERTY123',
       redirectUrl: '/parcours-inscription',
     })
@@ -145,7 +145,7 @@ describe.skip('Signup journey', () => {
 
   it('should attach user to an existing offerer', () => {
     cy.login({
-      email: 'pctest.pro93.0@example.com',
+      email: 'retention@example.com',
       password: 'user@AZERTY123',
       redirectUrl: '/parcours-inscription',
     })
