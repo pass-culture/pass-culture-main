@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
+import Callout from 'components/Callout/Callout'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { Venue } from 'core/Venue/types'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -12,7 +13,7 @@ import strokeValidIcon from 'icons/stroke-valid.svg'
 import { ButtonLink } from 'ui-kit/Button'
 import Button from 'ui-kit/Button/Button'
 import { Select } from 'ui-kit/form'
-import { Banner, Title } from 'ui-kit/index'
+import { Title } from 'ui-kit/index'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './PricingPoint.module.scss'
@@ -82,7 +83,7 @@ const PricingPoint = ({
       )}
 
       {!venue.pricingPoint && isBannerVisible && (
-        <Banner
+        <Callout
           links={[
             {
               href: `https://aide.passculture.app/hc/fr/articles/4413973462929--Acteurs-Culturels-Comment-rattacher-mes-points-de-remboursement-et-mes-coordonn%C3%A9es-bancaires-%C3%A0-un-SIRET-de-r%C3%A9f%C3%A9rence-`,
@@ -90,14 +91,13 @@ const PricingPoint = ({
               icon: fullLinkIcon,
             },
           ]}
-          type="notification-info"
         >
           Si vous souhaitez vous faire rembourser les offres de votre lieu sans
           SIRET, vous devez sélectionner un lieu avec SIRET dans votre structure
           afin de permettre le calcul de votre barème de remboursement.
           Attention, vous ne pourrez plus modifier votre sélection après
           validation.
-        </Banner>
+        </Callout>
       )}
 
       {isConfirmSiretDialogOpen && (
