@@ -39,8 +39,9 @@ const OffersForMyInstitution = (): JSX.Element => {
       } catch (e) {
         Sentry.withScope((scope) => {
           scope.setTag('custom-error-type', 'api')
-          Sentry.captureException(
-            `error when fetching offers for my institution ${e}`
+          Sentry.captureMessage(
+            `error when fetching offers for my institution ${e}`,
+            'error'
           )
         })
       } finally {
