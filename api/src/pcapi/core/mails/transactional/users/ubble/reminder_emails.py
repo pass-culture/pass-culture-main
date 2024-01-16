@@ -1,4 +1,3 @@
-import collections
 import datetime
 import logging
 
@@ -6,7 +5,6 @@ from dateutil.relativedelta import relativedelta
 import sqlalchemy as sqla
 
 from pcapi import settings
-from pcapi.core.external.batch import bulk_track_ubble_ko_events
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.ubble.constants as ubble_constants
 from pcapi.core.mails.transactional import send_subscription_document_error_email
@@ -30,8 +28,6 @@ def send_reminders() -> None:
         reason_codes_filter=list(ubble_constants.REASON_CODES_FOR_LONG_ACTION_REMINDERS),
     )
 
-    users_to_notify_per_code = collections.defaultdict(list)
-
     for user, relevant_reason_code in users_with_quick_actions + users_with_long_actions:
         if not relevant_reason_code:
             logger.error(
@@ -40,10 +36,7 @@ def send_reminders() -> None:
             )
             continue
 
-        users_to_notify_per_code[relevant_reason_code].append(user.id)
         send_subscription_document_error_email(user.email, relevant_reason_code, is_reminder=True)
-
-    bulk_track_ubble_ko_events(users_to_notify_per_code)
 
 
 def _find_users_to_remind(

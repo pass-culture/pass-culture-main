@@ -61,18 +61,3 @@ class TestingBackend(LoggerBackend):
                 "can_be_asynchronously_retried": can_be_asynchronously_retried,
             }
         )
-
-    def bulk_track_events(
-        self, user_ids: list[int], event_name: str, event_payload: dict, can_be_asynchronously_retried: bool = False
-    ) -> None:
-        super().bulk_track_events(
-            user_ids, event_name, event_payload, can_be_asynchronously_retried=can_be_asynchronously_retried
-        )
-        testing.requests.append(
-            {
-                "user_ids": user_ids,
-                "event_name": event_name,
-                "event_payload": event_payload,
-                "can_be_asynchronously_retried": can_be_asynchronously_retried,
-            }
-        )
