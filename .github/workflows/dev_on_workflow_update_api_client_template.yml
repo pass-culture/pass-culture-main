@@ -19,38 +19,31 @@ on:
         required: true
 
 jobs:
+  check-changes-in-api:
+    name: "Check changes in API"
+    uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
+    with:
+      folder: api/**
+  check-changes-in-dependencies:
+    name: "Check changes in dependencies (frontend + backend)"
+    uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
+    with:
+      folder: |
+        api/requirements.txt
+        pro/yarn.lock
   update-api-client:
     name: "Update API Client template"
+    needs: [check-changes-in-api, check-changes-in-dependencies]
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout 🛎️"
         uses: actions/checkout@v4.1.1
         with:
           ref: ${{ github.head_ref }}
-      - name: "Check changes in API"
-        id: "changes-api"
-        uses: dorny/paths-filter@v2
-        if: ${{ inputs.TRIGGER_ONLY_ON_API_CHANGE }}
-        with:
-          filters: |
-            src:
-              - 'api/**'
-      - name: "Get changed files"
-        id: "files"
-        if: ${{ inputs.TRIGGER_ONLY_ON_DEPENDENCY_CHANGE }}
-        uses: Ana06/get-changed-files@v1.2
-      - name: "Check if dependencies changed"
-        id: check-dependency-change
-        run: |
-          for changed_file in ${{ steps.files.outputs.all }}; do
-            if [[ "$changed_file" == "pro/yarn.lock" || "$changed_file" == "api/requirements.txt" ]]; then
-              echo "dependency-change=true" | tee -a $GITHUB_OUTPUT
-            fi
-          done
       - name: "Should run cache"
         id: "evaluate-variables"
         run: |
-          if ${{ (!inputs.TRIGGER_ONLY_ON_API_CHANGE && !inputs.TRIGGER_ONLY_ON_DEPENDENCY_CHANGE) || (inputs.TRIGGER_ONLY_ON_API_CHANGE && steps.changes-api.outputs.src == 'true') || (inputs.TRIGGER_ONLY_ON_DEPENDENCY_CHANGE && steps.check-dependency-change.outputs.dependency-change == 'true') }}; then
+          if ${{ (!inputs.TRIGGER_ONLY_ON_API_CHANGE && !inputs.TRIGGER_ONLY_ON_DEPENDENCY_CHANGE) || (inputs.TRIGGER_ONLY_ON_API_CHANGE && needs.check-changes-in-api.outputs.folder_changed == 'true') || (inputs.TRIGGER_ONLY_ON_DEPENDENCY_CHANGE && needs.check-changes-in-dependencies.outputs.folder_changed == 'true') }}; then
             echo "should-run-cache=true" | tee -a $GITHUB_OUTPUT
           else
             echo "should-run-cache=false" | tee -a $GITHUB_OUTPUT
