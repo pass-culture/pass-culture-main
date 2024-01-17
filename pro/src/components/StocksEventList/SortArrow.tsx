@@ -11,9 +11,14 @@ import styles from './SortArrow.module.scss'
 interface SortArrowProps {
   sortingMode: SortingMode
   onClick: () => void
+  children?: React.ReactNode
 }
 
-export const SortArrow = ({ sortingMode, onClick }: SortArrowProps) => (
+export const SortArrow = ({
+  sortingMode,
+  onClick,
+  children,
+}: SortArrowProps) => (
   <button type="button" className={styles['sorting-icons']} onClick={onClick}>
     {sortingMode !== SortingMode.NONE ? (
       sortingMode === SortingMode.DESC ? (
@@ -35,5 +40,6 @@ export const SortArrow = ({ sortingMode, onClick }: SortArrowProps) => (
         <SvgIcon src={fullDownIcon} alt="" />
       </span>
     )}
+    {children}
   </button>
 )
