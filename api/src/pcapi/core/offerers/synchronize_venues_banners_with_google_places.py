@@ -4,6 +4,7 @@ import googlemaps
 import pydantic
 
 from pcapi import settings
+from pcapi.core.object_storage import delete_public_object
 from pcapi.core.object_storage import store_public_object
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
@@ -43,7 +44,7 @@ class PlaceResponse(pydantic.BaseModel):
     status: str
 
 
-def get_venues_without_photo(begin: int, end: int, limit: int | None = None) -> list[offerers_models.Venue]:
+def get_venues_without_photo(begin: int, end: int | None, limit: int | None = None) -> list[offerers_models.Venue]:
     query = (
         offerers_models.Venue.query.join(offerers_models.Offerer)
         .filter(
@@ -51,10 +52,12 @@ def get_venues_without_photo(begin: int, end: int, limit: int | None = None) -> 
             offerers_models.Venue.bannerUrl.is_(None),  # type: ignore [attr-defined]
             offerers_models.Venue.venueTypeCode != "Lieu administratif",
             offerers_models.Offerer.isActive.is_(True),
-            offerers_models.Venue.id.between(begin, end),
+            offerers_models.Venue.id >= begin,
         )
         .order_by(offerers_models.Venue.id)
     )
+    if end is not None:
+        query = query.filter(offerers_models.Venue.id <= end)
     if limit is not None:
         query = query.limit(limit)
     venues = query.all()
@@ -117,13 +120,15 @@ def save_photo_to_gcp(venue_id: int, photo: PlacePhoto, prefix: str) -> str:
     return settings.OBJECT_STORAGE_URL + "/" + GOOGLE_PLACES_BANNER_STORAGE_FOLDER + "/" + object_id
 
 
-def synchronize_venues_banners_with_google_places(begin: int, end: int, limit: int | None = None) -> None:
-    venues_without_photos = get_venues_without_photo(begin, end, limit)
+def synchronize_venues_banners_with_google_places(
+    start_venue_id: int, end_venue_id: int | None, limit: int | None
+) -> None:
+    venues_without_photos = get_venues_without_photo(start_venue_id, end_venue_id, limit)
     print("the number of venues is:", len(venues_without_photos))
     logger.info(
         "[gmaps_banner_synchro] synchronize_venues_banners_with_google_places %s %s %s: the number of venues tried: %s",
-        begin,
-        end,
+        start_venue_id,
+        end_venue_id,
         limit,
         len(venues_without_photos),
     )
@@ -172,5 +177,49 @@ def synchronize_venues_banners_with_google_places(begin: int, end: int, limit: i
             "nb_places_found": nb_places_found,
             "nb_places_with_photo": nb_places_with_photo,
             "nb_places_with_owner_photo": nb_places_with_owner_photo,
+        },
+    )
+
+
+def delete_venues_banners(start_venue_id: int, end_venue_id: int | None, limit: int | None) -> None:
+    logger.info(
+        "deleting old google places banners",
+        extra={
+            "begin": start_venue_id,
+            "end": end_venue_id,
+            "limit": limit,
+        },
+    )
+    google_places_info_query = offerers_models.GooglePlacesInfo.query.filter(
+        offerers_models.GooglePlacesInfo.venueId >= start_venue_id,
+        offerers_models.GooglePlacesInfo.bannerUrl.is_not(None),
+    ).order_by(offerers_models.GooglePlacesInfo.venueId)
+    nb_deleted_banners = 0
+    if end_venue_id is not None:
+        google_places_info_query = google_places_info_query.filter(
+            offerers_models.GooglePlacesInfo.venueId <= end_venue_id
+        )
+    if limit is not None:
+        google_places_info_query = google_places_info_query.limit(limit)
+    for place_info in google_places_info_query:
+        try:
+            delete_public_object(GOOGLE_PLACES_BANNER_STORAGE_FOLDER, place_info.bannerUrl.split("/")[-1])
+        except Exception as e:  # pylint: disable=broad-except
+            logger.exception(
+                "error deleting google banner %s for venue %s: %s",
+                place_info.bannerUrl,
+                place_info.venueId,
+                e,
+                extra={"banner_url": place_info.bannerUrl, "venue_id": place_info.venueId, "error": e},
+            )
+            continue
+        nb_deleted_banners += 1
+        place_info.bannerUrl = None
+        place_info.bannerMeta = None
+    db.session.commit()
+    logger.info(
+        "deleted old google places banners",
+        extra={
+            "number of banners deleted": nb_deleted_banners,
         },
     )
