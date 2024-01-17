@@ -260,7 +260,18 @@ class CashflowFactory(BaseFactory):
     batch = factory.SubFactory(CashflowBatchFactory)
     status = models.CashflowStatus.ACCEPTED
     reimbursementPoint = None
-    bankInformation = factory.LazyAttribute(lambda cashflow: cashflow.reimbursementPoint.bankInformation)
+
+    @factory.lazy_attribute
+    def bankInformation(self) -> models.BankInformation | None:
+        if self.reimbursementPoint is not None:
+            return self.reimbursementPoint.bankInformation
+        return None
+
+    @factory.lazy_attribute
+    def bankAccount(self) -> models.BankAccount | None:
+        if self.reimbursementPoint is None:
+            return factory.SubFactory(BankAccountFactory)
+        return None
 
 
 # Factories below are deprecated and should probably NOT BE USED in
