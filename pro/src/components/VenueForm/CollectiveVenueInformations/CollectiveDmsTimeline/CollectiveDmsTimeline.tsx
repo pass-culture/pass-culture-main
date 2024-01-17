@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
