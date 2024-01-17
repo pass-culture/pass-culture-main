@@ -165,6 +165,7 @@ class UserProfileResponse(BaseModel):
     id: int
     isBeneficiary: bool
     isEligibleForBeneficiaryUpgrade: bool
+    hasPassword: bool
     lastName: str | None
     needsToFillCulturalSurvey: bool
     phoneNumber: str | None
@@ -225,6 +226,7 @@ class UserProfileResponse(BaseModel):
         user.subscriptionMessage = user_subscription_state.subscription_message
         user.status = user_subscription_state.young_status
         user.requires_id_check = subscription_api.requires_identity_check_step(user)
+        user.hasPassword = user.password is not None
 
         serialized_user = super().from_orm(user)
 

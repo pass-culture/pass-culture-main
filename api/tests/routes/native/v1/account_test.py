@@ -96,7 +96,7 @@ class AccountTest:
             dateOfBirth=datetime(2000, 1, 1),
             # The expiration date is taken in account in
             # `get_wallet_balance` and compared against the SQL
-            # `now()` function, which is NOT overriden by
+            # `now()` function, which is NOT overridden by
             # `freeze_time()`.
             deposit__expirationDate=datetime(2040, 1, 1),
             notificationSubscriptions={"marketing_push": True},
@@ -126,6 +126,7 @@ class AccountTest:
             "eligibility": "age-18",
             "eligibilityEndDatetime": "2019-01-11T11:00:00Z",
             "eligibilityStartDatetime": "2015-01-11T00:00:00Z",
+            "hasPassword": True,
             "isBeneficiary": True,
             "isEligibleForBeneficiaryUpgrade": False,
             "roles": ["BENEFICIARY"],
@@ -363,6 +364,16 @@ class AccountTest:
         response = client.get("/native/v1/me")
         assert response.status_code == 200
         assert response.json["needsToFillCulturalSurvey"] is True
+
+    def test_user_without_password(self, client):
+        sso = users_factories.SingleSignOnFactory()
+        user = sso.user
+        user.password = None
+
+        response = client.with_token(user.email).get("/native/v1/me")
+
+        assert response.status_code == 200, response.json
+        assert response.json["hasPassword"] == False
 
 
 class AccountCreationTest:
