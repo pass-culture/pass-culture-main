@@ -31,6 +31,8 @@ else color=""; fi
 color_reset="\x1b[0m"
 prompt="${color}${environment}>${color_reset} "
 
+config_path="$(dirname $0)/../etc/pgcli.ini"
+
 # `--prompt` is manually added here, I don't know how to properly
 # quote it to include the trailing space.
-pgcli ${args} --prompt "${prompt}"
+pgcli ${args} --prompt "${prompt}" --pgclirc "${config_path}"
