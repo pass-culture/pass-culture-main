@@ -6778,10 +6778,10 @@ ini@^1.3.5:
   resolved "https://registry.yarnpkg.com/ini/-/ini-1.3.8.tgz#a29da425b48806f34767a4efce397269af28432c"
   integrity sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew==
 
-instantsearch.js@4.63.0:
-  version "4.63.0"
-  resolved "https://registry.yarnpkg.com/instantsearch.js/-/instantsearch.js-4.63.0.tgz#49c86a5afacd5b66a6fe28d4453409931ef3017a"
-  integrity sha512-Bk46LO6hpaFHkeDIjAV7+xgq+1a5zOq7lKUen9KfW4EoA1JVn26HEeAjW8cvHwHp1phL9mgu/Q3CQ075+6V9hg==
+instantsearch.js@4.63.1:
+  version "4.63.1"
+  resolved "https://registry.yarnpkg.com/instantsearch.js/-/instantsearch.js-4.63.1.tgz#ae76f37d95cebd56c3eef24c57de94830dca6665"
+  integrity sha512-40pUYH0oG1BACUf7Ae05cEIFXFqZKBGdP2dqWLjiFx6hCRxRz0QDNF0QxC64k17BfkPOpElzYHZh4q4MZ79hqw==
   dependencies:
     "@algolia/events" "^4.0.1"
     "@algolia/ui-components-highlight-vdom" "^1.2.2"
@@ -8844,24 +8844,24 @@ react-inspector@6.0.2:
   resolved "https://registry.yarnpkg.com/react-inspector/-/react-inspector-6.0.2.tgz#aa3028803550cb6dbd7344816d5c80bf39d07e9d"
   integrity sha512-x+b7LxhmHXjHoU/VrFAzw5iutsILRoYyDq97EDYdFpPLcvqtEzk4ZSZSQjnFPbr5T57tLXnHcqFYoN1pI6u8uQ==
 
-react-instantsearch-core@7.5.0:
-  version "7.5.0"
-  resolved "https://registry.yarnpkg.com/react-instantsearch-core/-/react-instantsearch-core-7.5.0.tgz#c6c9fcd662bf88cf8f76e59283f33f77ad300de4"
-  integrity sha512-MtIT4jTpREs19g7M6AaiAyb44BgGl4QJGumtYauN8fpvpH0yyEzEKQZ5wduNKAuqNCcEZp9FM566pouOuQJhWg==
+react-instantsearch-core@7.5.1:
+  version "7.5.1"
+  resolved "https://registry.yarnpkg.com/react-instantsearch-core/-/react-instantsearch-core-7.5.1.tgz#7c92d5a8e4d1f7d5448edc452d6ee4e487b487e1"
+  integrity sha512-CNT8I/bnKQD4wHqS1zwVcIHzshOU3MXSy0M/aS8JrNUaHxGPwcn35dr5qDdoyVwfkTAa+WGMAzXegGf0/2W2SQ==
   dependencies:
     "@babel/runtime" "^7.1.2"
     algoliasearch-helper "3.16.1"
-    instantsearch.js "4.63.0"
+    instantsearch.js "4.63.1"
     use-sync-external-store "^1.0.0"
 
-react-instantsearch@^7.5.0:
-  version "7.5.0"
-  resolved "https://registry.yarnpkg.com/react-instantsearch/-/react-instantsearch-7.5.0.tgz#35e5fc822a0ddca28be1ad0eab45c0af4e8ea394"
-  integrity sha512-OoK9CS1c+wHnzaz/TEVcfvc4BmGVaJIstImj097+vHhM00YeN9w4IcNA3PQaufIANjWoVCLF8CbEE0TAIeB24Q==
+react-instantsearch@^7.5.1:
+  version "7.5.1"
+  resolved "https://registry.yarnpkg.com/react-instantsearch/-/react-instantsearch-7.5.1.tgz#6c1b3eb674fdb68e7d7d00f6476829d9ee2a8870"
+  integrity sha512-IX+RngzwrPBO8WNbuZajvNvnlt4WTvxzvUHDdWo1FKz2f2QtDd2PCG9IePQAivb+3hsazZHYOM2XQ8L2EIwehQ==
   dependencies:
     "@babel/runtime" "^7.1.2"
-    instantsearch.js "4.63.0"
-    react-instantsearch-core "7.5.0"
+    instantsearch.js "4.63.1"
+    react-instantsearch-core "7.5.1"
 
 react-is@18.1.0:
   version "18.1.0"
