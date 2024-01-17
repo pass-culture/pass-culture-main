@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { format } from 'date-fns'
+import { compareAsc, format } from 'date-fns'
 
 import { InvoiceResponseModel } from 'apiClient/v1'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
@@ -27,74 +27,62 @@ enum InvoicesOrderedBy {
   DOCUMENT_TYPE = 'documentType',
 }
 
-function sortByDate(
-  invoiceA: InvoiceResponseModel,
-  invoiceB: InvoiceResponseModel
-) {
-  const invoiceDateA = new Date(invoiceA.date)
-  const invoiceDateB = new Date(invoiceB.date)
-  if (invoiceDateA > invoiceDateB) {
-    return 1
-  } else if (invoiceDateA < invoiceDateB) {
-    return -1
-  }
-  return 0
-}
-
-function sortByAlphabeticalOrder(wordA: string, wordB: string) {
-  if (wordA > wordB) {
-    return 1
-  } else if (wordA < wordB) {
-    return -1
-  }
-  return 0
-}
-
 function sortInvoices(
   invoices: InvoiceResponseModel[],
   currentSortingColumn: InvoicesOrderedBy | null,
   sortingMode: SortingMode
 ) {
+  if (sortingMode === SortingMode.NONE) {
+    return invoices
+  }
   switch (currentSortingColumn) {
     case InvoicesOrderedBy.DATE:
-      return invoices.sort(
-        (a, b) => sortByDate(a, b) * (sortingMode === SortingMode.ASC ? 1 : -1)
+      return [...invoices].sort((a, b) =>
+        sortingMode === SortingMode.ASC
+          ? compareAsc(new Date(a.date), new Date(b.date))
+          : compareAsc(new Date(b.date), new Date(a.date))
       )
 
+    // TODO : remove me when removing WIP_ENABLE_FINANCE_INCIDENT
     case InvoicesOrderedBy.REIMBURSEMENT_POINT_NAME:
-      return invoices.sort(
-        (a, b) =>
-          sortByAlphabeticalOrder(
-            a.reimbursementPointName || '',
-            b.reimbursementPointName || ''
-          ) * (sortingMode === SortingMode.ASC ? 1 : -1)
-      )
-
-    case InvoicesOrderedBy.REFERENCE:
-      return invoices.sort(
-        (a, b) =>
-          sortByAlphabeticalOrder(a.reference, b.reference) *
-          (sortingMode === SortingMode.ASC ? 1 : -1)
-      )
-
-    case InvoicesOrderedBy.CASHFLOW_LABELS:
-      return invoices.sort(
-        (a, b) =>
-          sortByAlphabeticalOrder(a.cashflowLabels[0], b.cashflowLabels[0]) *
-          (sortingMode === SortingMode.ASC ? 1 : -1)
+      return [...invoices].sort((a, b) =>
+        sortingMode === SortingMode.ASC
+          ? (a.reimbursementPointName ?? '').localeCompare(
+              b.reimbursementPointName ?? ''
+            )
+          : (b.reimbursementPointName ?? '').localeCompare(
+              a.reimbursementPointName ?? ''
+            )
       )
 
     case InvoicesOrderedBy.DOCUMENT_TYPE:
-      return invoices.sort(
-        (a, b) =>
-          sortByAlphabeticalOrder(
-            a.amount >= 0 ? 'a (first)' : 'z (last)',
-            b.amount >= 0 ? 'a (first)' : 'z (last)'
-          ) * (sortingMode === SortingMode.ASC ? 1 : -1)
+      return [...invoices].sort((a, b) => {
+        // document type is juste assumed from amount :
+        // 1 for positive amount, -1 for negative amount
+        const documentTypeA = a.amount >= 0 ? 1 : -1
+        const documentTypeB = b.amount >= 0 ? 1 : -1
+
+        return sortingMode === SortingMode.ASC
+          ? documentTypeA - documentTypeB
+          : documentTypeB - documentTypeA
+      })
+
+    case InvoicesOrderedBy.REFERENCE:
+      return [...invoices].sort((a, b) =>
+        sortingMode === SortingMode.ASC
+          ? a.reference.localeCompare(b.reference)
+          : b.reference.localeCompare(a.reference)
+      )
+
+    case InvoicesOrderedBy.CASHFLOW_LABELS:
+      return [...invoices].sort((a, b) =>
+        sortingMode === SortingMode.ASC
+          ? a.cashflowLabels[0].localeCompare(b.cashflowLabels[0])
+          : b.cashflowLabels[0].localeCompare(a.cashflowLabels[0])
       )
 
     default:
-      return invoices.sort((a, b) => sortByDate(a, b) * -1)
+      return invoices
   }
 }
 
