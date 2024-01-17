@@ -170,6 +170,70 @@ describe('reimbursementsWithFilters', () => {
     expect(reimbursementCells[15].innerHTML).toContain('VIR7')
   })
 
+  it('should contain sort informations for a11y', async () => {
+    renderReimbursementsInvoices({
+      features: ['WIP_ENABLE_FINANCE_INCIDENT'],
+    })
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    // All cases for first column
+    await userEvent.click(
+      screen.getAllByRole('img', {
+        name: 'Trier par ordre croissant',
+      })[0]
+    )
+    expect(
+      screen.getByText('Tri par date ascendant activé.')
+    ).toBeInTheDocument()
+
+    await userEvent.click(
+      screen.getAllByRole('img', {
+        name: 'Trier par ordre décroissant',
+      })[0]
+    )
+    expect(
+      screen.getByText('Tri par date descendant activé.')
+    ).toBeInTheDocument()
+
+    await userEvent.click(
+      screen.getAllByRole('img', {
+        name: 'Ne plus trier',
+      })[0]
+    )
+    expect(
+      screen.getByText('Tri par date par défaut activé.')
+    ).toBeInTheDocument()
+
+    // One case for others columns
+    await userEvent.click(
+      screen.getAllByRole('img', {
+        name: 'Trier par ordre croissant',
+      })[1]
+    )
+    expect(
+      screen.getByText('Tri par type de document ascendant activé.')
+    ).toBeInTheDocument()
+
+    await userEvent.click(
+      screen.getAllByRole('img', {
+        name: 'Trier par ordre croissant',
+      })[1]
+    )
+    expect(
+      screen.getByText('Tri par n° de justificatif ascendant activé.')
+    ).toBeInTheDocument()
+
+    await userEvent.click(
+      screen.getAllByRole('img', {
+        name: 'Trier par ordre croissant',
+      })[2]
+    )
+    expect(
+      screen.getByText('Tri par n° de virement ascendant activé.')
+    ).toBeInTheDocument()
+  })
+
   it('should not display invoice banner if FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is off', async () => {
     renderReimbursementsInvoices()
 
