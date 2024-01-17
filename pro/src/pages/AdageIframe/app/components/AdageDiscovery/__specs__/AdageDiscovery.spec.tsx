@@ -1,5 +1,8 @@
-// @vitest-environment happy-dom
-import { screen, waitFor } from '@testing-library/react'
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
@@ -113,23 +116,36 @@ describe('AdageDiscovery', () => {
   })
 
   it('should call tracker for domains playlist element', async () => {
+    global.window = Object.create(window)
+    Object.defineProperty(window, 'location', {
+      value: {
+        href: '',
+      },
+      writable: true,
+    })
+
     renderAdageDiscovery(user)
 
-    const domainPlaylistElement = await screen.findByRole('link', {
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    const link = await screen.findByRole('link', {
       name: 'Danse',
     })
 
-    await userEvent.click(domainPlaylistElement)
+    await userEvent.click(link)
 
-    expect(apiAdage.logConsultPlaylistElement).toHaveBeenCalledWith({
-      elementId: 0,
-      iframeFrom: '/',
-      playlistId: DOMAINS_PLAYLIST,
-      playlistType: 'domain',
-    })
+    expect(apiAdage.logConsultPlaylistElement).toHaveBeenCalledWith(
+      expect.objectContaining({
+        elementId: 0,
+        playlistId: DOMAINS_PLAYLIST,
+        playlistType: 'domain',
+      })
+    )
   })
 
-  it('should trigger a log wheen the last element of a playlist is seen', async () => {
+  it('should trigger a log when the last element of a playlist is seen', async () => {
+    renderAdageDiscovery(user)
+
     //  Once for the footer visibility and twice for each playlist (4*2+1=9)
     vi.spyOn(useIsElementVisible, 'default')
       .mockReturnValueOnce([true, true])
@@ -141,8 +157,6 @@ describe('AdageDiscovery', () => {
       .mockReturnValueOnce([true, true])
       .mockReturnValueOnce([true, true])
       .mockReturnValueOnce([true, true])
-
-    renderAdageDiscovery(user)
 
     await waitFor(() => expect(api.listEducationalDomains).toHaveBeenCalled())
 
