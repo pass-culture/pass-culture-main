@@ -29,7 +29,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
     with:
       folder: |
-        api/requirements.txt
+        api/poetry.lock
         pro/yarn.lock
   update-api-client:
     name: "Update API Client template"
