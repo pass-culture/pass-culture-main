@@ -4,7 +4,6 @@ import {
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
 import { api } from 'apiClient/api'
 import {
@@ -38,7 +37,7 @@ const renderReimbursementsInvoices = (options?: RenderWithProvidersOptions) => {
 const BASE_INVOICES = [
   {
     reference: 'J123456789',
-    date: '13-02-2022',
+    date: '2022-11-02',
     amount: 100,
     url: 'J123456789.invoice',
     reimbursementPointName: 'First reimbursement point',
@@ -46,15 +45,15 @@ const BASE_INVOICES = [
   },
   {
     reference: 'J666666666',
-    date: '11-03-2022',
-    amount: 50,
+    date: '2022-11-03',
+    amount: -50,
     url: 'J666666666.invoice',
     reimbursementPointName: 'Second reimbursement point',
     cashflowLabels: ['VIR4'],
   },
   {
     reference: 'J987654321',
-    date: '10-02-2022',
+    date: '2022-10-02',
     amount: 75,
     url: 'J987654321.invoice',
     reimbursementPointName: 'First reimbursement point',
@@ -100,25 +99,25 @@ describe('reimbursementsWithFilters', () => {
     expect(screen.queryAllByRole('columnheader').length).toEqual(5)
 
     const firstLine = [
-      '10-02-2022',
+      '02/10/2022',
       'First reimbursement point',
       'J987654321',
       'VIR9, VIR12',
-      '75,00&nbsp;€',
+      '+75,00&nbsp;€',
     ]
     const secondLine = [
-      '11-03-2022',
-      'Second reimbursement point',
-      'J666666666',
-      'VIR4',
-      '50,00&nbsp;€',
-    ]
-    const thirdLine = [
-      '13-02-2022',
+      '02/11/2022',
       'First reimbursement point',
       'J123456789',
       'VIR7',
-      '100,00&nbsp;€',
+      '+100,00&nbsp;€',
+    ]
+    const thirdLine = [
+      '03/11/2022',
+      'Second reimbursement point',
+      'J666666666',
+      'N/A',
+      '-50,00&nbsp;€',
     ]
 
     await waitFor(() => {
@@ -128,9 +127,9 @@ describe('reimbursementsWithFilters', () => {
       expect(reimbursementCells.slice(0, 5)).toEqual(firstLine)
       expect(reimbursementCells[5]).toContain('J987654321.invoice')
       expect(reimbursementCells.slice(6, 11)).toEqual(secondLine)
-      expect(reimbursementCells[11]).toContain('J666666666.invoice')
+      expect(reimbursementCells[11]).toContain('J123456789.invoice')
       expect(reimbursementCells.slice(12, 17)).toEqual(thirdLine)
-      expect(reimbursementCells[17]).toContain('J123456789.invoice')
+      expect(reimbursementCells[17]).toContain('J666666666.invoice')
     })
   })
 
@@ -151,23 +150,23 @@ describe('reimbursementsWithFilters', () => {
     await waitFor(() => {
       expect(reimbursementCells[3].innerHTML).toContain('VIR9, VIR12')
     })
-    expect(reimbursementCells[9].innerHTML).toContain('VIR4')
-    expect(reimbursementCells[15].innerHTML).toContain('VIR7')
+    expect(reimbursementCells[9].innerHTML).toContain('VIR7')
+    expect(reimbursementCells[15].innerHTML).toContain('N/A')
     const orderButton = screen.getAllByRole('img', {
       name: 'Trier par ordre croissant',
     })[3]
     await userEvent.click(orderButton)
 
     let refreshedCells = screen.queryAllByRole('cell')
-    expect(refreshedCells[3].innerHTML).toContain('VIR4')
+    expect(refreshedCells[3].innerHTML).toContain('N/A')
     expect(refreshedCells[9].innerHTML).toContain('VIR7')
     expect(refreshedCells[15].innerHTML).toContain('VIR9, VIR12')
 
     await userEvent.click(orderButton)
     refreshedCells = screen.queryAllByRole('cell')
     expect(reimbursementCells[3].innerHTML).toContain('VIR9, VIR12')
-    expect(reimbursementCells[9].innerHTML).toContain('VIR4')
-    expect(reimbursementCells[15].innerHTML).toContain('VIR7')
+    expect(reimbursementCells[9].innerHTML).toContain('VIR7')
+    expect(reimbursementCells[15].innerHTML).toContain('N/A')
   })
 
   it('should contain sort informations for a11y', async () => {
