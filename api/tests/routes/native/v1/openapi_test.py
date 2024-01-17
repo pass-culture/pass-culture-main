@@ -1727,6 +1727,7 @@ def test_public_api(client):
                         },
                         "email": {"title": "Email", "type": "string"},
                         "firstName": {"nullable": True, "title": "Firstname", "type": "string"},
+                        "hasPassword": {"title": "Haspassword", "type": "boolean"},
                         "id": {"title": "Id", "type": "integer"},
                         "isBeneficiary": {"title": "Isbeneficiary", "type": "boolean"},
                         "isEligibleForBeneficiaryUpgrade": {
@@ -1754,6 +1755,7 @@ def test_public_api(client):
                         "id",
                         "isBeneficiary",
                         "isEligibleForBeneficiaryUpgrade",
+                        "hasPassword",
                         "needsToFillCulturalSurvey",
                         "requiresIdCheck",
                         "roles",
