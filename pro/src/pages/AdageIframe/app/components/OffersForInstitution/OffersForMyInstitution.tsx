@@ -1,110 +1,130 @@
-import algoliasearch from 'algoliasearch/lite'
-import React from 'react'
-import { Configure, InstantSearch } from 'react-instantsearch'
+import * as Sentry from '@sentry/react'
+import { useEffect, useState } from 'react'
 
+import { apiAdage } from 'apiClient/api'
 import Callout from 'components/Callout/Callout'
 import fullLinkIcon from 'icons/full-link.svg'
 import strokeMyInstitution from 'icons/stroke-my-institution.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import {
-  ALGOLIA_API_KEY,
-  ALGOLIA_APP_ID,
-  ALGOLIA_COLLECTIVE_OFFERS_INDEX,
-} from 'utils/config'
 
-import useAdageUser from '../../hooks/useAdageUser'
 import { AnalyticsContextProvider } from '../../providers/AnalyticsContextProvider'
-import { algoliaSearchDefaultAttributesToRetrieve } from '../OffersInstantSearch/OffersInstantSearch'
-import { Offers } from '../OffersInstantSearch/OffersSearch/Offers/Offers'
+import { HydratedCollectiveOffer } from '../../types/offers'
+import Offer from '../OffersInstantSearch/OffersSearch/Offers/Offer'
 
 import styles from './OffersForMyInstitution.module.scss'
 
-const searchClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_API_KEY)
-
 const OffersForMyInstitution = (): JSX.Element => {
-  const {
-    adageUser: { offersCount, uai },
-  } = useAdageUser()
   const params = new URLSearchParams(location.search)
   const adageAuthToken = params.get('token')
+  const [myInstitutionOffers, setMyInstitutionOffers] = useState<
+    HydratedCollectiveOffer[]
+  >([])
+  const [loadingOffers, setLoadingOffers] = useState<boolean>(false)
+
+  useEffect(() => {
+    async function getMyInstitutionOffers() {
+      setLoadingOffers(true)
+      try {
+        const offers = await apiAdage.getCollectiveOffersForMyInstitution()
+
+        setMyInstitutionOffers(
+          offers.collectiveOffers.map((offer) => ({
+            ...offer,
+            isTemplate: false,
+          }))
+        )
+      } catch (e) {
+        Sentry.withScope((scope) => {
+          scope.setTag('custom-error-type', 'api')
+          Sentry.captureException(
+            `error when fetching offers for my institution ${e}`
+          )
+        })
+      } finally {
+        setLoadingOffers(false)
+      }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    getMyInstitutionOffers()
+  }, [])
+
+  if (loadingOffers) {
+    return <Spinner message="Chargement en cours" />
+  }
 
   return (
-    <InstantSearch
-      indexName={ALGOLIA_COLLECTIVE_OFFERS_INDEX}
-      searchClient={searchClient}
-    >
-      <Configure
-        attributesToHighlight={[]}
-        attributesToRetrieve={algoliaSearchDefaultAttributesToRetrieve}
-        clickAnalytics
-        facetFilters={[`offer.educationalInstitutionUAICode:${uai}`]}
-        hitsPerPage={8}
-        distinct={false}
-      />
-      <AnalyticsContextProvider>
-        <h1>Pour mon établissement</h1>
-        <Callout
-          className={styles['my-institution-callout']}
-          links={[
-            {
-              href: `${document.referrer}adage/passculture/index`,
-              isExternal: true,
-              icon: fullLinkIcon,
-              linkTitle: 'Voir la page “Suivi pass Culture”',
-              svgAlt: 'Nouvelle fenêtre',
-            },
-          ]}
-        >
-          <p className={styles['callout-text']}>
-            Retrouvez sur cette page les offres destinées aux professeurs de
-            votre établissement et rédigées par les acteurs culturels
-            partenaires de l’établissement scolaire.
-          </p>
-          <p className={styles['callout-text']}>
-            Le contenu, la date et le montant de chaque offre ont été définis
-            lors d’échanges entre un professeur et la structure culturelle
-            concernée.
-          </p>
-          <p>
-            Processus : vous cliquez sur “Préréserver” l’offre qui vous est
-            destinée. L’offre va disparaitre de cette page, mais vous pourrez la
-            retrouver dans la page “Suivi pass Culture”. Puis, vous associerez
-            l’offre à votre projet pédagogique dans la page “Les projets”.
-            Enfin, votre chef d’établissement confirmera la réservation de
-            l’offre dans “Suivi pass Culture”.
-          </p>
-        </Callout>
-        {offersCount === 0 ? (
-          <div className={styles['no-results']}>
-            <SvgIcon
-              src={strokeMyInstitution}
-              alt=""
-              viewBox="0 0 375 154"
-              width="375"
-              className={styles['no-results-svg']}
-            />
-            <div>
-              <h2 className={styles['no-results-title']}>
-                Vous n’avez pas d’offre à préréserver
-              </h2>
-              <ButtonLink
-                link={{
-                  to: `/adage-iframe/recherche?token=${adageAuthToken}`,
-                  isExternal: false,
-                }}
-                variant={ButtonVariant.PRIMARY}
-              >
-                Explorer le catalogue
-              </ButtonLink>
-            </div>
+    <AnalyticsContextProvider>
+      <h1>Pour mon établissement</h1>
+      <Callout
+        className={styles['my-institution-callout']}
+        links={[
+          {
+            href: `${document.referrer}adage/passculture/index`,
+            isExternal: true,
+            icon: fullLinkIcon,
+            linkTitle: 'Voir la page “Suivi pass Culture”',
+            svgAlt: 'Nouvelle fenêtre',
+          },
+        ]}
+      >
+        <p className={styles['callout-text']}>
+          Retrouvez sur cette page les offres destinées aux professeurs de votre
+          établissement et rédigées par les acteurs culturels partenaires de
+          l’établissement scolaire.
+        </p>
+        <p className={styles['callout-text']}>
+          Le contenu, la date et le montant de chaque offre ont été définis lors
+          d’échanges entre un professeur et la structure culturelle concernée.
+        </p>
+        <p>
+          Processus : vous cliquez sur “Préréserver” l’offre qui vous est
+          destinée. L’offre va disparaitre de cette page, mais vous pourrez la
+          retrouver dans la page “Suivi pass Culture”. Puis, vous associerez
+          l’offre à votre projet pédagogique dans la page “Les projets”. Enfin,
+          votre chef d’établissement confirmera la réservation de l’offre dans
+          “Suivi pass Culture”.
+        </p>
+      </Callout>
+      {myInstitutionOffers.length === 0 ? (
+        <div className={styles['no-results']}>
+          <SvgIcon
+            src={strokeMyInstitution}
+            alt=""
+            viewBox="0 0 375 154"
+            width="375"
+            className={styles['no-results-svg']}
+          />
+          <div>
+            <h2 className={styles['no-results-title']}>
+              Vous n’avez pas d’offre à préréserver
+            </h2>
+            <ButtonLink
+              link={{
+                to: `/adage-iframe/recherche?token=${adageAuthToken}`,
+                isExternal: false,
+              }}
+              variant={ButtonVariant.PRIMARY}
+            >
+              Explorer le catalogue
+            </ButtonLink>
           </div>
-        ) : (
-          <Offers displayStats={false} />
-        )}
-      </AnalyticsContextProvider>
-    </InstantSearch>
+        </div>
+      ) : (
+        <ul className={styles['offers-list']}>
+          {myInstitutionOffers.map((offer, i) => {
+            return (
+              <li key={offer.id} data-testid="offer-listitem">
+                <Offer offer={offer} queryId="" position={i}></Offer>
+              </li>
+            )
+          })}
+        </ul>
+      )}
+    </AnalyticsContextProvider>
   )
 }
 
