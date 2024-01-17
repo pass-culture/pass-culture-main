@@ -13,6 +13,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 import pcapi.utils.date as utils_date
 from pcapi.validation.models import entity_validator
 
@@ -52,7 +53,19 @@ class EMSStocks:
         for event in self.site.events:
             self.poster_urls_map.update({event.id: event.bill_url})
 
+            product = self.get_movie_product(event)
+            if not product:
+                logger.info(
+                    "Product not found for allocine Id %s",
+                    event.allocine_id,
+                    extra={"allocineId": event.allocine_id, "venueId": self.venue.id},
+                    technical_message_id="allocineId.not_found",
+                )
+                if FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS.is_active():
+                    continue
+
             offer = self.get_or_create_offer(event, self.provider.id, self.venue)
+            offer.product = product
             offer = self.fill_offer_attributes(offer, event)
             errors = entity_validator.validate(offer)
             if errors and len(errors.errors) > 0:
@@ -118,6 +131,14 @@ class EMSStocks:
             self.errored_objects,
         )
 
+    def get_movie_product(self, event: ems_serializers.Event) -> offers_models.Product | None:
+        if not event.allocine_id:
+            return None
+
+        return offers_models.Product.query.filter(
+            offers_models.Product.extraData["allocineId"] == str(event.allocine_id)
+        ).one_or_none()
+
     def get_or_create_offer(
         self, event: ems_serializers.Event, provider_id: int, venue: offerers_models.Venue
     ) -> offers_models.Offer:
@@ -144,6 +165,14 @@ class EMSStocks:
         if event.duration:
             offer.durationMinutes = event.duration
         offer.isDuo = self.is_duo
+
+        if offer.product:
+            offer.name = offer.product.name
+            offer.description = offer.product.description
+            offer.durationMinutes = offer.product.durationMinutes
+            if offer.product.extraData:
+                offer.extraData = offer.extraData or offers_models.OfferExtraData()
+                offer.extraData.update(offer.product.extraData)
 
         return offer
 
