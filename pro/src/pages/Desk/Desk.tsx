@@ -4,7 +4,9 @@ import React, { useState } from 'react'
 
 import { GetBookingResponse } from 'apiClient/v2'
 import { AppLayout } from 'app/AppLayout'
-import { Banner, SubmitButton, TextInput } from 'ui-kit'
+import Callout from 'components/Callout/Callout'
+import fullLinkIcon from 'icons/full-link.svg'
+import { SubmitButton, TextInput } from 'ui-kit'
 import Titles from 'ui-kit/Titles/Titles'
 
 import { submitValidate, getBooking, submitInvalidate } from './adapters'
@@ -166,15 +168,16 @@ export const Desk = (): JSX.Element => {
           >
             {message.message}
           </div>
-          <Banner
+
+          <Callout
             links={[
               {
                 href: 'https://aide.passculture.app/hc/fr/articles/4416062183569--Acteurs-Culturels-Modalités-de-retrait-et-CGU',
-                linkTitle: 'En savoir plus',
+                linkTitle: 'Modalités de retrait et CGU',
+                icon: fullLinkIcon,
               },
             ]}
-            type="notification-info"
-            className={styles['desk-banner']}
+            className={`${styles['desk-callout']}`}
           >
             <strong>
               N’oubliez pas de vérifier l’identité du bénéficiaire avant de
@@ -183,7 +186,7 @@ export const Desk = (): JSX.Element => {
             {
               ' Les pièces d’identité doivent impérativement être présentées physiquement. Merci de ne pas accepter les pièces d’identité au format numérique.'
             }
-          </Banner>
+          </Callout>
         </form>
       </FormikProvider>
     </AppLayout>
