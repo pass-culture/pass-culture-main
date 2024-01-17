@@ -1,20 +1,24 @@
 import React from 'react'
 
-import { Banner } from 'ui-kit'
+import Callout from 'components/Callout/Callout'
+import fullLinkIcon from 'icons/full-link.svg'
 
 const BannerReimbursementsInfo = (): JSX.Element => {
   return (
-    <Banner
-      type="notification-info"
+    <Callout
       className="banner"
       links={[
         {
           href: 'https://passculture.zendesk.com/hc/fr/articles/4411992051601',
-          linkTitle: 'En savoir plus sur les prochains remboursements',
+          linkTitle: 'Quand votre prochain remboursement sera-t-il effectué ?',
+          icon: fullLinkIcon,
+          svgAlt: 'Nouvelle fenêtre',
         },
         {
           href: 'https://passculture.zendesk.com/hc/fr/articles/4412007300369',
           linkTitle: 'Connaître les modalités de remboursement',
+          icon: fullLinkIcon,
+          svgAlt: 'Nouvelle fenêtre',
         },
       ]}
     >
@@ -24,7 +28,7 @@ const BannerReimbursementsInfo = (): JSX.Element => {
         automatique des contremarques d’évènements. Cette page est
         automatiquement mise à jour à chaque remboursement.
       </p>
-    </Banner>
+    </Callout>
   )
 }
 
