@@ -125,8 +125,8 @@ def get_filtered_venues(
 ) -> list[models.Venue]:
     query = (
         models.Venue.query.join(models.Offerer, models.Offerer.id == models.Venue.managingOffererId)
+        .options(sqla_orm.contains_eager(models.Venue.managingOfferer))
         .join(models.UserOfferer, models.UserOfferer.offererId == models.Offerer.id)
-        .options(sqla_orm.joinedload(models.Venue.managingOfferer))
         .options(sqla_orm.joinedload(models.Venue.collectiveDomains))
         .options(sqla_orm.joinedload(models.Venue.reimbursement_point_links))
         .options(sqla_orm.joinedload(models.Venue.bankInformation))
