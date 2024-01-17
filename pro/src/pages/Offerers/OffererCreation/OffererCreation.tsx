@@ -29,23 +29,22 @@ export const OffererCreation = (): JSX.Element => {
   const notification = useNotification()
   const [offerer, setOfferer] = useState<CreateOffererQueryModel>()
   const initialValues = { siren: '' }
-
-  const redirectAfterSubmit = (createdOffererId: string) => {
-    navigate(`/accueil?structure=${createdOffererId}`, { replace: true })
-  }
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (formValues: OffererCreationFormValues) => {
+    setIsSubmitting(true)
     try {
       const response = await getSirenDataAdapter(formValues.siren)
 
       if (!response.payload.values?.address) {
         notification.error('Impossible de vérifier le SIREN saisi.')
+        setIsSubmitting(false)
       } else {
         const createdOfferer = await api.createOfferer({
           ...response.payload.values,
           siren: formValues.siren?.replace(/\s/g, ''),
         })
-        redirectAfterSubmit(createdOfferer.id.toString())
+        navigate(`/accueil?structure=${createdOfferer.id}`, { replace: true })
       }
     } catch (error) {
       if (isErrorAPIError(error) && error.status == 400 && error.body.siren) {
@@ -53,6 +52,7 @@ export const OffererCreation = (): JSX.Element => {
       } else {
         notification.error('Vous êtes déjà rattaché à cette structure.')
       }
+      setIsSubmitting(false)
     }
   }
 
@@ -120,7 +120,7 @@ export const OffererCreation = (): JSX.Element => {
                 <div>
                   <SubmitButton
                     variant={ButtonVariant.PRIMARY}
-                    disabled={formik.isSubmitting}
+                    disabled={isSubmitting}
                   >
                     Créer
                   </SubmitButton>
