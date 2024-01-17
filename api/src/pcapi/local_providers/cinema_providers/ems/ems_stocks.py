@@ -53,7 +53,7 @@ class EMSStocks:
             self.poster_urls_map.update({event.id: event.bill_url})
 
             offer = self.get_or_create_offer(event, self.provider.id, self.venue)
-            offer = self.fill_offer_attribut(offer, event)
+            offer = self.fill_offer_attributes(offer, event)
             errors = entity_validator.validate(offer)
             if errors and len(errors.errors) > 0:
                 self.created_objects -= 1
@@ -138,7 +138,7 @@ class EMSStocks:
         self.created_objects += 1
         return offer
 
-    def fill_offer_attribut(self, offer: offers_models.Offer, event: ems_serializers.Event) -> offers_models.Offer:
+    def fill_offer_attributes(self, offer: offers_models.Offer, event: ems_serializers.Event) -> offers_models.Offer:
         if event.title:
             offer.name = event.title
         if event.synopsis:
