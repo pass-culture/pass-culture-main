@@ -54,10 +54,10 @@ describe('IndivualOfferLayout', () => {
     expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
 
     expect(
-      screen.getByRole('heading', { name: 'offer name' })
+      screen.getByRole('heading', { name: /offer name/ })
     ).toBeInTheDocument()
     expect(
-      screen.getByRole('heading', { name: 'layout title' })
+      screen.getByRole('heading', { name: /layout title/ })
     ).toBeInTheDocument()
   })
 
