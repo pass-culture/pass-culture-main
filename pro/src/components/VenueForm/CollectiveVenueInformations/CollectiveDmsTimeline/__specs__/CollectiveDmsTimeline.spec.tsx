@@ -1,4 +1,3 @@
-// @vitest-environment happy-dom
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
@@ -151,6 +150,11 @@ describe('CollectiveDmsTimeline', () => {
       const dmsLink = screen.getByRole('link', {
         name: 'Consulter ma messagerie sur Démarches Simplifiées',
       })
+
+      dmsLink.addEventListener('click', (e) => {
+        e.preventDefault()
+      })
+
       await userEvent.click(dmsLink)
       expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_EAC_DMS_LINK, {
         from: '/',
