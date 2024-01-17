@@ -37,3 +37,14 @@ export const useColumnSorting = <SortingColumn>() => {
 
   return { currentSortingColumn, currentSortingMode, onColumnHeaderClick }
 }
+
+export function giveSortingModeForAlly(sortingMode: SortingMode): string {
+  switch (sortingMode) {
+    case SortingMode.ASC:
+      return 'ascendant'
+    case SortingMode.DESC:
+      return 'descendant'
+    case SortingMode.NONE:
+      return 'par défaut'
+  }
+}

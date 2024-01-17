@@ -4,7 +4,11 @@ import { compareAsc, format } from 'date-fns'
 import { InvoiceResponseModel } from 'apiClient/v1'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
 import useActiveFeature from 'hooks/useActiveFeature'
-import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
+import {
+  SortingMode,
+  giveSortingModeForAlly,
+  useColumnSorting,
+} from 'hooks/useColumnSorting'
 import fullDownloadIcon from 'icons/full-download.svg'
 import strokeLessIcon from 'icons/stroke-less.svg'
 import strokeMoreIcon from 'icons/stroke-more.svg'
@@ -103,10 +107,14 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
   )
 
   return (
-    <table className={styles['invoices-table']}>
+    <table role="table" className={styles['invoices-table']}>
+      <caption className="visually-hidden">
+        Justificatif de remboursement ou de trop perçu
+      </caption>
       <thead>
-        <tr className={styles['row']}>
+        <tr role="row" className={styles['row']}>
           <th
+            role="columnheader"
             scope="col"
             className={cn(styles['header'], styles['date-column'])}
           >
@@ -120,10 +128,18 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
               onClick={() => {
                 onColumnHeaderClick(InvoicesOrderedBy.DATE)
               }}
-            />
+            >
+              {currentSortingColumn === InvoicesOrderedBy.DATE && (
+                <span className="visually-hidden">
+                  Tri par date {giveSortingModeForAlly(currentSortingMode)}{' '}
+                  activé.
+                </span>
+              )}
+            </SortArrow>
           </th>
           {isFinanceIncidentEnabled ? (
             <th
+              role="columnheader"
               scope="col"
               className={cn(styles['header'], styles['document-type-column'])}
             >
@@ -137,10 +153,18 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
                 onClick={() => {
                   onColumnHeaderClick(InvoicesOrderedBy.DOCUMENT_TYPE)
                 }}
-              />
+              >
+                {currentSortingColumn === InvoicesOrderedBy.DOCUMENT_TYPE && (
+                  <span className="visually-hidden">
+                    Tri par type de document{' '}
+                    {giveSortingModeForAlly(currentSortingMode)} activé.
+                  </span>
+                )}
+              </SortArrow>
             </th>
           ) : (
             <th
+              role="columnheader"
               scope="col"
               className={cn(styles['header'], styles['document-type-column'])}
             >
@@ -159,10 +183,22 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
                     InvoicesOrderedBy.REIMBURSEMENT_POINT_NAME
                   )
                 }}
-              />
+              >
+                {currentSortingColumn ===
+                  InvoicesOrderedBy.REIMBURSEMENT_POINT_NAME && (
+                  <span className="visually-hidden">
+                    Tri par{' '}
+                    {isNewBankDetailsJourneyEnabled
+                      ? 'compte bancaire '
+                      : 'point de remboursement '}
+                    {giveSortingModeForAlly(currentSortingMode)} activé.
+                  </span>
+                )}
+              </SortArrow>
             </th>
           )}
           <th
+            role="columnheader"
             scope="col"
             className={cn(styles['header'], styles['reference-column'])}
           >
@@ -176,9 +212,17 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
               onClick={() => {
                 onColumnHeaderClick(InvoicesOrderedBy.REFERENCE)
               }}
-            />
+            >
+              {currentSortingColumn === InvoicesOrderedBy.REFERENCE && (
+                <span className="visually-hidden">
+                  Tri par n° de justificatif{' '}
+                  {giveSortingModeForAlly(currentSortingMode)} activé.
+                </span>
+              )}
+            </SortArrow>
           </th>
           <th
+            role="columnheader"
             scope="col"
             className={cn(styles['header'], styles['label-column'])}
           >
@@ -192,9 +236,17 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
               onClick={() => {
                 onColumnHeaderClick(InvoicesOrderedBy.CASHFLOW_LABELS)
               }}
-            />
+            >
+              {currentSortingColumn === InvoicesOrderedBy.CASHFLOW_LABELS && (
+                <span className="visually-hidden">
+                  Tri par n° de virement{' '}
+                  {giveSortingModeForAlly(currentSortingMode)} activé.
+                </span>
+              )}
+            </SortArrow>
           </th>
           <th
+            role="columnheader"
             scope="col"
             className={cn(styles['header'], styles['amount-column'])}
           >
@@ -205,8 +257,9 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
       <tbody className={styles['body']}>
         {sortedInvoices.map((invoice) => {
           return (
-            <tr key={invoice.reference} className={styles['row']}>
+            <tr role="row" key={invoice.reference} className={styles['row']}>
               <td
+                role="cell"
                 className={cn(
                   styles['data'],
                   styles['date-column'],
@@ -218,6 +271,7 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
               </td>
               {isFinanceIncidentEnabled ? (
                 <td
+                  role="cell"
                   className={cn(styles['data'], styles['document-type-column'])}
                   data-label="Type de document"
                 >
@@ -245,6 +299,7 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
                 </td>
               ) : (
                 <td
+                  role="cell"
                   className={cn(styles['data'], styles['document-type-column'])}
                   data-label="Point de remboursement"
                 >
@@ -252,6 +307,7 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
                 </td>
               )}
               <td
+                role="cell"
                 className={cn(styles['data'], styles['reference-column'])}
                 data-label="N° du justificatif"
               >
@@ -259,12 +315,14 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
               </td>
               {/* For now only one label is possible by invoice. */}
               <td
+                role="cell"
                 className={cn(styles['data'], styles['label-column'])}
                 data-label="N° de virement"
               >
                 {invoice.amount >= 0 ? invoice.cashflowLabels[0] : 'N/A'}
               </td>
               <td
+                role="cell"
                 className={cn(styles['data'], styles['amount-column'], {
                   [styles['negative-amount']]: invoice.amount < 0,
                 })}
@@ -275,8 +333,9 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
                 })}
               </td>
               <td
+                role="cell"
                 className={cn(styles['data'], styles['invoice-data'])}
-                data-label="Télécharger le PDF"
+                data-label="Téléchargement"
               >
                 <ButtonLink
                   link={{
@@ -284,10 +343,10 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
                     to: invoice.url,
                     rel: 'noopener noreferrer',
                     target: '_blank',
-                    'aria-label': 'Télécharger le PDF',
                     download: true,
                   }}
                   icon={fullDownloadIcon}
+                  svgAlt={`Justificatif de ${invoice.amount >= 0 ? 'remboursement' : 'trop perçu'} ${invoice.reference}, nouvelle fenêtre, format`}
                   variant={ButtonVariant.TERNARY}
                 >
                   PDF
