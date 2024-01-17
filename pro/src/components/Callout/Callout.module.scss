@@ -10,6 +10,7 @@
   color: colors.$black;
   border-radius: rem.torem(8px);
   padding: rem.torem(16px);
+  margin-bottom: rem.torem(16px);
 
   &-default {
     border-color: colors.$callout-default-border;

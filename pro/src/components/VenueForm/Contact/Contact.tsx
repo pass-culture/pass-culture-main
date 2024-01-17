@@ -1,7 +1,8 @@
 import React from 'react'
 
+import Callout from 'components/Callout/Callout'
 import FormLayout from 'components/FormLayout'
-import { InfoBox, TextInput } from 'ui-kit'
+import { TextInput } from 'ui-kit'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 
 export interface ContactProps {
@@ -44,10 +45,10 @@ const Contact = ({ isVenueVirtual = false, isCreatingVenue }: ContactProps) => {
         <FormLayout.Row
           sideComponent={
             isVenueVirtual ? null : (
-              <InfoBox>
+              <Callout>
                 Cette adresse s’appliquera par défaut à toutes vos offres, vous
                 pourrez la modifier à l’échelle de chaque offre.
-              </InfoBox>
+              </Callout>
             )
           }
         >
