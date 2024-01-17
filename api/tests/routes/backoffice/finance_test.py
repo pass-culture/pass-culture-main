@@ -248,23 +248,23 @@ class ValidateIncidentTest(PostEndpointHelper):
             assert len(mails_testing.outbox) == 1
         else:
             assert len(mails_testing.outbox) == 2
-            assert mails_testing.outbox[0].sent_data["To"] == venue.bookingEmail
+            assert mails_testing.outbox[0]["To"] == venue.bookingEmail
             assert (
-                mails_testing.outbox[0].sent_data["template"]
+                mails_testing.outbox[0]["template"]
                 == TransactionalEmail.RETRIEVE_INCIDENT_AMOUNT_ON_INDIVIDUAL_BOOKINGS.value.__dict__
             )
-            assert mails_testing.outbox[0].sent_data["params"] == {
+            assert mails_testing.outbox[0]["params"] == {
                 "OFFER_NAME": booking_incident.booking.stock.offer.name,
                 "VENUE_NAME": venue.publicName,
             }
 
-        assert mails_testing.outbox[-1].sent_data["To"] == booking_incident.booking.user.email
+        assert mails_testing.outbox[-1]["To"] == booking_incident.booking.user.email
         assert (
-            mails_testing.outbox[-1].sent_data["template"]
+            mails_testing.outbox[-1]["template"]
             == TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY.value.__dict__
         )
-        assert mails_testing.outbox[-1].sent_data["params"]["OFFER_NAME"] == booking_incident.booking.stock.offer.name
-        assert mails_testing.outbox[-1].sent_data["params"]["VENUE_NAME"] == venue.publicName
+        assert mails_testing.outbox[-1]["params"]["OFFER_NAME"] == booking_incident.booking.stock.offer.name
+        assert mails_testing.outbox[-1]["params"]["VENUE_NAME"] == venue.publicName
 
     @pytest.mark.parametrize("force_debit_note", [True, False])
     def test_incident_validation_with_several_bookings(self, authenticated_client, force_debit_note):
