@@ -50,7 +50,7 @@ describe('CollectiveOfferLayout', () => {
   it('should render summary page layout in edition', () => {
     renderCollectiveOfferLayout('/offre/A1/collectif/recapitulatif', {})
 
-    const title = screen.getByRole('heading', { name: 'Récapitulatif' })
+    const title = screen.getByRole('heading', { name: /Récapitulatif/ })
 
     expect(title).toBeInTheDocument()
   })
@@ -59,7 +59,7 @@ describe('CollectiveOfferLayout', () => {
     renderCollectiveOfferLayout('/offre/A1/collectif/', { isCreation: true })
 
     const title = screen.getByRole('heading', {
-      name: 'Créer une nouvelle offre collective',
+      name: /Créer une nouvelle offre collective/,
     })
 
     expect(title).toBeInTheDocument()
@@ -72,7 +72,7 @@ describe('CollectiveOfferLayout', () => {
     })
 
     const title = screen.getByRole('heading', {
-      name: 'Créer une offre pour un établissement scolaire',
+      name: /Créer une offre pour un établissement scolaire/,
     })
 
     expect(title).toBeInTheDocument()

@@ -13,6 +13,7 @@
 .offer-title {
   @include fonts.title4;
 
+  display: block;
   font-weight: 500;
 }
 

@@ -39,8 +39,12 @@ const IndivualOfferLayout = ({
         })}
       >
         <div>
-          <h1>{title}</h1>
-          {offer && <h2 className={styles['offer-title']}>{offer.name}</h2>}
+          <h1>
+            {title}{' '}
+            {offer && (
+              <span className={styles['offer-title']}>{offer.name}</span>
+            )}
+          </h1>
         </div>
         {shouldDisplayActionOnStatus && (
           <div className={styles['right']}>

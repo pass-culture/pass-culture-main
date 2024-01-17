@@ -67,11 +67,12 @@ const CollectiveOfferLayout = ({
           </Tag>
         )}
         {}
-        <h1 className={styles['eac-layout-heading']}>{title}</h1>
-
-        {subTitle && (
-          <h2 className={styles['eac-layout-sub-heading']}>{subTitle}</h2>
-        )}
+        <h1 className={styles['eac-layout-heading']}>
+          {title}{' '}
+          {subTitle && (
+            <span className={styles['eac-layout-sub-heading']}>{subTitle}</span>
+          )}
+        </h1>
       </div>
 
       {

@@ -40,7 +40,7 @@ describe('CollectiveOfferCreation', () => {
 
     expect(
       await screen.findByRole('heading', {
-        name: 'Créer une nouvelle offre collective',
+        name: /Créer une nouvelle offre collective/,
       })
     ).toBeInTheDocument()
     expect(
@@ -58,7 +58,7 @@ describe('CollectiveOfferCreation', () => {
 
     expect(
       await screen.findByRole('heading', {
-        name: 'Créer une nouvelle offre collective',
+        name: /Créer une nouvelle offre collective/,
       })
     ).toBeInTheDocument()
     expect(screen.getByText('Offre vitrine')).toBeInTheDocument()
