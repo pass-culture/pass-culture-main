@@ -1,12 +1,13 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 
+import Callout from 'components/Callout/Callout'
 import FormLayout from 'components/FormLayout'
 import { Venue } from 'core/Venue/types'
 import fullEditIcon from 'icons/full-edit.svg'
 import { venueHasCollectiveInformation } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/EACInformation/utils/venueHasCollectiveInformation'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { Banner, ButtonLink } from 'ui-kit/index'
+import { ButtonLink } from 'ui-kit/index'
 
 import styles from './eacInformation.module.scss'
 
@@ -36,10 +37,10 @@ const EACInformation = ({ venue, isCreatingVenue }: EACInformationProps) => {
         généralisation....)
       </p>
       {isCreatingVenue && (
-        <Banner type="notification-info">
+        <Callout>
           Une fois votre lieu créé, vous pourrez renseigner des informations
           pour les enseignants en revenant sur cette page.
-        </Banner>
+        </Callout>
       )}
 
       <FormLayout.Row>
