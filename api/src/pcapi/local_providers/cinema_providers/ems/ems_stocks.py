@@ -103,9 +103,7 @@ class EMSStocks:
                 user=None, offer=offer, credit=None, image_as_bytes=thumb, keep_ratio=True, check_image_validity=False
             )
 
-        offer_ids = set()
-        for offer in self.created_offers:
-            offer_ids.add(offer.id)
+        offer_ids = {offer.id for offer in self.created_offers}
         search.async_index_offer_ids(
             offer_ids,
             reason=search.IndexationReason.STOCK_SYNCHRONIZATION,
