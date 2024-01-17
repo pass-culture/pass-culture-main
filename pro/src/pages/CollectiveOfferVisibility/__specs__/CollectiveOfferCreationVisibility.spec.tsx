@@ -43,7 +43,7 @@ describe('CollectiveOfferVisibility', () => {
 
     expect(
       await screen.findByRole('heading', {
-        name: 'Créer une nouvelle offre collective',
+        name: /Créer une nouvelle offre collective/,
       })
     ).toBeInTheDocument()
 

@@ -45,7 +45,7 @@ describe('CollectiveOfferStockCreation', () => {
 
     expect(
       await screen.findByRole('heading', {
-        name: 'Créer une nouvelle offre collective',
+        name: /Créer une nouvelle offre collective/,
       })
     ).toBeInTheDocument()
     expect(
@@ -93,7 +93,7 @@ describe('CollectiveOfferStockCreation', () => {
     renderCollectiveStockCreation('/offre/A1/collectif/stocks', props)
     expect(
       await screen.findByRole('heading', {
-        name: 'Créer une offre pour un établissement scolaire',
+        name: /Créer une offre pour un établissement scolaire/,
       })
     ).toBeInTheDocument()
 
