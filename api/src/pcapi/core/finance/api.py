@@ -2199,18 +2199,40 @@ def merge_cashflow_batches(
     wrong). The target batch must hence be the one with the right
     cutoff.
     """
+    if not FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
+        _merge_cashflow_batches_old_journey(batches_to_remove, target_batch)
+    else:
+        _merge_cashflow_batches_new_journey(batches_to_remove, target_batch)
+
+
+def _merge_cashflow_batches_old_journey(
+    batches_to_remove: list[models.CashflowBatch],
+    target_batch: models.CashflowBatch,
+) -> None:
     assert len(batches_to_remove) >= 1
     assert target_batch not in batches_to_remove
 
     batch_ids_to_remove = [batch.id for batch in batches_to_remove]
-    reimbursement_point_ids = [
+    all_reimbursement_point_ids_of_batch_to_remove = [
         id_
         for id_, in (
-            models.Cashflow.query.filter(models.Cashflow.batchId.in_(batch_ids_to_remove))
-            .with_entities(models.Cashflow.reimbursementPointId)
-            .distinct()
+            models.Cashflow.query.filter(models.Cashflow.batchId.in_(batch_ids_to_remove)).with_entities(
+                models.Cashflow.reimbursementPointId
+            )
         )
     ]
+
+    # Ensure we only process batches from the old journey (i.e. we can't have any reimbursementPointId None)
+    assert all(all_reimbursement_point_ids_of_batch_to_remove), "Can't merge batches from both bank journeys"
+    assert all(
+        id_
+        for id_, in models.Cashflow.query.filter(models.Cashflow.batchId == target_batch.id).with_entities(
+            models.Cashflow.reimbursementPointId
+        )
+    ), "Can't merge batches from both bank journeys"
+
+    reimbursement_point_ids = set(all_reimbursement_point_ids_of_batch_to_remove)
+
     with transaction():
         initial_sum = (
             models.Cashflow.query.filter(
@@ -2222,6 +2244,101 @@ def merge_cashflow_batches(
         for reimbursement_point_id in reimbursement_point_ids:
             cashflows = models.Cashflow.query.filter(
                 models.Cashflow.reimbursementPointId == reimbursement_point_id,
+                models.Cashflow.batchId.in_(
+                    batch_ids_to_remove + [target_batch.id],
+                ),
+            ).all()
+            # One cashflow, wrong batch. Just change the batchId.
+            if len(cashflows) == 1:
+                models.Cashflow.query.filter_by(id=cashflows[0].id).update(
+                    {
+                        "batchId": target_batch.id,
+                        "creationDate": target_batch.creationDate,
+                    },
+                    synchronize_session=False,
+                )
+                continue
+
+            # Multiple cashflows, possibly including the target batch.
+            # Update "right" cashflow amount if there is one (or any
+            # cashflow otherwise), delete other cashflows.
+            try:
+                cashflow_to_keep = [cf for cf in cashflows if cf.batchId == target_batch.id][0]
+            except IndexError:
+                cashflow_to_keep = cashflows[0]
+            cashflow_ids_to_remove = [cf.id for cf in cashflows if cf != cashflow_to_keep]
+            sum_to_add = (
+                models.Cashflow.query.filter(models.Cashflow.id.in_(cashflow_ids_to_remove))
+                .with_entities(sqla_func.sum(models.Cashflow.amount))
+                .scalar()
+            )
+            models.CashflowPricing.query.filter(models.CashflowPricing.cashflowId.in_(cashflow_ids_to_remove)).update(
+                {"cashflowId": cashflow_to_keep.id},
+                synchronize_session=False,
+            )
+            models.Cashflow.query.filter_by(id=cashflow_to_keep.id).update(
+                {
+                    "batchId": target_batch.id,
+                    "amount": cashflow_to_keep.amount + sum_to_add,
+                },
+                synchronize_session=False,
+            )
+            models.CashflowLog.query.filter(
+                models.CashflowLog.cashflowId.in_(cashflow_ids_to_remove),
+            ).delete(synchronize_session=False)
+            models.Cashflow.query.filter(
+                models.Cashflow.id.in_(cashflow_ids_to_remove),
+            ).delete(synchronize_session=False)
+        models.CashflowBatch.query.filter(models.CashflowBatch.id.in_(batch_ids_to_remove)).delete(
+            synchronize_session=False,
+        )
+        final_sum = (
+            models.Cashflow.query.filter(
+                models.Cashflow.batchId.in_(batch_ids_to_remove + [target_batch.id]),
+            )
+            .with_entities(sqla_func.sum(models.Cashflow.amount))
+            .scalar()
+        )
+        assert final_sum == initial_sum
+        db.session.commit()
+
+
+def _merge_cashflow_batches_new_journey(
+    batches_to_remove: list[models.CashflowBatch],
+    target_batch: models.CashflowBatch,
+) -> None:
+    assert len(batches_to_remove) >= 1
+    assert target_batch not in batches_to_remove
+
+    batch_ids_to_remove = [batch.id for batch in batches_to_remove]
+    all_bank_account_ids_of_batches_to_remove = [
+        id_
+        for id_, in models.Cashflow.query.filter(models.Cashflow.batchId.in_(batch_ids_to_remove))
+        .with_entities(models.Cashflow.bankAccountId)
+        .distinct()
+    ]
+    # Ensure we only process Cashflow from the new journey (i.e. we can't have any bankAccount None)
+    assert all(all_bank_account_ids_of_batches_to_remove), "Can't merge batches from both bank journeys"
+    assert all(
+        id_
+        for id_, in models.Cashflow.query.filter(models.Cashflow.batchId == target_batch.id).with_entities(
+            models.Cashflow.bankAccountId
+        )
+    ), "Can't merge batches from both bank journeys"
+
+    bank_account_ids = set(all_bank_account_ids_of_batches_to_remove)
+
+    with transaction():
+        initial_sum = (
+            models.Cashflow.query.filter(
+                models.Cashflow.batchId.in_([b.id for b in batches_to_remove + [target_batch]]),
+            )
+            .with_entities(sqla_func.sum(models.Cashflow.amount))
+            .scalar()
+        )
+        for bank_account_id in bank_account_ids:
+            cashflows = models.Cashflow.query.filter(
+                models.Cashflow.bankAccountId == bank_account_id,
                 models.Cashflow.batchId.in_(
                     batch_ids_to_remove + [target_batch.id],
                 ),

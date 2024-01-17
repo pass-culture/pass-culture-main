@@ -2661,7 +2661,105 @@ class GenerateAndStoreInvoiceTest:
         assert len(mails_testing.outbox) == 1
 
 
-def test_merge_cashflow_batches():
+@pytest.mark.parametrize("ff_activated", [True, False])
+def test_we_cant_merge_batches_cashflow_from_both_bank_journey_from_target_batch(ff_activated):
+    rp1, rp2, rp3, rp4 = [
+        factories.BankInformationFactory(
+            venue=offerers_factories.VenueFactory(),
+        ).venue
+        for i in range(4)
+    ]
+
+    venue = offerers_factories.VenueFactory()
+    bank_account5 = factories.BankAccountFactory(offerer=venue.managingOfferer)
+
+    batch1 = factories.CashflowBatchFactory(id=1)
+    batch2 = factories.CashflowBatchFactory(id=2)
+    batch3 = factories.CashflowBatchFactory(id=3)
+    batch4 = factories.CashflowBatchFactory(id=4)
+    batch5 = factories.CashflowBatchFactory(id=5)
+
+    # Cashflow of batches 1 and 2: should not be changed.
+    factories.CashflowFactory(batch=batch1, reimbursementPoint=rp1, amount=10)
+    factories.CashflowFactory(batch=batch2, reimbursementPoint=rp1, amount=20)
+    # Reimbursement point 1: batches 3, 4 and 5.
+    factories.CashflowFactory(batch=batch3, reimbursementPoint=rp1, amount=40)
+    factories.CashflowFactory(batch=batch4, reimbursementPoint=rp1, amount=80)
+    factories.CashflowFactory(batch=batch5, reimbursementPoint=rp1, amount=160)
+    # Reimbursement point 2: batches 3 and 4.
+    cf_3_2 = factories.CashflowFactory(batch=batch3, reimbursementPoint=rp2, amount=320)
+    factories.PricingFactory(cashflows=[cf_3_2])
+    cf_4_2 = factories.CashflowFactory(batch=batch4, reimbursementPoint=rp2, amount=640)
+    factories.PricingFactory(cashflows=[cf_4_2])
+    # Reimbursement point 3: batches 3 and 5.
+    cf_3_3 = factories.CashflowFactory(batch=batch3, reimbursementPoint=rp3, amount=1280)
+    factories.PricingFactory(cashflows=[cf_3_3])
+    cf_5_3 = factories.CashflowFactory(batch=batch5, reimbursementPoint=rp3, amount=2560)
+    factories.PricingFactory(cashflows=[cf_5_3])
+    # Reimbursement point 4: batch 3 only
+    cf_3_4 = factories.CashflowFactory(batch=batch3, reimbursementPoint=rp4, amount=5120)
+    factories.PricingFactory(cashflows=[cf_3_4])
+    # Reimbursement point 5: batch 5 (nothing to do)
+    cf_5_5 = factories.CashflowFactory(batch=batch5, bankAccount=bank_account5, amount=10240)
+    factories.PricingFactory(cashflows=[cf_5_5])
+
+    with override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=ff_activated), pytest.raises(
+        AssertionError, match=r".*merge batches from both bank journeys.*"
+    ):
+        api.merge_cashflow_batches(batches_to_remove=[batch3, batch4], target_batch=batch5)
+
+
+@pytest.mark.parametrize("ff_activated", [True, False])
+def test_we_cant_merge_batches_cashflow_from_both_bank_journey_from_batches_to_remove(ff_activated):
+    rp1, rp4, rp5 = [
+        factories.BankInformationFactory(
+            venue=offerers_factories.VenueFactory(),
+        ).venue
+        for i in range(3)
+    ]
+
+    venue = offerers_factories.VenueFactory()
+    bank_account2 = factories.BankAccountFactory(offerer=venue.managingOfferer)
+    bank_account3 = factories.BankAccountFactory(offerer=venue.managingOfferer)
+
+    batch1 = factories.CashflowBatchFactory(id=1)
+    batch2 = factories.CashflowBatchFactory(id=2)
+    batch3 = factories.CashflowBatchFactory(id=3)
+    batch4 = factories.CashflowBatchFactory(id=4)
+    batch5 = factories.CashflowBatchFactory(id=5)
+
+    # Cashflow of batches 1 and 2: should not be changed.
+    factories.CashflowFactory(batch=batch1, reimbursementPoint=rp1, amount=10)
+    factories.CashflowFactory(batch=batch2, reimbursementPoint=rp1, amount=20)
+    # Reimbursement point 1: batches 3, 4 and 5.
+    factories.CashflowFactory(batch=batch3, reimbursementPoint=rp1, amount=40)
+    factories.CashflowFactory(batch=batch4, reimbursementPoint=rp1, amount=80)
+    factories.CashflowFactory(batch=batch5, reimbursementPoint=rp5, amount=160)
+    # Reimbursement point 2: batches 3 and 4.
+    cf_3_2 = factories.CashflowFactory(batch=batch3, bankAccount=bank_account2, amount=320)
+    factories.PricingFactory(cashflows=[cf_3_2])
+    cf_4_2 = factories.CashflowFactory(batch=batch4, bankAccount=bank_account2, amount=640)
+    factories.PricingFactory(cashflows=[cf_4_2])
+    # Reimbursement point 3: batches 3 and 5.
+    cf_3_3 = factories.CashflowFactory(batch=batch3, bankAccount=bank_account3, amount=1280)
+    factories.PricingFactory(cashflows=[cf_3_3])
+    cf_5_3 = factories.CashflowFactory(batch=batch5, bankAccount=bank_account3, amount=2560)
+    factories.PricingFactory(cashflows=[cf_5_3])
+    # Reimbursement point 4: batch 3 only
+    cf_3_4 = factories.CashflowFactory(batch=batch3, reimbursementPoint=rp4, amount=5120)
+    factories.PricingFactory(cashflows=[cf_3_4])
+    # Reimbursement point 5: batch 5 (nothing to do)
+    cf_5_5 = factories.CashflowFactory(batch=batch5, reimbursementPoint=rp5, amount=10240)
+    factories.PricingFactory(cashflows=[cf_5_5])
+
+    with override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=ff_activated), pytest.raises(
+        AssertionError, match=r".*merge batches from both bank journeys.*"
+    ):
+        api.merge_cashflow_batches(batches_to_remove=[batch3, batch4], target_batch=batch5)
+
+
+@override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
+def test_merge_cashflow_batches_old_journey():
     rp1, rp2, rp3, rp4, rp5 = [
         factories.BankInformationFactory(
             venue=offerers_factories.VenueFactory(),
@@ -2726,6 +2824,78 @@ def test_merge_cashflow_batches():
     assert get_cashflows(batch_id=5, reimbursement_point=rp3)[0].amount == 1280 + 2560
     assert get_cashflows(batch_id=5, reimbursement_point=rp4)[0].amount == 5120
     assert get_cashflows(batch_id=5, reimbursement_point=rp5)[0].amount == 10240
+
+
+@override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
+def test_merge_cashflow_batches_new_journey():
+    venue = offerers_factories.VenueFactory()
+
+    (
+        bank_account1,
+        bank_account2,
+        bank_account3,
+        bank_account4,
+        bank_account5,
+    ) = factories.BankAccountFactory.create_batch(size=5, offerer=venue.managingOfferer)
+
+    batch1 = factories.CashflowBatchFactory(id=1)
+    batch2 = factories.CashflowBatchFactory(id=2)
+    batch3 = factories.CashflowBatchFactory(id=3)
+    batch4 = factories.CashflowBatchFactory(id=4)
+    batch5 = factories.CashflowBatchFactory(id=5)
+
+    # Cashflow of batches 1 and 2: should not be changed.
+    factories.CashflowFactory(batch=batch1, bankAccount=bank_account1, amount=10)
+    factories.CashflowFactory(batch=batch2, bankAccount=bank_account1, amount=20)
+    # Reimbursement point 1: batches 3, 4 and 5.
+    factories.CashflowFactory(batch=batch3, bankAccount=bank_account1, amount=40)
+    factories.CashflowFactory(batch=batch4, bankAccount=bank_account1, amount=80)
+    factories.CashflowFactory(batch=batch5, bankAccount=bank_account1, amount=160)
+    # Reimbursement point 2: batches 3 and 4.
+    cf_3_2 = factories.CashflowFactory(batch=batch3, bankAccount=bank_account2, amount=320)
+    factories.PricingFactory(cashflows=[cf_3_2])
+    cf_4_2 = factories.CashflowFactory(batch=batch4, bankAccount=bank_account2, amount=640)
+    factories.PricingFactory(cashflows=[cf_4_2])
+    # Reimbursement point 3: batches 3 and 5.
+    cf_3_3 = factories.CashflowFactory(batch=batch3, bankAccount=bank_account3, amount=1280)
+    factories.PricingFactory(cashflows=[cf_3_3])
+    cf_5_3 = factories.CashflowFactory(batch=batch5, bankAccount=bank_account3, amount=2560)
+    factories.PricingFactory(cashflows=[cf_5_3])
+    # Reimbursement point 4: batch 3 only
+    cf_3_4 = factories.CashflowFactory(batch=batch3, bankAccount=bank_account4, amount=5120)
+    factories.PricingFactory(cashflows=[cf_3_4])
+    # Reimbursement point 5: batch 5 (nothing to do)
+    cf_5_5 = factories.CashflowFactory(batch=batch5, bankAccount=bank_account5, amount=10240)
+    factories.PricingFactory(cashflows=[cf_5_5])
+
+    def get_cashflows(batch_id, bank_account=None):
+        query = models.Cashflow.query.filter_by(batchId=batch_id)
+        if bank_account:
+            query = query.filter_by(bankAccount=bank_account)
+        return query.all()
+
+    api.merge_cashflow_batches(batches_to_remove=[batch3, batch4], target_batch=batch5)
+
+    # No changes on batches 1 and 2.
+    cashflows = get_cashflows(batch_id=1)
+    assert len(cashflows) == 1
+    assert cashflows[0].bankAccount == bank_account1
+    assert cashflows[0].amount == 10
+    cashflows = get_cashflows(batch_id=2)
+    assert len(cashflows) == 1
+    assert cashflows[0].bankAccount == bank_account1
+    assert cashflows[0].amount == 20
+
+    # Batches 3 and 4 have been deleted.
+    assert not models.CashflowBatch.query.filter(models.CashflowBatch.id.in_((3, 4))).all()
+
+    # Batch 5 now has all cashflows.
+    assert len(get_cashflows(batch_id=5)) == 5
+    assert get_cashflows(batch_id=5, bank_account=bank_account1)[0].amount == 40 + 80 + 160
+    assert get_cashflows(batch_id=5, bank_account=bank_account2)[0].amount == 320 + 640
+    assert get_cashflows(batch_id=5, bank_account=bank_account3)[0].amount == 1280 + 2560
+    assert get_cashflows(batch_id=5, bank_account=bank_account4)[0].amount == 5120
+    assert get_cashflows(batch_id=5, bank_account=bank_account5)[0].amount == 10240
 
 
 def test_get_drive_folder_name():
