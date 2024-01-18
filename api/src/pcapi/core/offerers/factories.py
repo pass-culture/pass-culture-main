@@ -58,6 +58,7 @@ class VenueFactory(BaseFactory):
     publicName = factory.SelfAttribute("name")
     siret = factory.LazyAttributeSequence(lambda o, n: f"{o.managingOfferer.siren}{n:05}")
     isVirtual = False
+    isPermanent = factory.LazyAttribute(lambda o: o.venueTypeCode in models.PERMENANT_VENUE_TYPES)
     venueTypeCode = models.VenueTypeCode.OTHER
     description = factory.Faker("text", max_nb_chars=64)
     audioDisabilityCompliant: bool | None = False

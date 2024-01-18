@@ -64,7 +64,7 @@ class CreateVenueProviderTest:
         db_session,
     ):
         # Given
-        venue = offerers_factories.VenueFactory(venueTypeCode=venue_type)
+        venue = offerers_factories.VenueFactory(venueTypeCode=venue_type, isPermanent=False)
         provider = providers_factories.ProviderFactory(
             enabledForPro=True,
             isActive=True,

@@ -144,6 +144,15 @@ class VenueTypeCode(enum.Enum):
         return value
 
 
+PERMENANT_VENUE_TYPES = [
+    VenueTypeCode.CREATIVE_ARTS_STORE,
+    VenueTypeCode.LIBRARY,
+    VenueTypeCode.BOOKSTORE,
+    VenueTypeCode.MUSEUM,
+    VenueTypeCode.MOVIE,
+    VenueTypeCode.MUSICAL_INSTRUMENT_STORE,
+]
+
 VENUE_DEFAULTS_DIR = "assets/venue_default_images"
 VENUE_TYPE_DEFAULT_BANNERS: dict[VenueTypeCode, tuple[str, ...]] = {
     VenueTypeCode.ADMINISTRATIVE: (),
