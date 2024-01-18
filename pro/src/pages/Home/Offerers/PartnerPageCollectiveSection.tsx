@@ -1,9 +1,4 @@
-import {
-  DMSApplicationForEAC,
-  DMSApplicationstatus,
-  GetOffererResponseModel,
-  GetOffererVenueResponseModel,
-} from 'apiClient/v1'
+import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import fullInfoIcon from 'icons/full-info.svg'
@@ -14,11 +9,6 @@ import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 import { getLastCollectiveDmsApplication } from 'utils/getLastCollectiveDmsApplication'
 
 import styles from './PartnerPage.module.scss'
-
-export interface PartnerPageProps {
-  offerer: GetOffererResponseModel
-  venue: GetOffererVenueResponseModel
-}
 
 export function PartnerPageCollectiveSection({
   collectiveDmsApplications,
