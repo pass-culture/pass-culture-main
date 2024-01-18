@@ -3,12 +3,12 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi import settings
 from pcapi.connectors.api_allocine import AllocineException
 from pcapi.connectors.api_allocine import get_movie_list_page
 from pcapi.connectors.api_allocine import get_movie_poster_from_allocine
 from pcapi.connectors.api_allocine import get_movies_showtimes_from_allocine
 from pcapi.connectors.serialization import allocine_serializers
-
 from tests.connectors import fixtures
 
 
