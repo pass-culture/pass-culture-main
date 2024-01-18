@@ -4,8 +4,6 @@ from pcapi.connectors.serialization import allocine_serializers
 from pcapi.core.categories.subcategories_v2 import SEANCE_CINE
 from pcapi.core.offers.models import OfferExtraData
 from pcapi.core.offers.models import Product
-from pcapi.core.providers import constants as providers_constants
-from pcapi.core.providers.models import Provider
 from pcapi.domain import allocine as allocine_domain
 from pcapi.models import db
 from pcapi.repository import transaction
@@ -16,17 +14,12 @@ def synchronize_products() -> None:
     allocine_ids = [movie.internalId for movie in movies]
     products_query = Product.query.filter(Product.extraData["allocineId"].cast(Integer).in_(allocine_ids))
     products_by_allocine_id = {product.extraData["allocineId"]: product for product in products_query}
-    allocine_products_provider = Provider.query.filter(
-        Provider.name == providers_constants.ALLOCINE_PRODUCTS_PROVIDER_NAME
-    ).one()
     with transaction():
         for movie in movies:
-            _upsert_product(products_by_allocine_id, movie, allocine_products_provider)
+            _upsert_product(products_by_allocine_id, movie)
 
 
-def _upsert_product(
-    products_by_allocine_id: dict[int, Product], movie: allocine_serializers.AllocineMovie, provider: Provider
-) -> None:
+def _upsert_product(products_by_allocine_id: dict[int, Product], movie: allocine_serializers.AllocineMovie) -> None:
     allocine_id = movie.internalId
     product = products_by_allocine_id.get(allocine_id)
     movie_data = _build_movie_data(movie)
@@ -36,7 +29,6 @@ def _upsert_product(
             durationMinutes=movie.runtime,
             extraData=movie_data,
             idAtProviders=str(allocine_id),
-            lastProviderId=provider.id,
             name=movie.title,
             subcategoryId=SEANCE_CINE.id,
         )
