@@ -53,7 +53,6 @@ def create_offers_with_gtls() -> None:
     librairie_gtl = offerers_factories.VenueFactory(
         name="Librairie des GTls",
         venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
-        isPermanent=True,
         latitude=45.91967,
         longitude=3.06504,
         address="13 AVENUE BARADUC",
@@ -73,7 +72,6 @@ def create_offers_with_gtls() -> None:
     librairie_manga = offerers_factories.VenueFactory(
         name="Librairie des mangas",
         venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
-        isPermanent=True,
         latitude=46.66979,
         longitude=-1.42979,
         address="11 RUE GEORGES CLEMENCEAU",
@@ -139,7 +137,6 @@ def create_offers_with_same_ean() -> None:
                 venue=offerers_factories.VenueFactory(
                     name=venue_data["name"],
                     venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
-                    isPermanent=True,
                     latitude=venue_data["latitude"],
                     longitude=venue_data["longitude"],
                     address=venue_data["address"],
@@ -186,7 +183,6 @@ def create_venues_across_cities() -> None:
             venue = offerers_factories.VenueFactory(
                 name=venue["city"] + "-" + venue["name"],
                 venueTypeCode=venue_type_code,
-                isPermanent=True,
                 latitude=venue["latitude"],
                 longitude=venue["longitude"],
                 address=venue["address"],
@@ -259,7 +255,6 @@ def create_offers_with_same_author() -> None:
         offerers_factories.VenueFactory(
             name="same author " + str(venue["name"]),
             venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
-            isPermanent=True,
             latitude=venue["latitude"],
             longitude=venue["longitude"],
             address=venue["address"],
@@ -383,7 +378,6 @@ def create_offers_with_more_extra_data() -> None:
     venue = offerers_factories.VenueFactory(
         name="extra_data " + str(venue_data["name"]),
         venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
-        isPermanent=True,
         latitude=venue_data["latitude"],
         longitude=venue_data["longitude"],
         address=venue_data["address"],
