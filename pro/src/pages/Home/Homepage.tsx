@@ -147,17 +147,17 @@ export const Homepage = (): JSX.Element => {
         <PendingBankAccountCallout offerer={selectedOfferer} />
       </div>
 
-      {selectedOfferer?.isValidated && selectedOfferer?.isActive && (
-        <>
-          <OffererBanners
-            isUserOffererValidated={isUserOffererValidated}
-            offerer={selectedOfferer}
-          />
+      {selectedOfferer !== null && (
+        <OffererBanners
+          isUserOffererValidated={isUserOffererValidated}
+          offerer={selectedOfferer}
+        />
+      )}
 
-          <section className={styles['section']}>
-            <StatisticsDashboard offerer={selectedOfferer} />
-          </section>
-        </>
+      {selectedOfferer?.isValidated && selectedOfferer?.isActive && (
+        <section className={styles['section']}>
+          <StatisticsDashboard offerer={selectedOfferer} />
+        </section>
       )}
 
       <section className={styles['section']} ref={offerersRef}>
