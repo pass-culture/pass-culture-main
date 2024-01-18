@@ -25,7 +25,6 @@ def create_offerer_with_several_venues() -> offerers_models.Offerer:
         pricing_point="self",
         reimbursement_point="self",
         venueTypeCode=offerers_models.VenueTypeCode.MUSEUM,
-        isPermanent=True,
     )
     offerers_factories.VenueFactory(
         name="Festival de musique",
@@ -40,7 +39,6 @@ def create_offerer_with_several_venues() -> offerers_models.Offerer:
         pricing_point=venue1,
         reimbursement_point=venue1,
         venueTypeCode=offerers_models.VenueTypeCode.LIBRARY,
-        isPermanent=True,
     )
     # offerers have always a virtual venue so we have to create one to match reality
     virtual_venue = offerers_factories.VirtualVenueFactory(

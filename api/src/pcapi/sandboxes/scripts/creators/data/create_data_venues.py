@@ -73,10 +73,6 @@ def create_data_venues(offerers_by_name: dict) -> dict[str, Venue]:
         comment = None
         siret = f"{offerer.siren}{random.randint(11111,99999)}"
 
-        # TODO: remove venue_type and label to code mapping when
-        # the venue_type table has been finally replaced by the
-        # VenueTypeCode enum
-
         venue = offerers_factories.VenueFactory(
             managingOfferer=offerer,
             bookingEmail="data@example.com",
@@ -85,8 +81,7 @@ def create_data_venues(offerers_by_name: dict) -> dict[str, Venue]:
             comment=comment,
             name=venue_name,
             siret=siret,
-            venueTypeCode=random.choice(list(offerers_models.VenueTypeCode)),
-            isPermanent=True,
+            venueTypeCode=offerers_models.VenueTypeCode.MUSEUM,
             pricing_point="self" if siret else None,
             reimbursement_point="self" if siret else None,
         )
