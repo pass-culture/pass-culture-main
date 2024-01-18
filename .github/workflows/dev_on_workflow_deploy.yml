@@ -142,23 +142,19 @@ jobs:
           certificate-ttl: 1h
           kubernetes-cluster: ${{ inputs.teleport_kubernetes_cluster }}
       - name: "Play pre-migrations"
-        uses: nick-fields/retry@v2
-        with:
-          timeout_minutes: 30
-          max_attempts: 3
-          command: |
-            set -e
-            VERSION="${{ inputs.app_version }}"
-            export ENVIRONMENT="${{ inputs.environment }}"
-            IMAGE=$(kubectl get -n ${{ inputs.environment }} po -l role=api -o json |jq -r '.items[0].spec.containers[0].image'|awk -F':' '{print $1}')
-            export IMAGE="${IMAGE}:${VERSION}"
-            export DATE=$(date +"%Y-%m-%d--%H-%M-%S")
-            envsubst < .github/workflows/templates/pre-upgrade-job.yaml | kubectl -n ${{ inputs.environment }} apply -f -
-            while true;
-            do
-            kubectl logs -n ${{ inputs.environment }} -f jobs/pre-upgrade-${DATE} && break
-            done
-            kubectl wait --for=condition=complete --timeout=30s -n ${{ inputs.environment }} jobs/pre-upgrade-${DATE}
+        run: |
+          set -e
+          VERSION="${{ inputs.app_version }}"
+          export ENVIRONMENT="${{ inputs.environment }}"
+          IMAGE=$(kubectl get -n ${{ inputs.environment }} po -l role=api -o json |jq -r '.items[0].spec.containers[0].image'|awk -F':' '{print $1}')
+          export IMAGE="${IMAGE}:${VERSION}"
+          export DATE=$(date +"%Y-%m-%d--%H-%M-%S")
+          envsubst < .github/workflows/templates/pre-upgrade-job.yaml | kubectl -n ${{ inputs.environment }} apply -f -
+          while true;
+          do
+          kubectl logs -n ${{ inputs.environment }} -f jobs/pre-upgrade-${DATE} && break
+          done
+          kubectl wait --for=condition=complete --timeout=10900s -n ${{ inputs.environment }} jobs/pre-upgrade-${DATE}
       - name: "Deploy pcapi"
         run: |
           PASSCULTURE_USERNAME="oauth2accesstoken" \
@@ -168,22 +164,19 @@ jobs:
           helmfile -e ${{ inputs.environment }} sync --set image.tag=${{ inputs.app_version }}
       - name: "Play post-migrations"
         uses: nick-fields/retry@v2
-        with:
-          timeout_minutes: 30
-          max_attempts: 3
-          command: |
-            set -e
-            VERSION="${{ inputs.app_version }}"
-            export ENVIRONMENT="${{ inputs.environment }}"
-            IMAGE=$(kubectl get -n ${{ inputs.environment }} po -l role=api -o json |jq -r '.items[0].spec.containers[0].image'|awk -F':' '{print $1}')
-            export IMAGE="${IMAGE}:${VERSION}"
-            export DATE=$(date +"%Y-%m-%d--%H-%M-%S")
-            envsubst < .github/workflows/templates/post-upgrade-job.yaml | kubectl -n ${{ inputs.environment }} apply -f -
-            while true;
-            do
-            kubectl logs -n ${{ inputs.environment }} -f jobs/post-upgrade-${DATE} && break
-            done
-            kubectl wait --for=condition=complete --timeout=30s -n ${{ inputs.environment }} jobs/post-upgrade-${DATE}
+        run: |
+          set -e
+          VERSION="${{ inputs.app_version }}"
+          export ENVIRONMENT="${{ inputs.environment }}"
+          IMAGE=$(kubectl get -n ${{ inputs.environment }} po -l role=api -o json |jq -r '.items[0].spec.containers[0].image'|awk -F':' '{print $1}')
+          export IMAGE="${IMAGE}:${VERSION}"
+          export DATE=$(date +"%Y-%m-%d--%H-%M-%S")
+          envsubst < .github/workflows/templates/post-upgrade-job.yaml | kubectl -n ${{ inputs.environment }} apply -f -
+          while true;
+          do
+          kubectl logs -n ${{ inputs.environment }} -f jobs/post-upgrade-${DATE} && break
+          done
+          kubectl wait --for=condition=complete --timeout=10900s -n ${{ inputs.environment }} jobs/post-upgrade-${DATE}
 
   deploy-pro-on-testing-on-firebase:
     name: "Deploy pro on testing live channel"

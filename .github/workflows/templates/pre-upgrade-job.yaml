@@ -3,12 +3,13 @@ kind: Job
 metadata:
   name: pre-upgrade-${DATE}
 spec:
-  backoffLimit: 0
+  backoffLimit: 3
   ttlSecondsAfterFinished: 604800
   template:
     spec:
+      activeDeadlineSeconds: 10800
       containers:
-      - name: pcapi 
+      - name: pcapi
         image: ${IMAGE}
         imagePullPolicy: Always
         envFrom:
@@ -18,7 +19,7 @@ spec:
             name: ${ENVIRONMENT}-pcapi-api-specific
         - secretRef:
             name: ${ENVIRONMENT}-pcapi
-        command: 
+        command:
           - "/bin/bash"
         args:
           - "-c"
