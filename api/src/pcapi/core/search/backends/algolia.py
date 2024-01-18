@@ -515,7 +515,8 @@ class AlgoliaBackend(base.SearchBackend):
                 "searchGroupName": offer.subcategory.search_group_name,
                 "searchGroupNamev2": offer.subcategory.search_group_name,
                 "showType": show_type_label,
-                "stocksDateCreated": sorted(stocks_date_created),
+                # For backward compatibility, this must be a list.
+                "stocksDateCreated": [max(stocks_date_created)] if stocks_date_created else [],
                 "students": extra_data.get("students") or [],
                 "subcategoryId": offer.subcategory.id,
                 "thumbUrl": url_path(offer.thumbUrl) if offer.thumbUrl else None,
