@@ -1,5 +1,3 @@
-import pydantic
-
 from pcapi import settings
 from pcapi.connectors.serialization import allocine_serializers
 from pcapi.utils import requests
@@ -22,12 +20,7 @@ def get_movie_list_page(after: str = "") -> allocine_serializers.AllocineMovieLi
     if not response.ok:
         raise AllocineException(f"Error getting API Allocine data to get movie list, error={response.status_code}")
 
-    try:
-        validated_response = allocine_serializers.AllocineMovieListResponse.model_validate(response.json())
-    except pydantic.ValidationError as exc:
-        raise AllocineException(f"Error validating Allocine response. Error: {str(exc)}")
-
-    return validated_response
+    return allocine_serializers.AllocineMovieListResponse.model_validate(response.json())
 
 
 def get_movies_showtimes_from_allocine(theater_id: str) -> allocine_serializers.AllocineMovieShowtimeListResponse:
@@ -41,12 +34,7 @@ def get_movies_showtimes_from_allocine(theater_id: str) -> allocine_serializers.
     if response.status_code != 200:
         raise AllocineException(f"Error getting API Allocine DATA for theater {theater_id}")
 
-    try:
-        validated_response = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(response.json())
-    except pydantic.ValidationError as exc:
-        raise AllocineException(f"Error validating Allocine response. Error: {str(exc)}")
-
-    return validated_response
+    return allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(response.json())
 
 
 def get_movie_poster_from_allocine(poster_url: str) -> bytes:
