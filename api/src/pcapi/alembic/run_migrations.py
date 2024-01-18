@@ -1,4 +1,5 @@
 import logging
+import sys
 import time
 
 from alembic import context
@@ -96,8 +97,7 @@ def run_migrations() -> None:
 
             attempt += 1
             if attempt > settings.DB_MIGRATION_MAX_ATTEMPTS:
-                logger.error("FAILURE: Migrations failed to be run.")
-                break
+                sys.exit("FAILURE: Migrations failed to be run.")
 
             logger.warning("Retrying in %d seconds...", settings.DB_MIGRATION_RETRY_DELAY)
             time.sleep(settings.DB_MIGRATION_RETRY_DELAY)
