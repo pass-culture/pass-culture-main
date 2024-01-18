@@ -20,6 +20,7 @@ type NewOfferPlaylistProps = {
     playlistId,
     playlistType,
     elementId,
+    index,
   }: TrackerElementArg) => void
 }
 
@@ -68,13 +69,14 @@ export const NewOfferPlaylist = ({
           playlistType: AdagePlaylistType.OFFER,
         })
       }
-      elements={offers.map((offer, i) => (
+      elements={offers.map((offer, index) => (
         <OfferCardComponent
           handlePlaylistElementTracking={() =>
             trackPlaylistElementClicked({
               playlistId: NEW_OFFER_PLAYLIST,
               playlistType: AdagePlaylistType.OFFER,
-              elementId: i,
+              index,
+              elementId: offer.id,
             })
           }
           key={offer.id}
