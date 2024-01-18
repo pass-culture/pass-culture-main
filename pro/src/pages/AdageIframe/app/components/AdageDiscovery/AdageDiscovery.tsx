@@ -29,6 +29,7 @@ export type TrackerElementArg = {
   playlistId: number
   playlistType: AdagePlaylistType
   elementId?: number
+  index?: number
 }
 
 export const AdageDiscovery = () => {
@@ -90,10 +91,12 @@ export const AdageDiscovery = () => {
     playlistId,
     playlistType,
     elementId,
+    index,
   }: {
     playlistId: number
     playlistType: AdagePlaylistType
     elementId?: number
+    index?: number
   }) => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     apiAdage.logConsultPlaylistElement({
@@ -101,6 +104,7 @@ export const AdageDiscovery = () => {
       playlistId,
       playlistType,
       elementId,
+      index,
     })
   }
 
@@ -128,9 +132,9 @@ export const AdageDiscovery = () => {
                 playlistType: AdagePlaylistType.DOMAIN,
               })
             }
-            elements={domainsOptions.map((elm, key) => {
+            elements={domainsOptions.map((elm, index) => {
               const colorAndMotif =
-                colorAndMotifOrder[key % colorAndMotifOrder.length]
+                colorAndMotifOrder[index % colorAndMotifOrder.length]
 
               return (
                 <DomainsCard
@@ -138,7 +142,7 @@ export const AdageDiscovery = () => {
                     trackPlaylistElementClicked({
                       playlistId: DOMAINS_PLAYLIST,
                       playlistType: AdagePlaylistType.DOMAIN,
-                      elementId: key,
+                      index,
                     })
                   }
                   key={`domains-${elm.value}`}

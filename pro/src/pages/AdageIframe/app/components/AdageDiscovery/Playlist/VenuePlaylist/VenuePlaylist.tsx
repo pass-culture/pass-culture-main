@@ -24,6 +24,7 @@ type VenuePlaylistProps = {
     playlistId,
     playlistType,
     elementId,
+    index,
   }: TrackerElementArg) => void
 }
 
@@ -96,7 +97,8 @@ export const VenuePlaylist = ({
             trackPlaylistElementClicked({
               playlistId: VENUE_PLAYLIST,
               playlistType: AdagePlaylistType.VENUE,
-              elementId: index,
+              index,
+              elementId: venue.id,
             })
           }
           venue={venue}

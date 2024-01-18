@@ -20,6 +20,7 @@ type ClassroomPlaylistProps = {
     playlistId,
     playlistType,
     elementId,
+    index,
   }: TrackerElementArg) => void
 }
 
@@ -74,7 +75,8 @@ export const ClassroomPlaylist = ({
             trackPlaylistElementClicked({
               playlistId: CLASSROOM_PLAYLIST,
               playlistType: AdagePlaylistType.OFFER,
-              elementId: index,
+              index,
+              elementId: offerElement.id,
             })
           }
           key={`card-offer-class-${offerElement.id}`}

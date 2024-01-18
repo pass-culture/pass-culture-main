@@ -143,7 +143,8 @@ describe('AdageDiscovery', () => {
 
     expect(apiAdage.logConsultPlaylistElement).toHaveBeenCalledWith(
       expect.objectContaining({
-        elementId: 0,
+        elementId: undefined,
+        index: 0,
         playlistId: DOMAINS_PLAYLIST,
         playlistType: 'domain',
       })
