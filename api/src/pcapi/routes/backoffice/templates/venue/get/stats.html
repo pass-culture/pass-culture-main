@@ -106,19 +106,10 @@
                         type="button">
                   <i class="bi bi-trash3-fill"></i>
                 </button>
-                {{ build_lazy_modal(url_for("backoffice_web.venue.get_remove_pricing_point_form", venue_id=venue.id), "remove-venue-pricing-point") }}
+                {{ build_lazy_modal(url_for("backoffice_web.venue.get_remove_pricing_point_form", venue_id=venue.id) , "remove-venue-pricing-point") }}
               {% endif %}
             {% else %}
               {{ bank_information.pricing_point_name | empty_string_if_null }}
-            {% endif %}
-          </li>
-          <li>
-            <span class="fw-bold">Point de remboursement :</span>
-            {% if bank_information.reimbursement_point_url %}
-              <a href="{{ bank_information.reimbursement_point_url }}"
-                 class="link-primary">{{ bank_information.reimbursement_point_name }}</a>
-            {% else %}
-              {{ bank_information.reimbursement_point_name | empty_string_if_null }}
             {% endif %}
           </li>
           {% if is_feature_active("WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY") %}
@@ -130,6 +121,15 @@
               {% endif %}
             </li>
           {% else %}
+            <li>
+              <span class="fw-bold">Point de remboursement :</span>
+              {% if bank_information.reimbursement_point_url %}
+                <a href="{{ bank_information.reimbursement_point_url }}"
+                   class="link-primary">{{ bank_information.reimbursement_point_name }}</a>
+              {% else %}
+                {{ bank_information.reimbursement_point_name | empty_string_if_null }}
+              {% endif %}
+            </li>
             <li>
               <span class="fw-bold">BIC :</span> {{ bank_information.bic | empty_string_if_null }}
             </li>
