@@ -33,8 +33,6 @@ describe('screens | OfferEducational : event address step', () => {
 
     it('should display venue radio buttons with pre-selected offerer venue and a disabled select', async () => {
       renderWithProviders(<OfferEducational {...props} />)
-      // wait for page to be rendered
-      expect(screen.getByLabelText('Structure')).toBeInTheDocument()
 
       expect(await screen.findByLabelText('Dans votre lieu')).toBeChecked()
       expect(
@@ -171,6 +169,7 @@ describe('screens | OfferEducational : event address step', () => {
     it('should prefill intervention field with venue intervention field when selecting venue', async () => {
       const offererId = '55'
       const venueId = '42'
+
       renderWithProviders(
         <OfferEducational
           {...props}

@@ -36,15 +36,6 @@ describe('screens | OfferEducational : creation offerer step', () => {
         .mockResolvedValue(eligibilityResponse(true))
     })
 
-    it('should display offerer select with pre-selected options', async () => {
-      renderWithProviders(<OfferEducational {...props} />)
-      const offererSelect = await screen.findByLabelText('Structure')
-
-      expect(offererSelect).toHaveValue(props.userOfferers[0].id.toString())
-      expect(offererSelect).toBeDisabled()
-      expect(offererSelect.children).toHaveLength(1)
-    })
-
     it('should test eligibility and display venue input if offerer is eligible', async () => {
       renderWithProviders(
         <OfferEducational
@@ -133,21 +124,14 @@ describe('screens | OfferEducational : creation offerer step', () => {
         .mockResolvedValue(eligibilityResponse(true))
     })
 
-    it('should pre-select both selects and display the next step', async () => {
+    it('should select venue and display the next step', async () => {
       renderWithProviders(<OfferEducational {...props} />)
 
       const offerTypeTitle = await screen.findByRole('heading', {
         name: 'Type d’offre',
       })
-      const offererSelect = await screen.findByLabelText('Structure')
+
       const venueSelect = await screen.findByLabelText('Lieu')
-
-      expect(offererSelect).toBeInTheDocument()
-      expect(offererSelect).toHaveValue(props.userOfferers[0].id.toString())
-      expect(offererSelect.children).toHaveLength(1)
-      expect(offererSelect).toBeDisabled()
-
-      expect(screen.queryByTestId('error-offererId')).not.toBeInTheDocument()
 
       expect(venueSelect).toBeInTheDocument()
       expect(venueSelect).toHaveValue(

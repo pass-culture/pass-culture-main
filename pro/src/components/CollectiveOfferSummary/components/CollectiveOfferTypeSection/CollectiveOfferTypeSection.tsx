@@ -39,42 +39,46 @@ export default function CollectiveOfferTypeSection({
   }, [offer.subcategoryId])
   const isFormatActive = useActiveFeature('WIP_ENABLE_FORMAT')
   return (
-    <SummaryLayout.SubSection title="Type d’offre">
-      {isFormatActive ? (
-        <SummaryLayout.Row
-          title="Format"
-          description={offer.formats?.join(', ') || DEFAULT_RECAP_VALUE}
-        />
-      ) : (
-        <>
+    <>
+      <SummaryLayout.SubSection title="Type d’offre">
+        {isFormatActive ? (
           <SummaryLayout.Row
-            title="Catégorie"
-            description={category?.label || DEFAULT_RECAP_VALUE}
+            title="Format"
+            description={offer.formats?.join(', ') || DEFAULT_RECAP_VALUE}
           />
-          <SummaryLayout.Row
-            title="Sous-catégorie"
-            description={subCategory?.label || DEFAULT_RECAP_VALUE}
-          />
-        </>
-      )}
+        ) : (
+          <>
+            <SummaryLayout.Row
+              title="Catégorie"
+              description={category?.label || DEFAULT_RECAP_VALUE}
+            />
+            <SummaryLayout.Row
+              title="Sous-catégorie"
+              description={subCategory?.label || DEFAULT_RECAP_VALUE}
+            />
+          </>
+        )}
 
-      <SummaryLayout.Row
-        title="Domaine artistique et culturel"
-        description={offer.domains.map((domain) => domain.name).join(', ')}
-      />
-      <SummaryLayout.Row
-        title="Dispositif national"
-        description={offer.nationalProgram?.name || DEFAULT_RECAP_VALUE}
-      />
-      <SummaryLayout.Row title="Titre de l’offre" description={offer.name} />
-      <SummaryLayout.Row
-        title="Description"
-        description={offer.description || DEFAULT_RECAP_VALUE}
-      />
-      <SummaryLayout.Row
-        title="Durée"
-        description={formatDuration(offer.durationMinutes)}
-      />
-    </SummaryLayout.SubSection>
+        <SummaryLayout.Row
+          title="Domaine artistique et culturel"
+          description={offer.domains.map((domain) => domain.name).join(', ')}
+        />
+        <SummaryLayout.Row
+          title="Dispositif national"
+          description={offer.nationalProgram?.name || DEFAULT_RECAP_VALUE}
+        />
+      </SummaryLayout.SubSection>
+      <SummaryLayout.SubSection title="Informations artistiques">
+        <SummaryLayout.Row title="Titre de l’offre" description={offer.name} />
+        <SummaryLayout.Row
+          title="Description"
+          description={offer.description || DEFAULT_RECAP_VALUE}
+        />
+        <SummaryLayout.Row
+          title="Durée"
+          description={formatDuration(offer.durationMinutes)}
+        />
+      </SummaryLayout.SubSection>
+    </>
   )
 }

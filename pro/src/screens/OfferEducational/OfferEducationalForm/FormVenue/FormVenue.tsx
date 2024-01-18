@@ -73,15 +73,17 @@ const FormVenue = ({
       description="Le lieu de rattachement permet d'associer vos coordonnées bancaires à votre offre pour permettre le remboursement par le pass Culture."
       title="Lieu de rattachement de votre offre"
     >
-      <FormLayout.Row>
-        <Select
-          onChange={(e) => onChangeOfferer(e.target.value)}
-          disabled={offerersOptions.length === 1 || disableOfferSelection}
-          label={OFFERER_LABEL}
-          name="offererId"
-          options={offerersOptions}
-        />
-      </FormLayout.Row>
+      {offerersOptions.length > 1 && (
+        <FormLayout.Row>
+          <Select
+            onChange={(e) => onChangeOfferer(e.target.value)}
+            disabled={offerersOptions.length === 1 || disableOfferSelection}
+            label={OFFERER_LABEL}
+            name="offererId"
+            options={offerersOptions}
+          />
+        </FormLayout.Row>
+      )}
       {isEligible === false && offerersOptions.length !== 0 && (
         <Banner
           links={[
