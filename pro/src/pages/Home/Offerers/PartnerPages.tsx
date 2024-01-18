@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import {
   GetOffererResponseModel,
@@ -13,8 +13,9 @@ import { PartnerPage } from './PartnerPage'
 import styles from './PartnerPages.module.scss'
 
 export const SAVED_VENUE_ID_KEY = 'homepageSelectedVenueId'
+
 const getSavedVenueId = (
-  venues: GetOffererVenueResponseModel[]
+  venues: Map<string, GetOffererVenueResponseModel>
 ): string | null => {
   const isLocalStorageAvailable = localStorageAvailable()
   if (!isLocalStorageAvailable) {
@@ -22,14 +23,7 @@ const getSavedVenueId = (
   }
 
   const savedVenueId = localStorage.getItem(SAVED_VENUE_ID_KEY)
-  if (
-    !savedVenueId ||
-    !venues.map((venue) => String(venue.id)).includes(savedVenueId)
-  ) {
-    return null
-  }
-
-  return savedVenueId
+  return venues.has(savedVenueId ?? '') ? savedVenueId : null
 }
 
 export interface PartnerPagesProps {
@@ -38,15 +32,30 @@ export interface PartnerPagesProps {
 }
 
 export const PartnerPages = ({ venues, offerer }: PartnerPagesProps) => {
-  const venuesOptions: SelectOption[] = venues.map((venue) => ({
-    label: venue.name,
-    value: venue.id.toString(),
-  }))
-  const [selectedVenueId, setSelectedVenueId] = useState<string>(
-    venues.length > 0 ? getSavedVenueId(venues) ?? venues[0].id.toString() : ''
-  )
-  const selectedVenue =
-    venues.find((venue) => venue.id.toString() === selectedVenueId) ?? venues[0]
+  const [venuesOptions, setVenuesOptions] = useState<SelectOption[]>([])
+  const [mapVenues, setMapVenues] = useState<
+    Map<string, GetOffererVenueResponseModel>
+  >(new Map())
+  const [selectedVenueId, setSelectedVenueId] = useState<string>('')
+
+  useEffect(() => {
+    const options = []
+    const map = new Map()
+    for (const venue of venues) {
+      options.push({
+        label: venue.name,
+        value: venue.id.toString(),
+      })
+      map.set(venue.id.toString(), venue)
+    }
+    setVenuesOptions(options)
+    setMapVenues(map)
+    setSelectedVenueId(
+      venues.length > 0 ? getSavedVenueId(map) ?? venues[0].id.toString() : ''
+    )
+  }, [venues])
+
+  const selectedVenue = mapVenues.get(selectedVenueId) ?? venues[0]
 
   return (
     <section className={styles['section']}>
