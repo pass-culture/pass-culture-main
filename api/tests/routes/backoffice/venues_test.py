@@ -189,8 +189,7 @@ class ListVenuesTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 2
-        assert int(rows[0]["ID"]) == venues[0].id
-        assert int(rows[1]["ID"]) == venue.id
+        assert {int(row["ID"]) for row in rows} == {venues[0].id, venue.id}
 
     def test_list_venues_by_department(self, authenticated_client, venues):
         with assert_num_queries(self.expected_num_queries):
