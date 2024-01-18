@@ -1,7 +1,6 @@
 from unittest.mock import patch
 
 from pcapi.connectors.api_allocine import ALLOCINE_API_URL
-from pcapi.connectors.serialization import allocine_serializers
 from pcapi.domain.allocine import _exclude_movie_showtimes_with_special_event_type
 from pcapi.domain.allocine import get_movie_list
 from pcapi.domain.allocine import get_movie_poster
@@ -36,19 +35,83 @@ class GetMovieShowtimeListFromAllocineTest:
         self.theater_id = "123456789"
 
     @patch("pcapi.domain.allocine.api_allocine.get_movies_showtimes_from_allocine")
-    def test_should_exclude_empty_movies_and_special_events(self, mock_get_movies_showtimes):
+    def test_should_retrieve_result_from_api_connector_with_theater_id_parameter(self, mock_get_movies_showtimes):
         # Given
-        mock_get_movies_showtimes.return_value = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
-            fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
-        )
+        movies_list = [
+            {
+                "node": {
+                    "movie": {
+                        "id": "TW92aWU6Mzc4MzI=",
+                        "internalId": 37832,
+                        "title": "Les Contes de la m\u00e8re poule",
+                        "type": "COMMERCIAL",
+                    }
+                }
+            }
+        ]
+        mock_get_movies_showtimes.return_value = {"movieShowtimeList": {"totalCount": 1, "edges": movies_list}}
 
         # When
-        movie_showtimes = get_movies_showtimes(self.theater_id)
-
+        get_movies_showtimes(self.theater_id)
         # Then
         mock_get_movies_showtimes.assert_called_once_with(self.theater_id)
-        assert next(movie_showtimes).movie.internalId == 131136
-        assert next(movie_showtimes, None) is None
+
+    @patch("pcapi.domain.allocine.api_allocine.get_movies_showtimes_from_allocine")
+    def test_should_extract_movies_from_api_result(self, mock_get_movies_showtimes):
+        # Given
+        given_movies = [
+            {
+                "node": {
+                    "movie": {
+                        "id": "TW92aWU6Mzc4MzI=",
+                        "internalId": 37832,
+                        "title": "Les Contes de la m\u00e8re poule",
+                        "type": "COMMERCIAL",
+                    }
+                }
+            },
+            {"node": {"movie": None}},
+            {"node": {}},
+            {
+                "node": {
+                    "movie": {
+                        "id": "TW92aWU6NTA0MDk=",
+                        "internalId": 50609,
+                        "title": "Le Ch\u00e2teau ambulant",
+                        "type": "BRAND_CONTENT",
+                    }
+                }
+            },
+        ]
+
+        expected_movies = [
+            {
+                "node": {
+                    "movie": {
+                        "id": "TW92aWU6Mzc4MzI=",
+                        "internalId": 37832,
+                        "title": "Les Contes de la m\u00e8re poule",
+                        "type": "COMMERCIAL",
+                    }
+                }
+            },
+            {
+                "node": {
+                    "movie": {
+                        "id": "TW92aWU6NTA0MDk=",
+                        "internalId": 50609,
+                        "title": "Le Ch\u00e2teau ambulant",
+                        "type": "BRAND_CONTENT",
+                    }
+                }
+            },
+        ]
+        mock_get_movies_showtimes.return_value = {"movieShowtimeList": {"totalCount": 4, "edges": given_movies}}
+
+        # When
+        movies = get_movies_showtimes(self.theater_id)
+        # Then
+        assert any(expected_movie == next(movies) for expected_movie in expected_movies)
 
 
 class GetMoviePosterTest:
@@ -61,3 +124,48 @@ class GetMoviePosterTest:
         url = "https://allocine.example.com/movie/poster.jpg"
         requests_mock.get(url, status_code=404)
         assert get_movie_poster(url) == b""
+
+
+class RemoveMovieShowsWithSpecialEventTypeTest:
+    def test_should_remove_movie_shows_with_special_event_type(self):
+        # Given
+        movies_list = [
+            {
+                "node": {
+                    "movie": {
+                        "id": "TW92aWU6Mzc4MzI=",
+                        "internalId": 37832,
+                        "title": "Les Contes de la m\u00e8re poule",
+                        "type": "COMMERCIAL",
+                    }
+                }
+            },
+            {
+                "node": {
+                    "movie": {
+                        "id": "TW92aWU6NTA0MDk=",
+                        "internalId": 50609,
+                        "title": "Le Ch\u00e2teau ambulant",
+                        "type": "SPECIAL_EVENT",
+                    }
+                }
+            },
+        ]
+
+        # When
+        filtered_movies_list = _exclude_movie_showtimes_with_special_event_type(movies_list)
+
+        # Then
+        assert len(filtered_movies_list) == 1
+        assert filtered_movies_list == [
+            {
+                "node": {
+                    "movie": {
+                        "id": "TW92aWU6Mzc4MzI=",
+                        "internalId": 37832,
+                        "title": "Les Contes de la m\u00e8re poule",
+                        "type": "COMMERCIAL",
+                    }
+                }
+            }
+        ]
