@@ -1,6 +1,7 @@
 import datetime
 from unittest.mock import patch
 
+from psycopg2.extras import DateTimeRange
 import pytest
 import sqlalchemy as sa
 from sqlalchemy.exc import IntegrityError
@@ -568,3 +569,23 @@ class VenueBankAccountLinkTest:
         with pytest.raises(IntegrityError):
             factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
             factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
+
+
+class OpeningHoursTest:
+    def test_opening_hours_timespan_number(self):
+        timespan_1 = DateTimeRange(datetime.datetime(2022, 9, 8, 10, 0), datetime.datetime(2022, 9, 8, 13, 0))
+        timespan_2 = DateTimeRange(datetime.datetime(2022, 9, 8, 14, 0), datetime.datetime(2022, 9, 8, 16, 0))
+        timespan_3 = DateTimeRange(datetime.datetime(2022, 9, 8, 17, 0), datetime.datetime(2022, 9, 8, 20, 0))
+        opening_hours = models.OpeningHours(weekday=models.Weekday.SATURDAY)
+        with pytest.raises(ValueError):
+            opening_hours.add_timespan(timespan_1)
+            opening_hours.add_timespan(timespan_2)
+            opening_hours.add_timespan(timespan_3)
+
+    def test_opening_hours_timespan_overlapping(self):
+        timespan_1 = DateTimeRange(datetime.datetime(2022, 9, 8, 10, 0), datetime.datetime(2022, 9, 8, 13, 0))
+        timespan_2 = DateTimeRange(datetime.datetime(2022, 9, 8, 11, 0), datetime.datetime(2022, 9, 8, 18, 0))
+        opening_hours = models.OpeningHours(weekday=models.Weekday.SATURDAY)
+        with pytest.raises(ValueError):
+            opening_hours.add_timespan(timespan_1)
+            opening_hours.add_timespan(timespan_2)

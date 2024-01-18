@@ -246,6 +246,16 @@ class InvitationStatus(enum.Enum):
     ACCEPTED = "ACCEPTED"
 
 
+class Weekday(enum.Enum):
+    MONDAY = "MONDAY"
+    TUESDAY = "TUESDAY"
+    WEDNESDAY = "WEDNESDAY"
+    THURSDAY = "THURSDAY"
+    FRIDAY = "FRIDAY"
+    SATURDAY = "SATURDAY"
+    SUNDAY = "SUNDAY"
+
+
 class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     __tablename__ = "venue"
 
@@ -420,6 +430,8 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     accessibilityProvider: sa_orm.Mapped["AccessibilityProvider | None"] = relationship(
         "AccessibilityProvider", back_populates="venue", uselist=False
     )
+
+    openingHours: list["OpeningHours"] = relationship("OpeningHours", back_populates="venue", passive_deletes=True)
 
     def _get_type_banner_url(self) -> str | None:
         elligible_banners: tuple[str, ...] = VENUE_TYPE_DEFAULT_BANNERS.get(self.venueTypeCode, tuple())
@@ -748,6 +760,28 @@ class AccessibilityProvider(PcObject, Base, Model):
         Request API to get latest update
         """
         raise NotImplementedError()
+
+
+class OpeningHours(PcObject, Base, Model):
+    __tablename__ = "opening_hours"
+    venueId: int = Column(BigInteger, ForeignKey("venue.id", ondelete="CASCADE"), nullable=False, index=True)
+    venue: sa_orm.Mapped[Venue] = relationship("Venue", foreign_keys=[venueId], back_populates="openingHours")
+    weekday: Weekday = Column(db_utils.MagicEnum(Weekday), nullable=False, default=Weekday.MONDAY)
+    timespan: list[psycopg2.extras.DateTimeRange] = Column(sa_psql.ARRAY(sa_psql.TSRANGE), nullable=True)
+
+    __table_args__ = (CheckConstraint(func.cardinality(timespan) <= 2, name="max_opening_hours_timespan_is_2"),)
+
+    def add_timespan(self, new_timespan: psycopg2.extras.DateTimeRange) -> None:
+        if self.timespan:
+            for existing_timespan in self.timespan:
+                if existing_timespan.lower < new_timespan.upper and existing_timespan.upper > new_timespan.lower:
+                    raise ValueError("New opening hours timespan overlaps with existing ones")
+
+            if len(self.timespan) >= 2:
+                raise ValueError("Maximum size of timespan list reached")
+            self.timespan.append(new_timespan)
+        else:
+            self.timespan = [new_timespan]
 
 
 class VenueLabel(PcObject, Base, Model):
