@@ -24,8 +24,8 @@
 
         display: inline-flex;
         align-items: center;
-        white-space: nowrap;
         text-decoration: underline;
+        white-space: break-spaces;
 
         &[aria-current="page"] {
           color: inherit;

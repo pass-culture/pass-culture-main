@@ -148,53 +148,7 @@ const Offer = ({
         <div className={style['offer-details-container']}>
           <div className={style['offer-header']}>
             <div className={style['offer-header-row']}>
-              <div>
-                <h2 className={style['offer-header-title']}>{offer.name}</h2>
-                <div className={style['offer-header-subtitles']}>
-                  <span className={style['offer-header-label']}>
-                    Proposée par
-                  </span>
-
-                  {offer.venue.adageId ? (
-                    <ButtonLink
-                      link={{
-                        isExternal: true,
-                        to: `${document.referrer}adage/ressource/partenaires/id/${offer.venue.adageId}`,
-                        target: '_blank',
-                        rel: 'noopener noreferrer',
-                      }}
-                      variant={ButtonVariant.TERNARY}
-                      className={style['offer-header-venue-link']}
-                      onClick={offerVenueLinkClicked}
-                      icon={fullLinkIcon}
-                    >
-                      {venueAndOffererName}
-                    </ButtonLink>
-                  ) : (
-                    <span>{venueAndOffererName}</span>
-                  )}
-                </div>
-                {isCollectiveOffer(offer) && offer.teacher && (
-                  <div className={style['offer-header-teacher']}>
-                    <span className={style['offer-header-label']}>
-                      Destinée à{' '}
-                    </span>
-                    <span>
-                      {offer.teacher.firstName} {offer.teacher.lastName}
-                    </span>
-                  </div>
-                )}
-                <ul className={style['offer-domains-list']}>
-                  {offer?.domains?.map((domain) => (
-                    <li
-                      className={style['offer-domains-list-item']}
-                      key={domain.id}
-                    >
-                      <Tag variant={TagVariant.LIGHT_GREY}>{domain.name}</Tag>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <h2 className={style['offer-header-row-title']}>{offer.name}</h2>
               <div className={style['offer-details-actions']}>
                 {canAddOfferToFavorites && (
                   <OfferFavoriteButton
@@ -232,6 +186,52 @@ const Offer = ({
                 )}
               </div>
             </div>
+
+            <div className={style['offer-header-subtitles']}>
+              <span className={style['offer-header-label']}>Proposée par</span>
+
+              {offer.venue.adageId ? (
+                <ButtonLink
+                  link={{
+                    isExternal: true,
+                    to: `${document.referrer}adage/ressource/partenaires/id/${offer.venue.adageId}`,
+                    target: '_blank',
+                    rel: 'noopener noreferrer',
+                  }}
+                  variant={ButtonVariant.TERNARY}
+                  className={style['offer-header-venue-link']}
+                  onClick={offerVenueLinkClicked}
+                  icon={fullLinkIcon}
+                >
+                  {venueAndOffererName}
+                </ButtonLink>
+              ) : (
+                <span>{venueAndOffererName}</span>
+              )}
+            </div>
+            {isCollectiveOffer(offer) && offer.teacher && (
+              <div className={style['offer-header-teacher']}>
+                <span className={style['offer-header-label']}>Destinée à </span>
+                <span>
+                  {offer.teacher.firstName} {offer.teacher.lastName}
+                </span>
+              </div>
+            )}
+            <ul className={style['offer-domains-list']}>
+              {offer?.domains?.map((domain) => (
+                <li
+                  className={style['offer-domains-list-item']}
+                  key={domain.id}
+                >
+                  <Tag
+                    variant={TagVariant.LIGHT_GREY}
+                    className={style['offer-domains-list-item-tag']}
+                  >
+                    {domain.name}
+                  </Tag>
+                </li>
+              ))}
+            </ul>
           </div>
           <OfferSummary offer={offer} />
           <p className={style['offer-description']}>
