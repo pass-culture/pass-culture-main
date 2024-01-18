@@ -196,6 +196,7 @@ describe('Homepage', () => {
         screen.queryByText('Présence sur le pass Culture')
       ).not.toBeInTheDocument()
     })
+
     it('should not display statistics dashboard when selected offerer is validated but not active', async () => {
       vi.spyOn(api, 'getOfferer').mockResolvedValue({
         ...defaultGetOffererResponseModel,
@@ -263,5 +264,19 @@ describe('Homepage', () => {
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(api.getOfferer).toHaveBeenCalledWith(baseOfferers[0].id)
+  })
+
+  it('should display pending offerer banner when rattachement is pending', async () => {
+    vi.spyOn(api, 'getOfferer').mockRejectedValueOnce({ status: 403 })
+
+    renderHomePage(store)
+
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    expect(
+      screen.getByText(
+        'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
+      )
+    ).toBeInTheDocument()
   })
 })
