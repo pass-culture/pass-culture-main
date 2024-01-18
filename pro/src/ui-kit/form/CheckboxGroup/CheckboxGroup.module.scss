@@ -4,6 +4,7 @@
   &-item {
     // RomainC: I don't understand why it doesn't exactly match the sketch
     margin-bottom: rem.torem(12px);
+    width: max-content;
 
     &:last-of-type {
       margin-bottom: 0;

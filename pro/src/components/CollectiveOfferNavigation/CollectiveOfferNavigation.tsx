@@ -43,12 +43,12 @@ const CollectiveOfferNavigation = ({
   const requestIdUrl = requestId ? `?requete=${requestId}` : ''
 
   if (isEditingExistingOffer) {
-    stepList[CollectiveOfferStep.DETAILS] = {
-      id: CollectiveOfferStep.DETAILS,
-      label: 'Détails de l’offre',
-      url: `/offre/${offerId}/collectif/edition`,
-    }
     if (!isTemplate) {
+      stepList[CollectiveOfferStep.DETAILS] = {
+        id: CollectiveOfferStep.DETAILS,
+        label: 'Détails de l’offre',
+        url: `/offre/${offerId}/collectif/edition`,
+      }
       stepList[CollectiveOfferStep.STOCKS] = {
         id: CollectiveOfferStep.STOCKS,
         label: 'Date et prix',
