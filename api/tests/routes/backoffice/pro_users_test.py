@@ -143,6 +143,7 @@ class GetProUserTest(GetEndpointHelper):
         assert f"Code postal : {user.postalCode} " in content
         assert f"Département : {user.departementCode} " in content
         assert "Email validé : Oui" in content
+        assert url_for("backoffice_web.users.redirect_to_brevo_user_page", user_id=user.id).encode() in response.data
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
         assert "Pro" in badges

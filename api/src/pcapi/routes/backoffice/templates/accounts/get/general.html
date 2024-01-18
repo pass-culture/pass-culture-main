@@ -1,6 +1,7 @@
 {% from "components/forms.html" import build_form_fields_group with context %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
 {% import "components/clipboard.html" as clipboard %}
+{% import "components/logo.html" as logo %}
 {% set username = user.firstName | empty_string_if_null + ' ' + user.lastName | empty_string_if_null | upper %}
 <div class="row row-cols-1 g-4 py-3 pc-strip-query-string">
   <div class="col">
@@ -55,6 +56,13 @@
                     </form>
                   </div>
                 </div>
+              </div>
+            {% endif %}
+            {% if user.isActive %}
+              <div class="mx-3 pt-2 pc-brevo-logo-link">
+                <a href="{{ url_for('backoffice_web.users.redirect_to_brevo_user_page', user_id=user.id) }}"
+                   target="_blank"
+                   rel="noreferrer noopener">{{ logo.brevo() }}</a>
               </div>
             {% endif %}
           </div>

@@ -1,3 +1,4 @@
+import logging
 from operator import attrgetter
 
 from flask import flash
@@ -12,6 +13,7 @@ from sqlalchemy.orm import load_only
 from werkzeug.exceptions import Forbidden
 from werkzeug.exceptions import NotFound
 
+from pcapi.core import mails
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import api as users_api
@@ -19,7 +21,10 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.users import forms
+from pcapi.utils.requests import ExternalAPIException
 
+
+logger = logging.getLogger(__name__)
 
 # This blueprint is for common actions on User, which can be beneficiary, pro, admin...
 # Currently targets actions related to "Fraude & Conformité"
@@ -36,7 +41,7 @@ def _redirect_to_user_page(user: users_models.User) -> utils.BackofficeResponse:
         return redirect(request.referrer, code=303)
 
     # Fallback in case referrer is missing (maybe because of browser settings)
-    if user.UserOfferers:
+    if user.has_pro_role or user.has_non_attached_pro_role:
         return redirect(url_for("backoffice_web.pro_user.get", user_id=user.id), code=303)
 
     return redirect(url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id), code=303)
@@ -230,3 +235,36 @@ def confirm_batch_suspend_users() -> utils.BackofficeResponse:
         flash(f"{len(users)} compte d'utilisateur a été suspendu", "success")
 
     return redirect(url_for("backoffice_web.fraud.list_blacklisted_domain_names"), code=303)
+
+
+@users_blueprint.route("/<int:user_id>/redirect-to-brevo", methods=["GET"])
+@utils.permission_required_in(
+    [
+        perm_models.Permissions.READ_PUBLIC_ACCOUNT,
+        perm_models.Permissions.READ_PRO_ENTITY,
+    ]
+)
+def redirect_to_brevo_user_page(user_id: int) -> utils.BackofficeResponse:
+    user = users_models.User.query.filter_by(id=user_id).one_or_none()
+
+    if not user:
+        raise NotFound()
+    try:
+        user_url = mails.get_contact_url(user.email)
+    except ExternalAPIException as exp:
+        flash("Impossible de rediriger vers Brevo suite a une erreur inconnue", "warning")
+        logger.error(
+            "Brevo search: Unknown error",
+            extra={
+                "exception": exp,
+                "request_type": "search",
+                "user_id": user_id,
+            },
+        )
+        return _redirect_to_user_page(user)
+
+    if not user_url:
+        flash(Markup("L'adresse <b>{email}</b> n'existe pas dans Brevo").format(email=user.email), "warning")
+        return _redirect_to_user_page(user)
+
+    return redirect(user_url)
