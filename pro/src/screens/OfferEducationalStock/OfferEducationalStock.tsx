@@ -191,8 +191,6 @@ const OfferEducationalStock = <
                 >
                   Étape précédente
                 </ButtonLink>
-              </ActionsBarSticky.Left>
-              <ActionsBarSticky.Right>
                 <SubmitButton
                   className=""
                   disabled={
@@ -201,9 +199,11 @@ const OfferEducationalStock = <
                   }
                   isLoading={isLoading}
                 >
-                  {mode === Mode.EDITION ? 'Enregistrer' : 'Étape suivante'}
+                  {mode === Mode.EDITION
+                    ? 'Enregistrer les modifications'
+                    : 'Étape suivante'}
                 </SubmitButton>
-              </ActionsBarSticky.Right>
+              </ActionsBarSticky.Left>
             </ActionsBarSticky>
           </FormLayout>
         </form>

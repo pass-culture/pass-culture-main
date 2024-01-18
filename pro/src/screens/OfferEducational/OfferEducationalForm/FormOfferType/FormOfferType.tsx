@@ -182,34 +182,36 @@ const FormOfferType = ({
           />
         </FormLayout.Row>
       )}
-      <FormLayout.Row>
-        <TextInput
-          countCharacters
-          label={TITLE_LABEL}
-          maxLength={110}
-          name="title"
-          disabled={disableForm}
-        />
-      </FormLayout.Row>
-      <FormLayout.Row>
-        <TextArea
-          countCharacters
-          label={DESCRIPTION_LABEL}
-          maxLength={MAX_DETAILS_LENGTH}
-          name="description"
-          placeholder="Détaillez ici votre projet et son interêt pédagogique."
-          disabled={disableForm}
-        />
-      </FormLayout.Row>
-      <FormLayout.Row>
-        <TextInput
-          isOptional
-          label={DURATION_LABEL}
-          name="duration"
-          placeholder="HH:MM"
-          disabled={disableForm}
-        />
-      </FormLayout.Row>
+      <FormLayout.Section title="Informations artistiques">
+        <FormLayout.Row>
+          <TextInput
+            countCharacters
+            label={TITLE_LABEL}
+            maxLength={110}
+            name="title"
+            disabled={disableForm}
+          />
+        </FormLayout.Row>
+        <FormLayout.Row>
+          <TextArea
+            countCharacters
+            label={DESCRIPTION_LABEL}
+            maxLength={MAX_DETAILS_LENGTH}
+            name="description"
+            placeholder="Détaillez ici votre projet et son interêt pédagogique."
+            disabled={disableForm}
+          />
+        </FormLayout.Row>
+        <FormLayout.Row>
+          <TextInput
+            isOptional
+            label={DURATION_LABEL}
+            name="duration"
+            placeholder="HH:MM"
+            disabled={disableForm}
+          />
+        </FormLayout.Row>
+      </FormLayout.Section>
     </FormLayout.Section>
   )
 }

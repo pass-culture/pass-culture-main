@@ -204,15 +204,15 @@ const OfferEducationalForm = ({
           >
             Annuler et quitter
           </ButtonLink>
-        </ActionsBarSticky.Left>
-        <ActionsBarSticky.Right>
           <SubmitButton
             disabled={!isEligible || mode === Mode.READ_ONLY}
             isLoading={isLoading}
           >
-            {mode === Mode.CREATION ? 'Étape suivante' : 'Enregistrer'}
+            {mode === Mode.CREATION
+              ? 'Étape suivante'
+              : 'Enregistrer les modifications'}
           </SubmitButton>
-        </ActionsBarSticky.Right>
+        </ActionsBarSticky.Left>
       </ActionsBarSticky>
     </FormLayout>
   )

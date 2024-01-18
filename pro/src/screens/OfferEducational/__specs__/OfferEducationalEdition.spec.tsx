@@ -74,7 +74,7 @@ describe('screens | OfferEducational', () => {
       screen.getByLabelText(INTERVENTION_AREA_LABEL),
     ]
     const submitButton = screen.getByRole('button', {
-      name: 'Enregistrer',
+      name: 'Enregistrer les modifications',
     })
     await waitFor(() => {
       inputs.forEach((input) => expect(input).toBeDisabled())
