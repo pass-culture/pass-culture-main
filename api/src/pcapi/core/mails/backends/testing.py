@@ -33,3 +33,7 @@ class TestingBackend(BaseBackend):
 
     def delete_contact(self, contact_email: str) -> None:
         users_testing.sendinblue_requests.append({"email": contact_email, "action": "delete"})
+
+    def get_contact_url(self, contact_email: str) -> str | None:
+        users_testing.sendinblue_requests.append({"email": contact_email, "action": "get_contact_url"})
+        return None
