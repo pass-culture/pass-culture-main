@@ -16,12 +16,13 @@ depends_on = None
 
 def upgrade() -> None:
     op.execute("COMMIT")
-    op.execute("""SET SESSION statement_timeout = '2600s'""")
+    op.execute("""SET SESSION statement_timeout = '500s'""")
     op.execute(
         """
             CREATE INDEX CONCURRENTLY IF NOT EXISTS
             offer_music_type_idx ON public.offer USING btree (("jsonData" ->> 'musicType'::text))
-            WHERE (("jsonData" ->> 'musicType'::text)) IS NOT NULL;
+            WHERE offer."subcategoryId" IN ('SUPPORT_PHYSIQUE_MUSIQUE_CD','SUPPORT_PHYSIQUE_MUSIQUE_VINYLE','TELECHARGEMENT_MUSIQUE','ABO_PLATEFORME_MUSIQUE','CAPTATION_MUSIQUE','CONCERT','EVENEMENT_MUSIQUE','LIVESTREAM_MUSIQUE','ABO_CONCERT','FESTIVAL_MUSIQUE')
+            AND (("jsonData" ->> 'musicType'::text)) IS NOT NULL;
         """
     )
     op.execute(
