@@ -1,6 +1,6 @@
 from sqlalchemy import Integer
 
-from pcapi.connectors.serialization import allocine_serializers
+from pcapi.connectors.serialization.allocine_serializers import AllocineMovie
 from pcapi.core.categories.subcategories_v2 import SEANCE_CINE
 from pcapi.core.offers.models import OfferExtraData
 from pcapi.core.offers.models import Product
@@ -19,14 +19,13 @@ def synchronize_products() -> None:
             _upsert_product(products_by_allocine_id, movie)
 
 
-def _upsert_product(products_by_allocine_id: dict[int, Product], movie: allocine_serializers.AllocineMovie) -> None:
+def _upsert_product(products_by_allocine_id: dict[int, Product], movie: AllocineMovie) -> None:
     allocine_id = movie.internalId
     product = products_by_allocine_id.get(allocine_id)
     movie_data = _build_movie_data(movie)
     if not product:
         product = Product(
-            description=_build_description(movie),
-            durationMinutes=movie.runtime,
+            description=movie.synopsis,
             extraData=movie_data,
             idAtProviders=str(allocine_id),
             name=movie.title,
@@ -36,14 +35,15 @@ def _upsert_product(products_by_allocine_id: dict[int, Product], movie: allocine
         if product.extraData is None:
             product.extraData = OfferExtraData()
         product.extraData.update(movie_data)
+
     db.session.add(product)
 
 
-def _build_movie_data(movie: allocine_serializers.AllocineMovie) -> OfferExtraData:
+def _build_movie_data(movie: AllocineMovie) -> OfferExtraData:
     return OfferExtraData(
         allocineId=movie.internalId,
         backlink=str(movie.backlink.url),
-        cast=[_build_full_name(item.actor) for item in movie.cast.items if item.actor],
+        cast=[f"{item.actor.firstName} {item.actor.lastName}" for item in movie.cast.items if item.actor],
         companies=[company.model_dump() for company in movie.companies],
         countries=[country.name for country in movie.countries],
         credits=[credit.model_dump() for credit in movie.credits],
@@ -52,20 +52,9 @@ def _build_movie_data(movie: allocine_serializers.AllocineMovie) -> OfferExtraDa
         originalTitle=movie.originalTitle,
         posterUrl=str(movie.poster.url) if movie.poster else None,
         productionYear=movie.data.productionYear,
-        releaseDate=movie.releases[0].releaseDate.date.isoformat() if movie.releases else None,
         releases=[release.model_dump() for release in movie.releases],
         runtime=movie.runtime,
-        stageDirector=_build_full_name(movie.credits[0].person) if movie.credits else None,
         synopsis=movie.synopsis,
         title=movie.title,
         type=movie.type,
-        visa=movie.releases[0].data.visa_number if movie.releases else None,
     )
-
-
-def _build_description(movie: allocine_serializers.AllocineMovie) -> str:
-    return f"{movie.synopsis}\n{movie.backlink.label}: {movie.backlink.url}"
-
-
-def _build_full_name(person: allocine_serializers.AllocineMoviePerson) -> str:
-    return f"{person.firstName or ''} {person.lastName or ''}".strip()
