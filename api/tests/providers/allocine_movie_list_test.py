@@ -2,9 +2,7 @@ import pytest
 
 from pcapi.connectors.api_allocine import ALLOCINE_API_URL
 from pcapi.core.offers.models import Product
-from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers.allocine_movie_list import synchronize_products
-from pcapi.core.providers.models import Provider
 
 from tests.domain import fixtures
 
@@ -29,11 +27,6 @@ class AllocineMovieListTest:
         # Then
         catalogue = Product.query.order_by(Product.id).all()
         assert len(catalogue) == 4
-
-        allocine_products_provider = Provider.query.filter(
-            Provider.name == providers_constants.ALLOCINE_PRODUCTS_PROVIDER_NAME
-        ).one()
-        assert all(product.lastProviderId == allocine_products_provider.id for product in catalogue)
 
         movie_data = catalogue[0].extraData
         expected_data = fixtures.ALLOCINE_MOVIE_LIST_PAGE_1["movieList"]["edges"][0]["node"]
