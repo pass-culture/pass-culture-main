@@ -518,15 +518,20 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
         ):
             new_revenue += event.bookingFinanceIncident.newTotalAmount
 
-    rule_finder = reimbursement.CustomRuleFinder()
-    rule = reimbursement.get_reimbursement_rule(booking, rule_finder, new_revenue)
-
-    if event.motive == models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT:
+    if is_incident_event:
         original_pricing = models.Pricing.query.filter_by(
             status=models.PricingStatus.INVOICED,
             booking=individual_booking,
             collectiveBooking=collective_booking,
         ).one()
+
+        rule = find_reimbursement_rule(original_pricing.customRuleId or original_pricing.standardRule)
+    else:
+        original_pricing = None
+        rule_finder = reimbursement.CustomRuleFinder()
+        rule = reimbursement.get_reimbursement_rule(booking, rule_finder, new_revenue)
+
+    if event.motive == models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT:
         amount = -original_pricing.amount  # inverse the original pricing amount (positive)
         lines = [
             models.PricingLine(

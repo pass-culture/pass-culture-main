@@ -287,6 +287,31 @@ class PriceEventTest:
         assert created_pricing.lines[0].amount == -1000
         assert created_pricing.lines[0].category == models.PricingLineCategory.OFFERER_REVENUE
 
+    def test_price_event_on_cancelled_booking(self):
+        venue = offerers_factories.VenueFactory(pricing_point="self", reimbursement_point="self")
+        booking = bookings_factories.ReimbursedBookingFactory(venue=venue, stock__offer__venue=venue)
+        used_event = factories.UsedBookingFinanceEventFactory(booking=booking)
+        original_pricing = api.price_event(used_event)
+        original_pricing.status = models.PricingStatus.INVOICED
+        total_booking_incident = factories.IndividualBookingFinanceIncidentFactory(
+            newTotalAmount=0, incident__venue=venue, booking=booking
+        )
+
+        api.validate_finance_incident(total_booking_incident.incident, force_debit_note=False)
+
+        assert total_booking_incident.booking.status == bookings_models.BookingStatus.CANCELLED
+
+        reversal_event = (
+            models.FinanceEvent.query.join(models.FinanceEvent.bookingFinanceIncident)
+            .filter(models.BookingFinanceIncident.bookingId == booking.id)
+            .first()
+        )
+
+        pricing = api.price_event(reversal_event)
+        assert pricing
+        assert pricing.customRuleId == original_pricing.customRuleId
+        assert pricing.standardRule == original_pricing.standardRule
+
     @pytest.mark.parametrize(
         "event_motive",
         [
