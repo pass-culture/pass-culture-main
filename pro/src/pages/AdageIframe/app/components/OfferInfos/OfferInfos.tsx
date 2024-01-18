@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, useParams, useSearchParams } from 'react-router-dom'
 
+import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import Breadcrumb from 'components/Breadcrumb/Breadcrumb'
+import Breadcrumb, { Crumb } from 'components/Breadcrumb/Breadcrumb'
 import strokePassIcon from 'icons/stroke-pass.svg'
+import strokeSearchIcon from 'icons/stroke-search.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
+import useAdageUser from '../../hooks/useAdageUser'
 import Offer from '../OffersInstantSearch/OffersSearch/Offers/Offer'
 
 import offerInfosFallback from './assets/offer-infos-fallback.svg'
@@ -19,6 +22,8 @@ export const OfferInfos = () => {
 
   const [offer, setOffer] = useState(state?.offer)
   const [loading, setLoading] = useState(false)
+
+  const { adageUser } = useAdageUser()
 
   useEffect(() => {
     async function getOffer() {
@@ -46,6 +51,22 @@ export const OfferInfos = () => {
     return <Spinner />
   }
 
+  const originCrumb: Crumb = {
+    title:
+      adageUser.role === AdageFrontRoles.READONLY ? 'Recherche' : 'Découvrir',
+    link: {
+      isExternal: false,
+      to:
+        adageUser.role === AdageFrontRoles.READONLY
+          ? `/adage-iframe/recherche?token=${adageAuthToken}`
+          : `/adage-iframe/decouverte?token=${adageAuthToken}`,
+    },
+    icon:
+      adageUser.role === AdageFrontRoles.READONLY
+        ? strokeSearchIcon
+        : strokePassIcon,
+  }
+
   return (
     <div className={styles['offers-info']}>
       {offer ? (
@@ -53,14 +74,7 @@ export const OfferInfos = () => {
           <div className={styles['offers-info-breadcrumb']}>
             <Breadcrumb
               crumbs={[
-                {
-                  title: 'Découvrir',
-                  link: {
-                    isExternal: false,
-                    to: `/adage-iframe/decouverte?token=${adageAuthToken}`,
-                  },
-                  icon: strokePassIcon,
-                },
+                originCrumb,
                 {
                   title: offer.name,
                   link: {

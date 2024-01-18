@@ -1,6 +1,7 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import * as router from 'react-router-dom'
 
+import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
@@ -25,9 +26,9 @@ vi.mock('react-router-dom', async () => ({
   }),
 }))
 
-const renderOfferInfos = () => {
+const renderOfferInfos = (user: AuthenticatedResponse = defaultAdageUser) => {
   renderWithProviders(
-    <AdageUserContextProvider adageUser={defaultAdageUser}>
+    <AdageUserContextProvider adageUser={user}>
       <OfferInfos />
     </AdageUserContextProvider>
   )
@@ -58,6 +59,12 @@ describe('OfferInfos', () => {
     renderOfferInfos()
 
     expect(screen.getByRole('link', { name: 'Découvrir' })).toBeInTheDocument()
+  })
+
+  it('should display the breadcrumb with a link back to the search page if the user is admin', () => {
+    renderOfferInfos({ ...defaultAdageUser, role: AdageFrontRoles.READONLY })
+
+    expect(screen.getByRole('link', { name: 'Recherche' })).toBeInTheDocument()
   })
 
   it('should display the offer that is passed through the router when the user navigates within the app', () => {
