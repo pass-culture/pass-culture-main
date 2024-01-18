@@ -2,6 +2,7 @@ import datetime
 import logging
 from typing import Any
 
+from flask_sqlalchemy import BaseQuery
 import pytz
 import sqlalchemy as sqla
 import sqlalchemy.orm as sqla_orm
@@ -390,22 +391,9 @@ def _get_sent_pricings_for_individual_bookings(
     ).all()
 
 
-def _get_collective_reimbursement_details_from_invoices(invoice_ids: list[int]) -> list[tuple]:
-    ReimbursementPoint = sqla_orm.aliased(offerers_models.Venue)
+def _get_reimbursement_details_from_invoices_base_query(invoice_ids: list[int]) -> BaseQuery:
     return (
-        models.Pricing.query.join(educational_models.CollectiveBooking, models.Pricing.collectiveBooking)
-        .join(educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock)
-        .join(educational_models.CollectiveOffer, educational_models.CollectiveStock.collectiveOffer)
-        .join(offerers_models.Venue, educational_models.CollectiveOffer.venue)
-        .join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
-        .join(models.Pricing.cashflows)
-        .join(models.Cashflow.bankInformation)
-        .join(models.Cashflow.batch)
-        .join(models.Cashflow.invoices)
-        .join(ReimbursementPoint, models.Cashflow.reimbursementPointId == ReimbursementPoint.id)
-        .outerjoin(models.Pricing.customRule)
-        .filter(
-            models.Pricing.status == models.PricingStatus.INVOICED,
+        models.Invoice.query.filter(
             models.Invoice.id.in_(invoice_ids),
             # Complementary invoices (that end with ".2") are linked
             # to the same bookings as the original invoices they
@@ -413,6 +401,32 @@ def _get_collective_reimbursement_details_from_invoices(invoice_ids: list[int]) 
             # twice.
             models.Invoice.reference.not_like("%.2"),
         )
+        .join(models.InvoiceCashflow, models.InvoiceCashflow.invoiceId == models.Invoice.id)
+        .join(models.Cashflow, models.Cashflow.id == models.InvoiceCashflow.cashflowId)
+        .join(models.CashflowPricing, models.CashflowPricing.cashflowId == models.Cashflow.id)
+        .join(
+            models.Pricing,
+            sqla.and_(
+                models.Pricing.id == models.CashflowPricing.pricingId,
+                models.Pricing.status == models.PricingStatus.INVOICED,
+            ),
+        )
+        .join(models.Cashflow.bankInformation)
+        .join(models.Cashflow.batch)
+        .outerjoin(models.Pricing.customRule)
+    )
+
+
+def _get_collective_reimbursement_details_from_invoices(invoice_ids: list[int]) -> list[tuple]:
+    ReimbursementPoint = sqla_orm.aliased(offerers_models.Venue)
+    return (
+        _get_reimbursement_details_from_invoices_base_query(invoice_ids)
+        .join(educational_models.CollectiveBooking, models.Pricing.collectiveBooking)
+        .join(educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock)
+        .join(educational_models.CollectiveOffer, educational_models.CollectiveStock.collectiveOffer)
+        .join(offerers_models.Venue, educational_models.CollectiveOffer.venue)
+        .join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
+        .join(ReimbursementPoint, models.Cashflow.reimbursementPointId == ReimbursementPoint.id)
         .join(
             educational_models.EducationalRedactor,
             educational_models.CollectiveBooking.educationalRedactor,
@@ -484,22 +498,9 @@ def _get_collective_reimbursement_details_from_invoices(invoice_ids: list[int]) 
 def _get_individual_reimbursement_details_from_invoices(invoice_ids: list[int]) -> list[tuple]:
     ReimbursementPoint = sqla_orm.aliased(offerers_models.Venue)
     return (
-        models.Pricing.query.join(models.Pricing.booking)
-        .join(models.Pricing.cashflows)
-        .join(models.Cashflow.bankInformation)
-        .join(models.Cashflow.batch)
-        .join(models.Cashflow.invoices)
+        _get_reimbursement_details_from_invoices_base_query(invoice_ids)
+        .join(models.Pricing.booking)
         .join(ReimbursementPoint, models.Cashflow.reimbursementPointId == ReimbursementPoint.id)
-        .outerjoin(models.Pricing.customRule)
-        .filter(
-            models.Pricing.status == models.PricingStatus.INVOICED,
-            models.Invoice.id.in_(invoice_ids),
-            # Complementary invoices (that end with ".2") are linked
-            # to the same bookings as the original invoices they
-            # complement. We don't want these bookings to be listed
-            # twice.
-            models.Invoice.reference.not_like("%.2"),
-        )
         .join(bookings_models.Booking.offerer)
         .join(bookings_models.Booking.stock)
         .join(offers_models.Stock.offer)
