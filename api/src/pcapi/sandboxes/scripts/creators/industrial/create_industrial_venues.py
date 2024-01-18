@@ -24,12 +24,6 @@ DEFAULT_VENUE_IMAGES = 4
 VENUE_IMAGE_INDEX_START_AT = 21
 
 
-def _random_venue_type_code() -> offerers_models.VenueTypeCode:
-    return random.choice(
-        [type_code for type_code in offerers_models.VenueTypeCode if type_code != offerers_models.VenueTypeCode.DIGITAL]
-    )
-
-
 def add_default_image_to_venue(image_venue_counter: int, offerer: Offerer, venue: Venue) -> None:
     image_number = image_venue_counter + VENUE_IMAGE_INDEX_START_AT
     with open(
@@ -101,8 +95,7 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
                 comment=comment,
                 name=venue_name,
                 siret=siret,
-                venueTypeCode=_random_venue_type_code(),
-                isPermanent=True,
+                venueTypeCode=random.choice(offerers_models.PERMENANT_VENUE_TYPES),
                 pricing_point="self" if siret else None,
                 reimbursement_point="self" if siret else None,
             )
@@ -135,8 +128,7 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
                     comment=None,
                     name=second_venue_name,
                     siret=f"{offerer.siren}22222",
-                    venueTypeCode=_random_venue_type_code(),
-                    isPermanent=True,
+                    venueTypeCode=random.choice(offerers_models.PERMENANT_VENUE_TYPES),
                     pricing_point="self",
                     reimbursement_point="self",
                 )

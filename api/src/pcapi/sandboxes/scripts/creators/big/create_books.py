@@ -17,7 +17,6 @@ def create_books(size: int) -> None:
         offerers_factories.VenueFactory(
             name="Librairie,  " + str(venue["name"]),
             venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
-            isPermanent=True,
             latitude=venue["latitude"],
             longitude=venue["longitude"],
             address=venue["address"],
