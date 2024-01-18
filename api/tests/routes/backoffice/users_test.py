@@ -1,3 +1,5 @@
+from unittest import mock
+
 from flask import url_for
 import pytest
 
@@ -595,3 +597,73 @@ class ConfirmBatchSuspendUsersTest(BatchSuspendUsersReturns400Helper):
             assert booking.status != bookings_models.BookingStatus.CANCELLED
         for booking in cancellable_bookings:
             assert booking.status == bookings_models.BookingStatus.CANCELLED
+
+
+class GetRedirectToBrevoUserPageTest(GetEndpointHelper):
+    endpoint = "backoffice_web.users.redirect_to_brevo_user_page"
+    endpoint_kwargs = {"user_id": 1}
+    needed_permission = [
+        perm_models.Permissions.READ_PUBLIC_ACCOUNT,
+        perm_models.Permissions.READ_PRO_ENTITY,
+    ]
+
+    @mock.patch(
+        "pcapi.core.mails.backends.testing.TestingBackend.get_contact_url", return_value="https://url/to/contact/12345"
+    )
+    def test_beneficiary_in_brevo(self, mocked_get_contact_url, authenticated_client):
+        user = users_factories.BeneficiaryGrant18Factory()
+        user_id = user.id
+        with assert_num_queries(3):  # session + current user + get_user
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 302
+
+        assert response.location == "https://url/to/contact/12345"
+
+        mocked_get_contact_url.assert_called_once_with(user.email)
+
+    def test_beneficiary_not_in_brevo(self, authenticated_client):
+        user = users_factories.BeneficiaryGrant18Factory()
+        user_id = user.id
+        with assert_num_queries(3):  # session + current user + get_user
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 303
+
+        assert response.location == url_for(
+            "backoffice_web.public_accounts.get_public_account", user_id=user_id, _external=True
+        )
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == f"L'adresse {user.email} n'existe pas dans Brevo"
+        )
+
+    def test_user_does_not_exists(self, authenticated_client):
+        with assert_num_queries(3):  # session + current user + get_user
+            response = authenticated_client.get(url_for(self.endpoint, user_id=0))
+            assert response.status_code == 404
+
+    @mock.patch(
+        "pcapi.core.mails.backends.testing.TestingBackend.get_contact_url", return_value="https://url/to/contact/67890"
+    )
+    def test_pro_in_brevo(self, mocked_get_contact_url, authenticated_client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        user_id = user_offerer.user.id
+        with assert_num_queries(3):  # session + current user + get_user
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 302
+
+        assert response.location == "https://url/to/contact/67890"
+
+        mocked_get_contact_url.assert_called_once_with(user_offerer.user.email)
+
+    def test_pro_not_in_brevo(self, authenticated_client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        user_id = user_offerer.user.id
+        with assert_num_queries(3):  # session + current user + get_user
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 303
+
+        assert response.location == url_for("backoffice_web.pro_user.get", user_id=user_id, _external=True)
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == f"L'adresse {user_offerer.user.email} n'existe pas dans Brevo"
+        )

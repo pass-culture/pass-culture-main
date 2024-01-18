@@ -570,6 +570,7 @@ class GetPublicAccountTest(GetEndpointHelper):
             in content
         )
         assert f"Adresse {user.address} " in content
+        assert url_for("backoffice_web.users.redirect_to_brevo_user_page", user_id=user_id).encode() in response.data
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
         if expected_badge:

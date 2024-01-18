@@ -42,3 +42,10 @@ class LoggerBackend(BaseBackend):
             "A request to Sendinblue Contact API would be sent for user %s to delete them.",
             contact_email,
         )
+
+    def get_contact_url(self, contact_email: str) -> str | None:
+        logger.info(
+            "A request to Sendinblue Contact API would be sent for user %s to to get their info.",
+            contact_email,
+        )
+        return None

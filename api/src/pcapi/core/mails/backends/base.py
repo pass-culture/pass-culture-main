@@ -19,3 +19,6 @@ class BaseBackend:
 
     def delete_contact(self, contact_email: str) -> None:
         raise NotImplementedError()
+
+    def get_contact_url(self, contact_email: str) -> str | None:
+        raise NotImplementedError()
