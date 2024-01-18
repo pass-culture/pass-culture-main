@@ -5,54 +5,53 @@
 
 .adage-header-menu {
   display: flex;
-  height: rem.torem(61px);
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
   flex: 1;
 
   &-item {
     height: 100%;
+  }
+}
 
-    .adage-header-link {
-      @include fonts.button;
+.adage-header-link {
+  @include fonts.button;
 
-      height: 100%;
-      display: flex;
-      align-items: center;
-      padding: 0 rem.torem(16px);
-      gap: rem.torem(8px);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: rem.torem(16px) rem.torem(8px);
+  gap: rem.torem(8px);
 
-      &-active {
-        position: relative;
-        color: colors.$primary;
+  &-active {
+    position: relative;
+    color: colors.$primary;
 
-        &::after {
-          content: "";
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          width: 100%;
-          height: rem.torem(4px);
-          background-color: colors.$primary;
-          border-radius: rem.torem(2px) rem.torem(2px) 0 0;
-        }
-
-        .adage-header-item-icon {
-          fill: colors.$primary;
-        }
-      }
-
-      &-icon {
-        width: rem.torem(20px);
-        min-width: rem.torem(20px);
-        height: rem.torem(20px);
-        fill: colors.$black;
-      }
-
-      &:hover {
-        background-color: colors.$grey-light;
-      }
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: rem.torem(4px);
+      background-color: colors.$primary;
+      border-radius: rem.torem(2px) rem.torem(2px) 0 0;
     }
+
+    .adage-header-item-icon {
+      fill: colors.$primary;
+    }
+  }
+
+  &-icon {
+    width: rem.torem(20px);
+    min-width: rem.torem(20px);
+    height: rem.torem(20px);
+    fill: colors.$black;
+  }
+
+  &:hover {
+    background-color: colors.$grey-light;
   }
 }
 
@@ -69,5 +68,17 @@
 @media (min-width: size.$desktop) {
   .adage-header-menu {
     gap: rem.torem(48px);
+  }
+}
+
+@media (min-width: size.$tablet) {
+  .adage-header-menu {
+    flex-direction: row;
+    text-align: center;
+    height: rem.torem(61px);
+  }
+
+  .adage-header-link {
+    padding: 0 rem.torem(16px);
   }
 }
