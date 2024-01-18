@@ -121,6 +121,7 @@ class FeatureToggle(enum.Enum):
     WIP_GOOGLE_MAPS_VENUE_IMAGES = "Activer l'affichage des images des lieux importées depuis Google Maps"
     WIP_PARTNER_PAGE = 'Activer la nouvelle version des pages "Partenaire"'
     WIP_ENABLE_PRO_SIDE_NAV = "Refonte de la navigation de l'app pro"
+    WIP_ENABLE_PRO_OPENING_HOURS = "Active l'affichage des horaires d'ouverture sur les pages partenaire"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -188,6 +189,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_PARTNER_PAGE,
     FeatureToggle.ENABLE_CRON_TO_UPDATE_OFFERER_STATS,
     FeatureToggle.WIP_ENABLE_PRO_SIDE_NAV,
+    FeatureToggle.WIP_ENABLE_PRO_OPENING_HOURS,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
