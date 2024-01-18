@@ -24,11 +24,12 @@ def get_movie_list() -> list[allocine_serializers.AllocineMovie]:
     return movie_list
 
 
-def get_movies_showtimes(theater_id: str) -> Iterator[allocine_serializers.AllocineMovieShowtime]:
-    movie_showtime_list_response = api_allocine.get_movies_showtimes_from_allocine(theater_id)
-    movie_showtime_list = movie_showtime_list_response.movieShowtimeList
-    movies_number = movie_showtime_list.totalCount
-    filtered_movies_showtimes = _exclude_empty_movies_and_special_events(movie_showtime_list.moviesShowtimes)
+def get_movies_showtimes(theater_id: str) -> Iterator:
+    api_response = api_allocine.get_movies_showtimes_from_allocine(theater_id)
+    movies_showtimes = api_response["movieShowtimeList"]["edges"]
+    movies_number = api_response["movieShowtimeList"]["totalCount"]
+    cleared_movies = _ignore_empty_movies(movies_showtimes)
+    filtered_movies_showtimes = _exclude_movie_showtimes_with_special_event_type(cleared_movies)
 
     logger.info("[ALLOCINE] Total : %s movies", movies_number)
 
@@ -49,11 +50,11 @@ def get_movie_poster(poster_url: str) -> bytes:
         return bytes()
 
 
-def _exclude_empty_movies_and_special_events(
-    movies_showtimes: list[allocine_serializers.AllocineMovieShowtime],
-) -> list[allocine_serializers.AllocineMovieShowtime]:
-    return [
-        movie_showtimes
-        for movie_showtimes in movies_showtimes
-        if movie_showtimes.movie and movie_showtimes.movie.type != MOVIE_SPECIAL_EVENT
-    ]
+def _ignore_empty_movies(movies_showtime: list) -> list:
+    return list(filter(lambda movie_showtime: movie_showtime["node"].get("movie"), movies_showtime))
+
+
+def _exclude_movie_showtimes_with_special_event_type(movies_showtime: list) -> list:
+    return list(
+        filter(lambda movie_showtime: movie_showtime["node"]["movie"]["type"] != MOVIE_SPECIAL_EVENT, movies_showtime)
+    )
