@@ -471,15 +471,14 @@ class AlgoliaBackend(base.SearchBackend):
     def serialize_offer(cls, offer: offers_models.Offer, last_30_days_bookings: int) -> dict:
         venue = offer.venue
         offerer = venue.managingOfferer
-        prices = map(lambda stock: stock.price, offer.bookableStocks)
-        prices_sorted = sorted(prices, key=float)
-        dates = []
-        times = []
+        prices = {stock.price for stock in offer.bookableStocks}
+        dates = set()
+        times = set()
         if offer.isEvent:
-            dates = [stock.beginningDatetime.timestamp() for stock in offer.bookableStocks]  # type: ignore[union-attr]
-            times = [
+            dates = {stock.beginningDatetime.timestamp() for stock in offer.bookableStocks}  # type: ignore[union-attr]
+            times = {
                 date_utils.get_time_in_seconds_from_datetime(stock.beginningDatetime) for stock in offer.bookableStocks  # type: ignore[arg-type]
-            ]
+            }
         date_created = offer.dateCreated.timestamp()
         stocks_date_created = [stock.dateCreated.timestamp() for stock in offer.bookableStocks]
         tags = [criterion.name for criterion in offer.criteria]
@@ -555,7 +554,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "musicType": music_type_label,
                 "name": offer.name,
                 "nativeCategoryId": offer.subcategory.native_category_id,
-                "prices": prices_sorted,
+                "prices": sorted(prices),
                 # TODO(jeremieb): keep searchGroupNamev2 and remove
                 # remove searchGroupName once the search group name &
                 # home page label migration is over.
@@ -568,7 +567,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "subcategoryId": offer.subcategory.id,
                 "thumbUrl": url_path(offer.thumbUrl) if offer.thumbUrl else None,
                 "tags": tags,
-                "times": list(set(times)),
+                "times": list(times),
                 "visa": extra_data.get("visa"),
             },
             "offerer": {
