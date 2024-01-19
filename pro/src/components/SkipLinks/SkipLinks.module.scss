@@ -32,17 +32,17 @@
     }
 
     // Align skiplink to passculture logo, add logo margin and padding of a nav item creating more space
-    margin-right: calc(size.$nav-brand-margin-right + size.$header-nav-item-padding + rem.torem(4px));
+    margin-right: calc(
+      size.$nav-brand-margin-right + size.$header-nav-item-padding +
+        rem.torem(4px)
+    );
 
     &-button {
       color: colors.$white;
+      outline-color: colors.$white;
 
       & svg {
         fill: colors.$white;
-      }
-
-      &:focus {
-        border-color: white;
       }
     }
   }
