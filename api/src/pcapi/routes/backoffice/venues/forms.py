@@ -32,7 +32,7 @@ class EditVenueForm(EditVirtualVenueForm):
         "Nom d'usage",
         validators=(wtforms.validators.Length(max=255, message="doit contenir moins de %(max)d caractères"),),
     )
-    siret = fields.PCOptStringField("siret")
+    siret = fields.PCOptStringField("SIRET")
     postal_address_autocomplete = fields.PcPostalAddressAutocomplete(
         "Adresse",
         address="address",
