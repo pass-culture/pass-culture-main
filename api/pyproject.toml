@@ -29,7 +29,7 @@ freezegun = "1.2.2"
 google-auth = "2.26.2"
 google-api-python-client = "2.114.0"
 google-cloud-storage = "2.14.0"
-google-cloud-tasks = "2.15.0"
+google-cloud-tasks = "2.15.1"
 google-cloud-bigquery = "3.16.0"
 gql = { extras = ["requests"], version = "^3.5.0" }
 gunicorn = "20.0.4"
