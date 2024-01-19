@@ -3,6 +3,7 @@ import datetime
 from decimal import Decimal
 import enum
 import logging
+import re
 import secrets
 import typing
 
@@ -1087,9 +1088,10 @@ def _filter_user_accounts(accounts: BaseQuery, search_term: str) -> BaseQuery:
     else:
         term_filters.append(models.User.phoneNumber == term_as_phone_number)  # type: ignore [arg-type]
 
-    # numeric
-    if search_term.isnumeric():
-        term_filters.append(models.User.id == int(search_term))
+    # numeric (single id or multiple ids)
+    split_terms = re.split(r"[,;\s]+", search_term)
+    if all(term.isnumeric() for term in split_terms):
+        term_filters.append(models.User.id.in_([int(term) for term in split_terms]))
 
     # email
     sanitized_term = email_utils.sanitize_email(search_term)

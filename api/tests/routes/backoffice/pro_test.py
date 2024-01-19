@@ -148,6 +148,21 @@ class SearchProUserTest:
             total_items=1,
         )
 
+    def test_can_search_pro_by_multiple_ids(self, authenticated_client):
+        self._create_accounts()
+
+        search_query = f" {self.pro_accounts[2].id},{self.pro_accounts[4].id}, \t{self.pro_accounts[7].id}\n"
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=search_query, pro_type=TypeOptions.USER.name))
+            assert response.status_code == 200
+
+        cards_titles = html_parser.extract_cards_titles(response.data)
+        assert set(cards_titles) == {
+            self.pro_accounts[2].full_name,
+            self.pro_accounts[4].full_name,
+            self.pro_accounts[7].full_name,
+        }
+
     def test_can_search_pro_by_email(self, authenticated_client):
         self._create_accounts()
 
