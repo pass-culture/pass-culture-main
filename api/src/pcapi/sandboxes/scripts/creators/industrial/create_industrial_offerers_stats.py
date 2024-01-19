@@ -57,17 +57,3 @@ def create_180_days_view_stats(offerer: offerers_models.Offerer, has_view: int) 
         table=DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
         jsonData=offerers_models.OffererStatsData(daily_views=daily_views_stats),
     )
-
-
-def create_industrial_offerers_stats(
-    offerers_by_name: dict[str, offerers_models.Offerer],
-    event_offers_by_name: dict[str, offers_models.Offer],
-) -> None:
-    offerer_list = list(offerers_by_name.values())
-    # Create different cases for the 9 first offerers
-    # The 10th offerer whill have no data
-    for index, case in enumerate(offer_count_cases):
-        offerer = offerer_list[index]
-        offers = list(el for el in event_offers_by_name.values() if el.venue.managingOffererId == offerer.id)
-        create_top_30_days_offerers_stats(offerer, offers, case[:-1])
-        create_180_days_view_stats(offerer, case[-1])
