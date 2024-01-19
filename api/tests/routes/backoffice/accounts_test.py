@@ -169,6 +169,17 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
             total_items=1,
         )
 
+    def test_can_search_public_account_by_multiple_ids(self, authenticated_client):
+        searched_user1, _, _, searched_user2, _ = create_bunch_of_accounts()
+        search_query = f" {searched_user1.id}, {searched_user2.id}"
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=search_query))
+            assert response.status_code == 200
+
+        cards_titles = html_parser.extract_cards_titles(response.data)
+        assert set(cards_titles) == {searched_user1.full_name, searched_user2.full_name}
+
     def test_can_search_public_account_by_small_id(self, authenticated_client):
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q="2"))
