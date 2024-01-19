@@ -330,41 +330,41 @@ files = [
 
 [[package]]
 name = "boto3"
-version = "1.21.9"
+version = "1.34.22"
 description = "The AWS SDK for Python"
 optional = false
-python-versions = ">= 3.6"
+python-versions = ">= 3.8"
 files = [
-    {file = "boto3-1.21.9-py3-none-any.whl", hash = "sha256:32080e2d956b222f36b76f8fec532ec237ddb4a935dd1c9bb79c759fbe4a5868"},
-    {file = "boto3-1.21.9.tar.gz", hash = "sha256:bd7c71274e9257596879f99cff3d0f531b801e567e509b5e3d613bd2033a7279"},
+    {file = "boto3-1.34.22-py3-none-any.whl", hash = "sha256:5909cd1393143576265c692e908a9ae495492c04a0ffd4bae8578adc2e44729e"},
+    {file = "boto3-1.34.22.tar.gz", hash = "sha256:a98c0b86f6044ff8314cc2361e1ef574d674318313ab5606ccb4a6651c7a3f8c"},
 ]
 
 [package.dependencies]
-botocore = ">=1.24.9,<1.25.0"
-jmespath = ">=0.7.1,<1.0.0"
-s3transfer = ">=0.5.0,<0.6.0"
+botocore = ">=1.34.22,<1.35.0"
+jmespath = ">=0.7.1,<2.0.0"
+s3transfer = ">=0.10.0,<0.11.0"
 
 [package.extras]
 crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.24.46"
+version = "1.34.22"
 description = "Low-level, data-driven core of boto 3."
 optional = false
-python-versions = ">= 3.6"
+python-versions = ">= 3.8"
 files = [
-    {file = "botocore-1.24.46-py3-none-any.whl", hash = "sha256:663d8f02b98641846eb959c54c840cc33264d5f2dee5b8fc09ee8adbef0f8dcf"},
-    {file = "botocore-1.24.46.tar.gz", hash = "sha256:89a203bba3c8f2299287e48a9e112e2dbe478cf67eaac26716f0e7f176446146"},
+    {file = "botocore-1.34.22-py3-none-any.whl", hash = "sha256:e5f7775975b9213507fbcf846a96b7a2aec2a44fc12a44585197b014a4ab0889"},
+    {file = "botocore-1.34.22.tar.gz", hash = "sha256:c47ba4286c576150d1b6ca6df69a87b5deff3d23bd84da8bcf8431ebac3c40ba"},
 ]
 
 [package.dependencies]
 jmespath = ">=0.7.1,<2.0.0"
 python-dateutil = ">=2.1,<3.0.0"
-urllib3 = ">=1.25.4,<1.27"
+urllib3 = {version = ">=1.25.4,<2.1", markers = "python_version >= \"3.10\""}
 
 [package.extras]
-crt = ["awscrt (==0.13.8)"]
+crt = ["awscrt (==0.19.19)"]
 
 [[package]]
 name = "boussole"
@@ -4245,6 +4245,7 @@ files = [
     {file = "PyYAML-6.0.1-cp311-cp311-win_amd64.whl", hash = "sha256:bf07ee2fef7014951eeb99f56f39c9bb4af143d8aa3c21b1677805985307da34"},
     {file = "PyYAML-6.0.1-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:855fb52b0dc35af121542a76b9a84f8d1cd886ea97c84703eaa6d88e37a2ad28"},
     {file = "PyYAML-6.0.1-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:40df9b996c2b73138957fe23a16a4f0ba614f4c0efce1e9406a184b6d07fa3a9"},
+    {file = "PyYAML-6.0.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a08c6f0fe150303c1c6b71ebcd7213c2858041a7e01975da3a99aed1e7a378ef"},
     {file = "PyYAML-6.0.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6c22bec3fbe2524cde73d7ada88f6566758a8f7227bfbf93a408a9d86bcc12a0"},
     {file = "PyYAML-6.0.1-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:8d4e9c88387b0f5c7d5f281e55304de64cf7f9c0021a3525bd3b1c542da3b0e4"},
     {file = "PyYAML-6.0.1-cp312-cp312-win32.whl", hash = "sha256:d483d2cdf104e7c9fa60c544d92981f12ad66a457afae824d146093b8c294c54"},
@@ -4659,20 +4660,20 @@ pyasn1 = ">=0.1.3"
 
 [[package]]
 name = "s3transfer"
-version = "0.5.2"
+version = "0.10.0"
 description = "An Amazon S3 Transfer Manager"
 optional = false
-python-versions = ">= 3.6"
+python-versions = ">= 3.8"
 files = [
-    {file = "s3transfer-0.5.2-py3-none-any.whl", hash = "sha256:7a6f4c4d1fdb9a2b640244008e142cbc2cd3ae34b386584ef044dd0f27101971"},
-    {file = "s3transfer-0.5.2.tar.gz", hash = "sha256:95c58c194ce657a5f4fb0b9e60a84968c808888aed628cd98ab8771fe1db98ed"},
+    {file = "s3transfer-0.10.0-py3-none-any.whl", hash = "sha256:3cdb40f5cfa6966e812209d0994f2a4709b561c88e90cf00c2696d2df4e56b2e"},
+    {file = "s3transfer-0.10.0.tar.gz", hash = "sha256:d0c8bbf672d5eebbe4e57945e23b972d963f07d82f661cabf678a5c88831595b"},
 ]
 
 [package.dependencies]
-botocore = ">=1.12.36,<2.0a.0"
+botocore = ">=1.33.2,<2.0a.0"
 
 [package.extras]
-crt = ["botocore[crt] (>=1.20.29,<2.0a.0)"]
+crt = ["botocore[crt] (>=1.33.2,<2.0a.0)"]
 
 [[package]]
 name = "schwifty"
@@ -5801,4 +5802,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "7966bdaf4dc2ae35b5e6269805a68c2e281a62e4b18441e1c42595e3bc902649"
+content-hash = "71367898ba8d2a160803f70a2424b4c017b45ea3b37dc11a7c55efd7fcf63e39"
