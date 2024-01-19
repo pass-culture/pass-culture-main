@@ -771,6 +771,22 @@ export class DefaultService {
     });
   }
   /**
+   * create_adage_jwt_fake_token <GET>
+   * @returns any OK
+   * @throws ApiError
+   */
+  public createAdageJwtFakeToken(): CancelablePromise<any> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/adage-iframe/testing/token',
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
    * get_venue_by_siret <GET>
    * @param siret
    * @param getRelative
