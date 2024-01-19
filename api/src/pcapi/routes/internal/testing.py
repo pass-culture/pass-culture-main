@@ -1,10 +1,13 @@
 import logging
 
 from pcapi import settings
+from pcapi.core.educational.utils import create_adage_jwt_fake_valid_token
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import Feature
+from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.apis import public_api
+from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.decorator import spectree_serialize
 
 from . import serializers
@@ -21,3 +24,15 @@ def set_features(body: serializers.FeaturesToggleRequest) -> None:
     for feature in body.features:
         Feature.query.filter_by(name=feature.name).update({"isActive": feature.isActive})
         db.session.commit()
+
+
+class AdageFakeToken(BaseModel):
+    token: str
+
+
+@blueprint.adage_iframe.route("/testing/token", methods=["GET"])
+@spectree_serialize(api=blueprint.api, on_error_statuses=[404])
+def create_adage_jwt_fake_token() -> AdageFakeToken:
+    if not settings.ENABLE_TEST_ROUTES:
+        raise ApiErrors({"code": "not found"}, status_code=404)
+    return AdageFakeToken(token=create_adage_jwt_fake_valid_token(False))
