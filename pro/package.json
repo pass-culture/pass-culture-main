@@ -63,7 +63,7 @@
     "react-avatar-editor": "^13.0.2",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.0.0",
-    "react-instantsearch": "^7.5.1",
+    "react-instantsearch": "^7.5.2",
     "react-redux": "^9.1.0",
     "react-router-dom": "^6.21.2",
     "redux": "^5.0.1",
