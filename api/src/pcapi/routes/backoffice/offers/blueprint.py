@@ -279,7 +279,9 @@ def _get_offer_ids_query(form: forms.InternalSearchForm) -> BaseQuery:
                     query = main_query
 
     # +1 to check if there are more results than requested
-    return query.with_entities(offers_models.Offer.id).distinct().limit(form.limit.data + 1)
+    # union() above may cause duplicates, but distinct() affects performance and causes timeout;
+    # actually duplicate ids can be accepted since the current function is called inside .in_()
+    return query.with_entities(offers_models.Offer.id).limit(form.limit.data + 1)
 
 
 def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
