@@ -10,15 +10,17 @@ import { getLastCollectiveDmsApplication } from 'utils/getLastCollectiveDmsAppli
 
 import styles from './PartnerPage.module.scss'
 
+export type PartnerPageCollectiveSectionProps = {
+  collectiveDmsApplications: DMSApplicationForEAC[]
+  venueId: number
+  hasAdageId: boolean
+}
+
 export function PartnerPageCollectiveSection({
   collectiveDmsApplications,
   venueId,
   hasAdageId,
-}: {
-  collectiveDmsApplications: DMSApplicationForEAC[]
-  venueId: number
-  hasAdageId: boolean
-}) {
+}: PartnerPageCollectiveSectionProps) {
   const { logEvent } = useAnalytics()
 
   const lastDmsApplication = getLastCollectiveDmsApplication(
@@ -37,10 +39,7 @@ export function PartnerPageCollectiveSection({
     })
   }
 
-  if (
-    lastDmsApplication?.state === DMSApplicationstatus.ACCEPTE ||
-    hasAdageId
-  ) {
+  if (hasAdageId) {
     return (
       <section className={styles['details']}>
         <div>
@@ -122,6 +121,7 @@ export function PartnerPageCollectiveSection({
     )
   }
   // Last case :
+  // (lastDmsApplication?.state === DMSApplicationstatus.ACCEPTE && !hasAdageId) ||
   // lastDmsApplication?.state === DMSApplicationstatus.EN_CONSTRUCTION ||
   // lastDmsApplication?.state === DMSApplicationstatus.EN_INSTRUCTION)
   return (

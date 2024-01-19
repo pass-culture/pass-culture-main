@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router-dom'
 
-import { DMSApplicationstatus, VenueTypeCode } from 'apiClient/v1'
+import { VenueTypeCode } from 'apiClient/v1'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
@@ -10,7 +10,6 @@ import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
 } from 'utils/apiFactories'
-import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { PartnerPage, PartnerPageProps } from '../PartnerPage'
@@ -86,7 +85,7 @@ describe('PartnerPages', () => {
     )
   })
 
-  it('should display the EAC section when no adage', () => {
+  it('should display the EAC section', () => {
     renderPartnerPages({
       venue: {
         ...defaultGetOffererVenueResponseModel,
@@ -98,87 +97,5 @@ describe('PartnerPages', () => {
     expect(
       screen.getByText('Faire une demande de référencement ADAGE')
     ).toBeInTheDocument()
-  })
-
-  it('should display the EAC section when adage refused', () => {
-    renderPartnerPages({
-      venue: {
-        ...defaultGetOffererVenueResponseModel,
-        collectiveDmsApplications: [
-          {
-            ...defaultCollectiveDmsApplication,
-            state: DMSApplicationstatus.REFUSE,
-          },
-        ],
-      },
-    })
-
-    expect(screen.getByText('Non référencé sur ADAGE')).toBeInTheDocument()
-    expect(
-      screen.queryByText('Faire une demande de référencement ADAGE')
-    ).not.toBeInTheDocument()
-  })
-
-  it('should display the EAC section when adage is without following', () => {
-    renderPartnerPages({
-      venue: {
-        ...defaultGetOffererVenueResponseModel,
-        collectiveDmsApplications: [
-          {
-            ...defaultCollectiveDmsApplication,
-            state: DMSApplicationstatus.SANS_SUITE,
-          },
-        ],
-      },
-    })
-
-    expect(screen.getByText('Non référencé sur ADAGE')).toBeInTheDocument()
-    expect(
-      screen.queryByText('Faire une demande de référencement ADAGE')
-    ).not.toBeInTheDocument()
-  })
-
-  it('should display the EAC section when adage application in progress', () => {
-    renderPartnerPages({
-      venue: {
-        ...defaultGetOffererVenueResponseModel,
-        collectiveDmsApplications: [
-          {
-            ...defaultCollectiveDmsApplication,
-            state: DMSApplicationstatus.EN_INSTRUCTION,
-          },
-        ],
-      },
-    })
-
-    expect(screen.getByText('Référencement en cours')).toBeInTheDocument()
-  })
-
-  it('should display the EAC section when adage application accepted', () => {
-    renderPartnerPages({
-      venue: {
-        ...defaultGetOffererVenueResponseModel,
-        collectiveDmsApplications: [
-          {
-            ...defaultCollectiveDmsApplication,
-            state: DMSApplicationstatus.ACCEPTE,
-          },
-        ],
-      },
-    })
-
-    expect(screen.getByText('Référencé sur ADAGE')).toBeInTheDocument()
-  })
-
-  it('should display the EAC section when it has an adageId', () => {
-    renderPartnerPages({
-      venue: {
-        ...defaultGetOffererVenueResponseModel,
-        collectiveDmsApplications: [],
-        hasAdageId: true,
-      },
-    })
-
-    expect(screen.getByText('Référencé sur ADAGE')).toBeInTheDocument()
   })
 })
