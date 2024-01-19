@@ -30,7 +30,6 @@ $full-content-max-width: rem.torem(600px);
 // Mixin used to "center" with input
 // We are using margin-top and not flex center because when there is an error the
 // input field grows at the bottom and we don't want the aligned content to move with it
-// stylelint-disable scss/operator-no-newline-after
 @mixin input-center-with-top-margin($content-height, $no-label: false) {
   @if $no-label {
     margin-top: calc((#{$input-min-height} - #{$content-height}) / 2);

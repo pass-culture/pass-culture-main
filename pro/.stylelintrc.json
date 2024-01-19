@@ -4,6 +4,7 @@
     "at-rule-no-unknown": null,
     "no-descending-specificity": null,
     "scss/at-extend-no-missing-placeholder": null,
+    "scss/operator-no-newline-after": null,
     "font-family-no-missing-generic-family-keyword": null
   },
   "ignoreFiles": [
