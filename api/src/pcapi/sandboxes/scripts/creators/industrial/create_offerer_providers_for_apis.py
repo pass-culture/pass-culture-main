@@ -3,6 +3,8 @@ import logging
 import random
 
 from pcapi import settings
+from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
+from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import factories as educational_factories
@@ -107,6 +109,37 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
             external_bookings_factories.ExternalBookingFactory(booking=booking)
 
         offers.append(offer)
+
+    daily_views = []
+
+    # For testing purpoes, we want the number of views per day to be the day of the month
+    # Ex: 1st day of the month, 1 view, 2nd day of the month, 2 views, etc.
+    number_of_views = 0
+    for i in range(90):
+        date = now - datetime.timedelta(days=i)
+        number_of_views += date.day
+        daily_views.append(offerers_models.OffererViewsModel(eventDate=date, numberOfViews=number_of_views))
+
+    offerers_factories.OffererStatsFactory(
+        offerer=offerer,
+        syncDate=datetime.datetime.utcnow(),
+        table=DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
+        jsonData=offerers_models.OffererStatsData(daily_views=daily_views),
+    )
+
+    today = datetime.datetime.today()
+
+    total_views_last_30_days = sum((today - datetime.timedelta(days=i)).day for i in range(90))
+
+    offerers_factories.OffererStatsFactory(
+        offerer=offerer,
+        syncDate=datetime.datetime.utcnow(),
+        table=TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
+        jsonData=offerers_models.OffererStatsData(
+            top_offers=[offerers_models.TopOffersData(offerId=random.choice(offers).id, numberOfViews=today.day)],
+            total_views_last_30_days=total_views_last_30_days,
+        ),
+    )
 
     offers_factories.EventStockFactory(
         offer__name="Taylor à Besançon !",

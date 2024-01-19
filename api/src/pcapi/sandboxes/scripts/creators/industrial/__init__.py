@@ -23,9 +23,6 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_mediations im
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_validation_rules import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_tags import create_industrial_offerer_tags
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerers import *
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerers_stats import (
-    create_industrial_offerers_stats,
-)
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_pro_users import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_pro_users_api_keys import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_search_objects import (
@@ -76,8 +73,6 @@ def save_industrial_sandbox() -> None:
     event_offers_by_name = create_industrial_event_offers(event_products_by_name, offerers_by_name)
 
     thing_offers_by_name = create_industrial_thing_offers(thing_products_by_name, offerers_by_name, venues_by_name)
-
-    create_industrial_offerers_stats(offerers_by_name, event_offers_by_name)
 
     create_industrial_draft_offers(offerers_by_name)
 
