@@ -71,13 +71,17 @@ class BookOfferConcurrencyTest:
         # open a second connection on purpose and lock the stock
         engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
         with engine.connect() as connection:
-            connection.execute(text("""SELECT * FROM stock WHERE stock.id = :stock_id FOR UPDATE"""), stock_id=stock.id)
+            connection.execute(
+                text("""SELECT * FROM stock WHERE stock.id = :stock_id FOR UPDATE"""), {"stock_id": stock.id}
+            )
 
             with pytest.raises(sqlalchemy.exc.OperationalError):
                 api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
         with engine.connect() as connection:
-            connection.execute(text("""SELECT * FROM "user" WHERE id = :user_id FOR UPDATE"""), user_id=beneficiary.id)
+            connection.execute(
+                text("""SELECT * FROM "user" WHERE id = :user_id FOR UPDATE"""), {"user_id": beneficiary.id}
+            )
 
             with pytest.raises(sqlalchemy.exc.OperationalError):
                 api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
@@ -93,7 +97,7 @@ class BookOfferConcurrencyTest:
         engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
         with engine.connect() as connection:
             connection.execute(
-                text("""SELECT * FROM stock WHERE stock.id = :stock_id FOR UPDATE"""), stock_id=booking.stockId
+                text("""SELECT * FROM stock WHERE stock.id = :stock_id FOR UPDATE"""), {"stock_id": booking.stockId}
             )
 
             with pytest.raises(sqlalchemy.exc.OperationalError):
@@ -134,7 +138,9 @@ class BookOfferConcurrencyTest:
         # open a second connection on purpose and lock the stock
         engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
         with engine.connect() as connection:
-            connection.execute(text("""SELECT * FROM stock WHERE stock.id = :stock_id FOR UPDATE"""), stock_id=stock.id)
+            connection.execute(
+                text("""SELECT * FROM stock WHERE stock.id = :stock_id FOR UPDATE"""), {"stock_id": stock.id}
+            )
 
             with pytest.raises(sqlalchemy.exc.OperationalError):
                 api.cancel_bookings_from_stock_by_offerer(stock)

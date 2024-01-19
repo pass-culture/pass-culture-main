@@ -58,7 +58,7 @@ class ReferenceSchemeTest:
         with engine.connect() as connection:
             res = connection.execute(
                 sqla_sql.text("""SELECT * FROM reference_scheme WHERE id = :scheme_id FOR UPDATE"""),
-                scheme_id=scheme.id,
+                {"scheme_id": scheme.id},
             )
             assert len(res.fetchall()) == 1
 
