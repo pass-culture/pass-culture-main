@@ -1,12 +1,17 @@
 from datetime import datetime
+from datetime import timedelta
 import logging
+import random
 
+from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
+from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
@@ -33,6 +38,16 @@ def create_specific_invoice() -> None:
     bank_info = finance_factories.BankInformationFactory()
     offerer = offerers_factories.OffererFactory(name="0 - Structure avec justificatif copieux")
     offerers_factories.UserOffererFactory(offerer=offerer, user__email="activation@example.com")
+    offerers_factories.OffererStatsFactory(
+        offerer=offerer,
+        table=TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
+        jsonData=offerers_models.OffererStatsData(top_offers=[], total_views_last_30_days=0),
+    )
+    offerers_factories.OffererStatsFactory(
+        offerer=offerer,
+        table=DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
+        jsonData=offerers_models.OffererStatsData(daily_views=[]),
+    )
     venue = offerers_factories.VenueFactory(
         name="Lieu avec justificatif copieux",
         managingOfferer=offerer,
@@ -187,6 +202,38 @@ def create_specific_cashflow_batch_without_invoice() -> None:
     )
     digital_offer1 = offers_factories.DigitalOfferFactory(name="Specific invoice digital offer 1", venue=virtual_venue)
     digital_offer2 = offers_factories.DigitalOfferFactory(name="Specific invoice digital offer 2", venue=virtual_venue)
+    daily_views = []
+
+    number_of_views = 0
+    for i in range(7 * 30):  # 7 months
+        date = datetime.today() - timedelta(days=i)
+        number_of_views += date.day
+        daily_views.append(offerers_models.OffererViewsModel(eventDate=date, numberOfViews=number_of_views))
+
+    offerers_factories.OffererStatsFactory(
+        offerer=offerer,
+        syncDate=datetime.utcnow(),
+        table=DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
+        jsonData=offerers_models.OffererStatsData(daily_views=daily_views),
+    )
+
+    top_offers = random.choices(
+        [thing_offer1, thing_offer2, book_offer1, book_offer2, digital_offer1, digital_offer2], k=3
+    )
+
+    offerers_factories.OffererStatsFactory(
+        offerer=offerer,
+        syncDate=datetime.utcnow(),
+        table=TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
+        jsonData=offerers_models.OffererStatsData(
+            top_offers=[
+                offerers_models.TopOffersData(offerId=top_offers[0].id, numberOfViews=(random.randint(100, 1000))),
+                offerers_models.TopOffersData(offerId=top_offers[1].id, numberOfViews=(random.randint(1000, 2000))),
+                offerers_models.TopOffersData(offerId=top_offers[2].id, numberOfViews=(random.randint(2000, 3000))),
+            ],
+            total_views_last_30_days=random.randint(6000, 10000),
+        ),
+    )
     custom_rule_offer1 = offers_factories.ThingOfferFactory(name="Specific invoice custom rule offer 1", venue=venue)
     finance_factories.CustomReimbursementRuleFactory(rate=0.94, offer=custom_rule_offer1)
     custom_rule_offer2 = offers_factories.ThingOfferFactory(name="Specific invoice custom rule offer 1", venue=venue)
