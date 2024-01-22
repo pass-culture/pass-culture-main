@@ -15,6 +15,7 @@ import pcapi.core.finance.repository as finance_repository
 import pcapi.core.finance.utils as finance_utils
 from pcapi.core.offers.serialize import serialize_offer_type_educational_or_individual
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils.date import MONTHS_IN_FRENCH
 from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.string import u_nbsp
@@ -74,7 +75,7 @@ def _legacy_get_validation_period(transaction_label: str) -> str:
 
 
 class ReimbursementDetails:
-    CSV_HEADER = [
+    LEGACY_JOURNEY_CSV_HEADER = [
         "Réservations concernées par le remboursement",
         "Date du justificatif",
         "N° du justificatif",
@@ -101,13 +102,45 @@ class ReimbursementDetails:
         "Type d'offre",
     ]
 
+    NEW_JOURNEY_CSV_HEADER = [
+        "Réservations concernées par le remboursement",
+        "Date du justificatif",
+        "N° du justificatif",
+        "N° de virement",
+        "Intitulé du compte bancaire",
+        "IBAN",
+        "Raison sociale du lieu",
+        "Adresse du lieu",
+        "SIRET du lieu",
+        "Nom de l'offre",
+        "N° de réservation (offre collective)",
+        "Nom (offre collective)",
+        "Prénom (offre collective)",
+        "Nom de l'établissement (offre collective)",
+        "Date de l'évènement (offre collective)",
+        "Contremarque",
+        "Date de validation de la réservation",
+        "Intitulé du tarif",
+        "Montant de la réservation",
+        "Barème",
+        "Montant remboursé",
+        "Type d'offre",
+    ]
+
+    @classmethod
+    def get_csv_header(cls) -> list[str]:
+        if not FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
+            return cls.LEGACY_JOURNEY_CSV_HEADER
+        return cls.NEW_JOURNEY_CSV_HEADER
+
     # The argument is not a named tuple, but rather an SQLAlchemy
     # result object, but both are as opaque to mypy, which hence
     # reports "attr-defined" errors on almost every line. Instead of
     # polluting the code with dozens of "ignore" comments, disable
     # typing for the whole method.
     @typing.no_type_check
-    def __init__(self, payment_info: namedtuple):
+    def __init__(self, payment_info: namedtuple, is_new_journey_active: bool = False):
+        self.is_new_journey_active = is_new_journey_active
         using_legacy_models = hasattr(payment_info, "transaction_label")
 
         # Validation period
@@ -141,6 +174,8 @@ class ReimbursementDetails:
             self.reimbursement_point_common_name = self.venue_common_name
             self.reimbursement_point_siret = self.venue_siret
             self.reimbursement_point_address = self.venue_address
+        elif self.is_new_journey_active:
+            self.bank_account_label = payment_info.bank_account_label
         else:
             self.reimbursement_point_common_name = payment_info.reimbursement_point_common_name
             self.reimbursement_point_siret = payment_info.reimbursement_point_siret
@@ -200,14 +235,11 @@ class ReimbursementDetails:
 
     @typing.no_type_check  # see comment for `__init__()` above
     def as_csv_row(self) -> list:
-        return [
+        rows = [
             self.validation_period,
             self.invoice_date,
             self.invoice_reference,
             self.cashflow_batch_label,
-            self.reimbursement_point_common_name,
-            self.reimbursement_point_address,
-            self.reimbursement_point_siret,
             self.iban,
             self.venue_name,
             self.venue_address,
@@ -227,12 +259,21 @@ class ReimbursementDetails:
             self.offer_type,
         ]
 
+        if not self.is_new_journey_active:
+            rows.insert(4, self.reimbursement_point_common_name)
+            rows.insert(5, self.reimbursement_point_address)
+            rows.insert(6, self.reimbursement_point_siret)
+        else:
+            rows.insert(4, self.bank_account_label)
+
+        return rows
+
 
 def generate_reimbursement_details_csv(reimbursement_details: Iterable[ReimbursementDetails]) -> str:
     output = StringIO()
     csv_lines = [reimbursement_detail.as_csv_row() for reimbursement_detail in reimbursement_details]
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
-    writer.writerow(ReimbursementDetails.CSV_HEADER)
+    writer.writerow(ReimbursementDetails.get_csv_header())
     writer.writerows(csv_lines)
     return output.getvalue()
 
@@ -255,7 +296,11 @@ def find_all_offerers_reimbursement_details(
     venue_id: int | None = None,
 ) -> list[ReimbursementDetails]:
     offerer_payments = finance_repository.find_all_offerers_payments(offerer_ids, reimbursements_period, venue_id)  # type: ignore [arg-type]
-    reimbursement_details = [ReimbursementDetails(offerer_payment) for offerer_payment in offerer_payments]
+    # Avoid triggering one query per reimbursement details
+    is_new_journey_active = FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active()
+    reimbursement_details = [
+        ReimbursementDetails(offerer_payment, is_new_journey_active) for offerer_payment in offerer_payments
+    ]
 
     return reimbursement_details
 
