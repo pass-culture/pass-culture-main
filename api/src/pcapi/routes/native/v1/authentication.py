@@ -249,6 +249,7 @@ def google_auth(body: authentication.GoogleSigninRequest) -> authentication.Sign
             {
                 "code": "SSO_EMAIL_NOT_FOUND",
                 "accountCreationToken": encoded_account_creation_token,
+                "email": email,
                 "general": [f"Aucun compte pass Culture lié à {email} n'a été trouvé"],
             },
             status_code=401,
