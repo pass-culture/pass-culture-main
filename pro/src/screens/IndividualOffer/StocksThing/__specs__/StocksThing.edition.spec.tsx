@@ -20,6 +20,7 @@ import {
   getIndividualOfferPath,
   getIndividualOfferUrl,
 } from 'core/Offers/utils/getIndividualOfferUrl'
+import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import { Stocks } from 'pages/IndividualOfferWizard/Stocks/Stocks'
 import { RootState } from 'store/rootReducer'
 import { individualGetOfferStockResponseModelFactory } from 'utils/individualApiFactories'
@@ -298,9 +299,7 @@ describe('screens:StocksThing', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
-    expect(
-      screen.getByText('Vos modifications ont bien été enregistrées')
-    ).toBeInTheDocument()
+    expect(screen.getByText(PATCH_SUCCESS_MESSAGE)).toBeInTheDocument()
     expect(screen.queryByTestId('stock-thing-form')).not.toBeInTheDocument()
     expect(
       screen.getByText(/This is the read only route content/)

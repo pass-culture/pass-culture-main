@@ -9,6 +9,7 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/cons
 import Notification from 'components/Notification/Notification'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
+import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
 import {
   individualOfferFactory,
@@ -159,9 +160,7 @@ describe('PriceCategories', () => {
 
     await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
-    expect(
-      await screen.findByText('Vos modifications ont bien été enregistrées')
-    ).toBeInTheDocument()
+    expect(await screen.findByText(PATCH_SUCCESS_MESSAGE)).toBeInTheDocument()
     expect(api.patchOffer).toHaveBeenCalled()
     expect(api.postPriceCategories).toHaveBeenCalled()
   })
