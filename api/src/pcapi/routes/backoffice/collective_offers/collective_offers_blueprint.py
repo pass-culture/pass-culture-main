@@ -1,4 +1,6 @@
 import datetime
+from functools import partial
+import typing
 
 from flask import flash
 from flask import redirect
@@ -6,6 +8,8 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import current_user
+from flask_sqlalchemy import BaseQuery
+from markupsafe import escape
 import sqlalchemy as sa
 
 from pcapi.core.educational import adage_backends as adage_client
@@ -23,10 +27,10 @@ from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import utils
-from pcapi.routes.backoffice.collective_offers.forms import EditCollectiveOfferPrice
-from pcapi.routes.backoffice.collective_offers.forms import GetCollectiveOffersListForm
+from pcapi.routes.backoffice.collective_offers import forms
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.utils import date as date_utils
+from pcapi.utils import regions as regions_utils
 
 
 blueprint = utils.child_backoffice_blueprint(
@@ -37,100 +41,252 @@ blueprint = utils.child_backoffice_blueprint(
 )
 
 
-def _get_collective_offers(
-    form: GetCollectiveOffersListForm,
-) -> list[educational_models.CollectiveOffer]:
-    base_query = educational_models.CollectiveOffer.query.options(
-        sa.orm.load_only(
-            educational_models.CollectiveOffer.id,
-            educational_models.CollectiveOffer.name,
-            educational_models.CollectiveOffer.subcategoryId,
-            educational_models.CollectiveOffer.dateCreated,
-            educational_models.CollectiveOffer.validation,
-            educational_models.CollectiveOffer.formats,
-            educational_models.CollectiveOffer.authorId,
-        ),
-        sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).load_only(
-            educational_models.CollectiveStock.beginningDatetime
-        ),
-        sa.orm.joinedload(educational_models.CollectiveOffer.venue).load_only(
-            offerers_models.Venue.managingOffererId, offerers_models.Venue.name, offerers_models.Venue.publicName
+aliased_stock = sa.orm.aliased(educational_models.CollectiveStock)
+
+SEARCH_FIELD_TO_PYTHON = {
+    "FORMATS": {
+        "field": "formats",
+        "column": educational_models.CollectiveOffer.formats,
+    },
+    "INSTITUTION": {
+        "field": "institution",
+        "column": educational_models.CollectiveOffer.institutionId,
+    },
+    "CREATION_DATE": {
+        "field": "date",
+        "column": educational_models.CollectiveOffer.dateCreated,
+        "special": partial(date_utils.date_to_localized_datetime, time_=datetime.datetime.min.time()),
+    },
+    "DEPARTMENT": {
+        "field": "department",
+        "column": offerers_models.Venue.departementCode,
+        "inner_join": "venue",
+    },
+    "REGION": {
+        "field": "region",
+        "column": offerers_models.Venue.departementCode,
+        "inner_join": "venue",
+        "special": regions_utils.get_department_codes_for_regions,
+    },
+    "EVENT_DATE": {
+        "field": "date",
+        "column": aliased_stock.beginningDatetime,
+        "special": partial(date_utils.date_to_localized_datetime, time_=datetime.datetime.min.time()),
+        "inner_join": "stock",
+    },
+    "BOOKING_LIMIT_DATE": {
+        "field": "date",
+        "column": aliased_stock.bookingLimitDatetime,
+        "special": partial(date_utils.date_to_localized_datetime, time_=datetime.datetime.min.time()),
+        "inner_join": "stock",
+    },
+    "ID": {
+        "field": "integer",
+        "column": educational_models.CollectiveOffer.id,
+    },
+    "NAME": {
+        "field": "string",
+        "column": educational_models.CollectiveOffer.name,
+    },
+    "OFFERER": {
+        "field": "offerer",
+        "column": offerers_models.Venue.managingOffererId,
+        "inner_join": "venue",
+    },
+    "STATUS": {
+        "field": "status",
+        "column": educational_models.CollectiveOffer.status,
+    },
+    "VENUE": {
+        "field": "venue",
+        "column": educational_models.CollectiveOffer.venueId,
+    },
+    "VALIDATION": {"field": "validation", "column": educational_models.CollectiveOffer.validation},
+}
+
+JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
+    "stock": [
+        {
+            "name": "stock",
+            "args": (
+                aliased_stock,
+                educational_models.CollectiveOffer.collectiveStock,
+            ),
+        }
+    ],
+    "venue": [
+        {
+            "name": "venue",
+            "args": (offerers_models.Venue, educational_models.CollectiveOffer.venue),
+        }
+    ],
+}
+
+OPERATOR_DICT: dict[str, dict[str, typing.Any]] = {
+    **utils.OPERATOR_DICT,
+    "NAME_EQUALS": {"function": lambda x, y: x.ilike(y)},
+    "NAME_NOT_EQUALS": {"function": lambda x, y: ~x.ilike(y)},
+}
+
+
+def _get_collective_offer_ids_query(form: forms.InternalSearchForm) -> BaseQuery:
+    base_query = educational_models.CollectiveOffer.query
+
+    if not forms.GetCollectiveOfferAdvancedSearchForm.is_search_empty(form.search.data):
+        base_query, inner_joins, _, warnings = utils.generate_search_query(
+            query=base_query,
+            search_parameters=form.search.data,
+            fields_definition=SEARCH_FIELD_TO_PYTHON,
+            joins_definition=JOIN_DICT,
+            operators_definition=OPERATOR_DICT,
         )
-        # needed to check if stock is bookable and compute initial/remaining stock:
-        .joinedload(offerers_models.Venue.managingOfferer).load_only(
-            offerers_models.Offerer.name, offerers_models.Offerer.isActive, offerers_models.Offerer.validationStatus
-        ),
-        sa.orm.joinedload(educational_models.CollectiveOffer.flaggingValidationRules).load_only(
-            offers_models.OfferValidationRule.name
-        ),
-        sa.orm.joinedload(educational_models.CollectiveOffer.author).load_only(
-            users_models.User.id,
-            users_models.User.firstName,
-            users_models.User.lastName,
-        ),
-    )
-    if form.from_date.data:
-        from_datetime = date_utils.date_to_localized_datetime(form.from_date.data, datetime.datetime.min.time())
-        base_query = base_query.filter(educational_models.CollectiveOffer.dateCreated >= from_datetime)
+        for warning in warnings:
+            flash(escape(warning), "warning")
 
-    if form.to_date.data:
-        to_datetime = date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time())
-        base_query = base_query.filter(educational_models.CollectiveOffer.dateCreated <= to_datetime)
+        if form.only_validated_offerers.data:
+            if "venue" not in inner_joins:
+                base_query = base_query.join(offerers_models.Venue, educational_models.CollectiveOffer.venue)
+            if "offerer" not in inner_joins:
+                base_query = base_query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
+            base_query = base_query.filter(offerers_models.Offerer.isValidated)
+    else:
+        if form.from_date.data:
+            from_datetime = date_utils.date_to_localized_datetime(form.from_date.data, datetime.datetime.min.time())
+            base_query = base_query.filter(educational_models.CollectiveOffer.dateCreated >= from_datetime)
 
-    if form.formats.data:
-        base_query = base_query.filter(
-            educational_models.CollectiveOffer.formats.overlap(
-                sa.dialects.postgresql.array((fmt for fmt in form.formats.data))
+        if form.to_date.data:
+            to_datetime = date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time())
+            base_query = base_query.filter(educational_models.CollectiveOffer.dateCreated <= to_datetime)
+
+        if form.formats.data:
+            base_query = base_query.filter(
+                educational_models.CollectiveOffer.formats.overlap(
+                    sa.dialects.postgresql.array((fmt for fmt in form.formats.data))
+                )
             )
-        )
 
-    if form.venue.data:
-        base_query = base_query.filter(educational_models.CollectiveOffer.venueId.in_(form.venue.data))
+        if form.venue.data:
+            base_query = base_query.filter(educational_models.CollectiveOffer.venueId.in_(form.venue.data))
 
-    if form.offerer.data:
-        base_query = base_query.join(educational_models.CollectiveOffer.venue).filter(
-            offerers_models.Venue.managingOffererId.in_(form.offerer.data)
-        )
+        if form.offerer.data:
+            base_query = base_query.join(educational_models.CollectiveOffer.venue).filter(
+                offerers_models.Venue.managingOffererId.in_(form.offerer.data)
+            )
 
-    if form.status.data:
-        base_query = base_query.filter(educational_models.CollectiveOffer.validation.in_(form.status.data))  # type: ignore [attr-defined]
+        if form.status.data:
+            base_query = base_query.filter(educational_models.CollectiveOffer.validation.in_(form.status.data))  # type: ignore [attr-defined]
 
-    if form.only_validated_offerers.data:
-        base_query = (
-            base_query.join(educational_models.CollectiveOffer.venue)
-            .join(offerers_models.Venue.managingOfferer)
-            .filter(offerers_models.Offerer.isValidated)
-        )
+        if form.only_validated_offerers.data:
+            base_query = (
+                base_query.join(educational_models.CollectiveOffer.venue)
+                .join(offerers_models.Venue.managingOfferer)
+                .filter(offerers_models.Offerer.isValidated)
+            )
 
-    if form.q.data:
-        search_query = form.q.data
+        if form.q.data:
+            search_query = form.q.data
 
-        if search_query.isnumeric():
-            base_query = base_query.filter(educational_models.CollectiveOffer.id == int(search_query))
-        else:
-            name_query = "%{}%".format(search_query)
-            base_query = base_query.filter(educational_models.CollectiveOffer.name.ilike(name_query))
+            if search_query.isnumeric():
+                base_query = base_query.filter(educational_models.CollectiveOffer.id == int(search_query))
+            else:
+                name_query = "%{}%".format(search_query)
+                base_query = base_query.filter(educational_models.CollectiveOffer.name.ilike(name_query))
 
-    if form.sort.data:
-        base_query = base_query.order_by(
-            getattr(getattr(educational_models.CollectiveOffer, form.sort.data), form.order.data)()
-        )
+        if form.sort.data:
+            base_query = base_query.order_by(
+                getattr(getattr(educational_models.CollectiveOffer, form.sort.data), form.order.data)()
+            )
 
     # +1 to check if there are more results than requested
-    return base_query.limit(form.limit.data + 1).all()
+    return base_query.with_entities(educational_models.CollectiveOffer.id).limit(form.limit.data + 1)
+
+
+def _get_collective_offers(form: forms.InternalSearchForm) -> list[educational_models.CollectiveOffer]:
+    # Aggregate validation rules as an array of names returned in a single row
+    rules_subquery = (
+        sa.select(sa.func.array_agg(offers_models.OfferValidationRule.name))
+        .select_from(offers_models.OfferValidationRule)
+        .join(educational_models.ValidationRuleCollectiveOfferLink)
+        .filter(
+            educational_models.ValidationRuleCollectiveOfferLink.collectiveOfferId
+            == educational_models.CollectiveOffer.id
+        )
+        .correlate(educational_models.CollectiveOffer)
+        .scalar_subquery()
+    )
+
+    query = (
+        db.session.query(
+            educational_models.CollectiveOffer,
+            rules_subquery.label("rules"),
+        )
+        .filter(educational_models.CollectiveOffer.id.in_(_get_collective_offer_ids_query(form).subquery()))
+        # 1-1 relationships so join will not increase the number of SQL rows
+        .join(educational_models.CollectiveOffer.venue)
+        .join(offerers_models.Venue.managingOfferer)
+        .options(
+            sa.orm.load_only(
+                educational_models.CollectiveOffer.id,
+                educational_models.CollectiveOffer.name,
+                educational_models.CollectiveOffer.dateCreated,
+                educational_models.CollectiveOffer.validation,
+                educational_models.CollectiveOffer.formats,
+                educational_models.CollectiveOffer.authorId,
+            ),
+            sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).load_only(
+                educational_models.CollectiveStock.beginningDatetime
+            ),
+            sa.orm.joinedload(educational_models.CollectiveOffer.venue).load_only(
+                offerers_models.Venue.managingOffererId,
+                offerers_models.Venue.name,
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.departementCode,
+            )
+            # needed to check if stock is bookable and compute initial/remaining stock:
+            .joinedload(offerers_models.Venue.managingOfferer).load_only(
+                offerers_models.Offerer.name, offerers_models.Offerer.isActive, offerers_models.Offerer.validationStatus
+            ),
+            sa.orm.joinedload(educational_models.CollectiveOffer.institution).load_only(
+                educational_models.EducationalInstitution.name,
+                educational_models.EducationalInstitution.institutionType,
+                educational_models.EducationalInstitution.city,
+            ),
+            sa.orm.joinedload(educational_models.CollectiveOffer.author).load_only(
+                users_models.User.id,
+                users_models.User.firstName,
+                users_models.User.lastName,
+            ),
+        )
+    )
+
+    if form.sort.data:
+        order = form.order.data or "desc"
+        query = query.order_by(getattr(getattr(educational_models.CollectiveOffer, form.sort.data), order)())
+
+    return query.all()
 
 
 @blueprint.route("", methods=["GET"])
 def list_collective_offers() -> utils.BackofficeResponse:
-    form = GetCollectiveOffersListForm(formdata=utils.get_query_params())
+    display_form = forms.GetCollectiveOffersListForm(formdata=utils.get_query_params())
+    form = forms.InternalSearchForm(formdata=utils.get_query_params())
     if not form.validate():
-        return render_template("collective_offer/list.html", rows=[], form=form), 400
+        return (
+            render_template(
+                "collective_offer/list.html",
+                rows=[],
+                form=display_form,
+                **utils.get_advanced_search_args(
+                    form.search.data, forms.CollectiveOffersSearchAttributes, SEARCH_FIELD_TO_PYTHON
+                ),
+            ),
+            400,
+        )
 
     if form.is_empty():
-        return render_template("collective_offer/list.html", rows=[], form=form)
+        return render_template("collective_offer/list.html", rows=[], form=display_form)
 
     collective_offers = _get_collective_offers(form)
-
     collective_offers = utils.limit_rows(collective_offers, form.limit.data)
 
     autocomplete.prefill_offerers_choices(form.offerer)
@@ -139,8 +295,27 @@ def list_collective_offers() -> utils.BackofficeResponse:
     return render_template(
         "collective_offer/list.html",
         rows=collective_offers,
+        form=display_form,
+        date_created_sort_url=(
+            form.get_sort_link_with_search_data(".list_collective_offers") if form.sort.data else None
+        ),
+        **utils.get_advanced_search_args(
+            form.search.data, forms.CollectiveOffersSearchAttributes, SEARCH_FIELD_TO_PYTHON
+        ),
+    )
+
+
+@blueprint.route("get-advanced-search-form", methods=["GET"])
+def get_advanced_search_form() -> utils.BackofficeResponse:
+    form = forms.GetCollectiveOfferAdvancedSearchForm(formdata=utils.get_query_params())
+
+    return render_template(
+        "components/turbo/modal_form.html",
         form=form,
-        date_created_sort_url=form.get_sort_link(".list_collective_offers") if form.sort.data else None,
+        dst=url_for("backoffice_web.collective_offer.list_collective_offers"),
+        div_id="advanced-collective-offer-search",  # must be consistent with parameter passed to build_lazy_modal
+        title="Recherche avancée d'offres collectives",
+        button_text="Appliquer",
     )
 
 
@@ -429,7 +604,7 @@ def edit_collective_offer_price(collective_offer_id: int) -> utils.BackofficeRes
         flash("Cette offre n'est pas modifiable", "warning")
         return redirect(redirect_url, code=303)
 
-    form = EditCollectiveOfferPrice()
+    form = forms.EditCollectiveOfferPrice()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(redirect_url, code=303)
@@ -485,7 +660,7 @@ def edit_collective_offer_price(collective_offer_id: int) -> utils.BackofficeRes
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def get_collective_offer_price_form(collective_offer_id: int) -> utils.BackofficeResponse:
     collective_offer = educational_models.CollectiveOffer.query.get_or_404(collective_offer_id)
-    form = EditCollectiveOfferPrice(
+    form = forms.EditCollectiveOfferPrice(
         price=collective_offer.collectiveStock.price,
         numberOfTickets=collective_offer.collectiveStock.numberOfTickets,
     )

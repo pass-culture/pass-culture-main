@@ -2,6 +2,7 @@ from flask import request
 import sqlalchemy as sa
 
 from pcapi.core.criteria import models as criteria_models
+from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.serialization import BaseModel
@@ -73,6 +74,68 @@ def autocomplete_offerers() -> AutocompleteResponse:
 
     return AutocompleteResponse(
         items=[AutocompleteItem(id=offerer.id, text=_get_offerer_choice_label(offerer)) for offerer in offerers]
+    )
+
+
+def _get_institution_choice_label(institution: educational_models.EducationalInstitution) -> str:
+    return f"{institution.institutionType} {institution.name.strip()} - {institution.city}"
+
+
+def _get_institutions_base_query() -> sa.orm.Query:
+    return educational_models.EducationalInstitution.query.options(
+        sa.orm.load_only(
+            educational_models.EducationalInstitution.id,
+            educational_models.EducationalInstitution.name,
+            educational_models.EducationalInstitution.institutionType,
+            educational_models.EducationalInstitution.city,
+        )
+    )
+
+
+def prefill_institutions_choices(autocomplete_field: fields.PCTomSelectField) -> None:
+    if autocomplete_field.data:
+        institutions = (
+            _get_institutions_base_query()
+            .filter(educational_models.EducationalInstitution.id.in_(autocomplete_field.data))
+            .order_by(
+                educational_models.EducationalInstitution.institutionType,
+                educational_models.EducationalInstitution.name,
+            )
+        )
+        autocomplete_field.choices = [
+            (institution.id, _get_institution_choice_label(institution)) for institution in institutions
+        ]
+
+
+@blueprint.backoffice_web.route("/autocomplete/institutions", methods=["GET"])
+@spectree_serialize(response_model=AutocompleteResponse, api=blueprint.backoffice_web_schema)
+def autocomplete_institutions() -> AutocompleteResponse:
+    query_string = request.args.get("q", "").strip()
+
+    is_numeric_query = query_string.isnumeric()
+    if not is_numeric_query and len(query_string) < 2:
+        return AutocompleteResponse(items=[])
+
+    if is_numeric_query:
+        filters = educational_models.EducationalInstitution.id == int(query_string)
+    else:
+        searched_name = (
+            educational_models.EducationalInstitution.institutionType
+            + " "
+            + educational_models.EducationalInstitution.name
+            + " "
+            + educational_models.EducationalInstitution.city
+        )
+        # Don't use sa.func.unaccent on query, as it will skip the use of the index
+        # Besides, all three columns are accentless in db
+        filters = searched_name.ilike(f"%{clean_accents(query_string).replace(' ', '%')}%")
+    institutions = _get_institutions_base_query().filter(filters).limit(NUM_RESULTS)
+
+    return AutocompleteResponse(
+        items=[
+            AutocompleteItem(id=institution.id, text=_get_institution_choice_label(institution))
+            for institution in institutions
+        ]
     )
 
 

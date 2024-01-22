@@ -18,32 +18,14 @@ from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
+from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import constants
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.forms import fields
-from pcapi.routes.backoffice.forms import utils
-from pcapi.routes.backoffice.utils import get_regions_choices
+from pcapi.routes.backoffice.forms import utils as forms_utils
 
 
-class SearchOperators(enum.Enum):
-    NOT_EQUALS = "est différent de"
-    EQUALS = "est égal à"
-    NAME_NOT_EQUALS = "est différent de\0\0"
-    NAME_EQUALS = "est égal à\0\0"
-    STR_NOT_EQUALS = "est différent de\0"  # the \0 is here to force wtforms to display NOT_EQUALS and STR_NOT_EQUALS
-    STR_EQUALS = "est égal à\0"  # the \0 is here to force wtforms to display EQUALS and STR_EQUALS
-    GREATER_THAN = "supérieur strict"
-    GREATER_THAN_OR_EQUAL_TO = "supérieur ou égal"
-    LESS_THAN = "inférieur strict"
-    LESS_THAN_OR_EQUAL_TO = "inférieur ou égal"
-    IN = "est parmi"
-    NOT_IN = "n'est pas parmi"
-    CONTAINS = "contient"
-    NO_CONTAINS = "ne contient pas"
-    NOT_EXIST = "n'a aucun"
-
-
-class SearchAttributes(enum.Enum):
+class IndividualOffersSearchAttributes(enum.Enum):
     CATEGORY = "Catégorie"
     SUBCATEGORY = "Sous-catégorie"
     CREATION_DATE = "Date de création"
@@ -110,7 +92,7 @@ form_field_configuration = {
 }
 
 
-class GetOffersBaseFields(utils.PCForm):
+class GetOffersBaseFields(forms_utils.PCForm):
     sort = wtforms.HiddenField(
         "sort", validators=(wtforms.validators.Optional(), wtforms.validators.AnyOf(("id", "dateCreated")))
     )
@@ -136,7 +118,7 @@ class GetOffersBaseFields(utils.PCForm):
         return True
 
 
-class OfferAdvancedSearchSubForm(utils.PCForm):
+class OfferAdvancedSearchSubForm(forms_utils.PCForm):
     class Meta:
         csrf = False
 
@@ -174,27 +156,27 @@ class OfferAdvancedSearchSubForm(utils.PCForm):
 
     search_field = fields.PCSelectWithPlaceholderValueField(
         "Champ de recherche",
-        choices=utils.choices_from_enum(SearchAttributes),
+        choices=forms_utils.choices_from_enum(IndividualOffersSearchAttributes),
         validators=[
             wtforms.validators.Optional(""),
         ],
     )
     operator = fields.PCSelectWithPlaceholderValueField(
         "Opérateur",
-        choices=utils.choices_from_enum(SearchOperators),
+        choices=forms_utils.choices_from_enum(utils.AdvancedSearchOperators),
         validators=[
             wtforms.validators.Optional(""),
         ],
     )
     category = fields.PCSelectMultipleField(
         "Catégories",
-        choices=utils.choices_from_enum(categories.CategoryIdLabelEnum),
+        choices=forms_utils.choices_from_enum(categories.CategoryIdLabelEnum),
         search_inline=True,
         field_list_compatibility=True,
     )
     subcategory = fields.PCSelectMultipleField(
         "Sous-catégories",
-        choices=utils.choices_from_enum(subcategories.SubcategoryProLabelEnumv2),
+        choices=forms_utils.choices_from_enum(subcategories.SubcategoryProLabelEnumv2),
         search_inline=True,
         field_list_compatibility=True,
     )
@@ -216,7 +198,7 @@ class OfferAdvancedSearchSubForm(utils.PCForm):
     )
     region = fields.PCSelectMultipleField(
         "Régions",
-        choices=get_regions_choices(),
+        choices=utils.get_regions_choices(),
         search_inline=True,
         field_list_compatibility=True,
     )
@@ -258,7 +240,7 @@ class OfferAdvancedSearchSubForm(utils.PCForm):
     )
     validation = fields.PCSelectMultipleField(
         "États",
-        choices=utils.choices_from_enum(
+        choices=forms_utils.choices_from_enum(
             OfferValidationStatus,
             formatter=filters.format_offer_validation_status,
         ),
@@ -267,7 +249,7 @@ class OfferAdvancedSearchSubForm(utils.PCForm):
     )
     status = fields.PCSelectMultipleField(
         "Statut",
-        choices=utils.choices_from_enum(
+        choices=forms_utils.choices_from_enum(
             OfferStatus,
             formatter=filters.format_offer_status,
         ),
@@ -362,7 +344,7 @@ class GetOfferAdvancedSearchForm(GetOffersBaseFields):
             if search_field := sub_search.get("search_field"):
                 if GetOfferAdvancedSearchForm.is_sub_search_empty(sub_search):
                     try:
-                        errors.append(f"Le filtre « {SearchAttributes[search_field].value} » est vide.")
+                        errors.append(f"Le filtre « {IndividualOffersSearchAttributes[search_field].value} » est vide.")
                     except KeyError:
                         errors.append(f"Le filtre {search_field} est invalide.")
 
@@ -380,7 +362,7 @@ class GetOffersSearchForm(GetOffersBaseFields):
     q = fields.PCOptSearchField("ID de l'offre ou liste d'ID, nom, EAN-13, visa d'exploitation")
     category = fields.PCSelectMultipleField(
         "Catégories",
-        choices=utils.choices_from_enum(categories.CategoryIdLabelEnum),
+        choices=forms_utils.choices_from_enum(categories.CategoryIdLabelEnum),
         search_inline=True,
     )
     offerer = fields.PCTomSelectField(
@@ -393,7 +375,7 @@ class GetOffersSearchForm(GetOffersBaseFields):
     )
     status = fields.PCSelectMultipleField(
         "États",
-        choices=utils.choices_from_enum(OfferValidationStatus, formatter=filters.format_offer_validation_status),
+        choices=forms_utils.choices_from_enum(OfferValidationStatus, formatter=filters.format_offer_validation_status),
         search_inline=True,
     )
 
@@ -419,7 +401,7 @@ class GetOffersSearchForm(GetOffersBaseFields):
 
 
 class InternalSearchForm(GetOffersSearchForm, GetOfferAdvancedSearchForm):
-    """concat of GetOffersSearchForm and GetOfferAdvancedSearchForm. this form is never displayed bit it is the one
+    """concat of GetOffersSearchForm and GetOfferAdvancedSearchForm. this form is never displayed but it is the one
     used to display the list of individual offers"""
 
     class Meta:

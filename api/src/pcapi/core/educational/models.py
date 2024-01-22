@@ -1024,6 +1024,8 @@ class EducationalInstitution(PcObject, Base, Model):
         "CollectivePlaylist", back_populates="institution"
     )
 
+    __table_args__ = (sa.Index("ix_educational_institution_type_name_city", institutionType + " " + name + " " + city),)
+
     @property
     def full_name(self) -> str:
         return f"{self.institutionType} {self.name}".strip()
