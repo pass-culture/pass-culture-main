@@ -1,6 +1,6 @@
 import cn from 'classnames'
-import React, { useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useFetcher, useSearchParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import {
@@ -85,6 +85,7 @@ const StocksEventList = ({
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const [searchParams, setSearchParams] = useSearchParams()
+  const fetcher = useFetcher()
 
   // states
   const [allStocksChecked, setAllStocksChecked] = useState<PartialCheck>(
@@ -253,6 +254,14 @@ const StocksEventList = ({
       setCheckedStocks(newArray)
     }
 
+    // When all stocks are deleted, we need to reload the offer
+    // to disable the stepper
+    if (stocks.length === 1 && page === 1) {
+      fetcher.submit(null, {
+        method: 'patch',
+        action: `/offre/individuelle/${offer.id}`,
+      })
+    }
     notify.success('1 date a été supprimée')
   }
 
@@ -310,6 +319,14 @@ const StocksEventList = ({
       offerId: offer.id,
       deletionCount: deletionCount,
     })
+    // When all stocks are deleted, we need to reload the offer
+    // to disable the stepper
+    if (allStocksChecked) {
+      fetcher.submit(null, {
+        method: 'patch',
+        action: `/offre/individuelle/${offer.id}`,
+      })
+    }
     notify.success(
       stocksIdToDelete.length === 1
         ? '1 date a été supprimée'
