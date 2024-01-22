@@ -1,6 +1,5 @@
 import cn from 'classnames'
 import { format } from 'date-fns-tz'
-import React from 'react'
 
 import {
   BookingRecapResponseBookingStatusHistoryModel,
@@ -33,8 +32,25 @@ export const BookingStatusCellHistory = ({
       item.status
     )
 
-    if (!displayInfoFromStatus) {
+    if (!displayInfoFromStatus || bookingStatusHistory.length < 1) {
       return null
+    }
+
+    if (bookingStatusHistory.length === 1) {
+      return (
+        <div key={displayInfoFromStatus.status}>
+          <span
+            className={cn(
+              styles['colored-disc'],
+              styles[displayInfoFromStatus.historyClassName]
+            )}
+          />
+          {`${displayInfoFromStatus.label} : ${computeDateForStatus(
+            item,
+            displayInfoFromStatus.dateFormat
+          )}`}
+        </div>
+      )
     }
 
     return (
@@ -55,7 +71,11 @@ export const BookingStatusCellHistory = ({
 
   return (
     <div className={styles['booking-status-history']}>
-      {bookingsStatusHistoryItems}
+      {bookingStatusHistory.length > 1 ? (
+        <ul>{bookingsStatusHistoryItems}</ul>
+      ) : (
+        bookingsStatusHistoryItems
+      )}
     </div>
   )
 }
