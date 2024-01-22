@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/react'
 import { useEffect, useState } from 'react'
 
 import { apiAdage } from 'apiClient/api'
@@ -9,6 +8,7 @@ import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
 import { AnalyticsContextProvider } from '../../providers/AnalyticsContextProvider'
 import { HydratedCollectiveOffer } from '../../types/offers'
@@ -37,13 +37,9 @@ const OffersForMyInstitution = (): JSX.Element => {
           }))
         )
       } catch (e) {
-        Sentry.withScope((scope) => {
-          scope.setTag('custom-error-type', 'api')
-          Sentry.captureMessage(
-            `error when fetching offers for my institution ${e}`,
-            'error'
-          )
-        })
+        sendSentryCustomError(
+          `error when fetching offers for my institution ${e}`
+        )
       } finally {
         setLoadingOffers(false)
       }
