@@ -266,7 +266,7 @@ def index_offers_in_queue(stop_only_when_empty: bool = False, from_error_queue: 
                 extra={"count": len(offer_ids)},
             )
             try:
-                reindex_offer_ids(offer_ids)
+                reindex_offer_ids(offer_ids, from_error_queue=from_error_queue)
             except Exception as exc:  # pylint: disable=broad-except
                 if settings.IS_RUNNING_TESTS:
                     raise
@@ -510,7 +510,7 @@ def index_offers_of_venues_in_queue() -> None:
                     )
                     if not offer_ids:
                         break
-                    reindex_offer_ids(offer_ids)
+                    reindex_offer_ids(offer_ids, from_error_queue=False)
                     page += 1
                 logger.info("Finished indexing offers of venue", extra={"venue": venue_id})
     except Exception:  # pylint: disable=broad-except
