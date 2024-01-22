@@ -15,6 +15,7 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.users.models as users_models
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 import pcapi.utils.date as date_utils
 import pcapi.utils.db as db_utils
 
@@ -223,18 +224,85 @@ def _get_sent_pricings_for_collective_bookings(
     reimbursement_period: tuple[datetime.date, datetime.date],
     venue_id: int | None = None,
 ) -> list[tuple]:
-    ReimbursementPoint = sqla_orm.aliased(offerers_models.Venue)
-    return (
+    initial_query = (
         models.Pricing.query.join(educational_models.CollectiveBooking, models.Pricing.collectiveBooking)
         .join(educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock)
         .join(educational_models.CollectiveOffer, educational_models.CollectiveStock.collectiveOffer)
         .join(offerers_models.Venue, educational_models.CollectiveOffer.venue)
         .join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
         .join(models.Pricing.cashflows)
-        .join(models.Cashflow.bankInformation)
-        .join(models.Cashflow.batch)
+    )
+
+    columns: tuple[sqla.sql.elements.Label, ...] = (
+        educational_models.EducationalRedactor.firstName.label("redactor_firstname"),
+        educational_models.EducationalRedactor.lastName.label("redactor_lastname"),
+        educational_models.EducationalInstitution.name.label("institution_name"),
+        _truncate_milliseconds(educational_models.CollectiveBooking.dateUsed).label("booking_used_date"),
+        educational_models.CollectiveStock.price.label("booking_amount"),
+        educational_models.CollectiveStock.beginningDatetime.label("event_date"),
+        educational_models.CollectiveOffer.name.label("offer_name"),
+        sqla.true().label("offer_is_educational"),
+        offerers_models.Venue.name.label("venue_name"),
+        offerers_models.Venue.common_name.label("venue_common_name"),  # type: ignore[attr-defined]
+        sqla_func.coalesce(
+            offerers_models.Venue.address,
+            offerers_models.Offerer.address,
+        ).label("venue_address"),
+        sqla_func.coalesce(
+            offerers_models.Venue.postalCode,
+            offerers_models.Offerer.postalCode,
+        ).label("venue_postal_code"),
+        sqla_func.coalesce(
+            offerers_models.Venue.city,
+            offerers_models.Offerer.city,
+        ).label("venue_city"),
+        offerers_models.Venue.siret.label("venue_siret"),
+        offerers_models.Venue.departementCode.label("venue_departement_code"),
+        # See note about `amount` in `core/finance/models.py`.
+        (-models.Pricing.amount).label("amount"),
+        models.Pricing.standardRule.label("rule_name"),
+        models.Pricing.customRuleId.label("rule_id"),
+        models.Pricing.collectiveBookingId.label("collective_booking_id"),
+        sqla.cast(models.Invoice.date, sqla.Date).label("invoice_date"),
+        models.Invoice.reference.label("invoice_reference"),
+        models.CashflowBatch.cutoff.label("cashflow_batch_cutoff"),
+        models.CashflowBatch.label.label("cashflow_batch_label"),
+    )
+
+    if not FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
+        ReimbursementPoint = sqla_orm.aliased(offerers_models.Venue)
+        query = initial_query.join(models.Cashflow.bankInformation).join(
+            ReimbursementPoint, models.Cashflow.reimbursementPointId == ReimbursementPoint.id
+        )
+        columns += (
+            ReimbursementPoint.common_name.label("reimbursement_point_common_name"),
+            sqla_func.coalesce(
+                ReimbursementPoint.address,
+                offerers_models.Offerer.address,
+            ).label("reimbursement_point_address"),
+            sqla_func.coalesce(
+                ReimbursementPoint.postalCode,
+                offerers_models.Offerer.postalCode,
+            ).label("reimbursement_point_postal_code"),
+            sqla_func.coalesce(
+                ReimbursementPoint.city,
+                offerers_models.Offerer.city,
+            ).label("reimbursement_point_city"),
+            ReimbursementPoint.siret.label("reimbursement_point_siret"),
+            models.BankInformation.iban.label("iban"),
+        )
+
+    else:
+        query = initial_query.join(models.Cashflow.bankAccount)
+
+        columns += (
+            models.BankAccount.label.label("bank_account_label"),
+            models.BankAccount.iban.label("iban"),
+        )
+
+    return (
+        query.join(models.Cashflow.batch)
         .join(models.Cashflow.invoices)
-        .join(ReimbursementPoint, models.Cashflow.reimbursementPointId == ReimbursementPoint.id)
         .outerjoin(models.Pricing.customRule)
         .filter(
             models.Pricing.status == models.PricingStatus.INVOICED,
@@ -262,31 +330,61 @@ def _get_sent_pricings_for_collective_bookings(
             educational_models.CollectiveBooking.dateUsed.desc(),
             educational_models.CollectiveBooking.id.desc(),
         )
-        .with_entities(
-            educational_models.EducationalRedactor.firstName.label("redactor_firstname"),
-            educational_models.EducationalRedactor.lastName.label("redactor_lastname"),
-            educational_models.EducationalInstitution.name.label("institution_name"),
-            _truncate_milliseconds(educational_models.CollectiveBooking.dateUsed).label("booking_used_date"),
-            educational_models.CollectiveStock.price.label("booking_amount"),
-            educational_models.CollectiveStock.beginningDatetime.label("event_date"),
-            educational_models.CollectiveOffer.name.label("offer_name"),
-            sqla.true().label("offer_is_educational"),
-            offerers_models.Venue.name.label("venue_name"),
-            offerers_models.Venue.common_name.label("venue_common_name"),  # type: ignore[attr-defined]
-            sqla_func.coalesce(
-                offerers_models.Venue.address,
-                offerers_models.Offerer.address,
-            ).label("venue_address"),
-            sqla_func.coalesce(
-                offerers_models.Venue.postalCode,
-                offerers_models.Offerer.postalCode,
-            ).label("venue_postal_code"),
-            sqla_func.coalesce(
-                offerers_models.Venue.city,
-                offerers_models.Offerer.city,
-            ).label("venue_city"),
-            offerers_models.Venue.siret.label("venue_siret"),
-            offerers_models.Venue.departementCode.label("venue_departement_code"),
+        .with_entities(*columns)
+    ).all()
+
+
+def _get_sent_pricings_for_individual_bookings(
+    offerer_ids: list[int],
+    reimbursement_period: tuple[datetime.date, datetime.date],
+    venue_id: int | None = None,
+) -> list[tuple]:
+    initial_query = (
+        models.Pricing.query.join(models.Pricing.booking)
+        .join(models.Pricing.cashflows)
+        .join(models.Cashflow.batch)
+        .join(models.Cashflow.invoices)
+    )
+
+    columns: tuple[sqla.sql.elements.Label, ...] = (
+        bookings_models.Booking.token.label("booking_token"),
+        _truncate_milliseconds(bookings_models.Booking.dateUsed).label("booking_used_date"),
+        bookings_models.Booking.quantity.label("booking_quantity"),
+        bookings_models.Booking.priceCategoryLabel.label("booking_price_category_label"),
+        bookings_models.Booking.amount.label("booking_amount"),
+        offers_models.Offer.name.label("offer_name"),
+        offerers_models.Venue.name.label("venue_name"),
+        offerers_models.Venue.common_name.label("venue_common_name"),  # type: ignore[attr-defined]
+        sqla_func.coalesce(
+            offerers_models.Venue.address,
+            offerers_models.Offerer.address,
+        ).label("venue_address"),
+        sqla_func.coalesce(
+            offerers_models.Venue.postalCode,
+            offerers_models.Offerer.postalCode,
+        ).label("venue_postal_code"),
+        sqla_func.coalesce(
+            offerers_models.Venue.city,
+            offerers_models.Offerer.city,
+        ).label("venue_city"),
+        offerers_models.Venue.siret.label("venue_siret"),
+        # See note about `amount` in `core/finance/models.py`.
+        (-models.Pricing.amount).label("amount"),
+        models.Pricing.standardRule.label("rule_name"),
+        models.Pricing.customRuleId.label("rule_id"),
+        models.Pricing.collectiveBookingId.label("collective_booking_id"),
+        sqla.cast(models.Invoice.date, sqla.Date).label("invoice_date"),
+        models.Invoice.reference.label("invoice_reference"),
+        models.CashflowBatch.cutoff.label("cashflow_batch_cutoff"),
+        models.CashflowBatch.label.label("cashflow_batch_label"),
+    )
+
+    if not FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
+        ReimbursementPoint = sqla_orm.aliased(offerers_models.Venue)
+        query = initial_query.join(models.Cashflow.bankInformation).join(
+            ReimbursementPoint, models.Cashflow.reimbursementPointId == ReimbursementPoint.id
+        )
+        columns += (
             ReimbursementPoint.common_name.label("reimbursement_point_common_name"),
             sqla_func.coalesce(
                 ReimbursementPoint.address,
@@ -301,34 +399,19 @@ def _get_sent_pricings_for_collective_bookings(
                 offerers_models.Offerer.city,
             ).label("reimbursement_point_city"),
             ReimbursementPoint.siret.label("reimbursement_point_siret"),
-            # See note about `amount` in `core/finance/models.py`.
-            (-models.Pricing.amount).label("amount"),
-            models.Pricing.standardRule.label("rule_name"),
-            models.Pricing.customRuleId.label("rule_id"),
-            models.Pricing.collectiveBookingId.label("collective_booking_id"),
-            sqla.cast(models.Invoice.date, sqla.Date).label("invoice_date"),
-            models.Invoice.reference.label("invoice_reference"),
-            models.CashflowBatch.cutoff.label("cashflow_batch_cutoff"),
-            models.CashflowBatch.label.label("cashflow_batch_label"),
             models.BankInformation.iban.label("iban"),
         )
-    ).all()
 
+    else:
+        query = initial_query.join(models.Cashflow.bankAccount)
 
-def _get_sent_pricings_for_individual_bookings(
-    offerer_ids: list[int],
-    reimbursement_period: tuple[datetime.date, datetime.date],
-    venue_id: int | None = None,
-) -> list[tuple]:
-    ReimbursementPoint = sqla_orm.aliased(offerers_models.Venue)
+        columns += (
+            models.BankAccount.label.label("bank_account_label"),
+            models.BankAccount.iban.label("iban"),
+        )
+
     return (
-        models.Pricing.query.join(models.Pricing.booking)
-        .join(models.Pricing.cashflows)
-        .join(models.Cashflow.bankInformation)
-        .join(models.Cashflow.batch)
-        .join(models.Cashflow.invoices)
-        .join(ReimbursementPoint, models.Cashflow.reimbursementPointId == ReimbursementPoint.id)
-        .outerjoin(models.Pricing.customRule)
+        query.outerjoin(models.Pricing.customRule)
         .filter(
             models.Pricing.status == models.PricingStatus.INVOICED,
             sqla.cast(models.Cashflow.creationDate, sqla.Date).between(
@@ -348,53 +431,7 @@ def _get_sent_pricings_for_individual_bookings(
         .join(offers_models.Stock.offer)
         .join(bookings_models.Booking.venue)
         .order_by(bookings_models.Booking.dateUsed.desc(), bookings_models.Booking.id.desc())
-        .with_entities(
-            bookings_models.Booking.token.label("booking_token"),
-            _truncate_milliseconds(bookings_models.Booking.dateUsed).label("booking_used_date"),
-            bookings_models.Booking.quantity.label("booking_quantity"),
-            bookings_models.Booking.priceCategoryLabel.label("booking_price_category_label"),
-            bookings_models.Booking.amount.label("booking_amount"),
-            offers_models.Offer.name.label("offer_name"),
-            offerers_models.Venue.name.label("venue_name"),
-            offerers_models.Venue.common_name.label("venue_common_name"),  # type: ignore[attr-defined]
-            sqla_func.coalesce(
-                offerers_models.Venue.address,
-                offerers_models.Offerer.address,
-            ).label("venue_address"),
-            sqla_func.coalesce(
-                offerers_models.Venue.postalCode,
-                offerers_models.Offerer.postalCode,
-            ).label("venue_postal_code"),
-            sqla_func.coalesce(
-                offerers_models.Venue.city,
-                offerers_models.Offerer.city,
-            ).label("venue_city"),
-            offerers_models.Venue.siret.label("venue_siret"),
-            ReimbursementPoint.common_name.label("reimbursement_point_common_name"),
-            sqla_func.coalesce(
-                ReimbursementPoint.address,
-                offerers_models.Offerer.address,
-            ).label("reimbursement_point_address"),
-            sqla_func.coalesce(
-                ReimbursementPoint.postalCode,
-                offerers_models.Offerer.postalCode,
-            ).label("reimbursement_point_postal_code"),
-            sqla_func.coalesce(
-                ReimbursementPoint.city,
-                offerers_models.Offerer.city,
-            ).label("reimbursement_point_city"),
-            ReimbursementPoint.siret.label("reimbursement_point_siret"),
-            # See note about `amount` in `core/finance/models.py`.
-            (-models.Pricing.amount).label("amount"),
-            models.Pricing.standardRule.label("rule_name"),
-            models.Pricing.customRuleId.label("rule_id"),
-            models.Pricing.collectiveBookingId.label("collective_booking_id"),
-            sqla.cast(models.Invoice.date, sqla.Date).label("invoice_date"),
-            models.Invoice.reference.label("invoice_reference"),
-            models.CashflowBatch.cutoff.label("cashflow_batch_cutoff"),
-            models.CashflowBatch.label.label("cashflow_batch_label"),
-            models.BankInformation.iban.label("iban"),
-        )
+        .with_entities(*columns)
     ).all()
 
 
