@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import { GetCollectiveVenueResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import MandatoryInfo from 'components/FormLayout/FormLayoutMandatoryInfo'
@@ -16,12 +17,12 @@ import fullBackIcon from 'icons/full-back.svg'
 import { Banner, Title, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
+import { sendSentryCustomError } from 'utils/sendSentryError'
 
 import { getCulturalPartnersAdapter } from '../adapters'
 import { venueHasCollectiveInformation } from '../EACInformation/utils/venueHasCollectiveInformation'
 
 import { getVenueEducationalStatusesAdapter } from './adapters'
-import getCulturalPartnerAdapter from './adapters/getCulturalPartnerAdapter'
 import getVenueCollectiveDataAdapter from './adapters/getVenueCollectiveDataAdapter'
 import styles from './CollectiveDataEdition.module.scss'
 import CollectiveDataForm from './CollectiveDataForm'
@@ -33,27 +34,31 @@ const fetchCulturalPartnerIfVenueHasNoCollectiveData = async (
     return null
   }
 
-  const culturalPartnerResponse = await getCulturalPartnerAdapter(
-    venueResponse.siret
-  )
+  try {
+    const culturalPartnerResponse = await api.getEducationalPartner(
+      venueResponse.siret
+    )
 
-  if (!culturalPartnerResponse.isOk) {
+    return {
+      ...venueResponse,
+      collectiveLegalStatus: culturalPartnerResponse.statutId
+        ? {
+            id: culturalPartnerResponse.statutId,
+            name: '',
+          }
+        : null,
+      collectiveWebsite: culturalPartnerResponse.siteWeb,
+      collectiveDomains: culturalPartnerResponse.domaineIds.map((id) => ({
+        id,
+        name: '',
+      })),
+    }
+  } catch (e) {
+    sendSentryCustomError(
+      `error when fetching cultural educational partner ${e}`
+    )
+
     return null
-  }
-
-  return {
-    ...venueResponse,
-    collectiveLegalStatus: culturalPartnerResponse.payload.statutId
-      ? {
-          id: culturalPartnerResponse.payload.statutId,
-          name: '',
-        }
-      : null,
-    collectiveWebsite: culturalPartnerResponse.payload.siteWeb,
-    collectiveDomains: culturalPartnerResponse.payload.domaineIds.map((id) => ({
-      id,
-      name: '',
-    })),
   }
 }
 
