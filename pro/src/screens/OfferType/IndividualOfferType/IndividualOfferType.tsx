@@ -1,10 +1,11 @@
+import * as Sentry from '@sentry/react'
 import { useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import { SubcategoryIdEnum, SubcategoryResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
-import { getCategoriesAdapter } from 'core/Offers/adapters'
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
 import { getIndividualOfferVenuesAdapter } from 'core/Venue/adapters/getIndividualOfferVenuesAdapter'
 import { getVenueAdapter } from 'core/Venue/adapters/getVenueAdapter'
@@ -24,6 +25,20 @@ import { OfferTypeFormValues } from '../types'
 
 import { venueTypeSubcategoriesMapping } from './venueTypeSubcategoriesMapping'
 
+async function getCategories() {
+  try {
+    const categories = await api.getCategories()
+    return categories
+  } catch (e) {
+    Sentry.withScope((scope) => {
+      scope.setTag('custom-error-type', 'api')
+      Sentry.captureMessage(`error when fetching categories ${e}`, 'error')
+    })
+
+    return null
+  }
+}
+
 const getVenueTypeAndSubcategories = async (
   venueId: string | null,
   offererId: string | null
@@ -33,33 +48,31 @@ const getVenueTypeAndSubcategories = async (
 
   if (venueId) {
     const [categoriesResponse, venueResponse] = await Promise.all([
-      getCategoriesAdapter(),
+      getCategories(),
       getVenueAdapter(Number(venueId)),
     ])
 
-    if (venueResponse.isOk && categoriesResponse.isOk) {
+    if (venueResponse.isOk && categoriesResponse) {
       const venueData = venueResponse.payload
-      const { subCategories } = categoriesResponse.payload
       venueType = venueData.venueType
-      subcategories = subCategories
+      subcategories = categoriesResponse.subcategories
     }
   } else {
     const [categoriesResponse, venuesResponse] = await Promise.all([
-      getCategoriesAdapter(),
+      getCategories(),
       getIndividualOfferVenuesAdapter({
         offererId: offererId ? Number(offererId) : undefined,
       }),
     ])
 
-    if (venuesResponse.isOk && categoriesResponse.isOk) {
-      const { subCategories } = categoriesResponse.payload
+    if (venuesResponse.isOk && categoriesResponse) {
       const venuesData = venuesResponse.payload.filter(
         (venue) => !venue.isVirtual
       )
 
       if (venuesData.length === 1) {
         venueType = venuesData[0].venueType
-        subcategories = subCategories
+        subcategories = categoriesResponse.subcategories
       }
     }
   }
