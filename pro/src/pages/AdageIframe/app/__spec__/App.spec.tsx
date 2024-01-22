@@ -48,11 +48,6 @@ vi.mock('react-instantsearch', async () => {
   }
 })
 
-vi.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
-  getEducationalDomains: vi.fn(),
-  getFeatures: vi.fn(),
-}))
-
 vi.mock('utils/config', async () => {
   return {
     ...((await vi.importActual('utils/config')) ?? {}),

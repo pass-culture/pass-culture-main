@@ -98,11 +98,6 @@ vi.mock('hooks/useIsElementVisible', () => ({
   default: vi.fn().mockImplementation(() => [false, false]),
 }))
 
-vi.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
-  getEducationalDomains: vi.fn(),
-  getFeatures: vi.fn(),
-}))
-
 const renderAppLayout = (
   options?: RenderWithProvidersOptions,
   user = defaultAdageUser

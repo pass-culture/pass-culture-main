@@ -9,9 +9,6 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import PrebookingButton from '../PrebookingButton'
 
-vi.mock('repository/pcapi/pcapi', () => ({
-  preBookStock: vi.fn(),
-}))
 vi.mock('pages/AdageIframe/libs/initAlgoliaAnalytics')
 
 vi.mock('apiClient/api', () => ({
