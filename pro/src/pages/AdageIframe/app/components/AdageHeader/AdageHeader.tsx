@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/react'
 import cn from 'classnames'
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
@@ -12,6 +11,7 @@ import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { sendSentryCustomError } from 'utils/sendSentryError'
 
 import useAdageUser from '../../hooks/useAdageUser'
 
@@ -45,13 +45,9 @@ export const AdageHeader = () => {
       } catch (e) {
         notify.error(GET_DATA_ERROR_MESSAGE)
 
-        Sentry.withScope((scope) => {
-          scope.setTag('custom-error-type', 'api')
-          Sentry.captureMessage(
-            `error when retrieving educational institution budget ${adageUser.uai} ${e}`,
-            'error'
-          )
-        })
+        sendSentryCustomError(
+          `error when retrieving educational institution budget ${adageUser.uai} ${e}`
+        )
       } finally {
         setIsLoading(false)
       }
