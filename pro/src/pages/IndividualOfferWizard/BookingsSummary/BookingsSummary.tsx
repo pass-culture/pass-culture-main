@@ -9,19 +9,14 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 
 const BookingsSummary = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
-  const { offer, setOffer } = useIndividualOfferContext()
+  const { offer } = useIndividualOfferContext()
 
   if (offer === null) {
     return <Spinner />
   }
 
   return (
-    <IndivualOfferLayout
-      title="Récapitulatif"
-      offer={offer}
-      setOffer={setOffer}
-      mode={mode}
-    >
+    <IndivualOfferLayout title="Récapitulatif" offer={offer} mode={mode}>
       <BookingsSummaryScreen offer={offer} />
     </IndivualOfferLayout>
   )

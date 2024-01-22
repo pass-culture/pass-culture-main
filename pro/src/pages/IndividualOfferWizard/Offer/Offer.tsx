@@ -14,7 +14,7 @@ import { parse } from 'utils/query-string'
 export const Offer = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
   const { currentUser } = useCurrentUser()
-  const { offer, setOffer } = useIndividualOfferContext()
+  const { offer } = useIndividualOfferContext()
 
   const { search } = useLocation()
   const { structure: offererId, lieu: venueId } = parse(search)
@@ -25,12 +25,7 @@ export const Offer = (): JSX.Element | null => {
     !(offererId || offer)
 
   return (
-    <IndivualOfferLayout
-      offer={offer}
-      setOffer={setOffer}
-      title={getTitle(mode)}
-      mode={mode}
-    >
+    <IndivualOfferLayout offer={offer} title={getTitle(mode)} mode={mode}>
       {showAdminCreationBanner ? (
         <BannerCreateOfferAdmin />
       ) : (
