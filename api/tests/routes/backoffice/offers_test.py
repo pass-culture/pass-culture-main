@@ -78,6 +78,14 @@ def offers_fixture(criteria) -> tuple:
         subcategoryId=subcategories.LIVRE_PAPIER.id,
         extraData={"ean": "9781234567890"},
     )
+    offer_with_a_lot_of_types = offers_factories.OfferFactory(
+        criteria=[criteria[3]],
+        venue__postalCode="10000",
+        venue__departementCode="10",
+        subcategoryId=subcategories.JEU_EN_LIGNE.id,
+        author=users_factories.ProFactory(),
+        extraData={"musicType": 870, "musicSubType": 871, "showType": 1510, "showSubType": 1511},
+    )
     offers_factories.StockFactory(quantity=None, offer=offer_with_unlimited_stock)
     offers_factories.StockFactory(offer=offer_with_unlimited_stock)
     offers_factories.EventStockFactory(
@@ -92,14 +100,7 @@ def offers_fixture(criteria) -> tuple:
         offer=offer_with_limited_stock,
         beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3),
     )
-    return offer_with_unlimited_stock, offer_with_limited_stock, offer_with_two_criteria
-
-
-@pytest.fixture(scope="function", name="offers_not_taken")
-def offers_not_taken_fixture(criteria) -> offers_factories.OfferFactory:
-    offers_factories.OfferFactory(
-        extraData={"musicType": 870, "musicSubType": 871, "showType": 1510, "showSubType": 1511},
-    )
+    return offer_with_unlimited_stock, offer_with_limited_stock, offer_with_two_criteria, offer_with_a_lot_of_types
 
 
 class ListOffersTest(GetEndpointHelper):
@@ -417,10 +418,10 @@ class ListOffersTest(GetEndpointHelper):
         "operator,criteria_indexes,expected_offer_indexes",
         [
             ("IN", [0], [0, 2]),
-            ("NOT_IN", [0], [1]),
-            ("NOT_IN", [1], [0, 1]),
-            ("NOT_IN", [2], [0, 1, 2]),
-            ("NOT_IN", [0, 1], [1]),
+            ("NOT_IN", [0], [1, 3]),
+            ("NOT_IN", [1], [0, 1, 3]),
+            ("NOT_IN", [2], [0, 1, 2, 3]),
+            ("NOT_IN", [0, 1], [1, 3]),
             ("NOT_EXIST", [], [1]),
         ],
     )
@@ -512,7 +513,7 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert {int(row["ID"]) for row in rows} == {offers[1].id, offers[2].id}
 
-    def test_list_offers_advanced_search_by_music_type(self, authenticated_client, offers, offers_not_taken):
+    def test_list_offers_advanced_search_by_music_type(self, authenticated_client, offers):
         query_args = {
             "search-3-search_field": "MUSIC_TYPE",
             "search-3-operator": "IN",
@@ -526,7 +527,7 @@ class ListOffersTest(GetEndpointHelper):
         row = html_parser.extract_table_rows(response.data)
         assert int(row[0]["ID"]) == offers[0].id
 
-    def test_list_offers_advanced_search_by_music_sub_type(self, authenticated_client, offers, offers_not_taken):
+    def test_list_offers_advanced_search_by_music_sub_type(self, authenticated_client, offers):
         query_args = {
             "search-0-search_field": "MUSIC_SUB_TYPE",
             "search-0-operator": "IN",
@@ -540,7 +541,7 @@ class ListOffersTest(GetEndpointHelper):
         row = html_parser.extract_table_rows(response.data)
         assert int(row[0]["ID"]) == offers[0].id
 
-    def test_list_offers_advanced_search_by_show_type(self, authenticated_client, offers, offers_not_taken):
+    def test_list_offers_advanced_search_by_show_type(self, authenticated_client, offers):
         query_args = {
             "search-3-search_field": "SHOW_TYPE",
             "search-3-operator": "IN",
@@ -554,7 +555,7 @@ class ListOffersTest(GetEndpointHelper):
         row = html_parser.extract_table_rows(response.data)
         assert int(row[0]["ID"]) == offers[1].id
 
-    def test_list_offers_advanced_search_by_show_sub_type(self, authenticated_client, offers, offers_not_taken):
+    def test_list_offers_advanced_search_by_show_sub_type(self, authenticated_client, offers):
         query_args = {
             "search-3-search_field": "SHOW_SUB_TYPE",
             "search-3-operator": "IN",

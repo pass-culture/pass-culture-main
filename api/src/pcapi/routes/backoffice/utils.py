@@ -1,3 +1,4 @@
+import enum
 from functools import wraps
 import logging
 import operator as op
@@ -14,6 +15,7 @@ from flask_sqlalchemy import BaseQuery
 from flask_wtf import FlaskForm
 from markupsafe import Markup
 from sqlalchemy import func
+from sqlalchemy.dialects import postgresql
 import werkzeug
 from werkzeug.datastructures import ImmutableMultiDict
 from werkzeug.exceptions import Forbidden
@@ -35,6 +37,7 @@ logger = logging.getLogger(__name__)
 # perhaps one day we will be able to define it as str | tuple[str, int]
 BackofficeResponse = str | tuple[str, int] | WerkzeugResponse | Forbidden
 
+
 OPERATOR_DICT: dict[str, dict[str, typing.Any]] = {
     "EQUALS": {"function": op.eq},
     "NOT_EQUALS": {"function": op.ne},
@@ -49,7 +52,29 @@ OPERATOR_DICT: dict[str, dict[str, typing.Any]] = {
     "CONTAINS": {"function": lambda x, y: x.ilike(f"%{y}%")},
     "NO_CONTAINS": {"function": lambda x, y: ~x.ilike(f"%{y}%")},
     "NOT_EXIST": {"function": lambda x, y: x.is_(None), "outer_join": True},
+    "INTERSECTS": {"function": lambda x, y: x.overlap(postgresql.array(obj for obj in y))},
+    "NOT_INTERSECTS": {"function": lambda x, y: ~x.overlap(postgresql.array(obj for obj in y))},
 }
+
+
+class AdvancedSearchOperators(enum.Enum):
+    NOT_EQUALS = "est différent de"
+    EQUALS = "est égal à"
+    NAME_NOT_EQUALS = "est différent de\0\0"
+    NAME_EQUALS = "est égal à\0\0"
+    STR_NOT_EQUALS = "est différent de\0"  # the \0 is here to force wtforms to display NOT_EQUALS and STR_NOT_EQUALS
+    STR_EQUALS = "est égal à\0"  # the \0 is here to force wtforms to display EQUALS and STR_EQUALS
+    GREATER_THAN = "supérieur strict"
+    GREATER_THAN_OR_EQUAL_TO = "supérieur ou égal"
+    LESS_THAN = "inférieur strict"
+    LESS_THAN_OR_EQUAL_TO = "inférieur ou égal"
+    IN = "est parmi"
+    NOT_IN = "n'est pas parmi"
+    CONTAINS = "contient"
+    NO_CONTAINS = "ne contient pas"
+    NOT_EXIST = "n'a aucun"
+    INTERSECTS = "contient\0"  # the \0 is here to force wtforms to display CONTAINS and INTERSECTS
+    NOT_INTERSECTS = "ne contient pas\0"  # the \0 is here to force wtforms to display NO_CONTAINS and NOT_INTERSECTS
 
 
 class UnauthenticatedUserError(Exception):
@@ -289,6 +314,36 @@ def _manage_joins(
                     raise ValueError(f"Unsupported join_type {join_type}. Supported : 'inner_join' or 'outer_join'.")
                 join_log.add(join_dict["name"])
     return query, join_log
+
+
+def get_advanced_search_args(
+    form_search_data: dict,
+    search_attributes: type,  # type[IndividualOffersSearchAttributes] | type[CollectiveOffersSearchAttributes]
+    search_field_to_python_dict: dict[str, dict[str, typing.Any]],
+) -> dict[str, typing.Any]:
+    advanced_query = ""
+    search_data_tags = set()
+
+    if form_search_data:
+        advanced_query = f"?{request.query_string.decode()}"
+
+        for data in form_search_data:
+            if search_operator := data.get("operator"):
+                if search_field := data.get("search_field"):
+                    if search_field_attr := getattr(search_attributes, search_field, None):
+                        field_name = search_field_to_python_dict[search_field]["field"]
+                        field_data = data[field_name] if isinstance(data[field_name], list) else [data[field_name]]
+                        field_data = ", ".join(str(e) for e in field_data)
+
+                        field_title = search_field_attr.value
+                        operator_title = AdvancedSearchOperators[search_operator].value
+
+                        search_data_tags.add(" ".join((field_title, operator_title, field_data)))
+
+    return {
+        "advanced_query": advanced_query,
+        "search_data_tags": search_data_tags,
+    }
 
 
 def limit_rows(rows: list[typing.Any], limit: int) -> list[typing.Any]:

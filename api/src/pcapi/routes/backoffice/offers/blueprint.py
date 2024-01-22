@@ -392,38 +392,22 @@ def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
     return query.all()
 
 
-def _get_advanced_search_args(form: forms.InternalSearchForm) -> dict[str, typing.Any]:
-    advanced_query = ""
-    search_data_tags = set()
-
-    if form.search.data:
-        advanced_query = f"?{request.query_string.decode()}"
-
-        for data in form.search.data:
-            if search_operator := data.get("operator"):
-                if search_field := data.get("search_field"):
-                    if search_field_attr := getattr(forms.SearchAttributes, search_field, None):
-                        field_name = SEARCH_FIELD_TO_PYTHON[search_field]["field"]
-                        field_data = data[field_name] if isinstance(data[field_name], list) else [data[field_name]]
-                        field_data = ", ".join(str(e) for e in field_data)
-
-                        field_title = search_field_attr.value
-                        operator_title = forms.SearchOperators[search_operator].value
-
-                        search_data_tags.add(" ".join((field_title, operator_title, field_data)))
-
-    return {
-        "advanced_query": advanced_query,
-        "search_data_tags": search_data_tags,
-    }
-
-
 @list_offers_blueprint.route("", methods=["GET"])
 def list_offers() -> utils.BackofficeResponse:
     display_form = forms.GetOffersSearchForm(formdata=utils.get_query_params())
     form = forms.InternalSearchForm(formdata=utils.get_query_params())
     if not form.validate():
-        return render_template("offer/list.html", rows=[], form=display_form, **_get_advanced_search_args(form)), 400
+        return (
+            render_template(
+                "offer/list.html",
+                rows=[],
+                form=display_form,
+                **utils.get_advanced_search_args(
+                    form.search.data, forms.IndividualOffersSearchAttributes, SEARCH_FIELD_TO_PYTHON
+                ),
+            ),
+            400,
+        )
 
     if form.is_empty():
         return render_template("offer/list.html", rows=[], form=display_form)
@@ -436,7 +420,9 @@ def list_offers() -> utils.BackofficeResponse:
         rows=offers,
         form=display_form,
         date_created_sort_url=form.get_sort_link_with_search_data(".list_offers") if form.sort.data else None,
-        **_get_advanced_search_args(form),
+        **utils.get_advanced_search_args(
+            form.search.data, forms.IndividualOffersSearchAttributes, SEARCH_FIELD_TO_PYTHON
+        ),
     )
 
 
