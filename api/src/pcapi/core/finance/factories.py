@@ -240,12 +240,12 @@ class CustomReimbursementRuleFactory(BaseFactory):
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.CustomReimbursementRule:
-        if "rate" in kwargs:
+        if kwargs.get("rate") is not None:
             kwargs["amount"] = None
-        if "offerer" in kwargs:
+        if kwargs.get("offerer"):
             kwargs["offer"] = None
             kwargs["venue"] = None
-        elif "venue" in kwargs:
+        elif kwargs.get("venue"):
             kwargs["offer"] = None  # offerer is already None here
         return super()._create(model_class, *args, **kwargs)
 

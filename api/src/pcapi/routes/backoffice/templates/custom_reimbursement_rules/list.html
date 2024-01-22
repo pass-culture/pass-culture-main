@@ -1,6 +1,7 @@
 {% import "components/forms.html" as forms with context %}
 {% import "components/links.html" as links %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% from "components/turbo/spinner.html" import build_loading_spinner with context %}
 {% extends "layouts/connected.html" %}
 {% block page %}
   <div class="pt-3 px-5"
@@ -20,6 +21,13 @@
       </div>
     </div>
     <div class="filters-container">{{ forms.build_filters_form(form, dst) }}</div>
+    <div class="row">
+      <div class="col-md-11 mb-4">
+        <turbo-frame id="reimbursement_stats" src="{{ url_for("backoffice_web.reimbursement_rules.get_stats") }}">
+        {{ build_loading_spinner() }}
+        </turbo-frame>
+      </div>
+    </div>
     <div>
       {% if has_permission("CREATE_REIMBURSEMENT_RULES") %}
         <button class="btn btn-outline-primary lead fw-bold mt-2"
