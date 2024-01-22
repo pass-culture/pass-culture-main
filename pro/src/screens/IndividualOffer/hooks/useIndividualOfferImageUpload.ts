@@ -12,7 +12,7 @@ import { imageFileToDataUrl } from '../InformationsScreen/utils/files'
 
 export const useIndividualOfferImageUpload = () => {
   const notify = useNotification()
-  const { offerId, offer, setOffer } = useIndividualOfferContext()
+  const { offerId, offer } = useIndividualOfferContext()
 
   const [imageOfferCreationArgs, setImageOfferCreationArgs] = useState<
     OnImageUploadArgs | undefined
@@ -50,16 +50,7 @@ export const useIndividualOfferImageUpload = () => {
         url: response.payload.url,
         credit: response.payload.credit,
       })
-      if (setOffer && offer) {
-        setOffer({
-          ...offer,
-          image: {
-            originalUrl: response.payload.url,
-            url: response.payload.url,
-            credit: response.payload.credit,
-          },
-        })
-      }
+
       return Promise.resolve()
     },
     [imageOfferCreationArgs]
