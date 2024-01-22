@@ -40,7 +40,6 @@ const renderPriceCategoriesForm = (
       <PriceCategoriesForm
         offer={individualOfferFactory({ id: 42, hasStocks: false })}
         mode={OFFER_WIZARD_MODE.CREATION}
-        setOffer={vi.fn()}
         isDisabled={false}
         {...customProps}
       />

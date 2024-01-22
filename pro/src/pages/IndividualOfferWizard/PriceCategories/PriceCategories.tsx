@@ -9,7 +9,7 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 
 export const PriceCategories = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
-  const { offer, setOffer } = useIndividualOfferContext()
+  const { offer } = useIndividualOfferContext()
 
   // Offer might be null: when we submit Informations form, we setOffer with the
   // submited payload. Due to React 18 render batching behavior and react-router
@@ -20,12 +20,7 @@ export const PriceCategories = (): JSX.Element | null => {
   }
 
   return (
-    <IndivualOfferLayout
-      offer={offer}
-      setOffer={setOffer}
-      title={getTitle(mode)}
-      mode={mode}
-    >
+    <IndivualOfferLayout offer={offer} title={getTitle(mode)} mode={mode}>
       <PriceCategoriesScreen offer={offer} />
     </IndivualOfferLayout>
   )

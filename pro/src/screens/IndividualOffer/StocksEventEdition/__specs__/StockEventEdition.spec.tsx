@@ -23,6 +23,7 @@ import Notification from 'components/Notification/Notification'
 import { STOCKS_PER_PAGE } from 'components/StocksEventList/StocksEventList'
 import { IndividualOfferContextProvider } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
+import { IndividualOffer } from 'core/Offers/types'
 import {
   getIndividualOfferPath,
   getIndividualOfferUrl,
@@ -36,7 +37,6 @@ import {
   individualOfferFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
-import { IndividualOffer } from 'core/Offers/types'
 
 vi.mock('utils/date', async () => {
   return {

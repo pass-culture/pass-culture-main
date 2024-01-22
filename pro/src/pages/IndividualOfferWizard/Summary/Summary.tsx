@@ -10,7 +10,7 @@ import SummaryScreen from 'screens/IndividualOffer/SummaryScreen/SummaryScreen'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 const Summary = (): JSX.Element | null => {
-  const { offer, setOffer } = useIndividualOfferContext()
+  const { offer } = useIndividualOfferContext()
 
   const mode = useOfferWizardMode()
 
@@ -28,12 +28,7 @@ const Summary = (): JSX.Element | null => {
   }
 
   return (
-    <IndivualOfferLayout
-      title={title}
-      offer={offer}
-      setOffer={setOffer}
-      mode={mode}
-    >
+    <IndivualOfferLayout title={title} offer={offer} mode={mode}>
       <SummaryScreen />
     </IndivualOfferLayout>
   )

@@ -9,7 +9,7 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 
 export const Confirmation = (): JSX.Element => {
   const mode = useOfferWizardMode()
-  const { offer, setOffer } = useIndividualOfferContext()
+  const { offer } = useIndividualOfferContext()
 
   if (offer === null) {
     return <Spinner />
@@ -19,7 +19,6 @@ export const Confirmation = (): JSX.Element => {
     <IndivualOfferLayout
       withStepper={false}
       offer={offer}
-      setOffer={setOffer}
       title={getTitle(mode)}
       mode={mode}
     >
