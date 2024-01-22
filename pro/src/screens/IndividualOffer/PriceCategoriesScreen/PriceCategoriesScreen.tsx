@@ -82,7 +82,7 @@ export const arePriceCategoriesChanged = (
 export const PriceCategoriesScreen = ({
   offer,
 }: PriceCategoriesScreenProps): JSX.Element => {
-  const { setOffer, subCategories } = useIndividualOfferContext()
+  const { subCategories } = useIndividualOfferContext()
   const navigate = useNavigate()
   const mode = useOfferWizardMode()
   const notify = useNotification()
@@ -128,7 +128,7 @@ export const PriceCategoriesScreen = ({
 
     // Submit
     try {
-      await submitToApi(values, offer, setOffer, formik.resetForm)
+      await submitToApi(values, offer, formik.resetForm)
     } catch (error) {
       if (error instanceof Error) {
         notify.error(error?.message)
@@ -192,7 +192,6 @@ export const PriceCategoriesScreen = ({
         <PriceCategoriesForm
           offer={offer}
           mode={mode}
-          setOffer={setOffer}
           isDisabled={isDisabled}
           canBeDuo={canBeDuo}
         />
