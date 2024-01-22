@@ -1,4 +1,5 @@
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
+import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 
 export const getSuccessMessage = (mode: OFFER_WIZARD_MODE) => {
   switch (mode) {
@@ -7,6 +8,6 @@ export const getSuccessMessage = (mode: OFFER_WIZARD_MODE) => {
 
     case OFFER_WIZARD_MODE.EDITION:
     default:
-      return 'Vos modifications ont bien été enregistrées'
+      return PATCH_SUCCESS_MESSAGE
   }
 }

@@ -18,6 +18,7 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
 import { VenueFormValues } from 'components/VenueForm'
 import { Offerer } from 'core/Offerers/types'
+import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import { Venue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
@@ -368,9 +369,7 @@ describe('VenueFormScreen', () => {
 
     await userEvent.click(screen.getByText(/Enregistrer et créer le lieu/))
     await waitFor(() => {
-      expect(
-        screen.getByText('Vos modifications ont bien été enregistrées')
-      ).toBeInTheDocument()
+      expect(screen.getByText(PATCH_SUCCESS_MESSAGE)).toBeInTheDocument()
     })
   })
 
@@ -389,9 +388,7 @@ describe('VenueFormScreen', () => {
     await userEvent.click(screen.getByText(/Enregistrer et créer le lieu/))
 
     await waitFor(() => {
-      expect(
-        screen.queryByText('Vos modifications ont bien été enregistrées')
-      ).not.toBeInTheDocument()
+      expect(screen.queryByText(PATCH_SUCCESS_MESSAGE)).not.toBeInTheDocument()
     })
   })
 
@@ -410,9 +407,7 @@ describe('VenueFormScreen', () => {
     await userEvent.click(screen.getByText(/Enregistrer et créer le lieu/))
 
     await waitFor(() => {
-      expect(
-        screen.getByText('Vos modifications ont bien été enregistrées')
-      ).toBeInTheDocument()
+      expect(screen.getByText(PATCH_SUCCESS_MESSAGE)).toBeInTheDocument()
     })
   })
 
@@ -765,9 +760,7 @@ describe('VenueFormScreen', () => {
       expect(editVenue).toHaveBeenCalledWith(15, expectedEditVenue)
 
       await waitFor(() => {
-        expect(
-          screen.getByText('Vos modifications ont bien été enregistrées')
-        ).toBeInTheDocument()
+        expect(screen.getByText(PATCH_SUCCESS_MESSAGE)).toBeInTheDocument()
       })
     })
 
