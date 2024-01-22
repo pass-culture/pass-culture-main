@@ -126,6 +126,7 @@ export const Offers = ({
             sendSentryCustomError(
               `error when retrieving adage offer ${hit.objectID} ${e}`
             )
+
             return {}
           }
         }
