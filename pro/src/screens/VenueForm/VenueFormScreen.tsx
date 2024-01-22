@@ -14,6 +14,7 @@ import {
 import { generateSiretValidationSchema } from 'components/VenueForm/Informations/SiretOrCommentFields'
 import { Events } from 'core/FirebaseEvents/constants'
 import { Offerer } from 'core/Offerers/types'
+import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import { Providers, Venue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -137,7 +138,7 @@ const VenueFormScreen = ({
       navigate(venueSubmitRedirectUrl(isCreatingVenue, offerer.id, currentUser))
 
       if (currentUser.isAdmin) {
-        notify.success('Vos modifications ont bien été enregistrées')
+        notify.success(PATCH_SUCCESS_MESSAGE)
       }
 
       logEvent?.(Events.CLICKED_SAVE_VENUE, {

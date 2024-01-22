@@ -27,6 +27,7 @@ import {
   getIndividualOfferPath,
   getIndividualOfferUrl,
 } from 'core/Offers/utils/getIndividualOfferUrl'
+import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import { Stocks } from 'pages/IndividualOfferWizard/Stocks/Stocks'
 import { ButtonLink } from 'ui-kit'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
@@ -445,9 +446,7 @@ describe('screens:StocksEventEdition', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
-    expect(
-      await screen.findByText('Vos modifications ont bien été enregistrées')
-    ).toBeInTheDocument()
+    expect(await screen.findByText(PATCH_SUCCESS_MESSAGE)).toBeInTheDocument()
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
   })
 
@@ -532,9 +531,7 @@ describe('screens:StocksEventEdition', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
-    expect(
-      screen.getByText('Vos modifications ont bien été enregistrées')
-    ).toBeInTheDocument()
+    expect(screen.getByText(PATCH_SUCCESS_MESSAGE)).toBeInTheDocument()
     expect(screen.queryByTestId('stock-event-form')).not.toBeInTheDocument()
     expect(
       screen.getByText(/This is the read only route content/)

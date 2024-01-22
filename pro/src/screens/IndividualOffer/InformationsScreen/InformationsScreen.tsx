@@ -32,6 +32,7 @@ import { serializePatchOffer } from 'core/Offers/adapters/updateIndividualOffer/
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { isOfferDisabled } from 'core/Offers/utils'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
+import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
@@ -217,7 +218,7 @@ const InformationsScreen = ({
     )
 
     if (mode === OFFER_WIZARD_MODE.EDITION) {
-      notify.success('Vos modifications ont bien été enregistrées')
+      notify.success(PATCH_SUCCESS_MESSAGE)
     }
   }
 

@@ -10,6 +10,8 @@ export const offerFormUrlRegex = new RegExp(
   'i'
 )
 
+export const PATCH_SUCCESS_MESSAGE =
+  'Vos modifications ont bien été enregistrées'
 export const GET_DATA_ERROR_MESSAGE =
   'Nous avons rencontré un problème lors de la récupération des données.'
 export const SENT_DATA_ERROR_MESSAGE =
