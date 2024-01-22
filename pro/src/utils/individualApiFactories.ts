@@ -258,7 +258,6 @@ export const individualOfferContextFactory = (
     offererNames: [],
     categories: [],
     subCategories: [],
-    setOffer: () => {},
     setSubcategory: () => {},
     showVenuePopin: {},
     ...customContext,

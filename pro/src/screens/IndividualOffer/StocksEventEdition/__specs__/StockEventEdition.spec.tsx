@@ -7,11 +7,11 @@ import { userEvent } from '@testing-library/user-event'
 import format from 'date-fns/format'
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
+import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import {
   ApiError,
-  GetIndividualOfferResponseModel,
   GetOfferStockResponseModel,
   OfferStatus,
   SubcategoryIdEnum,
@@ -31,8 +31,12 @@ import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import { Stocks } from 'pages/IndividualOfferWizard/Stocks/Stocks'
 import { ButtonLink } from 'ui-kit'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
-import { individualGetOfferStockResponseModelFactory } from 'utils/individualApiFactories'
+import {
+  individualGetOfferStockResponseModelFactory,
+  individualOfferFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { IndividualOffer } from 'core/Offers/types'
 
 vi.mock('utils/date', async () => {
   return {
@@ -41,13 +45,21 @@ vi.mock('utils/date', async () => {
   }
 })
 
+vi.mock('react-router-dom', async () => ({
+  ...((await vi.importActual('react-router-dom')) ?? {}),
+  useFetcher: () => ({
+    submit: vi.fn(),
+  }),
+  useLoaderData: vi.fn(),
+}))
+
 const renderStockEventScreen = async (
-  apiOffer: GetIndividualOfferResponseModel,
+  apiOffer: IndividualOffer,
   apiStocks: GetOfferStockResponseModel[] = [],
   stocksCount?: number,
   searchParams = ''
 ) => {
-  vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
+  vi.spyOn(router, 'useLoaderData').mockReturnValue({ offer: apiOffer })
   vi.spyOn(api, 'getCategories').mockResolvedValue({
     categories: [],
     subcategories: [],
@@ -143,7 +155,7 @@ const priceCategoryId = '1'
 const otherPriceCategoryId = '2'
 
 describe('screens:StocksEventEdition', () => {
-  let apiOffer: GetIndividualOfferResponseModel
+  let apiOffer: IndividualOffer
   let apiStocks: GetOfferStockResponseModel[]
 
   beforeEach(() => {
@@ -152,27 +164,18 @@ describe('screens:StocksEventEdition', () => {
         bookingsQuantity: 4,
       }),
     ]
-    apiOffer = {
-      bookingEmail: null,
-      dateCreated: '2022-05-18T08:25:30.991476Z',
+    apiOffer = individualOfferFactory({
+      bookingEmail: 'test@example.com',
       description: 'A passionate description of product 80',
       durationMinutes: null,
-      extraData: null,
-      hasBookingLimitDatetimesPassed: true,
       hasStocks: true,
       isActive: true,
       isActivable: true,
       isDigital: false,
       isDuo: false,
-      isEditable: true,
       isEvent: true,
       isNational: false,
-      isThing: false,
-      audioDisabilityCompliant: false,
-      mentalDisabilityCompliant: false,
-      motorDisabilityCompliant: false,
       id: 12,
-      visualDisabilityCompliant: false,
       lastProvider: null,
       name: 'Séance ciné duo',
       priceCategories: [
@@ -180,9 +183,8 @@ describe('screens:StocksEventEdition', () => {
         { id: Number(otherPriceCategoryId), label: 'Cat 2', price: 12.2 },
       ],
       subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
-      thumbUrl: null,
-      externalTicketOfficeUrl: null,
-      url: null,
+      externalTicketOfficeUrl: '',
+      url: '',
       venue: {
         address: '1 boulevard Poissonnière',
         bookingEmail: 'venue29@example.net',
@@ -207,7 +209,7 @@ describe('screens:StocksEventEdition', () => {
       withdrawalType: null,
       withdrawalDelay: null,
       bookingsCount: 0,
-    }
+    })
   })
 
   it('render stock event row', async () => {
@@ -437,6 +439,7 @@ describe('screens:StocksEventEdition', () => {
       ...apiOffer.lastProvider,
       name: 'ciné office',
     }
+    apiOffer.lastProviderName = 'ciné office'
     await renderStockEventScreen(apiOffer, apiStocks)
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks_count: apiStocks.length,
