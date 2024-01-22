@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/react'
 import { useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
@@ -19,6 +18,7 @@ import { RadioButton } from 'ui-kit'
 import { BaseRadioVariant } from 'ui-kit/form/shared/BaseRadio/types'
 import RadioButtonWithImage from 'ui-kit/RadioButtonWithImage'
 import Spinner from 'ui-kit/Spinner/Spinner'
+import { sendSentryCustomError } from 'utils/sendSentryError'
 
 import styles from '../OfferType.module.scss'
 import { OfferTypeFormValues } from '../types'
@@ -30,10 +30,7 @@ async function getCategories() {
     const categories = await api.getCategories()
     return categories
   } catch (e) {
-    Sentry.withScope((scope) => {
-      scope.setTag('custom-error-type', 'api')
-      Sentry.captureMessage(`error when fetching categories ${e}`, 'error')
-    })
+    sendSentryCustomError(`error when fetching categories ${e}`)
 
     return null
   }
