@@ -1,13 +1,14 @@
+import * as Sentry from '@sentry/react'
 import { Form, FormikProvider, useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
 
 import { AdageFrontRoles, EacFormat, OfferAddressType } from 'apiClient/adage'
+import { apiAdage } from 'apiClient/api'
 import AdageButtonFilter from 'components/AdageButtonFilter/AdageButtonFilter'
 import FormLayout from 'components/FormLayout'
 import strokeBuildingIcon from 'icons/stroke-building.svg'
 import strokeFranceIcon from 'icons/stroke-france.svg'
 import strokeNearIcon from 'icons/stroke-near.svg'
-import { getAcademiesOptionsAdapter } from 'pages/AdageIframe/app/adapters/getAcademiesOptionsAdapter'
 import { departmentOptions } from 'pages/AdageIframe/app/constants/departmentOptions'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { Option } from 'pages/AdageIframe/app/types'
@@ -111,10 +112,22 @@ export const OfferFilters = ({
   }
   useEffect(() => {
     const loadFiltersOptions = async () => {
-      const academiesResponse = await getAcademiesOptionsAdapter()
-
-      if (academiesResponse.isOk) {
-        setAcademieOptions(academiesResponse.payload)
+      try {
+        const academies = await apiAdage.getAcademies()
+        setAcademieOptions(
+          academies.map((academy) => ({
+            value: academy,
+            label: academy,
+          }))
+        )
+      } catch (e) {
+        Sentry.withScope((scope) => {
+          scope.setTag('custom-error-type', 'api')
+          Sentry.captureMessage(
+            `error when retrieving academies options ${e}`,
+            'error'
+          )
+        })
       }
     }
 
