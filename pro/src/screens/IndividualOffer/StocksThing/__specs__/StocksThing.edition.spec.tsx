@@ -2,6 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
+import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import {
@@ -31,6 +32,14 @@ vi.mock('screens/IndividualOffer/Informations/utils', () => {
     filterCategories: vi.fn(),
   }
 })
+
+vi.mock('react-router-dom', async () => ({
+  ...((await vi.importActual('react-router-dom')) ?? {}),
+  useFetcher: () => ({
+    submit: vi.fn(),
+  }),
+  useLoaderData: vi.fn(),
+}))
 
 vi.mock('repository/pcapi/pcapi', () => ({
   postThumbnail: vi.fn(),
@@ -165,7 +174,7 @@ describe('screens:StocksThing', () => {
       },
     }
 
-    vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
+    vi.spyOn(router, 'useLoaderData').mockReturnValue({ offer: apiOffer })
     vi.spyOn(api, 'getStocks').mockResolvedValue({
       stocks: [stockToDelete],
       hasStocks: true,
@@ -216,7 +225,7 @@ describe('screens:StocksThing', () => {
       screen.getByText('Voulez-vous supprimer ce stock ?')
     ).toBeInTheDocument()
 
-    vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
+    // vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     await userEvent.click(screen.getByText('Supprimer', { selector: 'button' }))
     expect(
       await screen.findByText('Le stock a été supprimé.')
@@ -241,7 +250,6 @@ describe('screens:StocksThing', () => {
     apiOffer.lastProvider = {
       name: 'Provider',
     }
-    vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
     renderStockThingScreen(storeOverride)
     await screen.findByTestId('stock-thing-form')
@@ -309,7 +317,6 @@ describe('screens:StocksThing', () => {
   it('should not display any message when user delete empty stock', async () => {
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
     renderStockThingScreen(storeOverride)
-    vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     await screen.findByTestId('stock-thing-form')
     await userEvent.click(
       (await screen.findAllByTitle('Supprimer le stock'))[1]

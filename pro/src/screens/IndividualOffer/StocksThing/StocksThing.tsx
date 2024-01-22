@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useFetcher, useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetOfferStockResponseModel } from 'apiClient/v1'
@@ -11,7 +11,6 @@ import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIn
 import { StockFormActions } from 'components/StockFormActions'
 import { StockFormRowAction } from 'components/StockFormActions/types'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
-import { getIndividualOfferAdapter } from 'core/Offers/adapters'
 import {
   LIVRE_PAPIER_SUBCATEGORY_ID,
   OFFER_WIZARD_MODE,
@@ -50,7 +49,8 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
   const notify = useNotification()
-  const { setOffer, subCategories } = useIndividualOfferContext()
+  const { subCategories } = useIndividualOfferContext()
+  const fetcher = useFetcher()
 
   const [stocks, setStocks] = useState<GetOfferStockResponseModel[]>([])
   const [isActivationCodeFormVisible, setIsActivationCodeFormVisible] =
@@ -110,13 +110,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
 
     // Submit
     try {
-      await submitToApi(
-        values,
-        offer,
-        setOffer,
-        formik.resetForm,
-        formik.setErrors
-      )
+      await submitToApi(values, offer, formik.resetForm, formik.setErrors)
     } catch (error) {
       if (error instanceof Error) {
         notify.error(error?.message)
@@ -168,11 +162,10 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     }
     try {
       await api.deleteStock(formik.values.stockId)
-      const response = await getIndividualOfferAdapter(offer.id)
-      /* istanbul ignore next: DEBT, TO FIX */
-      if (response.isOk) {
-        setOffer && setOffer(response.payload)
-      }
+      fetcher.submit(null, {
+        method: 'patch',
+        action: `/offre/individuelle/${offer.id}`,
+      })
       formik.resetForm({ values: STOCK_THING_FORM_DEFAULT_VALUES })
       notify.success('Le stock a été supprimé.')
     } catch {
