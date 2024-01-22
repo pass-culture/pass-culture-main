@@ -1,9 +1,11 @@
+import * as Sentry from '@sentry/react'
 import cn from 'classnames'
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { AdageFrontRoles, AdageHeaderLink } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import useNotification from 'hooks/useNotification'
 import fullDownloadIcon from 'icons/full-download.svg'
 import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
@@ -11,7 +13,6 @@ import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import { getEducationalInstitutionWithBudgetAdapter } from '../../adapters/getEducationalInstitutionWithBudgetAdapter'
 import useAdageUser from '../../hooks/useAdageUser'
 
 import styles from './AdageHeader.module.scss'
@@ -38,15 +39,22 @@ export const AdageHeader = () => {
 
   useEffect(() => {
     async function getEducationalInstitutionBudget() {
-      const { isOk, payload, message } =
-        await getEducationalInstitutionWithBudgetAdapter()
+      try {
+        const payload = await apiAdage.getEducationalInstitutionWithBudget()
+        setInstitutionBudget(payload.budget)
+      } catch (e) {
+        notify.error(GET_DATA_ERROR_MESSAGE)
 
-      if (!isOk) {
-        return notify.error(message)
+        Sentry.withScope((scope) => {
+          scope.setTag('custom-error-type', 'api')
+          Sentry.captureMessage(
+            `error when retrieving educational institution budget ${adageUser.uai} ${e}`,
+            'error'
+          )
+        })
+      } finally {
+        setIsLoading(false)
       }
-
-      setInstitutionBudget(payload.budget)
-      setIsLoading(false)
     }
 
     if (adageUser.role !== AdageFrontRoles.READONLY) {
