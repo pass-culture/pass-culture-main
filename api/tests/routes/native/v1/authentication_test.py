@@ -327,8 +327,9 @@ class SSOSigninTest:
             )
 
         assert response.status_code == 401
-        assert set(["code", "accountCreationToken", "general"]) == response.json.keys()
+        assert set(["code", "accountCreationToken", "general", "email"]) == response.json.keys()
         assert response.json["code"] == "SSO_EMAIL_NOT_FOUND"
+        assert response.json["email"] == self.valid_google_user.email
 
         decoded_account_creation_token = token_utils.UUIDToken.load_without_checking(
             response.json["accountCreationToken"]
