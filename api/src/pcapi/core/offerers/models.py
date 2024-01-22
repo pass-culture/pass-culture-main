@@ -712,11 +712,14 @@ class GooglePlacesInfo(PcObject, Base, Model):
 
 
 class AccessibilityProvider(PcObject, Base, Model):
-    venueId: int = Column(BigInteger, ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False)
+    venueId: int = Column(
+        BigInteger, ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False, unique=True
+    )
     venue: sa_orm.Mapped[Venue] = relationship("Venue", foreign_keys=[venueId], back_populates="accessibilityProvider")
     externalAccessibilityId: str | None = Column(
         Text,
         nullable=True,
+        unique=True,
     )
     externalAccessibilityData: dict | None = sa.Column(MutableDict.as_mutable(JSONB), nullable=True)
     lastUpdateAtProvider: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
