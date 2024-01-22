@@ -163,7 +163,6 @@ jobs:
           PCAPI_SECRETS_FILE=<(echo '${{ needs.generate-pcapi-helm-secrets-file.outputs.pcapi_helm_secrets_file_base64 }}' | base64 -d) \
           helmfile -e ${{ inputs.environment }} sync --set image.tag=${{ inputs.app_version }}
       - name: "Play post-migrations"
-        uses: nick-fields/retry@v2
         run: |
           set -e
           VERSION="${{ inputs.app_version }}"
