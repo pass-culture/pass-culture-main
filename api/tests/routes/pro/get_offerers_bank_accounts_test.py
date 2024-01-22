@@ -290,10 +290,10 @@ class OfferersBankAccountTest:
         assert len(managed_venues) == 3
 
         assert len(bank_accounts) == 2
-        assert bank_accounts[0]["id"] == first_bank_account.id
-        assert not bank_accounts[0]["linkedVenues"]
-        assert bank_accounts[1]["id"] == second_bank_account.id
-        assert bank_accounts[1]["linkedVenues"]
+        assert bank_accounts[0]["id"] == second_bank_account.id
+        assert bank_accounts[0]["linkedVenues"]
+        assert bank_accounts[1]["id"] == first_bank_account.id
+        assert not bank_accounts[1]["linkedVenues"]
 
         assert managed_venues[0]["bankAccountId"] == second_bank_account.id
         assert not managed_venues[1]["bankAccountId"]
