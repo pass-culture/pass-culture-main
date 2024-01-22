@@ -16,7 +16,6 @@ export interface IndivualOfferLayoutProps {
   withStepper?: boolean
   children: JSX.Element | JSX.Element[]
   offer: IndividualOffer | null
-  setOffer: ((offer: IndividualOffer) => void) | null
   mode: OFFER_WIZARD_MODE
 }
 
@@ -25,7 +24,6 @@ const IndivualOfferLayout = ({
   children,
   withStepper = true,
   offer,
-  setOffer,
   mode,
 }: IndivualOfferLayoutProps) => {
   const shouldDisplayActionOnStatus =
@@ -54,7 +52,6 @@ const IndivualOfferLayout = ({
                 status={offer.status}
                 isActive={offer.isActive}
                 canDeactivate={offer.isActivable}
-                setOffer={setOffer}
               />
             }
           </div>
