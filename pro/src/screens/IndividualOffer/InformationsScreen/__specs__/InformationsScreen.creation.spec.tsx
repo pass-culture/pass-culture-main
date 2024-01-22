@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router-dom'
 
@@ -147,9 +147,6 @@ describe('screens:IndividualOffer::Informations::creation', () => {
       venueId: venue1.id.toString(),
     }
 
-    vi.spyOn(api, 'getOffer').mockResolvedValue(
-      {} as GetIndividualOfferResponseModel
-    )
     vi.spyOn(api, 'postOffer').mockResolvedValue({
       id: offerId,
     } as GetIndividualOfferResponseModel)
@@ -189,7 +186,6 @@ describe('screens:IndividualOffer::Informations::creation', () => {
       withdrawalDetails: null,
       withdrawalType: null,
     })
-    expect(api.getOffer).toHaveBeenCalledTimes(1)
     expect(
       await screen.findByText('There is the stock route content')
     ).toBeInTheDocument()
@@ -223,11 +219,7 @@ describe('screens:IndividualOffer::Informations::creation', () => {
 
     await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
-    await waitFor(() => {
-      expect(api.postOffer).toHaveBeenCalledTimes(1)
-      expect(api.getOffer).not.toHaveBeenCalled()
-    })
-
+    expect(api.postOffer).toHaveBeenCalledTimes(1)
     expect(pcapi.postThumbnail).not.toHaveBeenCalled()
     expect(await screen.findByText('api wrong name')).toBeInTheDocument()
     expect(screen.getByText('api wrong venue')).toBeInTheDocument()
@@ -275,7 +267,6 @@ describe('screens:IndividualOffer::Informations::creation', () => {
       withdrawalDetails: null,
       withdrawalType: null,
     })
-    expect(api.getOffer).toHaveBeenCalledTimes(1)
     expect(
       await screen.findByText('There is the stock route content')
     ).toBeInTheDocument()
