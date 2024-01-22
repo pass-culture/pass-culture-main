@@ -5,6 +5,7 @@ from flask import url_for
 import pytest
 
 from pcapi.core.criteria import factories as criteria_factories
+from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 
@@ -58,6 +59,34 @@ class AutocompleteOffererTest:
         offerers_factories.OffererFactory(id=12344, siren="561234789", name="Cinéma concurrent")
 
         _test_autocomplete(authenticated_client, "backoffice_web.autocomplete_offerers", search_query, expected_texts)
+
+
+class AutocompleteInstitutionTest:
+    @pytest.mark.parametrize(
+        "search_query, expected_texts",
+        [
+            ("", set()),
+            ("1", set()),
+            ("2", set()),
+            ("12", {"Lycée public magique Georges Pompidou - Fougères"}),
+            ("789", set()),
+            ("Georges", {"Lycée public magique Georges Pompidou - Fougères", "Collège Georges de la Tour - Metz"}),
+            ("Pompidou", {"Lycée public magique Georges Pompidou - Fougères"}),
+            ("magique Pompidou Fou", {"Lycée public magique Georges Pompidou - Fougères"}),
+            ("Georges Clémenceau", set()),
+        ],
+    )
+    def test_autocomplete_institutions(self, authenticated_client, search_query, expected_texts):
+        educational_factories.EducationalInstitutionFactory(
+            id=12, name="Georges Pompidou", institutionType="Lycée public magique", city="Fougères"
+        )
+        educational_factories.EducationalInstitutionFactory(
+            id=2000, name="Georges de la Tour", institutionType="Collège", city="Metz"
+        )
+
+        _test_autocomplete(
+            authenticated_client, "backoffice_web.autocomplete_institutions", search_query, expected_texts
+        )
 
 
 class AutocompleteVenueTest:
