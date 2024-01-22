@@ -2,9 +2,11 @@ import logging
 
 from pcapi import settings
 from pcapi.core.external import sendinblue
+from pcapi.core.mails.transactional.cancel_transactional_email import cancel_scheduled_email
 from pcapi.core.mails.transactional.send_transactional_email import send_transactional_email
 from pcapi.tasks.decorator import task
 from pcapi.tasks.serialization.external_pro_tasks import UpdateProAttributesRequest
+from pcapi.tasks.serialization.sendinblue_tasks import CancelScheduledEmailRequest
 from pcapi.tasks.serialization.sendinblue_tasks import SendTransactionalEmailRequest
 from pcapi.tasks.serialization.sendinblue_tasks import UpdateSendinblueContactRequest
 
@@ -30,6 +32,11 @@ def send_transactional_email_primary_task(payload: SendTransactionalEmailRequest
 @task(SENDINBLUE_TRANSACTIONAL_EMAILS_SECONDARY_QUEUE_NAME, "/sendinblue/send-transactional-email-secondary")  # type: ignore [arg-type]
 def send_transactional_email_secondary_task(payload: SendTransactionalEmailRequest) -> None:
     send_transactional_email(payload)
+
+
+@task(SENDINBLUE_TRANSACTIONAL_EMAILS_SECONDARY_QUEUE_NAME, "/sendinblue/cancel-transactional-email")  # type: ignore [arg-type]
+def cancel_scheduled_transactional_email_task(payload: CancelScheduledEmailRequest) -> None:
+    cancel_scheduled_email(payload.message_id)
 
 
 # De-duplicate and delay by 12 hours, to avoid collecting pro attributes and making an update request to Sendinblue

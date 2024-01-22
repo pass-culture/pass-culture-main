@@ -25,3 +25,7 @@ class SendTransactionalEmailRequest(BaseModel):
     reply_to: dict
     # 2023/11/27 warning: the scheduled_at field is in public beta. (https://developers.brevo.com/reference/sendtransacemail)
     scheduled_at: datetime.datetime | None = None
+
+
+class CancelScheduledEmailRequest(BaseModel):
+    message_id: str

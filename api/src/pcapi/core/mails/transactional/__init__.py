@@ -20,6 +20,7 @@ from .bookings.booking_soon_to_be_expired_to_beneficiary import (
 from .bookings.booking_withdrawal_updated import send_booking_withdrawal_updated
 from .bookings.booking_withdrawal_updated import send_email_for_each_ongoing_booking
 from .bookings.new_booking_to_pro import send_user_new_booking_to_pro_email
+from .cancel_transactional_email import cancel_scheduled_email
 from .educational.eac_booking_cancellation import send_eac_booking_cancellation_email
 from .educational.eac_new_booking_to_pro import send_eac_new_booking_email_to_pro
 from .educational.eac_new_prebooking_to_pro import send_eac_new_collective_prebooking_email_to_pro

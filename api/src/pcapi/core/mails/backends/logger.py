@@ -49,3 +49,6 @@ class LoggerBackend(BaseBackend):
             contact_email,
         )
         return None
+
+    def cancel_scheduled_email(self, message_id: str) -> None:
+        logger.info("A request to Sendinblue Transactional Email API would be sent to cancel email %s", message_id)

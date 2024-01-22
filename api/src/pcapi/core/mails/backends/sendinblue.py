@@ -7,6 +7,7 @@ from sib_api_v3_sdk.rest import ApiException as SendinblueApiException
 
 from pcapi import settings
 from pcapi.core.users.repository import find_user_by_email
+from pcapi.tasks.sendinblue_tasks import cancel_scheduled_transactional_email_task
 from pcapi.tasks.sendinblue_tasks import send_transactional_email_primary_task
 from pcapi.tasks.sendinblue_tasks import send_transactional_email_secondary_task
 import pcapi.tasks.serialization.sendinblue_tasks as serializers
@@ -148,6 +149,9 @@ class SendinblueBackend(BaseBackend):
             },
         )
         raise ExternalAPIException(is_retryable=False) from exception
+
+    def cancel_scheduled_email(self, message_id: str) -> None:
+        cancel_scheduled_transactional_email_task.delay(serializers.CancelScheduledEmailRequest(message_id=message_id))
 
 
 class ToDevSendinblueBackend(SendinblueBackend):

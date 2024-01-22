@@ -5,8 +5,6 @@ from pcapi.tasks.serialization import sendinblue_tasks
 from pcapi.utils.module_loading import import_string
 
 from . import models
-from .backends.base import BaseBackend
-from .backends.logger import LoggerBackend
 
 
 def send(
@@ -37,6 +35,11 @@ def delete_contact(contact_email: str) -> None:
 def get_contact_url(contact_email: str) -> str | None:
     backend = import_string(settings.EMAIL_BACKEND)
     return backend().get_contact_url(contact_email)
+
+
+def cancel_scheduled_email(message_id: str) -> None:
+    backend = import_string(settings.EMAIL_BACKEND)
+    backend().cancel_scheduled_email(message_id)
 
 
 def _get_backend(data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData) -> type:

@@ -22,3 +22,6 @@ class BaseBackend:
 
     def get_contact_url(self, contact_email: str) -> str | None:
         raise NotImplementedError()
+
+    def cancel_scheduled_email(self, message_id: str) -> None:
+        raise NotImplementedError()

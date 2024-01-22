@@ -2,9 +2,7 @@ from dataclasses import asdict
 from typing import Iterable
 import uuid
 
-from requests import Response
 from pcapi.core.mails.transactional.send_transactional_email import save_message_ids_for_scheduled_emails
-
 from pcapi.core.users import testing as users_testing
 from pcapi.tasks.serialization import sendinblue_tasks
 
@@ -95,3 +93,6 @@ class TestingBackend(BaseBackend):
     def get_contact_url(self, contact_email: str) -> str | None:
         users_testing.sendinblue_requests.append({"email": contact_email, "action": "get_contact_url"})
         return None
+
+    def cancel_scheduled_email(self, message_id: str) -> None:
+        users_testing.sendinblue_requests.append({"messageId": message_id, "action": "cancel"})
