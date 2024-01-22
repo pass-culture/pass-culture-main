@@ -17,8 +17,6 @@ import { FilterResultsRow } from 'components/StocksEventList/FilterResultsRow'
 import { NoResultsRow } from 'components/StocksEventList/NoResultsRow'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
 import { STOCKS_PER_PAGE } from 'components/StocksEventList/StocksEventList'
-import { useIndividualOfferContext } from 'context/IndividualOfferContext'
-import { getIndividualOfferAdapter } from 'core/Offers/adapters/getIndividualOfferAdapter'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
 import { isOfferDisabled } from 'core/Offers/utils'
@@ -117,7 +115,6 @@ const StocksEventEdition = ({
 }: StocksEventEditionProps): JSX.Element => {
   // utilities
   const mode = useOfferWizardMode()
-  const { setOffer } = useIndividualOfferContext()
   const navigate = useNavigate()
   const notify = useNotification()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -323,10 +320,6 @@ const StocksEventEdition = ({
       offer.id,
       notify
     )
-    const offerResponse = await getIndividualOfferAdapter(offer.id)
-    if (offerResponse.isOk) {
-      setOffer && setOffer(offerResponse.payload)
-    }
     const response = await loadStocksFromCurrentFilters()
     resetFormWithNewPage({
       response,
