@@ -1,6 +1,7 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
+import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetOfferStockResponseModel, StocksOrderedBy } from 'apiClient/v1'
@@ -13,6 +14,8 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StocksEventList, { StocksEventListProps } from '../StocksEventList'
 
+const mockFetcherSubmit = vi.fn()
+
 vi.mock('apiClient/api', () => ({
   api: {
     getStocks: vi.fn(),
@@ -20,6 +23,13 @@ vi.mock('apiClient/api', () => ({
     deleteStocks: vi.fn(),
     deleteStock: vi.fn(),
   },
+}))
+
+vi.mock('react-router-dom', async () => ({
+  ...((await vi.importActual('react-router-dom')) ?? {}),
+  useFetcher: () => ({
+    submit: mockFetcherSubmit,
+  }),
 }))
 
 const offerId = 1
@@ -409,19 +419,56 @@ describe('StocksEventList', () => {
   it('should delete line when clicking on trash icon', async () => {
     await renderStocksEventList([stock1, stock2, stock3])
 
-    const checkboxes = screen.getAllByRole('checkbox')
-    await userEvent.click(checkboxes[0])
-    expect(screen.getByText('3 dates sélectionnées')).toBeInTheDocument()
-
     vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
       stocks: [stock2, stock3],
       stockCount: 2,
       hasStocks: true,
     })
     await userEvent.click(screen.getAllByText('Supprimer')[0])
-    await waitFor(() => {
-      expect(api.deleteStock).toHaveBeenCalledWith(stock1.id)
-    })
+    expect(api.deleteStock).toHaveBeenCalledWith(stock1.id)
     expect(api.getStocks).toHaveBeenCalledTimes(1)
+  })
+
+  it('should reload offer to cancel next step when deleting last offer', async () => {
+    await renderStocksEventList([stock1])
+
+    vi.spyOn(router, 'useFetcher').mockImplementationOnce(
+      () =>
+        ({
+          submit: mockFetcherSubmit,
+        }) as unknown as router.FetcherWithComponents<unknown>
+    )
+
+    vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+      stocks: [],
+      stockCount: 0,
+      hasStocks: false,
+    })
+    await userEvent.click(screen.getAllByText('Supprimer')[0])
+    expect(api.deleteStock).toHaveBeenCalledTimes(1)
+    expect(mockFetcherSubmit).toHaveBeenCalledTimes(1)
+  })
+
+  it('should reload offer to cancel next step when bulk deleting last offers', async () => {
+    await renderStocksEventList([stock1, stock2, stock3])
+    vi.spyOn(router, 'useFetcher').mockImplementationOnce(
+      () =>
+        ({
+          submit: mockFetcherSubmit,
+        }) as unknown as router.FetcherWithComponents<unknown>
+    )
+
+    const checkboxes = screen.getAllByRole('checkbox')
+    await userEvent.click(checkboxes[0])
+    expect(screen.getByText('3 dates sélectionnées')).toBeInTheDocument()
+
+    vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
+      stocks: [],
+      stockCount: 0,
+      hasStocks: false,
+    })
+    await userEvent.click(screen.getByText('Supprimer ces dates'))
+    expect(api.deleteAllFilteredStocks).toBeCalledTimes(1)
+    expect(mockFetcherSubmit).toHaveBeenCalledTimes(1)
   })
 })
