@@ -1,7 +1,9 @@
+import * as Sentry from '@sentry/react'
+
+import { api } from 'apiClient/api'
 import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import { getOffererNamesAdapter } from 'core/Offerers/adapters'
 import { OffererName } from 'core/Offerers/types'
-import { getCategoriesAdapter } from 'core/Offers/adapters'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { getIndividualOfferVenuesAdapter } from 'core/Venue/adapters/getIndividualOfferVenuesAdapter'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
@@ -57,10 +59,17 @@ const getWizardData: GetIndividualOfferAdapter = async ({
     })
   }
 
-  const categoriesResponse = await getCategoriesAdapter()
-  if (categoriesResponse.isOk) {
-    successPayload.categoriesData = categoriesResponse.payload
-  } else {
+  try {
+    const categoriesResponse = await api.getCategories()
+    successPayload.categoriesData = {
+      categories: categoriesResponse.categories,
+      subCategories: categoriesResponse.subcategories,
+    }
+  } catch (e) {
+    Sentry.withScope((scope) => {
+      scope.setTag('custom-error-type', 'api')
+      Sentry.captureMessage(`error when fetching categories ${e}`, 'error')
+    })
     return Promise.resolve(FAILING_RESPONSE)
   }
 
