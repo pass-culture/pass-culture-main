@@ -25,7 +25,6 @@ import {
 } from 'core/FirebaseEvents/constants'
 import {
   createIndividualOffer,
-  getIndividualOfferAdapter,
   updateIndividualOffer,
 } from 'core/Offers/adapters'
 import { serializePatchOffer } from 'core/Offers/adapters/updateIndividualOffer/serializers'
@@ -65,14 +64,8 @@ const InformationsScreen = ({
   const { currentUser } = useCurrentUser()
   const navigate = useNavigate()
   const mode = useOfferWizardMode()
-  const {
-    offer,
-    categories,
-    subCategories,
-    offererNames,
-    venueList,
-    setOffer,
-  } = useIndividualOfferContext()
+  const { offer, categories, subCategories, offererNames, venueList } =
+    useIndividualOfferContext()
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
     useIndividualOfferImageUpload()
 
@@ -170,11 +163,6 @@ const InformationsScreen = ({
 
     const receivedOfferId = payload.id
     await handleImageOnSubmit(receivedOfferId)
-
-    const response = await getIndividualOfferAdapter(receivedOfferId)
-    if (response.isOk) {
-      setOffer && setOffer(response.payload)
-    }
 
     // replace url to fix back button
     navigate(
