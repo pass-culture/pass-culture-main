@@ -14,7 +14,6 @@ import { PriceCategoriesFormValues, PriceCategoryFormik } from './types'
 export const submitToApi = async (
   values: PriceCategoriesFormValues,
   offer: IndividualOffer,
-  setOffer: ((offer: IndividualOffer | null) => void) | null,
   resetForm: PriceCategoryFormik['resetForm']
 ) => {
   const serializedOffer = serializePatchOffer({
@@ -42,7 +41,6 @@ export const submitToApi = async (
   const response = await getIndividualOfferAdapter(offer.id)
   if (response.isOk) {
     const updatedOffer = response.payload
-    setOffer && setOffer(updatedOffer)
     resetForm({
       values: computeInitialValues(updatedOffer),
     })

@@ -32,7 +32,6 @@ import styles from './PriceCategoriesForm.module.scss'
 export interface PriceCategoriesFormProps {
   offer: IndividualOffer
   mode: OFFER_WIZARD_MODE
-  setOffer: ((offer: IndividualOffer | null) => void) | null
   isDisabled: boolean
   canBeDuo?: boolean
 }
@@ -40,7 +39,6 @@ export interface PriceCategoriesFormProps {
 export const PriceCategoriesForm = ({
   offer,
   mode,
-  setOffer,
   isDisabled,
   canBeDuo,
 }: PriceCategoriesFormProps): JSX.Element => {
@@ -73,11 +71,8 @@ export const PriceCategoriesForm = ({
       })
       if (isOk) {
         arrayHelpers.remove(index)
-        const response = await getIndividualOfferAdapter(offer.id)
-        if (response.isOk) {
-          const updatedOffer = response.payload
-          setOffer && setOffer(updatedOffer)
-        }
+        await getIndividualOfferAdapter(offer.id)
+
         notify.success(message)
       } else {
         notify.error(message)
@@ -109,7 +104,6 @@ export const PriceCategoriesForm = ({
       const response = await getIndividualOfferAdapter(offer.id)
       if (response.isOk) {
         const updatedOffer = response.payload
-        setOffer && setOffer(updatedOffer)
         await setValues({
           ...values,
           priceCategories: computeInitialValues(updatedOffer).priceCategories,
