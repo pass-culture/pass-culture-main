@@ -11,7 +11,7 @@ import StocksThing from 'screens/IndividualOffer/StocksThing/StocksThing'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 export const Stocks = (): JSX.Element | null => {
-  const { offer, setOffer } = useIndividualOfferContext()
+  const { offer } = useIndividualOfferContext()
   const mode = useOfferWizardMode()
 
   // Here we display a spinner because when the router transitions from
@@ -24,12 +24,7 @@ export const Stocks = (): JSX.Element | null => {
   }
 
   return (
-    <IndivualOfferLayout
-      offer={offer}
-      setOffer={setOffer}
-      title={getTitle(mode)}
-      mode={mode}
-    >
+    <IndivualOfferLayout offer={offer} title={getTitle(mode)} mode={mode}>
       {offer.isEvent ? (
         mode === OFFER_WIZARD_MODE.CREATION ? (
           <StocksEventCreation offer={offer} />

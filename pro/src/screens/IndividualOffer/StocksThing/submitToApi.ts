@@ -13,7 +13,6 @@ import buildInitialValues from './utils/buildInitialValues'
 export const submitToApi = async (
   values: StockThingFormValues,
   offer: IndividualOffer,
-  setOffer: ((offer: IndividualOffer | null) => void) | null,
   resetForm: StockThingFormik['resetForm'],
   setErrors: StockThingFormik['setErrors']
 ) => {
@@ -49,7 +48,6 @@ export const submitToApi = async (
     api.getStocks(offer.id),
   ])
   if (offerResponse.isOk) {
-    setOffer && setOffer(offerResponse.payload)
     resetForm({
       values: buildInitialValues(offerResponse.payload, stockResponse.stocks),
     })
