@@ -1,6 +1,8 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
+import { isErrorAPIError } from 'apiClient/helpers'
 import { AppLayout } from 'app/AppLayout'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import {
@@ -10,16 +12,16 @@ import {
   getStockCollectiveOfferAdapter,
   CollectiveOffer,
   isCollectiveOfferTemplate,
+  createPatchStockDataPayload,
 } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
+import { FORM_ERROR_MESSAGE, UNKNOWN_FAILING_RESPONSE } from 'core/shared'
 import useNotification from 'hooks/useNotification'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
 } from 'screens/OfferEducational/useCollectiveOfferFromParams'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
-
-import patchCollectiveStockAdapter from './adapters/patchCollectiveStockAdapter'
 
 const CollectiveOfferStockEdition = ({
   offer,
@@ -43,22 +45,31 @@ const CollectiveOfferStockEdition = ({
       return notify.error('Impossible de mettre à jour le stock.')
     }
 
-    const stockResponse = await patchCollectiveStockAdapter({
-      offer,
-      stockId: offer.collectiveStock.id,
-      values,
-      initialValues,
-    })
     const offerResponse = await getStockCollectiveOfferAdapter(offer.id)
-
-    if (!stockResponse.isOk) {
-      return notify.error(stockResponse.message)
-    }
 
     if (!offerResponse.isOk) {
       return notify.error(offerResponse.message)
     }
 
+    try {
+      const patchStockPayload = createPatchStockDataPayload(
+        values,
+        offer.venue.departementCode ?? '',
+        initialValues
+      )
+      await api.editCollectiveStock(offer.collectiveStock.id, patchStockPayload)
+    } catch (e) {
+      /* sendSentryCustomError(
+        `error when updating stock on offer ${offer.id} ${e}`
+      ) */
+      if (isErrorAPIError(e) && e.status === 400) {
+        return notify.error(FORM_ERROR_MESSAGE)
+      } else {
+        return notify.error(UNKNOWN_FAILING_RESPONSE)
+      }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     reloadCollectiveOffer()
     navigate(
       `/offre/${computeURLCollectiveOfferId(
@@ -66,7 +77,7 @@ const CollectiveOfferStockEdition = ({
         false
       )}/collectif/recapitulatif`
     )
-    notify.success(stockResponse.message)
+    notify.success('Vos modifications ont bien été enregistrées')
   }
 
   return (

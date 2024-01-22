@@ -16,5 +16,7 @@ export const SENT_DATA_ERROR_MESSAGE =
   'Une erreur est survenue lors de la sauvegarde de vos modifications.\n Merci de réessayer plus tard'
 export const FORM_ERROR_MESSAGE =
   'Une ou plusieurs erreurs sont présentes dans le formulaire'
+export const UNKNOWN_FAILING_RESPONSE =
+  'Une erreur est survenue lors de la mise à jour de votre stock.'
 
 export const NBSP = '\u00a0'

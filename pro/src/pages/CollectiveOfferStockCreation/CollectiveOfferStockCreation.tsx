@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
+import { isErrorAPIError } from 'apiClient/helpers'
 import { GetCollectiveOfferRequestResponseModel } from 'apiClient/v1/models/GetCollectiveOfferRequestResponseModel'
 import { AppLayout } from 'app/AppLayout'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
@@ -8,8 +10,11 @@ import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGua
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
+  createPatchStockDataPayload,
+  createStockDataPayload,
   EducationalOfferType,
   extractInitialStockValues,
+  hasStatusCodeAndErrorsCode,
   isCollectiveOffer,
   isCollectiveOfferTemplate,
   Mode,
@@ -17,9 +22,9 @@ import {
 } from 'core/OfferEducational'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
+import { FORM_ERROR_MESSAGE, UNKNOWN_FAILING_RESPONSE } from 'core/shared'
 import useNotification from 'hooks/useNotification'
 import getOfferRequestInformationsAdapter from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
-import patchCollectiveStockAdapter from 'pages/CollectiveOfferStockEdition/adapters/patchCollectiveStockAdapter'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 import {
   MandatoryCollectiveOfferFromParamsProps,
@@ -28,7 +33,6 @@ import {
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 import postCollectiveOfferTemplateAdapter from './adapters/postCollectiveOfferTemplate'
-import postCollectiveStockAdapter from './adapters/postCollectiveStock'
 
 export const CollectiveOfferStockCreation = ({
   offer,
@@ -93,8 +97,6 @@ export const CollectiveOfferStockCreation = ({
     offer: CollectiveOffer,
     values: OfferEducationalStockFormValues
   ) => {
-    let isOk: boolean
-    let message: string | null
     let createdOfferTemplateId: number | null = null
     const isTemplate =
       values.educationalOfferType === EducationalOfferType.SHOWCASE
@@ -103,39 +105,67 @@ export const CollectiveOfferStockCreation = ({
         offerId: offer.id,
         values,
       })
-      isOk = response.isOk
-      message = response.message
+      if (!response.isOk) {
+        return notify.error(response.message)
+      }
       createdOfferTemplateId = response.payload ? response.payload.id : null
     } else {
-      const response = offer.collectiveStock
-        ? await patchCollectiveStockAdapter({
-            offer,
-            stockId: offer.collectiveStock.id,
-            values,
-            initialValues,
-          })
-        : await postCollectiveStockAdapter({
-            offer,
-            values,
-          })
-      isOk = response.isOk
-      message = response.message
+      try {
+        const patchStockPayload = createPatchStockDataPayload(
+          values,
+          offer.venue.departementCode ?? '',
+          initialValues
+        )
 
-      if (offer && response.payload !== null) {
-        setOffer({
-          ...offer,
-          collectiveStock: {
-            ...offer.collectiveStock,
-            ...response.payload,
-            isBooked: false,
-            isCancellable: offer.isCancellable,
-          },
-        })
+        const createStockPayload = createStockDataPayload(
+          values,
+          offer.venue.departementCode ?? '',
+          offer.id
+        )
+
+        const response = offer.collectiveStock
+          ? await api.editCollectiveStock(
+              offer.collectiveStock.id,
+              patchStockPayload
+            )
+          : await api.createCollectiveStock(createStockPayload)
+
+        if (offer && response !== null) {
+          setOffer({
+            ...offer,
+            collectiveStock: {
+              ...offer.collectiveStock,
+              ...response,
+              isBooked: false,
+              isCancellable: offer.isCancellable,
+            },
+          })
+        }
+      } catch (error) {
+        if (isErrorAPIError(error) && error.status === 400) {
+          if (
+            !offer.collectiveStock &&
+            hasStatusCodeAndErrorsCode(error) &&
+            error.errors.code === 'EDUCATIONAL_STOCK_ALREADY_EXISTS'
+          ) {
+            /* sendSentryCustomError(
+              `date et prix existent déjà pour cette offre ${offer.id} ${error}`
+            ) */
+            notify.error(
+              'Une erreur s’est produite. Les informations date et prix existent déjà pour cette offre.'
+            )
+            return
+          }
+
+          /* sendSentryCustomError(`${FORM_ERROR_MESSAGE} ${error}`) */
+          notify.error(FORM_ERROR_MESSAGE)
+          return
+        }
+        /* sendSentryCustomError(`${UNKNOWN_FAILING_RESPONSE} ${error}`) */
+        notify.error(UNKNOWN_FAILING_RESPONSE)
+
+        return
       }
-    }
-
-    if (!isOk) {
-      return notify.error(message)
     }
 
     let url = `/offre/${computeURLCollectiveOfferId(
