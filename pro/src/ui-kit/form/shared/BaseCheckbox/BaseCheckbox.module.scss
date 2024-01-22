@@ -69,15 +69,7 @@
     width: size.$checkbox-size;
     cursor: pointer;
 
-    &.partial-check {
-      &:checked {
-        &::after {
-          background-image: url("./checkbox-partial.svg");
-        }
-      }
-    }
-
-    &:checked {
+    &:checked, &:indeterminate {
       background-color: colors.$grey-dark;
 
       &::after {
@@ -105,14 +97,20 @@
       }
     }
 
-    &:disabled, &:disabled:checked {
+    &:indeterminate {
+      &::after {
+        background-image: url("./checkbox-partial.svg");
+      }
+    }
+
+    &:disabled, &:disabled:checked, &:disabled:indeterminate {
       background-color: colors.$grey-medium;
       border-color: colors.$grey-medium;
       cursor: not-allowed;
       opacity: 1;
     }
 
-    &:not(:checked) {
+    &:not(:checked, :indeterminate) {
       background-color: colors.$white;
 
       &:hover {
