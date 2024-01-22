@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React from 'react'
+import { useEffect, useRef } from 'react'
 
 import styles from './BaseCheckbox.module.scss'
 
@@ -24,40 +24,50 @@ const BaseCheckbox = ({
   partialCheck,
   exceptionnallyHideLabelDespiteA11y,
   ...props
-}: BaseCheckboxProps): JSX.Element => (
-  <label
-    className={cn(
-      styles['base-checkbox'],
-      {
-        [styles['with-border']]: withBorder,
-      },
-      className
-    )}
-  >
-    <span className={styles['base-checkbox-label-row']}>
-      <input
-        aria-invalid={hasError}
-        type="checkbox"
-        {...props}
-        className={cn(styles['base-checkbox-input'], {
-          [styles['has-error']]: hasError,
-          [styles['partial-check']]: partialCheck,
-        })}
-      />
-      {Boolean(icon) && (
-        <span className={styles['base-checkbox-icon']}>
-          <img src={icon} className={styles['base-checkbox-icon-svg']} />
-        </span>
+}: BaseCheckboxProps): JSX.Element => {
+  const checkboxRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (checkboxRef.current) {
+      checkboxRef.current.indeterminate = partialCheck ?? false
+    }
+  }, [checkboxRef, partialCheck])
+
+  return (
+    <label
+      className={cn(
+        styles['base-checkbox'],
+        {
+          [styles['with-border']]: withBorder,
+        },
+        className
       )}
-      <span
-        className={cn(styles['base-checkbox-label'], {
-          ['visually-hidden']: Boolean(exceptionnallyHideLabelDespiteA11y),
-        })}
-      >
-        {label}
+    >
+      <span className={styles['base-checkbox-label-row']}>
+        <input
+          ref={checkboxRef}
+          aria-invalid={hasError}
+          type="checkbox"
+          {...props}
+          className={cn(styles['base-checkbox-input'], {
+            [styles['has-error']]: hasError,
+          })}
+        />
+        {Boolean(icon) && (
+          <span className={styles['base-checkbox-icon']}>
+            <img src={icon} className={styles['base-checkbox-icon-svg']} />
+          </span>
+        )}
+        <span
+          className={cn(styles['base-checkbox-label'], {
+            ['visually-hidden']: Boolean(exceptionnallyHideLabelDespiteA11y),
+          })}
+        >
+          {label}
+        </span>
       </span>
-    </span>
-  </label>
-)
+    </label>
+  )
+}
 
 export default BaseCheckbox
