@@ -132,7 +132,7 @@ describe('AdageHeader', () => {
 
     expect(notifyError).toHaveBeenNthCalledWith(
       1,
-      'Nous avons rencontré un problème lors du chargemement des données'
+      'Nous avons rencontré un problème lors de la récupération des données.'
     )
   })
 
