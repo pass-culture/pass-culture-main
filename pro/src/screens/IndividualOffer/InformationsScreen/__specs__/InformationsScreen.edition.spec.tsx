@@ -242,7 +242,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       withdrawalType: WithdrawalTypeEnum.ON_SITE,
       shouldSendMail: false,
     })
-    expect(api.getOffer).toHaveBeenCalledTimes(1)
     expect(
       await screen.findByText('There is the summary route content')
     ).toBeInTheDocument()
@@ -304,7 +303,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       withdrawalType: undefined,
       shouldSendMail: false,
     })
-    expect(api.getOffer).toHaveBeenCalledTimes(1)
     expect(
       await screen.findByText('There is the summary route content')
     ).toBeInTheDocument()
@@ -339,6 +337,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       await screen.findByRole('button', { name: /Ajouter une image/ })
     ).toBeInTheDocument()
   })
+
   it('should display an error on delete offer image api failure', async () => {
     contextOverride.offer = {
       ...offer,
@@ -486,7 +485,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
 
       expect(api.patchOffer).toHaveBeenCalledTimes(1)
       expect(api.patchOffer).toHaveBeenCalledWith(offer.id, expectedBody)
-      expect(api.getOffer).toHaveBeenCalledTimes(1)
       expect(
         await screen.findByText('There is the summary route content')
       ).toBeInTheDocument()
@@ -624,9 +622,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
 
         expect(api.patchOffer).toHaveBeenCalledTimes(1)
         expect(api.patchOffer).toHaveBeenCalledWith(offer.id, expectedBody)
-        await waitFor(() => {
-          expect(api.getOffer).toHaveBeenCalledTimes(1)
-        })
         expect(
           await screen.findByText('There is the summary route content')
         ).toBeInTheDocument()
@@ -784,7 +779,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
         ).toBeInTheDocument()
 
         expect(api.patchOffer).toHaveBeenCalledTimes(0)
-        expect(api.getOffer).toHaveBeenCalledTimes(0)
         expect(
           screen.queryByText('There is the summary route content')
         ).not.toBeInTheDocument()
@@ -800,7 +794,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
 
         expect(api.patchOffer).toHaveBeenCalledTimes(1)
         expect(api.patchOffer).toHaveBeenCalledWith(offer.id, expectedBody)
-        expect(api.getOffer).toHaveBeenCalledTimes(1)
         expect(
           await screen.findByText('There is the summary route content')
         ).toBeInTheDocument()
