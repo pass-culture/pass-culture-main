@@ -12,7 +12,6 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
-import { serializeOfferApi } from 'core/Offers/adapters/getIndividualOfferAdapter/serializers'
 import { publishIndividualOffer } from 'core/Offers/adapters/publishIndividualOffer'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
@@ -43,7 +42,7 @@ const SummaryScreen = () => {
   const notification = useNotification()
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
-  const { setOffer, offerOfferer, showVenuePopin, offer, subCategories } =
+  const { offerOfferer, showVenuePopin, offer, subCategories } =
     useIndividualOfferContext()
   const { logEvent } = useAnalytics()
 
@@ -76,7 +75,6 @@ const SummaryScreen = () => {
     })
 
     if (publishIndividualOfferResponse.isOk) {
-      setOffer?.(serializeOfferApi(publishIndividualOfferResponse.payload))
       const shouldDisplayRedirectDialog =
         (isNewBankDetailsJourneyEnabled &&
           publishIndividualOfferResponse.payload.isNonFreeOffer &&

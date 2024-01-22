@@ -8,7 +8,7 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 
 const PriceCategoriesSummary = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
-  const { offer, subCategories, setOffer } = useIndividualOfferContext()
+  const { offer, subCategories } = useIndividualOfferContext()
 
   if (offer === null) {
     return <Spinner />
@@ -19,12 +19,7 @@ const PriceCategoriesSummary = (): JSX.Element | null => {
   )?.canBeDuo
 
   return (
-    <IndivualOfferLayout
-      title="Récapitulatif"
-      offer={offer}
-      setOffer={setOffer}
-      mode={mode}
-    >
+    <IndivualOfferLayout title="Récapitulatif" offer={offer} mode={mode}>
       <PriceCategoriesSection offer={offer} canBeDuo={canBeDuo} />
     </IndivualOfferLayout>
   )
