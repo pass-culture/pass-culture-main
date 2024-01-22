@@ -657,7 +657,7 @@ def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
             .load_only(models.VenuePricingPointLink.id)
         )
         .options(sqla_orm.load_only(models.Offerer.id, models.Offerer.name))
-        .order_by(finance_models.BankAccount.dateCreated)
+        .order_by(finance_models.BankAccount.dateCreated.desc())
         .populate_existing()
         .one_or_none()
     )
