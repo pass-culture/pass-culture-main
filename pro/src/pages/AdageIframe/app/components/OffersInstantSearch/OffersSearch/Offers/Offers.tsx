@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/react'
 import React, { useEffect, useState } from 'react'
 import {
   useInfiniteHits,
@@ -20,6 +19,7 @@ import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
 import { DiffuseHelp } from '../../../DiffuseHelp/DiffuseHelp'
 import { SurveySatisfaction } from '../../../SurveySatisfaction/SurveySatisfaction'
@@ -123,13 +123,9 @@ export const Offers = ({
               }
             }
           } catch (e) {
-            Sentry.withScope((scope) => {
-              scope.setTag('custom-error-type', 'api')
-              Sentry.captureMessage(
-                `error when retrieving adage offer ${hit.objectID} ${e}`,
-                'error'
-              )
-            })
+            sendSentryCustomError(
+              `error when retrieving adage offer ${hit.objectID} ${e}`
+            )
             return {}
           }
         }
@@ -156,13 +152,10 @@ export const Offers = ({
         setFetchedOffers(offersFromHitsMap)
       })
       .catch((e) => {
-        Sentry.withScope((scope) => {
-          scope.setTag('custom-error-type', 'data-processing')
-          Sentry.captureMessage(
-            `error when filtering offer results ${e}`,
-            'error'
-          )
-        })
+        sendSentryCustomError(
+          `error when filtering offer results ${e}`,
+          'data-processing'
+        )
       })
       .finally(() => {
         setQueriesAreLoading(false)
