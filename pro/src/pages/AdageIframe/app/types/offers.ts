@@ -4,11 +4,6 @@ import {
 } from 'apiClient/adage'
 import { hasProperty } from 'utils/types'
 
-export type EducationalDomain = {
-  id: number
-  name: string
-}
-
 export type HydratedCollectiveOffer = CollectiveOfferResponseModel & {
   isTemplate: false
 }
