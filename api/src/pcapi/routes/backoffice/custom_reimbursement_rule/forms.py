@@ -5,8 +5,10 @@ from flask import flash
 from flask_wtf import FlaskForm
 import wtforms
 
+from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2
 from pcapi.routes.backoffice.forms import fields
+from pcapi.routes.backoffice.forms import utils
 
 
 class GetCustomReimbursementRulesListForm(FlaskForm):
@@ -35,6 +37,14 @@ class GetCustomReimbursementRulesListForm(FlaskForm):
         coerce=int,
         validators=(wtforms.validators.Optional(),),
     )
+    categories = fields.PCSelectMultipleField(
+        "Catégories",
+        choices=utils.choices_from_enum(categories.CategoryIdLabelEnum),
+        field_list_compatibility=True,
+    )
+    subcategories = fields.PCSelectMultipleField(
+        "Sous-catégories", choices=[(s.id, s.pro_label) for s in subcategories_v2.ALL_SUBCATEGORIES]
+    )
 
     def is_empty(self) -> bool:
         return not any(
@@ -42,6 +52,8 @@ class GetCustomReimbursementRulesListForm(FlaskForm):
                 self.q.data,
                 self.offerer.data,
                 self.venue.data,
+                self.categories.data,
+                self.subcategories.data,
             )
         )
 

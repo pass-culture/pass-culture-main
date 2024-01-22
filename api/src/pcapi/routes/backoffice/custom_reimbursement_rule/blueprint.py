@@ -11,6 +11,7 @@ from markupsafe import Markup
 import pytz
 import sqlalchemy as sa
 
+from pcapi.core.categories import subcategories_v2
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import models as finance_models
@@ -112,6 +113,26 @@ def _get_custom_reimbursement_rules(
             )
         )
 
+    if form.subcategories.data:
+        base_query = base_query.filter(
+            finance_models.CustomReimbursementRule.subcategories.overlap(
+                sa.dialects.postgresql.array(form.subcategories.data)
+            )
+        )
+
+    if form.categories.data:
+        base_query = base_query.filter(
+            finance_models.CustomReimbursementRule.subcategories.overlap(
+                sa.dialects.postgresql.array(
+                    [
+                        subcategory.id
+                        for subcategory in subcategories_v2.ALL_SUBCATEGORIES
+                        if subcategory.category.id in form.categories.data
+                    ]
+                )
+            )
+        )
+
     if form.q.data:
         search_query = form.q.data
 
@@ -146,6 +167,36 @@ def list_custom_reimbursement_rules() -> utils.BackofficeResponse:
         rows=custom_reimbursement_rules,
         form=form,
         now=datetime.utcnow(),
+    )
+
+
+def _get_custom_reimburement_rule_stats() -> dict[str, int]:
+    query = sa.select(sa.func.jsonb_object_agg(sa.text("rule_group"), sa.text("number"))).select_from(
+        sa.select(
+            sa.case(
+                [
+                    (finance_models.CustomReimbursementRule.offerId.is_not(None), "by_offer"),
+                    (finance_models.CustomReimbursementRule.offererId.is_not(None), "by_offerer"),
+                    (finance_models.CustomReimbursementRule.venueId.is_not(None), "by_venue"),
+                ]
+            ).label("rule_group"),
+            sa.func.count(finance_models.CustomReimbursementRule.id).label("number"),
+        )
+        .group_by("rule_group")
+        .subquery()
+    )
+    (data,) = db.session.execute(query).one()
+
+    return data
+
+
+@custom_reimbursement_rules_blueprint.route("/stats", methods=["GET"])
+def get_stats() -> utils.BackofficeResponse:
+    stats = _get_custom_reimburement_rule_stats()
+
+    return render_template(
+        "custom_reimbursement_rules/list/stats.html",
+        stats=stats,
     )
 
 

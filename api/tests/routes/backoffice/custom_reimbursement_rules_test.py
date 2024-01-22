@@ -121,6 +121,30 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
 
         assert html_parser.extract_pagination_info(response.data) == (1, 1, len(rows))
 
+    def test_list_rules_by_category(self, authenticated_client):
+        offer_rule_music = finance_factories.CustomReimbursementRuleFactory(subcategories=["FESTIVAL_MUSIQUE"])
+        finance_factories.CustomReimbursementRuleFactory(subcategories=["CARTE_MUSEE"])
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, categories=["MUSIQUE_LIVE"]))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID règle"] == str(offer_rule_music.id)
+
+    def test_list_rules_by_subcategory(self, authenticated_client):
+        offer_rule_music = finance_factories.CustomReimbursementRuleFactory(subcategories=["FESTIVAL_MUSIQUE"])
+        finance_factories.CustomReimbursementRuleFactory(subcategories=["CARTE_MUSEE"])
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, subcategories=["FESTIVAL_MUSIQUE"]))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID règle"] == str(offer_rule_music.id)
+
     def test_list_rules_by_id_not_found(self, authenticated_client):
         rules = finance_factories.CustomReimbursementRuleFactory.create_batch(5)
         search_query = str(rules[-1].id * 1000)
@@ -572,3 +596,32 @@ class EditCustomReimbursementRuleTest(PostEndpointHelper):
 
         db.session.refresh(rule)
         assert rule.timespan.lower, rule.timespan.upper == original_timespan
+
+
+class GetReimburementStatsTest(GetEndpointHelper):
+    endpoint = "backoffice_web.reimbursement_rules.get_stats"
+    needed_permission = perm_models.Permissions.READ_REIMBURSEMENT_RULES
+
+    # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
+    # by a field added in the jinja template.
+    # - fetch session (1 query)
+    # - fetch user (1 query)
+    # - fetch custom reimbursement rules statistics (1 query)
+    expected_num_queries = 3
+
+    def test_get_data(self, authenticated_client):
+        finance_factories.CustomReimbursementRuleFactory.create_batch(4, offerer=offerers_factories.OffererFactory())
+        finance_factories.CustomReimbursementRuleFactory.create_batch(5, venue=offerers_factories.VenueFactory())
+        finance_factories.CustomReimbursementRuleFactory.create_batch(3, offer=offers_factories.OfferFactory())
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
+
+        rules_count_by_offerer, rules_count_by_venue, rules_count_by_offer = html_parser.extract_cards_titles(
+            response.data
+        )
+
+        assert rules_count_by_offerer == "4"
+        assert rules_count_by_venue == "5"
+        assert rules_count_by_offer == "3"
