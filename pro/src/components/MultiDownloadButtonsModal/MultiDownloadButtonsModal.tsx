@@ -51,7 +51,8 @@ const MultiDownloadButtonsModal = ({
             })
             setIsDownloadModalOptionOpen(!isDownloadModalOptionOpen)
           }}
-          type="button"
+          aria-expanded={isDownloadModalOptionOpen}
+          aria-controls="download-panel"
         >
           Télécharger
           {isDownloadModalOptionOpen ? (
@@ -63,7 +64,7 @@ const MultiDownloadButtonsModal = ({
       </div>
 
       {isDownloadModalOptionOpen && (
-        <div className={style['download-modal-option']}>
+        <div className={style['download-modal-option']} id="download-panel">
           <Button
             variant={ButtonVariant.TERNARY}
             icon={fullDownloadIcon}
