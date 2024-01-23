@@ -24,14 +24,13 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.routes.backoffice.forms.search import TypeOptions
+from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.utils import regions as regions_utils
 
 from . import forms as offerer_forms
 from . import serialization
 from .. import utils
 from ..forms import empty as empty_forms
-from ..forms import search as search_forms
 
 
 offerer_blueprint = utils.child_backoffice_blueprint(
@@ -155,9 +154,9 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
             tags=offerer.tags,
         )
 
-    search_form = search_forms.CompactProSearchForm(
+    search_form = pro_forms.CompactProSearchForm(
         q=request.args.get("q"),
-        pro_type=TypeOptions.OFFERER.name,
+        pro_type=pro_forms.TypeOptions.OFFERER.name,
         departments=request.args.getlist("departments")
         if request.args.get("q") or request.args.getlist("departments")
         else current_user.backoffice_profile.preferences.get("departments", []),
@@ -172,7 +171,7 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
     return render_template(
         "offerer/get.html",
         search_form=search_form,
-        search_dst=url_for("backoffice_web.search_pro"),
+        search_dst=url_for("backoffice_web.pro.search_pro"),
         offerer=offerer,
         region=regions_utils.get_region_name_from_postal_code(offerer.postalCode),
         creator_phone_number=row.creator_phone_number,
@@ -196,7 +195,7 @@ def get(offerer_id: int) -> utils.BackofficeResponse:
             event_name="ConsultCard",
             extra_data={
                 "searchType": "ProSearch",
-                "searchProType": TypeOptions.OFFERER.name,
+                "searchProType": pro_forms.TypeOptions.OFFERER.name,
                 "searchQuery": request.args.get("q"),
                 "searchDepartments": ",".join(request.args.get("departments", [])),
                 "searchRank": request.args.get("search_rank"),
@@ -347,7 +346,7 @@ def delete_offerer(offerer_id: int) -> utils.BackofficeResponse:
         ),
         "success",
     )
-    return redirect(url_for("backoffice_web.search_pro"), code=303)
+    return redirect(url_for("backoffice_web.pro.search_pro"), code=303)
 
 
 @offerer_blueprint.route("/update", methods=["POST"])
