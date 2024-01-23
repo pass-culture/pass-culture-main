@@ -169,5 +169,5 @@ def update_bo_user(user_id: int) -> utils.BackofficeResponse:
     snapshot.add_action()
     repository.save(user)
 
-    flash("Informations mises à jour", "success")
+    flash("Les informations ont été mises à jour", "success")
     return redirect(url_for(".get_bo_user", user_id=user_id), code=303)

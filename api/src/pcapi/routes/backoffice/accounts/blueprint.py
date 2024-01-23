@@ -863,7 +863,7 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
         # TODO (prouzet) old email should also be updated, but there is no update_external_user by email
         external_attributes_api.update_external_user(user)
 
-    flash("Informations mises à jour", "success")
+    flash("Les informations ont été mises à jour", "success")
     return redirect(get_public_account_link(user_id), code=303)
 
 
@@ -878,7 +878,7 @@ def resend_validation_email(user_id: int) -> utils.BackofficeResponse:
         flash("L'adresse email est déjà validée", "warning")
     else:
         users_api.request_email_confirmation(user)
-        flash("Email de validation envoyé", "success")
+        flash("L'email de validation a été envoyé", "success")
 
     return redirect(get_public_account_link(user_id), code=303)
 
@@ -904,7 +904,7 @@ def manually_validate_phone_number(user_id: int) -> utils.BackofficeResponse:
     subscription_api.activate_beneficiary_if_no_missing_step(user)
     users_api.delete_all_users_phone_validation_tokens(user)
 
-    flash("Le numéro a été validé avec succès", "success")
+    flash("Le numéro de téléphone a été validé", "success")
 
     return redirect(get_public_account_link(user_id), code=303)
 
@@ -1017,7 +1017,7 @@ def comment_public_account(user_id: int) -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
     else:
         users_api.add_comment_to_user(user=user, author_user=current_user, comment=form.comment.data)
-        flash("Commentaire enregistré", "success")
+        flash("Le commentaire a été enregistré", "success")
 
     return redirect(get_public_account_link(user_id, active_tab="history"), code=303)
 

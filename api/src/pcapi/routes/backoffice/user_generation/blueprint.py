@@ -51,8 +51,7 @@ def generate_user() -> utils.BackofficeResponse:
     form = forms.UserGeneratorForm()
 
     if not form.validate():
-        error_msg = utils.build_form_error_msg(form)
-        flash(error_msg, "warning")
+        flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.get_generated_user"), code=303)
 
     # >18yo user cannot be identified with Educonnect

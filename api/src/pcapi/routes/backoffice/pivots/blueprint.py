@@ -70,8 +70,7 @@ def create_pivot(name: str) -> utils.BackofficeResponse:
     form = pivot_context.get_form()
 
     if not form.validate():
-        error_msg = utils.build_form_error_msg(form)
-        flash(error_msg, "warning")
+        flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for(".get_pivots", active_tab=name), code=303)
 
     try:
@@ -83,7 +82,7 @@ def create_pivot(name: str) -> utils.BackofficeResponse:
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:
         if can_create_pivot:
-            flash("Le pivot a été créé", "success")
+            flash("Le nouveau pivot a été créé", "success")
 
     return redirect(url_for(".get_pivots", active_tab=name), code=303)
 
@@ -111,8 +110,7 @@ def update_pivot(name: str, pivot_id: int) -> utils.BackofficeResponse:
 
     form = pivot_context.get_edit_form(pivot_id)
     if not form.validate():
-        error_msg = utils.build_form_error_msg(form)
-        flash(error_msg, "warning")
+        flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for(".get_pivots", active_tab=name), code=303)
 
     try:

@@ -36,20 +36,22 @@ def _validate_move_siret_form() -> (
     source_venue = offerers_models.Venue.query.filter_by(id=form.source_venue.data).one_or_none()
     if not source_venue:
         flash(
-            Markup("Aucun lieu n'a été trouvé avec l'ID {venue_id}").format(venue_id=form.source_venue.data), "warning"
+            Markup("Aucun lieu n'a été trouvé avec l'ID <b>{venue_id}</b>").format(venue_id=form.source_venue.data),
+            "warning",
         )
         return form, None, None
 
     target_venue = offerers_models.Venue.query.filter_by(id=form.target_venue.data).one_or_none()
     if not target_venue:
         flash(
-            Markup("Aucun lieu n'a été trouvé avec l'ID {venue_id}").format(venue_id=form.target_venue.data), "warning"
+            Markup("Aucun lieu n'a été trouvé avec l'ID <b>{venue_id}</b>").format(venue_id=form.target_venue.data),
+            "warning",
         )
         return form, None, None
 
     if source_venue.siret != form.siret.data:
         flash(
-            Markup("Le SIRET {siret} ne correspond pas au lieu {venue_id}").format(
+            Markup("Le SIRET <b>{siret}</b> ne correspond pas au lieu <b>{venue_id}</b>").format(
                 siret=form.siret.data, venue_id=form.source_venue.data
             ),
             "warning",
@@ -58,7 +60,7 @@ def _validate_move_siret_form() -> (
 
     if target_venue.isVirtual:
         flash(
-            Markup("Le lieu cible {venue_name} (ID {venue_id}) est un lieu virtuel").format(
+            Markup("Le lieu cible <b>{venue_name}</b> (ID {venue_id}) est un lieu virtuel").format(
                 venue_name=target_venue.name, venue_id=target_venue.id
             ),
             "warning",

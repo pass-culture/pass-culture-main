@@ -278,7 +278,7 @@ def create_rule() -> utils.BackofficeResponse:
             sub_rules_info=sub_rules_info,
         )
         db.session.commit()
-        flash("Règle créée avec succès", "success")
+        flash("La nouvelle règle a été créée", "success")
 
     except sa.exc.IntegrityError as err:
         db.session.rollback()

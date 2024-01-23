@@ -387,7 +387,7 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
         tags=form.tags.data,
     )
 
-    flash("Informations mises à jour", "success")
+    flash("Les informations ont été mises à jour", "success")
     return _self_redirect(offerer.id)
 
 
@@ -718,7 +718,7 @@ def comment_offerer(offerer_id: int) -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
     else:
         offerers_api.add_comment_to_offerer(offerer, current_user, comment=form.comment.data)
-        flash("Commentaire enregistré", "success")
+        flash("Le commentaire a été enregistré", "success")
 
     return _self_redirect(offerer.id)
 

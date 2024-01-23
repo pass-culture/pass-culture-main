@@ -349,9 +349,7 @@ class ValidateCollectiveOfferTemplateTest(PostEndpointHelper):
         response = authenticated_client.get(collective_offer_list_url)
 
         assert response.status_code == 200
-        assert "Seules les offres collectives vitrines en attente peuvent être validées" in response.data.decode(
-            "utf-8"
-        )
+        assert "Seules les offres collectives vitrine en attente peuvent être validées" in response.data.decode("utf-8")
         row = html_parser.extract_table_rows(response.data)
         assert len(row) == 1
         assert row[0]["État"] == "Rejetée"
@@ -431,9 +429,7 @@ class RejectCollectiveOfferTemplateTest(PostEndpointHelper):
         response = authenticated_client.get(collective_offer_template_list_url)
 
         assert response.status_code == 200
-        assert "Seules les offres collectives vitrines en attente peuvent être rejetées" in response.data.decode(
-            "utf-8"
-        )
+        assert "Seules les offres collectives vitrine en attente peuvent être rejetées" in response.data.decode("utf-8")
         row = html_parser.extract_table_rows(response.data)
         assert len(row) == 1
         assert row[0]["État"] == "Validée"

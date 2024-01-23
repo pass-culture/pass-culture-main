@@ -92,7 +92,7 @@ def create_offerer_tag() -> utils.BackofficeResponse:
         )
         db.session.add(tag)
         db.session.commit()
-        flash("Le tag structure a été créé", "success")
+        flash("Le nouveau tag structure a été créé", "success")
 
     except sa.exc.IntegrityError:
         db.session.rollback()
@@ -157,7 +157,7 @@ def create_offerer_tag_category() -> utils.BackofficeResponse:
     try:
         db.session.add(offerers_models.OffererTagCategory(name=form.name.data, label=form.label.data))
         db.session.commit()
-        flash("La catégorie a été créée", "success")
+        flash("La nouvelle catégorie a été créée", "success")
     except sa.exc.IntegrityError:
         db.session.rollback()
         flash("Cette catégorie existe déjà", "warning")

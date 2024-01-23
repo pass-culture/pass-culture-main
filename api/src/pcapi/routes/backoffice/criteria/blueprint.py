@@ -105,7 +105,7 @@ def create_tag() -> utils.BackofficeResponse:
         db.session.rollback()
         flash("Ce tag existe déjà", "warning")
     else:
-        flash("Tag offres et lieux créé", "success")
+        flash("Le nouveau tag offres et lieux a été créé", "success")
 
     return redirect(url_for("backoffice_web.tags.list_tags"), code=303)
 
@@ -191,7 +191,7 @@ def delete_tag(tag_id: int) -> utils.BackofficeResponse:
         db.session.rollback()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exception)), "warning")
 
-    flash("Le tag a bien été supprimé", "success")
+    flash("Le tag a été supprimé", "success")
     return redirect(url_for("backoffice_web.tags.list_tags"), code=303)
 
 
@@ -228,7 +228,7 @@ def create_tag_category() -> utils.BackofficeResponse:
     try:
         db.session.add(criteria_models.CriterionCategory(label=form.label.data))
         db.session.commit()
-        flash("La catégorie a été créée", "success")
+        flash("La nouvelle catégorie a été créée", "success")
     except sa.exc.IntegrityError:
         db.session.rollback()
         flash("Cette catégorie existe déjà", "warning")

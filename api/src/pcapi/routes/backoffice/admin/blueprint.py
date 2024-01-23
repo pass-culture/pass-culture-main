@@ -81,7 +81,7 @@ def update_role(role_id: int) -> utils.BackofficeResponse:
     role_name = roles[role_id].name
 
     perm_api.update_role(role_id, role_name, tuple(new_permissions_ids), author=current_user)
-    flash("Informations mises à jour", "success")
+    flash("Les informations ont été mises à jour", "success")
 
     return redirect(url_for(".get_roles"), code=303)
 

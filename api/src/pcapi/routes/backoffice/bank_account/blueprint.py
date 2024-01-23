@@ -145,6 +145,6 @@ def update_bank_account(bank_account_id: int) -> utils.BackofficeResponse:
         bank_account.label = form.label.data
         db.session.add(bank_account)
         db.session.commit()
-        flash("Les informations ont bien été mises à jour", "success")
+        flash("Les informations ont été mises à jour", "success")
 
     return redirect(url_for("backoffice_web.bank_account.get", bank_account_id=bank_account_id), code=303)

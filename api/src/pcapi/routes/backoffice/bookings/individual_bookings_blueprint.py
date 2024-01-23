@@ -282,7 +282,7 @@ def batch_validate_individual_bookings() -> utils.BackofficeResponse:
         except bookings_exceptions.BookingIsAlreadyCancelled:
             bookings_api.mark_as_used_with_uncancelling(booking)
 
-    return _batch_individual_bookings_action(form, _booking_callback, "Les réservations ont été validées avec succès")
+    return _batch_individual_bookings_action(form, _booking_callback, "Les réservations ont été validées")
 
 
 @individual_bookings_blueprint.route("/batch-cancel", methods=["GET"])
@@ -312,7 +312,7 @@ def batch_cancel_individual_bookings() -> utils.BackofficeResponse:
         lambda booking: bookings_api.mark_as_cancelled(
             booking, bookings_models.BookingCancellationReasons(form.reason.data)
         ),
-        "Les réservations ont été annulées avec succès",
+        "Les réservations ont été annulées",
     )
 
 

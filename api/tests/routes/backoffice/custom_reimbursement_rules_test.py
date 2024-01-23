@@ -193,7 +193,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
         assert response.status_code == 303
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Le tarif dérogatoire a été créé"
+            == "Le nouveau tarif dérogatoire a été créé"
         )
 
         rule = finance_models.CustomReimbursementRule.query.one()
@@ -295,7 +295,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
         assert response.status_code == 303
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Le tarif dérogatoire a été créé"
+            == "Le nouveau tarif dérogatoire a été créé"
         )
 
         rule = finance_models.CustomReimbursementRule.query.one()
@@ -370,7 +370,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
         assert response.status_code == 303
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Le tarif dérogatoire a été créé"
+            == "Le nouveau tarif dérogatoire a été créé"
         )
 
         rule = finance_models.CustomReimbursementRule.query.one()
@@ -447,7 +447,7 @@ class CreateCustomReimbursementRuleTest(PostEndpointHelper):
         assert response.status_code == 303
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Le tarif dérogatoire a été créé"
+            == "Le nouveau tarif dérogatoire a été créé"
         )
 
         rule = finance_models.CustomReimbursementRule.query.one()
