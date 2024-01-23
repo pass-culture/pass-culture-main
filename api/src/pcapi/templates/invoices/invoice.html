@@ -193,8 +193,8 @@
 </svg>
 <h1>Justificatif de remboursement</h1>
 <div class="customerInfo">
-    <p><b>Structure :</b> {{ reimbursement_point.managingOfferer.name }} - {{ reimbursement_point.managingOfferer.siren }}</p>
-    <p><b>Point de remboursement :</b> {{ reimbursement_point_name }} - {{ reimbursement_point_iban }}</p>
+    <p><b>Structure :</b> {{ bank_account.offerer.name }} - {{ bank_account.offerer.siren }}</p>
+    <p><b>Compte bancaire :</b> {{ bank_account_label }} - {{ bank_account_iban }}</p>
 </div>
 <h3 class="coloredTitle">
     Remboursement des réservations validées entre le {{ period_start.strftime("%d/%m/%y") }} et le {{ period_end.strftime("%d/%m/%y") }}, sauf cas exceptionnels.
@@ -270,11 +270,11 @@
     <tbody>
 {% for cashflow in cashflows %}
     <tr>
-        <td>Virement {{ cashflow.bankInformation.iban }}</td>
+        <td>Virement {{ cashflow.bankAccount.iban }}</td>
         <td class="cashflow_batch_label">{{ cashflow.batch.label }}</td>
         <td class="cashflow_creation_date">{{ invoice.date.strftime("%d/%m/%Y") }}</td>
         <td>{{ cashflow.amount|fr_currency_opposite }} €</td>
-        <td>{{ reimbursement_point_name }}</td>
+        <td>{{ bank_account_label }}</td>
     </tr>
 {% endfor %}
     <tr class="coloredSection bottomTableText">

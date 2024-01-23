@@ -1930,7 +1930,7 @@ def generate_and_store_invoice_legacy(
     ).one()
 
     with log_elapsed(logger, "Generated invoice HTML", log_extra):
-        invoice_html = _generate_invoice_html(invoice, batch)
+        invoice_html = _generate_invoice_html_legacy(invoice, batch)
     with log_elapsed(logger, "Generated and stored PDF invoice", log_extra):
         _store_invoice_pdf(invoice_storage_id=invoice.storage_object_id, invoice_html=invoice_html)
     with log_elapsed(logger, "Sent invoice", log_extra):
@@ -2336,7 +2336,7 @@ def get_invoice_period(
     return start_date.date(), end_date.date()
 
 
-def _prepare_invoice_context(invoice: models.Invoice, batch: models.CashflowBatch) -> dict:
+def _prepare_invoice_context_legacy(invoice: models.Invoice, batch: models.CashflowBatch) -> dict:
     # Easier to sort here and not in PostgreSQL, and not much slower
     # because there are very few cashflows (and usually only 1).
     cashflows = sorted(invoice.cashflows, key=lambda c: (c.creationDate, c.id))
@@ -2391,6 +2391,73 @@ def _prepare_invoice_context(invoice: models.Invoice, batch: models.CashflowBatc
         reimbursement_point=reimbursement_point,
         reimbursement_point_name=reimbursement_point_name,
         reimbursement_point_iban=reimbursement_point_iban,
+        total_used_bookings_amount=total_used_bookings_amount,
+        total_contribution_amount=total_contribution_amount,
+        total_reimbursed_amount=total_reimbursed_amount,
+        period_start=period_start,
+        period_end=period_end,
+        reimbursements_by_venue=reimbursements_by_venue,
+        including_finance_incident=any(
+            cashflow
+            for cashflow in cashflows
+            # TODO: remove condition on eventId when it becomes non-nullable
+            if any(pricing.event.bookingFinanceIncidentId for pricing in cashflow.pricings if pricing.eventId)
+        ),
+    )
+
+
+def _prepare_invoice_context(invoice: models.Invoice, batch: models.CashflowBatch) -> dict:
+    # Easier to sort here and not in PostgreSQL, and not much slower
+    # because there are very few cashflows (and usually only 1).
+    cashflows = sorted(invoice.cashflows, key=lambda c: (c.creationDate, c.id))
+
+    invoice_lines = sorted(invoice.lines, key=lambda k: (k.group["position"], -k.rate))
+    total_used_bookings_amount = 0
+    total_contribution_amount = 0
+    total_reimbursed_amount = 0
+    invoice_groups: dict[str, tuple[dict, list[models.InvoiceLine]]] = {}
+    for line in invoice_lines:
+        group = line.group
+        if line.group["label"] in invoice_groups:
+            invoice_groups[line.group["label"]][1].append(line)
+        else:
+            invoice_groups[line.group["label"]] = (group, [line])
+
+    groups = []
+    for group, lines in invoice_groups.values():
+        contribution_subtotal = sum(line.contributionAmount for line in lines)
+        total_contribution_amount += contribution_subtotal
+        reimbursed_amount_subtotal = sum(line.reimbursedAmount for line in lines)
+        total_reimbursed_amount += reimbursed_amount_subtotal
+        used_bookings_subtotal = sum(line.bookings_amount for line in lines if line.bookings_amount)
+        total_used_bookings_amount += used_bookings_subtotal
+
+        invoice_group = models.InvoiceLineGroup(
+            position=group["position"],
+            label=group["label"],
+            contribution_subtotal=contribution_subtotal,
+            reimbursed_amount_subtotal=reimbursed_amount_subtotal,
+            used_bookings_subtotal=used_bookings_subtotal,
+            lines=lines,
+        )
+        groups.append(invoice_group)
+    reimbursements_by_venue = get_reimbursements_by_venue(invoice)
+
+    bank_account = invoice.bankAccount
+    if not bank_account:
+        raise ValueError("Could not generate invoice without bank account")
+    bank_account_label = bank_account.label
+    bank_account_iban = bank_account.iban
+
+    period_start, period_end = get_invoice_period(batch.cutoff)
+
+    return dict(
+        invoice=invoice,
+        cashflows=cashflows,
+        groups=groups,
+        bank_account=bank_account,
+        bank_account_label=bank_account_label,
+        bank_account_iban=bank_account_iban,
         total_used_bookings_amount=total_used_bookings_amount,
         total_contribution_amount=total_contribution_amount,
         total_reimbursed_amount=total_reimbursed_amount,
@@ -2560,6 +2627,11 @@ def get_reimbursements_by_venue(
         reimbursements_by_venue[venue_id]["finance_incident_contribution"] += incident_amount - total_pricing_amount
 
     return reimbursements_by_venue.values()
+
+
+def _generate_invoice_html_legacy(invoice: models.Invoice, batch: models.CashflowBatch) -> str:
+    context = _prepare_invoice_context_legacy(invoice, batch)
+    return render_template("invoices/invoice_legacy.html", **context)
 
 
 def _generate_invoice_html(invoice: models.Invoice, batch: models.CashflowBatch) -> str:
