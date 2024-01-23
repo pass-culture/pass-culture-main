@@ -73,6 +73,7 @@
               <div class="fs-6">
                 <p class="mb-1">
                   <span class="fw-bold">Email :</span> {{ user.email }}
+                  <span class="ms-1">{{ clipboard.copy_to_clipboard(user.email, "Copier l'adresse email") }}</span>
                 </p>
                 <p class="mb-1">
                   <span class="fw-bold">Tél :</span> {{ user.phoneNumber | empty_string_if_null }}
