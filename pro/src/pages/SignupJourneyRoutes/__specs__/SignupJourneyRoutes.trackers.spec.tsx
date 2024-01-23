@@ -1,9 +1,8 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
-import { api } from 'apiClient/api'
 import { routesSignupJourney } from 'app/AppRouter/subroutesSignupJourneyMap'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
@@ -52,14 +51,10 @@ describe('SignupJourneyRoutes::trackers', () => {
     }))
   })
 
-  it('should logout', async () => {
+  it('should track logout', async () => {
     renderSignupJourneyRoutes()
 
-    vi.spyOn(api, 'signout').mockResolvedValue()
     await userEvent.click(screen.getByText('Se déconnecter'))
-    await waitFor(() => {
-      expect(api.signout).toHaveBeenCalledTimes(1)
-    })
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_LOGOUT, {
       from: '/parcours-inscription/structure',

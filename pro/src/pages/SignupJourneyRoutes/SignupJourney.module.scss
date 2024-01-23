@@ -1,6 +1,7 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .sign-up-journey {
   max-height: calc(100vh - #{size.$action-bar-sticky-height});
@@ -20,5 +21,19 @@
   &-logo {
     height: rem.torem(42px);
     color: colors.$logo-purple;
+  }
+}
+
+.logout-link {
+  @include fonts.button;
+
+  gap: rem.torem(8px);
+  display: inline-flex;
+  justify-content: center;
+  margin: auto 0;
+
+  &:hover {
+    cursor: pointer;
+    text-decoration: underline;
   }
 }
