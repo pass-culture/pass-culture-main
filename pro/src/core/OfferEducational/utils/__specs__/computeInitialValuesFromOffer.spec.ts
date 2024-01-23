@@ -1,5 +1,9 @@
 import { DEFAULT_EAC_FORM_VALUES } from 'core/OfferEducational/constants'
-import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
+import {
+  collectiveOfferFactory,
+  collectiveOfferTemplateFactory,
+} from 'utils/collectiveApiFactories'
+import { formatShortDateForInput } from 'utils/date'
 
 import { computeInitialValuesFromOffer } from '../computeInitialValuesFromOffer'
 
@@ -26,5 +30,32 @@ describe('computeInitialValuesFromOffer', () => {
         })
       ).notificationEmails
     ).toEqual(['someemail@example.com'])
+  })
+
+  it('should pre-set todays dates for a template offer creation initial values', () => {
+    expect(
+      computeInitialValuesFromOffer(
+        { educationalCategories: [], educationalSubCategories: [] },
+        [],
+        true,
+        undefined
+      ).beginningDate
+    ).toEqual(formatShortDateForInput(new Date()))
+  })
+
+  it('should fill the time values to the start date time', () => {
+    expect(
+      computeInitialValuesFromOffer(
+        { educationalCategories: [], educationalSubCategories: [] },
+        [],
+        true,
+        collectiveOfferTemplateFactory({
+          dates: {
+            end: '2024-01-29T23:00:28.040559Z',
+            start: '2024-01-23T23:00:28.040547Z',
+          },
+        })
+      ).hour
+    ).toEqual('23:00')
   })
 })

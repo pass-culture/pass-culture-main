@@ -1,13 +1,12 @@
-import { format } from 'date-fns'
-
 import {
   SubcategoryIdEnum,
   StudentLevels,
   GetEducationalOffererResponseModel,
 } from 'apiClient/v1'
 import {
-  FORMAT_HH_mm,
-  FORMAT_ISO_DATE_ONLY,
+  formatShortDateForInput,
+  formatTimeForInput,
+  getToday,
   toDateStrippedOfTimezone,
 } from 'utils/date'
 
@@ -130,11 +129,16 @@ export const computeInitialValuesFromOffer = (
   )
 
   if (offer === undefined) {
+    const today = formatShortDateForInput(getToday())
     return {
       ...DEFAULT_EAC_FORM_VALUES,
       offererId: initialOffererId,
       venueId: initialVenueId,
       isTemplate,
+      beginningDate: isTemplate
+        ? today
+        : DEFAULT_EAC_FORM_VALUES['beginningDate'],
+      endingDate: isTemplate ? today : DEFAULT_EAC_FORM_VALUES['endingDate'],
     }
   }
 
@@ -205,21 +209,15 @@ export const computeInitialValuesFromOffer = (
       : undefined,
     beginningDate:
       isCollectiveOfferTemplate(offer) && offer.dates
-        ? format(
-            toDateStrippedOfTimezone(offer.dates.start),
-            FORMAT_ISO_DATE_ONLY
-          )
+        ? formatShortDateForInput(toDateStrippedOfTimezone(offer.dates.start))
         : DEFAULT_EAC_FORM_VALUES.beginningDate,
     endingDate:
       isCollectiveOfferTemplate(offer) && offer.dates
-        ? format(
-            toDateStrippedOfTimezone(offer.dates.end),
-            FORMAT_ISO_DATE_ONLY
-          )
+        ? formatShortDateForInput(toDateStrippedOfTimezone(offer.dates.end))
         : DEFAULT_EAC_FORM_VALUES.endingDate,
     hour:
       isCollectiveOfferTemplate(offer) && offer.dates
-        ? format(toDateStrippedOfTimezone(offer.dates.start), FORMAT_HH_mm)
+        ? formatTimeForInput(toDateStrippedOfTimezone(offer.dates.start))
         : DEFAULT_EAC_FORM_VALUES.hour,
     formats: offer.formats ?? DEFAULT_EAC_FORM_VALUES.formats,
   }
