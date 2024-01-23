@@ -168,4 +168,24 @@ describe('FormDates', () => {
       startDate
     )
   })
+
+  it('should set endingDate when the beginningDate changes', async () => {
+    renderFormDates(
+      { ...defaultProps, dateCreated: '2021-01-01' },
+      {
+        ...DEFAULT_EAC_FORM_VALUES,
+        isTemplate: true,
+        datesType: 'specific_dates',
+        beginningDate: '',
+      }
+    )
+
+    const beginningInput = screen.getByLabelText('Date de début')
+
+    await userEvent.type(beginningInput, '2025-02-02')
+    expect(screen.getByLabelText('Date de fin')).toHaveAttribute(
+      'value',
+      '2025-02-02'
+    )
+  })
 })

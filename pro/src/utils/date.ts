@@ -99,3 +99,18 @@ export const getYearMonthDay = (date: string) => {
   const [year, month, day] = date.split('-')
   return [parseInt(year), parseInt(month) - 1, parseInt(day)]
 }
+
+export function formatShortDateForInput(date: Date) {
+  //  sv-se is similar to ISO 8601 for the short date format, which is used in HTML Input dates
+  //  The output format is yyyy-MM-dd
+  return new Intl.DateTimeFormat('sv-se').format(date)
+}
+
+export function formatTimeForInput(date: Date) {
+  //  sv-se is similar to ISO 8601 for the time format, which is used in HTML Input dates
+  //  The output format is HH:mm
+  return new Intl.DateTimeFormat('sv-se', {
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date)
+}
