@@ -18,7 +18,7 @@ class SendinblueBackend:
         configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
         self.api_instance = sib_api_v3_sdk.TransactionalSMSApi(sib_api_v3_sdk.ApiClient(configuration))
 
-    def send_transactional_sms(self, recipient: str, content: str) -> bool:
+    def send_transactional_sms(self, recipient: str, content: str) -> None:
         send_transac_sms = sib_api_v3_sdk.SendTransacSms(
             sender="PassCulture",
             recipient=self._format_recipient(recipient),
@@ -45,8 +45,6 @@ class SendinblueBackend:
             logger.warning("Exception caught while sending SMS", extra={"recipient": recipient, "content": content})
             raise requests.ExternalAPIException(is_retryable=True) from exception
 
-        return True
-
     def _format_recipient(self, recipient: str) -> str:
         """Sendinblue does not accept phone numbers with a leading '+'"""
         if recipient.startswith("+"):
@@ -55,15 +53,15 @@ class SendinblueBackend:
 
 
 class ToDevSendinblueBackend(SendinblueBackend):
-    def send_transactional_sms(self, recipient: str, content: str) -> bool:
+    def send_transactional_sms(self, recipient: str, content: str) -> None:
         # No need to import in production
         import sqlalchemy as sa
 
         from pcapi.core.users import models as users_models
 
         if recipient in settings.WHITELISTED_SMS_RECIPIENTS:
-            if not super().send_transactional_sms(recipient, content):
-                return False
+            super().send_transactional_sms(recipient, content)
+            return
 
         mail_recipient = settings.DEV_EMAIL_ADDRESS
         mail_content = mails_models.TransactionalWithoutTemplateEmailData(
@@ -89,4 +87,3 @@ class ToDevSendinblueBackend(SendinblueBackend):
                     mail_recipient = user.email
 
         mails.send(recipients=[mail_recipient], data=mail_content)
-        return True

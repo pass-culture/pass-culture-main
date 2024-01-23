@@ -3,7 +3,7 @@ from pcapi.notifications.sms.backends.logger import LoggerBackend
 
 
 class TestingBackend(LoggerBackend):
-    def send_transactional_sms(self, recipient: str, content: str) -> bool:
+    def send_transactional_sms(self, recipient: str, content: str) -> None:
         super().send_transactional_sms(recipient, content)
         testing.requests.append(
             {
@@ -11,4 +11,3 @@ class TestingBackend(LoggerBackend):
                 "content": content,
             }
         )
-        return True
