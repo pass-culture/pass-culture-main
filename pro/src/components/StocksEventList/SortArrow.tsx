@@ -30,10 +30,10 @@ export const SortArrow = ({ sortingMode, onClick }: SortArrowProps) => (
         />
       )
     ) : (
-      <div className={cn(styles['sort-icon'], styles['both-icons'])}>
+      <span className={cn(styles['sort-icon'], styles['both-icons'])}>
         <SvgIcon src={fullUpIcon} alt="Trier par ordre croissant" />
         <SvgIcon src={fullDownIcon} alt="" />
-      </div>
+      </span>
     )}
   </button>
 )
