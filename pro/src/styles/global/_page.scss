@@ -2,6 +2,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/variables/_size.scss" as size;
+@use "styles/variables/_z-index.scss" as zIndex;
 
 .columns,
 .field.is-grouped {
@@ -81,8 +82,57 @@ main {
     }
   }
 
+  &.page-content {
+    margin: rem.torem(26px) auto 0;
+  }
+
   &.spinner-container {
     grid-column-start: col-main;
     grid-row-start: row-main;
+  }
+}
+
+.lateral-panel {
+  &-wrapper {
+    display: none;
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    z-index: zIndex.$lateral-menu-backdrop-z-index;
+
+
+    &::before {
+      content: ' ';
+      display: block;
+      position: fixed;
+      inset: 0;
+      background: rgba(colors.$input-text-color, .48);
+    }
+
+    &.open {
+      display: block;
+    }
+  }
+
+
+  &-menu {
+    background: colors.$white;
+    z-index: zIndex.$lateral-menu-z-index;
+    position: fixed;
+    max-width: rem.torem(268px);
+    inset: 0;
+  }
+
+  &-nav {
+    padding: 0 rem.torem(16px);
+    height: rem.torem(50px);
+    box-shadow: 0 3px 4px 0 rgb(103 104 107 / 10%);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .logo {
+      width: rem.torem(80px);
+    }
   }
 }

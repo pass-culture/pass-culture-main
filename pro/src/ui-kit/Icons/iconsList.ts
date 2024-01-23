@@ -3,6 +3,7 @@ import fullAddUserIcon from 'icons/full-add-user.svg'
 import fullArrowLeftIcon from 'icons/full-arrow-left.svg'
 import fullArrowRightIcon from 'icons/full-arrow-right.svg'
 import fullBackIcon from 'icons/full-back.svg'
+import fullBurgerkIcon from 'icons/full-burger.svg'
 import fullClearIcon from 'icons/full-clear.svg'
 import fullCodeIcon from 'icons/full-code.svg'
 import fullDeskIcon from 'icons/full-desk.svg'
@@ -164,6 +165,7 @@ export const fullIcons: IconListItem[] = [
   { src: fullAddUserIcon },
   { src: fullStarIcon },
   { src: fullDeskIcon },
+  { src: fullBurgerkIcon },
   { src: fullDisclosureCloseIcon, viewBox: '0 0 16 16' }, // TODO clean viewbox
   { src: fullDisclosureOpenIcon, viewBox: '0 0 16 16' }, // TODO clean viewbox
 ]
