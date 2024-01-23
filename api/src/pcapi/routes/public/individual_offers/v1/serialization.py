@@ -901,6 +901,7 @@ class GetShowTypesResponse(serialization.ConfiguredBaseModel):
 
 
 class MusicTypeResponse(serialization.ConfiguredBaseModel):
+    gtl_id: str | None
     id: MusicTypeEnum  # type: ignore [valid-type]
     label: str
 
