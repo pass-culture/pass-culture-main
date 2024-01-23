@@ -1277,7 +1277,6 @@ def generate_payment_files(batch: models.CashflowBatch) -> None:
     """Generate all payment files that are related to the requested
     CashflowBatch and mark all related Cashflow as ``UNDER_REVIEW``.
     """
-    is_new_bank_account_journey_active = FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active()
     logger.info("Generating payment files")
     not_pending_cashflows = models.Cashflow.query.filter(
         models.Cashflow.batchId == batch.id,
@@ -1290,15 +1289,19 @@ def generate_payment_files(batch: models.CashflowBatch) -> None:
         )
 
     file_paths = {}
-    if is_new_bank_account_journey_active:
+    if FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
         logger.info("Generating bank accounts file")
         file_paths["bank_accounts"] = _generate_bank_accounts_file(batch.cutoff)
+
+        logger.info("Generating payments file")
+        file_paths["payments"] = _generate_payments_file(batch.id)
     else:
         logger.info("Generating reimbursement points file")
         file_paths["reimbursement_points"] = _generate_reimbursement_points_file(batch.cutoff)
 
-    logger.info("Generating payments file")
-    file_paths["payments"] = _generate_payments_file(batch.id)
+        logger.info("Generating payments file")
+        file_paths["payments"] = _generate_payments_file_legacy(batch.id)
+
     logger.info(
         "Finance files have been generated",
         extra={"paths": [str(path) for path in file_paths.values()]},
@@ -1488,6 +1491,114 @@ def _clean_for_accounting(value: str) -> str:
 
 def _generate_payments_file(batch_id: int) -> pathlib.Path:
     header = [
+        "Identifiant des coordonnées bancaires",
+        "SIREN de la structure",
+        "Nom de la structure - Libellé des coordonnées bancaires",
+        "Montant net offreur",
+    ]
+
+    def get_bookings_data(query: BaseQuery) -> BaseQuery:
+        return (
+            query.filter(bookings_models.Booking.amount != 0)
+            .join(
+                models.BankAccount,
+                models.BankAccount.id == models.Cashflow.bankAccountId,
+            )
+            .join(models.BankAccount.offerer)
+            .join(bookings_models.Booking.deposit)
+            .filter(models.Cashflow.batchId == batch_id)
+            .group_by(
+                models.BankAccount.id,
+                offerers_models.Offerer.name,
+                offerers_models.Offerer.siren,
+                models.Deposit.type,
+            )
+            .with_entities(
+                models.BankAccount.id.label("bank_account_id"),
+                models.BankAccount.label.label("bank_account_label"),
+                offerers_models.Offerer.name.label("offerer_name"),
+                offerers_models.Offerer.siren.label("offerer_siren"),
+                sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
+            )
+        )
+
+    def get_collective_bookings_data(query: BaseQuery) -> BaseQuery:
+        return (
+            query.join(educational_models.CollectiveBooking.collectiveStock)
+            .join(
+                models.BankAccount,
+                models.BankAccount.id == models.Cashflow.bankAccountId,
+            )
+            .join(models.BankAccount.offerer)
+            .join(educational_models.CollectiveBooking.educationalInstitution)
+            .join(
+                educational_models.EducationalDeposit,
+                sqla.and_(
+                    educational_models.EducationalDeposit.educationalYearId
+                    == educational_models.CollectiveBooking.educationalYearId,
+                    educational_models.EducationalDeposit.educationalInstitutionId
+                    == educational_models.EducationalInstitution.id,
+                ),
+            )
+            .filter(models.Cashflow.batchId == batch_id)
+            .group_by(
+                models.BankAccount.id,
+                offerers_models.Offerer.name,
+                offerers_models.Offerer.siren,
+                educational_models.EducationalDeposit.ministry,
+            )
+            .with_entities(
+                models.BankAccount.id.label("bank_account_id"),
+                models.BankAccount.label.label("bank_account_label"),
+                offerers_models.Offerer.name.label("offerer_name"),
+                offerers_models.Offerer.siren.label("offerer_siren"),
+                sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
+            )
+        )
+
+    bookings_query = get_bookings_data(
+        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
+        .join(models.Pricing.cashflows)
+        .join(models.Pricing.booking)
+    )
+
+    collective_bookings_query = get_collective_bookings_data(
+        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
+        .join(models.Pricing.cashflows)
+        .join(models.Pricing.collectiveBooking)
+    )
+
+    finance_incident_bookings_query = get_bookings_data(
+        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
+        .join(models.Pricing.cashflows)
+        .join(models.Pricing.event)
+        .join(models.FinanceEvent.bookingFinanceIncident)
+        .join(models.BookingFinanceIncident.booking)
+    )
+
+    finance_incident_collective_bookings_query = get_collective_bookings_data(
+        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
+        .join(models.Pricing.cashflows)
+        .join(models.Pricing.event)
+        .join(models.FinanceEvent.bookingFinanceIncident)
+        .join(models.BookingFinanceIncident.collectiveBooking)
+    )
+
+    return _write_csv(
+        "down_payment",
+        header,
+        rows=itertools.chain(
+            bookings_query,
+            collective_bookings_query,
+            finance_incident_bookings_query,
+            finance_incident_collective_bookings_query,
+        ),
+        row_formatter=_payment_details_row_formatter,
+    )
+
+
+def _generate_payments_file_legacy(batch_id: int) -> pathlib.Path:
+    header = [
         "Identifiant du point de remboursement",
         "SIRET du point de remboursement",
         "Libellé du point de remboursement",  # commercial name
@@ -1591,6 +1702,13 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
 def _payment_details_row_formatter(sql_row: typing.Any) -> tuple:
     net_amount = utils.to_euros(-sql_row.pricing_amount)
 
+    if FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
+        return (
+            human_ids.humanize(sql_row.bank_account_id),
+            _clean_for_accounting(sql_row.offerer_siren),
+            _clean_for_accounting(f"{sql_row.offerer_name} - {sql_row.bank_account_label}"),
+            net_amount,
+        )
     return (
         human_ids.humanize(sql_row.reimbursement_point_id),
         _clean_for_accounting(sql_row.reimbursement_point_siret),
