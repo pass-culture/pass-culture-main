@@ -30,7 +30,7 @@ from . import forms as collective_offer_forms
 list_collective_offer_templates_blueprint = utils.child_backoffice_blueprint(
     "collective_offer_template",
     __name__,
-    url_prefix="/pro/collective_offer_template",
+    url_prefix="/pro/collective-offer-template",
     permission=perm_models.Permissions.READ_OFFERS,
 )
 
