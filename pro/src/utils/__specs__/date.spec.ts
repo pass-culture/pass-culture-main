@@ -1,6 +1,8 @@
 import {
   FORMAT_DD_MM_YYYY_HH_mm,
   formatBrowserTimezonedDateAsUTC,
+  formatShortDateForInput,
+  formatTimeForInput,
   getRangeToFrenchText,
   toDateStrippedOfTimezone,
   toISOStringWithoutMilliseconds,
@@ -103,5 +105,17 @@ describe('getRangeToFrenchText', () => {
     const formattedRange = getRangeToFrenchText(from, to)
 
     expect(formattedRange).toBe('Du 17 novembre 2020 au 10 janvier 2021 à 08h')
+  })
+
+  it('should format a date with the right format for a HTML input', () => {
+    const date = new Date('2020-11-17T08:00:00Z')
+
+    expect(formatShortDateForInput(date)).toBe('2020-11-17')
+  })
+
+  it('should format a time with the right format for a HTML input', () => {
+    const date = new Date('2020-11-17T23:10:00Z')
+
+    expect(formatTimeForInput(date)).toBe('23:10')
   })
 })

@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import React from 'react'
+import { ChangeEvent } from 'react'
 
 import Callout from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
@@ -19,11 +19,20 @@ const FormDates = ({
   disableForm,
   dateCreated,
 }: FormDatesProps): JSX.Element => {
-  const { values } = useFormikContext<OfferEducationalFormValues>()
+  const { values, setFieldValue } =
+    useFormikContext<OfferEducationalFormValues>()
   const minBeginningDate = dateCreated ? new Date(dateCreated) : new Date()
   const minDateForEndingDate = isDateValid(values.beginningDate)
     ? new Date(values.beginningDate)
     : new Date()
+
+  async function handleBeginningDateChange(e: ChangeEvent<HTMLInputElement>) {
+    const newBeginningDate = e.target.value
+    if (newBeginningDate) {
+      await setFieldValue('endingDate', newBeginningDate)
+    }
+  }
+
   return (
     <FormLayout.Section title="Date et heure">
       <RadioGroup
@@ -55,6 +64,7 @@ const FormDates = ({
               disabled={disableForm}
               minDate={minBeginningDate}
               hideFooter
+              onChange={handleBeginningDateChange}
             />
             <DatePicker
               name="endingDate"
