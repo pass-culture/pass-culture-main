@@ -37,12 +37,12 @@
   }
 
   &-icon {
-    width: rem.torem(20px);
     margin-right: rem.torem(8px);
     display: flex;
     flex-direction: column;
 
     &-svg {
+      width: rem.torem(20px);
       fill: colors.$input-text-color;
 
       :disabled + & {

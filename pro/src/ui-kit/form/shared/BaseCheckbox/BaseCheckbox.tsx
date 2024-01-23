@@ -1,6 +1,8 @@
 import cn from 'classnames'
 import { useEffect, useRef } from 'react'
 
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+
 import styles from './BaseCheckbox.module.scss'
 
 export interface BaseCheckboxProps
@@ -53,9 +55,13 @@ const BaseCheckbox = ({
             [styles['has-error']]: hasError,
           })}
         />
-        {Boolean(icon) && (
+        {icon && (
           <span className={styles['base-checkbox-icon']}>
-            <img src={icon} className={styles['base-checkbox-icon-svg']} />
+            <SvgIcon
+              src={icon}
+              alt=""
+              className={styles['base-checkbox-icon-svg']}
+            />
           </span>
         )}
         <span
