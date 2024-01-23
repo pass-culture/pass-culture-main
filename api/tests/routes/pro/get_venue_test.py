@@ -94,6 +94,7 @@ class Returns200Test:
             "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,
             "motorDisabilityCompliant": venue.motorDisabilityCompliant,
             "name": venue.name,
+            "openingHours": [],
             "postalCode": venue.postalCode,
             "publicName": venue.publicName,
             "siret": venue.siret,
@@ -357,6 +358,21 @@ class Returns200Test:
             },
             "image_credit": None,
             "original_image_url": None,
+        }
+
+    def should_get_opening_hours_when_existing(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
+        venue = offerers_factories.PermanentVenueFactory(
+            name="L'encre et la plume",
+            managingOfferer=user_offerer.offerer,
+        )
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        response = auth_request.get("/venues/%s" % venue.id)
+
+        assert response.json["openingHours"][3] == {
+            "weekday": "THURSDAY",
+            "timespan": ["10:00 - 13:00", "14:00 - 19:30"],
         }
 
 

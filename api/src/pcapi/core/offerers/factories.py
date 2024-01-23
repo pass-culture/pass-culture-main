@@ -2,6 +2,7 @@ import datetime
 import typing
 
 import factory
+from psycopg2.extras import DateTimeRange
 
 from pcapi.core.factories import BaseFactory
 import pcapi.core.users.factories as users_factories
@@ -14,6 +15,11 @@ from . import models
 
 if typing.TYPE_CHECKING:
     from pcapi.core.finance.models import BankAccount
+
+
+# DateTimeRange works with datetime objects, not time, so we use an arbitraty date
+MORNING_RANGE = DateTimeRange(datetime.datetime(2022, 9, 8, 10, 0), datetime.datetime(2022, 9, 8, 13, 0))
+AFTERNOON_RANGE = DateTimeRange(datetime.datetime(2022, 9, 8, 14, 0), datetime.datetime(2022, 9, 8, 19, 30))
 
 
 class OffererFactory(BaseFactory):
@@ -167,6 +173,19 @@ class VirtualVenueFactory(VenueFactory):
     motorDisabilityCompliant = None
     visualDisabilityCompliant = None
     venueTypeCode = models.VenueTypeCode.DIGITAL
+
+
+class PermanentVenueFactory(VenueFactory):
+    venueTypeCode = models.VenueTypeCode.LIBRARY
+    openingHours = [
+        models.OpeningHours(weekday=models.Weekday.MONDAY, timespan=[AFTERNOON_RANGE]),
+        models.OpeningHours(weekday=models.Weekday.TUESDAY, timespan=[MORNING_RANGE, AFTERNOON_RANGE]),
+        models.OpeningHours(weekday=models.Weekday.WEDNESDAY, timespan=[MORNING_RANGE, AFTERNOON_RANGE]),
+        models.OpeningHours(weekday=models.Weekday.THURSDAY, timespan=[MORNING_RANGE, AFTERNOON_RANGE]),
+        models.OpeningHours(weekday=models.Weekday.FRIDAY, timespan=[MORNING_RANGE, AFTERNOON_RANGE]),
+        models.OpeningHours(weekday=models.Weekday.SATURDAY, timespan=[MORNING_RANGE]),
+        models.OpeningHours(weekday=models.Weekday.SUNDAY, timespan=[]),
+    ]
 
 
 class VenueWithoutSiretFactory(VenueFactory):

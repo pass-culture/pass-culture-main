@@ -199,6 +199,26 @@ class LegalStatusResponseModel(BaseModel):
         orm_mode = True
 
 
+class OpeningHoursResponseModel(BaseModel):
+    weekday: offerers_models.Weekday
+    timespan: list[str] | None
+
+    class Config:
+        orm_mode = True
+
+    @classmethod
+    def from_orm(cls, opening_hours: offerers_models.OpeningHours) -> "OpeningHoursResponseModel":
+        opening_hours.timespan = (
+            [
+                f'{span.lower.time().strftime("%H:%M")} - {span.upper.time().strftime("%H:%M")}'
+                for span in opening_hours.timespan
+            ]
+            if opening_hours.timespan
+            else None
+        )
+        return super().from_orm(opening_hours)
+
+
 class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin):
     dateCreated: datetime
     id: int
@@ -211,6 +231,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     dmsToken: str
     hasPendingBankInformationApplication: bool | None
     managingOfferer: GetVenueManagingOffererResponseModel
+    openingHours: list[OpeningHoursResponseModel] | None
     pricingPoint: GetVenuePricingPointResponseModel | None
     reimbursementPointId: int | None
     siret: str | None

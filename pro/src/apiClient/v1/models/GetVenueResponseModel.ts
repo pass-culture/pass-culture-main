@@ -8,6 +8,7 @@ import type { GetVenueDomainResponseModel } from './GetVenueDomainResponseModel'
 import type { GetVenueManagingOffererResponseModel } from './GetVenueManagingOffererResponseModel';
 import type { GetVenuePricingPointResponseModel } from './GetVenuePricingPointResponseModel';
 import type { LegalStatusResponseModel } from './LegalStatusResponseModel';
+import type { OpeningHoursResponseModel } from './OpeningHoursResponseModel';
 import type { StudentLevels } from './StudentLevels';
 import type { VenueContactModel } from './VenueContactModel';
 import type { VenueTypeCode } from './VenueTypeCode';
@@ -50,6 +51,7 @@ export type GetVenueResponseModel = {
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;
+  openingHours?: Array<OpeningHoursResponseModel> | null;
   postalCode?: string | null;
   pricingPoint?: GetVenuePricingPointResponseModel | null;
   publicName?: string | null;

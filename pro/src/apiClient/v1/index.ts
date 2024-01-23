@@ -161,6 +161,7 @@ export type { OffererViewsModel } from './models/OffererViewsModel';
 export type { OfferImage } from './models/OfferImage';
 export { OfferStatus } from './models/OfferStatus';
 export { OfferType } from './models/OfferType';
+export type { OpeningHoursResponseModel } from './models/OpeningHoursResponseModel';
 export type { PatchAllCollectiveOffersActiveStatusBodyModel } from './models/PatchAllCollectiveOffersActiveStatusBodyModel';
 export type { PatchAllOffersActiveStatusBodyModel } from './models/PatchAllOffersActiveStatusBodyModel';
 export type { PatchCollectiveOfferActiveStatusBodyModel } from './models/PatchCollectiveOfferActiveStatusBodyModel';
@@ -227,6 +228,7 @@ export type { VenueStatsResponseModel } from './models/VenueStatsResponseModel';
 export { VenueTypeCode } from './models/VenueTypeCode';
 export type { VenueTypeListResponseModel } from './models/VenueTypeListResponseModel';
 export type { VenueTypeResponseModel } from './models/VenueTypeResponseModel';
+export { Weekday } from './models/Weekday';
 export { WithdrawalTypeEnum } from './models/WithdrawalTypeEnum';
 
 export { DefaultService } from './services/DefaultService';
