@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import fullAddUserIcon from 'icons/full-add-user.svg'
 import fullArrowLeftIcon from 'icons/full-arrow-left.svg'
 import fullArrowRightIcon from 'icons/full-arrow-right.svg'
