@@ -122,6 +122,7 @@
                   <p class="mb-1">
                     <span class="fw-bold">Email :</span>
                     {{ offerer.email }}
+                    <span class="ms-1">{{ clipboard.copy_to_clipboard(offerer.email, "Copier l'adresse email") }}</span>
                   </p>
                 {% endif %}
                 {% if offerer.phoneNumber %}
