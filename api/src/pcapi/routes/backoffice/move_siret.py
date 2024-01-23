@@ -17,7 +17,7 @@ from .forms import pro_support as pro_support_forms
 move_siret_blueprint = utils.child_backoffice_blueprint(
     "move_siret",
     __name__,
-    url_prefix="/pro/support/move_siret",
+    url_prefix="/pro/support/move-siret",
     permission=perm_models.Permissions.MOVE_SIRET,
 )
 

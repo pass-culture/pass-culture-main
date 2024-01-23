@@ -33,7 +33,7 @@ from pcapi.utils import date as date_utils
 blueprint = utils.child_backoffice_blueprint(
     "collective_offer",
     __name__,
-    url_prefix="/pro/collective_offer",
+    url_prefix="/pro/collective-offer",
     permission=perm_models.Permissions.READ_OFFERS,
 )
 
