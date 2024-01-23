@@ -138,9 +138,8 @@ describe('navigation menu', () => {
 
     it('when clicking on Logout', async () => {
       renderHeader()
-      vi.spyOn(api, 'signout').mockResolvedValue()
 
-      await userEvent.click(screen.getByRole('button'))
+      await userEvent.click(screen.getByTestId('logout-link'))
 
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
       expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_LOGOUT, {

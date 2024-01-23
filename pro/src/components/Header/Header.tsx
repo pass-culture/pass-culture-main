@@ -4,7 +4,6 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
-import { useLogout } from 'hooks/useLogout'
 import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import deskIcon from 'icons/stroke-desk.svg'
@@ -18,15 +17,9 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 const NAV_ITEM_ICON_SIZE = '24'
 
 const Header = () => {
-  const logout = useLogout()
   const { logEvent } = useAnalytics()
   const location = useLocation()
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
-
-  async function onSignoutClick() {
-    logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
-    await logout()
-  }
 
   return (
     <header className="menu-v2" id="header-navigation">
@@ -160,10 +153,13 @@ const Header = () => {
           <li>
             <div className="separator" />
 
-            <button
+            <NavLink
               className="nav-item icon-only"
-              onClick={onSignoutClick}
-              type="button"
+              onClick={() =>
+                logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
+              }
+              to={`${location.pathname}?logout`}
+              data-testid="logout-link"
             >
               <SvgIcon
                 src={strokeLogoutIcon}
@@ -171,7 +167,7 @@ const Header = () => {
                 className="nav-item-icon signout-icon"
                 width={NAV_ITEM_ICON_SIZE}
               />
-            </button>
+            </NavLink>
           </li>
         </ul>
       </nav>
