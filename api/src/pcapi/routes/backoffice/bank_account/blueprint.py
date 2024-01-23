@@ -19,8 +19,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice import utils
-from pcapi.routes.backoffice.forms import search as search_forms
-from pcapi.routes.backoffice.forms.search import TypeOptions
+from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.utils.human_ids import humanize
 
 from . import forms
@@ -42,8 +41,10 @@ def render_bank_account_details(
 
     return render_template(
         "bank_account/get.html",
-        search_form=search_forms.CompactProSearchForm(q=request.args.get("q"), pro_type=TypeOptions.BANK_ACCOUNT.name),
-        search_dst=url_for("backoffice_web.search_pro"),
+        search_form=pro_forms.CompactProSearchForm(
+            q=request.args.get("q"), pro_type=pro_forms.TypeOptions.BANK_ACCOUNT.name
+        ),
+        search_dst=url_for("backoffice_web.pro.search_pro"),
         bank_account=bank_account,
         humanized_bank_account_id=humanize(bank_account.id),
         dms_stats=dms_api.get_dms_stats(bank_account.dsApplicationId),
