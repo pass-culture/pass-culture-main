@@ -565,3 +565,22 @@ class TestClient:
             pprint(result.json)
 
         print("===========================================\n")
+
+
+@pytest.fixture(scope="function")
+def db_session(_engine, _session, _transaction):
+    """
+    Taken from `pytest_flask_sqlalchemy/fixtures.py`
+    pytest-flask-sqlalchemy let us not choice of redefining this fixtures.
+    Otherwise, the session options `future=True` define in `pcapi/models/__init__.py`
+    is never applied when running tests.
+
+    Make sure all the different ways that we access the database in the code
+    are scoped to a transactional context, and return a Session object that
+    can interact with the database in the tests.
+
+    Use this fixture in tests when you would like to use the SQLAlchemy ORM
+    API, just as you might use a SQLAlchemy Session object.
+    """
+    _session().future = True  # Added to the definition of the fixture
+    return _session
