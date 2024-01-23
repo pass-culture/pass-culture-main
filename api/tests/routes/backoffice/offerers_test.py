@@ -24,8 +24,8 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.routes.backoffice.forms.search import TypeOptions
 from pcapi.routes.backoffice.offerers import offerer_blueprint
+from pcapi.routes.backoffice.pro.forms import TypeOptions
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
@@ -316,7 +316,7 @@ class DeleteOffererTest(PostEndpointHelper):
         assert response.status_code == 303
         assert offerers_models.Offerer.query.filter(offerers_models.Offerer.id == offerer_to_delete.id).count() == 0
 
-        expected_url = url_for("backoffice_web.search_pro", _external=True)
+        expected_url = url_for("backoffice_web.pro.search_pro", _external=True)
         assert response.location == expected_url
         response = authenticated_client.get(expected_url)
         assert (

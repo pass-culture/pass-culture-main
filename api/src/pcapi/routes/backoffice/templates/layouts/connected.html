@@ -71,7 +71,7 @@
               <div class="nav nav-pills flex-column">
                 {% call menu_section("Acteurs culturels") %}
                   {% if has_permission("READ_PRO_ENTITY") %}
-                    {{ menu_section_item("Liste des acteurs culturels", "backoffice_web.search_pro") }}
+                    {{ menu_section_item("Liste des acteurs culturels", "backoffice_web.pro.search_pro") }}
                     {{ menu_section_item("Structures à valider", "backoffice_web.validation.list_offerers_to_validate") }}
                     {{ menu_section_item("Rattachements à valider", "backoffice_web.validation.list_offerers_attachments_to_validate") }}
                   {% endif %}

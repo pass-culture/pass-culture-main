@@ -157,7 +157,7 @@ class GetProUserTest(GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.search_pro", _external=True)
+        expected_url = url_for("backoffice_web.pro.search_pro", _external=True)
         assert response.location == expected_url
 
 
@@ -427,7 +427,7 @@ class DeleteProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user_id, form=form)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.search_pro", _external=True)
+        assert response.location == url_for("backoffice_web.pro.search_pro", _external=True)
 
         mails_api.delete_contact.assert_called_once_with(user.email)
         DeleteBatchUserAttributesRequest.assert_called_once_with(user_id=user_id)
@@ -450,7 +450,7 @@ class DeleteProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user_id, form=form)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.search_pro", _external=True)
+        assert response.location == url_for("backoffice_web.pro.search_pro", _external=True)
 
         mails_api.delete_contact.assert_not_called()
         DeleteBatchUserAttributesRequest.assert_called_once_with(user_id=user_id)

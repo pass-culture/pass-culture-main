@@ -15,7 +15,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.routes.backoffice.forms.search import TypeOptions
+from pcapi.routes.backoffice.pro.forms import TypeOptions
 from pcapi.utils.human_ids import humanize
 
 from .helpers import html_parser
@@ -32,7 +32,7 @@ pytestmark = [
 
 class SearchProTest(search_helpers.SearchHelper, GetEndpointHelper):
     # This class performs basic search tests by inheritance
-    endpoint = "backoffice_web.search_pro"
+    endpoint = "backoffice_web.pro.search_pro"
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
     def test_default_options(self, legit_user, authenticated_client):
@@ -90,7 +90,7 @@ def assert_venue_equals(result_card_text: str, expected_venue: offerers_models.V
 
 
 class SearchProUserTest:
-    endpoint = "backoffice_web.search_pro"
+    endpoint = "backoffice_web.pro.search_pro"
 
     # - fetch session
     # - fetch authenticated user
@@ -256,7 +256,7 @@ class SearchProUserTest:
 
 
 class SearchOffererTest:
-    endpoint = "backoffice_web.search_pro"
+    endpoint = "backoffice_web.pro.search_pro"
 
     # - fetch session
     # - fetch authenticated user
@@ -372,7 +372,7 @@ class SearchOffererTest:
 
 
 class SearchVenueTest:
-    endpoint = "backoffice_web.search_pro"
+    endpoint = "backoffice_web.pro.search_pro"
 
     # - fetch session
     # - fetch authenticated user
@@ -575,7 +575,7 @@ class SearchVenueTest:
 
 
 class SearchBankAccountTest:
-    endpoint = "backoffice_web.search_pro"
+    endpoint = "backoffice_web.pro.search_pro"
 
     # session + current user (2 queries)
     # results + count in .paginate (2 queries)
@@ -633,7 +633,7 @@ class SearchBankAccountTest:
 
 
 class LogsTest:
-    endpoint = "backoffice_web.search_pro"
+    endpoint = "backoffice_web.pro.search_pro"
 
     def test_log_pro_search(self, authenticated_client, caplog):
         offerers_factories.OffererFactory(name="Log à rythme", postalCode="02302")

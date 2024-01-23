@@ -40,8 +40,7 @@ from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
-from pcapi.routes.backoffice.forms import search as search_forms
-from pcapi.routes.backoffice.forms.search import TypeOptions
+from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.routes.serialization import base as serialize_base
 from pcapi.routes.serialization import reimbursement_csv_serialize
 from pcapi.utils import regions as regions_utils
@@ -203,9 +202,9 @@ def render_venue_details(
 
     delete_form = empty_forms.EmptyForm()
 
-    search_form = search_forms.CompactProSearchForm(
+    search_form = pro_forms.CompactProSearchForm(
         q=request.args.get("q"),
-        pro_type=TypeOptions.VENUE.name,
+        pro_type=pro_forms.TypeOptions.VENUE.name,
         departments=request.args.getlist("departments")
         if request.args.get("q") or request.args.getlist("departments")
         else current_user.backoffice_profile.preferences.get("departments", []),
@@ -214,7 +213,7 @@ def render_venue_details(
     return render_template(
         "venue/get.html",
         search_form=search_form,
-        search_dst=url_for("backoffice_web.search_pro"),
+        search_dst=url_for("backoffice_web.pro.search_pro"),
         venue=venue,
         edit_venue_form=edit_venue_form,
         region=region,
@@ -262,7 +261,7 @@ def get(venue_id: int) -> utils.BackofficeResponse:
             event_name="ConsultCard",
             extra_data={
                 "searchType": "ProSearch",
-                "searchProType": TypeOptions.VENUE.name,
+                "searchProType": pro_forms.TypeOptions.VENUE.name,
                 "searchQuery": request.args.get("q"),
                 "searchDepartments": ",".join(request.args.get("departments", [])),
                 "searchRank": request.args.get("search_rank"),
@@ -552,7 +551,7 @@ def delete_venue(venue_id: int) -> utils.BackofficeResponse:
         Markup("Le lieu {venue_name} ({venue_id}) a été supprimé").format(venue_name=venue_name, venue_id=venue_id),
         "success",
     )
-    return redirect(url_for("backoffice_web.search_pro"), code=303)
+    return redirect(url_for("backoffice_web.pro.search_pro"), code=303)
 
 
 @venue_blueprint.route("/<int:venue_id>/update", methods=["POST"])

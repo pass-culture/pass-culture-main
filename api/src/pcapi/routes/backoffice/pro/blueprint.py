@@ -11,11 +11,17 @@ from flask_sqlalchemy import BaseQuery
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import api as users_api
+from pcapi.routes.backoffice import search_utils
+from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice.pro import forms as pro_forms
 
-from . import blueprint
-from . import search_utils
-from . import utils
-from .forms import search as search_forms
+
+pro_blueprint = utils.child_backoffice_blueprint(
+    "pro",
+    __name__,
+    url_prefix="/pro",
+    permission=perm_models.Permissions.READ_PRO_ENTITY,
+)
 
 
 class Context:
@@ -30,7 +36,7 @@ class Context:
     row_id_name: str
 
     @classmethod
-    def get_pro_link(cls, row_id: int, form: search_forms.ProSearchForm | None, **kwargs: typing.Any) -> str:
+    def get_pro_link(cls, row_id: int, form: pro_forms.ProSearchForm | None, **kwargs: typing.Any) -> str:
         if form:
             kwargs.update({cls.row_id_name: row_id, "q": form.q.data, "departments": form.departments.data})
         return url_for(cls.endpoint, **kwargs)
@@ -39,47 +45,46 @@ class Context:
 class UserContext(Context):
     fetch_rows_func = users_api.search_pro_account
     get_item_base_query = users_api.get_pro_account_base_query
-    endpoint = ".pro_user.get"
+    endpoint = "backoffice_web.pro_user.get"
     row_id_name = "user_id"
 
 
 class OffererContext(Context):
     fetch_rows_func = offerers_api.search_offerer
     get_item_base_query = offerers_api.get_offerer_base_query
-    endpoint = ".offerer.get"
+    endpoint = "backoffice_web.offerer.get"
     row_id_name = "offerer_id"
 
 
 class VenueContext(Context):
     fetch_rows_func = offerers_api.search_venue
     get_item_base_query = offerers_api.get_venue_base_query
-    endpoint = ".venue.get"
+    endpoint = "backoffice_web.venue.get"
     row_id_name = "venue_id"
 
 
 class BankAccountContext(Context):
     fetch_rows_func = offerers_api.search_bank_account
     get_item_base_query = offerers_api.get_bank_account_base_query
-    endpoint = ".bank_account.get"
+    endpoint = "backoffice_web.bank_account.get"
     row_id_name = "bank_account_id"
 
     @classmethod
-    def get_pro_link(cls, row_id: int, form: search_forms.ProSearchForm | None, **kwargs: typing.Any) -> str:
+    def get_pro_link(cls, row_id: int, form: pro_forms.ProSearchForm | None, **kwargs: typing.Any) -> str:
         # No ConsultCard logged for bank account
         filtered_kwargs = {k: v for k, v in kwargs.items() if v and k not in ("search_rank", "total_items")}
         return super().get_pro_link(row_id, form, **filtered_kwargs)
 
 
-def render_search_template(form: search_forms.ProSearchForm | None = None) -> str:
+def render_search_template(form: pro_forms.ProSearchForm | None = None) -> str:
     if form is None:
         preferences = current_user.backoffice_profile.preferences
-        form = search_forms.ProSearchForm(departments=preferences.get("departments", []))
+        form = pro_forms.ProSearchForm(departments=preferences.get("departments", []))
 
     return render_template("pro/search.html", title="Recherche pro", dst=url_for(".search_pro"), form=form)
 
 
-@blueprint.backoffice_web.route("/pro/search", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.READ_PRO_ENTITY)
+@pro_blueprint.route("/search", methods=["GET"])
 def search_pro() -> utils.BackofficeResponse:
     """
     Renders two search pages: first the one with the search form, then
@@ -88,7 +93,7 @@ def search_pro() -> utils.BackofficeResponse:
     if not request.args:
         return render_search_template()
 
-    form = search_forms.ProSearchForm(request.args)
+    form = pro_forms.ProSearchForm(request.args)
     if not form.validate():
         return render_search_template(form), 400
 
@@ -119,7 +124,7 @@ def search_pro() -> utils.BackofficeResponse:
             context.get_pro_link(paginated_rows.items[0].id, form=form, search_rank=1, total_items=1), code=303
         )
 
-    search_form = search_forms.CompactProSearchForm(request.args)
+    search_form = pro_forms.CompactProSearchForm(request.args)
     search_form.page.data = 1  # Reset to first page when form is submitted ("Chercher" clicked)
     search_form.pro_type.data = form.pro_type.data.name  # Don't send an enum to jinja
 
@@ -134,10 +139,10 @@ def search_pro() -> utils.BackofficeResponse:
     )
 
 
-def get_context(pro_type: search_forms.TypeOptions) -> type[Context]:
+def get_context(pro_type: pro_forms.TypeOptions) -> type[Context]:
     return {
-        search_forms.TypeOptions.USER: UserContext,
-        search_forms.TypeOptions.OFFERER: OffererContext,
-        search_forms.TypeOptions.VENUE: VenueContext,
-        search_forms.TypeOptions.BANK_ACCOUNT: BankAccountContext,
+        pro_forms.TypeOptions.USER: UserContext,
+        pro_forms.TypeOptions.OFFERER: OffererContext,
+        pro_forms.TypeOptions.VENUE: VenueContext,
+        pro_forms.TypeOptions.BANK_ACCOUNT: BankAccountContext,
     }[pro_type]

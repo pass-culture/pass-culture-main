@@ -20,8 +20,7 @@ from pcapi.core.users.email import update as email_update
 from pcapi.models import db
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
-from pcapi.routes.backoffice.forms import search as search_forms
-from pcapi.routes.backoffice.forms.search import TypeOptions
+from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.routes.backoffice.pro_users import forms as pro_users_forms
 from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.tasks.batch_tasks import DeleteBatchUserAttributesRequest
@@ -49,7 +48,7 @@ def get(user_id: int) -> utils.BackofficeResponse:
     )
     if not user:
         flash("Cet utilisateur n'a pas de compte pro ou n'existe pas", "warning")
-        return redirect(url_for("backoffice_web.search_pro"), code=303)
+        return redirect(url_for("backoffice_web.pro.search_pro"), code=303)
 
     form = pro_users_forms.EditProUserForm(
         first_name=user.firstName,
@@ -65,7 +64,7 @@ def get(user_id: int) -> utils.BackofficeResponse:
             event_name="ConsultCard",
             extra_data={
                 "searchType": "ProSearch",
-                "searchProType": TypeOptions.USER.name,
+                "searchProType": pro_forms.TypeOptions.USER.name,
                 "searchQuery": request.args.get("q"),
                 "searchRank": request.args.get("search_rank"),
                 "searchNbResults": request.args.get("total_items"),
@@ -74,8 +73,8 @@ def get(user_id: int) -> utils.BackofficeResponse:
 
     return render_template(
         "pro_user/get.html",
-        search_form=search_forms.CompactProSearchForm(q=request.args.get("q"), pro_type=TypeOptions.USER.name),
-        search_dst=url_for("backoffice_web.search_pro"),
+        search_form=pro_forms.CompactProSearchForm(q=request.args.get("q"), pro_type=pro_forms.TypeOptions.USER.name),
+        search_dst=url_for("backoffice_web.pro.search_pro"),
         user=user,
         form=form,
         dst=dst,
@@ -192,7 +191,7 @@ def delete(user_id: int) -> utils.BackofficeResponse:
     users_models.User.query.filter(users_models.User.id == user_id).delete()
     db.session.commit()
     flash("Le compte a été supprimé", "success")
-    return redirect(url_for("backoffice_web.search_pro"), code=303)
+    return redirect(url_for("backoffice_web.pro.search_pro"), code=303)
 
 
 @pro_user_blueprint.route("/comment", methods=["POST"])

@@ -34,6 +34,7 @@ def install_routes(app: Flask) -> None:
     from .offers import blueprint as offers_blueprint
     from .pivots import blueprint as pivots_blueprint
     from .preferences import blueprint as preferences_blueprint
+    from .pro import blueprint as pro_blueprint
     from .pro_users import blueprint as pro_users_blueprint
     from .providers import blueprint as providers_blueprint
     from .titelive import blueprint as titelive_blueprint

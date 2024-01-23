@@ -30,7 +30,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.models import db
 from pcapi.routes.backoffice.filters import format_dms_status
-from pcapi.routes.backoffice.forms.search import TypeOptions
+from pcapi.routes.backoffice.pro.forms import TypeOptions
 from pcapi.routes.backoffice.venues import blueprint as venues_blueprint
 from pcapi.utils import urls
 
@@ -847,7 +847,7 @@ class DeleteVenueTest(PostEndpointHelper):
         assert response.status_code == 303
         assert offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_to_delete_id).count() == 0
 
-        expected_url = url_for("backoffice_web.search_pro", _external=True)
+        expected_url = url_for("backoffice_web.pro.search_pro", _external=True)
         assert response.location == expected_url
         response = authenticated_client.get(expected_url)
         assert (
