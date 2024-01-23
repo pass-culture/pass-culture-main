@@ -463,7 +463,10 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
             form=form,
         )
         assert response.status_code == 303
-        assert html_parser.extract_alert(authenticated_client.get(response.location).data) == "Règle créée avec succès"
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "La nouvelle règle a été créée"
+        )
 
         rule = offers_models.OfferValidationRule.query.one()
         assert rule.name == "First rule of robotics"
@@ -486,7 +489,10 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
             form=form,
         )
         assert response.status_code == 303
-        assert html_parser.extract_alert(authenticated_client.get(response.location).data) == "Règle créée avec succès"
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "La nouvelle règle a été créée"
+        )
 
         rule = offers_models.OfferValidationRule.query.one()
         assert rule.name == "First rule of robotics"
@@ -513,7 +519,10 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
             form=form,
         )
         assert response.status_code == 303
-        assert html_parser.extract_alert(authenticated_client.get(response.location).data) == "Règle créée avec succès"
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "La nouvelle règle a été créée"
+        )
 
         rule = offers_models.OfferValidationRule.query.one()
         assert rule.name == "First rule of robotics"

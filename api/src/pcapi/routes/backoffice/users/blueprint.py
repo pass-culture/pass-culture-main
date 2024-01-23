@@ -85,7 +85,7 @@ def suspend_user(user_id: int) -> utils.BackofficeResponse:
             is_backoffice_action=True,
         )
         flash(
-            Markup("Le compte de l'utilisateur {email} ({user_id}) a été suspendu").format(
+            Markup("Le compte de l'utilisateur <b>{email}</b> ({user_id}) a été suspendu").format(
                 email=user.email, user_id=user.id
             ),
             "success",
@@ -117,7 +117,7 @@ def unsuspend_user(user_id: int) -> utils.BackofficeResponse:
     if form.validate():
         users_api.unsuspend_account(user, current_user, comment=form.comment.data)
         flash(
-            Markup("Le compte de l'utilisateur {email} ({user_id}) a été réactivé").format(
+            Markup("Le compte de l'utilisateur <b>{email}</b> ({user_id}) a été réactivé").format(
                 email=user.email, user_id=user.id
             ),
             "success",

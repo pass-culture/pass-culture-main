@@ -396,7 +396,7 @@ class ValidateProEmailTest(PostEndpointHelper):
         assert pro_user.isEmailValidated
 
         response_redirect = authenticated_client.get(response.location)
-        assert f"L'email {pro_user.email} est validé !" in response_redirect.data.decode("utf-8")
+        assert f"L'email {pro_user.email} est validé !" in html_parser.content_as_text(response_redirect.data)
         assert len(mails_testing.outbox) == 0
 
     def test_validate_non_pro_user_email(self, authenticated_client):

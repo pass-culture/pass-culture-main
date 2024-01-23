@@ -205,5 +205,5 @@ def remove_blacklisted_domain_name(domain: str) -> utils.BackofficeResponse:
 
     db.session.commit()
 
-    flash(Markup("Le nom de domaine {domain} a été retiré de la liste").format(domain=domain), "success")
+    flash(Markup("Le nom de domaine <b>{domain}</b> a été retiré de la liste").format(domain=domain), "success")
     return redirect(url_for(".list_blacklisted_domain_names"), code=303)

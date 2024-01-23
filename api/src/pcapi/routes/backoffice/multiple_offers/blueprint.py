@@ -129,7 +129,7 @@ def add_criteria_to_offers() -> utils.BackofficeResponse:
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
     elif offers_api.add_criteria_to_offers(form.criteria.data, ean=form.ean.data):
-        flash("Les offres du produit ont bien été taguées", "success")
+        flash("Les offres du produit ont été taguées", "success")
     else:
         flash("Une erreur s'est produite lors de l'opération", "warning")
 

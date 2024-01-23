@@ -129,7 +129,7 @@ class EditEMSForm(EditPivotForm):
 
         ems_provider = providers_repository.get_provider_by_local_class("EMSStocks")
         if not ems_provider:
-            flash("Provider EMS n'existe pas.", "warning")
+            flash("Le provider EMS n'existe pas.", "warning")
             return False
 
         pivot = providers_repository.get_pivot_for_id_at_provider(

@@ -103,13 +103,14 @@ def create_provider() -> utils.BackofficeResponse:
             zendesk_sell.create_offerer(offerer)
         flash(
             Markup(
-                "Le partenaire {name} a été créé. La Clé API ne peut être régénérée ni ré-affichée, veillez à la sauvegarder immédiatement : {clear_secret}"
+                "Le nouveau partenaire <b>{name}</b> a été créé. "
+                "La Clé API ne peut être régénérée ni ré-affichée, veillez à la sauvegarder immédiatement : <pre>{clear_secret}</pre>"
             ).format(name=provider.name, clear_secret=clear_secret),
             "success",
         )
         flash(
             Markup(
-                "La clé de chiffrage des requêtes entre le partenaire et le pass Culture dans le cadre de l'api Charlie est: {key}"
+                "La clé de chiffrage des requêtes entre le partenaire et le pass Culture dans le cadre de l'API Charlie est : <pre>{key}</pre>"
             ).format(key=provider.hmacKey),
             "success",
         )
@@ -182,6 +183,6 @@ def update_provider(provider_id: int) -> utils.BackofficeResponse:
         db.session.rollback()
         flash("Ce partenaire existe déjà", "warning")
     else:
-        flash(Markup("Le partenaire {name} a été modifié.").format(name=provider.name), "success")
+        flash(Markup("Le partenaire <b>{name}</b> a été modifié.").format(name=provider.name), "success")
 
     return redirect(url_for("backoffice_web.providers.get_providers"), code=303)

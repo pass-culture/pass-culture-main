@@ -157,7 +157,7 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
     snapshot.add_action()
     db.session.commit()
 
-    flash("Informations mises à jour", "success")
+    flash("Les informations ont été mises à jour", "success")
     return redirect(url_for(".get", user_id=user_id), code=303)
 
 
@@ -191,7 +191,7 @@ def delete(user_id: int) -> utils.BackofficeResponse:
 
     users_models.User.query.filter(users_models.User.id == user_id).delete()
     db.session.commit()
-    flash("Le compte a bien été supprimé", "success")
+    flash("Le compte a été supprimé", "success")
     return redirect(url_for("backoffice_web.search_pro"), code=303)
 
 
@@ -213,7 +213,7 @@ def comment_pro_user(user_id: int) -> utils.BackofficeResponse:
         return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
 
     users_api.add_comment_to_user(user=user, author_user=current_user, comment=form.comment.data)
-    flash("Commentaire enregistré", "success")
+    flash("Le commentaire a été enregistré", "success")
 
     return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
 
@@ -228,10 +228,10 @@ def validate_pro_user_email(user_id: int) -> utils.BackofficeResponse:
         raise NotFound()
 
     if user.isEmailValidated:
-        flash(Markup("L'email {email} est déjà validé !").format(email=user.email), "warning")
+        flash(Markup("L'email <b>{email}</b> est déjà validé !").format(email=user.email), "warning")
     else:
         users_api.validate_pro_user_email(user=user, author_user=current_user)
-        flash(Markup("L'email {email} est validé !").format(email=user.email), "success")
+        flash(Markup("L'email <b>{email}</b> est validé !").format(email=user.email), "success")
     return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
 
 

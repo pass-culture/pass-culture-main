@@ -214,7 +214,7 @@ class ValidateIncidentTest(PostEndpointHelper):
         assert response.status_code == 200
 
         content = html_parser.content_as_text(response.data)
-        assert "L'incident a été validé avec succès." in content
+        assert "L'incident a été validé" in content
 
         updated_incident = finance_models.FinanceIncident.query.get(booking_incident.incidentId)
         assert updated_incident.status == finance_models.IncidentStatus.VALIDATED
@@ -310,7 +310,7 @@ class ValidateIncidentTest(PostEndpointHelper):
         assert response.status_code == 200
 
         content = html_parser.content_as_text(response.data)
-        assert "L'incident a été validé avec succès." in content
+        assert "L'incident a été validé" in content
 
         assert incident.status == finance_models.IncidentStatus.VALIDATED
         assert incident.forceDebitNote == force_debit_note

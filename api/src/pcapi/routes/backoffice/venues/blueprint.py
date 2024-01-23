@@ -423,7 +423,7 @@ def delete_venue_provider(venue_id: int, provider_id: int) -> utils.BackofficeRe
         return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
 
     providers_api.delete_venue_provider(venue_provider, author=current_user, send_email=False)
-    flash("Le lien entre le lieu et le provider a bien été effacé.", "info")
+    flash("Le lien entre le lieu et le provider a été effacé.", "info")
 
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
 
@@ -668,7 +668,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
         if not existing_pricing_point_id:
             offerers_api.link_venue_to_pricing_point(venue, pricing_point_id=venue.id)
 
-    flash("Les informations ont bien été mises à jour", "success")
+    flash("Les informations ont été mises à jour", "success")
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
 
 
@@ -753,7 +753,7 @@ def batch_edit_venues() -> utils.BackofficeResponse:
         reason=search.IndexationReason.VENUE_BATCH_UPDATE,
     )
 
-    flash("Les lieux ont été modifiés avec succès", "success")
+    flash("Les lieux ont été modifiés", "success")
     return redirect(request.referrer or url_for(".list_venues"), code=303)
 
 

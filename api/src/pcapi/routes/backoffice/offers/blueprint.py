@@ -503,7 +503,7 @@ def batch_validate_offers() -> utils.BackofficeResponse:
         return redirect(request.referrer, 400)
 
     _batch_validate_offers(form.object_ids_list)
-    flash("Les offres ont été validées avec succès", "success")
+    flash("Les offres ont été validées", "success")
     return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
 
 
@@ -530,7 +530,7 @@ def batch_reject_offers() -> utils.BackofficeResponse:
         return redirect(request.referrer, 400)
 
     _batch_reject_offers(form.object_ids_list)
-    flash("Les offres ont été rejetées avec succès", "success")
+    flash("Les offres ont été rejetées", "success")
     return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
 
 
@@ -601,7 +601,7 @@ def batch_edit_offer() -> utils.BackofficeResponse:
         reason=search.IndexationReason.OFFER_BATCH_UPDATE,
     )
 
-    flash("Les offres ont été modifiées avec succès", "success")
+    flash("Les offres ont été modifiées", "success")
     return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
 
 
@@ -626,7 +626,7 @@ def edit_offer(offer_id: int) -> utils.BackofficeResponse:
     #  waiting N minutes for the next indexing cron tasks is painful.
     search.reindex_offer_ids([offer.id])
 
-    flash("L'offre a été modifiée avec succès", "success")
+    flash("L'offre a été modifiée", "success")
     return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
 
 
@@ -654,7 +654,7 @@ def get_validate_offer_form(offer_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def validate_offer(offer_id: int) -> utils.BackofficeResponse:
     _batch_validate_offers([offer_id])
-    flash("L'offre a été validée avec succès", "success")
+    flash("L'offre a été validée", "success")
     return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
 
 
@@ -682,7 +682,7 @@ def get_reject_offer_form(offer_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def reject_offer(offer_id: int) -> utils.BackofficeResponse:
     _batch_reject_offers([offer_id])
-    flash("L'offre a été rejetée avec succès", "success")
+    flash("L'offre a été rejetée", "success")
     return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
 
 
@@ -895,7 +895,7 @@ def edit_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
             "new_price": float(form.price.data),
         },
     )
-    flash(f"Le stock {stock_id} a bien été mis à jour.", "success")
+    flash(f"Le stock {stock_id} a été mis à jour.", "success")
     db.session.commit()
     return redirect(url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id), 303)
 
