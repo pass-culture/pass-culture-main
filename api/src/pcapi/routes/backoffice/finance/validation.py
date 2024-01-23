@@ -65,7 +65,7 @@ def check_total_amount(
         return True
 
     if not input_amount:
-        flash("Impossible de créer un incident d'un montant de 0€.", "warning")
+        flash("Impossible de créer un incident d'un montant de 0 €.", "warning")
         return False
 
     if input_amount < 0:

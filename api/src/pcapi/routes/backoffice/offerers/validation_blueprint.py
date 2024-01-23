@@ -307,7 +307,7 @@ def batch_validate_offerer() -> utils.BackofficeResponse:
     try:
         return _offerer_batch_action(
             offerers_api.validate_offerer,
-            "Les structures sélectionnées ont été validées avec succès",
+            "Les structures sélectionnées ont été validées",
             BatchForm,
         )
     except offerers_exceptions.OffererAlreadyValidatedException:
@@ -354,7 +354,7 @@ def get_batch_offerer_pending_form() -> utils.BackofficeResponse:
 def batch_set_offerer_pending() -> utils.BackofficeResponse:
     return _offerer_batch_action(
         offerers_api.set_offerer_pending,
-        "Les structures ont été mises en attente avec succès",
+        "Les structures sélectionnées ont été mises en attente",
         offerer_forms.BatchCommentAndTagOffererForm,
     )
 
@@ -379,7 +379,7 @@ def batch_reject_offerer() -> utils.BackofficeResponse:
     try:
         return _offerer_batch_action(
             offerers_api.reject_offerer,
-            "Les structures sélectionnées ont été rejetées avec succès",
+            "Les structures sélectionnées ont été rejetées",
             offerer_forms.BatchOptionalCommentForm,
         )
     except offerers_exceptions.OffererAlreadyRejectedException:
@@ -667,7 +667,7 @@ def _user_offerer_batch_action(
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def batch_set_user_offerer_pending() -> utils.BackofficeResponse:
     return _user_offerer_batch_action(
-        offerers_api.set_offerer_attachment_pending, "Les rattachements ont été mis en attente avec succès"
+        offerers_api.set_offerer_attachment_pending, "Les rattachements ont été mis en attente"
     )
 
 
@@ -676,7 +676,7 @@ def batch_set_user_offerer_pending() -> utils.BackofficeResponse:
 def batch_reject_user_offerer() -> utils.BackofficeResponse:
     try:
         return _user_offerer_batch_action(
-            offerers_api.reject_offerer_attachment, "Les rattachements sélectionnés ont été rejetés avec succès"
+            offerers_api.reject_offerer_attachment, "Les rattachements sélectionnés ont été rejetés"
         )
     except offerers_exceptions.UserOffererAlreadyValidatedException:
         flash("Au moins un des rattachements est déjà rejeté", "warning")
@@ -688,7 +688,7 @@ def batch_reject_user_offerer() -> utils.BackofficeResponse:
 def batch_validate_user_offerer() -> utils.BackofficeResponse:
     try:
         return _user_offerer_batch_action(
-            offerers_api.validate_offerer_attachment, "Les rattachements sélectionnés ont été validés avec succès"
+            offerers_api.validate_offerer_attachment, "Les rattachements sélectionnés ont été validés"
         )
     except offerers_exceptions.UserOffererAlreadyValidatedException:
         flash("Au moins un des rattachements est déjà validé", "warning")

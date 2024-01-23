@@ -139,7 +139,7 @@ def cancel_finance_incident(finance_incident_id: int) -> utils.BackofficeRespons
         flash("Impossible d'annuler un incident déjà validé", "warning")
         return render_finance_incident(incident)
 
-    flash("L'incident a été annulé avec succès", "success")
+    flash("L'incident a été annulé", "success")
     return render_finance_incident(incident)
 
 
@@ -336,7 +336,7 @@ def create_individual_booking_incident() -> utils.BackofficeResponse:
     )
 
     flash(
-        Markup("Un incident a bien été créé pour {count} réservation{s}").format(
+        Markup("Un nouvel incident a été créé pour {count} réservation{s}").format(
             count=len(bookings), s="" if len(bookings) == 1 else "s"
         ),
         "success",
@@ -369,7 +369,7 @@ def create_collective_booking_incident(collective_booking_id: int) -> utils.Back
 
     finance_api.create_finance_incident(kind=form.kind.data, bookings=[collective_booking], origin=form.origin.data)
 
-    flash("L'incident a bien été créé.", "success")
+    flash("Le nouvel incident a été créé.", "success")
     return redirect(redirect_url, 303)
 
 
@@ -438,7 +438,7 @@ def comment_incident(finance_incident_id: int) -> utils.BackofficeResponse:
             comment=form.comment.data,
         )
         db.session.commit()
-        flash("Commentaire enregistré", "success")
+        flash("Le commentaire a été enregistré", "success")
 
     return redirect(
         url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=incident.id, active_tab="history")
@@ -540,7 +540,7 @@ def validate_finance_incident(finance_incident_id: int) -> utils.BackofficeRespo
         finance_incident, form.compensation_mode.data == forms.IncidentCompensationModes.FORCE_DEBIT_NOTE.name
     )
 
-    flash("L'incident a été validé avec succès.", "success")
+    flash("L'incident a été validé", "success")
     return render_finance_incident(finance_incident)
 
 

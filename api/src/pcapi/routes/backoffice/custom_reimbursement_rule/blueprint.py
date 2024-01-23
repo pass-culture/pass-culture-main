@@ -191,7 +191,7 @@ def create_custom_reimbursement_rule() -> utils.BackofficeResponse:
         db.session.rollback()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(err)), "warning")
     else:
-        flash("Le tarif dérogatoire a été créé", "success")
+        flash("Le nouveau tarif dérogatoire a été créé", "success")
 
     return _redirect_after_reimbursement_rule_action()
 

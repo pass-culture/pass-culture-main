@@ -197,7 +197,7 @@ def mark_booking_as_used(collective_booking_id: int) -> utils.BackofficeResponse
     except Exception as exc:  # pylint: disable=broad-except
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:
-        flash(f"La réservation {collective_booking.id} a été validée", "success")
+        flash(f"La réservation <b>{collective_booking.id}</b> a été validée", "success")
 
     return _redirect_after_collective_booking_action()
 
@@ -225,6 +225,6 @@ def mark_booking_as_cancelled(collective_booking_id: int) -> utils.BackofficeRes
     except Exception as exc:  # pylint: disable=broad-except
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:
-        flash(f"La réservation {collective_booking.id} a été annulée", "success")
+        flash(f"La réservation <b>{collective_booking.id}</b> a été annulée", "success")
 
     return _redirect_after_collective_booking_action()

@@ -2160,7 +2160,7 @@ class PostDeleteVenueProviderTest(PostEndpointHelper):
         )
 
         response = authenticated_client.get(response.location)
-        assert "Le lien entre le lieu et le provider a bien été effacé." in html_parser.extract_alert(response.data)
+        assert "Le lien entre le lieu et le provider a été effacé." in html_parser.extract_alert(response.data)
 
     def test_delete_venue_wrong_provider(self, authenticated_client):
         venue_provider = providers_factories.VenueProviderFactory()

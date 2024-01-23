@@ -230,16 +230,16 @@ def _batch_validate_or_reject_collective_offers(
 
     if len(collective_offer_update_succeed_ids) == 1:
         flash(
-            "L'offre collective a bien été validée"
+            "L'offre collective a été validée"
             if validation is offer_mixin.OfferValidationStatus.APPROVED
-            else "L'offre collective a bien été rejetée",
+            else "L'offre collective a été rejetée",
             "success",
         )
     elif collective_offer_update_succeed_ids:
         flash(
-            f"Les offres collectives {', '.join(map(str, collective_offer_update_succeed_ids))} ont bien été validées"
+            f"Les offres collectives {', '.join(map(str, collective_offer_update_succeed_ids))} ont été validées"
             if validation is offer_mixin.OfferValidationStatus.APPROVED
-            else f"Les offres collectives {', '.join(map(str, collective_offer_update_succeed_ids))} ont bien été rejetées",
+            else f"Les offres collectives {', '.join(map(str, collective_offer_update_succeed_ids))} ont été rejetées",
             "success",
         )
 

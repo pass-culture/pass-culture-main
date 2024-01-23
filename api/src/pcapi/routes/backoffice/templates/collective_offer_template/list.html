@@ -4,7 +4,7 @@
 {% extends "layouts/connected.html" %}
 {% block page %}
   <div class="pt-3 px-5 table-container-collective-offer-template-validation">
-    <h2 class="fw-light">Offres collectives vitrines</h2>
+    <h2 class="fw-light">Offres collectives vitrine</h2>
     {{ build_filters_form(form, dst) }}
     <div>
       {% if rows %}
@@ -108,7 +108,7 @@
                 <td>{{ links.build_offerer_name_to_details_link(collective_offer_template.venue.managingOfferer) }}</td>
                 <td>{{ links.build_venue_name_to_details_link(collective_offer_template.venue) }}</td>
                 <td>
-                  {{ links.build_venue_offers_icon_link(".list_collective_offer_templates", "Offres collectives vitrines", collective_offer_template.venue) }}
+                  {{ links.build_venue_offers_icon_link(".list_collective_offer_templates", "Offres collectives vitrine", collective_offer_template.venue) }}
                 </td>
               </tr>
             {% endfor %}
