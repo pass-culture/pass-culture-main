@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Outlet, useLocation } from 'react-router-dom'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
 
 import { AppLayout } from 'app/AppLayout'
 import { SignupJourneyFormLayout } from 'components/SignupJourneyFormLayout'
@@ -7,11 +7,8 @@ import SkipLinks from 'components/SkipLinks'
 import { SignupJourneyContextProvider } from 'context/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import { useLogout } from 'hooks/useLogout'
 import fullLogoutIcon from 'icons/full-logout.svg'
 import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
-import { Button } from 'ui-kit'
-import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './SignupJourney.module.scss'
@@ -19,12 +16,6 @@ import styles from './SignupJourney.module.scss'
 export const SignupJourneyRoutes = () => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
-  const logout = useLogout()
-
-  const onSignoutClick = async () => {
-    logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
-    await logout()
-  }
 
   useEffect(() => {
     if (window.Beamer !== undefined) {
@@ -50,13 +41,21 @@ export const SignupJourneyRoutes = () => {
             src={logoPassCultureProIcon}
             viewBox="0 0 119 40"
           />
-          <Button
-            onClick={onSignoutClick}
-            variant={ButtonVariant.TERNARY}
-            icon={fullLogoutIcon}
+          <NavLink
+            onClick={() =>
+              logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
+            }
+            to={`${location.pathname}?logout}`}
+            className={styles['logout-link']}
           >
+            <SvgIcon
+              className="nav-item-icon"
+              src={fullLogoutIcon}
+              alt=""
+              width="20"
+            />
             Se déconnecter
-          </Button>
+          </NavLink>
         </div>
       </header>
 
