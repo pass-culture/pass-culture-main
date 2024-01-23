@@ -870,361 +870,159 @@ class SubcategoriesTest:
                 "values": [
                     {"name": "Art", "value": "Art"},
                     {"name": "Arts Culinaires", "value": "Arts Culinaires"},
-                    {"name": "Bandes dessin\u00e9es", "value": "Bandes dessin\u00e9es"},
-                    {"name": "Carri\u00e8re/Concours", "value": "Carri\u00e8re/Concours"},
+                    {"name": "Bandes dessinées", "value": "Bandes dessinées"},
+                    {"name": "Carrière/Concours", "value": "Carrière/Concours"},
                     {"name": "Droit", "value": "Droit"},
-                    {"name": "Faits, t\u00e9moignages", "value": "Faits, t\u00e9moignages"},
+                    {"name": "Faits, témoignages", "value": "Faits, témoignages"},
                     {"name": "Gestion/entreprise", "value": "Gestion/entreprise"},
-                    {"name": "G\u00e9ographie, cartographie", "value": "G\u00e9ographie, cartographie"},
+                    {"name": "Géographie, cartographie", "value": "Géographie, cartographie"},
                     {"name": "Histoire", "value": "Histoire"},
                     {"name": "Humour", "value": "Humour"},
                     {"name": "Informatique", "value": "Informatique"},
                     {"name": "Jeunesse", "value": "Jeunesse"},
                     {"name": "Jeux", "value": "Jeux"},
                     {"name": "Langue", "value": "Langue"},
-                    {"name": "Litt\u00e9rature Europ\u00e9enne", "value": "Litt\u00e9rature Europ\u00e9enne"},
-                    {"name": "Litt\u00e9rature fran\u00e7aise", "value": "Litt\u00e9rature fran\u00e7aise"},
-                    {"name": "Litt\u00e9rature \u00e9trang\u00e8re", "value": "Litt\u00e9rature \u00e9trang\u00e8re"},
+                    {"name": "Littérature Européenne", "value": "Littérature Européenne"},
+                    {"name": "Littérature française", "value": "Littérature française"},
+                    {"name": "Littérature étrangère", "value": "Littérature étrangère"},
                     {"name": "Loisirs", "value": "Loisirs"},
                     {"name": "Manga", "value": "Manga"},
                     {"name": "Marketing et audio-visuel", "value": "Marketing et audio-visuel"},
                     {"name": "Policier", "value": "Policier"},
-                    {
-                        "name": "Po\u00e9sie, th\u00e9\u00e2tre et spectacle",
-                        "value": "Po\u00e9sie, th\u00e9\u00e2tre et spectacle",
-                    },
+                    {"name": "Poésie, théâtre et spectacle", "value": "Poésie, théâtre et spectacle"},
                     {"name": "Psychanalyse, psychologie", "value": "Psychanalyse, psychologie"},
-                    {"name": "Religions, spiritualit\u00e9s", "value": "Religions, spiritualit\u00e9s"},
-                    {"name": "Sant\u00e9", "value": "Sant\u00e9"},
+                    {"name": "Religions, spiritualités", "value": "Religions, spiritualités"},
+                    {"name": "Santé", "value": "Santé"},
                     {
                         "name": "Science-fiction, fantastique & terreur",
                         "value": "Science-fiction, fantastique & terreur",
                     },
                     {
-                        "name": "Sciences Humaines, Encyclop\u00e9die, dictionnaire",
-                        "value": "Sciences Humaines, Encyclop\u00e9die, dictionnaire",
+                        "name": "Sciences Humaines, Encyclopédie, dictionnaire",
+                        "value": "Sciences Humaines, Encyclopédie, dictionnaire",
                     },
                     {"name": "Sciences, vie & Nature", "value": "Sciences, vie & Nature"},
                     {"name": "Scolaire & Parascolaire", "value": "Scolaire & Parascolaire"},
-                    {"name": "Sexualit\u00e9", "value": "Sexualit\u00e9"},
+                    {"name": "Sexualité", "value": "Sexualité"},
                     {"name": "Sociologie", "value": "Sociologie"},
                     {"name": "Sport", "value": "Sport"},
                     {"name": "Tourisme", "value": "Tourisme"},
                     {"name": "Vie pratique", "value": "Vie pratique"},
-                    {"name": "\u00c9conomie", "value": "\u00c9conomie"},
+                    {"name": "Économie", "value": "Économie"},
                 ],
                 "trees": [
                     {
                         "children": [
                             {
                                 "label": "Romances",
-                                "gtls": [{"code": "01020600", "label": "Roman sentimental", "level": 4}],
+                                "gtls": [{"code": "01020600", "label": "Roman sentimental", "level": 3}],
+                                "position": 1,
                             },
-                            {"label": "Thriller", "gtls": [{"code": "01020500", "label": "Thriller", "level": 3}]},
-                            {"label": "Fantasy", "gtls": [{"code": "01020900", "label": "Fantasy", "level": 4}]},
-                            {"label": "Policier", "gtls": [{"code": "01020400", "label": "Policier", "level": 3}]},
                             {
-                                "label": "\u0152uvres classiques",
-                                "gtls": [{"code": "01030000", "label": "\u0152uvres classiques", "level": 2}],
+                                "label": "Thriller",
+                                "gtls": [{"code": "01020500", "label": "Thriller", "level": 3}],
+                                "position": 2,
+                            },
+                            {
+                                "label": "Fantasy",
+                                "gtls": [{"code": "01020900", "label": "Fantasy", "level": 3}],
+                                "position": 3,
+                            },
+                            {
+                                "label": "Policier",
+                                "gtls": [{"code": "01020400", "label": "Policier", "level": 3}],
+                                "position": 4,
+                            },
+                            {
+                                "label": "Œuvres classiques",
+                                "gtls": [{"code": "01030000", "label": "Œuvres classiques", "level": 2}],
+                                "position": 5,
                             },
                             {
                                 "label": "Sciences fictions",
-                                "gtls": [{"code": "01020700", "label": "Science-fiction", "level": 4}],
+                                "gtls": [{"code": "01020700", "label": "Science-fiction", "level": 3}],
+                                "position": 6,
                             },
                             {
                                 "label": "Horreur",
                                 "gtls": [{"code": "01020802", "label": "Horreur / Terreur", "level": 4}],
+                                "position": 7,
                             },
                             {
-                                "label": "Aventure (inclut espionnage)",
+                                "label": "Aventure",
                                 "gtls": [
                                     {"code": "01020200", "label": "Aventure", "level": 3},
                                     {"code": "01020300", "label": "Espionnage", "level": 3},
                                 ],
+                                "position": 8,
                             },
                             {
                                 "label": "Biographie",
                                 "gtls": [
-                                    {
-                                        "code": "01060000",
-                                        "label": "Biographie / T\u00e9moignage litt\u00e9raire",
-                                        "level": 2,
-                                    }
+                                    {"code": "01060000", "label": "Biographie / Témoignage littéraire", "level": 2}
                                 ],
+                                "position": 9,
                             },
                             {
-                                "label": "Contes & l\u00e9gendes",
-                                "gtls": [{"code": "01040000", "label": "Contes / L\u00e9gendes", "level": 2}],
+                                "label": "Contes & légendes",
+                                "gtls": [{"code": "01040000", "label": "Contes / Légendes", "level": 2}],
+                                "position": 10,
                             },
-                            {"label": "Jeunesse", "gtls": [{"code": "02000000", "label": "Jeunesse", "level": 1}]},
                         ],
                         "gtls": [
                             {"code": "01010000", "label": "Romans & Nouvelles", "level": 2},
                             {"code": "01020000", "label": "Romans & Nouvelles de genre", "level": 2},
-                            {"code": "01030000", "label": "\u0152uvres classiques", "level": 2},
-                            {"code": "02000000", "label": "Jeunesse", "level": 2},
+                            {"code": "01030000", "label": "Œuvres classiques", "level": 2},
+                            {"code": "02000000", "label": "Jeunesse", "level": 1},
+                            {"code": "01060000", "label": "Biographie / Témoignage littéraire", "level": 2},
+                            {"code": "01040000", "label": "Contes / Légendes", "level": 2},
                         ],
-                        "label": "Romans et litt\u00e9rature",
+                        "label": "Romans et littérature",
+                        "position": 1,
                     },
                     {
                         "children": [
-                            {"label": "Kodomo", "gtls": [{"code": "03040300", "label": "Kodomo", "level": 3}]},
-                            {"label": "Sh\u00f4jo", "gtls": [{"code": "03040400", "label": "Sh\u00f4jo", "level": 3}]},
-                            {"label": "Shonen", "gtls": [{"code": "03040500", "label": "Shonen", "level": 3}]},
-                            {"label": "Josei", "gtls": [{"code": "03040700", "label": "Josei", "level": 3}]},
-                            {"label": "Yaoi", "gtls": [{"code": "03040800", "label": "Yaoi", "level": 3}]},
-                            {"label": "Yuri", "gtls": [{"code": "03040900", "label": "Yuri", "level": 3}]},
+                            {
+                                "label": "Shonen",
+                                "gtls": [{"code": "03040500", "label": "Shonen", "level": 3}],
+                                "position": 1,
+                            },
+                            {
+                                "label": "Shôjo",
+                                "gtls": [{"code": "03040400", "label": "Shôjo", "level": 3}],
+                                "position": 2,
+                            },
+                            {
+                                "label": "Yaoi",
+                                "gtls": [{"code": "03040800", "label": "Yaoi", "level": 3}],
+                                "position": 3,
+                            },
+                            {
+                                "label": "Kodomo",
+                                "gtls": [{"code": "03040300", "label": "Kodomo", "level": 3}],
+                                "position": 4,
+                            },
+                            {
+                                "label": "Josei",
+                                "gtls": [{"code": "03040700", "label": "Josei", "level": 3}],
+                                "position": 5,
+                            },
+                            {
+                                "label": "Yuri",
+                                "gtls": [{"code": "03040900", "label": "Yuri", "level": 3}],
+                                "position": 6,
+                            },
                         ],
                         "gtls": [
                             {"code": "03040300", "label": "Kodomo", "level": 3},
-                            {"code": "03040400", "label": "Sh\u00f4jo", "level": 3},
+                            {"code": "03040400", "label": "Shôjo", "level": 3},
                             {"code": "03040500", "label": "Shonen", "level": 3},
                             {"code": "03040700", "label": "Josei", "level": 3},
                             {"code": "03040800", "label": "Yaoi", "level": 3},
                             {"code": "03040900", "label": "Yuri", "level": 3},
                         ],
                         "label": "Mangas",
-                    },
-                    {
-                        "children": [
-                            {
-                                "label": "Vie quotidienne & Bien-\u00eatre",
-                                "gtls": [{"code": "04060000", "label": "Vie quotidienne & Bien-\u00eatre", "level": 2}],
-                            },
-                            {
-                                "label": "Cuisine",
-                                "gtls": [{"code": "04030000", "label": "Arts de la table / Gastronomie", "level": 2}],
-                            },
-                            {
-                                "label": "Activit\u00e9s manuelles",
-                                "gtls": [{"code": "04050000", "label": "Hobbies", "level": 2}],
-                            },
-                            {"label": "Jeux", "gtls": [{"code": "04050500", "label": "Jeux", "level": 3}]},
-                            {"label": "Sports", "gtls": [{"code": "04070000", "label": "Sports", "level": 2}]},
-                            {"label": "Animaux", "gtls": [{"code": "04020000", "label": "Animaux", "level": 2}]},
-                            {
-                                "label": "Nature & plein air",
-                                "gtls": [{"code": "04010000", "label": "Nature & Plein air", "level": 2}],
-                            },
-                            {
-                                "label": "Habitat & maison",
-                                "gtls": [{"code": "04040000", "label": "Habitat / Maison", "level": 2}],
-                            },
-                            {"label": "Transports", "gtls": [{"code": "04050700", "label": "Transports", "level": 3}]},
-                        ],
-                        "gtls": [{"code": "04000000", "label": "Vie pratique & Loisirs", "level": 1}],
-                        "label": "Loisirs & Bien-\u00eatre",
-                    },
-                    {
-                        "children": [
-                            {
-                                "label": "Philosophie",
-                                "gtls": [{"code": "09080000", "label": "Philosophie", "level": 2}],
-                            },
-                            {
-                                "label": "Sciences politiques",
-                                "gtls": [{"code": "09110000", "label": "Sciences politiques & Politique", "level": 2}],
-                            },
-                            {
-                                "label": "Sciences sociales & Soci\u00e9t\u00e9",
-                                "gtls": [
-                                    {"code": "09120000", "label": "Sciences sociales  / Soci\u00e9t\u00e9", "level": 3}
-                                ],
-                            },
-                            {
-                                "label": "Psychologie & Psychanalyse",
-                                "gtls": [{"code": "09090000", "label": "Psychologie / Psychanalyse", "level": 2}],
-                            },
-                            {
-                                "label": "Actualit\u00e9s & reportage",
-                                "gtls": [{"code": "01110000", "label": "Actualit\u00e9s & Reportages", "level": 2}],
-                            },
-                            {
-                                "label": "Anthropologie & Ethnologie",
-                                "gtls": [
-                                    {"code": "09010000", "label": "Anthropologie", "level": 2},
-                                    {"code": "09020000", "label": "Ethnologie", "level": 2},
-                                ],
-                            },
-                        ],
-                        "gtls": [
-                            {"code": "09000000", "label": "Sciences humaines & sociales", "level": 1},
-                            {"code": "01110000", "label": "Actualit\u00e9s & Reportages", "level": 2},
-                        ],
-                        "label": "Soci\u00e9t\u00e9 et politique",
-                    },
-                    {
-                        "children": [
-                            {"label": "Droit", "gtls": [{"code": "08030000", "label": "Droit", "level": 2}]},
-                            {
-                                "label": "M\u00e9decine",
-                                "gtls": [{"code": "10080000", "label": "M\u00e9decine", "level": 2}],
-                            },
-                            {
-                                "label": "Entreprise",
-                                "gtls": [
-                                    {"code": "08040000", "label": "Entreprise, gestion et management", "level": 1}
-                                ],
-                            },
-                            {
-                                "label": "Sciences \u00e9conomiques",
-                                "gtls": [{"code": "08010000", "label": "Sciences \u00e9conomiques", "level": 2}],
-                            },
-                            {
-                                "label": "Histoire",
-                                "gtls": [
-                                    {"code": "09050000", "label": "Histoire", "level": 2},
-                                    {"code": "09060000", "label": "Histoire du monde", "level": 2},
-                                ],
-                            },
-                            {
-                                "label": "G\u00e9ographie",
-                                "gtls": [
-                                    {"code": "09030000", "label": "G\u00e9ographie", "level": 2},
-                                    {"code": "09040000", "label": "G\u00e9ographie du monde", "level": 2},
-                                ],
-                            },
-                            {
-                                "label": "Sciences de la Terre et de l\u2019Univers",
-                                "gtls": [
-                                    {"code": "10050000", "label": "Sciences de la Terre et de l'Univers", "level": 2}
-                                ],
-                            },
-                            {
-                                "label": "Physiques, Math\u00e9matiques et Informatique",
-                                "gtls": [
-                                    {"code": "10030000", "label": "Sciences physiques", "level": 2},
-                                    {"code": "12200200", "label": "Math\u00e9matiques", "level": 3},
-                                    {"code": "10070000", "label": "Informatique", "level": 2},
-                                ],
-                            },
-                            {
-                                "label": "Sciences appliqu\u00e9es et industrie",
-                                "gtls": [
-                                    {"code": "10060000", "label": "Sciences appliqu\u00e9es et industrie", "level": 2}
-                                ],
-                            },
-                            {
-                                "label": "Dictionnaires",
-                                "gtls": [{"code": "13010000", "label": "Dictionnaires de fran\u00e7ais", "level": 2}],
-                            },
-                            {
-                                "label": "Encyclop\u00e9dies",
-                                "gtls": [{"code": "13020000", "label": "Encyclop\u00e9dies", "level": 2}],
-                            },
-                        ],
-                        "gtls": [
-                            {"code": "08030000", "label": "Droit", "level": 2},
-                            {"code": "10080000", "label": "M\u00e9decine", "level": 2},
-                            {"code": "08040000", "label": "Entreprise, gestion et management", "level": 1},
-                            {"code": "08010000", "label": "Sciences \u00e9conomiques", "level": 2},
-                            {"code": "09050000", "label": "Histoire", "level": 2},
-                            {"code": "09060000", "label": "Histoire du monde", "level": 2},
-                            {"code": "09030000", "label": "G\u00e9ographie", "level": 2},
-                            {"code": "09040000", "label": "G\u00e9ographie du monde", "level": 2},
-                            {"code": "10050000", "label": "Sciences de la Terre et de l'Univers", "level": 2},
-                            {"code": "10030000", "label": "Sciences physiques", "level": 2},
-                            {"code": "12200200", "label": "Math\u00e9matiques", "level": 3},
-                            {"code": "10070000", "label": "Informatique", "level": 2},
-                            {"code": "10060000", "label": "Sciences appliqu\u00e9es et industrie", "level": 2},
-                            {"code": "13010000", "label": "Dictionnaires de fran\u00e7ais", "level": 2},
-                            {"code": "13020000", "label": "Encyclop\u00e9dies", "level": 2},
-                        ],
-                        "label": "Comp\u00e9tences g\u00e9n\u00e9rales",
-                    },
-                    {
-                        "children": [
-                            {
-                                "label": "Th\u00e9\u00e2tre",
-                                "gtls": [{"code": "01080000", "label": "Th\u00e9\u00e2tre", "level": 3}],
-                            },
-                            {
-                                "label": "Po\u00e9sie",
-                                "gtls": [{"code": "01090000", "label": "Po\u00e9sie", "level": 2}],
-                            },
-                            {
-                                "label": "Essais litt\u00e9raires",
-                                "gtls": [{"code": "01070000", "label": "Litt\u00e9rature argumentative", "level": 2}],
-                            },
-                            {"label": "R\u00e9cit", "gtls": [{"code": "01050000", "label": "R\u00e9cit", "level": 2}]},
-                        ],
-                        "gtls": [
-                            {"code": "01080000", "label": "Th\u00e9\u00e2tre", "level": 3},
-                            {"code": "01090000", "label": "Po\u00e9sie", "level": 2},
-                            {"code": "01070000", "label": "Litt\u00e9rature argumentative", "level": 2},
-                            {"code": "01050000", "label": "R\u00e9cit", "level": 2},
-                        ],
-                        "label": "Th\u00e9\u00e2tre, po\u00e9sie et essais",
-                    },
-                    {
-                        "children": [
-                            {
-                                "label": "Monde",
-                                "gtls": [{"code": "05030000", "label": "Tourisme & Voyages Monde", "level": 2}],
-                            },
-                            {
-                                "label": "France",
-                                "gtls": [{"code": "05020000", "label": "Tourisme & Voyages France", "level": 2}],
-                            },
-                            {
-                                "label": "Europe",
-                                "gtls": [{"code": "05040000", "label": "Tourisme & Voyages Europe", "level": 2}],
-                            },
-                            {
-                                "label": "Asie",
-                                "gtls": [{"code": "05100000", "label": "Tourisme & Voyages Asie", "level": 2}],
-                            },
-                            {
-                                "label": "Am\u00e9rique du Nord",
-                                "gtls": [
-                                    {
-                                        "code": "05070000",
-                                        "label": "Tourisme & Voyages Am\u00e9rique du Nord",
-                                        "level": 2,
-                                    }
-                                ],
-                            },
-                            {
-                                "label": "Afrique",
-                                "gtls": [{"code": "05060000", "label": "Tourisme & Voyages Afrique", "level": 2}],
-                            },
-                            {
-                                "label": "Oc\u00e9anie",
-                                "gtls": [{"code": "05110000", "label": "Tourisme & Voyages Oc\u00e9anie", "level": 2}],
-                            },
-                            {
-                                "label": "Arctique & Antarctique",
-                                "gtls": [
-                                    {
-                                        "code": "05120000",
-                                        "label": "Tourisme & Voyages Arctique / Antarctique",
-                                        "level": 2,
-                                    }
-                                ],
-                            },
-                            {
-                                "label": "Am\u00e9rique centrale & Cara\u00efbes",
-                                "gtls": [
-                                    {
-                                        "code": "05080000",
-                                        "label": "Tourisme & Voyages Am\u00e9rique centrale et Cara\u00efbes",
-                                        "level": 2,
-                                    }
-                                ],
-                            },
-                            {
-                                "label": "Am\u00e9rique du Sud",
-                                "gtls": [
-                                    {"code": "05090000", "label": "Tourisme & Voyages Am\u00e9rique du Sud", "level": 2}
-                                ],
-                            },
-                            {
-                                "label": "Moyen-Orient",
-                                "gtls": [{"code": "05050000", "label": "Tourisme & Voyages Moyen-Orient", "level": 2}],
-                            },
-                        ],
-                        "gtls": [{"code": "05000000", "label": "Tourisme & Voyages", "level": 1}],
-                        "label": "Tourisme & Voyages",
+                        "position": 2,
                     },
                     {
                         "children": [
@@ -1241,9 +1039,10 @@ class SubcategoriesTest:
                                     {"code": "03030610", "label": "Humour", "level": 4},
                                     {"code": "03030710", "label": "Humour", "level": 4},
                                 ],
+                                "position": 1,
                             },
                             {
-                                "label": "Action / Aventures",
+                                "label": "Action & Aventure",
                                 "gtls": [
                                     {"code": "03020109", "label": "Action / Aventures", "level": 4},
                                     {"code": "03020209", "label": "Action / Aventures", "level": 4},
@@ -1255,9 +1054,10 @@ class SubcategoriesTest:
                                     {"code": "03030608", "label": "Action / Aventures", "level": 4},
                                     {"code": "03030708", "label": "Action / Aventures", "level": 4},
                                 ],
+                                "position": 2,
                             },
                             {
-                                "label": "Fantastique / Epouvante",
+                                "label": "Fantastique & Épouvante",
                                 "gtls": [
                                     {"code": "03020206", "label": "Fantastique / Epouvante", "level": 4},
                                     {"code": "03020305", "label": "Fantastique / Epouvante", "level": 4},
@@ -1268,20 +1068,22 @@ class SubcategoriesTest:
                                     {"code": "03030605", "label": "Fantastique / Epouvante", "level": 4},
                                     {"code": "03030705", "label": "Fantastique / Epouvante", "level": 4},
                                 ],
+                                "position": 3,
                             },
                             {
-                                "label": "Documentaire / Soci\u00e9t\u00e9",
+                                "label": "Documentaire & Société",
                                 "gtls": [
-                                    {"code": "03020103", "label": "Documentaire / Soci\u00e9t\u00e9", "level": 4},
-                                    {"code": "03020203", "label": "Documentaire / Soci\u00e9t\u00e9", "level": 4},
-                                    {"code": "03020302", "label": "Documentaire / Soci\u00e9t\u00e9", "level": 4},
-                                    {"code": "03030202", "label": "Documentaire / Soci\u00e9t\u00e9", "level": 4},
-                                    {"code": "03030302", "label": "Documentaire / Soci\u00e9t\u00e9", "level": 4},
-                                    {"code": "03030402", "label": "Documentaire / Soci\u00e9t\u00e9", "level": 4},
-                                    {"code": "03030502", "label": "Documentaire / Soci\u00e9t\u00e9", "level": 4},
-                                    {"code": "03030602", "label": "Documentaire / Soci\u00e9t\u00e9", "level": 4},
-                                    {"code": "03030702", "label": "Documentaire / Soci\u00e9t\u00e9", "level": 4},
+                                    {"code": "03020103", "label": "Documentaire / Société", "level": 4},
+                                    {"code": "03020203", "label": "Documentaire / Société", "level": 4},
+                                    {"code": "03020302", "label": "Documentaire / Société", "level": 4},
+                                    {"code": "03030202", "label": "Documentaire / Société", "level": 4},
+                                    {"code": "03030302", "label": "Documentaire / Société", "level": 4},
+                                    {"code": "03030402", "label": "Documentaire / Société", "level": 4},
+                                    {"code": "03030502", "label": "Documentaire / Société", "level": 4},
+                                    {"code": "03030602", "label": "Documentaire / Société", "level": 4},
+                                    {"code": "03030702", "label": "Documentaire / Société", "level": 4},
                                 ],
+                                "position": 4,
                             },
                             {
                                 "label": "Fantasy",
@@ -1296,6 +1098,7 @@ class SubcategoriesTest:
                                     {"code": "03030604", "label": "Fantasy", "level": 4},
                                     {"code": "03030704", "label": "Fantasy", "level": 4},
                                 ],
+                                "position": 5,
                             },
                             {
                                 "label": "Histoire",
@@ -1310,9 +1113,10 @@ class SubcategoriesTest:
                                     {"code": "03030607", "label": "Histoire", "level": 4},
                                     {"code": "03030707", "label": "Histoire", "level": 4},
                                 ],
+                                "position": 6,
                             },
                             {
-                                "label": "Policier / Thriller",
+                                "label": "Policier & Thriller",
                                 "gtls": [
                                     {"code": "03020107", "label": "Policier / Thriller", "level": 4},
                                     {"code": "03020207", "label": "Policier / Thriller", "level": 4},
@@ -1324,6 +1128,7 @@ class SubcategoriesTest:
                                     {"code": "03030606", "label": "Policier / Thriller", "level": 4},
                                     {"code": "03030706", "label": "Policier / Thriller", "level": 4},
                                 ],
+                                "position": 7,
                             },
                             {
                                 "label": "Science-fiction",
@@ -1338,6 +1143,7 @@ class SubcategoriesTest:
                                     {"code": "03030603", "label": "Science-fiction", "level": 4},
                                     {"code": "03030703", "label": "Science-fiction", "level": 4},
                                 ],
+                                "position": 8,
                             },
                             {
                                 "label": "Adaptation",
@@ -1352,6 +1158,7 @@ class SubcategoriesTest:
                                     {"code": "03030601", "label": "Adaptation", "level": 4},
                                     {"code": "03030701", "label": "Adaptation", "level": 4},
                                 ],
+                                "position": 9,
                             },
                             {
                                 "label": "Western",
@@ -1366,51 +1173,361 @@ class SubcategoriesTest:
                                     {"code": "03030609", "label": "Western", "level": 4},
                                     {"code": "03030709", "label": "Western", "level": 4},
                                 ],
+                                "position": 10,
                             },
-                            {"label": "Super H\u00e9ros", "gtls": [{"code": "03030300", "label": "Strip", "level": 4}]},
                             {
-                                "label": "Super H\u00e9ros",
-                                "gtls": [{"code": "03030400", "label": "Super H\u00e9ros", "level": 4}],
+                                "label": "Super Héros",
+                                "gtls": [{"code": "03030400", "label": "Super Héros", "level": 3}],
+                                "position": 11,
+                            },
+                            {
+                                "label": "Strip",
+                                "gtls": [{"code": "03030300", "label": "Strip", "level": 3}],
+                                "position": 12,
                             },
                         ],
                         "gtls": [
-                            {"code": "03020000", "label": "Bandes dessin\u00e9es", "level": 2},
+                            {"code": "03020000", "label": "Bandes dessinées", "level": 2},
                             {"code": "03030000", "label": "Comics", "level": 2},
                         ],
                         "label": "BD & Comics",
+                        "position": 3,
+                    },
+                    {
+                        "children": [
+                            {
+                                "label": "Vie quotidienne & Bien-être",
+                                "gtls": [{"code": "04060000", "label": "Vie quotidienne & Bien-être", "level": 2}],
+                                "position": 1,
+                            },
+                            {
+                                "label": "Cuisine",
+                                "gtls": [{"code": "04030000", "label": "Arts de la table / Gastronomie", "level": 2}],
+                                "position": 2,
+                            },
+                            {
+                                "label": "Activités manuelles",
+                                "gtls": [{"code": "04050000", "label": "Hobbies", "level": 2}],
+                                "position": 3,
+                            },
+                            {
+                                "label": "Jeux",
+                                "gtls": [{"code": "04050500", "label": "Jeux", "level": 3}],
+                                "position": 4,
+                            },
+                            {
+                                "label": "Sports",
+                                "gtls": [{"code": "04070000", "label": "Sports", "level": 2}],
+                                "position": 5,
+                            },
+                            {
+                                "label": "Animaux",
+                                "gtls": [{"code": "04020000", "label": "Animaux", "level": 2}],
+                                "position": 6,
+                            },
+                            {
+                                "label": "Nature & Plein air",
+                                "gtls": [{"code": "04010000", "label": "Nature & Plein air", "level": 2}],
+                                "position": 7,
+                            },
+                            {
+                                "label": "Habitat & Maison",
+                                "gtls": [{"code": "04040000", "label": "Habitat / Maison", "level": 2}],
+                                "position": 8,
+                            },
+                            {
+                                "label": "Transports",
+                                "gtls": [{"code": "04050700", "label": "Transports", "level": 3}],
+                                "position": 9,
+                            },
+                        ],
+                        "gtls": [{"code": "04000000", "label": "Vie pratique & Loisirs", "level": 1}],
+                        "label": "Loisirs & Bien-être",
+                        "position": 4,
+                    },
+                    {
+                        "children": [
+                            {
+                                "label": "Philosophie",
+                                "gtls": [{"code": "09080000", "label": "Philosophie", "level": 2}],
+                                "position": 1,
+                            },
+                            {
+                                "label": "Sciences politiques",
+                                "gtls": [{"code": "09110000", "label": "Sciences politiques & Politique", "level": 2}],
+                                "position": 2,
+                            },
+                            {
+                                "label": "Sciences sociales & Société",
+                                "gtls": [{"code": "09120000", "label": "Sciences sociales  / Société", "level": 2}],
+                                "position": 3,
+                            },
+                            {
+                                "label": "Psychologie & Psychanalyse",
+                                "gtls": [{"code": "09090000", "label": "Psychologie / Psychanalyse", "level": 2}],
+                                "position": 4,
+                            },
+                            {
+                                "label": "Actualité & Reportage",
+                                "gtls": [{"code": "01110000", "label": "Actualités & Reportages", "level": 2}],
+                                "position": 5,
+                            },
+                            {
+                                "label": "Anthropologie & Ethnologie",
+                                "gtls": [
+                                    {"code": "09010000", "label": "Anthropologie", "level": 2},
+                                    {"code": "09020000", "label": "Ethnologie", "level": 2},
+                                ],
+                                "position": 6,
+                            },
+                        ],
+                        "gtls": [
+                            {"code": "09000000", "label": "Sciences humaines & sociales", "level": 1},
+                            {"code": "01110000", "label": "Actualités & Reportages", "level": 2},
+                        ],
+                        "label": "Société & Politique",
+                        "position": 5,
+                    },
+                    {
+                        "children": [
+                            {
+                                "label": "Théâtre",
+                                "gtls": [{"code": "01080000", "label": "Théâtre", "level": 2}],
+                                "position": 1,
+                            },
+                            {
+                                "label": "Poésie",
+                                "gtls": [{"code": "01090000", "label": "Poésie", "level": 2}],
+                                "position": 2,
+                            },
+                            {
+                                "label": "Essais littéraires",
+                                "gtls": [{"code": "01070000", "label": "Littérature argumentative", "level": 2}],
+                                "position": 3,
+                            },
+                            {
+                                "label": "Récit",
+                                "gtls": [{"code": "01050000", "label": "Récit", "level": 2}],
+                                "position": 4,
+                            },
+                        ],
+                        "gtls": [
+                            {"code": "01080000", "label": "Théâtre", "level": 2},
+                            {"code": "01090000", "label": "Poésie", "level": 2},
+                            {"code": "01070000", "label": "Littérature argumentative", "level": 2},
+                            {"code": "01050000", "label": "Récit", "level": 2},
+                        ],
+                        "label": "Théâtre, Poésie & Essais",
+                        "position": 6,
+                    },
+                    {
+                        "children": [
+                            {
+                                "label": "Droit",
+                                "gtls": [{"code": "08030000", "label": "Droit", "level": 2}],
+                                "position": 1,
+                            },
+                            {
+                                "label": "Médecine",
+                                "gtls": [{"code": "10080000", "label": "Médecine", "level": 2}],
+                                "position": 2,
+                            },
+                            {
+                                "label": "Entreprise",
+                                "gtls": [
+                                    {"code": "08040000", "label": "Entreprise, gestion et management", "level": 2}
+                                ],
+                                "position": 3,
+                            },
+                            {
+                                "label": "Sciences économiques",
+                                "gtls": [{"code": "08010000", "label": "Sciences économiques", "level": 2}],
+                                "position": 4,
+                            },
+                            {
+                                "label": "Histoire",
+                                "gtls": [
+                                    {"code": "09050000", "label": "Histoire", "level": 2},
+                                    {"code": "09060000", "label": "Histoire du monde", "level": 2},
+                                ],
+                                "position": 5,
+                            },
+                            {
+                                "label": "Géographie",
+                                "gtls": [
+                                    {"code": "09030000", "label": "Géographie", "level": 2},
+                                    {"code": "09040000", "label": "Géographie du monde", "level": 2},
+                                ],
+                                "position": 6,
+                            },
+                            {
+                                "label": "Sciences de la Terre et de l’Univers",
+                                "gtls": [
+                                    {"code": "10050000", "label": "Sciences de la Terre et de l'Univers", "level": 2}
+                                ],
+                                "position": 7,
+                            },
+                            {
+                                "label": "Physiques, Mathématiques & Informatique",
+                                "gtls": [
+                                    {"code": "10030000", "label": "Sciences physiques", "level": 2},
+                                    {"code": "10020000", "label": "Mathématiques", "level": 2},
+                                    {"code": "10070000", "label": "Informatique", "level": 2},
+                                ],
+                                "position": 8,
+                            },
+                            {
+                                "label": "Sciences appliquées & Industrie",
+                                "gtls": [{"code": "10060000", "label": "Sciences appliquées et industrie", "level": 2}],
+                                "position": 9,
+                            },
+                            {
+                                "label": "Dictionnaires",
+                                "gtls": [{"code": "13010000", "label": "Dictionnaires de français", "level": 2}],
+                                "position": 10,
+                            },
+                            {
+                                "label": "Encyclopédies",
+                                "gtls": [{"code": "13020000", "label": "Encyclopédies", "level": 2}],
+                                "position": 11,
+                            },
+                        ],
+                        "gtls": [
+                            {"code": "08030000", "label": "Droit", "level": 2},
+                            {"code": "10080000", "label": "Médecine", "level": 2},
+                            {"code": "08040000", "label": "Entreprise, gestion et management", "level": 2},
+                            {"code": "08010000", "label": "Sciences économiques", "level": 2},
+                            {"code": "09050000", "label": "Histoire", "level": 2},
+                            {"code": "09060000", "label": "Histoire du monde", "level": 2},
+                            {"code": "09030000", "label": "Géographie", "level": 2},
+                            {"code": "09040000", "label": "Géographie du monde", "level": 2},
+                            {"code": "10050000", "label": "Sciences de la Terre et de l'Univers", "level": 2},
+                            {"code": "10030000", "label": "Sciences physiques", "level": 2},
+                            {"code": "10020000", "label": "Mathématiques", "level": 2},
+                            {"code": "10070000", "label": "Informatique", "level": 2},
+                            {"code": "10060000", "label": "Sciences appliquées et industrie", "level": 2},
+                            {"code": "13010000", "label": "Dictionnaires de français", "level": 2},
+                            {"code": "13020000", "label": "Encyclopédies", "level": 2},
+                        ],
+                        "label": "Compétences générales",
+                        "position": 7,
                     },
                     {
                         "children": [
                             {
                                 "label": "Mode",
-                                "gtls": [
-                                    {"code": "06100200", "label": "Mode / Parfums / Cosm\u00e9tiques", "level": 3}
-                                ],
+                                "gtls": [{"code": "06100200", "label": "Mode / Parfums / Cosmétiques", "level": 3}],
+                                "position": 1,
                             },
                             {
-                                "label": "Peinture et sculpture et arts graphiques",
+                                "label": "Peinture, Sculpture & Arts graphiques",
                                 "gtls": [
-                                    {
-                                        "code": "06100000",
-                                        "label": "Arts appliqu\u00e9s / Arts d\u00e9coratifs",
-                                        "level": 2,
-                                    },
+                                    {"code": "06100100", "label": "Arts appliqués / Arts décoratifs autre", "level": 3},
+                                    {"code": "06100300", "label": "Décoration d'intérieur", "level": 3},
+                                    {"code": "06100400", "label": "Métiers d'art", "level": 3},
+                                    {"code": "06100500", "label": "Techniques / Enseignement", "level": 3},
                                     {"code": "06050000", "label": "Peinture / Arts graphiques", "level": 2},
                                     {"code": "06060000", "label": "Sculpture / Arts plastiques", "level": 2},
                                 ],
+                                "position": 2,
                             },
                             {
-                                "label": "Photos et cin\u00e9ma",
+                                "label": "Photos & Cinéma",
                                 "gtls": [{"code": "06070000", "label": "Arts de l'image", "level": 2}],
+                                "position": 3,
                             },
                             {
-                                "label": "Architecture, urbanisme et design",
+                                "label": "Architecture, Urbanisme & Design",
                                 "gtls": [{"code": "06040000", "label": "Architecture / Urbanisme", "level": 2}],
+                                "position": 4,
                             },
-                            {"label": "Musique", "gtls": [{"code": "06030000", "label": "Musique", "level": 2}]},
+                            {
+                                "label": "Musique",
+                                "gtls": [{"code": "06030000", "label": "Musique", "level": 2}],
+                                "position": 5,
+                            },
                         ],
                         "gtls": [{"code": "06000000", "label": "Arts et spectacles", "level": 1}],
                         "label": "Mode et Art",
+                        "position": 8,
+                    },
+                    {
+                        "children": [
+                            {
+                                "label": "Monde",
+                                "gtls": [{"code": "05030000", "label": "Tourisme & Voyages Monde", "level": 2}],
+                                "position": 1,
+                            },
+                            {
+                                "label": "France",
+                                "gtls": [{"code": "05020000", "label": "Tourisme & Voyages France", "level": 2}],
+                                "position": 2,
+                            },
+                            {
+                                "label": "Europe",
+                                "gtls": [{"code": "05040000", "label": "Tourisme & Voyages Europe", "level": 2}],
+                                "position": 3,
+                            },
+                            {
+                                "label": "Asie",
+                                "gtls": [{"code": "05100000", "label": "Tourisme & Voyages Asie", "level": 2}],
+                                "position": 4,
+                            },
+                            {
+                                "label": "Amérique du Nord",
+                                "gtls": [
+                                    {"code": "05070000", "label": "Tourisme & Voyages Amérique du Nord", "level": 2}
+                                ],
+                                "position": 5,
+                            },
+                            {
+                                "label": "Afrique",
+                                "gtls": [{"code": "05060000", "label": "Tourisme & Voyages Afrique", "level": 2}],
+                                "position": 6,
+                            },
+                            {
+                                "label": "Océanie",
+                                "gtls": [{"code": "05110000", "label": "Tourisme & Voyages Océanie", "level": 2}],
+                                "position": 7,
+                            },
+                            {
+                                "label": "Arctique & Antarctique",
+                                "gtls": [
+                                    {
+                                        "code": "05120000",
+                                        "label": "Tourisme & Voyages Arctique / Antarctique",
+                                        "level": 2,
+                                    }
+                                ],
+                                "position": 8,
+                            },
+                            {
+                                "label": "Amérique centrale & Caraïbes",
+                                "gtls": [
+                                    {
+                                        "code": "05080000",
+                                        "label": "Tourisme & Voyages Amérique centrale et Caraïbes",
+                                        "level": 2,
+                                    }
+                                ],
+                                "position": 9,
+                            },
+                            {
+                                "label": "Amérique du Sud",
+                                "gtls": [
+                                    {"code": "05090000", "label": "Tourisme & Voyages Amérique du Sud", "level": 2}
+                                ],
+                                "position": 10,
+                            },
+                            {
+                                "label": "Moyen-Orient",
+                                "gtls": [{"code": "05050000", "label": "Tourisme & Voyages Moyen-Orient", "level": 2}],
+                                "position": 11,
+                            },
+                        ],
+                        "gtls": [{"code": "05000000", "label": "Tourisme & Voyages", "level": 1}],
+                        "label": "Tourisme & Voyages",
+                        "position": 9,
                     },
                 ],
             },
@@ -1419,7 +1536,7 @@ class SubcategoriesTest:
                 "values": [
                     {"name": "Autre", "value": "Autre"},
                     {"name": "Blues", "value": "Blues"},
-                    {"name": "Chansons / Vari\u00e9t\u00e9s", "value": "Chansons / Vari\u00e9t\u00e9s"},
+                    {"name": "Chansons / Variétés", "value": "Chansons / Variétés"},
                     {"name": "Classique", "value": "Classique"},
                     {"name": "Country", "value": "Country"},
                     {"name": "Electro", "value": "Electro"},
@@ -1466,7 +1583,7 @@ class SubcategoriesTest:
                         "children": [
                             {"code": 521, "label": "Blues Acoustique", "slug": "BLUES-BLUES_ACOUSTIQUE"},
                             {"code": 522, "label": "Blues Contemporain", "slug": "BLUES-BLUES_CONTEMPORAIN"},
-                            {"code": 523, "label": "Blues \u00c9lectrique", "slug": "BLUES-BLUES_ELECTRIQUE"},
+                            {"code": 523, "label": "Blues Électrique", "slug": "BLUES-BLUES_ELECTRIQUE"},
                             {"code": 524, "label": "Blues Rock", "slug": "BLUES-BLUES_ROCK"},
                             {"code": 525, "label": "Chicago Blues", "slug": "BLUES-CHICAGO_BLUES"},
                             {"code": 526, "label": "Classic Blues", "slug": "BLUES-CLASSIC_BLUES"},
@@ -1500,11 +1617,11 @@ class SubcategoriesTest:
                             {"code": 605, "label": "Contemporain", "slug": "CLASSIQUE-CONTEMPORAIN"},
                             {"code": 606, "label": "Expressioniste", "slug": "CLASSIQUE-EXPRESSIONISTE"},
                             {"code": 607, "label": "Impressioniste", "slug": "CLASSIQUE-IMPRESSIONISTE"},
-                            {"code": 608, "label": "M\u00e9dievale", "slug": "CLASSIQUE-MEDIEVALE"},
+                            {"code": 608, "label": "Médievale", "slug": "CLASSIQUE-MEDIEVALE"},
                             {"code": 609, "label": "Minimaliste", "slug": "CLASSIQUE-MINIMALISTE"},
                             {"code": 610, "label": "Moderne ", "slug": "CLASSIQUE-MODERNE"},
                             {"code": 611, "label": "Oratorio", "slug": "CLASSIQUE-ORATORIO"},
-                            {"code": 612, "label": "Op\u00e9ra", "slug": "CLASSIQUE-OPERA"},
+                            {"code": 612, "label": "Opéra", "slug": "CLASSIQUE-OPERA"},
                             {"code": 613, "label": "Renaissance", "slug": "CLASSIQUE-RENAISSANCE"},
                             {"code": 614, "label": "Romantique", "slug": "CLASSIQUE-ROMANTIQUE"},
                             {"code": -1, "label": "Autre", "slug": "CLASSIQUE-OTHER"},
@@ -1518,23 +1635,19 @@ class SubcategoriesTest:
                             {"code": 702, "label": "Afro Beat", "slug": "MUSIQUE_DU_MONDE-AFRO_BEAT"},
                             {"code": 703, "label": "Afro Pop", "slug": "MUSIQUE_DU_MONDE-AFRO_POP"},
                             {"code": 704, "label": "Alternativo ", "slug": "MUSIQUE_DU_MONDE-ALTERNATIVO"},
-                            {
-                                "code": 705,
-                                "label": "Am\u00e9rique du Nord",
-                                "slug": "MUSIQUE_DU_MONDE-AMERIQUE_DU_NORD",
-                            },
-                            {"code": 706, "label": "Am\u00e9rique du Sud", "slug": "MUSIQUE_DU_MONDE-AMERIQUE_DU_SUD"},
+                            {"code": 705, "label": "Amérique du Nord", "slug": "MUSIQUE_DU_MONDE-AMERIQUE_DU_NORD"},
+                            {"code": 706, "label": "Amérique du Sud", "slug": "MUSIQUE_DU_MONDE-AMERIQUE_DU_SUD"},
                             {"code": 707, "label": "Asiatique", "slug": "MUSIQUE_DU_MONDE-ASIATIQUE"},
                             {"code": 708, "label": "Baladas y Boleros", "slug": "MUSIQUE_DU_MONDE-BALADAS_Y_BOLEROS"},
                             {"code": 709, "label": "Bossa Nova", "slug": "MUSIQUE_DU_MONDE-BOSSA_NOVA"},
-                            {"code": 710, "label": "Br\u00e9silienne", "slug": "MUSIQUE_DU_MONDE-BRESILIENNE"},
+                            {"code": 710, "label": "Brésilienne", "slug": "MUSIQUE_DU_MONDE-BRESILIENNE"},
                             {"code": 711, "label": "Cajun", "slug": "MUSIQUE_DU_MONDE-CAJUN"},
                             {"code": 712, "label": "Calypso", "slug": "MUSIQUE_DU_MONDE-CALYPSO"},
-                            {"code": 713, "label": "Carib\u00e9enne", "slug": "MUSIQUE_DU_MONDE-CARIBEENNE"},
+                            {"code": 713, "label": "Caribéenne", "slug": "MUSIQUE_DU_MONDE-CARIBEENNE"},
                             {"code": 714, "label": "Celtique", "slug": "MUSIQUE_DU_MONDE-CELTIQUE"},
                             {"code": 715, "label": "Cumbia ", "slug": "MUSIQUE_DU_MONDE-CUMBIA"},
                             {"code": 716, "label": "Flamenco", "slug": "MUSIQUE_DU_MONDE-FLAMENCO"},
-                            {"code": 717, "label": "Gr\u00e8cque", "slug": "MUSIQUE_DU_MONDE-GRECQUE"},
+                            {"code": 717, "label": "Grècque", "slug": "MUSIQUE_DU_MONDE-GRECQUE"},
                             {"code": 718, "label": "Indienne", "slug": "MUSIQUE_DU_MONDE-INDIENNE"},
                             {"code": 719, "label": "Latin Jazz", "slug": "MUSIQUE_DU_MONDE-LATIN_JAZZ"},
                             {"code": 720, "label": "Moyen-Orient", "slug": "MUSIQUE_DU_MONDE-MOYEN_ORIENT"},
@@ -1560,16 +1673,16 @@ class SubcategoriesTest:
                             {"code": 801, "label": "Britpop", "slug": "POP-BRITPOP"},
                             {"code": 802, "label": "Bubblegum ", "slug": "POP-BUBBLEGUM"},
                             {"code": 803, "label": "Dance Pop", "slug": "POP-DANCE_POP"},
-                            {"code": 804, "label": "Dream Pop\u00a0", "slug": "POP-DREAM_POP"},
+                            {"code": 804, "label": "Dream Pop\xa0", "slug": "POP-DREAM_POP"},
                             {"code": 805, "label": "Electro Pop", "slug": "POP-ELECTRO_POP"},
                             {"code": 806, "label": "Indie Pop", "slug": "POP-INDIE_POP"},
                             {"code": 808, "label": "J-Pop", "slug": "POP-J_POP"},
                             {"code": 809, "label": "K-Pop", "slug": "POP-K_POP"},
                             {"code": 810, "label": "Pop Punk ", "slug": "POP-POP_PUNK"},
                             {"code": 811, "label": "Pop/Rock", "slug": "POP-POP_ROCK"},
-                            {"code": 812, "label": "Power Pop\u00a0", "slug": "POP-POWER_POP"},
+                            {"code": 812, "label": "Power Pop\xa0", "slug": "POP-POWER_POP"},
                             {"code": 813, "label": "Soft Rock", "slug": "POP-SOFT_ROCK"},
-                            {"code": 814, "label": "Synthpop\u00a0", "slug": "POP-SYNTHPOP"},
+                            {"code": 814, "label": "Synthpop\xa0", "slug": "POP-SYNTHPOP"},
                             {"code": 815, "label": "Teen Pop", "slug": "POP-TEEN_POP"},
                             {"code": -1, "label": "Autre", "slug": "POP-OTHER"},
                         ],
@@ -1606,7 +1719,7 @@ class SubcategoriesTest:
                             {"code": 843, "label": "Doom Metal", "slug": "METAL-DOOM_METAL"},
                             {"code": 844, "label": "Gothic ", "slug": "METAL-GOTHIC"},
                             {"code": 845, "label": "Metal Core", "slug": "METAL-METAL_CORE"},
-                            {"code": 846, "label": "Metal\u00a0Progressif", "slug": "METAL-METAL_PROGRESSIF"},
+                            {"code": 846, "label": "Metal\xa0Progressif", "slug": "METAL-METAL_PROGRESSIF"},
                             {"code": 847, "label": "Trash Metal", "slug": "METAL-TRASH_METAL"},
                             {"code": 848, "label": "Metal Industriel", "slug": "METAL-METAL_INDUSTRIEL"},
                             {"code": 849, "label": "Fusion", "slug": "METAL-FUSION"},
@@ -1619,7 +1732,7 @@ class SubcategoriesTest:
                         "children": [
                             {"code": 851, "label": "Post Punk ", "slug": "PUNK-POST_PUNK"},
                             {"code": 852, "label": "Hardcore Punk", "slug": "PUNK-HARDCORE_PUNK"},
-                            {"code": 853, "label": "Afro\u00a0Punk", "slug": "PUNK-AFRO_PUNK"},
+                            {"code": 853, "label": "Afro\xa0Punk", "slug": "PUNK-AFRO_PUNK"},
                             {"code": 854, "label": "Grindcore", "slug": "PUNK-GRINDCORE"},
                             {"code": 855, "label": "Noise Rock ", "slug": "PUNK-NOISE_ROCK"},
                             {"code": -1, "label": "Autre", "slug": "PUNK-OTHER"},
@@ -1684,7 +1797,7 @@ class SubcategoriesTest:
                             {"code": 902, "label": "Hip Hop", "slug": "HIP_HOP_RAP-HIP_HOP"},
                             {"code": 903, "label": "Rap Alternatif", "slug": "HIP_HOP_RAP-RAP_ALTERNATIF"},
                             {"code": 905, "label": "Rap East Coast", "slug": "HIP_HOP_RAP-RAP_EAST_COAST"},
-                            {"code": 906, "label": "Rap Fran\u00e7ais", "slug": "HIP_HOP_RAP-RAP_FRANCAIS"},
+                            {"code": 906, "label": "Rap Français", "slug": "HIP_HOP_RAP-RAP_FRANCAIS"},
                             {"code": 907, "label": "Rap Gangsta", "slug": "HIP_HOP_RAP-RAP_GANGSTA"},
                             {"code": 908, "label": "Rap Hardcore", "slug": "HIP_HOP_RAP-RAP_HARDCORE"},
                             {"code": 909, "label": "Rap Latino", "slug": "HIP_HOP_RAP-RAP_LATINO"},
@@ -1721,25 +1834,13 @@ class SubcategoriesTest:
                     },
                     {
                         "code": 1000,
-                        "label": "Chansons / Vari\u00e9t\u00e9s",
+                        "label": "Chansons / Variétés",
                         "children": [
                             {"code": 1001, "label": "Musette", "slug": "CHANSON_VARIETE-MUSETTE"},
-                            {
-                                "code": 1002,
-                                "label": "Chanson Fran\u00e7aise",
-                                "slug": "CHANSON_VARIETE-CHANSON_FRANCAISE",
-                            },
+                            {"code": 1002, "label": "Chanson Française", "slug": "CHANSON_VARIETE-CHANSON_FRANCAISE"},
                             {"code": 1003, "label": "Music Hall", "slug": "CHANSON_VARIETE-MUSIC_HALL"},
-                            {
-                                "code": 1004,
-                                "label": "Folklore fran\u00e7ais",
-                                "slug": "CHANSON_VARIETE-FOLKLORE_FRANCAIS",
-                            },
-                            {
-                                "code": 1005,
-                                "label": "Chanson \u00e0 texte",
-                                "slug": "CHANSON_VARIETE-CHANSON_\u00c0_TEXTE",
-                            },
+                            {"code": 1004, "label": "Folklore français", "slug": "CHANSON_VARIETE-FOLKLORE_FRANCAIS"},
+                            {"code": 1005, "label": "Chanson à texte", "slug": "CHANSON_VARIETE-CHANSON_À_TEXTE"},
                             {"code": 1006, "label": "Slam", "slug": "CHANSON_VARIETE-SLAM"},
                             {"code": -1, "label": "Autre", "slug": "CHANSON_VARIETE-OTHER"},
                         ],
@@ -1753,20 +1854,20 @@ class SubcategoriesTest:
                     {"name": "Arts de la rue", "value": "Arts de la rue"},
                     {"name": "Autre", "value": "Autre"},
                     {
-                        "name": "Autre (spectacle sur glace, historique, aquatique, \u2026)  ",
-                        "value": "Autre (spectacle sur glace, historique, aquatique, \u2026)  ",
+                        "name": "Autre (spectacle sur glace, historique, aquatique, …)  ",
+                        "value": "Autre (spectacle sur glace, historique, aquatique, …)  ",
                     },
                     {"name": "Cirque", "value": "Cirque"},
                     {"name": "Danse", "value": "Danse"},
-                    {"name": "Humour / Caf\u00e9-th\u00e9\u00e2tre", "value": "Humour / Caf\u00e9-th\u00e9\u00e2tre"},
-                    {"name": "Op\u00e9ra", "value": "Op\u00e9ra"},
+                    {"name": "Humour / Café-théâtre", "value": "Humour / Café-théâtre"},
+                    {"name": "Opéra", "value": "Opéra"},
                     {"name": "Pluridisciplinaire", "value": "Pluridisciplinaire"},
                     {"name": "Spectacle Jeunesse", "value": "Spectacle Jeunesse"},
                     {
-                        "name": "Spectacle Musical / Cabaret / Op\u00e9rette",
-                        "value": "Spectacle Musical / Cabaret / Op\u00e9rette",
+                        "name": "Spectacle Musical / Cabaret / Opérette",
+                        "value": "Spectacle Musical / Cabaret / Opérette",
                     },
-                    {"name": "Th\u00e9\u00e2tre", "value": "Th\u00e9\u00e2tre"},
+                    {"name": "Théâtre", "value": "Théâtre"},
                 ],
                 "trees": [
                     {
@@ -1775,12 +1876,8 @@ class SubcategoriesTest:
                             {"code": 102, "label": "Fanfare", "slug": "ART_DE_LA_RUE-FANFARE"},
                             {"code": 103, "label": "Mime", "slug": "ART_DE_LA_RUE-MIME"},
                             {"code": 104, "label": "Parade", "slug": "ART_DE_LA_RUE-PARADE"},
-                            {"code": 105, "label": "Th\u00e9\u00e2tre de Rue", "slug": "ART_DE_LA_RUE-THEATRE_DE_RUE"},
-                            {
-                                "code": 106,
-                                "label": "Th\u00e9\u00e2tre Promenade",
-                                "slug": "ART_DE_LA_RUE-THEATRE_PROMENADE",
-                            },
+                            {"code": 105, "label": "Théâtre de Rue", "slug": "ART_DE_LA_RUE-THEATRE_DE_RUE"},
+                            {"code": 106, "label": "Théâtre Promenade", "slug": "ART_DE_LA_RUE-THEATRE_PROMENADE"},
                             {"code": -1, "label": "Autre", "slug": "ART_DE_LA_RUE-OTHER"},
                         ],
                         "code": 100,
@@ -1796,7 +1893,7 @@ class SubcategoriesTest:
                             {"code": 206, "label": "Hypnose", "slug": "CIRQUE-HYPNOSE"},
                             {"code": 207, "label": "Mentaliste", "slug": "CIRQUE-MENTALISTE"},
                             {"code": 208, "label": "Spectacle de Magie", "slug": "CIRQUE-SPECTACLE_DE_MAGIE"},
-                            {"code": 209, "label": "Spectacle \u00c9questre", "slug": "CIRQUE-SPECTACLE_EQUESTRE"},
+                            {"code": 209, "label": "Spectacle Équestre", "slug": "CIRQUE-SPECTACLE_EQUESTRE"},
                             {"code": -1, "label": "Autre", "slug": "CIRQUE-OTHER"},
                         ],
                         "code": 200,
@@ -1823,52 +1920,40 @@ class SubcategoriesTest:
                     },
                     {
                         "children": [
-                            {"code": 401, "label": "Caf\u00e9 Th\u00e9\u00e2tre", "slug": "HUMOUR-CAFE_THEATRE"},
+                            {"code": 401, "label": "Café Théâtre", "slug": "HUMOUR-CAFE_THEATRE"},
                             {"code": 402, "label": "Improvisation", "slug": "HUMOUR-IMPROVISATION"},
-                            {"code": 403, "label": "Seul.e en sc\u00e8ne", "slug": "HUMOUR-SEUL_EN_SCENE"},
+                            {"code": 403, "label": "Seul.e en scène", "slug": "HUMOUR-SEUL_EN_SCENE"},
                             {"code": 404, "label": "Sketch", "slug": "HUMOUR-SKETCH"},
                             {"code": 405, "label": "Stand Up", "slug": "HUMOUR-STAND_UP"},
                             {"code": 406, "label": "Ventriloque", "slug": "HUMOUR-VENTRILOQUE"},
                             {"code": -1, "label": "Autre", "slug": "HUMOUR-OTHER"},
                         ],
                         "code": 400,
-                        "label": "Humour / Caf\u00e9-th\u00e9\u00e2tre",
+                        "label": "Humour / Café-théâtre",
                     },
                     {
                         "children": [
                             {"code": 1101, "label": "Cabaret", "slug": "SPECTACLE_MUSICAL-CABARET"},
-                            {"code": 1102, "label": "Caf\u00e9 Concert", "slug": "SPECTACLE_MUSICAL-CAFE_CONCERT"},
+                            {"code": 1102, "label": "Café Concert", "slug": "SPECTACLE_MUSICAL-CAFE_CONCERT"},
                             {"code": 1103, "label": "Claquette", "slug": "SPECTACLE_MUSICAL-CLAQUETTE"},
-                            {
-                                "code": 1104,
-                                "label": "Com\u00e9die Musicale",
-                                "slug": "SPECTACLE_MUSICAL-COMEDIE_MUSICALE",
-                            },
-                            {"code": 1105, "label": "Op\u00e9ra Bouffe", "slug": "SPECTACLE_MUSICAL-OPERA_BOUFFE"},
-                            {"code": 1108, "label": "Op\u00e9rette", "slug": "SPECTACLE_MUSICAL-OPERETTE"},
+                            {"code": 1104, "label": "Comédie Musicale", "slug": "SPECTACLE_MUSICAL-COMEDIE_MUSICALE"},
+                            {"code": 1105, "label": "Opéra Bouffe", "slug": "SPECTACLE_MUSICAL-OPERA_BOUFFE"},
+                            {"code": 1108, "label": "Opérette", "slug": "SPECTACLE_MUSICAL-OPERETTE"},
                             {"code": 1109, "label": "Revue", "slug": "SPECTACLE_MUSICAL-REVUE"},
                             {"code": 1111, "label": "Burlesque", "slug": "SPECTACLE_MUSICAL-BURLESQUE"},
-                            {"code": 1112, "label": "Com\u00e9die-Ballet", "slug": "SPECTACLE_MUSICAL-COMEDIE_BALLET"},
-                            {"code": 1113, "label": "Op\u00e9ra Comique", "slug": "SPECTACLE_MUSICAL-OPERA_COMIQUE"},
-                            {"code": 1114, "label": "Op\u00e9ra-Ballet", "slug": "SPECTACLE_MUSICAL-OPERA_BALLET"},
-                            {
-                                "code": 1115,
-                                "label": "Th\u00e9\u00e2tre musical",
-                                "slug": "SPECTACLE_MUSICAL-THEATRE_MUSICAL",
-                            },
+                            {"code": 1112, "label": "Comédie-Ballet", "slug": "SPECTACLE_MUSICAL-COMEDIE_BALLET"},
+                            {"code": 1113, "label": "Opéra Comique", "slug": "SPECTACLE_MUSICAL-OPERA_COMIQUE"},
+                            {"code": 1114, "label": "Opéra-Ballet", "slug": "SPECTACLE_MUSICAL-OPERA_BALLET"},
+                            {"code": 1115, "label": "Théâtre musical", "slug": "SPECTACLE_MUSICAL-THEATRE_MUSICAL"},
                             {"code": -1, "label": "Autre", "slug": "SPECTACLE_MUSICAL-OTHER"},
                         ],
                         "code": 1100,
-                        "label": "Spectacle Musical / Cabaret / Op\u00e9rette",
+                        "label": "Spectacle Musical / Cabaret / Opérette",
                     },
                     {
                         "children": [
                             {"code": 1201, "label": "Conte", "slug": "SPECTACLE_JEUNESSE-CONTE"},
-                            {
-                                "code": 1202,
-                                "label": "Th\u00e9\u00e2tre jeunesse",
-                                "slug": "SPECTACLE_JEUNESSE-THEATRE_JEUNESSE",
-                            },
+                            {"code": 1202, "label": "Théâtre jeunesse", "slug": "SPECTACLE_JEUNESSE-THEATRE_JEUNESSE"},
                             {
                                 "code": 1203,
                                 "label": "Spectacle Petite Enfance",
@@ -1877,20 +1962,16 @@ class SubcategoriesTest:
                             {"code": 1204, "label": "Magie Enfance", "slug": "SPECTACLE_JEUNESSE-MAGIE_ENFANCE"},
                             {
                                 "code": 1205,
-                                "label": "Spectacle p\u00e9dagogique",
+                                "label": "Spectacle pédagogique",
                                 "slug": "SPECTACLE_JEUNESSE-SPECTACLE_PEDAGOGIQUE",
                             },
                             {"code": 1206, "label": "Marionettes", "slug": "SPECTACLE_JEUNESSE-MARIONETTES"},
                             {
                                 "code": 1207,
-                                "label": "Com\u00e9die musicale jeunesse",
+                                "label": "Comédie musicale jeunesse",
                                 "slug": "SPECTACLE_JEUNESSE-COMEDIE_MUSICALE_JEUNESSE",
                             },
-                            {
-                                "code": 1208,
-                                "label": "Th\u00e9\u00e2tre d'Ombres",
-                                "slug": "SPECTACLE_JEUNESSE-THEATRE_D_OMBRES",
-                            },
+                            {"code": 1208, "label": "Théâtre d'Ombres", "slug": "SPECTACLE_JEUNESSE-THEATRE_D_OMBRES"},
                             {"code": -1, "label": "Autre", "slug": "SPECTACLE_JEUNESSE-OTHER"},
                         ],
                         "code": 1200,
@@ -1900,30 +1981,26 @@ class SubcategoriesTest:
                         "children": [
                             {"code": 1301, "label": "Boulevard", "slug": "THEATRE-BOULEVARD"},
                             {"code": 1302, "label": "Classique", "slug": "THEATRE-CLASSIQUE"},
-                            {"code": 1303, "label": "Com\u00e9die", "slug": "THEATRE-COMEDIE"},
+                            {"code": 1303, "label": "Comédie", "slug": "THEATRE-COMEDIE"},
                             {"code": 1304, "label": "Contemporain", "slug": "THEATRE-CONTEMPORAIN"},
                             {"code": 1305, "label": "Lecture", "slug": "THEATRE-LECTURE"},
                             {
                                 "code": 1306,
-                                "label": "Spectacle Sc\u00e9nographique",
+                                "label": "Spectacle Scénographique",
                                 "slug": "THEATRE-SPECTACLE_SCENOGRAPHIQUE",
                             },
-                            {
-                                "code": 1307,
-                                "label": "Th\u00e9\u00e2tre Experimental",
-                                "slug": "THEATRE-THEATRE_EXPERIMENTAL",
-                            },
-                            {"code": 1308, "label": "Th\u00e9\u00e2tre d'Objet", "slug": "THEATRE-THEATRE_D_OBJET"},
-                            {"code": 1309, "label": "Trag\u00e9die", "slug": "THEATRE-TRAGEDIE"},
+                            {"code": 1307, "label": "Théâtre Experimental", "slug": "THEATRE-THEATRE_EXPERIMENTAL"},
+                            {"code": 1308, "label": "Théâtre d'Objet", "slug": "THEATRE-THEATRE_D_OBJET"},
+                            {"code": 1309, "label": "Tragédie", "slug": "THEATRE-TRAGEDIE"},
                             {"code": -1, "label": "Autre", "slug": "THEATRE-OTHER"},
                         ],
                         "code": 1300,
-                        "label": "Th\u00e9\u00e2tre",
+                        "label": "Théâtre",
                     },
                     {
                         "children": [
                             {"code": 1401, "label": "Performance", "slug": "PLURIDISCIPLINAIRE-PERFORMANCE"},
-                            {"code": 1402, "label": "Po\u00e9sie", "slug": "PLURIDISCIPLINAIRE-POESIE"},
+                            {"code": 1402, "label": "Poésie", "slug": "PLURIDISCIPLINAIRE-POESIE"},
                             {"code": -1, "label": "Autre", "slug": "PLURIDISCIPLINAIRE-OTHER"},
                         ],
                         "code": 1400,
@@ -1931,27 +2008,27 @@ class SubcategoriesTest:
                     },
                     {
                         "children": [
-                            {"code": 1501, "label": "Son et lumi\u00e8re", "slug": "OTHER-SON_ET_LUMIERE"},
+                            {"code": 1501, "label": "Son et lumière", "slug": "OTHER-SON_ET_LUMIERE"},
                             {"code": 1502, "label": "Spectacle sur glace", "slug": "OTHER-SPECTACLE_SUR_GLACE"},
                             {"code": 1503, "label": "Spectacle historique", "slug": "OTHER-SPECTACLE_HISTORIQUE"},
                             {"code": 1504, "label": "Spectacle aquatique", "slug": "OTHER-SPECTACLE_AQUATIQUE"},
                             {"code": -1, "label": "Autre", "slug": "OTHER-OTHER"},
                         ],
                         "code": 1500,
-                        "label": "Autre (spectacle sur glace, historique, aquatique, \u2026)  ",
+                        "label": "Autre (spectacle sur glace, historique, aquatique, …)  ",
                     },
                     {
                         "children": [
-                            {"code": 1511, "label": "Op\u00e9ra s\u00e9rie", "slug": "OPERA-OPERA_SERIE"},
-                            {"code": 1512, "label": "Grand op\u00e9ra", "slug": "OPERA-GRAND_OPERA"},
-                            {"code": 1513, "label": "Op\u00e9ra bouffe", "slug": "OPERA-OPERA_BOUFFE"},
-                            {"code": 1514, "label": "Op\u00e9ra comique", "slug": "OPERA-OPERA_COMIQUE"},
-                            {"code": 1515, "label": "Op\u00e9ra-ballet", "slug": "OPERA-OPERA_BALLET"},
+                            {"code": 1511, "label": "Opéra série", "slug": "OPERA-OPERA_SERIE"},
+                            {"code": 1512, "label": "Grand opéra", "slug": "OPERA-GRAND_OPERA"},
+                            {"code": 1513, "label": "Opéra bouffe", "slug": "OPERA-OPERA_BOUFFE"},
+                            {"code": 1514, "label": "Opéra comique", "slug": "OPERA-OPERA_COMIQUE"},
+                            {"code": 1515, "label": "Opéra-ballet", "slug": "OPERA-OPERA_BALLET"},
                             {"code": 1516, "label": "Singspiel", "slug": "OPERA-SINGSPIEL"},
                             {"code": -1, "label": "Autre", "slug": "OPERA-OTHER"},
                         ],
                         "code": 1510,
-                        "label": "Op\u00e9ra",
+                        "label": "Opéra",
                     },
                     {"children": [{"code": -1, "label": "Autre", "slug": "OTHER"}], "code": -1, "label": "Autre"},
                 ],
@@ -1965,25 +2042,25 @@ class SubcategoriesTest:
                     {"name": "ADVENTURE", "value": "Aventure"},
                     {"name": "BIOPIC", "value": "Biopic"},
                     {"name": "BOLLYWOOD", "value": "Bollywood"},
-                    {"name": "COMEDY", "value": "Com\u00e9die"},
-                    {"name": "COMEDY_DRAMA", "value": "Com\u00e9die dramatique"},
-                    {"name": "MUSICAL", "value": "Com\u00e9die musicale"},
+                    {"name": "COMEDY", "value": "Comédie"},
+                    {"name": "COMEDY_DRAMA", "value": "Comédie dramatique"},
+                    {"name": "MUSICAL", "value": "Comédie musicale"},
                     {"name": "CONCERT", "value": "Concert"},
                     {"name": "DIVERS", "value": "Divers"},
                     {"name": "DOCUMENTARY", "value": "Documentaire"},
                     {"name": "DRAMA", "value": "Drame"},
-                    {"name": "KOREAN_DRAMA", "value": "Drame cor\u00e9en"},
+                    {"name": "KOREAN_DRAMA", "value": "Drame coréen"},
                     {"name": "SPY", "value": "Espionnage"},
-                    {"name": "EXPERIMENTAL", "value": "Exp\u00e9rimental"},
+                    {"name": "EXPERIMENTAL", "value": "Expérimental"},
                     {"name": "FAMILY", "value": "Familial"},
                     {"name": "FANTASY", "value": "Fantastique"},
                     {"name": "WARMOVIE", "value": "Guerre"},
                     {"name": "HISTORICAL", "value": "Historique"},
-                    {"name": "HISTORICAL_EPIC", "value": "Historique-\u00e9pique"},
+                    {"name": "HISTORICAL_EPIC", "value": "Historique-épique"},
                     {"name": "HORROR", "value": "Horreur"},
                     {"name": "JUDICIAL", "value": "Judiciaire"},
                     {"name": "MUSIC", "value": "Musique"},
-                    {"name": "OPERA", "value": "Op\u00e9ra"},
+                    {"name": "OPERA", "value": "Opéra"},
                     {"name": "PERFORMANCE", "value": "Performance"},
                     {"name": "DETECTIVE", "value": "Policier"},
                     {"name": "ROMANCE", "value": "Romance"},
@@ -1991,7 +2068,7 @@ class SubcategoriesTest:
                     {"name": "SPORT_EVENT", "value": "Sport"},
                     {"name": "THRILLER", "value": "Thriller"},
                     {"name": "WESTERN", "value": "Western"},
-                    {"name": "EROTIC", "value": "\u00c9rotique"},
+                    {"name": "EROTIC", "value": "Érotique"},
                 ],
                 "trees": [
                     {"label": "Action", "name": "ACTION", "children": None},
@@ -1999,26 +2076,26 @@ class SubcategoriesTest:
                     {"label": "Animation", "name": "ANIMATION", "children": None},
                     {"label": "Biopic", "name": "BIOPIC", "children": None},
                     {"label": "Bollywood", "name": "BOLLYWOOD", "children": None},
-                    {"label": "Com\u00e9die", "name": "COMEDY", "children": None},
-                    {"label": "Com\u00e9die dramatique", "name": "COMEDY_DRAMA", "children": None},
+                    {"label": "Comédie", "name": "COMEDY", "children": None},
+                    {"label": "Comédie dramatique", "name": "COMEDY_DRAMA", "children": None},
                     {"label": "Concert", "name": "CONCERT", "children": None},
                     {"label": "Policier", "name": "DETECTIVE", "children": None},
                     {"label": "Divers", "name": "DIVERS", "children": None},
                     {"label": "Documentaire", "name": "DOCUMENTARY", "children": None},
                     {"label": "Drame", "name": "DRAMA", "children": None},
-                    {"label": "\u00c9rotique", "name": "EROTIC", "children": None},
-                    {"label": "Exp\u00e9rimental", "name": "EXPERIMENTAL", "children": None},
+                    {"label": "Érotique", "name": "EROTIC", "children": None},
+                    {"label": "Expérimental", "name": "EXPERIMENTAL", "children": None},
                     {"label": "Familial", "name": "FAMILY", "children": None},
                     {"label": "Fantastique", "name": "FANTASY", "children": None},
                     {"label": "Historique", "name": "HISTORICAL", "children": None},
-                    {"label": "Historique-\u00e9pique", "name": "HISTORICAL_EPIC", "children": None},
+                    {"label": "Historique-épique", "name": "HISTORICAL_EPIC", "children": None},
                     {"label": "Horreur", "name": "HORROR", "children": None},
                     {"label": "Judiciaire", "name": "JUDICIAL", "children": None},
-                    {"label": "Drame cor\u00e9en", "name": "KOREAN_DRAMA", "children": None},
+                    {"label": "Drame coréen", "name": "KOREAN_DRAMA", "children": None},
                     {"label": "Arts martiaux", "name": "MARTIAL_ARTS", "children": None},
                     {"label": "Musique", "name": "MUSIC", "children": None},
-                    {"label": "Com\u00e9die musicale", "name": "MUSICAL", "children": None},
-                    {"label": "Op\u00e9ra", "name": "OPERA", "children": None},
+                    {"label": "Comédie musicale", "name": "MUSICAL", "children": None},
+                    {"label": "Opéra", "name": "OPERA", "children": None},
                     {"label": "Performance", "name": "PERFORMANCE", "children": None},
                     {"label": "Romance", "name": "ROMANCE", "children": None},
                     {"label": "Science-fiction", "name": "SCIENCE_FICTION", "children": None},
