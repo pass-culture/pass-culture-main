@@ -155,6 +155,7 @@
                   <p class="mb-1">
                     <span class="fw-bold">Email :</span>
                     {{ venue.bookingEmail }}
+                    <span class="ms-1">{{ clipboard.copy_to_clipboard(venue.bookingEmail, "Copier l'adresse email") }}</span>
                   </p>
                 {% endif %}
                 {% if venue.contact %}
