@@ -1,7 +1,0 @@
-import{j as t}from"./jsx-runtime-iXOPPpZ7.js";import{s}from"./stroke-accessibility-eye-nC6HHnlW.js";import{B as u}from"./BaseCheckbox--z6neJGX.js";import"./index-7OBYoplD.js";import"./_commonjsHelpers-4gQjN7DL.js";import"./index-XNbs-YUW.js";const E={title:"ui-kit/forms/shared/BaseCheckbox",component:u},o=g=>t.jsx("div",{children:t.jsx(u,{...g})}),e=o.bind({});e.args={label:"Checkbox Label",hasError:!1,disabled:!1,onChange:()=>{},icon:s};const r=o.bind({});r.args={label:"Checkbox Label",hasError:!1,disabled:!1,onChange:()=>{},icon:s,partialCheck:!0};const a=o.bind({});a.args={label:"Checkbox Label with border",hasError:!1,disabled:!1,onChange:()=>{},icon:s,withBorder:!0};var i,c,d;e.parameters={...e.parameters,docs:{...(i=e.parameters)==null?void 0:i.docs,source:{originalSource:`args => <div>
-    <BaseCheckbox {...args} />
-  </div>`,...(d=(c=e.parameters)==null?void 0:c.docs)==null?void 0:d.source}}};var n,l,h;r.parameters={...r.parameters,docs:{...(n=r.parameters)==null?void 0:n.docs,source:{originalSource:`args => <div>
-    <BaseCheckbox {...args} />
-  </div>`,...(h=(l=r.parameters)==null?void 0:l.docs)==null?void 0:h.source}}};var m,p,b;a.parameters={...a.parameters,docs:{...(m=a.parameters)==null?void 0:m.docs,source:{originalSource:`args => <div>
-    <BaseCheckbox {...args} />
-  </div>`,...(b=(p=a.parameters)==null?void 0:p.docs)==null?void 0:b.source}}};const j=["Default","WithPartialCheck","WithBorder"];export{e as Default,a as WithBorder,r as WithPartialCheck,j as __namedExportsOrder,E as default};
