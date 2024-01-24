@@ -163,6 +163,12 @@ describe('reimbursementsWithFilters', () => {
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
+    // there was a bug were two blocks were displayed
+    expect(
+      screen.queryByText(
+        'Aucun justificatif de remboursement trouvé pour votre recherche'
+      )
+    ).not.toBeInTheDocument()
     expect(
       screen.getByText(
         'Vous n’avez pas encore de justificatifs de remboursement disponibles'
@@ -175,6 +181,15 @@ describe('reimbursementsWithFilters', () => {
     renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(
+      screen.queryByText(
+        'Aucun justificatif de remboursement trouvé pour votre recherche'
+      )
+    ).not.toBeInTheDocument()
+
+    vi.spyOn(api, 'getInvoices').mockResolvedValueOnce([])
+    await userEvent.click(screen.getByText('Lancer la recherche'))
 
     expect(
       screen.getByText(
