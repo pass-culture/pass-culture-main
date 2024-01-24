@@ -77,7 +77,6 @@ class SearchMultipleOffersTest(GetEndpointHelper):
         assert "Rejetées : 0 " in left_card
         assert "Compatible avec les CGU : Oui" in left_card
         assert "EAN-13 : 9783161484100 " in left_card
-        assert "Synchronizable : Oui " in left_card
 
     def test_search_product_with_offers_and_manual_offers(self, authenticated_client):
         provider = providers_factories.APIProviderFactory()
@@ -109,7 +108,6 @@ class SearchMultipleOffersTest(GetEndpointHelper):
         assert "Rejetées : 0 " in left_card
         assert "Compatible avec les CGU : Oui" in left_card
         assert "EAN-13 : 9783161484100 " in left_card
-        assert "Synchronizable : Oui " in left_card
 
     def test_search_product_without_offers(self, authenticated_client):
         provider = providers_factories.APIProviderFactory()
@@ -137,7 +135,6 @@ class SearchMultipleOffersTest(GetEndpointHelper):
         assert "Rejetées : 0 " in left_card
         assert "Compatible avec les CGU : Oui" in left_card
         assert "EAN-13 : 9783161484100 " in left_card
-        assert "Synchronizable : Oui " in left_card
 
     def test_search_product_with_offers_but_no_product(self, authenticated_client):
         with assert_num_queries(self.expected_num_queries - 1):  # no offers to query
@@ -173,7 +170,6 @@ class SearchMultipleOffersTest(GetEndpointHelper):
         assert "Rejetées : 0 " in left_card
         assert "Compatible avec les CGU : Oui" in left_card
         assert "EAN-13 : 9783161484100 " in left_card
-        assert "Synchronizable : Oui " in left_card
 
     @pytest.mark.parametrize(
         "compatibility,expected_cgu_display",
@@ -198,30 +194,6 @@ class SearchMultipleOffersTest(GetEndpointHelper):
         left_card = html_parser.extract_cards_text(response.data)[0]
 
         assert f"Compatible avec les CGU : {expected_cgu_display}" in left_card
-
-    @pytest.mark.parametrize(
-        "synchronisable,expected_synchronisable_display",
-        [
-            (True, "Oui"),
-            (False, "Non"),
-        ],
-    )
-    def test_product_synchronisable(self, authenticated_client, synchronisable, expected_synchronisable_display):
-        provider = providers_factories.APIProviderFactory()
-        offers_factories.ThingProductFactory(
-            extraData={"ean": "9781234567890"},
-            subcategoryId=subcategories.LIVRE_PAPIER.id,
-            isSynchronizationCompatible=synchronisable,
-            lastProvider=provider,
-        )
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, ean="9781234567890"))
-            assert response.status_code == 200
-
-        left_card = html_parser.extract_cards_text(response.data)[0]
-
-        assert f"Synchronizable : {expected_synchronisable_display}" in left_card
 
     def test_get_current_criteria_on_active_offers(self, authenticated_client):
         provider = providers_factories.APIProviderFactory()

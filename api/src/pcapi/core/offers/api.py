@@ -1239,7 +1239,6 @@ def whitelist_product(idAtProviders: str) -> models.Product | None:
     product = fetch_or_update_product_with_titelive_data(titelive_product)
 
     product.isGcuCompatible = True
-    product.isSynchronizationCompatible = True
 
     db.session.add(product)
     db.session.commit()
