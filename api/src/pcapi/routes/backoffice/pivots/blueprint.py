@@ -8,6 +8,8 @@ import sqlalchemy as sa
 
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
+from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
 
 from . import forms
 from .. import autocomplete
@@ -25,6 +27,7 @@ pivots_blueprint = utils.child_backoffice_blueprint(
 
 
 @pivots_blueprint.route("", methods=["GET"])
+@atomic()
 def get_pivots() -> utils.BackofficeResponse:
     return render_template(
         "pivots/get.html",
@@ -33,6 +36,7 @@ def get_pivots() -> utils.BackofficeResponse:
 
 
 @pivots_blueprint.route("/<string:name>", methods=["GET"])
+@atomic()
 def list_pivots(name: str) -> utils.BackofficeResponse:
     pivot_context = get_context(name)
 
@@ -49,6 +53,7 @@ def list_pivots(name: str) -> utils.BackofficeResponse:
 
 
 @pivots_blueprint.route("/<string:name>/create", methods=["GET"])
+@atomic()
 def get_create_pivot_form(name: str) -> utils.BackofficeResponse:
     pivot_context = get_context(name)
 
@@ -64,6 +69,7 @@ def get_create_pivot_form(name: str) -> utils.BackofficeResponse:
 
 
 @pivots_blueprint.route("/<string:name>/create", methods=["POST"])
+@atomic()
 def create_pivot(name: str) -> utils.BackofficeResponse:
     pivot_context = get_context(name)
 
@@ -76,9 +82,9 @@ def create_pivot(name: str) -> utils.BackofficeResponse:
     try:
         can_create_pivot = pivot_context.create_pivot(form)
         if can_create_pivot:
-            db.session.commit()
+            db.session.flush()
     except sa.exc.IntegrityError as exc:
-        db.session.rollback()
+        mark_transaction_as_invalid()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:
         if can_create_pivot:
@@ -88,6 +94,7 @@ def create_pivot(name: str) -> utils.BackofficeResponse:
 
 
 @pivots_blueprint.route("/<string:name>/<int:pivot_id>/update", methods=["GET"])
+@atomic()
 def get_update_pivot_form(name: str, pivot_id: int) -> utils.BackofficeResponse:
     pivot_context = get_context(name)
 
@@ -105,6 +112,7 @@ def get_update_pivot_form(name: str, pivot_id: int) -> utils.BackofficeResponse:
 
 
 @pivots_blueprint.route("/<string:name>/<int:pivot_id>/update", methods=["POST"])
+@atomic()
 def update_pivot(name: str, pivot_id: int) -> utils.BackofficeResponse:
     pivot_context = get_context(name)
 
@@ -116,9 +124,9 @@ def update_pivot(name: str, pivot_id: int) -> utils.BackofficeResponse:
     try:
         can_update_pivot = pivot_context.update_pivot(form, pivot_id)
         if can_update_pivot:
-            db.session.commit()
+            db.session.flush()
     except sa.exc.IntegrityError as exc:
-        db.session.rollback()
+        mark_transaction_as_invalid()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:
         if can_update_pivot:
@@ -128,6 +136,7 @@ def update_pivot(name: str, pivot_id: int) -> utils.BackofficeResponse:
 
 
 @pivots_blueprint.route("/<string:name>/<int:pivot_id>/delete", methods=["GET"])
+@atomic()
 def get_delete_pivot_form(name: str, pivot_id: int) -> utils.BackofficeResponse:
     return render_template(
         "components/turbo/modal_form.html",
@@ -141,15 +150,16 @@ def get_delete_pivot_form(name: str, pivot_id: int) -> utils.BackofficeResponse:
 
 
 @pivots_blueprint.route("/<string:name>/<int:pivot_id>/delete", methods=["POST"])
+@atomic()
 def delete_pivot(name: str, pivot_id: int) -> utils.BackofficeResponse:
     pivot_context = get_context(name)
 
     try:
         can_delete_pivot = pivot_context.delete_pivot(pivot_id)
         if can_delete_pivot:
-            db.session.commit()
+            db.session.flush()
     except sa.exc.IntegrityError as exc:
-        db.session.rollback()
+        mark_transaction_as_invalid()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:
         if can_delete_pivot:

@@ -6,6 +6,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import models as users_models
+from pcapi.repository import atomic
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.clean_accents import clean_accents
@@ -51,6 +52,7 @@ def prefill_offerers_choices(autocomplete_field: fields.PCTomSelectField) -> Non
 
 
 @blueprint.backoffice_web.route("/autocomplete/offerers", methods=["GET"])
+@atomic()
 @spectree_serialize(response_model=AutocompleteResponse, api=blueprint.backoffice_web_schema)
 def autocomplete_offerers() -> AutocompleteResponse:
     query_string = request.args.get("q", "").strip()
@@ -109,6 +111,7 @@ def prefill_institutions_choices(autocomplete_field: fields.PCTomSelectField) ->
 
 
 @blueprint.backoffice_web.route("/autocomplete/institutions", methods=["GET"])
+@atomic()
 @spectree_serialize(response_model=AutocompleteResponse, api=blueprint.backoffice_web_schema)
 def autocomplete_institutions() -> AutocompleteResponse:
     query_string = request.args.get("q", "").strip()
@@ -199,12 +202,14 @@ def _autocomplete_venues(only_with_siret: bool = False) -> AutocompleteResponse:
 
 
 @blueprint.backoffice_web.route("/autocomplete/venues", methods=["GET"])
+@atomic()
 @spectree_serialize(response_model=AutocompleteResponse, api=blueprint.backoffice_web_schema)
 def autocomplete_venues() -> AutocompleteResponse:
     return _autocomplete_venues()
 
 
 @blueprint.backoffice_web.route("/autocomplete/pricing-points", methods=["GET"])
+@atomic()
 @spectree_serialize(response_model=AutocompleteResponse, api=blueprint.backoffice_web_schema)
 def autocomplete_pricing_points() -> AutocompleteResponse:
     return _autocomplete_venues(only_with_siret=True)
@@ -243,6 +248,7 @@ def prefill_criteria_choices(autocomplete_field: fields.PCTomSelectField) -> Non
 
 
 @blueprint.backoffice_web.route("/autocomplete/criteria", methods=["GET"])
+@atomic()
 @spectree_serialize(response_model=AutocompleteResponse, api=blueprint.backoffice_web_schema)
 def autocomplete_criteria() -> AutocompleteResponse:
     query_string = request.args.get("q", "").strip()
@@ -285,6 +291,7 @@ def prefill_cashflow_batch_choices(autocomplete_field: fields.PCTomSelectField) 
 
 
 @blueprint.backoffice_web.route("/autocomplete/cashflow-batches", methods=["GET"])
+@atomic()
 @spectree_serialize(response_model=AutocompleteResponse, api=blueprint.backoffice_web_schema)
 def autocomplete_cashflow_batches() -> AutocompleteResponse:
     query_string = request.args.get("q", "").strip()
@@ -318,6 +325,7 @@ def prefill_bo_users_choices(autocomplete_field: fields.PCTomSelectField) -> Non
 
 
 @blueprint.backoffice_web.route("/autocomplete/bo-users", methods=["GET"])
+@atomic()
 @spectree_serialize(response_model=AutocompleteResponse, api=blueprint.backoffice_web_schema)
 def autocomplete_bo_users() -> AutocompleteResponse:
     query_string = request.args.get("q", "").strip()

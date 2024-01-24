@@ -7,6 +7,7 @@ from flask_login import current_user
 
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
+from pcapi.repository import atomic
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.preferences import forms
 
@@ -22,6 +23,7 @@ preferences_blueprint = utils.child_backoffice_blueprint(
 
 
 @preferences_blueprint.route("", methods=["GET"])
+@atomic()
 def edit_preferences() -> utils.BackofficeResponse:
     preferences = current_user.backoffice_profile.preferences
 
@@ -35,6 +37,7 @@ def edit_preferences() -> utils.BackofficeResponse:
 
 
 @preferences_blueprint.route("", methods=["POST"])
+@atomic()
 def save_preferences() -> utils.BackofficeResponse:
     form = forms.EditPreferencesForm()
 
@@ -45,7 +48,7 @@ def save_preferences() -> utils.BackofficeResponse:
         }
     )
     current_user.backoffice_profile.preferences = preferences
-    db.session.commit()
+    db.session.flush()
 
     flash("Les préférences ont été enregistrées", "success")
     return redirect(request.referrer or url_for(".edit_preferences"), 303)

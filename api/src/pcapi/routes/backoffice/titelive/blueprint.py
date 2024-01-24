@@ -21,6 +21,8 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
+from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
 from pcapi.utils import requests
 
 from . import forms
@@ -36,6 +38,7 @@ titelive_blueprint = utils.child_backoffice_blueprint(
 
 
 @titelive_blueprint.route("/", methods=["GET"])
+@atomic()
 def search_titelive() -> utils.BackofficeResponse:
     if not request.args:
         return render_template(
@@ -87,6 +90,7 @@ def search_titelive() -> utils.BackofficeResponse:
 
 
 @titelive_blueprint.route("/<string:ean>/<string:title>/add-product-whitelist-confirmation-form", methods=["GET"])
+@atomic()
 def get_add_product_whitelist_confirmation_form(ean: str, title: str) -> utils.BackofficeResponse:
     form = forms.OptionalCommentForm()
     return render_template(
@@ -100,6 +104,7 @@ def get_add_product_whitelist_confirmation_form(ean: str, title: str) -> utils.B
 
 
 @titelive_blueprint.route("/<string:ean>/<string:title>/add", methods=["POST"])
+@atomic()
 def add_product_whitelist(ean: str, title: str) -> utils.BackofficeResponse:
     form = forms.OptionalCommentForm()
     try:
@@ -117,9 +122,9 @@ def add_product_whitelist(ean: str, title: str) -> utils.BackofficeResponse:
                 comment=form.comment.data, ean=ean, title=title, authorId=current_user.id
             )
             db.session.add(product_whitelist)
-            db.session.commit()
+            db.session.flush()
         except sa.exc.IntegrityError as error:
-            db.session.rollback()
+            mark_transaction_as_invalid()
             flash(
                 Markup("L'EAN <b>{ean}</b> n'a pas été ajouté dans la whitelist :<br/>{error}").format(
                     ean=ean, error=error
@@ -127,7 +132,7 @@ def add_product_whitelist(ean: str, title: str) -> utils.BackofficeResponse:
                 "warning",
             )
         except GtlIdError:
-            db.session.rollback()
+            mark_transaction_as_invalid()
             flash(
                 Markup("L'EAN <b>{ean}</b> n'a pas de GTL ID côté Titelive").format(ean=ean),
                 "warning",
@@ -153,7 +158,7 @@ def add_product_whitelist(ean: str, title: str) -> utils.BackofficeResponse:
                         },
                         synchronize_session=False,
                     )
-                    db.session.commit()
+                    db.session.flush()
                     search.async_index_offer_ids(
                         offer_ids,
                         reason=search.IndexationReason.PRODUCT_WHITELIST_ADDITION,
@@ -164,6 +169,7 @@ def add_product_whitelist(ean: str, title: str) -> utils.BackofficeResponse:
 
 
 @titelive_blueprint.route("/<string:ean>/delete", methods=["GET"])
+@atomic()
 def delete_product_whitelist(ean: str) -> utils.BackofficeResponse:
     try:
         product_whitelist = fraud_models.ProductWhitelist.query.filter(
@@ -173,9 +179,9 @@ def delete_product_whitelist(ean: str) -> utils.BackofficeResponse:
             flash(Markup("L'EAN <b>{ean}</b> n'existe pas dans la whitelist").format(ean=ean), "warning")
         else:
             db.session.delete(product_whitelist)
-            db.session.commit()
+            db.session.flush()
     except sa.exc.IntegrityError as error:
-        db.session.rollback()
+        mark_transaction_as_invalid()
         flash(
             Markup("Impossible de supprimer l'EAN <b>{ean}</b> de la whitelist :<br/>{error}").format(
                 ean=ean, error=error

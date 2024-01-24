@@ -28,6 +28,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.repository import atomic
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.utils import regions as regions_utils
 from pcapi.utils.siren import is_valid_siren
@@ -243,6 +244,7 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
 
 
 @offerer_blueprint.route("", methods=["GET"])
+@atomic()
 def get(offerer_id: int) -> utils.BackofficeResponse:
     if request.args.get("q") and request.args.get("search_rank"):
         utils.log_backoffice_tracking_data(
@@ -305,6 +307,7 @@ def get_stats_data(offerer_id: int) -> dict:
 
 
 @offerer_blueprint.route("/stats", methods=["GET"])
+@atomic()
 def get_stats(offerer_id: int) -> utils.BackofficeResponse:
     data = get_stats_data(offerer_id)
     return render_template(
@@ -315,6 +318,7 @@ def get_stats(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/revenue-details", methods=["GET"])
+@atomic()
 def get_revenue_details(offerer_id: int) -> utils.BackofficeResponse:
     details = offerers_repository.get_revenues_per_year(offererId=offerer_id)
     return render_template(
@@ -324,6 +328,7 @@ def get_revenue_details(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/suspend", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def suspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
@@ -355,6 +360,7 @@ def suspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/unsuspend", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def unsuspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
@@ -382,6 +388,7 @@ def unsuspend_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/delete", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.DELETE_PRO_ENTITY)
 def delete_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.filter_by(id=offerer_id).populate_existing().with_for_update().one_or_none()
@@ -413,6 +420,7 @@ def delete_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/update", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
@@ -454,6 +462,7 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/history", methods=["GET"])
+@atomic()
 def get_history(offerer_id: int) -> utils.BackofficeResponse:
     # this should not be necessary but in case there is a huge amount
     # of actions, it is safer to set a limit
@@ -483,6 +492,7 @@ def get_history(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/users", methods=["GET"])
+@atomic()
 def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
     # All ids which appear in either offerer history or attached users
     # Double join takes 30 seconds on staging, union takes 0.03 s.
@@ -600,6 +610,7 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/users/<int:user_offerer_id>/delete", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def get_delete_user_offerer_form(offerer_id: int, user_offerer_id: int) -> utils.BackofficeResponse:
     user_offerer = (
@@ -631,6 +642,7 @@ def get_delete_user_offerer_form(offerer_id: int, user_offerer_id: int) -> utils
 
 
 @offerer_blueprint.route("/users/<int:user_offerer_id>/delete", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def delete_user_offerer(offerer_id: int, user_offerer_id: int) -> utils.BackofficeResponse:
     user_offerer = (
@@ -671,6 +683,7 @@ def delete_user_offerer(offerer_id: int, user_offerer_id: int) -> utils.Backoffi
 
 
 @offerer_blueprint.route("/add-user", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def add_user_offerer_and_validate(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.filter_by(id=offerer_id).one_or_none()
@@ -722,6 +735,7 @@ def add_user_offerer_and_validate(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/venues", methods=["GET"])
+@atomic()
 def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
     venues = (
         offerers_models.Venue.query.filter_by(managingOffererId=offerer_id)
@@ -757,6 +771,7 @@ def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/bank-accounts", methods=["GET"])
+@atomic()
 def get_bank_accounts(offerer_id: int) -> utils.BackofficeResponse:
     bank_accounts = (
         finance_models.BankAccount.query.filter_by(offererId=offerer_id)
@@ -779,6 +794,7 @@ def get_bank_accounts(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/comment", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def comment_offerer(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
@@ -801,6 +817,7 @@ def comment_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/individual-subscription", methods=["GET"])
+@atomic()
 @utils.permission_required_in([perm_models.Permissions.VALIDATE_OFFERER, perm_models.Permissions.READ_PRO_AE_INFO])
 def get_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
@@ -869,6 +886,7 @@ def get_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/individual-subscription", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def update_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
@@ -909,12 +927,13 @@ def update_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
         )
     else:
         db.session.add(offerers_models.IndividualOffererSubscription(offererId=offerer_id, **data))
-    db.session.commit()
+    db.session.flush()
 
     return _self_redirect(offerer_id, active_tab="subscription")
 
 
 @offerer_blueprint.route("/api-entreprise", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.READ_PRO_ENTREPRISE_INFO)
 def get_entreprise_info(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
@@ -948,6 +967,7 @@ def get_entreprise_info(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/api-entreprise/rcs", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.READ_PRO_ENTREPRISE_INFO)
 def get_entreprise_rcs_info(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
@@ -966,6 +986,7 @@ def get_entreprise_rcs_info(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/api-entreprise/urssaf", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.READ_PRO_SENSITIVE_INFO)
 def get_entreprise_urssaf_info(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
@@ -989,6 +1010,7 @@ def get_entreprise_urssaf_info(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/api-entreprise/dgfip", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.READ_PRO_SENSITIVE_INFO)
 def get_entreprise_dgfip_info(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
