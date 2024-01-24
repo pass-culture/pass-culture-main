@@ -1866,10 +1866,6 @@ def delete_offerer(offerer_id: int) -> None:
         synchronize_session=False
     )
 
-    offers_models.Product.query.filter(offers_models.Product.owningOffererId == offerer_id).delete(
-        synchronize_session=False
-    )
-
     offerers_models.ApiKey.query.filter(offerers_models.ApiKey.offererId == offerer_id).delete(
         synchronize_session=False
     )
