@@ -29,6 +29,18 @@
     top: 50%;
     width: 100%;
   }
+
+  &-button {
+    display: flex;
+    justify-content: center;
+    position: relative;
+
+  }
+
+  &-search-button {
+    margin: 0 rem.torem(12px);
+    min-width: rem.torem(148px);
+  }
 }
 
 @media (min-width: size.$tablet) {
