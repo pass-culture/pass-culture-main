@@ -49,7 +49,6 @@ def create_industrial_thing_products() -> dict[str, offers_models.Product]:
                 extraData={"author": MOCK_AUTHOR_NAMES[mock_index]},
                 description=MOCK_DESCRIPTIONS[mock_index],
                 idAtProviders=str(id_at_providers),
-                isNational=is_online_only,
                 name=MOCK_NAMES[mock_index],
                 subcategoryId=thing_subcategory.id,
                 url=url,
