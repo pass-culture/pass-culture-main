@@ -39,6 +39,7 @@
   // FIXME: made in order to make icon + text be to the right
   // otherwise the text go to the right but not the icon
   width: min-content;
+  text-align: right;
 }
 
 .more-icon {
@@ -94,6 +95,11 @@
 
   .document-type-column {
     width: rem.torem(230px);
+  }
+
+  .document-type-content {
+    width: rem.torem(230px);
+    text-align: left;
   }
 
   .reference-column {
