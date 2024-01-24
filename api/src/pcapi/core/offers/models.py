@@ -1043,9 +1043,9 @@ class OfferReport(PcObject, Base, Model):
     )
 
     user: sa.orm.Mapped["User"] = sa.orm.relationship("User", backref="reported_offers")
-    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
+    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
     offer: sa.orm.Mapped["Offer"] = sa.orm.relationship("Offer", backref="reports")
-    offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False)
+    offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
     reason: Reason = sa.Column(sa.Enum(Reason, create_constraint=False), nullable=False, index=True)
     reportedAt: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
     # If the reason code is OTHER, save the user's custom reason

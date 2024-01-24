@@ -12175,7 +12175,7 @@ ALTER TABLE ONLY public.offer
 --
 
 ALTER TABLE ONLY public.offer_report
-    ADD CONSTRAINT "offer_report_offerId_fkey" FOREIGN KEY ("offerId") REFERENCES public.offer(id) ON DELETE CASCADE;
+    ADD CONSTRAINT "offer_report_offerId_fkey" FOREIGN KEY ("offerId") REFERENCES public.offer(id);
 
 
 --
@@ -12183,7 +12183,7 @@ ALTER TABLE ONLY public.offer_report
 --
 
 ALTER TABLE ONLY public.offer_report
-    ADD CONSTRAINT "offer_report_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."user"(id) ON DELETE CASCADE;
+    ADD CONSTRAINT "offer_report_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."user"(id);
 
 
 --
