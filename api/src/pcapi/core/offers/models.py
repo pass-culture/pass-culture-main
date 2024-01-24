@@ -133,7 +133,6 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     name: str = sa.Column(sa.String(140), nullable=False)
     subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
     thumb_path_component = "products"
-    url = sa.Column(sa.String(255), nullable=True)
 
     sa.Index("product_ean_idx", extraData["ean"].astext)
     sa.Index("product_allocineId_idx", extraData["allocineId"].cast(sa.Integer))
@@ -143,10 +142,6 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
         if self.subcategoryId not in subcategories_v2.ALL_SUBCATEGORIES_DICT:
             raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for product {self.id}")
         return subcategories_v2.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
-
-    @property
-    def isDigital(self) -> bool:
-        return self.url is not None and self.url != ""
 
     @hybrid_property
     def can_be_synchronized(self) -> bool:
