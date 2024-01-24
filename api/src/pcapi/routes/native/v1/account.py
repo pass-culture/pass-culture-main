@@ -39,12 +39,24 @@ from .serialization import authentication as auth_serializers
 logger = logging.getLogger(__name__)
 
 
+@blueprint.native_route("/me", version="v99", methods=["GET"])
+@spectree_serialize(
+    response_model=serializers.UserProfileResponse,
+    on_success_status=200,
+    api=blueprint.api,
+)
+@authenticated_and_active_user_required
+def get_user_profile_v2(user: users_models.User) -> serializers.UserProfileResponse:
+    return serializers.UserProfileResponse.from_orm(user)
+
+
 @blueprint.native_v1.route("/me", methods=["GET"])
 @spectree_serialize(
     response_model=serializers.UserProfileResponse,
     on_success_status=200,
     api=blueprint.api,
 )
+@blueprint.api.validate(deprecated=True)
 @authenticated_and_active_user_required
 def get_user_profile(user: users_models.User) -> serializers.UserProfileResponse:
     return serializers.UserProfileResponse.from_orm(user)
