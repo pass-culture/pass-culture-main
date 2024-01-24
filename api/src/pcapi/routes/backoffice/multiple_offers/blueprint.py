@@ -116,7 +116,6 @@ def search_multiple_offers() -> utils.BackofficeResponse:
         ean=ean,
         product_compatibility=product.isGcuCompatible,
         current_criteria_on_offers=_get_current_criteria_on_active_offers(offers),
-        product_synchronisable=product.isSynchronizationCompatible,
         **operations_forms,
     )
 

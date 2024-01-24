@@ -138,7 +138,6 @@ class SynchronizeStocksTest:
             {"ref": "3010000108123", "available": 17, "price": 12},
             {"ref": "3010000108124", "available": 17, "price": 12},
             {"ref": "3010000108125", "available": 17, "price": 12},
-            {"ref": "3010000102735", "available": 1, "price": 12},
             {"ref": "3010000105566", "available": 3, "price": 12},
         ]
         providers_factories.APIProviderFactory(apiUrl="https://provider_url", authToken="fake_token")
@@ -157,8 +156,7 @@ class SynchronizeStocksTest:
         product = create_product(spec[2]["ref"])
         create_product(spec[4]["ref"])
         create_product(spec[6]["ref"], isGcuCompatible=False)
-        create_product(spec[7]["ref"], isSynchronizationCompatible=False)
-        create_product(spec[8]["ref"], name=offers_models.UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER)
+        create_product(spec[7]["ref"], name=offers_models.UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER)
 
         stock_with_booking = create_stock(spec[5]["ref"], siret, venue, quantity=20)
         BookingFactory(stock=stock_with_booking)
@@ -183,13 +181,12 @@ class SynchronizeStocksTest:
         assert created_offer.stocks[0].quantity == 18
 
         # Test doesn't creates offer if product is unrealsed or unavailable
-        offer_not_created = Offer.query.filter_by(idAtProvider=spec[8]["ref"]).one_or_none()
+        offer_not_created = Offer.query.filter_by(idAtProvider=spec[7]["ref"]).one_or_none()
         assert offer_not_created is None
 
-        # Test doesn't create offer if product does not exist or not gcu compatible or not synchronization compatible
+        # Test doesn't create offer if product does not exist or not gcu compatible
         assert Offer.query.filter_by(idAtProvider=spec[3]["ref"]).count() == 0
         assert Offer.query.filter_by(idAtProvider=spec[6]["ref"]).count() == 0
-        assert Offer.query.filter_by(idAtProvider=spec[7]["ref"]).count() == 0
 
         # Test second page is actually processed
         second_created_offer = Offer.query.filter_by(idAtProvider=spec[4]["ref"]).one()
