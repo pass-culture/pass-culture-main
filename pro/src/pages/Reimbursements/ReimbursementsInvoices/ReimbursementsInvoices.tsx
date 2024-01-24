@@ -26,13 +26,12 @@ const ReimbursementsInvoices = (): JSX.Element => {
   const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
-  const ALL_REIMBURSEMENT_POINT_OPTION_ID = 'all'
   const { currentUser } = useCurrentUser()
   const INITIAL_FILTERS = useMemo(() => {
     const today = getToday()
     const oneMonthAgo = subMonths(today, 1)
     return {
-      reimbursementPoint: ALL_REIMBURSEMENT_POINT_OPTION_ID,
+      reimbursementPoint: DEFAULT_INVOICES_FILTERS.reimbursementPointId,
       periodStart: format(oneMonthAgo, FORMAT_ISO_DATE_ONLY),
       periodEnd: format(today, FORMAT_ISO_DATE_ONLY),
     }
@@ -46,11 +45,16 @@ const ReimbursementsInvoices = (): JSX.Element => {
   const [reimbursementPointsOptions, setReimbursementPointsOptions] = useState<
     SelectOption[]
   >([])
+  const [hasSearchedOnce, setHasSearchedOnce] = useState(false)
 
-  const hasNoSearchResult = !hasError && invoices.length === 0
+  const hasNoSearchResult =
+    !hasError && invoices?.length === 0 && hasSearchedOnce
 
   const hasNoInvoicesYetForNonAdmin =
-    !hasError && !currentUser.isAdmin && invoices.length === 0
+    !hasError &&
+    !currentUser.isAdmin &&
+    invoices.length === 0 &&
+    !hasSearchedOnce
 
   const loadInvoices = useCallback(
     async (shouldReset?: boolean) => {
@@ -92,7 +96,11 @@ const ReimbursementsInvoices = (): JSX.Element => {
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadInvoices()
-  }, [loadInvoices])
+
+    // We let the dependancies table empty here to have the same behavior as the previous version :
+    //  data load when we arrive on the page
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     const getReimbursementPointsResult = async () => {
@@ -147,6 +155,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
         selectableOptions={reimbursementPointsOptions}
         setAreFiltersDefault={setAreFiltersDefault}
         setFilters={setFilters}
+        setHasSearchedOnce={setHasSearchedOnce}
       />
       {hasError && <InvoicesServerError />}
       {hasNoInvoicesYetForNonAdmin && <NoInvoicesYet />}

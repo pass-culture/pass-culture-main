@@ -19,10 +19,11 @@ interface ReimbursementsSectionHeaderProps {
   filters: FiltersType
   disable: boolean
   initialFilters: FiltersType
-  loadInvoices: (shouldReset: boolean) => void
+  loadInvoices: (shouldReset?: boolean) => Promise<void>
   selectableOptions: SelectOption[]
   setAreFiltersDefault: Dispatch<SetStateAction<boolean>>
   setFilters: Dispatch<SetStateAction<FiltersType>>
+  setHasSearchedOnce: Dispatch<SetStateAction<boolean>>
 }
 
 const InvoicesFilters = ({
@@ -34,6 +35,7 @@ const InvoicesFilters = ({
   selectableOptions,
   setAreFiltersDefault,
   setFilters,
+  setHasSearchedOnce,
 }: ReimbursementsSectionHeaderProps): JSX.Element => {
   const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
@@ -45,10 +47,10 @@ const InvoicesFilters = ({
     periodEnd: selectedPeriodEnd,
   } = filters
 
-  function resetFilters() {
+  async function resetFilters() {
     setAreFiltersDefault(true)
     setFilters(initialFilters)
-    loadInvoices(true)
+    await loadInvoices(true)
   }
 
   const setReimbursementPointFilter = (
@@ -132,6 +134,19 @@ const InvoicesFilters = ({
 
       <div className={styles['button-group']}>
         <div className={styles['button-group-separator']} />
+        <div className={styles['button-group-button']}>
+          <Button
+            variant={ButtonVariant.PRIMARY}
+            className={styles['button-group-search-button']}
+            disabled={!(filters.periodStart && filters.periodEnd)}
+            onClick={async () => {
+              setHasSearchedOnce(true)
+              await loadInvoices()
+            }}
+          >
+            Lancer la recherche
+          </Button>
+        </div>
       </div>
     </>
   )
