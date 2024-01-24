@@ -37,7 +37,7 @@ const Stepper = ({
 
   return (
     <>
-      <ul className={cn(styles[`stepper`], className)} data-testid="stepper">
+      <ol className={cn(styles[`stepper`], className)} data-testid="stepper">
         {steps.map((step, stepIndex) => {
           const isActive = activeStep === step.id
           const isLastStep = lastStepIndex === stepIndex
@@ -65,7 +65,7 @@ const Stepper = ({
             </li>
           )
         })}
-      </ul>
+      </ol>
     </>
   )
 }
