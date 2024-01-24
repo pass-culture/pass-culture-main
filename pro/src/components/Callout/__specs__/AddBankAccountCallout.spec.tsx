@@ -26,7 +26,7 @@ describe('AddBankAccountCallout', () => {
     ).not.toBeInTheDocument()
     expect(
       screen.queryByText(
-        /Rendez-vous dans l’onglet informations bancaires de votre page Gestion financière./
+        /Rendez-vous dans l’onglet Informations bancaires de votre page Gestion financière./
       )
     ).not.toBeInTheDocument()
     expect(
@@ -116,7 +116,7 @@ describe('AddBankAccountCallout', () => {
       ).toBeInTheDocument()
       expect(
         screen.getByText(
-          /Rendez-vous dans l’onglet informations bancaires de votre page Gestion financière./
+          /Rendez-vous dans l’onglet Informations bancaires de votre page Gestion financière./
         )
       ).toBeInTheDocument()
       expect(

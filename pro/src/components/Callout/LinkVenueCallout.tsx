@@ -58,16 +58,7 @@ const LinkVenueCallout = ({
       titleOnly={titleOnly}
     >
       <p>
-        Afin de percevoir vos remboursements, vous devez rattacher
-        {offerer?.venuesWithNonFreeOffersWithoutBankAccounts.length > 1
-          ? ' vos lieux'
-          : ' votre lieu'}{' '}
-        à un compte bancaire. Les offres dont les lieux ne sont pas rattachés à
-        un compte bancaire ne seront pas remboursées.
-      </p>
-      <br />
-      <p>
-        Rendez-vous dans l’onglet informations bancaires de votre page Gestion
+        Rendez-vous dans l’onglet Informations bancaires de votre page Gestion
         financière.
       </p>
     </Callout>
