@@ -5537,35 +5537,35 @@ files = [
 
 [[package]]
 name = "wtforms"
-version = "3.0.1"
+version = "3.1.2"
 description = "Form validation and rendering for Python web development."
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "WTForms-3.0.1-py3-none-any.whl", hash = "sha256:837f2f0e0ca79481b92884962b914eba4e72b7a2daaf1f939c890ed0124b834b"},
-    {file = "WTForms-3.0.1.tar.gz", hash = "sha256:6b351bbb12dd58af57ffef05bc78425d08d1914e0fd68ee14143b7ade023c5bc"},
+    {file = "wtforms-3.1.2-py3-none-any.whl", hash = "sha256:bf831c042829c8cdbad74c27575098d541d039b1faa74c771545ecac916f2c07"},
+    {file = "wtforms-3.1.2.tar.gz", hash = "sha256:f8d76180d7239c94c6322f7990ae1216dae3659b7aa1cee94b6318bdffb474b9"},
 ]
 
 [package.dependencies]
-MarkupSafe = "*"
+markupsafe = "*"
 
 [package.extras]
 email = ["email-validator"]
 
 [[package]]
 name = "wtforms-sqlalchemy"
-version = "0.3"
+version = "0.4.1"
 description = "SQLAlchemy tools for WTForms"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.8"
 files = [
-    {file = "WTForms-SQLAlchemy-0.3.tar.gz", hash = "sha256:7ca42824ad7c453a036f502b42d9c17d4ad8398ff9248a62ed538d1ce0bc41c3"},
-    {file = "WTForms_SQLAlchemy-0.3-py3-none-any.whl", hash = "sha256:90195d7592bf256d82498c42c79d416832e4a4e6fbca4f1e745a018f66d26c47"},
+    {file = "WTForms-SQLAlchemy-0.4.1.tar.gz", hash = "sha256:370f52b738527cf6d8ab78d3488afb9342666144da2637e0cf8b5ae522e8a4db"},
+    {file = "WTForms_SQLAlchemy-0.4.1-py3-none-any.whl", hash = "sha256:df3965015b60de172f4b35e691a47d9913d56bb0abb62c620edd04c1376979e3"},
 ]
 
 [package.dependencies]
-SQLAlchemy = ">=0.7.10"
-WTForms = ">=1.0.5"
+SQLAlchemy = ">=1.4"
+WTForms = ">=3.1"
 
 [[package]]
 name = "xlsxwriter"
@@ -5802,4 +5802,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "9ad6c92efa0cd21b9edad91791a188feaa09f1a8919b4bd2d57c21c76664bda6"
+content-hash = "a2023737680c6d975217c47c9a0274a36c4cd01f6f6e35d4e8d5250c63fdd851"

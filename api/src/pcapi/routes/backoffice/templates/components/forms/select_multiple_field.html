@@ -7,7 +7,7 @@
           name="{{ field.name }}"
           data-original-name="{{ field.name }}"
           size="2">
-    {% for value, label, selected in field.iter_choices() %}
+    {% for value, label, selected, _ in field.iter_choices() %}
       <option value="{{ value }}" {{ "selected" if selected else "" }}>
         {{ label }}
       </option>
@@ -26,7 +26,7 @@
             class="form-select pc-select-field value-element-form pc-no-update"
             data-original-name="{{ field.name }}"
             size="2">
-      {% for value, label, selected in field.iter_choices() %}
+      {% for value, label, selected, _ in field.iter_choices() %}
         <option value="{{ value }}" {{ "selected" if selected else "" }}>
           {{ label  }}
         </option>
