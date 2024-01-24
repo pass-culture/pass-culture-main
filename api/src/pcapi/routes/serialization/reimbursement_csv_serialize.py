@@ -28,7 +28,7 @@ def _build_full_address(street: str | None, postal_code: str | None, city: str |
     return " ".join((street or "", postal_code or "", city or ""))
 
 
-def _get_validation_period(cutoff: datetime.datetime) -> str:
+def _get_validation_period(cutoff: datetime.datetime, is_incident: bool = False) -> str:
     """Indicate the 2-week period during which most(*) bookings have
     been validated that correspond with the requested cutoff.
 
@@ -48,7 +48,7 @@ def _get_validation_period(cutoff: datetime.datetime) -> str:
         fortnight = "1ère quinzaine"
     else:
         fortnight = "2nde quinzaine"
-    return f"Validées et remboursables sur {month} : {fortnight}"
+    return f"{'Incident' if is_incident else 'Validées et remboursables'} sur {month} : {fortnight}"
 
 
 def _legacy_get_validation_period(transaction_label: str) -> str:
@@ -114,7 +114,8 @@ class ReimbursementDetails:
         if using_legacy_models:
             self.validation_period = _legacy_get_validation_period(payment_info.transaction_label)
         else:
-            self.validation_period = _get_validation_period(payment_info.cashflow_batch_cutoff)
+            is_incident = getattr(payment_info, "is_incident", False)
+            self.validation_period = _get_validation_period(payment_info.cashflow_batch_cutoff, is_incident=is_incident)
 
         # Invoice info
         if using_legacy_models:

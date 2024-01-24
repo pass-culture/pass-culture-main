@@ -424,11 +424,10 @@ def _get_reimbursement_details_from_invoices_base_query(invoice_ids: list[int]) 
     )
 
 
-def _get_collective_reimbursement_details_from_invoices(invoice_ids: list[int]) -> list[tuple]:
+def _get_collective_booking_reimbursement_data(query: BaseQuery) -> list:
     ReimbursementPoint = sqla_orm.aliased(offerers_models.Venue)
     return (
-        _get_reimbursement_details_from_invoices_base_query(invoice_ids)
-        .join(educational_models.CollectiveBooking, models.Pricing.collectiveBooking)
+        query.outerjoin(models.Pricing.event)
         .join(educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock)
         .join(educational_models.CollectiveOffer, educational_models.CollectiveStock.collectiveOffer)
         .join(offerers_models.Venue, educational_models.CollectiveOffer.venue)
@@ -498,15 +497,35 @@ def _get_collective_reimbursement_details_from_invoices(invoice_ids: list[int]) 
             models.CashflowBatch.cutoff.label("cashflow_batch_cutoff"),
             models.CashflowBatch.label.label("cashflow_batch_label"),
             models.BankInformation.iban.label("iban"),
+            sqla.case([(models.FinanceEvent.bookingFinanceIncidentId.is_(None), False)], else_=True).label(
+                "is_incident"
+            ),
         )
     ).all()
 
 
-def _get_individual_reimbursement_details_from_invoices(invoice_ids: list[int]) -> list[tuple]:
+def _get_collective_reimbursement_details_from_invoices(invoice_ids: list[int]) -> list[tuple]:
+    collective_details = _get_collective_booking_reimbursement_data(
+        _get_reimbursement_details_from_invoices_base_query(invoice_ids).join(
+            educational_models.CollectiveBooking, models.Pricing.collectiveBooking
+        )
+    )
+    collective_details.extend(
+        _get_collective_booking_reimbursement_data(
+            _get_reimbursement_details_from_invoices_base_query(invoice_ids)
+            .join(models.Pricing.event)
+            .join(models.FinanceEvent.bookingFinanceIncident)
+            .join(models.BookingFinanceIncident.collectiveBooking)
+        )
+    )
+
+    return collective_details
+
+
+def _get_individual_booking_reimbursement_data(query: BaseQuery) -> list:
     ReimbursementPoint = sqla_orm.aliased(offerers_models.Venue)
     return (
-        _get_reimbursement_details_from_invoices_base_query(invoice_ids)
-        .join(models.Pricing.booking)
+        query.outerjoin(models.Pricing.event)
         .join(ReimbursementPoint, models.Cashflow.reimbursementPointId == ReimbursementPoint.id)
         .join(bookings_models.Booking.offerer)
         .join(bookings_models.Booking.stock)
@@ -569,8 +588,28 @@ def _get_individual_reimbursement_details_from_invoices(invoice_ids: list[int]) 
             models.CashflowBatch.cutoff.label("cashflow_batch_cutoff"),
             models.CashflowBatch.label.label("cashflow_batch_label"),
             models.BankInformation.iban.label("iban"),
+            sqla.case([(models.FinanceEvent.bookingFinanceIncidentId.is_(None), False)], else_=True).label(
+                "is_incident"
+            ),
         )
     ).all()
+
+
+def _get_individual_reimbursement_details_from_invoices(invoice_ids: list[int]) -> list[tuple]:
+    individual_details = _get_individual_booking_reimbursement_data(
+        _get_reimbursement_details_from_invoices_base_query(invoice_ids).join(models.Pricing.booking)
+    )
+    # Finance incident data
+    individual_details.extend(
+        _get_individual_booking_reimbursement_data(
+            _get_reimbursement_details_from_invoices_base_query(invoice_ids)
+            .join(models.Pricing.event)
+            .join(models.FinanceEvent.bookingFinanceIncident)
+            .join(models.BookingFinanceIncident.booking)
+        )
+    )
+
+    return individual_details
 
 
 def _get_legacy_payments_for_individual_bookings(
