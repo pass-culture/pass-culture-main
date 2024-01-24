@@ -130,7 +130,6 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     extraData: OfferExtraData | None = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
     isGcuCompatible: bool = sa.Column(sa.Boolean, default=True, server_default=sa.true(), nullable=False)
     isNational: bool = sa.Column(sa.Boolean, server_default=sa.false(), default=False, nullable=False)
-    isSynchronizationCompatible: bool = sa.Column(sa.Boolean, default=True, server_default=sa.true(), nullable=False)
     last_30_days_booking = sa.Column(sa.Integer, nullable=True)
     name: str = sa.Column(sa.String(140), nullable=False)
     owningOfferer: sa_orm.Mapped["Offerer | None"] = sa_orm.relationship("Offerer", backref="events")
@@ -154,11 +153,7 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
 
     @hybrid_property
     def can_be_synchronized(self) -> bool:
-        return (
-            self.isGcuCompatible
-            & self.isSynchronizationCompatible
-            & (self.name != UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER)
-        )
+        return self.isGcuCompatible & (self.name != UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER)
 
 
 class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, DeactivableMixin):

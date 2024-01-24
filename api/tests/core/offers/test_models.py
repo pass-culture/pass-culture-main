@@ -1,5 +1,4 @@
 import datetime
-import itertools
 
 import pytest
 
@@ -29,18 +28,13 @@ class ProductModelTest:
         product = models.Product(thumbCount=0)
         assert product.thumbUrl is None
 
-    def test_cgu_compatible_and_sync_compatible(self):
-        permutations = itertools.product((True, False), (True, False))
-        for gcu_compatible, is_synchronization_compatible in permutations:
-            product = factories.ProductFactory(
-                isGcuCompatible=gcu_compatible,
-                isSynchronizationCompatible=is_synchronization_compatible,
-            )
+    @pytest.mark.parametrize("gcu_compatible, product_count", [(True, 1), (False, 0)])
+    def test_cgu_compatible(self, gcu_compatible, product_count):
+        product = factories.ProductFactory(isGcuCompatible=gcu_compatible)
 
-            can_be_synchronized = gcu_compatible & is_synchronization_compatible
-            assert product.can_be_synchronized == can_be_synchronized
-            assert models.Product.query.filter(models.Product.can_be_synchronized).count() == int(can_be_synchronized)
-            models.Product.query.delete()
+        assert product.can_be_synchronized == gcu_compatible
+        assert models.Product.query.filter(models.Product.can_be_synchronized).count() == product_count
+        models.Product.query.delete()
 
 
 class OfferIsDigitalTest:

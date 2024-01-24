@@ -1927,7 +1927,7 @@ class UnindexExpiredOffersTest:
 class WhitelistExistingProductTest:
     @override_settings(TITELIVE_EPAGINE_API_USERNAME="test@example.com")
     @override_settings(TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
-    def test_modify_product_if_existing_and_not_cgcompatible_nor_synchronizable(self, requests_mock):
+    def test_modify_product_if_existing_and_not_cgu_compatible(self, requests_mock):
         ean = "9782070455379"
         requests_mock.post(
             "https://login.epagine.fr/v1/login/test@example.com/token",
@@ -1959,14 +1959,12 @@ class WhitelistExistingProductTest:
                 "rayon": "test",
             },
             isGcuCompatible=False,
-            isSynchronizationCompatible=False,
         )
 
         api.whitelist_product(ean)
 
         assert models.Product.query.one() == product
         assert product.isGcuCompatible
-        assert product.isSynchronizationCompatible
         oeuvre = fixtures.BOOK_BY_EAN_FIXTURE["oeuvre"]
         article = oeuvre["article"][0]
         assert product.name == oeuvre["titre"]

@@ -102,7 +102,6 @@ class ProviderAPICronTest:
         product = create_product(EANs[2], product_price="8.01")
         create_product(EANs[4], product_price="10.02")
         create_product(EANs[6], isGcuCompatible=False, product_price="10.04")
-        create_product(EANs[8], isSynchronizationCompatible=False, product_price="7.08")
 
         stock_with_booking = create_stock(EANs[5], siret, venue, quantity=20, product_price="18.01")
         BookingFactory(stock=stock_with_booking, user__deposit__expirationDate=datetime(year=2031, month=12, day=31))
@@ -138,10 +137,9 @@ class ProviderAPICronTest:
         created_offer = Offer.query.filter_by(idAtProvider=EANs[2]).one()
         assert created_offer.stocks[0].quantity == 18
 
-        # Test doesn't create offer if product does not exist or not gcu or not synchronization compatible
+        # Test doesn't create offer if product does not exist or not gcu compatible
         assert Offer.query.filter_by(idAtProvider=EANs[3]).count() == 0
         assert Offer.query.filter_by(idAtProvider=EANs[6]).count() == 0
-        assert Offer.query.filter_by(idAtProvider=EANs[8]).count() == 0
 
         # Test second page is actually processed
         second_created_offer = Offer.query.filter_by(idAtProvider=EANs[4]).one()
