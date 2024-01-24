@@ -231,7 +231,7 @@ def test_should_return_offer_features():
 
 
 @freeze_time("2032-10-15 12:48:00")
-class DigitalOffersTestSendinblue:
+class DigitalOffersSendinblueTest:
     def test_should_return_digital_thing_specific_data_for_email_when_offer_is_a_digital_thing_sendinblue(self):
         booking = BookingFactory(
             quantity=10,
@@ -267,7 +267,8 @@ class DigitalOffersTestSendinblue:
         offer = offers_factories.OfferFactory(
             venue__name="Lieu de l'offreur",
             venue__managingOfferer__name="Théâtre du coin",
-            product=offers_factories.DigitalProductFactory(name="Super offre numérique", url="http://example.com"),
+            name="Super offre numérique",
+            url="http://example.com",
         )
         digital_stock = offers_factories.StockWithActivationCodesFactory()
         first_activation_code = digital_stock.activationCodes[0]
@@ -290,7 +291,7 @@ class DigitalOffersTestSendinblue:
             IS_EVENT=False,
             IS_SINGLE_EVENT=False,
             OFFER_NAME="Super offre numérique",
-            OFFER_PRICE="10.00 €",
+            OFFER_PRICE="10.10 €",
             OFFER_TOKEN=booking.activationCode.code,
             CAN_EXPIRE=False,
             IS_DIGITAL_BOOKING_WITH_ACTIVATION_CODE_AND_NO_EXPIRATION_DATE=True,
@@ -313,7 +314,7 @@ class DigitalOffersTestSendinblue:
             quantity=10,
             stock__price=0,
             stock__offer__subcategoryId=subcategories.VOD.id,
-            stock__offer__product__url="http://example.com?token={token}&offerId={offerId}&email={email}",
+            stock__offer__url="http://example.com?token={token}&offerId={offerId}&email={email}",
             stock__offer__name="Super offre numérique",
             dateCreated=datetime.utcnow(),
         )
@@ -348,7 +349,7 @@ class DigitalOffersTestSendinblue:
             quantity=10,
             stock__price=0,
             stock__offer__subcategoryId=subcategories.VOD.id,
-            stock__offer__product__url="http://example.com",
+            stock__offer__url="http://example.com",
             stock__offer__name="Super offre numérique",
             dateCreated=datetime.utcnow(),
         )

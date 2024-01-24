@@ -44,13 +44,6 @@ class ThingProductFactory(ProductFactory):
     subcategoryId = subcategories.SUPPORT_PHYSIQUE_FILM.id
 
 
-class DigitalProductFactory(ThingProductFactory):
-    subcategoryId = subcategories.VOD.id
-    name = factory.Sequence("Digital product {}".format)
-    url = factory.Sequence("http://example.com/product/{}".format)
-    isNational = True
-
-
 class OfferFactory(BaseFactory):
     class Meta:
         model = models.Offer
