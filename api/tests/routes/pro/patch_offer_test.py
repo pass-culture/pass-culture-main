@@ -155,7 +155,6 @@ class Returns400Test:
             "id": 1,
             "idAtProviders": 1,
             "lastProviderId": 1,
-            "owningOffererId": "AA",
             "thumbCount": 2,
             "subcategoryId": subcategories.LIVRE_PAPIER,
         }
@@ -163,14 +162,13 @@ class Returns400Test:
 
         # Then
         assert response.status_code == 400
-        assert response.json["owningOffererId"] == ["Vous ne pouvez pas changer cette information"]
+        assert response.json["lastProviderId"] == ["Vous ne pouvez pas changer cette information"]
         forbidden_keys = {
             "dateCreated",
             "dateModifiedAtLastProvider",
             "id",
             "idAtProviders",
             "lastProviderId",
-            "owningOffererId",
             "thumbCount",
             "subcategoryId",
         }

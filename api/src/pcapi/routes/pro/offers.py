@@ -345,7 +345,7 @@ def patch_offer(
     offer = models.Offer.query.options(
         sqla.orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
         sqla.orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer),
-        sqla.orm.joinedload(models.Offer.product).joinedload(models.Product.owningOfferer),
+        sqla.orm.joinedload(models.Offer.product),
     ).get(offer_id)
     if not offer:
         raise api_errors.ResourceNotFoundError
