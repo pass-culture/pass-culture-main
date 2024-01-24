@@ -1062,15 +1062,6 @@ def set_offer_status_based_on_fraud_criteria(offer: AnyOffer) -> models.OfferVal
     return status
 
 
-def _load_product_by_ean(ean: str | None) -> models.Product:
-    if not ean:
-        raise exceptions.MissingEAN()
-    product = models.Product.query.filter(models.Product.extraData["ean"].astext == ean).first()
-    if product is None or not product.isGcuCompatible:
-        raise exceptions.NotEligibleEAN()
-    return product
-
-
 def unindex_expired_offers(process_all_expired: bool = False) -> None:
     """Unindex offers that have expired.
 
