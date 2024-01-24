@@ -1883,34 +1883,6 @@ class ResolveOfferValidationRuleTest:
         assert api.set_offer_status_based_on_fraud_criteria(collective_offer) == expected_status
 
 
-@pytest.mark.usefixtures("db_session")
-class LoadProductByEan:
-    def test_returns_product_if_found_and_is_gcu_compatible(self):
-        ean = "2221001648"
-        product = factories.ProductFactory(extraData={"ean": ean}, isGcuCompatible=True)
-
-        result = api._load_product_by_ean(ean)
-
-        assert result == product
-
-    def test_raise_api_error_if_no_product(self):
-        factories.ProductFactory(isGcuCompatible=True)
-
-        with pytest.raises(exceptions.NotEligibleEAN) as exception_info:
-            api._load_product_by_ean("2221001649")
-
-        assert exception_info.value.errors["ean"] == ["product not eligible to pass Culture"]
-
-    def test_raise_api_error_if_product_is_not_gcu_compatible(self):
-        ean = "2221001648"
-        factories.ProductFactory(extraData={"ean": ean}, isGcuCompatible=False)
-
-        with pytest.raises(exceptions.NotEligibleEAN) as exception_info:
-            api._load_product_by_ean(ean)
-
-        assert exception_info.value.errors["ean"] == ["product not eligible to pass Culture"]
-
-
 @freeze_time("2020-01-05 10:00:00")
 @pytest.mark.usefixtures("db_session")
 class UnindexExpiredOffersTest:
