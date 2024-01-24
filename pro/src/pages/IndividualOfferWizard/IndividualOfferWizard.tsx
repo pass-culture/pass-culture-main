@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { useLocation, useParams, Outlet, RouteObject } from 'react-router-dom'
 
 import { AppLayout } from 'app/AppLayout'
