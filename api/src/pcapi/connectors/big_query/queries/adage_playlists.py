@@ -30,7 +30,7 @@ class NewTemplateOffersPlaylistModel(pydantic_v1.BaseModel):
     distance_in_km: float
 
 
-class NewTemplateOffersPlaylist(BaseQuery):
+class NewTemplateOffersPlaylistQuery(BaseQuery):
     raw_query = f"""
         SELECT
             distinct collective_offer_id,

@@ -3,16 +3,11 @@ import logging
 import random
 import typing
 
-from pcapi import settings
-from pcapi.connectors.big_query.queries import LocalOfferersQuery
-from pcapi.connectors.big_query.queries.adage_playlists import NewTemplateOffersPlaylist
-import pcapi.connectors.big_query.queries.base as queries_base
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository
 import pcapi.core.educational.api.favorites as favorites_api
 import pcapi.core.offerers.api as offerers_api
-import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.repository import get_venue_by_id
 from pcapi.models import Model
 from pcapi.models.api_errors import ApiErrors
@@ -59,7 +54,9 @@ def get_classroom_playlist(
     if not redactor:
         raise ApiErrors(errors={"auth": "unknown redactor"}, status_code=403)
 
-    playlist_items = repository.get_collective_offer_templates_for_playlist(institution.id)
+    playlist_items = repository.get_collective_offer_templates_for_playlist(
+        institution_id=institution.id, playlist_type=educational_models.PlaylistType.CLASSROOM
+    )
     favorite_ids = favorites_api.get_redactors_favorite_templates_subset(
         redactor, [item.collective_offer_template.id for item in playlist_items]
     )
@@ -133,52 +130,31 @@ def new_template_offers_playlist(
     if not redactor:
         raise ApiErrors(errors={"auth": "unknown redactor"}, status_code=403)
 
-    try:
-        rows = {
-            row.collective_offer_id: row.distance_in_km
-            for row in NewTemplateOffersPlaylist().execute(institution_id=str(institution.id))
-        }
-    except queries_base.MalformedRow:
-        return serializers.ListCollectiveOfferTemplateResponseModel(collectiveOffers=[])
-
-    if (settings.IS_TESTING or settings.IS_DEV) and not settings.IS_RUNNING_TESTS:
-        rows = get_random_results(educational_models.CollectiveOfferTemplate)
-
-    offer_ids = typing.cast(set[int], set(rows))
-
-    offers = repository.get_collective_offer_template_by_ids(list(offer_ids))
-    favorite_ids = favorites_api.get_redactors_favorite_templates_subset(redactor, offer_ids)
+    playlist_items = repository.get_collective_offer_templates_for_playlist(
+        institution_id=institution.id, playlist_type=educational_models.PlaylistType.NEW_OFFER
+    )
+    favorite_ids = favorites_api.get_redactors_favorite_templates_subset(
+        redactor, [item.collective_offer_template.id for item in playlist_items]
+    )
 
     return serializers.ListCollectiveOfferTemplateResponseModel(
         collectiveOffers=[
             typing.cast(
                 serializers.CollectiveOfferTemplateResponseModel,
                 serialize_collective_offer(
-                    offer=offer,
+                    offer=item.collective_offer_template,
                     serializer=serializers.CollectiveOfferTemplateResponseModel,
-                    is_favorite=offer.id in favorite_ids,
-                    event_distance=rows[str(offer.id)]
-                    if offer.offerVenue["addressType"]
+                    is_favorite=item.collective_offer_template.id in favorite_ids,
+                    event_distance=item.distanceInKm
+                    if item.collective_offer_template.offerVenue["addressType"]
                     == collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value
                     else None,
-                    venue_distance=rows[str(offer.id)],
+                    venue_distance=item.distanceInKm,
                 ),
             )
-            for offer in offers
+            for item in playlist_items
         ]
     )
-
-
-def _get_max_range_for_local_venues(institution: educational_models.EducationalInstitution) -> int:
-    return {
-        educational_models.InstitutionRuralLevel.URBAIN_DENSE: 3,
-        educational_models.InstitutionRuralLevel.URBAIN_DENSITE_INTERMEDIAIRE: 10,
-        educational_models.InstitutionRuralLevel.RURAL_SOUS_FORTE_INFLUENCE_D_UN_POLE: 15,
-        educational_models.InstitutionRuralLevel.RURAL_SOUS_FAIBLE_INFLUENCE_D_UN_POLE: 60,
-        educational_models.InstitutionRuralLevel.RURAL_AUTONOME_PEU_DENSE: 60,
-        educational_models.InstitutionRuralLevel.RURAL_AUTONOME_TRES_PEU_DENSE: 60,
-        None: 60,
-    }.get(institution.ruralLevel, 60)
 
 
 @blueprint.adage_iframe.route("/playlists/local-offerers", methods=["GET"])
@@ -194,20 +170,12 @@ def get_local_offerers_playlist(
     if not institution:
         raise ApiErrors({"message": "institutionId is mandatory"}, status_code=403)
 
-    max_range = _get_max_range_for_local_venues(institution)
+    playlist_items = repository.get_collective_offer_templates_for_playlist(
+        institution_id=institution.id, playlist_type=educational_models.PlaylistType.LOCAL_OFFERER
+    )
 
-    try:
-        rows = {
-            row.venue_id: row.distance_in_km
-            for row in LocalOfferersQuery().execute(range=max_range, institution_id=str(institution.id))
-        }
-    except queries_base.MalformedRow:
-        return playlists_serializers.LocalOfferersPlaylist(venues=[])
-
-    if (settings.IS_TESTING or settings.IS_DEV) and not settings.IS_RUNNING_TESTS:
-        rows = get_random_results(offerers_models.Venue)
-
-    venues = offerers_api.get_venues_by_ids(set(rows))
+    distances = {item.venueId: item.distanceInKm for item in playlist_items}
+    venues = offerers_api.get_venues_by_ids(distances.keys())
 
     return playlists_serializers.LocalOfferersPlaylist(
         venues=[
@@ -215,7 +183,7 @@ def get_local_offerers_playlist(
                 img_url=venue.bannerUrl,
                 public_name=venue.publicName,
                 name=venue.name,
-                distance=format_distance(rows[str(venue.id)]),
+                distance=format_distance(distances[venue.id]),
                 city=venue.city,
                 id=venue.id,
             )
