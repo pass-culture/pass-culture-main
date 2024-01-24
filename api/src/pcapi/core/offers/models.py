@@ -484,6 +484,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         extraData["showSubType"].astext,
         postgresql_where=extraData["showSubType"] is not None,
     )
+    sa.Index("offer_authorId_idx", authorId, postgresql_using="btree")
 
     # FIXME: We shoud be able to remove the index on `venueId`, since this composite index
     #  can be used by PostgreSQL when filtering on the `venueId` column only.
