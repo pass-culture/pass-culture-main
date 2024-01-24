@@ -23,22 +23,21 @@ $number-size: rem.torem(30px);
   .step-container {
     display: flex;
     flex: 1;
-   
+
     .step {
       display: flex;
       position: relative;
-      color: colors.$grey-semi-dark;
+      color: colors.$grey-dark;
       align-items: center;
     }
 
-    
     .number {
       padding-right: rem.torem(8px);
 
       .inner {
         @include fonts.button;
 
-        border: solid 1px colors.$grey-semi-dark;
+        border: solid 1px colors.$grey-dark;
         border-radius: 50%;
         width: $number-size;
         height: $number-size;
@@ -127,7 +126,7 @@ $number-size: rem.torem(30px);
         align-items: center;
         justify-content: center;
         flex: 1;
-  
+
         &::after {
           border-radius: rem.torem(2px);
           background-color: colors.$grey-semi-dark;
@@ -135,7 +134,7 @@ $number-size: rem.torem(30px);
           width: 100%;
           height: rem.torem(2px);
         }
-  
+
         &.active {
           &::after {
             background-color: colors.$tertiary;
@@ -151,15 +150,11 @@ $number-size: rem.torem(30px);
         bottom: rem.torem(-17.274px);
         text-decoration: underline transparent;
         transition: text-decoration 250ms;
-  
+
         .inner {
           margin-left: -50%;
         }
-
-        
       }
-      
     }
-   
   }
 }
