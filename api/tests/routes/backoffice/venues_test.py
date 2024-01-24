@@ -13,6 +13,7 @@ from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import factories as history_factories
@@ -1525,46 +1526,83 @@ class DownloadReimbursementDetailsTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
     def test_download_reimbursement_details(self, authenticated_client):
-        booking = bookings_factories.UsedBookingFactory(stock__offer__venue__reimbursement_point="self")
-        reimbursement_point = booking.venue
-        finance_factories.BankInformationFactory(venue=reimbursement_point)
+        venue = offerers_factories.VenueFactory(pricing_point="self", reimbursement_point="self")
+        booking = bookings_factories.UsedBookingFactory(stock__offer__venue=venue, venue=venue)
+        finance_factories.BankInformationFactory(venue=venue)
+
+        # Create partial overpayment on booking
+        booking_finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+            booking__venue=venue,
+            booking__stock__offer__venue=venue,
+            booking__quantity=1,
+            booking__amount=3,
+            newTotalAmount=200,
+        )
+        finance_factories.PricingFactory(
+            status=finance_models.PricingStatus.INVOICED, booking=booking_finance_incident.booking
+        )
+        incident_events = finance_api._create_finance_events_from_incident(booking_finance_incident, datetime.utcnow())
+        incident_pricings = []
+        for event in incident_events:
+            pricing = finance_api.price_event(event)
+            pricing.status = finance_models.PricingStatus.INVOICED
+            incident_pricings.append(pricing)
+
+        # Create total overpayment on collective booking
+        collective_booking_finance_incident = finance_factories.CollectiveBookingFinanceIncidentFactory(
+            collectiveBooking__venue=venue,
+            collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
+            collectiveBooking__collectiveStock__price=7,
+            newTotalAmount=0,
+        )
+        finance_factories.CollectivePricingFactory(
+            status=finance_models.PricingStatus.INVOICED,
+            collectiveBooking=collective_booking_finance_incident.collectiveBooking,
+        )
+        collective_incident_events = finance_api._create_finance_events_from_incident(
+            collective_booking_finance_incident, datetime.utcnow()
+        )
+        for event in collective_incident_events:
+            pricing = finance_api.price_event(event)
+            pricing.status = finance_models.PricingStatus.INVOICED
+            incident_pricings.append(pricing)
+
         pricing = finance_factories.PricingFactory(
             booking=booking,
             status=finance_models.PricingStatus.INVOICED,
         )
         cashflow = finance_factories.CashflowFactory(
-            reimbursementPoint=reimbursement_point,
-            pricings=[pricing],
+            reimbursementPoint=venue, pricings=[pricing, *incident_pricings], amount=-210
         )
         invoice = finance_factories.InvoiceFactory(cashflows=[cashflow])
 
-        second_booking = bookings_factories.UsedBookingFactory(
-            stock__offer__venue__reimbursement_point=reimbursement_point
-        )
+        second_booking = bookings_factories.UsedBookingFactory(stock__offer__venue__reimbursement_point=venue)
         second_pricing = finance_factories.PricingFactory(
             booking=second_booking,
             status=finance_models.PricingStatus.INVOICED,
         )
         second_cashflow = finance_factories.CashflowFactory(
-            reimbursementPoint=reimbursement_point,
-            pricings=[second_pricing],
+            reimbursementPoint=venue, pricings=[second_pricing], amount=-1010
         )
         second_invoice = finance_factories.InvoiceFactory(cashflows=[second_cashflow])
 
         response = self.post_to_endpoint(
             authenticated_client,
-            venue_id=reimbursement_point.id,
+            venue_id=venue.id,
             form={"object_ids": f"{invoice.id}, {second_invoice.id}"},
         )
         assert response.status_code == 200
 
         expected_length = 1  # headers
-        expected_length += 1  # invoice
+        expected_length += 1  # first invoice booking
+        expected_length += 1  # first invoice booking price reversal (incident)
+        expected_length += 1  # first invoice booking new price (incident)
+        expected_length += 1  # first invoice collective booking reversal (incident)
         expected_length += 1  # second_invoice
         expected_length += 1  # empty line
-        print(response.data)
 
         assert len(response.data.split(b"\n")) == expected_length
+        assert str(response.data).count("Incident") == 3
 
 
 class GetBatchEditVenuesFormTest(PostEndpointHelper):
