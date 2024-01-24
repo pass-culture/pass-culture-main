@@ -107,7 +107,7 @@ const Informations = ({
         <FormLayout.Row>
           <TextInput
             isOptional
-            label="EAN-13"
+            label="EAN-13 (European Article Numbering)"
             countCharacters
             name="ean"
             maxLength={13}
