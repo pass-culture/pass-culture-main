@@ -70,7 +70,7 @@ const FormVenue = ({
 
   return (
     <FormLayout.Section
-      description="Le lieu de rattachement permet d'associer vos coordonnées bancaires à votre offre pour permettre le remboursement par le pass Culture."
+      description="Le lieu de rattachement permet d’associer votre compte bancaire pour le remboursement pass Culture."
       title="Lieu de rattachement de votre offre"
     >
       <FormLayout.Row>
