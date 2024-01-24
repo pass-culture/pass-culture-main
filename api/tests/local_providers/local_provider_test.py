@@ -192,8 +192,9 @@ class CreateObjectTest:
     def test_raises_api_errors_exception_when_errors_occur_on_model_and_log_error(self):
         # Given
         providers_factories.AllocineProviderFactory(localClass="TestLocalProviderWithApiErrors")
-        providable_info = ProvidableInfo()
-        local_provider = provider_test_utils.TestLocalProviderWithApiErrors()
+        providable_info = ProvidableInfo(type=offers_models.Offer)
+        venue_provider = providers_factories.VenueProviderFactory()
+        local_provider = provider_test_utils.TestLocalProviderWithApiErrors(venue_provider)
 
         # When
         with pytest.raises(ApiErrors) as api_errors:
@@ -201,7 +202,7 @@ class CreateObjectTest:
 
         # Then
         assert api_errors.value.errors["url"] == [
-            "Un produit de sous-catégorie ACHAT_INSTRUMENT ne peut pas être numérique"
+            "Une offre de sous-catégorie Achat instrument ne peut pas être numérique"
         ]
         assert offers_models.Product.query.count() == 0
         provider_event = providers_models.LocalProviderEvent.query.one()
@@ -234,10 +235,10 @@ class HandleUpdateTest:
         # Given
         provider = providers_factories.AllocineProviderFactory(localClass="TestLocalProviderWithApiErrors")
         providable_info = ProvidableInfo()
-        product = offers_factories.ThingProductFactory(
+        product = offers_factories.ThingOfferFactory(
             name="Old product name",
             subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
-            idAtProviders=providable_info.id_at_providers,
+            idAtProvider=providable_info.id_at_providers,
             lastProvider=provider,
         )
         local_provider = provider_test_utils.TestLocalProviderWithApiErrors()
@@ -248,7 +249,7 @@ class HandleUpdateTest:
 
         # Then
         assert api_errors.value.errors["url"] == [
-            "Un produit de sous-catégorie ACHAT_INSTRUMENT ne peut pas être numérique"
+            "Une offre de sous-catégorie Achat instrument ne peut pas être numérique"
         ]
         provider_event = providers_models.LocalProviderEvent.query.one()
         assert provider_event.type == providers_models.LocalProviderEventType.SyncError

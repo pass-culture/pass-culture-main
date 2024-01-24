@@ -231,8 +231,7 @@ class CheckExpenseLimitsDepositVersion2Test:
 
     def test_digital_limit_on_uncapped_type(self):
         beneficiary = self._get_beneficiary()
-        product = offers_factories.DigitalProductFactory(subcategoryId=subcategories.OEUVRE_ART.id)
-        offer = offers_factories.OfferFactory(product=product)
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.OEUVRE_ART.id)
         factories.BookingFactory(user=beneficiary, stock__price=190, stock__offer=offer)
 
         # should not raise because OEUVRE_ART is not capped

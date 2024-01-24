@@ -36,6 +36,8 @@ class TestLocalProviderWithApiErrors(LocalProvider):
         obj.name = "New Product"
         obj.subcategoryId = subcategories.ACHAT_INSTRUMENT.id
         obj.url = "http://url.com"
+        if self.venue_provider:
+            obj.venue = self.venue_provider.venue
 
     def __next__(self):
         pass

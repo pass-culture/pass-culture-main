@@ -132,22 +132,6 @@ class OfferValidationTest:
         }
 
 
-class ProductValidationTest:
-    def test_digital_with_incompatible_subcategory(self):
-        product = offers_factories.DigitalProductFactory.build(
-            subcategoryId=subcategories.CARTE_CINE_MULTISEANCES.id,
-        )
-        api_errors = validate(product)
-        assert api_errors.errors == {
-            "url": ["Un produit de sous-catégorie CARTE_CINE_MULTISEANCES ne peut pas être numérique"]
-        }
-
-    def test_digital_with_compatible_subcategory(self):
-        product = offers_factories.DigitalProductFactory.build()
-        api_errors = validate(product)
-        assert not api_errors.errors
-
-
 class StockValidationTest:
     def test_invalid_quantity(self):
         stock = offers_factories.StockFactory.build(quantity=-1)
