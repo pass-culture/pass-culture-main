@@ -131,8 +131,6 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     isGcuCompatible: bool = sa.Column(sa.Boolean, default=True, server_default=sa.true(), nullable=False)
     last_30_days_booking = sa.Column(sa.Integer, nullable=True)
     name: str = sa.Column(sa.String(140), nullable=False)
-    owningOfferer: sa_orm.Mapped["Offerer | None"] = sa_orm.relationship("Offerer", backref="events")
-    owningOffererId = sa.Column(sa.Integer, sa.ForeignKey("offerer.id"), nullable=True)
     subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
     thumb_path_component = "products"
     url = sa.Column(sa.String(255), nullable=True)

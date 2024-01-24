@@ -1239,19 +1239,6 @@ class DeleteOffererTest:
         assert offerers_models.Offerer.query.count() == 1
         assert offerers_models.ApiKey.query.count() == 1
 
-    def test_delete_cascade_offerer_should_remove_products_owned_by_offerer(self):
-        # Given
-        offerer_to_delete = offerers_factories.OffererFactory()
-        offers_factories.ProductFactory(owningOfferer=offerer_to_delete)
-        offers_factories.ProductFactory()
-
-        # When
-        offerers_api.delete_offerer(offerer_to_delete.id)
-
-        # Then
-        assert offerers_models.Offerer.query.count() == 0
-        assert offers_models.Product.query.count() == 1
-
     def test_delete_cascade_offerer_should_remove_bank_informations_of_offerer(self):
         # Given
         offerer_to_delete = offerers_factories.OffererFactory()

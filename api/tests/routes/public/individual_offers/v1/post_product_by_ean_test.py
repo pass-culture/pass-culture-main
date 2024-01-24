@@ -102,7 +102,6 @@ class PostProductByEanTest:
         offers_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
             extraData={"ean": "1234567890123"},
-            owningOfferer=offerers_factories.OffererFactory(),
         )
         unknown_ean = "1234567897123"
 
@@ -343,14 +342,9 @@ class PostProductByEanTest:
         assert offers_models.Offer.query.count() == 1
         assert offers_models.Stock.query.count() == 1
 
-    def test_does_not_create_non_synchronisable_or_specific_to_an_offerer_product(self, client):
+    def test_does_not_create_an_offer_of_non_compatible_product(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         product = offers_factories.ProductFactory(extraData={"ean": "1234567890123"}, isGcuCompatible=False)
-        # Theis product should not exists in our database (but they do). They are not synchronisable and are specific to an offerer.
-        # They are created at the same time as an offer.
-        product = offers_factories.ProductFactory(
-            extraData={"ean": "1234567890123"}, isGcuCompatible=False, owningOfferer=venue.managingOfferer
-        )
 
         client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
