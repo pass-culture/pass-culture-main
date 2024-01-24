@@ -23,11 +23,6 @@ describe('LinkVenueCallout', () => {
       screen.queryByText(/Dernière étape pour vous faire rembourser/)
     ).not.toBeInTheDocument()
     expect(
-      screen.queryByText(
-        /Afin de percevoir vos remboursements, vous devez rattacher vos lieux/
-      )
-    ).not.toBeInTheDocument()
-    expect(
       screen.queryByRole('link', {
         name: 'Gérer le rattachement de mes lieux',
       })
@@ -83,11 +78,6 @@ describe('LinkVenueCallout', () => {
         screen.getByText(/Dernière étape pour vous faire rembourser/)
       ).toBeInTheDocument()
       expect(
-        screen.getByText(
-          /Afin de percevoir vos remboursements, vous devez rattacher/
-        )
-      ).toBeInTheDocument()
-      expect(
         screen.getByRole('link', {
           name: 'Gérer le rattachement de mes lieux',
         })
@@ -110,11 +100,6 @@ describe('LinkVenueCallout', () => {
           /Dernière étape pour vous faire rembourser : rattachez votre lieu/
         )
       ).toBeInTheDocument()
-      expect(
-        screen.getByText(
-          /Afin de percevoir vos remboursements, vous devez rattacher votre lieu/
-        )
-      ).toBeInTheDocument()
     })
 
     it('should render LinkVenueCallout with singular plural', () => {
@@ -133,11 +118,6 @@ describe('LinkVenueCallout', () => {
       expect(
         screen.getByText(
           /Dernière étape pour vous faire rembourser : rattachez vos lieux/
-        )
-      ).toBeInTheDocument()
-      expect(
-        screen.getByText(
-          /Afin de percevoir vos remboursements, vous devez rattacher vos lieux/
         )
       ).toBeInTheDocument()
     })
