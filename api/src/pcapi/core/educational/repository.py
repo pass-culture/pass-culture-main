@@ -954,13 +954,16 @@ def get_collective_offer_template_by_ids(offer_ids: list[int]) -> list[education
 
 
 def get_collective_offer_templates_for_playlist(
-    institution_id: int,
+    institution_id: int, playlist_type: educational_models.PlaylistType, max_distance: int | None = 60
 ) -> list[educational_models.CollectiveOfferTemplate]:
     query = educational_models.CollectivePlaylist.query.filter(
-        educational_models.CollectivePlaylist.type == educational_models.PlaylistType.CLASSROOM,
+        educational_models.CollectivePlaylist.type == playlist_type,
         educational_models.CollectivePlaylist.institutionId == institution_id,
-        educational_models.CollectivePlaylist.distanceInKm <= 60,
     )
+
+    if max_distance:
+        query = query.filter(educational_models.CollectivePlaylist.distanceInKm <= max_distance)
+
     query = query.options(
         sa.orm.joinedload(educational_models.CollectivePlaylist.collective_offer_template)
         .joinedload(
