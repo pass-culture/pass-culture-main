@@ -257,7 +257,7 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
             )
         for product in existing_products:
             try:
-                ean = product.extraData["ean"]  # type: ignore [index]
+                ean = product.extraData["ean"] if product.extraData else None
                 stock_data = serialized_products_stocks[ean]
                 created_offer = _create_offer_from_product(
                     venue,
@@ -379,10 +379,7 @@ def _create_offer_from_product(
     product: offers_models.Product,
     provider: providers_models.Provider,
 ) -> offers_models.Offer:
-    ean = None
-    if product.extraData:
-        ean = product.extraData.get("ean")
-        offers_validation.check_ean_does_not_exist(ean, venue)
+    ean = product.extraData.get("ean") if product.extraData else None
 
     offer = offers_api.build_new_offer_from_product(venue, product, ean, provider.id)
 
