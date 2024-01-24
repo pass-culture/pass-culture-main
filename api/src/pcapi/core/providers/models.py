@@ -145,9 +145,7 @@ class VenueProvider(PcObject, Base, Model, DeactivableMixin):
 
     __mapper_args__ = {
         "polymorphic_on": case(
-            [
-                (isFromAllocineProvider, "allocine_venue_provider"),
-            ],
+            (isFromAllocineProvider, "allocine_venue_provider"),
             else_="venue_provider",
         ),
         "polymorphic_identity": "venue_provider",
