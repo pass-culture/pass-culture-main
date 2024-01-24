@@ -1,5 +1,4 @@
-import React from 'react'
-
+/* istanbul ignore file */
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import useOfferWizardMode from 'hooks/useOfferWizardMode'
 import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'

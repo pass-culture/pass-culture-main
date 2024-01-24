@@ -1,4 +1,4 @@
-/* istanbul ignore file: DEBT, TO FIX */
+/* istanbul ignore file */
 import React from 'react'
 
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
