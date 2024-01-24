@@ -342,3 +342,4 @@ class PlaylistFactory(BaseFactory):
     type = models.PlaylistType.CLASSROOM
     institution = factory.SubFactory(EducationalInstitutionFactory)
     collective_offer_template = factory.SubFactory(CollectiveOfferTemplateFactory)
+    venue = factory.SubFactory(offerers_factories.VenueFactory)
