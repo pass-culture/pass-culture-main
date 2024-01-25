@@ -431,7 +431,7 @@ def creat_cine_offer_with_cast(venue: offerers_models.Venue) -> None:
         extra_data={
             "cast": [Fake.name() for _ in range(random.randint(1, 10))],
             "releaseDate": Fake.date(),
-            "genres": [random.choice(movie_types).label for _ in range(random.randint(1, 4))],
+            "genres": [random.choice(movie_types).name for _ in range(random.randint(1, 4))],
             "stageDirector": Fake.name(),
         },
         subcategory=subcategories_v2.SEANCE_CINE,
