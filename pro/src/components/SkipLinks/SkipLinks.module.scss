@@ -7,12 +7,7 @@
   height: 0;
   position: absolute;
   background-color: colors.$secondary;
-  top: rem.torem(-100px);
-  display: grid;
-
-  @media (min-width: size.$desktop) {
-    grid-template-columns: size.$header-grid-template-columns;
-  }
+  top: 0;
 
   &:focus-within {
     min-height: rem.torem(32px);
@@ -25,25 +20,10 @@
     display: flex;
     gap: rem.torem(16px);
     align-items: center;
-    height: rem.torem(32px);
-
-    @media (min-width: size.$desktop) {
-      justify-content: flex-end;
-    }
-
-    // Align skiplink to passculture logo, add logo margin and padding of a nav item creating more space
-    margin-right: calc(
-      size.$nav-brand-margin-right + size.$header-nav-item-padding +
-        rem.torem(4px)
-    );
 
     &-button {
       color: colors.$white;
       outline-color: colors.$white;
-
-      & svg {
-        fill: colors.$white;
-      }
     }
   }
 }
