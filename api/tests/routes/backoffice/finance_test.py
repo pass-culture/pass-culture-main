@@ -189,14 +189,16 @@ class ValidateIncidentTest(PostEndpointHelper):
     def test_validate_incident(self, authenticated_client, force_debit_note):
         venue = offerers_factories.VenueFactory(reimbursement_point="self")
         booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
-            booking__pricings=[
-                finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-1000)
-            ],
             booking__amount=10.10,
             booking__venue=venue,
             booking__stock__offer__venue=venue,
             incident__venue=venue,
             newTotalAmount=0,
+        )
+        finance_factories.PricingFactory(
+            booking=booking_incident.booking,
+            status=finance_models.PricingStatus.INVOICED,
+            amount=-1000,
         )
 
         assert booking_incident.incident.venue.current_reimbursement_point
