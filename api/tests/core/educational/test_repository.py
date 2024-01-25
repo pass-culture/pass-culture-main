@@ -303,7 +303,7 @@ class FindByProUserTest:
         # Given
         booking_date = datetime.utcnow() - timedelta(days=5)
         user_offerer = offerers_factories.UserOffererFactory()
-        event_date = datetime.utcnow() + timedelta(days=30, hours=20)
+        event_date = datetime.utcnow() + timedelta(days=30)
         educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
             dateCreated=booking_date,
