@@ -535,7 +535,7 @@ describe('VenueFormScreen', () => {
       false,
       venue
     )
-    const adressInput = screen.getByLabelText('Adresse postale')
+    const adressInput = screen.getByLabelText('Adresse postale *')
 
     await userEvent.type(adressInput, '12 rue des fleurs')
     await userEvent.click(screen.getByText(/Enregistrer/))
@@ -558,7 +558,7 @@ describe('VenueFormScreen', () => {
       false,
       venue
     )
-    const adressInput = screen.getByLabelText('Adresse postale')
+    const adressInput = screen.getByLabelText('Adresse postale *')
 
     await userEvent.type(adressInput, '12 rue des fleurs')
     await userEvent.click(screen.getByText(/Enregistrer/))
@@ -586,7 +586,7 @@ describe('VenueFormScreen', () => {
     await waitFor(() => {
       expect(screen.queryByTestId('wrapper-publicName')).not.toBeInTheDocument()
     })
-    expect(screen.getByText('Activité principale')).toBeInTheDocument()
+    expect(screen.getByText('Activité principale *')).toBeInTheDocument()
 
     expect(screen.queryByText('Adresse du lieu')).not.toBeInTheDocument()
     expect(screen.queryByTestId('wrapper-description')).not.toBeInTheDocument()
@@ -620,9 +620,9 @@ describe('VenueFormScreen', () => {
         expect(screen.queryByTestId('wrapper-publicName')).toBeInTheDocument()
       })
 
-      expect(screen.getByText('Raison sociale')).toBeInTheDocument()
+      expect(screen.getByText('Raison sociale *')).toBeInTheDocument()
       expect(screen.getByText('Nom public')).toBeInTheDocument()
-      expect(screen.getByText('Activité principale')).toBeInTheDocument()
+      expect(screen.getByText('Activité principale *')).toBeInTheDocument()
 
       await waitFor(() => {
         expect(

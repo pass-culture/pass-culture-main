@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { ProUserCreationBodyV2Model } from 'apiClient/v1'
+import MandatoryInfo from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import useInitReCaptcha from 'hooks/useInitReCaptcha'
@@ -107,7 +108,7 @@ const SignupContainer = (): JSX.Element => {
       <OperatingProcedures />
 
       <div className={styles['mandatory']}>
-        Tous les champs sont obligatoires sauf mention contraire
+        <MandatoryInfo />
       </div>
       <FormikProvider value={formik}>
         <Form onSubmit={formik.handleSubmit}>

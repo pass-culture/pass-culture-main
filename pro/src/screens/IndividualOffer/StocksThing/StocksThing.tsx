@@ -328,6 +328,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                   smallLabel
                   name="bookingLimitDatetime"
                   label="Date limite de réservation"
+                  isOptional
                   className={styles['input-booking-limit-datetime']}
                   classNameFooter={styles['field-layout-footer']}
                   minDate={today}
@@ -350,6 +351,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                   name="quantity"
                   label="Quantité"
                   placeholder="Illimité"
+                  isOptional
                   className={styles['input-quantity']}
                   classNameFooter={styles['field-layout-footer']}
                   disabled={readOnlyFields.includes('quantity')}
@@ -374,6 +376,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                     }
                     readOnly
                     label="Stock restant"
+                    isOptional
                     smallLabel
                     classNameFooter={styles['field-layout-footer']}
                   />
@@ -382,6 +385,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                     value={formik.values.bookingsQuantity || 0}
                     readOnly
                     label="Réservations"
+                    isOptional
                     smallLabel
                     classNameFooter={styles['field-layout-footer']}
                   />

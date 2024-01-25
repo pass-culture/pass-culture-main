@@ -57,7 +57,7 @@ describe('FormNotifications', () => {
     }
     renderFormNotifications(initialValues, onSubmit)
     const mailInputs = screen.getAllByRole('textbox', {
-      name: 'Email auquel envoyer les notifications',
+      name: 'Email auquel envoyer les notifications *',
     })
     const addInputButton = screen.getByRole('button', {
       name: 'Ajouter un email de notification',
@@ -68,7 +68,7 @@ describe('FormNotifications', () => {
     await waitFor(() => {
       expect(
         screen.getAllByRole('textbox', {
-          name: 'Email auquel envoyer les notifications',
+          name: 'Email auquel envoyer les notifications *',
         }).length
       ).toEqual(2)
     })
@@ -80,7 +80,7 @@ describe('FormNotifications', () => {
     }
     renderFormNotifications(initialValues, onSubmit)
     let mailInputs = screen.getAllByRole('textbox', {
-      name: 'Email auquel envoyer les notifications',
+      name: 'Email auquel envoyer les notifications *',
     })
     const removeInputIcon = screen.getByRole('button', {
       name: 'Supprimer l’email',
@@ -88,7 +88,7 @@ describe('FormNotifications', () => {
     expect(mailInputs.length).toEqual(2)
     await userEvent.click(removeInputIcon)
     mailInputs = screen.getAllByRole('textbox', {
-      name: 'Email auquel envoyer les notifications',
+      name: 'Email auquel envoyer les notifications *',
     })
     expect(mailInputs.length).toEqual(1)
   })

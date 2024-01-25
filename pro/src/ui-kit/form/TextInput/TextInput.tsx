@@ -46,6 +46,7 @@ const TextInput = ({
   inline = false,
   description,
   clearButtonProps,
+  hasLabelLineBreak = true,
   ErrorDetails,
   ...props
 }: TextInputProps): JSX.Element => {
@@ -79,6 +80,7 @@ const TextInput = ({
       description={description}
       clearButtonProps={clearButtonProps}
       ErrorDetails={ErrorDetails}
+      hasLabelLineBreak={hasLabelLineBreak}
     >
       {readOnly ? (
         <span

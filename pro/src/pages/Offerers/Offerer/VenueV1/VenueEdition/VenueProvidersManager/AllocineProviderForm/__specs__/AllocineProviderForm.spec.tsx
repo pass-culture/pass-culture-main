@@ -22,7 +22,7 @@ const renderAllocineProviderForm = async (props: AllocineProviderFormProps) => {
     </Formik>
   )
   await waitFor(() => {
-    screen.getByText('Prix de vente/place')
+    screen.getByText('Prix de vente/place *')
   })
 }
 
@@ -58,7 +58,7 @@ describe('AllocineProviderForm', () => {
   it('should display the price field with minimum value set to 0', async () => {
     await renderAllocineProviderForm(props)
 
-    const priceField = screen.getByLabelText('Prix de vente/place', {
+    const priceField = screen.getByLabelText('Prix de vente/place *', {
       exact: false,
     })
     expect(priceField).toBeInTheDocument()
@@ -99,7 +99,7 @@ describe('AllocineProviderForm', () => {
     const offerImportButton = screen.getByRole('button', {
       name: 'Lancer la synchronisation',
     })
-    const priceField = screen.getByLabelText('Prix de vente/place', {
+    const priceField = screen.getByLabelText('Prix de vente/place *', {
       exact: false,
     })
     const quantityField = screen.getByLabelText(/Nombre de places\/séance/)
@@ -125,7 +125,7 @@ describe('AllocineProviderForm', () => {
     const offerImportButton = screen.getByRole('button', {
       name: 'Lancer la synchronisation',
     })
-    const priceField = screen.getByLabelText('Prix de vente/place', {
+    const priceField = screen.getByLabelText('Prix de vente/place *', {
       exact: false,
     })
 
@@ -147,7 +147,7 @@ describe('AllocineProviderForm', () => {
     const offerImportButton = screen.getByRole('button', {
       name: 'Lancer la synchronisation',
     })
-    const priceField = screen.getByLabelText('Prix de vente/place', {
+    const priceField = screen.getByLabelText('Prix de vente/place *', {
       exact: false,
     })
 
@@ -166,7 +166,7 @@ describe('AllocineProviderForm', () => {
 
   it('should track on import  on creation', async () => {
     await renderAllocineProviderForm(props)
-    const priceField = screen.getByLabelText('Prix de vente/place', {
+    const priceField = screen.getByLabelText('Prix de vente/place *', {
       exact: false,
     })
     await userEvent.type(priceField, '10')
@@ -217,7 +217,7 @@ describe('AllocineProviderForm', () => {
     }
     await renderAllocineProviderForm(props)
 
-    const priceField = screen.getByLabelText('Prix de vente/place', {
+    const priceField = screen.getByLabelText('Prix de vente/place *', {
       exact: false,
     })
     expect(priceField).toHaveValue(15)
@@ -245,7 +245,7 @@ describe('AllocineProviderForm', () => {
     const saveEditionProviderButton = screen.getByRole('button', {
       name: 'Modifier',
     })
-    const priceField = screen.getByLabelText('Prix de vente/place', {
+    const priceField = screen.getByLabelText('Prix de vente/place *', {
       exact: false,
     })
 
@@ -263,7 +263,7 @@ describe('AllocineProviderForm', () => {
     }
     await renderAllocineProviderForm(props)
 
-    const priceField = screen.getByLabelText('Prix de vente/place', {
+    const priceField = screen.getByLabelText('Prix de vente/place *', {
       exact: false,
     })
 
@@ -300,7 +300,7 @@ describe('AllocineProviderForm', () => {
     const saveEditionProviderButton = screen.getByRole('button', {
       name: 'Modifier',
     })
-    const priceField = screen.getByLabelText('Prix de vente/place', {
+    const priceField = screen.getByLabelText('Prix de vente/place *', {
       exact: false,
     })
     const quantityField = screen.getByLabelText(/Nombre de places\/séance/)

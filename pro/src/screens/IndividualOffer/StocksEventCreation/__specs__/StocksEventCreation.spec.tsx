@@ -130,11 +130,14 @@ describe('StocksEventCreation', () => {
 
     await userEvent.click(screen.getByText('Ajouter une ou plusieurs dates'))
 
-    await userEvent.type(screen.getByLabelText('Date de l’évènement'), tomorrow)
-    await userEvent.type(screen.getByLabelText('Horaire 1'), '12:15')
+    await userEvent.type(
+      screen.getByLabelText('Date de l’évènement *'),
+      tomorrow
+    )
+    await userEvent.type(screen.getByLabelText('Horaire 1 *'), '12:15')
     await userEvent.click(screen.getByText('12:15'))
     await userEvent.click(screen.getByText('Ajouter un créneau'))
-    await userEvent.type(screen.getByLabelText('Horaire 2'), '12:30')
+    await userEvent.type(screen.getByLabelText('Horaire 2 *'), '12:30')
 
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks_count: 2 })
     vi.spyOn(api, 'getStocks').mockResolvedValueOnce({

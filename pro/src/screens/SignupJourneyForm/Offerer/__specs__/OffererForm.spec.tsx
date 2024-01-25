@@ -125,14 +125,12 @@ describe('screens:SignupJourney::OffererForm', () => {
     ).toBeInTheDocument()
 
     expect(
-      screen.getByText(
-        'Tous les champs sont obligatoires sauf mention contraire.'
-      )
+      screen.getByText('Tous les champs suivis d’un * sont obligatoires.')
     ).toBeInTheDocument()
 
-    expect(screen.getByLabelText('Numéro de SIRET à 14 chiffres')).toHaveValue(
-      ''
-    )
+    expect(
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres *')
+    ).toHaveValue('')
   })
 
   it('should render offerer form with initialValues', () => {
@@ -143,9 +141,9 @@ describe('screens:SignupJourney::OffererForm', () => {
       initialValues: initialValues,
       contextValue,
     })
-    expect(screen.getByLabelText('Numéro de SIRET à 14 chiffres')).toHaveValue(
-      '123456789333'
-    )
+    expect(
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres *')
+    ).toHaveValue('123456789333')
   })
 
   it('should fill siret field only with numbers', async () => {
@@ -155,13 +153,13 @@ describe('screens:SignupJourney::OffererForm', () => {
     })
 
     await userEvent.type(
-      screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres *'),
       'AbdqsI'
     )
 
-    expect(screen.getByLabelText('Numéro de SIRET à 14 chiffres')).toHaveValue(
-      ''
-    )
+    expect(
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres *')
+    ).toHaveValue('')
   })
 
   it('should render empty siret field error', async () => {
@@ -183,7 +181,7 @@ describe('screens:SignupJourney::OffererForm', () => {
     })
 
     await userEvent.type(
-      screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres *'),
       siretValue
     )
     await userEvent.click(screen.getByText('Submit'))
@@ -210,7 +208,7 @@ describe('screens:SignupJourney::OffererForm', () => {
     })
 
     await userEvent.type(
-      screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres *'),
       '12345678999999'
     )
     await userEvent.click(screen.getByText('Submit'))

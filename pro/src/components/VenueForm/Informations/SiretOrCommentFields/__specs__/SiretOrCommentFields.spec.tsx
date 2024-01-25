@@ -86,7 +86,7 @@ describe('components | SiretOrCommentFields', () => {
       props,
       validationSchema,
     })
-    const siretField = screen.getByLabelText('SIRET du lieu')
+    const siretField = screen.getByLabelText('SIRET du lieu *')
     expect(siretField).toBeInTheDocument()
     const commentField = screen.queryByText('Commentaire du lieu sans SIRET')
     expect(commentField).not.toBeInTheDocument()

@@ -215,15 +215,15 @@ describe('screens:StocksEventEdition', () => {
   it('render stock event row', async () => {
     await renderStockEventScreen(apiOffer, apiStocks)
 
-    expect(await screen.findByLabelText('Date')).toBeInTheDocument()
-    expect(screen.getByLabelText('Horaire')).toBeInTheDocument()
-    expect(screen.getByLabelText('Tarif')).toBeInTheDocument()
+    expect(await screen.findByLabelText('Date *')).toBeInTheDocument()
+    expect(screen.getByLabelText('Horaire *')).toBeInTheDocument()
+    expect(screen.getByLabelText('Tarif *')).toBeInTheDocument()
     expect(
-      screen.getByLabelText('Date limite de réservation')
+      screen.getByLabelText('Date limite de réservation *')
     ).toBeInTheDocument()
-    expect(screen.getByLabelText('Quantité restante')).toBeInTheDocument()
+    expect(screen.getByLabelText('Quantité restante *')).toBeInTheDocument()
 
-    expect(screen.getAllByText('Réservations')[0]).toBeInTheDocument()
+    expect(screen.getAllByText('Réservations *')[0]).toBeInTheDocument()
 
     expect(
       screen.getByTestId('stock-form-actions-button-open')
@@ -328,7 +328,7 @@ describe('screens:StocksEventEdition', () => {
     expect(deleteButton).toHaveAttribute('aria-disabled', 'true')
     await userEvent.click(deleteButton)
     expect(api.deleteStock).not.toHaveBeenCalled()
-    expect(screen.getByLabelText('Tarif')).toHaveValue(otherPriceCategoryId)
+    expect(screen.getByLabelText('Tarif *')).toHaveValue(otherPriceCategoryId)
   })
 
   it('should allow user to delete stock from a synchronized offer', async () => {
@@ -409,12 +409,12 @@ describe('screens:StocksEventEdition', () => {
     await userEvent.click(screen.getByText('Ajouter une ou plusieurs dates'))
 
     await userEvent.type(
-      screen.getByLabelText('Date de l’évènement'),
+      screen.getByLabelText('Date de l’évènement *'),
       format(new Date(), FORMAT_ISO_DATE_ONLY)
     )
-    await userEvent.type(screen.getByLabelText('Horaire 1'), '12:15')
+    await userEvent.type(screen.getByLabelText('Horaire 1 *'), '12:15')
     await userEvent.selectOptions(
-      screen.getAllByLabelText('Tarif')[1],
+      screen.getAllByLabelText('Tarif *')[1],
       priceCategoryId
     )
     await userEvent.click(screen.getByText('Valider'))
@@ -445,7 +445,7 @@ describe('screens:StocksEventEdition', () => {
       stocks_count: apiStocks.length,
     })
 
-    await userEvent.type(screen.getByLabelText('Quantité restante'), '30')
+    await userEvent.type(screen.getByLabelText('Quantité restante *'), '30')
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
@@ -494,7 +494,7 @@ describe('screens:StocksEventEdition', () => {
     })
 
     await userEvent.selectOptions(
-      screen.getByLabelText('Tarif'),
+      screen.getByLabelText('Tarif *'),
       priceCategoryId
     )
     await userEvent.click(
@@ -513,10 +513,10 @@ describe('screens:StocksEventEdition', () => {
     await renderStockEventScreen(apiOffer, apiStocks)
 
     await userEvent.selectOptions(
-      screen.getByLabelText('Tarif'),
+      screen.getByLabelText('Tarif *'),
       priceCategoryId
     )
-    expect(screen.getByLabelText('Tarif')).toHaveValue(priceCategoryId)
+    expect(screen.getByLabelText('Tarif *')).toHaveValue(priceCategoryId)
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
@@ -588,7 +588,7 @@ describe('screens:StocksEventEdition', () => {
 
     await renderStockEventScreen(apiOffer, apiStocks)
     await userEvent.selectOptions(
-      screen.getByLabelText('Tarif'),
+      screen.getByLabelText('Tarif *'),
       priceCategoryId
     )
 
@@ -609,7 +609,7 @@ describe('screens:StocksEventEdition', () => {
       STOCKS_PER_PAGE * 5 + 10,
       '?page=3'
     )
-    await userEvent.type(screen.getByLabelText('Quantité restante'), '30')
+    await userEvent.type(screen.getByLabelText('Quantité restante *'), '30')
 
     // should block on next page
     await userEvent.click(screen.getByRole('button', { name: 'Page suivante' }))

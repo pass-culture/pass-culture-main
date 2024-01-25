@@ -55,13 +55,13 @@ describe('IndividualOffer section: TicketWithdrawal', () => {
     await userEvent.click(
       await screen.findByText('Les billets seront envoyés par email')
     )
-    expect(await screen.findByText('Date d’envoi')).toBeInTheDocument()
+    expect(await screen.findByText('Date d’envoi *')).toBeInTheDocument()
 
     // should contain withdrawal hour information when tickets are to withdraw on place
     await userEvent.click(
       await screen.findByText('Retrait sur place (guichet, comptoir...)')
     )
-    expect(await screen.findByText('Heure de retrait')).toBeInTheDocument()
+    expect(await screen.findByText('Heure de retrait *')).toBeInTheDocument()
 
     await userEvent.click(
       await screen.findByText('Aucun billet n’est nécessaire')

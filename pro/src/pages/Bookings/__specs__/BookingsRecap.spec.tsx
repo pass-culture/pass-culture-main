@@ -126,8 +126,8 @@ describe('components | BookingsRecap | Pro user', () => {
     await renderBookingsRecap(store)
 
     // Then
-    const eventDateFilter = screen.getByLabelText('Date de l’évènement')
-    const eventVenueFilter = screen.getByLabelText('Lieu')
+    const eventDateFilter = screen.getByLabelText('Date de l’évènement *')
+    const eventVenueFilter = screen.getByLabelText('Lieu *')
     const eventBookingPeriodFilter = screen.getByText('Période de réservation')
     expect(eventDateFilter).toBeInTheDocument()
     expect(eventVenueFilter).toBeInTheDocument()
@@ -163,7 +163,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // When
     await userEvent.selectOptions(
-      screen.getByLabelText('Lieu'),
+      screen.getByLabelText('Lieu *'),
       venue.id.toString()
     )
     await submitFilters()
@@ -205,7 +205,7 @@ describe('components | BookingsRecap | Pro user', () => {
     })
     const { submitFilters } = await renderBookingsRecap(store)
     await userEvent.selectOptions(
-      screen.getByLabelText('Lieu'),
+      screen.getByLabelText('Lieu *'),
       venue.id.toString()
     )
     await submitFilters()
@@ -217,7 +217,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await userEvent.click(resetButton)
 
     // Then
-    expect(screen.getByLabelText('Lieu')).toHaveValue(
+    expect(screen.getByLabelText('Lieu *')).toHaveValue(
       DEFAULT_PRE_FILTERS.offerVenueId
     )
   })
@@ -253,7 +253,7 @@ describe('components | BookingsRecap | Pro user', () => {
     })
     const { submitFilters } = await renderBookingsRecap(store)
     await userEvent.selectOptions(
-      screen.getByLabelText('Lieu'),
+      screen.getByLabelText('Lieu *'),
       venue.id.toString()
     )
     const beginningPeriodInput = screen.getByLabelText('Début de la période')
@@ -270,7 +270,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await userEvent.click(resetButton)
 
     // Then
-    expect(screen.getByLabelText('Lieu')).toHaveValue(
+    expect(screen.getByLabelText('Lieu *')).toHaveValue(
       DEFAULT_PRE_FILTERS.offerVenueId
     )
 
@@ -291,7 +291,7 @@ describe('components | BookingsRecap | Pro user', () => {
     })
     const { submitFilters } = await renderBookingsRecap(store)
     await userEvent.selectOptions(
-      screen.getByLabelText('Lieu'),
+      screen.getByLabelText('Lieu *'),
       venue.id.toString()
     )
     await submitFilters()
@@ -399,7 +399,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // When
     await userEvent.selectOptions(
-      screen.getByLabelText('Lieu'),
+      screen.getByLabelText('Lieu *'),
       venue.id.toString()
     )
     await submitFilters()
@@ -442,7 +442,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // When
     await userEvent.type(
-      screen.getByLabelText('Date de l’évènement'),
+      screen.getByLabelText('Date de l’évènement *'),
       '2020-06-08'
     )
     await submitFilters()
@@ -474,7 +474,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // When
     await userEvent.type(
-      screen.getByLabelText('Date de l’évènement'),
+      screen.getByLabelText('Date de l’évènement *'),
       '2020-08-10'
     )
     await submitFilters()
@@ -588,7 +588,7 @@ describe('components | BookingsRecap | Pro user', () => {
     const { submitFilters } = await renderBookingsRecap(store)
 
     await userEvent.selectOptions(
-      screen.getByLabelText('Lieu'),
+      screen.getByLabelText('Lieu *'),
       otherVenue.id.toString()
     )
     await submitFilters()
@@ -596,7 +596,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // When
     await userEvent.selectOptions(
-      screen.getByLabelText('Lieu'),
+      screen.getByLabelText('Lieu *'),
       venue.id.toString()
     )
     await submitFilters()
@@ -631,7 +631,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // when
     await userEvent.selectOptions(
-      screen.getByLabelText('Lieu'),
+      screen.getByLabelText('Lieu *'),
       venue.id.toString()
     )
     await userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
@@ -662,7 +662,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // when
     await userEvent.selectOptions(
-      screen.getByLabelText('Lieu'),
+      screen.getByLabelText('Lieu *'),
       venue.id.toString()
     )
     await userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
@@ -682,7 +682,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // When
     await userEvent.selectOptions(
-      screen.getByLabelText('Lieu'),
+      screen.getByLabelText('Lieu *'),
       venue.publicName ?? venue.name
     )
 
@@ -697,13 +697,13 @@ describe('components | BookingsRecap | Pro user', () => {
     // Given
     await renderBookingsRecap(store)
     await userEvent.selectOptions(
-      screen.getByLabelText('Lieu'),
+      screen.getByLabelText('Lieu *'),
       venue.publicName ?? venue.name
     )
 
     // When
     await userEvent.selectOptions(
-      screen.getByLabelText('Lieu'),
+      screen.getByLabelText('Lieu *'),
       screen.getByText('Tous les lieux')
     )
 
@@ -720,7 +720,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // When
     await userEvent.selectOptions(
-      screen.getByLabelText('Lieu'),
+      screen.getByLabelText('Lieu *'),
       venue.publicName ?? venue.name
     )
 

@@ -106,12 +106,7 @@ const PhoneNumberInput = ({
   return (
     <fieldset className={styles['phone-number-input-wrapper']}>
       <legend className={styles['phone-number-input-legend']}>
-        {label}
-        {isOptional && (
-          <span className={styles['phone-number-input-optional']}>
-            Optionnel
-          </span>
-        )}
+        {label} {!isOptional && '*'}
       </legend>
       <label htmlFor="countryCode" className="visually-hidden">
         Indicatif téléphonique

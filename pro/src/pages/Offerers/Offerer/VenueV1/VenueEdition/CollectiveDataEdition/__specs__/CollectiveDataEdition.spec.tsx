@@ -396,8 +396,8 @@ describe('CollectiveDataEdition', () => {
       renderCollectiveDataEdition()
       await waitForLoader()
 
-      const categoryField = screen.getByLabelText(/Catégorie/)
-      const subCategoryField = screen.getByLabelText(/Sous-catégorie/)
+      const categoryField = screen.getByLabelText(/Catégorie */)
+      const subCategoryField = screen.getByLabelText(/Sous-catégorie */)
 
       expect(categoryField).toHaveValue('CATEGORY_1')
       expect(subCategoryField).toHaveValue('SUB_CATEGORY_1')
@@ -411,7 +411,7 @@ describe('CollectiveDataEdition', () => {
       renderCollectiveDataEdition()
       await waitForLoader()
 
-      const subCategoryField = screen.queryByLabelText(/Sous-catégorie/)
+      const subCategoryField = screen.queryByLabelText(/Sous-catégorie */)
 
       expect(subCategoryField).not.toBeInTheDocument()
     })
@@ -419,10 +419,10 @@ describe('CollectiveDataEdition', () => {
     it('should display subcategory field when category is selected', async () => {
       renderCollectiveDataEdition()
       await waitForLoader()
-      const categoryField = screen.getByLabelText(/Catégorie/)
+      const categoryField = screen.getByLabelText(/Catégorie */)
       await userEvent.selectOptions(categoryField, 'CATEGORY_2')
 
-      const subCategoryField = screen.getByLabelText(/Sous-catégorie/)
+      const subCategoryField = screen.getByLabelText(/Sous-catégorie */)
       expect(subCategoryField).toBeInTheDocument()
     })
   })
@@ -496,7 +496,7 @@ describe('CollectiveDataEdition', () => {
       expect(statusField).toHaveValue('1')
 
       await userEvent.click(
-        await screen.findByLabelText(/Domaine artistique et culturel/)
+        await screen.findByLabelText(/Domaine artistique et culturel */)
       )
       await waitFor(async () =>
         expect(

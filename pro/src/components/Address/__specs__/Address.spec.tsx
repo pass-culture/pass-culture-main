@@ -90,7 +90,7 @@ describe('AddressSelect', () => {
 
   it('should submit form without errors', async () => {
     const { buttonSubmit } = renderAddress({ initialValues, onSubmit })
-    const adressInput = screen.getByLabelText('Adresse postale')
+    const adressInput = screen.getByLabelText('Adresse postale *')
 
     await userEvent.type(adressInput, '12 rue ')
     const suggestion = screen.getByText('12 rue des tournesols 75003 Paris', {
@@ -122,7 +122,7 @@ describe('AddressSelect', () => {
       'Erreur lors de la récupération des données'
     )
     renderAddress({ initialValues, onSubmit })
-    const adressInput = screen.getByLabelText('Adresse postale')
+    const adressInput = screen.getByLabelText('Adresse postale *')
 
     await userEvent.type(adressInput, '12 rue')
     expect(

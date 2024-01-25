@@ -107,7 +107,7 @@ describe('LinkVenueDialog', () => {
     await userEvent.click(selectSiretButton)
     await userEvent.selectOptions(
       screen.getByLabelText(
-        'Lieu avec SIRET utilisé pour le calcul de votre barème de remboursement'
+        'Lieu avec SIRET utilisé pour le calcul de votre barème de remboursement *'
       ),
       screen.getByRole('option', { name: 'Mon super lieu - 123456789' })
     )
@@ -149,7 +149,7 @@ describe('LinkVenueDialog', () => {
     )
     await userEvent.selectOptions(
       screen.getByLabelText(
-        'Lieu avec SIRET utilisé pour le calcul de votre barème de remboursement'
+        'Lieu avec SIRET utilisé pour le calcul de votre barème de remboursement *'
       ),
       screen.getByRole('option', { name: 'Mon super lieu - 123456789' })
     )

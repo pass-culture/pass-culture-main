@@ -172,11 +172,11 @@ describe('IndividualOfferForm', () => {
       props,
     })
 
-    const categorySelect = await screen.findByLabelText('Catégorie')
+    const categorySelect = await screen.findByLabelText('Catégorie *')
     await userEvent.selectOptions(categorySelect, 'physical')
-    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
+    const subCategorySelect = screen.getByLabelText('Sous-catégorie *')
     await userEvent.selectOptions(subCategorySelect, 'physical')
-    const nameField = screen.getByLabelText('Titre de l’offre')
+    const nameField = screen.getByLabelText('Titre de l’offre *')
     await userEvent.type(nameField, 'Le nom de mon offre')
 
     await userEvent.click(await screen.findByText('Submit'))
@@ -239,13 +239,13 @@ describe('IndividualOfferForm', () => {
       props,
     })
 
-    const categorySelect = await screen.findByLabelText('Catégorie')
+    const categorySelect = await screen.findByLabelText('Catégorie *')
     await userEvent.selectOptions(categorySelect, 'virtual')
-    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
+    const subCategorySelect = screen.getByLabelText('Sous-catégorie *')
     await userEvent.selectOptions(subCategorySelect, 'virtual')
-    const nameField = screen.getByLabelText('Titre de l’offre')
+    const nameField = screen.getByLabelText('Titre de l’offre *')
     await userEvent.type(nameField, 'Le nom de mon offre')
-    const urlField = await screen.findByLabelText('URL d’accès à l’offre')
+    const urlField = await screen.findByLabelText('URL d’accès à l’offre *')
 
     await userEvent.type(urlField, 'https://example.com/')
 

@@ -58,7 +58,7 @@ describe('PriceCategories', () => {
   it('should render without error', () => {
     renderPriceCategoriesForm(undefined, { canBeDuo: true })
 
-    expect(screen.getAllByText('Intitulé du tarif')).toHaveLength(3)
+    expect(screen.getAllByText('Intitulé du tarif *')).toHaveLength(3)
     expect(screen.getByText('Réservations “Duo”')).toBeInTheDocument()
   })
 
@@ -95,7 +95,7 @@ describe('PriceCategories', () => {
     expect(freeCheckboxes[1]).toBeChecked()
     expect(freeCheckboxes[2]).toBeChecked()
 
-    const tarifFields = screen.getAllByLabelText('Prix par personne')
+    const tarifFields = screen.getAllByLabelText('Prix par personne *')
     expect(tarifFields[0]).toHaveValue(0)
     expect(tarifFields[1]).toHaveValue(0)
     expect(tarifFields[2]).toHaveValue(0)
@@ -117,7 +117,7 @@ describe('PriceCategories', () => {
       await userEvent.click(screen.getByText('Ajouter un tarif'))
     }
 
-    expect(screen.getAllByText('Intitulé du tarif')).toHaveLength(
+    expect(screen.getAllByText('Intitulé du tarif *')).toHaveLength(
       PRICE_CATEGORY_MAX_LENGTH
     )
     expect(screen.getByText('Ajouter un tarif')).toBeDisabled()
@@ -217,7 +217,7 @@ describe('PriceCategories', () => {
 
     // I add a price category line
     await userEvent.click(screen.getByText('Ajouter un tarif'))
-    const nameFields = screen.getAllByLabelText('Intitulé du tarif')
+    const nameFields = screen.getAllByLabelText('Intitulé du tarif *')
     expect(nameFields[0]).toHaveValue('')
     expect(nameFields[0]).not.toBeDisabled()
 

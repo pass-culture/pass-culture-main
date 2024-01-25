@@ -89,10 +89,7 @@ const FieldLayout = ({
           )}
           htmlFor={name}
         >
-          {label}
-          {isOptional && (
-            <span className={styles['field-layout-optional']}>Optionnel</span>
-          )}
+          {label} {!isOptional && '*'}
         </label>
         {description && (
           <span className={styles['field-layout-input-description']}>

@@ -41,7 +41,7 @@ const renderVenue = ({
     </Formik>
   )
 
-  const selectVenue = screen.getByLabelText('Lieu')
+  const selectVenue = screen.getByLabelText('Lieu *')
   const checkboxNone = screen.getByLabelText('Non accessible', {
     exact: false,
   })

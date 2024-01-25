@@ -67,10 +67,10 @@ describe('PriceCategories', () => {
       offer: individualOfferFactory({ hasStocks: false }),
     })
     await userEvent.type(
-      screen.getByLabelText('Intitulé du tarif'),
+      screen.getByLabelText('Intitulé du tarif *'),
       'Mon tarif'
     )
-    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
+    await userEvent.type(screen.getByLabelText('Prix par personne *'), '20')
 
     await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
@@ -88,10 +88,10 @@ describe('PriceCategories', () => {
       }),
     })
     await userEvent.type(
-      screen.getByLabelText('Intitulé du tarif'),
+      screen.getByLabelText('Intitulé du tarif *'),
       'Mon tarif'
     )
-    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
+    await userEvent.type(screen.getByLabelText('Prix par personne *'), '20')
 
     await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
@@ -118,10 +118,10 @@ describe('PriceCategories', () => {
       }),
     })
     await userEvent.type(
-      screen.getByLabelText('Intitulé du tarif'),
+      screen.getByLabelText('Intitulé du tarif *'),
       'Mon tarif'
     )
-    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
+    await userEvent.type(screen.getByLabelText('Prix par personne *'), '20')
 
     await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
@@ -153,10 +153,10 @@ describe('PriceCategories', () => {
       )
     )
     await userEvent.type(
-      screen.getByLabelText('Intitulé du tarif'),
+      screen.getByLabelText('Intitulé du tarif *'),
       'Mon tarif'
     )
-    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
+    await userEvent.type(screen.getByLabelText('Prix par personne *'), '20')
 
     await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
@@ -179,10 +179,10 @@ describe('PriceCategories', () => {
       )
     )
     await userEvent.type(
-      screen.getByLabelText('Intitulé du tarif'),
+      screen.getByLabelText('Intitulé du tarif *'),
       'Mon tarif'
     )
-    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
+    await userEvent.type(screen.getByLabelText('Prix par personne *'), '20')
 
     await userEvent.click(screen.getByText('Enregistrer les modifications'))
 

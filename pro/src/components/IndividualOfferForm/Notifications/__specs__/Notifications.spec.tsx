@@ -80,14 +80,14 @@ describe('IndividualOffer section: Notifications', () => {
       await screen.findByText('Être notifié par email des réservations')
     ).toBeInTheDocument()
     expect(
-      screen.queryByText('Email auquel envoyer les notifications')
+      screen.queryByText('Email auquel envoyer les notifications *')
     ).not.toBeInTheDocument()
 
     await userEvent.click(
       screen.getByText('Être notifié par email des réservations')
     )
     expect(
-      await screen.findByText('Email auquel envoyer les notifications')
+      await screen.findByText('Email auquel envoyer les notifications *')
     ).toBeInTheDocument()
     expect(screen.getByDisplayValue('email@example.com')).toBeInTheDocument()
   })
@@ -104,14 +104,14 @@ describe('IndividualOffer section: Notifications', () => {
       await screen.findByText('Être notifié par email des réservations')
     ).toBeInTheDocument()
     expect(
-      screen.queryByText('Email auquel envoyer les notifications')
+      screen.queryByText('Email auquel envoyer les notifications *')
     ).not.toBeInTheDocument()
 
     await userEvent.click(
       screen.getByText('Être notifié par email des réservations')
     )
     expect(
-      await screen.findByText('Email auquel envoyer les notifications')
+      await screen.findByText('Email auquel envoyer les notifications *')
     ).toBeInTheDocument()
     expect(screen.getByDisplayValue('venue@exemple.com')).toBeInTheDocument()
   })
@@ -129,14 +129,14 @@ describe('IndividualOffer section: Notifications', () => {
       await screen.findByText('Être notifié par email des réservations')
     ).toBeInTheDocument()
     expect(
-      screen.queryByText('Email auquel envoyer les notifications')
+      screen.queryByText('Email auquel envoyer les notifications *')
     ).not.toBeInTheDocument()
 
     await userEvent.click(
       screen.getByText('Être notifié par email des réservations')
     )
     expect(
-      await screen.findByText('Email auquel envoyer les notifications')
+      await screen.findByText('Email auquel envoyer les notifications *')
     ).toBeInTheDocument()
     expect(
       screen.getByDisplayValue('customMail@exemple.com')
@@ -153,7 +153,7 @@ describe('IndividualOffer section: Notifications', () => {
       screen.getByText('Être notifié par email des réservations')
     )
     const bookingEmailInput = screen.getByLabelText(
-      'Email auquel envoyer les notifications'
+      'Email auquel envoyer les notifications *'
     )
 
     // when email is empty
@@ -205,7 +205,7 @@ describe('IndividualOffer section: Notifications', () => {
     )
 
     expect(
-      screen.getByLabelText('Email auquel envoyer les notifications')
+      screen.getByLabelText('Email auquel envoyer les notifications *')
     ).toBeDisabled()
   })
 })

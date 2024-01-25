@@ -120,7 +120,7 @@ describe('OffererStatsScreen', () => {
     await waitFor(() => {
       expect(api.getOfferer).toHaveBeenCalledTimes(1)
     })
-    const offererSelect = screen.getByLabelText('Structure')
+    const offererSelect = screen.getByLabelText('Structure *')
     await userEvent.selectOptions(offererSelect, '2')
 
     const iframe = screen.getByTitle('Tableau des statistiques')
@@ -150,7 +150,7 @@ describe('OffererStatsScreen', () => {
       expect(api.getOfferer).toHaveBeenCalledTimes(1)
     })
 
-    const venueSelect = await screen.findByLabelText('Lieu')
+    const venueSelect = await screen.findByLabelText('Lieu *')
     await userEvent.selectOptions(venueSelect, venueId.toString())
     const iframe = screen.getByTitle('Tableau des statistiques')
     expect(iframe).toBeInTheDocument()
@@ -163,7 +163,7 @@ describe('OffererStatsScreen', () => {
       expect(api.getOfferer).toHaveBeenCalledTimes(1)
     })
 
-    const venueSelect = await screen.findByLabelText('Lieu')
+    const venueSelect = await screen.findByLabelText('Lieu *')
     await userEvent.selectOptions(venueSelect, 'all')
     expect(api.getOffererStatsDashboardUrl).toHaveBeenCalledTimes(1)
   })

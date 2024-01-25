@@ -42,7 +42,7 @@ describe('MultiSelectAutocomplete', () => {
         <MultiSelectAutocomplete {...props} />
       </Formik>
     )
-    expect(screen.getByLabelText('Département')).toBeInTheDocument()
+    expect(screen.getByLabelText('Département *')).toBeInTheDocument()
   })
 
   it('should display the number of selected options', () => {

@@ -137,8 +137,8 @@ describe('OffererAuthenticationForm', () => {
       contextValue: contextValue,
     })
 
-    const siretField = screen.getByLabelText('Numéro de SIRET')
-    const nameField = screen.getByLabelText('Raison sociale')
+    const siretField = screen.getByLabelText('Numéro de SIRET *')
+    const nameField = screen.getByLabelText('Raison sociale *')
 
     expect(siretField).toBeDisabled()
     expect(siretField).toHaveValue('123 456 789 33333')

@@ -153,7 +153,7 @@ describe('screens:StocksThing', () => {
       )
     ).toBeInTheDocument()
 
-    expect(screen.getByLabelText('Prix')).toBeInTheDocument()
+    expect(screen.getByLabelText('Prix *')).toBeInTheDocument()
     expect(
       screen.getByLabelText('Date limite de réservation')
     ).toBeInTheDocument()
@@ -202,7 +202,7 @@ describe('screens:StocksThing', () => {
     const nextButton = screen.getByRole('button', {
       name: 'Enregistrer et continuer',
     })
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
+    await userEvent.type(screen.getByLabelText('Prix *'), '20')
     await userEvent.click(nextButton)
 
     await waitFor(() => {
@@ -229,7 +229,7 @@ describe('screens:StocksThing', () => {
     const nextButton = screen.getByRole('button', {
       name: 'Enregistrer et continuer',
     })
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
+    await userEvent.type(screen.getByLabelText('Prix *'), '20')
     await userEvent.click(
       screen.getByLabelText('Accepter les réservations “Duo“')
     )
@@ -278,7 +278,7 @@ describe('screens:StocksThing', () => {
 
     await renderStockThingScreen([], props, contextValue)
 
-    await userEvent.type(screen.getByLabelText('Prix'), '20')
+    await userEvent.type(screen.getByLabelText('Prix *'), '20')
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer et continuer' })
     )
@@ -303,7 +303,7 @@ describe('screens:StocksThing', () => {
       }
       await renderStockThingScreen([], props, contextValue)
 
-      await userEvent.type(screen.getByLabelText('Prix'), '20')
+      await userEvent.type(screen.getByLabelText('Prix *'), '20')
 
       await userEvent.click(
         screen.getByTestId('stock-form-actions-button-open')
@@ -341,10 +341,10 @@ describe('screens:StocksThing', () => {
       await userEvent.click(screen.getByText('Valider'))
       expect(screen.getByLabelText('Quantité')).toBeDisabled()
 
-      const priceInput = screen.getByLabelText('Prix')
+      const priceInput = screen.getByLabelText('Prix *')
       await userEvent.clear(priceInput)
       await userEvent.type(priceInput, '14.01')
-      const expirationInput = screen.getByLabelText("Date d'expiration")
+      const expirationInput = screen.getByLabelText("Date d'expiration *")
       expect(expirationInput).toBeDisabled()
       const date = new Date()
       date.setUTCHours(22, 59, 59, 999)
@@ -424,7 +424,7 @@ describe('screens:StocksThing', () => {
       )
 
       expect(screen.getByLabelText('Quantité')).toBeDisabled()
-      const expirationInput = screen.getByLabelText("Date d'expiration")
+      const expirationInput = screen.getByLabelText("Date d'expiration *")
       expect(expirationInput).toBeDisabled()
       expect(expirationInput).toHaveValue('2020-12-15')
     })
