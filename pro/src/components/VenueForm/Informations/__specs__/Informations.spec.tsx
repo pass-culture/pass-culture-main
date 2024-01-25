@@ -132,7 +132,7 @@ describe('components | Informations', () => {
       onSubmit,
       props,
     })
-    const nameInput = screen.getByText('Raison sociale')
+    const nameInput = screen.getByText('Raison sociale *')
 
     await userEvent.click(nameInput)
     await userEvent.tab()

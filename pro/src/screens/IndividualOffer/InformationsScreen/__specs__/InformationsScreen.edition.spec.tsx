@@ -203,7 +203,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
 
   it('should submit minimal physical offer and redirect to summary', async () => {
     renderInformationsScreen(props, contextOverride)
-    const nameField = screen.getByLabelText('Titre de l’offre')
+    const nameField = screen.getByLabelText('Titre de l’offre *')
     await userEvent.clear(nameField)
     await userEvent.type(nameField, 'Le nom de mon offre édité')
 
@@ -264,7 +264,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
     }
 
     renderInformationsScreen(props, contextOverride)
-    const nameField = screen.getByLabelText('Titre de l’offre')
+    const nameField = screen.getByLabelText('Titre de l’offre *')
     await userEvent.clear(nameField)
     await userEvent.type(nameField, 'Le nom de mon offre édité')
 
@@ -439,7 +439,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
 
       renderInformationsScreen(props, contextOverride)
 
-      const nameField = screen.getByLabelText('Titre de l’offre')
+      const nameField = screen.getByLabelText('Titre de l’offre *')
       await userEvent.clear(nameField)
       await userEvent.type(nameField, 'Le nom de mon offre édité')
 
@@ -504,7 +504,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
 
       renderInformationsScreen(props, contextOverride)
 
-      const nameField = screen.getByLabelText('Titre de l’offre')
+      const nameField = screen.getByLabelText('Titre de l’offre *')
       await userEvent.clear(nameField)
       await userEvent.type(nameField, 'Le nom de mon offre édité')
 
@@ -547,7 +547,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
 
       expect(api.patchOffer).toHaveBeenCalledTimes(0)
       expect(api.getOffer).toHaveBeenCalledTimes(0)
-      expect(screen.getByText('Titre de l’offre')).toBeInTheDocument()
+      expect(screen.getByText('Titre de l’offre *')).toBeInTheDocument()
     })
 
     /**
@@ -588,7 +588,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
         }
         renderInformationsScreen(props, contextOverride)
 
-        const nameField = screen.getByLabelText('Titre de l’offre')
+        const nameField = screen.getByLabelText('Titre de l’offre *')
         await userEvent.clear(nameField)
         await userEvent.type(nameField, 'Le nom de mon offre édité')
 
@@ -647,7 +647,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       expectedBody.withdrawalDelay = null
       expectedBody.withdrawalType = WithdrawalTypeEnum.NO_TICKET
 
-      const nameField = screen.getByLabelText('Titre de l’offre')
+      const nameField = screen.getByLabelText('Titre de l’offre *')
       await userEvent.clear(nameField)
       await userEvent.type(nameField, 'Le nom de mon offre édité')
 
@@ -730,7 +730,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
         }
         renderInformationsScreen(props, contextOverride)
 
-        const nameField = screen.getByLabelText('Titre de l’offre')
+        const nameField = screen.getByLabelText('Titre de l’offre *')
         await userEvent.clear(nameField)
         await userEvent.type(nameField, 'Le nom de mon offre édité')
 
@@ -752,7 +752,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
 
         if (withdrawalInformations.withdrawalDelay) {
           const withdrawalDelayField =
-            await screen.findByLabelText('Heure de retrait')
+            await screen.findByLabelText('Heure de retrait *')
           await userEvent.selectOptions(withdrawalDelayField, '1 heure')
           expectedBody.withdrawalDelay = 3600
         }

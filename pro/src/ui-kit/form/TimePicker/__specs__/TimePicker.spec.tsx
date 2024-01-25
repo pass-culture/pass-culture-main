@@ -15,6 +15,6 @@ const renderTimePicker = (initialValue: string | Date | null | undefined) => {
 describe('TimePicker', () => {
   it('should render field', () => {
     renderTimePicker('')
-    expect(screen.getByLabelText('Horaire')).toBeInTheDocument()
+    expect(screen.getByLabelText('Horaire *')).toBeInTheDocument()
   })
 })

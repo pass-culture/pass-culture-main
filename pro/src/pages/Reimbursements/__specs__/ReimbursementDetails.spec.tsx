@@ -105,7 +105,7 @@ describe('reimbursementsWithFilters', () => {
     })
 
     await userEvent.selectOptions(
-      await screen.findByLabelText('Lieu'),
+      await screen.findByLabelText('Lieu *'),
       'Public Name venue 1'
     )
 
@@ -131,7 +131,7 @@ describe('reimbursementsWithFilters', () => {
     await userEvent.type(startFilter, '1998-11-12')
     await userEvent.type(endFilter, '1999-12-12')
     await userEvent.selectOptions(
-      await screen.findByLabelText('Lieu'),
+      await screen.findByLabelText('Lieu *'),
       'Public Name venue 1'
     )
 
@@ -141,7 +141,7 @@ describe('reimbursementsWithFilters', () => {
       })
     )
 
-    expect(screen.getByLabelText('Lieu')).toHaveValue('allVenues')
+    expect(screen.getByLabelText('Lieu *')).toHaveValue('allVenues')
     expect(screen.getByLabelText('Début de la période')).toHaveValue(
       '2020-11-15'
     )
@@ -154,7 +154,7 @@ describe('reimbursementsWithFilters', () => {
     })
 
     const options = await within(
-      await screen.findByLabelText('Lieu')
+      await screen.findByLabelText('Lieu *')
     ).findAllByRole('option')
 
     expect(options[0].textContent).toBe('Tous les lieux')
@@ -171,7 +171,7 @@ describe('reimbursementsWithFilters', () => {
     })
 
     const options = await within(
-      await screen.findByLabelText('Lieu')
+      await screen.findByLabelText('Lieu *')
     ).findAllByRole('option')
 
     expect(options[0].textContent).toBe('Tous les lieux')
@@ -186,7 +186,7 @@ describe('reimbursementsWithFilters', () => {
     })
 
     await userEvent.selectOptions(
-      await screen.findByLabelText('Lieu'),
+      await screen.findByLabelText('Lieu *'),
       'Public Name venue 1'
     )
 

@@ -272,7 +272,7 @@ describe('screen Offers', () => {
 
   it('should allow user to select manual creation mode filter', async () => {
     renderOffers(props)
-    const creationModeSelect = screen.getByLabelText('Mode de création')
+    const creationModeSelect = screen.getByLabelText('Mode de création *')
 
     await userEvent.selectOptions(creationModeSelect, 'Manuel')
 
@@ -404,7 +404,7 @@ describe('screen Offers', () => {
         })
 
         await userEvent.selectOptions(
-          screen.getByLabelText('Lieu'),
+          screen.getByLabelText('Lieu *'),
           venueOptionToSelect
         )
 
@@ -746,7 +746,7 @@ describe('screen Offers', () => {
       { features: ['WIP_ENABLE_FORMAT'] }
     )
 
-    expect(screen.getByRole('combobox', { name: 'Format' }))
+    expect(screen.getByRole('combobox', { name: 'Format *' }))
   })
 
   it('should filter on the format when the ff is enabled', async () => {
@@ -755,7 +755,7 @@ describe('screen Offers', () => {
       { features: ['WIP_ENABLE_FORMAT'] }
     )
 
-    const formatSelect = screen.getByRole('combobox', { name: 'Format' })
+    const formatSelect = screen.getByRole('combobox', { name: 'Format *' })
 
     await userEvent.selectOptions(
       formatSelect,

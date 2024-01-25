@@ -117,9 +117,9 @@ describe('IndividualOfferForm', () => {
         props,
       })
 
-      const categorySelect = await screen.findByLabelText('Catégorie')
+      const categorySelect = await screen.findByLabelText('Catégorie *')
       await userEvent.selectOptions(categorySelect, 'physical')
-      const subcategorySelect = await screen.findByLabelText('Sous-catégorie')
+      const subcategorySelect = await screen.findByLabelText('Sous-catégorie *')
       await userEvent.selectOptions(subcategorySelect, 'physical')
 
       expect(screen.queryByText('+ Ajouter un lieu')).toBeInTheDocument()
@@ -139,9 +139,9 @@ describe('IndividualOfferForm', () => {
         props,
       })
 
-      const categorySelect = await screen.findByLabelText('Catégorie')
+      const categorySelect = await screen.findByLabelText('Catégorie *')
       await userEvent.selectOptions(categorySelect, 'virtual')
-      const subcategorySelect = await screen.findByLabelText('Sous-catégorie')
+      const subcategorySelect = await screen.findByLabelText('Sous-catégorie *')
       await userEvent.selectOptions(subcategorySelect, 'virtual')
 
       expect(screen.queryByText('+ Ajouter un lieu')).not.toBeInTheDocument()
@@ -154,9 +154,9 @@ describe('IndividualOfferForm', () => {
         props,
       })
 
-      const categorySelect = await screen.findByLabelText('Catégorie')
+      const categorySelect = await screen.findByLabelText('Catégorie *')
       await userEvent.selectOptions(categorySelect, 'physical')
-      const subcategorySelect = await screen.findByLabelText('Sous-catégorie')
+      const subcategorySelect = await screen.findByLabelText('Sous-catégorie *')
       await userEvent.selectOptions(subcategorySelect, 'physical')
 
       expect(screen.queryByText('+ Ajouter un lieu')).not.toBeInTheDocument()

@@ -63,7 +63,7 @@ describe('FormDates', () => {
       datesType: 'specific_dates',
       hour: '',
     })
-    expect(screen.getByLabelText('Date de fin')).toHaveAttribute(
+    expect(screen.getByLabelText('Date de fin *')).toHaveAttribute(
       'min',
       format(new Date(), FORMAT_ISO_DATE_ONLY)
     )
@@ -80,7 +80,7 @@ describe('FormDates', () => {
         hour: '',
       }
     )
-    expect(screen.getByLabelText('Date de début')).toHaveAttribute(
+    expect(screen.getByLabelText('Date de début *')).toHaveAttribute(
       'min',
       format(new Date('2021-01-01'), FORMAT_ISO_DATE_ONLY)
     )
@@ -163,7 +163,7 @@ describe('FormDates', () => {
 
     await userEvent.click(screenSpecific)
 
-    expect(screen.getByLabelText('Date de début')).toHaveAttribute(
+    expect(screen.getByLabelText('Date de début *')).toHaveAttribute(
       'value',
       startDate
     )

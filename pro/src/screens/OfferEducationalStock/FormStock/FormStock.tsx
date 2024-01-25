@@ -60,6 +60,7 @@ const FormStock = ({
         placeholder="Ex : 30"
         smallLabel
         type="number"
+        hasLabelLineBreak={false}
       />
       <TextInput
         disabled={disablePriceAndParticipantInputs}
@@ -82,6 +83,7 @@ const FormStock = ({
         }
         name="bookingLimitDatetime"
         smallLabel
+        isOptional
         className={styles['input-date']}
       />
     </FormLayout.Row>

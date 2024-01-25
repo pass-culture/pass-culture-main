@@ -170,7 +170,7 @@ describe('Offerer', () => {
     ).toBeInTheDocument()
 
     await userEvent.type(
-      screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres *'),
       '12345678999999'
     )
 
@@ -191,7 +191,7 @@ describe('Offerer', () => {
       await screen.findByText('Renseignez le SIRET de votre structure')
     ).toBeInTheDocument()
     await userEvent.type(
-      screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres *'),
       '12345678933333'
     )
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
@@ -209,7 +209,7 @@ describe('Offerer', () => {
     renderOffererScreen(contextValue)
 
     await userEvent.type(
-      screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres *'),
       '12345678933333'
     )
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
@@ -258,7 +258,7 @@ describe('Offerer', () => {
     renderOffererScreen(contextValue)
 
     await userEvent.type(
-      screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres *'),
       '12345678933333'
     )
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
@@ -278,13 +278,13 @@ describe('Offerer', () => {
     ).not.toBeInTheDocument()
 
     await userEvent.type(
-      screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres *'),
       '12345678933367'
     )
 
     await waitFor(() => {
       expect(
-        screen.getByLabelText('Numéro de SIRET à 14 chiffres')
+        screen.getByLabelText('Numéro de SIRET à 14 chiffres *')
       ).toHaveValue('123 456 789 33367')
     })
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
@@ -299,13 +299,13 @@ describe('Offerer', () => {
     renderOffererScreen(contextValue)
 
     await userEvent.click(
-      screen.getByLabelText('Numéro de SIRET à 14 chiffres')
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres *')
     )
     await userEvent.tab()
     expect(api.getSiretInfo).not.toHaveBeenCalled()
 
     await userEvent.type(
-      screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres *'),
       '12345678933338'
     )
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
@@ -330,13 +330,13 @@ describe('Offerer', () => {
     renderOffererScreen(contextValue)
 
     await userEvent.type(
-      screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres *'),
       '12345678933334'
     )
 
     await waitFor(() => {
       expect(
-        screen.getByLabelText('Numéro de SIRET à 14 chiffres')
+        screen.getByLabelText('Numéro de SIRET à 14 chiffres *')
       ).toHaveValue('123 456 789 33334')
     })
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
@@ -363,7 +363,7 @@ describe('Offerer', () => {
     renderOffererScreen(contextValue)
 
     await userEvent.type(
-      screen.getByLabelText('Numéro de SIRET à 14 chiffres'),
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres *'),
       '12345678933335'
     )
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))

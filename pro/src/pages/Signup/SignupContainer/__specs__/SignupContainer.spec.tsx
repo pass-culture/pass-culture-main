@@ -150,7 +150,7 @@ describe('Signup', () => {
       // then it should have an email field
       expect(
         screen.getByRole('textbox', {
-          name: /Adresse email/,
+          name: /Adresse email */,
         })
       ).toBeInTheDocument()
       // and a password field
@@ -190,7 +190,7 @@ describe('Signup', () => {
 
           await userEvent.type(
             screen.getByRole('textbox', {
-              name: /Adresse email/,
+              name: /Adresse email */,
             }),
             'test@example.com'
           )
@@ -258,7 +258,7 @@ describe('Signup', () => {
           })
           await userEvent.type(
             screen.getByRole('textbox', {
-              name: /Adresse email/,
+              name: /Adresse email */,
             }),
             'test@example.com'
           )
@@ -329,15 +329,15 @@ describe('Signup', () => {
         })
 
         await userEvent.type(
-          screen.getByLabelText('Adresse email'),
+          screen.getByLabelText('Adresse email *'),
           'test@example.com'
         )
         await userEvent.type(
-          screen.getByLabelText('Mot de passe'),
+          screen.getByLabelText('Mot de passe *'),
           'user@AZERTY123'
         )
-        await userEvent.type(screen.getByLabelText('Nom'), 'Nom')
-        await userEvent.type(screen.getByLabelText('Prénom'), 'Prénom')
+        await userEvent.type(screen.getByLabelText('Nom *'), 'Nom')
+        await userEvent.type(screen.getByLabelText('Prénom *'), 'Prénom')
 
         await userEvent.type(
           screen.getByLabelText('Numéro de téléphone'),

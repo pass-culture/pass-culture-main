@@ -53,12 +53,6 @@
     }
   }
 
-  &-optional {
-    @include fonts.caption;
-
-    color: colors.$grey-dark;
-  }
-
   &-footer {
     @include formsM.field-layout-footer;
   }

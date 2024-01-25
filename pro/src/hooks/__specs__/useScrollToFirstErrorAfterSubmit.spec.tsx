@@ -53,6 +53,6 @@ describe('useScrollToFirstErrorAfterSubmit', () => {
       expect(screen.getByText('Veuillez remplir le champ')).toBeInTheDocument()
     })
     expect(scrollIntoViewMock).toHaveBeenCalled()
-    expect(screen.getByLabelText('test')).toHaveFocus()
+    expect(screen.getByLabelText('test *')).toHaveFocus()
   })
 })

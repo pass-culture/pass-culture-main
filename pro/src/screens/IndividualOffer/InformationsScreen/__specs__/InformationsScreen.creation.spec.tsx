@@ -155,11 +155,11 @@ describe('screens:IndividualOffer::Informations::creation', () => {
   it('should submit minimal physical offer', async () => {
     renderInformationsScreen(props, contextOverride)
 
-    const categorySelect = await screen.findByLabelText('Catégorie')
+    const categorySelect = await screen.findByLabelText('Catégorie *')
     await userEvent.selectOptions(categorySelect, 'A')
-    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
+    const subCategorySelect = screen.getByLabelText('Sous-catégorie *')
     await userEvent.selectOptions(subCategorySelect, 'physical')
-    const nameField = screen.getByLabelText('Titre de l’offre')
+    const nameField = screen.getByLabelText('Titre de l’offre *')
     await userEvent.type(nameField, 'Le nom de mon offre')
 
     await userEvent.click(await screen.findByText('Enregistrer et continuer'))
@@ -195,11 +195,11 @@ describe('screens:IndividualOffer::Informations::creation', () => {
   it('should display api errors', async () => {
     renderInformationsScreen(props, contextOverride)
 
-    const categorySelect = await screen.findByLabelText('Catégorie')
+    const categorySelect = await screen.findByLabelText('Catégorie *')
     await userEvent.selectOptions(categorySelect, 'A')
-    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
+    const subCategorySelect = screen.getByLabelText('Sous-catégorie *')
     await userEvent.selectOptions(subCategorySelect, 'physical')
-    const nameField = screen.getByLabelText('Titre de l’offre')
+    const nameField = screen.getByLabelText('Titre de l’offre *')
     await userEvent.type(nameField, 'Le nom de mon offre')
 
     vi.spyOn(api, 'postOffer').mockRejectedValue(
@@ -231,15 +231,15 @@ describe('screens:IndividualOffer::Informations::creation', () => {
     props.venueId = '2'
     renderInformationsScreen(props, contextOverride)
 
-    const categorySelect = await screen.findByLabelText('Catégorie')
+    const categorySelect = await screen.findByLabelText('Catégorie *')
     await userEvent.selectOptions(categorySelect, 'A')
-    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
+    const subCategorySelect = screen.getByLabelText('Sous-catégorie *')
     await userEvent.selectOptions(subCategorySelect, 'virtual')
 
-    const nameField = screen.getByLabelText('Titre de l’offre')
+    const nameField = screen.getByLabelText('Titre de l’offre *')
     await userEvent.type(nameField, 'Le nom de mon offre')
 
-    const urlField = await screen.findByLabelText('URL d’accès à l’offre')
+    const urlField = await screen.findByLabelText('URL d’accès à l’offre *')
 
     await userEvent.type(urlField, 'https://example.com/')
 
@@ -338,14 +338,14 @@ describe('screens:IndividualOffer::Informations::creation', () => {
     const searchParam = '?offer-type=VIRTUAL_GOOD'
     renderInformationsScreen(props, contextOverride, searchParam)
 
-    const categorySelect = await screen.findByLabelText('Catégorie')
+    const categorySelect = await screen.findByLabelText('Catégorie *')
     await userEvent.selectOptions(categorySelect, 'A')
-    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
+    const subCategorySelect = screen.getByLabelText('Sous-catégorie *')
     await userEvent.selectOptions(subCategorySelect, 'virtual')
 
-    const nameField = screen.getByLabelText('Titre de l’offre')
+    const nameField = screen.getByLabelText('Titre de l’offre *')
     await userEvent.type(nameField, 'Le nom de mon offre')
-    const urlField = await screen.findByLabelText('URL d’accès à l’offre')
+    const urlField = await screen.findByLabelText('URL d’accès à l’offre *')
 
     await userEvent.type(urlField, 'https://example.com/')
 
@@ -422,9 +422,9 @@ describe('screens:IndividualOffer::Informations::creation', () => {
     const searchParam = '?sous-categorie=virtual'
     renderInformationsScreen(props, contextOverride, searchParam)
 
-    const nameField = screen.getByLabelText('Titre de l’offre')
+    const nameField = screen.getByLabelText('Titre de l’offre *')
     await userEvent.type(nameField, 'Le nom de mon offre')
-    const urlField = await screen.findByLabelText('URL d’accès à l’offre')
+    const urlField = await screen.findByLabelText('URL d’accès à l’offre *')
 
     await userEvent.type(urlField, 'https://example.com/')
 

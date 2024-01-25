@@ -12,7 +12,7 @@ const MandatoryInfo = ({
 }: FormLayoutMandatoryInfoProps): JSX.Element => {
   return (
     <p className={cn(style['mandatory-info'], className)}>
-      Tous les champs sont obligatoires sauf mention contraire.
+      Tous les champs suivis d’un * sont obligatoires.
     </p>
   )
 }

@@ -36,7 +36,7 @@ describe('LostPassword', () => {
       // then
       // user can fill and submit email
       await userEvent.type(
-        screen.getByLabelText(/Adresse email/),
+        screen.getByLabelText(/Adresse email */),
         'coucou@example.com'
       )
       await userEvent.click(screen.getByText(/Valider/))

@@ -105,8 +105,8 @@ describe('OfferEducationalStock', () => {
       const descriptionInput = screen.getByPlaceholderText(
         'Détaillez ici des informations complémentaires.'
       )
-      const priceInput = screen.getByLabelText('Prix global TTC')
-      const placeInput = screen.getByLabelText('Nombre de participants')
+      const priceInput = screen.getByLabelText('Prix global TTC *')
+      const placeInput = screen.getByLabelText('Nombre de participants *')
 
       expect(descriptionInput).not.toBeDisabled()
       expect(priceInput).not.toBeDisabled()
@@ -137,8 +137,8 @@ describe('OfferEducationalStock', () => {
       const descriptionInput = screen.getByPlaceholderText(
         'Détaillez ici des informations complémentaires.'
       )
-      const priceInput = screen.getByLabelText('Prix global TTC')
-      const placeInput = screen.getByLabelText('Nombre de participants')
+      const priceInput = screen.getByLabelText('Prix global TTC *')
+      const placeInput = screen.getByLabelText('Nombre de participants *')
 
       expect(descriptionInput).toBeDisabled()
       expect(priceInput).toBeDisabled()

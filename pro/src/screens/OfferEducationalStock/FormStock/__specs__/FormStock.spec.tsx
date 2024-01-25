@@ -90,7 +90,7 @@ describe('TimePicker', () => {
       },
     })
     const userDateInput = format(addDays(new Date(), 1), FORMAT_ISO_DATE_ONLY)
-    const dateInput = screen.getByLabelText('Date')
+    const dateInput = screen.getByLabelText('Date *')
     await userEvent.click(dateInput)
     await userEvent.clear(dateInput)
     await waitFor(() => userEvent.type(dateInput, userDateInput))
@@ -112,8 +112,8 @@ describe('TimePicker', () => {
       },
     })
 
-    const priceInput = screen.getByLabelText('Prix global TTC')
-    const placeInput = screen.getByLabelText('Nombre de participants')
+    const priceInput = screen.getByLabelText('Prix global TTC *')
+    const placeInput = screen.getByLabelText('Nombre de participants *')
 
     expect(priceInput).toBeDisabled()
     expect(placeInput).toBeDisabled()
@@ -131,7 +131,7 @@ describe('TimePicker', () => {
       },
     })
 
-    const priceInput = screen.getByLabelText('Prix global TTC')
+    const priceInput = screen.getByLabelText('Prix global TTC *')
     await userEvent.clear(priceInput)
     await userEvent.type(priceInput, '10000')
     const saveButton = screen.getByText('Enregistrer')

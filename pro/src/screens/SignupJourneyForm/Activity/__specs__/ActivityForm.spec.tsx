@@ -97,7 +97,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
       contextValue,
     })
     expect(await screen.findByText('Activité')).toBeInTheDocument()
-    expect(screen.getByLabelText('Activité principale')).toHaveValue('')
+    expect(screen.getByLabelText('Activité principale *')).toHaveValue('')
     expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(1)
     expect(
       await screen.findByRole('button', { name: 'Ajouter un lien' })
@@ -236,7 +236,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
       contextValue,
     })
 
-    const venueTypeSelect = screen.getByLabelText('Activité principale')
+    const venueTypeSelect = screen.getByLabelText('Activité principale *')
     expect(venueTypeSelect).toHaveValue('')
 
     await userEvent.click(venueTypeSelect)

@@ -45,7 +45,7 @@ describe('SelectAutocomplete', () => {
         <SelectAutocomplete {...props} />
       </Formik>
     )
-    expect(screen.getByLabelText('Département')).toBeInTheDocument()
+    expect(screen.getByLabelText('Département *')).toBeInTheDocument()
   })
 
   describe('Options', () => {
@@ -65,7 +65,7 @@ describe('SelectAutocomplete', () => {
           <SelectAutocomplete {...props} />
         </Formik>
       )
-      await userEvent.click(screen.getByLabelText('Département'))
+      await userEvent.click(screen.getByLabelText('Département *'))
       expect(screen.getByTestId('list').children).toHaveLength(15)
     })
 
@@ -75,7 +75,7 @@ describe('SelectAutocomplete', () => {
           <SelectAutocomplete {...props} />
         </Formik>
       )
-      await userEvent.click(screen.getByLabelText('Département'))
+      await userEvent.click(screen.getByLabelText('Département *'))
       await userEvent.click(
         screen.getByRole('img', { name: 'Masquer les options' })
       )
@@ -91,7 +91,7 @@ describe('SelectAutocomplete', () => {
           </>
         </Formik>
       )
-      await userEvent.click(screen.getByLabelText('Département'))
+      await userEvent.click(screen.getByLabelText('Département *'))
       await userEvent.click(
         await screen.findByRole('button', { name: 'Outside' })
       )
@@ -124,7 +124,7 @@ describe('SelectAutocomplete', () => {
             <SelectAutocomplete {...{ ...props, multi: true }} />
           </Formik>
         )
-        await userEvent.click(screen.getByLabelText('Département'))
+        await userEvent.click(screen.getByLabelText('Département *'))
         const list = screen.getByTestId('list')
         await userEvent.click(await within(list).findByText('Aveyron'))
         await userEvent.click(await within(list).findByText('Calvados'))
@@ -148,7 +148,7 @@ describe('SelectAutocomplete', () => {
             <SelectAutocomplete {...{ ...props, multi: true }} />
           </Formik>
         )
-        await userEvent.click(screen.getByLabelText('Département'))
+        await userEvent.click(screen.getByLabelText('Département *'))
         const list = screen.getByTestId('list')
         await userEvent.click(await within(list).findByText('Ain'))
         expect(screen.queryByTestId('select')).toHaveValue([
@@ -164,7 +164,7 @@ describe('SelectAutocomplete', () => {
             <SelectAutocomplete {...props} />
           </Formik>
         )
-        await userEvent.click(screen.getByLabelText('Département'))
+        await userEvent.click(screen.getByLabelText('Département *'))
         const list = screen.getByTestId('list')
         await userEvent.click(await within(list).findByText('Aveyron'))
         expect(screen.queryByTestId('select')).toHaveValue('12')
@@ -179,7 +179,7 @@ describe('SelectAutocomplete', () => {
           <SelectAutocomplete {...props} />
         </Formik>
       )
-      await userEvent.type(screen.getByLabelText('Département'), 'al')
+      await userEvent.type(screen.getByLabelText('Département *'), 'al')
       expect(screen.getByTestId('list').children).toHaveLength(
         [
           'Allier',
@@ -198,7 +198,7 @@ describe('SelectAutocomplete', () => {
           <SelectAutocomplete {...props} />
         </Formik>
       )
-      await userEvent.type(screen.getByLabelText('Département'), 'al')
+      await userEvent.type(screen.getByLabelText('Département *'), 'al')
       await userEvent.click(
         screen.getByRole('img', { name: 'Masquer les options' })
       )
@@ -216,7 +216,7 @@ describe('SelectAutocomplete', () => {
         </Formik>
       )
       await userEvent.type(
-        screen.getByLabelText('Département'),
+        screen.getByLabelText('Département *'),
         'pas dans la liste'
       )
       expect(await screen.findByText(/Aucun résultat/)).toBeInTheDocument()
@@ -236,7 +236,7 @@ describe('SelectAutocomplete', () => {
           <SelectAutocomplete {...{ ...props, multi: true }} />
         </Formik>
       )
-      await userEvent.click(screen.getByLabelText('Département'))
+      await userEvent.click(screen.getByLabelText('Département *'))
       const list = screen.getByTestId('list')
       await userEvent.click(await within(list).findByText('Aveyron'))
       await userEvent.click(await within(list).findByText('Calvados'))
@@ -260,7 +260,7 @@ describe('SelectAutocomplete', () => {
           <SelectAutocomplete {...{ ...props, multi: true }} hideTags />
         </Formik>
       )
-      await userEvent.click(screen.getByLabelText('Département'))
+      await userEvent.click(screen.getByLabelText('Département *'))
       const list = screen.getByTestId('list')
       await userEvent.click(await within(list).findByText('Aveyron'))
       await userEvent.click(await within(list).findByText('Calvados'))
@@ -303,7 +303,7 @@ describe('SelectAutocomplete', () => {
         </Formik>
       )
       await userEvent.click(screen.getByRole('button', { name: /Aisne/ }))
-      await userEvent.click(screen.getByLabelText('Département'))
+      await userEvent.click(screen.getByLabelText('Département *'))
       // Ain (01) still selected, Aisne (02) not selected any more
       expect(screen.queryByTestId('select')).toHaveValue(['01'])
     })
@@ -325,7 +325,7 @@ describe('SelectAutocomplete', () => {
         <SelectAutocomplete {...{ ...props, multi: true }} />
       </Formik>
     )
-    await userEvent.click(screen.getByLabelText('Département'))
+    await userEvent.click(screen.getByLabelText('Département *'))
     // when user unselects default options
     const list = screen.getByTestId('list')
     await userEvent.click(await within(list).findByText('Ain'))
@@ -349,9 +349,9 @@ describe('SelectAutocomplete', () => {
         <SelectAutocomplete {...{ ...props, multi: true }} />
       </Formik>
     )
-    await userEvent.click(screen.getByLabelText('Département'))
+    await userEvent.click(screen.getByLabelText('Département *'))
 
-    expect(screen.getByLabelText('Département')).toHaveValue('')
+    expect(screen.getByLabelText('Département *')).toHaveValue('')
   })
 
   it('should not clear the input on focus', async () => {
@@ -368,8 +368,8 @@ describe('SelectAutocomplete', () => {
         />
       </Formik>
     )
-    await userEvent.click(screen.getByLabelText('Département'))
+    await userEvent.click(screen.getByLabelText('Département *'))
 
-    expect(screen.getByLabelText('Département')).toHaveValue('Test search')
+    expect(screen.getByLabelText('Département *')).toHaveValue('Test search')
   })
 })
