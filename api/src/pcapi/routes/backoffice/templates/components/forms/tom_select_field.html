@@ -19,7 +19,7 @@
 </div>
 {% if field.field_list_compatibility %}
   <!-- (Almost) duplicated html for field list field widget -->
-  <div class="form-floating {{ field.name }}-container pc-field-{{ field.name }} d-none empty-tom-select-form-container"
+  <div class="form-floating {{ field.name }}-container pc-field-{{ field.name }} d-none empty-tom-select-form-container {% if field.search_inline %}pc-search-inline{% endif %}"
        data-original-name="{{ field.name }}"
        data-clone-function-name="_tomSelectCloneFunction">
     {% set tom_select_field_id = random_hash() %}
