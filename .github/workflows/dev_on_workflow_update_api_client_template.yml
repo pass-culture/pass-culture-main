@@ -61,9 +61,9 @@ jobs:
         # Ignore the failure of a step and avoid terminating the job.
         continue-on-error: true
         with:
-          key: docker-cache-${{ hashFiles('api/requirements.txt') }}
+          key: docker-cache-${{ hashFiles('api/poetry.lock') }}
           restore-keys: |
-            docker-cache-${{ hashFiles('api/requirements.txt') }}
+            docker-cache-${{ hashFiles('api/poetry.lock') }}
             docker-cache
       - name: "Fix local permissions"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
