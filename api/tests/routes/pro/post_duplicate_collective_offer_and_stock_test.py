@@ -153,6 +153,7 @@ class Returns200Test:
             "teacher": None,
             "nationalProgram": {"id": national_program.id, "name": national_program.name},
             "formats": [fmt.value for fmt in subcategories.SEANCE_CINE.formats],
+            "isTemplate": False,
         }
 
     def test_duplicate_collective_offer_without_subcategoryId(self, client):

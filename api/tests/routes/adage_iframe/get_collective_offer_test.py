@@ -135,6 +135,7 @@ class CollectiveOfferTest:
             "nationalProgram": {"id": offer.nationalProgramId, "name": offer.nationalProgram.name},
             "isFavorite": False,
             "formats": [fmt.value for fmt in subcategories.SEANCE_CINE.formats],
+            "isTemplate": False,
         }
 
     def test_is_a_redactors_favorite(self, eac_client):

@@ -88,6 +88,7 @@ class Returns200Test:
         assert response.json["interventionArea"] == ["01", "2A"]
         assert response.json["description"] == "Ma super description"
         assert response.json["nationalProgram"] == {"id": national_program.id, "name": national_program.name}
+        assert not response.json["isTemplate"]
 
         updated_offer = CollectiveOffer.query.get(offer.id)
         assert updated_offer.name == "New name"
