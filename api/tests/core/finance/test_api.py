@@ -183,7 +183,7 @@ class PriceEventTest:
             lines=[factories.PricingLineFactory(amount=1000)],
             venue=booking.venue,
             valueDate=used_event.valueDate,
-            pricingPointId=pricing_point.id,
+            pricingPoint=pricing_point,
         )
         booking_incident = factories.IndividualBookingFinanceIncidentFactory(
             incident__venue__pricing_point=pricing_point,
