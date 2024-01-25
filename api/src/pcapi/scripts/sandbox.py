@@ -22,7 +22,7 @@ def sandbox(name: str, clean: str) -> None:
 
 @blueprint.cli.command("sandbox-ci")
 def sandbox_ci() -> None:
-    if not settings.IS_E2E_TESTS:
+    if settings.IS_E2E_TESTS:
         print("This sandbox is only for the ci environment")
         return
     save_sandbox_ci()

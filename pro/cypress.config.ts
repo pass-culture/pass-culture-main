@@ -1,6 +1,6 @@
 import { defineConfig } from 'cypress'
 
-const API_BASE_URL = 'http://localhost:50001' || process.env.API_BASE_URL
+const API_BASE_URL = 'http://localhost:5001' || process.env.API_BASE_URL
 
 // ts-unused-exports:disable-next-line
 export default defineConfig({
