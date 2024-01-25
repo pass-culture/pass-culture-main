@@ -267,6 +267,34 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {offers[1].id}
 
+    def test_list_offers_display_advanced_filters_bubbles(self, authenticated_client):
+        query_args = {
+            "search-0-search_field": "CATEGORY",
+            "search-0-operator": "IN",
+            "search-0-category": "BEAUX_ARTS",
+            "search-2-search_field": "CREATION_DATE",
+            "search-2-operator": "GREATER_THAN_OR_EQUAL_TO",
+            "search-2-date": "2024-01-20",
+            "search-3-search_field": "EAN",
+            "search-3-operator": "STR_NOT_EQUALS",
+            "search-3-string": "123",
+            "search-4-search_field": "ID",
+            "search-4-operator": "NOT_EQUALS",
+            "search-4-integer": "5",
+        }
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        bubbles = html_parser.extract(response.data, "span", "bubble")
+        assert set(bubbles) == {
+            "Date de création supérieur ou égal 2024-01-20",
+            "ID de l'offre est différent de 5",
+            "EAN-13 est différent de 123",
+            "Catégorie est parmi BEAUX_ARTS",
+        }
+
     def test_list_offers_without_sort_should_not_have_created_date_sort_link(self, authenticated_client, offers):
         searched_id = str(offers[0].id)
         with assert_num_queries(self.expected_num_queries):
