@@ -399,14 +399,22 @@ def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
 def _get_advanced_search_args(form: forms.InternalSearchForm) -> dict[str, typing.Any]:
     advanced_query = ""
     search_data_tags = set()
+
     if form.search.data:
         advanced_query = f"?{request.query_string.decode()}"
 
         for data in form.search.data:
-            if data.get("operator"):
+            if search_operator := data.get("operator"):
                 if search_field := data.get("search_field"):
                     if search_field_attr := getattr(forms.SearchAttributes, search_field, None):
-                        search_data_tags.add(search_field_attr.value)
+                        field_name = SEARCH_FIELD_TO_PYTHON[search_field]["field"]
+                        field_data = data[field_name] if isinstance(data[field_name], list) else [data[field_name]]
+                        field_data = ", ".join(str(e) for e in field_data)
+
+                        field_title = search_field_attr.value
+                        operator_title = forms.SearchOperators[search_operator].value
+
+                        search_data_tags.add(" ".join((field_title, operator_title, field_data)))
 
     return {
         "advanced_query": advanced_query,

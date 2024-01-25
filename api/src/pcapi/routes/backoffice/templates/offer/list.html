@@ -6,8 +6,10 @@
   <div class="pt-3 px-5">
     <h2 class="fw-light">Offres individuelles</h2>
     {{ build_filters_form(form, dst) }}
-    <div>
-      {% for search_data_tag in search_data_tags %}<span class="border border-secondary rounded px-2">{{ search_data_tag }}</span>{% endfor %}
+    <div class="d-flex flex-row gap-2">
+      {% for search_data_tag in search_data_tags %}
+        <span class="border border-secondary rounded p-1 align-self-stretch bubble">{{ search_data_tag }}</span>
+      {% endfor %}
     </div>
     {% if advanced_query %}
       {% set advanced_url = url_for("backoffice_web.offer.get_advanced_search_form") + advanced_query %}
