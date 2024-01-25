@@ -44,7 +44,11 @@ const Header = () => {
         <ul className="nav-menu">
           <li>
             <NavLink
-              className="nav-item"
+              className={({ isActive }) =>
+                classnames('nav-item', {
+                  ['nav-item-selected']: isActive,
+                })
+              }
               onClick={() => {
                 logEvent?.(Events.CLICKED_HOME, { from: location.pathname })
               }}
@@ -61,7 +65,11 @@ const Header = () => {
           </li>
           <li>
             <NavLink
-              className="nav-item"
+              className={({ isActive }) =>
+                classnames('nav-item', {
+                  ['nav-item-selected']: isActive,
+                })
+              }
               onClick={() => {
                 logEvent?.(Events.CLICKED_TICKET, { from: location.pathname })
               }}
@@ -78,7 +86,11 @@ const Header = () => {
           </li>
           <li>
             <NavLink
-              className="nav-item"
+              className={({ isActive }) =>
+                classnames('nav-item', {
+                  ['nav-item-selected']: isActive,
+                })
+              }
               onClick={() => {
                 logEvent?.(Events.CLICKED_OFFER, { from: location.pathname })
               }}
@@ -95,7 +107,11 @@ const Header = () => {
           </li>
           <li>
             <NavLink
-              className="nav-item"
+              className={({ isActive }) =>
+                classnames('nav-item', {
+                  ['nav-item-selected']: isActive,
+                })
+              }
               onClick={() => {
                 logEvent?.(Events.CLICKED_BOOKING, { from: location.pathname })
               }}
@@ -112,7 +128,11 @@ const Header = () => {
           </li>
           <li>
             <NavLink
-              className="nav-item"
+              className={({ isActive }) =>
+                classnames('nav-item', {
+                  ['nav-item-selected']: isActive,
+                })
+              }
               onClick={() => {
                 logEvent?.(Events.CLICKED_REIMBURSEMENT, {
                   from: location.pathname,
@@ -132,7 +152,11 @@ const Header = () => {
           {isOffererStatsActive && (
             <li>
               <NavLink
-                className="nav-item"
+                className={({ isActive }) =>
+                  classnames('nav-item', {
+                    ['nav-item-selected']: isActive,
+                  })
+                }
                 onClick={() => {
                   logEvent?.(Events.CLICKED_STATS, {
                     from: location.pathname,

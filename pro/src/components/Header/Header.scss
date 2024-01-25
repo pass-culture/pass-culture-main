@@ -59,7 +59,8 @@ header.menu-v2 {
         }
 
         &:hover,
-        &:focus {
+        &:focus,
+        &-selected {
           background-color: colors.$primary;
         }
       }
@@ -73,7 +74,6 @@ header.menu-v2 {
         background-color: colors.$white;
         flex-shrink: 0;
         height: rem.torem(24px);
-        margin: 0 rem.torem(8px);
         width: rem.torem(1px);
       }
     }
