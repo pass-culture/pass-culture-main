@@ -38,7 +38,7 @@ const defaultUseLocationValue = {
   state: { offer: defaultCollectiveTemplateOffer },
   hash: '',
   key: '',
-  pathname: '',
+  pathname: '/adage-iframe/decouverte/offre/10',
   search: '',
 }
 
@@ -58,13 +58,61 @@ describe('OfferInfos', () => {
   it('should display the breadcrumb with a link back to the discovery home', () => {
     renderOfferInfos()
 
-    expect(screen.getByRole('link', { name: 'Découvrir' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Découvrir' })).toHaveAttribute(
+      'href',
+      '/adage-iframe/decouverte?token=null'
+    )
+  })
+
+  it("should display the breadcrumb with a link to the search page if the url doesn't contain a known parent page name", () => {
+    vi.spyOn(router, 'useLocation').mockReturnValueOnce({
+      ...defaultUseLocationValue,
+      pathname: '',
+    })
+
+    renderOfferInfos()
+
+    expect(screen.getByRole('link', { name: 'Recherche' })).toHaveAttribute(
+      'href',
+      '/adage-iframe/recherche?token=null'
+    )
+  })
+
+  it("should display the breadcrumb with a link back to the search page if the url contains 'recherche'", () => {
+    vi.spyOn(router, 'useLocation').mockReturnValueOnce({
+      ...defaultUseLocationValue,
+      pathname: '/adage-iframe/recherche/offre/10',
+    })
+
+    renderOfferInfos()
+
+    expect(screen.getByRole('link', { name: 'Recherche' })).toHaveAttribute(
+      'href',
+      '/adage-iframe/recherche?token=null'
+    )
+  })
+
+  it("should display the breadcrumb with a link back to the favorite page if the url contains 'mes-favoris'", () => {
+    vi.spyOn(router, 'useLocation').mockReturnValueOnce({
+      ...defaultUseLocationValue,
+      pathname: '/adage-iframe/mes-favoris/offre/10',
+    })
+
+    renderOfferInfos()
+
+    expect(screen.getByRole('link', { name: 'Mes favoris' })).toHaveAttribute(
+      'href',
+      '/adage-iframe/mes-favoris?token=null'
+    )
   })
 
   it('should display the breadcrumb with a link back to the search page if the user is admin', () => {
     renderOfferInfos({ ...defaultAdageUser, role: AdageFrontRoles.READONLY })
 
-    expect(screen.getByRole('link', { name: 'Recherche' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Recherche' })).toHaveAttribute(
+      'href',
+      '/adage-iframe/recherche?token=null'
+    )
   })
 
   it('should display the offer that is passed through the router when the user navigates within the app', () => {
