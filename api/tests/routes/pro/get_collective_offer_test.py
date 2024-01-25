@@ -73,6 +73,7 @@ class Returns200Test:
         assert response_json["templateId"] == template.id
         assert response_json["nationalProgram"] == {"id": national_program.id, "name": national_program.name}
         assert response_json["formats"] == [fmt.value for fmt in subcategories.SEANCE_CINE.formats]
+        assert not response_json["isTemplate"]
 
     def test_sold_out(self, client):
         # Given

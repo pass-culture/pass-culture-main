@@ -32,6 +32,7 @@ export type GetCollectiveOfferTemplateResponseModel = {
   isCancellable: boolean;
   isEditable: boolean;
   isNonFreeOffer?: boolean | null;
+  isTemplate?: boolean;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;

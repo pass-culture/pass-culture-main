@@ -320,6 +320,7 @@ class TemplateDatesModel(BaseModel):
 class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseModel):
     priceDetail: PriceDetail | None = Field(alias="educationalPriceDetail")
     dates: TemplateDatesModel | None
+    isTemplate: bool = True
 
     class Config:
         orm_mode = True
@@ -365,6 +366,7 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     teacher: EducationalRedactorResponseModel | None
     isPublicApi: bool
     formats: typing.Sequence[subcategories.EacFormat] | None
+    isTemplate: bool = False
 
     @classmethod
     def from_orm(cls, offer: CollectiveOffer) -> "GetCollectiveOfferResponseModel":
