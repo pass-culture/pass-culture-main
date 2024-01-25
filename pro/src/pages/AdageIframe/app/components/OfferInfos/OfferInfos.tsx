@@ -6,6 +6,7 @@ import { apiAdage } from 'apiClient/api'
 import Breadcrumb, { Crumb } from 'components/Breadcrumb/Breadcrumb'
 import strokePassIcon from 'icons/stroke-pass.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
+import strokeStarIcon from 'icons/stroke-star.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -17,13 +18,51 @@ import offerInfosFallback from './assets/offer-infos-fallback.svg'
 import styles from './OfferInfos.module.scss'
 
 export const OfferInfos = () => {
-  const { state } = useLocation()
+  const { state, pathname } = useLocation()
   const { offerId } = useParams()
+  const [searchParams] = useSearchParams()
+  const adageAuthToken = searchParams.get('token')
+
+  const parentRouteInUrl = pathname.split('/')[2] ?? 'recherche'
 
   const [offer, setOffer] = useState(state?.offer)
   const [loading, setLoading] = useState(false)
 
   const { adageUser } = useAdageUser()
+
+  const crumbForCurrentRoute: { [key: string]: Crumb } = {
+    recherche: {
+      title: 'Recherche',
+      link: {
+        isExternal: false,
+        to: `/adage-iframe/recherche?token=${adageAuthToken}`,
+      },
+      icon: strokeSearchIcon,
+    },
+    decouverte: {
+      title: 'Découvrir',
+      link: {
+        isExternal: false,
+        to: `/adage-iframe/decouverte?token=${adageAuthToken}`,
+      },
+      icon: strokePassIcon,
+    },
+    ['mes-favoris']: {
+      title: 'Mes favoris',
+      link: {
+        isExternal: false,
+        to: `/adage-iframe/mes-favoris?token=${adageAuthToken}`,
+      },
+      icon: strokeStarIcon,
+    },
+  }
+
+  const originCrumb: Crumb =
+    crumbForCurrentRoute[
+      adageUser.role === AdageFrontRoles.READONLY
+        ? 'recherche'
+        : parentRouteInUrl
+    ]
 
   useEffect(() => {
     async function getOffer() {
@@ -44,27 +83,8 @@ export const OfferInfos = () => {
     }
   }, [offerId, state?.offer])
 
-  const [searchParams] = useSearchParams()
-  const adageAuthToken = searchParams.get('token')
-
   if (loading) {
     return <Spinner />
-  }
-
-  const originCrumb: Crumb = {
-    title:
-      adageUser.role === AdageFrontRoles.READONLY ? 'Recherche' : 'Découvrir',
-    link: {
-      isExternal: false,
-      to:
-        adageUser.role === AdageFrontRoles.READONLY
-          ? `/adage-iframe/recherche?token=${adageAuthToken}`
-          : `/adage-iframe/decouverte?token=${adageAuthToken}`,
-    },
-    icon:
-      adageUser.role === AdageFrontRoles.READONLY
-        ? strokeSearchIcon
-        : strokePassIcon,
   }
 
   return (
