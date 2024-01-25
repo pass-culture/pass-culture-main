@@ -128,7 +128,7 @@ class PcFieldList extends PcAddOn {
     const $emptyForm = $ul.querySelector(`.${PcFieldList.PC_FORM_FIELD_EMPTY_CONTAINER_CLASS}`)
     const $removeButton = $ul.querySelector(PcFieldList.REMOVE_BUTTON_SELECTOR).cloneNode(true)
     const $li = document.createElement('li')
-    $li.classList.add("d-flex", "align-items-start", "justify-content-between", "gap-2")
+    $li.classList.add("d-flex", "align-items-start", "justify-content-between", "gap-2", "pt-2")
     const $newEmptyForm = $emptyForm.cloneNode(true)
     $li.append($newEmptyForm, $emptyForm.cloneNode(true), $removeButton) // we keep a clone within the newly added and edited $newEmptyForm form
     // tomSelect code
@@ -232,6 +232,8 @@ class PcFieldList extends PcAddOn {
     const { fieldListContainerId } = event.target.dataset
     const $fieldListContainer = this.#getFieldListContainerFromId(fieldListContainerId)
     const $ul = $fieldListContainer.querySelector(PcFieldList.PC_FIELD_LIST_UL_SELECTOR)
+    const { entriesCount: previousCount } = $ul.dataset
+    $ul.dataset.entriesCount = Number(previousCount) - 1
     const $li = event.target.parentElement // remove button is within li
     $li.remove()
     this.#filterMinEntries($ul)
