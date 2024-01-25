@@ -22,7 +22,7 @@ jobs:
     name: "Check folder changes"
     runs-on: ubuntu-latest
     outputs:
-      folder_changed: ${{ steps.folder-check-changed-files.outputs.any_changed }}
+      folder_changed: ${{ steps.folder-check-changed-files.outputs.any_modified }}
     steps:
       - uses: actions/checkout@v4.1.1
         with:
