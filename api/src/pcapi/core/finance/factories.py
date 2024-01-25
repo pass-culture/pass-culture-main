@@ -124,7 +124,7 @@ class _BasePricingFactory(BaseFactory):
     class Meta:
         model = models.Pricing
 
-    pricingPointId = None  # see `_create()` below
+    pricingPoint = None  # see `_create()` below
 
     @classmethod
     def _create(
@@ -133,7 +133,7 @@ class _BasePricingFactory(BaseFactory):
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.Pricing:
-        if not kwargs["pricingPointId"]:
+        if not kwargs["pricingPoint"]:
             event = kwargs.get("event")
             event_booking = (
                 event.booking
@@ -146,14 +146,14 @@ class _BasePricingFactory(BaseFactory):
             booking = kwargs.get("booking") or kwargs.get("collectiveBooking") or event_booking
             assert booking  # make mypy happy
             venue = booking.venue
-            pricing_point_id = venue.current_pricing_point_id
-            if not pricing_point_id:
+            pricing_point = venue.current_pricing_point
+            if not pricing_point:
                 offerers_factories.VenuePricingPointLinkFactory(
                     venue=venue,
                     pricingPoint=venue,
                 )
-                pricing_point_id = venue.id
-            kwargs["pricingPointId"] = pricing_point_id
+                pricing_point = venue
+            kwargs["pricingPoint"] = pricing_point
         return super()._create(model_class, *args, **kwargs)
 
 
