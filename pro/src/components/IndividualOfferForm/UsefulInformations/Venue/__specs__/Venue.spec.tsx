@@ -92,7 +92,7 @@ describe('IndividualOffer section: venue', () => {
   it('should not automatically select a structure', () => {
     renderVenue({ initialValues, onSubmit, props })
 
-    const selectOfferer = screen.getByLabelText('Structure')
+    const selectOfferer = screen.getByLabelText('Structure *')
 
     expect(selectOfferer).toBeInTheDocument()
     expect(selectOfferer).toHaveValue(VENUE_DEFAULT_VALUES.offererId)
@@ -102,7 +102,7 @@ describe('IndividualOffer section: venue', () => {
   it('should not automatically select an offerer when the structure is not defined', () => {
     renderVenue({ initialValues, onSubmit, props })
 
-    const selectVenue = screen.getByLabelText('Lieu')
+    const selectVenue = screen.getByLabelText('Lieu *')
 
     expect(selectVenue).toBeInTheDocument()
     expect(selectVenue).toHaveValue(VENUE_DEFAULT_VALUES.venueId)
@@ -127,8 +127,8 @@ describe('IndividualOffer section: venue', () => {
       onSubmit,
       props,
     })
-    const selectVenue = screen.getByLabelText('Lieu')
-    const selectOfferer = screen.getByLabelText('Structure')
+    const selectVenue = screen.getByLabelText('Lieu *')
+    const selectOfferer = screen.getByLabelText('Structure *')
 
     await waitFor(() => {
       expect(selectOfferer).toHaveValue(firstOfferer.id.toString())
@@ -146,8 +146,8 @@ describe('IndividualOffer section: venue', () => {
       onSubmit,
       props,
     })
-    const selectVenue = screen.getByLabelText('Lieu')
-    const selectOfferer = screen.getByLabelText('Structure')
+    const selectVenue = screen.getByLabelText('Lieu *')
+    const selectOfferer = screen.getByLabelText('Structure *')
 
     // select a offerer with 1 venue
     await userEvent.selectOptions(selectOfferer, firstOfferer.id.toString())
@@ -164,8 +164,8 @@ describe('IndividualOffer section: venue', () => {
       onSubmit,
       props,
     })
-    const selectVenue = screen.getByLabelText('Lieu')
-    const selectOfferer = screen.getByLabelText('Structure')
+    const selectVenue = screen.getByLabelText('Lieu *')
+    const selectOfferer = screen.getByLabelText('Structure *')
 
     await userEvent.selectOptions(selectOfferer, thirdOfferer.id.toString())
     expect(selectOfferer).toHaveValue(thirdOfferer.id.toString())
@@ -184,8 +184,8 @@ describe('IndividualOffer section: venue', () => {
       onSubmit,
       props,
     })
-    const selectVenue = screen.getByLabelText('Lieu')
-    const selectOfferer = screen.getByLabelText('Structure')
+    const selectVenue = screen.getByLabelText('Lieu *')
+    const selectOfferer = screen.getByLabelText('Structure *')
 
     // select a other offerer with 1 venue
     await userEvent.selectOptions(selectOfferer, secondOfferer.id.toString())
@@ -204,8 +204,8 @@ describe('IndividualOffer section: venue', () => {
       onSubmit,
       props,
     })
-    const selectVenue = screen.getByLabelText('Lieu')
-    const selectOfferer = screen.getByLabelText('Structure')
+    const selectVenue = screen.getByLabelText('Lieu *')
+    const selectOfferer = screen.getByLabelText('Structure *')
 
     expect(
       screen.queryByText('Veuillez sélectionner une structure')
@@ -247,7 +247,7 @@ describe('IndividualOffer section: venue', () => {
       props,
     })
 
-    expect(screen.getByLabelText('Structure')).toBeDisabled()
-    expect(screen.getByLabelText('Lieu')).toBeDisabled()
+    expect(screen.getByLabelText('Structure *')).toBeDisabled()
+    expect(screen.getByLabelText('Lieu *')).toBeDisabled()
   })
 })

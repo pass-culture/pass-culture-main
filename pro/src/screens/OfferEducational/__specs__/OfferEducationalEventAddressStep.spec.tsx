@@ -40,8 +40,8 @@ describe('screens | OfferEducational : event address step', () => {
       ).not.toBeChecked()
       expect(screen.getByLabelText('Autre')).not.toBeChecked()
 
-      expect(screen.getByLabelText('Sélectionner le lieu')).toHaveValue('1')
-      expect(screen.getByLabelText('Sélectionner le lieu')).toBeDisabled()
+      expect(screen.getByLabelText('Sélectionner le lieu *')).toHaveValue('1')
+      expect(screen.getByLabelText('Sélectionner le lieu *')).toBeDisabled()
 
       expect(
         await screen.findByText('Venue name', { exact: false, selector: 'div' })
@@ -59,15 +59,15 @@ describe('screens | OfferEducational : event address step', () => {
       expect(screen.getByLabelText('Autre')).toBeChecked()
 
       expect(
-        screen.queryByLabelText('Sélectionner le lieu')
+        screen.queryByLabelText('Sélectionner le lieu *')
       ).not.toBeInTheDocument()
 
       expect(
-        screen.getByLabelText('Adresse de l’évènement')
+        screen.getByLabelText('Adresse de l’évènement *')
       ).toBeInTheDocument()
 
       expect(
-        screen.queryByLabelText(INTERVENTION_AREA_LABEL)
+        screen.queryByLabelText(`${INTERVENTION_AREA_LABEL} *`)
       ).toBeInTheDocument()
     })
 
@@ -82,15 +82,15 @@ describe('screens | OfferEducational : event address step', () => {
       ).toBeChecked()
 
       expect(
-        screen.queryByLabelText('Sélectionner le lieu')
+        screen.queryByLabelText('Sélectionner le lieu *')
       ).not.toBeInTheDocument()
 
       expect(
-        screen.queryByLabelText('Adresse de l’évènement')
+        screen.queryByLabelText('Adresse de l’évènement *')
       ).not.toBeInTheDocument()
 
       expect(
-        screen.queryByLabelText(INTERVENTION_AREA_LABEL)
+        screen.queryByLabelText(`${INTERVENTION_AREA_LABEL} *`)
       ).toBeInTheDocument()
     })
   })
@@ -127,12 +127,12 @@ describe('screens | OfferEducational : event address step', () => {
       renderWithProviders(<OfferEducational {...props} />)
 
       // wait for page to be rendered
-      const offererSelect = await screen.findByLabelText('Lieu')
+      const offererSelect = await screen.findByLabelText('Lieu *')
       // select venue to open step Address
       await userEvent.selectOptions(offererSelect, [firstVenueId])
 
       const offerVenueSelect = await screen.findByLabelText(
-        'Sélectionner le lieu'
+        'Sélectionner le lieu *'
       )
       expect(offerVenueSelect).toHaveValue(firstVenueId)
       expect(offerVenueSelect.children).toHaveLength(3)
@@ -148,12 +148,12 @@ describe('screens | OfferEducational : event address step', () => {
       renderWithProviders(<OfferEducational {...props} />)
 
       // wait for page to be rendered
-      const offererSelect = await screen.findByLabelText('Lieu')
+      const offererSelect = await screen.findByLabelText('Lieu *')
       // select venue to open step Address
       await userEvent.selectOptions(offererSelect, [firstVenueId])
 
       const offerVenueSelect = await screen.findByLabelText(
-        'Sélectionner le lieu'
+        'Sélectionner le lieu *'
       )
       expect(offerVenueSelect).toHaveValue(firstVenueId)
 
@@ -189,21 +189,21 @@ describe('screens | OfferEducational : event address step', () => {
         />
       )
 
-      const offererSelect = await screen.findByLabelText('Structure')
+      const offererSelect = await screen.findByLabelText('Structure *')
 
       await userEvent.selectOptions(offererSelect, [offererId])
-      expect(screen.queryByLabelText('Structure')).toHaveValue(offererId)
+      expect(screen.queryByLabelText('Structure *')).toHaveValue(offererId)
 
-      const venuesSelect = await screen.findByLabelText('Lieu')
+      const venuesSelect = await screen.findByLabelText('Lieu *')
 
       await userEvent.selectOptions(venuesSelect, [venueId])
 
-      expect(screen.queryByLabelText('Lieu')).toHaveValue(venueId)
+      expect(screen.queryByLabelText('Lieu *')).toHaveValue(venueId)
 
       await userEvent.click(await screen.findByLabelText('Autre'))
       expect(screen.getByLabelText('Autre')).toBeChecked()
       const interventionArea = await screen.findByLabelText(
-        INTERVENTION_AREA_LABEL
+        `${INTERVENTION_AREA_LABEL} *`
       )
       await userEvent.click(interventionArea)
       await waitFor(() => {

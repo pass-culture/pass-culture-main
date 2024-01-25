@@ -55,23 +55,23 @@ describe('screens | OfferEducational', () => {
       mode: Mode.READ_ONLY,
     }
     renderWithProviders(<OfferEducational {...props} />)
-    await screen.findByLabelText(VENUE_LABEL)
+    await screen.findByLabelText(`${VENUE_LABEL} *`)
 
     const inputs = [
-      screen.getByLabelText(CATEGORY_LABEL),
-      screen.getByLabelText(SUBCATEGORY_LABEL),
-      screen.getByLabelText(TITLE_LABEL),
-      screen.getByLabelText(CATEGORY_LABEL),
+      screen.getByLabelText(`${CATEGORY_LABEL} *`),
+      screen.getByLabelText(`${SUBCATEGORY_LABEL} *`),
+      screen.getByLabelText(`${TITLE_LABEL} *`),
+      screen.getByLabelText(`${CATEGORY_LABEL} *`),
       screen.getByLabelText(DURATION_LABEL, { exact: false }),
-      screen.getByLabelText(OFFERER_LABEL),
-      screen.getByLabelText(VENUE_LABEL),
+      screen.getByLabelText(`${OFFERER_LABEL} *`),
+      screen.getByLabelText(`${VENUE_LABEL} *`),
       screen.getByLabelText('Autre'), // one of every option
       screen.getByLabelText('Collège - 3e'), // one of every option
       screen.getByLabelText('Visuel'), // one of every option
       screen.getByLabelText('Téléphone', { exact: false }),
-      screen.getByLabelText(EMAIL_LABEL),
-      screen.getByLabelText(NOTIFICATIONS_EMAIL_LABEL),
-      screen.getByLabelText(INTERVENTION_AREA_LABEL),
+      screen.getByLabelText(`${EMAIL_LABEL} *`),
+      screen.getByLabelText(`${NOTIFICATIONS_EMAIL_LABEL} *`),
+      screen.getByLabelText(`${INTERVENTION_AREA_LABEL} *`),
     ]
     const submitButton = screen.getByRole('button', {
       name: 'Enregistrer les modifications',

@@ -185,7 +185,7 @@ describe('screens:IndividualOffer::Informations::creation', () => {
   it('should block when form has just been touched', async () => {
     renderInformationsScreen(props, contextOverride)
 
-    const categorySelect = screen.getByLabelText('Catégorie')
+    const categorySelect = screen.getByLabelText('Catégorie *')
     await userEvent.selectOptions(categorySelect, 'A')
 
     await userEvent.click(screen.getByText('Go outside !'))
@@ -198,11 +198,11 @@ describe('screens:IndividualOffer::Informations::creation', () => {
   it('should not block when submitting minimal physical offer from action bar', async () => {
     renderInformationsScreen(props, contextOverride)
 
-    const categorySelect = screen.getByLabelText('Catégorie')
+    const categorySelect = screen.getByLabelText('Catégorie *')
     await userEvent.selectOptions(categorySelect, 'A')
-    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
+    const subCategorySelect = screen.getByLabelText('Sous-catégorie *')
     await userEvent.selectOptions(subCategorySelect, 'physical')
-    const nameField = screen.getByLabelText('Titre de l’offre')
+    const nameField = screen.getByLabelText('Titre de l’offre *')
     await userEvent.type(nameField, 'Le nom de mon offre')
 
     await userEvent.click(screen.getByText('Enregistrer et continuer'))

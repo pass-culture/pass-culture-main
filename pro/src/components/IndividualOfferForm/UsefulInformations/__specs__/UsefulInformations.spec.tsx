@@ -114,16 +114,16 @@ describe('IndividualOffer section: UsefulInformations', () => {
       props,
     })
 
-    const offererSelect = screen.getByLabelText('Structure')
+    const offererSelect = screen.getByLabelText('Structure *')
     await userEvent.selectOptions(offererSelect, offererId.toString())
-    const venueSelect = screen.getByLabelText('Lieu')
+    const venueSelect = screen.getByLabelText('Lieu *')
     await userEvent.selectOptions(venueSelect, venueList[0].id.toString())
     const withEmail = screen.getByLabelText(
       'Les billets seront envoyés par email'
     )
     await userEvent.click(withEmail)
 
-    const bookingContactField = screen.getByLabelText('Email de contact')
+    const bookingContactField = screen.getByLabelText('Email de contact *')
     await userEvent.type(bookingContactField, 'robertoDu36@example.com')
 
     await userEvent.click(await screen.findByText('Submit'))
@@ -261,12 +261,12 @@ describe('IndividualOffer section: UsefulInformations', () => {
         props,
       })
 
-      const offererSelect = screen.getByLabelText('Structure')
+      const offererSelect = screen.getByLabelText('Structure *')
       await userEvent.selectOptions(offererSelect, offererId.toString())
-      const venueSelect = screen.getByLabelText('Lieu')
+      const venueSelect = screen.getByLabelText('Lieu *')
       await userEvent.selectOptions(venueSelect, venueList[1].id.toString())
 
-      const urlField = await screen.findByLabelText('URL d’accès à l’offre')
+      const urlField = await screen.findByLabelText('URL d’accès à l’offre *')
 
       // deactivate type interpolation : https://testing-library.com/docs/ecosystem-user-event/#keyboardtext-options
       await userEvent.type(
@@ -305,12 +305,12 @@ describe('IndividualOffer section: UsefulInformations', () => {
         props,
       })
 
-      const offererSelect = screen.getByLabelText('Structure')
+      const offererSelect = screen.getByLabelText('Structure *')
       await userEvent.selectOptions(offererSelect, offererId.toString())
-      const venueSelect = screen.getByLabelText('Lieu')
+      const venueSelect = screen.getByLabelText('Lieu *')
       await userEvent.selectOptions(venueSelect, venueList[1].id.toString())
 
-      const urlField = await screen.findByLabelText('URL d’accès à l’offre')
+      const urlField = await screen.findByLabelText('URL d’accès à l’offre *')
       await userEvent.click(urlField)
       await userEvent.tab()
 

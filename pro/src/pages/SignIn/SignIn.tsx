@@ -110,7 +110,7 @@ export const SignIn = (): JSX.Element => {
         </h1>
 
         <div className={styles['mandatory']}>
-          Tous les champs sont obligatoires
+          Tous les champs suivis d’un * sont obligatoires.
         </div>
         <FormikProvider value={formik}>
           <SigninForm />

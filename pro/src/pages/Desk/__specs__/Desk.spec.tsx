@@ -18,7 +18,7 @@ describe('src | components | Desk', () => {
   describe('Should validate while user is typing', () => {
     it('should remove QRcode prefix', async () => {
       renderDesk()
-      const contremarque = screen.getByLabelText('Contremarque')
+      const contremarque = screen.getByLabelText('Contremarque *')
       await userEvent.type(contremarque, 'AA:ZERRZ')
       expect(contremarque).toHaveValue('ZERRZ')
     })
@@ -36,14 +36,14 @@ describe('src | components | Desk', () => {
 
     it('should indicate the number of characters missing', async () => {
       renderDesk()
-      const contremarque = screen.getByLabelText('Contremarque')
+      const contremarque = screen.getByLabelText('Contremarque *')
       await userEvent.type(contremarque, 'AA')
       expect(screen.getByText('Caractères restants : 4/6')).toBeInTheDocument()
     })
 
     it('should indicate the maximum number of caracters', async () => {
       renderDesk()
-      const contremarque = screen.getByLabelText('Contremarque')
+      const contremarque = screen.getByLabelText('Contremarque *')
       await userEvent.type(contremarque, 'AAOURIRIR')
       expect(
         screen.getByText(
@@ -54,7 +54,7 @@ describe('src | components | Desk', () => {
 
     it('should indicate that the format is invalid and which characters are valid', async () => {
       renderDesk()
-      const contremarque = screen.getByLabelText('Contremarque')
+      const contremarque = screen.getByLabelText('Contremarque *')
       await userEvent.type(contremarque, 'AA-@')
       expect(
         screen.getByText('Caractères valides : de A à Z et de 0 à 9')
@@ -66,7 +66,7 @@ describe('src | components | Desk', () => {
         booking: defaultBookingResponse,
       })
       renderDesk()
-      const contremarque = screen.getByLabelText('Contremarque')
+      const contremarque = screen.getByLabelText('Contremarque *')
       await userEvent.type(contremarque, 'AAAAAA')
       expect(getBookingAdapter.getBooking).toHaveBeenCalledWith('AAAAAA')
       expect(
@@ -88,7 +88,7 @@ describe('src | components | Desk', () => {
         },
       })
       renderDesk()
-      const contremarque = screen.getByLabelText('Contremarque')
+      const contremarque = screen.getByLabelText('Contremarque *')
       await userEvent.type(contremarque, 'AAAAAA')
       expect(await screen.findByText(/Erreur/)).toBeInTheDocument()
     })
@@ -103,7 +103,7 @@ describe('src | components | Desk', () => {
     it('should display confirmation message and empty field when contremarque is validated', async () => {
       vi.spyOn(submitTokenAdapter, 'submitValidate').mockResolvedValueOnce({})
       renderDesk()
-      const contremarque = screen.getByLabelText('Contremarque')
+      const contremarque = screen.getByLabelText('Contremarque *')
       await userEvent.type(contremarque, 'AAAAAA')
       await userEvent.click(screen.getByText('Valider la contremarque'))
       expect(
@@ -120,7 +120,7 @@ describe('src | components | Desk', () => {
         },
       })
       renderDesk()
-      const contremarque = screen.getByLabelText('Contremarque')
+      const contremarque = screen.getByLabelText('Contremarque *')
       await userEvent.type(contremarque, 'AAAAAA')
       await userEvent.click(screen.getByText('Valider la contremarque'))
       expect(await screen.findByText(/Erreur/)).toBeInTheDocument()
@@ -142,7 +142,7 @@ describe('src | components | Desk', () => {
     it('should display invalidating message when waiting for invalidation and display invalidation confirmation', async () => {
       renderDesk()
 
-      await userEvent.type(screen.getByLabelText('Contremarque'), 'AAAAAA')
+      await userEvent.type(screen.getByLabelText('Contremarque *'), 'AAAAAA')
       await userEvent.click(screen.getByText('Invalider la contremarque'))
 
       const confirmModalButton = screen.getByRole('button', {
@@ -165,7 +165,7 @@ describe('src | components | Desk', () => {
 
       renderDesk()
 
-      await userEvent.type(screen.getByLabelText('Contremarque'), 'AAAAAA')
+      await userEvent.type(screen.getByLabelText('Contremarque *'), 'AAAAAA')
       await userEvent.click(screen.getByText('Invalider la contremarque'))
 
       const confirmModalButton = screen.getByRole('button', {

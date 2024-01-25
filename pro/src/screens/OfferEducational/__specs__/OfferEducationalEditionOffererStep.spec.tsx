@@ -74,13 +74,13 @@ describe('screens | OfferEducational : edition offerer step', () => {
     })
     expect(offerTypeTitle).toBeInTheDocument()
 
-    const offererSelect = await screen.findByLabelText('Structure')
+    const offererSelect = await screen.findByLabelText('Structure *')
 
     expect(offererSelect).toBeInTheDocument()
     expect(offererSelect).toHaveValue(secondOffererId.toString())
     expect(offererSelect).toBeDisabled()
 
-    const venueSelect = await screen.findByLabelText('Lieu')
+    const venueSelect = await screen.findByLabelText('Lieu *')
 
     expect(venueSelect).toBeInTheDocument()
     expect(venueSelect).toHaveValue(thirdVenueId.toString())
@@ -125,7 +125,7 @@ describe('screens | OfferEducational : edition offerer step', () => {
     }
     renderWithProviders(<OfferEducational {...props} />)
 
-    const venueSelect = await screen.findByLabelText('Lieu')
+    const venueSelect = await screen.findByLabelText('Lieu *')
 
     expect(venueSelect).toBeInTheDocument()
     expect(venueSelect).toHaveValue(thirdVenueId.toString())

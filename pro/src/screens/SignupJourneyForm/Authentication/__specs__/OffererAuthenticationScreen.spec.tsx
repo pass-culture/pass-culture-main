@@ -134,7 +134,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
 
     expect(
       await screen.findByText(
-        'Tous les champs sont obligatoires sauf mention contraire.'
+        'Tous les champs suivis d’un * sont obligatoires.'
       )
     ).toBeInTheDocument()
 
@@ -142,8 +142,8 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
       screen.getByRole('heading', { level: 2, name: 'Identification' })
     ).toBeInTheDocument()
 
-    const siretField = screen.getByLabelText('Numéro de SIRET')
-    const nameField = screen.getByLabelText('Raison sociale')
+    const siretField = screen.getByLabelText('Numéro de SIRET *')
+    const nameField = screen.getByLabelText('Raison sociale *')
 
     expect(siretField).toBeDisabled()
     expect(siretField).toHaveValue('123 456 789 33333')

@@ -54,11 +54,11 @@ describe('screens | OfferEducational : event address step', () => {
       storeOverrides: store,
     })
 
-    const offererSelect = await screen.findByLabelText('Structure')
+    const offererSelect = await screen.findByLabelText('Structure *')
 
     await userEvent.selectOptions(offererSelect, [offererId.toString()])
 
-    const venuesSelect = await screen.findByLabelText('Lieu')
+    const venuesSelect = await screen.findByLabelText('Lieu *')
     await userEvent.selectOptions(venuesSelect, ['43'])
 
     const accessibilityCheckboxes = screen.queryAllByRole('checkbox', {
@@ -89,15 +89,15 @@ describe('screens | OfferEducational : event address step', () => {
       storeOverrides: store,
     })
 
-    const offererSelect = await screen.findByLabelText('Structure')
+    const offererSelect = await screen.findByLabelText('Structure *')
 
     await userEvent.selectOptions(offererSelect, [offererId.toString()])
 
-    const venuesSelect = await screen.findByLabelText('Lieu')
+    const venuesSelect = await screen.findByLabelText('Lieu *')
     await userEvent.selectOptions(venuesSelect, [firstVenueId.toString()])
 
     const offerVenueSelect = await screen.findByLabelText(
-      'Sélectionner le lieu'
+      'Sélectionner le lieu *'
     )
     expect(offerVenueSelect).toHaveValue(firstVenueId.toString())
 

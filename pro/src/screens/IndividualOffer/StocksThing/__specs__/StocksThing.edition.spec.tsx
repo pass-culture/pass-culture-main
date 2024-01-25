@@ -231,7 +231,7 @@ describe('screens:StocksThing', () => {
     ).toBeInTheDocument()
 
     await waitFor(() => {
-      expect(screen.getByLabelText('Prix')).toHaveValue(null)
+      expect(screen.getByLabelText('Prix *')).toHaveValue(null)
     })
     expect(api.deleteStock).toHaveBeenCalledWith(stockToDelete.id)
     expect(api.deleteStock).toHaveBeenCalledTimes(1)

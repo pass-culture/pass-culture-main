@@ -52,7 +52,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
 
   it('should render non sub categories fields', () => {
     renderInformations({ props, initialValues, onSubmit })
-    expect(screen.getByLabelText('Titre de l’offre')).toBeInTheDocument()
+    expect(screen.getByLabelText('Titre de l’offre *')).toBeInTheDocument()
     expect(
       screen.getByLabelText('Description', { exact: false })
     ).toBeInTheDocument()

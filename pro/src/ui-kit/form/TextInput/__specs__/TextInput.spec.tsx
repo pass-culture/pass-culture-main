@@ -25,13 +25,13 @@ describe('TextInput', () => {
         </Formik>
       )
 
-      screen.getByLabelText('Input 1').focus()
-      expect(screen.getByLabelText('Input 1')).toHaveFocus()
-      expect(screen.getByLabelText('Input 2')).not.toHaveFocus()
+      screen.getByLabelText('Input 1 *').focus()
+      expect(screen.getByLabelText('Input 1 *')).toHaveFocus()
+      expect(screen.getByLabelText('Input 2 *')).not.toHaveFocus()
 
       await userEvent.tab()
-      expect(screen.getByLabelText('Input 1')).not.toHaveFocus()
-      expect(screen.getByLabelText('Input 2')).toHaveFocus()
+      expect(screen.getByLabelText('Input 1 *')).not.toHaveFocus()
+      expect(screen.getByLabelText('Input 2 *')).toHaveFocus()
     }
   )
 })

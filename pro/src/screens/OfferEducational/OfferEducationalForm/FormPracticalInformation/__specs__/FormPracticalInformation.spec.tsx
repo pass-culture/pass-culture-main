@@ -104,12 +104,12 @@ describe('FormPracticalInformation', () => {
       })
 
       const textarea = screen.getByRole('textbox', {
-        name: EVENT_ADDRESS_OTHER_ADDRESS_LABEL,
+        name: 'Adresse de l’évènement *',
       })
       expect(textarea).toBeInTheDocument()
       expect(textarea).toHaveValue('A la mairie')
       expect(
-        screen.queryByLabelText(INTERVENTION_AREA_LABEL)
+        screen.queryByLabelText('Zone de mobilité pour l’évènement *')
       ).toBeInTheDocument()
     })
 
@@ -124,11 +124,11 @@ describe('FormPracticalInformation', () => {
       })
 
       const textarea = screen.queryByRole('textbox', {
-        name: EVENT_ADDRESS_OTHER_ADDRESS_LABEL,
+        name: 'Adresse de l’évènement *',
       })
       expect(textarea).not.toBeInTheDocument()
       expect(
-        screen.queryByLabelText(INTERVENTION_AREA_LABEL)
+        screen.queryByLabelText('Zone de mobilité pour l’évènement *')
       ).toBeInTheDocument()
     })
   })

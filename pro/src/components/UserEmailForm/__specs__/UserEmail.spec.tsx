@@ -45,11 +45,13 @@ describe('components:UserEmailForm', () => {
   it('should trigger onSubmit callback when submitting', async () => {
     renderUserEmailForm(props)
     await userEvent.type(
-      screen.getByLabelText('Nouvelle adresse email'),
+      screen.getByLabelText('Nouvelle adresse email *'),
       'test@test.com'
     )
     await userEvent.type(
-      screen.getByLabelText('Mot de passe (requis pour modifier votre email)'),
+      screen.getByLabelText(
+        'Mot de passe (requis pour modifier votre email) *'
+      ),
       'test'
     )
     await userEvent.tab()

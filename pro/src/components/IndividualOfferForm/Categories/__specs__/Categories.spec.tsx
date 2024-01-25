@@ -85,7 +85,7 @@ describe('IndividualOffer section: Categories', () => {
       onSubmit,
       props,
     })
-    expect(screen.getByLabelText('Catégorie')).toBeInTheDocument()
+    expect(screen.getByLabelText('Catégorie *')).toBeInTheDocument()
     const infoBox = screen.getByText(
       'Une sélection précise de vos catégories permettra au grand public de facilement trouver votre offre. Une fois validées, vous ne pourrez pas les modifier.'
     )
@@ -103,13 +103,13 @@ describe('IndividualOffer section: Categories', () => {
       onSubmit,
       props,
     })
-    const categorySelect = screen.getByLabelText('Catégorie')
+    const categorySelect = screen.getByLabelText('Catégorie *')
     await userEvent.selectOptions(categorySelect, 'C')
-    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
+    const subCategorySelect = screen.getByLabelText('Sous-catégorie *')
     await userEvent.selectOptions(subCategorySelect, 'C-A')
-    const showSelect = screen.getByLabelText('Type de spectacle')
+    const showSelect = screen.getByLabelText('Type de spectacle *')
     await userEvent.selectOptions(showSelect, '100')
-    const subShowSelect = screen.getByLabelText('Sous-type')
+    const subShowSelect = screen.getByLabelText('Sous-type *')
     await userEvent.selectOptions(subShowSelect, '101')
 
     await userEvent.click(screen.getByText('Submit'))
@@ -145,14 +145,16 @@ describe('IndividualOffer section: Categories', () => {
       onSubmit,
       props,
     })
-    const categorySelect = screen.getByLabelText('Catégorie')
+    const categorySelect = screen.getByLabelText('Catégorie *')
     await userEvent.selectOptions(categorySelect, 'A')
-    expect(screen.getByLabelText('Sous-catégorie')).toBeInTheDocument()
+    expect(screen.getByLabelText('Sous-catégorie *')).toBeInTheDocument()
 
-    expect(screen.queryByLabelText('Type de spectacle')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Sous-type')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Genre musical')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Sous-genre')).not.toBeInTheDocument()
+    expect(
+      screen.queryByLabelText('Type de spectacle *')
+    ).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Sous-type *')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Genre musical *')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Sous-genre *')).not.toBeInTheDocument()
   })
 
   it('should not display type select when a standard subCategory is choosed', async () => {
@@ -161,17 +163,19 @@ describe('IndividualOffer section: Categories', () => {
       onSubmit,
       props,
     })
-    const categorySelect = screen.getByLabelText('Catégorie')
+    const categorySelect = screen.getByLabelText('Catégorie *')
     await userEvent.selectOptions(categorySelect, 'A')
-    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
+    const subCategorySelect = screen.getByLabelText('Sous-catégorie *')
     await userEvent.selectOptions(subCategorySelect, 'A-A')
 
-    expect(screen.getByLabelText('Sous-catégorie')).toBeInTheDocument()
+    expect(screen.getByLabelText('Sous-catégorie *')).toBeInTheDocument()
 
-    expect(screen.queryByLabelText('Type de spectacle')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Sous-type')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Genre musical')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Sous-genre')).not.toBeInTheDocument()
+    expect(
+      screen.queryByLabelText('Type de spectacle *')
+    ).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Sous-type *')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Genre musical *')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Sous-genre *')).not.toBeInTheDocument()
   })
 
   it('should display musicType selects when a music subCategory is choosed', async () => {
@@ -180,20 +184,22 @@ describe('IndividualOffer section: Categories', () => {
       onSubmit,
       props,
     })
-    const categorySelect = screen.getByLabelText('Catégorie')
+    const categorySelect = screen.getByLabelText('Catégorie *')
     await userEvent.selectOptions(categorySelect, 'B')
-    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
+    const subCategorySelect = screen.getByLabelText('Sous-catégorie *')
     await userEvent.selectOptions(subCategorySelect, 'B-A')
 
-    expect(screen.queryByLabelText('Sous-genre')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Type de spectacle')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Sous-type')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Sous-genre *')).not.toBeInTheDocument()
+    expect(
+      screen.queryByLabelText('Type de spectacle *')
+    ).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Sous-type *')).not.toBeInTheDocument()
 
-    const musicSelect = screen.getByLabelText('Genre musical')
+    const musicSelect = screen.getByLabelText('Genre musical *')
     expect(musicSelect).toBeInTheDocument()
 
     await userEvent.selectOptions(musicSelect, '520')
-    expect(screen.getByLabelText('Sous-genre')).toBeInTheDocument()
+    expect(screen.getByLabelText('Sous-genre *')).toBeInTheDocument()
 
     expect(screen.queryByLabelText('Type de spectacle')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Sous-type')).not.toBeInTheDocument()
@@ -205,23 +211,23 @@ describe('IndividualOffer section: Categories', () => {
       onSubmit,
       props,
     })
-    const categorySelect = screen.getByLabelText('Catégorie')
+    const categorySelect = screen.getByLabelText('Catégorie *')
     await userEvent.selectOptions(categorySelect, 'C')
-    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
+    const subCategorySelect = screen.getByLabelText('Sous-catégorie *')
     await userEvent.selectOptions(subCategorySelect, 'C-A')
 
     expect(screen.queryByLabelText('Genre musical')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Sous-genre')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Sous-type')).not.toBeInTheDocument()
 
-    const showSelect = screen.getByLabelText('Type de spectacle')
+    const showSelect = screen.getByLabelText('Type de spectacle *')
     expect(showSelect).toBeInTheDocument()
 
     await userEvent.selectOptions(showSelect, '100')
-    expect(screen.getByLabelText('Sous-type')).toBeInTheDocument()
+    expect(screen.getByLabelText('Sous-type *')).toBeInTheDocument()
 
-    expect(screen.queryByLabelText('Genre musical')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Sous-genre')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Genre musical *')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Sous-genre *')).not.toBeInTheDocument()
   })
 
   it('should not display subType selects when a music category is back to default', async () => {
@@ -230,19 +236,21 @@ describe('IndividualOffer section: Categories', () => {
       onSubmit,
       props,
     })
-    const categorySelect = screen.getByLabelText('Catégorie')
+    const categorySelect = screen.getByLabelText('Catégorie *')
     await userEvent.selectOptions(categorySelect, 'C')
-    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
+    const subCategorySelect = screen.getByLabelText('Sous-catégorie *')
     await userEvent.selectOptions(subCategorySelect, 'C-A')
 
-    const showSelect = screen.getByLabelText('Type de spectacle')
+    const showSelect = screen.getByLabelText('Type de spectacle *')
     expect(showSelect).toBeInTheDocument()
 
     await userEvent.selectOptions(showSelect, '100')
-    expect(screen.getByLabelText('Sous-type')).toBeInTheDocument()
+    expect(screen.getByLabelText('Sous-type *')).toBeInTheDocument()
 
     await userEvent.selectOptions(categorySelect, '')
-    expect(screen.queryByLabelText('Type de spectacle')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Sous-type')).not.toBeInTheDocument()
+    expect(
+      screen.queryByLabelText('Type de spectacle *')
+    ).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Sous-type *')).not.toBeInTheDocument()
   })
 })

@@ -316,7 +316,9 @@ describe('reimbursementsWithFilters', () => {
       )
     ).not.toBeInTheDocument()
 
-    expect(screen.getByLabelText('Point de remboursement')).toBeInTheDocument()
+    expect(
+      screen.getByLabelText('Point de remboursement *')
+    ).toBeInTheDocument()
     expect(
       screen.getByText('Tous les points de remboursement')
     ).toBeInTheDocument()
@@ -334,7 +336,7 @@ describe('reimbursementsWithFilters', () => {
       )
     ).toBeInTheDocument()
 
-    expect(screen.getByLabelText('Compte bancaire')).toBeInTheDocument()
+    expect(screen.getByLabelText('Compte bancaire *')).toBeInTheDocument()
     expect(screen.getByText('Tous les comptes bancaires')).toBeInTheDocument()
   })
 })

@@ -146,7 +146,7 @@ describe('PartnerPages', () => {
     expect(image).toHaveAttribute('src', 'MyFirstImage')
 
     await userEvent.selectOptions(
-      screen.getByLabelText('Sélectionnez votre page partenaire'),
+      screen.getByLabelText('Sélectionnez votre page partenaire *'),
       '666'
     )
 

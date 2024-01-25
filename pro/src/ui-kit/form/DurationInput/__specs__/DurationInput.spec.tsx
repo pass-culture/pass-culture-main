@@ -21,7 +21,7 @@ const renderDurationInput = () => {
 describe('DurationInput', () => {
   it('should render field', () => {
     renderDurationInput()
-    expect(screen.getByLabelText('Durée')).toBeInTheDocument()
+    expect(screen.getByLabelText('Durée *')).toBeInTheDocument()
   })
 
   const setDurationInputValue = [

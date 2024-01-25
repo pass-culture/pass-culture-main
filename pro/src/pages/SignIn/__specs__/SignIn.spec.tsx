@@ -100,8 +100,8 @@ describe('SignIn', () => {
     renderSignIn()
 
     // Then
-    expect(screen.getByLabelText('Adresse email')).toBeInTheDocument()
-    expect(screen.getByLabelText('Mot de passe')).toBeInTheDocument()
+    expect(screen.getByLabelText('Adresse email *')).toBeInTheDocument()
+    expect(screen.getByLabelText('Mot de passe *')).toBeInTheDocument()
     expect(screen.getByText('Se connecter')).toBeInTheDocument()
     expect(screen.getByText('Créer un compte')).toBeInTheDocument()
     expect(screen.getByText('Mot de passe oublié ?')).toBeInTheDocument()
@@ -124,7 +124,7 @@ describe('SignIn', () => {
       // Then
       await userEvent.click(eyePasswordButton)
 
-      expect(screen.getByLabelText('Mot de passe')).toHaveAttribute(
+      expect(screen.getByLabelText('Mot de passe *')).toHaveAttribute(
         'type',
         'text'
       )
@@ -142,7 +142,7 @@ describe('SignIn', () => {
       await userEvent.click(eyePasswordButton)
 
       //then
-      expect(screen.getByLabelText('Mot de passe')).toHaveAttribute(
+      expect(screen.getByLabelText('Mot de passe *')).toHaveAttribute(
         'type',
         'password'
       )
@@ -193,9 +193,9 @@ describe('SignIn', () => {
   it('should call submit prop when user clicks on "Se connecter"', async () => {
     renderSignIn()
 
-    const email = screen.getByLabelText('Adresse email')
+    const email = screen.getByLabelText('Adresse email *')
     await userEvent.type(email, 'MonPetitEmail@exemple.com')
-    const password = screen.getByLabelText('Mot de passe')
+    const password = screen.getByLabelText('Mot de passe *')
     await userEvent.type(password, 'MCSolar85')
     await userEvent.click(
       screen.getByRole('button', {
@@ -247,9 +247,9 @@ describe('SignIn', () => {
   it('should display errors message and focus email input when login failed', async () => {
     renderSignIn()
 
-    const email = screen.getByLabelText('Adresse email')
+    const email = screen.getByLabelText('Adresse email *')
     await userEvent.type(email, 'MonPetitEmail@exemple.com')
-    const password = screen.getByLabelText('Mot de passe')
+    const password = screen.getByLabelText('Mot de passe *')
     await userEvent.type(password, 'MCSolar85')
 
     vi.spyOn(api, 'signin').mockRejectedValueOnce(
@@ -274,15 +274,15 @@ describe('SignIn', () => {
       screen.getAllByText('Identifiant ou mot de passe incorrect.')
     ).toHaveLength(3)
 
-    expect(screen.getByLabelText('Adresse email')).toHaveFocus()
+    expect(screen.getByLabelText('Adresse email *')).toHaveFocus()
   })
 
   it('should display an error message when login rate limit exceeded', async () => {
     renderSignIn()
 
-    const email = screen.getByLabelText('Adresse email')
+    const email = screen.getByLabelText('Adresse email *')
     await userEvent.type(email, 'MonPetitEmail@exemple.com')
-    const password = screen.getByLabelText('Mot de passe')
+    const password = screen.getByLabelText('Mot de passe *')
     await userEvent.type(password, 'MCSolar85')
 
     vi.spyOn(api, 'signin').mockRejectedValueOnce(
@@ -354,10 +354,10 @@ describe('SignIn', () => {
 
       renderSignIn()
 
-      const email = screen.getByLabelText('Adresse email')
+      const email = screen.getByLabelText('Adresse email *')
       await userEvent.type(email, 'MonPetitEmail@exemple.com')
 
-      const password = screen.getByLabelText('Mot de passe')
+      const password = screen.getByLabelText('Mot de passe *')
       await userEvent.type(password, 'MCSolar85')
 
       await userEvent.click(
@@ -386,10 +386,10 @@ describe('SignIn', () => {
 
       renderSignIn()
 
-      const email = screen.getByLabelText('Adresse email')
+      const email = screen.getByLabelText('Adresse email *')
       await userEvent.type(email, 'MonPetitEmail@exemple.com')
 
-      const password = screen.getByLabelText('Mot de passe')
+      const password = screen.getByLabelText('Mot de passe *')
       await userEvent.type(password, 'MCSolar85')
 
       await userEvent.click(
@@ -406,10 +406,10 @@ describe('SignIn', () => {
     it('should redirect user to offer page on signin with url parameter', async () => {
       renderSignIn({ initialRouterEntries: ['/connexion?de=%2Foffres'] })
 
-      const email = screen.getByLabelText('Adresse email')
+      const email = screen.getByLabelText('Adresse email *')
       await userEvent.type(email, 'MonPetitEmail@exemple.com')
 
-      const password = screen.getByLabelText('Mot de passe')
+      const password = screen.getByLabelText('Mot de passe *')
       await userEvent.type(password, 'MCSolar85')
 
       await userEvent.click(

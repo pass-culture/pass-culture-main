@@ -25,7 +25,7 @@ describe('PriceCategories', () => {
       offer: individualOfferFactory({ lastProviderName: 'allociné' }),
     })
 
-    expect(screen.getByLabelText('Prix par personne')).not.toBeDisabled()
+    expect(screen.getByLabelText('Prix par personne *')).not.toBeDisabled()
   })
 
   it('should disabled field for provider', () => {
@@ -38,7 +38,7 @@ describe('PriceCategories', () => {
       }),
     })
 
-    expect(screen.getByLabelText('Prix par personne')).toBeDisabled()
+    expect(screen.getByLabelText('Prix par personne *')).toBeDisabled()
   })
 
   it('should disabled field for pending offer', () => {
@@ -46,7 +46,7 @@ describe('PriceCategories', () => {
       offer: individualOfferFactory({ status: OfferStatus.PENDING }),
     })
 
-    expect(screen.getByLabelText('Prix par personne')).toBeDisabled()
+    expect(screen.getByLabelText('Prix par personne *')).toBeDisabled()
   })
 
   it('should disabled field for rejected offer', () => {
@@ -54,6 +54,6 @@ describe('PriceCategories', () => {
       offer: individualOfferFactory({ status: OfferStatus.REJECTED }),
     })
 
-    expect(screen.getByLabelText('Prix par personne')).toBeDisabled()
+    expect(screen.getByLabelText('Prix par personne *')).toBeDisabled()
   })
 })

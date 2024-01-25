@@ -45,7 +45,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
       )
 
       expect(getIsOffererEligible).toHaveBeenCalledTimes(1)
-      expect(await screen.findByLabelText('Lieu')).toBeInTheDocument()
+      expect(await screen.findByLabelText('Lieu *')).toBeInTheDocument()
     })
 
     it('should test eligibility and display an error message with a link if the offerer is not eligible', async () => {
@@ -131,7 +131,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
         name: 'Type d’offre',
       })
 
-      const venueSelect = await screen.findByLabelText('Lieu')
+      const venueSelect = await screen.findByLabelText('Lieu *')
 
       expect(venueSelect).toBeInTheDocument()
       expect(venueSelect).toHaveValue(
@@ -169,7 +169,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
           getIsOffererEligible={getIsOffererEligible}
         />
       )
-      const offererSelect = await screen.findByLabelText('Structure')
+      const offererSelect = await screen.findByLabelText('Structure *')
 
       expect(offererSelect).toBeInTheDocument()
       expect(offererSelect).toHaveValue('')
@@ -208,7 +208,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
         />
       )
 
-      const offererSelect = await screen.findByLabelText('Structure')
+      const offererSelect = await screen.findByLabelText('Structure *')
 
       await userEvent.selectOptions(offererSelect, firstOffererId.toString())
 
@@ -244,7 +244,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
 
     it('should require a venue selection from the user', async () => {
       renderWithProviders(<OfferEducational {...props} />)
-      const venueSelect = await screen.findByLabelText('Lieu')
+      const venueSelect = await screen.findByLabelText('Lieu *')
 
       expect(venueSelect).toHaveValue('')
       expect(venueSelect).toHaveDisplayValue('Sélectionner un lieu')
@@ -282,7 +282,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
 
     it('should display venues by alphabeticall order', async () => {
       renderWithProviders(<OfferEducational {...props} />)
-      const venueSelect = await screen.findByLabelText('Lieu')
+      const venueSelect = await screen.findByLabelText('Lieu *')
       const venuesOptions = venueSelect.children
       expect(venuesOptions[0].textContent).toEqual('Sélectionner un lieu')
       expect(venuesOptions[1].textContent).toEqual('A - Venue 3')

@@ -23,14 +23,14 @@ describe('screens | OfferEducational : creation offer type step', () => {
   it('should display the right fields and titles', async () => {
     renderWithProviders(<OfferEducational {...props} />)
 
-    const categorySelect = await screen.findByLabelText('Catégorie')
+    const categorySelect = await screen.findByLabelText('Catégorie *')
     expect(categorySelect).toBeInTheDocument()
     expect(categorySelect).toBeEnabled()
     expect(categorySelect).toHaveValue('')
 
-    expect(screen.queryByLabelText('Sous-catégorie')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Sous-catégorie *')).not.toBeInTheDocument()
 
-    const titleInput = await screen.findByLabelText('Titre de l’offre')
+    const titleInput = await screen.findByLabelText('Titre de l’offre *')
     expect(titleInput).toBeEnabled()
     expect(titleInput).toHaveValue('')
     expect(titleInput.getAttribute('placeholder')).toBeNull()
@@ -39,7 +39,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
       '0/110'
     )
 
-    const descriptionTextArea = await screen.findByLabelText(/Description/)
+    const descriptionTextArea = await screen.findByLabelText(/Description */)
     expect(descriptionTextArea).toBeEnabled()
     expect(descriptionTextArea).toHaveValue('')
     expect(descriptionTextArea.getAttribute('placeholder')).toBe(
@@ -77,10 +77,12 @@ describe('screens | OfferEducational : creation offer type step', () => {
     it('should require user to select a category before displaying subcategories', async () => {
       renderWithProviders(<OfferEducational {...props} />)
 
-      const categorySelect = await screen.findByLabelText('Catégorie')
+      const categorySelect = await screen.findByLabelText('Catégorie *')
       expect(categorySelect).toBeInTheDocument()
 
-      expect(screen.queryByLabelText('Sous-catégorie')).not.toBeInTheDocument()
+      expect(
+        screen.queryByLabelText('Sous-catégorie *')
+      ).not.toBeInTheDocument()
 
       await userEvent.click(categorySelect)
       await userEvent.tab()
@@ -91,13 +93,15 @@ describe('screens | OfferEducational : creation offer type step', () => {
 
       await userEvent.selectOptions(categorySelect, 'CAT_1')
 
-      expect(await screen.findByLabelText('Sous-catégorie')).toBeInTheDocument()
+      expect(
+        await screen.findByLabelText('Sous-catégorie *')
+      ).toBeInTheDocument()
 
       expect(
         screen.queryByText('Veuillez sélectionner une catégorie')
       ).not.toBeInTheDocument()
 
-      const subCategorySelect = screen.getByLabelText('Sous-catégorie')
+      const subCategorySelect = screen.getByLabelText('Sous-catégorie *')
       expect(subCategorySelect.children).toHaveLength(3)
       expect(subCategorySelect.children[0]).toHaveValue('')
       expect(subCategorySelect.children[1]).toHaveValue('SUBCAT_1')
@@ -106,14 +110,14 @@ describe('screens | OfferEducational : creation offer type step', () => {
 
     it('should require user to select a subcategory', async () => {
       renderWithProviders(<OfferEducational {...props} />)
-      const categorySelect = await screen.findByLabelText('Catégorie')
+      const categorySelect = await screen.findByLabelText('Catégorie *')
       await userEvent.selectOptions(categorySelect, 'CAT_1')
 
       await waitFor(() =>
-        expect(screen.getByLabelText('Sous-catégorie')).toBeInTheDocument()
+        expect(screen.getByLabelText('Sous-catégorie *')).toBeInTheDocument()
       )
 
-      const subCategorySelect = screen.getByLabelText('Sous-catégorie')
+      const subCategorySelect = screen.getByLabelText('Sous-catégorie *')
 
       await userEvent.click(subCategorySelect)
       await userEvent.tab()
@@ -146,10 +150,10 @@ describe('screens | OfferEducational : creation offer type step', () => {
         storeOverrides: store,
       })
       await userEvent.click(
-        await screen.findByLabelText(/Domaine artistique et culturel/)
+        await screen.findByLabelText(/Domaine artistique et culturel */)
       )
 
-      await userEvent.click(screen.getByLabelText(/Catégorie/))
+      await userEvent.click(screen.getByLabelText(/Catégorie */))
 
       expect(
         screen.getByText('Veuillez renseigner un domaine')
@@ -162,12 +166,12 @@ describe('screens | OfferEducational : creation offer type step', () => {
       })
 
       await userEvent.click(
-        await screen.findByLabelText(/Domaine artistique et culturel/)
+        await screen.findByLabelText(/Domaine artistique et culturel */)
       )
 
       await userEvent.click(await screen.findByLabelText(/Domain 2/))
 
-      await userEvent.click(screen.getByLabelText(/Catégorie/))
+      await userEvent.click(screen.getByLabelText(/Catégorie */))
 
       expect(
         screen.queryByText('Veuillez renseigner un domaine')
@@ -187,8 +191,9 @@ describe('screens | OfferEducational : creation offer type step', () => {
       renderWithProviders(<OfferEducational {...overridedProps} />, {
         storeOverrides: store,
       })
-      const nationalProgramsSelect =
-        await screen.findByLabelText(/Dispositif national/)
+      const nationalProgramsSelect = await screen.findByLabelText(
+        /Dispositif national */
+      )
       await userEvent.click(nationalProgramsSelect)
       await userEvent.selectOptions(nationalProgramsSelect, '4')
       await userEvent.tab()
@@ -219,7 +224,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
 
       const titleMaxLength = 110
 
-      const titleInput = await screen.findByLabelText('Titre de l’offre')
+      const titleInput = await screen.findByLabelText('Titre de l’offre *')
       expect(titleInput).toHaveValue('')
       expect(screen.getByTestId('counter-title')).toHaveTextContent(
         `0/${titleMaxLength}`
@@ -250,7 +255,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
 
       const descMaxLength = 1000
 
-      const description = await screen.findByLabelText(/Description/)
+      const description = await screen.findByLabelText(/Description */)
       expect(description).toHaveValue('')
       expect(screen.getByTestId('counter-description')).toHaveTextContent(
         `0/${descMaxLength}`
@@ -276,7 +281,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
     it('should have a duration field with a format of hh:mm', async () => {
       renderWithProviders(<OfferEducational {...props} />)
 
-      const duration = await screen.findByLabelText(/Durée/)
+      const duration = await screen.findByLabelText(/Durée */)
       expect(duration).toHaveValue('')
 
       await userEvent.type(duration, 'bad String')

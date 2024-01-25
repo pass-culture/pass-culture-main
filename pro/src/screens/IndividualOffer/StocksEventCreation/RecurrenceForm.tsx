@@ -371,6 +371,7 @@ export const RecurrenceForm = ({
                           name={`quantityPerPriceCategories[${index}].quantity`}
                           type="number"
                           step="1"
+                          isOptional
                           placeholder="Illimité"
                           className={styles['quantity-input']}
                           hideFooter
