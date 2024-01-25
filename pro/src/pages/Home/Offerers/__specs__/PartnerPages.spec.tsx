@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react'
-import React from 'react'
+import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router-dom'
 
 import { VenueTypeCode } from 'apiClient/v1'
@@ -97,5 +97,53 @@ describe('PartnerPages', () => {
     expect(
       screen.getByText(defaultGetOffererVenueResponseModel.name)
     ).toBeInTheDocument()
+  })
+
+  it('should should change image when changing venue', async () => {
+    const venues = [
+      {
+        ...defaultGetOffererVenueResponseModel,
+        id: 42,
+        bannerUrl: 'MyFirstImage',
+        name: 'first venue',
+        bannerMeta: {
+          original_image_url: 'MyFirstImage',
+          crop_params: {
+            height_crop_percent: 12,
+            width_crop_percent: 12,
+            x_crop_percent: 12,
+            y_crop_percent: 12,
+          },
+        },
+      },
+      {
+        ...defaultGetOffererVenueResponseModel,
+        id: 666,
+        bannerUrl: 'MyOtherImage',
+        name: 'other venue',
+        bannerMeta: {
+          original_image_url: 'MyOtherImage',
+          crop_params: {
+            height_crop_percent: 12,
+            width_crop_percent: 12,
+            x_crop_percent: 12,
+            y_crop_percent: 12,
+          },
+        },
+      },
+    ]
+
+    renderPartnerPages({ venues })
+
+    let image = screen.getByAltText('Prévisualisation de l’image')
+    expect(image).toHaveAttribute('src', 'MyFirstImage')
+
+    await userEvent.selectOptions(
+      screen.getByLabelText('Sélectionnez votre page partenaire'),
+      '666'
+    )
+
+    image = screen.getByAltText('Prévisualisation de l’image')
+    expect(image).toHaveAttribute('src', 'MyOtherImage')
   })
 })
