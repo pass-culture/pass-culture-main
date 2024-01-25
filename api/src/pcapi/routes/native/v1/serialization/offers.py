@@ -18,6 +18,7 @@ from pcapi.core.offers.models import ReasonMeta
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.users.models import ExpenseDomain
+from pcapi.domain.movie_types import get_movie_label
 from pcapi.domain.music_types import MUSIC_SUB_TYPES_LABEL_BY_CODE
 from pcapi.domain.music_types import MUSIC_TYPES_LABEL_BY_CODE
 from pcapi.domain.show_types import SHOW_SUB_TYPES_LABEL_BY_CODE
@@ -159,6 +160,17 @@ class OfferExtraData(BaseModel):
     editeur: str | None
     gtlLabels: GtlLabels | None
     genres: list[str] | None
+
+    @validator("genres", pre=True, allow_reuse=True)
+    def convert_movie_types(cls, genres: list[str] | None) -> list[str] | None:
+        if not genres:
+            return None
+        movie_types = []
+        for genre in genres:
+            movie_type = get_movie_label(genre)
+            if movie_type:
+                movie_types.append(movie_type)
+        return movie_types
 
     _convert_music_sub_type = validator("musicSubType", pre=True, allow_reuse=True)(
         get_id_converter(MUSIC_SUB_TYPES_LABEL_BY_CODE, "musicSubType")
