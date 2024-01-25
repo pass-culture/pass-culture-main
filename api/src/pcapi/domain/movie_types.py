@@ -8,6 +8,18 @@ class MovieType:
     children: list | None = None
 
 
+def get_movie_label(code: str) -> str | None:
+    for movie_type in movie_types:
+        if movie_type.name == code:
+            return movie_type.label
+        # TODO: (lixxday, 26/01/2024) This is a workaround
+        # When this function is used in a pydantic validator, it will be called twice
+        # To avoid always retunrning empty responses, we check if the code is the label
+        if movie_type.label == code:
+            return movie_type.label
+    return None
+
+
 movie_types = [
     MovieType(name="ACTION", label="Action"),
     MovieType(name="ADVENTURE", label="Aventure"),

@@ -45,7 +45,7 @@ class OffersTest:
             "stageDirector": "metteur en scène",
             "speaker": "intervenant",
             "visa": "vasi",
-            "genres": ["genre1", "genre2"],
+            "genres": ["ACTION", "DRAMA"],
             "cast": ["cast1", "cast2"],
             "editeur": "editeur",
             "gtl_id": "01030000",
@@ -200,7 +200,7 @@ class OffersTest:
             "speaker": "intervenant",
             "stageDirector": "metteur en scène",
             "visa": "vasi",
-            "genres": ["genre1", "genre2"],
+            "genres": ["Action", "Drame"],
             "cast": ["cast1", "cast2"],
             "editeur": "editeur",
             "gtlLabels": {
