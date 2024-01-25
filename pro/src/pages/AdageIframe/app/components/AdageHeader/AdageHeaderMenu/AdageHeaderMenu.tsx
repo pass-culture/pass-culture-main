@@ -37,7 +37,6 @@ export const AdageHeaderMenu = ({
             <li className={styles['adage-header-menu-item']}>
               <NavLink
                 to={`/adage-iframe/decouverte?token=${adageAuthToken}`}
-                end
                 className={({ isActive }) => {
                   return cn(styles['adage-header-link'], {
                     [styles['adage-header-link-active']]: isActive,
@@ -53,7 +52,6 @@ export const AdageHeaderMenu = ({
           <li className={styles['adage-header-menu-item']}>
             <NavLink
               to={`/adage-iframe/recherche?token=${adageAuthToken}`}
-              end
               className={({ isActive }) => {
                 return cn(styles['adage-header-link'], {
                   [styles['adage-header-link-active']]: isActive,
