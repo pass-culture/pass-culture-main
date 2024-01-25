@@ -7,10 +7,10 @@
   height: 0;
   position: absolute;
   background-color: colors.$secondary;
-  top: 0;
+  top: rem.torem(-32px);
 
   &:focus-within {
-    min-height: rem.torem(32px);
+    height: rem.torem(32px);
     position: relative;
     z-index: 2;
     top: 0;
