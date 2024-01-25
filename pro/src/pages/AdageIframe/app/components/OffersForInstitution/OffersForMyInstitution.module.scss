@@ -26,4 +26,7 @@
 
 .offers-list {
   padding-bottom: rem.torem(32px);
+  display: flex;
+  flex-direction: column;
+  gap: rem.torem(16px);
 }

@@ -1,9 +1,8 @@
 @use "styles/mixins/_rem.scss" as rem;
 
 .favorite-list {
-  padding-bottom: rem.torem(32px);
-
-  li:not(:last-child) {
-    margin-bottom: rem.torem(16px);
-  }
+  padding: rem.torem(32px) 0;
+  display: flex;
+  flex-direction: column;
+  gap: rem.torem(16px);
 }
