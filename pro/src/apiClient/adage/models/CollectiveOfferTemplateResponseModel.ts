@@ -26,6 +26,7 @@ export type CollectiveOfferTemplateResponseModel = {
   isExpired: boolean;
   isFavorite?: boolean | null;
   isSoldOut: boolean;
+  isTemplate?: boolean;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;

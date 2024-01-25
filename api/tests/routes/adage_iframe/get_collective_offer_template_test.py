@@ -116,6 +116,7 @@ class CollectiveOfferTemplateTest:
                 "end": format_into_utc_date(offer.end),
             },
             "formats": [fmt.value for fmt in subcategories.SEANCE_CINE.formats],
+            "isTemplate": True,
         }
 
     def test_get_collective_offer_template_if_inactif(self, eac_client, redactor):

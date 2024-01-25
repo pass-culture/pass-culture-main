@@ -186,6 +186,7 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
     nationalProgram: NationalProgramModel | None
     isFavorite: bool | None
     formats: typing.Sequence[EacFormat] | None
+    isTemplate: bool = False
 
     @classmethod
     def build(
@@ -276,6 +277,7 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
     isFavorite: bool | None
     dates: TemplateDatesModel | None
     formats: typing.Sequence[EacFormat] | None
+    isTemplate: bool = True
 
     @classmethod
     def build(

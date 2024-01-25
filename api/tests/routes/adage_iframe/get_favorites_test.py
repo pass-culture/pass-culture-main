@@ -124,6 +124,7 @@ class GetFavoriteOfferTest:
                         "name": stock.collectiveOffer.nationalProgram.name,
                     },
                     "formats": [fmt.value for fmt in subcategories.SEANCE_CINE.formats],
+                    "isTemplate": False,
                 }
             ],
             "favoritesTemplate": [
@@ -183,6 +184,7 @@ class GetFavoriteOfferTest:
                         "end": collective_offer_template.end.isoformat(),
                     },
                     "formats": [fmt.value for fmt in subcategories.EVENEMENT_CINE.formats],
+                    "isTemplate": True,
                 }
             ],
         }
