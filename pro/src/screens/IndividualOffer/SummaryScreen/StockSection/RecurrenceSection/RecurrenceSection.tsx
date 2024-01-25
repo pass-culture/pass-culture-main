@@ -18,6 +18,9 @@ const RecurrenceSection = ({
   if (!stocksStats?.stockCount && stocksStats?.stockCount !== 0) {
     return null
   }
+  const formattedStockCount = new Intl.NumberFormat('fr-FR').format(
+    stocksStats.stockCount
+  )
 
   const totalCapacity =
     stocksStats.remainingQuantity || stocksStats.remainingQuantity === 0
@@ -51,7 +54,7 @@ const RecurrenceSection = ({
     <>
       <SummaryLayout.Row
         title="Nombre de dates"
-        description={stocksStats.stockCount}
+        description={formattedStockCount}
       />
       <SummaryLayout.Row title="Période concernée" description={periodText} />
       <SummaryLayout.Row title="Capacité totale" description={totalCapacity} />
