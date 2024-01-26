@@ -16,8 +16,10 @@ from flask_login import LoginManager
 from flask_login import current_user
 import prometheus_flask_exporter.multiprocess
 import redis
+import rq_exporter
 import sentry_sdk
 from sqlalchemy import orm
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from werkzeug.middleware.profiler import ProfilerMiddleware
 import werkzeug.middleware.proxy_fix
 
@@ -138,6 +140,11 @@ if settings.PROFILE_REQUESTS:
     app.wsgi_app = ProfilerMiddleware(  # type: ignore [method-assign]
         app.wsgi_app,
         restrictions=profiling_restrictions,
+    )
+
+if int(os.environ.get("ENABLE_RQ_PROMETHEUS_EXPORTER", "0")):
+    app.wsgi_app = DispatcherMiddleware(  # type: ignore [method-assign]
+        app.wsgi_app, {"/rq_metrics": rq_exporter.create_app()}
     )
 
 
