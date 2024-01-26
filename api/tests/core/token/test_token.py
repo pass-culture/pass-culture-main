@@ -146,3 +146,47 @@ class TokenTest:
         token.check(self.token_type, self.user_id)
         # should not raise
         token.check(self.token_type, self.user_id)
+
+
+class SecureTokenTest:
+    def test_create_token_with_data(self, app):
+        data = {"int": 12, "str": "Ça c'est pas de l'ascii 😉"}
+
+        token = token_tools.SecureToken(data=data)
+
+        assert 29 < app.redis_client.ttl(f"pcapi:token:SecureToken_{token.token}") <= 30
+        assert len(token.token) == 86
+        assert token.data["int"] == data["int"]
+        assert token.data["str"] == data["str"]
+
+    def test_create_token_without_data(self, app):
+        token = token_tools.SecureToken(ttl=10)
+
+        assert 9 < app.redis_client.ttl(f"pcapi:token:SecureToken_{token.token}") <= 10
+        assert len(token.token) == 86
+
+    def test_retrieve_token_with_data(self, app):
+        data = {"int": 12, "str": "Ça c'est pas de l'ascii 😉"}
+        original_token = token_tools.SecureToken(data=data)
+
+        token = token_tools.SecureToken(token=original_token.token)
+
+        assert app.redis_client.ttl(f"pcapi:token:SecureToken_{original_token.token}") == -2
+        assert token.data["int"] == data["int"]
+        assert token.data["str"] == data["str"]
+
+    def test_retrieve_token_without_data(self, app):
+        original_token = token_tools.SecureToken()
+
+        token = token_tools.SecureToken(token=original_token.token)
+
+        assert app.redis_client.ttl(f"pcapi:token:SecureToken_{original_token.token}") == -2
+        assert token.data == {}
+
+    def test_retrieve_unknown_token(self, app):
+        # create token
+        original_token = token_tools.SecureToken()
+        # remove token from redis
+        app.redis_client.delete(f"pcapi:token:SecureToken_{original_token.token}")
+        with pytest.raises(InvalidToken):
+            token_tools.SecureToken(token=original_token.token)
