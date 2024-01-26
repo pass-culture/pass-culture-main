@@ -158,11 +158,17 @@ class _BasePricingFactory(BaseFactory):
         if not kwargs["event"]:
             booking = kwargs.get("booking")
             if booking:
-                event = UsedBookingFinanceEventFactory(booking=booking)
+                event = UsedBookingFinanceEventFactory(
+                    booking=booking,
+                    status=models.FinanceEventStatus.PRICED,
+                )
             else:
                 collective_booking = kwargs.get("collectiveBooking")
                 assert collective_booking
-                event = UsedCollectiveBookingFinanceEventFactory(collectiveBooking=collective_booking)
+                event = UsedCollectiveBookingFinanceEventFactory(
+                    collectiveBooking=collective_booking,
+                    status=models.FinanceEventStatus.PRICED,
+                )
             kwargs["event"] = event
         return super()._create(model_class, *args, **kwargs)
 
