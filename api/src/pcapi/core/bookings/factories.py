@@ -69,6 +69,12 @@ class BookingFactory(BaseFactory):
             stock: offers_models.Stock = kwargs["stock"]
             stock.dnBookedQuantity = stock.dnBookedQuantity + kwargs.get("quantity", 1)
             kwargs["stock"] = stock
+        if "venue" in kwargs:
+            # `Booking.venue` is denormalized from `Booking.stock.offer.venue`.
+            # Users of the factory who provide it directly probably
+            # expect that it will set the venue of the offer, but it
+            # does not.
+            raise ValueError("Do not pass `venue`, pass `stock__offer__venue` instead.")
         kwargs["venue"] = kwargs["stock"].offer.venue
         kwargs["offerer"] = kwargs["stock"].offer.venue.managingOfferer
         return super()._create(model_class, *args, **kwargs)

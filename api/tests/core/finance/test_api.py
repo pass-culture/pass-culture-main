@@ -289,7 +289,7 @@ class PriceEventTest:
 
     def test_price_event_on_cancelled_booking(self):
         venue = offerers_factories.VenueFactory(pricing_point="self", reimbursement_point="self")
-        booking = bookings_factories.ReimbursedBookingFactory(venue=venue, stock__offer__venue=venue)
+        booking = bookings_factories.ReimbursedBookingFactory(stock__offer__venue=venue)
         used_event = factories.UsedBookingFinanceEventFactory(booking=booking)
         original_pricing = api.price_event(used_event)
         original_pricing.status = models.PricingStatus.INVOICED
@@ -988,7 +988,7 @@ class GenerateCashflowsLegacyTest:
         stock = offers_factories.StockFactory(
             offer=offer, price=incident_booking_amount, beginningDatetime=_beginningDatetime
         )
-        reimbursed_booking = bookings_factories.ReimbursedBookingFactory(stock=stock, venue=reimbursement_point1)
+        reimbursed_booking = bookings_factories.ReimbursedBookingFactory(stock=stock)
 
         event = api.add_event(
             motive=models.FinanceEventMotive.BOOKING_USED,
@@ -1275,7 +1275,7 @@ class GenerateCashflowsTest:
         stock = offers_factories.StockFactory(
             offer=offer, price=incident_booking_amount, beginningDatetime=_beginningDatetime
         )
-        reimbursed_booking = bookings_factories.ReimbursedBookingFactory(stock=stock, venue=venue1)
+        reimbursed_booking = bookings_factories.ReimbursedBookingFactory(stock=stock)
 
         event = api.add_event(
             motive=models.FinanceEventMotive.BOOKING_USED,
@@ -1743,7 +1743,6 @@ def test_generate_payments_file_legacy_journey():
     incident_booking = bookings_factories.ReimbursedBookingFactory(
         amount=12,
         dateUsed=used_date,
-        venue=offer_venue2,
         stock__offer__name="Une histoire plutôt bien",
         stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         stock__offer__venue=offer_venue2,
@@ -1934,7 +1933,6 @@ def test_generate_payments_file_new_journey():
     incident_booking = bookings_factories.ReimbursedBookingFactory(
         amount=12,
         dateUsed=used_date,
-        venue=venue2,
         stock__offer__name="Une histoire plutôt bien",
         stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         stock__offer__venue=venue2,

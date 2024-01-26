@@ -190,7 +190,6 @@ class ValidateIncidentTest(PostEndpointHelper):
         venue = offerers_factories.VenueFactory(reimbursement_point="self")
         booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
             booking__amount=10.10,
-            booking__venue=venue,
             booking__stock__offer__venue=venue,
             incident__venue=venue,
             newTotalAmount=0,
@@ -1164,7 +1163,7 @@ class ForceDebitNoteTest(PostEndpointHelper):
 
     def test_force_debit_note(self, authenticated_client):
         venue = offerers_factories.VenueFactory(pricing_point="self", reimbursement_point="self")
-        booking = bookings_factories.ReimbursedBookingFactory(venue=venue, stock__offer__venue=venue)
+        booking = bookings_factories.ReimbursedBookingFactory(stock__offer__venue=venue)
         original_event = finance_factories.UsedBookingFinanceEventFactory(booking=booking)
         original_pricing = api.price_event(original_event)
         original_pricing.status = finance_models.PricingStatus.INVOICED
@@ -1211,7 +1210,7 @@ class ForceDebitNoteTest(PostEndpointHelper):
     def test_force_debit_note_on_finished_incident(self, authenticated_client):
         venue = offerers_factories.VenueFactory(pricing_point="self", reimbursement_point="self")
         finance_factories.BankInformationFactory(venue=venue)
-        booking = bookings_factories.ReimbursedBookingFactory(venue=venue, stock__offer__venue=venue)
+        booking = bookings_factories.ReimbursedBookingFactory(stock__offer__venue=venue)
         original_event = finance_factories.UsedBookingFinanceEventFactory(booking=booking)
         original_pricing = api.price_event(original_event)
         original_pricing.status = finance_models.PricingStatus.INVOICED
@@ -1226,7 +1225,7 @@ class ForceDebitNoteTest(PostEndpointHelper):
                 incident_validation_date=datetime.datetime.utcnow(),
             )
         )
-        booking = bookings_factories.UsedBookingFactory(venue=venue, stock__offer__venue=venue, amount=20)
+        booking = bookings_factories.UsedBookingFactory(stock__offer__venue=venue, amount=20)
         events_to_price.append(
             finance_factories.FinanceEventFactory(
                 venue=venue, booking=booking, status=finance_models.FinanceEventStatus.READY
@@ -1260,7 +1259,7 @@ class CancelDebitNoteTest(PostEndpointHelper):
     def test_cancel_debit_note(self, authenticated_client):
         reimbursement_point = offerers_factories.VenueFactory(bookingEmail="pro@example.com")
         venue = offerers_factories.VenueFactory(pricing_point="self", reimbursement_point=reimbursement_point)
-        booking = bookings_factories.ReimbursedBookingFactory(venue=venue, stock__offer__venue=venue)
+        booking = bookings_factories.ReimbursedBookingFactory(stock__offer__venue=venue)
         original_event = finance_factories.UsedBookingFinanceEventFactory(booking=booking)
         original_pricing = api.price_event(original_event)
         original_pricing.status = finance_models.PricingStatus.INVOICED
@@ -1326,7 +1325,7 @@ class CancelDebitNoteTest(PostEndpointHelper):
     def test_cancel_debit_note_on_finished_incident(self, authenticated_client):
         venue = offerers_factories.VenueFactory(pricing_point="self", reimbursement_point="self")
         finance_factories.BankInformationFactory(venue=venue)
-        booking = bookings_factories.ReimbursedBookingFactory(venue=venue, stock__offer__venue=venue)
+        booking = bookings_factories.ReimbursedBookingFactory(stock__offer__venue=venue)
         original_event = finance_factories.UsedBookingFinanceEventFactory(booking=booking)
         original_pricing = api.price_event(original_event)
         original_pricing.status = finance_models.PricingStatus.INVOICED
@@ -1344,7 +1343,7 @@ class CancelDebitNoteTest(PostEndpointHelper):
                 incident_validation_date=datetime.datetime.utcnow(),
             )
         )
-        booking = bookings_factories.UsedBookingFactory(venue=venue, stock__offer__venue=venue, amount=20)
+        booking = bookings_factories.UsedBookingFactory(stock__offer__venue=venue, amount=20)
         events_to_price.append(
             finance_factories.FinanceEventFactory(
                 venue=venue, booking=booking, status=finance_models.FinanceEventStatus.READY
