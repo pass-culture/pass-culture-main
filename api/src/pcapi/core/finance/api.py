@@ -1444,7 +1444,7 @@ def _generate_reimbursement_points_file(cutoff: datetime.datetime) -> pathlib.Pa
 def _generate_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
     header = (
         "Identifiant des coordonnées bancaires",
-        "SIRET",
+        "SIREN de la structure",
         "Nom de la structure - Libellé des coordonnées bancaires",
         "IBAN",
         "BIC",
@@ -1462,8 +1462,8 @@ def _generate_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
         .order_by(offerers_models.Venue.id)
         .with_entities(
             models.BankAccount.id,
-            offerers_models.Venue.siret,
-            offerers_models.Offerer.name,
+            offerers_models.Offerer.name.label("offerer_name"),
+            offerers_models.Offerer.siren.label("offerer_siren"),
             models.BankAccount.label.label("label"),
             models.BankAccount.iban.label("iban"),
             models.BankAccount.bic.label("bic"),
@@ -1471,8 +1471,8 @@ def _generate_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
     )
     row_formatter = lambda row: (
         human_ids.humanize(row.id),
-        _clean_for_accounting(row.siret),
-        _clean_for_accounting(f"{row.name} - {row.label}"),
+        _clean_for_accounting(row.offerer_siren),
+        _clean_for_accounting(f"{row.offerer_name} - {row.label}"),
         _clean_for_accounting(row.iban),
         _clean_for_accounting(row.bic),
     )
