@@ -73,6 +73,7 @@ def spectree_serialize(
     on_error_statuses: list[int] | None = None,
     api: spectree.SpecTree = default_api,
     json_format: bool = True,
+    raw_response: bool = False,
     response_headers: dict[str, str] | None = None,
     resp: SpectreeResponse | None = None,
 ) -> Callable[[Any], Any]:
@@ -90,6 +91,7 @@ def spectree_serialize(
         on_error_statuses: list of possible error statuses. Defaults to [].
         api: [description]. Defaults to default_api.
         json_format: JSON format response if true, else text format response. Defaults to True.
+        raw_response: transmit the route response without touching it. Defaults to False.
         response_headers: a dict of headers to be added to the response. defaults to {}.
         resp: a Spectree.Response explicitely listing the possible responses.
 
@@ -166,6 +168,8 @@ def spectree_serialize(
                 kwargs["form"] = form_in_kwargs(**form)
 
             result = route(*args, **kwargs)
+            if raw_response:
+                return result
             if json_format:
                 return _make_json_response(
                     content=result,

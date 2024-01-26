@@ -5,20 +5,28 @@ from flask_login import current_user
 from flask_login import login_required
 from flask_login import login_user
 from flask_login import logout_user
+from werkzeug import Response
 
 from pcapi import settings
 from pcapi.connectors.api_recaptcha import ReCaptchaException
 from pcapi.connectors.api_recaptcha import check_web_recaptcha_token
 from pcapi.core import token as token_utils
-import pcapi.core.mails.transactional as transactional_mails
+from pcapi.core.history import api as history_api
+from pcapi.core.history import models as history_models
+from pcapi.core.mails import transactional as transactional_mails
+from pcapi.core.token import SecureToken
+from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import api as users_api
 from pcapi.core.users import email as email_api
 from pcapi.core.users import exceptions as users_exceptions
+from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.api import update_user_password
 from pcapi.core.users.email import repository as email_repository
 from pcapi.domain.password import check_password_validity
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.api_errors import ForbiddenError
+from pcapi.models.feature import FeatureToggle
 from pcapi.routes.serialization import users as users_serializers
 from pcapi.routes.shared.cookies_consent import CookieConsentRequest
 from pcapi.serialization.decorator import spectree_serialize
@@ -241,3 +249,95 @@ def cookies_consent(body: CookieConsentRequest) -> None:
         extra={"analyticsSource": "app-pro", **body.dict()},
         technical_message_id="cookies_consent",
     )
+
+
+@blueprint.pro_private_api.route("/users/connect-as/<token>", methods=["GET"])
+@login_required
+@spectree_serialize(api=blueprint.pro_private_schema, raw_response=True, json_format=False)
+def connect_as(token: str) -> Response:
+    # This route is not used by PRO but it is used by the Backoffice
+    if not FeatureToggle.WIP_CONNECT_AS.is_active():
+        raise ApiErrors(
+            errors={
+                "global": "La route n'est pas active",
+            },
+            status_code=404,
+        )
+
+    if not current_user.has_admin_role:
+        raise ForbiddenError(
+            errors={
+                "global": "L'utilisateur doit être connecté avec un compte admin pour pouvoir utiliser cet endpoint",
+            },
+        )
+
+    try:
+        secure_token = SecureToken(token=token)
+    except users_exceptions.InvalidToken:
+        raise ForbiddenError(
+            errors={
+                "global": "Le token est invalide",
+            },
+        )
+
+    token_data = ConnectAsInternalModel(**secure_token.data)
+
+    if not token_data.internal_admin_id == current_user.id:
+        raise ForbiddenError(
+            errors={
+                "global": "Le token a été généré pour un autre admin",
+            },
+        )
+
+    user = users_models.User.query.filter(users_models.User.id == token_data.user_id).one_or_none()
+
+    if not user:
+        raise ApiErrors(
+            errors={
+                "user": "L'utilisateur demandé n'existe pas",
+            },
+            status_code=404,
+        )
+
+    if not user.isActive:
+        raise ForbiddenError(
+            errors={
+                "user": "L'utilisateur est inactif",
+            },
+        )
+
+    if user.has_admin_role:
+        raise ForbiddenError(
+            errors={
+                "user": "L'utilisateur est un admin",
+            },
+        )
+
+    if user.has_anonymized_role:
+        raise ForbiddenError(
+            errors={
+                "user": "L'utilisateur est anonyme",
+            },
+        )
+
+    if not (user.has_non_attached_pro_role or user.has_pro_role):
+        raise ForbiddenError(
+            errors={
+                "user": "L'utilisateur n'est pas un pro",
+            },
+        )
+
+    history_api.add_action(
+        action_type=history_models.ActionType.CONNECT_AS_USER,
+        author=current_user,
+        user=user,
+    )
+
+    discard_session()
+    logout_user()
+    login_user(user)
+    stamp_session(user)
+    flask.session["internal_admin_email"] = token_data.internal_admin_email
+    flask.session["internal_admin_id"] = token_data.internal_admin_id
+
+    return flask.redirect(token_data.redirect_link, code=302)
