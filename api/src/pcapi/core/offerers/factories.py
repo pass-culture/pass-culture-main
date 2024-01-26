@@ -7,6 +7,7 @@ from pcapi.core.factories import BaseFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import crypto
+from pcapi.utils.date import timespan_str_to_numrange
 
 from . import api
 from . import models
@@ -14,6 +15,9 @@ from . import models
 
 if typing.TYPE_CHECKING:
     from pcapi.core.finance.models import BankAccount
+
+
+OPENING_HOURS = [("10:00", "13:00"), ("14:00", "19:30")]
 
 
 class OffererFactory(BaseFactory):
@@ -121,6 +125,26 @@ class VenueFactory(BaseFactory):
             return None
         return VenueBankAccountLinkFactory(venue=self, bankAccount=bank_account)
 
+    @factory.post_generation
+    def opening_hours(
+        self: models.Venue, create: bool, extracted: list[models.OpeningHours] | None, **kwargs: typing.Any
+    ) -> list[models.OpeningHours] | None:
+        if not create:
+            return None
+        opening_hours = extracted
+        if not opening_hours:
+            opening_hours = []
+        if self.isPermanent:
+            for weekday in models.Weekday:
+                if weekday.value == "MONDAY":
+                    timespan = timespan_str_to_numrange([OPENING_HOURS[1]])
+                elif weekday.value != "SUNDAY":
+                    timespan = timespan_str_to_numrange(OPENING_HOURS)
+                else:
+                    timespan = None
+                opening_hours.append(OpeningHoursFactory(venue=self, weekday=weekday, timespan=timespan))
+        return opening_hours
+
 
 class CollectiveVenueFactory(VenueFactory):
     venueTypeCode = models.VenueTypeCode.PERFORMING_ARTS
@@ -217,6 +241,15 @@ class VenueBankAccountLinkFactory(BaseFactory):
         "pcapi.core.finance.factories.BankAccountFactory", offerer=factory.SelfAttribute("..venue.managingOfferer")
     )
     timespan = factory.LazyFunction(lambda: [datetime.datetime.utcnow() - datetime.timedelta(days=365), None])
+
+
+class OpeningHoursFactory(BaseFactory):
+    class Meta:
+        model = models.OpeningHours
+
+    venue = factory.SubFactory(VenueFactory)
+    weekday = models.Weekday.MONDAY
+    timespan = timespan_str_to_numrange(OPENING_HOURS)
 
 
 class UserOffererFactory(BaseFactory):

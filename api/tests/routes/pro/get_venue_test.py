@@ -5,6 +5,7 @@ import pytest
 from pcapi.core import testing
 from pcapi.core.educational import factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offerers.models import VenueTypeCode
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
@@ -99,6 +100,7 @@ class Returns200Test:
             "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,
             "motorDisabilityCompliant": venue.motorDisabilityCompliant,
             "name": venue.name,
+            "venueOpeningHours": venue.opening_days,
             "postalCode": venue.postalCode,
             "publicName": venue.publicName,
             "siret": venue.siret,
@@ -374,6 +376,17 @@ class Returns200Test:
             },
             "image_credit": None,
             "original_image_url": None,
+        }
+
+    def should_get_opening_hours_when_existing(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
+        venue = offerers_factories.VenueFactory(
+            name="L'encre et la plume", managingOfferer=user_offerer.offerer, venueTypeCode=VenueTypeCode.LIBRARY
+        )
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        response = auth_request.get("/venues/%s" % venue.id)
+        assert response.json["venueOpeningHours"][3] == {
+            "THURSDAY": [{"open": "10:00", "close": "13:00"}, {"open": "14:00", "close": "19:30"}]
         }
 
 
