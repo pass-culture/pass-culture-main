@@ -598,6 +598,14 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     def has_test_role(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.TEST])
 
+    @hybrid_property
+    def has_anonymized_role(self) -> bool:
+        return UserRole.ANONYMIZED in self.roles
+
+    @has_anonymized_role.expression  # type: ignore [no-redef]
+    def has_anonymized_role(cls) -> bool:  # pylint: disable=no-self-argument
+        return cls.roles.contains([UserRole.ANONYMIZED])
+
 
 User.trig_ensure_password_or_sso_exists_ddl = sa.DDL(
     """
