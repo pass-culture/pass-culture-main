@@ -116,6 +116,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_MARSEILLE = "Activer Marseille en grand"
     WIP_GOOGLE_MAPS_VENUE_IMAGES = "Activer l'affichage des images des lieux importées depuis Google Maps"
     WIP_ENABLE_PRO_SIDE_NAV = "Refonte de la navigation de l'app pro"
+    WIP_CONNECT_AS = "Permettre a un admin de se connecter en tant qu'un pro"
     WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN = "Activer le nouveau design des offres sur adage"
     WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API = (
         "Activer les nouvelles règles de création et d'édition d'offres collecrives pour l'API publique (collective)"
@@ -185,6 +186,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_GOOGLE_MAPS_VENUE_IMAGES,  # FIXME Abdelmoujib: remove when feature is ready https://passculture.atlassian.net/browse/PC-26459
     FeatureToggle.ENABLE_CRON_TO_UPDATE_OFFERER_STATS,
     FeatureToggle.WIP_ENABLE_PRO_SIDE_NAV,
+    FeatureToggle.WIP_CONNECT_AS,
     FeatureToggle.WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN,
     FeatureToggle.WIP_ENABLE_COLLECTIVE_CUSTOM_CONTACT,
 )
