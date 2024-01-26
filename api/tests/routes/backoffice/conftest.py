@@ -517,9 +517,8 @@ def offerer_stocks_fixture(offerer_active_individual_offers):
 
 
 @pytest.fixture(name="individual_offerer_bookings")
-def individual_offerer_bookings_fixture(offerer_stocks, venue_with_accepted_bank_info):
-    used_simple = bookings_factories.BookingFactory(
-        status=bookings_models.BookingStatus.USED,
+def individual_offerer_bookings_fixture(offerer_stocks):
+    used_simple = bookings_factories.UsedBookingFactory(
         quantity=1,
         amount=10,
         stock=offerer_stocks[0],
@@ -530,11 +529,7 @@ def individual_offerer_bookings_fixture(offerer_stocks, venue_with_accepted_bank
         amount=10,
         stock=offerer_stocks[1],
     )
-    cancelled = bookings_factories.BookingFactory(
-        status=bookings_models.BookingStatus.CANCELLED,
-        venue=venue_with_accepted_bank_info,
-        stock=offerer_stocks[2],
-    )
+    cancelled = bookings_factories.CancelledBookingFactory(stock=offerer_stocks[2])
     return [used_simple, confirmed_duo, cancelled]
 
 

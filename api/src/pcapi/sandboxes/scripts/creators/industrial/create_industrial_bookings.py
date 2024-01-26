@@ -105,7 +105,6 @@ def _create_bookings_for_other_beneficiaries(
                 amount=booking_amount if booking_amount is not None else stock.price,
                 token=str(token),
                 offerer=offer.venue.managingOfferer,
-                venue=offer.venue,
             )
             if is_used:
                 finance_factories.UsedBookingFinanceEventFactory(booking=booking)

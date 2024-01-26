@@ -27,7 +27,6 @@ class GetBookingByTokenReturns200Test:
         past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
         product_stock = offers_factories.StockFactory(offer=product_offer, beginningDatetime=past)
         booking = bookings_factories.BookingFactory(
-            venue=venue,
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
@@ -75,7 +74,6 @@ class GetBookingByTokenReturns200Test:
         past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
         event_stock = offers_factories.EventStockFactory(offer=event_offer, beginningDatetime=past)
         booking = bookings_factories.BookingFactory(
-            venue=venue,
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
@@ -130,9 +128,7 @@ class GetBookingByTokenReturns403Test:
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         next_week = datetime.datetime.utcnow() + datetime.timedelta(weeks=1)
 
-        offer = offers_factories.ThingOfferFactory(
-            venue=venue,
-        )
+        offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.StockFactory(offer=offer, beginningDatetime=next_week)
         booking = bookings_factories.BookingFactory(stock=stock)
 
@@ -176,15 +172,10 @@ class GetBookingByTokenReturns404Test:
 
     def test_inactive_venue_provider(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
-        product_offer = offers_factories.ThingOfferFactory(
-            venue=venue,
-        )
+        product_offer = offers_factories.ThingOfferFactory(venue=venue)
         past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
         product_stock = offers_factories.StockFactory(offer=product_offer, beginningDatetime=past)
-        booking = bookings_factories.BookingFactory(
-            venue=venue,
-            stock=product_stock,
-        )
+        booking = bookings_factories.BookingFactory(stock=product_stock)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
             f"/public/bookings/v1/token/{booking.token.lower()}",
@@ -203,7 +194,6 @@ class GetBookingByTokenReturns404Test:
         past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
         product_stock = offers_factories.StockFactory(offer=product_offer, beginningDatetime=past)
         booking = bookings_factories.BookingFactory(
-            venue=venue,
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
@@ -221,9 +211,7 @@ class GetBookingByTokenReturns404Test:
 class GetBookingByTokenReturns410Test:
     def test_when_booking_is_already_validated(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
-        product_offer = offers_factories.ThingOfferFactory(
-            venue=venue,
-        )
+        product_offer = offers_factories.ThingOfferFactory(venue=venue)
         product_stock = offers_factories.StockFactory(offer=product_offer)
         booking = bookings_factories.UsedBookingFactory(stock=product_stock)
 
@@ -236,9 +224,7 @@ class GetBookingByTokenReturns410Test:
 
     def test_when_booking_is_cancelled(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
-        product_offer = offers_factories.ThingOfferFactory(
-            venue=venue,
-        )
+        product_offer = offers_factories.ThingOfferFactory(venue=venue)
         product_stock = offers_factories.StockFactory(offer=product_offer)
         booking = bookings_factories.CancelledBookingFactory(stock=product_stock)
 

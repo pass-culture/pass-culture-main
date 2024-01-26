@@ -24,7 +24,6 @@ class GetBookingsByOfferReturns200Test:
         past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
         product_stock = offers_factories.StockFactory(offer=product_offer, beginningDatetime=past)
         booking = bookings_factories.BookingFactory(
-            venue=venue,
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
@@ -49,7 +48,6 @@ class GetBookingsByOfferReturns200Test:
         past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
         product_stock = offers_factories.StockFactory(offer=product_offer, beginningDatetime=past)
         booking = bookings_factories.BookingFactory(
-            venue=venue,
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
@@ -100,7 +98,6 @@ class GetBookingsByOfferReturns200Test:
         past = datetime.datetime.utcnow() - datetime.timedelta(weeks=2)
         event_stock = offers_factories.EventStockFactory(offer=event_offer, beginningDatetime=past)
         booking = bookings_factories.BookingFactory(
-            venue=venue,
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
@@ -108,7 +105,6 @@ class GetBookingsByOfferReturns200Test:
             stock=event_stock,
         )
         booking_2 = bookings_factories.BookingFactory(
-            venue=venue,
             dateCreated=past - datetime.timedelta(days=1),
             user__email="beneficiary-2@example.com",
             user__phoneNumber="0698271625",
@@ -188,7 +184,6 @@ class GetBookingsByOfferReturns200Test:
             beginningDatetime=past,
         )
         booking = bookings_factories.BookingFactory(
-            venue=venue,
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
@@ -196,7 +191,6 @@ class GetBookingsByOfferReturns200Test:
             stock=event_stock,
         )
         booking_2 = bookings_factories.BookingFactory(
-            venue=venue,
             dateCreated=past - datetime.timedelta(days=1),
             user__email="beneficiary-2@example.com",
             user__phoneNumber="0698271625",
@@ -279,7 +273,6 @@ class GetBookingsByOfferReturns200Test:
             beginningDatetime=past + datetime.timedelta(days=2),
         )
         booking = bookings_factories.BookingFactory(
-            venue=venue,
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
@@ -287,7 +280,6 @@ class GetBookingsByOfferReturns200Test:
             stock=event_stock,
         )
         bookings_factories.BookingFactory(
-            venue=venue,
             dateCreated=past - datetime.timedelta(days=1),
             user__email="beneficiary-2@example.com",
             user__phoneNumber="0698271625",
@@ -346,7 +338,6 @@ class GetBookingsByOfferReturns200Test:
             beginningDatetime=past + datetime.timedelta(days=2),
         )
         booking = bookings_factories.BookingFactory(
-            venue=venue,
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
@@ -354,7 +345,6 @@ class GetBookingsByOfferReturns200Test:
             stock=event_stock,
         )
         bookings_factories.BookingFactory(
-            venue=venue,
             dateCreated=past - datetime.timedelta(days=1),
             user__email="beneficiary-2@example.com",
             user__phoneNumber="0698271625",
@@ -414,7 +404,6 @@ class GetBookingsByOfferReturns200Test:
             beginningDatetime=past + datetime.timedelta(days=2),
         )
         booking = bookings_factories.ReimbursedBookingFactory(
-            venue=venue,
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
@@ -422,7 +411,6 @@ class GetBookingsByOfferReturns200Test:
             stock=event_stock,
         )
         bookings_factories.UsedBookingFactory(
-            venue=venue,
             dateCreated=past - datetime.timedelta(days=1),
             user__email="beneficiary-2@example.com",
             user__phoneNumber="0698271625",
@@ -481,7 +469,6 @@ class GetBookingsByOfferReturns200Test:
             beginningDatetime=past + datetime.timedelta(days=2),
         )
         bookings_factories.ReimbursedBookingFactory(
-            venue=venue,
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
@@ -489,7 +476,6 @@ class GetBookingsByOfferReturns200Test:
             stock=event_stock,
         )
         bookings_factories.UsedBookingFactory(
-            venue=venue,
             dateCreated=past - datetime.timedelta(days=1),
             user__email="beneficiary-2@example.com",
             user__phoneNumber="0698271625",
@@ -497,7 +483,6 @@ class GetBookingsByOfferReturns200Test:
             stock=event_stock,
         )
         booking = bookings_factories.UsedBookingFactory(
-            venue=venue,
             dateCreated=past - datetime.timedelta(days=1),
             user__email="beneficiary-3@example.com",
             user__phoneNumber="0698273632",
@@ -549,7 +534,6 @@ class GetBookingsByOfferReturns200Test:
         past = datetime.datetime.utcnow() - datetime.timedelta(weeks=2)
         event_stock = offers_factories.EventStockFactory(offer=event_offer, beginningDatetime=past)
         booking = bookings_factories.BookingFactory(
-            venue=venue,
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
@@ -557,7 +541,6 @@ class GetBookingsByOfferReturns200Test:
             stock=event_stock,
         )
         booking_2 = bookings_factories.BookingFactory(
-            venue=venue,
             dateCreated=past - datetime.timedelta(days=1),
             user__email="beneficiary-2@example.com",
             user__phoneNumber="0698271625",
@@ -565,7 +548,6 @@ class GetBookingsByOfferReturns200Test:
             stock=event_stock,
         )
         bookings_factories.BookingFactory(
-            venue=venue,
             dateCreated=past - datetime.timedelta(days=1),
             user__email="beneficiary-3@example.com",
             user__phoneNumber="0698890987",
@@ -641,7 +623,6 @@ class GetBookingsByOfferReturns200Test:
         past = datetime.datetime.utcnow() - datetime.timedelta(weeks=2)
         event_stock = offers_factories.EventStockFactory(offer=event_offer, beginningDatetime=past)
         bookings_factories.BookingFactory(
-            venue=venue,
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
@@ -649,7 +630,6 @@ class GetBookingsByOfferReturns200Test:
             stock=event_stock,
         )
         booking_2 = bookings_factories.BookingFactory(
-            venue=venue,
             dateCreated=past - datetime.timedelta(days=1),
             user__email="beneficiary-2@example.com",
             user__phoneNumber="0698271625",
@@ -657,7 +637,6 @@ class GetBookingsByOfferReturns200Test:
             stock=event_stock,
         )
         booking_3 = bookings_factories.BookingFactory(
-            venue=venue,
             dateCreated=past - datetime.timedelta(days=1),
             user__email="beneficiary-3@example.com",
             user__phoneNumber="0698890987",
@@ -754,9 +733,7 @@ class GetBookingsByOfferReturns401Test:
 class GetBookingsByOfferReturns400Test:
     def test_no_offer_id_provided(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
-        product_offer = offers_factories.ThingOfferFactory(
-            venue=venue,
-        )
+        product_offer = offers_factories.ThingOfferFactory(venue=venue)
         product_stock = offers_factories.StockFactory(offer=product_offer)
         bookings_factories.UsedBookingFactory(stock=product_stock)
 
@@ -786,14 +763,9 @@ class GetBookingsByOfferReturns404Test:
 
     def test_inactive_venue_provider(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
-        product_offer = offers_factories.ThingOfferFactory(
-            venue=venue,
-        )
+        product_offer = offers_factories.ThingOfferFactory(venue=venue)
         product_stock = offers_factories.StockFactory(offer=product_offer)
-        bookings_factories.BookingFactory(
-            venue=venue,
-            stock=product_stock,
-        )
+        bookings_factories.BookingFactory(stock=product_stock)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
             f"/public/bookings/v1/bookings?offer_id={product_offer.id}",

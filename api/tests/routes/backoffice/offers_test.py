@@ -1862,7 +1862,6 @@ class EditOfferStockTest(PostEndpointHelper):
         booking_to_edit = bookings_factories.UsedBookingFactory(
             stock=stock_to_edit,
             amount=decimal.Decimal("123.45"),
-            venue=venue,
         )
         stock_untouched = offers_factories.StockFactory(
             offer=offer,
@@ -1871,7 +1870,6 @@ class EditOfferStockTest(PostEndpointHelper):
         booking_untouched = bookings_factories.UsedBookingFactory(
             stock=stock_untouched,
             amount=decimal.Decimal("123.45"),
-            venue=venue,
         )
         cancelled_event = finance_factories.FinanceEventFactory(
             booking=booking_to_edit, venue=venue, pricingPoint=venue
@@ -1921,7 +1919,6 @@ class EditOfferStockTest(PostEndpointHelper):
 
     def test_offer_stock_edit_with_french_decimal(self, authenticated_client):
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
-        venue = offer.venue
         stock_to_edit = offers_factories.StockFactory(
             offer=offer,
             price=decimal.Decimal("123.45"),
@@ -1929,7 +1926,6 @@ class EditOfferStockTest(PostEndpointHelper):
         booking_to_edit = bookings_factories.UsedBookingFactory(
             stock=stock_to_edit,
             amount=decimal.Decimal("123.45"),
-            venue=venue,
         )
 
         response = self.post_to_endpoint(
@@ -1946,7 +1942,6 @@ class EditOfferStockTest(PostEndpointHelper):
 
     def test_offer_stock_edit_confirmed_booking(self, authenticated_client):
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
-        venue = offer.venue
         stock_to_edit = offers_factories.StockFactory(
             offer=offer,
             price=decimal.Decimal("123.45"),
@@ -1955,7 +1950,6 @@ class EditOfferStockTest(PostEndpointHelper):
             status=BookingStatus.CONFIRMED,
             stock=stock_to_edit,
             amount=decimal.Decimal("123.45"),
-            venue=venue,
         )
 
         response = self.post_to_endpoint(
@@ -1974,7 +1968,6 @@ class EditOfferStockTest(PostEndpointHelper):
         venue = offer.venue
         event = finance_factories.FinanceEventFactory(
             booking__amount=decimal.Decimal("123.45"),
-            booking__venue=venue,
             booking__stock__offer=offer,
             booking__stock__price=decimal.Decimal("123.45"),
             venue=venue,
@@ -2017,7 +2010,6 @@ class EditOfferStockTest(PostEndpointHelper):
         venue = offer.venue
         event = finance_factories.FinanceEventFactory(
             booking__amount=decimal.Decimal("123.45"),
-            booking__venue=venue,
             booking__stock__offer=offer,
             booking__stock__price=decimal.Decimal("123.45"),
             venue=venue,
@@ -2050,7 +2042,6 @@ class EditOfferStockTest(PostEndpointHelper):
 
     def test_offer_stock_edit_no_used_or_confirmed_bookings(self, authenticated_client, app):
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
-        venue = offer.venue
         stock = offers_factories.StockFactory(
             offer=offer,
             price=decimal.Decimal("123.45"),
@@ -2058,7 +2049,6 @@ class EditOfferStockTest(PostEndpointHelper):
         bookings_factories.BookingFactory(
             status=BookingStatus.CANCELLED,
             stock=stock,
-            venue=venue,
         )
 
         response = self.post_to_endpoint(
@@ -2085,7 +2075,6 @@ class EditOfferStockTest(PostEndpointHelper):
         venue = offer.venue
         event = finance_factories.FinanceEventFactory(
             booking__amount=decimal.Decimal("123.45"),
-            booking__venue=venue,
             booking__stock__offer=offer,
             booking__stock__price=decimal.Decimal("123.45"),
             venue=venue,

@@ -3272,7 +3272,6 @@ class UpdateUsedStockPriceTest:
         booking_to_edit = bookings_factories.UsedBookingFactory(
             stock=stock_to_edit,
             amount=decimal.Decimal("123.45"),
-            venue=venue,
         )
         stock_untouched = factories.StockFactory(
             offer=offer,
@@ -3281,7 +3280,6 @@ class UpdateUsedStockPriceTest:
         booking_untouched = bookings_factories.UsedBookingFactory(
             stock=stock_untouched,
             amount=decimal.Decimal("123.45"),
-            venue=venue,
         )
         cancelled_event = finance_factories.FinanceEventFactory(
             booking=booking_to_edit, venue=venue, pricingPoint=venue
@@ -3327,17 +3325,14 @@ class UpdateUsedStockPriceTest:
         assert finance_models.Pricing.query.filter_by(id=later_pricing_id).count() == 0
 
     def test_update_used_stock_price_should_update_confirmed_events(self):
-        offer = factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
-        venue = offer.venue
         stock_to_edit = factories.StockFactory(
-            offer=offer,
+            offer__subcategoryId=subcategories.CONFERENCE.id,
             price=decimal.Decimal("123.45"),
         )
         booking_to_edit = bookings_factories.BookingFactory(
             status=bookings_models.BookingStatus.CONFIRMED,
             stock=stock_to_edit,
             amount=decimal.Decimal("123.45"),
-            venue=venue,
         )
 
         api.update_used_stock_price(booking_to_edit.stock, 50.1)
