@@ -1,5 +1,5 @@
 import { FormikProvider, useFormik } from 'formik'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
@@ -103,8 +103,12 @@ const InformationsScreen = ({
   )
 
   const filteredVenueList = querySubcategory
-    ? getFilteredVenueListBySubcategory(venueList, querySubcategory)
-    : getFilteredVenueListByCategoryStatus(venueList, categoryStatus)
+    ? getFilteredVenueListBySubcategory(venueList, querySubcategory).filter(
+        (venue) => venue.managingOffererId === Number(offererId)
+      )
+    : getFilteredVenueListByCategoryStatus(venueList, categoryStatus).filter(
+        (venue) => venue.managingOffererId === Number(offererId)
+      )
 
   // offer is null when we are creating a new offer
   const initialValues: IndividualOfferFormValues =

@@ -1,6 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -49,7 +48,8 @@ vi.mock('repository/pcapi/pcapi', () => ({
 
 const renderInformationsScreen = (
   props: InformationsScreenProps,
-  contextOverride: IndividualOfferContextValues
+  contextOverride: IndividualOfferContextValues,
+  searchParam = ''
 ) => {
   const storeOverrides = {
     user: {
@@ -92,7 +92,7 @@ const renderInformationsScreen = (
         getIndividualOfferPath({
           step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
           mode: OFFER_WIZARD_MODE.CREATION,
-        }),
+        }) + searchParam,
       ],
     }
   )
@@ -280,5 +280,168 @@ describe('screens:IndividualOffer::Informations::creation', () => {
       await screen.findByText('There is the stock route content')
     ).toBeInTheDocument()
     expect(pcapi.postThumbnail).not.toHaveBeenCalled()
+  })
+
+  it('should submit offer when several offerer and offer type set', async () => {
+    const categories = [individualOfferCategoryFactory({ id: 'A' })]
+    const subCategories: SubcategoryResponseModel[] = [
+      individualOfferSubCategoryFactory({
+        id: 'virtual',
+        categoryId: 'A',
+        isEvent: false,
+        onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
+        isSelectable: true,
+      }),
+      individualOfferSubCategoryFactory({
+        id: 'physical',
+        categoryId: 'A',
+        isEvent: false,
+        canBeDuo: true,
+        onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
+      }),
+    ]
+    const offererId1 = 1
+    const offererId2 = 2
+    const venue1Offerer1: IndividualOfferVenueItem =
+      individualOfferVenueItemFactory({
+        id: 1,
+        managingOffererId: offererId1,
+      })
+    const venue2Offerer1: IndividualOfferVenueItem =
+      individualOfferVenueItemFactory({
+        id: 2,
+        isVirtual: true,
+        managingOffererId: offererId1,
+      })
+    const venue1Offerer2: IndividualOfferVenueItem =
+      individualOfferVenueItemFactory({
+        id: 3,
+        managingOffererId: offererId2,
+      })
+    const venue2Offerer2: IndividualOfferVenueItem =
+      individualOfferVenueItemFactory({
+        id: 4,
+        isVirtual: true,
+        managingOffererId: offererId2,
+      })
+
+    const contextOverride = individualOfferContextFactory({
+      venueList: [
+        venue1Offerer1,
+        venue2Offerer1,
+        venue1Offerer2,
+        venue2Offerer2,
+      ],
+      offererNames: [
+        { id: offererId1, name: 'mon offerer A' },
+        { id: offererId2, name: 'mon offerer B' },
+      ],
+      categories,
+      subCategories,
+      offer: null,
+    })
+    props = {
+      offererId: offererId1.toString(),
+      venueId: '',
+    }
+    const searchParam = '?offer-type=VIRTUAL_GOOD'
+    renderInformationsScreen(props, contextOverride, searchParam)
+
+    const categorySelect = await screen.findByLabelText('Catégorie')
+    await userEvent.selectOptions(categorySelect, 'A')
+    const subCategorySelect = screen.getByLabelText('Sous-catégorie')
+    await userEvent.selectOptions(subCategorySelect, 'virtual')
+
+    const nameField = screen.getByLabelText('Titre de l’offre')
+    await userEvent.type(nameField, 'Le nom de mon offre')
+    const urlField = await screen.findByLabelText('URL d’accès à l’offre')
+
+    await userEvent.type(urlField, 'https://example.com/')
+
+    await userEvent.click(await screen.findByText('Enregistrer et continuer'))
+
+    expect(api.postOffer).toHaveBeenCalledTimes(1)
+    expect(
+      await screen.findByText('There is the stock route content')
+    ).toBeInTheDocument()
+  })
+
+  it('should submit offer when several offerer and subcategory set', async () => {
+    const categories = [individualOfferCategoryFactory({ id: 'A' })]
+    const subCategories: SubcategoryResponseModel[] = [
+      individualOfferSubCategoryFactory({
+        id: 'virtual',
+        categoryId: 'A',
+        isEvent: false,
+        onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
+        isSelectable: true,
+      }),
+      individualOfferSubCategoryFactory({
+        id: 'physical',
+        categoryId: 'A',
+        isEvent: false,
+        canBeDuo: true,
+        onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
+      }),
+    ]
+    const offererId1 = 1
+    const offererId2 = 2
+    const venue1Offerer1: IndividualOfferVenueItem =
+      individualOfferVenueItemFactory({
+        id: 1,
+        managingOffererId: offererId1,
+      })
+    const venue2Offerer1: IndividualOfferVenueItem =
+      individualOfferVenueItemFactory({
+        id: 2,
+        isVirtual: true,
+        managingOffererId: offererId1,
+      })
+    const venue1Offerer2: IndividualOfferVenueItem =
+      individualOfferVenueItemFactory({
+        id: 3,
+        managingOffererId: offererId2,
+      })
+    const venue2Offerer2: IndividualOfferVenueItem =
+      individualOfferVenueItemFactory({
+        id: 4,
+        isVirtual: true,
+        managingOffererId: offererId2,
+      })
+
+    const contextOverride = individualOfferContextFactory({
+      venueList: [
+        venue1Offerer1,
+        venue2Offerer1,
+        venue1Offerer2,
+        venue2Offerer2,
+      ],
+      offererNames: [
+        { id: offererId1, name: 'mon offerer A' },
+        { id: offererId2, name: 'mon offerer B' },
+      ],
+      categories,
+      subCategories,
+      offer: null,
+    })
+    props = {
+      offererId: offererId1.toString(),
+      venueId: '',
+    }
+    const searchParam = '?sous-categorie=virtual'
+    renderInformationsScreen(props, contextOverride, searchParam)
+
+    const nameField = screen.getByLabelText('Titre de l’offre')
+    await userEvent.type(nameField, 'Le nom de mon offre')
+    const urlField = await screen.findByLabelText('URL d’accès à l’offre')
+
+    await userEvent.type(urlField, 'https://example.com/')
+
+    await userEvent.click(await screen.findByText('Enregistrer et continuer'))
+
+    expect(api.postOffer).toHaveBeenCalledTimes(1)
+    expect(
+      await screen.findByText('There is the stock route content')
+    ).toBeInTheDocument()
   })
 })
