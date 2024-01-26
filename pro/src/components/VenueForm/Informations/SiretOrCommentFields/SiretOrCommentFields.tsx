@@ -3,12 +3,11 @@ import React, { useEffect, useState } from 'react'
 
 import { getAdressDataAdapter } from 'components/Address/adapter'
 import { handleAddressSelect } from 'components/Address/Address'
-import Callout from 'components/Callout/Callout'
 import FormLayout from 'components/FormLayout'
 import { VenueFormValues } from 'components/VenueForm/types'
 import getSiretData from 'core/Venue/adapters/getSiretDataAdapter'
 import { humanizeSiret, unhumanizeSiret } from 'core/Venue/utils'
-import { TextArea, TextInput } from 'ui-kit'
+import { InfoBox, TextArea, TextInput } from 'ui-kit'
 import Toggle from 'ui-kit/Toggle'
 
 import { isSiretStartingWithSiren, valideSiretLength } from './validationSchema'
@@ -99,11 +98,11 @@ const SiretOrCommentFields = ({
   useEffect(() => {
     setSideComponent(
       isSiretSelected ? (
-        <Callout>
+        <InfoBox>
           Le SIRET du lieu doit être lié au SIREN de votre structure. Attention,
           ce SIRET ne sera plus modifiable et ne pourra plus être utilisé pour
           un autre lieu.
-        </Callout>
+        </InfoBox>
       ) : (
         <></>
       )
