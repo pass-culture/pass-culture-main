@@ -1,9 +1,8 @@
 import { useFormikContext } from 'formik'
 import React, { useState } from 'react'
 
-import Callout from 'components/Callout/Callout'
 import FormLayout from 'components/FormLayout'
-import { TextInput } from 'ui-kit'
+import { InfoBox, TextInput } from 'ui-kit'
 
 import { VenueFormValues } from '..'
 
@@ -56,10 +55,10 @@ const Informations = ({
         {!isVenueVirtual && (
           <FormLayout.Row
             sideComponent={
-              <Callout>
+              <InfoBox>
                 À remplir si différent de la raison sociale. En le remplissant,
                 c’est ce dernier qui sera visible du public.
-              </Callout>
+              </InfoBox>
             }
           >
             <TextInput name="publicName" label="Nom public" isOptional />
