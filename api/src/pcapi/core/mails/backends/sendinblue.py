@@ -1,4 +1,3 @@
-from dataclasses import asdict
 import logging
 from typing import Iterable
 
@@ -33,43 +32,12 @@ class SendinblueBackend(BaseBackend):
         data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData,
         bcc_recipients: Iterable[str] = (),
     ) -> None:
-        if isinstance(data, models.TransactionalEmailData):
-            payload = serializers.SendTransactionalEmailRequest(
-                recipients=list(recipients),
-                bcc_recipients=list(bcc_recipients),
-                template_id=data.template.id,
-                params=data.params,
-                tags=data.template.tags,
-                sender=asdict(data.template.sender.value),
-                reply_to=asdict(data.reply_to),  # equal to sender if reply_to is None
-                subject=None,
-                html_content=None,
-                attachment=None,
-                scheduled_at=data.scheduled_at,
-            )
-            if data.template.use_priority_queue:
-                send_transactional_email_primary_task.delay(payload)
-            else:
-                send_transactional_email_secondary_task.delay(payload)
+        payload, use_priority_queue = self.get_payload_from_data(recipients, data, bcc_recipients)
 
-        elif isinstance(data, models.TransactionalWithoutTemplateEmailData):
-            payload = serializers.SendTransactionalEmailRequest(
-                recipients=list(recipients),
-                bcc_recipients=list(bcc_recipients),
-                sender=asdict(data.sender.value),
-                subject=data.subject,
-                html_content=data.html_content,
-                attachment=asdict(data.attachment) if data.attachment else None,
-                reply_to=asdict(data.reply_to),  # equal to sender if reply_to is None
-                template_id=None,
-                params=None,
-                tags=None,
-                scheduled_at=data.scheduled_at,
-            )
-            send_transactional_email_secondary_task.delay(payload)
-
+        if use_priority_queue:
+            send_transactional_email_primary_task.delay(payload)
         else:
-            raise ValueError(f"Tried sending an email via sendinblue, but received incorrectly formatted data: {data}")
+            send_transactional_email_secondary_task.delay(payload)
 
     def create_contact(self, payload: serializers.UpdateSendinblueContactRequest) -> None:
         """
