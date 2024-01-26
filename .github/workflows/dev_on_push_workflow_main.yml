@@ -147,6 +147,7 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
     with:
+      TAG: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
   deploy-storybook:
