@@ -99,6 +99,7 @@ export type { GetEducationalOfferersQueryModel } from './models/GetEducationalOf
 export type { GetEducationalOfferersResponseModel } from './models/GetEducationalOfferersResponseModel';
 export type { GetEducationalOffererVenueResponseModel } from './models/GetEducationalOffererVenueResponseModel';
 export type { GetIndividualOfferResponseModel } from './models/GetIndividualOfferResponseModel';
+export type { GetMusicTypesResponse } from './models/GetMusicTypesResponse';
 export type { GetOffererBankAccountsResponseModel } from './models/GetOffererBankAccountsResponseModel';
 export type { GetOffererMemberResponseModel } from './models/GetOffererMemberResponseModel';
 export type { GetOffererMembersResponseModel } from './models/GetOffererMembersResponseModel';
@@ -147,6 +148,7 @@ export type { ListVenueProviderQuery } from './models/ListVenueProviderQuery';
 export type { ListVenueProviderResponse } from './models/ListVenueProviderResponse';
 export type { LoginUserBodyModel } from './models/LoginUserBodyModel';
 export type { ManagedVenues } from './models/ManagedVenues';
+export type { MusicTypeResponse } from './models/MusicTypeResponse';
 export type { NationalProgramModel } from './models/NationalProgramModel';
 export type { NewPasswordBodyModel } from './models/NewPasswordBodyModel';
 export { OfferAddressType } from './models/OfferAddressType';

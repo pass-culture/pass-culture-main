@@ -16,6 +16,7 @@ from pcapi.core.offers import models
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
+from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.repository import transaction
@@ -444,6 +445,21 @@ def get_categories() -> offers_serialize.CategoriesResponseModel:
             offers_serialize.SubcategoryResponseModel.from_orm(subcategory)
             for subcategory in subcategories.ALL_SUBCATEGORIES
         ],
+    )
+
+
+@private_api.route("/offers/music-types", methods=["GET"])
+@login_required
+@spectree_serialize(
+    response_model=offers_serialize.GetMusicTypesResponse,
+    api=blueprint.pro_private_schema,
+)
+def get_music_types() -> offers_serialize.GetMusicTypesResponse:
+    return offers_serialize.GetMusicTypesResponse(
+        __root__=[
+            offers_serialize.MusicTypeResponse(gtl_id=gtl_id, label=label)
+            for gtl_id, label in TITELIVE_MUSIC_GENRES_BY_GTL_ID.items()
+        ]
     )
 
 

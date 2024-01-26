@@ -42,6 +42,7 @@ import type { GetCollectiveOfferTemplateResponseModel } from '../models/GetColle
 import type { GetCollectiveVenueResponseModel } from '../models/GetCollectiveVenueResponseModel';
 import type { GetEducationalOfferersResponseModel } from '../models/GetEducationalOfferersResponseModel';
 import type { GetIndividualOfferResponseModel } from '../models/GetIndividualOfferResponseModel';
+import type { GetMusicTypesResponse } from '../models/GetMusicTypesResponse';
 import type { GetOffererBankAccountsResponseModel } from '../models/GetOffererBankAccountsResponseModel';
 import type { GetOffererMembersResponseModel } from '../models/GetOffererMembersResponseModel';
 import type { GetOffererResponseModel } from '../models/GetOffererResponseModel';
@@ -1455,6 +1456,21 @@ export class DefaultService {
       url: '/offers/delete-draft',
       body: requestBody,
       mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * get_music_types <GET>
+   * @returns GetMusicTypesResponse OK
+   * @throws ApiError
+   */
+  public getMusicTypes(): CancelablePromise<GetMusicTypesResponse> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/offers/music-types',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
