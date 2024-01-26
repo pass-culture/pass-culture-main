@@ -1849,6 +1849,7 @@ def test_generate_invoice_file():
     pricing2 = factories.CollectivePricingFactory(
         amount=-3000,
         collectiveBooking__collectiveStock__collectiveOffer__venue=pricing_point1,
+        collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
         collectiveBooking__educationalInstitution=deposit.educationalInstitution,
         collectiveBooking__educationalYear=deposit.educationalYear,
         status=models.PricingStatus.VALIDATED,
@@ -1865,10 +1866,9 @@ def test_generate_invoice_file():
     incident_booking = bookings_factories.ReimbursedBookingFactory(
         amount=12,
         dateUsed=datetime.datetime.utcnow(),
-        venue=pricing_point1,
         stock__offer__name="Une histoire plutôt bien",
         stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
-        stock__offer__venue=pricing_point1,
+        stock__offer__venue=venue,
     )
 
     used_event = factories.UsedBookingFinanceEventFactory(booking=incident_booking)
@@ -1876,7 +1876,6 @@ def test_generate_invoice_file():
         booking=incident_booking,
         event=used_event,
         status=models.PricingStatus.INVOICED,
-        venue=incident_booking.venue,
         valueDate=datetime.datetime.utcnow(),
     )
 

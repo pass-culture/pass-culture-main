@@ -1527,14 +1527,12 @@ class DownloadReimbursementDetailsTest(PostEndpointHelper):
 
     def test_download_reimbursement_details(self, authenticated_client):
         venue = offerers_factories.VenueFactory(pricing_point="self", reimbursement_point="self")
-        booking = bookings_factories.UsedBookingFactory(stock__offer__venue=venue, venue=venue)
+        booking = bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
         finance_factories.BankInformationFactory(venue=venue)
 
         # Create partial overpayment on booking
         booking_finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
-            booking__venue=venue,
             booking__stock__offer__venue=venue,
-            booking__quantity=1,
             booking__amount=3,
             newTotalAmount=200,
         )
@@ -1550,7 +1548,7 @@ class DownloadReimbursementDetailsTest(PostEndpointHelper):
 
         # Create total overpayment on collective booking
         collective_booking_finance_incident = finance_factories.CollectiveBookingFinanceIncidentFactory(
-            collectiveBooking__venue=venue,
+            collectiveBooking__collectiveStock__beginningDatetime=datetime.utcnow() - timedelta(days=5),
             collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
             collectiveBooking__collectiveStock__price=7,
             newTotalAmount=0,
