@@ -59,7 +59,7 @@ class AllocineMovieListTest:
         assert movie_data["genres"] == expected_data["genres"]
         assert movie_data["originalTitle"] == expected_data["originalTitle"]
         assert movie_data["posterUrl"] == expected_data["poster"]["url"]
-        assert movie_data["releases"] == expected_data["releases"]
+        assert movie_data["releaseDate"] == expected_data["releases"][0]["releaseDate"]["date"]
         assert movie_data["runtime"] == 21
         assert movie_data["synopsis"] == expected_data["synopsis"]
         assert "theater" not in movie_data

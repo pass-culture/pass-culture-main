@@ -76,7 +76,7 @@ class AllocineReleaseData(pydantic.BaseModel):
 
 class AllocineMovieRelease(pydantic.BaseModel):
     name: str
-    releaseDate: AllocineReleaseDate
+    releaseDate: AllocineReleaseDate | None
     data: AllocineReleaseData
     certificate: str | None
 
