@@ -2009,7 +2009,8 @@ def test_generate_payments_file_new_journey():
 
 
 @clean_temporary_files
-def test_generate_invoice_file():
+@override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
+def test_generate_invoice_file_legacy_journey():
     first_siret = "12345678900"
     reimbursement_point1 = offerers_factories.VenueFactory(siret=first_siret)
     bank_info1 = factories.BankInformationFactory(venue=reimbursement_point1)
@@ -2122,7 +2123,7 @@ def test_generate_invoice_file():
 
     # Freeze time so that we can guess the timestamp of the CSV file.
     with freezegun.freeze_time(datetime.datetime(2023, 2, 1, 12, 34, 56)):
-        path = api.generate_invoice_file(cashflow1.batch)
+        path = api.generate_invoice_file_legacy(cashflow1.batch)
     with zipfile.ZipFile(path) as zfile:
         with zfile.open("invoices_20230201_133456.csv") as csv_bytefile:
             csv_textfile = io.TextIOWrapper(csv_bytefile)
@@ -2179,6 +2180,189 @@ def test_generate_invoice_file():
     }
     assert rows[5] == {
         "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point1.id),
+        "Date du justificatif": datetime.date.today().isoformat(),
+        "Référence du justificatif": invoice1.reference,
+        "Type de ticket de facturation": models.PricingLineCategory.OFFERER_CONTRIBUTION.value,
+        "Type de réservation": "PC",
+        "Ministère": "",
+        "Somme des tickets de facturation": 0,
+    }
+
+
+@clean_temporary_files
+@override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
+def test_generate_invoice_file_new_journey():
+    first_siret = "12345678900"
+    venue_1 = offerers_factories.VenueFactory(siret=first_siret)
+    offerer1 = venue_1.managingOfferer
+    bank_account_1 = factories.BankAccountFactory(offerer=offerer1)
+    offerers_factories.VenueBankAccountLinkFactory(venue=venue_1, bankAccount=bank_account_1)
+    pricing_point1 = offerers_factories.VenueFactory(managingOfferer=offerer1)
+    another_venue_1 = offerers_factories.VenueFactory(
+        managingOfferer=offerer1,
+        pricing_point=pricing_point1,
+    )
+    offerers_factories.VenueBankAccountLinkFactory(venue=another_venue_1, bankAccount=bank_account_1)
+    pricing1 = factories.PricingFactory(
+        status=models.PricingStatus.VALIDATED,
+        pricingPoint=pricing_point1,
+        amount=-1000,
+    )
+    pline11 = factories.PricingLineFactory(pricing=pricing1)
+    pline12 = factories.PricingLineFactory(
+        pricing=pricing1,
+        amount=100,
+        category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
+    )
+
+    # eac pricing
+    year1 = EducationalYearFactory()
+    educational_institution = EducationalInstitutionFactory()
+    deposit = EducationalDepositFactory(
+        educationalInstitution=educational_institution, educationalYear=year1, ministry=Ministry.AGRICULTURE.name
+    )
+    pricing2 = factories.CollectivePricingFactory(
+        amount=-3000,
+        collectiveBooking__collectiveStock__collectiveOffer__venue=pricing_point1,
+        collectiveBooking__educationalInstitution=deposit.educationalInstitution,
+        collectiveBooking__educationalYear=deposit.educationalYear,
+        status=models.PricingStatus.VALIDATED,
+        pricingPoint=pricing_point1,
+    )
+    pline21 = factories.PricingLineFactory(pricing=pricing2)
+    pline22 = factories.PricingLineFactory(
+        pricing=pricing2,
+        amount=300,
+        category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
+    )
+
+    # Create booking for overpayment finance incident
+    incident_booking = bookings_factories.ReimbursedBookingFactory(
+        amount=12,
+        dateUsed=datetime.datetime.utcnow(),
+        venue=pricing_point1,
+        stock__offer__name="Une histoire plutôt bien",
+        stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+        stock__offer__venue=pricing_point1,
+    )
+
+    used_event = factories.UsedBookingFinanceEventFactory(booking=incident_booking)
+    factories.PricingFactory(
+        booking=incident_booking,
+        event=used_event,
+        status=models.PricingStatus.INVOICED,
+        venue=incident_booking.venue,
+        valueDate=datetime.datetime.utcnow(),
+    )
+
+    # Create finance incident on the booking above (incident amount: 2€)
+    booking_finance_incident = factories.IndividualBookingFinanceIncidentFactory(
+        booking=incident_booking, newTotalAmount=1000
+    )
+    incident_events = api._create_finance_events_from_incident(
+        booking_finance_incident, datetime.datetime.utcnow(), commit=True
+    )
+
+    incidents_pricings = []
+    for event in incident_events:
+        incidents_pricings.append(api.price_event(event))
+
+    cashflow1 = factories.CashflowFactory(
+        bankAccount=bank_account_1,
+        pricings=[pricing1, pricing2, *incidents_pricings],
+        status=models.CashflowStatus.ACCEPTED,
+    )
+    invoice1 = factories.InvoiceFactory(
+        bankAccount=bank_account_1,
+        cashflows=[cashflow1],
+    )
+
+    # The file should contain only cashflows from the selected batch.
+    # This second invoice should not appear.
+    second_siret = "12345673900"
+    venue_2 = offerers_factories.VenueFactory(siret=second_siret)
+    offerer2 = venue_2.managingOfferer
+    bank_account_2 = factories.BankAccountFactory(offerer=offerer2)
+    offerers_factories.VenueBankAccountLinkFactory(venue=venue_2, bankAccount=bank_account_2)
+    pricing_point2 = offerers_factories.VenueFactory(managingOfferer=offerer2)
+    another_venue_2 = offerers_factories.VenueFactory(
+        managingOfferer=offerer2,
+        pricing_point=pricing_point2,
+    )
+    offerers_factories.VenueBankAccountLinkFactory(venue=another_venue_2, bankAccount=bank_account_2)
+    pline3 = factories.PricingLineFactory()
+    pricing3 = pline3.pricing
+    cashflow2 = factories.CashflowFactory(
+        bankAccount=bank_account_2,
+        pricings=[pricing3],
+        status=models.CashflowStatus.ACCEPTED,
+    )
+    factories.InvoiceFactory(
+        bankAccount=bank_account_2,
+        cashflows=[cashflow2],
+        reference="not displayed because on a different date",
+        date=datetime.datetime(2022, 1, 1),
+    )
+
+    # Freeze time so that we can guess the timestamp of the CSV file.
+    with freezegun.freeze_time(datetime.datetime(2023, 2, 1, 12, 34, 56)):
+        path = api.generate_invoice_file(cashflow1.batch)
+    with zipfile.ZipFile(path) as zfile:
+        with zfile.open("invoices_20230201_133456.csv") as csv_bytefile:
+            csv_textfile = io.TextIOWrapper(csv_bytefile)
+            reader = csv.DictReader(csv_textfile, quoting=csv.QUOTE_NONNUMERIC)
+            rows = list(reader)
+
+    assert len(rows) == 6
+    assert rows[0] == {
+        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
+        "Date du justificatif": datetime.date.today().isoformat(),
+        "Référence du justificatif": invoice1.reference,
+        "Type de ticket de facturation": pline11.category.value,
+        "Type de réservation": "PC",
+        "Ministère": "",
+        "Somme des tickets de facturation": pline11.amount,
+    }
+    assert rows[1] == {
+        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
+        "Date du justificatif": datetime.date.today().isoformat(),
+        "Référence du justificatif": invoice1.reference,
+        "Type de ticket de facturation": pline12.category.value,
+        "Type de réservation": "PC",
+        "Ministère": "",
+        "Somme des tickets de facturation": pline12.amount,
+    }
+    # collective pricing lines
+    assert rows[2] == {
+        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
+        "Date du justificatif": datetime.date.today().isoformat(),
+        "Référence du justificatif": invoice1.reference,
+        "Type de ticket de facturation": pline21.category.value,
+        "Type de réservation": "EACC",
+        "Ministère": "AGRICULTURE",
+        "Somme des tickets de facturation": pline21.amount,
+    }
+    assert rows[3] == {
+        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
+        "Date du justificatif": datetime.date.today().isoformat(),
+        "Référence du justificatif": invoice1.reference,
+        "Type de ticket de facturation": pline22.category.value,
+        "Type de réservation": "EACC",
+        "Ministère": "AGRICULTURE",
+        "Somme des tickets de facturation": pline22.amount,
+    }
+    # incident rows
+    assert rows[4] == {
+        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
+        "Date du justificatif": datetime.date.today().isoformat(),
+        "Référence du justificatif": invoice1.reference,
+        "Type de ticket de facturation": models.PricingLineCategory.OFFERER_REVENUE.value,
+        "Type de réservation": "PC",
+        "Ministère": "",
+        "Somme des tickets de facturation": -1000,
+    }
+    assert rows[5] == {
+        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
         "Type de ticket de facturation": models.PricingLineCategory.OFFERER_CONTRIBUTION.value,
