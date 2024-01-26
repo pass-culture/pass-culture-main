@@ -127,7 +127,7 @@ class DeleteSiretTest:
     @clean_database
     def test_refuse_if_pricing_point_has_pending_pricings(self):
         venue = offerers_factories.VenueFactory(pricing_point="self")
-        factories.PricingFactory(pricingPoint=venue, status=models.PricingStatus.PENDING)
+        factories.PricingFactory(booking__stock__offer__venue=venue, status=models.PricingStatus.PENDING)
 
         with pytest.raises(siret_api.CheckError) as err:
             siret_api.remove_siret(venue, comment="xxx", apply_changes=True)

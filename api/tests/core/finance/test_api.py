@@ -1823,14 +1823,14 @@ def test_generate_invoice_file():
     bank_info1 = factories.BankInformationFactory(venue=reimbursement_point1)
     offerer1 = reimbursement_point1.managingOfferer
     pricing_point1 = offerers_factories.VenueFactory(managingOfferer=offerer1)
-    offerers_factories.VenueFactory(
+    venue = offerers_factories.VenueFactory(
         managingOfferer=offerer1,
         pricing_point=pricing_point1,
         reimbursement_point=reimbursement_point1,
     )
     pricing1 = factories.PricingFactory(
         status=models.PricingStatus.VALIDATED,
-        pricingPoint=pricing_point1,
+        booking__stock__offer__venue=venue,
         amount=-1000,
     )
     pline11 = factories.PricingLineFactory(pricing=pricing1)
@@ -1848,12 +1848,11 @@ def test_generate_invoice_file():
     )
     pricing2 = factories.CollectivePricingFactory(
         amount=-3000,
-        collectiveBooking__collectiveStock__collectiveOffer__venue=pricing_point1,
+        collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
         collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
         collectiveBooking__educationalInstitution=deposit.educationalInstitution,
         collectiveBooking__educationalYear=deposit.educationalYear,
         status=models.PricingStatus.VALIDATED,
-        pricingPoint=pricing_point1,
     )
     pline21 = factories.PricingLineFactory(pricing=pricing2)
     pline22 = factories.PricingLineFactory(
