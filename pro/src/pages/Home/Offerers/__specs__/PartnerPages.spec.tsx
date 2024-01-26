@@ -62,7 +62,12 @@ describe('PartnerPages', () => {
     renderPartnerPages({
       venues: [
         defaultGetOffererVenueResponseModel,
-        { ...defaultGetOffererVenueResponseModel, id: 1 },
+        {
+          ...defaultGetOffererVenueResponseModel,
+          id: 1,
+          name: 'an other venue',
+          publicName: 'a really cool name !',
+        },
       ],
     })
 
@@ -70,8 +75,10 @@ describe('PartnerPages', () => {
       screen.getByRole('heading', { name: 'Vos pages partenaire' })
     ).toBeInTheDocument()
     expect(
-      screen.queryByLabelText(/Sélectionnez votre page partenaire/)
+      screen.getByLabelText(/Sélectionnez votre page partenaire/)
     ).toBeInTheDocument()
+    // it should use public name if available
+    expect(screen.getByText('a really cool name !')).toBeInTheDocument()
   })
 
   it('should load saved venue in localStorage if no get parameter', () => {
