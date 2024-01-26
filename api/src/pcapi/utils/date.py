@@ -6,6 +6,7 @@ from zoneinfo import ZoneInfo
 from babel.dates import format_date
 from babel.dates import format_datetime as babel_format_datetime
 from dateutil.parser import parserinfo
+from psycopg2.extras import NumericRange
 import pytz
 
 import pcapi.utils.postal_code as postal_code_utils
@@ -169,3 +170,26 @@ def parse_french_date(date_str: str | None) -> datetime | None:
 
 def format_date_to_french_locale(date_: date | None) -> str | None:
     return date_.strftime(FRENCH_DATE_FORMAT) if date_ else None
+
+
+def int_to_time(time_as_int: int) -> str:
+    """
+    Convert time defined by hours * 60 + minutes to the format "HH:MM"
+    """
+    hours, minutes = divmod(time_as_int, 60)
+    return f"{hours:02}:{minutes:02}"
+
+
+def time_to_int(time_as_str: str) -> int:
+    """
+    Convert time in the format "HH:MM" to int defined by hours * 60 + minutes
+    """
+    hours, minutes = map(int, time_as_str.split(":"))
+    return hours * 60 + minutes
+
+
+def timespan_str_to_numrange(timespan_list: list[tuple[str, str]]) -> list[NumericRange]:
+    """
+    Convert a list of tuples (start, end) in the the format [("HH:MM", "HH:MM"), ("HH:MM), "HH:MM")] to a list of NumericRange
+    """
+    return [NumericRange(time_to_int(start), time_to_int(end), bounds="[]") for start, end in timespan_list]

@@ -246,6 +246,16 @@ class InvitationStatus(enum.Enum):
     ACCEPTED = "ACCEPTED"
 
 
+class Weekday(enum.Enum):
+    MONDAY = "MONDAY"
+    TUESDAY = "TUESDAY"
+    WEDNESDAY = "WEDNESDAY"
+    THURSDAY = "THURSDAY"
+    FRIDAY = "FRIDAY"
+    SATURDAY = "SATURDAY"
+    SUNDAY = "SUNDAY"
+
+
 class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     __tablename__ = "venue"
 
@@ -423,6 +433,10 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
     adage_addresses: sa_orm.Mapped[educational_models.AdageVenueAddress | None] = sa.orm.relationship(
         "AdageVenueAddress", back_populates="venue", uselist=False
+    )
+
+    openingHours: Mapped[list["OpeningHours | None"]] = relationship(
+        "OpeningHours", back_populates="venue", passive_deletes=True
     )
 
     def _get_type_banner_url(self) -> str | None:
@@ -752,6 +766,21 @@ class AccessibilityProvider(PcObject, Base, Model):
         Request API to get latest update
         """
         raise NotImplementedError()
+
+
+class OpeningHours(PcObject, Base, Model):
+    __tablename__ = "opening_hours"
+    venueId: int = Column(BigInteger, ForeignKey("venue.id", ondelete="CASCADE"), nullable=False, index=True)
+    venue: sa_orm.Mapped[Venue] = relationship("Venue", foreign_keys=[venueId], back_populates="openingHours")
+    weekday: Weekday = Column(db_utils.MagicEnum(Weekday), nullable=False, default=Weekday.MONDAY)
+    timespan: list[psycopg2.extras.NumericRange] = Column(sa_psql.ARRAY(sa_psql.ranges.NUMRANGE), nullable=True)
+
+    __table_args__ = ((CheckConstraint(func.cardinality(timespan) <= 2, name="max_timespan_is_2")),)
+
+    def field_exists_and_has_changed(self, field: str, value: typing.Any) -> typing.Any:
+        if field not in type(self).__table__.columns:
+            raise ValueError(f"Unknown field {field} for model {type(self)}")
+        return getattr(self, field) != value
 
 
 class VenueLabel(PcObject, Base, Model):
