@@ -12,6 +12,7 @@ import {
 } from 'core/OfferEducational'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
+import { getNationalProgramsForDomains } from 'screens/OfferEducational/constants/getNationalProgramsForDomains'
 import {
   InfoBox,
   MultiSelectAutocomplete,
@@ -29,11 +30,11 @@ import {
   TITLE_LABEL,
 } from '../../constants/labels'
 
-interface FormTypeProps {
+export interface FormTypeProps {
   categories: EducationalCategory[]
   subCategories: EducationalSubCategory[]
   domainsOptions: SelectOption[]
-  nationalPrograms: SelectOption[]
+  nationalPrograms: SelectOption<number>[]
   disableForm: boolean
 }
 
@@ -107,6 +108,10 @@ const FormOfferType = ({
     ]
   }
 
+  const nationalProgramsForDomains = nationalPrograms.filter((program) =>
+    getNationalProgramsForDomains(values.domains).includes(program.value)
+  )
+
   return (
     <FormLayout.Section
       description="Le type de l’offre permet de la caractériser et de la valoriser au mieux pour les enseignants et chefs d’établissement."
@@ -172,7 +177,7 @@ const FormOfferType = ({
                 label: 'Sélectionnez un dispositif national',
                 value: '',
               },
-              ...nationalPrograms,
+              ...nationalProgramsForDomains,
             ]}
             label="Dispositif national"
             name="nationalProgramId"

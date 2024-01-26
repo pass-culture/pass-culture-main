@@ -41,7 +41,7 @@ export interface OfferEducationalProps {
   isOfferBooked?: boolean
   isOfferActive?: boolean
   domainsOptions: SelectOption[]
-  nationalPrograms: SelectOption[]
+  nationalPrograms: SelectOption<number>[]
   isTemplate: boolean
   isOfferCreated?: boolean
   reloadCollectiveOffer?: () => void

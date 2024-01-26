@@ -2,7 +2,11 @@ import { api } from 'apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 
-type GetNationalProgramsAdapter = Adapter<void, SelectOption[], SelectOption[]>
+type GetNationalProgramsAdapter = Adapter<
+  void,
+  SelectOption<number>[],
+  SelectOption<number>[]
+>
 
 const FAILING_RESPONSE = {
   isOk: false,

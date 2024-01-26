@@ -14,7 +14,7 @@ type OfferEducationalFormData = {
   categories: EducationalCategories
   domains: SelectOption[]
   offerers: GetEducationalOffererResponseModel[]
-  nationalPrograms: SelectOption[]
+  nationalPrograms: SelectOption<number>[]
 }
 
 const useOfferEducationalFormData = (

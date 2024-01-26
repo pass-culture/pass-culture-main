@@ -180,8 +180,8 @@ describe('screens | OfferEducational : creation offer type step', () => {
       const overridedProps = {
         ...props,
         nationalPrograms: [
-          { value: '1', label: 'Marseille en grand' },
-          { value: '2', label: 'Collège au ciné' },
+          { value: 1, label: 'Marseille en grand' },
+          { value: 4, label: 'Olympiades' },
         ],
       }
       renderWithProviders(<OfferEducational {...overridedProps} />, {
@@ -190,10 +190,10 @@ describe('screens | OfferEducational : creation offer type step', () => {
       const nationalProgramsSelect =
         await screen.findByLabelText(/Dispositif national/)
       await userEvent.click(nationalProgramsSelect)
-      await userEvent.selectOptions(nationalProgramsSelect, '2')
+      await userEvent.selectOptions(nationalProgramsSelect, '4')
       await userEvent.tab()
 
-      expect(screen.getByText('Collège au ciné')).toBeInTheDocument()
+      expect(screen.getByText('Olympiades')).toBeInTheDocument()
     })
   })
 
