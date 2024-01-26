@@ -46,7 +46,7 @@ def generate_and_store_invoice_task_legacy(payload: GenerateInvoicePayloadLegacy
             if current_app.redis_client.decr(finance_conf.REDIS_INVOICES_LEFT_TO_GENERATE) == 0:
                 try:
                     batch = finance_models.CashflowBatch.query.get(payload.batch_id)
-                    path = finance_api.generate_invoice_file(batch)
+                    path = finance_api.generate_invoice_file_legacy(batch)
                     logger.info("Generated CSV invoices file")
                     drive_folder_name = finance_api._get_drive_folder_name(batch)
                     finance_api._upload_files_to_google_drive(drive_folder_name, [path])
