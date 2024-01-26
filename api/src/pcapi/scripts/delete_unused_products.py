@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 # STAGING
 PROVIDER_IDS = [22, 70, 71, 1073, 1081]
+PROVIDER_IDS = [1073]
 
 CHUNK_SIZE = 1000
 
@@ -53,6 +54,7 @@ def execute_request(
                 for offer in offers:
                     # make_transient(offer)
                     offer.productId = None
+                    db.session.add(offer)
                     # If the offer doesn't have an image but the product does
                     # Transfer the product image to the offers
                     if not offer.activeMediation and product.thumbUrl:
@@ -63,15 +65,16 @@ def execute_request(
                                     user=None, credit=None, offer=offer, image_as_bytes=image.content, keep_ratio=True
                                 )
                                 db.session.add(mediation)
-                            except (ImageTooSmall, UnidentifiedImage):
+                            except (ImageTooSmall, UnidentifiedImage) as exc:
                                 # If product's image is too small, we keep the product and its thumb
                                 # We can't do much for now. Not deleted product ids will be displayed at the end of the script.
                                 must_delete_product = False
+                                print(f"Must not delete product {product.id}: {exc}")
                             else:
                                 db.session.add(mediation)
                     updated_offers.append(offer)
 
-                db.session.add_all(updated_offers)
+                # db.session.add_all(updated_offers)
                 for o in updated_offers:
                     print("authorId:", o.authorId)
                     print("lastProviderId:", o.lastProviderId)
@@ -89,9 +92,13 @@ def execute_request(
             if dry_run:
                 db.session.rollback()
             else:
-                offers_models.Product.query.filter(offers_models.Product.id.in_(products_id_to_delete)).delete(
-                    synchronize_session=False
-                )
+                try:
+                    offers_models.Product.query.filter(offers_models.Product.id.in_(products_id_to_delete)).delete(
+                        synchronize_session=False
+                    )
+                except Exception as e:
+                    # Handle delete errors
+                    print(f"Error deleting products: {e}")
 
     end_provider = time.time()
     print(f"Provider {provider_id} took {end_provider - start_provider:.2f}")
