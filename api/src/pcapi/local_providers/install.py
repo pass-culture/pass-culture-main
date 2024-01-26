@@ -23,3 +23,8 @@ def install_local_providers() -> None:
         name=providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME,
         enabledForPro=False,
     )
+    providers_factories.ProviderFactory(
+        name=providers_constants.ALLOCINE_PRODUCTS_PROVIDER_NAME,
+        enabledForPro=False,
+        localClass=None,
+    )
