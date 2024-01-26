@@ -1616,7 +1616,7 @@ def test_generate_bank_accounts_file():
     assert len(rows) == 1
     assert rows[0] == {
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_2.id),
-        "SIRET": "siret 1 t",
+        "SIREN de la structure": bank_account_2.offerer.siren,
         "Nom de la structure - Libellé des coordonnées bancaires": "Nom de la structure - some-label",
         "IBAN": "some-iban",
         "BIC": "some-bic",
