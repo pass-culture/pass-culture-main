@@ -61,6 +61,7 @@ from pcapi.utils import crypto
 from pcapi.utils.date import METROPOLE_TIMEZONE
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import get_postal_code_timezone
+from pcapi.utils.date import numranges_to_timespan_str
 import pcapi.utils.db as db_utils
 from pcapi.utils.human_ids import humanize
 import pcapi.utils.postal_code as postal_code_utils
@@ -716,6 +717,19 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     @property
     def target(self) -> Target | None:
         return self.registration.target if self.registration else None
+
+    @property
+    def opening_days(self) -> list[dict]:
+        opening_days = []
+
+        for opening_hours in self.openingHours:
+            timespan_list = (
+                [{"open": start, "close": end} for start, end in numranges_to_timespan_str(opening_hours.timespan)]
+                if opening_hours.timespan
+                else None
+            )
+            opening_days.append({opening_hours.weekday.value: timespan_list})
+        return opening_days
 
 
 class GooglePlacesInfo(PcObject, Base, Model):

@@ -127,7 +127,7 @@ def test_invalid_offerer_id(client):
     offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
     offerers_factories.VenueFactory(managingOfferer=offerer)
 
-    params = {"offererId": "666"}
+    params = {"offererId": f"{offerer.id + 1}"}
 
     # when
     client = client.with_session_auth(pro_user.email)

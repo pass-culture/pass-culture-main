@@ -216,6 +216,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     reimbursementPointId: int | None
     siret: str | None
     venueLabelId: int | None
+    venueOpeningHours: list[dict] | None
     venueTypeCode: offerers_models.VenueTypeCode
     collectiveDescription: str | None
     collectiveStudents: list[educational_models.StudentLevels] | None
@@ -275,6 +276,8 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
         venue.collectiveLegalStatus = venue.venueEducationalStatus
         venue.dmsToken = DMS_TOKEN_PRO_PREFIX + venue.dmsToken
         venue.hasAdageId = bool(venue.adageId)
+
+        venue.venueOpeningHours = venue.opening_days
         return super().from_orm(venue)
 
 
