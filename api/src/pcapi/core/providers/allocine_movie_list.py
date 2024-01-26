@@ -61,7 +61,7 @@ def _build_movie_data(movie: allocine_serializers.AllocineMovie) -> OfferExtraDa
         originalTitle=movie.originalTitle,
         posterUrl=str(movie.poster.url) if movie.poster else None,
         productionYear=movie.data.productionYear,
-        releases=[release.model_dump() for release in movie.releases],
+        releaseDate=_get_most_recent_release_date(movie.releases),
         runtime=movie.runtime,
         synopsis=movie.synopsis,
         title=movie.title,
@@ -71,3 +71,11 @@ def _build_movie_data(movie: allocine_serializers.AllocineMovie) -> OfferExtraDa
 
 def _build_movie_id_at_providers(provider: Provider, allocine_id: int) -> str:
     return f"{provider.id}:{allocine_id}"
+
+
+def _get_most_recent_release_date(releases: list[allocine_serializers.AllocineMovieRelease]) -> str | None:
+    if not releases:
+        return None
+    return sorted([release.releaseDate.date.isoformat() for release in releases if release.releaseDate], reverse=True)[
+        0
+    ]
