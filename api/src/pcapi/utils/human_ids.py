@@ -1,6 +1,5 @@
 from base64 import b32decode
 from base64 import b32encode
-import binascii
 
 import click
 
@@ -29,7 +28,7 @@ def dehumanize(public_id: str | None) -> int | None:
         public_id += "=" * (8 - missing_padding)
     try:
         xbytes = b32decode(public_id.replace("8", "O").replace("9", "I"))
-    except binascii.Error:
+    except Exception:
         raise NonDehumanizableId("id non dehumanizable")
     return int_from_bytes(xbytes)
 
