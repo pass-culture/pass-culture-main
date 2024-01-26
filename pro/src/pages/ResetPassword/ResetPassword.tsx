@@ -40,7 +40,7 @@ export const ResetPassword = (): JSX.Element => {
   })
 
   return (
-    <div className={styles['reset-password']}>
+    <AppLayout pageName="reset-password" layout="without-nav">
       <header className={styles['logo-side']}>
         <SvgIcon
           className="logo-unlogged"
@@ -50,38 +50,35 @@ export const ResetPassword = (): JSX.Element => {
           width="135"
         />
       </header>
-
-      <AppLayout fullscreen pageName="reset-password">
-        <div className={styles['content']}>
-          {passwordChanged && !isBadToken && (
-            <Hero
-              linkLabel="Se connecter"
-              linkTo="/connexion"
-              text="Vous pouvez dès à présent vous connecter avec votre nouveau mot de passe"
-              title="Mot de passe changé !"
-            />
-          )}
-          {(!token || isBadToken) && (
-            <Hero
-              linkLabel="Recevoir un nouveau lien"
-              linkTo="/demande-mot-de-passe"
-              text="Le lien pour réinitialiser votre mot de passe a expiré. Veuillez recommencer la procédure pour recevoir un nouveau lien par email."
-              title="Ce lien a expiré !"
-            />
-          )}
-          {token && !passwordChanged && !isBadToken && (
-            <section>
-              <h1 className={styles['change-password-title']}>
-                Définir un nouveau mot de passe
-              </h1>
-              <FormikProvider value={formik}>
-                <ChangePasswordForm />
-              </FormikProvider>
-            </section>
-          )}
-        </div>
-      </AppLayout>
-    </div>
+      <div className={styles['content']}>
+        {passwordChanged && !isBadToken && (
+          <Hero
+            linkLabel="Se connecter"
+            linkTo="/connexion"
+            text="Vous pouvez dès à présent vous connecter avec votre nouveau mot de passe"
+            title="Mot de passe changé !"
+          />
+        )}
+        {(!token || isBadToken) && (
+          <Hero
+            linkLabel="Recevoir un nouveau lien"
+            linkTo="/demande-mot-de-passe"
+            text="Le lien pour réinitialiser votre mot de passe a expiré. Veuillez recommencer la procédure pour recevoir un nouveau lien par email."
+            title="Ce lien a expiré !"
+          />
+        )}
+        {token && !passwordChanged && !isBadToken && (
+          <section>
+            <h1 className={styles['change-password-title']}>
+              Définir un nouveau mot de passe
+            </h1>
+            <FormikProvider value={formik}>
+              <ChangePasswordForm />
+            </FormikProvider>
+          </section>
+        )}
+      </div>
+    </AppLayout>
   )
 }
 

@@ -5,19 +5,8 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_size.scss" as size;
 
-.email-validation {
-  display: flex;
-  flex-direction: column;
-
-  @media (min-width: size.$tablet) {
-    flex-direction: row;
-    width: 100%;
-    align-items: center;
-  }
-
-  .logo-side {
-    @include layout.logo-side;
-  }
+.logo-side {
+  @include layout.logo-side;
 }
 
 .content {
