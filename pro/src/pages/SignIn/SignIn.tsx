@@ -6,7 +6,6 @@ import { useSearchParams } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { HTTP_STATUS, isErrorAPIError } from 'apiClient/helpers'
 import { AppLayout } from 'app/AppLayout'
-import SkipLinks from 'components/SkipLinks'
 import useInitReCaptcha from 'hooks/useInitReCaptcha'
 import useNotification from 'hooks/useNotification'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
@@ -95,37 +94,30 @@ export const SignIn = (): JSX.Element => {
   }
 
   return (
-    <>
-      <SkipLinks displayMenu={false} />
+    <AppLayout pageName="sign-in" layout="without-nav">
+      <header className={styles['logo-side']}>
+        <SvgIcon
+          className="logo-unlogged"
+          viewBox="0 0 282 120"
+          alt="Pass Culture pro, l’espace des acteurs culturels"
+          src={logoPassCultureProFullIcon}
+          width="135"
+        />
+      </header>
+      <section className={styles['content']}>
+        <h1 className={styles['title']}>
+          Bienvenue sur l’espace dédié aux acteurs culturels
+        </h1>
 
-      <div className={styles['sign-in']}>
-        <header className={styles['logo-side']}>
-          <SvgIcon
-            className="logo-unlogged"
-            viewBox="0 0 282 120"
-            alt="Pass Culture pro, l’espace des acteurs culturels"
-            src={logoPassCultureProFullIcon}
-            width="135"
-          />
-        </header>
-
-        <AppLayout fullscreen pageName="sign-in">
-          <section className={styles['content']}>
-            <h1 className={styles['title']}>
-              Bienvenue sur l’espace dédié aux acteurs culturels
-            </h1>
-
-            <div className={styles['mandatory']}>
-              Tous les champs sont obligatoires
-            </div>
-            <FormikProvider value={formik}>
-              <SigninForm />
-            </FormikProvider>
-            <CookiesFooter className={styles['cookies-footer']} />
-          </section>
-        </AppLayout>
-      </div>
-    </>
+        <div className={styles['mandatory']}>
+          Tous les champs sont obligatoires
+        </div>
+        <FormikProvider value={formik}>
+          <SigninForm />
+        </FormikProvider>
+        <CookiesFooter className={styles['cookies-footer']} />
+      </section>
+    </AppLayout>
   )
 }
 

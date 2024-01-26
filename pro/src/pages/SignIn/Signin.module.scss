@@ -5,23 +5,8 @@
 @use "styles/variables/_forms.scss" as forms;
 @use "styles/variables/_size.scss" as size;
 
-.sign-in {
-  display: flex;
-  flex-direction: column;
-
-  @media (min-width: size.$tablet) {
-    flex-direction: row;
-    width: 100%;
-
-    & > main {
-      display: flex;
-      align-items: center;
-    }
-  }
-
-  .logo-side {
-    @include layout.logo-side;
-  }
+.logo-side {
+  @include layout.logo-side;
 }
 
 .content {

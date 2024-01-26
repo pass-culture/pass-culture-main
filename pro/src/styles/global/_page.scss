@@ -48,8 +48,15 @@ main {
     }
   }
 
-  &.fullscreen {
-    margin: 0 auto;
+  &.without-nav {
+    display: flex;
+    flex-direction: column;
+
+    @media (min-width: size.$tablet) {
+      flex-direction: row;
+      width: 100%;
+      margin: 0 auto;
+    }
   }
 
   &.container {
