@@ -30,11 +30,12 @@ def _upsert_product(
     allocine_id = movie.internalId
     product = products_by_allocine_id.get(allocine_id)
     movie_data = _build_movie_data(movie)
+    id_at_providers = _build_movie_id_at_providers(provider, allocine_id)
     if not product:
         product = Product(
             description=movie.synopsis,
             extraData=movie_data,
-            idAtProviders=str(allocine_id),
+            idAtProviders=id_at_providers,
             lastProviderId=provider.id,
             name=movie.title,
             subcategoryId=SEANCE_CINE.id,
@@ -66,3 +67,7 @@ def _build_movie_data(movie: allocine_serializers.AllocineMovie) -> OfferExtraDa
         title=movie.title,
         type=movie.type,
     )
+
+
+def _build_movie_id_at_providers(provider: Provider, allocine_id: int) -> str:
+    return f"{provider.id}:{allocine_id}"
