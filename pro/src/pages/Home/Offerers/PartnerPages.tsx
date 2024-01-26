@@ -43,7 +43,7 @@ export const PartnerPages = ({ venues, offerer }: PartnerPagesProps) => {
     const map = new Map()
     for (const venue of venues) {
       options.push({
-        label: venue.name,
+        label: venue.publicName || venue.name,
         value: venue.id.toString(),
       })
       map.set(venue.id.toString(), venue)
