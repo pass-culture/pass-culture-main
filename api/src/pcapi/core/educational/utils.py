@@ -52,7 +52,7 @@ def log_information_for_data_purpose(
 
 
 def create_adage_jwt_fake_valid_token(readonly: bool) -> str:
-    with open("tests/routes/adage_iframe/private_keys_for_tests/valid_rsa_private_key", "rb") as reader:
+    with open("src/pcapi/routes/internal/testing_private_key_for_adage.key", "rb") as reader:
         authenticated_informations = {
             "civilite": "M.",
             "nom": "TEST",

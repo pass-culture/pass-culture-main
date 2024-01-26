@@ -1,0 +1,1 @@
+This key can only be used to generate a valid Adage JWT from local and testing environment.
