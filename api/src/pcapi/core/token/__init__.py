@@ -5,7 +5,9 @@ from datetime import timedelta
 import enum
 import json
 import logging
+import random
 import secrets
+import time
 import typing
 import uuid
 
@@ -253,3 +255,38 @@ class UUIDToken(AbstractToken):
         token = UUIDToken.load_without_checking(encoded_token)
         token._log(cls._TokenAction.CREATE)
         return token
+
+
+class SecureToken:
+    """A "single use token" implementation that put emphasis on security over any other concerns"""
+
+    def __init__(self, token: str = "", ttl: int = 30, data: dict | None = None):
+        """
+        This object has two modes:
+        - If token is provided this class will try to retrieve the data from redis. If they are not found it will
+        raise a ValueError. Warning retrieving a token from redis will destroy it (it is single use and this
+        operation is atomic)
+        - If no token is provided this class will dump data in json, generate a token and store the data with the
+        ttl (in seconds) in redis.
+
+        Once the object has been instanciated you can retrieve the data with token.data and the token with
+        token.token.
+        """
+        if token:
+            self.token = token
+            raw_data = app.redis_client.getdel(self.key)
+            if raw_data is None:
+                # add robustness against timing attacks
+                time.sleep(random.random())
+                raise users_exceptions.InvalidToken()
+            self.data = json.loads(raw_data)
+        else:
+            self.data = data or {}
+            # generate a 512 bits secure token
+            self.token = secrets.token_urlsafe(64)
+            raw_data = json.dumps(self.data)
+            app.redis_client.set(self.key, raw_data, ex=ttl)
+
+    @property
+    def key(self) -> str:
+        return f"pcapi:token:SecureToken_{self.token}"
