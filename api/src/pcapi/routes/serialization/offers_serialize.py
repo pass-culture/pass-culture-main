@@ -453,3 +453,12 @@ class PriceCategoryBody(BaseModel):
 
     class Config:
         alias_generator = to_camel
+
+
+class MusicTypeResponse(ConfiguredBaseModel):
+    gtl_id: str
+    label: str
+
+
+class GetMusicTypesResponse(ConfiguredBaseModel):
+    __root__: list[MusicTypeResponse]
