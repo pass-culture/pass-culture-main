@@ -42,13 +42,13 @@ jobs:
           body-includes: "mypy cop report"
       - name: "Create comment"
         if: ${{ steps.fc.outputs.comment-id == '' && steps.mypy-ignore-counter.outputs.this_branch_ignore_count != steps.mypy-ignore-counter.outputs.master_ignore_count }}
-        uses: peter-evans/create-or-update-comment@v3
+        uses: peter-evans/create-or-update-comment@v4
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: ${{ steps.mypy-cop.outputs.body }}
       - name: "Update comment"
         if: ${{ steps.fc.outputs.comment-id != '' }}
-        uses: peter-evans/create-or-update-comment@v3
+        uses: peter-evans/create-or-update-comment@v4
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           edit-mode: replace
