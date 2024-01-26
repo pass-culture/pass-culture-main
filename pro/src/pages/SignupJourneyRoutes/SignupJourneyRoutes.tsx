@@ -3,7 +3,6 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom'
 
 import { AppLayout } from 'app/AppLayout'
 import { SignupJourneyFormLayout } from 'components/SignupJourneyFormLayout'
-import SkipLinks from 'components/SkipLinks'
 import { SignupJourneyContextProvider } from 'context/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
@@ -31,39 +30,36 @@ export const SignupJourneyRoutes = () => {
 
   return (
     <>
-      <SkipLinks displayMenu={false} />
-
-      <header className={styles['header']}>
-        <div className={styles['header-content']}>
-          <SvgIcon
-            className={styles['header-logo']}
-            alt="Pass Culture pro, l’espace des acteurs culturels"
-            src={logoPassCultureProIcon}
-            viewBox="0 0 119 40"
-          />
-          <NavLink
-            onClick={() =>
-              logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
-            }
-            to={`${location.pathname}?logout}`}
-            className={styles['logout-link']}
-          >
-            <SvgIcon
-              className="nav-item-icon"
-              src={fullLogoutIcon}
-              alt=""
-              width="20"
-            />
-            Se déconnecter
-          </NavLink>
-        </div>
-      </header>
-
       <AppLayout
-        fullscreen
         pageName="sign-up-journey"
         className={styles['sign-up-journey']}
+        layout="funnel"
       >
+        <header className={styles['header']}>
+          <div className={styles['header-content']}>
+            <SvgIcon
+              className={styles['header-logo']}
+              alt="Pass Culture pro, l’espace des acteurs culturels"
+              src={logoPassCultureProIcon}
+              viewBox="0 0 119 40"
+            />
+            <NavLink
+              onClick={() =>
+                logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
+              }
+              to={`${location.pathname}?logout}`}
+              className={styles['logout-link']}
+            >
+              <SvgIcon
+                className="nav-item-icon"
+                src={fullLogoutIcon}
+                alt=""
+                width="20"
+              />
+              Se déconnecter
+            </NavLink>
+          </div>
+        </header>
         <SignupJourneyContextProvider>
           <SignupJourneyFormLayout>
             <Outlet />

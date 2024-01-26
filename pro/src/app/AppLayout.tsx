@@ -8,37 +8,32 @@ import SkipLinks from 'components/SkipLinks'
 export interface AppLayoutProps {
   children?: React.ReactNode
   pageName?: string
-  fullscreen?: boolean
   className?: string
+  layout?: 'basic' | 'funnel' | 'without-nav'
 }
 
 export const AppLayout = ({
   children,
   className,
   pageName = 'Accueil',
-  fullscreen = false,
+  layout = 'basic',
 }: AppLayoutProps) => (
   <>
-    {!fullscreen && (
-      <>
-        <SkipLinks />
-        <Header />
-      </>
-    )}
-
+    <SkipLinks />
+    {layout == 'basic' && <Header />}
     <main
       id="content"
       className={classnames(
         {
           page: true,
           [`${pageName}-page`]: true,
-          container: !fullscreen,
-          fullscreen,
+          container: layout === 'basic',
+          'without-nav': layout === 'without-nav',
         },
         className
       )}
     >
-      {fullscreen ? (
+      {layout === 'funnel' || layout === 'without-nav' ? (
         children
       ) : (
         <div className="page-content">

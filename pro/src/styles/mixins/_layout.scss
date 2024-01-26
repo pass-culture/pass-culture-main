@@ -26,6 +26,7 @@
 
 @mixin full-content-side() {
   padding: rem.torem(24px);
+  margin: auto;
 
   @media (min-width: size.$tablet) {
     min-width: size.$full-content-min-width;
