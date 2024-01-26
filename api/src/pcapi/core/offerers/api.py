@@ -10,6 +10,7 @@ import typing
 
 from flask_sqlalchemy import BaseQuery
 import jwt
+from psycopg2.extras import NumericRange
 import schwifty
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -2052,3 +2053,17 @@ def get_venues_by_ids(ids: typing.Collection[int]) -> BaseQuery:
     return offerers_models.Venue.query.filter(offerers_models.Venue.id.in_(ids)).options(
         sa.orm.joinedload(offerers_models.Venue.googlePlacesInfo)
     )
+
+
+def add_timespan(opening_hours: models.OpeningHours, new_timespan: NumericRange) -> None:
+    existing_timespan = opening_hours.timespan
+    if existing_timespan:
+        if len(existing_timespan) == 2:
+            raise ValueError("Maximum size for opening hours reached")
+        if existing_timespan[0].lower <= new_timespan.upper and existing_timespan[0].upper >= new_timespan.lower:
+            raise ValueError("New opening hours overlaps existing one")
+        existing_timespan.append(new_timespan)
+        existing_timespan.sort()
+    else:
+        opening_hours.timespan = [new_timespan]
+    db.session.commit()
