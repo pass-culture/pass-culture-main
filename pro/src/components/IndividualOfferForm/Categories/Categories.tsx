@@ -114,7 +114,7 @@ const Categories = ({
     )
     if (filteredVenueList.length === 1) {
       await setFieldValue('venueId', filteredVenueList[0].id.toString())
-      onVenueChange(
+      await onVenueChange(
         setFieldValue,
         filteredVenueList,
         filteredVenueList[0].id.toString()

@@ -1,5 +1,4 @@
 import { useFormikContext } from 'formik'
-import React from 'react'
 
 import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
@@ -51,7 +50,7 @@ const IndividualOfferForm = ({
     currentUser: { isAdmin },
   } = useCurrentUser()
   const {
-    values: { offererId, subcategoryId, venueId },
+    values: { subcategoryId, venueId },
   } = useFormikContext<IndividualOfferFormValues>()
 
   useScrollToFirstErrorAfterSubmit()
@@ -70,13 +69,7 @@ const IndividualOfferForm = ({
   // because of CATEGORY_STATUS.ONLINE_OR_OFFLINE who can be both virtual or not
   const isVenueVirtual = venue?.isVirtual || false
 
-  const matchOffererId = (venue: IndividualOfferVenueItem) => {
-    return venue.managingOffererId.toString() === offererId
-  }
-
-  const areAllVenuesVirtual = filteredVenueList
-    .filter(matchOffererId)
-    .every((v) => v.isVirtual)
+  const areAllVenuesVirtual = filteredVenueList.every((v) => v.isVirtual)
 
   const showAddVenueBanner =
     offerSubCategory &&

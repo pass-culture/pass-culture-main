@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
-import React from 'react'
 
 import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import { OffererName } from 'core/Offerers/types'
@@ -122,7 +121,121 @@ describe('IndividualOfferForm', () => {
       const subcategorySelect = await screen.findByLabelText('Sous-catégorie')
       await userEvent.selectOptions(subcategorySelect, 'physical')
 
-      expect(screen.queryByText('+ Ajouter un lieu')).toBeInTheDocument()
+      expect(screen.getByText('+ Ajouter un lieu')).toBeInTheDocument()
+    })
+
+    it('should not display venue banner when subcategory is not virtual and offererId is not set but it exist one not virtual venue', async () => {
+      offererNames = [
+        {
+          id: 1,
+          name: 'Offerer 1',
+        },
+        {
+          id: 2,
+          name: 'Offerer 2',
+        },
+      ]
+      venueList = [
+        individualOfferVenueItemFactory({
+          isVirtual: true,
+          managingOffererId: 1,
+        }),
+        individualOfferVenueItemFactory({
+          isVirtual: false,
+          managingOffererId: 1,
+        }),
+        individualOfferVenueItemFactory({
+          isVirtual: true,
+          managingOffererId: 2,
+        }),
+        individualOfferVenueItemFactory({
+          isVirtual: false,
+          managingOffererId: 2,
+        }),
+      ]
+      props = {
+        categories,
+        subCategories,
+        offererNames,
+        venueList,
+        readOnlyFields: [],
+        onImageUpload: vi.fn(),
+        onImageDelete: vi.fn(),
+        offerSubtype: null,
+      }
+      initialValues = setDefaultInitialFormValues(
+        offererNames,
+        null,
+        null,
+        venueList,
+        true
+      )
+
+      renderIndividualOfferForm({
+        initialValues,
+        onSubmit,
+        props,
+      })
+
+      const categorySelect = await screen.findByLabelText('Catégorie')
+      await userEvent.selectOptions(categorySelect, 'physical')
+      const subcategorySelect = await screen.findByLabelText('Sous-catégorie')
+      await userEvent.selectOptions(subcategorySelect, 'physical')
+
+      expect(screen.queryByText('+ Ajouter un lieu')).not.toBeInTheDocument()
+    })
+
+    it('should display venue banner when subcategory is not virtual and offererId is not set but it exist only virtual venues', async () => {
+      offererNames = [
+        {
+          id: 1,
+          name: 'Offerer 1',
+        },
+        {
+          id: 2,
+          name: 'Offerer 2',
+        },
+      ]
+      venueList = [
+        individualOfferVenueItemFactory({
+          isVirtual: true,
+          managingOffererId: 1,
+        }),
+        individualOfferVenueItemFactory({
+          isVirtual: true,
+          managingOffererId: 2,
+        }),
+      ]
+      props = {
+        categories,
+        subCategories,
+        offererNames,
+        venueList,
+        readOnlyFields: [],
+        onImageUpload: vi.fn(),
+        onImageDelete: vi.fn(),
+        offerSubtype: null,
+      }
+      initialValues = setDefaultInitialFormValues(
+        offererNames,
+        null,
+        null,
+        venueList,
+        true
+      )
+
+      renderIndividualOfferForm({
+        initialValues,
+        onSubmit,
+        props,
+      })
+
+      const categorySelect = await screen.findByLabelText('Catégorie')
+      await userEvent.selectOptions(categorySelect, 'physical')
+      const subcategorySelect = await screen.findByLabelText('Sous-catégorie')
+      await userEvent.selectOptions(subcategorySelect, 'physical')
+
+      expect(screen.getByText('+ Ajouter un lieu')).toBeInTheDocument()
     })
 
     it('should not display venue banner when subcategory is virtual', async () => {
