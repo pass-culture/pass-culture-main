@@ -92,6 +92,10 @@ def test_serialize_offer():
             "gtl_level2": None,
             "gtl_level3": None,
             "gtl_level4": None,
+            "gtlCodeLevel1": None,
+            "gtlCodeLevel2": None,
+            "gtlCodeLevel3": None,
+            "gtlCodeLevel4": None,
             "visa": None,
         },
         "offerer": {
