@@ -9,6 +9,9 @@ on:
       TRIGGER_ONLY_ON_DEPENDENCY_CHANGE:
         required: true
         type: boolean
+      PCAPI_DOCKER_TAG:
+        required: true
+        type: string
       CACHE_BUCKET_NAME:
         type: string
         required: true
@@ -40,6 +43,18 @@ jobs:
         uses: actions/checkout@v4.1.1
         with:
           ref: ${{ github.head_ref }}
+      - name: "Authentification to Google"
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: "Get Secret"
+        id: 'secrets'
+        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        with:
+          secrets: |-
+            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+            ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
       - name: "Should run cache"
         id: "evaluate-variables"
         run: |
@@ -48,23 +63,6 @@ jobs:
           else
             echo "should-run-cache=false" | tee -a $GITHUB_OUTPUT
           fi
-      - uses: actions/setup-node@v2
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        with:
-          node-version-file: "pro/.nvmrc"
-      - name: "Install dockerize"
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        run: ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
-      - name: "Cache"
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        uses: satackey/action-docker-layer-caching@v0.0.11
-        # Ignore the failure of a step and avoid terminating the job.
-        continue-on-error: true
-        with:
-          key: docker-cache-${{ hashFiles('api/poetry.lock') }}
-          restore-keys: |
-            docker-cache-${{ hashFiles('api/poetry.lock') }}
-            docker-cache
       - name: "Fix local permissions"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         run: sudo chown -R $PCAPI_UID:$PCAPI_GID .
@@ -72,9 +70,59 @@ jobs:
         env:
           PCAPI_UID: 1000
           PCAPI_GID: 1000
+      - uses: KengoTODA/actions-setup-docker-compose@v1
+        with:
+          version: '2.23.3'
       - name: "Run API"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        run: ./pc start-backend &
+        run: docker-compose -f docker-compose-backend.yml up postgres redis -d
+      - id: 'openid-auth'
+        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
+        name: "OpenID Connect Authentication"
+        uses: 'google-github-actions/auth@v2'
+        with:
+          create_credentials_file: false
+          token_format: "access_token"
+          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER  }}
+          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+      - name: 'Set up Cloud SDK'
+        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
+        uses: 'google-github-actions/setup-gcloud@v2'
+      - id: 'docker-login'
+        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
+        uses: "docker/login-action@v1"
+        name: "Docker login"
+        with:
+          registry: "europe-west1-docker.pkg.dev"
+          username: "oauth2accesstoken"
+          password: "${{ steps.openid-auth.outputs.access_token }}"
+      - name: "Run API server"
+        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
+        run: |
+          docker run \
+            --name pc-api \
+            --workdir /usr/src/app \
+            --volume ./api:/usr/src/app \
+            --env-file ./env_file \
+            --tty \
+            --detach \
+            --network pass-culture-main_db_nw \
+            --restart on-failure \
+            --publish 5001:5001 \
+            --publish 10002:10002 \
+            --entrypoint bash \
+            europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi:${{ inputs.PCAPI_DOCKER_TAG }} \
+            -c "set -e ; flask install_postgres_extensions ; alembic upgrade pre@head ; alembic upgrade post@head ; flask install_data ; python src/pcapi/app.py"
+      - name: "Wait for migrations to be run"
+        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
+        uses: iFaxity/wait-on-action@v1
+        with:
+          resource: http://localhost:5001/health/api
+          timeout: 120000
+      - uses: actions/setup-node@v2
+        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
+        with:
+          node-version-file: "pro/.nvmrc"
       - name: "Cache node dependencies"
         uses: pass-culture-github-actions/cache@v1.0.0
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
@@ -91,9 +139,6 @@ jobs:
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         working-directory: pro
         run: yarn install --immutable
-      - name: "Wait for backend"
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        run: dockerize -wait http://localhost:5001/health/api -timeout 10m -wait-retry-interval 5s
       - name: "Update api client"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         uses: nick-fields/retry@v2
@@ -102,7 +147,7 @@ jobs:
           max_attempts: 3
           command: |
             cd pro
-            yarn generate:api:client:local
+            yarn generate:api:client:local:no:docker
       - name: "Check if there are changes"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         id: "changes"

@@ -12,7 +12,7 @@
     "build:integration": "VITE_APP_VERSION=$(node -pe 'require(\"./package.json\").version') vite build --mode integration",
     "build:production": "VITE_APP_VERSION=$(node -pe 'require(\"./package.json\").version') vite build --mode production",
     "generate:api:client:local": "./scripts/generate_api_client_local.sh",
-    "generate:api:client:local:no:docker": "./scripts/generate_api_client_local_without_docker.sh",
+    "generate:api:client:local:no:docker": "PCAPI_HOST=0.0.0.0:5001 ./scripts/generate_api_client_local.sh",
     "lint:js": "eslint 'src/**/*.{ts,tsx}'",
     "lint:js:fix": "yarn lint:js --fix",
     "lint:scss": "stylelint '**/*.scss'",
