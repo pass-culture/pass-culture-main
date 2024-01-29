@@ -5,7 +5,7 @@ import { OffererName } from 'core/Offerers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { getIndividualOfferVenuesAdapter } from 'core/Venue/adapters/getIndividualOfferVenuesAdapter'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
-import { sendSentryCustomError } from 'utils/sendSentryError'
+import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
 interface GetWizardDataArgs {
   offerOffererId?: string
