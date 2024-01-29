@@ -116,7 +116,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_MARSEILLE = "Activer Marseille en grand"
     WIP_GOOGLE_MAPS_VENUE_IMAGES = "Activer l'affichage des images des lieux importées depuis Google Maps"
     WIP_ENABLE_PRO_SIDE_NAV = "Refonte de la navigation de l'app pro"
-    WIP_CONNECT_AS = "Permettre a un admin de se connecter en tant qu'un pro"
+    WIP_CONNECT_AS = "Permettre à un admin de se connecter en tant qu'un compte pro sur PC Pro"
     WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN = "Activer le nouveau design des offres sur adage"
     WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API = (
         "Activer les nouvelles règles de création et d'édition d'offres collecrives pour l'API publique (collective)"

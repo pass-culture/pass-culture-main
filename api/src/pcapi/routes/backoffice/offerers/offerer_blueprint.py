@@ -442,6 +442,8 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
         users_models.User.firstName,
         users_models.User.lastName,
         users_models.User.email,
+        users_models.User.isActive,
+        users_models.User.roles,
     )
 
     rows = (
@@ -451,6 +453,8 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
             users_models.User.lastName,
             users_models.User.full_name,
             users_models.User.email,
+            users_models.User.isActive,
+            users_models.User.roles,
             offerers_models.UserOfferer,
             offerers_models.OffererInvitation,
         )
@@ -519,12 +523,16 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
             "email": user_invited.email,
             "UserOfferer": None,
             "OffererInvitation": user_invited,
+            "isActive": False,
+            "roles": [],
         }
         for user_invited in users_invited
     ]
     return render_template(
         "offerer/get/details/users.html",
         rows=users_pro + users_invited_formatted,
+        admin_role=users_models.UserRole.ADMIN,
+        anonymized_role=users_models.UserRole.ANONYMIZED,
         **kwargs,
     )
 
