@@ -244,7 +244,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
 
     @remainingQuantity.expression  # type: ignore [no-redef]
     def remainingQuantity(cls) -> Case:  # pylint: disable=no-self-argument
-        return sa.case([(cls.quantity.is_(None), None)], else_=(cls.quantity - cls.dnBookedQuantity))
+        return sa.case((cls.quantity.is_(None), None), else_=(cls.quantity - cls.dnBookedQuantity))
 
     AUTOMATICALLY_USED_SUBCATEGORIES = [
         subcategories_v2.CARTE_MUSEE.id,
@@ -760,14 +760,12 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     @status.expression  # type: ignore [no-redef]
     def status(cls) -> Case:  # pylint: disable=no-self-argument
         return sa.case(
-            [
-                (cls.validation == OfferValidationStatus.REJECTED.name, OfferStatus.REJECTED.name),
-                (cls.validation == OfferValidationStatus.PENDING.name, OfferStatus.PENDING.name),
-                (cls.validation == OfferValidationStatus.DRAFT.name, OfferStatus.DRAFT.name),
-                (cls.isActive.is_(False), OfferStatus.INACTIVE.name),
-                (cls.hasBookingLimitDatetimesPassed.is_(True), OfferStatus.EXPIRED.name),
-                (cls.isSoldOut.is_(True), OfferStatus.SOLD_OUT.name),
-            ],
+            (cls.validation == OfferValidationStatus.REJECTED.name, OfferStatus.REJECTED.name),
+            (cls.validation == OfferValidationStatus.PENDING.name, OfferStatus.PENDING.name),
+            (cls.validation == OfferValidationStatus.DRAFT.name, OfferStatus.DRAFT.name),
+            (cls.isActive.is_(False), OfferStatus.INACTIVE.name),
+            (cls.hasBookingLimitDatetimesPassed.is_(True), OfferStatus.EXPIRED.name),
+            (cls.isSoldOut.is_(True), OfferStatus.SOLD_OUT.name),
             else_=OfferStatus.ACTIVE.name,
         )
 
