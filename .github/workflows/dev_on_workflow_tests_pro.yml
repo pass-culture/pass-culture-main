@@ -150,7 +150,7 @@ jobs:
           args: -Dsonar.qualitygate.wait=${{ github.event_name == 'pull_request' && 'true' || 'false'  }}
       - name: "Post failure message to slack"
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
-        uses: slackapi/slack-github-action@v1.24.0
+        uses: slackapi/slack-github-action@v1.25.0
         with:
           # channel #dev
           channel-id: "CPZ7U1CNP"

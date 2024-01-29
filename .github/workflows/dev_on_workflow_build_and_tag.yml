@@ -146,7 +146,7 @@ jobs:
           fi
       - name: "Post to a Slack channel"
         if: always()
-        uses: slackapi/slack-github-action@v1.24.0
+        uses: slackapi/slack-github-action@v1.25.0
         with:
           channel-id: CU0SQ8Y58
           payload: |
