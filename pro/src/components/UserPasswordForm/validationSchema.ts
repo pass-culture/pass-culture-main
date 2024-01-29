@@ -2,12 +2,7 @@ import * as yup from 'yup'
 
 import { isPasswordValid } from 'core/shared/utils/validation'
 
-const passwordErrorMessage = `Votre mot de passe doit contenir au moins :
-      - 12 caractères
-      - Un chiffre
-      - Une majuscule et une minuscule
-      - Un caractère spécial
-`
+const passwordErrorMessage = 'Veuillez renseigner votre nouveau mot de passe'
 
 const validationSchema = yup.object().shape({
   oldPassword: yup
