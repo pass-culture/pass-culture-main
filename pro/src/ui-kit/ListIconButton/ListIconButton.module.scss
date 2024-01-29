@@ -14,7 +14,9 @@
   transition: background-color 100ms ease-in-out;
   cursor: pointer;
 
-  &:hover, &:active:not(:disabled), &:hover:not(:disabled), &:focus-visible {
+  &:active:not(:disabled),
+  &:hover:not(:disabled),
+  &:focus-visible {
     .button-icon {
       height: rem.torem(20px);
       width: rem.torem(20px);
@@ -26,6 +28,7 @@
   }
 
   &:active {
+    color: colors.$tertiary;
     background-color: transparent;
   }
 
@@ -34,22 +37,14 @@
   }
 
   &-icon {
+    transition: all 100ms ease-in-out;
     height: rem.torem(24px);
     width: rem.torem(24px);
-    transition: all 100ms ease-in-out;
-    fill: colors.$black;
-
-    &:active {
-      fill: colors.$tertiary;
-    }
   }
 
   &:disabled {
     cursor: not-allowed;
-
-    .button-icon {
-      fill: colors.$grey-semi-dark;
-    }
+    color: colors.$grey-semi-dark;
   }
 }
 
