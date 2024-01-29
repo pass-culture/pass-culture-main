@@ -515,8 +515,8 @@ class GetPublicAccountTest(GetEndpointHelper):
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
 
-    # session + current user + user data
-    expected_num_queries = 3
+    # session + current user + user data + bookings
+    expected_num_queries = 4
 
     class ReviewButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS
@@ -546,16 +546,16 @@ class GetPublicAccountTest(GetEndpointHelper):
             return url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
 
     @pytest.mark.parametrize(
-        "index,expected_badge,expected_num_queries",
-        [(0, "Pass 15-17", 3), (1, "Pass 18", 3), (3, None, 3)],
+        "index,expected_badge",
+        [(0, "Pass 15-17"), (1, "Pass 18"), (3, None)],
     )
-    def test_get_public_account(self, authenticated_client, index, expected_badge, expected_num_queries):
+    def test_get_public_account(self, authenticated_client, index, expected_badge):
         users = create_bunch_of_accounts()
         user = users[index]
 
         user_id = user.id
         # expected_num_queries depends on the number of feature flags checked (2 + user + FF)
-        with assert_num_queries(expected_num_queries):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -744,7 +744,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         bookings_factories.UsedBookingFactory()
 
         user_id = user.id
-        with assert_num_queries(4):  # 2 + user + 1 FF
+        with assert_num_queries(self.expected_num_queries + 1):  # 1 FF
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -779,7 +779,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         bookings_factories.UsedBookingFactory()
 
         user_id = user.id
-        with assert_num_queries(4):  # 2 + user + 1 FF
+        with assert_num_queries(self.expected_num_queries + 1):  # 1 FF
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -797,7 +797,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         )
 
         user_id = user.id
-        with assert_num_queries(4):  # 2 + user + 1 FF
+        with assert_num_queries(self.expected_num_queries + 1):  # 1 FF
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -869,7 +869,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         repository.save(no_date_action)
 
         user_id = user.id
-        with assert_num_queries(4):  # 2 + user + 1 FF
+        with assert_num_queries(self.expected_num_queries + 1):  # 1 FF
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -1685,8 +1685,9 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
     # - session
     # - current user
     # - displayed user
+    # - user bookings separately
     # - feature flag ENABLE_PHONE_VALIDATION
-    expected_num_queries = 4
+    expected_num_queries = 5
 
     @pytest.mark.parametrize(
         "age,id_check_type,expected_items_status_18,expected_id_check_status_18",
