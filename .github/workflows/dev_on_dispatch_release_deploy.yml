@@ -120,7 +120,7 @@ jobs:
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
       - name: "Post to a Slack channel"
         if: always()
-        uses: slackapi/slack-github-action@v1.24.0
+        uses: slackapi/slack-github-action@v1.25.0
         with:
           channel-id: ${{ fromJSON('["C037KSSG38D", "CQAMNFVPS"]')[github.event.inputs.target_environment != 'testing'] }}
           payload: |
