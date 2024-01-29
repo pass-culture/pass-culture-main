@@ -34,6 +34,8 @@ jobs:
   build-and-push-docker-images:
     name: 'Build and push Docker images'
     runs-on: ubuntu-latest
+    env:
+      DOCKER_REGISTRY: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry
     steps:
       - uses: actions/checkout@v4.1.1
         with:
@@ -81,12 +83,20 @@ jobs:
           driver: docker
       - name: "Build and push pcapi image"
         uses: docker/build-push-action@v5
-        if: inputs.pcapi == true
+        if: inputs.pcapi == true && github.ref != 'refs/heads/master'
         with:
           context: api
           push: true
           target: pcapi
-          tags: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi:${{ inputs.tag }}
+          tags: ${{ env.DOCKER_REGISTRY }}/pcapi:${{ inputs.tag }}
+      - name: "Build and push pcapi image and set latest"
+        uses: docker/build-push-action@v5
+        if: inputs.pcapi == true && github.ref == 'refs/heads/master'
+        with:
+          context: api
+          push: true
+          target: pcapi
+          tags: ${{ env.DOCKER_REGISTRY }}/pcapi:${{ inputs.tag }},${{ env.DOCKER_REGISTRY }}/pcapi:latest
       - name: "Build and push pcapi-console image"
         uses: docker/build-push-action@v5
         if: inputs.console == true
@@ -94,7 +104,7 @@ jobs:
           context: api
           push: true
           target: pcapi-console
-          tags: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-console:${{ inputs.tag }}
+          tags: ${{ env.DOCKER_REGISTRY }}/pcapi-console:${{ inputs.tag }}
       - name: "Build and push pcapi-tests image"
         uses: docker/build-push-action@v5
         if: inputs.tests == true
@@ -102,4 +112,4 @@ jobs:
           context: api
           push: true
           target: pcapi-tests
-          tags: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-tests:${{ inputs.tag }}
+          tags: ${{ env.DOCKER_REGISTRY }}/pcapi-tests:${{ inputs.tag }}
