@@ -174,9 +174,9 @@ def get_new_product_from_ean13(ean: str) -> offers_models.Product:
             prix_livre=article["prix"],
             collection=article.get("collection"),
             comic_series=article.get("serie"),
-            date_parution=parse_things_date_to_string(article.get("dateparution"))
-            if "dateparution" in article
-            else None,
+            date_parution=(
+                parse_things_date_to_string(article.get("dateparution")) if "dateparution" in article else None
+            ),
             distributeur=article["distributeur"],
             editeur=article["editeur"],
             num_in_collection=article.get("collection_no"),

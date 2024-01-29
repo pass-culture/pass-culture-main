@@ -184,9 +184,11 @@ def render_venue_details(
                 public_name=venue.publicName,
                 siret=venue.siret,
                 city=venue.city,
-                postal_address_autocomplete=f"{venue.address}, {venue.postalCode} {venue.city}"
-                if venue.address is not None and venue.city is not None and venue.postalCode is not None
-                else None,
+                postal_address_autocomplete=(
+                    f"{venue.address}, {venue.postalCode} {venue.city}"
+                    if venue.address is not None and venue.city is not None and venue.postalCode is not None
+                    else None
+                ),
                 postal_code=venue.postalCode,
                 address=venue.address,
                 ban_id=venue.banId,
@@ -205,9 +207,11 @@ def render_venue_details(
     search_form = pro_forms.CompactProSearchForm(
         q=request.args.get("q"),
         pro_type=pro_forms.TypeOptions.VENUE.name,
-        departments=request.args.getlist("departments")
-        if request.args.get("q") or request.args.getlist("departments")
-        else current_user.backoffice_profile.preferences.get("departments", []),
+        departments=(
+            request.args.getlist("departments")
+            if request.args.get("q") or request.args.getlist("departments")
+            else current_user.backoffice_profile.preferences.get("departments", [])
+        ),
     )
 
     return render_template(
@@ -221,11 +225,13 @@ def render_venue_details(
         dms_stats=dms_stats,
         delete_form=delete_form,
         active_tab=request.args.get("active_tab", "history"),
-        zendesk_sell_synchronisation_form=empty_forms.EmptyForm()
-        if venue.isPermanent
-        and not venue.isVirtual
-        and utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
-        else None,
+        zendesk_sell_synchronisation_form=(
+            empty_forms.EmptyForm()
+            if venue.isPermanent
+            and not venue.isVirtual
+            and utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
+            else None
+        ),
     )
 
 

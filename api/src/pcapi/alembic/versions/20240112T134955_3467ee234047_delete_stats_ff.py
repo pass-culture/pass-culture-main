@@ -2,7 +2,6 @@
 Removes WIP_HOME_STATS and WIP_HOME_STATS_V2 Feature Flag
 """
 
-
 # pre/post deployment: f0fbdcf9961d
 # revision identifiers, used by Alembic.
 revision = "3467ee234047"

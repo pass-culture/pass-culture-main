@@ -285,12 +285,16 @@ def serialize_collective_booking(collective_booking: models.CollectiveBooking) -
                 collective_booking.cancellationLimitDate, collective_booking
             ),
         ).isoformat(),
-        bookingConfirmationDate=typing.cast(
-            datetime,
-            convert_real_booking_dates_utc_to_venue_timezone(collective_booking.confirmationDate, collective_booking),
-        ).isoformat()
-        if collective_booking.confirmationDate
-        else "",
+        bookingConfirmationDate=(
+            typing.cast(
+                datetime,
+                convert_real_booking_dates_utc_to_venue_timezone(
+                    collective_booking.confirmationDate, collective_booking
+                ),
+            ).isoformat()
+            if collective_booking.confirmationDate
+            else ""
+        ),
         bookingConfirmationLimitDate=typing.cast(
             datetime,
             convert_real_booking_dates_utc_to_venue_timezone(

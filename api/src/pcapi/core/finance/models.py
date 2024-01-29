@@ -5,6 +5,7 @@ signed:
 - a negative amount will be outgoing (payable by us to someone);
 - a positive amount will be incoming (payable to us by someone).
 """
+
 import dataclasses
 import datetime
 import decimal

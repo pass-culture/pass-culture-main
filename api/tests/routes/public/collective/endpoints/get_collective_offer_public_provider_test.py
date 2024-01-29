@@ -114,9 +114,9 @@ def expected_serialized_offer(offer):
             "id": booking.id,
             "status": booking.status.value,
             "confirmationDate": booking.confirmationDate.isoformat() if booking.confirmationDate else None,
-            "cancellationLimitDate": booking.cancellationLimitDate.isoformat()
-            if booking.cancellationLimitDate
-            else None,
+            "cancellationLimitDate": (
+                booking.cancellationLimitDate.isoformat() if booking.cancellationLimitDate else None
+            ),
             "reimbursementDate": booking.reimbursementDate.isoformat() if booking.reimbursementDate else None,
             "dateUsed": booking.dateUsed.isoformat() if booking.dateUsed else None,
             "dateCreated": booking.dateCreated.isoformat() if booking.dateCreated else None,

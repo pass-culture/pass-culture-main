@@ -44,9 +44,9 @@ class EMSStocks:
         self.provider = venue_provider.provider
         self.poster_urls_map: dict[str, str | None] = {}
         self.created_offers: set[offers_models.Offer] = set()
-        self.price_category_labels: list[
-            offers_models.PriceCategoryLabel
-        ] = offers_models.PriceCategoryLabel.query.filter(offers_models.PriceCategoryLabel.venue == self.venue).all()
+        self.price_category_labels: list[offers_models.PriceCategoryLabel] = (
+            offers_models.PriceCategoryLabel.query.filter(offers_models.PriceCategoryLabel.venue == self.venue).all()
+        )
 
     def synchronize(self) -> None:
         for event in self.site.events:

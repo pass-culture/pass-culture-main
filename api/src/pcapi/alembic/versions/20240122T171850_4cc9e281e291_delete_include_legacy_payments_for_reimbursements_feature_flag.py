@@ -1,7 +1,6 @@
 """Delete INCLUDE_LEGACY_PAYMENTS_FOR_REIMBURSEMENTS feature flag
 """
 
-
 # pre/post deployment: post
 # revision identifiers, used by Alembic.
 revision = "4cc9e281e291"

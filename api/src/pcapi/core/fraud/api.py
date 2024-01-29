@@ -689,9 +689,9 @@ def validate_beneficiary(
         author=reviewer,
         reason=reason,
         review=review,
-        eligibilityType=user.eligibility
-        if reviewed_eligibility is None
-        else reviewed_eligibility,  # needed condition to keep flask admin review behavior
+        eligibilityType=(
+            user.eligibility if reviewed_eligibility is None else reviewed_eligibility
+        ),  # needed condition to keep flask admin review behavior
     )
 
     if review.review is not None:

@@ -176,19 +176,40 @@ def format_booking_cancellation_reason(
     reason: bookings_models.BookingCancellationReasons | educational_models.CollectiveBookingCancellationReasons | None,
 ) -> str:
     match reason:
-        case bookings_models.BookingCancellationReasons.OFFERER | educational_models.CollectiveBookingCancellationReasons.OFFERER:
+        case (
+            bookings_models.BookingCancellationReasons.OFFERER
+            | educational_models.CollectiveBookingCancellationReasons.OFFERER
+        ):
             return "Annulée par l'acteur culturel"
-        case bookings_models.BookingCancellationReasons.BENEFICIARY | educational_models.CollectiveBookingCancellationReasons.BENEFICIARY:
+        case (
+            bookings_models.BookingCancellationReasons.BENEFICIARY
+            | educational_models.CollectiveBookingCancellationReasons.BENEFICIARY
+        ):
             return "Annulée par le bénéficiaire"
-        case bookings_models.BookingCancellationReasons.EXPIRED | educational_models.CollectiveBookingCancellationReasons.EXPIRED:
+        case (
+            bookings_models.BookingCancellationReasons.EXPIRED
+            | educational_models.CollectiveBookingCancellationReasons.EXPIRED
+        ):
             return "Expirée"
-        case bookings_models.BookingCancellationReasons.FRAUD | educational_models.CollectiveBookingCancellationReasons.FRAUD:
+        case (
+            bookings_models.BookingCancellationReasons.FRAUD
+            | educational_models.CollectiveBookingCancellationReasons.FRAUD
+        ):
             return "Fraude"
-        case educational_models.CollectiveBookingCancellationReasons.FINANCE_INCIDENT | bookings_models.BookingCancellationReasons.FINANCE_INCIDENT:
+        case (
+            educational_models.CollectiveBookingCancellationReasons.FINANCE_INCIDENT
+            | bookings_models.BookingCancellationReasons.FINANCE_INCIDENT
+        ):
             return "Incident finance"
-        case educational_models.CollectiveBookingCancellationReasons.BACKOFFICE | bookings_models.BookingCancellationReasons.BACKOFFICE:
+        case (
+            educational_models.CollectiveBookingCancellationReasons.BACKOFFICE
+            | bookings_models.BookingCancellationReasons.BACKOFFICE
+        ):
             return "Annulée sur le backoffice"
-        case bookings_models.BookingCancellationReasons.REFUSED_BY_INSTITUTE | educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE:
+        case (
+            bookings_models.BookingCancellationReasons.REFUSED_BY_INSTITUTE
+            | educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE
+        ):
             return "Refusée par l'institution"
         case educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER:
             return "Refusée par le chef d'établissement"
@@ -373,7 +394,10 @@ def format_dms_application_status(
             return "En construction"
         case GraphQLApplicationStates.refused | finance_models.BankAccountApplicationStatus.REFUSED:
             return "Refusé"
-        case GraphQLApplicationStates.without_continuation | finance_models.BankAccountApplicationStatus.WITHOUT_CONTINUATION:
+        case (
+            GraphQLApplicationStates.without_continuation
+            | finance_models.BankAccountApplicationStatus.WITHOUT_CONTINUATION
+        ):
             return "Classé sans suite"
         case _:
             return status.value
@@ -1055,9 +1079,9 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["pc_pro_venue_link"] = urls.build_pc_pro_venue_link
     app.jinja_env.filters["pc_pro_user_email_validation_link"] = urls.build_pc_pro_user_email_validation_link
     app.jinja_env.filters["pc_backoffice_public_account_link"] = urls.build_backoffice_public_account_link
-    app.jinja_env.filters[
-        "pc_backoffice_public_account_link_in_comment"
-    ] = urls.build_backoffice_public_account_link_in_comment
+    app.jinja_env.filters["pc_backoffice_public_account_link_in_comment"] = (
+        urls.build_backoffice_public_account_link_in_comment
+    )
     app.jinja_env.filters["format_finance_incident_status"] = format_finance_incident_status
     app.jinja_env.filters["format_finance_incident_type"] = format_finance_incident_type
     app.jinja_env.filters["format_finance_incident_type_str"] = format_finance_incident_type_str

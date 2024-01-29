@@ -1,6 +1,7 @@
 """
 Fetch users without the PRO role and with a not validated `UserOfferer` on Batch.
 """
+
 from itertools import islice
 from typing import Generator
 

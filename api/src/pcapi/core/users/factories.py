@@ -308,9 +308,11 @@ class BeneficiaryFactory(HonorStatementValidatedUserFactory):
 
     # Deposit activation : see below with deposit function
     roles = factory.LazyAttribute(
-        lambda o: [models.UserRole.UNDERAGE_BENEFICIARY]
-        if o.age in users_constants.ELIGIBILITY_UNDERAGE_RANGE
-        else [models.UserRole.BENEFICIARY]
+        lambda o: (
+            [models.UserRole.UNDERAGE_BENEFICIARY]
+            if o.age in users_constants.ELIGIBILITY_UNDERAGE_RANGE
+            else [models.UserRole.BENEFICIARY]
+        )
     )
 
     @factory.post_generation
@@ -554,9 +556,11 @@ class BeneficiaryGrant18Factory(BaseFactory):
 
         beneficiary_import = BeneficiaryImportFactory(
             beneficiary=obj,
-            source=BeneficiaryImportSources.educonnect.value
-            if obj.eligibility == models.EligibilityType.UNDERAGE
-            else BeneficiaryImportSources.ubble.value,
+            source=(
+                BeneficiaryImportSources.educonnect.value
+                if obj.eligibility == models.EligibilityType.UNDERAGE
+                else BeneficiaryImportSources.ubble.value
+            ),
             eligibilityType=obj.eligibility,
         )
         BeneficiaryImportStatusFactory(beneficiaryImport=beneficiary_import, author=None)
@@ -587,18 +591,22 @@ class BeneficiaryGrant18Factory(BaseFactory):
             user=obj,
             status=fraud_models.FraudCheckStatus.OK,
             type=type_,
-            resultContent=fraud_factories.EduconnectContentFactory(
-                first_name=obj.firstName,
-                last_name=obj.lastName,
-                birth_date=obj.dateOfBirth.date(),
-                ine_hash=obj.ineHash or "".join(random.choices(string.ascii_lowercase + string.digits, k=32)),
-                registration_datetime=obj.dateCreated,
-            )
-            if obj.eligibility == models.EligibilityType.UNDERAGE
-            else fraud_factories.UbbleContentFactory(first_name=obj.firstName, last_name=obj.lastName),
-            eligibilityType=models.EligibilityType.UNDERAGE
-            if obj.eligibility == models.EligibilityType.UNDERAGE
-            else models.EligibilityType.AGE18,
+            resultContent=(
+                fraud_factories.EduconnectContentFactory(
+                    first_name=obj.firstName,
+                    last_name=obj.lastName,
+                    birth_date=obj.dateOfBirth.date(),
+                    ine_hash=obj.ineHash or "".join(random.choices(string.ascii_lowercase + string.digits, k=32)),
+                    registration_datetime=obj.dateCreated,
+                )
+                if obj.eligibility == models.EligibilityType.UNDERAGE
+                else fraud_factories.UbbleContentFactory(first_name=obj.firstName, last_name=obj.lastName)
+            ),
+            eligibilityType=(
+                models.EligibilityType.UNDERAGE
+                if obj.eligibility == models.EligibilityType.UNDERAGE
+                else models.EligibilityType.AGE18
+            ),
         )
 
     @factory.post_generation

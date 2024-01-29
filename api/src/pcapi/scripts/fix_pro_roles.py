@@ -4,6 +4,7 @@ Fix wrong pro roles in User table.
 In some cases, user may have been set back to NON_ATTACHED_PRO when an offerer was moved to pending state, even if the
 user was already PRO because of existing validated attachment to another validated offerer.
 """
+
 import argparse
 
 import sqlalchemy as sa

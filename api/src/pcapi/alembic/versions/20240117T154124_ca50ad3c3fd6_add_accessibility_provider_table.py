@@ -1,6 +1,7 @@
 """
 add AccessibilityProvider table in offerers models
 """
+
 from alembic import op
 import sqlalchemy as sa
 

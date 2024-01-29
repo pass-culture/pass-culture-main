@@ -223,8 +223,9 @@ def refuse_collective_booking(educational_booking_id: int) -> educational_models
 def get_collective_booking_report(
     user: User,
     booking_period: tuple[datetime.date, datetime.date] | None = None,
-    status_filter: educational_models.CollectiveBookingStatusFilter
-    | None = educational_models.CollectiveBookingStatusFilter.BOOKED,
+    status_filter: (
+        educational_models.CollectiveBookingStatusFilter | None
+    ) = educational_models.CollectiveBookingStatusFilter.BOOKED,
     event_date: datetime.datetime | None = None,
     venue_id: int | None = None,
     export_type: bookings_models.BookingExportType | None = bookings_models.BookingExportType.CSV,

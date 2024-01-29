@@ -208,9 +208,11 @@ class ValidateIncidentTest(PostEndpointHelper):
             authenticated_client,
             finance_incident_id=booking_incident.incident.id,
             form={
-                "compensation_mode": finance_forms.IncidentCompensationModes.FORCE_DEBIT_NOTE.name
-                if force_debit_note
-                else finance_forms.IncidentCompensationModes.COMPENSATE_ON_BOOKINGS.name
+                "compensation_mode": (
+                    finance_forms.IncidentCompensationModes.FORCE_DEBIT_NOTE.name
+                    if force_debit_note
+                    else finance_forms.IncidentCompensationModes.COMPENSATE_ON_BOOKINGS.name
+                )
             },
         )
 
@@ -305,9 +307,11 @@ class ValidateIncidentTest(PostEndpointHelper):
             authenticated_client,
             finance_incident_id=incident.id,
             form={
-                "compensation_mode": finance_forms.IncidentCompensationModes.FORCE_DEBIT_NOTE.name
-                if force_debit_note
-                else finance_forms.IncidentCompensationModes.COMPENSATE_ON_BOOKINGS.name
+                "compensation_mode": (
+                    finance_forms.IncidentCompensationModes.FORCE_DEBIT_NOTE.name
+                    if force_debit_note
+                    else finance_forms.IncidentCompensationModes.COMPENSATE_ON_BOOKINGS.name
+                )
             },
         )
 
@@ -1082,9 +1086,10 @@ class GetInvoiceGenerationTest(GetEndpointHelper):
             batch=finance_factories.CashflowBatchFactory(label="VIR2", cutoff=datetime.datetime(2023, 1, 31)),
         )
 
-        with mock.patch("pcapi.tasks.finance_tasks.is_generate_invoices_queue_empty") as queue_empty_mock, mock.patch(
-            "flask.current_app.redis_client.get"
-        ) as redis_client_get_mock:
+        with (
+            mock.patch("pcapi.tasks.finance_tasks.is_generate_invoices_queue_empty") as queue_empty_mock,
+            mock.patch("flask.current_app.redis_client.get") as redis_client_get_mock,
+        ):
             queue_empty_mock.return_value = is_queue_empty
             redis_client_get_mock.side_effect = [40, 11] if not is_queue_empty else [None, None]
 

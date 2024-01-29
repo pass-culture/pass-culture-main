@@ -77,16 +77,20 @@ def render_finance_incident(incident: finance_models.FinanceIncident) -> utils.B
 
     total_amount = (
         sum(
-            booking_incident.collectiveBooking.reimbursement_pricing.amount
-            if booking_incident.collectiveBooking.reimbursement_pricing
-            else 0
+            (
+                booking_incident.collectiveBooking.reimbursement_pricing.amount
+                if booking_incident.collectiveBooking.reimbursement_pricing
+                else 0
+            )
             for booking_incident in booking_incidents
         )
         if incident.relates_to_collective_bookings
         else sum(
-            booking_incident.booking.reimbursement_pricing.amount
-            if booking_incident.booking.reimbursement_pricing
-            else 0
+            (
+                booking_incident.booking.reimbursement_pricing.amount
+                if booking_incident.booking.reimbursement_pricing
+                else 0
+            )
             for booking_incident in booking_incidents
         )
     )
@@ -97,9 +101,9 @@ def render_finance_incident(incident: finance_models.FinanceIncident) -> utils.B
         total_amount=total_amount,
         incident=incident,
         reimbursement_point=current_reimbursement_point,
-        reimbursement_point_humanized_id=humanize(current_reimbursement_point.id)
-        if current_reimbursement_point
-        else None,
+        reimbursement_point_humanized_id=(
+            humanize(current_reimbursement_point.id) if current_reimbursement_point else None
+        ),
         active_tab=request.args.get("active_tab", "bookings"),
     )
 

@@ -3,6 +3,7 @@ Fetch users from database and update their information in Batch and Sendinblue.
 Goal: some users do not have all the expected attributes, this script should
 fix this issue.
 """
+
 import sys
 
 from pcapi.core.external import batch

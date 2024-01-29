@@ -1,4 +1,5 @@
 """Create `collective_playlist` table"""
+
 from alembic import op
 import sqlalchemy as sa
 

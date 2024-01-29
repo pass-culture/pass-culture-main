@@ -3,8 +3,7 @@ import typing
 
 
 class UrlForPartial(typing.Protocol):
-    def __call__(self, page: int) -> str:
-        ...
+    def __call__(self, page: int) -> str: ...
 
 
 PAGINATION_STEPS = 7

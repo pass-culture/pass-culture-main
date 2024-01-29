@@ -145,9 +145,11 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
     if not edit_offerer_form:
         edit_offerer_form = offerer_forms.EditOffererForm(
             name=offerer.name,
-            postal_address_autocomplete=f"{offerer.address}, {offerer.postalCode} {offerer.city}"
-            if offerer.address is not None and offerer.city is not None and offerer.postalCode is not None
-            else None,
+            postal_address_autocomplete=(
+                f"{offerer.address}, {offerer.postalCode} {offerer.city}"
+                if offerer.address is not None and offerer.city is not None and offerer.postalCode is not None
+                else None
+            ),
             city=offerer.city,
             postal_code=offerer.postalCode,
             address=offerer.address,
@@ -157,9 +159,11 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
     search_form = pro_forms.CompactProSearchForm(
         q=request.args.get("q"),
         pro_type=pro_forms.TypeOptions.OFFERER.name,
-        departments=request.args.getlist("departments")
-        if request.args.get("q") or request.args.getlist("departments")
-        else current_user.backoffice_profile.preferences.get("departments", []),
+        departments=(
+            request.args.getlist("departments")
+            if request.args.get("q") or request.args.getlist("departments")
+            else current_user.backoffice_profile.preferences.get("departments", [])
+        ),
     )
 
     show_subscription_tab = (
@@ -182,9 +186,12 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
         delete_offerer_form=empty_forms.EmptyForm(),
         show_subscription_tab=show_subscription_tab,
         active_tab=request.args.get("active_tab", "history"),
-        zendesk_sell_synchronisation_form=empty_forms.EmptyForm()
-        if row.has_non_virtual_venues and utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
-        else None,
+        zendesk_sell_synchronisation_form=(
+            empty_forms.EmptyForm()
+            if row.has_non_virtual_venues
+            and utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
+            else None
+        ),
     )
 
 

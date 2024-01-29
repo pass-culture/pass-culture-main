@@ -5,6 +5,7 @@ from the PIL library:
 
     https://pillow.readthedocs.io/
 """
+
 from dataclasses import dataclass
 import enum
 import io

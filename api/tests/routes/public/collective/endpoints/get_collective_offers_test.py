@@ -53,15 +53,15 @@ class CollectiveOffersPublicGetOfferTest:
                     {
                         "id": booking2.id,
                         "status": booking2.status.value,
-                        "confirmationDate": booking2.confirmationDate.isoformat()
-                        if booking2.confirmationDate
-                        else None,
-                        "cancellationLimitDate": booking2.cancellationLimitDate.isoformat()
-                        if booking2.cancellationLimitDate
-                        else None,
-                        "reimbursementDate": booking2.reimbursementDate.isoformat()
-                        if booking2.reimbursementDate
-                        else None,
+                        "confirmationDate": (
+                            booking2.confirmationDate.isoformat() if booking2.confirmationDate else None
+                        ),
+                        "cancellationLimitDate": (
+                            booking2.cancellationLimitDate.isoformat() if booking2.cancellationLimitDate else None
+                        ),
+                        "reimbursementDate": (
+                            booking2.reimbursementDate.isoformat() if booking2.reimbursementDate else None
+                        ),
                         "dateUsed": booking2.dateUsed.isoformat() if booking2.dateUsed else None,
                         "dateCreated": booking2.dateCreated.isoformat() if booking2.dateCreated else None,
                     }

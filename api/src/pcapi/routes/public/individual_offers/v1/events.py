@@ -231,11 +231,11 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
                 bookingContact=update_body.get("booking_contact", offers_api.UNCHANGED),
                 bookingEmail=update_body.get("booking_email", offers_api.UNCHANGED),
                 durationMinutes=update_body.get("duration_minutes", offers_api.UNCHANGED),
-                extraData=serialization.deserialize_extra_data(
-                    body.category_related_fields, copy.deepcopy(offer.extraData)
-                )
-                if body.category_related_fields
-                else offers_api.UNCHANGED,
+                extraData=(
+                    serialization.deserialize_extra_data(body.category_related_fields, copy.deepcopy(offer.extraData))
+                    if body.category_related_fields
+                    else offers_api.UNCHANGED
+                ),
                 isActive=update_body.get("is_active", offers_api.UNCHANGED),
                 isDuo=update_body.get("is_duo", offers_api.UNCHANGED),
                 withdrawalDetails=update_body.get("withdrawal_details", offers_api.UNCHANGED),
@@ -362,9 +362,11 @@ def patch_event_price_categories(
                 event_offer,
                 price_category=price_category_to_edit,
                 label=update_body.get("label", offers_api.UNCHANGED),
-                price=finance_utils.to_euros(eurocent_price)
-                if eurocent_price != offers_api.UNCHANGED
-                else offers_api.UNCHANGED,
+                price=(
+                    finance_utils.to_euros(eurocent_price)
+                    if eurocent_price != offers_api.UNCHANGED
+                    else offers_api.UNCHANGED
+                ),
                 editing_provider=current_api_key.provider,
             )
     except offers_exceptions.OfferEditionBaseException as error:

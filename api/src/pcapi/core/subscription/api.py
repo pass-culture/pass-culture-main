@@ -855,9 +855,11 @@ def _get_steps_details(
                 name=step,
                 title=models.SubscriptionStepTitle[step.name],
                 subtitle=subtitle,
-                completion_state=models.SubscriptionStepCompletionState.COMPLETED
-                if is_before_current_step
-                else models.SubscriptionStepCompletionState.DISABLED,
+                completion_state=(
+                    models.SubscriptionStepCompletionState.COMPLETED
+                    if is_before_current_step
+                    else models.SubscriptionStepCompletionState.DISABLED
+                ),
             )
         )
 

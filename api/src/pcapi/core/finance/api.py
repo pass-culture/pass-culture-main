@@ -170,9 +170,11 @@ def add_event(
 
     event = models.FinanceEvent(
         booking=booking if isinstance(booking, bookings_models.Booking) and not booking_incident else None,  # type: ignore [arg-type]
-        collectiveBooking=booking  # type: ignore [arg-type]
-        if isinstance(booking, educational_models.CollectiveBooking) and not booking_incident
-        else None,
+        collectiveBooking=(
+            booking  # type: ignore [arg-type]
+            if isinstance(booking, educational_models.CollectiveBooking) and not booking_incident
+            else None
+        ),
         bookingFinanceIncident=booking_incident,  # type: ignore [arg-type]
         status=status,
         motive=motive,
@@ -190,9 +192,11 @@ def cancel_latest_event(
 ) -> models.FinanceEvent | None:
     """Cancel latest used-related finance event, if there is one."""
     event = models.FinanceEvent.query.filter(
-        (models.FinanceEvent.booking == booking)
-        if isinstance(booking, bookings_models.Booking)
-        else (models.FinanceEvent.collectiveBooking == booking),
+        (
+            (models.FinanceEvent.booking == booking)
+            if isinstance(booking, bookings_models.Booking)
+            else (models.FinanceEvent.collectiveBooking == booking)
+        ),
         models.FinanceEvent.motive.in_(
             (
                 models.FinanceEventMotive.BOOKING_USED,
@@ -3360,9 +3364,11 @@ def validate_finance_incident(finance_incident: models.FinanceIncident, force_de
         author=current_user,
         venue=finance_incident.venue,
         finance_incident=finance_incident,
-        comment="Génération d'une note de débit à la prochaine échéance."
-        if force_debit_note
-        else "Récupération sur les prochaines réservations.",
+        comment=(
+            "Génération d'une note de débit à la prochaine échéance."
+            if force_debit_note
+            else "Récupération sur les prochaines réservations."
+        ),
         linked_incident_id=finance_incident.id,
     )
 

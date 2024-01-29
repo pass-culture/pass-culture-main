@@ -6,6 +6,7 @@ Zendesk subscription does not include access to sandbox for testing and staging.
 So ZENDESK_API_URL will be empty for non-production platforms, except when working with a free evaluation account which
 is limited to 14 days after creation.
 """
+
 from datetime import datetime
 import logging
 from typing import Iterable
@@ -136,20 +137,22 @@ def _format_pro_attributes(email: str, attributes: attributes_models.ProAttribut
         "tags": tags,
         # https://developer.zendesk.com/api-reference/ticketing/users/users/#user-fields
         "user_fields": {
-            "backoffice_url": _get_backoffice_pro_user_link(attributes.user_id)
-            if attributes.user_id
-            else ", ".join(_get_backoffice_venues_links(attributes.venues_ids)),
+            "backoffice_url": (
+                _get_backoffice_pro_user_link(attributes.user_id)
+                if attributes.user_id
+                else ", ".join(_get_backoffice_venues_links(attributes.venues_ids))
+            ),
             "user_id": attributes.user_id,
             "first_name": attributes.first_name,
             "last_name": attributes.last_name,
             "postal_code": _format_list(attributes.postal_code),
             "offerer_name": _format_list(attributes.offerers_names),
             "venue_name": _format_list(attributes.venues_names),
-            "dms_application": "Approuvé"
-            if attributes.dms_application_approved
-            else "Déposé"
-            if attributes.dms_application_submitted
-            else "Aucun",
+            "dms_application": (
+                "Approuvé"
+                if attributes.dms_application_approved
+                else "Déposé" if attributes.dms_application_submitted else "Aucun"
+            ),
         },
     }
 

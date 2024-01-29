@@ -2,6 +2,7 @@
 Refresh all PRO attributes in Sendinblue.
 This command should be run when a new attribute is added for pro users or when its content scope is changed.
 """
+
 import time
 
 from pcapi.core.external.attributes.api import get_pro_attributes

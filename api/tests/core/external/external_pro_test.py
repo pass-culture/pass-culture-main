@@ -100,12 +100,12 @@ def test_update_external_pro_user_attributes(
         isPermanent=create_permanent,
         venueTypeCode=VenueTypeCode.MOVIE,
         venueLabelId=venue_label_a.id,
-        collectiveOffers=[educational_factories.CollectiveOfferFactory(isActive=True)]
-        if create_collective_offer
-        else [],
-        collectiveOfferTemplates=[educational_factories.CollectiveOfferTemplateFactory(isActive=True)]
-        if create_template_offer
-        else [],
+        collectiveOffers=(
+            [educational_factories.CollectiveOfferFactory(isActive=True)] if create_collective_offer else []
+        ),
+        collectiveOfferTemplates=(
+            [educational_factories.CollectiveOfferTemplateFactory(isActive=True)] if create_template_offer else []
+        ),
     )
     venue1b = offerers_factories.VenueFactory(
         managingOfferer=offerer1,

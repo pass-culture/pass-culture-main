@@ -2,6 +2,7 @@
 Ensure that the BaseQuery runs well: data is fetched, rows are
 properly serialized and yielded.
 """
+
 from unittest.mock import patch
 
 import pydantic.v1 as pydantic_v1

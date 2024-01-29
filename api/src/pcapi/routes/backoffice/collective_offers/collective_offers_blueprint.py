@@ -180,9 +180,11 @@ def _batch_validate_or_reject_collective_offers(
 
     if len(collective_offer_ids) != len(collective_offers):
         flash(
-            "Seules les offres collectives en attente peuvent être validées"
-            if validation is offer_mixin.OfferValidationStatus.APPROVED
-            else "Seules les offres collectives en attente peuvent être rejetées",
+            (
+                "Seules les offres collectives en attente peuvent être validées"
+                if validation is offer_mixin.OfferValidationStatus.APPROVED
+                else "Seules les offres collectives en attente peuvent être rejetées"
+            ),
             "warning",
         )
         return False
@@ -224,24 +226,30 @@ def _batch_validate_or_reject_collective_offers(
 
     if len(collective_offer_update_succeed_ids) == 1:
         flash(
-            "L'offre collective a été validée"
-            if validation is offer_mixin.OfferValidationStatus.APPROVED
-            else "L'offre collective a été rejetée",
+            (
+                "L'offre collective a été validée"
+                if validation is offer_mixin.OfferValidationStatus.APPROVED
+                else "L'offre collective a été rejetée"
+            ),
             "success",
         )
     elif collective_offer_update_succeed_ids:
         flash(
-            f"Les offres collectives {', '.join(map(str, collective_offer_update_succeed_ids))} ont été validées"
-            if validation is offer_mixin.OfferValidationStatus.APPROVED
-            else f"Les offres collectives {', '.join(map(str, collective_offer_update_succeed_ids))} ont été rejetées",
+            (
+                f"Les offres collectives {', '.join(map(str, collective_offer_update_succeed_ids))} ont été validées"
+                if validation is offer_mixin.OfferValidationStatus.APPROVED
+                else f"Les offres collectives {', '.join(map(str, collective_offer_update_succeed_ids))} ont été rejetées"
+            ),
             "success",
         )
 
     if len(collective_offer_update_failed_ids) > 0:
         flash(
-            f"Une erreur est survenue lors de la validation des offres collectives : {', '.join(map(str, collective_offer_update_failed_ids))}"
-            if validation is offer_mixin.OfferValidationStatus.APPROVED
-            else f"Une erreur est survenue lors du rejet des offres collectives : {', '.join(map(str, collective_offer_update_failed_ids))}",
+            (
+                f"Une erreur est survenue lors de la validation des offres collectives : {', '.join(map(str, collective_offer_update_failed_ids))}"
+                if validation is offer_mixin.OfferValidationStatus.APPROVED
+                else f"Une erreur est survenue lors du rejet des offres collectives : {', '.join(map(str, collective_offer_update_failed_ids))}"
+            ),
             "warning",
         )
     return True

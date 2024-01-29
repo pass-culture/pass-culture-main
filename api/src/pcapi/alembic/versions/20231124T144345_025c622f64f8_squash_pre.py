@@ -1,7 +1,6 @@
 """Squashing migrations - PRE
 """
 
-
 # pre/post deployment: pre
 # revision identifiers, used by Alembic.
 revision = "025c622f64f8"

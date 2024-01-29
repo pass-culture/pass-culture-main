@@ -145,10 +145,12 @@ def new_template_offers_playlist(
                     offer=item.collective_offer_template,
                     serializer=serializers.CollectiveOfferTemplateResponseModel,
                     is_favorite=item.collective_offer_template.id in favorite_ids,
-                    event_distance=item.distanceInKm
-                    if item.collective_offer_template.offerVenue["addressType"]
-                    == collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value
-                    else None,
+                    event_distance=(
+                        item.distanceInKm
+                        if item.collective_offer_template.offerVenue["addressType"]
+                        == collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value
+                        else None
+                    ),
                     venue_distance=item.distanceInKm,
                 ),
             )

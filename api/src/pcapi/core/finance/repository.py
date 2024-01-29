@@ -662,9 +662,11 @@ def _get_legacy_payments_for_individual_bookings(
             models.PaymentStatus.status == models.TransactionStatus.SENT,
             payment_date.between(*reimbursement_period, symmetric=True),
             bookings_models.Booking.offererId.in_(offerer_ids),
-            (bookings_models.Booking.venueId == venue_id)
-            if venue_id
-            else (bookings_models.Booking.venueId is not None),
+            (
+                (bookings_models.Booking.venueId == venue_id)
+                if venue_id
+                else (bookings_models.Booking.venueId is not None)
+            ),
         )
         .join(offerers_models.Offerer)
         .join(offers_models.Stock)
@@ -716,9 +718,11 @@ def _get_legacy_payments_for_collective_bookings(
             models.PaymentStatus.status == models.TransactionStatus.SENT,
             payment_date.between(*reimbursement_period, symmetric=True),
             educational_models.CollectiveBooking.offererId.in_(offerer_ids),
-            (educational_models.CollectiveBooking.venueId == venue_id)
-            if venue_id
-            else (educational_models.CollectiveBooking.venueId is not None),
+            (
+                (educational_models.CollectiveBooking.venueId == venue_id)
+                if venue_id
+                else (educational_models.CollectiveBooking.venueId is not None)
+            ),
         )
         .join(offerers_models.Venue, offerers_models.Venue.id == educational_models.CollectiveBooking.venueId)
         .join(offerers_models.Offerer, offerers_models.Offerer.id == educational_models.CollectiveBooking.offererId)

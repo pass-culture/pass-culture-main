@@ -1,5 +1,6 @@
 """Add index on offer.authorId column
 """
+
 from alembic import op
 
 from pcapi import settings

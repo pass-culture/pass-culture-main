@@ -213,9 +213,11 @@ def _batch_validate_or_reject_collective_offer_templates(
 
     if len(collective_offer_template_ids) != len(collective_offer_templates):
         flash(
-            "Seules les offres collectives vitrine en attente peuvent être validées"
-            if validation is OfferValidationStatus.APPROVED
-            else "Seules les offres collectives vitrine en attente peuvent être rejetées",
+            (
+                "Seules les offres collectives vitrine en attente peuvent être validées"
+                if validation is OfferValidationStatus.APPROVED
+                else "Seules les offres collectives vitrine en attente peuvent être rejetées"
+            ),
             "warning",
         )
         return False
@@ -258,25 +260,31 @@ def _batch_validate_or_reject_collective_offer_templates(
 
     if len(collective_offer_template_update_succeed_ids) == 1:
         flash(
-            "L'offre collective vitrine a été validée"
-            if validation is OfferValidationStatus.APPROVED
-            else "L'offre collective vitrine a été rejetée",
+            (
+                "L'offre collective vitrine a été validée"
+                if validation is OfferValidationStatus.APPROVED
+                else "L'offre collective vitrine a été rejetée"
+            ),
             "success",
         )
     elif collective_offer_template_update_succeed_ids:
         flash(
-            f"Les offres collectives vitrine {', '.join(map(str, collective_offer_template_update_succeed_ids))} ont été validées"
-            if validation is OfferValidationStatus.APPROVED
-            else f"Les offres collectives vitrine {', '.join(map(str, collective_offer_template_update_succeed_ids))} ont été rejetées",
+            (
+                f"Les offres collectives vitrine {', '.join(map(str, collective_offer_template_update_succeed_ids))} ont été validées"
+                if validation is OfferValidationStatus.APPROVED
+                else f"Les offres collectives vitrine {', '.join(map(str, collective_offer_template_update_succeed_ids))} ont été rejetées"
+            ),
             "success",
         )
 
     if len(collective_offer_template_update_failed_ids) > 0:
         flash(
-            f"Une erreur est survenue lors du rejet des offres collectives vitrine : {', '.join(map(str, collective_offer_template_update_failed_ids))}"
-            if validation is OfferValidationStatus.APPROVED
-            else f"Une erreur est survenue lors du rejet des offres collectives vitrine : {', '.join(map(str, collective_offer_template_update_failed_ids))}"
-            "warning",
+            (
+                f"Une erreur est survenue lors du rejet des offres collectives vitrine : {', '.join(map(str, collective_offer_template_update_failed_ids))}"
+                if validation is OfferValidationStatus.APPROVED
+                else f"Une erreur est survenue lors du rejet des offres collectives vitrine : {', '.join(map(str, collective_offer_template_update_failed_ids))}"
+                "warning"
+            ),
         )
 
     return True

@@ -151,14 +151,16 @@ def upsert_stocks(
                     existing_stocks[stock_to_edit.id],
                     price=stock_to_edit.price,
                     quantity=stock_to_edit.quantity,
-                    beginning_datetime=serialization_utils.as_utc_without_timezone(stock_to_edit.beginning_datetime)
-                    if stock_to_edit.beginning_datetime
-                    else None,
-                    booking_limit_datetime=serialization_utils.as_utc_without_timezone(
-                        stock_to_edit.booking_limit_datetime
-                    )
-                    if stock_to_edit.booking_limit_datetime
-                    else None,
+                    beginning_datetime=(
+                        serialization_utils.as_utc_without_timezone(stock_to_edit.beginning_datetime)
+                        if stock_to_edit.beginning_datetime
+                        else None
+                    ),
+                    booking_limit_datetime=(
+                        serialization_utils.as_utc_without_timezone(stock_to_edit.booking_limit_datetime)
+                        if stock_to_edit.booking_limit_datetime
+                        else None
+                    ),
                     price_category=price_categories.get(stock_to_edit.price_category_id, None),
                 )
                 upserted_stocks.append(edited_stock)

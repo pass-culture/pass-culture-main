@@ -609,11 +609,11 @@ def edit_product(body: serialization.ProductOfferEdition) -> serialization.Produ
                 offer,
                 bookingContact=updated_offer_from_body.get("booking_contact", offers_api.UNCHANGED),
                 bookingEmail=updated_offer_from_body.get("booking_email", offers_api.UNCHANGED),
-                extraData=serialization.deserialize_extra_data(
-                    body.category_related_fields, copy.deepcopy(offer.extraData)
-                )
-                if body.category_related_fields
-                else offers_api.UNCHANGED,
+                extraData=(
+                    serialization.deserialize_extra_data(body.category_related_fields, copy.deepcopy(offer.extraData))
+                    if body.category_related_fields
+                    else offers_api.UNCHANGED
+                ),
                 isActive=updated_offer_from_body.get("is_active", offers_api.UNCHANGED),
                 isDuo=updated_offer_from_body.get("is_duo", offers_api.UNCHANGED),
                 withdrawalDetails=updated_offer_from_body.get("withdrawal_details", offers_api.UNCHANGED),

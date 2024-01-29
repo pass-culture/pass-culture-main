@@ -159,9 +159,11 @@ class BeneficiaryFraudCheckFactory(factories.BaseFactory):
     thirdPartyId = factory.LazyFunction(lambda: str(uuid.uuid4()))
     status = models.FraudCheckStatus.PENDING
     eligibilityType = factory.LazyAttribute(
-        lambda o: users_models.EligibilityType.UNDERAGE
-        if o.user.age in users_constants.ELIGIBILITY_UNDERAGE_RANGE
-        else users_models.EligibilityType.AGE18
+        lambda o: (
+            users_models.EligibilityType.UNDERAGE
+            if o.user.age in users_constants.ELIGIBILITY_UNDERAGE_RANGE
+            else users_models.EligibilityType.AGE18
+        )
     )
 
     @classmethod
