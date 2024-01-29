@@ -37,7 +37,7 @@ jobs:
           secrets: |-
             ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version-file: "pro/.nvmrc"
       - uses: KengoTODA/actions-setup-docker-compose@v1
