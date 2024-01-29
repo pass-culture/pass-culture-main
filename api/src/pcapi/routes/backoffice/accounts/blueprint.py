@@ -209,17 +209,18 @@ def render_public_account_details(
 ) -> str:
     # Pre-load as many things as possible in the same request to avoid too many SQL queries
     # Note that extra queries are made in methods called by get_eligibility_history()
+    # Do not joinedload bookings: combinations would cause too many rows returned by postgresql - fetched in a 2nd query
     user = (
         users_models.User.query.filter_by(id=user_id)
         .options(
             sa.orm.joinedload(users_models.User.deposits),
-            sa.orm.joinedload(users_models.User.userBookings)
+            sa.orm.subqueryload(users_models.User.userBookings)
             .joinedload(bookings_models.Booking.stock)
             .joinedload(offers_models.Stock.offer),
-            sa.orm.joinedload(users_models.User.userBookings)
+            sa.orm.subqueryload(users_models.User.userBookings)
             .joinedload(bookings_models.Booking.offerer)
             .load_only(offerers_models.Offerer.name),
-            sa.orm.joinedload(users_models.User.userBookings)
+            sa.orm.subqueryload(users_models.User.userBookings)
             .joinedload(bookings_models.Booking.venue)
             .load_only(offerers_models.Venue.bookingEmail),
             sa.orm.joinedload(users_models.User.beneficiaryFraudChecks),
