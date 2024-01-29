@@ -58,6 +58,7 @@
       <th scope="col">Prénom / Nom</th>
       <th scope="col">Email</th>
       <th scope="col">Invitation</th>
+      {% if is_feature_active('WIP_CONNECT_AS') %}<th scope="col">Connect as</th>{% endif %}
     </tr>
   </thead>
   <tbody>
@@ -126,20 +127,28 @@
             Invité le {{ offerer_invitation.dateCreated | format_date_time }} par {{ links.build_pro_user_name_to_details_link(offerer_invitation.user.id, offerer_invitation.user.full_name) }}
           {% endif %}
         </td>
+        {% if is_feature_active('WIP_CONNECT_AS') %}
+          <td class="fw-bolder">
+            {% if row.isActive and (admin_role not in row.roles) and (anonymized_role not in row.roles) %}
+              <a href="{{ url_for('backoffice_web.pro_user.connect_as', user_id=row.id, csrf_token=csrf_token._value() ) }}"
+                 target="_blank"
+                 rel="noopener">
+                <i class="bi bi-arrow-up-right-square-fill"></i>
+              </a>
+            {% endif %}
+          </td>
+        {% endif %}
       </tr>
     {% endfor %}
   </tbody>
 </table>
 {% for user_offerer in rows | map(attribute="UserOfferer") %}
   {% if user_offerer %}
-    {{ build_lazy_modal(
-    url_for("backoffice_web.validation.get_reject_user_offerer_form", user_offerer_id=user_offerer.id),
+    {{ build_lazy_modal(url_for("backoffice_web.validation.get_reject_user_offerer_form", user_offerer_id=user_offerer.id) ,
     "reject-modal-" + user_offerer.id|string) }}
-    {{ build_lazy_modal(
-    url_for("backoffice_web.validation.get_user_offerer_pending_form", user_offerer_id=user_offerer.id),
+    {{ build_lazy_modal(url_for("backoffice_web.validation.get_user_offerer_pending_form", user_offerer_id=user_offerer.id) ,
     "pending-modal-" + user_offerer.id|string) }}
-    {{ build_lazy_modal(
-    url_for("backoffice_web.offerer.get_delete_user_offerer_form", offerer_id=user_offerer.offerer.id, user_offerer_id=user_offerer.id),
+    {{ build_lazy_modal(url_for("backoffice_web.offerer.get_delete_user_offerer_form", offerer_id=user_offerer.offerer.id, user_offerer_id=user_offerer.id) ,
     "delete-modal-" + user_offerer.id|string) }}
   {% endif %}
 {% endfor %}

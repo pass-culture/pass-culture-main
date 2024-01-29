@@ -1,9 +1,11 @@
 import datetime
 from unittest.mock import patch
 
+from flask import g
 from flask import url_for
 import pytest
 
+from pcapi import settings
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
@@ -12,11 +14,14 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
+from pcapi.core.token import SecureToken
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.routes.backoffice.filters import format_date
 from pcapi.utils import email as email_utils
+from pcapi.utils import urls
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
@@ -556,3 +561,127 @@ class DeleteProUserTest(PostEndpointHelper):
         assert users_models.User.query.filter(users_models.User.id == user_id).count() == 0
         assert users_models.Favorite.query.filter(users_models.Favorite.userId == user_id).count() == 0
         assert offers_models.Mediation.query.one().authorId is None
+
+
+class GetConnectAsProUserTest(GetEndpointHelper):
+    endpoint = "backoffice_web.pro_user.connect_as"
+    endpoint_kwargs = {"user_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+
+    # session + current user + pro user data + WIP_CONNECT_AS
+    expected_num_queries = 4
+
+    # when pro is not loaded, e.g. invalid token or FF disabled
+    expected_num_queries_when_failed = expected_num_queries - 1
+
+    def _get_csrf_token(self, auth_client):
+        auth_client.get(url_for("backoffice_web.home"))
+        return g.get("csrf_token", None)
+
+    @override_features(WIP_CONNECT_AS=True)
+    @pytest.mark.parametrize("roles", [[users_models.UserRole.PRO], [users_models.UserRole.NON_ATTACHED_PRO]])
+    def test_connect_as(self, client, legit_user, roles):
+        user = users_factories.ProFactory(roles=roles)
+        authenticated_client = client.with_bo_session_auth(legit_user)
+
+        expected_token_data = {
+            "user_id": user.id,
+            "internal_admin_id": legit_user.id,
+            "internal_admin_email": legit_user.email,
+            "redirect_link": settings.PRO_URL,
+        }
+
+        url = url_for(self.endpoint, user_id=user.id, csrf_token=self._get_csrf_token(authenticated_client))
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 303
+
+        # check url form
+        base_url, key_token = response.location.rsplit("/", 1)
+        assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
+        assert SecureToken(token=key_token).data == expected_token_data
+
+    @override_features(WIP_CONNECT_AS=False)
+    def test_connect_as_protected_by_feature_flag(self, authenticated_client):
+        user = users_factories.ProFactory()
+
+        url = url_for(self.endpoint, user_id=user.id, csrf_token=self._get_csrf_token(authenticated_client))
+        with assert_num_queries(self.expected_num_queries_when_failed):
+            response = authenticated_client.get(url)
+            assert response.status_code == 303
+
+        assert response.location == url_for("backoffice_web.pro_user.get", user_id=user.id, _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "L'utilisation du « connect as » requiert l'activation de la feature : WIP_CONNECT_AS"
+        )
+
+    @override_features(WIP_CONNECT_AS=True)
+    def test_connect_as_protected_by_csrf(self, authenticated_client):
+        user = users_factories.ProFactory()
+
+        g.csrf_valid = False
+
+        url = url_for(self.endpoint, user_id=user.id, csrf_token="invalid-token")
+        with assert_num_queries(self.expected_num_queries_when_failed):
+            response = authenticated_client.get(url)
+            assert response.status_code == 303
+
+        assert response.location == url_for("backoffice_web.pro_user.get", user_id=user.id, _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Échec de la validation de sécurité, veuillez réessayer"
+        )
+
+    @override_features(WIP_CONNECT_AS=True)
+    def test_connect_as_user_not_found(self, authenticated_client):
+        url = url_for(self.endpoint, user_id=0, csrf_token=self._get_csrf_token(authenticated_client))
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 404
+
+    @override_features(WIP_CONNECT_AS=True)
+    def test_connect_as_inactive_user(self, authenticated_client):
+        user = users_factories.ProFactory(isActive=False)
+
+        url = url_for(self.endpoint, user_id=user.id, csrf_token=self._get_csrf_token(authenticated_client))
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 303
+
+        assert response.location == url_for("backoffice_web.pro_user.get", user_id=user.id, _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "L'utilisation du « connect as » n'est pas disponible pour les comptes inactifs"
+        )
+
+    @override_features(WIP_CONNECT_AS=True)
+    @pytest.mark.parametrize(
+        "roles,warning",
+        [
+            (
+                [users_models.UserRole.PRO, users_models.UserRole.ADMIN],
+                "L'utilisation du « connect as » n'est pas disponible pour les comptes admins",
+            ),
+            (
+                [users_models.UserRole.PRO, users_models.UserRole.ANONYMIZED],
+                "L'utilisation du « connect as » n'est pas disponible pour les comptes anonymisés",
+            ),
+            ([], ""),
+        ],
+    )
+    def test_connect_as_uneligible_user(self, authenticated_client, roles, warning):
+        user = users_factories.UserFactory(roles=roles)
+
+        url = url_for(self.endpoint, user_id=user.id, csrf_token=self._get_csrf_token(authenticated_client))
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 303
+
+        assert response.location == url_for("backoffice_web.pro_user.get", user_id=user.id, _external=True)
+        if warning:
+            redirected_response = authenticated_client.get(response.location)
+            assert html_parser.extract_alert(redirected_response.data) == warning
