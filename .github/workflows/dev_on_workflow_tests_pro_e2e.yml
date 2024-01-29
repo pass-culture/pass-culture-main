@@ -26,13 +26,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.1
       - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v2'
+        uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: "Get Secret"
-        id: 'secrets'
-        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        id: "secrets"
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
           secrets: |-
             ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
@@ -42,7 +42,7 @@ jobs:
           node-version-file: "pro/.nvmrc"
       - uses: KengoTODA/actions-setup-docker-compose@v1
         with:
-          version: '2.23.3'
+          version: "2.23.3"
       - name: "Fix local permissions"
         run: sudo chown -R $PCAPI_UID:$PCAPI_GID .
         working-directory: api
@@ -69,17 +69,17 @@ jobs:
       - run: yarn install --immutable
       - name: "Run postgres and redis server"
         run: docker-compose -f ../docker-compose-backend.yml up postgres redis -d
-      - id: 'openid-auth'
+      - id: "openid-auth"
         name: "OpenID Connect Authentication"
-        uses: 'google-github-actions/auth@v2'
+        uses: "google-github-actions/auth@v2"
         with:
           create_credentials_file: false
           token_format: "access_token"
           workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER  }}
           service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v2'
-      - id: 'docker-login'
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v2"
+      - id: "docker-login"
         uses: "docker/login-action@v1"
         name: "Docker login"
         with:
@@ -109,12 +109,12 @@ jobs:
           timeout: 120000
       - name: "Load sandbox"
         run: ../pc sandbox -n industrial
-      - name: 'Build vite application'
+      - name: "Build vite application"
         run: yarn build:development
-      - name: 'Serve vite preview'
+      - name: "Serve vite preview"
         run: yarn serve &
       # Using wait-on does not work well for this service, we use curl
-      - name: 'Wait for front-end to listen'
+      - name: "Wait for front-end to listen"
         run: |
           timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:3001)" != "200" ]]; do sleep 5; done' || false
       # Doc : https://github.com/cypress-io/github-action
@@ -127,7 +127,7 @@ jobs:
           wait-on: "http://localhost:5001/health/api,http://localhost:5001/health/database"
           wait-on-timeout: 600
           working-directory: pro
-      - name: 'Move cypress videos'
+      - name: "Move cypress videos"
         run: |
           mkdir -p cypress/videos/${{ github.ref }}/${{ github.sha }} && \
           mv cypress/videos/*.mp4 cypress/videos/${{ github.ref }}/${{ github.sha }}/
@@ -146,13 +146,13 @@ jobs:
     steps:
       - uses: technote-space/workflow-conclusion-action@v3
       - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v2'
+        uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: "Get Secret"
-        id: 'secrets'
-        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        id: "secrets"
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
           secrets: |-
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token

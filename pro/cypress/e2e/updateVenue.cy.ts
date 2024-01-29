@@ -1,5 +1,6 @@
 describe('Update a venue', () => {
   beforeEach(() => {
+    cy.visit('/connexion')
     cy.setFeatureFlags([{ name: 'WIP_PARTNER_PAGE', isActive: true }])
   })
 

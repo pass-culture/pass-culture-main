@@ -86,4 +86,13 @@ Cypress.Commands.add('setFeatureFlags', (features: Feature[]) => {
   })
 })
 
+Cypress.Commands.add('getFakeAdageToken', () => {
+  cy.request({
+    method: 'GET',
+    url: 'http://localhost:5001/adage-iframe/testing/token',
+  }).then((response) => {
+    Cypress.env('adageToken', response.body.token)
+  })
+})
+
 export {}

@@ -6,6 +6,8 @@ export default defineConfig({
     setupNodeEvents() {
       // implement node event listeners here
     },
+    baseUrl: 'http://localhost:3001',
+    experimentalRunAllSpecs: true, // Run all specs test in UI mode
   },
   retries: {
     runMode: 2,
