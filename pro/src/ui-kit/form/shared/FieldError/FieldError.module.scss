@@ -1,11 +1,11 @@
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/variables/_forms.scss" as forms;
+@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
 
 .field-error {
   @include fonts.caption;
 
-  color: forms.$error-text-color;
+  color: colors.$red-warning;
   display: flex;
   text-align: left;
 
