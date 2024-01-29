@@ -12,9 +12,9 @@
   appearance: none;
   min-height: size.$input-min-height;
   line-height: 1.3;
-  border: solid size.$input-border-width forms.$input-border-color;
+  border: solid size.$input-border-width colors.$input-border-color;
   border-radius: rem.torem(forms.$input-border-radius);
-  background-color: forms.$input-bg-color;
+  background-color: colors.$input-bg-color;
   padding: 0 rem.torem(16px);
   color: colors.$input-text-color;
   box-shadow: 0 0 0 0 colors.$black;
@@ -23,8 +23,8 @@
     box-shadow 150ms ease;
 
   &:focus {
-    outline: solid size.$input-border-width forms.$input-border-color-focus;
-    border-color: forms.$input-border-color-focus;
+    outline: solid size.$input-border-width colors.$input-border-color-focus;
+    border-color: colors.$input-border-color-focus;
   }
 
   &:hover:not(:focus) {
@@ -33,10 +33,10 @@
 
   &:disabled {
     cursor: unset;
-    background-color: forms.$input-bg-color-disabled;
-    color: forms.$input-text-color-disabled;
+    background-color: colors.$input-bg-color-disabled;
+    color: colors.$input-text-color-disabled;
     opacity: 1;
-    border-color: forms.$input-border-color-disabled;
+    border-color: colors.$input-border-color-disabled;
 
     &:hover {
       box-shadow: none;
@@ -46,20 +46,20 @@
   &::placeholder {
     @include fonts.placeholder;
 
-    color: forms.$placeholder-text-color;
+    color: colors.$grey-dark;
     opacity: 1;
   }
 
   &:-webkit-autofill,
   &:-internal-autofill-selected {
-    background-color: forms.$input-bg-color !important;
+    background-color: colors.$input-bg-color !important;
     color: colors.$input-text-color !important;
   }
 }
 
 @mixin input-theme-error {
-  border-color: forms.$input-border-color-error;
-  outline-color: forms.$input-border-color-error;
+  border-color: colors.$input-border-color-error;
+  outline-color: colors.$input-border-color-error;
 }
 
 @mixin input-icon-wrapper(
@@ -83,7 +83,7 @@
   }
 
   :disabled + & {
-    color: forms.$input-text-color-disabled;
+    color: colors.$input-text-color-disabled;
   }
 }
 

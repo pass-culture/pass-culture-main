@@ -30,7 +30,7 @@
     width: 100%;
 
     :disabled + & {
-      color: forms.$input-text-color-disabled;
+      color: colors.$input-text-color-disabled;
       cursor: default;
     }
 
@@ -46,15 +46,15 @@
       fill: colors.$input-text-color;
 
       :disabled + & {
-        fill: forms.$input-text-color-disabled;
+        fill: colors.$input-text-color-disabled;
       }
     }
   }
 
   &-input {
     appearance: none;
-    background-color: forms.$input-bg-color;
-    border: rem.torem(2px) solid forms.$input-border-color;
+    background-color: colors.$input-bg-color;
+    border: rem.torem(2px) solid colors.$input-border-color;
     border-radius: rem.torem(3px);
     transition: border 150ms ease,
     background 150ms ease;
@@ -93,7 +93,7 @@
       }
 
       &.has-error {
-        border-color: forms.$input-border-color-error;
+        border-color: colors.$input-border-color-error;
       }
     }
 
@@ -127,7 +127,7 @@
       }
 
       &.has-error {
-        border-color: forms.$input-border-color-error;
+        border-color: colors.$input-border-color-error;
       }
     }
 
