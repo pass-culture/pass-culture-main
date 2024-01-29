@@ -14,12 +14,15 @@ class ClassroomPlaylistModel(pydantic_v1.BaseModel):
 class ClassroomPlaylistQuery(BaseQuery):
     raw_query = f"""
         SELECT
-            collective_offer_id,
-            distance_in_km,
+            distinct collective_offer_id,
+            distance_in_km
         FROM
             `{settings.BIG_QUERY_TABLE_BASENAME}.adage_home_playlist_moving_offerers`
         WHERE
             institution_id = @institution_id
+        AND
+            distance_in_km <= 60
+        LIMIT 10
     """
 
     model = ClassroomPlaylistModel
