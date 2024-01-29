@@ -75,12 +75,14 @@ jobs:
 
   update-api-client-template:
     name: "Update api client template"
+    needs: build-api
     uses: ./.github/workflows/dev_on_workflow_update_api_client_template.yml
     if: github.base_ref == 'master'
     concurrency:
       group: update-api-client-template-${{ github.ref }}
       cancel-in-progress: true
     with:
+      PCAPI_DOCKER_TAG: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       TRIGGER_ONLY_ON_API_CHANGE: true
       TRIGGER_ONLY_ON_DEPENDENCY_CHANGE: true
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
@@ -93,6 +95,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_update_api_client_template.yml
     if: github.ref == 'refs/heads/master'
     with:
+      PCAPI_DOCKER_TAG: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       TRIGGER_ONLY_ON_API_CHANGE: false
       TRIGGER_ONLY_ON_DEPENDENCY_CHANGE: true
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
