@@ -953,38 +953,6 @@ def get_collective_offer_template_by_ids(offer_ids: list[int]) -> list[education
     return query
 
 
-def get_collective_offer_templates_for_playlist(
-    institution_id: int,
-) -> list[educational_models.CollectiveOfferTemplate]:
-    query = educational_models.CollectivePlaylist.query.filter(
-        educational_models.CollectivePlaylist.type == educational_models.PlaylistType.CLASSROOM,
-        educational_models.CollectivePlaylist.institutionId == institution_id,
-        educational_models.CollectivePlaylist.distanceInKm <= 60,
-    )
-    query = query.options(
-        sa.orm.joinedload(educational_models.CollectivePlaylist.collective_offer_template)
-        .joinedload(
-            educational_models.CollectiveOfferTemplate.venue,
-            innerjoin=True,
-        )
-        .joinedload(
-            offerers_models.Venue.managingOfferer,
-            innerjoin=True,
-        )
-    )
-    query = query.options(
-        sa.orm.joinedload(educational_models.CollectivePlaylist.collective_offer_template).joinedload(
-            educational_models.CollectiveOfferTemplate.domains
-        ),
-    )
-    query = query.options(
-        sa.orm.joinedload(educational_models.CollectivePlaylist.collective_offer_template).joinedload(
-            educational_models.CollectiveOfferTemplate.collective_playlists
-        ),
-    )
-    return query.all()
-
-
 def user_has_bookings(user: User) -> bool:
     bookings_query = educational_models.CollectiveBooking.query.join(educational_models.CollectiveBooking.offerer).join(
         offerers_models.Offerer.UserOfferers
