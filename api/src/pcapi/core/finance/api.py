@@ -455,7 +455,7 @@ def price_event(event: models.FinanceEvent) -> models.Pricing | None:
         if pricing:
             return pricing
 
-        _delete_dependent_event_pricings(event, "Deleted pricings priced too early")
+        _delete_dependent_pricings(event, "Deleted pricings priced too early")
 
         pricing = _price_event(event)
         db.session.add(pricing)
@@ -657,7 +657,7 @@ def _cancel_event_pricing(
         # *delete* all pricings that depended on it (i.e. all pricings
         # for events that were priced after the requested event), so
         # that we can price them again.
-        _delete_dependent_event_pricings(
+        _delete_dependent_pricings(
             event,
             "Deleted pricings that depended on cancelled pricing",
         )
@@ -683,9 +683,7 @@ def _cancel_event_pricing(
     return pricing
 
 
-# FIXME (dbaty, 2023-04-12): rename as _delete_dependent_pricings once
-# the legacy function with that name is removed.
-def _delete_dependent_event_pricings(event: models.FinanceEvent, log_message: str) -> None:
+def _delete_dependent_pricings(event: models.FinanceEvent, log_message: str) -> None:
     """Delete pricings for events that should be priced after the
     requested ``event``.
 
