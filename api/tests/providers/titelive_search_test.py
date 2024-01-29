@@ -2,7 +2,6 @@ import copy
 import datetime
 import pathlib
 import re
-from unittest.mock import patch
 
 import freezegun
 import pytest
@@ -161,8 +160,7 @@ class TiteliveSearchTest:
         assert stop_event.type == providers_models.LocalProviderEventType.SyncEnd
         assert start_event.type == providers_models.LocalProviderEventType.SyncStart
 
-    @patch("pcapi.connectors.notion.add_to_provider_error_database")
-    def test_titelive_sync_failure_event(self, mock_add_to_provider_error_database, requests_mock):
+    def test_titelive_sync_failure_event(self, requests_mock):
         self._configure_login_and_images(requests_mock)
         requests_mock.get("https://catsearch.epagine.fr/v1/search", exc=requests.exceptions.RequestException)
         titelive_epagine_provider = providers_repository.get_provider_by_name(
@@ -196,7 +194,6 @@ class TiteliveSearchTest:
             providers_models.LocalProviderEvent.type == providers_models.LocalProviderEventType.SyncError,
         )
         assert error_sync_events_query.count() == 1
-        assert mock_add_to_provider_error_database.call_count == 1
 
     def test_sync_skips_products_already_synced_by_other_provider(self, requests_mock):
         self._configure_login_and_images(requests_mock)
