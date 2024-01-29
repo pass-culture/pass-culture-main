@@ -323,7 +323,6 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     @hybrid_property
     def remainingStock(self) -> int | None:
         if self.isBookable:
-            # pylint: disable=comparison-with-callable
             return None if self.remainingQuantity == "unlimited" else self.remainingQuantity
         return 0
 
