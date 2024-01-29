@@ -25,13 +25,17 @@ RUN pip install poetry
 
 WORKDIR /home/pcapi
 
-RUN poetry export -o requirements.txt --without dev 
+RUN poetry check --lock
+
+RUN poetry export -o requirements.txt --without dev
 
 RUN pip install -r requirements.txt
 
 ########## DEV BUILDER ##########
 
 FROM builder AS builder-dev
+
+RUN poetry check --lock
 
 RUN poetry export -o requirements-dev.txt --only dev
 
