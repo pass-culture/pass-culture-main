@@ -1,4 +1,5 @@
 """ config """
+
 import base64
 import json
 from logging import INFO as LOG_LEVEL_INFO

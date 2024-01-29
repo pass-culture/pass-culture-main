@@ -90,9 +90,11 @@ def get_new_booking_to_pro_email_data(
             "MUST_USE_TOKEN_FOR_PAYMENT": not (
                 booking.stock.price == 0 or booking.activationCode or is_booking_autovalidated
             ),
-            "WITHDRAWAL_PERIOD": booking_constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
-            if offer.subcategoryId == subcategories.LIVRE_PAPIER.id
-            else booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days,
+            "WITHDRAWAL_PERIOD": (
+                booking_constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
+                if offer.subcategoryId == subcategories.LIVRE_PAPIER.id
+                else booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days
+            ),
             "FEATURES": ", ".join(booking.stock.features),
         },
     )

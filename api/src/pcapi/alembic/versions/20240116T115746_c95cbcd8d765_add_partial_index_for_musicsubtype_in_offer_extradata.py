@@ -1,6 +1,7 @@
 """
 Add partial index for musicSubType in Offer.extraData
 """
+
 from alembic import op
 
 from pcapi import settings

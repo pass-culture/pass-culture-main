@@ -53,9 +53,9 @@ class CDSStocks(LocalProvider):
         self.media_options = self.client_cds.get_media_options()
         self.shows = self._get_cds_shows()
         self.filtered_movie_showtimes = None
-        self.price_category_labels: list[
-            offers_models.PriceCategoryLabel
-        ] = offers_models.PriceCategoryLabel.query.filter(offers_models.PriceCategoryLabel.venue == self.venue).all()
+        self.price_category_labels: list[offers_models.PriceCategoryLabel] = (
+            offers_models.PriceCategoryLabel.query.filter(offers_models.PriceCategoryLabel.venue == self.venue).all()
+        )
         self.price_category_lists_by_offer: dict[offers_models.Offer, list[offers_models.PriceCategory]] = {}
 
     def __next__(self) -> list[ProvidableInfo]:

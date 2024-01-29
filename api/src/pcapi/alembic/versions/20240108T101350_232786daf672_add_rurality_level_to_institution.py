@@ -1,5 +1,6 @@
 """add rurality_level to EductionInstitution
 """
+
 from alembic import op
 import sqlalchemy as sa
 

@@ -34,9 +34,11 @@ def get_first_venue_approved_offer_email_data(offer: Offer) -> models.Transactio
             "IS_EVENT": offer.isEvent,
             "IS_THING": offer.isThing,
             "IS_DIGITAL": offer.isDigital,
-            "WITHDRAWAL_PERIOD": booking_constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
-            if offer.subcategoryId == subcategories.LIVRE_PAPIER.id
-            else booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days,
+            "WITHDRAWAL_PERIOD": (
+                booking_constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
+                if offer.subcategoryId == subcategories.LIVRE_PAPIER.id
+                else booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days
+            ),
             "PC_PRO_OFFER_LINK": build_pc_pro_offer_link(offer),
             "NEEDS_BANK_INFORMATION_REMINDER": not (
                 venue.hasPendingBankInformationApplication or current_reimbursement_point

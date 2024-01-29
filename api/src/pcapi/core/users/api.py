@@ -748,9 +748,11 @@ def get_domains_credit(
     domains_credit = models.DomainsCredit(
         all=models.Credit(
             initial=user.deposit.amount,
-            remaining=max(user.deposit.amount - sum(booking.total_amount for booking in deposit_bookings), Decimal("0"))
-            if user.has_active_deposit
-            else Decimal("0"),
+            remaining=(
+                max(user.deposit.amount - sum(booking.total_amount for booking in deposit_bookings), Decimal("0"))
+                if user.has_active_deposit
+                else Decimal("0")
+            ),
         ),
     )
     specific_caps = user.deposit.specific_caps

@@ -52,11 +52,11 @@ def _get_common_metadata_from_offer(offer: offers_models.Offer) -> Metadata:
             "priceCurrency": "EUR",
             "lowPrice": str(offer.min_price),
             "url": offer_app_link(offer),
-            "availability": "https://schema.org/InStock"
-            if offer.hasStocks
-            else "https://schema.org/SoldOut"
-            if offer.isEvent
-            else "https://schema.org/OutOfStock",
+            "availability": (
+                "https://schema.org/InStock"
+                if offer.hasStocks
+                else "https://schema.org/SoldOut" if offer.isEvent else "https://schema.org/OutOfStock"
+            ),
         }
 
     return metadata

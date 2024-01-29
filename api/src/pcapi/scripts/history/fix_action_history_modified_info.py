@@ -1,6 +1,7 @@
 """
 Fix modified info in ActionHistory.extraData
 """
+
 import argparse
 from copy import deepcopy
 

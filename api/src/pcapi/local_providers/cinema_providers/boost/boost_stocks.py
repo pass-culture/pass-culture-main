@@ -42,9 +42,9 @@ class BoostStocks(LocalProvider):
         self.attributs: list[boost_serializers.CinemaAttribut] = self._get_cinema_attributs()
         self.showtimes_filter_ff_is_active = FeatureToggle.WIP_ENABLE_BOOST_SHOWTIMES_FILTER.is_active()
         self.showtimes: Iterator[boost_serializers.ShowTime4] = iter(self._get_showtimes())
-        self.price_category_labels: list[
-            offers_models.PriceCategoryLabel
-        ] = offers_models.PriceCategoryLabel.query.filter(offers_models.PriceCategoryLabel.venue == self.venue).all()
+        self.price_category_labels: list[offers_models.PriceCategoryLabel] = (
+            offers_models.PriceCategoryLabel.query.filter(offers_models.PriceCategoryLabel.venue == self.venue).all()
+        )
 
         self.price_category_lists_by_offer: dict[offers_models.Offer, list[offers_models.PriceCategory]] = {}
 

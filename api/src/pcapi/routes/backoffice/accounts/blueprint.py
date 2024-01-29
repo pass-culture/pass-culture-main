@@ -182,9 +182,9 @@ def _convert_fraud_review_to_fraud_action_dict(fraud_review: fraud_models.Benefi
     return {
         "creationDate": fraud_review.dateReviewed,
         "type": "Revue manuelle",
-        "applicableEligibilities": [fraud_review.eligibilityType.value]
-        if fraud_review.eligibilityType is not None
-        else [],
+        "applicableEligibilities": (
+            [fraud_review.eligibilityType.value] if fraud_review.eligibilityType is not None else []
+        ),
         "status": fraud_models.FraudReviewStatus(fraud_review.review).value,
         "reason": fraud_review.reason,
     }
@@ -274,9 +274,11 @@ def render_public_account_details(
                 birth_date=user.birth_date,
                 phone_number=user.phoneNumber,
                 id_piece_number=user.idPieceNumber,
-                postal_address_autocomplete=f"{user.address}, {user.postalCode} {user.city}"
-                if user.address is not None and user.city is not None and user.postalCode is not None
-                else None,
+                postal_address_autocomplete=(
+                    f"{user.address}, {user.postalCode} {user.city}"
+                    if user.address is not None and user.city is not None and user.postalCode is not None
+                    else None
+                ),
                 address=user.address,
                 postal_code=user.postalCode,
                 city=user.city,
@@ -286,9 +288,11 @@ def render_public_account_details(
             {
                 "edit_account_form": edit_account_form,
                 "edit_account_dst": url_for(".update_public_account", user_id=user.id),
-                "manual_review_form": account_forms.ManualReviewForm()
-                if utils.has_current_user_permission(perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS)
-                else None,
+                "manual_review_form": (
+                    account_forms.ManualReviewForm()
+                    if utils.has_current_user_permission(perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS)
+                    else None
+                ),
                 "manual_review_dst": url_for(".review_public_account", user_id=user.id),
                 "send_validation_code_form": empty_forms.EmptyForm(),
                 "manual_phone_validation_form": empty_forms.EmptyForm(),
@@ -558,9 +562,9 @@ def _get_steps_tunnel_underage_age18(
         RegistrationStep(
             step_id=5,
             description=TunnelType.UNDERAGE.value,
-            subscription_item_status=SubscriptionItemStatus.OK.value
-            if user.received_pass_15_17
-            else SubscriptionItemStatus.VOID.value,
+            subscription_item_status=(
+                SubscriptionItemStatus.OK.value if user.received_pass_15_17 else SubscriptionItemStatus.VOID.value
+            ),
             icon="1517",
             fraud_actions_history=[
                 _convert_fraud_review_to_fraud_action_dict(review)
@@ -613,9 +617,9 @@ def _get_steps_tunnel_underage_age18(
         RegistrationStep(
             step_id=10,
             description=TunnelType.AGE18.value,
-            subscription_item_status=SubscriptionItemStatus.OK.value
-            if user.received_pass_18
-            else SubscriptionItemStatus.VOID.value,
+            subscription_item_status=(
+                SubscriptionItemStatus.OK.value if user.received_pass_18 else SubscriptionItemStatus.VOID.value
+            ),
             icon="bi-card-checklist",
             fraud_actions_history=[
                 _convert_fraud_review_to_fraud_action_dict(review)
@@ -691,9 +695,9 @@ def _get_steps_tunnel_age18(
         RegistrationStep(
             step_id=6,
             description="Pass 18",
-            subscription_item_status=SubscriptionItemStatus.OK.value
-            if user.received_pass_18
-            else SubscriptionItemStatus.VOID.value,
+            subscription_item_status=(
+                SubscriptionItemStatus.OK.value if user.received_pass_18 else SubscriptionItemStatus.VOID.value
+            ),
             icon="18",
             fraud_actions_history=[
                 _convert_fraud_review_to_fraud_action_dict(review)
@@ -757,9 +761,9 @@ def _get_steps_tunnel_underage(
         RegistrationStep(
             step_id=5,
             description="Pass 15-17",
-            subscription_item_status=SubscriptionItemStatus.OK.value
-            if user.received_pass_15_17
-            else SubscriptionItemStatus.VOID.value,
+            subscription_item_status=(
+                SubscriptionItemStatus.OK.value if user.received_pass_15_17 else SubscriptionItemStatus.VOID.value
+            ),
             icon="1517",
             fraud_actions_history=[
                 _convert_fraud_review_to_fraud_action_dict(review)

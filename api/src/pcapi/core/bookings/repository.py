@@ -567,11 +567,11 @@ def _serialize_booking_recap(booking: Booking) -> BookingRecap:
         cancellation_date=typing.cast(
             datetime, convert_booking_dates_utc_to_venue_timezone(booking.cancelledAt, booking=booking)
         ),
-        cancellation_limit_date=typing.cast(
-            datetime, convert_booking_dates_utc_to_venue_timezone(booking.cancellationLimitDate, booking)
-        )
-        if booking.cancellationLimitDate
-        else None,
+        cancellation_limit_date=(
+            typing.cast(datetime, convert_booking_dates_utc_to_venue_timezone(booking.cancellationLimitDate, booking))
+            if booking.cancellationLimitDate
+            else None
+        ),
         event_beginning_datetime=(
             _apply_departement_timezone(booking.stockBeginningDatetime, booking.venueDepartmentCode)
             if booking.stockBeginningDatetime

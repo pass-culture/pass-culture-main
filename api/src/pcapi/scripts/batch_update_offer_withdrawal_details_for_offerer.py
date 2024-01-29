@@ -1,6 +1,7 @@
 """
 Fetch offers from database and update their withdrawal details on Batch.
 """
+
 import math
 
 from sqlalchemy import func

@@ -3,6 +3,7 @@ Fetch users from database and update their informations on Batch.
 Goal: some users do not have all the expected attributes, this script should
 fix this issue.
 """
+
 from itertools import islice
 from typing import Generator
 

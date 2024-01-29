@@ -3189,8 +3189,9 @@ def test_we_cant_merge_batches_cashflow_from_both_bank_journey_from_target_batch
     cf_5_5 = factories.CashflowFactory(batch=batch5, bankAccount=bank_account5, amount=10240)
     factories.PricingFactory(cashflows=[cf_5_5])
 
-    with override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=ff_activated), pytest.raises(
-        AssertionError, match=r".*merge batches from both bank journeys.*"
+    with (
+        override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=ff_activated),
+        pytest.raises(AssertionError, match=r".*merge batches from both bank journeys.*"),
     ):
         api.merge_cashflow_batches(batches_to_remove=[batch3, batch4], target_batch=batch5)
 
@@ -3238,8 +3239,9 @@ def test_we_cant_merge_batches_cashflow_from_both_bank_journey_from_batches_to_r
     cf_5_5 = factories.CashflowFactory(batch=batch5, reimbursementPoint=rp5, amount=10240)
     factories.PricingFactory(cashflows=[cf_5_5])
 
-    with override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=ff_activated), pytest.raises(
-        AssertionError, match=r".*merge batches from both bank journeys.*"
+    with (
+        override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=ff_activated),
+        pytest.raises(AssertionError, match=r".*merge batches from both bank journeys.*"),
     ):
         api.merge_cashflow_batches(batches_to_remove=[batch3, batch4], target_batch=batch5)
 

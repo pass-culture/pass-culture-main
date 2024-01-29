@@ -1,4 +1,5 @@
 """ deactivable mixin """
+
 from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy.orm import declarative_mixin

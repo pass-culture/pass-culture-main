@@ -119,9 +119,11 @@ def get_most_relevant_ubble_error(
         iter(
             sorted(
                 reason_codes,
-                key=lambda reason_code: models.UBBLE_CODE_ERROR_MAPPING[reason_code].priority
-                if reason_code in models.UBBLE_CODE_ERROR_MAPPING
-                else 0,
+                key=lambda reason_code: (
+                    models.UBBLE_CODE_ERROR_MAPPING[reason_code].priority
+                    if reason_code in models.UBBLE_CODE_ERROR_MAPPING
+                    else 0
+                ),
                 reverse=True,
             )
         ),

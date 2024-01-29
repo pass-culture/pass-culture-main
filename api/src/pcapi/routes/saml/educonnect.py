@@ -131,9 +131,9 @@ def on_educonnect_authentication_response() -> Response:
             "user_email": user.email,
             "user_id": user.id,
             "date_of_birth": educonnect_user.birth_date.isoformat(),
-            "educonnect_connection_date": educonnect_user.connection_datetime.isoformat()
-            if educonnect_user.connection_datetime
-            else None,
+            "educonnect_connection_date": (
+                educonnect_user.connection_datetime.isoformat() if educonnect_user.connection_datetime else None
+            ),
             "educonnect_id": educonnect_user.educonnect_id,
             "ine_hash": educonnect_user.ine_hash,
             "first_name": educonnect_user.first_name,

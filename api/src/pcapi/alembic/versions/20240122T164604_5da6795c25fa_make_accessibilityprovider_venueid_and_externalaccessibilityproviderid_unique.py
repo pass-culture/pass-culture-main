@@ -1,6 +1,7 @@
 """
 Add unicity constraint to AccessibilityProvider.venueId and externalAccessibilityProviderId
 """
+
 from alembic import op
 
 

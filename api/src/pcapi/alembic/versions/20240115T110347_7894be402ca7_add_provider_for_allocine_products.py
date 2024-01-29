@@ -1,4 +1,5 @@
 """Add "AllocineProducts" in table "provider" """
+
 from alembic import op
 
 from pcapi.core.providers import constants as providers_constants

@@ -464,7 +464,9 @@ class PhoneValidationFraudData(pydantic_v1.BaseModel):
 
 
 class ProfileCompletionContent(pydantic_v1.BaseModel):
-    activity: users_models.ActivityEnum | str | None  # str for backward compatibility. All new data should be ActivityEnum
+    activity: (
+        users_models.ActivityEnum | str | None
+    )  # str for backward compatibility. All new data should be ActivityEnum
     address: str | None  # Optional because it was not saved up until now
     city: str | None  # Optional because it was not saved up until now
     first_name: str

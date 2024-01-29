@@ -247,8 +247,7 @@ class CollectiveOfferNotFound(Exception):
     pass
 
 
-class UnapplicableModel(Exception):
-    ...
+class UnapplicableModel(Exception): ...  # pylint: disable=multiple-statements
 
 
 class UnexpectedCinemaProvider(Exception):

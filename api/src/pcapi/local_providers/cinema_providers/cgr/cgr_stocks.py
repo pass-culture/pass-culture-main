@@ -39,9 +39,9 @@ class CGRStocks(LocalProvider):
         self.isDuo = bool(venue_provider.isDuoOffers)
         self.films: Iterator[cgr_serializers.Film] = iter(self.cgr_client_api.get_films())
         self.last_offer: offers_models.Offer | None = None
-        self.price_category_labels: list[
-            offers_models.PriceCategoryLabel
-        ] = offers_models.PriceCategoryLabel.query.filter(offers_models.PriceCategoryLabel.venue == self.venue).all()
+        self.price_category_labels: list[offers_models.PriceCategoryLabel] = (
+            offers_models.PriceCategoryLabel.query.filter(offers_models.PriceCategoryLabel.venue == self.venue).all()
+        )
         self.price_category_lists_by_offer: dict[offers_models.Offer, list[offers_models.PriceCategory]] = {}
 
     def __next__(self) -> list[ProvidableInfo]:

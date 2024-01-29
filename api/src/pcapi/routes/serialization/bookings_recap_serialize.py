@@ -134,9 +134,9 @@ def serialize_booking_recap(booking_recap: BookingRecap) -> BookingRecapResponse
             "stockIdentifier": booking_recap.stock_identifier,
             "offerName": booking_recap.offer_name,
             "offerId": booking_recap.offer_identifier,
-            "eventBeginningDatetime": isoformat(booking_recap.event_beginning_datetime)
-            if booking_recap.event_beginning_datetime
-            else None,
+            "eventBeginningDatetime": (
+                isoformat(booking_recap.event_beginning_datetime) if booking_recap.event_beginning_datetime else None
+            ),
             "offerIsbn": booking_recap.offer_ean,
             "offerIsEducational": False,
         },

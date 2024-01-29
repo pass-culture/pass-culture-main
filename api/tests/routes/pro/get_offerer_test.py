@@ -73,9 +73,9 @@ class GetOffererTest:
             "isValidated": offerer.isValidated,
             "managedVenues": [
                 {
-                    "adageInscriptionDate": format_into_utc_date(venue.adageInscriptionDate)
-                    if venue.adageInscriptionDate
-                    else None,
+                    "adageInscriptionDate": (
+                        format_into_utc_date(venue.adageInscriptionDate) if venue.adageInscriptionDate else None
+                    ),
                     "address": venue.address,
                     "audioDisabilityCompliant": False,
                     "bannerMeta": venue.bannerMeta,
@@ -94,9 +94,9 @@ class GetOffererTest:
                             "buildDate": format_into_utc_date(a.buildDate) if a.buildDate else None,
                             "instructionDate": format_into_utc_date(a.instructionDate) if a.instructionDate else None,
                             "processingDate": format_into_utc_date(a.processingDate) if a.processingDate else None,
-                            "userDeletionDate": format_into_utc_date(a.userDeletionDate)
-                            if a.userDeletionDate
-                            else None,
+                            "userDeletionDate": (
+                                format_into_utc_date(a.userDeletionDate) if a.userDeletionDate else None
+                            ),
                         }
                         for a in venue.collectiveDmsApplications
                     ],

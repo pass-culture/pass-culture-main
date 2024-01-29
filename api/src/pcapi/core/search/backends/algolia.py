@@ -637,13 +637,15 @@ class AlgoliaBackend(base.SearchBackend):
                 "students": [student.value for student in collective_offer.students],
                 "subcategoryId": collective_offer.subcategoryId,
                 "domains": [domain.id for domain in collective_offer.domains],
-                "educationalInstitutionUAICode": collective_offer.institution.institutionId
-                if collective_offer.institution
-                else "all",
+                "educationalInstitutionUAICode": (
+                    collective_offer.institution.institutionId if collective_offer.institution else "all"
+                ),
                 "interventionArea": collective_offer.interventionArea,
-                "schoolInterventionArea": collective_offer.interventionArea
-                if collective_offer.offerVenue.get("addressType") == "school"
-                else None,
+                "schoolInterventionArea": (
+                    collective_offer.interventionArea
+                    if collective_offer.offerVenue.get("addressType") == "school"
+                    else None
+                ),
                 "eventAddressType": collective_offer.offerVenue.get("addressType"),
                 "beginningDatetime": beginning_datetime,
                 "description": remove_stopwords(collective_offer.description),
@@ -687,9 +689,11 @@ class AlgoliaBackend(base.SearchBackend):
                 "domains": [domain.id for domain in collective_offer_template.domains],
                 "educationalInstitutionUAICode": "all",
                 "interventionArea": collective_offer_template.interventionArea,
-                "schoolInterventionArea": collective_offer_template.interventionArea
-                if collective_offer_template.offerVenue.get("addressType") == "school"
-                else None,
+                "schoolInterventionArea": (
+                    collective_offer_template.interventionArea
+                    if collective_offer_template.offerVenue.get("addressType") == "school"
+                    else None
+                ),
                 "eventAddressType": collective_offer_template.offerVenue.get("addressType"),
                 "beginningDatetime": date_created,  # this hack is needed to make the order keeps working
                 "description": remove_stopwords(collective_offer_template.description),

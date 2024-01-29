@@ -1,6 +1,7 @@
 """
 Add partial index for showSubType in Offer.extraData
 """
+
 from alembic import op
 
 from pcapi import settings

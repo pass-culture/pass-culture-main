@@ -1,4 +1,5 @@
 """Add NOT NULL constraint on "pricing.eventId" (step 4 of 4)"""
+
 from alembic import op
 
 
