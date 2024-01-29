@@ -1,23 +1,29 @@
+from flask import current_app as app
 from flask import flash
 from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import current_user
+from flask_wtf.csrf import validate_csrf
 from markupsafe import Markup
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
+from pcapi import settings
 from pcapi.core import mails as mails_api
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.history import repository as history_repository
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.token import SecureToken
+from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.core.users.email import update as email_update
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro import forms as pro_forms
@@ -26,6 +32,7 @@ from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.tasks.batch_tasks import DeleteBatchUserAttributesRequest
 from pcapi.tasks.batch_tasks import delete_user_attributes_task
 from pcapi.utils import email as email_utils
+from pcapi.utils import urls
 
 
 pro_user_blueprint = utils.child_backoffice_blueprint(
@@ -245,3 +252,53 @@ def _get_delete_kwargs(user: users_models.User) -> dict:
         "delete_form": pro_users_forms.DeleteProUser(),
     }
     return kwargs
+
+
+@pro_user_blueprint.route("/connect-as", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def connect_as(user_id: int) -> utils.BackofficeResponse:
+    if not FeatureToggle.WIP_CONNECT_AS.is_active():
+        flash("L'utilisation du « connect as » requiert l'activation de la feature : WIP_CONNECT_AS", "warning")
+        return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
+
+    try:
+        validate_csrf(
+            utils.get_query_params().get("csrf_token", ""),
+            app.config.get("WTF_CSRF_SECRET_KEY", app.secret_key),
+            app.config.get("WTF_CSRF_TIME_LIMIT", 3600),
+            app.config.get("WTF_CSRF_FIELD_NAME", "csrf_token"),
+        )
+    except ValueError:
+        flash("Échec de la validation de sécurité, veuillez réessayer", "warning")
+        return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
+
+    user = users_models.User.query.filter(users_models.User.id == user_id).one_or_none()
+    if not user:
+        raise NotFound()
+
+    if not user.isActive:
+        flash("L'utilisation du « connect as » n'est pas disponible pour les comptes inactifs", "warning")
+        return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
+
+    if user.has_admin_role:
+        flash("L'utilisation du « connect as » n'est pas disponible pour les comptes admins", "warning")
+        return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
+
+    if user.has_anonymized_role:
+        flash("L'utilisation du « connect as » n'est pas disponible pour les comptes anonymisés", "warning")
+        return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
+
+    if not (user.has_non_attached_pro_role or user.has_pro_role):
+        flash("L'utilisation du « connect as » n'est disponible que pour les comptes pro", "warning")
+        return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
+
+    token = SecureToken(
+        data=ConnectAsInternalModel(
+            user_id=user.id,
+            internal_admin_id=current_user.id,
+            internal_admin_email=current_user.email,
+            redirect_link=settings.PRO_URL if settings.PRO_URL else "/",
+        ).dict(),
+        ttl=10,
+    ).token
+    return redirect(urls.build_pc_pro_connect_as_link(token), code=303)

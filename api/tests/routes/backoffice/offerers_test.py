@@ -22,7 +22,9 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.backoffice.offerers import offerer_blueprint
@@ -833,7 +835,8 @@ class GetOffererUsersTest(GetEndpointHelper):
     # - session + authenticated user (2 queries)
     # - users with joined data (1 query)
     # - offerer_invitation data
-    expected_num_queries = 4
+    # - retrieve Feature Flags
+    expected_num_queries = 5
 
     def test_get_pro_users(self, authenticated_client, offerer):
         uo1 = offerers_factories.UserOffererFactory(
@@ -859,18 +862,45 @@ class GetOffererUsersTest(GetEndpointHelper):
         assert rows[0]["Prénom / Nom"] == uo1.user.full_name
         assert rows[0]["Email"] == uo1.user.email
         assert rows[0]["Invitation"] == ""
+        assert "Connect as" not in rows[0]
 
         assert rows[1]["ID"] == str(uo2.user.id)
         assert rows[1]["Statut"] == "Validé"
         assert rows[1]["Prénom / Nom"] == uo2.user.full_name
         assert rows[1]["Email"] == uo2.user.email
         assert rows[1]["Invitation"] == ""
+        assert "Connect as" not in rows[1]
 
         assert rows[2]["ID"] == str(uo3.user.id)
         assert rows[2]["Statut"] == "Nouveau"
         assert rows[2]["Prénom / Nom"] == uo3.user.full_name
         assert rows[2]["Email"] == uo3.user.email
         assert rows[2]["Invitation"] == ""
+        assert "Connect as" not in rows[2]
+
+    @override_features(WIP_CONNECT_AS=True)
+    @pytest.mark.parametrize(
+        "roles,active,result",
+        [
+            ([users_models.UserRole.PRO], False, False),
+            ([users_models.UserRole.PRO, users_models.UserRole.ANONYMIZED], True, False),
+            ([users_models.UserRole.PRO, users_models.UserRole.ADMIN], True, False),
+            ([users_models.UserRole.PRO], True, True),
+        ],
+    )
+    def test_connect_as_available_for_pro(self, authenticated_client, offerer, roles, active, result):
+        user = users_factories.ProFactory(roles=roles, isActive=active)
+        offerers_factories.UserOffererFactory(
+            offerer=offerer,
+            user=user,
+        )
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        assert (url_for("backoffice_web.pro_user.connect_as", user_id=user.id).encode() in response.data) == result
 
     def test_get_pro_users_with_one_offerer_invitation_without_user_account(self, authenticated_client, offerer):
         uo1 = offerers_factories.UserOffererFactory(offerer=offerer)
