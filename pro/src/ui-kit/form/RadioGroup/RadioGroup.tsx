@@ -12,7 +12,7 @@ export enum Direction {
   VERTICAL = 'vertical',
   HORIZONTAL = 'horizontal',
 }
-export interface RadioGroupProps {
+interface RadioGroupProps {
   direction?: Direction.HORIZONTAL | Direction.VERTICAL
   disabled?: boolean
   hideFooter?: boolean
