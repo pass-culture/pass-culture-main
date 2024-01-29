@@ -8,6 +8,7 @@ declare namespace Cypress {
     }): Chainable
     setFeatureFlags(features: Feature[]): Chainable
     acceptCookies(): Chainable
+    getFakeAdageToken(): Chainable
   }
 }
 
