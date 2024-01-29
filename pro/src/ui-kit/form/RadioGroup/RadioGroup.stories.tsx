@@ -1,14 +1,27 @@
-import type { Story } from '@storybook/react'
 import { Formik } from 'formik'
-import React from 'react'
 
-import RadioGroup, { Direction, RadioGroupProps } from './RadioGroup'
+import RadioGroup, { Direction } from './RadioGroup'
 
 export default {
   title: 'ui-kit/forms/RadioGroup',
   component: RadioGroup,
+  decorators: [
+    (Story: any) => (
+      <Formik
+        initialValues={{
+          question: {},
+        }}
+        onSubmit={() => {}}
+      >
+        {({ getFieldProps }) => {
+          return <Story {...getFieldProps('group')} />
+        }}
+      </Formik>
+    ),
+  ],
 }
-const args = {
+
+const defaultArgs = {
   name: 'question',
   legend: 'This is the legend',
   direction: Direction.VERTICAL,
@@ -25,45 +38,20 @@ const args = {
   withBorder: false,
 }
 
-const Template: Story<RadioGroupProps> = ({
-  direction,
-  name,
-  group,
-  legend,
-  withBorder,
-}: RadioGroupProps) => (
-  <Formik
-    initialValues={{
-      question: {},
-    }}
-    onSubmit={() => {}}
-  >
-    {({ getFieldProps }) => {
-      return (
-        <RadioGroup
-          {...getFieldProps('group')}
-          direction={direction}
-          group={group}
-          name={name}
-          legend={legend}
-          withBorder={withBorder}
-        />
-      )
-    }}
-  </Formik>
-)
-
-export const Default = Template.bind({})
-Default.args = args
-
-export const WithBorder = Template.bind({})
-WithBorder.args = {
-  ...args,
-  withBorder: true,
+export const Default = {
+  args: defaultArgs,
 }
 
-export const Horizontal = Template.bind({})
-Horizontal.args = {
-  ...args,
-  direction: Direction.HORIZONTAL,
+export const WithBorder = {
+  args: {
+    ...defaultArgs,
+    withBorder: true,
+  },
+}
+
+export const Horizontal = {
+  args: {
+    ...defaultArgs,
+    direction: Direction.HORIZONTAL,
+  },
 }
