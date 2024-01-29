@@ -20,7 +20,7 @@
   .bs-filter-tooltip {
     background-color: colors.$white;
     border-radius: rem.torem(4px);
-    box-shadow: 0 rem.torem(2px) rem.torem(10px) 0 rgb(0 0 0 / 30%);
+    box-shadow: 0 rem.torem(2px) rem.torem(10px) 0 colors.$black-shadow;
     left: rem.torem(-90px);
     margin-top: rem.torem(8px);
     padding: rem.torem(16px);

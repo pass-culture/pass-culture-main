@@ -22,11 +22,11 @@
   }
 
   .download-modal-option {
-    background: white;
+    background: colors.$white;
     border-radius: rem.torem(6px);
-    border: rem.torem(1px) solid #f1f1f4;
+    border: rem.torem(1px) solid colors.$grey-light;
     box-shadow: rem.torem(0) rem.torem(3px) rem.torem(4px)
-      rgb(103 104 107 / 10%);
+      colors.$grey-medium-shadow;
     display: inline-block;
     overflow: hidden;
     padding: rem.torem(12px) 0;
@@ -36,7 +36,7 @@
     top: rem.torem(45px);
 
     .inside-modal-button {
-      background: white;
+      background: colors.$white;
       border: none;
       display: flex;
       justify-content: flex-start;

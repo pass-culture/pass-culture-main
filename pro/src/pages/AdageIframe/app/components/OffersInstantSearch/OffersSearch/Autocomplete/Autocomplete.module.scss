@@ -60,7 +60,7 @@
 .dialog {
   border: none;
   width: 100%;
-  background-color: white;
+  background-color: colors.$white;
   position: absolute;
   top: rem.torem(-16px);
   right: 0;
@@ -137,7 +137,7 @@
   z-index: 1;
   position: fixed;
   inset: 0;
-  background-color: rgb(22 22 23 / 16%);
+  background-color: rgba(colors.$input-text-color, 0.161);
 }
 
 .panel-footer {

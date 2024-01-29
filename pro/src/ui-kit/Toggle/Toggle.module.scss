@@ -68,7 +68,7 @@
 }
 
 .toggle[aria-pressed="true"] .toggle-display::before {
-  background: center / contain no-repeat url("./assets/check.png") white;
+  background: center / contain no-repeat url("./assets/check.png") colors.$white;
   background-size: rem.torem(16px);
   left: rem.torem(-2px);
   transform: translate(100%, -50%);
@@ -80,6 +80,6 @@
 }
 
 .toggle[disabled] .toggle-display::before {
-  background: center / contain no-repeat url("./assets/lock.png") white;
+  background: center / contain no-repeat url("./assets/lock.png") colors.$white;
   background-size: rem.torem(16px);
 }

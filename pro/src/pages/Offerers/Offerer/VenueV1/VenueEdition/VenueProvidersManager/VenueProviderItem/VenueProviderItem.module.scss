@@ -17,7 +17,7 @@
       @include fonts.caption;
 
       align-content: space-between;
-      background-color: #f1f1f4;
+      background-color: colors.$grey-light;
       border-radius: rem.torem(6px);
       display: flex;
       flex-flow: row wrap;
