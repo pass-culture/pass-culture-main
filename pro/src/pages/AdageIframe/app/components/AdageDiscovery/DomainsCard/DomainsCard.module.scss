@@ -39,26 +39,26 @@
   }
 
   &-orange {
-    background: linear-gradient(#fa9f16, #b85901);
+    background: linear-gradient(colors.$adage-orange-light, colors.$adage-orange-dark);
   }
 
   &-purple {
-    background: linear-gradient(#ad87ff, #8337e9);
+    background: linear-gradient(colors.$adage-purple-light, colors.$adage-purple-dark);
   }
 
   &-pink {
-    background: linear-gradient(#ec3478, #c01371);
+    background: linear-gradient(colors.$adage-pink-light, colors.$adage-pink-dark);
   }
 
   &-green {
-    background: linear-gradient(#27dca8, #0e8474);
+    background: linear-gradient(colors.$adage-green-light, colors.$adage-green-dark);
   }
 
   &-red {
-    background: linear-gradient(#f8733d, #ca3f13);
+    background: linear-gradient(colors.$adage-red-light, colors.$adage-red-dark);
   }
 
   &-blue {
-    background: linear-gradient(#1fc5e9, #0e78b7);
+    background: linear-gradient(colors.$adage-blue-light, colors.$adage-blue-dark);
   }
 }

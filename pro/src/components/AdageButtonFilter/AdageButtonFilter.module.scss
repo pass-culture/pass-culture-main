@@ -1,6 +1,5 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_z-index.scss" as zIndex;
 
 .adage-container {
@@ -52,13 +51,13 @@
 
   &-children {
     border-radius: rem.torem(10px);
-    box-shadow: 0 rem.torem(2px) rem.torem(16px) 0 rgb(37 2 108 / 15%);
+    box-shadow: 0 rem.torem(2px) rem.torem(16px) 0 colors.$dark-blue-shadow;
     border: none;
     z-index: zIndex.$modal-z-index;
   }
 
   &-children::backdrop {
-    background-color: #448;
+    background-color: colors.$adage-blue;
   }
 
   &-dropdown {
