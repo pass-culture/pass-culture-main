@@ -83,3 +83,8 @@ class TrackingAutocompleteSuggestionBody(AdageBaseModel):
 
 class TrackingShowMoreBody(AdageBaseModel):
     source: str
+
+
+class TrackingCTAShareBody(AdageBaseModel):
+    source: str
+    offerId: int

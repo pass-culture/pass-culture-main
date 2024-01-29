@@ -1,10 +1,21 @@
 import logging
 
+from flask import url_for
 import pytest
 
+from pcapi.core.educational import utils
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFrontRoles
 
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
+
+
+EMAIL = "test@mail.com"
+UAI = "EAU123"
+
+
+@pytest.fixture(name="test_client")
+def test_client_fixture(client):
+    return client.with_adage_token(email=EMAIL, uai=UAI)
 
 
 class LogsTest:
@@ -514,4 +525,35 @@ class LogsTest:
             "uai": "EAU123",
             "user_role": AdageFrontRoles.READONLY,
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
+        }
+
+    def test_log_tracking_cta_share(self, test_client, caplog):
+        dst = url_for("adage_iframe.log_tracking_cta_share")
+
+        data = {
+            "source": "source",
+            "offerId": 1,
+            "iframeFrom": "some_iframe",
+        }
+
+        with caplog.at_level(logging.INFO):
+            response = test_client.post(dst, json=data)
+
+        assert response.status_code == 204
+
+        try:
+            record = next(record for record in caplog.records if record.message == "TrackingCTAShare")
+        except StopIteration:
+            pytest.fail("Should be a record with the expected message")
+
+        assert record.extra == {
+            "source": data["source"],
+            "offerId": data["offerId"],
+            "from": data["iframeFrom"],
+            "queryId": None,
+            "isFromNoResult": None,
+            "user_role": AdageFrontRoles.READONLY,
+            "uai": UAI,
+            "userId": utils.get_hashed_user_id(EMAIL),
+            "analyticsSource": "adage",
         }
