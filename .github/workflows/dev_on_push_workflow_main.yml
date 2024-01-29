@@ -246,7 +246,7 @@ jobs:
           secrets: |-
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
       - name: "Post to a Slack channel"
-        uses: slackapi/slack-github-action@v1.24.0
+        uses: slackapi/slack-github-action@v1.25.0
         with:
           # channel #alertes-deploiement
           channel-id: "CQAMNFVPS"
