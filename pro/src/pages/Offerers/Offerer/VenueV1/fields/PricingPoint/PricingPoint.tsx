@@ -91,6 +91,7 @@ const PricingPoint = ({
               icon: fullLinkIcon,
             },
           ]}
+          className={`${styles['desk-callout']}`}
         >
           Si vous souhaitez vous faire rembourser les offres de votre lieu sans
           SIRET, vous devez sélectionner un lieu avec SIRET dans votre structure
