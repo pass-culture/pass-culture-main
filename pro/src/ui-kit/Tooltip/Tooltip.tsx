@@ -19,17 +19,17 @@ const Tooltip = ({
   // Tooltip should implement onMouseOver onMouseOut onFocus onBlur onKeyDown
   // on parent to be accessible
   return (
-    <div className={cn(styles['tooltip-container'], className)}>
+    <span className={cn(styles['tooltip-container'], className)}>
       {children}
-      <div
+      <span
         className={cn(styles['tooltip'], {
           ['visually-hidden']: visuallyHidden,
         })}
         role="tooltip"
       >
         {content}
-      </div>
-    </div>
+      </span>
+    </span>
   )
 }
 

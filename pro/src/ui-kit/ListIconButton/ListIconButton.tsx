@@ -76,7 +76,7 @@ const ListIconButton = ({
     </a>
   ) : (
     <Link
-      className={className}
+      className={cn(styles['button'], className)}
       onClick={onClick}
       to={`${url}`}
       {...tooltipProps}

@@ -9,8 +9,6 @@ import {
   formatBrowserTimezonedDateAsUTC,
 } from 'utils/date'
 
-import styles from '../../OfferItem.module.scss'
-
 interface BookingLinkCellProps {
   bookingId: number
   bookingStatus: string
@@ -33,7 +31,6 @@ const BookingLinkCell = ({
   const bookingLink = `/reservations/collectives?page=1&offerEventDate=${eventDateFormated}&bookingStatusFilter=booked&offerType=all&offerVenueId=all&bookingId=${bookingId}`
   return (
     <ListIconButton
-      className={styles['button']}
       url={bookingLink}
       isExternal={false}
       icon={arrowIcon}
