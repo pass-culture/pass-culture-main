@@ -15,7 +15,7 @@ import { Button, RadioGroup } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import AdageMultiselect from 'ui-kit/form/AdageMultiselect/AdageMultiselect'
 import Slider from 'ui-kit/form/Slider/Slider'
-import { sendSentryCustomError } from 'utils/sendSentryError'
+import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
 import { LocalisationFilterStates, SearchFormValues } from '../OffersSearch'
 

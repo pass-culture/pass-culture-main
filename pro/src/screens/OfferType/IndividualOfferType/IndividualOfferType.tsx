@@ -18,7 +18,7 @@ import { RadioButton } from 'ui-kit'
 import { BaseRadioVariant } from 'ui-kit/form/shared/BaseRadio/types'
 import RadioButtonWithImage from 'ui-kit/RadioButtonWithImage'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import { sendSentryCustomError } from 'utils/sendSentryError'
+import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
 import styles from '../OfferType.module.scss'
 import { OfferTypeFormValues } from '../types'
