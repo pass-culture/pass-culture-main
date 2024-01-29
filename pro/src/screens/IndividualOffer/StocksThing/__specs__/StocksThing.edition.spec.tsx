@@ -225,7 +225,6 @@ describe('screens:StocksThing', () => {
       screen.getByText('Voulez-vous supprimer ce stock ?')
     ).toBeInTheDocument()
 
-    // vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     await userEvent.click(screen.getByText('Supprimer', { selector: 'button' }))
     expect(
       await screen.findByText('Le stock a été supprimé.')

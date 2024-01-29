@@ -30,8 +30,8 @@ describe('StatusToggleButton', () => {
       status: OfferStatus.ACTIVE,
     }
 
-    // @ts-expect-error
     vi.spyOn(router, 'useFetcher').mockReturnValue({
+      ...router.useFetcher(),
       submit: vi.fn(),
     })
   })
