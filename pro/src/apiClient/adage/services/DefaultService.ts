@@ -29,6 +29,7 @@ import type { RedactorPreferences } from '../models/RedactorPreferences';
 import type { SearchBody } from '../models/SearchBody';
 import type { StockIdBody } from '../models/StockIdBody';
 import type { TrackingAutocompleteSuggestionBody } from '../models/TrackingAutocompleteSuggestionBody';
+import type { TrackingCTAShareBody } from '../models/TrackingCTAShareBody';
 import type { TrackingFilterBody } from '../models/TrackingFilterBody';
 import type { TrackingShowMoreBody } from '../models/TrackingShowMoreBody';
 import type { VenueResponse } from '../models/VenueResponse';
@@ -623,6 +624,27 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/tracking-autocompletion',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * log_tracking_cta_share <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public logTrackingCtaShare(
+    requestBody?: TrackingCTAShareBody,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/adage-iframe/logs/tracking-cta-share',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
