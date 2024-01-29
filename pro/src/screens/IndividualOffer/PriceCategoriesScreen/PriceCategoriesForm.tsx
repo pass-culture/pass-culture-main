@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import type { FieldArrayRenderProps } from 'formik'
 import { FieldArray, useFormikContext } from 'formik'
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import FormLayout from 'components/FormLayout'
@@ -71,8 +71,6 @@ export const PriceCategoriesForm = ({
       })
       if (isOk) {
         arrayHelpers.remove(index)
-        await getIndividualOfferAdapter(offer.id)
-
         notify.success(message)
       } else {
         notify.error(message)
