@@ -1,3 +1,5 @@
+import threading
+
 from flask import current_app as app
 
 from pcapi.repository.clean_database import clean_all_database
@@ -9,7 +11,7 @@ from pcapi.serialization.decorator import spectree_serialize
 @spectree_serialize(on_success_status=204)
 def tear_up() -> None:
     clean_all_database()
-    save_ci_sandbox()
+    threading.Thread(target=save_ci_sandbox).start()
 
 
 @app.route("/e2e/pro/tear-down", methods=["GET"])

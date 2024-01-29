@@ -39,8 +39,9 @@ def install_all_routes(app: Flask) -> None:
     adage_iframe.install_routes(app)
     pcapi.tasks.install_handlers(app)
     institutional.install_routes(app)
-    if settings.IS_E2E_TESTS:
-        pcapi.sandboxes.install_routes(app)
+    # if settings.IS_E2E_TESTS:
+    # DO NOT MERGE: This is a temporary route for e2e tests
+    pcapi.sandboxes.install_routes(app)
 
     app.register_blueprint(adage_v1_blueprint, url_prefix="/adage/v1")
     app.register_blueprint(native_blueprint, url_prefix="/native")

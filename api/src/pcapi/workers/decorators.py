@@ -10,6 +10,7 @@ from rq.queue import Queue
 
 from pcapi.settings import IS_DEV
 from pcapi.settings import IS_RUNNING_TESTS
+from pcapi.settings import IS_E2E_TESTS
 from pcapi.workers.logger import job_extra_description
 
 
@@ -21,7 +22,7 @@ def job(queue: Queue) -> typing.Callable:
         @wraps(func)
         def job_func(*args: typing.Any, **kwargs: typing.Any) -> None:
             current_job = get_current_job()
-            if not current_job or IS_RUNNING_TESTS or IS_DEV:
+            if not current_job or IS_RUNNING_TESTS or (IS_DEV and not IS_E2E_TESTS):
                 # in synchronous calls (as wall in TESTS because queued jobs are executed synchronously)
                 # we don't won't to create another session
                 func(*args, **kwargs)

@@ -7,13 +7,20 @@ export default defineConfig({
   e2e: {
     setupNodeEvents(on) {
       // implement node event listeners here
-      on('before:run', async (results: any) => {
+      on('before:run', async () => {
         // eslint disable-next-line no-console
-        console.log('before:run ~~~ ~~~ ~~~ ~~~ ~~~')
-        console.log(results)
         console.log('before:run ~~~ ~~~ ~~~ ~~~ ~~~ end')
         try {
+          await fetch(`${API_BASE_URL}/health/api`)
+          console.log('health check success')
+        } catch (error) {
+          console.error(error)
+          throw error
+        }
+        try {
           await fetch(`${API_BASE_URL}/e2e/pro/tear-up`)
+            .then((res) => res.status)
+            .then(console.log)
         } catch (error) {
           console.error(error)
           throw error
