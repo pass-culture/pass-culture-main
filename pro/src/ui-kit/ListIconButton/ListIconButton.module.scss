@@ -33,7 +33,7 @@
   }
 
   &:hover:not(:disabled) {
-    background-color: #ede3ff;
+    background-color: colors.$grey-blue-light;
   }
 
   &-icon {

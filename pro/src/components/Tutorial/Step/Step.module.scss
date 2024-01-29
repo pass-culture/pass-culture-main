@@ -60,16 +60,16 @@
 }
 
 .mb-content {
-  display: grid; 
+  display: grid;
   grid:
     "ticket-office-informations . booking-informations ." 1fr
     "nav-tutorial nav-tutorial nav-tutorial nav-tutorial" 1fr
     ". offers-informations . reimbursements-informations" 1fr
-    /1fr 1fr 1fr 1.5fr; 
+    /1fr 1fr 1fr 1.5fr;
   margin: auto;
-  align-items: center; 
+  align-items: center;
   gap: rem.torem(8px) 0;
-        
+
   .ticket-office-informations { grid-area: ticket-office-informations; }
   .offers-informations { grid-area: offers-informations; }
   .booking-informations { grid-area: booking-informations; }
@@ -87,7 +87,7 @@
       "ticket-office offers booking reimbursements" 1fr
       /1fr 1fr 1fr 1.5fr; 
     grid-area: nav-tutorial;
-    color: white;
+    color: colors.$white;
     background-image: linear-gradient(
       97deg,
       colors.$primary,
@@ -101,11 +101,11 @@
 
     .ticket-office, .offers, .booking, .reimbursements {
       @include fonts.button;
-      
+
       display: flex;
       align-items:center;
       justify-content: center;
-      color: white;
+      color: colors.$white;
       height: rem.torem(80px);
     }
   }
@@ -114,7 +114,7 @@
 
 @media (max-width: size.$mobile) {
   .mb-content {
-    grid: 
+    grid:
       "ticket-office-informations nav-tutorial" 1fr
       "offers-informations nav-tutorial" 1fr
       "booking-informations nav-tutorial" 1fr
@@ -127,7 +127,7 @@
           colors.$primary,
           colors.$secondary
         );
-      }           
+      }
   }
 
   .arrow-icon {

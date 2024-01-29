@@ -15,8 +15,7 @@
   &-help {
     display: flex;
     flex-wrap: wrap;
-    box-shadow: inset 0 rem.torem(5px) rem.torem(3px) rem.torem(-3px)
-      rgb(0 0 0 / 25%);
+    box-shadow: inset 0 rem.torem(5px) rem.torem(3px) rem.torem(-3px) colors.$black-shadow;
     background-color: colors.$grey-light;
     justify-content: center;
     padding: rem.torem(16px);
@@ -29,7 +28,7 @@
     background: colors.$white;
     padding: 0;
     border-radius: rem.torem(8px) rem.torem(8px) 0 0;
-    box-shadow: 0 rem.torem(2px) rem.torem(4px) 0 rgb(0 0 0 / 25%);
+    box-shadow: 0 rem.torem(2px) rem.torem(4px) 0 colors.$black-shadow;
     overflow-x: auto;
 
     &-brand {

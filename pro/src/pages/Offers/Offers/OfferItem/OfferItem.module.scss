@@ -126,7 +126,7 @@
   .sold-out-dates {
     background-color: colors.$white;
     border-radius: rem.torem(4px);
-    box-shadow: 0 rem.torem(2px) rem.torem(10px) 0 rgb(0 0 0 / 30%);
+    box-shadow: 0 rem.torem(2px) rem.torem(10px) 0 rgba(colors.$black, 0.3);
     display: none;
     margin-left: rem.torem(8px);
     padding: rem.torem(8px);

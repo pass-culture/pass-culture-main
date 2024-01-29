@@ -6,7 +6,7 @@
   height: rem.torem(264px);
   aspect-ratio: 2 / 3;
   border: 1px solid colors.$grey-medium;
-  box-shadow: 0 1px 8px 0 #25026c26;
+  box-shadow: 0 1px 8px 0 colors.$dark-blue-shadow;
 }
 
 .default-preview {
@@ -14,7 +14,7 @@
   justify-content: center;
   align-items: center;
   border-radius: rem.torem(4px);
-  background: linear-gradient(207.06deg, #f1f2f4 43.41%, #e1e1e7 107.01%);
+  background: linear-gradient(207.06deg, colors.$grey-light 43.41%, colors.$grey-lighter 107.01%);
 
   svg {
     height: rem.torem(60px);

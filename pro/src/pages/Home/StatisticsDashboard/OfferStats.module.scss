@@ -25,7 +25,7 @@
 
   // The trick is to "slide" the gradient with background-position
   // while the actual background is 3x the size of the actual block
-  background: linear-gradient(191deg, #e1e1e7, colors.$grey-light, #e1e1e7);
+  background: linear-gradient(191deg, colors.$grey-lighter, colors.$grey-light, colors.$grey-lighter);
   background-size: 300% 300%;
   animation: loadinggradient 2s ease infinite;
 }
