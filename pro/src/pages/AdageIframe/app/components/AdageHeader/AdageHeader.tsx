@@ -11,7 +11,7 @@ import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { sendSentryCustomError } from 'utils/sendSentryError'
+import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
 import useAdageUser from '../../hooks/useAdageUser'
 

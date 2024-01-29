@@ -17,7 +17,7 @@ import fullBackIcon from 'icons/full-back.svg'
 import { Banner, Title, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import { sendSentryCustomError } from 'utils/sendSentryError'
+import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
 import { getCulturalPartnersAdapter } from '../adapters'
 import { venueHasCollectiveInformation } from '../EACInformation/utils/venueHasCollectiveInformation'
