@@ -173,8 +173,7 @@ class SynchronizeVenueProvidersTest:
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.provider_manager.synchronize_venue_provider")
-    @patch("pcapi.connectors.notion.add_to_provider_error_database")
-    def test_catch_exception_and_continue(self, mock_add_to_provider_error_database, mock_synchronize_venue_provider):
+    def test_catch_exception_and_continue(self, mock_synchronize_venue_provider):
         venue_provider_1 = providers_factories.VenueProviderFactory()
         venue_provider_2 = providers_factories.VenueProviderFactory()
 
@@ -182,7 +181,6 @@ class SynchronizeVenueProvidersTest:
 
         synchronize_venue_providers([venue_provider_1, venue_provider_2], 10)
         assert mock_synchronize_venue_provider.call_count == 2
-        assert mock_add_to_provider_error_database.call_count == 2
 
 
 class SynchronizeDataForProviderTest:

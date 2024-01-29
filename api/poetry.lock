@@ -2008,17 +2008,6 @@ setproctitle = ["setproctitle"]
 tornado = ["tornado (>=0.2)"]
 
 [[package]]
-name = "h11"
-version = "0.14.0"
-description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "h11-0.14.0-py3-none-any.whl", hash = "sha256:e3fe4ac4b851c468cc8363d500db52c2ead036020723024a109d37346efaa761"},
-    {file = "h11-0.14.0.tar.gz", hash = "sha256:8f19fbbe99e72420ff35c00b27a34cb9937e902a8b810e2c88300c6f0a3b699d"},
-]
-
-[[package]]
 name = "html-tag-names"
 version = "0.1.2"
 description = "List of known HTML tag names"
@@ -2062,27 +2051,6 @@ genshi = ["genshi"]
 lxml = ["lxml"]
 
 [[package]]
-name = "httpcore"
-version = "0.18.0"
-description = "A minimal low-level HTTP client."
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "httpcore-0.18.0-py3-none-any.whl", hash = "sha256:adc5398ee0a476567bf87467063ee63584a8bce86078bf748e48754f60202ced"},
-    {file = "httpcore-0.18.0.tar.gz", hash = "sha256:13b5e5cd1dca1a6636a6aaea212b19f4f85cd88c366a2b82304181b769aab3c9"},
-]
-
-[package.dependencies]
-anyio = ">=3.0,<5.0"
-certifi = "*"
-h11 = ">=0.13,<0.15"
-sniffio = "==1.*"
-
-[package.extras]
-http2 = ["h2 (>=3,<5)"]
-socks = ["socksio (==1.*)"]
-
-[[package]]
 name = "httplib2"
 version = "0.22.0"
 description = "A comprehensive HTTP client library."
@@ -2095,29 +2063,6 @@ files = [
 
 [package.dependencies]
 pyparsing = {version = ">=2.4.2,<3.0.0 || >3.0.0,<3.0.1 || >3.0.1,<3.0.2 || >3.0.2,<3.0.3 || >3.0.3,<4", markers = "python_version > \"3.0\""}
-
-[[package]]
-name = "httpx"
-version = "0.25.0"
-description = "The next generation HTTP client."
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "httpx-0.25.0-py3-none-any.whl", hash = "sha256:181ea7f8ba3a82578be86ef4171554dd45fec26a02556a744db029a0a27b7100"},
-    {file = "httpx-0.25.0.tar.gz", hash = "sha256:47ecda285389cb32bb2691cc6e069e3ab0205956f681c5b2ad2325719751d875"},
-]
-
-[package.dependencies]
-certifi = "*"
-httpcore = ">=0.18.0,<0.19.0"
-idna = "*"
-sniffio = "*"
-
-[package.extras]
-brotli = ["brotli", "brotlicffi"]
-cli = ["click (==8.*)", "pygments (==2.*)", "rich (>=10,<14)"]
-http2 = ["h2 (>=3,<5)"]
-socks = ["socksio (==1.*)"]
 
 [[package]]
 name = "idna"
@@ -2915,20 +2860,6 @@ files = [
     {file = "mypy_extensions-1.0.0-py3-none-any.whl", hash = "sha256:4392f6c0eb8a5668a69e23d168ffa70f0be9ccfd32b5cc2d26a34ae5b844552d"},
     {file = "mypy_extensions-1.0.0.tar.gz", hash = "sha256:75dbf8955dc00442a438fc4d0666508a9a97b6bd41aa2f0ffe9d2f2725af0782"},
 ]
-
-[[package]]
-name = "notion-client"
-version = "1.0.0"
-description = "Python client for the official Notion API"
-optional = false
-python-versions = ">=3.7, <4"
-files = [
-    {file = "notion-client-1.0.0.tar.gz", hash = "sha256:281b37a1512abeccb81377d4a3461833f1c1fbd0ceb6e681e38b7cd446bf1bce"},
-    {file = "notion_client-1.0.0-py2.py3-none-any.whl", hash = "sha256:01b3dfba071b5d09b6bdef2950624b7f000da2ece851c133ccf40815c4db167b"},
-]
-
-[package.dependencies]
-httpx = ">=0.15.0"
 
 [[package]]
 name = "openpyxl"
@@ -5818,4 +5749,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "3f9c1ce53d15fb4c4e616a914766375dc90f08183f98a15d208016af3dc06549"
+content-hash = "7e774faed73a27b5f20f7e398a2fee844bee253c5940694174a8dd3995399616"

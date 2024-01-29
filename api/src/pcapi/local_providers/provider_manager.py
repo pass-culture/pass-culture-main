@@ -12,7 +12,6 @@ from urllib3 import exceptions as urllib3_exceptions
 from pcapi import settings
 import pcapi.connectors.ems as ems_connectors
 from pcapi.connectors.googledrive import get_backend
-import pcapi.connectors.notion as notion_connector
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers.models import Venue
@@ -61,13 +60,11 @@ def synchronize_venue_providers(venue_providers: list[provider_models.VenueProvi
         except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as exception:
             logger.error("Connexion error while synchronizing venue_provider", extra=log_data | {"exc": exception})
         except provider_api.ProviderAPIException as exception:
-            notion_connector.add_venue_provider_error_to_notion_database(exception, venue_provider)
             logger.error(  # pylint: disable=logging-fstring-interpolation
                 f"ProviderAPIException with code {exception.status_code} while synchronizing venue_provider",
                 extra=log_data | {"exc": exception},
             )
         except Exception as exception:  # pylint: disable=broad-except
-            notion_connector.add_venue_provider_error_to_notion_database(exception, venue_provider)
             logger.exception("Unexpected error while synchronizing venue provider", extra=log_data)
 
 
@@ -138,14 +135,12 @@ def synchronize_ems_venue_providers(from_last_version: bool = False) -> None:
             logger.error("Connexion error while synchronizing venue_provider", extra=log_data | {"exc": exception})
             venues_provider_to_sync.discard(venue_provider.id)
         except provider_api.ProviderAPIException as exception:
-            notion_connector.add_venue_provider_error_to_notion_database(exception, venue_provider)
             logger.error(  # pylint: disable=logging-fstring-interpolation
                 f"ProviderAPIException with code {exception.status_code} while synchronizing venue_provider",
                 extra=log_data | {"exc": exception},
             )
             venues_provider_to_sync.discard(venue_provider.id)
         except Exception as exception:  # pylint: disable=broad-except
-            notion_connector.add_venue_provider_error_to_notion_database(exception, venue_provider)
             logger.exception("Unexpected error while synchronizing venue provider", extra=log_data)
             venues_provider_to_sync.discard(venue_provider.id)
 
