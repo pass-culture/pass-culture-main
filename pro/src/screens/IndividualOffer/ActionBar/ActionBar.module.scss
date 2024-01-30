@@ -6,7 +6,7 @@
 }
 
 .draft-saved-icon {
-  color: colors.$green-valid;
+  color: colors.$valid;
   vertical-align: middle;
   margin-right: rem.torem(4px);
 }
@@ -20,5 +20,5 @@ $not-saved-size: rem.torem(16px);
   width: $not-saved-size;
   height: $not-saved-size;
   border-radius: 50%;
-  background-color: colors.$alert-color;
+  background-color: colors.$alert-dark;
 }

@@ -147,7 +147,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  border-top: rem.torem(1px) solid colors.$border-grey-color;
+  border-top: rem.torem(1px) solid colors.$grey-medium;
 
   &-link {
     @include fonts.caption;

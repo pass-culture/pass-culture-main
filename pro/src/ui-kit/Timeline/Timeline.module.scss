@@ -31,15 +31,15 @@ $time-line-width: rem.torem(2px);
 }
 
 .icon-error {
-  color: colors.$red-warning;
+  color: colors.$error;
 
   path {
-    fill: colors.$red-warning;
+    fill: colors.$error;
   }
 }
 
 .icon-success {
-  color: colors.$green-valid;
+  color: colors.$valid;
 }
 
 .icon-success-disabled {
@@ -55,7 +55,7 @@ $time-line-width: rem.torem(2px);
 }
 
 .icon-wrong {
-  color: colors.$red-warning;
+  color: colors.$error;
 }
 
 .step {
@@ -81,7 +81,7 @@ $time-line-width: rem.torem(2px);
 
 .line-success::after {
   border-style: solid;
-  border-color: colors.$green-valid;
+  border-color: colors.$valid;
 }
 
 .line-error::after {

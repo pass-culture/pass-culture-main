@@ -25,7 +25,7 @@
   }
 
   &-pre-booked {
-    background-color: colors.$booking-pending-status;
+    background-color: colors.$alert-dark;
     color: colors.$black;
 
     .status-label-icon {
@@ -39,7 +39,7 @@
 
   &-active,
   &-validated {
-    background-color: colors.$green-valid;
+    background-color: colors.$valid;
   }
 
   &-draft {

@@ -64,7 +64,7 @@
 }
 
 .toggle[aria-pressed="true"] .toggle-display {
-  background-color: colors.$green-valid;
+  background-color: colors.$valid;
 }
 
 .toggle[aria-pressed="true"] .toggle-display::before {

@@ -6,11 +6,10 @@ $grey-semi-dark: #90949d;
 $grey-dark: #696a6f;
 $black: #161617;
 
-// later :
+// waiting for designer approval :
 $grey-very-light: #ecf0f1;
 $grey-lighter: #e1e1e7;
 $grey-blue-light: #ede3ff;
-$logo-purple: #7b1e82; // Maybe should be deleted
 
 // SHADOWS COLORS
 $medium-shadow: #67686b29;
@@ -23,22 +22,20 @@ $secondary-lighter: #c1a3ff;
 $secondary-light: #6123df;
 $secondary: #320096;
 $secondary-dark: #25026c;
-$secondary-lighter-with-transparency: #f3edff;
 
-// later :
+// waiting for designer approval :
+$secondary-lighter-with-transparency: #f3edff; // name not true, it's not transparent !
 $primary-dark: #c10046;
 $primary-disabled: #ff99be;
+$logo-purple: #7b1e82; // nom: brand, code: #870087, vérifier avec Charlotte
 
 // STATE COLORS
 $accent: #06f;
-$green-valid: #15884f;
-$green-valid-light: #2cbe6e;
-$red-error: #e60039;
-$red-warning: #b60025;
-$notification-info: #b3e7ff;
-$alert-color: #f9c030;
-$booking-pending-status: $alert-color;
-$border-grey-color: $grey-medium;
+$valid: #15884f;
+$error-light: #e60039;
+$error: #b60025;
+$accent-light: #b3e7ff;
+$alert-dark: #f9c030;
 
 // GRADIENTS COLORS
 $linear-gradient-to-right: linear-gradient(to right, $primary, $secondary);
@@ -47,25 +44,27 @@ $linear-gradient-to-right: linear-gradient(to right, $primary, $secondary);
 $input-text-color: $black;
 $input-border-color: $grey-semi-dark;
 $input-border-color-focus: $black;
-$input-border-color-error: $red-warning;
+$input-border-color-error: $error;
 $input-border-color-disabled: $grey-medium;
 $input-bg-color: $white;
 $input-bg-color-disabled: $grey-light;
 $input-text-color-disabled: $grey-dark;
 
 // CALLOUT COLORS
+// waiting for designer approval :
 $callout-default-border: $secondary-light;
 $callout-default-background: #f4effd;
 $callout-info-border: $accent;
 $callout-info-background: #edf4ff;
-$callout-success-border: $green-valid;
+$callout-success-border: $valid;
 $callout-success-background: #eef7f3;
-$callout-warning-border: $alert-color;
+$callout-warning-border: $alert-dark;
 $callout-warning-background: #fff8e6;
 $callout-error-border: $primary;
 $callout-error-background: #fef2f6;
 
 // ADAGE COLORS
+// waiting for designer approval :
 $adage-discovery-background: #fbfafc;
 $adage-purple: #4613ad;
 $adage-blue: #448;
