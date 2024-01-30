@@ -225,7 +225,6 @@ export const VenueEditionFormScreen = ({
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit}>
           <VenueEditionForm
-            isCreatingVenue={false}
             updateIsSiretValued={setIsSiretValued}
             venueTypes={venueTypes}
             venueLabels={venueLabels}

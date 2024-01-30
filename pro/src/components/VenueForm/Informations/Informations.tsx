@@ -12,7 +12,7 @@ export interface InformationsProps {
   isCreatedEntity: boolean
   readOnly: boolean
   updateIsSiretValued: (value: boolean) => void
-  setIsSiretValued: (value: boolean) => void
+  setIsSiretValued?: (value: boolean) => void
   isVenueVirtual: boolean
   siren: string
 }
