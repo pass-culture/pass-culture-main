@@ -5,7 +5,6 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.routes.apis import public_api
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.validation.routes.institutional import require_institutional_api_token
 
 from . import serializers
 
@@ -14,7 +13,6 @@ PLAYLIST_MAX_SIZE = 20
 
 
 @public_api.route("/institutional/playlist/<tag_name>", methods=["GET"])
-@require_institutional_api_token
 @spectree_serialize(response_model=serializers.OffersResponse)
 def get_offers_by_tag(tag_name: str) -> serializers.OffersResponse:
     offers = (

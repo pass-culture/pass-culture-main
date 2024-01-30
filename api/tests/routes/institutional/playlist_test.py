@@ -25,10 +25,7 @@ class PlaylistTest:
 
         criterion_name = criterion.name
         with assert_num_queries(1):
-            response = client.get(
-                f"/institutional/playlist/{criterion_name}",
-                headers={"Authorization": f"Bearer {settings.INSTITUTIONAL_API_KEY}"},
-            )
+            response = client.get(f"/institutional/playlist/{criterion_name}")
 
         assert response.status_code == 200, response.json
         assert sorted(response.json, key=lambda offer: offer["id"]) == [
@@ -58,10 +55,7 @@ class PlaylistTest:
         criteria_factories.OfferCriterionFactory(offerId=inactive_offer.id, criterionId=criterion.id)
         criteria_factories.OfferCriterionFactory(offerId=unvalidated_offer.id, criterionId=criterion.id)
 
-        response = client.get(
-            f"/institutional/playlist/{criterion.name}",
-            headers={"Authorization": f"Bearer {settings.INSTITUTIONAL_API_KEY}"},
-        )
+        response = client.get(f"/institutional/playlist/{criterion.name}")
 
         assert response.status_code == 200, response.json
         assert response.json == []
@@ -75,10 +69,7 @@ class PlaylistTest:
         criterion = criteria_factories.CriterionFactory()
         criteria_factories.OfferCriterionFactory(offerId=unbookable_offer.id, criterionId=criterion.id)
 
-        response = client.get(
-            f"/institutional/playlist/{criterion.name}",
-            headers={"Authorization": f"Bearer {settings.INSTITUTIONAL_API_KEY}"},
-        )
+        response = client.get(f"/institutional/playlist/{criterion.name}")
 
         assert response.status_code == 200, response.json
         assert response.json == []
@@ -93,10 +84,7 @@ class PlaylistTest:
         criterion = criteria_factories.CriterionFactory()
         criteria_factories.OfferCriterionFactory(offerId=offer.id, criterionId=criterion.id)
 
-        response = client.get(
-            f"/institutional/playlist/{criterion.name}",
-            headers={"Authorization": f"Bearer {settings.INSTITUTIONAL_API_KEY}"},
-        )
+        response = client.get(f"/institutional/playlist/{criterion.name}")
 
         assert response.status_code == 200, response.json
         assert response.json == [
@@ -108,8 +96,3 @@ class PlaylistTest:
                 "venue": {"id": offer.venue.id, "commonName": offer.venue.common_name},
             }
         ]
-
-    def test_authentication(self, client):
-        response = client.get("/institutional/playlist/criterion_name")
-
-        assert response.status_code == 403
