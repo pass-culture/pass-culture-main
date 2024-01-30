@@ -24,7 +24,7 @@ import { SelectOption } from 'custom_types/form'
 import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { VenueFormScreen } from '../index'
+import { VenueCreationFormScreen } from '../VenueCreationFormScreen'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
@@ -63,7 +63,7 @@ const renderForm = (
           path="/structures/AE/lieux/creation"
           element={
             <>
-              <VenueFormScreen
+              <VenueCreationFormScreen
                 initialValues={initialValues}
                 isCreatingVenue={isCreatingVenue}
                 offerer={{ id: 12, siren: '881457238' } as Offerer}
