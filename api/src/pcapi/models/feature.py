@@ -106,7 +106,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_DOUBLE_MODEL_WRITING = "Activer la double écriture des coordonnées bancaires"
     WIP_CATEGORY_SELECTION = "Activer la nouvelle sélection de catégories"
     WIP_ENABLE_RATE_LIMITING = "Active le rate limiting"
-    WIP_ENABLE_SEARCH_HISTORY_ADAGE = "Activer la possibilité de voir l'historique des recherches sur adage"
     WIP_ENABLE_COMPLIANCE_CALL = "Activer les appels à l'API Compliance pour donner un score aux offres"
     WIP_ENABLE_MOCK_UBBLE = "Utiliser le mock Ubble à la place du vrai Ubble"
     WIP_ENABLE_BOOST_SHOWTIMES_FILTER = "Activer le filtre pour les requêtes showtimes Boost"
@@ -173,7 +172,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_ENABLE_SATISFACTION_SURVEY,
-    FeatureToggle.WIP_ENABLE_SEARCH_HISTORY_ADAGE,
     FeatureToggle.WIP_ENABLE_SUSPICIOUS_EMAIL_SEND,
     FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE,
     FeatureToggle.WIP_ENABLE_BOOST_SHOWTIMES_FILTER,
