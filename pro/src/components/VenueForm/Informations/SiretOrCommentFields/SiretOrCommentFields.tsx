@@ -18,8 +18,9 @@ export interface SiretOrCommentInterface {
   isToggleDisabled?: boolean
   readOnly: boolean
   setIsFieldNameFrozen: (isNameFrozen: boolean) => void
+  // TODO Albéric: not sure why there are two states, could be refactored
   updateIsSiretValued: (isSiretValued: boolean) => void
-  setIsSiretValued: (isSiretValued: boolean) => void
+  setIsSiretValued?: (isSiretValued: boolean) => void
   siren: string
 }
 
@@ -43,7 +44,9 @@ const SiretOrCommentFields = ({
     if (isSiretSelected) {
       setIsFieldNameFrozen(false)
     }
-    setIsSiretValued(!isSiretSelected)
+    if (setIsSiretValued) {
+      setIsSiretValued(!isSiretSelected)
+    }
     updateIsSiretValued(!isSiretSelected)
     setIsSiretSelected(!isSiretSelected)
   }
