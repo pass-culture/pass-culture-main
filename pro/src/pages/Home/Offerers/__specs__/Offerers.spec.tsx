@@ -30,6 +30,7 @@ const renderOfferers = (
       selectedOfferer={defaultGetOffererResponseModel}
       isLoading={false}
       isUserOffererValidated
+      setSelectedOfferer={vi.fn()}
       {...props}
     />,
     options
