@@ -2,10 +2,7 @@ import { useFormikContext } from 'formik'
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
-import {
-  SharedCurrentUserResponseModel,
-  VenueProviderResponse,
-} from 'apiClient/v1'
+import { VenueProviderResponse } from 'apiClient/v1'
 import { AddressSelect } from 'components/Address'
 import FormLayout from 'components/FormLayout'
 import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
@@ -15,10 +12,6 @@ import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
-import { venueSubmitRedirectUrl } from 'screens/VenueForm/utils/venueSubmitRedirectUrl'
-
-import useCurrentUser from '../../hooks/useCurrentUser'
-import RouteLeavingGuard, { BlockerFunction } from '../RouteLeavingGuard'
 
 import { Accessibility } from './Accessibility'
 import { Activity } from './Activity'
@@ -33,46 +26,17 @@ import { WithdrawalDetails } from './WithdrawalDetails'
 import { VenueFormValues } from '.'
 
 interface VenueFormProps {
-  isCreatingVenue: boolean
   offerer: Offerer
   updateIsSiretValued: (isSiretValued: boolean) => void
   venueTypes: SelectOption[]
   venueLabels: SelectOption[]
   provider?: Providers[]
   venueProvider?: VenueProviderResponse[]
-  venue?: Venue
+  venue: Venue
   initialIsVirtual?: boolean
 }
 
-interface ShouldBlockVenueNavigationProps {
-  isCreatingVenue: boolean
-  offererId: number
-  user: SharedCurrentUserResponseModel
-}
-
-type ShouldBlockVenueNavigation = (
-  p: ShouldBlockVenueNavigationProps
-) => BlockerFunction
-
-export const shouldBlockVenueNavigation: ShouldBlockVenueNavigation =
-  ({
-    isCreatingVenue,
-    offererId,
-    user,
-  }: ShouldBlockVenueNavigationProps): BlockerFunction =>
-  ({ nextLocation }) => {
-    if (!isCreatingVenue) {
-      return false
-    }
-
-    const url = venueSubmitRedirectUrl(isCreatingVenue, offererId, user)
-    const nextUrl = nextLocation.pathname + nextLocation.search
-
-    return !nextUrl.startsWith(url)
-  }
-
 export const VenueEditionForm = ({
-  isCreatingVenue,
   offerer,
   updateIsSiretValued,
   venueTypes,
@@ -91,11 +55,9 @@ export const VenueEditionForm = ({
   const shouldDisplayImageVenueUploaderSection = isPermanent
   useScrollToFirstErrorAfterSubmit()
   const location = useLocation()
-  const user = useCurrentUser()
 
   const [canOffererCreateCollectiveOffer, setCanOffererCreateCollectiveOffer] =
     useState(false)
-  const [isSiretValued, setIsSiretValued] = useState(true)
 
   useEffect(() => {
     const loadCanOffererCreateCollectiveOffer = async () => {
@@ -112,31 +74,30 @@ export const VenueEditionForm = ({
     <div>
       <FormLayout fullWidthActions>
         <FormLayout.MandatoryInfo />
-        {!isCreatingVenue &&
-          !initialIsVirtual &&
-          provider &&
-          venueProvider &&
-          venue && (
-            <OffersSynchronization
-              provider={provider}
-              venueProvider={venueProvider}
-              venue={venue}
-            />
-          )}
+
+        {!initialIsVirtual && provider && venueProvider && (
+          <OffersSynchronization
+            provider={provider}
+            venueProvider={venueProvider}
+            venue={venue}
+          />
+        )}
+
         <Informations
-          isCreatedEntity={isCreatingVenue}
-          readOnly={!isCreatingVenue}
+          isCreatedEntity={false}
+          readOnly={true}
           updateIsSiretValued={updateIsSiretValued}
           isVenueVirtual={initialIsVirtual}
-          setIsSiretValued={setIsSiretValued}
           siren={offerer.siren}
         />
+
         {
           /* istanbul ignore next: DEBT, TO FIX */
           !!shouldDisplayImageVenueUploaderSection && (
-            <ImageUploaderVenue isCreatingVenue={isCreatingVenue} />
+            <ImageUploaderVenue isCreatingVenue={false} />
           )
         }
+
         {!initialIsVirtual && (
           <FormLayout.Section
             title="Adresse du lieu"
@@ -147,56 +108,42 @@ export const VenueEditionForm = ({
             </FormLayout.Row>
           </FormLayout.Section>
         )}
+
         <Activity
           venueTypes={venueTypes}
           venueLabels={venueLabels}
           isVenueVirtual={initialIsVirtual}
-          isCreatingVenue={isCreatingVenue}
+          isCreatingVenue={false}
         />
+
         {!initialIsVirtual && (
           <>
-            <Accessibility isCreatingVenue={isCreatingVenue} />
-            {!isCreatingVenue && <WithdrawalDetails />}
+            <Accessibility isCreatingVenue={false} />
+            <WithdrawalDetails />
           </>
         )}
-        <Contact
-          isVenueVirtual={initialIsVirtual}
-          isCreatingVenue={isCreatingVenue}
-        />
+
+        <Contact isVenueVirtual={initialIsVirtual} isCreatingVenue={false} />
+
         {(canOffererCreateCollectiveOffer ||
-          !!venue?.collectiveDmsApplication) &&
-          ((isCreatingVenue && isSiretValued) || !isCreatingVenue) && (
-            <CollectiveVenueInformations
-              venue={venue}
-              isCreatingVenue={isCreatingVenue}
-              canCreateCollectiveOffer={canOffererCreateCollectiveOffer}
-            />
-          )}
-        {((!isNewBankDetailsJourneyEnabled && !isCreatingVenue) ||
-          (isNewBankDetailsJourneyEnabled && !venue?.siret)) &&
-          venue && (
-            <ReimbursementFields
-              offerer={offerer}
-              scrollToSection={
-                Boolean(location.state) || Boolean(location.hash)
-              }
-              venue={venue}
-            />
-          )}
-        <RouteLeavingGuard
-          shouldBlockNavigation={shouldBlockVenueNavigation({
-            isCreatingVenue,
-            offererId: offerer.id,
-            user: user.currentUser,
-          })}
-          dialogTitle="Voulez-vous quitter la création de lieu ?"
-        >
-          <p>Les informations non enregistrées seront perdues.</p>
-        </RouteLeavingGuard>
-        <VenueFormActionBar
-          offererId={offerer.id}
-          isCreatingVenue={isCreatingVenue}
-        />
+          Boolean(venue?.collectiveDmsApplication)) && (
+          <CollectiveVenueInformations
+            venue={venue}
+            isCreatingVenue={false}
+            canCreateCollectiveOffer={canOffererCreateCollectiveOffer}
+          />
+        )}
+
+        {(!isNewBankDetailsJourneyEnabled ||
+          (isNewBankDetailsJourneyEnabled && !venue?.siret)) && (
+          <ReimbursementFields
+            offerer={offerer}
+            scrollToSection={Boolean(location.state) || Boolean(location.hash)}
+            venue={venue}
+          />
+        )}
+
+        <VenueFormActionBar offererId={offerer.id} isCreatingVenue={false} />
       </FormLayout>
     </div>
   )

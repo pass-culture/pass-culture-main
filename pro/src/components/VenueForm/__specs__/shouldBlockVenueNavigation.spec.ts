@@ -21,31 +21,12 @@ const defaultLocation = {
 }
 
 const defaultShouldBlockNavigationInVenueProps = {
-  isCreatingVenue: true,
   isNewOfferCreationJourney: true,
   offererId: offererId,
   user: userAdmin,
 }
 
 describe('shouldBlockNavigation', () => {
-  it('should not block in edition', () => {
-    const nextLocation = {
-      ...defaultLocation,
-      pathname: '/offres',
-    }
-
-    const shouldBlockNavigationInVenueProps = {
-      ...defaultShouldBlockNavigationInVenueProps,
-      isCreatingVenue: false,
-    }
-
-    const result = shouldBlockVenueNavigation(
-      shouldBlockNavigationInVenueProps
-    )({ currentLocation: defaultLocation, nextLocation: nextLocation })
-
-    expect(result).toBe(false)
-  })
-
   it('should not block when creating venue and being redirected for admin', () => {
     const nextLocation = {
       ...defaultLocation,
