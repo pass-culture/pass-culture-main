@@ -215,6 +215,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     pricingPoint: GetVenuePricingPointResponseModel | None
     reimbursementPointId: int | None
     siret: str | None
+    timezone: str
     venueLabelId: int | None
     venueOpeningHours: list[dict] | None
     venueTypeCode: offerers_models.VenueTypeCode
