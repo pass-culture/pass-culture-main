@@ -50,7 +50,6 @@ export const VenueCreation = (): JSX.Element | null => {
       ) : (
         <VenueCreationFormScreen
           initialValues={initialValues}
-          isCreatingVenue
           offerer={offerer}
           venueTypes={venueTypes}
           venueLabels={venueLabels}
