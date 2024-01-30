@@ -51,7 +51,7 @@
 
   &-children {
     border-radius: rem.torem(10px);
-    box-shadow: 0 rem.torem(2px) rem.torem(16px) 0 colors.$dark-blue-shadow;
+    box-shadow: 0 rem.torem(2px) rem.torem(16px) 0 colors.$large-shadow;
     border: none;
     z-index: zIndex.$modal-z-index;
   }

@@ -9,7 +9,7 @@
 	grid-template-columns: rem.torem(281px) auto;
 	border: rem.torem(1px) solid colors.$border-grey-color;
 	border-radius: rem.torem(6px);
-	box-shadow: rem.torem(0) rem.torem(3px) rem.torem(4px) colors.$grey-medium-shadow;
+	box-shadow: rem.torem(0) rem.torem(3px) rem.torem(4px) colors.$medium-shadow;
 
 	@media (max-width: size.$tablet) {
     display: flex;
