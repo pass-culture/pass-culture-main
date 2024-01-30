@@ -1642,3 +1642,12 @@ class CollectivePlaylist(PcObject, Base, Model):
     )
 
     Index("ix_collective_playlist_type_institutionId", type, institutionId)
+
+
+class AdageVenueAddress(PcObject, Base, Model):
+    adageId: str | None = sa.Column(sa.Text, nullable=True, unique=True)
+    adageInscriptionDate: datetime | None = sa.Column(sa.DateTime, nullable=True)
+    venueId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=True)
+    venue: sa_orm.Mapped["Venue"] = sa.orm.relationship(
+        "Venue", foreign_keys=[venueId], back_populates="adage_addresses"
+    )
