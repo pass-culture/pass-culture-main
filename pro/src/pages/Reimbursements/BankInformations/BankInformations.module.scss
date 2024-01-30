@@ -2,7 +2,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_colors.scss" as colors;
 
-.title {
+.header-title {
   @include fonts.title3;
 }
 
@@ -18,7 +18,9 @@
   width: fit-content;
 }
 
-.add-bank-account-button, .spinner, .select-offerer-section {
+.add-bank-account-button,
+.spinner,
+.select-offerer-section {
   margin-top: rem.torem(32px);
 }
 

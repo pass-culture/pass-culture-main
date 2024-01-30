@@ -129,7 +129,7 @@ const BankInformations = (): JSX.Element => {
 
   return (
     <>
-      <h2 className="header-title">Informations bancaires</h2>
+      <h2 className={styles['header-title']}>Informations bancaires</h2>
       <div className={styles['information']}>
         {!selectedOfferer?.hasValidBankAccount &&
           !selectedOfferer?.hasPendingBankAccount &&
