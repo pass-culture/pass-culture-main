@@ -29,6 +29,18 @@ class FinanceReimbursementPointListResponseModel(BaseModel):
     __root__: list[FinanceReimbursementPointResponseModel]
 
 
+class FinanceBankAccountResponseModel(BaseModel):
+    class Config:
+        orm_mode = True
+
+    id: int
+    label: str
+
+
+class FinanceBankAccountListResponseModel(BaseModel):
+    __root__: list[FinanceBankAccountResponseModel]
+
+
 class InvoiceListQueryModel(BaseModel):
     class Config:
         orm_mode = True

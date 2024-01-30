@@ -10,7 +10,6 @@ import sqlalchemy.sql.sqltypes as sqla_sqltypes
 
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.educational.models as educational_models
-import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.users.models as users_models
@@ -761,14 +760,12 @@ def _get_legacy_payments_for_collective_bookings(
     )
 
 
-def get_bank_account_with_current_venues_links(
-    offerer_id: int, bank_account_id: int
-) -> finance_models.BankAccount | None:
+def get_bank_account_with_current_venues_links(offerer_id: int, bank_account_id: int) -> models.BankAccount | None:
     return (
-        finance_models.BankAccount.query.filter(
-            finance_models.BankAccount.id == bank_account_id,
-            finance_models.BankAccount.offererId == offerer_id,
-            finance_models.BankAccount.status == finance_models.BankAccountApplicationStatus.ACCEPTED,
+        models.BankAccount.query.filter(
+            models.BankAccount.id == bank_account_id,
+            models.BankAccount.offererId == offerer_id,
+            models.BankAccount.status == models.BankAccountApplicationStatus.ACCEPTED,
         )
         .join(offerers_models.Offerer)
         .outerjoin(offerers_models.Venue, offerers_models.Venue.managingOffererId == offerers_models.Offerer.id)
@@ -787,16 +784,27 @@ def get_bank_account_with_current_venues_links(
             ),
         )
         .options(
-            sqla_orm.contains_eager(finance_models.BankAccount.offerer)
+            sqla_orm.contains_eager(models.BankAccount.offerer)
             .contains_eager(offerers_models.Offerer.managedVenues)
             .load_only(offerers_models.Venue.id)
             .contains_eager(offerers_models.Venue.pricing_point_links)
             .load_only(offerers_models.VenuePricingPointLink.timespan)
         )
         .options(
-            sqla_orm.contains_eager(finance_models.BankAccount.offerer)
+            sqla_orm.contains_eager(models.BankAccount.offerer)
             .contains_eager(offerers_models.Offerer.managedVenues)
             .contains_eager(offerers_models.Venue.bankAccountLinks)
         )
         .one_or_none()
     )
+
+
+def get_bank_accounts_query(user: users_models.User) -> sqla_orm.Query:
+    query = models.BankAccount.query.filter(models.BankAccount.status == models.BankAccountApplicationStatus.ACCEPTED)
+
+    if not user.has_admin_role:
+        query = query.join(
+            offerers_models.UserOfferer, models.BankAccount.offererId == offerers_models.UserOfferer.offererId
+        ).filter(offerers_models.UserOfferer.user == user, offerers_models.UserOfferer.isValidated)
+    query = query.with_entities(models.BankAccount.id, models.BankAccount.label)
+    return query

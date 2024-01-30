@@ -34,6 +34,7 @@ import type { EditVenueCollectiveDataBodyModel } from '../models/EditVenueCollec
 import type { EducationalDomainsResponseModel } from '../models/EducationalDomainsResponseModel';
 import type { EducationalInstitutionsResponseModel } from '../models/EducationalInstitutionsResponseModel';
 import type { EducationalRedactors } from '../models/EducationalRedactors';
+import type { FinanceBankAccountListResponseModel } from '../models/FinanceBankAccountListResponseModel';
 import type { FinanceReimbursementPointListResponseModel } from '../models/FinanceReimbursementPointListResponseModel';
 import type { GenerateOffererApiKeyResponse } from '../models/GenerateOffererApiKeyResponse';
 import type { GetCollectiveOfferRequestResponseModel } from '../models/GetCollectiveOfferRequestResponseModel';
@@ -908,6 +909,21 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/features',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * get_bank_accounts <GET>
+   * @returns FinanceBankAccountListResponseModel OK
+   * @throws ApiError
+   */
+  public getBankAccounts(): CancelablePromise<FinanceBankAccountListResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/finance/bank-accounts',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,

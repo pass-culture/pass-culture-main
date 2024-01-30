@@ -83,6 +83,8 @@ export type { EducationalRedactorQueryModel } from './models/EducationalRedactor
 export type { EducationalRedactorResponseModel } from './models/EducationalRedactorResponseModel';
 export type { EducationalRedactors } from './models/EducationalRedactors';
 export type { FeatureResponseModel } from './models/FeatureResponseModel';
+export type { FinanceBankAccountListResponseModel } from './models/FinanceBankAccountListResponseModel';
+export type { FinanceBankAccountResponseModel } from './models/FinanceBankAccountResponseModel';
 export type { FinanceReimbursementPointListResponseModel } from './models/FinanceReimbursementPointListResponseModel';
 export type { FinanceReimbursementPointResponseModel } from './models/FinanceReimbursementPointResponseModel';
 export { GenderEnum } from './models/GenderEnum';
