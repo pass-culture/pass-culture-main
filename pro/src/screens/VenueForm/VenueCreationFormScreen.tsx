@@ -131,7 +131,6 @@ export const VenueCreationFormScreen = ({
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit}>
           <VenueCreationForm
-            isCreatingVenue={true}
             updateIsSiretValued={setIsSiretValued}
             venueTypes={venueTypes}
             venueLabels={venueLabels}
