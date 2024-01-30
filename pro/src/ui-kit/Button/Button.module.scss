@@ -200,7 +200,7 @@
 
     &:hover:not(:disabled, .button-disabled) {
       box-shadow: rem.torem(0) rem.torem(3px) rem.torem(4px)
-        colors.$grey-medium-shadow;
+        colors.$medium-shadow;
     }
 
     &:focus-visible {

@@ -29,7 +29,7 @@ $venue-image-width: rem.torem(276px);
 
   &:hover {
     .venue-image {
-      box-shadow: 0 0 rem.torem(4px) colors.$black-shadow;
+      box-shadow: 0 0 rem.torem(4px) colors.$large-shadow;
     }
 
     .venue-infos-name,

@@ -8,7 +8,7 @@
   border-radius: rem.torem(4px);
   box-shadow:
     0 rem.torem(1px) rem.torem(8px)
-    rgba(colors.$black-with-transparency, $alpha: 0.15);
+    rgba(colors.$large-shadow, $alpha: 0.15);
 
   &.preview-venue {
     $height: rem.torem(176px);
