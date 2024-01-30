@@ -46,7 +46,7 @@ const renderForm = (
   currentUser: SharedCurrentUserResponseModel,
   initialValues: VenueFormValues,
   isCreatingVenue: boolean,
-  venue?: Venue | undefined,
+  venue: Venue,
   hasBookingQuantity?: boolean
 ) => {
   const storeOverrides = {
@@ -65,7 +65,6 @@ const renderForm = (
             <>
               <VenueEditionFormScreen
                 initialValues={initialValues}
-                isCreatingVenue={isCreatingVenue}
                 offerer={{ id: 12, siren: '881457238' } as Offerer}
                 venueTypes={venueTypes}
                 venueLabels={venueLabels}
@@ -355,94 +354,6 @@ describe('VenueFormScreen', () => {
     }
   })
 
-  it('should redirect user with the new creation journey', async () => {
-    vi.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: 56 })
-    renderForm(
-      {
-        id: 12,
-        isAdmin: true,
-      } as SharedCurrentUserResponseModel,
-      formValues,
-      true,
-      undefined
-    )
-
-    await userEvent.click(screen.getByText(/Enregistrer et créer le lieu/))
-    await waitFor(() => {
-      expect(screen.getByText(PATCH_SUCCESS_MESSAGE)).toBeInTheDocument()
-    })
-  })
-
-  it('should redirect user with the creation popin displayed', async () => {
-    renderForm(
-      {
-        id: 12,
-        isAdmin: false,
-      } as SharedCurrentUserResponseModel,
-      formValues,
-      true,
-      undefined
-    )
-    vi.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: 56 })
-
-    await userEvent.click(screen.getByText(/Enregistrer et créer le lieu/))
-
-    await waitFor(() => {
-      expect(screen.queryByText(PATCH_SUCCESS_MESSAGE)).not.toBeInTheDocument()
-    })
-  })
-
-  it('should redirect user to the edit page after creating a venue', async () => {
-    renderForm(
-      {
-        id: 12,
-        isAdmin: true,
-      } as SharedCurrentUserResponseModel,
-      formValues,
-      true,
-      undefined
-    )
-    vi.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: 56 })
-
-    await userEvent.click(screen.getByText(/Enregistrer et créer le lieu/))
-
-    await waitFor(() => {
-      expect(screen.getByText(PATCH_SUCCESS_MESSAGE)).toBeInTheDocument()
-    })
-  })
-
-  it('should display an error when the venue could not be created', async () => {
-    renderForm(
-      {
-        id: 12,
-        isAdmin: true,
-      } as SharedCurrentUserResponseModel,
-      formValues,
-      true,
-      undefined
-    )
-
-    vi.spyOn(api, 'postCreateVenue').mockRejectedValue(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          body: {
-            siret: ['ensure this value has at least 14 characters'],
-          },
-        } as ApiResult,
-        ''
-      )
-    )
-
-    await userEvent.click(screen.getByText(/Enregistrer/))
-
-    await waitFor(() => {
-      expect(
-        screen.getByText('ensure this value has at least 14 characters')
-      ).toBeInTheDocument()
-    })
-  })
-
   it('should display an error when the venue could not be updated', async () => {
     renderForm(
       {
@@ -471,31 +382,6 @@ describe('VenueFormScreen', () => {
     await waitFor(() => {
       expect(
         screen.getByText('ensure this value has at least 14 characters')
-      ).toBeInTheDocument()
-    })
-  })
-
-  it('Submit creation form that fails with unknown error', async () => {
-    renderForm(
-      {
-        id: 12,
-        isAdmin: true,
-      } as SharedCurrentUserResponseModel,
-      formValues,
-      true,
-      undefined
-    )
-
-    const postCreateVenue = vi
-      .spyOn(api, 'postCreateVenue')
-      .mockRejectedValue({})
-
-    await userEvent.click(screen.getByText(/Enregistrer/))
-
-    expect(postCreateVenue).toHaveBeenCalled()
-    await waitFor(() => {
-      expect(
-        screen.getByText('Erreur inconnue lors de la sauvegarde du lieu.')
       ).toBeInTheDocument()
     })
   })
@@ -631,33 +517,6 @@ describe('VenueFormScreen', () => {
           )
         ).toBeInTheDocument()
       })
-    })
-
-    it('should render errors on creation', async () => {
-      formValues.venueType = ''
-      formValues.name = ''
-      formValues.publicName = ''
-      renderForm(
-        {
-          id: 12,
-          isAdmin: false,
-        } as SharedCurrentUserResponseModel,
-        formValues,
-        true,
-        undefined
-      )
-
-      await userEvent.click(screen.getByText(/Enregistrer et créer le lieu/))
-
-      expect(
-        await screen.findByText(
-          'Veuillez renseigner la raison sociale de votre lieu'
-        )
-      ).toBeInTheDocument()
-
-      expect(
-        screen.getByText('Veuillez sélectionner une activité principale')
-      ).toBeInTheDocument()
     })
   })
 
@@ -1052,25 +911,6 @@ describe('VenueFormScreen', () => {
           name: 'Mes informations pour les enseignants',
         })
       ).not.toBeInTheDocument()
-    })
-    it('should display eac section during venue creation if venue has siret and is eligible to eac', async () => {
-      renderForm(
-        {
-          id: 12,
-          isAdmin: false,
-        } as SharedCurrentUserResponseModel,
-        formValues,
-        true,
-        undefined
-      )
-      await waitFor(
-        () => expect(api.canOffererCreateEducationalOffer).toHaveBeenCalled
-      )
-      expect(
-        screen.queryByRole('heading', {
-          name: 'Mes informations pour les enseignants',
-        })
-      ).toBeInTheDocument()
     })
   })
 })

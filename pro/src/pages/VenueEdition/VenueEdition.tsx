@@ -108,7 +108,6 @@ export const VenueEdition = (): JSX.Element | null => {
       ) : (
         <VenueEditionFormScreen
           initialValues={setInitialFormValues(venue)}
-          isCreatingVenue={false}
           offerer={offerer}
           venueTypes={venueTypes}
           venueLabels={venueLabels}
