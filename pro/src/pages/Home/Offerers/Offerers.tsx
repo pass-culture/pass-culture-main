@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useSearchParams } from 'react-router-dom'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
@@ -26,6 +26,7 @@ export interface OfferersProps {
   isLoading: boolean
   isUserOffererValidated: boolean
   offererOptions: SelectOption[]
+  setSelectedOfferer: (offerer: GetOffererResponseModel) => void
 }
 
 const Offerers = ({
@@ -33,6 +34,7 @@ const Offerers = ({
   selectedOfferer,
   isLoading,
   isUserOffererValidated,
+  setSelectedOfferer,
 }: OfferersProps) => {
   const isPartnerPageActive = useActiveFeature('WIP_PARTNER_PAGE')
   const [openSuccessDialog, setOpenSuccessDialog] = useState(false)
@@ -114,7 +116,11 @@ const Offerers = ({
           />
 
           {isPartnerPageActive && permanentVenues.length > 0 && (
-            <PartnerPages venues={permanentVenues} offerer={selectedOfferer} />
+            <PartnerPages
+              venues={permanentVenues}
+              offerer={selectedOfferer}
+              setSelectedOfferer={setSelectedOfferer}
+            />
           )}
 
           {!isOffererSoftDeleted && (
