@@ -1,6 +1,6 @@
 import { SharedCurrentUserResponseModel } from 'apiClient/v1'
 
-import { shouldBlockVenueNavigation } from '../VenueForm'
+import { shouldBlockVenueNavigation } from '../VenueCreationForm'
 
 const userAdmin = {
   isAdmin: true,
