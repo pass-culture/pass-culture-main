@@ -417,6 +417,7 @@ export const defaultVenueResponseModel: GetVenueResponseModel = {
   name: 'Lieu de test',
   id: 1,
   venueTypeCode: VenueTypeCode.CENTRE_CULTUREL,
+  timezone: 'Europe/Paris',
 }
 
 export const defaultRequestResponseModel: GetCollectiveOfferRequestResponseModel =

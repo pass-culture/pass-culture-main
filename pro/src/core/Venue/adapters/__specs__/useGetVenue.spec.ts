@@ -51,6 +51,7 @@ describe('useGetVenue', () => {
       comment: 'commentaire lieu sans siret',
       bookingEmail: 'test@example.com',
       venueTypeCode: VenueTypeCode.LIBRAIRIE,
+      timezone: 'Europe/Paris',
       withdrawalDetails: '',
       collectiveAccessInformation: '',
       collectiveDescription: 'Description',

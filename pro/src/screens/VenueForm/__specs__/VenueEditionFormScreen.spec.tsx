@@ -211,6 +211,7 @@ const venueResponse: GetVenueResponseModel = {
   postalCode: '75008',
   publicName: 'name',
   siret: '88145723823022',
+  timezone: 'Europe/Paris',
   venueTypeCode: VenueTypeCode.COURS_ET_PRATIQUE_ARTISTIQUES,
   venueLabelId: 1,
   reimbursementPointId: 0,

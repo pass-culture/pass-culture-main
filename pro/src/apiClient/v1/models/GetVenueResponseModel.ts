@@ -55,6 +55,7 @@ export type GetVenueResponseModel = {
   publicName?: string | null;
   reimbursementPointId?: number | null;
   siret?: string | null;
+  timezone: string;
   venueLabelId?: number | null;
   venueOpeningHours?: Array<Record<string, any>> | null;
   venueTypeCode: VenueTypeCode;

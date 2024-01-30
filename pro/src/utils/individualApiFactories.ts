@@ -116,6 +116,7 @@ export const individualOfferVenueResponseModelFactory = (
     postalCode: '11100',
     publicName: 'Mon Lieu',
     departementCode: '78',
+    timezone: 'Europe/Paris',
     managingOfferer: {
       city: 'Paris',
       dateCreated: '2021-10-15T12:00:00Z',
