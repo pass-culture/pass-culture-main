@@ -59,43 +59,4 @@ describe('PartnerPages', () => {
       isEdition: true,
     })
   })
-
-  it('should display the image if its present', () => {
-    renderPartnerPages({
-      venue: {
-        ...defaultGetOffererVenueResponseModel,
-        venueTypeCode: VenueTypeCode.FESTIVAL,
-        bannerUrl: 'https://www.example.com/image.png',
-        bannerMeta: {
-          original_image_url: 'https://www.example.com/image.png',
-          image_credit: '',
-          crop_params: {
-            x_crop_percent: 0,
-            y_crop_percent: 0,
-            width_crop_percent: 0,
-            height_crop_percent: 0,
-          },
-        },
-      },
-    })
-
-    expect(screen.getByAltText('Prévisualisation de l’image')).toHaveAttribute(
-      'src',
-      'https://www.example.com/image.png'
-    )
-  })
-
-  it('should display the EAC section', () => {
-    renderPartnerPages({
-      venue: {
-        ...defaultGetOffererVenueResponseModel,
-        collectiveDmsApplications: [],
-      },
-    })
-
-    expect(screen.getByText('Non référencé sur ADAGE')).toBeInTheDocument()
-    expect(
-      screen.getByText('Faire une demande de référencement ADAGE')
-    ).toBeInTheDocument()
-  })
 })

@@ -119,8 +119,8 @@ jobs:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: "Get Secret"
-        id: 'secrets'
-        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        id: "secrets"
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
           secrets: |-
             SONAR_TOKEN:passculture-metier-ehp/passculture-main-sonar-token
@@ -137,6 +137,17 @@ jobs:
           restore-keys: |
             v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - run: yarn install --immutable
+      - name: Get changed files in src
+        if: ${{ github.event_name == 'pull_request' }}
+        id: changed-src-files
+        uses: tj-actions/changed-files@v42
+        with:
+          path: ./pro/src
+      - name: Run tests with coverage and coverage check
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          CHANGED_FILES: ${{ steps.changed-src-files.outputs.all_changed_files }}
+        run: yarn test:unit:hookcoverage ${CHANGED_FILES//src\//}
       - name: Run tests with coverage
         run: yarn test:unit:ci
       - name: SonarCloud scan
@@ -147,7 +158,6 @@ jobs:
           SONAR_TOKEN: ${{ steps.secrets.outputs.SONAR_TOKEN }}
         with:
           projectBaseDir: pro
-          args: -Dsonar.qualitygate.wait=${{ github.event_name == 'pull_request' && 'true' || 'false'  }}
       - name: "Post failure message to slack"
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
         uses: slackapi/slack-github-action@v1.25.0

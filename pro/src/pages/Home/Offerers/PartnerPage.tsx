@@ -44,6 +44,7 @@ export const PartnerPage = ({ offerer, venue }: PartnerPageProps) => {
   const venueType = venueTypes.find(
     (venueType) => venueType.id === venue.venueTypeCode
   )
+
   const initialValues = buildInitialValues(
     venue.bannerUrl,
     // There would be a lot of refactoring to remove this "as"

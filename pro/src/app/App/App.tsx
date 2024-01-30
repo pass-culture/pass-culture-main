@@ -101,6 +101,7 @@ const App = (): JSX.Element | null => {
   }, [location])
 
   const currentRoute = findCurrentRoute(location)
+
   if (!currentRoute?.meta?.public && currentUser === null) {
     const fromUrl = encodeURIComponent(`${location.pathname}${location.search}`)
     const loginUrl = fromUrl.includes('logout')
