@@ -5,5 +5,5 @@
 .stock-section-warning {
   @include fonts.body-important;
 
-  color: colors.$red-warning;
+  color: colors.$error;
 }

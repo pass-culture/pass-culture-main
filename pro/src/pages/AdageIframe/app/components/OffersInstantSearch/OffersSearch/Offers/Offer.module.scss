@@ -61,7 +61,7 @@ $offer-image-width: rem.torem(176px);
   &-image-default {
     align-items: center;
     background-color: colors.$grey-light;
-    border: 1px solid colors.$border-grey-color;
+    border: 1px solid colors.$grey-medium;
     border-radius: rem.torem(4px);
     display: flex;
     height: $offer-image-height;
