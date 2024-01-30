@@ -1,0 +1,58 @@
+$grey-very-light: #ecf0f1; //  ???? should be remplaced
+
+$grey: #cbcdd2; // -> nom: grey-medium
+$grey-medium: #c7c7cc; // -> grey-medium
+$grey-dark: #696a6f; // -> nom: grey-dark
+$grey-darker: #696a6f; // -> grey-dark
+$grey-semi-dark: #90949d; // nom ok grey-semi-dark
+$grey-medium-shadow: rgba(103 104 107 / 16%); // -> #67686b 16% transp -> nom: medium-shadow
+$black: #151515; // -> 161617
+$black-with-transparency: rgba($black, 0.8); // -> -> 25026C 15% transp ->nom: large-shadow
+$black-shadow: rgba($black, 0.2); // -> large-shadow
+$dark-blue-shadow: rgb(37 2 108 / 15%); // -> large-shadow
+$blue: #06f; // -> accent
+$accent: $blue;
+
+
+$dark-blue: #25026c; // -> nom: secondary-dark
+$primary: #eb0055; // ok !
+$primary-dark: #c10046; // -> design ?? (bouton hover)
+$secondary: #320096; // ok !
+$tertiary: #6123df; // -> nom: secondary-light
+$light-purple: #c1a3ff; // -> nom: secondary-lighter
+$light-pink: #f3edff; // -> nom: secondary-lighter-with-transparency + 19% transp
+$light-purple-with-transparency: rgba($light-purple, 0.3); // -> secondary-lighter-with-transparency
+$primary-disabled: #ff99be; // -> supprimer la couleur remplacer par le gris de la librairie attention au texte aussi !
+$green-valid: #15884f; // nom: valid
+$green-valid-light: #2cbe6e; // nom: valid-light
+$red-error: #e60039; // nom: error-light -> #de1e45
+$red-warning: #b60025; // nom: error, code ok
+$attention: #ffea00; // à supprimer
+$notification-error: #ff8097; // à supprimer
+$notification-info: #b3e7ff; // nom accent-light, code ok
+$notification-success: #b8e986; // à supprimer
+$notification-warning: #ffd580; // à supprimer
+$linear-gradient-to-bottom-right: linear-gradient(
+  to bottom right,
+  $primary,
+  $secondary
+); // à supprimer
+$alert-color: #F9C030; // nom: alert-dark
+$linear-gradient-to-right: linear-gradient(to right, $primary, $secondary); // ok
+$booking-pending-status: $alert-color; // -> alert-dark
+$input-text-color: #161617; // -> black
+$input-text-color-semi-dark: #90949d; // -> grey-semi-dark
+$light-lavender: #f6f1ff; // à supprimer
+$border-grey-color: $grey; // -> grey-medium
+$logo-purple: #7b1e82; // nom: brand, code: #870087, vérifier avec Charlotte
+
+$callout-default-border: $blue; // -> accent
+$callout-default-background: #F4EFFD; // à vérifier
+$callout-info-border: #06F; // à vérifier
+$callout-info-background: #EDF4FF; // à vérifier
+$callout-success-border: $green-valid; // à vérifier
+$callout-success-background: #EEF7F3; // à vérifier
+$callout-warning-border: $alert-color; // à vérifier
+$callout-warning-background: #FFF8E6; // à vérifier
+$callout-error-border: $primary; // à vérifier
+$callout-error-background: #fef2f6; // à vérifier

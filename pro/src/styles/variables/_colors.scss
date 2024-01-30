@@ -1,24 +1,24 @@
 // GENERAL COLORS
 $white: #fff;
+$grey-light: #f1f1f4;
+$grey-medium: #cbcdd2;
+$grey-semi-dark: #90949d;
+$grey-dark: #696a6f;
+$black: #161617;
+ 
 $grey-very-light: #ecf0f1;
 $grey-lighter: #e1e1e7;
-$grey-light: #f1f1f4;
-$grey: #cbcdd2;
-$grey-medium: #c7c7cc;
-$grey-dark: #696a6f;
-$grey-semi-dark: #90949d;
 $grey-blue-light: #ede3ff;
-$grey-medium-shadow: #67686b29;
-$black: #151515;
-$black-with-transparency: rgba($black, 0.8);
-$black-shadow: rgba($black, 0.2);
-$dark-blue-shadow: #25026c26;
-$blue: #06f;
 $dark-blue: #25026c;
 $light-pink: #f3edff;
 $light-purple: #c1a3ff;
 $light-purple-with-transparency: rgba($light-purple, 0.3);
 $logo-purple: #7b1e82; // Maybe should be deleted
+
+// SHADOWS COLORS
+$medium-shadow: #67686b29;
+$large-shadow: rgba(#25026c, 0.15);
+
 
 // BRAND & ACTIONS COLORS
 $primary: #eb0055;
@@ -28,7 +28,7 @@ $tertiary: #6123df;
 $primary-disabled: #ff99be;
 
 // STATE COLORS
-$accent: $blue;
+$accent: #06f;
 $green-valid: #15884f;
 $green-valid-light: #2cbe6e;
 $red-error: #e60039;
@@ -36,17 +36,17 @@ $red-warning: #b60025;
 $notification-info: #b3e7ff;
 $alert-color: #f9c030;
 $booking-pending-status: $alert-color;
-$border-grey-color: $grey;
+$border-grey-color: $grey-medium;
 
 // GRADIENTS COLORS
 $linear-gradient-to-right: linear-gradient(to right, $primary, $secondary);
 
 // FORMS & INPUT COLORS
-$input-text-color: #161617;
+$input-text-color: $black;
 $input-border-color: $grey-semi-dark;
 $input-border-color-focus: $black;
 $input-border-color-error: $red-warning;
-$input-border-color-disabled: $grey;
+$input-border-color-disabled: $grey-medium;
 $input-bg-color: $white;
 $input-bg-color-disabled: $grey-light;
 $input-text-color-disabled: $grey-dark;
@@ -54,7 +54,7 @@ $input-text-color-disabled: $grey-dark;
 // CALLOUT COLORS
 $callout-default-border: $tertiary;
 $callout-default-background: #f4effd;
-$callout-info-border: $blue;
+$callout-info-border: $accent;
 $callout-info-background: #edf4ff;
 $callout-success-border: $green-valid;
 $callout-success-background: #eef7f3;
