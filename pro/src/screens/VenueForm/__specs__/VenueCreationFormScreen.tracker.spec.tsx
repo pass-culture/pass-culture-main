@@ -12,7 +12,7 @@ import { SelectOption } from 'custom_types/form'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { VenueFormScreen } from '../index'
+import { VenueCreationFormScreen } from '../VenueCreationFormScreen'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
@@ -85,7 +85,7 @@ const renderForm = (isCreation: boolean) => {
       <Route
         path="/structures/AE/lieux/creation"
         element={
-          <VenueFormScreen
+          <VenueCreationFormScreen
             initialValues={formValues}
             isCreatingVenue={isCreation}
             offerer={{ id: 12, siren: '881457238' } as Offerer}

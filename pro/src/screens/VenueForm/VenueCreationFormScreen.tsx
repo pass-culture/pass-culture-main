@@ -31,7 +31,7 @@ import {
   serializePostVenueBodyModel,
 } from './serializers'
 import { venueSubmitRedirectUrl } from './utils/venueSubmitRedirectUrl'
-import style from './VenueFormScreen.module.scss'
+import style from './VenueCreationFormScreen.module.scss'
 
 interface VenueEditionProps {
   isCreatingVenue: boolean
@@ -45,7 +45,7 @@ interface VenueEditionProps {
   hasBookingQuantity?: boolean
 }
 
-const VenueFormScreen = ({
+export const VenueCreationFormScreen = ({
   isCreatingVenue,
   initialValues,
   offerer,
@@ -277,5 +277,3 @@ const VenueFormScreen = ({
     </div>
   )
 }
-
-export default VenueFormScreen
