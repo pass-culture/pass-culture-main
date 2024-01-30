@@ -70,7 +70,7 @@ const formValues: VenueFormValues = {
   reimbursementPointId: 91,
 }
 
-const renderForm = (isCreation: boolean) => {
+const renderForm = () => {
   const storeOverrides = {
     user: {
       initialized: true,
@@ -87,7 +87,6 @@ const renderForm = (isCreation: boolean) => {
         element={
           <VenueCreationFormScreen
             initialValues={formValues}
-            isCreatingVenue={isCreation}
             offerer={{ id: 12, siren: '881457238' } as Offerer}
             venueTypes={venueTypes}
             venueLabels={venueLabels}
@@ -161,7 +160,7 @@ describe('venue form trackers', () => {
   })
 
   it('should track success of form submit', async () => {
-    renderForm(true)
+    renderForm()
     vi.spyOn(api, 'postCreateVenue').mockResolvedValue({
       id: 1,
     })
@@ -176,7 +175,7 @@ describe('venue form trackers', () => {
   })
 
   it('should track failing of form submit', async () => {
-    renderForm(true)
+    renderForm()
     vi.spyOn(api, 'postCreateVenue').mockRejectedValue({})
 
     await userEvent.click(screen.getByText(/Enregistrer/))

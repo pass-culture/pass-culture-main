@@ -26,27 +26,22 @@ import strokeMailIcon from 'icons/stroke-mail.svg'
 import { Button, Title } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import {
-  serializeEditVenueBodyModel,
-  serializePostVenueBodyModel,
-} from './serializers'
+import { serializeEditVenueBodyModel } from './serializers'
 import { venueSubmitRedirectUrl } from './utils/venueSubmitRedirectUrl'
 import style from './VenueEditionFormScreen.module.scss'
 
 interface VenueEditionProps {
-  isCreatingVenue: boolean
   initialValues: VenueFormValues
   offerer: Offerer
   venueTypes: SelectOption[]
   venueLabels: SelectOption[]
   providers?: Providers[]
   venueProviders?: VenueProviderResponse[]
-  venue?: Venue
+  venue: Venue
   hasBookingQuantity?: boolean
 }
 
 export const VenueEditionFormScreen = ({
-  isCreatingVenue,
   initialValues,
   offerer,
   venueTypes,
@@ -59,9 +54,7 @@ export const VenueEditionFormScreen = ({
   const navigate = useNavigate()
   const location = useLocation()
   const notify = useNotification()
-  const [isSiretValued, setIsSiretValued] = useState(
-    isCreatingVenue || !!venue?.siret
-  )
+  const [isSiretValued, setIsSiretValued] = useState(Boolean(venue.siret))
 
   const { logEvent } = useAnalytics()
 
@@ -105,7 +98,6 @@ export const VenueEditionFormScreen = ({
 
   const onSubmit = async (value: VenueFormValues) => {
     if (
-      !isCreatingVenue &&
       value.isWithdrawalAppliedOnAllOffers &&
       hasBookingQuantity &&
       !handleWithdrawalDialog()
@@ -114,28 +106,19 @@ export const VenueEditionFormScreen = ({
     }
 
     try {
-      if (isCreatingVenue) {
-        await api.postCreateVenue(
-          serializePostVenueBodyModel(value, {
-            hideSiret: !isSiretValued,
-            offererId: offerer.id,
-          })
+      await api.editVenue(
+        /* istanbul ignore next: there will always be a venue id on update screen */
+        venue?.id || 0,
+        serializeEditVenueBodyModel(
+          value,
+          {
+            hideSiret: venue?.siret.length === 0,
+          },
+          shouldSendMail
         )
-      } else {
-        await api.editVenue(
-          /* istanbul ignore next: there will always be a venue id on update screen */
-          venue?.id || 0,
-          serializeEditVenueBodyModel(
-            value,
-            {
-              hideSiret: venue?.siret.length === 0,
-            },
-            shouldSendMail
-          )
-        )
-      }
+      )
 
-      navigate(venueSubmitRedirectUrl(isCreatingVenue, offerer.id, currentUser))
+      navigate(venueSubmitRedirectUrl(false, offerer.id, currentUser))
 
       if (currentUser.isAdmin) {
         notify.success(PATCH_SUCCESS_MESSAGE)
@@ -144,7 +127,7 @@ export const VenueEditionFormScreen = ({
       logEvent?.(Events.CLICKED_SAVE_VENUE, {
         from: location.pathname,
         saved: true,
-        isEdition: !isCreatingVenue,
+        isEdition: true,
       })
     } catch (error) {
       let formErrors
@@ -178,7 +161,7 @@ export const VenueEditionFormScreen = ({
       logEvent?.(Events.CLICKED_SAVE_VENUE, {
         from: location.pathname,
         saved: false,
-        isEdition: !isCreatingVenue,
+        isEdition: true,
       })
     }
   }
@@ -209,18 +192,13 @@ export const VenueEditionFormScreen = ({
     <div>
       <div className={style['venue-form-heading']}>
         <div className={style['title-page']}>
-          <Title level={1}>
-            {isCreatingVenue ? 'Création d’un lieu' : 'Lieu'}
-          </Title>
-          {!isCreatingVenue && (
-            <a
-              href={`/offre/creation?lieu=${initialId}&structure=${offerer.id}`}
-            >
-              <Button variant={ButtonVariant.PRIMARY} icon={fullPlusIcon}>
-                <span>Créer une offre</span>
-              </Button>
-            </a>
-          )}
+          <Title level={1}>Lieu</Title>
+
+          <a href={`/offre/creation?lieu=${initialId}&structure=${offerer.id}`}>
+            <Button variant={ButtonVariant.PRIMARY} icon={fullPlusIcon}>
+              <span>Créer une offre</span>
+            </Button>
+          </a>
         </div>
         <Title level={2} className={style['venue-name']}>
           {
@@ -230,27 +208,27 @@ export const VenueEditionFormScreen = ({
           }
         </Title>
         {
-          /* istanbul ignore next: DEBT, TO FIX */ !isCreatingVenue &&
-            venue &&
-            !isNewBankDetailsEnabled && (
-              <>
-                {/* For the screen reader to spell-out the id, we add a
+          /* istanbul ignore next: DEBT, TO FIX */
+          !isNewBankDetailsEnabled && (
+            <>
+              {/* For the screen reader to spell-out the id, we add a
                 visually hidden span with a space between each character.
                 The other span will be hidden from the screen reader. */}
-                <span className={style['identifier-hidden']}>
-                  Identifiant du lieu : {venue.dmsToken.split('').join(' ')}
-                </span>
-                <span aria-hidden={true}>
-                  Identifiant du lieu : {venue.dmsToken}
-                </span>
-              </>
-            )
+              <span className={style['identifier-hidden']}>
+                Identifiant du lieu : {venue.dmsToken.split('').join(' ')}
+              </span>
+              <span aria-hidden={true}>
+                Identifiant du lieu : {venue.dmsToken}
+              </span>
+            </>
+          )
         }
       </div>
+
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit}>
           <VenueForm
-            isCreatingVenue={isCreatingVenue}
+            isCreatingVenue={false}
             updateIsSiretValued={setIsSiretValued}
             venueTypes={venueTypes}
             venueLabels={venueLabels}
