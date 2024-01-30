@@ -6,7 +6,7 @@
 
 .container {
   position: relative;
-  border: 1px solid colors.$tertiary;
+  border: 1px solid colors.$secondary-light;
   border-radius: rem.torem(6px);
   padding: rem.torem(40px) rem.torem(16px) rem.torem(24px);
 }
@@ -18,7 +18,7 @@
   top: 0;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: colors.$tertiary;
+  color: colors.$secondary-light;
   padding: rem.torem(8px) rem.torem(24px);
   text-align: center;
   background-color: colors.$white;
@@ -47,7 +47,7 @@
 .step-number {
   @include fonts.hero;
 
-  color: colors.$tertiary;
+  color: colors.$secondary-light;
   margin-right: rem.torem(24px);
 }
 

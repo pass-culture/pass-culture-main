@@ -25,7 +25,7 @@ $arrow-triangle-height: rem.torem(8px);
     top: 0;
     left: 50%;
     transform: translate(-50%, calc(-120% - #{$arrow-triangle-height}));
-    background-color: colors.$dark-blue;
+    background-color: colors.$secondary-dark;
 
     &::after {
       content: "";
@@ -35,7 +35,7 @@ $arrow-triangle-height: rem.torem(8px);
       height: 0;
       border-width: $arrow-triangle-height;
       border-style: solid;
-      border-color: colors.$dark-blue transparent transparent transparent;
+      border-color: colors.$secondary-dark transparent transparent transparent;
       bottom: -($arrow-triangle-height * 2);
       left: 50%;
       transform: translate(-50%);

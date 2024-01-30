@@ -5,14 +5,11 @@ $grey-medium: #cbcdd2;
 $grey-semi-dark: #90949d;
 $grey-dark: #696a6f;
 $black: #161617;
- 
+
+// later :
 $grey-very-light: #ecf0f1;
 $grey-lighter: #e1e1e7;
 $grey-blue-light: #ede3ff;
-$dark-blue: #25026c;
-$light-pink: #f3edff;
-$light-purple: #c1a3ff;
-$light-purple-with-transparency: rgba($light-purple, 0.3);
 $logo-purple: #7b1e82; // Maybe should be deleted
 
 // SHADOWS COLORS
@@ -22,9 +19,14 @@ $large-shadow: rgba(#25026c, 0.15);
 
 // BRAND & ACTIONS COLORS
 $primary: #eb0055;
-$primary-dark: #c10046;
+$secondary-lighter: #c1a3ff;
+$secondary-light: #6123df;
 $secondary: #320096;
-$tertiary: #6123df;
+$secondary-dark: #25026c;
+$secondary-lighter-with-transparency: #f3edff;
+
+// later :
+$primary-dark: #c10046;
 $primary-disabled: #ff99be;
 
 // STATE COLORS
@@ -52,7 +54,7 @@ $input-bg-color-disabled: $grey-light;
 $input-text-color-disabled: $grey-dark;
 
 // CALLOUT COLORS
-$callout-default-border: $tertiary;
+$callout-default-border: $secondary-light;
 $callout-default-background: #f4effd;
 $callout-info-border: $accent;
 $callout-info-background: #edf4ff;

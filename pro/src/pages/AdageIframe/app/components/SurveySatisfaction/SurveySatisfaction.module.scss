@@ -23,7 +23,7 @@
 .survey-title {
     @include fonts.title3;
 
-    color: colors.$tertiary;
+    color: colors.$secondary-light;
 }
 
 .survey-description {
@@ -31,26 +31,26 @@
 }
 
 .survey-button {
-    background-color: colors.$tertiary;
-    border-color: colors.$tertiary;
+    background-color: colors.$secondary-light;
+    border-color: colors.$secondary-light;
     width: rem.torem(196px);
     margin-left: rem.torem(16px);
 
     &:hover, &:focus {
-        background-color: colors.$tertiary;
-        border-color: colors.$tertiary;
+        background-color: colors.$secondary-light;
+        border-color: colors.$secondary-light;
     }
 
     &-secondary {
-        color: colors.$tertiary;
+        color: colors.$secondary-light;
         background-color: colors.$white;
-        border-color: colors.$tertiary;
+        border-color: colors.$secondary-light;
     
         &:hover,
         &:focus {
           color: colors.$white;
-          background-color: colors.$tertiary;
-          border-color: colors.$tertiary;
+          background-color: colors.$secondary-light;
+          border-color: colors.$secondary-light;
     
           .button-icon {
             fill: colors.$white;
