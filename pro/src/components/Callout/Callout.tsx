@@ -25,6 +25,11 @@ export interface CalloutProps {
   titleOnly?: boolean
 }
 
+interface CalloutVariantProps {
+  src: string
+  alt: string
+}
+
 const Callout = ({
   children,
   className,
@@ -35,20 +40,20 @@ const Callout = ({
   type = CalloutVariant.DEFAULT,
   titleOnly = false,
 }: CalloutProps): JSX.Element => {
-  let calloutIconSrc
+  let calloutIcon: CalloutVariantProps
   /* istanbul ignore next: graphic variations */
   switch (type) {
     case CalloutVariant.WARNING:
-      calloutIconSrc = strokeWarningIcon
+      calloutIcon = { src: strokeWarningIcon, alt: 'Attention' }
       break
     case CalloutVariant.SUCCESS:
-      calloutIconSrc = strokeValidIcon
+      calloutIcon = { src: strokeValidIcon, alt: 'Confirmation' }
       break
     case CalloutVariant.ERROR:
-      calloutIconSrc = strokeErrorIcon
+      calloutIcon = { src: strokeErrorIcon, alt: 'Erreur' }
       break
     default:
-      calloutIconSrc = strokeInfoIcon
+      calloutIcon = { src: strokeInfoIcon, alt: 'Information' }
       break
   }
 
@@ -63,8 +68,8 @@ const Callout = ({
       )}
     >
       <SvgIcon
-        src={calloutIconSrc}
-        alt=""
+        src={calloutIcon.src}
+        alt={calloutIcon.alt}
         className={styles['icon']}
         width="20"
       />
