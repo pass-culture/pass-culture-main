@@ -104,6 +104,7 @@ class Returns200Test:
             "postalCode": venue.postalCode,
             "publicName": venue.publicName,
             "siret": venue.siret,
+            "timezone": venue.timezone,
             "venueLabelId": venue.venueLabelId,
             "venueTypeCode": venue.venueTypeCode.name,
             "visualDisabilityCompliant": venue.visualDisabilityCompliant,
