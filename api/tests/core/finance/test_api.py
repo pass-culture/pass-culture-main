@@ -2193,19 +2193,15 @@ def test_generate_invoice_file_legacy_journey():
 @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
 def test_generate_invoice_file_new_journey():
     first_siret = "12345678900"
-    venue_1 = offerers_factories.VenueFactory(siret=first_siret)
-    offerer1 = venue_1.managingOfferer
+    venue = offerers_factories.VenueFactory(siret=first_siret, pricing_point="self")
+    offerer1 = venue.managingOfferer
     bank_account_1 = factories.BankAccountFactory(offerer=offerer1)
-    offerers_factories.VenueBankAccountLinkFactory(venue=venue_1, bankAccount=bank_account_1)
-    pricing_point1 = offerers_factories.VenueFactory(managingOfferer=offerer1)
-    another_venue_1 = offerers_factories.VenueFactory(
-        managingOfferer=offerer1,
-        pricing_point=pricing_point1,
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue, bankAccount=bank_account_1, timespan=(datetime.datetime.utcnow(),)
     )
-    offerers_factories.VenueBankAccountLinkFactory(venue=another_venue_1, bankAccount=bank_account_1)
     pricing1 = factories.PricingFactory(
         status=models.PricingStatus.VALIDATED,
-        pricingPoint=pricing_point1,
+        booking__stock__offer__venue=venue,
         amount=-1000,
     )
     pline11 = factories.PricingLineFactory(pricing=pricing1)
@@ -2223,11 +2219,11 @@ def test_generate_invoice_file_new_journey():
     )
     pricing2 = factories.CollectivePricingFactory(
         amount=-3000,
-        collectiveBooking__collectiveStock__collectiveOffer__venue=pricing_point1,
+        collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
+        collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
         collectiveBooking__educationalInstitution=deposit.educationalInstitution,
         collectiveBooking__educationalYear=deposit.educationalYear,
         status=models.PricingStatus.VALIDATED,
-        pricingPoint=pricing_point1,
     )
     pline21 = factories.PricingLineFactory(pricing=pricing2)
     pline22 = factories.PricingLineFactory(
@@ -2240,10 +2236,9 @@ def test_generate_invoice_file_new_journey():
     incident_booking = bookings_factories.ReimbursedBookingFactory(
         amount=12,
         dateUsed=datetime.datetime.utcnow(),
-        venue=pricing_point1,
         stock__offer__name="Une histoire plutôt bien",
         stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
-        stock__offer__venue=pricing_point1,
+        stock__offer__venue=venue,
     )
 
     used_event = factories.UsedBookingFinanceEventFactory(booking=incident_booking)
@@ -2251,7 +2246,6 @@ def test_generate_invoice_file_new_journey():
         booking=incident_booking,
         event=used_event,
         status=models.PricingStatus.INVOICED,
-        venue=incident_booking.venue,
         valueDate=datetime.datetime.utcnow(),
     )
 
@@ -2280,16 +2274,10 @@ def test_generate_invoice_file_new_journey():
     # The file should contain only cashflows from the selected batch.
     # This second invoice should not appear.
     second_siret = "12345673900"
-    venue_2 = offerers_factories.VenueFactory(siret=second_siret)
-    offerer2 = venue_2.managingOfferer
+    venue2 = offerers_factories.VenueFactory(siret=second_siret, pricing_point="self")
+    offerer2 = venue2.managingOfferer
     bank_account_2 = factories.BankAccountFactory(offerer=offerer2)
-    offerers_factories.VenueBankAccountLinkFactory(venue=venue_2, bankAccount=bank_account_2)
-    pricing_point2 = offerers_factories.VenueFactory(managingOfferer=offerer2)
-    another_venue_2 = offerers_factories.VenueFactory(
-        managingOfferer=offerer2,
-        pricing_point=pricing_point2,
-    )
-    offerers_factories.VenueBankAccountLinkFactory(venue=another_venue_2, bankAccount=bank_account_2)
+    offerers_factories.VenueBankAccountLinkFactory(venue=venue2, bankAccount=bank_account_2)
     pline3 = factories.PricingLineFactory()
     pricing3 = pline3.pricing
     cashflow2 = factories.CashflowFactory(
