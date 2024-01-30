@@ -5,7 +5,7 @@
 .diffuse-help {
   margin-top: rem.torem(16px);
   border-radius: rem.torem(8px);
-  background-color: colors.$light-pink;
+  background-color: colors.$secondary-lighter-with-transparency;
 
   &-infos {
     display: flex;
@@ -19,7 +19,7 @@
 
     display: flex;
     flex-direction: row;
-    color: colors.$tertiary;
+    color: colors.$secondary-light;
   }
 
   &-header {
@@ -36,27 +36,27 @@
   }
 
   &-button {
-    background-color: colors.$tertiary;
-    border-color: colors.$tertiary;
+    background-color: colors.$secondary-light;
+    border-color: colors.$secondary-light;
     width: rem.torem(196px);
     margin-left: rem.torem(16px);
 
     &:hover,
     &:focus {
-      background-color: colors.$tertiary;
-      border-color: colors.$tertiary;
+      background-color: colors.$secondary-light;
+      border-color: colors.$secondary-light;
     }
 
     &-secondary {
-      color: colors.$tertiary;
+      color: colors.$secondary-light;
       background-color: colors.$white;
-      border-color: colors.$tertiary;
+      border-color: colors.$secondary-light;
 
       &:hover,
       &:focus {
         color: colors.$white;
-        background-color: colors.$tertiary;
-        border-color: colors.$tertiary;
+        background-color: colors.$secondary-light;
+        border-color: colors.$secondary-light;
 
         .button-icon {
           fill: colors.$white;

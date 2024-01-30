@@ -99,13 +99,13 @@ $banner-left-padding: rem.torem(16px);
   }
 
   &.notification-info {
-    border: rem.torem(1px) solid colors.$tertiary;
-    color: colors.$tertiary;
+    border: rem.torem(1px) solid colors.$secondary-light;
+    color: colors.$secondary-light;
 
     .close-icon-banner,
     .close-icon {
-      fill: colors.$tertiary;
-      color: colors.$tertiary;
+      fill: colors.$secondary-light;
+      color: colors.$secondary-light;
     }
   }
 

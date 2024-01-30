@@ -13,7 +13,7 @@
     width: 100%;
     height: rem.torem(2px);
     border-radius: rem.torem(10px);
-    background: colors.$tertiary;
+    background: colors.$secondary-light;
 
     &:first-of-type {
       width: rem.torem(24px);
@@ -23,7 +23,7 @@
 
   &-title {
     background-color: colors.$white;
-    color: colors.$tertiary;
+    color: colors.$secondary-light;
     display: flex;
     align-items: center;
     padding: 0 rem.torem(8px);
