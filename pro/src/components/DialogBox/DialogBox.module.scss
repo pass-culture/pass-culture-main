@@ -22,9 +22,8 @@
 }
 
 .dialog-box-close-container {
-  display: flex;
-  width: 100%;
-  justify-content: flex-end;
+  display: block;
+  float: right;
 }
 
 .dialog-box-close {
@@ -35,7 +34,6 @@
   justify-content: center;
   margin: rem.torem(-2px) rem.torem(-2px) rem.torem(-9px) 0;
   width: rem.torem(44px);
-  position: absolute;
 
   &-icon {
     width: rem.torem(24px);
@@ -52,9 +50,9 @@
 }
 
 @media (min-width: size.$tablet) {
-    .dialog-box-content {
-      min-width: rem.torem(534px);
-    }
+  .dialog-box-content {
+    min-width: rem.torem(534px);
+  }
 
   .dialog-box-full-content-width {
     width: size.$main-content-width !important;

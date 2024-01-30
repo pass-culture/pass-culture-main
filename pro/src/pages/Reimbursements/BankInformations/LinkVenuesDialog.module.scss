@@ -10,7 +10,7 @@ $banner-height: rem.torem(124px);
 
 .dialog {
   &-with-banner {
-    height: $modal-height + $banner-height;
+    min-height: $modal-height + $banner-height;
   }
 
   &-title {
@@ -67,20 +67,23 @@ $banner-height: rem.torem(124px);
   }
 
   @media (min-width: size.$tablet) {
-    height: $modal-height;
+    min-height: $modal-height;
     width: $modal-width;
 
     &-with-banner {
-      height: $modal-height + $banner-height;
+      min-height: $modal-height + $banner-height;
     }
   }
 }
 
 .discard-dialog {
-  width: $modal-width;
-  height: $modal-height;
+  min-height: $modal-height;
 
   &-with-banner {
-    height: $modal-height + $banner-height;
+    min-height: $modal-height + $banner-height;
+  }
+
+  @media (min-width: size.$tablet) {
+    width: $modal-width;
   }
 }
