@@ -109,9 +109,6 @@ export const Autocomplete = ({
   const inputRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
-  const enableAutocompleteAdage = useActiveFeature(
-    'WIP_ENABLE_SEARCH_HISTORY_ADAGE'
-  )
   const isFormatEnable = useActiveFeature('WIP_ENABLE_FORMAT')
 
   const formik = useContext(FormikContext)
@@ -138,9 +135,9 @@ export const Autocomplete = ({
       setCategories(categoriesResponse.payload.educationalCategories)
     }
 
-    // TODO: delete when ff deleted
-    enableAutocompleteAdage && void loadData()
-  }, [])
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    loadData()
+  }, [notify])
 
   const logAutocompleteSuggestionClick = async (
     suggestionType: SuggestionType,
@@ -320,13 +317,11 @@ export const Autocomplete = ({
           setCurrentSearch(state.query)
         },
         placeholder,
-        plugins: enableAutocompleteAdage
-          ? [
-              ...(isLocalStorageEnabled ? [recentSearchesPlugin] : []),
-              venuesSuggestionsPlugin,
-              querySuggestionsPlugin,
-            ]
-          : [],
+        plugins: [
+          ...(isLocalStorageEnabled ? [recentSearchesPlugin] : []),
+          venuesSuggestionsPlugin,
+          querySuggestionsPlugin,
+        ],
       }),
     [placeholder, refine, categories]
   )
@@ -396,21 +391,18 @@ export const Autocomplete = ({
   }
 
   const shouldDisplayRecentSearch =
-    enableAutocompleteAdage &&
     recentSearchesSource &&
     recentSearchesItems &&
     recentSearchesItems.length > 0 &&
     Boolean(!instantSearchUiState.query)
 
   const shouldDisplayVenueSuggestions =
-    enableAutocompleteAdage &&
     venuesSuggestionsSource &&
     venuesSuggestionsItems &&
     venuesSuggestionsItems.length > 0 &&
     Boolean(instantSearchUiState.query)
 
   const shouldDisplayKeywordSuggestions =
-    enableAutocompleteAdage &&
     keywordSuggestionsSource &&
     keywordSuggestionsItems &&
     keywordSuggestionsItems.length > 0 &&
@@ -462,7 +454,6 @@ export const Autocomplete = ({
               </div>
 
               <SubmitButton
-                // TODO: delete when the link is added
                 onBlur={() => {
                   if (shouldDisplayRecentSearch) {
                     return
@@ -506,7 +497,6 @@ export const Autocomplete = ({
                           )
                           autocomplete.setIsOpen(false)
                         }}
-                        // TODO: delete when the link is added
                         onBlur={() => {
                           autocomplete.setIsOpen(false)
                         }}
@@ -648,28 +638,6 @@ export const Autocomplete = ({
                   </div>
                 )}
               </div>
-              {/* <div
-                className={cn(styles['panel-footer'], {
-                  [styles['panel-footer-no-result']]: !localStorage.getItem(
-                    'AUTOCOMPLETE_RECENT_SEARCHES:RECENT_SEARCH'
-                  ),
-                })}
-              >
-                <ButtonLink
-                  className={styles['panel-footer-link']}
-                  variant={ButtonVariant.TERNARYPINK}
-                  link={{
-                    to: '#', // TODO:  Lien FAQ à ajouter quand il sera disponible
-                    isExternal: true,
-                  }}
-                  icon={fullLinkIcon}
-                  onBlur={() => {
-                    autocomplete.setIsOpen(false)
-                  }}
-                >
-                  Comment fonctionne la recherche ?
-                </ButtonLink>
-              </div> */}
             </dialog>
           </div>
         </form>

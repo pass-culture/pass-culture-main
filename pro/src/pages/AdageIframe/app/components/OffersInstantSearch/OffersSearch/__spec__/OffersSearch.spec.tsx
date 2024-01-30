@@ -92,10 +92,7 @@ vi.mock('apiClient/api', () => ({
     ]),
   },
   apiAdage: {
-    getEducationalOffersCategories: vi.fn(() => ({
-      categories: [],
-      subcategories: [],
-    })),
+    getEducationalOffersCategories: vi.fn(),
     getAcademies: vi.fn(() => ['Amiens', 'Paris']),
   },
 }))
@@ -172,10 +169,6 @@ describe('offersSearch component', () => {
       setFacetFilters: () => {},
       initialFilters: {},
     }
-    vi.spyOn(apiAdage, 'getEducationalOffersCategories').mockResolvedValue({
-      categories: [],
-      subcategories: [],
-    })
     window.IntersectionObserver = vi.fn().mockImplementation(() => ({
       observe: vi.fn(),
       unobserve: vi.fn(),
@@ -424,8 +417,10 @@ describe('offersSearch component', () => {
   })
 
   it('should show an error message notification when categories could not be fetched', async () => {
-    vi.spyOn(apiAdage, 'getEducationalOffersCategories').mockRejectedValueOnce(
-      null
+    vi.spyOn(apiAdage, 'getEducationalOffersCategories').mockImplementationOnce(
+      () => {
+        throw new Error()
+      }
     )
 
     renderOffersSearchComponent(props, user)

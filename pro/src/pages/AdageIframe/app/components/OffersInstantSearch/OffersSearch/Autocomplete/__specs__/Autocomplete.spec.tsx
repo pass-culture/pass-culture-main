@@ -121,7 +121,7 @@ vi.mock('react-instantsearch', async () => {
 })
 
 const renderAutocomplete = (
-  initialQuery: string,
+  initialQuery: string = '',
   options?: RenderWithProvidersOptions
 ) => {
   return renderWithProviders(
@@ -146,20 +146,20 @@ const renderAutocomplete = (
 }
 
 describe('Autocomplete', () => {
-  it('should renders the Autocomplete component with placeholder and search button', () => {
-    renderAutocomplete('')
+  it('should renders the Autocomplete component with placeholder and search button', async () => {
+    renderAutocomplete()
 
     const inputElement = screen.getByPlaceholderText(
       'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
     )
-    const searchButton = screen.getByText('Rechercher')
+    const searchButton = await screen.findByText('Rechercher')
 
     expect(inputElement).toBeInTheDocument()
     expect(searchButton).toBeInTheDocument()
   })
 
   it('should close autocomplete panel when escape key pressed  ', async () => {
-    renderAutocomplete('', { features: ['WIP_ENABLE_SEARCH_HISTORY_ADAGE'] })
+    renderAutocomplete()
 
     const inputElement = screen.getByPlaceholderText(
       'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
@@ -179,7 +179,7 @@ describe('Autocomplete', () => {
   })
 
   it('should close autocomplete panel when focus outside form ', async () => {
-    renderAutocomplete('', { features: ['WIP_ENABLE_SEARCH_HISTORY_ADAGE'] })
+    renderAutocomplete()
 
     const inputElement = screen.getByPlaceholderText(
       'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
@@ -204,7 +204,7 @@ describe('Autocomplete', () => {
   })
 
   it('should call refine function when the form is submitted', async () => {
-    renderAutocomplete('', { features: ['WIP_ENABLE_SEARCH_HISTORY_ADAGE'] })
+    renderAutocomplete()
 
     const inputElement = screen.getByPlaceholderText(
       'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
@@ -234,7 +234,7 @@ describe('Autocomplete', () => {
   })
 
   it('should clear recent search when clear button is clicked', async () => {
-    renderAutocomplete('', { features: ['WIP_ENABLE_SEARCH_HISTORY_ADAGE'] })
+    renderAutocomplete()
 
     const inputElement = screen.getByPlaceholderText(
       'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
@@ -253,7 +253,7 @@ describe('Autocomplete', () => {
   })
 
   it('should disable saved history when cookies are disabled', async () => {
-    renderAutocomplete('', { features: ['WIP_ENABLE_SEARCH_HISTORY_ADAGE'] })
+    renderAutocomplete()
 
     vi.spyOn(
       localStorageAvailable,
@@ -279,7 +279,7 @@ describe('Autocomplete', () => {
   })
 
   it('should display venue suggestion when user start to type', async () => {
-    renderAutocomplete('', { features: ['WIP_ENABLE_SEARCH_HISTORY_ADAGE'] })
+    renderAutocomplete()
 
     const inputElement = screen.getByPlaceholderText(
       'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
@@ -296,7 +296,7 @@ describe('Autocomplete', () => {
     mockGetItems = vi.fn(() => mockKeywordSuggestions)
     mockSourceId = 'KeywordQuerySuggestionsSource'
 
-    renderAutocomplete('', { features: ['WIP_ENABLE_SEARCH_HISTORY_ADAGE'] })
+    renderAutocomplete('')
 
     const inputElement = screen.getByPlaceholderText(
       'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
@@ -313,7 +313,7 @@ describe('Autocomplete', () => {
     vi.spyOn(apiAdage, 'getEducationalOffersCategories').mockRejectedValueOnce(
       null
     )
-    renderAutocomplete('', { features: ['WIP_ENABLE_SEARCH_HISTORY_ADAGE'] })
+    renderAutocomplete()
 
     expect(
       await screen.findByText(
@@ -324,7 +324,7 @@ describe('Autocomplete', () => {
 
   it('should display format value for suggestion word ', async () => {
     renderAutocomplete('mock keyword 1', {
-      features: ['WIP_ENABLE_SEARCH_HISTORY_ADAGE', 'WIP_ENABLE_FORMAT'],
+      features: ['WIP_ENABLE_FORMAT'],
     })
 
     const inputElement = screen.getByPlaceholderText(
