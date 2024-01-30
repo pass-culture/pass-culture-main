@@ -71,7 +71,7 @@ export const shouldBlockVenueNavigation: ShouldBlockVenueNavigation =
     return !nextUrl.startsWith(url)
   }
 
-const VenueForm = ({
+export const VenueEditionForm = ({
   isCreatingVenue,
   offerer,
   updateIsSiretValued,
@@ -156,9 +156,7 @@ const VenueForm = ({
         {!initialIsVirtual && (
           <>
             <Accessibility isCreatingVenue={isCreatingVenue} />
-            {!isCreatingVenue && (
-              <WithdrawalDetails isCreatedEntity={isCreatingVenue} />
-            )}
+            {!isCreatingVenue && <WithdrawalDetails />}
           </>
         )}
         <Contact
@@ -203,5 +201,3 @@ const VenueForm = ({
     </div>
   )
 }
-
-export default VenueForm

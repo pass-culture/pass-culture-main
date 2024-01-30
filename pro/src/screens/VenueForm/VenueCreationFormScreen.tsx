@@ -5,12 +5,9 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { VenueProviderResponse } from 'apiClient/v1'
-import {
-  validationSchema,
-  VenueForm,
-  VenueFormValues,
-} from 'components/VenueForm'
+import { validationSchema, VenueFormValues } from 'components/VenueForm'
 import { generateSiretValidationSchema } from 'components/VenueForm/Informations/SiretOrCommentFields'
+import { VenueCreationForm } from 'components/VenueForm/VenueCreationForm'
 import { Events } from 'core/FirebaseEvents/constants'
 import { Offerer } from 'core/Offerers/types'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
@@ -133,7 +130,7 @@ export const VenueCreationFormScreen = ({
 
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit}>
-          <VenueForm
+          <VenueCreationForm
             isCreatingVenue={true}
             updateIsSiretValued={setIsSiretValued}
             venueTypes={venueTypes}

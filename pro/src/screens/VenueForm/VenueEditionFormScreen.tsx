@@ -6,12 +6,9 @@ import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { VenueProviderResponse } from 'apiClient/v1'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
-import {
-  validationSchema,
-  VenueForm,
-  VenueFormValues,
-} from 'components/VenueForm'
+import { validationSchema, VenueFormValues } from 'components/VenueForm'
 import { generateSiretValidationSchema } from 'components/VenueForm/Informations/SiretOrCommentFields'
+import { VenueEditionForm } from 'components/VenueForm/VenueEditionForm'
 import { Events } from 'core/FirebaseEvents/constants'
 import { Offerer } from 'core/Offerers/types'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
@@ -227,7 +224,7 @@ export const VenueEditionFormScreen = ({
 
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit}>
-          <VenueForm
+          <VenueEditionForm
             isCreatingVenue={false}
             updateIsSiretValued={setIsSiretValued}
             venueTypes={venueTypes}
