@@ -4,11 +4,7 @@ import FormLayout from 'components/FormLayout'
 import { InfoBox } from 'ui-kit'
 import { Checkbox, TextArea } from 'ui-kit/form'
 
-interface WithdrawalDetails {
-  isCreatedEntity?: boolean
-}
-
-const WithdrawalDetails = ({ isCreatedEntity }: WithdrawalDetails) => {
+const WithdrawalDetails = () => {
   return (
     <FormLayout.Section title="Informations de retrait de vos offres">
       <FormLayout.Row
@@ -38,14 +34,13 @@ const WithdrawalDetails = ({ isCreatedEntity }: WithdrawalDetails) => {
           isOptional
         />
       </FormLayout.Row>
-      {!isCreatedEntity && (
-        <FormLayout.Row>
-          <Checkbox
-            name="isWithdrawalAppliedOnAllOffers"
-            label="Appliquer le changement à toutes les offres déjà existantes"
-          />
-        </FormLayout.Row>
-      )}
+
+      <FormLayout.Row>
+        <Checkbox
+          name="isWithdrawalAppliedOnAllOffers"
+          label="Appliquer le changement à toutes les offres déjà existantes"
+        />
+      </FormLayout.Row>
     </FormLayout.Section>
   )
 }

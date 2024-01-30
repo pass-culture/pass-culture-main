@@ -11,7 +11,6 @@ import {
 } from '../../WithdrawalDetails'
 
 const renderWithdrawalDetails = ({
-  isCreatedEntity,
   initialValues,
   onSubmit = vi.fn(),
 }: {
@@ -28,7 +27,7 @@ const renderWithdrawalDetails = ({
     >
       {({ handleSubmit }) => (
         <Form onSubmit={handleSubmit}>
-          <WithdrawalDetails isCreatedEntity={isCreatedEntity} />
+          <WithdrawalDetails />
         </Form>
       )}
     </Formik>
@@ -38,18 +37,6 @@ const renderWithdrawalDetails = ({
 describe('components | WithdrawalDetails', () => {
   let initialValues: Partial<VenueFormValues>
   const onSubmit = vi.fn()
-
-  it('should not display checkbox', () => {
-    renderWithdrawalDetails({
-      isCreatedEntity: true,
-      initialValues,
-      onSubmit,
-    })
-
-    expect(
-      screen.queryByLabelText(/Appliquer le changement/)
-    ).not.toBeInTheDocument()
-  })
 
   it('should display checkbox', async () => {
     initialValues = {
