@@ -123,7 +123,6 @@
     "vitest-fetch-mock": "^0.2.2"
   },
   "resolutions": {
-    "jackspeak": "2.1.1",
     "@babel/traverse": ">=7.23.2"
   },
   "engines": {
