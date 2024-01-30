@@ -104,7 +104,7 @@ def delete_venue_provider(
 
     # Save data now: it won't be available after we have deleted the object.
     venue_id = venue_provider.venueId
-    provider_name = venue_provider.provider.name
+    provider_id = venue_provider.provider.id
     history_api.add_action(
         history_models.ActionType.LINK_VENUE_PROVIDER_DELETED,
         author,
@@ -117,7 +117,7 @@ def delete_venue_provider(
     logger.info(
         "Deleted VenueProvider for venue %d",
         venue_id,
-        extra={"venue_id": venue_id, "provider_name": provider_name},
+        extra={"venue_id": venue_id, "provider_id": provider_id},
         technical_message_id="offer.sync.deleted",
     )
 
@@ -136,8 +136,8 @@ def update_venue_provider(
             "Updated VenueProvider %s isActive attribut to %s",
             venue_provider.id,
             venue_provider.isActive,
-            extra={"is_active": venue_provider.isActive, "venue_provider_id": venue_provider.id},
-            technical_message_id="offer.sync.activated" if venue_provider.isActive else "offer.sync.deactivated",
+            extra={"venue_id": venue_provider.venueId, "provider_id": venue_provider.providerId},
+            technical_message_id="offer.sync.reactivated" if venue_provider.isActive else "offer.sync.deactivated",
         )
 
     if venue_provider.isFromAllocineProvider:
