@@ -31,10 +31,10 @@
   &-icon {
     width: rem.torem(20px);
     height: rem.torem(20px);
-    color: colors.$tertiary;
+    color: colors.$secondary-light;
 
     path {
-      fill: colors.$tertiary;
+      fill: colors.$secondary-light;
     }
   }
 }
@@ -126,7 +126,7 @@
 
     line-height: rem.torem(12px);
     content: "Bientôt";
-    background-color: colors.$tertiary;
+    background-color: colors.$secondary-light;
     color: colors.$white;
     border-radius: rem.torem(2px);
     padding: rem.torem(2px) rem.torem(4px);

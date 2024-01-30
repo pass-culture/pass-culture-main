@@ -27,7 +27,7 @@ $radio-size: rem.torem(16px);
   }
 
   &-radio-on {
-    color: colors.$tertiary;
+    color: colors.$secondary-light;
     top: calc(rem.torem(16px) - $border-size-selected);
     right: calc(rem.torem(16px) - $border-size-selected);
   }
@@ -37,8 +37,8 @@ $radio-size: rem.torem(16px);
     size: 44px;
     width: rem.torem(44px);
     height: rem.torem(44px);
-    color: colors.$tertiary;
-    fill: colors.$tertiary; // TODO: delete after all icons update
+    color: colors.$secondary-light;
+    fill: colors.$secondary-light; // TODO: delete after all icons update
   }
 
   &:hover {
@@ -52,10 +52,10 @@ $radio-size: rem.torem(16px);
   }
 
   &.is-selected {
-    border-color: colors.$tertiary;
-    border: $border-size-selected solid colors.$tertiary;
+    border-color: colors.$secondary-light;
+    border: $border-size-selected solid colors.$secondary-light;
     font-weight: 700;
-    background-color: colors.$light-pink;
+    background-color: colors.$secondary-lighter-with-transparency;
   }
 
   &.is-disabled {

@@ -108,10 +108,10 @@
   }
 
   &:checked {
-    border-color: colors.$tertiary;
+    border-color: colors.$secondary-light;
     background: radial-gradient(
-      colors.$tertiary 0%,
-      colors.$tertiary 40%,
+      colors.$secondary-light 0%,
+      colors.$secondary-light 40%,
       transparent 50%,
       transparent
     );
@@ -190,8 +190,8 @@
   }
 
   &-checked {
-    border: rem.torem(2px) solid colors.$tertiary;
-    background-color: colors.$light-pink;
+    border: rem.torem(2px) solid colors.$secondary-light;
+    background-color: colors.$secondary-lighter-with-transparency;
 
     .base-radio-label {
       font-weight: 700;

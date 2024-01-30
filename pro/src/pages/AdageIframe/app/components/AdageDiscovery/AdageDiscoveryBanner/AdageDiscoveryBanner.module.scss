@@ -40,11 +40,11 @@
     background-image: linear-gradient(
       to right,
       colors.$secondary,
-      colors.$tertiary 80%
+      colors.$secondary-light 80%
     );
 
     .discovery-banner-svg-oval {
-      fill: colors.$tertiary;
+      fill: colors.$secondary-light;
     }
 
     .discovery-banner-svg-cross {
