@@ -166,6 +166,7 @@ export const Homepage = (): JSX.Element => {
           isLoading={isLoading}
           offererOptions={offererOptions}
           isUserOffererValidated={isUserOffererValidated}
+          setSelectedOfferer={setSelectedOfferer}
         />
       </section>
 

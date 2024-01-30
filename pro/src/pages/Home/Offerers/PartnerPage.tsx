@@ -35,9 +35,14 @@ import { PartnerPageCollectiveSection } from './PartnerPageCollectiveSection'
 export interface PartnerPageProps {
   offerer: GetOffererResponseModel
   venue: GetOffererVenueResponseModel
+  setSelectedOfferer: (offerer: GetOffererResponseModel) => void
 }
 
-export const PartnerPage = ({ offerer, venue }: PartnerPageProps) => {
+export const PartnerPage = ({
+  offerer,
+  venue,
+  setSelectedOfferer,
+}: PartnerPageProps) => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const { venueTypes } = useLoaderData() as HomepageLoaderData
@@ -72,6 +77,19 @@ export const PartnerPage = ({ offerer, venue }: PartnerPageProps) => {
       setImageValues(
         buildInitialValues(editedVenue.bannerUrl, editedVenue.bannerMeta)
       )
+      // we update the offerer state to keep venue with its new image
+      setSelectedOfferer({
+        ...offerer,
+        managedVenues: (offerer.managedVenues ?? []).map((iteratedVenue) =>
+          iteratedVenue.id === venue.id
+            ? {
+                ...venue,
+                bannerUrl: editedVenue.bannerUrl,
+                bannerMeta: editedVenue.bannerMeta,
+              }
+            : iteratedVenue
+        ),
+      })
 
       notify.success('Vos modifications ont bien été prises en compte')
     } catch {
