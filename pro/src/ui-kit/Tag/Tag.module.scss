@@ -51,12 +51,12 @@
   }
 
   &.red {
-    background-color: colors.$red-error;
+    background-color: colors.$error-light;
     color: colors.$white;
   }
 
   &.green {
-    background-color: colors.$green-valid;
+    background-color: colors.$valid;
     color: colors.$white;
   }
 

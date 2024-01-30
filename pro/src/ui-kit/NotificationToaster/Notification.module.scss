@@ -71,12 +71,12 @@
   }
 
   &.is-success {
-    background-color: colors.$green-valid;
+    background-color: colors.$valid;
     color: colors.$white;
   }
 
   &.is-error {
-    background-color: colors.$red-error;
+    background-color: colors.$error-light;
     color: colors.$white;
   }
 

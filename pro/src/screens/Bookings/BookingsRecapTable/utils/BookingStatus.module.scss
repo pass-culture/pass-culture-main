@@ -6,7 +6,7 @@
 }
 
 .booking-status-pending {
-  background-color: colors.$booking-pending-status;
+  background-color: colors.$alert-dark;
   color: colors.$black;
 
   svg {
@@ -26,7 +26,7 @@
 
 .booking-status-reimbursed {
   color: colors.$white;
-  background-color: colors.$green-valid;
+  background-color: colors.$valid;
 }
 
 .booking-status-confirmed {

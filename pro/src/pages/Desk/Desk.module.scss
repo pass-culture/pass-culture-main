@@ -29,10 +29,10 @@
   @include fonts.caption;
 
   white-space: pre-line;
-  color: colors.$green-valid;
+  color: colors.$valid;
 
   &.error {
-    color: colors.$red-error;
+    color: colors.$error-light;
   }
 }
 
