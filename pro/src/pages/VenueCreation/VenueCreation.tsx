@@ -7,7 +7,7 @@ import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
 import { useGetVenueLabels } from 'core/Venue/adapters/getVenueLabelsAdapter'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import useNotification from 'hooks/useNotification'
-import { VenueFormScreen } from 'screens/VenueForm'
+import { VenueCreationFormScreen } from 'screens/VenueForm/VenueCreationFormScreen'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 export const VenueCreation = (): JSX.Element | null => {
@@ -48,7 +48,7 @@ export const VenueCreation = (): JSX.Element | null => {
       {isLoadingOfferer || isLoadingVenueTypes || isLoadingVenueLabels ? (
         <Spinner />
       ) : (
-        <VenueFormScreen
+        <VenueCreationFormScreen
           initialValues={initialValues}
           isCreatingVenue
           offerer={offerer}

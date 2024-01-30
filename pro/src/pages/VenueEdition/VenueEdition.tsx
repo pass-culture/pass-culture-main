@@ -14,7 +14,7 @@ import {
   getFilteredOffersAdapter,
   Payload,
 } from 'pages/Offers/adapters/getFilteredOffersAdapter'
-import { VenueFormScreen } from 'screens/VenueForm'
+import { VenueEditionFormScreen } from 'screens/VenueForm/VenueEditionFormScreen'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import useGetProviders from '../../core/Venue/adapters/getProviderAdapter/useGetProvider'
@@ -106,7 +106,7 @@ export const VenueEdition = (): JSX.Element | null => {
       isLoadingVenueOffers ? (
         <Spinner />
       ) : (
-        <VenueFormScreen
+        <VenueEditionFormScreen
           initialValues={setInitialFormValues(venue)}
           isCreatingVenue={false}
           offerer={offerer}
