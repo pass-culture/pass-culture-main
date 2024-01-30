@@ -59,3 +59,18 @@ def get_reimbursement_points() -> finance_serialize.FinanceReimbursementPointLis
             for reimbursement_point in reimbursement_points
         ],
     )
+
+
+@private_api.route("/finance/bank-accounts", methods=["GET"])
+@login_required
+@spectree_serialize(
+    response_model=finance_serialize.FinanceBankAccountListResponseModel, api=blueprint.pro_private_schema
+)
+def get_bank_accounts() -> finance_serialize.FinanceBankAccountListResponseModel:
+    bank_accounts = finance_repository.get_bank_accounts_query(user=current_user)
+    bank_accounts = bank_accounts.order_by(finance_models.BankAccount.label)
+    return finance_serialize.FinanceBankAccountListResponseModel(
+        __root__=[
+            finance_serialize.FinanceBankAccountResponseModel.from_orm(bank_account) for bank_account in bank_accounts
+        ],
+    )
