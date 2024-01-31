@@ -1,6 +1,3 @@
-import type { KeySelector } from 're-reselect'
-import { createCachedSelector } from 're-reselect'
-
 import { apiAdresse } from 'apiClient/adresse'
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
@@ -118,10 +115,4 @@ const getSiretDataAdapter: GetSiretDataAdapter = async (humanSiret: string) => {
   }
 }
 
-const mapArgsToCacheKey: KeySelector<string> = (siret: string) => siret || ''
-const getSiretData = createCachedSelector(
-  (siret: string): string => siret,
-  getSiretDataAdapter
-)(mapArgsToCacheKey)
-
-export default getSiretData
+export default getSiretDataAdapter

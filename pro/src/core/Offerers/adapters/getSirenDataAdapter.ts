@@ -1,6 +1,3 @@
-import type { KeySelector } from 're-reselect'
-import { createCachedSelector } from 're-reselect'
-
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { unhumanizeSiren } from 'core/Offerers/utils'
@@ -77,10 +74,4 @@ const getSirenDataAdapter: GetSirenDataAdapter = async (humanSiren: string) => {
   }
 }
 
-const mapArgsToCacheKey: KeySelector<string> = (siren: string) => siren || ''
-const getSirenData = createCachedSelector(
-  (siren: string): string => siren,
-  getSirenDataAdapter
-)(mapArgsToCacheKey)
-
-export default getSirenData
+export default getSirenDataAdapter
