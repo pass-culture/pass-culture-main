@@ -13,7 +13,7 @@ interface BaseFileInputProps {
   children?: never
 }
 
-const BaseFileInput = ({
+export const BaseFileInput = ({
   label,
   isValid,
   fileTypes,
@@ -36,5 +36,3 @@ const BaseFileInput = ({
     />
   </label>
 )
-
-export default BaseFileInput

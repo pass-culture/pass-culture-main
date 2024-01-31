@@ -1,6 +1,6 @@
 import type { StoryObj } from '@storybook/react'
 
-import BaseFileInput from './BaseFileInput'
+import { BaseFileInput } from './BaseFileInput'
 
 export default {
   title: 'ui-kit/forms/shared/FileInput',
