@@ -254,6 +254,19 @@ class SearchProUserTest:
             total_items=1,
         )
 
+    def test_can_search_pro_with_empty_content(self, authenticated_client):
+        self._create_accounts()
+
+        search_query = " "
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(self.endpoint, q=search_query, pro_type=TypeOptions.OFFERER.name)
+            )
+            assert response.status_code == 200
+
+        p_leads = html_parser.extract(response.data, tag="p", class_="lead")
+        assert p_leads[-1] == "0 résultat"
+
 
 class SearchOffererTest:
     endpoint = "backoffice_web.pro.search_pro"
