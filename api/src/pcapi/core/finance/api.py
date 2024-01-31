@@ -897,7 +897,7 @@ def _generate_cashflows_legacy(batch: models.CashflowBatch) -> None:
         .outerjoin(bookings_models.Booking.stock)
         .outerjoin(models.Pricing.collectiveBooking)
         .outerjoin(educational_models.CollectiveBooking.collectiveStock)
-        .outerjoin(models.Pricing.event)
+        .join(models.Pricing.event)
         .join(
             offerers_models.VenueReimbursementPointLink,
             offerers_models.VenueReimbursementPointLink.venueId == models.Pricing.venueId,
@@ -933,7 +933,7 @@ def _generate_cashflows_legacy(batch: models.CashflowBatch) -> None:
                     .outerjoin(bookings_models.Booking.stock)
                     .outerjoin(models.Pricing.collectiveBooking)
                     .outerjoin(educational_models.CollectiveBooking.collectiveStock)
-                    .outerjoin(models.Pricing.event)
+                    .join(models.Pricing.event)
                     .join(
                         models.BankInformation,
                         models.BankInformation.venueId == reimbursement_point_id,
@@ -1120,7 +1120,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
         .outerjoin(bookings_models.Booking.stock)
         .outerjoin(models.Pricing.collectiveBooking)
         .outerjoin(educational_models.CollectiveBooking.collectiveStock)
-        .outerjoin(models.Pricing.event)
+        .join(models.Pricing.event)
         .join(
             offerers_models.VenueBankAccountLink,
             offerers_models.VenueBankAccountLink.venueId == models.Pricing.venueId,
@@ -1151,7 +1151,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                     .outerjoin(bookings_models.Booking.stock)
                     .outerjoin(models.Pricing.collectiveBooking)
                     .outerjoin(educational_models.CollectiveBooking.collectiveStock)
-                    .outerjoin(models.Pricing.event)
+                    .join(models.Pricing.event)
                     .join(
                         models.BankAccount,
                         models.BankAccount.id == bank_account_id,
@@ -2194,7 +2194,11 @@ def _generate_invoice_legacy(
             sqla_orm.joinedload(models.Cashflow.pricings)
             .options(sqla_orm.joinedload(models.Pricing.lines))
             .options(sqla_orm.joinedload(models.Pricing.customRule))
-            .options(sqla_orm.joinedload(models.Pricing.event).joinedload(models.FinanceEvent.bookingFinanceIncident))
+            .options(
+                sqla_orm.joinedload(models.Pricing.event, innerjoin=True).joinedload(
+                    models.FinanceEvent.bookingFinanceIncident
+                )
+            )
         )
     ).all()
     if not cashflows:
@@ -2373,7 +2377,11 @@ def _generate_invoice(
             sqla_orm.joinedload(models.Cashflow.pricings)
             .options(sqla_orm.joinedload(models.Pricing.lines))
             .options(sqla_orm.joinedload(models.Pricing.customRule))
-            .options(sqla_orm.joinedload(models.Pricing.event).joinedload(models.FinanceEvent.bookingFinanceIncident))
+            .options(
+                sqla_orm.joinedload(models.Pricing.event, innerjoin=True).joinedload(
+                    models.FinanceEvent.bookingFinanceIncident
+                )
+            )
         )
     ).all()
     if not cashflows:
