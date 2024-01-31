@@ -180,10 +180,10 @@ describe('FormDates', () => {
       }
     )
 
-    const beginningInput = screen.getByLabelText('Date de début')
+    const beginningInput = screen.getByLabelText('Date de début *')
 
     await userEvent.type(beginningInput, '2025-02-02')
-    expect(screen.getByLabelText('Date de fin')).toHaveAttribute(
+    expect(screen.getByLabelText('Date de fin *')).toHaveAttribute(
       'value',
       '2025-02-02'
     )
