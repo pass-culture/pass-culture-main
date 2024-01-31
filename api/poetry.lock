@@ -3939,13 +3939,13 @@ certifi = "*"
 
 [[package]]
 name = "pysaml2"
-version = "7.4.2"
+version = "7.5.0"
 description = "Python implementation of SAML Version 2 Standard"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "pysaml2-7.4.2-py3-none-any.whl", hash = "sha256:6616abe0526915cabef6af3a81570bd4c339bedd8db3ab12dcd4fa0612896837"},
-    {file = "pysaml2-7.4.2.tar.gz", hash = "sha256:2bc5147b3b2f902a9131bf08240c068becea29994aafb7654a63d7270ac5b63b"},
+    {file = "pysaml2-7.5.0-py3-none-any.whl", hash = "sha256:bc6627cc344476a83c757f440a73fda1369f13b6fda1b4e16bca63ffbabb5318"},
+    {file = "pysaml2-7.5.0.tar.gz", hash = "sha256:f36871d4e5ee857c6b85532e942550d2cf90ea4ee943d75eb681044bbc4f54f7"},
 ]
 
 [package.dependencies]
@@ -3955,7 +3955,7 @@ pyopenssl = "*"
 python-dateutil = "*"
 pytz = "*"
 requests = ">=2,<3"
-xmlschema = ">=1.2.1"
+xmlschema = ">=2,<3"
 
 [package.extras]
 s2repoze = ["paste", "repoze.who", "zope.interface"]
@@ -5715,4 +5715,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "496a6060f1960f23a5fe644fd891397b93be742053ed9ee9a8d4faa36d025e8b"
+content-hash = "9727a69d2096f5c8275c9e6cb20091dabe5e90ea5c4ae06f23c2e01eb9cf85bf"
