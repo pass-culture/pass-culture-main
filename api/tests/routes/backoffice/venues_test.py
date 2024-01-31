@@ -520,6 +520,39 @@ class GetVenueTest(GetEndpointHelper):
         assert response.status_code == 200
         assert f"/pro/venue/{venue_id}/provider/{venue_provider.provider.id}/delete".encode() in response.data
 
+    def test_display_fully_sync_provider_button(self, authenticated_client, random_venue):
+        provider = providers_factories.APIProviderFactory()
+        providers_factories.AllocineVenueProviderFactory(
+            venue=random_venue,
+            lastSyncDate=datetime.utcnow() - timedelta(hours=4),
+            isActive=True,
+            provider=provider,
+        )
+        venue_id = random_venue.id
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
+        buttons = html_parser.extract(response.data, tag="button")
+        assert "Resynchroniser les offres" in buttons
+
+    def test_hide_fully_sync_provider_button(self, authenticated_client, random_venue):
+        provider = providers_factories.APIProviderFactory(name="Praxiel")
+        provider = providers_factories.AllocineVenueProviderFactory(
+            venue=random_venue,
+            lastSyncDate=datetime.utcnow() - timedelta(hours=4),
+            isActive=True,
+            provider=provider,
+        )
+        venue_id = random_venue.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
+        buttons = html_parser.extract(response.data, tag="button")
+        assert "Resynchroniser les offres" not in buttons
+
     def test_get_virtual_venue(self, authenticated_client):
         venue = offerers_factories.VirtualVenueFactory()
 
@@ -833,6 +866,38 @@ class HasReimbursementPointTest:
     def test_venue_with_no_reimbursement_point_links(self):
         venue = offerers_factories.VenueFactory()
         assert venue.current_reimbursement_point is None
+
+
+class FullySyncVenueTest(PostEndpointHelper):
+    endpoint = "backoffice_web.venue.fully_sync_venue"
+    endpoint_kwargs = {"venue_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+
+    @patch("pcapi.workers.fully_sync_venue_job.fully_sync_venue_job.delay")
+    def test_fully_sync_venue(self, fully_sync_venue_job, authenticated_client, random_venue):
+        provider = providers_factories.APIProviderFactory()
+        providers_factories.AllocineVenueProviderFactory(
+            venue=random_venue,
+            lastSyncDate=datetime.utcnow() - timedelta(hours=5),
+            isActive=True,
+            provider=provider,
+        )
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=random_venue.id)
+        assert response.status_code == 303
+        fully_sync_venue_job.assert_called_once_with(random_venue.id)
+
+    @patch("pcapi.workers.fully_sync_venue_job.fully_sync_venue_job.delay")
+    def test_fully_sync_venue_disabled_provider(self, fully_sync_venue_job, authenticated_client, random_venue):
+        provider = providers_factories.APIProviderFactory()
+        providers_factories.AllocineVenueProviderFactory(
+            venue=random_venue,
+            lastSyncDate=datetime.utcnow() - timedelta(hours=4),
+            isActive=False,
+            provider=provider,
+        )
+        response = self.post_to_endpoint(authenticated_client, venue_id=random_venue.id)
+        assert response.status_code == 404
 
 
 class DeleteVenueTest(PostEndpointHelper):

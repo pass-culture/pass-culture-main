@@ -32,6 +32,7 @@ from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import api as providers_api
 from pcapi.core.providers import models as providers_models
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
@@ -46,6 +47,7 @@ from pcapi.routes.serialization import reimbursement_csv_serialize
 from pcapi.utils import regions as regions_utils
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.string import to_camelcase
+from pcapi.workers.fully_sync_venue_job import fully_sync_venue_job
 
 from . import forms
 from . import serialization
@@ -147,12 +149,15 @@ def get_venue(venue_id: int) -> offerers_models.Venue:
             .load_only(
                 providers_models.VenueProvider.id,
                 providers_models.VenueProvider.lastSyncDate,
+                providers_models.VenueProvider.isActive,
             )
             .joinedload(providers_models.VenueProvider.provider)
             .load_only(
                 providers_models.Provider.id,
                 providers_models.Provider.name,
                 providers_models.Provider.localClass,
+                providers_models.Provider.apiUrl,
+                providers_models.Provider.isActive,
             ),
         )
         .one_or_none()
@@ -203,6 +208,7 @@ def render_venue_details(
         edit_venue_form.tags.choices = [(criterion.id, criterion.name) for criterion in venue.criteria]
 
     delete_form = empty_forms.EmptyForm()
+    fully_sync_venue_form = empty_forms.EmptyForm()
 
     search_form = pro_forms.CompactProSearchForm(
         q=request.args.get("q"),
@@ -222,8 +228,13 @@ def render_venue_details(
         edit_venue_form=edit_venue_form,
         region=region,
         has_reimbursement_point=bool(venue.current_reimbursement_point),
+        has_active_provider=any(
+            (venue_provider.isActive and venue_provider.provider.allow_bo_sync)
+            for venue_provider in venue.venueProviders
+        ),
         dms_stats=dms_stats,
         delete_form=delete_form,
+        fully_sync_venue_form=fully_sync_venue_form,
         active_tab=request.args.get("active_tab", "history"),
         zendesk_sell_synchronisation_form=(
             empty_forms.EmptyForm()
@@ -558,6 +569,27 @@ def delete_venue(venue_id: int) -> utils.BackofficeResponse:
         "success",
     )
     return redirect(url_for("backoffice_web.pro.search_pro"), code=303)
+
+
+@venue_blueprint.route("/<int:venue_id>/fully-sync", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def fully_sync_venue(venue_id: int) -> utils.BackofficeResponse:
+    venue_exists = db.session.query(
+        offerers_models.Venue.query.join(providers_models.VenueProvider)
+        .join(providers_models.Provider)
+        .filter(providers_models.Provider.allow_bo_sync.is_(True))  # type: ignore[attr-defined]
+        .filter(offerers_models.Venue.id == venue_id)
+        .filter(providers_models.VenueProvider.isActive.is_(True))
+        .exists()
+    ).scalar()
+
+    if not venue_exists:
+        raise NotFound()
+
+    fully_sync_venue_job.delay(venue_id)
+
+    flash("La re-synchronisation des offres a été lancée.", "success")
+    return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
 
 
 @venue_blueprint.route("/<int:venue_id>/update", methods=["POST"])
