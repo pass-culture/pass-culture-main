@@ -498,7 +498,8 @@ class GetVenueTest(GetEndpointHelper):
 
     def test_get_venue_with_provider(self, authenticated_client, random_venue):
         venue_provider = providers_factories.AllocineVenueProviderFactory(
-            venue=random_venue, lastSyncDate=datetime.utcnow() - timedelta(hours=5)
+            venue=random_venue,
+            lastSyncDate=datetime(2024, 1, 5, 12, 0),
         )
         venue_id = random_venue.id
 
@@ -508,7 +509,7 @@ class GetVenueTest(GetEndpointHelper):
 
         content = html_parser.content_as_text(response.data)
         assert "Provider : Allociné" in content
-        assert f"Dernière synchronisation : {venue_provider.lastSyncDate.strftime('%d/%m/%Y à ')}" in content
+        assert "Dernière synchronisation : 05/01/2024 à 13h00" in content
         assert f"/pro/venue/{venue_id}/delete/{venue_provider.provider.id}".encode() not in response.data
 
     def test_get_venue_with_provider_not_allocine(self, authenticated_client, random_venue):
