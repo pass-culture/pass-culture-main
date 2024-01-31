@@ -1,9 +1,11 @@
+import { apiAdage } from 'apiClient/api'
 import strokeShareIcon from 'icons/stroke-share.svg'
 import {
   HydratedCollectiveOffer,
   HydratedCollectiveOfferTemplate,
 } from 'pages/AdageIframe/app/types/offers'
 import ListIconButton from 'ui-kit/ListIconButton'
+import { LOGS_DATA } from 'utils/config'
 
 import styles from './OfferShareLink.module.scss'
 
@@ -21,12 +23,23 @@ Bonjour,
 %0D%0A%0D%0ACordialement
   `
 
+  function handleShareButtonClicked() {
+    if (LOGS_DATA) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      apiAdage.logTrackingCtaShare({
+        iframeFrom: location.pathname,
+        offerId: offer.id,
+        source: '',
+      })
+    }
+  }
+
   return (
     <ListIconButton
       className={styles['share-link']}
       url={`mailto:?subject=Partage d’offre sur ADAGE - ${offer.name}&body=${mailBody}`}
-      isExternal={true}
       icon={strokeShareIcon}
+      onClick={handleShareButtonClicked}
     >
       Partager l’offre par email
     </ListIconButton>

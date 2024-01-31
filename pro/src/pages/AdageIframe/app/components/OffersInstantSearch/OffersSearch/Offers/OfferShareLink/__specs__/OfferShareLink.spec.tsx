@@ -1,5 +1,7 @@
 import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 
+import { apiAdage } from 'apiClient/api'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
   defaultAdageUser,
@@ -11,11 +13,16 @@ import OfferShareLink, { OfferShareLinkProps } from '../OfferShareLink'
 
 vi.mock('apiClient/api', () => ({
   apiAdage: {
-    logFavOfferButtonClick: vi.fn(),
-    deleteFavoriteForCollectiveOfferTemplate: vi.fn(),
-    postCollectiveTemplateFavorites: vi.fn(),
+    logTrackingCtaShare: vi.fn(),
   },
 }))
+
+vi.mock('utils/config', async () => {
+  return {
+    ...((await vi.importActual('utils/config')) ?? {}),
+    LOGS_DATA: true,
+  }
+})
 
 const renderOfferShareLink = (props: OfferShareLinkProps) => {
   renderWithProviders(
@@ -40,5 +47,22 @@ describe('OfferShareLink', () => {
       .getAttribute('href')
 
     expect(shareLink).toContain('mailto')
+  })
+
+  it('should log a tracking event when clicking the share button', async () => {
+    const logSpy = vi.spyOn(apiAdage, 'logTrackingCtaShare')
+    renderOfferShareLink(defaultProps)
+
+    const shareLink = screen.getByRole('link', {
+      name: /Partager l’offre par email/i,
+    })
+
+    shareLink.addEventListener('click', (e) => {
+      e.preventDefault()
+    })
+
+    await userEvent.click(shareLink)
+
+    expect(logSpy).toHaveBeenCalled()
   })
 })
