@@ -1,12 +1,12 @@
 import { OfferStatus } from 'apiClient/v1'
 
-import { computeOffersUrl } from '../computeOffersUrl'
+import { computeIndividualOffersUrl } from '../computeOffersUrl'
 
 describe('computeOffersUrl', () => {
   it('should return simple query for offers page when no search filters', () => {
     const offersSearchFilters = {}
 
-    const value = computeOffersUrl(offersSearchFilters)
+    const value = computeIndividualOffersUrl(offersSearchFilters)
 
     expect(value).toBe('/offres')
   })
@@ -24,7 +24,7 @@ describe('computeOffersUrl', () => {
       page: 2,
     }
 
-    const value = computeOffersUrl(offersSearchFilters)
+    const value = computeIndividualOffersUrl(offersSearchFilters)
 
     expect(value).toBe(
       '/offres?page=2&nom=test&structure=AY&lieu=EQ&categorie=CINEMA&statut=active&creation=manuelle&periode-evenement-debut=2020-11-30T00%3A00%3A00%2B01%3A00&periode-evenement-fin=2021-01-07T23%3A59%3A59%2B01%3A00'

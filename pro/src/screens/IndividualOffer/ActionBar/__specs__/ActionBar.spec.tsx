@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -14,18 +13,7 @@ const renderActionBar = ({
   props: ActionBarProps
   url?: string
 }) => {
-  const storeOverrides = {
-    offers: {
-      searchFilters: {
-        filter: 'my_filter',
-        other_filter: 'my_other_filter',
-      },
-      pageNumber: 3,
-    },
-  }
-
   return renderWithProviders(<ActionBar {...props} />, {
-    storeOverrides,
     initialRouterEntries: [url],
   })
 }
@@ -138,10 +126,7 @@ describe('IndividualOffer::ActionBar', () => {
       renderActionBar({ props, url: '/edition/url' })
 
       const buttonBack = screen.getByText('Retour à la liste des offres')
-      expect(buttonBack).toHaveAttribute(
-        'href',
-        '/offres?page=3&filter=my_filter&other_filter=my_other_filter'
-      )
+      expect(buttonBack).toHaveAttribute('href', '/offres')
     })
   })
 })

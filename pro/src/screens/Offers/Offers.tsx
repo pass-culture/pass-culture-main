@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { useFetcher, useLoaderData } from 'react-router-dom'
 
 import {
   CollectiveOfferResponseModel,
@@ -16,7 +17,7 @@ import {
 import { Offerer, SearchFiltersParams } from 'core/Offers/types'
 import {
   computeCollectiveOffersUrl,
-  computeOffersUrl,
+  computeIndividualOffersUrl,
   hasSearchFilters,
 } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
@@ -41,10 +42,7 @@ export interface OffersProps {
     roles: Array<UserRole>
     isAdmin: boolean
   }
-  isLoading: boolean
-  loadAndUpdateOffers: (filters: SearchFiltersParams) => Promise<void>
   offerer: Offerer | null
-  offers: CollectiveOfferResponseModel[] | ListOffersOfferResponseModel[]
   setOfferer: (offerer: Offerer | null) => void
   initialSearchFilters: SearchFiltersParams
   audience: Audience
@@ -62,10 +60,7 @@ export interface OffersProps {
 const Offers = ({
   currentPageNumber,
   currentUser,
-  isLoading,
-  loadAndUpdateOffers,
   offerer,
-  offers,
   setOfferer,
   initialSearchFilters,
   audience,
@@ -76,8 +71,10 @@ const Offers = ({
 }: OffersProps): JSX.Element => {
   const [searchFilters, setSearchFilters] =
     useState<SearchFiltersParams>(initialSearchFilters)
-  const [isRefreshingOffers, setIsRefreshingOffers] = useState(true)
-
+  const fetcher = useFetcher()
+  const { offers } = useLoaderData() as {
+    offers: CollectiveOfferResponseModel[] | ListOffersOfferResponseModel[]
+  }
   const [areAllOffersSelected, setAreAllOffersSelected] = useState(false)
   const [selectedOfferIds, setSelectedOfferIds] = useState<string[]>([])
 
@@ -90,29 +87,7 @@ const Offers = ({
   )
   const hasOffers = currentPageOffersSubset.length > 0
 
-  const userHasNoOffers =
-    !isLoading && !hasOffers && !hasSearchFilters(urlSearchFilters)
-
-  const hasDifferentFiltersFromLastSearch = useCallback(
-    (
-      searchFilters: SearchFiltersParams,
-      filterNames: (keyof SearchFiltersParams)[] = Object.keys(
-        searchFilters
-      ) as (keyof SearchFiltersParams)[]
-    ) => {
-      const lastSearchFilters = {
-        ...DEFAULT_SEARCH_FILTERS,
-        ...urlSearchFilters,
-      }
-      return filterNames
-        .map(
-          (filterName) =>
-            searchFilters[filterName] !== lastSearchFilters[filterName]
-        )
-        .includes(true)
-    },
-    [urlSearchFilters]
-  )
+  const userHasNoOffers = !hasOffers && !hasSearchFilters(urlSearchFilters)
 
   const [isOffererValidated, setIsOffererValidated] = useState<boolean>(false)
   const displayCreateOfferButton =
@@ -135,7 +110,7 @@ const Offers = ({
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       loadValidatedUserOfferers()
     }
-  }, [])
+  }, [isAdmin])
 
   const actionLink = displayCreateOfferButton ? (
     <ButtonLink
@@ -156,10 +131,12 @@ const Offers = ({
     setSelectedOfferIds([])
   }, [])
 
-  const refreshOffers = useCallback(
-    () => loadAndUpdateOffers(initialSearchFilters),
-    [loadAndUpdateOffers, initialSearchFilters]
-  )
+  const refreshOffers = () => {
+    fetcher.submit(null, {
+      method: 'patch',
+      action: '/offres',
+    })
+  }
 
   const toggleSelectAllCheckboxes = useCallback(() => {
     setAreAllOffersSelected((currentValue) => !currentValue)
@@ -174,32 +151,13 @@ const Offers = ({
   const numberOfPages = Math.ceil(offers.length / NUMBER_OF_OFFERS_PER_PAGE)
   const pageCount = Math.min(numberOfPages, MAX_TOTAL_PAGES)
 
-  useEffect(() => {
-    if (isRefreshingOffers) {
-      setSearchFilters(initialSearchFilters)
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      loadAndUpdateOffers(initialSearchFilters)
-    }
-  }, [
-    isRefreshingOffers,
-    loadAndUpdateOffers,
-    setSearchFilters,
-    initialSearchFilters,
-  ])
-
   const applyUrlFiltersAndRedirect = (
-    filters: SearchFiltersParams & { audience?: Audience },
-    isRefreshing = true
+    filters: SearchFiltersParams & { audience?: Audience }
   ) => {
-    setIsRefreshingOffers(isRefreshing)
     redirectWithUrlFilters(filters)
   }
 
-  const applyFilters = async () => {
-    // FIXME : this code's part seems to be useless
-    if (!hasDifferentFiltersFromLastSearch(searchFilters)) {
-      await refreshOffers()
-    }
+  const applyFilters = () => {
     applyUrlFiltersAndRedirect({ ...searchFilters, page: DEFAULT_PAGE })
   }
 
@@ -234,13 +192,6 @@ const Offers = ({
     return ''
   }
 
-  /* istanbul ignore next: DEBT, TO FIX */
-  const canDeleteOffers = (tmpSelectedOfferIds: string[]) => {
-    const selectedOffers = offers.filter((offer) =>
-      tmpSelectedOfferIds.includes(offer.id.toString())
-    )
-    return !selectedOffers.some((offer) => offer.status !== OFFER_STATUS_DRAFT)
-  }
   return (
     <div className="offers-page">
       <Titles action={actionLink} title="Offres" />
@@ -250,7 +201,7 @@ const Offers = ({
         tabs={[
           {
             label: 'Offres individuelles',
-            url: computeOffersUrl({
+            url: computeIndividualOffersUrl({
               ...searchFilters,
               status: DEFAULT_SEARCH_FILTERS.status,
               page: currentPageNumber,
@@ -295,7 +246,6 @@ const Offers = ({
           currentPageOffersSubset={currentPageOffersSubset}
           currentUser={currentUser}
           hasOffers={hasOffers}
-          isLoading={isLoading}
           offersCount={offers.length}
           pageCount={pageCount}
           resetFilters={resetFilters}
@@ -319,7 +269,7 @@ const Offers = ({
           toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
           audience={audience}
           getUpdateOffersStatusMessage={getUpdateOffersStatusMessage}
-          canDeleteOffers={canDeleteOffers}
+          currentPageOffersSubset={currentPageOffersSubset}
         />
       )}
     </div>

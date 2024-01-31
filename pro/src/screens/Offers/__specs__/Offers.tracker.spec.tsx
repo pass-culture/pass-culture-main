@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
+import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { UserRole } from 'apiClient/v1'
@@ -10,6 +10,11 @@ import { offererFactory } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Offers, { OffersProps } from '../Offers'
+
+vi.mock('react-router-dom', async () => ({
+  ...((await vi.importActual('react-router-dom')) ?? {}),
+  useLoaderData: vi.fn(),
+}))
 
 const renderOffers = (props: OffersProps) =>
   renderWithProviders(<Offers {...props} />)
@@ -21,8 +26,9 @@ vi.mock('apiClient/api', () => ({
 }))
 
 describe('tracker screen Offers', () => {
-  it('should track when clciking on offer link', async () => {
+  it('should track when cliking on offer link', async () => {
     // Given
+    vi.spyOn(router, 'useLoaderData').mockReturnValue({ offers: [] })
     const props = {
       currentPageNumber: 1,
       isLoading: false,

@@ -1,5 +1,4 @@
-import React, { useCallback } from 'react'
-import { useSelector } from 'react-redux'
+import { useCallback } from 'react'
 
 import {
   CollectiveOfferResponseModel,
@@ -12,11 +11,9 @@ import { hasSearchFilters, isOfferDisabled } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
 import NoResults from 'screens/Offers/NoResults'
-import { searchFiltersSelector } from 'store/offers/selectors'
 import { Banner } from 'ui-kit'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { Pagination } from 'ui-kit/Pagination'
-import Spinner from 'ui-kit/Spinner/Spinner'
 
 import styles from './Offers.module.scss'
 import OffersTableBody from './OffersTableBody/OffersTableBody'
@@ -36,7 +33,6 @@ type OffersProps = {
     | ListOffersOfferResponseModel[]
   currentUser: { isAdmin: boolean }
   hasOffers: boolean
-  isLoading: boolean
   offersCount: number
   pageCount: number
   resetFilters: () => void
@@ -57,7 +53,6 @@ const Offers = ({
   currentPageNumber,
   currentPageOffersSubset,
   hasOffers,
-  isLoading,
   offersCount,
   pageCount,
   resetFilters,
@@ -131,83 +126,74 @@ const Offers = ({
 
     toggleSelectAllCheckboxes()
   }
-
-  const savedSearchFilters = useSelector(searchFiltersSelector)
-
   return (
-    <div aria-busy={isLoading} aria-live="polite" className="section">
-      {isLoading ? (
-        <Spinner />
-      ) : (
-        <>
-          {offersCount > MAX_OFFERS_TO_DISPLAY && (
-            <Banner type="notification-info">
-              L’affichage est limité à 500 offres. Modifiez les filtres pour
-              affiner votre recherche.
-            </Banner>
-          )}
-          {hasOffers && (
-            <div className={styles['offers-count']}>
-              {`${getOffersCountToDisplay(offersCount)} ${
-                offersCount <= 1 ? 'offre' : 'offres'
-              }`}
-            </div>
-          )}
-          {hasOffers && (
-            <>
-              <div className={styles['select-all-container']}>
-                <BaseCheckbox
-                  checked={areAllOffersSelected || isAtLeastOneOfferChecked}
-                  partialCheck={
-                    !areAllOffersSelected && isAtLeastOneOfferChecked
-                  }
-                  disabled={isAdminForbidden(savedSearchFilters) || !hasOffers}
-                  onChange={selectAllOffers}
-                  label={
-                    areAllOffersSelected
-                      ? 'Tout désélectionner'
-                      : 'Tout sélectionner'
-                  }
-                />
-              </div>
-              <table>
-                <OffersTableHead
-                  applyFilters={applyFilters}
-                  areAllOffersSelected={areAllOffersSelected}
-                  areOffersPresent={hasOffers}
-                  filters={searchFilters}
-                  isAdminForbidden={isAdminForbidden}
-                  selectAllOffers={selectAllOffers}
-                  updateStatusFilter={updateStatusFilter}
-                  audience={audience}
-                  isAtLeastOneOfferChecked={isAtLeastOneOfferChecked}
-                />
-                <OffersTableBody
-                  areAllOffersSelected={areAllOffersSelected}
-                  offers={currentPageOffersSubset}
-                  selectOffer={selectOffer}
-                  selectedOfferIds={selectedOfferIds}
-                  audience={audience}
-                  refreshOffers={refreshOffers}
-                />
-              </table>
-            </>
-          )}
-          {hasOffers && (
-            <div className={styles['offers-pagination']}>
-              <Pagination
-                currentPage={currentPageNumber}
-                pageCount={pageCount}
-                onPreviousPageClick={onPreviousPageClick}
-                onNextPageClick={onNextPageClick}
+    <div aria-busy={false} aria-live="polite" className="section">
+      <>
+        {offersCount > MAX_OFFERS_TO_DISPLAY && (
+          <Banner type="notification-info">
+            L’affichage est limité à 500 offres. Modifiez les filtres pour
+            affiner votre recherche.
+          </Banner>
+        )}
+        {hasOffers && (
+          <div className={styles['offers-count']}>
+            {`${getOffersCountToDisplay(offersCount)} ${
+              offersCount <= 1 ? 'offre' : 'offres'
+            }`}
+          </div>
+        )}
+        {hasOffers && (
+          <>
+            <div className={styles['select-all-container']}>
+              <BaseCheckbox
+                checked={areAllOffersSelected || isAtLeastOneOfferChecked}
+                partialCheck={!areAllOffersSelected && isAtLeastOneOfferChecked}
+                disabled={isAdminForbidden(searchFilters) || !hasOffers}
+                onChange={selectAllOffers}
+                label={
+                  areAllOffersSelected
+                    ? 'Tout désélectionner'
+                    : 'Tout sélectionner'
+                }
               />
             </div>
-          )}
-          {!hasOffers && hasSearchFilters(urlSearchFilters) && (
-            <NoResults resetFilters={resetFilters} />
-          )}
-        </>
-      )}
+            <table>
+              <OffersTableHead
+                applyFilters={applyFilters}
+                areAllOffersSelected={areAllOffersSelected}
+                areOffersPresent={hasOffers}
+                filters={searchFilters}
+                isAdminForbidden={isAdminForbidden}
+                selectAllOffers={selectAllOffers}
+                updateStatusFilter={updateStatusFilter}
+                audience={audience}
+                isAtLeastOneOfferChecked={isAtLeastOneOfferChecked}
+              />
+              <OffersTableBody
+                areAllOffersSelected={areAllOffersSelected}
+                offers={currentPageOffersSubset}
+                selectOffer={selectOffer}
+                selectedOfferIds={selectedOfferIds}
+                audience={audience}
+                refreshOffers={refreshOffers}
+              />
+            </table>
+          </>
+        )}
+        {hasOffers && (
+          <div className={styles['offers-pagination']}>
+            <Pagination
+              currentPage={currentPageNumber}
+              pageCount={pageCount}
+              onPreviousPageClick={onPreviousPageClick}
+              onNextPageClick={onNextPageClick}
+            />
+          </div>
+        )}
+        {!hasOffers && hasSearchFilters(urlSearchFilters) && (
+          <NoResults resetFilters={resetFilters} />
+        )}
+      </>
     </div>
   )
 }

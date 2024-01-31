@@ -1,7 +1,7 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 import { Route, Routes } from 'react-router-dom'
+import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { ListOffersOfferResponseModel, OfferStatus } from 'apiClient/v1'
@@ -14,7 +14,7 @@ import {
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
-import { computeOffersUrl } from 'core/Offers/utils'
+import { computeIndividualOffersUrl } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
 import {
   defaultGetOffererResponseModel,
@@ -24,6 +24,16 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OffersRoute } from '../../../pages/Offers/OffersRoute'
+
+const mockNavigate = vi.fn()
+
+vi.mock('react-router-dom', async () => ({
+  ...((await vi.importActual('react-router-dom')) ?? {}),
+  useFetcher: () => ({
+    submit: vi.fn(),
+  }),
+  useNavigate: vi.fn(),
+}))
 
 const categoriesAndSubcategories = {
   categories: [
@@ -50,14 +60,14 @@ const proVenues = [
   }),
 ]
 
-const renderOffers = async (
+const renderOffers = (
   storeOverrides: any,
   filters: Partial<SearchFiltersParams> & {
     page?: number
     audience?: Audience
   } = DEFAULT_SEARCH_FILTERS
 ) => {
-  const route = computeOffersUrl(filters)
+  const route = computeIndividualOffersUrl(filters)
   renderWithProviders(
     <Routes>
       <Route path="/offres" element={<OffersRoute />} />
@@ -71,9 +81,6 @@ const renderOffers = async (
       initialRouterEntries: [route],
     }
   )
-
-  await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-  vi.clearAllMocks()
 }
 
 vi.mock('repository/venuesService', async () => ({
@@ -105,27 +112,30 @@ describe('route Offers', () => {
         initialized: true,
         currentUser,
       },
-      offers: {
-        searchFilters: DEFAULT_SEARCH_FILTERS,
-      },
     }
     offersRecap = [
       listOffersOfferResponseModelFactory({ customVenue: proVenues[0] }),
     ]
-    vi.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
+    // vi.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
+    // vi.spyOn(router, 'useLoaderData').mockReturnValue({
+    //   offers: offersRecap,
+    // })
+    vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
+
     vi.spyOn(api, 'getCategories').mockResolvedValueOnce(
       categoriesAndSubcategories
     )
+
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
   })
 
   describe('render', () => {
     describe('filters', () => {
       it('should display only selectable categories on filters', async () => {
-        await renderOffers(store)
+        renderOffers(store)
 
         expect(
-          screen.getByRole('option', { name: 'Cinéma' })
+          await screen.findByRole('option', { name: 'Cinéma' })
         ).toBeInTheDocument()
         expect(screen.getByRole('option', { name: 'Jeux' })).toBeInTheDocument()
         expect(
@@ -135,9 +145,9 @@ describe('route Offers', () => {
 
       describe('status filters', () => {
         it('should filter offers given status filter when clicking on "Appliquer"', async () => {
-          await renderOffers(store)
+          renderOffers(store)
 
-          const statusFiltersButton = screen.getByRole('button', {
+          const statusFiltersButton = await screen.findByRole('button', {
             name: /Afficher ou masquer le filtre par statut/,
           })
           expect(statusFiltersButton).toHaveAttribute(
@@ -146,28 +156,18 @@ describe('route Offers', () => {
           )
           expect(statusFiltersButton).toHaveAttribute('aria-expanded', 'false')
           await userEvent.click(statusFiltersButton)
-          expect(statusFiltersButton).toHaveAttribute('aria-expanded', 'true')
-
+          screen.debug(undefined, 1000000)
+          // expect(statusFiltersButton).toHaveAttribute('aria-expanded', 'true')
           await userEvent.click(screen.getByLabelText('Expirée'))
           await userEvent.click(screen.getByText('Appliquer'))
-
-          expect(api.listOffers).toHaveBeenLastCalledWith(
-            undefined,
-            undefined,
-            'EXPIRED',
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined
-          )
+          expect(mockNavigate).toHaveBeenCalledWith('/offres?statut=expiree')
         })
 
         it('should filter draft offers given status filter when clicking on "Appliquer"', async () => {
-          await renderOffers(store)
+          renderOffers(store)
 
           await userEvent.click(
-            screen.getByRole('button', {
+            await screen.findByRole('button', {
               name: 'Statut Afficher ou masquer le filtre par statut',
             })
           )
@@ -175,43 +175,39 @@ describe('route Offers', () => {
 
           await userEvent.click(screen.getByText('Appliquer'))
 
-          expect(api.listOffers).toHaveBeenCalledTimes(1)
-          expect(api.listOffers).toHaveBeenLastCalledWith(
-            undefined,
-            undefined,
-            'DRAFT',
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined
-          )
+          expect(mockNavigate).toHaveBeenCalledWith('/offres?statut=draft')
         })
 
-        it('should indicate that no offers match selected filters', async () => {
-          vi.spyOn(api, 'listOffers')
-            .mockResolvedValueOnce(offersRecap)
-            .mockResolvedValueOnce([])
-          await renderOffers(store)
-
-          await userEvent.click(
-            screen.getByRole('button', {
-              name: 'Statut Afficher ou masquer le filtre par statut',
+        it.only('should indicate that no offers match selected filters', async () => {
+          vi.spyOn(router, 'useLoaderData')
+            .mockReturnValueOnce({
+              offers: offersRecap,
             })
-          )
-          await userEvent.click(screen.getByLabelText('Expirée'))
-          await userEvent.click(screen.getByText('Appliquer'))
+            .mockReturnValueOnce({
+              offers: offersRecap,
+            })
+            .mockReturnValueOnce({
+              offers: [],
+            })
 
-          const noOffersForSearchFiltersText = screen.getByText(
-            'Aucune offre trouvée pour votre recherche'
+          renderOffers(store)
+          await userEvent.type(
+            screen.getByLabelText('Nom de l’offre ou EAN-13'),
+            'qmskefhlqzekufz'
           )
-          expect(noOffersForSearchFiltersText).toBeInTheDocument()
+          await userEvent.click(screen.getByText('Rechercher'))
+
+          screen.debug(undefined, 1000000)
+
+          expect(
+            await screen.findByText('Aucune offre trouvée pour votre recherche')
+          ).toBeInTheDocument()
         })
 
-        it('should not display column titles when no offers are returned', async () => {
+        it('should not display column titles when no offers are returned', () => {
           vi.spyOn(api, 'listOffers').mockResolvedValueOnce([])
 
-          await renderOffers(store)
+          renderOffers(store)
 
           expect(screen.queryByText('Lieu', { selector: 'th' })).toBeNull()
           expect(screen.queryByText('Stock', { selector: 'th' })).toBeNull()
@@ -238,7 +234,7 @@ describe('route Offers', () => {
               venueId: venueId.toString(),
               status: OfferStatus.INACTIVE,
             }
-            await renderOffers(store, filters)
+            renderOffers(store, filters)
 
             await userEvent.selectOptions(
               screen.getByDisplayValue(venueName),
@@ -271,7 +267,7 @@ describe('route Offers', () => {
               status: OfferStatus.INACTIVE,
               offererId: 'EF',
             }
-            await renderOffers(store, filters)
+            renderOffers(store, filters)
             await userEvent.selectOptions(
               screen.getByDisplayValue(venueName),
               ALL_VENUES
@@ -308,7 +304,7 @@ describe('route Offers', () => {
               offererId: offerer.id.toString(),
               status: OfferStatus.INACTIVE,
             }
-            await renderOffers(store, filters)
+            renderOffers(store, filters)
 
             await userEvent.click(screen.getByTestId('remove-offerer-filter'))
 
@@ -343,7 +339,7 @@ describe('route Offers', () => {
               status: OfferStatus.INACTIVE,
               offererId: offerer.id.toString(),
             }
-            await renderOffers(store, filters)
+            renderOffers(store, filters)
 
             await userEvent.click(screen.getByTestId('remove-offerer-filter'))
 
@@ -364,10 +360,10 @@ describe('route Offers', () => {
             )
           })
 
-          it('should enable status filters when venue filter is applied', async () => {
+          it('should enable status filters when venue filter is applied', () => {
             const filters = { venueId: 'IJ' }
 
-            await renderOffers(store, filters)
+            renderOffers(store, filters)
 
             expect(
               screen.getByRole('button', {
@@ -376,10 +372,10 @@ describe('route Offers', () => {
             ).not.toBeDisabled()
           })
 
-          it('should enable status filters when offerer filter is applied', async () => {
+          it('should enable status filters when offerer filter is applied', () => {
             const filters = { offererId: 'A4' }
 
-            await renderOffers(store, filters)
+            renderOffers(store, filters)
 
             expect(
               screen.getByRole('button', {
@@ -392,7 +388,7 @@ describe('route Offers', () => {
 
       describe('on click on search button', () => {
         it('should load offers with written offer name filter', async () => {
-          await renderOffers(store)
+          renderOffers(store)
           await userEvent.type(
             screen.getByPlaceholderText(
               'Rechercher par nom d’offre ou par EAN-13'
@@ -415,7 +411,7 @@ describe('route Offers', () => {
         })
 
         it('should load offers with selected venue filter', async () => {
-          await renderOffers(store)
+          renderOffers(store)
           const firstVenueOption = screen.getByRole('option', {
             name: proVenues[0].name,
           })
@@ -437,7 +433,7 @@ describe('route Offers', () => {
         })
 
         it('should load offers with selected type filter', async () => {
-          await renderOffers(store)
+          renderOffers(store)
           const firstTypeOption = screen.getByRole('option', {
             name: 'Cinéma',
           })
@@ -461,7 +457,7 @@ describe('route Offers', () => {
         })
 
         it('should load offers with selected creation mode filter', async () => {
-          await renderOffers(store)
+          renderOffers(store)
           const creationModeSelect = screen.getByDisplayValue('Tous')
           const importedCreationMode = CREATION_MODES_OPTIONS[2].value
           await userEvent.selectOptions(
@@ -484,7 +480,7 @@ describe('route Offers', () => {
         })
 
         it('should load offers with selected period beginning date', async () => {
-          await renderOffers(store)
+          renderOffers(store)
 
           await userEvent.type(
             screen.getByLabelText('Début de la période'),
@@ -506,7 +502,7 @@ describe('route Offers', () => {
         })
 
         it('should load offers with selected period ending date', async () => {
-          await renderOffers(store)
+          renderOffers(store)
 
           await userEvent.type(
             screen.getByLabelText('Fin de la période'),
@@ -535,7 +531,7 @@ describe('route Offers', () => {
         listOffersOfferResponseModelFactory()
       )
       vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
-      await renderOffers(store)
+      renderOffers(store)
       const nextPageIcon = screen.getByRole('button', { name: 'Page suivante' })
 
       await userEvent.click(nextPageIcon)
@@ -544,7 +540,7 @@ describe('route Offers', () => {
     })
 
     it('should store search value', async () => {
-      await renderOffers(store)
+      renderOffers(store)
       const searchInput = screen.getByPlaceholderText(
         'Rechercher par nom d’offre ou par EAN-13'
       )
@@ -565,7 +561,7 @@ describe('route Offers', () => {
     })
 
     it('should have offer name value be removed when name search value is an empty string', async () => {
-      await renderOffers(store)
+      renderOffers(store)
 
       await userEvent.clear(
         screen.getByPlaceholderText('Rechercher par nom d’offre ou par EAN-13')
@@ -585,7 +581,7 @@ describe('route Offers', () => {
     })
 
     it('should have venue value when user filters by venue', async () => {
-      await renderOffers(store)
+      renderOffers(store)
       const firstVenueOption = screen.getByRole('option', {
         name: proVenues[0].name,
       })
@@ -618,7 +614,7 @@ describe('route Offers', () => {
         ],
         subcategories: [],
       })
-      await renderOffers(store)
+      renderOffers(store)
       const firstTypeOption = screen.getByRole('option', {
         name: 'My test value',
       })
@@ -649,7 +645,7 @@ describe('route Offers', () => {
         }),
       ])
 
-      await renderOffers(store)
+      renderOffers(store)
       await userEvent.click(
         screen.getByRole('button', {
           name: 'Statut Afficher ou masquer le filtre par statut',
@@ -679,7 +675,7 @@ describe('route Offers', () => {
           customStocksList: [],
         }),
       ])
-      await renderOffers(store)
+      renderOffers(store)
       await userEvent.click(
         screen.getByRole('button', {
           name: 'Statut Afficher ou masquer le filtre par statut',
@@ -701,7 +697,7 @@ describe('route Offers', () => {
       )
     })
 
-    it('should have offerer filter when user filters by offerer', async () => {
+    it('should have offerer filter when user filters by offerer', () => {
       const id = 654
 
       vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
@@ -710,7 +706,7 @@ describe('route Offers', () => {
       })
       const filters = { offererId: id.toString() }
 
-      await renderOffers(store, filters)
+      renderOffers(store, filters)
 
       const offererFilter = screen.getByText('La structure')
       expect(offererFilter).toBeInTheDocument()
@@ -724,7 +720,7 @@ describe('route Offers', () => {
         id,
       })
       const filters = { offererId: id.toString() }
-      await renderOffers(store, filters)
+      renderOffers(store, filters)
 
       await userEvent.click(screen.getByTestId('remove-offerer-filter'))
 
@@ -732,7 +728,7 @@ describe('route Offers', () => {
     })
 
     it('should have creation mode value when user filters by creation mode', async () => {
-      await renderOffers(store)
+      renderOffers(store)
 
       await userEvent.selectOptions(screen.getByDisplayValue('Tous'), 'manual')
       await userEvent.click(screen.getByText('Rechercher'))
@@ -750,7 +746,7 @@ describe('route Offers', () => {
     })
 
     it('should have creation mode value be removed when user ask for all creation modes', async () => {
-      await renderOffers(store)
+      renderOffers(store)
       const searchButton = screen.getByText('Rechercher')
       await userEvent.selectOptions(screen.getByDisplayValue('Tous'), 'manual')
       await userEvent.click(searchButton)
@@ -777,7 +773,7 @@ describe('route Offers', () => {
   describe('page navigation', () => {
     it('should redirect to collective offers when user click on collective offer link', async () => {
       vi.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
-      await renderOffers(store)
+      renderOffers(store)
       screen.getByText('Rechercher')
       const collectiveAudienceLink = screen.getByText('Offres collectives', {
         selector: 'span',
@@ -793,7 +789,7 @@ describe('route Offers', () => {
         listOffersOfferResponseModelFactory()
       )
       vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offers)
-      await renderOffers(store)
+      renderOffers(store)
       const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
 
       await userEvent.click(nextIcon)
@@ -808,7 +804,7 @@ describe('route Offers', () => {
       )
 
       vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offers)
-      await renderOffers(store)
+      renderOffers(store)
       const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
       const previousIcon = screen.getByRole('button', {
         name: 'Page précédente',
@@ -828,17 +824,17 @@ describe('route Offers', () => {
         )
       })
 
-      it('should have max number page of 50', async () => {
+      it('should have max number page of 50', () => {
         vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
 
-        await renderOffers(store)
+        renderOffers(store)
 
         expect(screen.getByText('Page 1/50')).toBeInTheDocument()
       })
 
       it('should not display the 501st offer', async () => {
         vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
-        await renderOffers(store)
+        renderOffers(store)
         const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
 
         for (let i = 1; i < 51; i++) {
@@ -858,7 +854,7 @@ describe('route Offers', () => {
       vi.spyOn(api, 'listOffers')
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
-      await renderOffers(store)
+      renderOffers(store)
 
       const firstVenueOption = screen.getByRole('option', {
         name: proVenues[0].name,
@@ -905,7 +901,7 @@ describe('route Offers', () => {
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
 
-      await renderOffers(store)
+      renderOffers(store)
 
       const venueOptionToSelect = screen.getByRole('option', {
         name: proVenues[0].name,

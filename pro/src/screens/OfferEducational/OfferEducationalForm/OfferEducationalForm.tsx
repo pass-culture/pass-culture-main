@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import React, { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { GetEducationalOffererResponseModel } from 'apiClient/v1'
@@ -13,7 +13,6 @@ import {
   isCollectiveOffer,
   Mode,
 } from 'core/OfferEducational'
-import { computeOffersUrl } from 'core/Offers/utils'
 import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useNotification from 'hooks/useNotification'
@@ -197,7 +196,7 @@ const OfferEducationalForm = ({
         <ActionsBarSticky.Left>
           <ButtonLink
             variant={ButtonVariant.SECONDARY}
-            link={{ to: computeOffersUrl({}), isExternal: false }}
+            link={{ to: '/offres/collectives', isExternal: false }}
           >
             Annuler et quitter
           </ButtonLink>

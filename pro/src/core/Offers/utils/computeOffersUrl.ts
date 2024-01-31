@@ -37,7 +37,7 @@ const computeOffersUrlForGivenAudience = (
   return queryString ? `${baseUrl}?${queryString}` : baseUrl
 }
 
-export const computeOffersUrl = (
+export const computeIndividualOffersUrl = (
   offersSearchFilters: Partial<SearchFiltersParams>
 ): string =>
   computeOffersUrlForGivenAudience(Audience.INDIVIDUAL, {
