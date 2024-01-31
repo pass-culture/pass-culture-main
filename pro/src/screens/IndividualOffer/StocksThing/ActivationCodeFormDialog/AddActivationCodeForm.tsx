@@ -2,7 +2,7 @@ import React from 'react'
 
 import fullDownloadIcon from 'icons/full-download.svg'
 import { ButtonLink } from 'ui-kit'
-import { BaseFileInput } from 'ui-kit/form/shared'
+import { BaseFileInput } from 'ui-kit/form/shared/BaseFileInput/BaseFileInput'
 
 import styles from './ActivationCodeFormDialog.module.scss'
 import ActivationCodesUploadInformationDescription from './ActivationCodesUploadInformationDescription'
