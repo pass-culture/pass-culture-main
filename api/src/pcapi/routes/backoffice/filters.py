@@ -550,30 +550,32 @@ def format_modified_info_values(modified_info: typing.Any, name: str | None = No
     return str(modified_info)  # this should not happen if data is consistent
 
 
-def format_music_type(music_subtype_id: int | str, music_type_id: int | str) -> str:
+def format_music_type(music_type_id: int | str) -> str:
     try:
-        music_type = music_types.MUSIC_TYPES_LABEL_BY_CODE.get(int(music_type_id), f"Autre[{music_type_id}]")
+        return music_types.MUSIC_TYPES_LABEL_BY_CODE.get(int(music_type_id), f"Autre[{music_type_id}]")
     except ValueError:
-        music_type = f"Autre[{music_type_id}]"
-    try:
-        music_subtype = music_types.MUSIC_SUB_TYPES_LABEL_BY_CODE.get(
-            int(music_subtype_id), f"Autre[{music_subtype_id}]"
-        )
-    except ValueError:
-        music_subtype = f"Autre[{music_subtype_id}]"
-    return f"{music_type} - {music_subtype}"
+        return f"Autre[{music_type_id}]"
 
 
-def format_show_type(show_subtype_id: int | str, show_type_id: int | str) -> str:
+def format_music_subtype(music_subtype_id: int | str) -> str:
     try:
-        show_type = show_types.SHOW_TYPES_LABEL_BY_CODE.get(int(show_type_id), f"Autre[{show_type_id}]")
+        return music_types.MUSIC_SUB_TYPES_LABEL_BY_CODE.get(int(music_subtype_id), f"Autre[{music_subtype_id}]")
     except ValueError:
-        show_type = f"Autre[{show_type_id}]"
+        return f"Autre[{music_subtype_id}]"
+
+
+def format_show_type(show_type_id: int | str) -> str:
     try:
-        show_subtype = show_types.SHOW_SUB_TYPES_LABEL_BY_CODE.get(int(show_subtype_id), f"Autre[{show_subtype_id}]")
+        return show_types.SHOW_TYPES_LABEL_BY_CODE.get(int(show_type_id), f"Autre[{show_type_id}]")
     except ValueError:
-        show_subtype = f"Autre[{show_subtype_id}]"
-    return f"{show_type} - {show_subtype}"
+        return f"Autre[{show_type_id}]"
+
+
+def format_show_subtype(show_subtype_id: int | str) -> str:
+    try:
+        return show_types.SHOW_SUB_TYPES_LABEL_BY_CODE.get(int(show_subtype_id), f"Autre[{show_subtype_id}]")
+    except ValueError:
+        return f"Autre[{show_subtype_id}]"
 
 
 def format_modified_info_name(info_name: str) -> str:
@@ -1060,7 +1062,9 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_offer_validation_sub_rule"] = format_offer_validation_sub_rule
     app.jinja_env.filters["format_offer_validation_operator"] = format_offer_validation_operator
     app.jinja_env.filters["format_music_type"] = format_music_type
+    app.jinja_env.filters["format_music_subtype"] = format_music_subtype
     app.jinja_env.filters["format_show_type"] = format_show_type
+    app.jinja_env.filters["format_show_subtype"] = format_show_subtype
     app.jinja_env.filters["get_comparated_format_function"] = get_comparated_format_function
     app.jinja_env.filters["format_offer_types"] = format_offer_types
     app.jinja_env.filters["format_website"] = format_website

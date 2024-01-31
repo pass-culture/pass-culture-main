@@ -1240,7 +1240,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
     # session + user + offer with joined data
     expected_num_queries = 3
 
-    def test_get_detail_offer(self, legit_user, authenticated_client):
+    def test_get_detail_offer(self, authenticated_client):
         offer = offers_factories.OfferFactory(
             withdrawalDetails="Demander à la caisse",
             extraData={
@@ -1279,7 +1279,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
 
         assert html_parser.count_table_rows(response.data) == 0
 
-    def test_get_detail_event_offer(self, legit_user, authenticated_client):
+    def test_get_detail_event_offer(self, authenticated_client):
         offer = offers_factories.OfferFactory(
             name="good movie",
             subcategoryId=subcategories.SEANCE_CINE.id,
@@ -1397,6 +1397,28 @@ class GetOfferDetailsTest(GetEndpointHelper):
         card_text = cards_text[0]
         assert f"Utilisateur de la dernière validation : {legit_user.full_name}" in card_text
         assert f"Date de dernière validation : {format_date(validation_date, '%d/%m/%Y à %Hh%M')}" in card_text
+
+    def test_get_detail_offer_without_show_subtype(self, legit_user, authenticated_client):
+        offer = offers_factories.OfferFactory(
+            withdrawalDetails="Demander à la caisse",
+            extraData={"showType": 1510},
+        )
+
+        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+    def test_get_detail_offer_without_music_subtype(self, legit_user, authenticated_client):
+        offer = offers_factories.OfferFactory(
+            withdrawalDetails="Demander à la caisse",
+            extraData={"musicType": 1510},
+        )
+
+        url = url_for(self.endpoint, offer_id=offer.id, _external=True)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
 
     def test_get_detail_offer_display_modify_offer_button(self, client):
         offer = offers_factories.OfferFactory()
