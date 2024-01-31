@@ -25,6 +25,7 @@ const OperatingProcedures = (): JSX.Element => {
           svgAlt: 'Nouvelle fenêtre',
         },
       ]}
+      className={styles['desk-callout']}
     >
       <p className={styles.description}>
         Nous vous invitons à prendre connaissance des modalités de
