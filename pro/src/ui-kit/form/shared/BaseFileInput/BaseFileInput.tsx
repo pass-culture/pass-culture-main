@@ -4,7 +4,8 @@ import React from 'react'
 import buttonStyle from 'ui-kit/Button/Button.module.scss'
 
 import style from './BaseFileInput.module.scss'
-export interface BaseFileInputProps {
+
+interface BaseFileInputProps {
   label: string
   fileTypes: string[]
   isValid: boolean
