@@ -463,7 +463,7 @@ def _get_reimbursement_details_from_invoices_base_query(invoice_ids: list[int]) 
 def _get_collective_booking_reimbursement_data(query: BaseQuery) -> list:
     ReimbursementPoint = sqla_orm.aliased(offerers_models.Venue)
     return (
-        query.outerjoin(models.Pricing.event)
+        query.join(models.Pricing.event)
         .join(educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock)
         .join(educational_models.CollectiveOffer, educational_models.CollectiveStock.collectiveOffer)
         .join(offerers_models.Venue, educational_models.CollectiveOffer.venue)
@@ -561,7 +561,7 @@ def _get_collective_reimbursement_details_from_invoices(invoice_ids: list[int]) 
 def _get_individual_booking_reimbursement_data(query: BaseQuery) -> list:
     ReimbursementPoint = sqla_orm.aliased(offerers_models.Venue)
     return (
-        query.outerjoin(models.Pricing.event)
+        query.join(models.Pricing.event)
         .join(ReimbursementPoint, models.Cashflow.reimbursementPointId == ReimbursementPoint.id)
         .join(bookings_models.Booking.offerer)
         .join(bookings_models.Booking.stock)
