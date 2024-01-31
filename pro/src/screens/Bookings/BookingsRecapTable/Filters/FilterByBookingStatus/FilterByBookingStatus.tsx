@@ -10,7 +10,7 @@ import { Audience } from 'core/shared'
 import useAnalytics from 'hooks/useAnalytics'
 import useOnClickOrFocusOutside from 'hooks/useOnClickOrFocusOutside'
 import fullSortIcon from 'icons/full-sort.svg'
-import { BaseCheckbox } from 'ui-kit/form/shared'
+import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { BookingsFilters } from '../../types'

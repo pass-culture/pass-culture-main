@@ -2,7 +2,7 @@ import cx from 'classnames'
 import React, { Ref } from 'react'
 
 import { SelectOption } from 'custom_types/form'
-import BaseCheckbox from 'ui-kit/form/shared/BaseCheckbox'
+import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import baseCheckboxStyles from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox.module.scss'
 
 import styles from './OptionsList.module.scss'

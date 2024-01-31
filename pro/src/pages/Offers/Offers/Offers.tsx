@@ -10,7 +10,7 @@ import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDis
 import NoResults from 'screens/Offers/NoResults'
 import { searchFiltersSelector } from 'store/offers/selectors'
 import { Banner } from 'ui-kit'
-import { BaseCheckbox } from 'ui-kit/form/shared'
+import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { Pagination } from 'ui-kit/Pagination'
 import Spinner from 'ui-kit/Spinner/Spinner'
 

@@ -1,7 +1,7 @@
 import { useField } from 'formik'
 import React from 'react'
 
-import { BaseCheckbox } from '../shared'
+import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 
 interface CheckboxGroupItemProps {
   setGroupTouched(): void
