@@ -28,6 +28,8 @@ export { BookingStatusFilter } from './models/BookingStatusFilter';
 export type { BookingStatusHistoryResponseModel } from './models/BookingStatusHistoryResponseModel';
 export type { CategoriesResponseModel } from './models/CategoriesResponseModel';
 export type { CategoryResponseModel } from './models/CategoryResponseModel';
+export type { CategorySuggestionQuery } from './models/CategorySuggestionQuery';
+export type { CategorySuggestionResponseModel } from './models/CategorySuggestionResponseModel';
 export type { ChangePasswordBodyModel } from './models/ChangePasswordBodyModel';
 export type { ChangeProEmailBody } from './models/ChangeProEmailBody';
 export { CollectiveBookingBankAccountStatus } from './models/CollectiveBookingBankAccountStatus';

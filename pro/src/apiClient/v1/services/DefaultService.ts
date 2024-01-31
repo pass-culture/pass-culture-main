@@ -9,6 +9,7 @@ import type { AttachImageResponseModel } from '../models/AttachImageResponseMode
 import type { BookingExportType } from '../models/BookingExportType';
 import type { BookingStatusFilter } from '../models/BookingStatusFilter';
 import type { CategoriesResponseModel } from '../models/CategoriesResponseModel';
+import type { CategorySuggestionResponseModel } from '../models/CategorySuggestionResponseModel';
 import type { ChangePasswordBodyModel } from '../models/ChangePasswordBodyModel';
 import type { ChangeProEmailBody } from '../models/ChangeProEmailBody';
 import type { CollectiveBookingByIdResponseModel } from '../models/CollectiveBookingByIdResponseModel';
@@ -173,6 +174,30 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/bookings/pro/userHasBookings',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * get_category_suggestion <GET>
+   * @param offerTitle
+   * @param offerDescription
+   * @returns CategorySuggestionResponseModel OK
+   * @throws ApiError
+   */
+  public getCategorySuggestion(
+    offerTitle: string,
+    offerDescription: string,
+  ): CancelablePromise<CategorySuggestionResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/categories/suggestion',
+      query: {
+        'offerTitle': offerTitle,
+        'offerDescription': offerDescription,
+      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,

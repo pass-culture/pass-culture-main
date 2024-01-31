@@ -4,6 +4,8 @@ from flask import request
 from flask_login import current_user
 from flask_login import login_required
 import sqlalchemy as sqla
+import vertexai
+from vertexai.language_models import TextGenerationModel
 
 from pcapi import repository
 from pcapi.core.categories import categories
@@ -21,6 +23,8 @@ from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
+from pcapi.routes.pro.category_suggestion_prompt import PROMPT
+from pcapi.routes.pro.google_creds import get_credentials
 from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
@@ -32,7 +36,28 @@ from pcapi.workers.update_all_offers_active_status_job import update_all_offers_
 from . import blueprint
 
 
+vertexai.init(project="categorizer-412910", location="europe-west1", credentials=get_credentials())
+generation_model = TextGenerationModel.from_pretrained("text-bison@001")
+
 logger = logging.getLogger(__name__)
+
+
+@private_api.route("/categories/suggestion", methods=["GET"])
+@login_required
+@spectree_serialize(
+    response_model=offers_serialize.CategorySuggestionResponseModel,
+    api=blueprint.pro_private_schema,
+    on_success_status=200,
+)
+def get_category_suggestion(
+    query: offers_serialize.CategorySuggestionQuery,
+) -> offers_serialize.CategorySuggestionResponseModel:
+    prompt = PROMPT.format(offer_title=query.offer_title, offer_description=query.offer_description)
+    response = generation_model.predict(prompt=prompt)
+    parsed_from_usual_format = response.text.rstrip(".").split("is ")[1].strip('"')
+    # subcategory_id = parsed_from_usual_format
+    # subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
+    return offers_serialize.CategorySuggestionResponseModel(subcategoryId=parsed_from_usual_format)
 
 
 @private_api.route("/offers", methods=["GET"])

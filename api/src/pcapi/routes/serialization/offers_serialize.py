@@ -462,3 +462,12 @@ class MusicTypeResponse(ConfiguredBaseModel):
 
 class GetMusicTypesResponse(ConfiguredBaseModel):
     __root__: list[MusicTypeResponse]
+
+
+class CategorySuggestionQuery(ConfiguredBaseModel):
+    offer_title: str
+    offer_description: str
+
+
+class CategorySuggestionResponseModel(ConfiguredBaseModel):
+    subcategoryId: str

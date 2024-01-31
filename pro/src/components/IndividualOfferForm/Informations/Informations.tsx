@@ -1,8 +1,9 @@
 import { useFormikContext } from 'formik'
-import React from 'react'
+import { useState } from 'react'
 
+import { api } from 'apiClient/api'
 import FormLayout from 'components/FormLayout'
-import { TextArea, TextInput } from 'ui-kit'
+import { Button, TextArea, TextInput } from 'ui-kit'
 import DurationInput from 'ui-kit/form/DurationInput'
 
 import styles from '../IndividualOfferForm.module.scss'
@@ -16,7 +17,8 @@ const Informations = ({
   readOnlyFields = [],
 }: InformationsProps): JSX.Element => {
   const {
-    values: { subCategoryFields },
+    values: { subCategoryFields, name, description },
+    setFieldValue,
   } = useFormikContext<IndividualOfferFormValues>()
 
   const hasAuthor = subCategoryFields.includes('author')
@@ -26,6 +28,16 @@ const Informations = ({
   const hasStageDirector = subCategoryFields.includes('stageDirector')
   const hasVisa = subCategoryFields.includes('visa')
   const hasDurationMinutes = subCategoryFields.includes('durationMinutes')
+  const [suggestion, setSuggestion] = useState('')
+
+  const getCategorySuggestion = async () => {
+    const response = await api.getCategorySuggestion(name, description)
+    console.log(response)
+    setSuggestion(response.subcategoryId)
+    // await setFieldValue('subcategoryId', subcategoryId)
+    await setFieldValue('categoryId', 'JEU')
+    await setFieldValue('subcategoryId', 'ABO_JEU_VIDEO')
+  }
 
   return (
     <FormLayout.Section title="Informations artistiques">
@@ -48,6 +60,12 @@ const Informations = ({
           disabled={readOnlyFields.includes('description')}
         />
       </FormLayout.Row>
+      <FormLayout.Row>
+        <Button onClick={getCategorySuggestion}>
+          Obtenir une suggestion de catégorie
+        </Button>
+      </FormLayout.Row>
+      <FormLayout.Row>{suggestion}</FormLayout.Row>
       {hasSpeaker && (
         <FormLayout.Row>
           <TextInput

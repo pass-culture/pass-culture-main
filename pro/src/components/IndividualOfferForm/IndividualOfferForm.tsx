@@ -62,7 +62,7 @@ const IndividualOfferForm = ({
     offerSubCategory
   )
 
-  const showFullForm = subcategoryId.length > 0 && filteredVenueList.length > 0
+  // const showFullForm = subcategoryId.length > 0 && filteredVenueList.length > 0
 
   const venue = filteredVenueList.find((v) => v.id.toString() === venueId)
 
@@ -87,44 +87,46 @@ const IndividualOfferForm = ({
     <>
       <FormLayout.MandatoryInfo />
 
-      <Categories
-        categories={categories}
-        subCategories={subCategories}
-        readOnlyFields={readOnlyFields}
-        showAddVenueBanner={showAddVenueBanner}
-        offerSubtype={offerSubtype}
-        // subcategory change will recompute the venue list
-        // so we need to pass the full venue list here
-        venueList={venueList}
-      />
-      {showFullForm && (
-        <>
-          <Informations readOnlyFields={readOnlyFields} />
-          <ImageUploaderOffer
-            onImageUpload={onImageUpload}
-            onImageDelete={onImageDelete}
-            imageOffer={imageOffer}
-          />
+      {
+        /* showFullForm */ true && (
+          <>
+            <Informations readOnlyFields={readOnlyFields} />
+            <Categories
+              categories={categories}
+              subCategories={subCategories}
+              readOnlyFields={readOnlyFields}
+              showAddVenueBanner={showAddVenueBanner}
+              offerSubtype={offerSubtype}
+              // subcategory change will recompute the venue list
+              // so we need to pass the full venue list here
+              venueList={venueList}
+            />
+            <ImageUploaderOffer
+              onImageUpload={onImageUpload}
+              onImageDelete={onImageDelete}
+              imageOffer={imageOffer}
+            />
 
-          <UsefulInformations
-            isUserAdmin={isAdmin}
-            offererNames={offererNames}
-            venueList={filteredVenueList}
-            offerSubCategory={offerSubCategory}
-            isVenueVirtual={isVenueVirtual}
-            readOnlyFields={readOnlyFields}
-          />
+            <UsefulInformations
+              isUserAdmin={isAdmin}
+              offererNames={offererNames}
+              venueList={filteredVenueList}
+              offerSubCategory={offerSubCategory}
+              isVenueVirtual={isVenueVirtual}
+              readOnlyFields={readOnlyFields}
+            />
 
-          <Accessibility readOnlyFields={readOnlyFields} />
+            <Accessibility readOnlyFields={readOnlyFields} />
 
-          <ExternalLink readOnlyFields={readOnlyFields} />
+            <ExternalLink readOnlyFields={readOnlyFields} />
 
-          <Notifications
-            venueBookingEmail={venue?.bookingEmail}
-            readOnlyFields={readOnlyFields}
-          />
-        </>
-      )}
+            <Notifications
+              venueBookingEmail={venue?.bookingEmail}
+              readOnlyFields={readOnlyFields}
+            />
+          </>
+        )
+      }
     </>
   )
 }
