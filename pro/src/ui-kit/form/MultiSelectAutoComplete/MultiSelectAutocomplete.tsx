@@ -3,12 +3,12 @@ import { useField, useFormikContext } from 'formik'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 
 import { SelectOption } from 'custom_types/form'
+import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { getLabelString } from 'utils/getLabelString'
 
 import { SelectedValuesTags } from '../SelectAutoComplete/SelectedValuesTags/SelectedValuesTags'
 import { BaseInput } from '../shared'
 import AutocompleteList from '../shared/AutocompleteList'
-import BaseCheckbox from '../shared/BaseCheckbox'
 import FieldLayout from '../shared/FieldLayout'
 import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
 

@@ -2,7 +2,7 @@ import type { StoryObj } from '@storybook/react'
 
 import strokeAccessibilityEye from 'icons/stroke-accessibility-eye.svg'
 
-import BaseCheckbox from './BaseCheckbox'
+import { BaseCheckbox } from './BaseCheckbox'
 
 export default {
   title: 'ui-kit/forms/shared/BaseCheckbox',

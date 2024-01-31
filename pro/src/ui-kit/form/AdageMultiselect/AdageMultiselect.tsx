@@ -2,7 +2,9 @@ import { useCombobox } from 'downshift'
 import { useField, useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
 
-import { BaseCheckbox, BaseInput } from '../shared'
+import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
+
+import { BaseInput } from '../shared'
 
 import styles from './AdageMultiselect.module.scss'
 
