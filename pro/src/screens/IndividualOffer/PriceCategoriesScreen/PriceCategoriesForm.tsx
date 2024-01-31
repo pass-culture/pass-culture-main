@@ -14,7 +14,7 @@ import fullTrashIcon from 'icons/full-trash.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
 import { Button, Checkbox, InfoBox, TextInput } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
-import { BaseCheckbox } from 'ui-kit/form/shared'
+import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 
 import deletePriceCategoryAdapter from './adapters/deletePriceCategoryAdapter'
 import postPriceCategoriesAdapter from './adapters/postPriceCategoriesAdapter'

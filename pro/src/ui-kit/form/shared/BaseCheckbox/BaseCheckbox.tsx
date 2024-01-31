@@ -17,7 +17,7 @@ interface BaseCheckboxProps
   exceptionnallyHideLabelDespiteA11y?: boolean
 }
 
-const BaseCheckbox = ({
+export const BaseCheckbox = ({
   label,
   hasError,
   className,
@@ -75,5 +75,3 @@ const BaseCheckbox = ({
     </label>
   )
 }
-
-export default BaseCheckbox

@@ -16,7 +16,7 @@ import fullEditIcon from 'icons/full-edit.svg'
 import strokeWarningIcon from 'icons/stroke-warning.svg'
 import { Button, SubmitButton } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
-import { BaseCheckbox } from 'ui-kit/form/shared'
+import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { pluralize, pluralizeString } from 'utils/pluralize'
 
 import styles from './LinkVenuesDialog.module.scss'

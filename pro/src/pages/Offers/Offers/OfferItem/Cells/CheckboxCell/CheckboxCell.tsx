@@ -2,7 +2,7 @@ import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
 import { isOfferDisabled } from 'core/Offers/utils'
-import BaseCheckbox from 'ui-kit/form/shared/BaseCheckbox'
+import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 
 interface CheckboxCellProps {
   offerName: string
