@@ -7,7 +7,7 @@ import {
   imageConstraints,
 } from 'components/ConstraintCheck/imageConstraints'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
-import { BaseFileInput } from 'ui-kit/form/shared'
+import { BaseFileInput } from 'ui-kit/form/shared/BaseFileInput/BaseFileInput'
 
 import { modeValidationConstraints } from './constants'
 import { ImageUploadBrowserFormValues } from './types'
