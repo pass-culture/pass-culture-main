@@ -5,7 +5,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './BaseCheckbox.module.scss'
 
-export interface BaseCheckboxProps
+interface BaseCheckboxProps
   extends Partial<React.InputHTMLAttributes<HTMLInputElement>> {
   label: string | React.ReactNode
   hasError?: boolean
