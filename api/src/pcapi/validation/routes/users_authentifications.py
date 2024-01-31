@@ -36,6 +36,12 @@ def login_or_api_key_required(function: typing.Callable) -> typing.Callable:
         if not g.current_api_key and not current_user.is_authenticated:
             raise api_errors.UnauthorizedError(errors={"auth": "API key or login required"})
         if g.current_api_key:
+            # The api using this decorator will be deprecated
+            # log calls with an api_key, they are the only one not coming from our PRO front
+            logger.info(
+                "Call to CM v2 api",
+                extra={"offerer_id": g.current_api_key.offerer.id, "offerer_name": g.current_api_key.offerer.name},
+            )
             _check_active_offerer(g.current_api_key)
         return function(*args, **kwds)
 
