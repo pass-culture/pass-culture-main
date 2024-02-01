@@ -61,14 +61,14 @@
   }
 
   &.light-green {
-    background-color: colors.$callout-success-background;
+    background-color: colors.$background-valid;
   }
 
   &.light-yellow {
-    background-color: colors.$callout-warning-background;
+    background-color: colors.$background-alert;
   }
 
   &.light-blue {
-    background-color: colors.$callout-info-background;
+    background-color: colors.$background-accent-light;
   }
 }
