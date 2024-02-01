@@ -1,4 +1,4 @@
-import type { Story } from '@storybook/react'
+import type { StoryObj } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
@@ -7,6 +7,13 @@ import AdageMultiselect from './AdageMultiselect'
 export default {
   title: 'ui-kit/forms/AdageMultiselect',
   component: AdageMultiselect,
+  decorators: [
+    (Story: any) => (
+      <Formik initialValues={{ educationalDomains: [] }} onSubmit={() => {}}>
+        <Story />
+      </Formik>
+    ),
+  ],
 }
 
 const options = [
@@ -30,16 +37,12 @@ const options = [
   { value: 18, label: 'Patrimoine' },
 ]
 
-const Template: Story = () => (
-  <Formik initialValues={{ educationalDomains: [] }} onSubmit={() => {}}>
-    <AdageMultiselect
-      options={options}
-      placeholder="Ex: Théâtre"
-      name="educationalDomains"
-      label="Rechercher un domaine artistique"
-      isOpen={true}
-    />
-  </Formik>
-)
-
-export const Default = Template.bind({})
+export const Default: StoryObj<typeof AdageMultiselect> = {
+  args: {
+    options,
+    placeholder: 'Ex: Théâtre',
+    name: 'educationalDomains',
+    label: 'Rechercher un domaine artistique',
+    isOpen: true,
+  },
+}
