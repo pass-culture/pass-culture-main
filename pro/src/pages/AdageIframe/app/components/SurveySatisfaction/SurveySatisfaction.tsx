@@ -83,7 +83,6 @@ export const SurveySatisfaction = ({
             link={{
               to: 'https://passculture.qualtrics.com/jfe/form/SV_8w5mdHmrxly9bcW',
               isExternal: true,
-              rel: 'noopener noreferrer',
               target: '_blank',
             }}
             className={styles['survey-button']}

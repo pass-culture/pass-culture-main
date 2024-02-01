@@ -4,7 +4,6 @@ import { useLocation } from 'react-router-dom'
 import Callout from 'components/Callout/Callout'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import fullLinkIcon from 'icons/full-link.svg'
 
 import styles from './OperationProcedures.module.scss'
 
@@ -17,12 +16,10 @@ const OperatingProcedures = (): JSX.Element => {
       links={[
         {
           href: 'https://passculture.zendesk.com/hc/fr/articles/4411999179665',
-          linkTitle: 'Consulter notre centre d’aide',
+          label: 'Consulter notre centre d’aide',
           isExternal: true,
           onClick: () =>
             logEvent?.(Events.CLICKED_HELP_CENTER, { from: location.pathname }),
-          icon: fullLinkIcon,
-          svgAlt: 'Nouvelle fenêtre',
         },
       ]}
       className={styles['desk-callout']}

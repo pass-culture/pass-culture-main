@@ -135,7 +135,7 @@ describe('Offerer', () => {
     ).toBeInTheDocument()
 
     expect(
-      screen.getByRole('link', { name: 'En savoir plus' })
+      screen.getByRole('link', { name: /En savoir plus/ })
     ).toBeInTheDocument()
   })
 

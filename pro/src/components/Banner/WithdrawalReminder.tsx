@@ -9,8 +9,8 @@ const WithdrawalReminder = () => {
       links={[
         {
           href: CGU_URL,
-          linkTitle: "Consulter les Conditions Générales d'Utilisation",
-          svgAlt: 'Nouvelle fenêtre',
+          label: "Consulter les Conditions Générales d'Utilisation",
+          isExternal: true,
         },
       ]}
       type="notification-info"

@@ -43,7 +43,6 @@ export const NoResultsPage = ({
             isExternal: true,
             to: `${document.referrer}adage/ressource/partenaires/id/${venue.adageId}`,
             target: '_blank',
-            rel: 'noopener noreferrer',
           }}
           variant={ButtonVariant.TERNARY}
           icon={fullLinkIcon}

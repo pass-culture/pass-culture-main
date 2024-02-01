@@ -8,10 +8,10 @@ import styles from './Button.module.scss'
 import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
 
 export type LinkProps = {
-  isExternal: boolean
+  isExternal?: boolean
   to: string
-  rel?: string
   target?: string
+  rel?: string
   'aria-label'?: string
   'aria-current'?: 'page'
   type?: string
@@ -103,6 +103,7 @@ const ButtonLink = ({
       href={absoluteUrl}
       onClick={callback}
       onBlur={(e) => onBlur?.(e)}
+      rel="noopener noreferrer"
       {...disabled}
       {...linkProps}
     >

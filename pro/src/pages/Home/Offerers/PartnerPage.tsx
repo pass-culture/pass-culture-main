@@ -160,8 +160,7 @@ export const PartnerPage = ({
             className={styles['venue-button']}
             link={{
               to: `/structures/${offerer.id}/lieux/${venue.id}?modification`,
-              isExternal: false,
-              'aria-label': `Gérer la page de ${venue.name}`,
+              'aria-label': `Gérer la page ${venue.name}`,
             }}
           >
             Gérer ma page
@@ -195,7 +194,6 @@ export const PartnerPage = ({
             to: venuePreviewLink,
             isExternal: true,
             target: '_blank',
-            rel: 'noopener noreferrer',
           }}
           svgAlt="Nouvelle fenêtre"
           className={styles['details-link']}

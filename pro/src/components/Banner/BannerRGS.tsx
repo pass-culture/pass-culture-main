@@ -1,7 +1,6 @@
 import React from 'react'
 
 import Callout from 'components/Callout/Callout'
-import fullLinkIcon from 'icons/full-link.svg'
 
 interface Props {
   closable?: boolean
@@ -15,9 +14,8 @@ const BannerRGS: React.FC<Props> = ({ closable, onClose }: Props) => (
     links={[
       {
         href: 'https://aide.passculture.app/hc/fr/articles/4458607720732--Acteurs-Culturels-Comment-assurer-la-s%C3%A9curit%C3%A9-de-votre-compte-',
-        linkTitle: 'Consulter nos recommandations de sécurité',
-        icon: fullLinkIcon,
-        svgAlt: 'Nouvelle fenêtre',
+        label: 'Consulter nos recommandations de sécurité',
+        isExternal: true,
       },
     ]}
   >

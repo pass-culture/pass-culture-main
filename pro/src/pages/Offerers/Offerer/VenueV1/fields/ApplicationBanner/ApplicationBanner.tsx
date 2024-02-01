@@ -11,7 +11,8 @@ const ApplicationBanner = ({ applicationId }: ApplicationBannerProps) => (
     links={[
       {
         href: `https://www.demarches-simplifiees.fr/dossiers/${applicationId}/messagerie`,
-        linkTitle: 'Voir le dossier en cours',
+        label: 'Voir le dossier en cours',
+        isExternal: true,
       },
     ]}
     type="notification-info"

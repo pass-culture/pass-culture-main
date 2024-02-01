@@ -41,7 +41,7 @@ const LinkVenueCallout = ({
       } à un compte bancaire`}
       links={
         titleOnly
-          ? []
+          ? undefined
           : [
               {
                 href:

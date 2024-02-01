@@ -9,8 +9,8 @@ const BannerCreateOfferAdmin = (): JSX.Element => (
     links={[
       {
         href: '/accueil',
-        linkTitle: 'Aller à l’accueil',
-        icon: strokeShowIcon,
+        label: 'Aller à l’accueil',
+        icon: { src: strokeShowIcon, alt: '' },
         isExternal: false,
       },
     ]}

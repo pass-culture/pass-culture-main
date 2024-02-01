@@ -84,7 +84,7 @@ const ApiKey = ({
         links={[
           {
             href: 'https://www.notion.so/passcultureapp/pass-Culture-Int-grations-techniques-231e16685c9a438b97bdcd7737cdd4d1',
-            linkTitle: 'En savoir plus sur les clés API',
+            label: 'En savoir plus sur les clés API',
           },
         ]}
         type="notification-info"

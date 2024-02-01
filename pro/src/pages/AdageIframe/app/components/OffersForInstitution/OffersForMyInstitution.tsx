@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 
 import { apiAdage } from 'apiClient/api'
 import Callout from 'components/Callout/Callout'
-import fullLinkIcon from 'icons/full-link.svg'
 import strokeMyInstitution from 'icons/stroke-my-institution.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -62,9 +61,7 @@ const OffersForMyInstitution = (): JSX.Element => {
           {
             href: `${document.referrer}adage/passculture/index`,
             isExternal: true,
-            icon: fullLinkIcon,
-            linkTitle: 'Voir la page “Suivi pass Culture”',
-            svgAlt: 'Nouvelle fenêtre',
+            label: 'Voir la page “Suivi pass Culture”',
           },
         ]}
       >

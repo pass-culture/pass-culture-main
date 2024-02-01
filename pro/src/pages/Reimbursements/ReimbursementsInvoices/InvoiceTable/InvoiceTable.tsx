@@ -341,12 +341,13 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
                   link={{
                     isExternal: true,
                     to: invoice.url,
-                    rel: 'noopener noreferrer',
                     target: '_blank',
                     download: true,
                   }}
                   icon={fullDownloadIcon}
-                  svgAlt={`Justificatif de ${invoice.amount >= 0 ? 'remboursement' : 'trop perçu'} ${invoice.reference}, nouvelle fenêtre, format`}
+                  svgAlt={`Justificatif de ${
+                    invoice.amount >= 0 ? 'remboursement' : 'trop perçu'
+                  } ${invoice.reference}, nouvelle fenêtre, format`}
                   variant={ButtonVariant.TERNARY}
                 >
                   PDF

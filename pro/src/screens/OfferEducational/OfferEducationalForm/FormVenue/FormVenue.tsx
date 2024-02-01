@@ -89,11 +89,11 @@ const FormVenue = ({
           links={[
             {
               href: 'https://www.demarches-simplifiees.fr/commencer/demande-de-referencement-sur-adage',
-              linkTitle: 'Faire une demande de référencement',
+              label: 'Faire une demande de référencement',
             },
             {
               href: 'https://aide.passculture.app/hc/fr/articles/5700215550364',
-              linkTitle:
+              label:
                 'Ma demande de référencement a été acceptée mais je ne peux toujours pas créer d’offres collectives',
             },
           ]}
@@ -141,7 +141,7 @@ const FormVenue = ({
             links={[
               {
                 href: `/structures/${values.offererId}/lieux/creation`,
-                linkTitle: 'Renseigner un lieu',
+                label: 'Renseigner un lieu',
               },
             ]}
           >
