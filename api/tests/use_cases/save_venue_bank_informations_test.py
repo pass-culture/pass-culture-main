@@ -4,6 +4,7 @@ from datetime import timedelta
 from unittest.mock import call
 from unittest.mock import patch
 
+import flask
 import pytest
 import schwifty
 
@@ -27,6 +28,7 @@ from pcapi.infrastructure.repository.venue.venue_with_basic_information.venue_wi
     VenueWithBasicInformationSQLRepository,
 )
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.feature import Feature
 from pcapi.use_cases.save_venue_bank_informations import SaveVenueBankInformationsFactory
 from pcapi.utils.urls import build_pc_pro_venue_link
 
@@ -1505,3 +1507,65 @@ class NewBankAccountJourneyTest:
 
         assert history_models.ActionHistory.query.count() == 1
         assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
+
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=False)
+    def test_dsv4_draft_application_is_handled_when_complete_after_new_journey_active(
+        self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client, db_session
+    ):
+        siret = "85331845900049"
+        siren = siret[:9]
+        venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
+        offerer = venue.managingOfferer
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v4_as_batch(
+            state=GraphQLApplicationStates.draft.value, dms_token=venue.dmsToken
+        )
+        update_ds_applications_for_procedure(settings.DMS_VENUE_PROCEDURE_ID_V4, since=None)
+
+        # Old journey
+        bank_information = finance_models.BankInformation.query.one()
+        assert bank_information.venue == venue
+        assert bank_information.bic is None
+        assert bank_information.iban is None
+        assert bank_information.status == finance_models.BankInformationStatus.DRAFT
+
+        # New journey is not active, we shouldn't have any BankAccount
+        assert not finance_models.BankAccount.query.all()
+
+        # We need to invalidate the cache for the FF values, otherwise, the below code would still be executed
+        # in a deactivated FF context
+        del flask.request._cached_features
+        # New journey is active, and the cron task is executed
+        ff = Feature.query.filter(Feature.name == "WIP_ENABLE_DOUBLE_MODEL_WRITING").one()
+        ff.isActive = True
+        db_session.add(ff)
+        db_session.commit()
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v4_as_batch(
+            state=GraphQLApplicationStates.accepted.value, dms_token=venue.dmsToken
+        )
+        update_ds_applications_for_procedure(settings.DMS_VENUE_PROCEDURE_ID_V4, since=None)
+
+        # Old journey
+        bank_information = finance_models.BankInformation.query.one()
+        assert bank_information.venue == venue
+        assert bank_information.bic == "SOGEFRPP"
+        assert bank_information.iban == "FR7630007000111234567890144"
+        assert bank_information.status == finance_models.BankInformationStatus.ACCEPTED
+
+        bank_account = finance_models.BankAccount.query.one()
+        assert bank_account.bic == "SOGEFRPP"
+        assert bank_account.iban == "FR7630007000111234567890144"
+        assert bank_account.offerer == offerer
+        assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
+        assert bank_account.label == venue.common_name
+        assert bank_account.dsApplicationId == self.dsv4_application_id
+        bank_account_link = offerers_models.VenueBankAccountLink.query.one()
+        assert bank_account_link.venue == venue
+
+        mock_archive_dossier.assert_has_calls([call("Q2zzbXAtNzgyODAw"), call("Q2zzbXAtNzgyODAw")])
+
+        assert history_models.ActionHistory.query.count() == 1  # One link created
+        assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
+
+        assert len(mails_testing.outbox) == 0
