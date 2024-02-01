@@ -229,7 +229,7 @@ def test_with_venue_filter_old_bank_information_journey_with_pricings(client):
     assert len(rows) == 1
     row = rows[0]
 
-    fortnight = "2nde" if datetime.date.today().day > 15 else "1ère"
+    fortnight = "2nde" if (datetime.date.today() - datetime.timedelta(days=1)).day > 15 else "1ère"
     invoice = finance_models.Invoice.query.filter(finance_models.Invoice.reimbursementPointId == venue1.id).one()
     batch = finance_models.CashflowBatch.query.one()
     offer = offers_models.Offer.query.filter(offers_models.Offer.venueId == venue1.id).one()
@@ -335,7 +335,7 @@ def test_with_reimbursement_period_filter_old_bank_information_journey_with_pric
     )
 
     for row, booking in zip(rows, bookings):
-        fortnight = "2nde" if datetime.date.today().day > 15 else "1ère"
+        fortnight = "2nde" if (datetime.date.today() - datetime.timedelta(days=1)).day > 15 else "1ère"
         pricing = finance_models.Pricing.query.filter(finance_models.Pricing.bookingId == booking.id).one()
         cashflow = pricing.cashflows[0]
         invoice = cashflow.invoices[0]
@@ -407,7 +407,7 @@ def test_with_venue_filter_old_bank_information_journey_with_pricings_and_collec
     assert len(rows) == 1
     row = rows[0]
 
-    fortnight = "2nde" if datetime.date.today().day > 15 else "1ère"
+    fortnight = "2nde" if (datetime.date.today() - datetime.timedelta(days=1)).day > 15 else "1ère"
     invoice = finance_models.Invoice.query.filter(finance_models.Invoice.reimbursementPointId == venue1.id).one()
     batch = finance_models.CashflowBatch.query.one()
     collective_offer = educational_models.CollectiveOffer.query.filter(
@@ -527,7 +527,7 @@ def test_with_reimbursement_period_filter_old_bank_information_journey_with_pric
     )
 
     for row, collective_booking in zip(rows, collective_bookings):
-        fortnight = "2nde" if datetime.date.today().day > 15 else "1ère"
+        fortnight = "2nde" if (datetime.date.today() - datetime.timedelta(days=1)).day > 15 else "1ère"
         pricing = finance_models.Pricing.query.filter(
             finance_models.Pricing.collectiveBookingId == collective_booking.id
         ).one()
@@ -614,7 +614,7 @@ def test_with_venue_filter_new_bank_account_journey_with_pricings(client):
     assert len(rows) == 1
     row = rows[0]
 
-    fortnight = "2nde" if datetime.date.today().day > 15 else "1ère"
+    fortnight = "2nde" if (datetime.date.today() - datetime.timedelta(days=1)).day > 15 else "1ère"
     invoice = finance_models.Invoice.query.filter(finance_models.Invoice.bankAccountId == bank_account_1.id).one()
     batch = finance_models.CashflowBatch.query.one()
     offer = offers_models.Offer.query.filter(offers_models.Offer.venueId == venue1.id).one()
@@ -721,7 +721,7 @@ def test_with_reimbursement_period_filter_new_bank_account_journey_with_pricings
     )
 
     for row, booking in zip(rows, bookings):
-        fortnight = "2nde" if datetime.date.today().day > 15 else "1ère"
+        fortnight = "2nde" if (datetime.date.today() - datetime.timedelta(days=1)).day > 15 else "1ère"
         pricing = finance_models.Pricing.query.filter(finance_models.Pricing.bookingId == booking.id).one()
         cashflow = pricing.cashflows[0]
         invoice = cashflow.invoices[0]
@@ -801,7 +801,7 @@ def test_with_venue_filter_new_bank_account_journey_with_pricings_collective_use
     assert len(rows) == 1
     row = rows[0]
 
-    fortnight = "2nde" if datetime.date.today().day > 15 else "1ère"
+    fortnight = "2nde" if (datetime.date.today() - datetime.timedelta(days=1)).day > 15 else "1ère"
     invoice = finance_models.Invoice.query.filter(finance_models.Invoice.bankAccountId == bank_account_1.id).one()
     batch = finance_models.CashflowBatch.query.one()
     collective_offer = educational_models.CollectiveOffer.query.filter(
@@ -918,7 +918,7 @@ def test_with_reimbursement_period_filter_new_bank_account_journey_with_pricings
     )
 
     for row, collective_booking in zip(rows, collective_bookings):
-        fortnight = "2nde" if datetime.date.today().day > 15 else "1ère"
+        fortnight = "2nde" if (datetime.date.today() - datetime.timedelta(days=1)).day > 15 else "1ère"
         pricing = finance_models.Pricing.query.filter(
             finance_models.Pricing.collectiveBookingId == collective_booking.id
         ).one()
