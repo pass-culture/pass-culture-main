@@ -2,7 +2,6 @@ import cn from 'classnames'
 import React from 'react'
 
 import { CalloutVariant } from 'components/Callout/types'
-import fullNextIcon from 'icons/full-next.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import strokeErrorIcon from 'icons/stroke-error.svg'
 import strokeInfoIcon from 'icons/stroke-info.svg'
@@ -21,8 +20,7 @@ export interface CalloutProps {
   links?: Link[]
   closable?: boolean
   onClose?: undefined | (() => void)
-  type?: CalloutVariant
-  titleOnly?: boolean
+  variant?: CalloutVariant
 }
 
 interface CalloutVariantProps {
@@ -37,12 +35,11 @@ const Callout = ({
   links,
   closable = false,
   onClose,
-  type = CalloutVariant.DEFAULT,
-  titleOnly = false,
+  variant = CalloutVariant.DEFAULT,
 }: CalloutProps): JSX.Element => {
   let calloutIcon: CalloutVariantProps
   /* istanbul ignore next: graphic variations */
-  switch (type) {
+  switch (variant) {
     case CalloutVariant.WARNING:
       calloutIcon = { src: strokeWarningIcon, alt: 'Attention' }
       break
@@ -57,12 +54,12 @@ const Callout = ({
       break
   }
 
-  const hasNoBottomSpace = (titleOnly || !title) && !links
+  const hasNoBottomSpace = (!children || !title) && !links
   return (
     <div
       className={cn(
         styles['callout'],
-        styles[`callout-${type}`],
+        styles[`callout-${variant}`],
         hasNoBottomSpace ? styles['small-callout'] : '',
         className
       )}
@@ -75,14 +72,8 @@ const Callout = ({
       />
       <div className={styles['content']}>
         {title && <div className={styles['title']}>{title}</div>}
-        {!titleOnly && (
-          <>
-            {children && (
-              <div className={styles['callout-text']}>{children}</div>
-            )}
-            <LinkNodes links={links} defaultLinkIcon={fullNextIcon} />
-          </>
-        )}
+        {children && <div className={styles['callout-text']}>{children}</div>}
+        {links && <LinkNodes links={links} />}
       </div>
       {closable && (
         <button

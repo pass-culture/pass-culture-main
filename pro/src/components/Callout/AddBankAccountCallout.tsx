@@ -35,22 +35,23 @@ const AddBankAccountCallout = ({
   return (
     <Callout
       title="Ajoutez un compte bancaire pour percevoir vos remboursements"
-      links={[
-        {
-          href: '/remboursements/informations-bancaires',
-          linkTitle: 'Ajouter un compte bancaire',
-          targetLink: '',
-          isExternal: false,
-          onClick: () => {
-            logEvent?.(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT, {
-              from: location.pathname,
-              offererId: offerer.id,
-            })
-          },
-        },
-      ]}
-      type={CalloutVariant.ERROR}
-      titleOnly={titleOnly}
+      links={
+        titleOnly
+          ? undefined
+          : [
+              {
+                href: '/remboursements/informations-bancaires',
+                label: 'Ajouter un compte bancaire',
+                onClick: () => {
+                  logEvent?.(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT, {
+                    from: location.pathname,
+                    offererId: offerer.id,
+                  })
+                },
+              },
+            ]
+      }
+      variant={CalloutVariant.ERROR}
     >
       <div>
         Rendez-vous dans l’onglet Informations bancaires de votre page Gestion

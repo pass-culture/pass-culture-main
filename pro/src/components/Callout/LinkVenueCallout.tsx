@@ -39,23 +39,28 @@ const LinkVenueCallout = ({
           ? 'vos lieux'
           : 'votre lieu'
       } à un compte bancaire`}
-      links={[
-        {
-          href:
-            '/remboursements/informations-bancaires?structure=' + offerer.id,
-          linkTitle: 'Gérer le rattachement de mes lieux',
-          targetLink: '',
-          isExternal: false,
-          onClick: () => {
-            logEvent?.(BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT, {
-              from: location.pathname,
-              offererId: offerer.id,
-            })
-          },
-        },
-      ]}
-      type={CalloutVariant.ERROR}
-      titleOnly={titleOnly}
+      links={
+        titleOnly
+          ? []
+          : [
+              {
+                href:
+                  '/remboursements/informations-bancaires?structure=' +
+                  offerer.id,
+                label: 'Gérer le rattachement de mes lieux',
+                onClick: () => {
+                  logEvent?.(
+                    BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT,
+                    {
+                      from: location.pathname,
+                      offererId: offerer.id,
+                    }
+                  )
+                },
+              },
+            ]
+      }
+      variant={CalloutVariant.ERROR}
     >
       <p>
         Rendez-vous dans l’onglet Informations bancaires de votre page Gestion
