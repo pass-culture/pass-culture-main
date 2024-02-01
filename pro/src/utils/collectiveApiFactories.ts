@@ -394,6 +394,7 @@ export const defaultVenue: Venue = {
   adageInscriptionDate: null,
   hasAdageId: false,
   collectiveDmsApplication: null,
+  bankAccount: null,
 }
 
 export const defaultVenueResponseModel: GetVenueResponseModel = {

@@ -15,6 +15,7 @@ import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/Reimburse
 
 import { Accessibility } from './Accessibility'
 import { Activity } from './Activity'
+import BankAccountInfos from './BankAccountInfos/BankAccountInfos'
 import CollectiveVenueInformations from './CollectiveVenueInformations/CollectiveVenueInformations'
 import { Contact } from './Contact'
 import { ImageUploaderVenue } from './ImageUploaderVenue'
@@ -141,6 +142,10 @@ export const VenueEditionForm = ({
             scrollToSection={Boolean(location.state) || Boolean(location.hash)}
             venue={venue}
           />
+        )}
+
+        {isNewBankDetailsJourneyEnabled && (
+          <BankAccountInfos venueBankAccount={venue.bankAccount} />
         )}
 
         <VenueFormActionBar offererId={offerer.id} isCreatingVenue={false} />
