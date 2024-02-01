@@ -205,7 +205,7 @@ def create_specific_cashflow_batch_without_invoice() -> None:
     daily_views = []
 
     number_of_views = 0
-    for i in range(7 * 30):  # 7 months
+    for i in range(7 * 30, 0, -1):  # 7 months
         date = datetime.today() - timedelta(days=i)
         number_of_views += date.day
         daily_views.append(offerers_models.OffererViewsModel(eventDate=date, numberOfViews=number_of_views))
