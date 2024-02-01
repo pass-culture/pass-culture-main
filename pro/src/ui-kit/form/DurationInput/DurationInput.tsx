@@ -13,7 +13,7 @@ export interface DurationInputProps {
   disabled?: boolean
 }
 
-const DurationInput = ({
+export const DurationInput = ({
   label,
   name,
   isOptional = false,
@@ -56,5 +56,3 @@ const DurationInput = ({
     />
   )
 }
-
-export default DurationInput

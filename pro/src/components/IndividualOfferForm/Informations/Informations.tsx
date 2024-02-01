@@ -3,7 +3,7 @@ import React from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { TextArea, TextInput } from 'ui-kit'
-import DurationInput from 'ui-kit/form/DurationInput'
+import { DurationInput } from 'ui-kit/form/DurationInput/DurationInput'
 
 import styles from '../IndividualOfferForm.module.scss'
 import { IndividualOfferFormValues } from '../types'

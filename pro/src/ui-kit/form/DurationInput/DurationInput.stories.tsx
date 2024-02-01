@@ -2,7 +2,7 @@ import type { StoryObj } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
-import DurationInput from './DurationInput'
+import { DurationInput } from './DurationInput'
 import { validationSchema } from './validationSchema'
 
 export default {
