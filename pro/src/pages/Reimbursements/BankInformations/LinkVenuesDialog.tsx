@@ -134,7 +134,7 @@ const LinkVenuesDialog = ({
         {hasVenuesWithoutPricingPoint && (
           <Callout
             title="Certains de vos lieux n’ont pas de SIRET"
-            type={CalloutVariant.ERROR}
+            variant={CalloutVariant.ERROR}
             className={styles['dialog-callout']}
           >
             Sélectionnez un SIRET pour chacun de ces lieux avant de pouvoir les
