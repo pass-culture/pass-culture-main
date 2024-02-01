@@ -351,6 +351,7 @@ describe('VenueFormScreen', () => {
       hasAdageId: false,
       adageInscriptionDate: null,
       collectiveDmsApplication: null,
+      bankAccount: null,
     }
   })
 
