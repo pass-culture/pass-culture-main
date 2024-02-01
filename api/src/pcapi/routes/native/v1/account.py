@@ -33,6 +33,7 @@ from pcapi.utils.rate_limiting import basic_auth_rate_limiter
 
 from . import blueprint
 from .serialization import account as serializers
+from .serialization import authentication as auth_serializers
 
 
 logger = logging.getLogger(__name__)
@@ -212,8 +213,8 @@ def create_account(body: serializers.AccountRequest) -> None:
 
 
 @blueprint.native_v1.route("/oauth/google/account", methods=["POST"])
-@spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
-def create_account_with_google_sso(body: serializers.GoogleAccountRequest) -> None:
+@spectree_serialize(response_model=auth_serializers.SigninResponse, api=blueprint.api, on_error_statuses=[400])
+def create_account_with_google_sso(body: serializers.GoogleAccountRequest) -> auth_serializers.SigninResponse:
     if FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active():
         try:
             api_recaptcha.check_native_app_recaptcha_token(body.token)
@@ -266,6 +267,12 @@ def create_account_with_google_sso(body: serializers.GoogleAccountRequest) -> No
 
     except exceptions.UnderAgeUserException:
         raise api_errors.ApiErrors({"dateOfBirth": "The birthdate is invalid"})
+
+    return auth_serializers.SigninResponse(
+        access_token=api.create_user_access_token(created_user),
+        refresh_token=api.create_user_refresh_token(created_user, body.trusted_device),
+        account_state=created_user.account_state,
+    )
 
 
 @blueprint.native_v1.route("/resend_email_validation", methods=["POST"])

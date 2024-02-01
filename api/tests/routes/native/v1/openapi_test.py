@@ -2720,7 +2720,12 @@ def test_public_api(client):
                         }
                     },
                     "responses": {
-                        "204": {"description": "No " "Content"},
+                        "200": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/SigninResponse"}}
+                            },
+                            "description": "OK",
+                        },
                         "400": {"description": "Bad " "Request"},
                         "403": {"description": "Forbidden"},
                         "422": {

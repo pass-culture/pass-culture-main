@@ -574,7 +574,7 @@ class AccountCreationWithSSOTest:
     google_user = GoogleUser(sub="google_user_identifier", email="docteur.cuesta@passculture.app", email_verified=True)
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    def test_account_creation(self, mocked_check_recaptcha_token_is_valid, client):
+    def test_account_creation_and_login(self, mocked_check_recaptcha_token_is_valid, client):
         account_creation_token = token_utils.UUIDToken.create(
             token_utils.TokenType.ACCOUNT_CREATION,
             users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME,
@@ -594,7 +594,11 @@ class AccountCreationWithSSOTest:
                 "firebasePseudoId": "firebase_pseudo_id",
             },
         )
-        assert response.status_code == 204, response.json
+
+        assert response.status_code == 200, response.json
+        assert "accessToken" in response.json
+        assert "refreshToken" in response.json
+        assert response.json["accountState"] == users_models.AccountState.ACTIVE.value
 
         user = users_models.User.query.one()
         assert user is not None
@@ -684,7 +688,7 @@ class AccountCreationWithSSOTest:
             },
         )
 
-        assert response.status_code == 204, response.json
+        assert response.status_code == 200, response.json
 
         trusted_device = users_models.TrustedDevice.query.one()
         assert trusted_device.deviceId == "2E429592-2446-425F-9A62-D6983F375B3B"
@@ -711,7 +715,7 @@ class AccountCreationWithSSOTest:
             },
         )
 
-        assert response.status_code == 204, response.json
+        assert response.status_code == 200, response.json
         assert users_models.TrustedDevice.query.count() == 0
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
@@ -779,7 +783,7 @@ class AccountCreationWithSSOTest:
             },
         )
 
-        assert response.status_code == 204, response.json
+        assert response.status_code == 200, response.json
         assert not token_utils.UUIDToken.token_exists(
             token_utils.TokenType.ACCOUNT_CREATION, account_creation_token.key_suffix
         )
