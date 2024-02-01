@@ -12,15 +12,9 @@ import { handleAllFranceDepartmentOptions } from 'core/shared'
 import { venueInterventionOptions } from 'core/shared/interventionOptions'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
-import {
-  ButtonLink,
-  MultiSelectAutocomplete,
-  Select,
-  SubmitButton,
-  TextArea,
-  TextInput,
-} from 'ui-kit'
+import { ButtonLink, Select, SubmitButton, TextArea, TextInput } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { MultiSelectAutocomplete } from 'ui-kit/form/MultiSelectAutoComplete/MultiSelectAutocomplete'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 
 import editVenueCollectiveDataAdapter from '../adapters/editVenueCollectiveDataAdapter'
