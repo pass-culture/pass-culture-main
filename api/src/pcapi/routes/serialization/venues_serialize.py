@@ -20,6 +20,7 @@ from pcapi.domain.demarches_simplifiees import DMS_TOKEN_PRO_PREFIX
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import base
+from pcapi.routes.serialization.finance_serialize import BankAccountResponseModel
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
 from pcapi.serialization.utils import string_length_validator
 from pcapi.serialization.utils import string_to_boolean_field
@@ -230,6 +231,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     collectiveDmsApplications: list[DMSApplicationForEAC]
     hasAdageId: bool
     adageInscriptionDate: datetime | None
+    bankAccount: BankAccountResponseModel | None
 
     class Config:
         orm_mode = True
@@ -269,7 +271,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
                 continue
             if not reimbursement_link.timespan.upper or reimbursement_link.timespan.upper > now:
                 venue.reimbursementPointId = reimbursement_link.reimbursementPointId
-
+        venue.bankAccount = venue.current_bank_account_link.bankAccount if venue.current_bank_account_link else None
         venue.collectiveLegalStatus = venue.venueEducationalStatus
         venue.dmsToken = DMS_TOKEN_PRO_PREFIX + venue.dmsToken
         venue.hasAdageId = bool(venue.adageId)

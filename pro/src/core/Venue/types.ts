@@ -1,4 +1,5 @@
 import {
+  BankAccountResponseModel,
   DMSApplicationForEAC,
   GetVenueDomainResponseModel,
   GetVenueManagingOffererResponseModel,
@@ -89,6 +90,7 @@ export interface Venue {
   adageInscriptionDate: string | null
   hasAdageId: boolean
   collectiveDmsApplication: DMSApplicationForEAC | null
+  bankAccount: BankAccountResponseModel | null
 }
 
 export type Providers = {
