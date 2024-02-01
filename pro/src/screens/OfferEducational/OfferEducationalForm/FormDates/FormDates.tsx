@@ -53,7 +53,7 @@ const FormDates = ({
       />
       {values.datesType === 'specific_dates' && (
         <>
-          <Callout type={CalloutVariant.INFO} className={styles.banner}>
+          <Callout variant={CalloutVariant.INFO} className={styles.banner}>
             Votre offre sera désactivée automatiquement à l’issue des dates
             précisées ci-dessous.
           </Callout>

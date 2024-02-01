@@ -27,25 +27,26 @@ const PendingBankAccountCallout = ({
   return (
     <Callout
       title="Compte bancaire en cours de validation par nos services"
-      links={[
-        {
-          href: '/remboursements/informations-bancaires',
-          linkTitle: 'Suivre mon dossier de compte bancaire',
-          targetLink: '',
-          isExternal: false,
-          onClick: () => {
-            logEvent?.(
-              BankAccountEvents.CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP,
+      links={
+        titleOnly
+          ? undefined
+          : [
               {
-                from: location.pathname,
-                offererId: offerer.id,
-              }
-            )
-          },
-        },
-      ]}
-      type={CalloutVariant.INFO}
-      titleOnly={titleOnly}
+                href: '/remboursements/informations-bancaires',
+                label: 'Suivre mon dossier de compte bancaire',
+                onClick: () => {
+                  logEvent?.(
+                    BankAccountEvents.CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP,
+                    {
+                      from: location.pathname,
+                      offererId: offerer.id,
+                    }
+                  )
+                },
+              },
+            ]
+      }
+      variant={CalloutVariant.INFO}
     />
   )
 }
