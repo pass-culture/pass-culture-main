@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
 
-import DurationInput, { DurationInputProps } from '../DurationInput'
+import { DurationInput, DurationInputProps } from '../DurationInput'
 
 const renderDurationInput = () => {
   const initialValues = { durationMinutes: '' }
