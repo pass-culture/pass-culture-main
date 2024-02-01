@@ -55,7 +55,7 @@ $radio-size: rem.torem(16px);
     border-color: colors.$secondary-light;
     border: $border-size-selected solid colors.$secondary-light;
     font-weight: 700;
-    background-color: colors.$secondary-lighter-with-transparency;
+    background-color: colors.$background-secondary;
   }
 
   &.is-disabled {
