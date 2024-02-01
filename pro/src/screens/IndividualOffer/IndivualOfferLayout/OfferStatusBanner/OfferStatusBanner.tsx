@@ -15,7 +15,8 @@ const OfferStatusBanner = ({ status }: OfferStatusBannerProps): JSX.Element => {
         links={[
           {
             href: CGU_URL,
-            linkTitle: 'Consulter les Conditions Générales d’Utilisation',
+            label: 'Consulter les Conditions Générales d’Utilisation',
+            isExternal: true,
           },
         ]}
       >

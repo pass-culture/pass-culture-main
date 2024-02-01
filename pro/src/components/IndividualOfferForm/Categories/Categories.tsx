@@ -179,7 +179,6 @@ const Categories = ({
               to: 'https://aide.passculture.app/hc/fr/articles/4411999013265--Acteurs-Culturels-Quelle-cat%C3%A9gorie-et-sous-cat%C3%A9gorie-choisir-lors-de-la-cr%C3%A9ation-d-offres-',
               text: 'Quelles catégories choisir ?',
               target: '_blank',
-              rel: 'noopener noreferrer',
             }}
             svgAlt="Nouvelle fenêtre"
           >
@@ -240,7 +239,7 @@ const Categories = ({
             links={[
               {
                 href: `/structures/${offererId}/lieux/creation`,
-                linkTitle: '+ Ajouter un lieu',
+                label: '+ Ajouter un lieu',
                 isExternal: false,
               },
             ]}

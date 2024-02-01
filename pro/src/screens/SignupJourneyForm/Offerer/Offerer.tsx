@@ -14,7 +14,6 @@ import getSiretData from 'core/Venue/adapters/getSiretDataAdapter'
 import { getVenuesOfOffererFromSiretAdapter } from 'core/Venue/adapters/getVenuesOfOffererFromSiretAdapter'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import fullLinkIcon from 'icons/full-link.svg'
 import { MAYBE_APP_USER_APE_CODE } from 'pages/Signup/SignupContainer/constants'
 import MaybeAppUserDialog from 'pages/Signup/SignupContainer/MaybeAppUserDialog'
 
@@ -137,8 +136,8 @@ const Offerer = (): JSX.Element => {
               links={[
                 {
                   href: 'https://aide.passculture.app/hc/fr/articles/4633420022300--Acteurs-Culturels-Collectivit%C3%A9-Lieu-rattach%C3%A9-%C3%A0-une-collectivit%C3%A9-S-inscrire-et-param%C3%A9trer-son-compte-pass-Culture-',
-                  linkTitle: 'En savoir plus',
-                  icon: fullLinkIcon,
+                  label: 'En savoir plus',
+                  isExternal: true,
                 },
               ]}
             >

@@ -30,7 +30,6 @@ export const Support: () => JSX.Element | null = () => {
                 to: 'https://aide.passculture.app',
                 isExternal: true,
                 target: '_blank',
-                rel: 'noopener noreferrer',
               }}
               icon={fullLinkIcon}
               onClick={() =>
@@ -50,7 +49,6 @@ export const Support: () => JSX.Element | null = () => {
                 to: 'https://passcultureapp.notion.site/pass-Culture-Documentation-323b1a0ec309406192d772e7d803fbd0',
                 isExternal: true,
                 target: '_blank',
-                rel: 'noopener noreferrer',
               }}
               icon={fullLinkIcon}
               onClick={() =>
@@ -70,7 +68,6 @@ export const Support: () => JSX.Element | null = () => {
                 to: 'mailto:support-pro@passculture.app',
                 isExternal: true,
                 target: '_blank',
-                rel: 'noopener noreferrer',
               }}
               icon={fullMailIcon}
               onClick={() =>
@@ -90,7 +87,6 @@ export const Support: () => JSX.Element | null = () => {
                 to: 'https://pass.culture.fr/cgu-professionnels/',
                 isExternal: true,
                 target: '_blank',
-                rel: 'noopener noreferrer',
               }}
               icon={fullLinkIcon}
               onClick={() =>

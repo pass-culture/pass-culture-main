@@ -1,7 +1,6 @@
 import React from 'react'
 
 import Callout from 'components/Callout/Callout'
-import fullLinkIcon from 'icons/full-link.svg'
 
 const BannerReimbursementsInfo = (): JSX.Element => {
   return (
@@ -10,15 +9,13 @@ const BannerReimbursementsInfo = (): JSX.Element => {
       links={[
         {
           href: 'https://passculture.zendesk.com/hc/fr/articles/4411992051601',
-          linkTitle: 'Quand votre prochain remboursement sera-t-il effectué ?',
-          icon: fullLinkIcon,
-          svgAlt: 'Nouvelle fenêtre',
+          label: 'Quand votre prochain remboursement sera-t-il effectué ?',
+          isExternal: true,
         },
         {
           href: 'https://passculture.zendesk.com/hc/fr/articles/4412007300369',
-          linkTitle: 'Connaître les modalités de remboursement',
-          icon: fullLinkIcon,
-          svgAlt: 'Nouvelle fenêtre',
+          label: 'Connaître les modalités de remboursement',
+          isExternal: true,
         },
       ]}
     >

@@ -2,7 +2,6 @@ import React from 'react'
 
 import Callout from 'components/Callout/Callout'
 import fullMailIcon from 'icons/full-mail.svg'
-import { ButtonLink } from 'ui-kit'
 
 import styles from './SignupConfirmation.module.scss'
 
@@ -17,7 +16,16 @@ const SignupConfirmation = () => (
         Vous allez recevoir un lien de confirmation par email. Cliquez sur ce
         lien pour confirmer la création de votre compte.
       </div>
-      <Callout>
+      <Callout
+        links={[
+          {
+            href: 'mailto:support-pro@passculture.app',
+            isExternal: true,
+            icon: { src: fullMailIcon, alt: 'Nouvelle fenêtre, par email' },
+            label: 'Contacter le support',
+          },
+        ]}
+      >
         <p>
           Si vous ne recevez pas d’email de notre part d’ici 5 minutes, vérifiez
           que le message n’est pas dans le dossier “indésirables” ou “spam” de
@@ -26,18 +34,6 @@ const SignupConfirmation = () => (
         <p className={styles['banner-text-gap']}>
           Si vous n’avez rien reçu d’ici demain, merci de contacter le support.
         </p>
-        <ButtonLink
-          link={{
-            to: 'mailto:support-pro@passculture.app',
-            isExternal: true,
-            target: '_blank',
-            rel: 'noopener noreferrer',
-          }}
-          icon={fullMailIcon}
-          className={styles['contact-link']}
-        >
-          Contacter le support
-        </ButtonLink>
       </Callout>
     </div>
   </section>

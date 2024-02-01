@@ -19,9 +19,7 @@ const CookiesFooter = ({ className }: { className?: string }): JSX.Element => (
             link={{
               to: 'https://pass.culture.fr/cgu-professionnels/',
               isExternal: true,
-              rel: 'noopener noreferrer',
               target: '_blank',
-              'aria-label': 'Nouvelle fenêtre',
             }}
           >
             CGU professionnels
@@ -34,9 +32,7 @@ const CookiesFooter = ({ className }: { className?: string }): JSX.Element => (
             link={{
               to: 'https://pass.culture.fr/donnees-personnelles/',
               isExternal: true,
-              rel: 'noopener noreferrer',
               target: '_blank',
-              'aria-label': 'Nouvelle fenêtre',
             }}
           >
             Charte des Données Personnelles

@@ -9,7 +9,7 @@ const ShowcaseBannerInfo = (): JSX.Element => (
       {
         isExternal: true,
         href: 'https://aide.passculture.app/hc/fr/articles/4416082284945',
-        linkTitle:
+        label:
           'Consultez l’article “Quel est le cycle de vie de mon offre collective, de sa création à son remboursement ?”',
       },
     ]}

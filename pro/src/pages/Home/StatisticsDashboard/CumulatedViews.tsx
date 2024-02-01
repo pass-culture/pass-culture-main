@@ -82,7 +82,6 @@ export const CumulatedViews = ({ dailyViews }: CumulatedViewsProps) => {
               link={{
                 to: 'https://passcultureapp.notion.site/Les-bonnes-pratiques-et-tudes-du-pass-Culture-323b1a0ec309406192d772e7d803fbd0',
                 isExternal: true,
-                rel: 'noopener noreferrer',
                 target: '_blank',
               }}
               svgAlt="Nouvelle fenêtre"

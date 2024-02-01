@@ -52,8 +52,7 @@ const ReimbursementFields = ({
               links={[
                 {
                   href: `/structures/${offerer.id}/lieux/creation`,
-                  linkTitle: 'Créer un lieu avec SIRET',
-                  isExternal: false,
+                  label: 'Créer un lieu avec SIRET',
                 },
               ]}
             >

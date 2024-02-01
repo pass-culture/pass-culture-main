@@ -207,7 +207,7 @@ const CollectiveOfferType = ({
             links={[
               {
                 href: `/structures/${queryOffererId}/lieux/${lastDmsApplication?.venueId}#venue-collective-data`,
-                linkTitle: 'Voir ma demande de référencement',
+                label: 'Voir ma demande de référencement',
               },
             ]}
           >
@@ -218,11 +218,11 @@ const CollectiveOfferType = ({
             links={[
               {
                 href: 'https://www.demarches-simplifiees.fr/commencer/demande-de-referencement-sur-adage',
-                linkTitle: 'Faire une demande de référencement',
+                label: 'Faire une demande de référencement',
               },
               {
                 href: 'https://aide.passculture.app/hc/fr/articles/5700215550364',
-                linkTitle:
+                label:
                   'Ma demande de référencement a été acceptée mais je ne peux toujours pas créer d’offres collectives',
               },
             ]}

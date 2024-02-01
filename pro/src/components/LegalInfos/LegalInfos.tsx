@@ -30,7 +30,6 @@ const LegalInfos = ({ title, className }: LegalInfoProps): JSX.Element => {
         link={{
           to: 'https://pass.culture.fr/cgu-professionnels/',
           isExternal: true,
-          rel: 'noopener noreferrer',
           target: '_blank',
         }}
         variant={ButtonVariant.QUATERNARY}
@@ -52,7 +51,6 @@ const LegalInfos = ({ title, className }: LegalInfoProps): JSX.Element => {
         link={{
           to: 'https://pass.culture.fr/donnees-personnelles/',
           isExternal: true,
-          rel: 'noopener noreferrer',
           target: '_blank',
         }}
         variant={ButtonVariant.QUATERNARY}
@@ -81,7 +79,6 @@ const LegalInfos = ({ title, className }: LegalInfoProps): JSX.Element => {
         link={{
           to: 'mailto:support-pro@passculture.app',
           isExternal: true,
-          rel: 'noopener noreferrer',
           target: '_blank',
         }}
       >

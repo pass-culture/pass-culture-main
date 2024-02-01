@@ -5,7 +5,6 @@ import React, { useState } from 'react'
 import { GetBookingResponse } from 'apiClient/v2'
 import { AppLayout } from 'app/AppLayout'
 import Callout from 'components/Callout/Callout'
-import fullLinkIcon from 'icons/full-link.svg'
 import { SubmitButton, TextInput } from 'ui-kit'
 import Titles from 'ui-kit/Titles/Titles'
 
@@ -173,8 +172,8 @@ export const Desk = (): JSX.Element => {
             links={[
               {
                 href: 'https://aide.passculture.app/hc/fr/articles/4416062183569--Acteurs-Culturels-Modalités-de-retrait-et-CGU',
-                linkTitle: 'Modalités de retrait et CGU',
-                icon: fullLinkIcon,
+                label: 'Modalités de retrait et CGU',
+                isExternal: true,
               },
             ]}
             className={`${styles['desk-callout']}`}

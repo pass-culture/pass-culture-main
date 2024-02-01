@@ -1,46 +1,83 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import React from 'react'
+
+import { CalloutVariant } from 'components/Callout/types'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Callout, { CalloutProps } from '../Callout'
 
 describe('Callout', () => {
   const props: CalloutProps = {
     title: 'This is a banner warning',
-    links: [{ href: '/some/site', linkTitle: 'linkTitle' }],
+    links: [
+      {
+        href: '/some/site',
+        label: 'link label',
+        icon: null,
+        isExternal: true,
+      },
+    ],
   }
 
-  it('should render Callout', () => {
-    render(<Callout {...props}>This is the content</Callout>)
+  it('should display title, content and links', () => {
+    renderWithProviders(<Callout {...props}>This is the content</Callout>)
 
     expect(screen.getByText('This is a banner warning')).toBeInTheDocument()
     expect(screen.getByText('This is the content')).toBeInTheDocument()
-    const link = screen.getByRole('link', {
-      name: props.links?.[0]?.linkTitle,
-    })
-    expect(link).toBeInTheDocument()
-    expect(link).toHaveAttribute('href', props.links?.[0]?.href)
-    expect(link).toHaveAttribute('target', '_blank')
-    expect(link).toHaveAttribute('rel', 'noopener noreferrer')
+
+    expect(
+      screen.getByRole('link', {
+        name: /link label/,
+      })
+    ).toBeInTheDocument()
     expect(screen.queryByAltText('Fermer le message')).not.toBeInTheDocument()
   })
 
-  it('should render a closable Callout', () => {
-    props.closable = true
-    render(<Callout {...props}>Closable content</Callout>)
+  it('should close the Callout', async () => {
+    const spyClose = jest.fn()
+    renderWithProviders(
+      <Callout {...{ ...props, closable: true, onClose: spyClose }} />
+    )
 
-    expect(screen.getByLabelText('Fermer le message')).toBeInTheDocument()
+    await userEvent.click(screen.getByLabelText('Fermer le message'))
+
+    expect(spyClose).toHaveBeenCalledTimes(1)
   })
 
-  it('should render a title only Callout', () => {
-    props.titleOnly = true
-    render(<Callout {...props}>Closable content</Callout>)
+  it('should display an Information callout', () => {
+    renderWithProviders(<Callout {...props} />)
 
-    expect(screen.queryByText('This is a banner warning')).toBeInTheDocument()
-    expect(screen.queryByText('This is the content')).not.toBeInTheDocument()
-    expect(
-      screen.queryByRole('link', {
-        name: props.links?.[0]?.linkTitle,
-      })
-    ).not.toBeInTheDocument()
+    expect(screen.getAllByRole('img')[0]).toHaveAttribute(
+      'aria-label',
+      'Information'
+    )
+  })
+
+  it('should display an Error callout', () => {
+    renderWithProviders(<Callout {...props} variant={CalloutVariant.ERROR} />)
+
+    expect(screen.getAllByRole('img')[0]).toHaveAttribute(
+      'aria-label',
+      'Erreur'
+    )
+  })
+
+  it('should display a Success callout', () => {
+    renderWithProviders(<Callout {...props} variant={CalloutVariant.SUCCESS} />)
+
+    expect(screen.getAllByRole('img')[0]).toHaveAttribute(
+      'aria-label',
+      'Confirmation'
+    )
+  })
+
+  it('should display a Warning callout', () => {
+    renderWithProviders(<Callout {...props} variant={CalloutVariant.WARNING} />)
+
+    expect(screen.getAllByRole('img')[0]).toHaveAttribute(
+      'aria-label',
+      'Attention'
+    )
   })
 })
