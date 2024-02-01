@@ -13,13 +13,8 @@ import {
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { getNationalProgramsForDomains } from 'screens/OfferEducational/constants/getNationalProgramsForDomains'
-import {
-  InfoBox,
-  MultiSelectAutocomplete,
-  Select,
-  TextArea,
-  TextInput,
-} from 'ui-kit'
+import { InfoBox, Select, TextArea, TextInput } from 'ui-kit'
+import { MultiSelectAutocomplete } from 'ui-kit/form/MultiSelectAutoComplete/MultiSelectAutocomplete'
 import SelectAutocomplete from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 
 import {

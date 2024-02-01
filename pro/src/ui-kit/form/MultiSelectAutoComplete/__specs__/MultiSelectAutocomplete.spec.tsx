@@ -4,7 +4,8 @@ import { Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import MultiSelectAutocomplete, {
+import {
+  MultiSelectAutocomplete,
   MultiSelectAutocompleteProps,
 } from '../MultiSelectAutocomplete'
 
