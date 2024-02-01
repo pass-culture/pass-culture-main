@@ -18,9 +18,8 @@ const BannerRGS: React.FC<Props> = ({ closable, onClose }: Props) => (
         isExternal: true,
       },
     ]}
+    title="Soyez vigilant !"
   >
-    <strong>Soyez vigilant !</strong>
-    <br />
     Vos identifiants de connexion sont personnels et ne doivent pas être
     partagés. Pour assurer la protection de votre compte, découvrez nos
     recommandations.
