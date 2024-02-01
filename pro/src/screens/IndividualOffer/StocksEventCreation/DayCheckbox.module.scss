@@ -50,12 +50,12 @@ $checkbox-size: rem.torem(40px);
 
   &:checked {
     border: rem.torem(2px) solid colors.$secondary-light;
-    background-color: colors.$secondary-lighter-with-transparency;
+    background-color: colors.$background-secondary;
     font-weight: 700;
     
     &:focus {
       border: rem.torem(2px) solid colors.$secondary-light;
-      background-color: colors.$secondary-lighter-with-transparency;
+      background-color: colors.$background-secondary;
     }
   }
 

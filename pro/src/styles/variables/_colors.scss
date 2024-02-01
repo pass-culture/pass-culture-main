@@ -7,9 +7,7 @@ $grey-dark: #696a6f;
 $black: #161617;
 
 // waiting for designer approval :
-$grey-very-light: #ecf0f1;
 $grey-lighter: #e1e1e7;
-$grey-blue-light: #ede3ff;
 
 // SHADOWS COLORS
 $medium-shadow: #67686b29;
@@ -24,7 +22,6 @@ $secondary: #320096;
 $secondary-dark: #25026c;
 
 // waiting for designer approval :
-$secondary-lighter-with-transparency: #f3edff; // name not true, it's not transparent !
 $primary-dark: #c10046;
 $primary-disabled: #ff99be;
 $logo-purple: #7b1e82; // nom: brand, code: #870087, vérifier avec Charlotte
@@ -39,6 +36,9 @@ $alert-dark: #f9c030;
 
 // GRADIENTS COLORS
 $linear-gradient-to-right: linear-gradient(to right, $primary, $secondary);
+
+// BACKGROUND COLORS
+$background-secondary: #f3edff;
 
 // FORMS & INPUT COLORS
 $input-text-color: $black;
