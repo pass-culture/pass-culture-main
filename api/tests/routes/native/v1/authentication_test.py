@@ -292,7 +292,7 @@ class SSOSigninTest:
         )
 
         assert response.status_code == 400
-        assert response.json["code"] == "ACCOUNT_DELETED"
+        assert response.json["code"] == "SSO_ACCOUNT_DELETED"
 
     @patch("pcapi.connectors.google_oauth.get_google_user")
     @override_features(WIP_ENABLE_GOOGLE_SSO=True)
@@ -310,7 +310,7 @@ class SSOSigninTest:
         )
 
         assert response.status_code == 400
-        assert response.json["code"] == "ACCOUNT_ANONYMIZED"
+        assert response.json["code"] == "SSO_ACCOUNT_ANONYMIZED"
 
     @patch("pcapi.connectors.google_oauth.get_google_user")
     @override_features(WIP_ENABLE_GOOGLE_SSO=True)

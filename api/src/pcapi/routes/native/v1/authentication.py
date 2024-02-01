@@ -259,17 +259,20 @@ def google_auth(body: authentication.GoogleSigninRequest) -> authentication.Sign
     user_has_another_google_account_linked = user_ssos and sso_user_id not in [sso.ssoUserId for sso in user_ssos]
     if user_has_another_google_account_linked:
         raise ApiErrors(
-            {"code": "DUPLICATE_GOOGLE_ACCOUNT", "general": ["Un autre compte Google est déjà associé à ce compte."]}
+            {
+                "code": "SSO_DUPLICATE_GOOGLE_ACCOUNT",
+                "general": ["Un autre compte Google est déjà associé à ce compte."],
+            }
         )
 
     if user.account_state.is_deleted:
-        raise ApiErrors({"code": "ACCOUNT_DELETED", "general": ["Le compte a été supprimé"]})
+        raise ApiErrors({"code": "SSO_ACCOUNT_DELETED", "general": ["Le compte a été supprimé"]})
 
     if user.account_state == user_models.AccountState.ANONYMIZED:
-        raise ApiErrors({"code": "ACCOUNT_ANONYMIZED", "general": ["Le compte a été anonymisé"]})
+        raise ApiErrors({"code": "SSO_ACCOUNT_ANONYMIZED", "general": ["Le compte a été anonymisé"]})
 
     if not user.isValidated or not google_user.email_verified:
-        raise ApiErrors({"code": "EMAIL_NOT_VALIDATED", "general": ["L'email n'a pas été validé."]})
+        raise ApiErrors({"code": "SSO_EMAIL_NOT_VALIDATED", "general": ["L'email n'a pas été validé."]})
 
     with transaction():
         if not user.isEmailValidated:
