@@ -75,7 +75,6 @@ export function PartnerPageCollectiveSection({
             to: 'https://www.demarches-simplifiees.fr/commencer/demande-de-referencement-sur-adage',
             isExternal: true,
             target: '_blank',
-            rel: 'noopener noreferrer',
           }}
           svgAlt="Nouvelle fenêtre"
           className={styles['details-link']}
@@ -91,7 +90,6 @@ export function PartnerPageCollectiveSection({
             to: 'https://aide.passculture.app/hc/fr/categories/4410482280977--Acteurs-Culturels-Tout-savoir-sur-le-pass-Culture-collectif-%C3%A0-destination-des-groupes-scolaires',
             isExternal: true,
             target: '_blank',
-            rel: 'noopener noreferrer',
           }}
           svgAlt="Nouvelle fenêtre"
           className={styles['details-link']}
@@ -142,7 +140,6 @@ export function PartnerPageCollectiveSection({
           to: 'https://aide.passculture.app/hc/fr/categories/4410482280977--Acteurs-Culturels-Tout-savoir-sur-le-pass-Culture-collectif-%C3%A0-destination-des-groupes-scolaires',
           isExternal: true,
           target: '_blank',
-          rel: 'noopener noreferrer',
         }}
         svgAlt="Nouvelle fenêtre"
         className={styles['details-link']}

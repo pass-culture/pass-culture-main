@@ -13,7 +13,7 @@ const BannerInvisibleSiren = ({
     links={[
       {
         href: 'https://statut-diffusion-sirene.insee.fr/',
-        linkTitle: `Modifier la visibilité de mon ${
+        label: `Modifier la visibilité de mon ${
           isNewOnboarding ? 'SIRET' : 'SIREN'
         }`,
       },

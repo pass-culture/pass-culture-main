@@ -196,7 +196,6 @@ const Offer = ({
                     isExternal: true,
                     to: `${document.referrer}adage/ressource/partenaires/id/${offer.venue.adageId}`,
                     target: '_blank',
-                    rel: 'noopener noreferrer',
                   }}
                   variant={ButtonVariant.TERNARY}
                   className={style['offer-header-venue-link']}

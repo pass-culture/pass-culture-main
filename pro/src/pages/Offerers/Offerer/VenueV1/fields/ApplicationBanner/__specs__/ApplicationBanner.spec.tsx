@@ -1,5 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import React from 'react'
+
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ApplicationBanner from '../ApplicationBanner'
 
@@ -11,7 +13,7 @@ describe('when offerer has no bank informations', () => {
     }
 
     // when
-    render(<ApplicationBanner {...props} />)
+    renderWithProviders(<ApplicationBanner {...props} />)
     expect(
       await screen.findByText(
         'Les coordonnées bancaires de votre lieu sont en cours de validation par notre service financier. Vos remboursements seront rétroactifs une fois vos coordonnées bancaires validées.'

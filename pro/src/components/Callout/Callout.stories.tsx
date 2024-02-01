@@ -32,11 +32,12 @@ export const WithLink: StoryObj<typeof Callout> = {
     links: [
       {
         href: 'https://pro.testing.passculture.team',
-        linkTitle: 'Lien vers le pass culture',
+        label: 'Lien interne au pass culture pro',
       },
       {
         href: 'https://pro.testing.passculture.team',
-        linkTitle: 'Lien vers autre chose',
+        label: 'Lien externe',
+        isExternal: true,
       },
     ],
   },

@@ -87,8 +87,9 @@ const PricingPoint = ({
           links={[
             {
               href: `https://aide.passculture.app/hc/fr/articles/4413973462929--Acteurs-Culturels-Comment-rattacher-mes-points-de-remboursement-et-mes-coordonn%C3%A9es-bancaires-%C3%A0-un-SIRET-de-r%C3%A9f%C3%A9rence-`,
-              linkTitle: 'En savoir plus sur les barèmes de remboursement',
-              icon: fullLinkIcon,
+              label:
+                'Comment ajouter vos coordonnées bancaires sur un lieu sans SIRET ?',
+              isExternal: true,
             },
           ]}
           className={`${styles['desk-callout']}`}

@@ -91,8 +91,6 @@ export const AdageHeader = () => {
               to: `${document.referrer}adage/index/docGet/format/pptx/doc/PRESENTATION_J_UTILISE_PASS_CULTURE`,
               isExternal: true,
               download: true,
-              rel: 'noreferrer',
-              target: '_blank',
             }}
             icon={fullDownloadIcon}
           >

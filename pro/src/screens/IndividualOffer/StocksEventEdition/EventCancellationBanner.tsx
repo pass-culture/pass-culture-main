@@ -18,7 +18,7 @@ export const EventCancellationBanner = ({
       links={[
         {
           href: 'https://aide.passculture.app/hc/fr/articles/4411992053649--Acteurs-Culturels-Comment-annuler-ou-reporter-un-%C3%A9v%C3%A9nement-',
-          linkTitle: 'Comment reporter ou annuler un évènement ?',
+          label: 'Comment reporter ou annuler un évènement ?',
         },
       ]}
       isBanner

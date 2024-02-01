@@ -138,7 +138,7 @@ const OfferEducationalStock = <
                     links={[
                       {
                         href: 'https://passculture.zendesk.com/hc/fr/articles/4412973958673--Acteurs-culturels-Comment-modifier-une-offre-collective-pr%C3%A9-r%C3%A9serv%C3%A9e-',
-                        linkTitle:
+                        label:
                           'Consultez l’article “Comment modifier ou annuler une offre collective préréservée/réservée”',
                       },
                     ]}

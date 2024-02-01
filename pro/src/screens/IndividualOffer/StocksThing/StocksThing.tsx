@@ -254,7 +254,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     links = [
       {
         href: 'https://aide.passculture.app/hc/fr/articles/4411991970705--Acteurs-culturels-Comment-cr%C3%A9er-une-offre-num%C3%A9rique-avec-des-codes-d-activation-',
-        linkTitle: 'Comment gérer les codes d’activation ?',
+        label: 'Comment gérer les codes d’activation ?',
       },
     ]
   }

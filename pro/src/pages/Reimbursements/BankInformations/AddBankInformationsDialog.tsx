@@ -32,7 +32,6 @@ const AddBankInformationsDialog = ({
         link={{
           to: DS_BANK_ACCOUNT_PROCEDURE_ID,
           isExternal: true,
-          rel: 'noopener noreferrer',
           target: '_blank',
         }}
         icon={fullLinkIcon}

@@ -49,9 +49,8 @@ const AddActivationCodeForm = ({
           link={{
             isExternal: true,
             to: '/csvtemplates/CodesActivations-Gabarit.csv',
-            target: '_blank',
-            rel: 'noopener noreferrer',
             type: 'text/csv',
+            target: '_blank',
           }}
           icon={fullDownloadIcon}
         >

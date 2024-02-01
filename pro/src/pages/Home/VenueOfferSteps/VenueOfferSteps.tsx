@@ -109,7 +109,6 @@ export const VenueOfferSteps = ({
                   icon={fullNextIcon}
                   link={{
                     to: venueCreationUrl,
-                    isExternal: false,
                   }}
                   onClick={() => {
                     logEvent?.(Events.CLICKED_CREATE_VENUE, {
@@ -130,7 +129,6 @@ export const VenueOfferSteps = ({
                   link={{
                     to: 'https://aide.passculture.app/hc/fr/articles/4411992075281--Acteurs-Culturels-Comment-cr%C3%A9er-un-lieu-',
                     isExternal: true,
-                    rel: 'noopener noreferrer',
                     target: '_blank',
                   }}
                   icon={fullInfoIcon}
@@ -155,7 +153,6 @@ export const VenueOfferSteps = ({
                 icon={fullNextIcon}
                 link={{
                   to: `/offre/creation?lieu=${venue.id}&structure=${offerer.id}`,
-                  isExternal: false,
                 }}
               >
                 Créer une offre
@@ -171,7 +168,6 @@ export const VenueOfferSteps = ({
                   icon={fullNextIcon}
                   link={{
                     to: `/structures/${offerer.id}/lieux/${venue.id}#reimbursement`,
-                    isExternal: false,
                   }}
                   onClick={() => {
                     logEvent?.(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
@@ -193,7 +189,6 @@ export const VenueOfferSteps = ({
                   icon={fullNextIcon}
                   link={{
                     to: `remboursements/informations-bancaires?structure=${offerer.id}`,
-                    isExternal: false,
                   }}
                   onClick={() => {
                     logEvent?.(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
@@ -213,7 +208,6 @@ export const VenueOfferSteps = ({
                 icon={fullNextIcon}
                 link={{
                   to: `/structures/${offerer.id}/lieux/${venue.id}/eac`,
-                  isExternal: false,
                 }}
               >
                 Renseigner mes informations à destination des enseignants
@@ -237,7 +231,6 @@ export const VenueOfferSteps = ({
                   icon={fullNextIcon}
                   link={{
                     to: `/structures/${offerer.id}/lieux/${venue.id}#venue-collective-data`,
-                    isExternal: false,
                   }}
                   onClick={() => {
                     logEvent?.(Events.CLICKED_EAC_DMS_TIMELINE, {

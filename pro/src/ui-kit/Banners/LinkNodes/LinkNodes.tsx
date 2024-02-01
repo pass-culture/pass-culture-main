@@ -1,65 +1,73 @@
 import React from 'react'
 
 import fullLinkIcon from 'icons/full-link.svg'
-import { ButtonLink } from 'ui-kit/Button'
+import fullNextIcon from 'icons/full-next.svg'
+import ButtonLink, { LinkProps } from 'ui-kit/Button/ButtonLink'
 
 import styles from './LinkNodes.module.scss'
 
 export type Link = {
-  icon?: string
+  icon?: {
+    src: string
+    alt: string
+  } | null
   href: string
-  linkTitle: string
-  targetLink?: string
-  hideLinkIcon?: boolean
+  label: string
+  target?: string
   isExternal?: boolean
   onClick?: () => void
-  svgAlt?: string
   'aria-label'?: string
-}
-
-interface LinkNodeProps {
-  link: Link
-  defaultLinkIcon?: string
 }
 
 interface LinkNodesProps {
   links?: Link[]
-  defaultLinkIcon?: string
 }
 
-const LinkNode = ({
-  link: {
-    icon,
-    href,
-    linkTitle,
-    targetLink = '_blank',
-    hideLinkIcon,
-    isExternal = true,
-    onClick,
-    svgAlt,
-    'aria-label': ariaLabel,
-  },
-  defaultLinkIcon = fullLinkIcon,
-}: LinkNodeProps): React.ReactNode => (
-  <ButtonLink
-    link={{
-      isExternal: isExternal,
-      to: href,
-      target: targetLink,
-      rel: 'noopener noreferrer',
-      'aria-label': ariaLabel,
-    }}
-    icon={hideLinkIcon ? undefined : icon ?? defaultLinkIcon}
-    className={styles['bi-link']}
-    onClick={onClick}
-    svgAlt={svgAlt}
-  >
-    {linkTitle}
-  </ButtonLink>
-)
+export const LinkNode = ({
+  icon,
+  href,
+  label,
+  isExternal,
+  onClick,
+  'aria-label': ariaLabel,
+}: Link): React.ReactNode => {
+  const forwardLink: LinkProps = { to: href, isExternal }
+  if (isExternal) {
+    forwardLink.target = '_blank'
+  }
+  if (ariaLabel) {
+    forwardLink['aria-label'] = ariaLabel
+  }
+  return (
+    <ButtonLink
+      link={forwardLink}
+      icon={
+        icon === null
+          ? undefined
+          : icon
+            ? icon.src
+            : isExternal
+              ? fullLinkIcon
+              : fullNextIcon
+      }
+      className={styles['bi-link']}
+      onClick={onClick}
+      svgAlt={
+        icon === null
+          ? undefined
+          : icon?.alt
+            ? icon.alt
+            : isExternal
+              ? 'Nouvelle fenêtre'
+              : ''
+      }
+    >
+      {label}
+    </ButtonLink>
+  )
+}
 
 const LinkNodes = ({
-  defaultLinkIcon,
   links = [],
 }: LinkNodesProps): React.ReactNode | React.ReactNode[] => {
   if (links.length > 1) {
@@ -68,17 +76,14 @@ const LinkNodes = ({
         {links.map((link) => {
           return (
             <li key={link.href} className={styles['bi-link-item']}>
-              <LinkNode link={link} defaultLinkIcon={defaultLinkIcon} />
+              <LinkNode {...link} />
             </li>
           )
         })}
       </ul>
     )
   }
-
-  return (
-    links[0] && <LinkNode link={links[0]} defaultLinkIcon={defaultLinkIcon} />
-  )
+  return links[0] && <LinkNode {...links[0]} />
 }
 
 export default LinkNodes

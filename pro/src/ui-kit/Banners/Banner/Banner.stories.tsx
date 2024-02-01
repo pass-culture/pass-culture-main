@@ -61,11 +61,11 @@ export const WithLink: StoryObj<typeof Banner> = {
     links: [
       {
         href: 'https://pro.testing.passculture.team',
-        linkTitle: 'Lien vers le pass culture',
+        label: 'Lien vers le pass culture',
       },
       {
         href: '#',
-        linkTitle: 'Un autre lien',
+        label: 'Un autre lien',
       },
     ],
     minimalStyle: false,

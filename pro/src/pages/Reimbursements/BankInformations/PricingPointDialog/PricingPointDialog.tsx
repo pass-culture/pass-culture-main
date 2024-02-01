@@ -5,7 +5,6 @@ import { ManagedVenues } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
 import DialogBox from 'components/DialogBox'
 import useNotification from 'hooks/useNotification'
-import fullLinkIcon from 'icons/full-link.svg'
 import { Button, Select, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -74,8 +73,8 @@ const PricingPointDialog = ({
           {
             href: 'https://aide.passculture.app/hc/fr/articles/4413973462929--Acteurs-Culturels-Comment-rattacher-mes-points-de-remboursement-et-mes-coordonn%C3%A9es-bancaires-%C3%A0-un-SIRET-de-r%C3%A9f%C3%A9rence-',
             isExternal: true,
-            icon: fullLinkIcon,
-            linkTitle: 'En savoir plus sur les barèmes de remboursement',
+            label:
+              'Comment ajouter vos coordonnées bancaires sur un lieu sans SIRET ?',
           },
         ]}
       >
