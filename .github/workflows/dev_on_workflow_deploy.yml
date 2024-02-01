@@ -237,7 +237,7 @@ jobs:
           kubernetes-cluster: ${{ inputs.teleport_kubernetes_cluster }}
       - name: "Configure algolia"
         id: "set_algolia_settings"
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 30
           max_attempts: 3
