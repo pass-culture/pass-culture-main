@@ -9,12 +9,13 @@ class LocalOfferersPlaylistOffer(BaseModel):
     id: int
     name: str
     distance: Decimal | None
-    img_url: str | None
-    public_name: str | None
+    imgUrl: str | None
+    publicName: str | None
     city: str | None
 
     class Config:
         alias_generator = to_camel
+        allow_population_by_field_name = True
 
 
 class LocalOfferersPlaylist(BaseModel):

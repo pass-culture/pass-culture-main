@@ -163,7 +163,8 @@ class GetLocalOfferersPlaylistTest(SharedPlaylistsErrorTests):
     endpoint = "adage_iframe.get_local_offerers_playlist"
 
     def test_get_local_offerers_playlist(self, client):
-        playlist_venues = offerers_factories.VenueFactory.create_batch(2)
+        IMAGE_URL = "http://localhost/image.png"
+        playlist_venues = offerers_factories.VenueFactory.create_batch(2, _bannerUrl=IMAGE_URL)
         offerers_factories.VenueFactory()
 
         institution = educational_factories.EducationalInstitutionFactory()
@@ -197,6 +198,7 @@ class GetLocalOfferersPlaylistTest(SharedPlaylistsErrorTests):
         for idx, response_venue in enumerate(response_venues):
             assert response_venue["id"] == venues[idx].id
             assert response_venue["distance"] == expected_distance
+            assert response_venue["imgUrl"] == IMAGE_URL
 
     def test_no_rows(self, client):
         institution = educational_factories.EducationalInstitutionFactory()

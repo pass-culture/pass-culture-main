@@ -182,8 +182,8 @@ def get_local_offerers_playlist(
     return playlists_serializers.LocalOfferersPlaylist(
         venues=[
             playlists_serializers.LocalOfferersPlaylistOffer(
-                img_url=venue.bannerUrl,
-                public_name=venue.publicName,
+                imgUrl=venue.bannerUrl,
+                publicName=venue.publicName,
                 name=venue.name,
                 distance=format_distance(distances[venue.id]),
                 city=venue.city,
