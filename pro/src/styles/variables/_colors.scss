@@ -6,25 +6,18 @@ $grey-semi-dark: #90949d;
 $grey-dark: #696a6f;
 $black: #161617;
 
-// waiting for designer approval :
-$grey-lighter: #e1e1e7;
-
 // SHADOWS COLORS
 $medium-shadow: #67686b29;
 $large-shadow: rgba(#25026c, 0.15);
 
-
 // BRAND & ACTIONS COLORS
+$brand: #870087;
 $primary: #eb0055;
 $secondary-lighter: #c1a3ff;
 $secondary-light: #6123df;
 $secondary: #320096;
 $secondary-dark: #25026c;
-
-// waiting for designer approval :
-$primary-dark: #c10046;
-$primary-disabled: #ff99be;
-$logo-purple: #7b1e82; // nom: brand, code: #870087, vérifier avec Charlotte
+$primary-dark: #cb0659;
 
 // STATE COLORS
 $accent: #06f;
@@ -35,10 +28,18 @@ $accent-light: #b3e7ff;
 $alert-dark: #f9c030;
 
 // GRADIENTS COLORS
+$grey-lighter-for-gradient: #e1e1e7;
 $linear-gradient-to-right: linear-gradient(to right, $primary, $secondary);
+$linear-gradient-skeleton: linear-gradient(191deg, $grey-lighter-for-gradient, $grey-light, $grey-lighter-for-gradient);
+$adage-linear-gradient-image-preview: linear-gradient(207.06deg, $grey-light 43.41%, $grey-lighter-for-gradient 107.01%);
+
 
 // BACKGROUND COLORS
 $background-secondary: #f3edff;
+$background-accent-light: #e5f0ff;
+$background-valid: #eaf8f0;
+$background-alert: #fff8df;
+$background-error: #fdf4f6;
 
 // FORMS & INPUT COLORS
 $input-text-color: $black;
@@ -50,18 +51,9 @@ $input-bg-color: $white;
 $input-bg-color-disabled: $grey-light;
 $input-text-color-disabled: $grey-dark;
 
-// CALLOUT COLORS
-// waiting for designer approval :
-$callout-default-border: $secondary-light;
-$callout-default-background: #f4effd;
-$callout-info-border: $accent;
-$callout-info-background: #edf4ff;
-$callout-success-border: $valid;
-$callout-success-background: #eef7f3;
-$callout-warning-border: $alert-dark;
-$callout-warning-background: #fff8e6;
-$callout-error-border: $primary;
-$callout-error-background: #fef2f6;
+// TODO used in button, should be remplaced by real disable colors
+// see ticket PC-27778
+$primary-disabled: #ff99be;
 
 // ADAGE COLORS
 // waiting for designer approval :

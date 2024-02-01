@@ -12,47 +12,42 @@
   padding: rem.torem(16px);
 
   &-default {
-    border-color: colors.$callout-default-border;
-    background-color: colors.$callout-default-background;
+    background-color: colors.$background-secondary;
 
     .icon {
-      color: colors.$callout-default-border;
+      color: colors.$secondary-light;
     }
   }
 
   &-info {
-    border-color: colors.$callout-info-border;
-    background-color: colors.$callout-info-background;
+    background-color: colors.$background-accent-light;
 
     .icon {
-      color: colors.$callout-info-border;
+      color: colors.$accent;
     }
   }
 
   &-success {
-    border-color: colors.$callout-success-border;
-    background-color: colors.$callout-success-background;
+    background-color: colors.$background-valid;
 
     .icon {
-      color: colors.$callout-success-border;
+      color: colors.$valid;
     }
   }
 
   &-warning {
-    border-color: colors.$callout-warning-border;
-    background-color: colors.$callout-warning-background;
+    background-color: colors.$background-alert;
 
     .icon {
-      color: colors.$callout-warning-border;
+      color: colors.$alert-dark;
     }
   }
 
   &-error {
-    border-color: colors.$callout-error-border;
-    background-color: colors.$callout-error-background;
+    background-color: colors.$background-error;
 
     .icon {
-      color: colors.$callout-error-border;
+      color: colors.$primary;
     }
   }
 
