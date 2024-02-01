@@ -5,22 +5,22 @@ import React from 'react'
 import MultiSelectAutocomplete from './MultiSelectAutocomplete'
 import type { MultiSelectAutocompleteProps } from './MultiSelectAutocomplete'
 
-const ComponentWithFormik = (args: Args) => (
-  <Formik initialValues={args.initialValues} onSubmit={() => {}}>
-    <MultiSelectAutocomplete {...args} />
-  </Formik>
-)
-
 export default {
   title: 'ui-kit/forms/MultiSelectAutocomplete',
-  component: ComponentWithFormik,
+  component: MultiSelectAutocomplete,
+  decorators: [
+    (Story: any) => (
+      <Formik
+        initialValues={{ departement: ['01', '02'], 'search-departement': '' }}
+        onSubmit={() => {}}
+      >
+        <Story />
+      </Formik>
+    ),
+  ],
 }
 
-interface Args extends MultiSelectAutocompleteProps {
-  initialValues: { departement: string[]; 'search-departement': string }
-}
-
-const defaultProps: Args = {
+const defaultProps: MultiSelectAutocompleteProps = {
   pluralLabel: 'Départements',
   name: 'departement',
   options: [
@@ -43,7 +43,6 @@ const defaultProps: Args = {
     { value: '14', label: 'Calvados' },
     { value: '15', label: 'Cantal' },
   ],
-  initialValues: { departement: ['01', '02'], 'search-departement': '' },
   label: 'Département',
   hideFooter: false,
   hideTags: false,
@@ -51,10 +50,10 @@ const defaultProps: Args = {
   smallLabel: false,
 }
 
-export const Default: StoryObj<typeof ComponentWithFormik> = {
+export const Default: StoryObj<typeof MultiSelectAutocomplete> = {
   args: { ...defaultProps },
 }
 
-export const WithoutTags: StoryObj<typeof ComponentWithFormik> = {
+export const WithoutTags: StoryObj<typeof MultiSelectAutocomplete> = {
   args: { ...defaultProps, hideTags: true },
 }
