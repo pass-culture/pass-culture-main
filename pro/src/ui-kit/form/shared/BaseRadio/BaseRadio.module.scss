@@ -191,7 +191,7 @@
 
   &-checked {
     border: rem.torem(2px) solid colors.$secondary-light;
-    background-color: colors.$secondary-lighter-with-transparency;
+    background-color: colors.$background-secondary;
 
     .base-radio-label {
       font-weight: 700;

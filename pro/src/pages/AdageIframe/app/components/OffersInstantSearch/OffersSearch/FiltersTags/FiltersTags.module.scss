@@ -14,7 +14,7 @@
 .adage-tag {
   @include fonts.caption;
 
-  background-color: colors.$secondary-lighter-with-transparency;
+  background-color: colors.$background-secondary;
   border: none;
   padding: rem.torem(8px) rem.torem(12px);
   border-radius: rem.torem(20px);

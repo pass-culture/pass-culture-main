@@ -14,7 +14,7 @@
       .no-results-text-query {
         text-decoration: underline;
         text-decoration-thickness: rem.torem(7px);
-        text-decoration-color: colors.$secondary-lighter-with-transparency;
+        text-decoration-color: colors.$background-secondary;
         text-decoration-skip-ink: none;
         text-underline-offset: rem.torem(-2px);
       }

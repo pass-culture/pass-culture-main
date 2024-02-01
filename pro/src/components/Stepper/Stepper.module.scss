@@ -69,8 +69,8 @@ $number-size: rem.torem(30px);
           .inner {
             box-shadow:
               inset $number-size $number-size $number-size
-                colors.$secondary-lighter-with-transparency,
-              0 0 0 rem.torem(4px) colors.$secondary-lighter-with-transparency;
+                colors.$background-secondary,
+              0 0 0 rem.torem(4px) colors.$background-secondary;
           }
         }
       }
