@@ -140,11 +140,9 @@ const Offerer = (): JSX.Element => {
                   isExternal: true,
                 },
               ]}
+              title="Vous êtes un équipement d’une collectivité ou d’un établissement
+              public ?"
             >
-              <strong>
-                Vous êtes un équipement d’une collectivité ou d’un établissement
-                public ?
-              </strong>
               <p className={styles['callout-content-info']}>
                 Renseignez le SIRET de la structure à laquelle vous êtes
                 rattaché.
