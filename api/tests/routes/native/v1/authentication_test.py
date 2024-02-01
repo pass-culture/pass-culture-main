@@ -396,6 +396,23 @@ class SSOSigninTest:
 
     @patch("pcapi.connectors.google_oauth.get_google_user")
     @override_features(WIP_ENABLE_GOOGLE_SSO=True)
+    def test_single_sign_on_validates_email(self, mocked_google_oauth, client, caplog):
+        user = users_factories.UserFactory(email=self.valid_google_user.email, isEmailValidated=False)
+        oauth_state_token = token_utils.UUIDToken.create(
+            token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
+        )
+        mocked_google_oauth.return_value = self.valid_google_user
+
+        response = client.post(
+            "/native/v1/oauth/google/authorize",
+            json={"authorizationCode": "4/google_code", "oauthStateToken": oauth_state_token.encoded_token},
+        )
+
+        assert response.status_code == 200, response.json
+        assert user.isEmailValidated
+
+    @patch("pcapi.connectors.google_oauth.get_google_user")
+    @override_features(WIP_ENABLE_GOOGLE_SSO=True)
     def test_single_sign_on_does_not_duplicate_ssos(self, mocked_google_oauth, client):
         single_sign_on = users_factories.SingleSignOnFactory(ssoUserId=self.valid_google_user.sub)
         oauth_state_token = token_utils.UUIDToken.create(
