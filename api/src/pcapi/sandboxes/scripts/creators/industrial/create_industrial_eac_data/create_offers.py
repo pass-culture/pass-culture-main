@@ -476,7 +476,6 @@ def create_domains() -> list[educational_models.EducationalDomain]:
     return [
         educational_factories.EducationalDomainFactory(name="Architecture", id=1),
         educational_factories.EducationalDomainFactory(name="Arts du cirque et arts de la rue", id=2),
-        educational_factories.EducationalDomainFactory(name="Gastronomie et arts du goût", id=3),
         educational_factories.EducationalDomainFactory(name="Arts numériques", id=4),
         educational_factories.EducationalDomainFactory(name="Arts visuels, arts plastiques, arts appliqués", id=5),
         educational_factories.EducationalDomainFactory(name="Cinéma, audiovisuel", id=6),
