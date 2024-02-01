@@ -939,7 +939,7 @@ class SubcategoriesTest:
                                 "position": 5,
                             },
                             {
-                                "label": "Sciences fictions",
+                                "label": "Science-fiction",
                                 "gtls": [{"code": "01020700", "label": "Science-fiction", "level": 3}],
                                 "position": 6,
                             },

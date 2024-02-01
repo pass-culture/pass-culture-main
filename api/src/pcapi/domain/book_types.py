@@ -83,7 +83,7 @@ book_types = [
                 position=5, label="Œuvres classiques", gtls=[GTL(code="01030000", label="Œuvres classiques", level=2)]
             ),
             BookSubType(
-                position=6, label="Sciences fictions", gtls=[GTL(code="01020700", label="Science-fiction", level=3)]
+                position=6, label="Science-fiction", gtls=[GTL(code="01020700", label="Science-fiction", level=3)]
             ),
             BookSubType(position=7, label="Horreur", gtls=[GTL(code="01020802", label="Horreur / Terreur", level=4)]),
             BookSubType(
