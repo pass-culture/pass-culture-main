@@ -498,7 +498,6 @@ def create_domains() -> list[educational_models.EducationalDomain]:
 def create_national_programs() -> list[educational_models.NationalProgram]:
     return [
         educational_factories.NationalProgramFactory(name="collège au cinéma", id=1),
-        educational_factories.NationalProgramFactory(name="Le Prix des Incorruptibles", id=2),
         educational_factories.NationalProgramFactory(name="Lycéens et apprentis au cinéma", id=3),
         educational_factories.NationalProgramFactory(name="L’Olympiade culturelle", id=4),
         educational_factories.NationalProgramFactory(name="Théâtre au collège", id=5),
