@@ -268,11 +268,14 @@ def google_auth(body: authentication.GoogleSigninRequest) -> authentication.Sign
     if user.account_state == user_models.AccountState.ANONYMIZED:
         raise ApiErrors({"code": "ACCOUNT_ANONYMIZED", "general": ["Le compte a été anonymisé"]})
 
-    if not user.isValidated or not user.isEmailValidated or not google_user.email_verified:
+    if not user.isValidated or not google_user.email_verified:
         raise ApiErrors({"code": "EMAIL_NOT_VALIDATED", "general": ["L'email n'a pas été validé."]})
 
-    if not single_sign_on:
-        with transaction():
+    with transaction():
+        if not user.isEmailValidated:
+            user.isEmailValidated = True
+
+        if not single_sign_on:
             single_sign_on = users_repo.create_single_sign_on(user, "google", sso_user_id)
             db.session.add(single_sign_on)
 
