@@ -150,6 +150,7 @@ describe('useGetVenue', () => {
       adageInscriptionDate: null,
       hasAdageId: false,
       collectiveDmsApplication: null,
+      bankAccount: null,
     }
 
     await waitFor(() => {
