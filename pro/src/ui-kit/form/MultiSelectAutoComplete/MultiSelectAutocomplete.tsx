@@ -27,7 +27,7 @@ export type MultiSelectAutocompleteProps = FieldLayoutBaseProps & {
   filterMaxLength?: number
 }
 
-const MultiSelectAutocomplete = ({
+export const MultiSelectAutocomplete = ({
   className,
   name,
   hideFooter = false,
@@ -210,5 +210,3 @@ const MultiSelectAutocomplete = ({
     </FieldLayout>
   )
 }
-
-export default MultiSelectAutocomplete
