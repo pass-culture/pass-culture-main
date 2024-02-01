@@ -48,6 +48,11 @@ class Returns200Test:
             venue=venue,
             timespan=[now - datetime.timedelta(days=14), None],
         )
+        bank_account_link = offerers_factories.VenueBankAccountLinkFactory(
+            venue=venue,
+            timespan=[now - datetime.timedelta(days=14), None],
+        )
+
         venue_id = venue.id
         dmsapplication = educational_factories.CollectiveDmsApplicationFactory(
             venue=venue,
@@ -142,6 +147,18 @@ class Returns200Test:
             ],
             "hasAdageId": True,
             "adageInscriptionDate": format_into_utc_date(venue.adageInscriptionDate),
+            "bankAccount": {
+                "bic": bank_account_link.bankAccount.bic,
+                "dateCreated": format_into_utc_date(bank_account_link.bankAccount.dateCreated),
+                "dateLastStatusUpdate": bank_account_link.bankAccount.dateLastStatusUpdate,
+                "dsApplicationId": bank_account_link.bankAccount.dsApplicationId,
+                "id": bank_account_link.bankAccount.id,
+                "isActive": bank_account_link.bankAccount.isActive,
+                "label": bank_account_link.bankAccount.label,
+                "linkedVenues": [{"commonName": venue.common_name, "id": venue.id}],
+                "obfuscatedIban": f"""XXXX XXXX XXXX {bank_account_link.bankAccount.iban[-4:]}""",
+                "status": bank_account_link.bankAccount.status.value,
+            },
         }
         db.session.expire_all()
 

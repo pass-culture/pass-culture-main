@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { BankAccountResponseModel } from './BankAccountResponseModel';
 import type { BannerMetaModel } from './BannerMetaModel';
 import type { DMSApplicationForEAC } from './DMSApplicationForEAC';
 import type { GetVenueDomainResponseModel } from './GetVenueDomainResponseModel';
@@ -16,6 +17,7 @@ export type GetVenueResponseModel = {
   address?: string | null;
   audioDisabilityCompliant?: boolean | null;
   banId?: string | null;
+  bankAccount?: BankAccountResponseModel | null;
   bannerMeta?: BannerMetaModel | null;
   bannerUrl?: string | null;
   bookingEmail?: string | null;
