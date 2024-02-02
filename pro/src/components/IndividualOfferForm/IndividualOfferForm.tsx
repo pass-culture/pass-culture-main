@@ -34,6 +34,7 @@ export interface IndividualOfferFormProps {
   readOnlyFields?: string[]
   imageOffer?: IndividualOfferImage
   offerSubtype: INDIVIDUAL_OFFER_SUBTYPE | null
+  isEvent: boolean | null
 }
 
 const IndividualOfferForm = ({
@@ -46,6 +47,7 @@ const IndividualOfferForm = ({
   onImageDelete,
   imageOffer,
   offerSubtype,
+  isEvent,
 }: IndividualOfferFormProps) => {
   const {
     currentUser: { isAdmin },
@@ -96,6 +98,7 @@ const IndividualOfferForm = ({
         // subcategory change will recompute the venue list
         // so we need to pass the full venue list here
         venueList={venueList}
+        isEvent={isEvent}
       />
       {showFullForm && (
         <>
