@@ -11,7 +11,7 @@ import { PHONE_CODE_COUNTRY_CODE_OPTIONS, PLACEHOLDER_MAP } from './constants'
 import styles from './PhoneNumberInput.module.scss'
 import { getPhoneNumberInputAndCountryCode } from './utils/getPhoneNumberInputAndCountryCode'
 
-export type PhoneNumberInputProps = FieldLayoutBaseProps & {
+type PhoneNumberInputProps = FieldLayoutBaseProps & {
   disabled?: boolean
   maxLength?: number
 }
