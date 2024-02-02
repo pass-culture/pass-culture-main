@@ -7,7 +7,7 @@ import { FieldSetLayout } from '../shared'
 import styles from './CheckboxGroup.module.scss'
 import CheckboxGroupItem from './CheckboxGroupItem'
 
-export interface CheckboxGroupProps {
+interface CheckboxGroupProps {
   groupName: string
   legend: string
   group: {
