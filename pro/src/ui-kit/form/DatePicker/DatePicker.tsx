@@ -6,7 +6,7 @@ import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
 
 import { BaseDatePicker } from './BaseDatePicker'
 
-export interface DatePickerProps extends FieldLayoutBaseProps {
+interface DatePickerProps extends FieldLayoutBaseProps {
   disabled?: boolean
   maxDate?: Date
   minDate?: Date

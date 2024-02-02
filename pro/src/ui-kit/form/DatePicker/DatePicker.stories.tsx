@@ -1,29 +1,38 @@
-import type { Story } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
-import DatePicker, { DatePickerProps } from './DatePicker'
+import DatePicker from './DatePicker'
 
 export default {
   title: 'ui-kit/forms/DatePicker',
   component: DatePicker,
+  decorators: [
+    (Story: any) => (
+      <Formik initialValues={{ date: '' }} onSubmit={() => {}}>
+        <Story />
+      </Formik>
+    ),
+  ],
 }
 
-const Template: Story<DatePickerProps> = (props) => (
-  <Formik initialValues={{ date: '' }} onSubmit={() => {}}>
-    <DatePicker {...props} name="date" />
-  </Formik>
-)
-
-export const WithoutLabel = Template.bind({})
-export const WithLabel = Template.bind({})
-WithLabel.args = {
-  disabled: false,
-  label: 'label',
-  smallLabel: false,
+export const WithoutLabel = {
+  args: {
+    name: 'date',
+  },
 }
 
-export const FilterVariant = Template.bind({})
-FilterVariant.args = {
-  filterVariant: true,
+export const WithLabel = {
+  args: {
+    name: 'date',
+    disabled: false,
+    label: 'label',
+    smallLabel: false,
+  },
+}
+
+export const FilterVariant = {
+  args: {
+    name: 'date',
+    filterVariant: true,
+  },
 }
