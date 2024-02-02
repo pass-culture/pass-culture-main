@@ -1,6 +1,5 @@
-import type { Story } from '@storybook/react'
+import type { StoryObj } from '@storybook/react'
 import { Formik } from 'formik'
-import React from 'react'
 
 import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
 
@@ -9,54 +8,27 @@ import RadioButton from './RadioButton'
 export default {
   title: 'ui-kit/forms/RadioButton',
   component: RadioButton,
+  decorators: [
+    (Story: any) => (
+      <Formik initialValues={{}} onSubmit={() => {}}>
+        {({ getFieldProps }) => {
+          return <Story {...getFieldProps('gender')} />
+        }}
+      </Formik>
+    ),
+  ],
 }
 
-interface TemplateProps {
-  label1: JSX.Element | string
-  label2: JSX.Element | string
-  withBorder?: boolean
+export const Default: StoryObj<typeof RadioButton> = {
+  args: {
+    label: 'Male',
+  },
 }
-
-const Template: Story<TemplateProps> = ({
-  withBorder,
-  label1,
-  label2,
-}: TemplateProps) => (
-  <Formik initialValues={{}} onSubmit={() => {}}>
-    {({ getFieldProps }) => {
-      return (
-        <>
-          <RadioButton
-            {...getFieldProps('gender')}
-            label={label1}
-            name="gender"
-            value="male"
-            withBorder={withBorder}
-          />
-          <RadioButton
-            {...getFieldProps('gender')}
-            label={label2}
-            name="gender"
-            value="female"
-            withBorder={withBorder}
-          />
-        </>
-      )
-    }}
-  </Formik>
-)
-
-export const Default = Template.bind({})
-Default.args = {
-  label1: 'Male',
-  label2: 'Female',
-}
-
-export const WithBorder = Template.bind({})
-WithBorder.args = {
-  withBorder: true,
-  label1: 'Male',
-  label2: 'Female',
+export const WithBorder: StoryObj<typeof RadioButton> = {
+  args: {
+    withBorder: true,
+    label: 'Male',
+  },
 }
 
 const WithImage = ({ src }: { src: string }) => (
@@ -69,8 +41,8 @@ const WithImage = ({ src }: { src: string }) => (
   </div>
 )
 
-export const WithChildren = Template.bind({})
-WithChildren.args = {
-  label1: <WithImage src={logoPassCultureIcon} />,
-  label2: <WithImage src={logoPassCultureIcon} />,
+export const WithChildren: StoryObj<typeof RadioButton> = {
+  args: {
+    label: <WithImage src={logoPassCultureIcon} />,
+  },
 }
