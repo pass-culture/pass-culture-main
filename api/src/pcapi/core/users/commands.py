@@ -3,6 +3,7 @@ import logging
 import click
 
 from pcapi import settings
+from pcapi.core.mails.transactional.users import online_event_reminder
 import pcapi.core.users.api as user_api
 import pcapi.core.users.constants as users_constants
 import pcapi.scheduled_tasks.decorators as cron_decorators
@@ -17,6 +18,12 @@ logger = logging.getLogger(__name__)
 @cron_decorators.log_cron_with_transaction
 def notify_users_before_deletion_of_suspended_account() -> None:
     user_api.notify_users_before_deletion_of_suspended_account()
+
+
+@blueprint.cli.command("notify_users_before_online_event")
+@cron_decorators.log_cron_with_transaction
+def notify_users_before_online_event() -> None:
+    online_event_reminder.send_online_event_event_reminder()
 
 
 @blueprint.cli.command("delete_suspended_accounts_after_withdrawal_period")
