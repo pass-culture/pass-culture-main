@@ -17,6 +17,36 @@ class MusicType:
 
 OTHER_SHOW_TYPE_SLUG = "OTHER"
 
+
+@dataclass
+class TiteliveMusicType:
+    gtl_id: str
+    label: str
+    can_be_event: bool = True
+
+
+TITELIVE_MUSIC_TYPES = (
+    TiteliveMusicType(gtl_id="01000000", label="MUSIQUE_CLASSIQUE"),
+    TiteliveMusicType(gtl_id="02000000", label="JAZZ / BLUES"),
+    TiteliveMusicType(gtl_id="03000000", label="BANDES ORIGINALES", can_be_event=False),
+    TiteliveMusicType(gtl_id="04000000", label="ELECTRO"),
+    TiteliveMusicType(gtl_id="05000000", label="POP"),
+    TiteliveMusicType(gtl_id="06000000", label="ROCK"),
+    TiteliveMusicType(gtl_id="07000000", label="METAL"),
+    TiteliveMusicType(gtl_id="08000000", label="ALTERNATIF"),
+    TiteliveMusicType(gtl_id="09000000", label="VARIETES"),
+    TiteliveMusicType(gtl_id="10000000", label="FUNK / SOUL / RNB / DISCO"),
+    TiteliveMusicType(gtl_id="11000000", label="RAP/ HIP HOP"),
+    TiteliveMusicType(gtl_id="12000000", label="REGGAE / RAGGA"),
+    TiteliveMusicType(gtl_id="13000000", label="MUSIQUE DU MONDE"),
+    TiteliveMusicType(gtl_id="14000000", label="COUNTRY / FOLK"),
+    TiteliveMusicType(gtl_id="15000000", label="VIDEOS MUSICALES", can_be_event=False),
+    TiteliveMusicType(gtl_id="16000000", label="COMPILATIONS", can_be_event=False),
+    TiteliveMusicType(gtl_id="17000000", label="AMBIANCE"),
+    TiteliveMusicType(gtl_id="18000000", label="ENFANTS", can_be_event=False),
+    TiteliveMusicType(gtl_id="19000000", label="AUTRES"),
+)
+
 # WARNING: the list below MUST be kept in sync with the list at pro/src/core/Offers/categoriesSubTypes.ts
 music_types = [
     MusicType(
