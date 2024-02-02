@@ -69,6 +69,8 @@ const InformationsScreen = ({
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
     useIndividualOfferImageUpload()
 
+  const [isEvent, setIsEvent] = useState<boolean | undefined>(false)
+
   const isBookingContactEnabled = useActiveFeature(
     'WIP_MANDATORY_BOOKING_CONTACT'
   )
@@ -178,9 +180,11 @@ const InformationsScreen = ({
       { replace: true }
     )
 
-    const isEvent = subCategories.find(
-      (subcategory) => subcategory.id === formik.values.subcategoryId
-    )?.isEvent
+    setIsEvent(
+      subCategories.find(
+        (subcategory) => subcategory.id === formik.values.subcategoryId
+      )?.isEvent
+    )
     const nextStep =
       mode === OFFER_WIZARD_MODE.EDITION
         ? OFFER_WIZARD_STEP_IDS.SUMMARY
@@ -263,6 +267,7 @@ const InformationsScreen = ({
             onImageDelete={onImageDelete}
             imageOffer={imageOffer}
             offerSubtype={offerSubtype}
+            isEvent={isOfferSubtypeEvent(offerSubtype)}
           />
 
           <ActionBar
