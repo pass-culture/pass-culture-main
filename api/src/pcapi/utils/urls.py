@@ -46,7 +46,7 @@ def build_pc_pro_offerer_link(offerer: offerers_models.Offerer) -> str:
 
 
 def build_pc_pro_offerer_offers_link(offerer: offerers_models.Offerer) -> str:
-    return f"{settings.PRO_URL}/offres?structure={offerer.id}&statut=active"
+    return f"{settings.PRO_URL}/offres?structure={offerer.id}"
 
 
 def build_pc_pro_venue_link(venue: offerers_models.Venue) -> str:
