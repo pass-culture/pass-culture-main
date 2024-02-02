@@ -1,6 +1,7 @@
 import datetime
 from functools import partial
 import json
+import re
 import typing
 
 import email_validator
@@ -22,6 +23,21 @@ class PhoneNumberValidator:
                 phone_number.parse_phone_number(value)
             except phone_validation_exceptions.InvalidPhoneNumber:
                 raise validators.ValidationError("Numéro de téléphone invalide")
+
+
+class SiretValidator:
+    def __init__(self) -> None:
+        self.field_flags = {
+            "required": True,
+            "minlength": 14,
+            "maxlength": 14,
+            "pattern": r"\d{14}",
+        }
+
+    def __call__(self, form: wtforms.Form, field: wtforms.Field) -> None:
+        value = field.data
+        if not re.match(r"^\d{14}$", value):
+            raise validators.ValidationError("Le SIRET doit contenir exactement 14 chiffres")
 
 
 def widget(field: wtforms.Field, template: str, *args: typing.Any, **kwargs: typing.Any) -> str:
@@ -169,6 +185,10 @@ class PCPhoneNumberField(PCStringField):
         validators.Optional(""),
         PhoneNumberValidator(),
     ]
+
+
+class PCSiretField(PCStringField):
+    validators = [SiretValidator()]
 
 
 class PCTextareaField(wtforms.StringField):

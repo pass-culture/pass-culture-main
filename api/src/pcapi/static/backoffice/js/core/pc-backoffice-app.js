@@ -149,6 +149,11 @@ class PcBackofficeApp {
    */
   onTurboFrameMissing = (event) => {
     event.preventDefault()
+    if (event.detail.response.redirected) {
+      // Redirect from a turbo-frame loads a new full page
+      event.detail.visit(event.detail.response)
+      return
+    }
     const error = new Error(`turbo:frame-missing with status code: ${event.detail.response.status}`)
     console.error(error)
     event.target.textContent = 'Une erreur est survenue'

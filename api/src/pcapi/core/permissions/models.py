@@ -39,6 +39,7 @@ class Permissions(enum.Enum):
     READ_PRO_ENTITY = "visualiser une structure, un lieu ou un compte pro"
     MANAGE_PRO_ENTITY = "gérer une structure, un lieu ou un compte pro"
     DELETE_PRO_ENTITY = "supprimer une structure ou un lieu"
+    CREATE_PRO_ENTITY = "créer une structure"
 
     MOVE_SIRET = "support pro avancé : déplacer ou supprimer un SIRET"
     ADVANCED_PRO_SUPPORT = "support pro avancé"

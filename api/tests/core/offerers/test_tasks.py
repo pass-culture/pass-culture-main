@@ -42,6 +42,7 @@ class CheckOffererIsActiveTest:
             legal_category_code="1000",
             address=None,
             active=False,
+            diffusible=True,
         )
 
         response = client.post(
@@ -65,6 +66,7 @@ class CheckOffererIsActiveTest:
             legal_category_code="1000",
             address=None,
             active=False,
+            diffusible=True,
         )
 
         response = client.post(
