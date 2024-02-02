@@ -1,6 +1,16 @@
 {% extends "layouts/pro.html" %}
 {% from "components/search/base.html" import build_base_search with context %}
+{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% block pro_main_content %}
+  {% if has_permission("CREATE_PRO_ENTITY") %}
+    <div class="d-flex flex-row justify-content-end">
+      <button class="btn btn-outline-primary lead fw-bold mt-2"
+              data-bs-toggle="modal"
+              data-bs-target="#create-offerer-modal"
+              type="button">Créer une structure</button>
+      {{ build_lazy_modal(url_for('backoffice_web.pro.get_create_offerer_form'), "create-offerer-modal") }}
+    </div>
+  {% endif %}
   {% call build_base_search() %}
     Retrouve une structure ou un lieu par raison sociale, SIREN, SIRET,
     ID de son dossier DMS CB ou par l'identité du pro (nom, prénom,

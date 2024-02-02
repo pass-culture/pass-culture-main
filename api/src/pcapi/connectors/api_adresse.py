@@ -49,17 +49,35 @@ def _get_backend() -> "BaseBackend":
     return backend_class()
 
 
+def get_municipality_centroid(city: str, postcode: str) -> AddressInfo:
+    """Return information about the requested city."""
+    return _get_backend().get_municipality_centroid(postcode=postcode, city=city)
+
+
 def get_address(address: str, postcode: str | None = None, city: str | None = None) -> AddressInfo:
     """Return information about the requested address."""
     return _get_backend().get_single_address_result(address=address, postcode=postcode, city=city)
 
 
 class BaseBackend:
+    def get_municipality_centroid(self, city: str, postcode: str) -> AddressInfo:
+        raise NotImplementedError()
+
     def get_single_address_result(self, address: str, postcode: str | None, city: str | None = None) -> AddressInfo:
         raise NotImplementedError()
 
 
 class TestingBackend(BaseBackend):
+    def get_municipality_centroid(self, city: str, postcode: str) -> AddressInfo:
+        # Used to check non-diffusible SIREN/SIRET
+        return AddressInfo(
+            id="06029",
+            label="Cannes",
+            score=0.9549627272727272,
+            latitude=43.555468,
+            longitude=7.004585,
+        )
+
     def get_single_address_result(self, address: str, postcode: str | None, city: str | None = None) -> AddressInfo:
         return AddressInfo(
             id="75101_9575_00003",
@@ -98,7 +116,7 @@ class ApiAdresseBackend(BaseBackend):
             raise AdresseApiException("Unexpected non-JSON response from Adresse API")
         return data
 
-    def _get_municipality_centroid(self, city: str, postcode: str) -> AddressInfo:
+    def get_municipality_centroid(self, city: str, postcode: str) -> AddressInfo:
         """Fallback to querying the city, because the q parameter must contain part of the address label"""
         parameters = {
             "q": city,
@@ -138,7 +156,7 @@ class ApiAdresseBackend(BaseBackend):
                 extra={"queried_address": address, "postcode": postcode},
             )
             if city is not None and postcode is not None:
-                return self._get_municipality_centroid(city=city, postcode=postcode)
+                return self.get_municipality_centroid(city=city, postcode=postcode)
             raise NoResultException
 
         result = self._format_result(data)
