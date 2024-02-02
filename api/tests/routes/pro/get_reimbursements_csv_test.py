@@ -192,20 +192,24 @@ def test_admin_cannot_access_reimbursements_data_without_venue_filter(client):
 
 @pytest.mark.usefixtures("db_session")
 @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
-def test_with_venue_filter_old_bank_information_journey_with_pricings(client):
-    beginning_date_iso_format = (datetime.date.today() - datetime.timedelta(days=2)).isoformat()
-    ending_date_iso_format = (datetime.date.today() + datetime.timedelta(days=2)).isoformat()
+@pytest.mark.parametrize(
+    "cutoff,fortnight",
+    [(datetime.date(year=2023, month=1, day=16), "1ère"), (datetime.date(year=2023, month=1, day=1), "2nde")],
+)
+def test_with_venue_filter_old_bank_information_journey_with_pricings(client, cutoff, fortnight):
+    beginning_date_iso_format = (cutoff - datetime.timedelta(days=2)).isoformat()
+    ending_date_iso_format = (cutoff + datetime.timedelta(days=2)).isoformat()
     offerer = offerers_factories.OffererFactory()
     venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
     finance_factories.BankInformationFactory(venue=venue1)
     venue2 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point=venue1)
     finance_factories.BankInformationFactory(venue=venue2)
-    batch = finance_factories.CashflowBatchFactory()
+    batch = finance_factories.CashflowBatchFactory(cutoff=cutoff)
 
     for venue in (venue1, venue2):
-        invoice = finance_factories.InvoiceFactory(reimbursementPoint=venue, date=datetime.date.today())
+        invoice = finance_factories.InvoiceFactory(reimbursementPoint=venue, date=cutoff)
         cashflow = finance_factories.CashflowFactory(
-            batch=batch, creationDate=datetime.date.today(), reimbursementPoint=venue, invoices=[invoice]
+            batch=batch, creationDate=cutoff, reimbursementPoint=venue, invoices=[invoice]
         )
         finance_factories.PricingFactory(
             booking__stock__offer__venue=venue, status=finance_models.PricingStatus.INVOICED, cashflows=[cashflow]
@@ -229,7 +233,6 @@ def test_with_venue_filter_old_bank_information_journey_with_pricings(client):
     assert len(rows) == 1
     row = rows[0]
 
-    fortnight = "2nde" if (datetime.date.today() - datetime.timedelta(days=1)).day > 15 else "1ère"
     invoice = finance_models.Invoice.query.filter(finance_models.Invoice.reimbursementPointId == venue1.id).one()
     batch = finance_models.CashflowBatch.query.one()
     offer = offers_models.Offer.query.filter(offers_models.Offer.venueId == venue1.id).one()
@@ -263,20 +266,24 @@ def test_with_venue_filter_old_bank_information_journey_with_pricings(client):
 
 @pytest.mark.usefixtures("db_session")
 @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
-def test_with_reimbursement_period_filter_old_bank_information_journey_with_pricings(client):
-    beginning_date_iso_format = (datetime.date.today() - datetime.timedelta(days=2)).isoformat()
-    ending_date_iso_format = (datetime.date.today() + datetime.timedelta(days=2)).isoformat()
+@pytest.mark.parametrize(
+    "cutoff,fortnight",
+    [(datetime.date(year=2023, month=1, day=16), "1ère"), (datetime.date(year=2023, month=1, day=1), "2nde")],
+)
+def test_with_reimbursement_period_filter_old_bank_information_journey_with_pricings(client, cutoff, fortnight):
+    beginning_date_iso_format = (cutoff - datetime.timedelta(days=2)).isoformat()
+    ending_date_iso_format = (cutoff + datetime.timedelta(days=2)).isoformat()
     offerer = offerers_factories.OffererFactory()
     venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
     finance_factories.BankInformationFactory(venue=venue)
-    batch = finance_factories.CashflowBatchFactory()
+    batch = finance_factories.CashflowBatchFactory(cutoff=cutoff)
     pro = users_factories.ProFactory()
     offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
     # Within the reimbursement period filter
-    invoice_1 = finance_factories.InvoiceFactory(reimbursementPoint=venue, date=datetime.date.today())
+    invoice_1 = finance_factories.InvoiceFactory(reimbursementPoint=venue, date=cutoff)
     cashflow_1 = finance_factories.CashflowFactory(
-        batch=batch, creationDate=datetime.date.today(), reimbursementPoint=venue, invoices=[invoice_1]
+        batch=batch, creationDate=cutoff, reimbursementPoint=venue, invoices=[invoice_1]
     )
     finance_factories.PricingFactory(
         booking__stock__offer__venue=venue,
@@ -335,7 +342,6 @@ def test_with_reimbursement_period_filter_old_bank_information_journey_with_pric
     )
 
     for row, booking in zip(rows, bookings):
-        fortnight = "2nde" if (datetime.date.today() - datetime.timedelta(days=1)).day > 15 else "1ère"
         pricing = finance_models.Pricing.query.filter(finance_models.Pricing.bookingId == booking.id).one()
         cashflow = pricing.cashflows[0]
         invoice = cashflow.invoices[0]
@@ -368,20 +374,26 @@ def test_with_reimbursement_period_filter_old_bank_information_journey_with_pric
 
 
 @pytest.mark.usefixtures("db_session")
-def test_with_venue_filter_old_bank_information_journey_with_pricings_and_collective_use_case(client):
-    beginning_date_iso_format = (datetime.date.today() - datetime.timedelta(days=2)).isoformat()
-    ending_date_iso_format = (datetime.date.today() + datetime.timedelta(days=2)).isoformat()
+@pytest.mark.parametrize(
+    "cutoff,fortnight",
+    [(datetime.date(year=2023, month=1, day=16), "1ère"), (datetime.date(year=2023, month=1, day=1), "2nde")],
+)
+def test_with_venue_filter_old_bank_information_journey_with_pricings_and_collective_use_case(
+    client, cutoff, fortnight
+):
+    beginning_date_iso_format = (cutoff - datetime.timedelta(days=2)).isoformat()
+    ending_date_iso_format = (cutoff + datetime.timedelta(days=2)).isoformat()
     offerer = offerers_factories.OffererFactory()
     venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
     finance_factories.BankInformationFactory(venue=venue1)
     venue2 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point=venue1)
     finance_factories.BankInformationFactory(venue=venue2)
-    batch = finance_factories.CashflowBatchFactory()
+    batch = finance_factories.CashflowBatchFactory(cutoff=cutoff)
 
     for venue in (venue1, venue2):
-        invoice = finance_factories.InvoiceFactory(reimbursementPoint=venue, date=datetime.date.today())
+        invoice = finance_factories.InvoiceFactory(reimbursementPoint=venue, date=cutoff)
         cashflow = finance_factories.CashflowFactory(
-            batch=batch, creationDate=datetime.date.today(), reimbursementPoint=venue, invoices=[invoice]
+            batch=batch, creationDate=cutoff, reimbursementPoint=venue, invoices=[invoice]
         )
         finance_factories.CollectivePricingFactory(
             collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
@@ -407,7 +419,6 @@ def test_with_venue_filter_old_bank_information_journey_with_pricings_and_collec
     assert len(rows) == 1
     row = rows[0]
 
-    fortnight = "2nde" if (datetime.date.today() - datetime.timedelta(days=1)).day > 15 else "1ère"
     invoice = finance_models.Invoice.query.filter(finance_models.Invoice.reimbursementPointId == venue1.id).one()
     batch = finance_models.CashflowBatch.query.one()
     collective_offer = educational_models.CollectiveOffer.query.filter(
@@ -454,20 +465,26 @@ def test_with_venue_filter_old_bank_information_journey_with_pricings_and_collec
 
 
 @pytest.mark.usefixtures("db_session")
-def test_with_reimbursement_period_filter_old_bank_information_journey_with_pricings_collective_use_case(client):
-    beginning_date_iso_format = (datetime.date.today() - datetime.timedelta(days=2)).isoformat()
-    ending_date_iso_format = (datetime.date.today() + datetime.timedelta(days=2)).isoformat()
+@pytest.mark.parametrize(
+    "cutoff,fortnight",
+    [(datetime.date(year=2023, month=1, day=16), "1ère"), (datetime.date(year=2023, month=1, day=1), "2nde")],
+)
+def test_with_reimbursement_period_filter_old_bank_information_journey_with_pricings_collective_use_case(
+    client, cutoff, fortnight
+):
+    beginning_date_iso_format = (cutoff - datetime.timedelta(days=2)).isoformat()
+    ending_date_iso_format = (cutoff + datetime.timedelta(days=2)).isoformat()
     offerer = offerers_factories.OffererFactory()
     venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
     finance_factories.BankInformationFactory(venue=venue)
-    batch = finance_factories.CashflowBatchFactory()
+    batch = finance_factories.CashflowBatchFactory(cutoff=cutoff)
     pro = users_factories.ProFactory()
     offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
     # Within the reimbursement period filter
-    invoice_1 = finance_factories.InvoiceFactory(reimbursementPoint=venue, date=datetime.date.today())
+    invoice_1 = finance_factories.InvoiceFactory(reimbursementPoint=venue, date=cutoff)
     cashflow_1 = finance_factories.CashflowFactory(
-        batch=batch, creationDate=datetime.date.today(), reimbursementPoint=venue, invoices=[invoice_1]
+        batch=batch, creationDate=cutoff, reimbursementPoint=venue, invoices=[invoice_1]
     )
     finance_factories.CollectivePricingFactory(
         collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
@@ -527,7 +544,6 @@ def test_with_reimbursement_period_filter_old_bank_information_journey_with_pric
     )
 
     for row, collective_booking in zip(rows, collective_bookings):
-        fortnight = "2nde" if (datetime.date.today() - datetime.timedelta(days=1)).day > 15 else "1ère"
         pricing = finance_models.Pricing.query.filter(
             finance_models.Pricing.collectiveBookingId == collective_booking.id
         ).one()
@@ -569,9 +585,13 @@ def test_with_reimbursement_period_filter_old_bank_information_journey_with_pric
 
 @pytest.mark.usefixtures("db_session")
 @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
-def test_with_venue_filter_new_bank_account_journey_with_pricings(client):
-    beginning_date_iso_format = (datetime.date.today() - datetime.timedelta(days=2)).isoformat()
-    ending_date_iso_format = (datetime.date.today() + datetime.timedelta(days=2)).isoformat()
+@pytest.mark.parametrize(
+    "cutoff,fortnight",
+    [(datetime.date(year=2023, month=1, day=16), "1ère"), (datetime.date(year=2023, month=1, day=1), "2nde")],
+)
+def test_with_venue_filter_new_bank_account_journey_with_pricings(client, cutoff, fortnight):
+    beginning_date_iso_format = (cutoff - datetime.timedelta(days=2)).isoformat()
+    ending_date_iso_format = (cutoff + datetime.timedelta(days=2)).isoformat()
     offerer = offerers_factories.OffererFactory()
     venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
     bank_account_1 = finance_factories.BankAccountFactory(offerer=offerer)
@@ -585,12 +605,12 @@ def test_with_venue_filter_new_bank_account_journey_with_pricings(client):
         venue=venue2, bankAccount=bank_account_2, timespan=(datetime.datetime.utcnow(),)
     )
 
-    batch = finance_factories.CashflowBatchFactory()
+    batch = finance_factories.CashflowBatchFactory(cutoff=cutoff)
 
     for bank_account, venue in zip((bank_account_1, bank_account_2), (venue1, venue2)):
-        invoice = finance_factories.InvoiceFactory(bankAccount=bank_account, date=datetime.date.today())
+        invoice = finance_factories.InvoiceFactory(bankAccount=bank_account, date=cutoff)
         cashflow = finance_factories.CashflowFactory(
-            batch=batch, creationDate=datetime.date.today(), bankAccount=bank_account, invoices=[invoice]
+            batch=batch, creationDate=cutoff, bankAccount=bank_account, invoices=[invoice]
         )
         finance_factories.PricingFactory(
             booking__stock__offer__venue=venue, status=finance_models.PricingStatus.INVOICED, cashflows=[cashflow]
@@ -614,7 +634,6 @@ def test_with_venue_filter_new_bank_account_journey_with_pricings(client):
     assert len(rows) == 1
     row = rows[0]
 
-    fortnight = "2nde" if (datetime.date.today() - datetime.timedelta(days=1)).day > 15 else "1ère"
     invoice = finance_models.Invoice.query.filter(finance_models.Invoice.bankAccountId == bank_account_1.id).one()
     batch = finance_models.CashflowBatch.query.one()
     offer = offers_models.Offer.query.filter(offers_models.Offer.venueId == venue1.id).one()
@@ -647,21 +666,25 @@ def test_with_venue_filter_new_bank_account_journey_with_pricings(client):
 
 @pytest.mark.usefixtures("db_session")
 @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
-def test_with_reimbursement_period_filter_new_bank_account_journey_with_pricings(client):
-    beginning_date_iso_format = (datetime.date.today() - datetime.timedelta(days=2)).isoformat()
-    ending_date_iso_format = (datetime.date.today() + datetime.timedelta(days=2)).isoformat()
+@pytest.mark.parametrize(
+    "cutoff,fortnight",
+    [(datetime.date(year=2023, month=1, day=16), "1ère"), (datetime.date(year=2023, month=1, day=1), "2nde")],
+)
+def test_with_reimbursement_period_filter_new_bank_account_journey_with_pricings(client, cutoff, fortnight):
+    beginning_date_iso_format = (cutoff - datetime.timedelta(days=2)).isoformat()
+    ending_date_iso_format = (cutoff + datetime.timedelta(days=2)).isoformat()
     offerer = offerers_factories.OffererFactory()
     venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
     bank_account = finance_factories.BankAccountFactory(offerer=offerer)
     offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
-    batch = finance_factories.CashflowBatchFactory()
+    batch = finance_factories.CashflowBatchFactory(cutoff=cutoff)
     pro = users_factories.ProFactory()
     offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
     # Within the reimbursement period filter
-    invoice_1 = finance_factories.InvoiceFactory(bankAccount=bank_account, date=datetime.date.today())
+    invoice_1 = finance_factories.InvoiceFactory(bankAccount=bank_account, date=cutoff)
     cashflow_1 = finance_factories.CashflowFactory(
-        batch=batch, creationDate=datetime.date.today(), bankAccount=bank_account, invoices=[invoice_1]
+        batch=batch, creationDate=cutoff, bankAccount=bank_account, invoices=[invoice_1]
     )
     finance_factories.PricingFactory(
         booking__stock__offer__venue=venue,
@@ -721,7 +744,6 @@ def test_with_reimbursement_period_filter_new_bank_account_journey_with_pricings
     )
 
     for row, booking in zip(rows, bookings):
-        fortnight = "2nde" if (datetime.date.today() - datetime.timedelta(days=1)).day > 15 else "1ère"
         pricing = finance_models.Pricing.query.filter(finance_models.Pricing.bookingId == booking.id).one()
         cashflow = pricing.cashflows[0]
         invoice = cashflow.invoices[0]
@@ -754,9 +776,13 @@ def test_with_reimbursement_period_filter_new_bank_account_journey_with_pricings
 
 @pytest.mark.usefixtures("db_session")
 @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
-def test_with_venue_filter_new_bank_account_journey_with_pricings_collective_use_case(client):
-    beginning_date_iso_format = (datetime.date.today() - datetime.timedelta(days=2)).isoformat()
-    ending_date_iso_format = (datetime.date.today() + datetime.timedelta(days=2)).isoformat()
+@pytest.mark.parametrize(
+    "cutoff,fortnight",
+    [(datetime.date(year=2023, month=1, day=16), "1ère"), (datetime.date(year=2023, month=1, day=1), "2nde")],
+)
+def test_with_venue_filter_new_bank_account_journey_with_pricings_collective_use_case(client, cutoff, fortnight):
+    beginning_date_iso_format = (cutoff - datetime.timedelta(days=2)).isoformat()
+    ending_date_iso_format = (cutoff + datetime.timedelta(days=2)).isoformat()
     offerer = offerers_factories.OffererFactory()
     venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
     bank_account_1 = finance_factories.BankAccountFactory(offerer=offerer)
@@ -770,12 +796,12 @@ def test_with_venue_filter_new_bank_account_journey_with_pricings_collective_use
         venue=venue2, bankAccount=bank_account_2, timespan=(datetime.datetime.utcnow(),)
     )
 
-    batch = finance_factories.CashflowBatchFactory()
+    batch = finance_factories.CashflowBatchFactory(cutoff=cutoff)
 
     for bank_account, venue in zip((bank_account_1, bank_account_2), (venue1, venue2)):
-        invoice = finance_factories.InvoiceFactory(bankAccount=bank_account, date=datetime.date.today())
+        invoice = finance_factories.InvoiceFactory(bankAccount=bank_account, date=cutoff)
         cashflow = finance_factories.CashflowFactory(
-            batch=batch, creationDate=datetime.date.today(), bankAccount=bank_account, invoices=[invoice]
+            batch=batch, creationDate=cutoff, bankAccount=bank_account, invoices=[invoice]
         )
         finance_factories.CollectivePricingFactory(
             collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
@@ -801,7 +827,6 @@ def test_with_venue_filter_new_bank_account_journey_with_pricings_collective_use
     assert len(rows) == 1
     row = rows[0]
 
-    fortnight = "2nde" if (datetime.date.today() - datetime.timedelta(days=1)).day > 15 else "1ère"
     invoice = finance_models.Invoice.query.filter(finance_models.Invoice.bankAccountId == bank_account_1.id).one()
     batch = finance_models.CashflowBatch.query.one()
     collective_offer = educational_models.CollectiveOffer.query.filter(
@@ -844,21 +869,27 @@ def test_with_venue_filter_new_bank_account_journey_with_pricings_collective_use
 
 @pytest.mark.usefixtures("db_session")
 @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
-def test_with_reimbursement_period_filter_new_bank_account_journey_with_pricings_collective_use_case(client):
-    beginning_date_iso_format = (datetime.date.today() - datetime.timedelta(days=2)).isoformat()
-    ending_date_iso_format = (datetime.date.today() + datetime.timedelta(days=2)).isoformat()
+@pytest.mark.parametrize(
+    "cutoff,fortnight",
+    [(datetime.date(year=2023, month=1, day=16), "1ère"), (datetime.date(year=2023, month=1, day=1), "2nde")],
+)
+def test_with_reimbursement_period_filter_new_bank_account_journey_with_pricings_collective_use_case(
+    client, cutoff, fortnight
+):
+    beginning_date_iso_format = (cutoff - datetime.timedelta(days=2)).isoformat()
+    ending_date_iso_format = (cutoff + datetime.timedelta(days=2)).isoformat()
     offerer = offerers_factories.OffererFactory()
     venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
     bank_account = finance_factories.BankAccountFactory(offerer=offerer)
     offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
-    batch = finance_factories.CashflowBatchFactory()
+    batch = finance_factories.CashflowBatchFactory(cutoff=cutoff)
     pro = users_factories.ProFactory()
     offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
     # Within the reimbursement period filter
-    invoice_1 = finance_factories.InvoiceFactory(bankAccount=bank_account, date=datetime.date.today())
+    invoice_1 = finance_factories.InvoiceFactory(bankAccount=bank_account, date=cutoff)
     cashflow_1 = finance_factories.CashflowFactory(
-        batch=batch, creationDate=datetime.date.today(), bankAccount=bank_account, invoices=[invoice_1]
+        batch=batch, creationDate=cutoff, bankAccount=bank_account, invoices=[invoice_1]
     )
     finance_factories.CollectivePricingFactory(
         collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
@@ -918,7 +949,6 @@ def test_with_reimbursement_period_filter_new_bank_account_journey_with_pricings
     )
 
     for row, collective_booking in zip(rows, collective_bookings):
-        fortnight = "2nde" if (datetime.date.today() - datetime.timedelta(days=1)).day > 15 else "1ère"
         pricing = finance_models.Pricing.query.filter(
             finance_models.Pricing.collectiveBookingId == collective_booking.id
         ).one()
