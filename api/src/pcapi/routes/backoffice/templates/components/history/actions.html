@@ -71,6 +71,11 @@
               {% endif %}
               {% set provider_id = action.extraData.get('provider_id') %}
               {% if provider_id %}{{ action.extraData.get('provider_name') | empty_string_if_null }} (Provider ID : {{ provider_id }}){% endif %}
+              {% set ds_dossier_id = action.extraData.get('ds_dossier_id') %}
+              {% if ds_dossier_id %}
+                {% set link = "https://www.demarches-simplifiees.fr/dossiers/" + ds_dossier_id|string %}
+                <a href="{{ link }}" target="_blank">Dossier Démarches Simplifiées n°{{ ds_dossier_id }}</a>
+              {% endif %}
             {% endif %}
           </td>
           <td>{{ action.authorUser.full_name if action.authorUser else None | empty_string_if_null }}</td>

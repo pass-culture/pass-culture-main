@@ -75,6 +75,10 @@ def find_pro_user_by_email_query(email: str) -> BaseQuery:
     return _find_user_by_email_query(email).filter(models.User.has_pro_role.is_(True))  # type: ignore [attr-defined]
 
 
+def find_pro_or_non_attached_pro_user_by_email_query(email: str) -> BaseQuery:
+    return _find_user_by_email_query(email).filter(sa.or_(models.User.has_pro_role.is_(True), models.User.has_non_attached_pro_role.is_(True)))  # type: ignore [attr-defined]
+
+
 def get_newly_eligible_age_18_users(since: date) -> list[models.User]:
     """get users that are eligible between `since` (excluded) and now (included) and that have
     created their account before `since`"""

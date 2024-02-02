@@ -1,3 +1,4 @@
+from decimal import Decimal
 import logging
 import re
 import typing
@@ -6,6 +7,7 @@ from flask import url_for
 import pytest
 
 from pcapi.core.finance import factories as finance_factories
+from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
@@ -18,9 +20,11 @@ from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.backoffice.pro.forms import TypeOptions
 from pcapi.utils.human_ids import humanize
 
+from .helpers import button as button_helpers
 from .helpers import html_parser
 from .helpers import search as search_helpers
 from .helpers.get import GetEndpointHelper
+from .helpers.post import PostEndpointHelper
 from .helpers.url import assert_response_location
 
 
@@ -666,3 +670,211 @@ class LogsTest:
             "searchNbResults": 1,
             "searchProType": "offerer",
         }
+
+
+class CreateOffererButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.CREATE_PRO_ENTITY
+    button_label = "Créer une structure"
+
+    @property
+    def path(self):
+        return url_for("backoffice_web.pro.search_pro")
+
+
+class GetCreateOffererFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.pro.get_create_offerer_form"
+    needed_permission = perm_models.Permissions.CREATE_PRO_ENTITY
+
+    def test_get_create_offerer_form(self, authenticated_client):
+        url = url_for(self.endpoint)
+
+        with assert_num_queries(2):  # session + current user
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+
+@pytest.fixture(name="non_diffusible_tag")
+def non_diffusible_tag_fixture():
+    return offerers_factories.OffererTagFactory(name="non-diffusible", label="Non-diffusible")
+
+
+class CreateOffererTest(PostEndpointHelper):
+    """
+    Create non-diffusible offerer and venue.
+    TestingBackend is used in pcapi.connectors.sirene => Any SIREN/SIRET starting with '9' is non-diffusible
+    """
+
+    endpoint = "backoffice_web.pro.create_offerer"
+    needed_permission = perm_models.Permissions.CREATE_PRO_ENTITY
+
+    def test_create_offerer(self, legit_user, authenticated_client, non_diffusible_tag):
+        user = users_factories.NonAttachedProFactory()
+
+        form_data = {
+            "email": user.email,
+            "siret": "90000000100001",
+            "public_name": "Le Masque de Fer",
+            "venue_type_code": offerers_models.VenueTypeCode.PERFORMING_ARTS.name,
+            "web_presence": "https://www.example.com, https://offers.example.com",
+            "target": offerers_models.Target.INDIVIDUAL.name,
+            "ds_id": "12345",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, form=form_data)
+        assert response.status_code == 303
+
+        new_offerer: offerers_models.Offerer = offerers_models.Offerer.query.one()
+        assert new_offerer.siren == "900000001"
+        assert new_offerer.name == form_data["public_name"]
+        assert new_offerer.address == "[ND]"
+        assert new_offerer.postalCode == "06400"
+        assert new_offerer.city == "CANNES"
+        assert new_offerer.isActive
+        assert new_offerer.isNew
+        assert new_offerer.tags == [non_diffusible_tag]
+
+        new_user_offerer: offerers_models.UserOfferer = offerers_models.UserOfferer.query.one()
+        assert new_user_offerer.user == user
+        assert new_user_offerer.offerer == new_offerer
+        assert new_user_offerer.isValidated
+
+        new_venue: offerers_models.Venue = offerers_models.Venue.query.filter_by(siret=form_data["siret"]).one()
+        assert new_venue.name == form_data["public_name"]
+        assert new_venue.publicName == form_data["public_name"]
+        assert new_venue.venueTypeCode == offerers_models.VenueTypeCode.PERFORMING_ARTS
+        assert new_venue.address == "[ND]"
+        assert new_venue.departementCode == "06"
+        assert new_venue.postalCode == "06400"
+        assert new_venue.city == "CANNES"
+        assert new_venue.latitude == Decimal("43.55547")  # centroid
+        assert new_venue.longitude == Decimal("7.00459")  # centroid
+
+        venue_registration: offerers_models.VenueRegistration = offerers_models.VenueRegistration.query.one()
+        assert venue_registration.venueId == new_venue.id
+        assert venue_registration.target == offerers_models.Target.INDIVIDUAL
+        assert venue_registration.webPresence == form_data["web_presence"]
+
+        new_action: history_models.ActionHistory = history_models.ActionHistory.query.one()
+        assert new_action.actionType == history_models.ActionType.OFFERER_NEW
+        assert new_action.offererId == new_offerer.id
+        assert new_action.userId == user.id
+        assert new_action.authorUserId == legit_user.id
+        assert new_action.comment == "Structure créée depuis le backoffice"
+        assert new_action.extraData == {
+            "target": form_data["target"],
+            "venue_type_code": form_data["venue_type_code"],
+            "web_presence": form_data["web_presence"],
+            "ds_dossier_id": int(form_data["ds_id"]),
+            "sirene_info": {
+                "active": True,
+                "address": {"city": "CANNES", "insee_code": "06029", "postal_code": "06400", "street": "[ND]"},
+                "ape_code": "90.01Z",
+                "diffusible": False,
+                "head_office_siret": "90000000100001",
+                "legal_category_code": "1000",
+                "name": "[ND]",
+                "siren": "900000001",
+            },
+        }
+
+        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=new_offerer.id, _external=True)
+
+    def test_cant_create_offerer_because_email_does_not_exist(self, authenticated_client):
+        email = "unknown@example.com"
+
+        form_data = {
+            "email": email,
+            "siret": "90000000100001",
+            "public_name": "Le Masque de Fer",
+            "venue_type_code": offerers_models.VenueTypeCode.PERFORMING_ARTS.name,
+            "web_presence": "https://www.example.com",
+            "target": offerers_models.Target.INDIVIDUAL_AND_EDUCATIONAL.name,
+            "ds_id": "12345",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, form=form_data)
+        assert response.status_code == 400
+        assert html_parser.extract_warnings(response.data) == [f"Aucun compte pro n'existe avec l'adresse {email}"]
+
+    def test_cant_create_offerer_because_email_is_not_pro(self, authenticated_client):
+        user = users_factories.UserFactory()
+
+        form_data = {
+            "email": user.email,
+            "siret": "90000000100001",
+            "public_name": "Le Masque de Fer",
+            "venue_type_code": offerers_models.VenueTypeCode.PERFORMING_ARTS.name,
+            "web_presence": "https://www.example.com",
+            "target": offerers_models.Target.EDUCATIONAL.name,
+            "ds_id": "12345",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, form=form_data)
+        assert response.status_code == 400
+        assert html_parser.extract_warnings(response.data) == [f"Aucun compte pro n'existe avec l'adresse {user.email}"]
+
+    def test_cant_create_offerer_which_already_exists(self, authenticated_client):
+        offerers_factories.OffererFactory(siren="900000001")
+
+        form_data = {
+            "email": users_factories.NonAttachedProFactory().email,
+            "siret": "90000000100001",
+            "public_name": "Le Masque de Fer",
+            "venue_type_code": offerers_models.VenueTypeCode.PERFORMING_ARTS.name,
+            "web_presence": "https://www.example.com",
+            "target": offerers_models.Target.INDIVIDUAL.name,
+            "ds_id": "12345",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, form=form_data)
+        assert response.status_code == 400
+        assert html_parser.extract_warnings(response.data) == ["Une structure existe déjà avec le SIREN 900000001"]
+
+    @pytest.mark.parametrize(
+        "siret,expected_warning",
+        [
+            ("90000009900001", "L'établissement portant le SIRET 90000009900001 est fermé"),
+            (
+                "12345678900001",
+                "L'établissement portant le SIRET 12345678900001 est diffusible, l'acteur culturel peut créer la structure sur PC Pro",
+            ),
+        ],
+    )
+    def test_cant_create_offerer_because_of_insee_status(self, authenticated_client, siret, expected_warning):
+        user = users_factories.NonAttachedProFactory()
+
+        form_data = {
+            "email": user.email,
+            "siret": siret,
+            "public_name": "Le Masque de Fer",
+            "venue_type_code": offerers_models.VenueTypeCode.PERFORMING_ARTS.name,
+            "web_presence": "https://www.example.com, https://offers.example.com",
+            "target": offerers_models.Target.INDIVIDUAL.name,
+            "ds_id": "12345",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, form=form_data)
+        assert response.status_code == 400
+        assert html_parser.extract_warnings(response.data) == [expected_warning]
+
+        assert offerers_models.Offerer.query.count() == 0
+        assert offerers_models.Venue.query.count() == 0
+        assert offerers_models.VenueRegistration.query.count() == 0
+        assert history_models.ActionHistory.query.count() == 0
+
+    @pytest.mark.parametrize("missing_field", ["public_name", "venue_type_code", "target", "ds_id"])
+    def test_cant_create_offerer_because_of_missing_field(self, authenticated_client, missing_field):
+        form_data = {
+            "email": users_factories.NonAttachedProFactory().email,
+            "siret": "90000000100001",
+            "public_name": "Le Masque de Fer",
+            "venue_type_code": offerers_models.VenueTypeCode.PERFORMING_ARTS.name,
+            "web_presence": "https://www.example.com",
+            "target": offerers_models.Target.EDUCATIONAL.name,
+            "ds_id": "12345",
+        }
+        form_data[missing_field] = ""
+
+        response = self.post_to_endpoint(authenticated_client, form=form_data)
+        assert response.status_code == 400
+        assert html_parser.extract_warnings(response.data) == ["Information obligatoire"]

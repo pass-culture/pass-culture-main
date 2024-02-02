@@ -29,6 +29,7 @@ def test_get_siren():
         assert siren_info.address.postal_code == "75002"
         assert siren_info.address.city == "PARIS"
         assert siren_info.active
+        assert siren_info.diffusible
 
     # Test cache, no HTTP request
     siren_info = sirene.get_siren(siren)
@@ -99,6 +100,7 @@ def test_get_siren_with_non_public_data_do_not_raise():
         assert siren_info.siren == siren
         assert siren_info.name == "[ND]"
         assert siren_info.active is True
+        assert siren_info.diffusible is False
 
 
 @override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
@@ -148,6 +150,21 @@ def test_get_siret_with_non_public_data():
         )
         with pytest.raises(sirene.NonPublicDataException):
             sirene.get_siret(siret)
+
+
+@override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
+def test_get_siret_with_non_public_data_do_not_raise():
+    siret = "12345678900017"
+    with requests_mock.Mocker() as mock:
+        mock.get(
+            f"https://api.insee.fr/entreprises/sirene/V3/siret/{siret}",
+            json=sirene_test_data.RESPONSE_SIRET_COMPANY_WITH_NON_PUBLIC_DATA,
+        )
+        siret_info = sirene.get_siret(siret, raise_if_non_public=False)
+        assert siret_info.siret == siret
+        assert siret_info.name == "[ND]"
+        assert siret_info.active is True
+        assert siret_info.diffusible is False
 
 
 @override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")

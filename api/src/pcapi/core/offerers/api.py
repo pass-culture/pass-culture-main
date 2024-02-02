@@ -654,6 +654,8 @@ def _fill_in_offerer(
 def auto_tag_new_offerer(
     offerer: offerers_models.Offerer, siren_info: sirene.SirenInfo | None, user: users_models.User
 ) -> None:
+    tag_names_to_apply = set()
+
     if siren_info:
         tag_label = APE_TAG_MAPPING.get(siren_info.ape_code)
         if tag_label:
@@ -666,27 +668,25 @@ def auto_tag_new_offerer(
             else:
                 offerer.tags.append(tag)
 
-        if siren_info.siren in settings.EPN_SIREN:
-            tag_name = "ecosysteme-epn"
-            tag = offerers_models.OffererTag.query.filter_by(name=tag_name).one_or_none()
-            if not tag:
-                logger.error(
-                    "Could not assign tag to offerer: tag not found in DB",
-                    extra={"offerer": offerer.id, "tag_name": tag_name},
-                )
-            else:
-                offerer.tags.append(tag)
+        if not siren_info.diffusible:
+            tag_names_to_apply.add("non-diffusible")
 
-    if (user.email).split("@")[-1] in set(settings.NATIONAL_PARTNERS_EMAIL_DOMAINS.split(",")):
-        tag_name = "partenaire-national"
-        tag = offerers_models.OffererTag.query.filter_by(name=tag_name).one_or_none()
-        if not tag:
+        if siren_info.siren in settings.EPN_SIREN:
+            tag_names_to_apply.add("ecosysteme-epn")
+
+    if user.email.split("@")[-1] in set(settings.NATIONAL_PARTNERS_EMAIL_DOMAINS.split(",")):
+        tag_names_to_apply.add("partenaire-national")
+
+    if tag_names_to_apply:
+        tags = offerers_models.OffererTag.query.filter(offerers_models.OffererTag.name.in_(tag_names_to_apply)).all()
+        if len(tags) != len(tag_names_to_apply):
+            missing_tags = tag_names_to_apply - set(tag.name for tag in tags)
             logger.error(
                 "Could not assign tag to offerer: tag not found in DB",
-                extra={"offerer": offerer.id, "tag_name": tag_name},
+                extra={"offerer": offerer.id, "tag_name": ",".join(missing_tags)},
             )
-        else:
-            offerer.tags.append(tag)
+        offerer.tags.extend(tags)
+
     db.session.add(offerer)
 
 
@@ -708,10 +708,15 @@ def create_offerer(
     user: users_models.User,
     offerer_informations: offerers_serialize.CreateOffererQueryModel,
     new_onboarding_info: NewOnboardingInfo | None = None,
+    author: users_models.User | None = None,
+    comment: str | None = None,
+    **kwargs: typing.Any,
 ) -> models.UserOfferer:
     offerer = offerers_repository.find_offerer_by_siren(offerer_informations.siren)
     is_new = False
-    comment = None
+
+    if author is None:
+        author = user
 
     if offerer is not None:
         # The user can have his attachment rejected or deleted to the structure,
@@ -732,14 +737,19 @@ def create_offerer(
             # history is kept with same id and siren
             is_new = True
             _fill_in_offerer(offerer, offerer_informations)
-            comment = "Nouvelle demande sur un SIREN précédemment rejeté"
+            comment = (comment + "\n" if comment else "") + "Nouvelle demande sur un SIREN précédemment rejeté"
         else:
             user_offerer.validationStatus = ValidationStatus.NEW
             user_offerer.dateCreated = datetime.utcnow()
             extra_data: dict[str, typing.Any] = {}
             _add_new_onboarding_info_to_extra_data(new_onboarding_info, extra_data)
             history_api.add_action(
-                history_models.ActionType.USER_OFFERER_NEW, user, user=user, offerer=offerer, **extra_data
+                history_models.ActionType.USER_OFFERER_NEW,
+                author,
+                user=user,
+                offerer=offerer,
+                comment=comment,
+                **extra_data,
             )
     else:
         is_new = True
@@ -751,7 +761,7 @@ def create_offerer(
 
     assert offerer.siren  # helps mypy until Offerer.siren is set as NOT NULL
     try:
-        siren_info = sirene.get_siren(offerer.siren)
+        siren_info = sirene.get_siren(offerer.siren, raise_if_non_public=False)
     except sirene.SireneException as exc:
         logger.info("Could not fetch info from Sirene API", extra={"exc": exc})
         siren_info = None
@@ -763,9 +773,10 @@ def create_offerer(
         if siren_info:
             extra_data = {"sirene_info": dict(siren_info)}
         _add_new_onboarding_info_to_extra_data(new_onboarding_info, extra_data)
+        extra_data.update(kwargs)
 
         history_api.add_action(
-            history_models.ActionType.OFFERER_NEW, user, user=user, offerer=offerer, comment=comment, **extra_data
+            history_models.ActionType.OFFERER_NEW, author, user=user, offerer=offerer, comment=comment, **extra_data
         )
 
     # keep commit with repository.save() as long as siren is validated in pcapi.validation.models.offerer
