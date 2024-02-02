@@ -1,11 +1,15 @@
 import datetime
+import itertools
+import pathlib
 import random
 
 from factory.faker import faker
 
 from pcapi.core.categories import subcategories_v2
+from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.providers import factories as providers_factory
 from pcapi.core.providers.titelive_gtl import GTLS
@@ -13,6 +17,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.domain.movie_types import movie_types
 from pcapi.domain.music_types import music_types
 from pcapi.domain.show_types import show_types
+from pcapi.repository import atomic
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_gdpr_users import create_industrial_gdpr_users
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import (
     create_specific_cashflow_batch_without_invoice,
@@ -24,6 +29,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_with_
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_role_permissions import create_roles_with_permissions
 from pcapi.sandboxes.scripts.creators.test_cases import venues_mock
+import pcapi.sandboxes.thumbs.generic_pictures as generic_picture_thumbs
 from pcapi.scripts.venue.venue_label.create_venue_labels import create_venue_labels
 
 
@@ -47,6 +53,7 @@ def save_test_cases_sandbox() -> None:
     create_venues_with_gmaps_image()
     create_app_beneficiary()
     create_venues_with_practical_info_graphical_edge_cases()
+    create_institutional_website_offer_playlist()
 
 
 def create_offers_with_gtls() -> None:
@@ -110,9 +117,7 @@ def create_offers_with_gtl_id(gtl_id: str, size_per_gtl: int, venue: offerers_mo
         extraData={"gtl_id": gtl_id, "author": Fake.name(), "ean": ean, "editeur": Fake.name()},
     )
     for offer in offers:
-        offers_factories.StockFactory(
-            offer=offer,
-        )
+        offers_factories.StockFactory(offer=offer)
 
 
 def create_offers_with_same_ean() -> None:
@@ -638,3 +643,22 @@ def create_venues_with_practical_info_graphical_edge_cases() -> None:
     offerers_factories.VenueContactFactory(
         venue=partial_contact_venue, email=None, website="https://example.com", phone_number=None
     )
+
+
+@atomic()
+def create_institutional_website_offer_playlist() -> None:
+    criterion = criteria_factories.CriterionFactory(name="home_site_instit")
+    image_paths = sorted(pathlib.Path(generic_picture_thumbs.__path__[0]).iterdir())
+    portrait_image_paths = image_paths[13:18]
+
+    for i, image_path in zip(range(1, 11), itertools.cycle(portrait_image_paths)):
+        offer = offers_factories.OfferFactory(name=f"Offre {i} de la playlist du site institutionnel")
+        offers_factories.StockFactory(offer=offer)
+        criteria_factories.OfferCriterionFactory(offerId=offer.id, criterionId=criterion.id)
+
+        offers_api.create_mediation(
+            user=None,
+            offer=offer,
+            credit=f"Photographe {i}",
+            image_as_bytes=image_path.read_bytes(),
+        )
