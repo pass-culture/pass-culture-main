@@ -24,6 +24,7 @@ export const defaultCollectiveTemplateOffer: CollectiveOfferTemplateResponseMode
     isExpired: false,
     isSoldOut: false,
     isFavorite: false,
+    isTemplate: true,
     name: 'Mon offre vitrine',
     offerVenue: {
       venueId: 1,

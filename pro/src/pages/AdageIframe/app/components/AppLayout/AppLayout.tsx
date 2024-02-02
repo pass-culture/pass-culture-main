@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 
 import { AdageFrontRoles } from 'apiClient/adage'
@@ -19,7 +20,8 @@ export const AppLayout = (): JSX.Element => {
   const { pathname, search } = useLocation()
   const params = new URLSearchParams(search)
 
-  const isDiscoveryPage = pathname === '/adage-iframe/decouverte'
+  const isFullWidthPage =
+    pathname === '/adage-iframe/decouverte' || pathname.includes('/offre/')
   const isDiscoveryActive = useActiveFeature('WIP_ENABLE_DISCOVERY')
   const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
   const isUserInMarseilleProgram = (adageUser.programs ?? []).some(
@@ -35,12 +37,13 @@ export const AppLayout = (): JSX.Element => {
     venueId ||
     redirectToMarseilleSearch ||
     adageUser.role === AdageFrontRoles.READONLY
-
   return (
     <div>
       <AdageHeader />
       <main
-        className={isDiscoveryPage ? '' : styles['app-layout-content']}
+        className={classNames({
+          [styles['app-layout-content']]: !isFullWidthPage,
+        })}
         id="content"
       >
         <Routes>
