@@ -100,7 +100,7 @@ types-pyyaml = "^6.0.12.12"
 types-redis = "^4.6.0.20240106"
 types-urllib3 = "^1.26.25.14"
 djlint = "1.34.1"
-commitizen = "^3.13.0"
+commitizen = "^3.14.0"
 types-requests = "<2.32.0"
 types-protobuf = "^4.24.0.20240129"
 
