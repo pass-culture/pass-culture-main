@@ -9,7 +9,7 @@ from pcapi.serialization.decorator import spectree_serialize
 from . import serializers
 
 
-PLAYLIST_MAX_SIZE = 20
+PLAYLIST_MAX_SIZE = 10
 
 
 @public_api.route("/institutional/playlist/<tag_name>", methods=["GET"])
