@@ -42,7 +42,7 @@ class CollectiveOffersPublicPatchOfferTest:
 
         national_program = educational_factories.NationalProgramFactory()
 
-        domain = educational_factories.EducationalDomainFactory()
+        domain = educational_factories.EducationalDomainFactory(nationalPrograms=[national_program])
         educational_institution = educational_factories.EducationalInstitutionFactory()
         offer = educational_factories.CollectiveOfferFactory(
             imageCredit="pouet",

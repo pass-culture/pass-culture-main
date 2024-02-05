@@ -118,6 +118,9 @@ class FeatureToggle(enum.Enum):
     WIP_PARTNER_PAGE = 'Activer la nouvelle version des pages "Partenaire"'
     WIP_ENABLE_PRO_SIDE_NAV = "Refonte de la navigation de l'app pro"
     WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN = "Activer le nouveau design des offres sur adage"
+    WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API = (
+        "Activer les nouvelles règles de création et d'édition d'offres collecrives pour l'API publique (collective)"
+    )
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -189,6 +192,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
 if settings.IS_PROD or settings.IS_STAGING:
     FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_ENABLE_OFFER_CREATION_API_V1,)
     FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_ENABLE_FINANCE_INCIDENT,)
+    FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API,)
 
 if settings.IS_TESTING:
     testing_features_disabled_by_default = set(FEATURES_DISABLED_BY_DEFAULT)

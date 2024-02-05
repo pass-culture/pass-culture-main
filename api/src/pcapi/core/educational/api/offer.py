@@ -31,6 +31,7 @@ from pcapi.core.offers import validation as offer_validation
 from pcapi.core.providers import models as providers_models
 from pcapi.core.users.models import User
 from pcapi.models import db
+from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
 from pcapi.routes.adage.v1.serialization import prebooking
@@ -482,6 +483,9 @@ def create_collective_offer_public(
     if not len(educational_domains) == len(body.domains):
         raise exceptions.EducationalDomainsNotFound()
 
+    if feature.FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API.is_active():
+        offer_validation.validate_national_program(body.nationalProgramId, body.domains)
+
     institution = educational_repository.get_educational_institution_public(
         institution_id=body.educational_institution_id,
         uai=body.educational_institution,
@@ -595,6 +599,9 @@ def edit_collective_offer_public(
             domains = educational_repository.get_educational_domains_from_ids(value)
             if len(domains) != len(value):
                 raise exceptions.EducationalDomainsNotFound()
+
+            if feature.FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API.is_active():
+                offer_validation.validate_national_program(new_values.get("nationalProgramId"), value)
             offer.domains = domains
         elif key in ("educationalInstitutionId", "educationalInstitution"):
             if value is not None:

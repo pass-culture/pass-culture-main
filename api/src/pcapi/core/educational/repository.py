@@ -1074,7 +1074,11 @@ def get_query_for_collective_offers_template_by_ids_for_user(user: User, ids: It
 
 
 def get_educational_domains_from_ids(ids: Iterable[int]) -> list[educational_models.EducationalDomain]:
-    return educational_models.EducationalDomain.query.filter(educational_models.EducationalDomain.id.in_(ids)).all()
+    return (
+        educational_models.EducationalDomain.query.filter(educational_models.EducationalDomain.id.in_(ids))
+        .options(sa.orm.joinedload(educational_models.EducationalDomain.nationalPrograms))
+        .all()
+    )
 
 
 def get_all_educational_domains_ordered_by_name() -> list[educational_models.EducationalDomain]:

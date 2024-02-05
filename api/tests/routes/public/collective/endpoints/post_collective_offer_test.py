@@ -11,6 +11,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as provider_factories
+from pcapi.core.testing import assert_num_queries
 
 import tests
 from tests.routes import image_data
@@ -37,19 +38,19 @@ def venue_fixture(venue_provider):
     return venue_provider.venue
 
 
+@pytest.fixture(name="national_program")
+def national_program_fixture():
+    return educational_factories.NationalProgramFactory()
+
+
 @pytest.fixture(name="domain")
-def domain_fixture():
-    return educational_factories.EducationalDomainFactory()
+def domain_fixture(national_program):
+    return educational_factories.EducationalDomainFactory(nationalPrograms=[national_program])
 
 
 @pytest.fixture(name="institution")
 def institution_fixture():
     return educational_factories.EducationalInstitutionFactory()
-
-
-@pytest.fixture(name="national_program")
-def national_program_fixture():
-    return educational_factories.NationalProgramFactory()
 
 
 @pytest.fixture(name="payload")
@@ -108,8 +109,32 @@ class CollectiveOffersPublicPostOfferTest:
     def test_post_offers(
         self, public_client, payload, venue_provider, api_key, domain, institution, national_program, venue
     ):
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
-            response = public_client.post("/v2/collective/offers/", json=payload)
+        # TODO(jeremieb): it seems that we have a lot of queries...
+        # 1. fetch feature flag
+        # 2. fetch api key
+        # 3. fetch venue
+        # 4. fetch educational domain
+        # 5. fetch educational domain (again)
+        # 6. fetch educational institution
+        # 7. insert collective offer
+        # 8. insert collective offer domain
+        # 9. insert collective stock
+        # 10. fetch offer
+        # 11. fetch offer validation rule
+        # 12. update collective offer
+        # 13. savepoint
+        # 14. fetch collective offer
+        # 15. update collective offer
+        # 16. savepoint
+        # 17. fetch collective offer
+        # 18. fetch national program
+        # 19. fetch collective stock
+        # 20. fetch collective booking
+        # 21. fetch educational domain
+        # 22. fetch educational institution
+        with assert_num_queries(22):
+            with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+                response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 200
 
@@ -166,6 +191,7 @@ class CollectiveOffersPublicPostOfferTest:
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
+        assert "__root__" in response.json
 
     def test_invalid_api_key(self, public_client, payload):
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
@@ -205,6 +231,7 @@ class CollectiveOffersPublicPostOfferTest:
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
+        assert "imageFile" in response.json
 
     def test_invalid_image_type(self, public_client, payload, api_key):
         payload["imageFile"] = image_data.WRONG_IMAGE_TYPE
@@ -213,6 +240,7 @@ class CollectiveOffersPublicPostOfferTest:
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
+        assert "imageFile" in response.json
 
     def test_post_offers_institution_not_active(self, public_client, payload, api_key):
         institution = educational_factories.EducationalInstitutionFactory(isActive=False)
@@ -230,6 +258,16 @@ class CollectiveOffersPublicPostOfferTest:
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 404
+        assert "domains" in response.json
+
+    def test_national_program_not_linked_to_domains(self, public_client, payload, api_key):
+        payload["nationalProgramId"] = educational_factories.NationalProgramFactory().id
+
+        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+            response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 400
+        assert "national_program" in response.json
 
     def test_invalid_offer_venue(self, public_client, payload, api_key, venue):
         payload["offerVenue"] = {
