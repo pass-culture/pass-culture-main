@@ -16,7 +16,7 @@ def check_user_can_validate_bookings_v2(user: User, offerer_id: int) -> None:
 
 
 def check_user_can_alter_venue(user: User, venue_id: int) -> None:
-    venue = Venue.query.get(venue_id)
+    venue = Venue.query.filter(Venue.id == venue_id).one_or_none()
 
     if not venue:
         api_errors_not_found = ResourceNotFoundError()
