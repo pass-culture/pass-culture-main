@@ -81,6 +81,7 @@ def run_migrations() -> None:
                     include_schemas=True,
                     transaction_per_migration=True,
                     compare_server_default=True,
+                    literal_binds=context.is_offline_mode(),
                 )
                 with context.begin_transaction():
                     context.run_migrations()
