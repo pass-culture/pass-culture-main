@@ -17,258 +17,258 @@ concurrency:
   cancel-in-progress: ${{ github.ref == 'refs/heads/master' && false || true }}
 
 jobs:
-  check-api:
-    name: "Check api folder changes"
-    uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
-    with:
-      folder: api/**
+  # check-api:
+  #   name: "Check api folder changes"
+  #   uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
+  #   with:
+  #     folder: api/**
 
-  check-pro:
-    name: "Check pro folder changes"
-    uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
-    with:
-      folder: pro/**
+  # check-pro:
+  #   name: "Check pro folder changes"
+  #   uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
+  #   with:
+  #     folder: pro/**
 
-  check-maintenance-site:
-    name: "Check maintenance-site folder changes"
-    uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
-    with:
-      folder: maintenance-site/**
+  # check-maintenance-site:
+  #   name: "Check maintenance-site folder changes"
+  #   uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
+  #   with:
+  #     folder: maintenance-site/**
 
-  check-db-migrations:
-    name: "Check db migration folder changes"
-    uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
-    with:
-      folder: |-
-        api/src/pcapi/alembic/versions/**
-        api/src/pcapi/alembic/run_migrations.py
+  # check-db-migrations:
+  #   name: "Check db migration folder changes"
+  #   uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
+  #   with:
+  #     folder: |-
+  #       api/src/pcapi/alembic/versions/**
+  #       api/src/pcapi/alembic/run_migrations.py
 
-  build-api:
-    name: "Build API (backend) Docker image"
-    needs: [check-api, check-pro]
-    if: |
-      needs.check-api.outputs.folder_changed == 'true' ||
-      needs.check-pro.outputs.folder_changed == 'true' ||
-      github.ref == 'refs/heads/master' ||
-      startsWith(github.ref,'refs/heads/maint/v')
-    uses: ./.github/workflows/dev_on_workflow_build_and_push_docker_images.yml
-    with:
-      ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-      tag: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-      # Needed to run end-to-end tests, i.e. when either "pro" or
-      # "api" source code changes, which is the condition under which
-      # this step is run. In other words: always.
-      pcapi: true
-      # Extra when tests are run on master before deployment on testing.
-      console: ${{ github.ref == 'refs/heads/master' }}
-      # Needed to run backend tests.
-      tests: ${{ needs.check-api.outputs.folder_changed == 'true' || github.ref == 'refs/heads/master' || startsWith(github.ref,'refs/heads/maint/v') }}
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+  # build-api:
+  #   name: "Build API (backend) Docker image"
+  #   needs: [check-api, check-pro]
+  #   if: |
+  #     needs.check-api.outputs.folder_changed == 'true' ||
+  #     needs.check-pro.outputs.folder_changed == 'true' ||
+  #     github.ref == 'refs/heads/master' ||
+  #     startsWith(github.ref,'refs/heads/maint/v')
+  #   uses: ./.github/workflows/dev_on_workflow_build_and_push_docker_images.yml
+  #   with:
+  #     ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+  #     tag: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+  #     # Needed to run end-to-end tests, i.e. when either "pro" or
+  #     # "api" source code changes, which is the condition under which
+  #     # this step is run. In other words: always.
+  #     pcapi: true
+  #     # Extra when tests are run on master before deployment on testing.
+  #     console: ${{ github.ref == 'refs/heads/master' }}
+  #     # Needed to run backend tests.
+  #     tests: ${{ needs.check-api.outputs.folder_changed == 'true' || github.ref == 'refs/heads/master' || startsWith(github.ref,'refs/heads/maint/v') }}
+  #   secrets:
+  #     GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+  #     GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-  run-mypy-cop:
-    name: "MyPy cop"
-    needs: check-api
-    if: github.ref != 'refs/heads/master' && needs.check-api.outputs.folder_changed == 'true'
-    uses: ./.github/workflows/dev_on_workflow_mypy_cop.yml
+  # run-mypy-cop:
+  #   name: "MyPy cop"
+  #   needs: check-api
+  #   if: github.ref != 'refs/heads/master' && needs.check-api.outputs.folder_changed == 'true'
+  #   uses: ./.github/workflows/dev_on_workflow_mypy_cop.yml
 
-  update-api-client-template:
-    name: "Update api client template"
-    needs: build-api
-    uses: ./.github/workflows/dev_on_workflow_update_api_client_template.yml
-    if: github.base_ref == 'master'
-    concurrency:
-      group: update-api-client-template-${{ github.ref }}
-      cancel-in-progress: true
-    with:
-      PCAPI_DOCKER_TAG: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-      TRIGGER_ONLY_ON_API_CHANGE: true
-      TRIGGER_ONLY_ON_DEPENDENCY_CHANGE: true
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-    secrets:
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+  # update-api-client-template:
+  #   name: "Update api client template"
+  #   needs: build-api
+  #   uses: ./.github/workflows/dev_on_workflow_update_api_client_template.yml
+  #   if: github.base_ref == 'master'
+  #   concurrency:
+  #     group: update-api-client-template-${{ github.ref }}
+  #     cancel-in-progress: true
+  #   with:
+  #     PCAPI_DOCKER_TAG: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+  #     TRIGGER_ONLY_ON_API_CHANGE: true
+  #     TRIGGER_ONLY_ON_DEPENDENCY_CHANGE: true
+  #     CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+  #   secrets:
+  #     GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+  #     GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
 
-  prepare-cache-master:
-    name: "Reset cache on master on dependency update"
-    uses: ./.github/workflows/dev_on_workflow_update_api_client_template.yml
-    if: github.ref == 'refs/heads/master'
-    with:
-      PCAPI_DOCKER_TAG: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-      TRIGGER_ONLY_ON_API_CHANGE: false
-      TRIGGER_ONLY_ON_DEPENDENCY_CHANGE: true
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-    secrets:
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+  # prepare-cache-master:
+  #   name: "Reset cache on master on dependency update"
+  #   uses: ./.github/workflows/dev_on_workflow_update_api_client_template.yml
+  #   if: github.ref == 'refs/heads/master'
+  #   with:
+  #     PCAPI_DOCKER_TAG: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+  #     TRIGGER_ONLY_ON_API_CHANGE: false
+  #     TRIGGER_ONLY_ON_DEPENDENCY_CHANGE: true
+  #     CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+  #   secrets:
+  #     GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+  #     GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
 
   test-api:
     name: "Test api"
-    needs: [check-api, build-api]
-    if: |
-      needs.check-api.outputs.folder_changed == 'true' ||
-      github.ref == 'refs/heads/master' ||
-      startsWith(github.ref,'refs/heads/maint/v')
+    # needs: [check-api, build-api]
+    # if: |
+    #   needs.check-api.outputs.folder_changed == 'true' ||
+    #   github.ref == 'refs/heads/master' ||
+    #   startsWith(github.ref,'refs/heads/maint/v')
     uses: ./.github/workflows/dev_on_workflow_tests_api.yml
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-  test-pro:
-    name: "Tests pro"
-    needs: check-pro
-    if: |
-      needs.check-pro.outputs.folder_changed == 'true' ||
-      github.ref == 'refs/heads/master' ||
-      startsWith(github.ref,'refs/heads/maint/v')
-    uses: ./.github/workflows/dev_on_workflow_tests_pro.yml
-    with:
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+  # test-pro:
+  #   name: "Tests pro"
+  #   needs: check-pro
+  #   if: |
+  #     needs.check-pro.outputs.folder_changed == 'true' ||
+  #     github.ref == 'refs/heads/master' ||
+  #     startsWith(github.ref,'refs/heads/maint/v')
+  #   uses: ./.github/workflows/dev_on_workflow_tests_pro.yml
+  #   with:
+  #     CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+  #   secrets:
+  #     GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+  #     GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-  dependabot-auto-merge:
-    name: "Dependabot"
-    needs: test-pro
-    if: |
-      github.event_name == 'pull_request' &&
-      github.actor == 'dependabot[bot]'
-    uses: ./.github/workflows/dev_on_workflow_dependabot_auto_merge.yml
+  # dependabot-auto-merge:
+  #   name: "Dependabot"
+  #   needs: test-pro
+  #   if: |
+  #     github.event_name == 'pull_request' &&
+  #     github.actor == 'dependabot[bot]'
+  #   uses: ./.github/workflows/dev_on_workflow_dependabot_auto_merge.yml
 
-  test-pro-e2e:
-    name: "Tests pro E2E"
-    needs: [check-api, check-pro, build-api]
-    if: |
-      needs.check-api.outputs.folder_changed == 'true' ||
-      needs.check-pro.outputs.folder_changed == 'true' ||
-      github.ref == 'refs/heads/master' ||
-      startsWith(github.ref,'refs/heads/maint/v')
-    uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-    with:
-      TAG: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+  # test-pro-e2e:
+  #   name: "Tests pro E2E"
+  #   needs: [check-api, check-pro, build-api]
+  #   if: |
+  #     needs.check-api.outputs.folder_changed == 'true' ||
+  #     needs.check-pro.outputs.folder_changed == 'true' ||
+  #     github.ref == 'refs/heads/master' ||
+  #     startsWith(github.ref,'refs/heads/maint/v')
+  #   uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
+  #   secrets:
+  #     GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+  #     GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+  #   with:
+  #     TAG: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+  #     CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
-  deploy-storybook:
-    name: "Deploy Storybook"
-    needs: check-pro
-    if: ${{ github.ref == 'refs/heads/master' && needs.check-pro.outputs.folder_changed == 'true' }}
-    uses: ./.github/workflows/dev_on_workflow_deploy_storybook.yml
+  # deploy-storybook:
+  #   name: "Deploy Storybook"
+  #   needs: check-pro
+  #   if: ${{ github.ref == 'refs/heads/master' && needs.check-pro.outputs.folder_changed == 'true' }}
+  #   uses: ./.github/workflows/dev_on_workflow_deploy_storybook.yml
 
-  deploy-validation-env:
-    name: "[PRO] Deploy PR version for validation"
-    needs: check-pro
-    uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
-    if: |
-      always() &&
-      github.base_ref == 'master' &&
-      needs.check-pro.outputs.folder_changed == 'true'
-    secrets:
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-    with:
-      ENV: "testing"
-      CHANNEL: ""
-      REF: "${{ github.ref }}"
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+  # deploy-validation-env:
+  #   name: "[PRO] Deploy PR version for validation"
+  #   needs: check-pro
+  #   uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
+  #   if: |
+  #     always() &&
+  #     github.base_ref == 'master' &&
+  #     needs.check-pro.outputs.folder_changed == 'true'
+  #   secrets:
+  #     GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+  #     GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+  #   with:
+  #     ENV: "testing"
+  #     CHANNEL: ""
+  #     REF: "${{ github.ref }}"
+  #     CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
-  deploy-to-testing:
-    name: "Deploy to testing"
-    needs: [test-api, test-pro]
-    if: |
-      always() &&
-      github.ref == 'refs/heads/master' &&
-      contains(fromJSON('["success", "skipped"]'), needs.test-api.result) &&
-      contains(fromJSON('["success", "skipped"]'), needs.test-pro.result)
-    uses: ./.github/workflows/dev_on_workflow_deploy.yml
-    with:
-      environment: testing
-      app_version: ${{ github.sha }}
-      teleport_version: 11.1.1
-      teleport_proxy: teleport.ehp.passculture.team:443
-      teleport_kubernetes_cluster: passculture-metier-ehp
-      deploy_api: ${{ needs.test-api.result == 'success' }}
-      deploy_pro: ${{ needs.test-pro.result == 'success' }}
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+  # deploy-to-testing:
+  #   name: "Deploy to testing"
+  #   needs: [test-api, test-pro]
+  #   if: |
+  #     always() &&
+  #     github.ref == 'refs/heads/master' &&
+  #     contains(fromJSON('["success", "skipped"]'), needs.test-api.result) &&
+  #     contains(fromJSON('["success", "skipped"]'), needs.test-pro.result)
+  #   uses: ./.github/workflows/dev_on_workflow_deploy.yml
+  #   with:
+  #     environment: testing
+  #     app_version: ${{ github.sha }}
+  #     teleport_version: 11.1.1
+  #     teleport_proxy: teleport.ehp.passculture.team:443
+  #     teleport_kubernetes_cluster: passculture-metier-ehp
+  #     deploy_api: ${{ needs.test-api.result == 'success' }}
+  #     deploy_pro: ${{ needs.test-pro.result == 'success' }}
+  #   secrets:
+  #     GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+  #     GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-  deploy-maintenance-site:
-    name: "Deploy maintenance site"
-    needs: check-maintenance-site
-    if: |
-      always() &&
-      github.ref == 'refs/heads/master' &&
-      needs.check-maintenance-site.outputs.folder_changed == 'true'
-    uses: ./.github/workflows/dev_on_workflow_deploy_maintenance_site.yml
-    secrets:
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+  # deploy-maintenance-site:
+  #   name: "Deploy maintenance site"
+  #   needs: check-maintenance-site
+  #   if: |
+  #     always() &&
+  #     github.ref == 'refs/heads/master' &&
+  #     needs.check-maintenance-site.outputs.folder_changed == 'true'
+  #   uses: ./.github/workflows/dev_on_workflow_deploy_maintenance_site.yml
+  #   secrets:
+  #     GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+  #     GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
 
-  ping-data-team-on-slack:
-    name: "Ping data team on slack"
-    needs: check-db-migrations
-    if: |
-      always() &&
-      github.ref == 'refs/heads/master' &&
-      needs.check-db-migrations.outputs.folder_changed == 'true'
-    uses: ./.github/workflows/dev_on_workflow_ping_data_team.yml
-    secrets:
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+  # ping-data-team-on-slack:
+  #   name: "Ping data team on slack"
+  #   needs: check-db-migrations
+  #   if: |
+  #     always() &&
+  #     github.ref == 'refs/heads/master' &&
+  #     needs.check-db-migrations.outputs.folder_changed == 'true'
+  #   uses: ./.github/workflows/dev_on_workflow_ping_data_team.yml
+  #   secrets:
+  #     GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+  #     GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
 
-  update-jira-issue:
-    name: "Update Jira issue"
-    if: ${{ always() && github.ref == 'refs/heads/master' }}
-    concurrency: update-jira-issue-${{ github.workflow }}-${{ github.ref }}
-    uses: ./.github/workflows/dev_on_workflow_update_jira_issues.yml
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+  # update-jira-issue:
+  #   name: "Update Jira issue"
+  #   if: ${{ always() && github.ref == 'refs/heads/master' }}
+  #   concurrency: update-jira-issue-${{ github.workflow }}-${{ github.ref }}
+  #   uses: ./.github/workflows/dev_on_workflow_update_jira_issues.yml
+  #   secrets:
+  #     GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+  #     GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-  slack-notify:
-    name: "Slack notification"
-    runs-on: ubuntu-latest
-    if: ${{ failure() && github.ref == 'refs/heads/master' }}
-    needs: deploy-to-testing
-    steps:
-      - uses: technote-space/workflow-conclusion-action@v3
-      - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v2'
-        with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: "Get Secret"
-        id: 'secrets'
-        uses: 'google-github-actions/get-secretmanager-secrets@v2'
-        with:
-          secrets: |-
-            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
-      - name: "Post to a Slack channel"
-        uses: slackapi/slack-github-action@v1.25.0
-        with:
-          # channel #alertes-deploiement
-          channel-id: "CQAMNFVPS"
-          payload: |
-            {
-              "attachments": [
-                {
-                  "mrkdwn_in": ["text"],
-                  "color": "#A30002",
-                  "author_name": "${{github.actor}}",
-                  "author_link": "https://github.com/${{github.actor}}",
-                  "author_icon": "https://github.com/${{github.actor}}.png",
-                  "title": "PCAPI Deployment",
-                  "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                  "text": "Le déploiement de la version `master` a échoué sur `testing` :boom:"
-                }
-              ],
-              "unfurl_links": false,
-              "unfurl_media": false
-            }
-        env:
-          SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
+  # slack-notify:
+  #   name: "Slack notification"
+  #   runs-on: ubuntu-latest
+  #   if: ${{ failure() && github.ref == 'refs/heads/master' }}
+  #   needs: deploy-to-testing
+  #   steps:
+  #     - uses: technote-space/workflow-conclusion-action@v3
+  #     - name: "Authentification to Google"
+  #       uses: "google-github-actions/auth@v2"
+  #       with:
+  #         workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+  #         service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+  #     - name: "Get Secret"
+  #       id: "secrets"
+  #       uses: "google-github-actions/get-secretmanager-secrets@v2"
+  #       with:
+  #         secrets: |-
+  #           SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
+  #     - name: "Post to a Slack channel"
+  #       uses: slackapi/slack-github-action@v1.25.0
+  #       with:
+  #         # channel #alertes-deploiement
+  #         channel-id: "CQAMNFVPS"
+  #         payload: |
+  #           {
+  #             "attachments": [
+  #               {
+  #                 "mrkdwn_in": ["text"],
+  #                 "color": "#A30002",
+  #                 "author_name": "${{github.actor}}",
+  #                 "author_link": "https://github.com/${{github.actor}}",
+  #                 "author_icon": "https://github.com/${{github.actor}}.png",
+  #                 "title": "PCAPI Deployment",
+  #                 "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
+  #                 "text": "Le déploiement de la version `master` a échoué sur `testing` :boom:"
+  #               }
+  #             ],
+  #             "unfurl_links": false,
+  #             "unfurl_media": false
+  #           }
+  #       env:
+  #         SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
