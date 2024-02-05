@@ -8,8 +8,8 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import { App } from '../App'
 
 vi.mock('hooks/useAnalytics', () => ({ useConfigureFirebase: vi.fn() }))
-vi.mock('hooks/useLogNavigation', () => ({ default: vi.fn() }))
-vi.mock('hooks/usePageTitle', () => ({ default: vi.fn() }))
+vi.mock('app/App/hook/useLogNavigation', () => ({ default: vi.fn() }))
+vi.mock('app/App/hook/usePageTitle', () => ({ default: vi.fn() }))
 vi.mock('@sentry/browser', () => ({ setUser: vi.fn() }))
 
 const renderApp = (storeOverrides: any, url = '/') =>

@@ -9,13 +9,13 @@ import Notification from 'components/Notification/Notification'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { useConfigureFirebase } from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
-import useFocus from 'hooks/useFocus'
-import useLogNavigation from 'hooks/useLogNavigation'
-import usePageTitle from 'hooks/usePageTitle'
 import { updateUser } from 'store/user/reducer'
 import { Consents, initCookieConsent } from 'utils/cookieConsentModal'
 
+import useFocus from './hook/useFocus'
 import { useLoadFeatureFlags } from './hook/useLoadFeatureFlags'
+import useLogNavigation from './hook/useLogNavigation'
+import usePageTitle from './hook/usePageTitle'
 
 window.beamer_config = { product_id: 'vjbiYuMS52566', lazy: true }
 

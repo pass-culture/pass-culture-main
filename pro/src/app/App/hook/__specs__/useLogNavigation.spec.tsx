@@ -1,10 +1,9 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 import { Routes, Route, Link } from 'react-router-dom'
 
+import useLogNavigation from 'app/App/hook/useLogNavigation'
 import * as useAnalytics from 'hooks/useAnalytics'
-import useLogNavigation from 'hooks/useLogNavigation'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 const mockLogEvent = vi.fn()
