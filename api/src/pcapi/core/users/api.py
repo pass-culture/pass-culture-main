@@ -4,7 +4,6 @@ from decimal import Decimal
 import enum
 import logging
 import re
-import secrets
 import typing
 
 from dateutil.relativedelta import relativedelta
@@ -103,44 +102,6 @@ def create_phone_validation_token(
     )
 
 
-def generate_and_save_token(
-    user: models.User,
-    token_type: models.TokenType,
-    expiration: datetime.datetime | None = None,
-    token_value: str | None = None,
-    extra_data: models.TokenExtraData | None = None,
-) -> models.Token:
-    assert token_type.name in models.TokenType.__members__, "Only registered token types are allowed"
-
-    if settings.IS_PERFORMANCE_TESTS:
-        token_value = f"performance-tests_{token_type.value}_{user.id}"
-    else:
-        token_value = token_value or secrets.token_urlsafe(32)
-
-    token = models.Token(
-        user=user,
-        value=token_value,
-        type=token_type,
-        expirationDate=expiration,
-        extraData=asdict(extra_data) if extra_data else None,  # type: ignore [arg-type]
-    )
-    repository.save(token)
-
-    return token
-
-
-def delete_expired_tokens() -> None:
-    models.Token.query.filter(
-        models.Token.expirationDate < datetime.datetime.utcnow() - users_constants.TOKEN_DELETION_AFTER_EXPIRATION_DELAY
-    ).delete()
-
-
-def delete_all_users_tokens(user: models.User) -> None:
-    models.Token.query.filter(models.Token.user == user).delete()
-    for token_type in token_utils.TokenType:
-        token_utils.Token.delete(token_type, user.id)
-
-
 def delete_all_users_phone_validation_tokens(user: models.User) -> None:
     token_utils.Token.delete(token_utils.TokenType.PHONE_VALIDATION, user.id)
 
@@ -191,8 +152,6 @@ def create_account(
 
     repository.save(user)
     logger.info("Created user account", extra={"user": user.id})
-
-    delete_all_users_tokens(user)
 
     if remote_updates:
         external_attributes_api.update_external_user(user)

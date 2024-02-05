@@ -882,15 +882,6 @@ class NonAttachedProFactory(ProFactory):
     roles = [models.UserRole.NON_ATTACHED_PRO]
 
 
-class TokenFactory(BaseFactory):
-    class Meta:
-        model = models.Token
-
-    type = models.TokenType.RESET_PASSWORD
-    user = factory.SubFactory(UserFactory)
-    value = factory.Sequence("XYZ{0}".format)
-
-
 class UserSessionFactory(BaseFactory):
     class Meta:
         model = models.UserSession
