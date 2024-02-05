@@ -351,7 +351,7 @@ def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
             tags_subquery.label("tags"),
             rules_subquery.label("rules"),
         )
-        .filter(offers_models.Offer.id.in_(_get_offer_ids_query(form).subquery()))
+        .filter(offers_models.Offer.id.in_(_get_offer_ids_query(form)))
         # 1-1 relationships so join will not increase the number of SQL rows
         .join(offers_models.Offer.venue)
         .join(offerers_models.Venue.managingOfferer)

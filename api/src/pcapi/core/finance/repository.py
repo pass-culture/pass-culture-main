@@ -45,7 +45,7 @@ def get_reimbursement_points_query(user: users_models.User) -> sqla_orm.Query:
             offerers_models.Venue.managingOffererId == offerers_models.UserOfferer.offererId,
         ).filter(offerers_models.UserOfferer.user == user, offerers_models.UserOfferer.isValidated)
     if venue_subquery.whereclause is not None:
-        venue_subquery = venue_subquery.with_entities(offerers_models.Venue.id).subquery()
+        venue_subquery = venue_subquery.with_entities(offerers_models.Venue.id)
         query = query.filter(offerers_models.Venue.id.in_(venue_subquery))
     return query
 
@@ -81,9 +81,7 @@ def get_invoices_query(
         reimbursement_point_subquery = reimbursement_point_subquery.filter(False)
 
     invoices = models.Invoice.query.filter(
-        models.Invoice.reimbursementPointId.in_(
-            reimbursement_point_subquery.with_entities(offerers_models.Venue.id).subquery()
-        )
+        models.Invoice.reimbursementPointId.in_(reimbursement_point_subquery.with_entities(offerers_models.Venue.id))
     )
 
     convert_to_datetime = lambda date: date_utils.get_day_start(date, utils.ACCOUNTING_TIMEZONE).astimezone(pytz.utc)
