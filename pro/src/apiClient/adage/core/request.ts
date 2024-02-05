@@ -206,7 +206,7 @@ const getRequestBody = (options: ApiRequestOptions): any => {
   return undefined
 }
 
-export const sendRequest = async (
+export const sendRequest = (
   config: OpenAPIConfig,
   options: ApiRequestOptions,
   url: string,
@@ -353,19 +353,14 @@ export const request = <T>(
         // so in that case we don't redirect to the login page (since the route is public)
         // when navigating in private routes, others calls will throw a 401
         // and redirect the user to the login page except if the call is made to users/signin
-        if (!error.url.includes('/users/current') && !error.url.includes('/users/signin')) {
+        if (
+          !error.url.includes('/users/current') &&
+          !error.url.includes('/users/signin')
+        ) {
           window.location.href = '/connexion'
         }
       }
-      if (
-        error instanceof Error &&
-        (error.message === 'Failed to fetch' ||
-          error.message.includes('NetworkError'))
-      ) {
-        console.error(error)
-      } else {
-        reject(error)
-      }
+      reject(error)
     }
   })
 }
