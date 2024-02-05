@@ -55,3 +55,25 @@ def get_national_program(program_id: int | None) -> models.NationalProgram | Non
         return None
 
     return models.NationalProgram.query.get(program_id)
+
+
+def link_domain_to_national_program_by_ids(domain_id: int, program_id: int, commit: bool = True) -> None:
+    domain = models.EducationalDomain.query.get(domain_id)
+    if not domain:
+        raise exceptions.EducationalDomainNotFound()
+
+    program = get_national_program(program_id)
+    if not program:
+        raise exceptions.NationalProgramNotFound()
+
+    link_domain_to_national_program(domain=domain, program=program, commit=commit)
+
+
+def link_domain_to_national_program(
+    domain: models.EducationalDomain, program: models.NationalProgram, commit: bool = True
+) -> None:
+    link = models.DomainToNationalProgram(domainId=domain.id, nationalProgramId=program.id)
+
+    db.session.add(link)
+    if commit:
+        db.session.commit()

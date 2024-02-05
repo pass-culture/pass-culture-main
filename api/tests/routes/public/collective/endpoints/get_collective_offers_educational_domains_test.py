@@ -14,7 +14,9 @@ class CollectiveOffersGetEducationalDomainsTest:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.ApiKeyFactory(offerer=offerer)
 
-        domain1 = educational_factories.EducationalDomainFactory(name="Arts numériques")
+        programs = educational_factories.NationalProgramFactory.create_batch(2)
+
+        domain1 = educational_factories.EducationalDomainFactory(name="Arts numériques", nationalPrograms=programs)
         domain2 = educational_factories.EducationalDomainFactory(name="Cinéma, audiovisuel")
 
         # When
@@ -26,9 +28,10 @@ class CollectiveOffersGetEducationalDomainsTest:
         assert response.status_code == 200
 
         response_list = sorted(response.json, key=itemgetter("id"))
+        domain1_programs = [{"id": p.id, "name": p.name} for p in programs]
         assert response_list == [
-            {"id": domain1.id, "name": "Arts numériques"},
-            {"id": domain2.id, "name": "Cinéma, audiovisuel"},
+            {"id": domain1.id, "name": "Arts numériques", "nationalPrograms": domain1_programs},
+            {"id": domain2.id, "name": "Cinéma, audiovisuel", "nationalPrograms": []},
         ]
 
     def test_list_educational_domains_empty(self, client):
