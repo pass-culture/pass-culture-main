@@ -38,13 +38,7 @@ export const ErrorBoundary = () => {
 
       <p>Veuillez réessayer. Si le problème persiste, contactez le support.</p>
 
-      <a
-        href={
-          isAdageIframe ? `${document.referrer}adage/passculture/offres` : '/'
-        }
-      >
-        Revenir à l’acceuil
-      </a>
+      {!isAdageIframe && <a href="/">Revenir à l’accueil</a>}
     </main>
   )
 }
