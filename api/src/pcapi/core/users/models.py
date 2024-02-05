@@ -677,10 +677,6 @@ class Favorite(PcObject, Base, Model):
 
     offer: orm.Mapped["Offer"] = orm.relationship("Offer", foreign_keys=[offerId], backref="favorites")
 
-    mediationId = sa.Column(sa.BigInteger, sa.ForeignKey("mediation.id"), index=True, nullable=True)
-
-    mediation: orm.Mapped["Mediation"] = orm.relationship("Mediation", foreign_keys=[mediationId], backref="favorites")
-
     dateCreated = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow)
 
     __table_args__ = (
