@@ -98,7 +98,7 @@ def get_favorites_for(user: User, favorite_id: int | None = None) -> list[Favori
             # count all active
             func.count(Stock.id).filter(active_stock_filters).over(partition_by=Stock.offerId).label("active_count"),
         )
-        .options(Load(Favorite).load_only("id"))
+        .options(Load(Favorite).load_only(Favorite.id))
         .join(Favorite.offer)
         .join(Offer.venue)
         .outerjoin(Offer.stocks)
