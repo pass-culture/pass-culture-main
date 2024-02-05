@@ -1,3 +1,5 @@
+import memoize from 'lodash.memoize'
+
 import { apiAdresse } from 'apiClient/adresse'
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
@@ -115,4 +117,6 @@ const getSiretDataAdapter: GetSiretDataAdapter = async (humanSiret: string) => {
   }
 }
 
-export default getSiretDataAdapter
+const getSiretData = memoize(getSiretDataAdapter)
+
+export default getSiretData

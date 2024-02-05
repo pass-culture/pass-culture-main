@@ -1,3 +1,5 @@
+import memoize from 'lodash.memoize'
+
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { unhumanizeSiren } from 'core/Offerers/utils'
@@ -74,4 +76,6 @@ const getSirenDataAdapter: GetSirenDataAdapter = async (humanSiren: string) => {
   }
 }
 
-export default getSirenDataAdapter
+const getSirenData = memoize(getSirenDataAdapter)
+
+export default getSirenData
