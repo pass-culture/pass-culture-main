@@ -106,6 +106,19 @@ op.add_column('venue_provider', sa.Column('syncWorkerId', sa.VARCHAR(24), nullab
 
 Pour un meilleur typage des colonnes de type "ARRAY", utiliser `sqlalchemy.dialects.postgresql.ARRAY` plutôt que `sqlalchemy.typing`.
 
+### Lint
+
+[squawk](https://github.com/sbdchd/squawk/) est utilisé afin d'attraper les migrations qui prennent un verrou sur la base
+de donnée, empêchant les lectures/écritures et donc créant du downtime applicatif.
+
+Pour désactiver le lint sur une seule expression SQL, le commentaire `-- squawk:ignore-next-statement` doit être placé juste avant :
+
+```python
+def upgrade() -> None:
+    op.execute("-- squawk:ignore-next-statement")
+    op.execute(sql_statement_that_would_upset_squawk)
+```
+
 # Squasher les migrations
 
 ## Objectif
