@@ -30,13 +30,21 @@ export const ErrorBoundary = () => {
     return
   }
 
+  const isAdageIframe = window.location.href.includes('adage-iframe')
+
   return (
     <main className={styles['error-boundary']}>
       <h1>Une erreur est survenue</h1>
 
       <p>Veuillez réessayer. Si le problème persiste, contactez le support.</p>
 
-      <a href="/">Revenir à l’acceuil</a>
+      <a
+        href={
+          isAdageIframe ? `${document.referrer}adage/passculture/offres` : '/'
+        }
+      >
+        Revenir à l’acceuil
+      </a>
     </main>
   )
 }
