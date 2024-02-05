@@ -55,7 +55,7 @@ class BeneficiaryImportStatus(PcObject, Base, Model):
     beneficiaryImportId: int = Column(BigInteger, ForeignKey("beneficiary_import.id"), index=True, nullable=False)
 
     beneficiaryImport: sa_orm.Mapped["BeneficiaryImport"] = relationship(
-        "BeneficiaryImport", foreign_keys=[beneficiaryImportId], backref="statuses"
+        "BeneficiaryImport", foreign_keys=[beneficiaryImportId], back_populates="statuses"
     )
 
     authorId = Column(BigInteger, ForeignKey("user.id"), nullable=True)

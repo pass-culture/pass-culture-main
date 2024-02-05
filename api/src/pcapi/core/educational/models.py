@@ -1049,7 +1049,7 @@ class EducationalDeposit(PcObject, Base, Model):
     )
 
     educationalInstitution: EducationalInstitution = relationship(
-        EducationalInstitution, foreign_keys=[educationalInstitutionId], backref="deposits"
+        EducationalInstitution, foreign_keys=[educationalInstitutionId], back_populates="deposits"
     )
 
     educationalYearId: str = sa.Column(
@@ -1057,7 +1057,7 @@ class EducationalDeposit(PcObject, Base, Model):
     )
 
     educationalYear: sa_orm.Mapped["EducationalYear"] = relationship(
-        EducationalYear, foreign_keys=[educationalYearId], backref="deposits"
+        EducationalYear, foreign_keys=[educationalYearId], back_populates="deposits"
     )
 
     amount: Decimal = sa.Column(Numeric(10, 2), nullable=False)
@@ -1152,11 +1152,13 @@ class CollectiveBooking(PcObject, Base, Model):
 
     venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False)
 
-    venue: sa_orm.Mapped["Venue"] = relationship("Venue", foreign_keys=[venueId], backref="collectiveBookings")
+    venue: sa_orm.Mapped["Venue"] = relationship("Venue", foreign_keys=[venueId], back_populates="collectiveBookings")
 
     offererId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, nullable=False)
 
-    offerer: sa_orm.Mapped["Offerer"] = relationship("Offerer", foreign_keys=[offererId], backref="collectiveBookings")
+    offerer: sa_orm.Mapped["Offerer"] = relationship(
+        "Offerer", foreign_keys=[offererId], back_populates="collectiveBookings"
+    )
 
     cancellationDate = sa.Column(sa.DateTime, nullable=True)
 
@@ -1183,7 +1185,7 @@ class CollectiveBooking(PcObject, Base, Model):
         sa.BigInteger, sa.ForeignKey("educational_institution.id"), nullable=False
     )
     educationalInstitution: sa_orm.Mapped["EducationalInstitution"] = relationship(
-        EducationalInstitution, foreign_keys=[educationalInstitutionId], backref="collectiveBookings"
+        EducationalInstitution, foreign_keys=[educationalInstitutionId], back_populates="collectiveBookings"
     )
 
     educationalYearId: str = sa.Column(sa.String(30), sa.ForeignKey("educational_year.adageId"), nullable=False)

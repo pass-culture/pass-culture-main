@@ -671,11 +671,11 @@ class Favorite(PcObject, Base, Model):
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
 
-    user: orm.Mapped["User"] = orm.relationship("User", foreign_keys=[userId], backref="favorites")
+    user: orm.Mapped["User"] = orm.relationship("User", foreign_keys=[userId], back_populates="favorites")
 
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
 
-    offer: orm.Mapped["Offer"] = orm.relationship("Offer", foreign_keys=[offerId], backref="favorites")
+    offer: orm.Mapped["Offer"] = orm.relationship("Offer", foreign_keys=[offerId], back_populates="favorites")
 
     dateCreated = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow)
 
@@ -708,7 +708,7 @@ class UserEmailHistory(PcObject, Base, Model):
 
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), index=True, nullable=True)
     user: sa.orm.Mapped["User"] = orm.relationship(
-        "User", foreign_keys=[userId], backref=orm.backref("email_history", passive_deletes=True)
+        "User", foreign_keys=[userId], back_populates="email_history", passive_deletes=True
     )
 
     oldUserEmail: str = sa.Column(sa.String(120), nullable=False, unique=False, index=True)

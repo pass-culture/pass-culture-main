@@ -33,7 +33,6 @@ from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 from sqlalchemy.sql.elements import Case
@@ -276,7 +275,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     managingOffererId: int = Column(BigInteger, ForeignKey("offerer.id"), nullable=False, index=True)
 
     managingOfferer: sa_orm.Mapped["Offerer"] = relationship(
-        "Offerer", foreign_keys=[managingOffererId], backref="managedVenues"
+        "Offerer", foreign_keys=[managingOffererId], back_populates="managedVenues"
     )
 
     bookingEmail = Column(String(120), nullable=True)
@@ -356,7 +355,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     thumb_path_component = "venues"
 
     criteria: list["criteria_models.Criterion"] = sa.orm.relationship(
-        "Criterion", backref=db.backref("venue_criteria", lazy="dynamic"), secondary="venue_criterion"
+        "Criterion", back_populates="venue_criteria", lazy="dynamic", secondary="venue_criterion"
     )
 
     dmsToken: str = Column(Text, nullable=False, unique=True)
@@ -394,7 +393,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     )
     collectiveDmsApplications: Mapped[list[educational_models.CollectiveDmsApplication]] = relationship(
         educational_models.CollectiveDmsApplication,
-        backref=backref("venue"),
+        back_populates="venue",
         primaryjoin="foreign(CollectiveDmsApplication.siret) == Venue.siret",
         uselist=True,
     )
@@ -1097,7 +1096,7 @@ class UserOfferer(PcObject, Base, Model, ValidationStatusMixin):
 
 class ApiKey(PcObject, Base, Model):
     offererId: int = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=False)
-    offerer: sa_orm.Mapped[Offerer] = relationship("Offerer", foreign_keys=[offererId], backref=backref("apiKeys"))
+    offerer: sa_orm.Mapped[Offerer] = relationship("Offerer", foreign_keys=[offererId], back_populates="apiKeys")
     providerId: int = Column(BigInteger, ForeignKey("provider.id", ondelete="CASCADE"), index=True)
     provider: sa_orm.Mapped["providers_models.Provider"] = relationship(
         "Provider", foreign_keys=[providerId], back_populates="apiKeys"
@@ -1185,7 +1184,9 @@ class OffererInvitation(PcObject, Base, Model):
     email: str = Column(Text, nullable=False)
     dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
     userId: int = Column(BigInteger, ForeignKey("user.id"), nullable=False, index=True)
-    user: sa_orm.Mapped["users_models.User"] = relationship("User", foreign_keys=[userId], backref="OffererInvitations")
+    user: sa_orm.Mapped["users_models.User"] = relationship(
+        "User", foreign_keys=[userId], back_populates="OffererInvitations"
+    )
     status: InvitationStatus = Column(db_utils.MagicEnum(InvitationStatus), nullable=False)
 
     __table_args__ = (UniqueConstraint("offererId", "email", name="unique_offerer_invitation"),)
