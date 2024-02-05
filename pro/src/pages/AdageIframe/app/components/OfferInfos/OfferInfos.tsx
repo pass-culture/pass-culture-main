@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useParams, useSearchParams } from 'react-router-dom'
 
 import {
   AdageFrontRoles,
   CollectiveOfferTemplateResponseModel,
+  CollectiveOfferResponseModel,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { CollectiveOfferResponseModel } from 'apiClient/v1'
 import Breadcrumb, { Crumb } from 'components/Breadcrumb/Breadcrumb'
 import useActiveFeature from 'hooks/useActiveFeature'
 import strokePassIcon from 'icons/stroke-pass.svg'
@@ -123,7 +123,7 @@ export const OfferInfos = () => {
           ) : (
             <div className={styles['offer-container']}>
               <Offer
-                //  The "as" is temporary while the isTemplate adage rework isn't finished
+                //  TODO : Remove the "as". The "as" is temporary while the isTemplate adage rework isn't finished
                 //  Ultimately, HydratedCollectiveOfferTemplate wil be the same model as CollectiveOfferTemplateResponseModel
                 offer={offer as HydratedCollectiveOfferTemplate}
                 position={0}

@@ -1,32 +1,59 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .offer {
   &-header {
     padding: 0 rem.torem(24px) rem.torem(24px);
-    border-bottom: rem.torem(7px) solid #f3edff;
+    border-bottom: rem.torem(7px) solid colors.$light-pink;
+    display: flex;
+    gap: rem.torem(24px);
+  }
 
-    &-image-container {
-      width: rem.torem(176px);
-      height: rem.torem(264px);
+  &-body {
+    padding: rem.torem(24px);
+  }
 
-      .offer-header-image,
-      .offer-header-image-fallback {
-        width: 100%;
-        height: 100%;
-        border-radius: rem.torem(10px);
+  &-main {
+    display: flex;
+    flex-direction: column;
+    gap: rem.torem(32px);
+  }
+}
+
+.offer-section {
+  &-header {
+    display: flex;
+    align-items: center;
+    gap: rem.torem(8px);
+    margin-bottom: rem.torem(16px);
+
+    &-title {
+      @include fonts.title3;
+    }
+  }
+
+  &-group {
+    display: flex;
+    flex-direction: column;
+    gap: rem.torem(16px);
+
+    &-item {
+      &-subtitle {
+        @include fonts.caption;
+
+        color: colors.$grey-dark;
+        margin-bottom: rem.torem(8px);
       }
+    }
 
-      .offer-header-image {
-        object-fit: cover;
-      }
+    &-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: rem.torem(8px);
 
-      .offer-header-image-fallback {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: colors.$grey-light;
-        color: colors.$grey-semi-dark;
+      &-pipe {
+        color: colors.$grey;
       }
     }
   }
