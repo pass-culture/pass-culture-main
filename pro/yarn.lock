@@ -1726,15 +1726,15 @@
   resolved "https://registry.yarnpkg.com/@fal-works/esbuild-plugin-global-externals/-/esbuild-plugin-global-externals-2.1.2.tgz#c05ed35ad82df8e6ac616c68b92c2282bd083ba4"
   integrity sha512-cEee/Z+I12mZcFJshKcCqC8tuX5hG3s+d+9nZ3LabqKF1vKdF41B92pJVCBggjAGORAeOzyyDDKrZwIkLffeOQ==
 
-"@firebase/analytics@^0.10.0":
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/@firebase/analytics/-/analytics-0.10.0.tgz#9c6986acd573c6c6189ffb52d0fd63c775db26d7"
-  integrity sha512-Locv8gAqx0e+GX/0SI3dzmBY5e9kjVDtD+3zCFLJ0tH2hJwuCAiL+5WkHuxKj92rqQj/rvkBUCfA1ewlX2hehg==
+"@firebase/analytics@^0.10.1":
+  version "0.10.1"
+  resolved "https://registry.yarnpkg.com/@firebase/analytics/-/analytics-0.10.1.tgz#97d750020c5b3b41fd5191074c683a7a8c8900a5"
+  integrity sha512-5mnH1aQa99J5lZMJwTNzIoRc4yGXHf+fOn+EoEWhCDA3XGPweGHcylCbqq+G1wVJmfILL57fohDMa8ftMZ+44g==
   dependencies:
-    "@firebase/component" "0.6.4"
-    "@firebase/installations" "0.6.4"
+    "@firebase/component" "0.6.5"
+    "@firebase/installations" "0.6.5"
     "@firebase/logger" "0.4.0"
-    "@firebase/util" "1.9.3"
+    "@firebase/util" "1.9.4"
     tslib "^2.1.0"
 
 "@firebase/app@^0.9.26":
@@ -1762,16 +1762,6 @@
   integrity sha512-2tVDk1ixi12sbDmmfITK8lxSjmcb73BMF6Qwc3U44hN/J1Fi1QY/Hnnb6klFlbB9/G16a3J3d4nXykye2EADTw==
   dependencies:
     "@firebase/util" "1.9.4"
-    tslib "^2.1.0"
-
-"@firebase/installations@0.6.4":
-  version "0.6.4"
-  resolved "https://registry.yarnpkg.com/@firebase/installations/-/installations-0.6.4.tgz#20382e33e6062ac5eff4bede8e468ed4c367609e"
-  integrity sha512-u5y88rtsp7NYkCHC3ElbFBrPtieUybZluXyzl7+4BsIz4sqb4vSAuwHEUgCgCeaQhvsnxDEU6icly8U9zsJigA==
-  dependencies:
-    "@firebase/component" "0.6.4"
-    "@firebase/util" "1.9.3"
-    idb "7.0.1"
     tslib "^2.1.0"
 
 "@firebase/installations@0.6.5":
@@ -6755,11 +6745,6 @@ iconv-lite@0.6.3:
   integrity sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==
   dependencies:
     safer-buffer ">= 2.1.2 < 3.0.0"
-
-idb@7.0.1:
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/idb/-/idb-7.0.1.tgz#d2875b3a2f205d854ee307f6d196f246fea590a7"
-  integrity sha512-UUxlE7vGWK5RfB/fDwEGgRf84DY/ieqNha6msMV99UsEMQhJ1RwbCd8AYBj3QMgnE3VZnfQvm4oKVCJTYlqIgg==
 
 idb@7.1.1:
   version "7.1.1"
