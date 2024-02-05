@@ -5,7 +5,6 @@ from typing import Generator
 import requests
 import sqlalchemy as sa
 from sqlalchemy.orm import joinedload
-from sqlalchemy.orm.session import make_transient
 
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models as offers_models
@@ -52,7 +51,7 @@ def execute_request(
                 updated_offers = []
 
                 for offer in offers:
-                    make_transient(offer)
+                    # make_transient(offer)
                     offer.productId = None
                     # If the offer doesn't have an image but the product does
                     # Transfer the product image to the offers
