@@ -268,22 +268,20 @@ class StatusMixin:
     @status.expression  # type: ignore [no-redef]
     def status(cls) -> sa.sql.elements.Case:  # pylint: disable=no-self-argument
         return sa.case(
-            [
-                (
-                    cls.validation == offer_mixin.OfferValidationStatus.REJECTED.name,
-                    offer_mixin.OfferStatus.REJECTED.name,
-                ),
-                (
-                    cls.validation == offer_mixin.OfferValidationStatus.PENDING.name,
-                    offer_mixin.OfferStatus.PENDING.name,
-                ),
-                (cls.validation == offer_mixin.OfferValidationStatus.DRAFT.name, offer_mixin.OfferStatus.DRAFT.name),
-                (cls.isActive.is_(False), offer_mixin.OfferStatus.INACTIVE.name),
-                (cls.hasBeginningDatetimePassed, offer_mixin.OfferStatus.EXPIRED.name),
-                (cls.isSoldOut, offer_mixin.OfferStatus.SOLD_OUT.name),
-                (cls.hasBookingLimitDatetimesPassed, offer_mixin.OfferStatus.INACTIVE.name),
-                (cls.hasEndDatePassed, offer_mixin.OfferStatus.INACTIVE.name),
-            ],
+            (
+                cls.validation == offer_mixin.OfferValidationStatus.REJECTED.name,
+                offer_mixin.OfferStatus.REJECTED.name,
+            ),
+            (
+                cls.validation == offer_mixin.OfferValidationStatus.PENDING.name,
+                offer_mixin.OfferStatus.PENDING.name,
+            ),
+            (cls.validation == offer_mixin.OfferValidationStatus.DRAFT.name, offer_mixin.OfferStatus.DRAFT.name),
+            (cls.isActive.is_(False), offer_mixin.OfferStatus.INACTIVE.name),
+            (cls.hasBeginningDatetimePassed, offer_mixin.OfferStatus.EXPIRED.name),
+            (cls.isSoldOut, offer_mixin.OfferStatus.SOLD_OUT.name),
+            (cls.hasBookingLimitDatetimesPassed, offer_mixin.OfferStatus.INACTIVE.name),
+            (cls.hasEndDatePassed, offer_mixin.OfferStatus.INACTIVE.name),
             else_=offer_mixin.OfferStatus.ACTIVE.name,
         )
 

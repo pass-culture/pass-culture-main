@@ -157,12 +157,10 @@ def find_expiring_individual_bookings_query() -> BaseQuery:
             Booking.status == BookingStatus.CONFIRMED,
             Offer.canExpire,
             case(
-                [
-                    (
-                        Offer.subcategoryId == subcategories.LIVRE_PAPIER.id,
-                        (Booking.dateCreated + constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY) <= today_at_midnight,
-                    ),
-                ],
+                (
+                    Offer.subcategoryId == subcategories.LIVRE_PAPIER.id,
+                    (Booking.dateCreated + constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY) <= today_at_midnight,
+                ),
                 else_=((Booking.dateCreated + constants.BOOKINGS_AUTO_EXPIRY_DELAY) <= today_at_midnight),
             ),
         )
@@ -189,12 +187,10 @@ def find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: dat
             Booking.status == BookingStatus.CONFIRMED,
             Offer.canExpire,
             case(
-                [
-                    (
-                        Offer.subcategoryId == subcategories.LIVRE_PAPIER.id,
-                        ((Booking.dateCreated + constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY).between(*books_window)),
-                    )
-                ],
+                (
+                    Offer.subcategoryId == subcategories.LIVRE_PAPIER.id,
+                    ((Booking.dateCreated + constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY).between(*books_window)),
+                ),
                 else_=(Booking.dateCreated + constants.BOOKINGS_AUTO_EXPIRY_DELAY).between(*rest_window),
             ),
         )

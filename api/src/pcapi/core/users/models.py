@@ -370,10 +370,8 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     @birth_date.expression  # type: ignore [no-redef]
     def birth_date(cls) -> date | None:  # pylint: disable=no-self-argument
         return sa.case(
-            [
-                (cls.validatedBirthDate.is_not(None), cls.validatedBirthDate),
-                (cls.dateOfBirth.is_not(None), sa.cast(cls.dateOfBirth, sa.Date)),
-            ],
+            (cls.validatedBirthDate.is_not(None), cls.validatedBirthDate),
+            (cls.dateOfBirth.is_not(None), sa.cast(cls.dateOfBirth, sa.Date)),
             else_=None,
         )
 
@@ -425,9 +423,9 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
             sa.func.nullif(
                 sa.func.trim(
                     sa.func.concat(
-                        sa.case([(cls.firstName.is_not(None), cls.firstName)], else_=""),
+                        sa.case((cls.firstName.is_not(None), cls.firstName), else_=""),
                         " ",
-                        sa.case([(cls.lastName.is_not(None), cls.lastName)], else_=""),
+                        sa.case((cls.lastName.is_not(None), cls.lastName), else_=""),
                     )
                 ),
                 "",
