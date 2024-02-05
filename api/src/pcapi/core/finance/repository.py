@@ -495,15 +495,15 @@ def _get_collective_booking_reimbursement_data(query: BaseQuery) -> list:
             # is in another city. Now, we only check the postal code to keep either the venue's full address
             # or the offerer's one
             sqla.case(
-                [(offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.address)],
+                (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.address),
                 else_=offerers_models.Offerer.address,
             ).label("venue_address"),
             sqla.case(
-                [(offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.postalCode)],
+                (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.postalCode),
                 else_=offerers_models.Offerer.postalCode,
             ).label("venue_postal_code"),
             sqla.case(
-                [(offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.city)],
+                (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.city),
                 else_=offerers_models.Offerer.city,
             ).label("venue_city"),
             offerers_models.Venue.siret.label("venue_siret"),
@@ -511,15 +511,15 @@ def _get_collective_booking_reimbursement_data(query: BaseQuery) -> list:
             ReimbursementPoint.common_name.label("reimbursement_point_common_name"),
             # See comment for venue address
             sqla.case(
-                [(ReimbursementPoint.postalCode.is_not(None), ReimbursementPoint.address)],
+                (ReimbursementPoint.postalCode.is_not(None), ReimbursementPoint.address),
                 else_=offerers_models.Offerer.address,
             ).label("reimbursement_point_address"),
             sqla.case(
-                [(ReimbursementPoint.postalCode.is_not(None), ReimbursementPoint.postalCode)],
+                (ReimbursementPoint.postalCode.is_not(None), ReimbursementPoint.postalCode),
                 else_=offerers_models.Offerer.postalCode,
             ).label("reimbursement_point_postal_code"),
             sqla.case(
-                [(ReimbursementPoint.postalCode.is_not(None), ReimbursementPoint.city)],
+                (ReimbursementPoint.postalCode.is_not(None), ReimbursementPoint.city),
                 else_=offerers_models.Offerer.city,
             ).label("reimbursement_point_city"),
             ReimbursementPoint.siret.label("reimbursement_point_siret"),
@@ -533,9 +533,7 @@ def _get_collective_booking_reimbursement_data(query: BaseQuery) -> list:
             models.CashflowBatch.cutoff.label("cashflow_batch_cutoff"),
             models.CashflowBatch.label.label("cashflow_batch_label"),
             models.BankInformation.iban.label("iban"),
-            sqla.case([(models.FinanceEvent.bookingFinanceIncidentId.is_(None), False)], else_=True).label(
-                "is_incident"
-            ),
+            sqla.case((models.FinanceEvent.bookingFinanceIncidentId.is_(None), False), else_=True).label("is_incident"),
         )
     ).all()
 
@@ -581,37 +579,31 @@ def _get_individual_booking_reimbursement_data(query: BaseQuery) -> list:
             # is in another city. Now, we only check the postal code to keep either the venue's full address
             # or the offerer's one
             sqla.case(
-                [(offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.address)],
+                (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.address),
                 else_=offerers_models.Offerer.address,
             ).label("venue_address"),
             sqla.case(
-                [(offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.postalCode)],
+                (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.postalCode),
                 else_=offerers_models.Offerer.postalCode,
             ).label("venue_postal_code"),
             sqla.case(
-                [(offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.city)],
+                (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.city),
                 else_=offerers_models.Offerer.city,
             ).label("venue_city"),
             offerers_models.Venue.siret.label("venue_siret"),
             ReimbursementPoint.common_name.label("reimbursement_point_common_name"),
             # See comment for venue address
             sqla.case(
-                [
-                    (ReimbursementPoint.postalCode.is_not(None), ReimbursementPoint.address),
-                    (ReimbursementPoint.postalCode.is_(None), offerers_models.Offerer.address),
-                ]
+                (ReimbursementPoint.postalCode.is_not(None), ReimbursementPoint.address),
+                (ReimbursementPoint.postalCode.is_(None), offerers_models.Offerer.address),
             ).label("reimbursement_point_address"),
             sqla.case(
-                [
-                    (ReimbursementPoint.postalCode.is_not(None), ReimbursementPoint.postalCode),
-                    (ReimbursementPoint.postalCode.is_(None), offerers_models.Offerer.postalCode),
-                ]
+                (ReimbursementPoint.postalCode.is_not(None), ReimbursementPoint.postalCode),
+                (ReimbursementPoint.postalCode.is_(None), offerers_models.Offerer.postalCode),
             ).label("reimbursement_point_postal_code"),
             sqla.case(
-                [
-                    (ReimbursementPoint.postalCode.is_not(None), ReimbursementPoint.city),
-                    (ReimbursementPoint.postalCode.is_(None), offerers_models.Offerer.city),
-                ]
+                (ReimbursementPoint.postalCode.is_not(None), ReimbursementPoint.city),
+                (ReimbursementPoint.postalCode.is_(None), offerers_models.Offerer.city),
             ).label("reimbursement_point_city"),
             ReimbursementPoint.siret.label("reimbursement_point_siret"),
             # See note about `amount` in `core/finance/models.py`.
@@ -624,9 +616,7 @@ def _get_individual_booking_reimbursement_data(query: BaseQuery) -> list:
             models.CashflowBatch.cutoff.label("cashflow_batch_cutoff"),
             models.CashflowBatch.label.label("cashflow_batch_label"),
             models.BankInformation.iban.label("iban"),
-            sqla.case([(models.FinanceEvent.bookingFinanceIncidentId.is_(None), False)], else_=True).label(
-                "is_incident"
-            ),
+            sqla.case((models.FinanceEvent.bookingFinanceIncidentId.is_(None), False), else_=True).label("is_incident"),
         )
     ).all()
 
