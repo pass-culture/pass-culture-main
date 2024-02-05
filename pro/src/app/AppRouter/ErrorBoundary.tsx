@@ -1,12 +1,25 @@
-import React from 'react'
+import * as Sentry from '@sentry/react'
+import React, { useEffect } from 'react'
 import { useRouteError } from 'react-router-dom'
 
 import { isError } from 'apiClient/helpers'
 
+import styles from './ErrorBoundary.module.scss'
+
+const isDynamicImportError = (error: unknown) =>
+  isError(error) && error.message.includes('dynamically imported module')
+
 export const ErrorBoundary = () => {
   const error = useRouteError()
 
-  if (isError(error) && error.message.includes('dynamically imported module')) {
+  useEffect(() => {
+    if (isDynamicImportError(error)) {
+      return
+    }
+    Sentry.captureException(error)
+  }, [error])
+
+  if (isDynamicImportError(error)) {
     // Reload page when a dynamic import fails (when we release a new version)
     // https://github.com/remix-run/react-router/discussions/10333
     // Error message is different in some browsers:
@@ -17,5 +30,13 @@ export const ErrorBoundary = () => {
     return
   }
 
-  return <div>Erreur !</div>
+  return (
+    <main className={styles['error-boundary']}>
+      <h1>Une erreur est survenue</h1>
+
+      <p>Veuillez réessayer. Si le problème persiste, contactez le support.</p>
+
+      <a href="/">Revenir à l’acceuil</a>
+    </main>
+  )
 }
