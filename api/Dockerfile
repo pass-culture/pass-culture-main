@@ -21,7 +21,7 @@ COPY ./pyproject.toml ./poetry.lock ./
 
 ENV PATH=$PATH:/home/pcapi/.local/bin
 
-RUN pip install poetry
+RUN pip install poetry poetry-plugin-export
 
 WORKDIR /home/pcapi
 
