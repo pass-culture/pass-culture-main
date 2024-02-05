@@ -5,6 +5,7 @@ from typing import Generator
 import requests
 import sqlalchemy as sa
 from sqlalchemy.orm import joinedload
+from sqlalchemy.orm.session import make_transient
 
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models as offers_models
@@ -46,7 +47,13 @@ def execute_request(
             for product in product_to_delete:
                 print(f"{product.id = }, {len(product.offers) = }")
                 must_delete_product = True
-                for offer in product.offers:
+                offers = product.offers
+
+                updated_offers = []
+
+                for offer in offers:
+                    make_transient(offer)
+                    offer.productId = None
                     # If the offer doesn't have an image but the product does
                     # Transfer the product image to the offers
                     if not offer.activeMediation and product.thumbUrl:
@@ -63,8 +70,14 @@ def execute_request(
                                 must_delete_product = False
                             else:
                                 db.session.add(mediation)
+                    updated_offers.append(offer)
 
-                db.session.add_all(product.offers)
+                db.session.add_all(updated_offers)
+                for o in updated_offers:
+                    print("authorId:", o.authorId)
+                    print("lastProviderId:", o.lastProviderId)
+                    print("venueId:", o.venueId)
+
                 if must_delete_product:
                     products_id_to_delete.append(product.id)
                 else:
