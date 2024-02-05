@@ -148,6 +148,7 @@ def post_collective_offer_public(
     # in French, to be used by Swagger for the API documentation
     """Création d'une offre collective."""
     image_as_bytes = None
+
     if body.image_file:
         try:
             image_as_bytes = utils.get_bytes_from_base64_string(body.image_file)
@@ -251,6 +252,8 @@ def post_collective_offer_public(
             errors={"subcategoryId": ["La sous-catégorie n'est pas éligible pour les offres collectives."]},
             status_code=404,
         )
+    except offers_validation.OfferValidationError as err:
+        raise ApiErrors(errors={err.field: err.msg}, status_code=400)
 
     if image_as_bytes and body.image_credit is not None:
         educational_api_offer.attach_image(
@@ -555,6 +558,8 @@ def patch_collective_offer_public(
             },
             status_code=403,
         )
+    except offers_validation.OfferValidationError as err:
+        raise ApiErrors(errors={err.field: err.msg}, status_code=400)
 
     if image_as_bytes and offer.imageCredit is not None:
         educational_api_offer.attach_image(

@@ -2,6 +2,7 @@ import datetime
 import decimal
 from io import BytesIO
 import logging
+import typing
 
 from PIL import Image
 from PIL import UnidentifiedImageError
@@ -11,6 +12,7 @@ import sqlalchemy as sqla
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.categories.subcategories_v2 import ExtraDataFieldEnum
 from pcapi.core.educational import models as educational_models
+import pcapi.core.educational.api.national_program as np_api
 from pcapi.core.finance import repository as finance_repository
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import exceptions
@@ -544,3 +546,37 @@ def check_for_duplicated_price_categories(
             {"priceCategories": [f"The price category {existing_price_category.label} already exists"]},
             status_code=400,
         )
+
+
+class OfferValidationError(Exception):
+    field = "all"
+    msg = "Invalid"
+
+
+class UnknownNationalProgram(OfferValidationError):
+    field = "national_program"
+    msg = "National program unknown"
+
+
+class IllegalNationalProgram(OfferValidationError):
+    field = "national_program"
+    msg = "National program known, but can't be used in this context"
+
+
+class MissingDomains(OfferValidationError):
+    field = "domains"
+    msg = "Domains can't be null if national program is set"
+
+
+def validate_national_program(nationalProgramId: int | None, domains: typing.Sequence[int] | None) -> None:
+    if not domains and not nationalProgramId:
+        return
+
+    if not domains:
+        raise MissingDomains()
+
+    nps = {np.id for np in np_api.get_national_programs_from_domains(domains)}
+    if nationalProgramId not in nps:
+        if not np_api.get_national_program(nationalProgramId):
+            raise UnknownNationalProgram()
+        raise IllegalNationalProgram()
