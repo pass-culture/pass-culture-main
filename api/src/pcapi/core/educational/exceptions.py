@@ -103,6 +103,10 @@ class EducationalDomainsNotFound(Exception):
     pass
 
 
+class EducationalDomainNotFound(Exception):
+    pass
+
+
 class EducationalInstitutionNotFound(Exception):
     pass
 

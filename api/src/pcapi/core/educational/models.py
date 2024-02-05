@@ -1423,6 +1423,9 @@ class EducationalDomain(PcObject, Base, Model):
     collectiveOfferTemplates: list["CollectiveOfferTemplate"] = relationship(
         "CollectiveOfferTemplate", secondary="collective_offer_template_domain", back_populates="domains"
     )
+    nationalPrograms: sa_orm.Mapped[list["NationalProgram"]] = sa.orm.relationship(
+        "NationalProgram", back_populates="domains", secondary="domain_to_national_program"
+    )
 
 
 class CollectiveDmsApplication(PcObject, Base, Model):
@@ -1548,6 +1551,9 @@ class NationalProgram(PcObject, Base, Model):
 
     name: str = sa.Column(sa.Text, unique=True)
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    domains: sa_orm.Mapped[list["EducationalDomain"]] = sa.orm.relationship(
+        "EducationalDomain", back_populates="nationalPrograms", secondary="domain_to_national_program"
+    )
 
 
 class NationalProgramOfferLinkHistory(PcObject, Base, Model):
@@ -1668,4 +1674,26 @@ class AdageVenueAddress(PcObject, Base, Model):
     venueId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=True)
     venue: sa_orm.Mapped["Venue"] = sa.orm.relationship(
         "Venue", foreign_keys=[venueId], back_populates="adage_addresses"
+    )
+
+
+class DomainToNationalProgram(PcObject, Base, Model):
+    """Intermediate table that links `EducationalDomain`
+    to `NationalProgram`. Links are unique: a domain can be linked to many
+    programs but not twice the same.
+    """
+
+    domainId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("educational_domain.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    nationalProgramId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("national_program.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+
+    __table_args__ = (
+        sa.UniqueConstraint(
+            "domainId",
+            "nationalProgramId",
+            name="unique_domain_to_national_program",
+        ),
     )
