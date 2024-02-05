@@ -7,6 +7,8 @@ import App from 'app/App/App'
 import routes from 'app/AppRouter/routesMap'
 import { selectActiveFeatures } from 'store/features/selectors'
 
+import { ErrorBoundary } from './ErrorBoundary'
+
 const sentryCreateBrowserRouter =
   Sentry.wrapCreateBrowserRouter(createBrowserRouter)
 
@@ -21,6 +23,7 @@ const AppRouter = (): JSX.Element => {
     {
       path: '/',
       element: <App />,
+      errorElement: <ErrorBoundary />,
       children: [
         ...activeRoutes,
         {

@@ -17,6 +17,9 @@ export const getErrorCode = (error: ApiError): string => {
   return error.body.code
 }
 
+export const isError = (error: any): error is Error =>
+  typeof error === 'object' && 'message' in error
+
 export const isErrorAPIError = (error: any): error is ApiError =>
   'name' in error && error.name === 'ApiError'
 
