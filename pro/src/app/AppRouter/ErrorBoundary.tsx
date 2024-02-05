@@ -3,8 +3,7 @@ import React, { useEffect } from 'react'
 import { useRouteError } from 'react-router-dom'
 
 import { isError } from 'apiClient/helpers'
-
-import styles from './ErrorBoundary.module.scss'
+import { Unavailable } from 'pages/Errors/Unavailable/Unavailable'
 
 const isDynamicImportError = (error: unknown) =>
   isError(error) && error.message.includes('dynamically imported module')
@@ -30,15 +29,5 @@ export const ErrorBoundary = () => {
     return
   }
 
-  const isAdageIframe = window.location.href.includes('adage-iframe')
-
-  return (
-    <main className={styles['error-boundary']}>
-      <h1>Une erreur est survenue</h1>
-
-      <p>Veuillez réessayer. Si le problème persiste, contactez le support.</p>
-
-      {!isAdageIframe && <a href="/">Revenir à l’accueil</a>}
-    </main>
-  )
+  return <Unavailable />
 }

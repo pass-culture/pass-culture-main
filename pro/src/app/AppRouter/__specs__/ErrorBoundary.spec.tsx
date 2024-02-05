@@ -28,8 +28,7 @@ describe('ErrorBoundary', () => {
 
     render(<ErrorBoundary />)
 
-    expect(screen.getByText('Une erreur est survenue')).toBeInTheDocument()
-    expect(screen.getByText(/Revenir à l’accueil/)).toBeInTheDocument()
+    expect(screen.getByText('Page indisponible')).toBeInTheDocument()
     await waitFor(() => {
       expect(Sentry.captureException).toHaveBeenCalledWith(error)
     })
@@ -44,23 +43,5 @@ describe('ErrorBoundary', () => {
 
     expect(Sentry.captureException).not.toHaveBeenCalled()
     expect(reloadFn).toHaveBeenCalled()
-  })
-
-  it('should not show the redirect link when the user is within the adage iframe', () => {
-    const error = new Error('Some error')
-    vi.spyOn(router, 'useRouteError').mockReturnValue(error)
-
-    global.window = Object.create(window)
-    Object.defineProperty(window, 'location', {
-      value: {
-        reload: reloadFn,
-        href: '/adage-iframe',
-      },
-      writable: true,
-    })
-
-    render(<ErrorBoundary />)
-
-    expect(screen.queryByText(/Revenir à l’accueil/)).not.toBeInTheDocument()
   })
 })

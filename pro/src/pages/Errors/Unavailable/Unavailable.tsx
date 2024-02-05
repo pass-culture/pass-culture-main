@@ -5,7 +5,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Unavailable.module.scss'
 
-const Unavailable = () => {
+export const Unavailable = () => {
   return (
     <main className={styles['unavailable-page']} id="content">
       <SvgIcon
