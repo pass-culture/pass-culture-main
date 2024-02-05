@@ -75,8 +75,13 @@ def test_public_api(client, app):
                     "properties": {
                         "id": {"title": "Id", "type": "integer"},
                         "name": {"title": "Name", "type": "string"},
+                        "nationalPrograms": {
+                            "items": {"$ref": "#/components/schemas/NationalProgramModel"},
+                            "title": "Nationalprograms",
+                            "type": "array",
+                        },
                     },
-                    "required": ["id", "name"],
+                    "required": ["id", "name", "nationalPrograms"],
                     "title": "CollectiveOffersDomainResponseModel",
                     "type": "object",
                 },
@@ -1353,41 +1358,31 @@ def test_public_api(client, app):
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/AuthErrorResponseModel"}}
                             },
-                            "description": "Authentification " "nécessaire",
+                            "description": "Authentification nécessaire",
                         },
                         "403": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponseModel"}}
                             },
-                            "description": "Vous "
-                            "n'avez "
-                            "pas "
-                            "les "
-                            "droits "
-                            "nécessaires "
-                            "pour "
-                            "voir "
-                            "cette "
-                            "offre "
-                            "collective",
+                            "description": "Vous n'avez pas les droits nécessaires pour voir cette offre collective",
                         },
                         "404": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponseModel"}}
                             },
-                            "description": "L'offre " "collective " "n'existe " "pas",
+                            "description": "L'offre collective n'existe pas",
                         },
                         "422": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
-                            "description": "Unprocessable " "Entity",
+                            "description": "Unprocessable Entity",
                         },
                     },
                     "security": [{"ApiKeyAuth": []}],
-                    "summary": "Liste des " "formats " "d'offres " "collectives",
+                    "summary": "Liste des formats d'offres collectives",
                     "tags": ["API offres collectives"],
-                },
+                }
             },
             "/v2/collective/offers/{offer_id}": {
                 "get": {
