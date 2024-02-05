@@ -1203,7 +1203,6 @@ class ManualPhoneNumberValidationTest(PostEndpointHelper):
         user = users_factories.UserFactory(
             phoneValidationStatus=None, phoneNumber="+33601010203", isEmailValidated=True
         )
-        users_factories.TokenFactory(user=user, type=users_models.TokenType.RESET_PASSWORD)
 
         token_utils.Token.create(
             token_utils.TokenType.RESET_PASSWORD, users_constants.RESET_PASSWORD_TOKEN_LIFE_TIME, user.id

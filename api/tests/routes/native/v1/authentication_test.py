@@ -30,7 +30,6 @@ from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.models import AccountState
 from pcapi.core.users.models import LoginDeviceHistory
 from pcapi.core.users.models import SingleSignOn
-from pcapi.core.users.models import Token
 from pcapi.core.users.models import TrustedDevice
 from pcapi.models import db
 import pcapi.notifications.push.testing as bash_testing
@@ -966,9 +965,6 @@ class RequestResetPasswordTest:
         data = {"email": email}
         user = users_factories.UserFactory(email=email)
 
-        saved_token = Token.query.filter_by(user=user).first()
-        assert saved_token is None
-
         mock_check_native_app_recaptcha_token.return_value = None
 
         response = client.post("/native/v1/request_password_reset", json=data)
@@ -985,9 +981,6 @@ class RequestResetPasswordTest:
         email = "existing_user@example.com"
         data = {"email": email}
         user = users_factories.UserFactory(email=email)
-
-        saved_token = Token.query.filter_by(user=user).first()
-        assert saved_token is None
 
         response = client.post("/native/v1/request_password_reset", json=data)
 

@@ -33,7 +33,6 @@ from pcapi.core.users.repository import get_newly_eligible_age_18_users
 from pcapi.local_providers.provider_manager import collect_elligible_venues_and_activate_ems_sync
 from pcapi.local_providers.provider_manager import synchronize_ems_venue_providers
 from pcapi.local_providers.provider_manager import synchronize_venue_providers
-from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.notifications import push
 from pcapi.notifications.push import transactional_notifications
@@ -170,13 +169,6 @@ def notify_newly_eligible_age_18_users() -> None:
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
     for user in get_newly_eligible_age_18_users(yesterday):
         transactional_mails.send_birthday_age_18_email_to_newly_eligible_user(user)
-
-
-@blueprint.cli.command("clean_expired_tokens")
-@log_cron_with_transaction
-def clean_expired_tokens() -> None:
-    users_api.delete_expired_tokens()
-    db.session.commit()
 
 
 @blueprint.cli.command("check_stock_quantity_consistency")

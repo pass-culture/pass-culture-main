@@ -48,44 +48,10 @@ if typing.TYPE_CHECKING:
 VOID_FIRST_NAME = ""
 
 
-class TokenType(enum.Enum):
-    RESET_PASSWORD = "reset-password"
-
-
 class PhoneValidationStatusType(enum.Enum):
     SKIPPED_BY_SUPPORT = "skipped-by-support"
     UNVALIDATED = "unvalidated"
     VALIDATED = "validated"
-
-
-@dataclass
-class TokenExtraData:
-    phone_number: str | None
-
-
-class Token(PcObject, Base, Model):
-    __tablename__ = "token"
-
-    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
-
-    user: orm.Mapped["User"] = orm.relationship(
-        "User", foreign_keys=[userId], backref=orm.backref("tokens", passive_deletes=True)
-    )
-
-    value: str = sa.Column(sa.String, index=True, unique=True, nullable=False)
-
-    type: TokenType = sa.Column(sa.Enum(TokenType, create_constraint=False), nullable=False)
-
-    creationDate: datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
-
-    expirationDate = sa.Column(sa.DateTime, nullable=True)
-
-    isUsed: bool = sa.Column(sa.Boolean, nullable=False, server_default=expression.false(), default=False)
-
-    extraData: dict = sa.Column(MutableDict.as_mutable(postgresql.JSONB), nullable=True)
-
-    def get_extra_data(self) -> TokenExtraData | None:
-        return TokenExtraData(**self.extraData) if self.extraData else None
 
 
 class UserRole(enum.Enum):
