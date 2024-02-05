@@ -36,7 +36,7 @@ def get_user_with_id(user_id: int) -> users_models.User | None:
     except AttributeError:
         pass
 
-    return users_models.User.query.get(user_id)
+    return users_models.User.query.filter(users_models.User.id == user_id).one_or_none()
 
 
 @app.login_manager.unauthorized_handler  # type: ignore [attr-defined]
