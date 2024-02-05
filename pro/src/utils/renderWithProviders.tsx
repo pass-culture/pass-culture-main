@@ -36,6 +36,7 @@ export const renderWithProviders = (
     ...overrides?.storeOverrides,
     features: {
       list: featuresList,
+      lastLoaded: overrides?.storeOverrides?.features?.lastLoaded,
     },
   }
   const store = configureTestStore(storeOverrides)
