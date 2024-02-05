@@ -25,6 +25,10 @@ RUN pip install poetry poetry-plugin-export
 
 WORKDIR /home/pcapi
 
+# FIXME (dramelet, 2024-02-05) this is to avoid a warning about "poetry-plugin-export" not being installed,
+# even if it is installed. That line can be removed once Poetry does not warn us anymore.
+RUN poetry config warnings.export false
+
 RUN poetry check --lock
 
 RUN poetry export -o requirements.txt --without dev
