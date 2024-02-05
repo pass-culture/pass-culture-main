@@ -1,5 +1,4 @@
 import * as Sentry from '@sentry/react'
-import React from 'react'
 import { useSelector } from 'react-redux'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
