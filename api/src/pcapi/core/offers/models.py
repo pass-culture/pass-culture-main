@@ -315,7 +315,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
 
     @remainingStock.expression  # type: ignore [no-redef]
     def remainingStock(cls) -> Case:  # pylint: disable=no-self-argument
-        return sa.case([(cls._bookable, cls.remainingQuantity)], else_=0)
+        return sa.case((cls._bookable, cls.remainingQuantity), else_=0)
 
 
 @sa.event.listens_for(Stock, "before_insert")

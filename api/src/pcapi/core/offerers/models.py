@@ -986,13 +986,11 @@ class Offerer(
     @departementCode.expression  # type: ignore [no-redef]
     def departementCode(cls) -> Case:  # pylint: disable=no-self-argument
         return case(
-            [
-                (
-                    cast(func.substring(cls.postalCode, 1, 2), Integer)
-                    >= postal_code_utils.OVERSEAS_DEPARTEMENT_CODE_START,
-                    func.substring(cls.postalCode, 1, 3),
-                )
-            ],
+            (
+                cast(func.substring(cls.postalCode, 1, 2), Integer)
+                >= postal_code_utils.OVERSEAS_DEPARTEMENT_CODE_START,
+                func.substring(cls.postalCode, 1, 3),
+            ),
             else_=func.substring(cls.postalCode, 1, 2),
         )
 

@@ -296,15 +296,13 @@ def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
     remaining_quantity_subquery = (
         sa.select(
             sa.case(
-                [
-                    (
-                        sa.func.coalesce(
-                            sa.func.max(sa.case([(offers_models.Stock.remainingStock.is_(None), 1)], else_=0)), 0  # type: ignore [attr-defined]
-                        )
-                        == 0,
-                        sa.func.coalesce(sa.func.sum(offers_models.Stock.remainingStock), 0).cast(sa.String),
+                (
+                    sa.func.coalesce(
+                        sa.func.max(sa.case((offers_models.Stock.remainingStock.is_(None), 1), else_=0)), 0  # type: ignore [attr-defined]
                     )
-                ],
+                    == 0,
+                    sa.func.coalesce(sa.func.sum(offers_models.Stock.remainingStock), 0).cast(sa.String),
+                ),
                 else_="Illimité",
             )
         )
@@ -339,17 +337,15 @@ def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
             offers_models.Offer,
             booked_quantity_subquery.label("booked_quantity"),
             sa.case(
-                [
-                    (
-                        # Same as Offer.isReleased which is not an hybrid property
-                        sa.and_(  # type: ignore [type-var]
-                            offers_models.Offer._released,
-                            offerers_models.Offerer.isActive,
-                            offerers_models.Offerer.isValidated,
-                        ),
-                        remaining_quantity_subquery,
-                    )
-                ],
+                (
+                    # Same as Offer.isReleased which is not an hybrid property
+                    sa.and_(  # type: ignore [type-var]
+                        offers_models.Offer._released,
+                        offerers_models.Offerer.isActive,
+                        offerers_models.Offerer.isValidated,
+                    ),
+                    remaining_quantity_subquery,
+                ),
                 else_="-",
             ).label("remaining_quantity"),
             tags_subquery.label("tags"),

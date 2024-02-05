@@ -174,11 +174,9 @@ def _get_custom_reimburement_rule_stats() -> dict[str, int]:
     query = sa.select(sa.func.jsonb_object_agg(sa.text("rule_group"), sa.text("number"))).select_from(
         sa.select(
             sa.case(
-                [
-                    (finance_models.CustomReimbursementRule.offerId.is_not(None), "by_offer"),
-                    (finance_models.CustomReimbursementRule.offererId.is_not(None), "by_offerer"),
-                    (finance_models.CustomReimbursementRule.venueId.is_not(None), "by_venue"),
-                ]
+                (finance_models.CustomReimbursementRule.offerId.is_not(None), "by_offer"),
+                (finance_models.CustomReimbursementRule.offererId.is_not(None), "by_offerer"),
+                (finance_models.CustomReimbursementRule.venueId.is_not(None), "by_venue"),
             ).label("rule_group"),
             sa.func.count(finance_models.CustomReimbursementRule.id).label("number"),
         )

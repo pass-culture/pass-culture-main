@@ -286,7 +286,7 @@ class Booking(PcObject, Base, Model):
         return select(
             [
                 case(
-                    [(exists().where(ExternalBooking.bookingId == cls.id).correlate(cls), True)],
+                    (exists().where(ExternalBooking.bookingId == cls.id).correlate(cls), True),
                     else_=False,
                 ).label("isExternal")
             ]
