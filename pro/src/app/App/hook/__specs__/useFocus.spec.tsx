@@ -1,12 +1,12 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 import { Route, Routes } from 'react-router'
 import { Link } from 'react-router-dom'
 
 import SkipLinks from 'components/SkipLinks'
-import useFocus from 'hooks/useFocus'
 import { renderWithProviders } from 'utils/renderWithProviders'
+
+import useFocus from '../useFocus'
 
 const FocusTopPage = (): null => {
   useFocus()
