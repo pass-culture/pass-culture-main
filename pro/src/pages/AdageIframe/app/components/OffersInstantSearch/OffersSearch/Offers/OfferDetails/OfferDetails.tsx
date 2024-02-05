@@ -11,7 +11,7 @@ import OfferInterventionArea from './OfferInterventionArea'
 import OfferSection from './OfferSection'
 import OfferVenue from './OfferVenue'
 
-const computeDurationString = (durationMinutes?: number | null) => {
+export const computeDurationString = (durationMinutes?: number | null) => {
   if (!durationMinutes) {
     return ''
   }

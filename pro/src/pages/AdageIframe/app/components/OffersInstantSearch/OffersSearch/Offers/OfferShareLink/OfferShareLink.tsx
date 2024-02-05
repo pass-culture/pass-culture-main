@@ -1,3 +1,5 @@
+import classNames from 'classnames'
+
 import { apiAdage } from 'apiClient/api'
 import strokeShareIcon from 'icons/stroke-share.svg'
 import {
@@ -14,7 +16,10 @@ export interface OfferShareLinkProps {
   className?: string
 }
 
-const OfferShareLink = ({ offer }: OfferShareLinkProps): JSX.Element => {
+const OfferShareLink = ({
+  offer,
+  className,
+}: OfferShareLinkProps): JSX.Element => {
   const mailBody = `
 Bonjour,
 %0D%0A%0D%0AJe partage avec vous l’offre pass Culture “${offer.name}”. 
@@ -36,7 +41,7 @@ Bonjour,
 
   return (
     <ListIconButton
-      className={styles['share-link']}
+      className={classNames(styles['share-link'], className)}
       url={`mailto:?subject=Partage d’offre sur ADAGE - ${offer.name}&body=${mailBody}`}
       icon={strokeShareIcon}
       onClick={handleShareButtonClicked}
