@@ -1,5 +1,5 @@
 import { setUser as setSentryUser } from '@sentry/browser'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 
@@ -14,6 +14,8 @@ import useLogNavigation from 'hooks/useLogNavigation'
 import usePageTitle from 'hooks/usePageTitle'
 import { updateUser } from 'store/user/reducer'
 import { Consents, initCookieConsent } from 'utils/cookieConsentModal'
+
+import { useLoadFeatureFlags } from './hook/useLoadFeatureFlags'
 
 window.beamer_config = { product_id: 'vjbiYuMS52566', lazy: true }
 
@@ -67,6 +69,7 @@ const App = (): JSX.Element | null => {
   usePageTitle()
   useLogNavigation()
   useFocus()
+  useLoadFeatureFlags()
 
   useEffect(() => {
     if (consentedToBeamer && currentUser !== null) {

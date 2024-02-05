@@ -4,6 +4,7 @@ import { FeatureResponseModel } from 'apiClient/v1'
 
 interface FeaturesState {
   list: FeatureResponseModel[]
+  lastLoaded?: number
 }
 
 export const initialState: FeaturesState = {
@@ -19,6 +20,7 @@ const featuresSlice = createSlice({
       action: PayloadAction<FeatureResponseModel[]>
     ) => {
       state.list = action.payload
+      state.lastLoaded = new Date().getTime()
     },
   },
 })
