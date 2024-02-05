@@ -32,7 +32,7 @@ def list_educational_domains() -> domains_serialization.CollectiveOffersListDoma
 
     return domains_serialization.CollectiveOffersListDomainsResponseModel(
         __root__=[
-            domains_serialization.CollectiveOffersDomainResponseModel.from_orm(educational_domain)
+            domains_serialization.CollectiveOffersDomainResponseModel.build(educational_domain)
             for educational_domain in educational_domains
         ]
     )
