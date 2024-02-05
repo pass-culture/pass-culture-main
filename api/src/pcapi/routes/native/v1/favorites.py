@@ -190,7 +190,6 @@ def create_favorite(user: User, body: serializers.FavoriteRequest) -> serializer
     try:
         with transaction():
             favorite = Favorite(
-                mediation=offer.activeMediation,
                 offer=offer,
                 user=user,
             )
