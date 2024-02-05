@@ -3,6 +3,7 @@ from datetime import datetime
 from datetime import timedelta
 from itertools import count
 from itertools import cycle
+import typing
 
 from pcapi.core.categories.subcategories_v2 import EacFormat
 from pcapi.core.educational import factories as educational_factories
@@ -23,9 +24,9 @@ def create_offers(
     offerers: list[offerers_models.Offerer], institutions: list[educational_models.EducationalInstitution]
 ) -> None:
     reset_offer_id_seq()
-    domains = create_domains()
-    offerers_iterator = iter(offerers)
     national_programs = create_national_programs()
+    domains = create_domains(national_programs)
+    offerers_iterator = iter(offerers)
 
     # eac_1
     offerer = next(offerers_iterator)
@@ -472,25 +473,59 @@ def create_booking_base_list(
             )
 
 
-def create_domains() -> list[educational_models.EducationalDomain]:
+def create_domains(
+    national_programs: typing.Sequence[educational_models.NationalProgram],
+) -> list[educational_models.EducationalDomain]:
+    college_au_cinema = [np for np in national_programs if np.id == 1]
+    lyceens_apprentis_au_cinema = [np for np in national_programs if np.id == 3]
+    olympiade_culturelle = [np for np in national_programs if np.id == 4]
+    jeunes_en_librairie = [np for np in national_programs if np.id == 6]
     return [
-        educational_factories.EducationalDomainFactory(name="Architecture", id=1),
-        educational_factories.EducationalDomainFactory(name="Arts du cirque et arts de la rue", id=2),
-        educational_factories.EducationalDomainFactory(name="Arts numériques", id=4),
-        educational_factories.EducationalDomainFactory(name="Arts visuels, arts plastiques, arts appliqués", id=5),
-        educational_factories.EducationalDomainFactory(name="Cinéma, audiovisuel", id=6),
-        educational_factories.EducationalDomainFactory(name="Culture scientifique, technique et industrielle", id=7),
-        educational_factories.EducationalDomainFactory(name="Danse", id=8),
-        educational_factories.EducationalDomainFactory(name="Design", id=9),
-        educational_factories.EducationalDomainFactory(name="Développement durable", id=10),
-        educational_factories.EducationalDomainFactory(name="Univers du livre, de la lecture et des écritures", id=11),
-        educational_factories.EducationalDomainFactory(name="Musique", id=12),
-        educational_factories.EducationalDomainFactory(name="Patrimoine", id=13),
-        educational_factories.EducationalDomainFactory(name="Photographie", id=14),
-        educational_factories.EducationalDomainFactory(name="Théâtre, expression dramatique, marionnettes", id=15),
-        educational_factories.EducationalDomainFactory(name="Bande dessinée", id=16),
-        educational_factories.EducationalDomainFactory(name="Média et information", id=17),
-        educational_factories.EducationalDomainFactory(name="Mémoire", id=18),
+        educational_factories.EducationalDomainFactory(
+            name="Architecture", id=1, nationalPrograms=olympiade_culturelle
+        ),
+        educational_factories.EducationalDomainFactory(
+            name="Arts du cirque et arts de la rue", id=2, nationalPrograms=olympiade_culturelle
+        ),
+        educational_factories.EducationalDomainFactory(
+            name="Arts numériques", id=4, nationalPrograms=olympiade_culturelle
+        ),
+        educational_factories.EducationalDomainFactory(
+            name="Arts visuels, arts plastiques, arts appliqués", id=5, nationalPrograms=olympiade_culturelle
+        ),
+        educational_factories.EducationalDomainFactory(
+            name="Cinéma, audiovisuel",
+            id=6,
+            nationalPrograms=college_au_cinema + lyceens_apprentis_au_cinema,
+        ),
+        educational_factories.EducationalDomainFactory(
+            name="Culture scientifique, technique et industrielle", id=7, nationalPrograms=olympiade_culturelle
+        ),
+        educational_factories.EducationalDomainFactory(name="Danse", id=8, nationalPrograms=olympiade_culturelle),
+        educational_factories.EducationalDomainFactory(name="Design", id=9, nationalPrograms=olympiade_culturelle),
+        educational_factories.EducationalDomainFactory(
+            name="Développement durable", id=10, nationalPrograms=olympiade_culturelle
+        ),
+        educational_factories.EducationalDomainFactory(
+            name="Univers du livre, de la lecture et des écritures",
+            id=11,
+            nationalPrograms=jeunes_en_librairie,
+        ),
+        educational_factories.EducationalDomainFactory(name="Musique", id=12, nationalPrograms=olympiade_culturelle),
+        educational_factories.EducationalDomainFactory(name="Patrimoine", id=13, nationalPrograms=olympiade_culturelle),
+        educational_factories.EducationalDomainFactory(
+            name="Photographie", id=14, nationalPrograms=olympiade_culturelle
+        ),
+        educational_factories.EducationalDomainFactory(
+            name="Théâtre, expression dramatique, marionnettes", id=15, nationalPrograms=olympiade_culturelle
+        ),
+        educational_factories.EducationalDomainFactory(
+            name="Bande dessinée", id=16, nationalPrograms=olympiade_culturelle
+        ),
+        educational_factories.EducationalDomainFactory(
+            name="Média et information", id=17, nationalPrograms=olympiade_culturelle
+        ),
+        educational_factories.EducationalDomainFactory(name="Mémoire", id=18, nationalPrograms=olympiade_culturelle),
     ]
 
 
@@ -500,6 +535,7 @@ def create_national_programs() -> list[educational_models.NationalProgram]:
         educational_factories.NationalProgramFactory(name="Lycéens et apprentis au cinéma", id=3),
         educational_factories.NationalProgramFactory(name="L’Olympiade culturelle", id=4),
         educational_factories.NationalProgramFactory(name="Théâtre au collège", id=5),
+        educational_factories.NationalProgramFactory(name="Jeunes en librairie", id=6),
     ]
 
 
