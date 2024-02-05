@@ -4,6 +4,7 @@ from unittest.mock import patch
 import pytest
 from sib_api_v3_sdk.rest import ApiException
 
+from pcapi.core import token as token_utils
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription.phone_validation import api as phone_validation_api
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
@@ -25,7 +26,7 @@ class EnsurePhoneNumberUnicityTest:
         with pytest.raises(phone_validation_exceptions.PhoneAlreadyExists):
             phone_validation_api.send_phone_validation_code(in_validation_user, "+33607080900")
 
-        assert users_models.Token.query.count() == 0
+        token_utils.Token.token_exists(token_utils.TokenType.PHONE_VALIDATION, in_validation_user.id)
 
     @patch(
         "pcapi.notifications.sms.backends.sendinblue.sib_api_v3_sdk.TransactionalSMSApi.send_transac_sms",
