@@ -14,7 +14,7 @@ interface SummaryLayoutSectionProps {
   'aria-label'?: string
 }
 
-const Section = ({
+export const SummarySection = ({
   title,
   children,
   className,
@@ -46,5 +46,3 @@ const Section = ({
     {children}
   </div>
 )
-
-export default Section

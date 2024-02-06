@@ -2,7 +2,7 @@ import format from 'date-fns/format'
 import React, { useEffect, useState } from 'react'
 
 import { BookingRecapResponseModel } from 'apiClient/v1'
-import { SummaryLayout } from 'components/SummaryLayout'
+import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import {
   DEFAULT_PRE_FILTERS,
   EMPTY_FILTER_VALUE,
@@ -83,7 +83,7 @@ export const BookingsSummaryScreen = ({
   })
 
   return (
-    <SummaryLayout.Section title="Réservations">
+    <SummarySection title="Réservations">
       {bookings !== null ? (
         <>
           <IndividualBookingsTable
@@ -98,6 +98,6 @@ export const BookingsSummaryScreen = ({
       ) : (
         <Spinner />
       )}
-    </SummaryLayout.Section>
+    </SummarySection>
   )
 }

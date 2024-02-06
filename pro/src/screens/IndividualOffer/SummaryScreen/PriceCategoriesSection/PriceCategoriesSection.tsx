@@ -1,7 +1,8 @@
 import React from 'react'
 
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import { SummaryLayout } from 'components/SummaryLayout'
+import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
+import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
@@ -26,7 +27,7 @@ export const PriceCategoriesSection = ({ offer, canBeDuo }: Props) => {
   })
 
   return (
-    <SummaryLayout.Section
+    <SummarySection
       title="Tarifs"
       editLink={editLink}
       aria-label="Modifier les tarifs de l’offre"
@@ -37,11 +38,11 @@ export const PriceCategoriesSection = ({ offer, canBeDuo }: Props) => {
         </div>
       ))}
       {canBeDuo && (
-        <SummaryLayout.Row
+        <SummaryRow
           title='Accepter les réservations "Duo"'
           description={offer.isDuo ? 'Oui' : 'Non'}
         />
       )}
-    </SummaryLayout.Section>
+    </SummarySection>
   )
 }

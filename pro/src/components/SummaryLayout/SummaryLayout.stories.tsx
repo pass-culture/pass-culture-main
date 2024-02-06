@@ -1,7 +1,11 @@
 import React from 'react'
 import { withRouter } from 'storybook-addon-react-router-v6'
 
-import { SummaryLayout } from '.'
+import { SummaryContent } from './SummaryContent'
+import { SummaryLayout } from './SummaryLayout'
+import { SummaryRow } from './SummaryRow'
+import { SummarySection } from './SummarySection'
+import { SummarySubSection } from './SummarySubSection'
 
 export default {
   title: 'components/SummaryLayout',
@@ -12,41 +16,41 @@ export default {
 const Template = () => (
   <div style={{ width: 780 }}>
     <SummaryLayout>
-      <SummaryLayout.Content>
-        <SummaryLayout.Section title="Lorem ipsum dolor sit amet" editLink="/">
-          <SummaryLayout.SubSection title="Sub section title">
-            <SummaryLayout.Row
+      <SummaryContent>
+        <SummarySection title="Lorem ipsum dolor sit amet" editLink="/">
+          <SummarySubSection title="Sub section title">
+            <SummaryRow
               description="Lorem ipsum dolor sit amet. Et libero officia 33 perferendis quam ut tempore quos hic dolorum? Hic repellat nemo facilis magnam aut eaque fuga ex magnam cupiditate eos consequatur repellat. Cum enim repellendus qui omnis impedit et autem quod rem libero officiis est rerum possimus."
               title="Lorem"
             />
-          </SummaryLayout.SubSection>
-        </SummaryLayout.Section>
-        <SummaryLayout.Section title="Lorem ipsum dolor sit amet" editLink="/">
-          <SummaryLayout.SubSection title="Sub section title">
-            <SummaryLayout.Row
+          </SummarySubSection>
+        </SummarySection>
+        <SummarySection title="Lorem ipsum dolor sit amet" editLink="/">
+          <SummarySubSection title="Sub section title">
+            <SummaryRow
               description="Description  : Lorem ipsum dolor sit amet. Et libero officia 33 perferendis quam ut tempore quos hic dolorum? Hic repellat nemo facilis magnam aut eaque fuga ex magnam cupiditate eos consequatur repellat. Cum enim repellendus qui omnis impedit et autem quod rem libero officiis est rerum possimus."
               title="Lorem"
             />
-            <SummaryLayout.Row
+            <SummaryRow
               description="Lorem ipsum dolor sit amet"
               title="Lorem"
             />
-          </SummaryLayout.SubSection>
-          <SummaryLayout.SubSection title="Sub section title">
-            <SummaryLayout.Row description="Pas de titre" />
-          </SummaryLayout.SubSection>
-          <SummaryLayout.SubSection title="Sub section title">
-            <SummaryLayout.Row
+          </SummarySubSection>
+          <SummarySubSection title="Sub section title">
+            <SummaryRow description="Pas de titre" />
+          </SummarySubSection>
+          <SummarySubSection title="Sub section title">
+            <SummaryRow
               description="Description  : Lorem ipsum dolor sit amet. Et libero officia 33 perferendis quam ut tempore quos hic dolorum? Hic repellat nemo facilis magnam aut eaque fuga ex magnam cupiditate eos consequatur repellat. Cum enim repellendus qui omnis impedit et autem quod rem libero officiis est rerum possimus."
               title="Lorem"
             />
-            <SummaryLayout.Row
+            <SummaryRow
               description="Lorem ipsum dolor sit amet"
               title="Lorem"
             />
-          </SummaryLayout.SubSection>
-        </SummaryLayout.Section>
-      </SummaryLayout.Content>
+          </SummarySubSection>
+        </SummarySection>
+      </SummaryContent>
     </SummaryLayout>
   </div>
 )

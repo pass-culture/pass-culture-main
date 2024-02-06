@@ -1,6 +1,7 @@
 import React from 'react'
 
-import { SummaryLayout } from 'components/SummaryLayout'
+import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
+import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 
 interface CollectiveOfferContactSectionProps {
   phone?: string | null
@@ -12,10 +13,10 @@ const CollectiveOfferContactSection = ({
   email,
 }: CollectiveOfferContactSectionProps) => {
   return (
-    <SummaryLayout.SubSection title="Contact">
-      <SummaryLayout.Row title="Téléphone" description={phone} />
-      <SummaryLayout.Row title="Email" description={email} />
-    </SummaryLayout.SubSection>
+    <SummarySubSection title="Contact">
+      <SummaryRow title="Téléphone" description={phone} />
+      <SummaryRow title="Email" description={email} />
+    </SummarySubSection>
   )
 }
 

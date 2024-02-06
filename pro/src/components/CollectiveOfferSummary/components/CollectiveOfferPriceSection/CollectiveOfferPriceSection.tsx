@@ -1,6 +1,7 @@
 import React from 'react'
 
-import { SummaryLayout } from 'components/SummaryLayout'
+import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
+import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import { CollectiveOfferTemplate } from 'core/OfferEducational'
 
 import { DEFAULT_RECAP_VALUE } from '../constants'
@@ -13,10 +14,10 @@ export default function CollectiveOfferPriceSection({
   offer,
 }: CollectiveOfferPriceSectionProps) {
   return (
-    <SummaryLayout.SubSection title="Prix">
-      <SummaryLayout.Row
+    <SummarySubSection title="Prix">
+      <SummaryRow
         description={offer.educationalPriceDetail || DEFAULT_RECAP_VALUE}
       />
-    </SummaryLayout.SubSection>
+    </SummarySubSection>
   )
 }

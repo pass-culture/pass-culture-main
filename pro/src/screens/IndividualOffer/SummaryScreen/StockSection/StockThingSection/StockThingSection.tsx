@@ -2,7 +2,7 @@ import { format } from 'date-fns-tz'
 import React from 'react'
 
 import { GetOfferStockResponseModel } from 'apiClient/v1'
-import { SummaryLayout } from 'components/SummaryLayout'
+import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
 import { FORMAT_DD_MM_YYYY, toDateStrippedOfTimezone } from 'utils/date'
 import { formatPrice } from 'utils/formatPrice'
 
@@ -23,10 +23,10 @@ const StockThingSection = ({
 
   return (
     <>
-      <SummaryLayout.Row title="Prix" description={formatPrice(stock.price)} />
+      <SummaryRow title="Prix" description={formatPrice(stock.price)} />
 
       {stock.bookingLimitDatetime && (
-        <SummaryLayout.Row
+        <SummaryRow
           title="Date limite de réservation"
           description={format(
             toDateStrippedOfTimezone(stock.bookingLimitDatetime),
@@ -35,7 +35,7 @@ const StockThingSection = ({
         />
       )}
 
-      <SummaryLayout.Row
+      <SummaryRow
         title="Quantité"
         description={
           stock.quantity !== null && stock.quantity !== undefined
@@ -46,7 +46,7 @@ const StockThingSection = ({
 
       {/* Some things offer can be duo like ESCAPE_GAME or CARTE_MUSEE */}
       {canBeDuo && (
-        <SummaryLayout.Row
+        <SummaryRow
           title='Accepter les réservations "Duo"'
           description={isDuo ? 'Oui' : 'Non'}
         />

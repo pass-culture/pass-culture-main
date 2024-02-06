@@ -9,7 +9,7 @@ interface SummaryLayoutContentProps {
   fullWidth?: boolean
 }
 
-const Content = ({
+export const SummaryContent = ({
   className,
   children,
   fullWidth = false,
@@ -22,5 +22,3 @@ const Content = ({
     {children}
   </div>
 )
-
-export default Content
