@@ -262,6 +262,15 @@ def venue_with_accepted_reimbursement_point_fixture(
 ):
     offerers_factories.VenueReimbursementPointLinkFactory(
         venue=venue_with_no_bank_info,
+        timespan=[
+            datetime.datetime.utcnow() - datetime.timedelta(days=365),
+            datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        ],
+        reimbursementPoint=venue_with_accepted_bank_info,
+    )
+    offerers_factories.VenueReimbursementPointLinkFactory(
+        venue=venue_with_no_bank_info,
+        timespan=[datetime.datetime.utcnow() - datetime.timedelta(days=1), None],
         reimbursementPoint=venue_with_accepted_bank_info,
     )
     offerers_factories.VenueBankAccountLinkFactory(
