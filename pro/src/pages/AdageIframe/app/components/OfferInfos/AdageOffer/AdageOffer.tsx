@@ -25,7 +25,7 @@ export default function AdageOffer({ offer }: AdageOfferProps) {
       </div>
       <div className={styles['offer-body']}>
         <div className={styles['offer-main']}>
-          <div className={styles['offer-section']}>
+          <section className={styles['offer-section']}>
             <div className={styles['offer-section-header']}>
               <SvgIcon alt="" src={strokeArticleIcon} width="24" />
               <h2 className={styles['offer-section-header-title']}>
@@ -36,9 +36,9 @@ export default function AdageOffer({ offer }: AdageOfferProps) {
             <div className={styles['offer-section-group']}>
               <AdageOfferDetailsSection offer={offer} />
             </div>
-          </div>
+          </section>
 
-          <div className={styles['offer-section']}>
+          <section className={styles['offer-section']}>
             <div className={styles['offer-section-header']}>
               <SvgIcon alt="" src={strokeInfoIcon} width="24" />
               <h2 className={styles['offer-section-header-title']}>
@@ -49,8 +49,8 @@ export default function AdageOffer({ offer }: AdageOfferProps) {
             <div className={styles['offer-section-group']}>
               <AdageOfferInfoSection offer={offer} />
             </div>
-          </div>
-          <div className={styles['offer-section']}>
+          </section>
+          <section className={styles['offer-section']}>
             <div className={styles['offer-section-header']}>
               <SvgIcon alt="" src={strokeUserIcon} width="24" />
               <h2 className={styles['offer-section-header-title']}>
@@ -61,7 +61,7 @@ export default function AdageOffer({ offer }: AdageOfferProps) {
             <div className={styles['offer-section-group']}>
               <AdageOfferPublicSection offer={offer} />
             </div>
-          </div>
+          </section>
         </div>
       </div>
       <div className={styles['offer-side']}>
