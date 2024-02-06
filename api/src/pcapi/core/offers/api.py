@@ -168,11 +168,12 @@ def create_offer(
     withdrawal_delay: int | None = None,
     withdrawal_details: str | None = None,
     withdrawal_type: models.WithdrawalTypeEnum | None = None,
+    is_from_private_api: bool = False,
 ) -> models.Offer:
     validation.check_offer_withdrawal(withdrawal_type, withdrawal_delay, subcategory_id, booking_contact, provider)
     validation.check_offer_subcategory_is_valid(subcategory_id)
     formatted_extra_data = _format_extra_data(subcategory_id, extra_data)
-    validation.check_offer_extra_data(subcategory_id, formatted_extra_data, venue)
+    validation.check_offer_extra_data(subcategory_id, formatted_extra_data, venue, is_from_private_api)
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
     validation.check_is_duo_compliance(is_duo, subcategory)
 
@@ -237,11 +238,12 @@ def update_offer(
     withdrawalDetails: str | None | T_UNCHANGED = UNCHANGED,
     withdrawalType: models.WithdrawalTypeEnum | None | T_UNCHANGED = UNCHANGED,
     shouldSendMail: bool = False,
+    is_from_private_api: bool = False,
 ) -> models.Offer:
     modifications = {
         field: new_value
         for field, new_value in locals().items()
-        if field not in ("offer", "shouldSendMail")
+        if field not in ("offer", "shouldSendMail", "is_from_private_api")
         and new_value is not UNCHANGED  # has the user provided a value for this field
         and getattr(offer, field) != new_value  # is the value different from what we have on database?
     }
@@ -251,7 +253,9 @@ def update_offer(
     validation.check_validation_status(offer)
     if extraData is not UNCHANGED:
         formatted_extra_data = _format_extra_data(offer.subcategoryId, extraData)
-        validation.check_offer_extra_data(offer.subcategoryId, formatted_extra_data, offer.venue, offer)
+        validation.check_offer_extra_data(
+            offer.subcategoryId, formatted_extra_data, offer.venue, is_from_private_api, offer
+        )
     if isDuo is not UNCHANGED:
         validation.check_is_duo_compliance(isDuo, offer.subcategory)
 
