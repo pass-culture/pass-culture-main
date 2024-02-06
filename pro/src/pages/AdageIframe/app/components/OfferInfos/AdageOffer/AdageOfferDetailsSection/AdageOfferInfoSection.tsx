@@ -8,7 +8,7 @@ import { getRangeToFrenchText, toDateStrippedOfTimezone } from 'utils/date'
 
 import styles from '../AdageOffer.module.scss'
 
-type AdageOfferInfoSectionProps = {
+export type AdageOfferInfoSectionProps = {
   offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
 }
 
