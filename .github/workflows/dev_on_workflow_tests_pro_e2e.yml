@@ -108,8 +108,8 @@ jobs:
           resource: http://localhost:5001/health/api
           timeout: 120000
       # This is done in the cypress run step
-      - name: "Load sandbox"
-        run: ../pc sandbox -n industrial
+      # - name: "Load sandbox"
+      #   run: ../pc sandbox -n industrial
       - name: "Build vite application"
         run: yarn build:development
       - name: "Serve vite preview"

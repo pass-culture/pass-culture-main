@@ -12,7 +12,7 @@ def install_all_routes(app: Flask) -> None:
     from pcapi.routes.pro.blueprint import pro_private_api as pro_private_api_blueprint
     from pcapi.routes.public import blueprints as public_blueprint
     from pcapi.routes.saml.blueprint import saml_blueprint as saml_blueprint_blueprint
-    import pcapi.sandboxes
+    import pcapi.sandboxes.scripts.creators.end_to_end
     import pcapi.tasks
     from pcapi.tasks.decorator import cloud_task_api
 
@@ -41,7 +41,7 @@ def install_all_routes(app: Flask) -> None:
     institutional.install_routes(app)
     # if settings.IS_E2E_TESTS:
     # DO NOT MERGE: This is a temporary route for e2e tests
-    pcapi.sandboxes.install_routes(app)
+    pcapi.sandboxes.scripts.creators.end_to_end.install_routes(app)
 
     app.register_blueprint(adage_v1_blueprint, url_prefix="/adage/v1")
     app.register_blueprint(native_blueprint, url_prefix="/native")

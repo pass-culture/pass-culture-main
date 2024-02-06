@@ -11,8 +11,11 @@ def save_sandbox() -> None:
     disable_external_bookings()
 
 
-def save_ci_sandbox() -> None:
+def save_ci_sandbox(start: float) -> None:
     app.app_context().push()
     with app.app_context():
         save_industrial_ci_sandbox()
         disable_external_bookings()
+        from time import time
+
+        print("time elapsed: ", time() - start)

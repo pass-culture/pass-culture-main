@@ -34,6 +34,8 @@ export default defineConfig({
 
         try {
           await fetch(`${API_BASE_URL}/e2e/pro/tear-down`)
+          .then(res => res.status)
+          .then(console.log)
         } catch (error) {
           console.error(error)
           throw error

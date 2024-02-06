@@ -8,7 +8,7 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Product
 from pcapi.local_providers import TiteLiveThingThumbs
 from pcapi.repository import repository
-import pcapi.sandboxes
+import pcapi.sandboxes.scripts.creators.end_to_end
 from pcapi.utils.human_ids import humanize
 
 
@@ -67,7 +67,7 @@ def get_zip_with_1_relevant_thumb_file():
 
 
 def get_zip_thumbs_file_from_named_sandbox_file(file_name):
-    data_root_path = Path(pcapi.sandboxes.__path__[0]) / "providers" / "titelive_mocks"
+    data_root_path = Path(pcapi.sandboxes.scripts.creators.end_to_end.__path__[0]) / "providers" / "titelive_mocks"
     return data_root_path / file_name
 
 
