@@ -72,7 +72,7 @@ class Returns204Test:
             bookingExternalUrl=external_url + "/book",
             cancelExternalUrl=external_url + "/cancel",
         )
-        providers_factories.OffererProviderFactory(provider=provider)
+        offerers_factories.ApiKeyFactory(provider=provider)
         stock = offers_factories.EventStockFactory(
             lastProvider=provider,
             offer__subcategoryId=subcategories_v2.SEANCE_ESSAI_PRATIQUE_ART.id,
@@ -118,7 +118,7 @@ class Returns204Test:
             bookingExternalUrl=external_url + "/book",
             cancelExternalUrl=external_url + "/cancel",
         )
-        providers_factories.OffererProviderFactory(provider=provider)
+        offerers_factories.ApiKeyFactory(provider=provider)
         stock = offers_factories.EventStockFactory(
             lastProvider=provider,
             offer__subcategoryId=subcategories_v2.SEANCE_ESSAI_PRATIQUE_ART.id,
@@ -159,7 +159,7 @@ class Returns204Test:
             bookingExternalUrl=external_url + "/book",
             cancelExternalUrl=external_url + "/cancel",
         )
-        providers_factories.OffererProviderFactory(provider=provider)
+        offerers_factories.ApiKeyFactory(provider=provider)
         stock = offers_factories.EventStockFactory(
             lastProvider=provider,
             offer__subcategoryId=subcategories_v2.SEANCE_ESSAI_PRATIQUE_ART.id,
@@ -203,7 +203,7 @@ class Returns204Test:
             bookingExternalUrl=external_url + "/book",
             cancelExternalUrl=external_url + "/cancel",
         )
-        providers_factories.OffererProviderFactory(provider=provider)
+        offerers_factories.ApiKeyFactory(provider=provider)
         stock = offers_factories.EventStockFactory(
             lastProvider=provider,
             offer__subcategoryId=subcategories_v2.SEANCE_ESSAI_PRATIQUE_ART.id,
@@ -335,7 +335,7 @@ class Returns400Test:
             bookingExternalUrl=external_url + "/book",
             cancelExternalUrl=external_url + "/cancel",
         )
-        providers_factories.OffererProviderFactory(provider=provider)
+        offerers_factories.ApiKeyFactory(provider=provider)
         stock = offers_factories.EventStockFactory(
             lastProvider=provider,
             offer__subcategoryId=subcategories_v2.SEANCE_ESSAI_PRATIQUE_ART.id,

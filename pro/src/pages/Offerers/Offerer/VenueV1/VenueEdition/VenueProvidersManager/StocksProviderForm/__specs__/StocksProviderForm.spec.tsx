@@ -29,7 +29,7 @@ describe('StocksProviderForm', () => {
       saveVenueProvider: vi.fn().mockReturnValue(true),
       siret: '12345678901234',
       venueId: venueId,
-      hasOffererProvider: true,
+      hasApiKey: true,
     }
 
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({

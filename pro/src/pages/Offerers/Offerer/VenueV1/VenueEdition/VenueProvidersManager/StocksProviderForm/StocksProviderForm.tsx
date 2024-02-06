@@ -24,7 +24,7 @@ export interface StocksProviderFormProps {
   saveVenueProvider: (payload: PostVenueProviderBody) => boolean
   siret: string
   venueId: number
-  hasOffererProvider: boolean
+  hasApiKey: boolean
 }
 
 const StocksProviderForm = ({
@@ -32,7 +32,7 @@ const StocksProviderForm = ({
   providerId,
   siret,
   venueId,
-  hasOffererProvider,
+  hasApiKey,
   offererId,
 }: StocksProviderFormProps) => {
   const { logEvent } = useAnalytics()
@@ -83,7 +83,7 @@ const StocksProviderForm = ({
   return (
     <>
       <div className={styles['stocks-provider-form']}>
-        {!hasOffererProvider && (
+        {!hasApiKey && (
           <div className={styles['account-section']}>
             <div>Compte</div>
             <div>{siret}</div>

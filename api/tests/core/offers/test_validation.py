@@ -191,7 +191,6 @@ class CheckStockIsDeletableTest:
             bookingExternalUrl=external_url + "/book",
             cancelExternalUrl=external_url + "/cancel",
         )
-        providers_factories.OffererProviderFactory(provider=provider)
         stock = offers_factories.EventStockFactory(
             lastProvider=provider,
             offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,

@@ -613,15 +613,16 @@ def generate_offerer_api_key(offerer_id: int) -> tuple[models.ApiKey, str]:
 
 
 def generate_provider_api_key(provider: providers_models.Provider) -> tuple[models.ApiKey, str]:
-    offerer = provider.offererProvider.offerer if provider.offererProvider else None
+    offerer = provider.apiKeys.offerer if provider.apiKeys else None
     if offerer is None:
         raise exceptions.CannotFindProviderOfferer()
 
     clear_secret = secrets.token_hex(32)
     prefix = _generate_api_key_prefix()
-    key = models.ApiKey(offerer=offerer, provider=provider, prefix=prefix, secret=crypto.hash_password(clear_secret))
+    provider.apiKeys.prefix = (prefix,)
+    provider.apiKeys.secret = crypto.hash_password(clear_secret)
 
-    return key, f"{prefix}{API_KEY_SEPARATOR}{clear_secret}"
+    return provider.apiKeys, f"{prefix}{API_KEY_SEPARATOR}{clear_secret}"
 
 
 def _generate_api_key_prefix() -> str:

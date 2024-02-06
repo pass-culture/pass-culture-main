@@ -995,7 +995,7 @@ class Offerer(
 
     tags: list["OffererTag"] = sa.orm.relationship("OffererTag", secondary="offerer_tag_mapping")
 
-    offererProviders: list["OffererProvider"] = sa.orm.relationship("OffererProvider", back_populates="offerer")
+    apiKeys: list["ApiKey"] = sa.orm.relationship("ApiKey", back_populates="offerer")
     thumb_path_component = "offerers"
 
     bankAccounts: list[finance_models.BankAccount] = sa.orm.relationship(
@@ -1097,7 +1097,7 @@ class UserOfferer(PcObject, Base, Model, ValidationStatusMixin):
 
 class ApiKey(PcObject, Base, Model):
     offererId: int = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=False)
-    offerer: sa_orm.Mapped[Offerer] = relationship("Offerer", foreign_keys=[offererId], backref=backref("apiKeys"))
+    offerer: sa_orm.Mapped[Offerer] = relationship("Offerer", foreign_keys=[offererId], back_populates="apiKeys")
     providerId: int = Column(BigInteger, ForeignKey("provider.id", ondelete="CASCADE"), index=True)
     provider: sa_orm.Mapped["providers_models.Provider"] = relationship(
         "Provider", foreign_keys=[providerId], back_populates="apiKeys"
@@ -1105,6 +1105,8 @@ class ApiKey(PcObject, Base, Model):
     dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
     prefix = Column(Text, nullable=True, unique=True)
     secret: bytes = Column(LargeBinary, nullable=True)
+
+    __table_args__ = (UniqueConstraint("offererId", "providerId", name="unique_api_keys"),)
 
     def check_secret(self, clear_text: str) -> bool:
         return crypto.check_password(clear_text, self.secret)
@@ -1164,18 +1166,6 @@ class OffererTagMapping(PcObject, Base, Model):
     tagId: int = Column(BigInteger, ForeignKey("offerer_tag.id", ondelete="CASCADE"), index=True, nullable=False)
 
     __table_args__ = (UniqueConstraint("offererId", "tagId", name="unique_offerer_tag"),)
-
-
-class OffererProvider(PcObject, Base, Model):
-    __tablename__ = "offerer_provider"
-    offererId: int = Column(BigInteger, ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False)
-    offerer: Offerer = relationship("Offerer", foreign_keys=[offererId], back_populates="offererProviders")
-    providerId: int = Column(BigInteger, ForeignKey("provider.id"), index=True, nullable=False)
-    provider: sa_orm.Mapped["providers_models.Provider"] = relationship(
-        "Provider", foreign_keys=[providerId], back_populates="offererProvider"
-    )
-
-    __table_args__ = (UniqueConstraint("offererId", "providerId", name="unique_offerer_provider"),)
 
 
 class OffererInvitation(PcObject, Base, Model):

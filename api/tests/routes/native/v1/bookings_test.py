@@ -18,6 +18,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
 from pcapi.core.finance import utils as finance_utils
 import pcapi.core.mails.testing as mails_testing
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import models as offer_models
 from pcapi.core.offers.exceptions import UnexpectedCinemaProvider
 import pcapi.core.offers.factories as offers_factories
@@ -177,7 +178,7 @@ class PostBookingTest:
             localClass=None,
             notificationExternalUrl=external_notification_url,
         )
-        providers_factories.OffererProviderFactory(provider=provider)
+        offerers_factories.ApiKeyFactory(provider=provider)
         stock = EventStockFactory(
             lastProvider=provider,
             priceCategory__price=2,
@@ -234,7 +235,7 @@ class PostBookingTest:
             bookingExternalUrl=external_booking_url,
             cancelExternalUrl=external_booking_url,
         )
-        providers_factories.OffererProviderFactory(provider=provider)
+        offerers_factories.ApiKeyFactory(provider=provider)
         stock = EventStockFactory(
             lastProvider=provider,
             priceCategory__price=2,
@@ -306,7 +307,7 @@ class PostBookingTest:
             bookingExternalUrl=external_booking_url,
             cancelExternalUrl=external_booking_url,
         )
-        providers_factories.OffererProviderFactory(provider=provider)
+        offerers_factories.ApiKeyFactory(provider=provider)
         stock = EventStockFactory(
             lastProvider=provider,
             priceCategory__price=2,
@@ -374,7 +375,7 @@ class PostBookingTest:
             bookingExternalUrl=external_booking_url,
             cancelExternalUrl=external_booking_url,
         )
-        providers_factories.OffererProviderFactory(provider=provider)
+        offerers_factories.ApiKeyFactory(provider=provider)
         stock = EventStockFactory(
             lastProvider=provider,
             offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
@@ -410,7 +411,7 @@ class PostBookingTest:
             bookingExternalUrl=external_booking_url,
             cancelExternalUrl=external_booking_url,
         )
-        providers_factories.OffererProviderFactory(provider=provider)
+        offerers_factories.ApiKeyFactory(provider=provider)
         stock = EventStockFactory(
             lastProvider=provider,
             offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
@@ -445,7 +446,7 @@ class PostBookingTest:
             bookingExternalUrl=external_booking_url,
             cancelExternalUrl=external_booking_url,
         )
-        providers_factories.OffererProviderFactory(provider=provider)
+        offerers_factories.ApiKeyFactory(provider=provider)
         stock = EventStockFactory(
             lastProvider=provider,
             offer__lastProvider=provider,
@@ -514,7 +515,7 @@ class PostBookingTest:
             bookingExternalUrl=external_booking_url,
             cancelExternalUrl=cancel_booking_url,
         )
-        providers_factories.OffererProviderFactory(provider=provider)
+        offerers_factories.ApiKeyFactory(provider=provider)
         stock = EventStockFactory(
             lastProvider=provider,
             offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
@@ -566,7 +567,7 @@ class PostBookingTest:
             bookingExternalUrl=external_booking_url,
             cancelExternalUrl=cancel_booking_url,
         )
-        providers_factories.OffererProviderFactory(provider=provider)
+        offerers_factories.ApiKeyFactory(provider=provider)
         stock = EventStockFactory(
             lastProvider=provider,
             offer__lastProvider=provider,
@@ -606,7 +607,7 @@ class PostBookingTest:
             bookingExternalUrl=external_booking_url,
             cancelExternalUrl=cancel_booking_url,
         )
-        providers_factories.OffererProviderFactory(provider=provider)
+        offerers_factories.ApiKeyFactory(provider=provider)
         stock = EventStockFactory(
             lastProvider=provider,
             offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,

@@ -753,7 +753,6 @@ class ApiKeyTest:
         value = "a very secret legacy key"
         offerer = offerers_factories.OffererFactory()
         provider = providers_factories.ProviderFactory(localClass=None, name="RiotRecords")
-        providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
         offerers_factories.ApiKeyFactory(
             offerer=offerer, provider=provider, prefix="development_a very s", secret="ecret legacy key"
         )

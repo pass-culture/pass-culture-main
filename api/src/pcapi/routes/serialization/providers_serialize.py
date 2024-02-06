@@ -6,7 +6,7 @@ class ProviderResponse(BaseModel):
     name: str
     enabledForPro: bool
     isActive: bool
-    hasOffererProvider: bool
+    hasApiKey: bool
 
     class Config:
         orm_mode = True

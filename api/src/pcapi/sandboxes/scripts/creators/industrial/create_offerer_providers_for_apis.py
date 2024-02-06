@@ -53,10 +53,6 @@ def create_offerer_provider(
         providerId=provider.id,
     )
 
-    providers_factories.OffererProviderFactory(
-        offerer=offerer,
-        provider=provider,
-    )
     return offerer, provider
 
 

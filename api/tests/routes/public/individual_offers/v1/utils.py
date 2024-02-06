@@ -26,10 +26,6 @@ def create_offerer_provider(with_charlie=False):
         offerer=offerer,
         provider=provider,
     )
-    providers_factories.OffererProviderFactory(
-        offerer=offerer,
-        provider=provider,
-    )
     return provider, api_key
 
 

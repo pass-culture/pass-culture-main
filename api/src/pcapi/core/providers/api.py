@@ -177,7 +177,7 @@ def update_allocine_venue_provider(
 def connect_venue_to_provider(
     venue: offerers_models.Venue, provider: providers_models.Provider, venueIdAtOfferProvider: str | None = None
 ) -> providers_models.VenueProvider:
-    if provider.hasOffererProvider:
+    if provider.hasApiKey:
         id_at_provider = None
     else:
         id_at_provider = _get_siret(venueIdAtOfferProvider, venue.siret)
@@ -188,7 +188,6 @@ def connect_venue_to_provider(
     venue_provider.venue = venue
     venue_provider.provider = provider
     venue_provider.venueIdAtOfferProvider = id_at_provider
-
     repository.save(venue_provider)
     return venue_provider
 
@@ -214,7 +213,7 @@ def connect_venue_to_cinema_provider(
 
 
 def _check_provider_can_be_connected(provider: providers_models.Provider, id_at_provider: str | None) -> None:
-    if provider.hasOffererProvider:
+    if provider.hasApiKey:
         return
     if not provider.implements_provider_api:
         raise providers_exceptions.ProviderWithoutApiImplementation()
