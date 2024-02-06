@@ -4,7 +4,7 @@ import {
   EducationalInstitutionResponseModel,
   EducationalRedactorResponseModel,
 } from 'apiClient/v1'
-import { SummaryLayout } from 'components/SummaryLayout'
+import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
 
 interface CollectiveOfferStockSectionProps {
   institution?: EducationalInstitutionResponseModel | null
@@ -35,12 +35,12 @@ const CollectiveOfferStockSection = ({
 
   return (
     <>
-      <SummaryLayout.Row
+      <SummaryRow
         title="Établissement scolaire auquel vous adressez votre offre"
         description={getVisibilityDescription(institution)}
       />
       {teacher && (
-        <SummaryLayout.Row
+        <SummaryRow
           title="Enseignant avec qui vous avez construit cette offre"
           description={
             <div>

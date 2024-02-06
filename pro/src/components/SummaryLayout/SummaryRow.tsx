@@ -9,7 +9,7 @@ interface SummaryLayoutRowProps {
   title?: string
 }
 
-const Row = ({
+export const SummaryRow = ({
   className,
   description,
   title,
@@ -24,5 +24,3 @@ const Row = ({
     </span>
   </div>
 )
-
-export default Row

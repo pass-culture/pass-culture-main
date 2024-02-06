@@ -1,6 +1,7 @@
 import React from 'react'
 
-import { SummaryLayout } from 'components/SummaryLayout'
+import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
+import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 
 interface CollectiveOfferNotificationSectionProps {
   bookingEmails: string[]
@@ -10,11 +11,11 @@ const CollectiveOfferNotificationSection = ({
   bookingEmails,
 }: CollectiveOfferNotificationSectionProps) => {
   return (
-    <SummaryLayout.SubSection title="Notifications des réservations">
+    <SummarySubSection title="Notifications des réservations">
       {bookingEmails.map((email) => (
-        <SummaryLayout.Row description={email} key={email} />
+        <SummaryRow description={email} key={email} />
       ))}
-    </SummaryLayout.SubSection>
+    </SummarySubSection>
   )
 }
 

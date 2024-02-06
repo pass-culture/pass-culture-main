@@ -4,7 +4,8 @@ import { api } from 'apiClient/api'
 import { GetOfferStockResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
-import { SummaryLayout } from 'components/SummaryLayout'
+import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
+import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
@@ -66,13 +67,13 @@ export const StocksSummaryScreen = () => {
   )?.canBeDuo
 
   return (
-    <SummaryLayout.Section
+    <SummarySection
       title={offer.isEvent ? 'Dates et capacité' : 'Stocks et prix'}
       editLink={editLink}
       aria-label="Modifier les stocks et prix"
     >
       {stockWarningText && (
-        <SummaryLayout.Row
+        <SummaryRow
           className={styles['stock-section-warning']}
           description={stockWarningText}
         />
@@ -87,6 +88,6 @@ export const StocksSummaryScreen = () => {
           isDuo={offer.isDuo}
         />
       )}
-    </SummaryLayout.Section>
+    </SummarySection>
   )
 }

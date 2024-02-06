@@ -7,7 +7,8 @@ import {
   StockStatsResponseModel,
 } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import { SummaryLayout } from 'components/SummaryLayout'
+import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
+import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
@@ -99,13 +100,13 @@ const StockSection = ({ offer, canBeDuo }: StockSectionProps): JSX.Element => {
 
   return (
     <>
-      <SummaryLayout.Section
+      <SummarySection
         title={offer.isEvent ? 'Dates et capacité' : 'Stocks et prix'}
         editLink={editLink}
         aria-label="Modifier les stocks et prix"
       >
         {stockWarningText && (
-          <SummaryLayout.Row
+          <SummaryRow
             className={styles['stock-section-warning']}
             description={stockWarningText}
           />
@@ -123,7 +124,7 @@ const StockSection = ({ offer, canBeDuo }: StockSectionProps): JSX.Element => {
             isDuo={offer.isDuo}
           />
         )}
-      </SummaryLayout.Section>
+      </SummarySection>
     </>
   )
 }

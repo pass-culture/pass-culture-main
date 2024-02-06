@@ -1,6 +1,7 @@
 import React from 'react'
 
-import { SummaryLayout } from 'components/SummaryLayout'
+import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
+import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import { AccessiblityEnum } from 'core/shared'
 import { AccessibilityLabel } from 'ui-kit/AccessibilityLabel'
 
@@ -21,10 +22,8 @@ const AccessibilitySummarySection = ({
   motorDisabilityCompliant,
   audioDisabilityCompliant,
 }: AccessibilitySummarySectionProps) => (
-  <SummaryLayout.SubSection title="Accessibilité">
-    {noDisabilityCompliance && (
-      <SummaryLayout.Row description="Non accessible" />
-    )}
+  <SummarySubSection title="Accessibilité">
+    {noDisabilityCompliance && <SummaryRow description="Non accessible" />}
     {visualDisabilityCompliant && (
       <AccessibilityLabel
         className={styles['accessibility-row']}
@@ -49,7 +48,7 @@ const AccessibilitySummarySection = ({
         name={AccessiblityEnum.AUDIO}
       />
     )}
-  </SummaryLayout.SubSection>
+  </SummarySubSection>
 )
 
 export default AccessibilitySummarySection

@@ -2,7 +2,7 @@ import format from 'date-fns/format'
 import React from 'react'
 
 import { GetCollectiveOfferCollectiveStockResponseModel } from 'apiClient/v1'
-import { SummaryLayout } from 'components/SummaryLayout'
+import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
 import { TOTAL_PRICE_LABEL } from 'screens/OfferEducationalStock/constants/labels'
 import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
@@ -31,7 +31,7 @@ const CollectiveOfferStockSection = ({
   /* istanbul ignore next: DEBT, TO FIX */
   return (
     <>
-      <SummaryLayout.Row
+      <SummaryRow
         title="Date"
         description={
           (stock?.beginningDatetime &&
@@ -39,7 +39,7 @@ const CollectiveOfferStockSection = ({
           DEFAULT_RECAP_VALUE
         }
       />
-      <SummaryLayout.Row
+      <SummaryRow
         title="Horaire"
         description={
           (stock?.beginningDatetime &&
@@ -47,15 +47,12 @@ const CollectiveOfferStockSection = ({
           DEFAULT_RECAP_VALUE
         }
       />
-      <SummaryLayout.Row
+      <SummaryRow
         title="Nombre de participants"
         description={stock?.numberOfTickets || DEFAULT_RECAP_VALUE}
       />
-      <SummaryLayout.Row
-        title={TOTAL_PRICE_LABEL}
-        description={`${stock?.price}€`}
-      />
-      <SummaryLayout.Row
+      <SummaryRow title={TOTAL_PRICE_LABEL} description={`${stock?.price}€`} />
+      <SummaryRow
         title="Date limite de réservation"
         description={
           (stock?.bookingLimitDatetime &&
@@ -63,7 +60,7 @@ const CollectiveOfferStockSection = ({
           DEFAULT_RECAP_VALUE
         }
       />
-      <SummaryLayout.Row
+      <SummaryRow
         title="Détails"
         description={stock?.educationalPriceDetail || DEFAULT_RECAP_VALUE}
       />

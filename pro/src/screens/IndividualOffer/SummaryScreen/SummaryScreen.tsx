@@ -5,7 +5,9 @@ import { api } from 'apiClient/api'
 import Callout from 'components/Callout/Callout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { OfferAppPreview } from 'components/OfferAppPreview'
-import { SummaryLayout } from 'components/SummaryLayout'
+import { SummaryAside } from 'components/SummaryLayout/SummaryAside'
+import { SummaryContent } from 'components/SummaryLayout/SummaryContent'
+import { SummaryLayout } from 'components/SummaryLayout/SummaryLayout'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import {
   Events,
@@ -140,7 +142,7 @@ const SummaryScreen = () => {
       )}
 
       <SummaryLayout>
-        <SummaryLayout.Content>
+        <SummaryContent>
           <OfferSection conditionalFields={conditionalFields} offer={offer} />
 
           {mode === OFFER_WIZARD_MODE.CREATION && offer.isEvent && (
@@ -150,9 +152,9 @@ const SummaryScreen = () => {
           {mode === OFFER_WIZARD_MODE.CREATION && (
             <StockSection offer={offer} canBeDuo={canBeDuo} />
           )}
-        </SummaryLayout.Content>
+        </SummaryContent>
 
-        <SummaryLayout.Side>
+        <SummaryAside>
           <div className={styles['offer-creation-preview-title']}>
             <SvgIcon
               src={phoneStrokeIcon}
@@ -184,7 +186,7 @@ const SummaryScreen = () => {
               </DisplayOfferInAppLink>
             </div>
           )}
-        </SummaryLayout.Side>
+        </SummaryAside>
       </SummaryLayout>
       <ActionBar
         onClickNext={publishOffer}

@@ -8,8 +8,9 @@ interface SummaryLayoutSideProps {
   children?: React.ReactNode | React.ReactNode[]
 }
 
-const Side = ({ className, children }: SummaryLayoutSideProps): JSX.Element => (
+export const SummaryAside = ({
+  className,
+  children,
+}: SummaryLayoutSideProps): JSX.Element => (
   <div className={cn(style['summary-layout-side'], className)}>{children}</div>
 )
-
-export default Side

@@ -1,7 +1,8 @@
 import React from 'react'
 
 import { StudentLevels } from 'apiClient/v1'
-import { SummaryLayout } from 'components/SummaryLayout'
+import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
+import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 
 interface CollectiveOfferParticipantSectionProps {
   students: StudentLevels[]
@@ -11,11 +12,11 @@ const CollectiveOfferParticipantSection = ({
   students,
 }: CollectiveOfferParticipantSectionProps) => {
   return (
-    <SummaryLayout.SubSection title="Participants">
+    <SummarySubSection title="Participants">
       {students.map((student) => (
-        <SummaryLayout.Row description={student} key={student} />
+        <SummaryRow description={student} key={student} />
       ))}
-    </SummaryLayout.SubSection>
+    </SummarySubSection>
   )
 }
 

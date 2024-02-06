@@ -4,7 +4,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { GetCollectiveOfferRequestResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import ActionsBarSticky from 'components/ActionsBarSticky'
-import { SummaryLayout } from 'components/SummaryLayout'
+import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
+import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { Events } from 'core/FirebaseEvents/constants'
 import {
   CollectiveOfferTemplate,
@@ -109,9 +110,9 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
             modifiables.
             <br /> L’offre sera visible par l’enseignant sur Adage.
           </div>
-          <SummaryLayout.Section title="Détails de la demande">
+          <SummarySection title="Détails de la demande">
             <div className={styles['eac-section']}>
-              <SummaryLayout.Row
+              <SummaryRow
                 title="Demande reçue le"
                 description={
                   informations?.dateCreated
@@ -119,13 +120,13 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
                     : '-'
                 }
               />
-              <SummaryLayout.Row
+              <SummaryRow
                 title="Offre concernée"
                 description={offerTemplate?.name}
               />
             </div>
             <div className={styles['eac-section']}>
-              <SummaryLayout.Row
+              <SummaryRow
                 title="Etablissement scolaire"
                 description={
                   <div>
@@ -135,29 +136,29 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
                   </div>
                 }
               />
-              <SummaryLayout.Row
+              <SummaryRow
                 title="Prénom et nom de l’enseignant"
                 description={`${informations?.redactor.firstName} ${informations?.redactor.lastName} `}
               />
-              <SummaryLayout.Row
+              <SummaryRow
                 title="Téléphone"
                 description={informations?.phoneNumber ?? '-'}
               />
-              <SummaryLayout.Row
+              <SummaryRow
                 title="Email"
                 description={informations?.redactor.email}
               />
             </div>
 
-            <SummaryLayout.Row
+            <SummaryRow
               title="Nombre d'élèves"
               description={informations?.totalStudents ?? '-'}
             />
-            <SummaryLayout.Row
+            <SummaryRow
               title="Nombre d'accompagnateurs"
               description={informations?.totalTeachers ?? '-'}
             />
-            <SummaryLayout.Row
+            <SummaryRow
               title="Date souhaitée"
               description={
                 informations?.requestedDate
@@ -165,11 +166,11 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
                   : '-'
               }
             />
-            <SummaryLayout.Row
+            <SummaryRow
               title="Descriptif de la demande"
               description={informations?.comment}
             />
-          </SummaryLayout.Section>
+          </SummarySection>
           <ActionsBarSticky>
             <ActionsBarSticky.Right>
               <Button onClick={handleButtonClick}>

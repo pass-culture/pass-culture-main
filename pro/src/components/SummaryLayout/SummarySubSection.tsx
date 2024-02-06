@@ -11,7 +11,7 @@ interface SummaryLayoutSubSectionProps {
   className?: string
 }
 
-const SubSection = ({
+export const SummarySubSection = ({
   title,
   children,
   className,
@@ -28,5 +28,3 @@ const SubSection = ({
     <div className={style['summary-layout-sub-section-separator']}></div>
   </div>
 )
-
-export default SubSection

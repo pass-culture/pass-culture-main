@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react'
 
-import { SummaryLayout } from 'components/SummaryLayout'
+import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
+import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
@@ -40,45 +41,45 @@ export default function CollectiveOfferTypeSection({
   const isFormatActive = useActiveFeature('WIP_ENABLE_FORMAT')
   return (
     <>
-      <SummaryLayout.SubSection title="Type d’offre">
+      <SummarySubSection title="Type d’offre">
         {isFormatActive ? (
-          <SummaryLayout.Row
+          <SummaryRow
             title="Format"
             description={offer.formats?.join(', ') || DEFAULT_RECAP_VALUE}
           />
         ) : (
           <>
-            <SummaryLayout.Row
+            <SummaryRow
               title="Catégorie"
               description={category?.label || DEFAULT_RECAP_VALUE}
             />
-            <SummaryLayout.Row
+            <SummaryRow
               title="Sous-catégorie"
               description={subCategory?.label || DEFAULT_RECAP_VALUE}
             />
           </>
         )}
 
-        <SummaryLayout.Row
+        <SummaryRow
           title="Domaine artistique et culturel"
           description={offer.domains.map((domain) => domain.name).join(', ')}
         />
-        <SummaryLayout.Row
+        <SummaryRow
           title="Dispositif national"
           description={offer.nationalProgram?.name || DEFAULT_RECAP_VALUE}
         />
-      </SummaryLayout.SubSection>
-      <SummaryLayout.SubSection title="Informations artistiques">
-        <SummaryLayout.Row title="Titre de l’offre" description={offer.name} />
-        <SummaryLayout.Row
+      </SummarySubSection>
+      <SummarySubSection title="Informations artistiques">
+        <SummaryRow title="Titre de l’offre" description={offer.name} />
+        <SummaryRow
           title="Description"
           description={offer.description || DEFAULT_RECAP_VALUE}
         />
-        <SummaryLayout.Row
+        <SummaryRow
           title="Durée"
           description={formatDuration(offer.durationMinutes)}
         />
-      </SummaryLayout.SubSection>
+      </SummarySubSection>
     </>
   )
 }
