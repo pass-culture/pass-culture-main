@@ -34,6 +34,7 @@ class IndexationReason(enum.Enum):
     BOOKING_UNCANCELLATION = "booking-uncancellation"
     CINEMA_STOCK_QUANTITY_UPDATE = "cinema-stock-quantity-update"
     CRITERIA_LINK = "criteria-link"
+    GOOGLE_PLACES_BANNER_SYNCHRONIZATION = "google-places-banner-synchronization"
     MEDIATION_CREATION = "mediation-creation"
     MEDIATION_DELETION = "mediation-deletion"
     # Offer-related reasons apply to individual and collective offers and templates
