@@ -126,7 +126,6 @@ def synchronize_venues_banners_with_google_places(
     start_venue_id: int, end_venue_id: int | None, limit: int | None
 ) -> None:
     venues_without_photos = get_venues_without_photo(start_venue_id, end_venue_id, limit)
-    print("the number of venues is:", len(venues_without_photos))
     logger.info(
         "[gmaps_banner_synchro] synchronize_venues_banners_with_google_places %s %s %s: the number of venues tried: %s",
         start_venue_id,
@@ -137,6 +136,8 @@ def synchronize_venues_banners_with_google_places(
     nb_places_found = 0
     nb_places_with_photo = 0
     nb_places_with_owner_photo = 0
+    nb_images_ignored_due_to_ratio_venue_id = 0
+    images_ignored_due_to_ratio = []
     banner_synchronized_venue_ids = set()
     for venue in venues_without_photos:
         if venue.googlePlacesInfo:
@@ -165,6 +166,10 @@ def synchronize_venues_banners_with_google_places(
             venue.googlePlacesInfo.bannerUrl = save_photo_to_gcp(venue.id, photo, photo_prefix)
             venue.googlePlacesInfo.bannerMeta = photo.model_dump()
             banner_synchronized_venue_ids.add(venue.id)
+        except image_conversion.ImageRatioError:
+            nb_images_ignored_due_to_ratio_venue_id += 1
+            images_ignored_due_to_ratio.append(venue.id)
+            continue
         except Exception as e:  # pylint: disable=broad-except
             logger.exception(
                 "[gmaps_banner_synchro]venue id: %s error %s: ",
@@ -176,7 +181,7 @@ def synchronize_venues_banners_with_google_places(
     db.session.commit()
     async_index_venue_ids(banner_synchronized_venue_ids, IndexationReason.GOOGLE_PLACES_BANNER_SYNCHRONIZATION)
     logger.info(
-        "Synchronized venues with Google Places",
+        "[gmaps_banner_synchro]Synchronized venues with Google Places",
         extra={
             "nb_places_fetched": len(venues_without_photos),
             "nb_places_found": nb_places_found,
@@ -184,6 +189,15 @@ def synchronize_venues_banners_with_google_places(
             "nb_places_with_owner_photo": nb_places_with_owner_photo,
         },
     )
+    if nb_images_ignored_due_to_ratio_venue_id:
+        logger.warning(
+            "[gmaps_banner_synchro]Images ignored due to ratio: %s",
+            nb_images_ignored_due_to_ratio_venue_id,
+            extra={
+                "nb_images_ignored_due_to_ratio_venue_id": nb_images_ignored_due_to_ratio_venue_id,
+                "concerned venue Ids": images_ignored_due_to_ratio,
+            },
+        )
 
 
 def delete_venues_banners(start_venue_id: int, end_venue_id: int | None, limit: int | None) -> None:
