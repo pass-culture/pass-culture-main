@@ -53,22 +53,16 @@ def _self_redirect(
 def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
     bank_informations_query = sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
         sa.select(
-            sa.case(
-                (
-                    offerers_models.VenueReimbursementPointLink.id.is_(None)
-                    | sa.not_(
-                        offerers_models.VenueReimbursementPointLink.timespan.contains(datetime.datetime.utcnow())
-                    ),
-                    "ko",
-                ),
-                else_="ok",
-            ).label("status"),
+            sa.case((offerers_models.VenueReimbursementPointLink.id.is_(None), "ko"), else_="ok").label("status"),
             sa.func.count(offerers_models.Venue.id).label("number"),
         )
         .select_from(offerers_models.Venue)
         .outerjoin(
             offerers_models.VenueReimbursementPointLink,
-            offerers_models.VenueReimbursementPointLink.venueId == offerers_models.Venue.id,
+            sa.and_(
+                offerers_models.VenueReimbursementPointLink.venueId == offerers_models.Venue.id,
+                offerers_models.VenueReimbursementPointLink.timespan.contains(datetime.datetime.utcnow()),
+            ),
         )
         .filter(
             offerers_models.Venue.managingOffererId == offerer_id,
