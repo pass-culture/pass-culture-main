@@ -953,9 +953,9 @@ def get_collective_offer_template_by_ids(offer_ids: list[int]) -> list[education
     return query
 
 
-def get_collective_offer_templates_for_playlist(
+def get_collective_offer_templates_for_playlist_query(
     institution_id: int, playlist_type: educational_models.PlaylistType, max_distance: int | None = 60
-) -> list[educational_models.CollectiveOfferTemplate]:
+) -> BaseQuery:
     query = educational_models.CollectivePlaylist.query.filter(
         educational_models.CollectivePlaylist.type == playlist_type,
         educational_models.CollectivePlaylist.institutionId == institution_id,
@@ -980,12 +980,7 @@ def get_collective_offer_templates_for_playlist(
             educational_models.CollectiveOfferTemplate.domains
         ),
     )
-    query = query.options(
-        sa.orm.joinedload(educational_models.CollectivePlaylist.collective_offer_template).joinedload(
-            educational_models.CollectiveOfferTemplate.collective_playlists
-        ),
-    )
-    return query.all()
+    return query
 
 
 def user_has_bookings(user: User) -> bool:
