@@ -7,6 +7,8 @@ from pcapi import settings
 from pcapi.core.object_storage import delete_public_object
 from pcapi.core.object_storage import store_public_object
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.search import IndexationReason
+from pcapi.core.search import async_index_venue_ids
 from pcapi.models import db
 from pcapi.utils import image_conversion
 
@@ -135,6 +137,7 @@ def synchronize_venues_banners_with_google_places(
     nb_places_found = 0
     nb_places_with_photo = 0
     nb_places_with_owner_photo = 0
+    banner_synchronized_venue_ids = set()
     for venue in venues_without_photos:
         if venue.googlePlacesInfo:
             nb_places_found += 1
@@ -161,6 +164,7 @@ def synchronize_venues_banners_with_google_places(
         try:
             venue.googlePlacesInfo.bannerUrl = save_photo_to_gcp(venue.id, photo, photo_prefix)
             venue.googlePlacesInfo.bannerMeta = photo.model_dump()
+            banner_synchronized_venue_ids.add(venue.id)
         except Exception as e:  # pylint: disable=broad-except
             logger.exception(
                 "[gmaps_banner_synchro]venue id: %s error %s: ",
@@ -170,6 +174,7 @@ def synchronize_venues_banners_with_google_places(
             )
             continue
     db.session.commit()
+    async_index_venue_ids(banner_synchronized_venue_ids, IndexationReason.GOOGLE_PLACES_BANNER_SYNCHRONIZATION)
     logger.info(
         "Synchronized venues with Google Places",
         extra={
@@ -201,6 +206,7 @@ def delete_venues_banners(start_venue_id: int, end_venue_id: int | None, limit: 
         )
     if limit is not None:
         google_places_info_query = google_places_info_query.limit(limit)
+    venues_ids_with_deleted_banners = set()
     for place_info in google_places_info_query:
         try:
             delete_public_object(GOOGLE_PLACES_BANNER_STORAGE_FOLDER, place_info.bannerUrl.split("/")[-1])
@@ -216,7 +222,9 @@ def delete_venues_banners(start_venue_id: int, end_venue_id: int | None, limit: 
         nb_deleted_banners += 1
         place_info.bannerUrl = None
         place_info.bannerMeta = None
+        venues_ids_with_deleted_banners.add(place_info.venueId)
     db.session.commit()
+    async_index_venue_ids(venues_ids_with_deleted_banners, IndexationReason.GOOGLE_PLACES_BANNER_SYNCHRONIZATION)
     logger.info(
         "deleted old google places banners",
         extra={
