@@ -1,6 +1,5 @@
 export const SUBCATEGORIES_FIELDS_DEFAULT_VALUES = {
-  musicType: '',
-  musicSubType: '',
+  gtl_id: '',
   showType: '',
   showSubType: '',
   author: '',

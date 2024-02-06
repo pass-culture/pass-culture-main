@@ -13,8 +13,7 @@ export const serializeExtraData = (
 
   const extraData: OfferExtraData = {}
   extraData.author = formValues.author
-  extraData.musicType = formValues.musicType
-  extraData.musicSubType = formValues.musicSubType
+  extraData.gtl_id = formValues.gtl_id
   extraData.performer = formValues.performer
   extraData.ean = formValues.ean
   extraData.showType = formValues.showType

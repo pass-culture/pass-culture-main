@@ -70,8 +70,7 @@ describe('serializer', () => {
     const offerApi = {
       extraData: {
         author: 'test author',
-        musicType: 'test musicType',
-        musicSubType: 'test musicSubType',
+        gtl_id: '07000000',
         performer: 'test performer',
         ean: 'test ean',
         showType: 'test showType',
@@ -84,8 +83,7 @@ describe('serializer', () => {
 
     expect(serializeOfferApiExtraData(offerApi)).toEqual({
       author: 'test author',
-      musicType: 'test musicType',
-      musicSubType: 'test musicSubType',
+      gtl_id: '07000000',
       performer: 'test performer',
       ean: 'test ean',
       showType: 'test showType',
@@ -131,8 +129,7 @@ describe('serializer', () => {
       isThing: true,
       lastProvider: null,
       lastProviderName: null,
-      musicSubType: '',
-      musicType: '',
+      gtl_id: '',
       name: 'Le nom de l’offre 1',
       id: 1,
       performer: '',

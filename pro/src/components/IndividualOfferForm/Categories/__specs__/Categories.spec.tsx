@@ -41,6 +41,23 @@ const renderCategories = ({
   )
 }
 
+vi.mock('apiClient/api', () => ({
+  api: {
+    getEventMusicTypes: vi.fn(() =>
+      Promise.resolve([
+        {
+          gtl_id: '07000000',
+          label: 'Metal',
+        },
+        {
+          gtl_id: '02000000',
+          label: 'JAZZ / BLUES',
+        },
+      ])
+    ),
+  },
+}))
+
 describe('IndividualOffer section: Categories', () => {
   let initialValues: Partial<IndividualOfferFormValues>
   const onSubmit = vi.fn()
@@ -63,7 +80,7 @@ describe('IndividualOffer section: Categories', () => {
       individualOfferSubCategoryFactory({
         id: 'B-A',
         categoryId: 'B',
-        conditionalFields: ['musicType', 'musicSubType'],
+        conditionalFields: ['gtl_id'],
       }),
       individualOfferSubCategoryFactory({
         id: 'C-A',
@@ -76,6 +93,7 @@ describe('IndividualOffer section: Categories', () => {
       subCategories,
       offerSubtype: INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT,
       venueList: [],
+      isEvent: true,
     }
   })
 
@@ -121,8 +139,7 @@ describe('IndividualOffer section: Categories', () => {
         durationMinutes: '',
         isEvent: false,
         ean: '',
-        musicSubType: '',
-        musicType: '',
+        gtl_id: '',
         performer: '',
         showSubType: '101',
         showType: '100',
@@ -154,7 +171,6 @@ describe('IndividualOffer section: Categories', () => {
     ).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Sous-type *')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Genre musical *')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Sous-genre *')).not.toBeInTheDocument()
   })
 
   it('should not display type select when a standard subCategory is choosed', async () => {
@@ -178,7 +194,7 @@ describe('IndividualOffer section: Categories', () => {
     expect(screen.queryByLabelText('Sous-genre *')).not.toBeInTheDocument()
   })
 
-  it('should display musicType selects when a music subCategory is choosed', async () => {
+  it('should display music genre selects when a music subCategory is choosed', async () => {
     renderCategories({
       initialValues,
       onSubmit,
@@ -198,8 +214,7 @@ describe('IndividualOffer section: Categories', () => {
     const musicSelect = screen.getByLabelText('Genre musical *')
     expect(musicSelect).toBeInTheDocument()
 
-    await userEvent.selectOptions(musicSelect, '520')
-    expect(screen.getByLabelText('Sous-genre *')).toBeInTheDocument()
+    await userEvent.selectOptions(musicSelect, '07000000')
 
     expect(screen.queryByLabelText('Type de spectacle')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Sous-type')).not.toBeInTheDocument()
@@ -217,7 +232,6 @@ describe('IndividualOffer section: Categories', () => {
     await userEvent.selectOptions(subCategorySelect, 'C-A')
 
     expect(screen.queryByLabelText('Genre musical')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Sous-genre')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Sous-type')).not.toBeInTheDocument()
 
     const showSelect = screen.getByLabelText('Type de spectacle *')

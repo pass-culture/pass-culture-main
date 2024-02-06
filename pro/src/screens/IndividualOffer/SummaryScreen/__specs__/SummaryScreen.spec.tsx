@@ -8,6 +8,7 @@ import {
   ApiError,
   CancelablePromise,
   GetIndividualOfferResponseModel,
+  GetMusicTypesResponse,
   OfferStatus,
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
@@ -95,7 +96,33 @@ const subCategories = [
 
 describe('Summary', () => {
   let customContext: Partial<IndividualOfferContextValues>
+  let eventMusicTypes: GetMusicTypesResponse
+  let allMusicTypes: GetMusicTypesResponse
   beforeEach(() => {
+    eventMusicTypes = [
+      {
+        gtl_id: '07000000',
+        label: 'Metal',
+      },
+      {
+        gtl_id: '02000000',
+        label: 'JAZZ / BLUES',
+      },
+    ]
+    allMusicTypes = [
+      {
+        gtl_id: '07000000',
+        label: 'Metal',
+      },
+      {
+        gtl_id: '02000000',
+        label: 'JAZZ / BLUES',
+      },
+      {
+        gtl_id: '03000000',
+        label: 'Bandes Originales',
+      },
+    ]
     customContext = {
       offer: individualOfferFactory({
         isEvent: false,
@@ -134,6 +161,8 @@ describe('Summary', () => {
     vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
       GetIndividualOfferFactory()
     )
+    vi.spyOn(api, 'getEventMusicTypes').mockResolvedValue(eventMusicTypes)
+    vi.spyOn(api, 'getAllMusicTypes').mockResolvedValue(allMusicTypes)
   })
 
   const expectOfferFields = () => {

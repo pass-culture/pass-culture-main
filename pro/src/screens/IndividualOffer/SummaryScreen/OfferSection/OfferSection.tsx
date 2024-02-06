@@ -1,5 +1,6 @@
-import React from 'react'
+import { useEffect, useState } from 'react'
 
+import { api } from 'apiClient/api'
 import AccessibilitySummarySection from 'components/AccessibilitySummarySection'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
@@ -15,8 +16,9 @@ import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { AccessiblityEnum } from 'core/shared'
 import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
-import { serializeOfferSectionData } from './serializer'
+import { OfferSectionData, serializeOfferSectionData } from './serializer'
 import humanizeDelay from './utils'
 
 interface OfferSummaryProps {
@@ -33,14 +35,35 @@ const OfferSummary = ({
   const isBookingContactEnabled = useActiveFeature(
     'WIP_MANDATORY_BOOKING_CONTACT'
   )
-  const offerData = serializeOfferSectionData(offer, categories, subCategories)
+
+  const [offerData, setOfferData] = useState<OfferSectionData>()
+  useEffect(() => {
+    const updateOfferData = async () => {
+      let musicTypes
+      if (offer.gtl_id) {
+        musicTypes = await api.getAllMusicTypes()
+      }
+      const data = serializeOfferSectionData(
+        offer,
+        categories,
+        subCategories,
+        musicTypes
+      )
+      setOfferData(data)
+    }
+    void updateOfferData()
+  }, [offer])
 
   const editLink = getIndividualOfferUrl({
-    offerId: offerData.id,
+    offerId: offerData?.id,
     step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
     mode:
       mode === OFFER_WIZARD_MODE.READ_ONLY ? OFFER_WIZARD_MODE.EDITION : mode,
   })
+
+  if (!offerData) {
+    return <Spinner />
+  }
 
   return (
     <SummarySection
@@ -64,11 +87,8 @@ const OfferSummary = ({
             }
           />
         )}
-        {offerData.musicSubTypeName && (
-          <SummaryRow
-            title="Sous-genre"
-            description={offerData.musicSubTypeName}
-          />
+        {offerData.gtl_id && (
+          <SummaryRow title="gtl_id" description={offerData.gtl_id} />
         )}
         {
           /* istanbul ignore next: DEBT, TO FIX */
