@@ -455,10 +455,10 @@ class PriceCategoryBody(BaseModel):
         alias_generator = to_camel
 
 
-class MusicTypeResponse(ConfiguredBaseModel):
+class MusicTypeResponse(BaseModel):
     gtl_id: str
     label: str
 
 
-class GetMusicTypesResponse(ConfiguredBaseModel):
+class GetMusicTypesResponse(BaseModel):
     __root__: list[MusicTypeResponse]
