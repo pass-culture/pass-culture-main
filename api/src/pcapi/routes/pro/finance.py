@@ -24,7 +24,7 @@ def get_invoices(
     # `get_invoices_query` expects the upper bound to be *exclusive*.
     if query.periodEndingDate:
         query.periodEndingDate += datetime.timedelta(days=1)
-    invoices = finance_repository.get_invoices_query(
+    invoices = finance_repository.get_invoices_query_legacy(
         current_user,
         reimbursement_point_id=query.reimbursementPointId,
         date_from=query.periodBeginningDate,
@@ -37,6 +37,30 @@ def get_invoices(
 
     return finance_serialize.InvoiceListResponseModel(
         __root__=[finance_serialize.InvoiceResponseModel.from_orm(invoice) for invoice in invoices],
+    )
+
+
+@private_api.route("/v2/finance/invoices", methods=["GET"])
+@login_required
+@spectree_serialize(response_model=finance_serialize.InvoiceListV2ResponseModel, api=blueprint.pro_private_schema)
+def get_invoices_v2(query: finance_serialize.InvoiceListV2QueryModel) -> finance_serialize.InvoiceListV2ResponseModel:
+    # Frontend sends a period with *inclusive* bounds, but
+    # `get_invoices_query` expects the upper bound to be *exclusive*.
+    if query.periodEndingDate:
+        query.periodEndingDate += datetime.timedelta(days=1)
+    invoices = finance_repository.get_invoices_query(
+        current_user,
+        bank_account_id=query.bankAccountId,
+        date_from=query.periodBeginningDate,
+        date_until=query.periodEndingDate,
+    )
+    invoices = invoices.options(
+        sqla_orm.joinedload(finance_models.Invoice.cashflows).joinedload(finance_models.Cashflow.batch)
+    )
+    invoices = invoices.order_by(finance_models.Invoice.date.desc())
+
+    return finance_serialize.InvoiceListV2ResponseModel(
+        __root__=[finance_serialize.InvoiceResponseV2Model.from_orm(invoice) for invoice in invoices]
     )
 
 
