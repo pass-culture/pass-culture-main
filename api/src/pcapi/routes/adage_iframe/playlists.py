@@ -54,8 +54,12 @@ def get_classroom_playlist(
     if not redactor:
         raise ApiErrors(errors={"auth": "unknown redactor"}, status_code=403)
 
-    playlist_items = repository.get_collective_offer_templates_for_playlist(
-        institution_id=institution.id, playlist_type=educational_models.PlaylistType.CLASSROOM
+    playlist_items = (
+        repository.get_collective_offer_templates_for_playlist_query(
+            institution_id=institution.id, playlist_type=educational_models.PlaylistType.CLASSROOM
+        )
+        .limit(10)
+        .all()
     )
     favorite_ids = favorites_api.get_redactors_favorite_templates_subset(
         redactor, [item.collective_offer_template.id for item in playlist_items]
@@ -130,8 +134,12 @@ def new_template_offers_playlist(
     if not redactor:
         raise ApiErrors(errors={"auth": "unknown redactor"}, status_code=403)
 
-    playlist_items = repository.get_collective_offer_templates_for_playlist(
-        institution_id=institution.id, playlist_type=educational_models.PlaylistType.NEW_OFFER
+    playlist_items = (
+        repository.get_collective_offer_templates_for_playlist_query(
+            institution_id=institution.id, playlist_type=educational_models.PlaylistType.NEW_OFFER
+        )
+        .limit(10)
+        .all()
     )
     favorite_ids = favorites_api.get_redactors_favorite_templates_subset(
         redactor, [item.collective_offer_template.id for item in playlist_items]
@@ -172,8 +180,12 @@ def get_local_offerers_playlist(
     if not institution:
         raise ApiErrors({"message": "institutionId is mandatory"}, status_code=403)
 
-    playlist_items = repository.get_collective_offer_templates_for_playlist(
-        institution_id=institution.id, playlist_type=educational_models.PlaylistType.LOCAL_OFFERER
+    playlist_items = (
+        repository.get_collective_offer_templates_for_playlist_query(
+            institution_id=institution.id, playlist_type=educational_models.PlaylistType.LOCAL_OFFERER
+        )
+        .limit(10)
+        .all()
     )
 
     distances = {item.venueId: item.distanceInKm for item in playlist_items}
