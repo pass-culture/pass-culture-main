@@ -412,6 +412,7 @@ def check_offer_extra_data(
     subcategory_id: str,
     extra_data: models.OfferExtraData | None,
     venue: offerers_models.Venue,
+    is_from_private_api: bool,
     offer: models.Offer | None = None,
 ) -> None:
     errors = api_errors.ApiErrors()
@@ -423,7 +424,8 @@ def check_offer_extra_data(
     mandatory_fields = [
         name
         for name, conditional_field in subcategory.conditional_fields.items()
-        if conditional_field.is_required_in_internal_form
+        if (is_from_private_api and conditional_field.is_required_in_internal_form)
+        or (not is_from_private_api and conditional_field.is_required_in_external_form)
     ]
     for field in mandatory_fields:
         if not extra_data.get(field):
