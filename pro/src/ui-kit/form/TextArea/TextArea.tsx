@@ -51,6 +51,7 @@ const TextArea = ({
         rows={rows}
         maxLength={maxLength}
         placeholder={placeholder}
+        aria-required={!isOptional}
         {...field}
       />
     </FieldLayout>

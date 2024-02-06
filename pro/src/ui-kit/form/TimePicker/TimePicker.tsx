@@ -49,6 +49,7 @@ const TimePicker = ({
         hasError={meta.touched && !!meta.error}
         filterVariant={filterVariant}
         disabled={disabled}
+        aria-required={!isOptional}
       />
     </FieldLayout>
   )
