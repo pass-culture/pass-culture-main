@@ -44,8 +44,7 @@ const setInitialFormValues = (
     subcategoryId: offer.subcategoryId,
     showType: offer.showType,
     showSubType: offer.showSubType,
-    musicType: offer.musicType,
-    musicSubType: offer.musicSubType,
+    gtl_id: offer.gtl_id,
     withdrawalDetails:
       offer.withdrawalDetails || FORM_DEFAULT_VALUES['withdrawalDetails'],
     withdrawalDelay:

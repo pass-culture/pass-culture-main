@@ -1,18 +1,20 @@
-import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import {
-  musicOptionsTree,
-  showOptionsTree,
-} from 'core/Offers/categoriesSubTypes'
+  CategoryResponseModel,
+  GetMusicTypesResponse,
+  SubcategoryResponseModel,
+} from 'apiClient/v1'
+import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
 import { IndividualOffer } from 'core/Offers/types'
 
 const serializerOfferSubCategoryFields = (
   offer: IndividualOffer,
-  subCategory?: SubcategoryResponseModel
+  subCategory?: SubcategoryResponseModel,
+  musicTypes?: GetMusicTypesResponse
 ): {
   author: string
   stageDirector: string
   musicTypeName: string
-  musicSubTypeName: string
+  gtl_id?: string
   showTypeName: string
   showSubTypeName: string
   speaker: string
@@ -26,7 +28,7 @@ const serializerOfferSubCategoryFields = (
       author: '',
       stageDirector: '',
       musicTypeName: '',
-      musicSubTypeName: '',
+      gtl_id: '',
       showTypeName: '',
       showSubTypeName: '',
       speaker: '',
@@ -37,12 +39,8 @@ const serializerOfferSubCategoryFields = (
     }
   }
 
-  const musicType = musicOptionsTree.find(
-    (item) => item.code === parseInt(offer.musicType, 10)
-  )
-  const musicSubType = musicType?.children.find(
-    (item) => item.code === parseInt(offer.musicSubType, 10)
-  )
+  const gtl_id = offer.gtl_id
+  const musicType = musicTypes?.find((item) => item.gtl_id === gtl_id)?.label
   const showType = showOptionsTree.find(
     (item) => item.code === parseInt(offer.showType, 10)
   )
@@ -55,8 +53,8 @@ const serializerOfferSubCategoryFields = (
   return {
     author: offer.author || defaultValue('author'),
     stageDirector: offer.stageDirector || defaultValue('stageDirector'),
-    musicTypeName: musicType?.label || defaultValue('musicType'),
-    musicSubTypeName: musicSubType?.label || defaultValue('musicSubType'),
+    musicTypeName: musicType ?? defaultValue('musicType'),
+    gtl_id: gtl_id,
     showTypeName: showType?.label || defaultValue('showType'),
     showSubTypeName: showSubType?.label || defaultValue('showSubType'),
     speaker: offer.speaker || defaultValue('speaker'),
@@ -68,10 +66,13 @@ const serializerOfferSubCategoryFields = (
   }
 }
 
+export type OfferSectionData = ReturnType<typeof serializeOfferSectionData>
+
 export const serializeOfferSectionData = (
   offer: IndividualOffer,
   categories: CategoryResponseModel[],
-  subCategories: SubcategoryResponseModel[]
+  subCategories: SubcategoryResponseModel[],
+  musicTypes?: GetMusicTypesResponse
 ) => {
   const offerSubCategory = subCategories.find(
     (s) => s.id === offer.subcategoryId
@@ -106,7 +107,8 @@ export const serializeOfferSectionData = (
   }
   const subCategoryData = serializerOfferSubCategoryFields(
     offer,
-    offerSubCategory
+    offerSubCategory,
+    musicTypes
   )
   return {
     ...baseOffer,
