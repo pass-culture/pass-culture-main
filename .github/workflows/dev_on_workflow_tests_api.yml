@@ -9,7 +9,7 @@ on:
         required: true
 
 env:
-  tests_docker_image: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-tests:3d43e81572de683ae5464939c45cc3febed8181b
+  tests_docker_image: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-tests:${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
 defaults:
   run:

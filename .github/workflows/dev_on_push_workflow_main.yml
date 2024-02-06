@@ -43,29 +43,30 @@ jobs:
   #       api/src/pcapi/alembic/versions/**
   #       api/src/pcapi/alembic/run_migrations.py
 
-  # build-api:
-  #   name: "Build API (backend) Docker image"
-  #   needs: [check-api, check-pro]
-  #   if: |
-  #     needs.check-api.outputs.folder_changed == 'true' ||
-  #     needs.check-pro.outputs.folder_changed == 'true' ||
-  #     github.ref == 'refs/heads/master' ||
-  #     startsWith(github.ref,'refs/heads/maint/v')
-  #   uses: ./.github/workflows/dev_on_workflow_build_and_push_docker_images.yml
-  #   with:
-  #     ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-  #     tag: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-  #     # Needed to run end-to-end tests, i.e. when either "pro" or
-  #     # "api" source code changes, which is the condition under which
-  #     # this step is run. In other words: always.
-  #     pcapi: true
-  #     # Extra when tests are run on master before deployment on testing.
-  #     console: ${{ github.ref == 'refs/heads/master' }}
-  #     # Needed to run backend tests.
-  #     tests: ${{ needs.check-api.outputs.folder_changed == 'true' || github.ref == 'refs/heads/master' || startsWith(github.ref,'refs/heads/maint/v') }}
-  #   secrets:
-  #     GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-  #     GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+  build-api:
+    name: "Build API (backend) Docker image"
+    # needs: [check-api, check-pro]
+    # if: |
+    #   needs.check-api.outputs.folder_changed == 'true' ||
+    #   needs.check-pro.outputs.folder_changed == 'true' ||
+    #   github.ref == 'refs/heads/master' ||
+    #   startsWith(github.ref,'refs/heads/maint/v')
+    uses: ./.github/workflows/dev_on_workflow_build_and_push_docker_images.yml
+    with:
+      ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      tag: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      # Needed to run end-to-end tests, i.e. when either "pro" or
+      # "api" source code changes, which is the condition under which
+      # this step is run. In other words: always.
+      pcapi: true
+      # Extra when tests are run on master before deployment on testing.
+      console: ${{ github.ref == 'refs/heads/master' }}
+      # Needed to run backend tests.
+      tests: true
+      # tests: ${{ needs.check-api.outputs.folder_changed == 'true' || github.ref == 'refs/heads/master' || startsWith(github.ref,'refs/heads/maint/v') }}
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   # run-mypy-cop:
   #   name: "MyPy cop"
@@ -106,6 +107,7 @@ jobs:
   test-api:
     name: "Test api"
     # needs: [check-api, build-api]
+    needs: [build-api]
     # if: |
     #   needs.check-api.outputs.folder_changed == 'true' ||
     #   github.ref == 'refs/heads/master' ||
