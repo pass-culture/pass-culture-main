@@ -1,6 +1,7 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_size.scss" as size;
 
 .offer-header-image-container {
   width: rem.torem(176px);
@@ -33,8 +34,13 @@
 
 .offer-header-title-container {
   display: flex;
+  flex-direction: column-reverse;
   gap: rem.torem(16px);
   justify-content: space-between;
+}
+
+.offer-header-title {
+  @include fonts.title4;
 }
 
 .offer-header-details-structure {
@@ -61,12 +67,40 @@
 .offer-header-actions {
   display: flex;
   align-items: center;
-  gap: rem.torem(8px);
+  justify-content: center;
+  gap: rem.torem(24px);
 }
 
 .offer-header-action {
+  color: colors.$primary;
   svg {
     width: rem.torem(24px);
     height: rem.torem(24px);
+  }
+}
+
+@media (min-width: size.$mobile) {
+  .offer-header-title {
+    @include fonts.title3;
+  }
+
+  .offer-header-title-container {
+    flex-direction: row;
+  }
+
+  .offer-header-actions {
+    justify-content: unset;
+  }
+}
+
+@media (min-width: size.$mobile) {
+  .offer-header-actions {
+    gap: rem.torem(8px);
+  }
+}
+
+@media (min-width: size.$tablet) {
+  .offer-header-title {
+    @include fonts.title1;
   }
 }

@@ -1,13 +1,30 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_size.scss" as size;
 
 .offer {
+  position: relative;
+
+  &::before {
+    content: "";
+    width: 100%;
+    height: rem.torem(7px);
+    background-color: colors.$background-secondary;
+    position: absolute;
+    top: rem.torem(132px);
+    z-index: 0;
+  }
+
   &-header {
     padding: 0 rem.torem(24px) rem.torem(24px);
-    border-bottom: rem.torem(7px) solid colors.$light-pink;
+    border-bottom: rem.torem(7px) solid colors.$background-secondary;
     display: flex;
+    flex-direction: column;
+    align-items: center;
     gap: rem.torem(24px);
+    position: relative;
+    z-index: 1;
   }
 
   &-body {
@@ -53,8 +70,19 @@
       gap: rem.torem(8px);
 
       &-pipe {
-        color: colors.$grey;
+        color: colors.$grey-medium;
       }
     }
+  }
+}
+
+@media (min-width: size.$mobile) {
+  .offer-header {
+    flex-direction: row;
+    align-items: unset;
+  }
+
+  .offer::before {
+    display: none;
   }
 }
