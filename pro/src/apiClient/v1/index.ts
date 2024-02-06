@@ -127,7 +127,10 @@ export type { GetVenuesOfOffererFromSiretResponseModel } from './models/GetVenue
 export type { InviteMemberQueryModel } from './models/InviteMemberQueryModel';
 export type { InvoiceListQueryModel } from './models/InvoiceListQueryModel';
 export type { InvoiceListResponseModel } from './models/InvoiceListResponseModel';
+export type { InvoiceListV2QueryModel } from './models/InvoiceListV2QueryModel';
+export type { InvoiceListV2ResponseModel } from './models/InvoiceListV2ResponseModel';
 export type { InvoiceResponseModel } from './models/InvoiceResponseModel';
+export type { InvoiceResponseV2Model } from './models/InvoiceResponseV2Model';
 export type { LegalStatusResponseModel } from './models/LegalStatusResponseModel';
 export type { LinkedVenues } from './models/LinkedVenues';
 export type { LinkVenueToBankAccountBodyModel } from './models/LinkVenueToBankAccountBodyModel';

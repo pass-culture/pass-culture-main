@@ -50,7 +50,7 @@ def get_reimbursement_points_query(user: users_models.User) -> sqla_orm.Query:
     return query
 
 
-def get_invoices_query(
+def get_invoices_query_legacy(
     user: users_models.User,
     reimbursement_point_id: int | None = None,
     date_from: datetime.date | None = None,
@@ -796,3 +796,46 @@ def get_bank_accounts_query(user: users_models.User) -> sqla_orm.Query:
         ).filter(offerers_models.UserOfferer.user == user, offerers_models.UserOfferer.isValidated)
     query = query.with_entities(models.BankAccount.id, models.BankAccount.label)
     return query
+
+
+def get_invoices_query(
+    user: users_models.User,
+    bank_account_id: int | None = None,
+    date_from: datetime.date | None = None,
+    date_until: datetime.date | None = None,
+) -> sqla_orm.Query:
+    """Return invoices for the requested offerer.
+
+    If given, ``date_from`` is **inclusive**, ``date_until`` is
+    **exclusive**.
+    """
+    bank_account_subquery = models.BankAccount.query
+
+    if not user.has_admin_role:
+        bank_account_subquery = bank_account_subquery.join(
+            offerers_models.UserOfferer,
+            offerers_models.UserOfferer.offererId == models.BankAccount.offererId,
+        ).filter(offerers_models.UserOfferer.user == user, offerers_models.UserOfferer.isValidated)
+
+    if bank_account_id:
+        bank_account_subquery = bank_account_subquery.filter(models.BankAccount.id == bank_account_id)
+
+    elif user.has_admin_role:
+        # The following intentionally returns nothing for admin users,
+        # so that we do NOT return all invoices of all bank accounts
+        # for them. Admin users must select a bank account.
+        bank_account_subquery = bank_account_subquery.filter(False)
+
+    invoices = models.Invoice.query.filter(
+        models.Invoice.bankAccountId.in_(bank_account_subquery.with_entities(models.BankAccount.id))
+    )
+
+    convert_to_datetime = lambda date: date_utils.get_day_start(date, utils.ACCOUNTING_TIMEZONE).astimezone(pytz.utc)
+    if date_from:
+        datetime_from = convert_to_datetime(date_from)
+        invoices = invoices.filter(models.Invoice.date >= datetime_from)
+    if date_until:
+        datetime_until = convert_to_datetime(date_until)
+        invoices = invoices.filter(models.Invoice.date < datetime_until)
+
+    return invoices
