@@ -68,7 +68,7 @@ export default function AdageOfferPublicSection({
 
       <div className={styles['offer-section-group-item']}>
         <h3 className={styles['offer-section-group-item-subtitle']}>
-          Cette offre est accessible aux publics en situation de handicap
+          Accessibilité
         </h3>
         {a11yLevels.length > 0 ? (
           a11yLevels.length > 1 ? (

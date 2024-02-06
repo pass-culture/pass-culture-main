@@ -5,6 +5,7 @@
 
 .offers-info {
   &-breadcrumb {
+    display: none;
     margin-bottom: rem.torem(32px);
   }
 
@@ -30,6 +31,10 @@
 }
 
 @media (min-width: size.$tablet) {
+  .offers-info-breadcrumb {
+    display: block;
+  }
+
   .offer-container,
   .offers-info-breadcrumb {
     padding: 0 rem.torem(24px);
