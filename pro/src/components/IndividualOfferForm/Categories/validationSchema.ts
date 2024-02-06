@@ -9,17 +9,9 @@ const validationSchema = {
     then: (schema) =>
       schema.required('Veuillez sélectionner une sous-catégorie'),
   }),
-  musicType: yup.string().when('subCategoryFields', {
-    is: (subCategoryFields: string[]) =>
-      subCategoryFields.includes('musicType'),
+  gtl_id: yup.string().when('subCategoryFields', {
+    is: (subCategoryFields: string[]) => subCategoryFields.includes('gtl_id'),
     then: (schema) => schema.required('Veuillez sélectionner un genre musical'),
-  }),
-  musicSubType: yup.string().when(['subCategoryFields', 'musicType'], {
-    is: (subCategoryFields: string[], musicType: string) =>
-      subCategoryFields.includes('musicType') &&
-      musicType !== CATEGORIES_DEFAULT_VALUES.musicType,
-    then: (schema) =>
-      schema.required('Veuillez sélectionner un sous-genre musical'),
   }),
   showType: yup.string().when('subCategoryFields', {
     is: (subCategoryFields: string[]) => subCategoryFields.includes('showType'),

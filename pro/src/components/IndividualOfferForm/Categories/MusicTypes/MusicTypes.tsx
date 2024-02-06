@@ -24,27 +24,25 @@ const MusicTypes = ({
         : await api.getAllMusicTypes()
       setMusicTypes(musicTypes)
     }
-    void getMusicTypes()
+    getMusicTypes() // eslint-disable-next-line @typescript-eslint/no-floating-promises
   }, [isEvent])
 
   return (
-    <>
-      <FormLayout.Row>
-        <Select
-          label="Genre musical"
-          name="musicType"
-          options={musicTypes.map((data) => ({
-            value: data.gtlId,
-            label: data.label,
-          }))}
-          defaultOption={{
-            label: 'Choisir un genre musical',
-            value: FORM_DEFAULT_VALUES.musicType,
-          }}
-          disabled={readOnly}
-        />
-      </FormLayout.Row>
-    </>
+    <FormLayout.Row>
+      <Select
+        label="Genre musical"
+        name="gtl_id"
+        options={musicTypes.map((data) => ({
+          value: data.gtl_id,
+          label: data.label,
+        }))}
+        defaultOption={{
+          label: 'Choisir un genre musical',
+          value: FORM_DEFAULT_VALUES.gtl_id,
+        }}
+        disabled={readOnly}
+      />
+    </FormLayout.Row>
   )
 }
 

@@ -92,6 +92,7 @@ describe('IndividualOfferForm', () => {
       onImageUpload: vi.fn(),
       onImageDelete: vi.fn(),
       offerSubtype: null,
+      isEvent: false,
     }
     initialValues = setDefaultInitialFormValues(
       offererNames,

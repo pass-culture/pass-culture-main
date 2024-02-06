@@ -5,12 +5,12 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import FormLayout from 'components/FormLayout'
 import {
-  IndividualOfferFormValues,
   IndividualOfferForm,
+  IndividualOfferFormValues,
+  getValidationSchema,
   setDefaultInitialFormValues,
   setFormReadOnlyFields,
   setInitialFormValues,
-  getValidationSchema,
 } from 'components/IndividualOfferForm'
 import {
   getFilteredVenueListByCategoryStatus,
@@ -68,8 +68,6 @@ const InformationsScreen = ({
     useIndividualOfferContext()
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
     useIndividualOfferImageUpload()
-
-  const [isEvent, setIsEvent] = useState<boolean | undefined>(false)
 
   const isBookingContactEnabled = useActiveFeature(
     'WIP_MANDATORY_BOOKING_CONTACT'
@@ -180,11 +178,6 @@ const InformationsScreen = ({
       { replace: true }
     )
 
-    setIsEvent(
-      subCategories.find(
-        (subcategory) => subcategory.id === formik.values.subcategoryId
-      )?.isEvent
-    )
     const nextStep =
       mode === OFFER_WIZARD_MODE.EDITION
         ? OFFER_WIZARD_STEP_IDS.SUMMARY
@@ -228,6 +221,11 @@ const InformationsScreen = ({
     enableReinitialize: true,
   })
 
+  const isEvent =
+    subCategories.find(
+      (subcategory) => subcategory.id === formik.values.subcategoryId
+    )?.isEvent ?? isOfferSubtypeEvent(offerSubtype)
+
   const handlePreviousStepOrBackToReadOnly = () => {
     const queryParams = new URLSearchParams(location.search)
     const queryOffererId = queryParams.get('structure')
@@ -267,7 +265,7 @@ const InformationsScreen = ({
             onImageDelete={onImageDelete}
             imageOffer={imageOffer}
             offerSubtype={offerSubtype}
-            isEvent={isOfferSubtypeEvent(offerSubtype)}
+            isEvent={isEvent}
           />
 
           <ActionBar

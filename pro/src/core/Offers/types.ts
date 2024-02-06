@@ -1,12 +1,12 @@
 import {
-  EducationalInstitutionResponseModel,
-  WithdrawalTypeEnum,
-  OfferStatus,
   CollectiveOffersBookingResponseModel,
-  PriceCategoryResponseModel,
-  GetOfferVenueResponseModel,
-  GetOfferLastProviderResponseModel,
   EacFormat,
+  EducationalInstitutionResponseModel,
+  GetOfferLastProviderResponseModel,
+  GetOfferVenueResponseModel,
+  OfferStatus,
+  PriceCategoryResponseModel,
+  WithdrawalTypeEnum,
 } from 'apiClient/v1'
 import { CropParams } from 'components/ImageUploader'
 import { CollectiveOfferStatus } from 'core/OfferEducational'
@@ -79,8 +79,7 @@ export interface CategorySubtypeItem {
 // TODO: this should be generated in openapi schema
 export interface OfferExtraData {
   author?: string
-  musicType?: string
-  musicSubType?: string
+  gtl_id?: string
   performer?: string
   ean?: string
   showType?: string
@@ -118,8 +117,7 @@ export interface IndividualOffer {
   accessibility: AccessibiltyFormValues
   isNational: boolean
   name: string
-  musicSubType: string
-  musicType: string
+  gtl_id?: string
   performer: string
   priceCategories?: PriceCategoryResponseModel[] | null
   ean: string

@@ -116,7 +116,7 @@ const Categories = ({
     )
     if (filteredVenueList.length === 1) {
       await setFieldValue('venueId', filteredVenueList[0].id.toString())
-      void onVenueChange(
+      await onVenueChange(
         setFieldValue,
         filteredVenueList,
         filteredVenueList[0].id.toString()
@@ -153,7 +153,7 @@ const Categories = ({
   }
 
   const hasSubCategory = categoryId !== FORM_DEFAULT_VALUES.categoryId
-  const hasMusicType = subCategoryFields.includes('musicType')
+  const hasMusicType = subCategoryFields.includes('gtl_id')
   const hasShowType = subCategoryFields.includes('showType')
 
   return (
@@ -230,7 +230,7 @@ const Categories = ({
 
       {hasMusicType && (
         <MusicTypes
-          readOnly={readOnlyFields.includes('musicType')}
+          readOnly={readOnlyFields.includes('gtl_id')}
           isEvent={isEvent}
         />
       )}
