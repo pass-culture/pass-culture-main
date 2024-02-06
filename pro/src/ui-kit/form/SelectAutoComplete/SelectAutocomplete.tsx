@@ -256,6 +256,7 @@ const SelectAutocomplete = ({
           aria-describedby={`help-${name}`}
           aria-expanded={isOpen}
           aria-haspopup="listbox"
+          aria-required={!isOptional}
           role="combobox"
           leftIcon={leftIcon}
         />

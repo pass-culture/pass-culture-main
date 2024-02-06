@@ -65,6 +65,7 @@ const Select = ({
         hasDescription={description !== undefined}
         options={options}
         defaultOption={defaultOption}
+        aria-required={!isOptional}
         {...field}
         {...selectAttributes}
         onChange={(e) => onCustomChange(e)}
