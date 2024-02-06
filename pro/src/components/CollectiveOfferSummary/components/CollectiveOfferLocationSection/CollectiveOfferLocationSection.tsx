@@ -1,6 +1,7 @@
 import React from 'react'
 
-import { SummaryLayout } from 'components/SummaryLayout'
+import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
+import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
 import { useGetVenue } from 'core/Venue/adapters/getVenueAdapter'
 import useNotification from 'hooks/useNotification'
@@ -30,16 +31,16 @@ export default function CollectiveOfferLocationSection({
   }
 
   return (
-    <SummaryLayout.SubSection title="Lieu de l’évènement">
-      <SummaryLayout.Row
+    <SummarySubSection title="Lieu de l’évènement">
+      <SummaryRow
         description={formatOfferEventAddress(offer.offerVenue, venue)}
       />
       {interventionAreas && (
-        <SummaryLayout.Row
+        <SummaryRow
           title="Zone de mobilité pour l’évènement"
           description={interventionAreas}
         />
       )}
-    </SummaryLayout.SubSection>
+    </SummarySubSection>
   )
 }

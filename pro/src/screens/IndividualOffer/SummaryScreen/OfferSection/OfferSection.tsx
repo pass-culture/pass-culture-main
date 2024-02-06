@@ -2,7 +2,9 @@ import React from 'react'
 
 import AccessibilitySummarySection from 'components/AccessibilitySummarySection'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import { SummaryLayout } from 'components/SummaryLayout'
+import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
+import { SummarySection } from 'components/SummaryLayout/SummarySection'
+import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import {
   OFFER_WITHDRAWAL_TYPE_LABELS,
@@ -41,23 +43,20 @@ const OfferSummary = ({
   })
 
   return (
-    <SummaryLayout.Section
+    <SummarySection
       title="Détails de l’offre"
       editLink={editLink}
       aria-label="Modifier les détails de l’offre"
     >
-      <SummaryLayout.SubSection title="Type d’offre">
-        <SummaryLayout.Row
-          title="Catégorie"
-          description={offerData.categoryName}
-        />
-        <SummaryLayout.Row
+      <SummarySubSection title="Type d’offre">
+        <SummaryRow title="Catégorie" description={offerData.categoryName} />
+        <SummaryRow
           title="Sous-catégorie"
           description={offerData.subCategoryName}
         />
 
         {conditionalFields.includes('musicType') && (
-          <SummaryLayout.Row
+          <SummaryRow
             title="Genre musical"
             description={
               /* istanbul ignore next: DEBT, TO FIX */
@@ -66,7 +65,7 @@ const OfferSummary = ({
           />
         )}
         {offerData.musicSubTypeName && (
-          <SummaryLayout.Row
+          <SummaryRow
             title="Sous-genre"
             description={offerData.musicSubTypeName}
           />
@@ -74,7 +73,7 @@ const OfferSummary = ({
         {
           /* istanbul ignore next: DEBT, TO FIX */
           conditionalFields.includes('showType') && (
-            <SummaryLayout.Row
+            <SummaryRow
               title="Type de spectacle"
               description={
                 /* istanbul ignore next: DEBT, TO FIX */
@@ -86,20 +85,17 @@ const OfferSummary = ({
         {
           /* istanbul ignore next: DEBT, TO FIX */
           offerData.showSubTypeName && (
-            <SummaryLayout.Row
+            <SummaryRow
               title="Sous-type"
               description={offerData.showSubTypeName}
             />
           )
         }
-      </SummaryLayout.SubSection>
+      </SummarySubSection>
 
-      <SummaryLayout.SubSection title="Informations artistiques">
-        <SummaryLayout.Row
-          title="Titre de l’offre"
-          description={offerData.name}
-        />
-        <SummaryLayout.Row
+      <SummarySubSection title="Informations artistiques">
+        <SummaryRow title="Titre de l’offre" description={offerData.name} />
+        <SummaryRow
           title="Description"
           description={
             /* istanbul ignore next: DEBT, TO FIX */
@@ -110,22 +106,19 @@ const OfferSummary = ({
         {
           /* istanbul ignore next: DEBT, TO FIX */
           conditionalFields.includes('speaker') && (
-            <SummaryLayout.Row
-              title="Intervenant"
-              description={offerData.speaker}
-            />
+            <SummaryRow title="Intervenant" description={offerData.speaker} />
           )
         }
         {
           /* istanbul ignore next: DEBT, TO FIX */
           conditionalFields.includes('author') && (
-            <SummaryLayout.Row title="Auteur" description={offerData.author} />
+            <SummaryRow title="Auteur" description={offerData.author} />
           )
         }
         {
           /* istanbul ignore next: DEBT, TO FIX */
           conditionalFields.includes('visa') && (
-            <SummaryLayout.Row
+            <SummaryRow
               title="Visa d’exploitation"
               description={offerData.visa}
             />
@@ -134,13 +127,13 @@ const OfferSummary = ({
         {
           /* istanbul ignore next: DEBT, TO FIX */
           conditionalFields.includes('ean') && (
-            <SummaryLayout.Row title="EAN-13" description={offerData.ean} />
+            <SummaryRow title="EAN-13" description={offerData.ean} />
           )
         }
         {
           /* istanbul ignore next: DEBT, TO FIX */
           conditionalFields.includes('stageDirector') && (
-            <SummaryLayout.Row
+            <SummaryRow
               title="Metteur en scène"
               description={offerData.stageDirector}
             />
@@ -149,16 +142,13 @@ const OfferSummary = ({
         {
           /* istanbul ignore next: DEBT, TO FIX */
           conditionalFields.includes('performer') && (
-            <SummaryLayout.Row
-              title="Interprète"
-              description={offerData.performer}
-            />
+            <SummaryRow title="Interprète" description={offerData.performer} />
           )
         }
         {
           /* istanbul ignore next: DEBT, TO FIX */
           conditionalFields.includes('durationMinutes') && (
-            <SummaryLayout.Row
+            <SummaryRow
               title="Durée"
               description={
                 offerData.durationMinutes
@@ -168,14 +158,11 @@ const OfferSummary = ({
             />
           )
         }
-      </SummaryLayout.SubSection>
+      </SummarySubSection>
 
-      <SummaryLayout.SubSection title="Informations pratiques">
-        <SummaryLayout.Row
-          title="Structure"
-          description={offerData.offererName}
-        />
-        <SummaryLayout.Row
+      <SummarySubSection title="Informations pratiques">
+        <SummaryRow title="Structure" description={offerData.offererName} />
+        <SummaryRow
           title="Lieu"
           description={
             /* istanbul ignore next: DEBT, TO FIX */ offerData.venuePublicName ||
@@ -183,7 +170,7 @@ const OfferSummary = ({
           }
         />
 
-        <SummaryLayout.Row
+        <SummaryRow
           title="Informations de retrait"
           description={
             /* istanbul ignore next: DEBT, TO FIX */
@@ -194,7 +181,7 @@ const OfferSummary = ({
         {
           /* istanbul ignore next: DEBT, TO FIX */
           offerData.withdrawalType && (
-            <SummaryLayout.Row
+            <SummaryRow
               title="Précisez la façon dont vous distribuerez les billets"
               description={
                 OFFER_WITHDRAWAL_TYPE_LABELS[offerData.withdrawalType]
@@ -206,7 +193,7 @@ const OfferSummary = ({
         {
           /* istanbul ignore next: DEBT, TO FIX */
           offerData.withdrawalDelay && (
-            <SummaryLayout.Row
+            <SummaryRow
               title="Heure de retrait"
               description={`${humanizeDelay(
                 offerData.withdrawalDelay
@@ -216,7 +203,7 @@ const OfferSummary = ({
         }
 
         {isBookingContactEnabled && offerData.bookingContact && (
-          <SummaryLayout.Row
+          <SummaryRow
             title="Email de contact"
             description={
               /* istanbul ignore next: DEBT, TO FIX */
@@ -226,7 +213,7 @@ const OfferSummary = ({
         )}
 
         {conditionalFields.includes('url') && (
-          <SummaryLayout.Row
+          <SummaryRow
             title="URL d’accès à l’offre"
             description={
               /* istanbul ignore next: DEBT, TO FIX */
@@ -234,7 +221,7 @@ const OfferSummary = ({
             }
           />
         )}
-      </SummaryLayout.SubSection>
+      </SummarySubSection>
 
       <AccessibilitySummarySection
         noDisabilityCompliance={offerData.accessibility[AccessiblityEnum.NONE]}
@@ -252,26 +239,26 @@ const OfferSummary = ({
         }
       />
 
-      <SummaryLayout.SubSection title="Lien pour le grand public">
-        <SummaryLayout.Row
+      <SummarySubSection title="Lien pour le grand public">
+        <SummaryRow
           title="URL de votre site ou billetterie"
           description={
             /* istanbul ignore next: DEBT, TO FIX */
             offerData.externalTicketOfficeUrl || ' - '
           }
         />
-      </SummaryLayout.SubSection>
+      </SummarySubSection>
 
-      <SummaryLayout.SubSection title="Notifications des réservations">
-        <SummaryLayout.Row
+      <SummarySubSection title="Notifications des réservations">
+        <SummaryRow
           title="Email auquel envoyer les notifications"
           description={
             /* istanbul ignore next: DEBT, TO FIX */
             offerData.bookingEmail || ' - '
           }
         />
-      </SummaryLayout.SubSection>
-    </SummaryLayout.Section>
+      </SummarySubSection>
+    </SummarySection>
   )
 }
 

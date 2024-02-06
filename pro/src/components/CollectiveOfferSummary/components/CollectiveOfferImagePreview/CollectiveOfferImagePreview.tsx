@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { SummaryLayout } from 'components/SummaryLayout'
+import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import { CollectiveOfferTemplate, CollectiveOffer } from 'core/OfferEducational'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -16,7 +16,7 @@ const CollectiveOfferImagePreview = ({
   offer,
 }: CollectiveOfferImagePreviewProps): JSX.Element => {
   return (
-    <SummaryLayout.SubSection title="Image de l’offre">
+    <SummarySubSection title="Image de l’offre">
       {offer?.imageUrl ? (
         <img
           alt={offer.name}
@@ -28,7 +28,7 @@ const CollectiveOfferImagePreview = ({
           <SvgIcon alt={offer.name} src={strokeOfferIcon} />
         </div>
       )}
-    </SummaryLayout.SubSection>
+    </SummarySubSection>
   )
 }
 

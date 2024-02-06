@@ -1,7 +1,9 @@
 import React from 'react'
 
 import BannerPublicApi from 'components/Banner/BannerPublicApi'
-import { SummaryLayout } from 'components/SummaryLayout'
+import { SummaryContent } from 'components/SummaryLayout/SummaryContent'
+import { SummaryLayout } from 'components/SummaryLayout/SummaryLayout'
+import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
@@ -43,14 +45,14 @@ const CollectiveOfferSummary = ({
   return (
     <>
       <SummaryLayout>
-        <SummaryLayout.Content fullWidth>
+        <SummaryContent fullWidth>
           {isCollectiveOffer(offer) && offer.isPublicApi && (
             <BannerPublicApi className={styles['banner-space']}>
               Offre créée par votre outil de billetterie via l’API offres
               collectives
             </BannerPublicApi>
           )}
-          <SummaryLayout.Section
+          <SummarySection
             title="Détails de l’offre"
             editLink={
               offerManuallyCreated || offer.isTemplate ? offerEditLink : ''
@@ -73,10 +75,10 @@ const CollectiveOfferSummary = ({
                 bookingEmails={offer.bookingEmails}
               />
             )}
-          </SummaryLayout.Section>
+          </SummarySection>
 
           {!offer.isTemplate && (
-            <SummaryLayout.Section
+            <SummarySection
               title="Date & Prix"
               editLink={
                 offerManuallyCreated || offer.isTemplate ? stockEditLink : ''
@@ -86,11 +88,11 @@ const CollectiveOfferSummary = ({
                 stock={offer.collectiveStock}
                 venueDepartmentCode={offer.venue.departementCode}
               />
-            </SummaryLayout.Section>
+            </SummarySection>
           )}
 
           {!offer.isTemplate && (
-            <SummaryLayout.Section
+            <SummarySection
               title={'Établissement et enseignant'}
               editLink={
                 offerManuallyCreated || offer.isTemplate
@@ -102,9 +104,9 @@ const CollectiveOfferSummary = ({
                 institution={offer.institution}
                 teacher={offer.teacher}
               />
-            </SummaryLayout.Section>
+            </SummarySection>
           )}
-        </SummaryLayout.Content>
+        </SummaryContent>
       </SummaryLayout>
     </>
   )
