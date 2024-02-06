@@ -509,21 +509,23 @@ class CheckOfferWithdrawalTest:
 class CheckOfferExtraDataTest:
     def test_missing_required_extra_data(self):
         with pytest.raises(ApiErrors) as error:
-            validation.check_offer_extra_data(subcategories.FESTIVAL_MUSIQUE.id, {}, offerers_factories.VenueFactory())
+            validation.check_offer_extra_data(
+                subcategories.FESTIVAL_MUSIQUE.id, {}, offerers_factories.VenueFactory(), False
+            )
 
         assert error.value.errors["musicType"] == ["Ce champ est obligatoire"]
 
     def test_invalid_ean_extra_data(self):
         with pytest.raises(ApiErrors) as error:
             validation.check_offer_extra_data(
-                subcategories.JEU_EN_LIGNE.id, {"ean": 12345678}, offerers_factories.VenueFactory()
+                subcategories.JEU_EN_LIGNE.id, {"ean": 12345678}, offerers_factories.VenueFactory(), False
             )
 
         assert error.value.errors["ean"] == ["L'EAN doit être une chaîne de caractères"]
 
         with pytest.raises(ApiErrors) as error:
             validation.check_offer_extra_data(
-                subcategories.JEU_EN_LIGNE.id, {"ean": "invalid ean"}, offerers_factories.VenueFactory()
+                subcategories.JEU_EN_LIGNE.id, {"ean": "invalid ean"}, offerers_factories.VenueFactory(), False
             )
 
         assert error.value.errors["ean"] == ["L'EAN doit être composé de 13 chiffres"]
@@ -531,7 +533,7 @@ class CheckOfferExtraDataTest:
     def test_valid_ean_extra_data(self):
         assert (
             validation.check_offer_extra_data(
-                subcategories.JEU_EN_LIGNE.id, {"ean": "1234567891234"}, offerers_factories.VenueFactory()
+                subcategories.JEU_EN_LIGNE.id, {"ean": "1234567891234"}, offerers_factories.VenueFactory(), False
             )
             is None
         )
@@ -539,9 +541,10 @@ class CheckOfferExtraDataTest:
     def test_valid_show_types(self):
         assert (
             validation.check_offer_extra_data(
-                subcategories.JEU_EN_LIGNE.id,
+                subcategories.SPECTACLE_REPRESENTATION.id,
                 {"showType": "200", "showSubType": "201"},
                 offerers_factories.VenueFactory(),
+                True,
             )
             is None
         )
@@ -549,9 +552,10 @@ class CheckOfferExtraDataTest:
     def test_valid_music_types(self):
         assert (
             validation.check_offer_extra_data(
-                subcategories.JEU_EN_LIGNE.id,
+                subcategories.CONCERT.id,
                 {"musicType": "530", "musicSubType": "533"},
                 offerers_factories.VenueFactory(),
+                False,
             )
             is None
         )
@@ -559,7 +563,7 @@ class CheckOfferExtraDataTest:
     def test_invalid_show_type_code(self):
         with pytest.raises(ApiErrors) as error:
             validation.check_offer_extra_data(
-                subcategories.JEU_EN_LIGNE.id, {"showType": "1"}, offerers_factories.VenueFactory()
+                subcategories.JEU_EN_LIGNE.id, {"showType": "1"}, offerers_factories.VenueFactory(), False
             )
 
         assert error.value.errors["showType"] == ["should be in allowed values"]
@@ -567,7 +571,7 @@ class CheckOfferExtraDataTest:
     def test_invalid_show_type_format(self):
         with pytest.raises(ApiErrors) as error:
             validation.check_offer_extra_data(
-                subcategories.JEU_EN_LIGNE.id, {"showType": "one"}, offerers_factories.VenueFactory()
+                subcategories.JEU_EN_LIGNE.id, {"showType": "one"}, offerers_factories.VenueFactory(), False
             )
 
         assert error.value.errors["showType"] == ["should be an int or an int string"]
@@ -576,7 +580,9 @@ class CheckOfferExtraDataTest:
         offer = offers_factories.OfferFactory(extraData={"ean": "1234567891234"})
 
         with pytest.raises(ApiErrors) as error:
-            validation.check_offer_extra_data(subcategories.LIVRE_PAPIER.id, {"ean": "1234567891234"}, offer.venue)
+            validation.check_offer_extra_data(
+                subcategories.LIVRE_PAPIER.id, {"ean": "1234567891234"}, offer.venue, False
+            )
 
         assert error.value.errors["ean"] == [
             "Une offre avec cet EAN existe déjà. Vous pouvez la retrouver dans l’onglet Offres."
@@ -585,6 +591,8 @@ class CheckOfferExtraDataTest:
     def test_allow_creation_with_inactive_ean(self):
         offer = offers_factories.OfferFactory(extraData={"ean": "1234567891234"}, isActive=False)
         assert (
-            validation.check_offer_extra_data(subcategories.LIVRE_PAPIER.id, {"ean": "1234567891234"}, offer.venue)
+            validation.check_offer_extra_data(
+                subcategories.LIVRE_PAPIER.id, {"ean": "1234567891234"}, offer.venue, False
+            )
             is None
         )
