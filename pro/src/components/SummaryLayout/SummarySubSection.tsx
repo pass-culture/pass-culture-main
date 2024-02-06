@@ -1,8 +1,6 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { Title } from 'ui-kit'
-
 import style from './SummaryLayout.module.scss'
 
 interface SummaryLayoutSubSectionProps {
@@ -17,14 +15,10 @@ export const SummarySubSection = ({
   className,
 }: SummaryLayoutSubSectionProps): JSX.Element => (
   <div className={cn(style['summary-layout-sub-section'], className)}>
-    <Title
-      as="h4"
-      className={style['summary-layout-sub-section-title']}
-      level={4}
-    >
-      {title}
-    </Title>
+    <h3 className={style['summary-layout-sub-section-title']}>{title}</h3>
+
     {children}
+
     <div className={style['summary-layout-sub-section-separator']}></div>
   </div>
 )
