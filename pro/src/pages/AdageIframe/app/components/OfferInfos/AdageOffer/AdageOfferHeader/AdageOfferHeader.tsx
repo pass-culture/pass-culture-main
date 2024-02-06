@@ -20,7 +20,7 @@ import { getOfferVenueAndOffererName } from '../../../OffersInstantSearch/Offers
 
 import styles from './AdageOfferHeader.module.scss'
 
-type AdageOfferProps = {
+export type AdageOfferProps = {
   offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
 }
 

@@ -7,7 +7,7 @@ import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 import { computeDurationString } from '../../../OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferDetails'
 import styles from '../AdageOffer.module.scss'
 
-type AdageOfferDetailsSectionProps = {
+export type AdageOfferDetailsSectionProps = {
   offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
 }
 
@@ -17,6 +17,7 @@ export default function AdageOfferDetailsSection({
   const domains = offer.domains || []
   const formats = offer.formats || []
   const duration = computeDurationString(offer.durationMinutes)
+
   return (
     <>
       {domains.length > 0 && (
@@ -48,14 +49,14 @@ export default function AdageOfferDetailsSection({
           {formats.length > 1 ? (
             <ul className={styles['offer-section-group-list']}>
               {formats.map((format, i) => (
-                <>
-                  <li key={format}>{format}</li>{' '}
+                <li key={format}>
+                  {format}{' '}
                   {i < formats.length - 1 && (
                     <span className={styles['offer-section-group-list-pipe']}>
                       |
                     </span>
                   )}
-                </>
+                </li>
               ))}
             </ul>
           ) : (

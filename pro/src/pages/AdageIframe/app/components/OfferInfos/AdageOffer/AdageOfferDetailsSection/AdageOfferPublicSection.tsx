@@ -5,7 +5,7 @@ import {
 
 import styles from '../AdageOffer.module.scss'
 
-type AdageOfferPublicSectionProps = {
+export type AdageOfferPublicSectionProps = {
   offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
 }
 
@@ -50,14 +50,14 @@ export default function AdageOfferPublicSection({
           {studentLevels.length > 1 ? (
             <ul className={styles['offer-section-group-list']}>
               {studentLevels.map((level, i) => (
-                <>
-                  <li key={level}>{level}</li>{' '}
+                <li key={level}>
+                  {level}{' '}
                   {i < level.length - 1 && (
                     <span className={styles['offer-section-group-list-pipe']}>
                       |
                     </span>
                   )}
-                </>
+                </li>
               ))}
             </ul>
           ) : (
@@ -74,14 +74,14 @@ export default function AdageOfferPublicSection({
           a11yLevels.length > 1 ? (
             <ul className={styles['offer-section-group-list']}>
               {a11yLevels.map((level, i) => (
-                <>
-                  <li key={level}>{level}</li>{' '}
+                <li key={level}>
+                  {level}{' '}
                   {i < level.length - 1 && (
                     <span className={styles['offer-section-group-list-pipe']}>
                       |
                     </span>
                   )}
-                </>
+                </li>
               ))}
             </ul>
           ) : (
