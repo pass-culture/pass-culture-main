@@ -52,6 +52,9 @@ class BeneficiaryImport(PcObject, Base, Model):
     beneficiary: sa_orm.Mapped["User"] = relationship(
         "User", foreign_keys=[beneficiaryId], back_populates="beneficiaryImports"
     )
+    statuses: sa_orm.Mapped[list["BeneficiaryImportStatus"]] = relationship(
+        "BeneficiaryImportStatus", back_populates="beneficiaryImport"
+    )
 
     @hybrid_property
     def currentStatus(self):

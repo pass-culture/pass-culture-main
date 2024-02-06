@@ -43,9 +43,11 @@ if typing.TYPE_CHECKING:
     from pcapi.core.criteria.models import Criterion
     from pcapi.core.educational.models import CollectiveOffer
     from pcapi.core.educational.models import CollectiveOfferTemplate
+    from pcapi.core.history.models import ActionHistory
     from pcapi.core.offerers.models import Offerer
     from pcapi.core.offerers.models import Venue
     from pcapi.core.providers.models import Provider
+    from pcapi.core.users.models import Favorite
     from pcapi.core.users.models import User
 
 
@@ -133,6 +135,7 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     name: str = sa.Column(sa.String(140), nullable=False)
     subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
     thumb_path_component = "products"
+    offers: list["Offer"] = sa.orm.relationship("Offer", back_populates="product")
 
     sa.Index("product_ean_idx", extraData["ean"].astext)
     sa.Index("product_allocineId_idx", extraData["allocineId"].cast(sa.Integer))
@@ -186,6 +189,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     # FIXME: mageoffray (2024-01-05) : remove this column when Provider API is not used anymore
     rawProviderQuantity = sa.Column(sa.Integer, nullable=True)
     features: list[str] = sa.Column(postgresql.ARRAY(sa.Text), nullable=False, server_default=sa.text("'{}'::text[]"))
+    bookings: sa_orm.Mapped[list["Booking"]] = relationship("Booking", back_populates="stock")
 
     __table_args__ = (
         sa.Index(
@@ -407,13 +411,11 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     MAX_STOCKS_PER_OFFER = 2_500
 
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
-    author: sa_orm.Mapped["User"] | None = relationship(
-        "User", back_populates="offers", foreign_keys=[authorId], uselist=False
-    )
+    author: sa_orm.Mapped["User"] | None = relationship("User", foreign_keys=[authorId], back_populates="offers")
     bookingContact = sa.Column(sa.String(120), nullable=True)
     bookingEmail = sa.Column(sa.String(120), nullable=True)
     criteria: sa_orm.Mapped["Criterion"] = sa.orm.relationship(
-        "Criterion", back_populates="criteria", lazy="dynamic", secondary="offer_criterion"
+        "Criterion", backref=db.backref("criteria", lazy="dynamic"), secondary="offer_criterion"
     )
     dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
     dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
@@ -478,6 +480,11 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     isNonFreeOffer: sa_orm.Mapped["bool"] = sa_orm.query_expression()
     bookingsCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
+
+    mediations: sa_orm.Mapped[list["Mediation"]] = sa.orm.relationship("Mediation", back_populates="offer")
+    stocks: sa_orm.Mapped[list["Stock"]] = sa.orm.relationship("Stock", back_populates="offer")
+    reports: sa.orm.Mapped[list["OfferReport"]] = sa.orm.relationship("OfferReport", back_populates="offer")
+    favorites: sa.orm.Mapped[list["Favorite"]] = sa.orm.relationship("Favorite", back_populates="offer")
 
     @property
     def isEducational(self) -> bool:
@@ -957,6 +964,13 @@ class OfferValidationRule(PcObject, Base, Model, DeactivableMixin):
         "CollectiveOfferTemplate",
         secondary="validation_rule_collective_offer_template_link",
         back_populates="flaggingValidationRules",
+    )
+    subRules: sa.orm.Mapped["OfferValidationSubRule"] = sa.orm.relationship(
+        "OfferValidationSubRule", back_populates="validationRule"
+    )
+    action_history: sa.orm.Mapped[list["ActionHistory"]] = sa.orm.relationship(
+        "ActionHistory",
+        back_populates="rule",  # Doit-on garder passive_deletes=True ?
     )
 
 

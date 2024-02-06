@@ -155,6 +155,18 @@ class Booking(PcObject, Base, Model):
         "Deposit", foreign_keys=[depositId], back_populates="bookings"
     )
 
+    finance_events: Mapped["finance_models.FinanceEvent | None"] = relationship(
+        finance_models.FinanceEvent, back_populates="booking"
+    )
+
+    pricings: Mapped[list["finance_models.Pricing"]] = relationship("Pricing", back_populates="booking")
+
+    externalBookings: Mapped[list["ExternalBooking"]] = relationship("ExternalBooking", back_populates="booking")
+
+    incidents: Mapped[list["finance_models.BookingFinanceIncident"]] = relationship(
+        "BookingFinanceIncident", back_populates="booking"
+    )
+
     def mark_as_used(self) -> None:
         if self.is_used_or_reimbursed:
             raise exceptions.BookingHasAlreadyBeenUsed()

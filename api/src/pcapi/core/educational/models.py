@@ -1022,6 +1022,8 @@ class EducationalInstitution(PcObject, Base, Model):
         "CollectivePlaylist", back_populates="institution"
     )
 
+    deposits: list["EducationalDeposit"] = relationship("EducationalDeposit", back_populates="educationalInstitution")
+
     __table_args__ = (sa.Index("ix_educational_institution_type_name_city", institutionType + " " + name + " " + city),)
 
     @property
@@ -1037,6 +1039,8 @@ class EducationalYear(PcObject, Base, Model):
     beginningDate: datetime = sa.Column(sa.DateTime, nullable=False)
 
     expirationDate: datetime = sa.Column(sa.DateTime, nullable=False)
+
+    deposits: list["EducationalDeposit"] = relationship("EducationalDeposit", back_populates="educationalYear")
 
 
 class EducationalDeposit(PcObject, Base, Model):
@@ -1152,12 +1156,14 @@ class CollectiveBooking(PcObject, Base, Model):
 
     venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False)
 
-    venue: sa_orm.Mapped["Venue"] = relationship("Venue", foreign_keys=[venueId], back_populates="collectiveBookings")
+    venue: sa_orm.Mapped["Venue"] = relationship(
+        "Venue", foreign_keys=[venueId]
+    )  # , back_populates="collectiveBookings")
 
     offererId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, nullable=False)
 
     offerer: sa_orm.Mapped["Offerer"] = relationship(
-        "Offerer", foreign_keys=[offererId], back_populates="collectiveBookings"
+        "Offerer", foreign_keys=[offererId]  # , back_populates="collectiveBookings"
     )
 
     cancellationDate = sa.Column(sa.DateTime, nullable=True)
@@ -1185,7 +1191,7 @@ class CollectiveBooking(PcObject, Base, Model):
         sa.BigInteger, sa.ForeignKey("educational_institution.id"), nullable=False
     )
     educationalInstitution: sa_orm.Mapped["EducationalInstitution"] = relationship(
-        EducationalInstitution, foreign_keys=[educationalInstitutionId], back_populates="collectiveBookings"
+        EducationalInstitution, foreign_keys=[educationalInstitutionId]  # , back_populates="collectiveBookings"
     )
 
     educationalYearId: str = sa.Column(sa.String(30), sa.ForeignKey("educational_year.adageId"), nullable=False)
@@ -1206,6 +1212,14 @@ class CollectiveBooking(PcObject, Base, Model):
         EducationalRedactor,
         back_populates="collectiveBookings",
         uselist=False,
+    )
+
+    pricings: sa_orm.Mapped[list["finance_models.Pricing"]] = relationship(
+        "Pricing"  # , back_populates="collective_booking"
+    )
+
+    incidents: sa_orm.Mapped["finance_models.BookingFinanceIncident"] = relationship(
+        "BookingFinanceIncident", back_populates="collectiveBooking"
     )
 
     def cancel_booking(
@@ -1441,6 +1455,11 @@ class CollectiveDmsApplication(PcObject, Base, Model):
     instructionDate = sa.Column(sa.DateTime, nullable=True)
     processingDate = sa.Column(sa.DateTime, nullable=True)
     userDeletionDate = sa.Column(sa.DateTime, nullable=True)
+    venue: sa_orm.Mapped["Venue"] = sa.orm.relationship(
+        "Venue",
+        back_populates="collectiveDmsApplications",
+        primaryjoin="foreign(CollectiveDmsApplication.siret) == Venue.siret",
+    )
 
 
 CollectiveBooking.trig_update_cancellationDate_on_isCancelled_ddl = f"""
