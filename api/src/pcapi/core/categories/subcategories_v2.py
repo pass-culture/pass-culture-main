@@ -1075,10 +1075,13 @@ CONCERT = Subcategory(
     conditional_fields={
         ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
         ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: FieldCondition(
-            is_required_in_external_form=True, is_required_in_internal_form=True
+            is_required_in_external_form=True, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
-            is_required_in_external_form=True, is_required_in_internal_form=True
+            is_required_in_external_form=True, is_required_in_internal_form=False
+        ),
+        ExtraDataFieldEnum.GTL_ID.value: FieldCondition(
+            is_required_in_external_form=False, is_required_in_internal_form=True
         ),
         ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
     },
@@ -1104,10 +1107,13 @@ EVENEMENT_MUSIQUE = Subcategory(
     conditional_fields={
         ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
         ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: FieldCondition(
-            is_required_in_external_form=True, is_required_in_internal_form=True
+            is_required_in_external_form=True, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
-            is_required_in_external_form=True, is_required_in_internal_form=True
+            is_required_in_external_form=True, is_required_in_internal_form=False
+        ),
+        ExtraDataFieldEnum.GTL_ID.value: FieldCondition(
+            is_required_in_external_form=False, is_required_in_internal_form=True
         ),
         ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
     },
@@ -1133,10 +1139,13 @@ LIVESTREAM_MUSIQUE = Subcategory(
     conditional_fields={
         ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
         ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: FieldCondition(
-            is_required_in_external_form=True, is_required_in_internal_form=True
+            is_required_in_external_form=True, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
-            is_required_in_external_form=True, is_required_in_internal_form=True
+            is_required_in_external_form=True, is_required_in_internal_form=False
+        ),
+        ExtraDataFieldEnum.GTL_ID.value: FieldCondition(
+            is_required_in_external_form=False, is_required_in_internal_form=True
         ),
         ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
     },
@@ -1160,8 +1169,11 @@ ABO_CONCERT = Subcategory(
     is_event=False,
     conditional_fields={
         ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
-            is_required_in_external_form=True, is_required_in_internal_form=True
-        )
+            is_required_in_external_form=True, is_required_in_internal_form=False
+        ),
+        ExtraDataFieldEnum.GTL_ID.value: FieldCondition(
+            is_required_in_external_form=False, is_required_in_internal_form=True
+        ),
     },
     can_expire=True,
     can_be_duo=False,
@@ -1183,10 +1195,13 @@ FESTIVAL_MUSIQUE = Subcategory(
     conditional_fields={
         ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
         ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: FieldCondition(
-            is_required_in_external_form=True, is_required_in_internal_form=True
+            is_required_in_external_form=True, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
-            is_required_in_external_form=True, is_required_in_internal_form=True
+            is_required_in_external_form=True, is_required_in_internal_form=False
+        ),
+        ExtraDataFieldEnum.GTL_ID.value: FieldCondition(
+            is_required_in_external_form=False, is_required_in_internal_form=True
         ),
         ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
     },
@@ -1214,10 +1229,13 @@ SUPPORT_PHYSIQUE_MUSIQUE_CD = Subcategory(
     conditional_fields={
         ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
         ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: FieldCondition(
-            is_required_in_external_form=True, is_required_in_internal_form=True
+            is_required_in_external_form=True, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
-            is_required_in_external_form=True, is_required_in_internal_form=True
+            is_required_in_external_form=True, is_required_in_internal_form=False
+        ),
+        ExtraDataFieldEnum.GTL_ID.value: FieldCondition(
+            is_required_in_external_form=False, is_required_in_internal_form=True
         ),
         ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
         ExtraDataFieldEnum.EAN.value: FieldCondition(is_required_in_external_form=True),
@@ -1242,10 +1260,13 @@ SUPPORT_PHYSIQUE_MUSIQUE_VINYLE = Subcategory(
     conditional_fields={
         ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
         ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: FieldCondition(
-            is_required_in_external_form=True, is_required_in_internal_form=True
+            is_required_in_external_form=True, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
-            is_required_in_external_form=True, is_required_in_internal_form=True
+            is_required_in_external_form=True, is_required_in_internal_form=False
+        ),
+        ExtraDataFieldEnum.GTL_ID.value: FieldCondition(
+            is_required_in_external_form=False, is_required_in_internal_form=True
         ),
         ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
         ExtraDataFieldEnum.EAN.value: FieldCondition(is_required_in_external_form=True),
@@ -1270,10 +1291,13 @@ TELECHARGEMENT_MUSIQUE = Subcategory(
     conditional_fields={
         ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
         ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: FieldCondition(
-            is_required_in_external_form=True, is_required_in_internal_form=True
+            is_required_in_external_form=True, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
-            is_required_in_external_form=True, is_required_in_internal_form=True
+            is_required_in_external_form=True, is_required_in_internal_form=False
+        ),
+        ExtraDataFieldEnum.GTL_ID.value: FieldCondition(
+            is_required_in_external_form=False, is_required_in_internal_form=True
         ),
         ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
         ExtraDataFieldEnum.EAN.value: FieldCondition(),
@@ -1318,10 +1342,13 @@ CAPTATION_MUSIQUE = Subcategory(
     conditional_fields={
         ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
         ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: FieldCondition(
-            is_required_in_external_form=True, is_required_in_internal_form=True
+            is_required_in_external_form=True, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
-            is_required_in_external_form=True, is_required_in_internal_form=True
+            is_required_in_external_form=True, is_required_in_internal_form=False
+        ),
+        ExtraDataFieldEnum.GTL_ID.value: FieldCondition(
+            is_required_in_external_form=False, is_required_in_internal_form=True
         ),
         ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
     },

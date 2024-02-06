@@ -153,7 +153,7 @@ class Returns200Test:
             "bookingContact": "booking@conta.ct",
             "withdrawalDetails": "Veuillez récuperer vos billets à l'accueil :)",
             "withdrawalType": "no_ticket",
-            "extraData": {"musicType": -1, "musicSubType": -1},
+            "extraData": {"gtl_id": "07000000"},
             "mentalDisabilityCompliant": False,
             "audioDisabilityCompliant": False,
             "visualDisabilityCompliant": False,

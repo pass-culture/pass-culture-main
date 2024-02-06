@@ -39,5 +39,6 @@ def test_category_serialization(client):
         "author": False,
         "musicSubType": True,
         "musicType": True,
+        "gtl_id": False,
         "performer": False,
     }
