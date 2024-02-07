@@ -153,7 +153,8 @@ const Categories = ({
   }
 
   const hasSubCategory = categoryId !== FORM_DEFAULT_VALUES.categoryId
-  const hasMusicType = subCategoryFields.includes('gtl_id')
+  const hasMusicType =
+    subCategoryFields.includes('gtl_id') && categoryId !== 'LIVRE'
   const hasShowType = subCategoryFields.includes('showType')
 
   return (
