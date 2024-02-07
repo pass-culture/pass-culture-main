@@ -129,7 +129,13 @@ class CreateOffererForm(FlaskForm):
             if find_offerer_by_siren(siren):
                 raise wtforms.validators.ValidationError(f"Une structure existe déjà avec le SIREN {siren}")
 
-            siret_info = sirene.get_siret(siret.data, raise_if_non_public=False)
+            try:
+                siret_info = sirene.get_siret(siret.data, raise_if_non_public=False)
+            except sirene.UnknownEntityException:
+                raise wtforms.validators.ValidationError(f"Le SIRET {siret.data} n'existe pas")
+            except sirene.SireneApiException:
+                raise wtforms.validators.ValidationError("Une erreur s'est produite lors de l'appel à l'API Sirene")
+
             if not siret_info.active:
                 raise wtforms.validators.ValidationError(f"L'établissement portant le SIRET {siret.data} est fermé")
             if siret_info.diffusible:
