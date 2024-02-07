@@ -588,6 +588,14 @@ class CollectiveOffer(
         result = query.one_or_none()
         return result[0] if result else None
 
+    @hybrid_property
+    def is_expired(self) -> bool:
+        return self.hasBeginningDatetimePassed
+
+    @is_expired.expression  # type: ignore [no-redef]
+    def is_expired(cls) -> bool:  # pylint: disable=no-self-argument
+        return cls.hasBeginningDatetimePassed
+
 
 class CollectiveOfferTemplate(
     PcObject, offer_mixin.ValidationMixin, AccessibilityMixin, StatusMixin, HasImageMixin, Base, Model
@@ -871,6 +879,14 @@ class CollectiveOfferTemplate(
             offerId=collective_offer.offerId,
             priceDetail=price_detail,
         )
+
+    @hybrid_property
+    def is_expired(self) -> bool:
+        return self.hasBeginningDatetimePassed
+
+    @is_expired.expression  # type: ignore [no-redef]
+    def is_expired(cls) -> bool:  # pylint: disable=no-self-argument
+        return cls.hasBeginningDatetimePassed
 
 
 class CollectiveStock(PcObject, Base, Model):

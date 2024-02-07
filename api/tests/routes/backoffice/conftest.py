@@ -1,5 +1,6 @@
 import datetime
 
+import factory
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
@@ -439,6 +440,36 @@ def offerer_active_collective_offers_fixture(offerer, venue_with_accepted_bank_i
         validation=offers_models.OfferValidationStatus.DRAFT.value,
     )
     return approved_offers + [rejected_offer, pending_offer, draft_offer]
+
+
+@pytest.fixture
+def offerer_expired_offers(offerer, venue_with_accepted_bank_info):
+    offers = offers_factories.OfferFactory.create_batch(
+        size=4,
+        venue=venue_with_accepted_bank_info,
+        validation=offers_models.OfferValidationStatus.APPROVED.value,
+    )
+    offers_factories.StockFactory.create_batch(
+        size=4,
+        offer=factory.Iterator(offers),
+        isSoftDeleted=False,
+        bookingLimitDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=10),
+    )
+    return offers
+
+
+@pytest.fixture
+def offerer_expired_collective_offers(offerer, venue_with_accepted_bank_info):
+    stocks = educational_factories.CollectiveStockFactory.create_batch(
+        size=4,
+        price=1337,
+        beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=10),
+    )
+    return educational_factories.CollectiveOfferFactory.create_batch(
+        size=4,
+        venue=venue_with_accepted_bank_info,
+        collectiveStock=factory.Iterator(stocks),
+    )
 
 
 @pytest.fixture(name="offerer_inactive_collective_offers")
