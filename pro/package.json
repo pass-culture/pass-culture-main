@@ -73,7 +73,7 @@
     "yup": "^1.3.3"
   },
   "devDependencies": {
-    "@storybook/addon-a11y": "^7.6.12",
+    "@storybook/addon-a11y": "^7.6.13",
     "@storybook/addon-controls": "^7.6.12",
     "@storybook/preset-scss": "^1.0.3",
     "@storybook/react": "^7.6.9",
