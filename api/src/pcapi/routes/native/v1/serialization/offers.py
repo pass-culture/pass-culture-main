@@ -116,6 +116,7 @@ class OfferVenueResponse(BaseModel):
     coordinates: Coordinates
     isPermanent: bool
     timezone: str
+    bannerUrl: str | None
 
     class Config:
         orm_mode = True

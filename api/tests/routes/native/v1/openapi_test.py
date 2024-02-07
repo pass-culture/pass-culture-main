@@ -1179,6 +1179,7 @@ def test_public_api(client):
                 "OfferVenueResponse": {
                     "properties": {
                         "address": {"nullable": True, "title": "Address", "type": "string"},
+                        "bannerUrl": {"nullable": True, "title": "Bannerurl", "type": "string"},
                         "city": {"nullable": True, "title": "City", "type": "string"},
                         "coordinates": {"$ref": "#/components/schemas/Coordinates"},
                         "id": {"title": "Id", "type": "integer"},
