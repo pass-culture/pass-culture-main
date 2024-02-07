@@ -5,7 +5,6 @@ from dataclasses import dataclass
 class MovieType:
     label: str
     name: str
-    children: list | None = None
 
 
 def get_movie_label(code: str) -> str | None:
