@@ -145,7 +145,7 @@ class TestingBackend(BaseBackend):
 
     nd_address = _Address(
         street="[ND]",
-        postal_code="06400",
+        postal_code="[ND]",
         city="CANNES",
         insee_code="06029",
     )

@@ -19,6 +19,7 @@ def test_nominal_case(requests_mock):
     assert address_info == api_adresse.AddressInfo(
         id="75118_2974_00018",
         label="18 Rue Duhesme 75018 Paris",
+        postcode="75018",
         latitude=48.890787,
         longitude=2.338562,
         score=0.9806027272727271,
@@ -42,6 +43,7 @@ def test_fallback_to_municipality(requests_mock):
     assert address_info == api_adresse.AddressInfo(
         id="75118",
         label="Paris 18e Arrondissement",
+        postcode="75018",
         latitude=48.892045,
         longitude=2.348679,
         score=0.2084164031620553,
