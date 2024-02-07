@@ -184,6 +184,7 @@ const Header = () => {
               }
               to={`${location.pathname}?logout`}
               data-testid="logout-link"
+              title="Déconnexion"
             >
               <SvgIcon
                 src={strokeLogoutIcon}
