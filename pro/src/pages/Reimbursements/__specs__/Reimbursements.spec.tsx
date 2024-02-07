@@ -50,6 +50,7 @@ const renderReimbursements = (options?: RenderWithProvidersOptions) => {
 describe('Reimbursement page', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getReimbursementPoints').mockResolvedValue([])
+    vi.spyOn(api, 'getBankAccounts').mockResolvedValue([])
   })
 
   it('should render reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY off', async () => {
@@ -89,6 +90,7 @@ describe('Reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY enabled
 
     vi.spyOn(api, 'getOfferer').mockResolvedValue(selectedOfferer)
     vi.spyOn(api, 'getReimbursementPoints').mockResolvedValue([])
+    vi.spyOn(api, 'getBankAccounts').mockResolvedValue([])
   })
 
   it('should render reimbursement page', async () => {

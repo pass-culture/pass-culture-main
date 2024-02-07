@@ -70,12 +70,24 @@ const BASE_REIMBURSEMENT_POINTS = [
   },
 ]
 
+const BASE_BANK_ACCOUNTS = [
+  {
+    id: 1,
+    label: 'My first bank account',
+  },
+  {
+    id: 2,
+    label: 'My second bank account',
+  },
+]
+
 describe('reimbursementsWithFilters', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getInvoices').mockResolvedValueOnce(BASE_INVOICES)
     vi.spyOn(api, 'getReimbursementPoints').mockResolvedValueOnce(
       BASE_REIMBURSEMENT_POINTS
     )
+    vi.spyOn(api, 'getBankAccounts').mockResolvedValueOnce(BASE_BANK_ACCOUNTS)
   })
 
   it('shoud render a table with invoices', async () => {
