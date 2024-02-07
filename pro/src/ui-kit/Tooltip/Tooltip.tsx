@@ -6,25 +6,33 @@ import styles from './Tooltip.module.scss'
 interface TooltipProps {
   content: ReactNode
   children: ReactNode
-  className?: string
+  tooltipContainerClassName?: string
+  tooltipContentClassName?: string
   visuallyHidden: boolean
 }
 
 const Tooltip = ({
   children,
   content,
-  className,
+  tooltipContainerClassName,
+  tooltipContentClassName,
   visuallyHidden,
 }: TooltipProps): JSX.Element => {
   // Tooltip should implement onMouseOver onMouseOut onFocus onBlur onKeyDown
   // on parent to be accessible
   return (
-    <span className={cn(styles['tooltip-container'], className)}>
+    <span
+      className={cn(styles['tooltip-container'], tooltipContainerClassName)}
+    >
       {children}
       <span
-        className={cn(styles['tooltip'], {
-          ['visually-hidden']: visuallyHidden,
-        })}
+        className={cn(
+          styles['tooltip'],
+          {
+            ['visually-hidden']: visuallyHidden,
+          },
+          tooltipContentClassName
+        )}
         role="tooltip"
       >
         {content}

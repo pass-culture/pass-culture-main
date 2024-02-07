@@ -73,6 +73,7 @@
 
 .offer-header-action {
   color: colors.$primary;
+
   svg {
     width: rem.torem(24px);
     height: rem.torem(24px);
@@ -90,6 +91,10 @@
 
   .offer-header-actions {
     justify-content: unset;
+  }
+
+  .offer-header-share-button-tooltip-content {
+    width: auto;
   }
 }
 
