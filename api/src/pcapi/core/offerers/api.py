@@ -1498,8 +1498,8 @@ def get_offerer_offers_stats(offerer_id: int, max_offer_count: int = 0) -> dict:
         return sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
             sa.select(
                 sa.case(
-                    (offer_class.isActive.is_(True), "active"),  # type: ignore [attr-defined]
-                    (offer_class.isActive.is_(False), "inactive"),  # type: ignore [attr-defined]
+                    (sa.and_(offer_class.isActive.is_(True), offer_class.is_expired.is_(False)), "active"),  # type: ignore [attr-defined]
+                    else_="inactive",
                 ).label("status"),
                 sa.func.count(offer_class.id).label("number"),
             )
@@ -1525,7 +1525,7 @@ def get_offerer_offers_stats(offerer_id: int, max_offer_count: int = 0) -> dict:
                     ),
                 ),
             )
-            .group_by(offer_class.isActive)
+            .group_by("status")
             .subquery()
         )
 

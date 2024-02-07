@@ -722,6 +722,14 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return f"{self.name} {self.description}"
 
     @hybrid_property
+    def is_expired(self) -> bool:
+        return self.hasBookingLimitDatetimesPassed
+
+    @is_expired.expression  # type: ignore [no-redef]
+    def is_expired(cls) -> bool:  # pylint: disable=no-self-argument
+        return cls.hasBookingLimitDatetimesPassed
+
+    @hybrid_property
     def status(self) -> OfferStatus:
         if self.validation == OfferValidationStatus.REJECTED:
             return OfferStatus.REJECTED
