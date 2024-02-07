@@ -14,6 +14,7 @@ from . import models
 
 
 if typing.TYPE_CHECKING:
+    from pcapi.core.educational.models import AdageVenueAddress
     from pcapi.core.finance.models import BankAccount
 
 
@@ -144,6 +145,19 @@ class VenueFactory(BaseFactory):
                     timespan = None
                 opening_hours.append(OpeningHoursFactory(venue=self, weekday=weekday, timespan=timespan))
         return opening_hours
+
+    @factory.post_generation
+    def adage_venue_addresses(  # pylint: disable=no-self-argument
+        venue: models.Venue,
+        create: bool,
+        extracted: typing.Any,
+        **kwargs: typing.Any,
+    ) -> typing.Sequence["AdageVenueAddress"]:
+        from pcapi.core.educational.factories import AdageVenueAddressFactory
+
+        if not create:
+            return []
+        return [AdageVenueAddressFactory(venue=venue)]
 
 
 class CollectiveVenueFactory(VenueFactory):

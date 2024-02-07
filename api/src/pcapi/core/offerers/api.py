@@ -25,6 +25,7 @@ from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
+import pcapi.core.educational.api.address as educational_address_api
 from pcapi.core.external import zendesk_sell
 from pcapi.core.external.attributes import api as external_attributes_api
 import pcapi.core.finance.models as finance_models
@@ -281,7 +282,9 @@ def create_venue(
         setattr(venue, key, value)
     if venue_data.contact:
         upsert_venue_contact(venue, venue_data.contact)
-    repository.save(venue)
+
+    ava = educational_address_api.new_venue(venue)
+    repository.save(venue, ava)
 
     if venue.siret:
         link_venue_to_pricing_point(venue, pricing_point_id=venue.id)
