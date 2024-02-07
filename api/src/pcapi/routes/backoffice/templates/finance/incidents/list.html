@@ -5,6 +5,7 @@
 {% block page %}
   <div class="pt-3 px-5">
     <h2 class="fw-light">Liste des incidents</h2>
+    {{ build_filters_form(form, dst) }}
     <div>
       {% if rows %}
         <div class="d-flex flex-column">
@@ -47,7 +48,7 @@
                     {% if incident.isClosed %}
                       <span class="badge text-bg-light">Terminé</span>
                     {% else %}
-                      {{ incident.status | format_finance_incident_status | safe }}
+                      {{ incident.status | format_finance_incident_status_badge | safe }}
                     {% endif %}
                   </td>
                   <td>{{ incident.kind | format_finance_incident_type | safe }}</td>
