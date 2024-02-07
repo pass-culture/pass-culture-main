@@ -39,8 +39,18 @@ def generate_and_store_invoice_task_legacy(payload: GenerateInvoicePayloadLegacy
             finance_api.generate_and_store_invoice_legacy(
                 reimbursement_point_id=payload.reimbursement_point_id,
                 cashflow_ids=payload.cashflow_ids,
+                is_debit_note=False,
             )
             logger.info("Generated and sent invoice", extra={"reimbursement_point_id": payload.reimbursement_point_id})
+
+            finance_api.generate_and_store_invoice_legacy(
+                reimbursement_point_id=payload.reimbursement_point_id,
+                cashflow_ids=payload.cashflow_ids,
+                is_debit_note=True,
+            )
+            logger.info(
+                "Generated and sent debit note", extra={"reimbursement_point_id": payload.reimbursement_point_id}
+            )
 
             # When it's the last invoice, generate and upload the invoices file
             if current_app.redis_client.decr(finance_conf.REDIS_INVOICES_LEFT_TO_GENERATE) == 0:
@@ -80,11 +90,14 @@ def generate_and_store_invoice_task(payload: GenerateInvoicePayload) -> None:
     try:
         with transaction():
             finance_api.generate_and_store_invoice(
-                bank_account_id=payload.bank_account_id,
-                cashflow_ids=payload.cashflow_ids,
+                bank_account_id=payload.bank_account_id, cashflow_ids=payload.cashflow_ids, is_debit_note=False
             )
             logger.info("Generated and sent invoice", extra={"bank_account_id": payload.bank_account_id})
 
+            finance_api.generate_and_store_invoice(
+                bank_account_id=payload.bank_account_id, cashflow_ids=payload.cashflow_ids, is_debit_note=True
+            )
+            logger.info("Generated and sent debit note", extra={"bank_account_id": payload.bank_account_id})
             # When it's the last invoice, generate and upload the invoices file
             if current_app.redis_client.decr(finance_conf.REDIS_INVOICES_LEFT_TO_GENERATE) == 0:
                 try:

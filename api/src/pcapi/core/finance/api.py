@@ -825,7 +825,6 @@ def _get_next_cashflow_batch_label() -> str:
 def generate_cashflows(cutoff: datetime.datetime) -> models.CashflowBatch:
     """Generate a new CashflowBatch and a new cashflow for each
     reimbursement point for which there is money to transfer.
-    # TODO for each bank account instead of each reimbursement point
     """
     app.redis_client.set(conf.REDIS_GENERATE_CASHFLOW_LOCK, "1", ex=conf.REDIS_GENERATE_CASHFLOW_LOCK_TIMEOUT)
     batch = models.CashflowBatch(cutoff=cutoff, label=_get_next_cashflow_batch_label())
@@ -976,7 +975,10 @@ def _generate_cashflows_legacy(batch: models.CashflowBatch) -> None:
 
                 # The total is positive if the pro owes us more than we do.
                 if total >= 0:
-                    last_cashflow_age = 0
+                    if total == 0:
+                        # TODO: Manage invoices for transaction with amount equal to zero
+                        _mark_as_processed(pricings)
+                        continue
 
                     all_current_incidents = (
                         models.FinanceIncident.query.join(models.FinanceIncident.booking_finance_incidents)
@@ -993,43 +995,41 @@ def _generate_cashflows_legacy(batch: models.CashflowBatch) -> None:
                         .all()
                     )
 
-                    if total > 0:
-                        override_incident_debit_note = any(
-                            incident.forceDebitNote for incident in all_current_incidents
+                    override_incident_debit_note = any(incident.forceDebitNote for incident in all_current_incidents)
+                    # Last cashflow where we effectively paid (successfully or not) the pro
+                    last_cashflow = (
+                        models.Cashflow.query.filter(
+                            models.Cashflow.reimbursementPointId == reimbursement_point_id,
+                            models.Cashflow.status == models.CashflowStatus.ACCEPTED,
                         )
-                        # Last cashflow where we effectively paid (successfully or not) the pro
-                        last_cashflow = (
-                            models.Cashflow.query.filter(
-                                models.Cashflow.reimbursementPointId == reimbursement_point_id,
-                                models.Cashflow.status == models.CashflowStatus.ACCEPTED,
+                        .order_by(models.Cashflow.creationDate.desc())
+                        .first()
+                    )
+                    if last_cashflow:
+                        last_cashflow_age = (datetime.datetime.utcnow() - last_cashflow.creationDate).days
+                    else:
+                        last_cashflow_age = 0
+
+                    if (
+                        last_cashflow_age < conf.DEBIT_NOTE_AGE_THRESHOLD_FOR_CASHFLOW
+                        and not override_incident_debit_note
+                    ):
+                        for incident in all_current_incidents:
+                            history_api.add_action(
+                                history_models.ActionType.FINANCE_INCIDENT_WAIT_FOR_PAYMENT,
+                                author=None,
+                                finance_incident=incident,
+                                comment="Le montant de l’incident est supérieur au montant total des réservations validées. Donc aucun justificatif n’est généré, on attend la prochaine échéance",
                             )
-                            .order_by(models.Cashflow.creationDate.desc())
-                            .first()
-                        )
-                        if last_cashflow:
-                            last_cashflow_age = (datetime.datetime.utcnow() - last_cashflow.creationDate).days
 
-                        if (
-                            last_cashflow_age < conf.DEBIT_NOTE_AGE_THRESHOLD_FOR_CASHFLOW
-                            and not override_incident_debit_note
-                        ):
-                            for incident in all_current_incidents:
-                                history_api.add_action(
-                                    history_models.ActionType.FINANCE_INCIDENT_WAIT_FOR_PAYMENT,
-                                    author=None,
-                                    finance_incident=incident,
-                                    comment="Le montant de l’incident est supérieur au montant total des réservations validées. Donc aucun justificatif n’est généré, on attend la prochaine échéance",
-                                    save=False,
-                                )
-
-                            continue
-
-                        # TODO (akarki): generate debit note + history entry
                         continue
-                    # Mark as `PROCESSED` even if there is no cashflow, so
-                    # that we will not process these pricings again.
-                    _mark_as_processed(pricings)
-                    continue
+                    for incident in all_current_incidents:
+                        history_api.add_action(
+                            history_models.ActionType.FINANCE_INCIDENT_GENERATE_DEBIT_NOTE,
+                            author=None,
+                            finance_incident=incident,
+                            comment="Une note de débit sera générée dans quelques jours",
+                        )
 
                 cashflow = models.Cashflow(
                     batchId=batch_id,
@@ -1193,7 +1193,10 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
 
                 # The total is positive if the pro owes us more than we do.
                 if total >= 0:
-                    last_cashflow_age = 0
+                    if total == 0:
+                        # TODO: Manage invoices for transaction with amount equal to zero
+                        _mark_as_processed(pricings)
+                        continue
 
                     all_current_incidents = (
                         models.FinanceIncident.query.join(models.FinanceIncident.booking_finance_incidents)
@@ -1210,42 +1213,42 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                         .all()
                     )
 
-                    if total > 0:
-                        override_incident_debit_note = any(
-                            incident.forceDebitNote for incident in all_current_incidents
+                    override_incident_debit_note = any(incident.forceDebitNote for incident in all_current_incidents)
+                    # Last cashflow where we effectively paid (successfully or not) the pro
+                    last_cashflow = (
+                        models.Cashflow.query.filter(
+                            models.Cashflow.bankAccountId == bank_account_id,
+                            models.Cashflow.status == models.CashflowStatus.ACCEPTED,
                         )
-                        # Last cashflow where we effectively paid (successfully or not) the pro
-                        last_cashflow = (
-                            models.Cashflow.query.filter(
-                                models.Cashflow.bankAccountId == bank_account_id,
-                                models.Cashflow.status == models.CashflowStatus.ACCEPTED,
+                        .order_by(models.Cashflow.creationDate.desc())
+                        .first()
+                    )
+                    if last_cashflow:
+                        last_cashflow_age = (datetime.datetime.utcnow() - last_cashflow.creationDate).days
+                    else:
+                        last_cashflow_age = 0
+
+                    if (
+                        last_cashflow_age < conf.DEBIT_NOTE_AGE_THRESHOLD_FOR_CASHFLOW
+                        and not override_incident_debit_note
+                    ):
+                        for incident in all_current_incidents:
+                            history_api.add_action(
+                                history_models.ActionType.FINANCE_INCIDENT_WAIT_FOR_PAYMENT,
+                                author=None,
+                                finance_incident=incident,
+                                comment="Le montant de l’incident est supérieur au montant total des réservations validées. Donc aucun justificatif n’est généré, on attend la prochaine échéance",
                             )
-                            .order_by(models.Cashflow.creationDate.desc())
-                            .first()
-                        )
-                        if last_cashflow:
-                            last_cashflow_age = (datetime.datetime.utcnow() - last_cashflow.creationDate).days
 
-                        if (
-                            last_cashflow_age < conf.DEBIT_NOTE_AGE_THRESHOLD_FOR_CASHFLOW
-                            and not override_incident_debit_note
-                        ):
-                            for incident in all_current_incidents:
-                                history_api.add_action(
-                                    history_models.ActionType.FINANCE_INCIDENT_WAIT_FOR_PAYMENT,
-                                    author=None,
-                                    finance_incident=incident,
-                                    comment="Le montant de l’incident est supérieur au montant total des réservations validées. Donc aucun justificatif n’est généré, on attend la prochaine échéance",
-                                )
-
-                            continue
-
-                        # TODO (akarki): generate debit note + history entry
                         continue
-                    # Mark as `PROCESSED` even if there is no cashflow, so
-                    # that we will not process these pricings again.
-                    _mark_as_processed(pricings)
-                    continue
+
+                    for incident in all_current_incidents:
+                        history_api.add_action(
+                            history_models.ActionType.FINANCE_INCIDENT_GENERATE_DEBIT_NOTE,
+                            author=None,
+                            finance_incident=incident,
+                            comment="Une note de débit sera générée dans quelques jours",
+                        )
 
                 cashflow = models.Cashflow(
                     batchId=batch_id,
@@ -1777,19 +1780,19 @@ def _filter_invoiceable_cashflows(query: BaseQuery) -> BaseQuery:
     )
 
 
-def _get_cashflows_by_reimbursement_points(batch: models.CashflowBatch) -> list:
-    rows = (
-        _filter_invoiceable_cashflows(
-            db.session.query(
-                models.Cashflow.reimbursementPointId.label("reimbursement_point_id"),
-                sqla_func.array_agg(models.Cashflow.id).label("cashflow_ids"),
-            )
+def _get_cashflows_by_reimbursement_points(batch: models.CashflowBatch, only_debit_notes: bool = False) -> list:
+    query = _filter_invoiceable_cashflows(
+        db.session.query(
+            models.Cashflow.reimbursementPointId.label("reimbursement_point_id"),
+            sqla_func.array_agg(models.Cashflow.id).label("cashflow_ids"),
         )
-        .filter(models.Cashflow.batchId == batch.id)
-        .group_by(models.Cashflow.reimbursementPointId)
-    ).all()
+    ).filter(models.Cashflow.batchId == batch.id)
 
-    if not rows:
+    query = query.filter(models.Cashflow.amount > 0) if only_debit_notes else query.filter(models.Cashflow.amount < 0)
+
+    rows = query.group_by(models.Cashflow.reimbursementPointId).all()
+
+    if not rows and not only_debit_notes:
         # Probably a mistake in the batch id input
         raise exceptions.NoInvoiceToGenerate()
 
@@ -1799,9 +1802,9 @@ def _get_cashflows_by_reimbursement_points(batch: models.CashflowBatch) -> list:
 def _generate_invoices_legacy(batch: models.CashflowBatch) -> None:
     """Generate (and store) all invoices."""
 
-    rows = _get_cashflows_by_reimbursement_points(batch)
+    invoiceable_rows = _get_cashflows_by_reimbursement_points(batch, only_debit_notes=False)
 
-    for row in rows:
+    for row in invoiceable_rows:
         try:
             with transaction():
                 extra = {"reimbursement_point_id": row.reimbursement_point_id}
@@ -1809,6 +1812,7 @@ def _generate_invoices_legacy(batch: models.CashflowBatch) -> None:
                     generate_and_store_invoice_legacy(
                         reimbursement_point_id=row.reimbursement_point_id,
                         cashflow_ids=row.cashflow_ids,
+                        is_debit_note=False,
                     )
         except Exception as exc:  # pylint: disable=broad-except
             if settings.IS_RUNNING_TESTS:
@@ -1828,17 +1832,79 @@ def _generate_invoices_legacy(batch: models.CashflowBatch) -> None:
         _upload_files_to_google_drive(drive_folder_name, [path])
 
 
-def _get_cashflows_by_bank_accounts(batch: models.CashflowBatch) -> list:
-    rows = (
-        _filter_invoiceable_cashflows(
-            db.session.query(
-                models.Cashflow.bankAccountId.label("bank_account_id"),
-                sqla_func.array_agg(models.Cashflow.id).label("cashflow_ids"),
+def _generate_debit_notes_legacy(batch: models.CashflowBatch) -> None:
+    """Generate (and store) all debit notes."""
+    if FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
+        raise ValueError("This function should not be called when WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is enabled.")
+
+    debit_note_rows = _get_cashflows_by_reimbursement_points(batch, only_debit_notes=True)
+
+    for row in debit_note_rows:
+        try:
+            with transaction():
+                extra = {"reimbursement_point_id": row.reimbursement_point_id}
+                with log_elapsed(logger, "Generated and sent debit note", extra):
+                    generate_and_store_invoice_legacy(
+                        reimbursement_point_id=row.reimbursement_point_id,
+                        cashflow_ids=row.cashflow_ids,
+                        is_debit_note=True,
+                    )
+        except Exception as exc:  # pylint: disable=broad-except
+            if settings.IS_RUNNING_TESTS:
+                raise
+            logger.exception(
+                "Could not generate debit note",
+                extra={
+                    "reimbursement_point_id": row.reimbursement_point_id,
+                    "cashflow_ids": row.cashflow_ids,
+                    "exc": str(exc),
+                },
             )
+
+
+def generate_debit_notes(batch: models.CashflowBatch) -> None:
+    """Generate (and store) all invoices."""
+    if not FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
+        _generate_debit_notes_legacy(batch)
+        return
+
+    debit_note_rows = _get_cashflows_by_bank_accounts(batch, only_debit_notes=True)
+
+    for row in debit_note_rows:
+        try:
+            with transaction():
+                extra = {"bank_account_id": row.bank_account_id}
+                with log_elapsed(logger, "Generated and sent debit note", extra):
+                    if not FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
+                        generate_and_store_invoice(
+                            bank_account_id=row.bank_account_id,
+                            cashflow_ids=row.cashflow_ids,
+                            is_debit_note=True,
+                        )
+        except Exception as exc:  # pylint: disable=broad-except
+            if settings.IS_RUNNING_TESTS:
+                raise
+            logger.exception(
+                "Could not generate debit note",
+                extra={
+                    "bank_account_id": row.bank_account_id,
+                    "cashflow_ids": row.cashflow_ids,
+                    "exc": str(exc),
+                },
+            )
+
+
+def _get_cashflows_by_bank_accounts(batch: models.CashflowBatch, only_debit_notes: bool = False) -> list:
+    query = _filter_invoiceable_cashflows(
+        db.session.query(
+            models.Cashflow.bankAccountId.label("bank_account_id"),
+            sqla_func.array_agg(models.Cashflow.id).label("cashflow_ids"),
         )
-        .filter(models.Cashflow.batchId == batch.id)
-        .group_by(models.Cashflow.bankAccountId)
-    ).all()
+    ).filter(models.Cashflow.batchId == batch.id)
+
+    query = query.filter(models.Cashflow.amount > 0) if only_debit_notes else query.filter(models.Cashflow.amount < 0)
+
+    rows = query.group_by(models.Cashflow.bankAccountId).all()
 
     if not rows:
         # Probably a mistake in the batch id input
@@ -1849,7 +1915,6 @@ def _get_cashflows_by_bank_accounts(batch: models.CashflowBatch) -> list:
 
 def generate_invoices(batch: models.CashflowBatch) -> None:
     """Generate (and store) all invoices."""
-
     if not FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
         _generate_invoices_legacy(batch)
         return
@@ -2116,14 +2181,12 @@ def _invoice_row_formatter(sql_row: typing.Any) -> tuple:
 
 
 def generate_and_store_invoice_legacy(
-    reimbursement_point_id: int,
-    cashflow_ids: list[int],
+    reimbursement_point_id: int, cashflow_ids: list[int], is_debit_note: bool = False
 ) -> None:
     log_extra = {"reimbursement_point": reimbursement_point_id}
     with log_elapsed(logger, "Generated invoice model instance", log_extra):
         invoice = _generate_invoice_legacy(
-            reimbursement_point_id=reimbursement_point_id,
-            cashflow_ids=cashflow_ids,
+            reimbursement_point_id=reimbursement_point_id, cashflow_ids=cashflow_ids, is_debit_note=is_debit_note
         )
         if not invoice:
             return
@@ -2137,22 +2200,21 @@ def generate_and_store_invoice_legacy(
     ).one()
 
     with log_elapsed(logger, "Generated invoice HTML", log_extra):
-        invoice_html = _generate_invoice_html_legacy(invoice, batch)
-    with log_elapsed(logger, "Generated and stored PDF invoice", log_extra):
+        if is_debit_note:
+            invoice_html = _generate_debit_note_html_legacy(invoice, batch)
+        else:
+            invoice_html = _generate_invoice_html_legacy(invoice, batch)
+    with log_elapsed(logger, "Generated and stored PDF file", log_extra):
         _store_invoice_pdf(invoice_storage_id=invoice.storage_object_id, invoice_html=invoice_html)
     with log_elapsed(logger, "Sent invoice", log_extra):
         transactional_mails.send_invoice_available_to_pro_email(invoice, batch)
 
 
-def generate_and_store_invoice(
-    bank_account_id: int,
-    cashflow_ids: list[int],
-) -> None:
+def generate_and_store_invoice(bank_account_id: int, cashflow_ids: list[int], is_debit_note: bool = False) -> None:
     log_extra = {"bank_account": bank_account_id}
     with log_elapsed(logger, "Generated invoice model instance", log_extra):
         invoice = _generate_invoice(
-            bank_account_id=bank_account_id,
-            cashflow_ids=cashflow_ids,
+            bank_account_id=bank_account_id, cashflow_ids=cashflow_ids, is_debit_note=is_debit_note
         )
         if not invoice:
             return
@@ -2166,7 +2228,10 @@ def generate_and_store_invoice(
     ).one()
 
     with log_elapsed(logger, "Generated invoice HTML", log_extra):
-        invoice_html = _generate_invoice_html(invoice, batch)
+        if is_debit_note:
+            invoice_html = _generate_debit_note_html(invoice, batch)
+        else:
+            invoice_html = _generate_invoice_html(invoice, batch)
     with log_elapsed(logger, "Generated and stored PDF invoice", log_extra):
         _store_invoice_pdf(invoice_storage_id=invoice.storage_object_id, invoice_html=invoice_html)
     with log_elapsed(logger, "Sent invoice", log_extra):
@@ -2174,8 +2239,7 @@ def generate_and_store_invoice(
 
 
 def _generate_invoice_legacy(
-    reimbursement_point_id: int,
-    cashflow_ids: list[int],
+    reimbursement_point_id: int, cashflow_ids: list[int], is_debit_note: bool = False
 ) -> models.Invoice | None:
     # Acquire lock to avoid 2 simultaneous calls to this function (on
     # the same reimbursement point) generating 2 duplicate invoices.
@@ -2226,8 +2290,7 @@ def _generate_invoice_legacy(
             incident_pricings = []
             other_pricings = []
             for pricing in pricings:
-                # TODO: remove condition on eventId when it becomes non-nullable
-                if pricing.eventId and pricing.event.bookingFinanceIncidentId:
+                if pricing.event.bookingFinanceIncidentId:
                     incident_pricings.append(pricing)
                 else:
                     other_pricings.append(pricing)
@@ -2268,7 +2331,8 @@ def _generate_invoice_legacy(
     invoice.amount = total_reimbursed_amount
     # As of Python 3.9, DEFAULT_ENTROPY is 32 bytes
     invoice.token = secrets.token_urlsafe()
-    scheme = reference_models.ReferenceScheme.get_and_lock(name="invoice.reference", year=datetime.date.today().year)
+    scheme_name = "invoice.reference" if not is_debit_note else "debit_note.reference"
+    scheme = reference_models.ReferenceScheme.get_and_lock(name=scheme_name, year=datetime.date.today().year)
     invoice.reference = scheme.formatted_reference
     scheme.increment_after_use()
     db.session.add(scheme)
@@ -2357,8 +2421,7 @@ def _generate_invoice_legacy(
 
 
 def _generate_invoice(
-    bank_account_id: int,
-    cashflow_ids: list[int],
+    bank_account_id: int, cashflow_ids: list[int], is_debit_note: bool = False
 ) -> models.Invoice | None:
     # Acquire lock to avoid 2 simultaneous calls to this function (on
     # the same bank account) generating 2 duplicate invoices.
@@ -2409,8 +2472,7 @@ def _generate_invoice(
             incident_pricings = []
             other_pricings = []
             for pricing in pricings:
-                # TODO: remove condition on eventId when it becomes non-nullable
-                if pricing.eventId and pricing.event.bookingFinanceIncidentId:
+                if pricing.event.bookingFinanceIncidentId:
                     incident_pricings.append(pricing)
                 else:
                     other_pricings.append(pricing)
@@ -2451,7 +2513,8 @@ def _generate_invoice(
     invoice.amount = total_reimbursed_amount
     # As of Python 3.9, DEFAULT_ENTROPY is 32 bytes
     invoice.token = secrets.token_urlsafe()
-    scheme = reference_models.ReferenceScheme.get_and_lock(name="invoice.reference", year=datetime.date.today().year)
+    scheme_name = "invoice.reference" if not is_debit_note else "debit_note.reference"
+    scheme = reference_models.ReferenceScheme.get_and_lock(name=scheme_name, year=datetime.date.today().year)
     invoice.reference = scheme.formatted_reference
     scheme.increment_after_use()
     db.session.add(scheme)
@@ -2615,8 +2678,7 @@ def _prepare_invoice_context_legacy(invoice: models.Invoice, batch: models.Cashf
         including_finance_incident=any(
             cashflow
             for cashflow in cashflows
-            # TODO: remove condition on eventId when it becomes non-nullable
-            if any(pricing.event.bookingFinanceIncidentId for pricing in cashflow.pricings if pricing.eventId)
+            if any(pricing.event.bookingFinanceIncidentId for pricing in cashflow.pricings)
         ),
     )
 
@@ -2852,6 +2914,16 @@ def _generate_invoice_html_legacy(invoice: models.Invoice, batch: models.Cashflo
 def _generate_invoice_html(invoice: models.Invoice, batch: models.CashflowBatch) -> str:
     context = _prepare_invoice_context(invoice, batch)
     return render_template("invoices/invoice.html", **context)
+
+
+def _generate_debit_note_html_legacy(invoice: models.Invoice, batch: models.CashflowBatch) -> str:
+    context = _prepare_invoice_context_legacy(invoice, batch)
+    return render_template("invoices/debit_note_legacy.html", **context)
+
+
+def _generate_debit_note_html(invoice: models.Invoice, batch: models.CashflowBatch) -> str:
+    context = _prepare_invoice_context(invoice, batch)
+    return render_template("invoices/debit_note.html", **context)
 
 
 def _store_invoice_pdf(invoice_storage_id: str, invoice_html: str) -> None:
