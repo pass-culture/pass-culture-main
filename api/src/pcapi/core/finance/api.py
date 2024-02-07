@@ -1458,25 +1458,24 @@ def _generate_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
         "BIC",
     )
     query = (
-        offerers_models.Venue.query.join(
-            offerers_models.VenueBankAccountLink,
-            sqla.and_(
-                offerers_models.Venue.id == offerers_models.VenueBankAccountLink.venueId,
-                offerers_models.VenueBankAccountLink.timespan.contains(cutoff),
-            ),
+        models.BankAccount.query.filter(
+            models.BankAccount.id.in_(
+                offerers_models.VenueBankAccountLink.query.filter(
+                    offerers_models.VenueBankAccountLink.timespan.contains(cutoff)
+                ).with_entities(offerers_models.VenueBankAccountLink.bankAccountId)
+            )
         )
-        .join(models.BankAccount, offerers_models.VenueBankAccountLink.bankAccountId == models.BankAccount.id)
-        .join(offerers_models.Venue.managingOfferer)
-        .order_by(offerers_models.Venue.id)
-        .with_entities(
-            models.BankAccount.id,
-            offerers_models.Offerer.name.label("offerer_name"),
-            offerers_models.Offerer.siren.label("offerer_siren"),
-            models.BankAccount.label.label("label"),
-            models.BankAccount.iban.label("iban"),
-            models.BankAccount.bic.label("bic"),
-        )
+        .join(models.BankAccount.offerer)
+        .order_by(models.BankAccount.id)
+    ).with_entities(
+        models.BankAccount.id,
+        offerers_models.Offerer.name.label("offerer_name"),
+        offerers_models.Offerer.siren.label("offerer_siren"),
+        models.BankAccount.label.label("label"),
+        models.BankAccount.iban.label("iban"),
+        models.BankAccount.bic.label("bic"),
     )
+
     row_formatter = lambda row: (
         human_ids.humanize(row.id),
         _clean_for_accounting(row.offerer_siren),
