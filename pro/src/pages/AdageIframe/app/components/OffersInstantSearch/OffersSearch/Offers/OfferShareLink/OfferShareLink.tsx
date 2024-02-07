@@ -14,11 +14,13 @@ import styles from './OfferShareLink.module.scss'
 export interface OfferShareLinkProps {
   offer: HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
   className?: string
+  tooltipContentClassName?: string
 }
 
 const OfferShareLink = ({
   offer,
   className,
+  tooltipContentClassName,
 }: OfferShareLinkProps): JSX.Element => {
   const mailBody = `
 Bonjour,
@@ -45,6 +47,7 @@ Bonjour,
       url={`mailto:?subject=Partage d’offre sur ADAGE - ${offer.name}&body=${mailBody}`}
       icon={strokeShareIcon}
       onClick={handleShareButtonClicked}
+      tooltipContentClassName={tooltipContentClassName}
     >
       Partager l’offre par email
     </ListIconButton>
