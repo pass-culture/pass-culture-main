@@ -88,6 +88,13 @@ class Returns201Test:
         assert not venue.contact.phone_number
         assert not venue.contact.social_medias
 
+        assert len(venue.adage_addresses) == 1
+        adage_addr = venue.adage_addresses[0]
+
+        assert adage_addr.venueId == venue.id
+        assert adage_addr.adageId == venue.adageId
+        assert adage_addr.adageInscriptionDate == venue.adageInscriptionDate
+
         assert len(external_testing.sendinblue_requests) == 1
         assert external_testing.zendesk_sell_requests == [
             {

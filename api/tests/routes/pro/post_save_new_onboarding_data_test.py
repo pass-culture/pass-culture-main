@@ -60,6 +60,13 @@ class Returns200Test:
         assert created_venue.venueTypeCode == offerers_models.VenueTypeCode.MOVIE
         assert created_venue.withdrawalDetails is None
 
+        assert len(created_venue.adage_addresses) == 1
+        adage_addr = created_venue.adage_addresses[0]
+
+        assert adage_addr.venueId == created_venue.id
+        assert adage_addr.adageId == created_venue.adageId
+        assert adage_addr.adageInscriptionDate == created_venue.adageInscriptionDate
+
     def test_returns_public_information_only(self, client):
         user = users_factories.UserFactory(email="pro@example.com")
 

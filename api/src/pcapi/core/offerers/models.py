@@ -434,8 +434,8 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
         "AccessibilityProvider", back_populates="venue", uselist=False
     )
 
-    adage_addresses: sa_orm.Mapped[educational_models.AdageVenueAddress | None] = sa.orm.relationship(
-        "AdageVenueAddress", back_populates="venue", uselist=False
+    adage_addresses: sa_orm.Mapped[typing.Sequence[educational_models.AdageVenueAddress]] = sa.orm.relationship(
+        "AdageVenueAddress", back_populates="venue"
     )
 
     openingHours: Mapped[list["OpeningHours | None"]] = relationship(
