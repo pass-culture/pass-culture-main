@@ -9,8 +9,10 @@ const validationSchema = {
     then: (schema) =>
       schema.required('Veuillez sélectionner une sous-catégorie'),
   }),
-  gtl_id: yup.string().when('subCategoryFields', {
-    is: (subCategoryFields: string[]) => subCategoryFields.includes('gtl_id'),
+  gtl_id: yup.string().when(['subCategoryFields', 'categoryId'], {
+    is: (subCategoryFields: string[], categoryId: string) => {
+      return subCategoryFields.includes('gtl_id') && categoryId !== 'LIVRE'
+    },
     then: (schema) => schema.required('Veuillez sélectionner un genre musical'),
   }),
   showType: yup.string().when('subCategoryFields', {
