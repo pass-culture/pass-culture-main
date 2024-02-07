@@ -54,3 +54,49 @@ class IncidentValidationForm(FlaskForm):
     compensation_mode = fields.PCSelectField(
         "Mode de compensation", choices=forms_utils.choices_from_enum(IncidentCompensationModes)
     )
+
+
+class GetIncidentsSearchForm(forms_utils.PCForm):
+    class Meta:
+        csrf = False
+
+    q = fields.PCOptSearchField("ID de réservation ou ID de l'incident, contremarque")
+
+    status = fields.PCSelectMultipleField(
+        "États",
+        choices=forms_utils.choices_from_enum(
+            finance_models.IncidentStatus,
+            formatter=filters.format_finance_incident_status,
+        ),
+    )
+
+    offerer = fields.PCTomSelectField(
+        "Structures",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_offerers",
+    )
+
+    venue = fields.PCTomSelectField(
+        "Lieux porteurs de l'offre",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_venues",
+    )
+
+    from_date = fields.PCDateField("Créées à partir du", validators=(Optional(),))
+    to_date = fields.PCDateField("Jusqu'au", validators=(Optional(),))
+
+    def is_empty(self) -> bool:
+        return not any(
+            (
+                self.q.data,
+                self.status.data,
+                self.offerer.data,
+                self.venue.data,
+                self.from_date.data,
+                self.to_date.data,
+            )
+        )
