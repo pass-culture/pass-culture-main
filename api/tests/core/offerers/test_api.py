@@ -391,6 +391,7 @@ class DeleteVenueTest:
 
     def test_delete_cascade_venue_should_remove_adage_addresses(self):
         venue = offerers_factories.VenueFactory()
+        assert venue.adage_addresses
 
         offerers_api.delete_venue(venue.id)
 
