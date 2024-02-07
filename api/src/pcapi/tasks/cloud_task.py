@@ -79,7 +79,7 @@ def enqueue_task(
         logger.exception(
             "Failed to enqueue a task: %s",
             exc,
-            extra={"queue": queue, "task_url": http_request.url, "body": http_request.body},
+            extra={"queue": queue, "task_url": http_request.url, "body": http_request.body, "exc": str(exc)},
         )
         return None
 
