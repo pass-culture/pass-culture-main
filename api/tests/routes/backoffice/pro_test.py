@@ -767,7 +767,7 @@ class CreateOffererTest(PostEndpointHelper):
             "ds_dossier_id": int(form_data["ds_id"]),
             "sirene_info": {
                 "active": True,
-                "address": {"city": "CANNES", "insee_code": "06029", "postal_code": "06400", "street": "[ND]"},
+                "address": {"city": "CANNES", "insee_code": "06029", "postal_code": "[ND]", "street": "[ND]"},
                 "ape_code": "90.01Z",
                 "diffusible": False,
                 "head_office_siret": "90000000100001",

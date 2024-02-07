@@ -185,14 +185,20 @@ def create_offerer() -> utils.BackofficeResponse:
 
     pro_user = form.user
     address = form.siret_info.address
+    # When non-diffusible, postal code is often [ND] but city and INSEE code are public
+    postal_code = address.postal_code if address.postal_code.isnumeric() else None
 
     try:
-        city_info = api_adresse.get_municipality_centroid(address.postal_code, address.city)
+        city_info = api_adresse.get_municipality_centroid(
+            address.city, postcode=postal_code, citycode=address.insee_code
+        )
+        if not postal_code:
+            postal_code = city_info.postcode
     except api_adresse.AdresseApiException as exc:
         flash(
             Markup(
-                "Une erreur s'est produite lors de la recherche des coordonnées pour <b>{postal_code} {city}</b> : {error}"
-            ).format(postal_code=address.postal_code, city=address.city, error=str(exc))
+                "Une erreur s'est produite lors de la recherche des coordonnées pour <b>{code} {city}</b> : {error}"
+            ).format(code=address.insee_code, city=address.city, error=str(exc))
         )
         return _render_get_create_offerer_form(form), 400
 
@@ -200,7 +206,7 @@ def create_offerer() -> utils.BackofficeResponse:
         siren=form.siret_info.siret[:9],
         name=form.public_name.data,
         address=address.street,  # [ND]
-        postalCode=address.postal_code,
+        postalCode=postal_code,
         city=address.city,
         latitude=city_info.latitude,
         longitude=city_info.longitude,
@@ -232,7 +238,7 @@ def create_offerer() -> utils.BackofficeResponse:
         managingOffererId=user_offerer.offererId,
         name=form.public_name.data,
         publicName=form.public_name.data,
-        postalCode=address.postal_code,  # type: ignore [arg-type]
+        postalCode=postal_code,  # type: ignore [arg-type]
         venueLabelId=None,
         venueTypeCode=form.venue_type_code.data,
         withdrawalDetails=None,
