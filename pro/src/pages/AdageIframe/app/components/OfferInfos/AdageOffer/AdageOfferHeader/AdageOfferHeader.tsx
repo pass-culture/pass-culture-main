@@ -85,6 +85,9 @@ export default function AdageOfferHeader({ offer }: AdageOfferProps) {
                 Ultimately, HydratedCollectiveOfferTemplate wil be the same model as CollectiveOfferTemplateResponseModel */}
               <OfferShareLink
                 className={styles['offer-header-action']}
+                tooltipContentClassName={
+                  styles['offer-header-share-button-tooltip-content']
+                }
                 offer={offer as HydratedCollectiveOfferTemplate}
               />
             </div>
