@@ -912,8 +912,9 @@ def set_offerer_attachment_pending(
 
 def reject_offerer_attachment(
     user_offerer: offerers_models.UserOfferer,
-    author_user: users_models.User,
+    author_user: users_models.User | None,
     comment: str | None = None,
+    send_email: bool = True,
     commit: bool = True,
 ) -> None:
     user_offerer.validationStatus = ValidationStatus.REJECTED
@@ -927,7 +928,8 @@ def reject_offerer_attachment(
         comment=comment,
     )
 
-    transactional_mails.send_offerer_attachment_rejection_email_to_pro(user_offerer)
+    if send_email:
+        transactional_mails.send_offerer_attachment_rejection_email_to_pro(user_offerer)
 
     remove_pro_role_and_add_non_attached_pro_role([user_offerer.user])
 
@@ -999,7 +1001,7 @@ def validate_offerer(offerer: models.Offerer, author_user: users_models.User) ->
 
 
 def reject_offerer(
-    offerer: offerers_models.Offerer, author_user: users_models.User, comment: str | None = None
+    offerer: offerers_models.Offerer, author_user: users_models.User | None, **action_args: typing.Any
 ) -> None:
     if offerer.isRejected:
         raise exceptions.OffererAlreadyRejectedException()
@@ -1017,7 +1019,7 @@ def reject_offerer(
         author_user,
         offerer=offerer,
         user=first_user_to_register_offerer,
-        comment=comment,
+        **action_args,
     )
 
     if applicants:
@@ -1026,7 +1028,11 @@ def reject_offerer(
     users_offerer = offerers_models.UserOfferer.query.filter_by(offererId=offerer.id).all()
     for user_offerer in users_offerer:
         reject_offerer_attachment(
-            user_offerer, author_user, "Compte pro rejeté suite au rejet de la structure", commit=False
+            user_offerer,
+            author_user,
+            "Compte pro rejeté suite au rejet de la structure",
+            send_email=(user_offerer.user not in applicants),  # do not send a second email
+            commit=False,
         )
 
     remove_pro_role_and_add_non_attached_pro_role(applicants)
