@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/react'
 import cn from 'classnames'
 import { compareAsc, format } from 'date-fns'
 
-import { InvoiceResponseModel } from 'apiClient/v1'
+import { InvoiceResponseV2Model } from 'apiClient/v1'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
 import useActiveFeature from 'hooks/useActiveFeature'
 import {
@@ -21,7 +21,7 @@ import { formatPrice } from 'utils/formatPrice'
 import styles from './InvoiceTable.module.scss'
 
 type InvoiceTableProps = {
-  invoices: InvoiceResponseModel[]
+  invoices: InvoiceResponseV2Model[]
 }
 
 enum InvoicesOrderedBy {
@@ -33,7 +33,7 @@ enum InvoicesOrderedBy {
 }
 
 function sortInvoices(
-  invoices: InvoiceResponseModel[],
+  invoices: InvoiceResponseV2Model[],
   currentSortingColumn: InvoicesOrderedBy | null,
   sortingMode: SortingMode
 ) {
@@ -52,12 +52,8 @@ function sortInvoices(
     case InvoicesOrderedBy.REIMBURSEMENT_POINT_NAME:
       return [...invoices].sort((a, b) =>
         sortingMode === SortingMode.ASC
-          ? (a.reimbursementPointName ?? '').localeCompare(
-              b.reimbursementPointName ?? ''
-            )
-          : (b.reimbursementPointName ?? '').localeCompare(
-              a.reimbursementPointName ?? ''
-            )
+          ? (a.bankAccountLabel ?? '').localeCompare(b.bankAccountLabel ?? '')
+          : (b.bankAccountLabel ?? '').localeCompare(a.bankAccountLabel ?? '')
       )
 
     case InvoicesOrderedBy.DOCUMENT_TYPE:
@@ -320,7 +316,7 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
                   className={cn(styles['data'], styles['document-type-column'])}
                   data-label="Point de remboursement"
                 >
-                  {invoice.reimbursementPointName}
+                  {invoice.bankAccountLabel}
                 </td>
               )}
               <td
