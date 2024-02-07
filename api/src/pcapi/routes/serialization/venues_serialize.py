@@ -328,6 +328,7 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     contact: base.VenueContactModel | None
     reimbursementPointId: int | None
     shouldSendMail: bool | None
+    venueOpeningHours: list[base.VenueOpeningHoursModel] | None
 
 
 class EditVenueCollectiveDataBodyModel(BaseModel):

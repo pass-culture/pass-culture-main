@@ -88,6 +88,7 @@ def create_digital_venue(offerer: models.Offerer) -> models.Venue:
 def update_venue(
     venue: models.Venue,
     author: users_models.User,
+    opening_days: list[serialize_base.VenueOpeningHoursModel] | None = None,
     contact_data: serialize_base.VenueContactModel | None = None,
     criteria: list[criteria_models.Criterion] | T_UNCHANGED = UNCHANGED,
     admin_update: bool = False,
@@ -111,6 +112,17 @@ def update_venue(
         target = venue.contact if venue.contact is not None else offerers_models.VenueContact()
         venue_snapshot.trace_update(contact_data.dict(), target=target, field_name_template="contact.{}")
         upsert_venue_contact(venue, contact_data)
+
+    if opening_days:
+        for opening_hours_data in opening_days:
+            weekday = models.Weekday(opening_hours_data.weekday.upper())
+            target = get_venue_opening_hours_by_weekday(venue, weekday)
+            venue_snapshot.trace_update(
+                opening_hours_data.dict(),
+                target=target,
+                field_name_template=f"openingHours.{opening_hours_data.weekday}.{{}}",
+            )
+            upsert_venue_opening_hours(venue, opening_hours_data)
 
     if criteria is not UNCHANGED:
         if set(venue.criteria) != set(criteria):
@@ -228,6 +240,29 @@ def upsert_venue_contact(venue: models.Venue, contact_data: serialize_base.Venue
     venue_contact.social_medias = contact_data.social_medias or {}
 
     repository.save(venue_contact)
+    return venue
+
+
+def upsert_venue_opening_hours(
+    venue: models.Venue, opening_hours_data: serialize_base.VenueOpeningHoursModel
+) -> models.Venue:
+    """
+    Create and attach OpeningHours for a given weekday to a Venue if it has none.
+    Update (replace) an existing OpeningHours list otherwise.
+    """
+    weekday = models.Weekday(opening_hours_data.weekday.upper())
+    venue_opening_hours = get_venue_opening_hours_by_weekday(venue, weekday)
+
+    modifications = {
+        field: value
+        for field, value in opening_hours_data.dict().items()
+        if venue_opening_hours.field_exists_and_has_changed(field, value)
+    }
+    if not modifications:
+        return venue
+    venue_opening_hours.venue = venue
+    venue_opening_hours.timespan = opening_hours_data.timespan
+    repository.save(venue_opening_hours)
     return venue
 
 
@@ -2084,3 +2119,10 @@ def add_timespan(opening_hours: models.OpeningHours, new_timespan: NumericRange)
     else:
         opening_hours.timespan = [new_timespan]
     db.session.commit()
+
+
+def get_venue_opening_hours_by_weekday(venue: models.Venue, weekday: models.Weekday) -> models.OpeningHours:
+    for opening_hours in venue.openingHours:
+        if opening_hours.weekday == weekday:
+            return opening_hours
+    return models.OpeningHours(weekday=weekday)

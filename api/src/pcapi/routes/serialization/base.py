@@ -1,12 +1,14 @@
 import re
 import typing
 
+from psycopg2.extras import NumericRange
 import pydantic.v1 as pydantic_v1
 from pydantic.v1 import validator
 
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import phone_number as phone_number_utils
+from pcapi.utils.date import time_to_int
 
 
 SocialMedia = typing.Literal["facebook", "instagram", "snapchat", "twitter"]
@@ -134,3 +136,13 @@ class ListOffersVenueResponseModel(BaseModel):
     offererName: str
     publicName: str | None
     departementCode: str | None
+
+
+class VenueOpeningHoursModel(BaseModel):
+    weekday: str
+    timespan: list[list[str]] | None
+
+    @validator("timespan", each_item=True)
+    def convert_to_numeric_ranges(cls, timespan: list[str]) -> NumericRange:
+        start, end = timespan
+        return NumericRange(time_to_int(start), time_to_int(end), "[]")
