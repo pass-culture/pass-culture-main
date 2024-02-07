@@ -850,7 +850,6 @@ def test_public_api(client):
                 },
                 "MovieType": {
                     "properties": {
-                        "children": {"items": {}, "nullable": True, "title": "Children", "type": "array"},
                         "label": {"title": "Label", "type": "string"},
                         "name": {"title": "Name", "type": "string"},
                     },
