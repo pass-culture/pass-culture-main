@@ -2,7 +2,7 @@ import { format, subMonths } from 'date-fns'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { api } from 'apiClient/api'
-import { InvoiceResponseModel } from 'apiClient/v1'
+import { InvoiceResponseModel, InvoiceResponseV2Model } from 'apiClient/v1'
 import { BannerReimbursementsInfo } from 'components/Banner'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -38,13 +38,11 @@ const ReimbursementsInvoices = (): JSX.Element => {
   }, [])
 
   const [filters, setFilters] = useState(INITIAL_FILTERS)
-  const [invoices, setInvoices] = useState<InvoiceResponseModel[]>([])
+  const [invoices, setInvoices] = useState<InvoiceResponseV2Model[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
   const [areFiltersDefault, setAreFiltersDefault] = useState(true)
-  const [reimbursementPointsOptions, setReimbursementPointsOptions] = useState<
-    SelectOption[]
-  >([])
+  const [filterOptions, setFilterOptions] = useState<SelectOption[]>([])
   const [hasSearchedOnce, setHasSearchedOnce] = useState(false)
 
   const hasNoSearchResult =
@@ -69,15 +67,31 @@ const ReimbursementsInvoices = (): JSX.Element => {
         : filters.periodEnd
 
       try {
-        const invoices = await api.getInvoices(
-          periodStart,
-          periodEnd,
-          reimbursmentPoint !== DEFAULT_INVOICES_FILTERS.reimbursementPointId
-            ? parseInt(reimbursmentPoint)
-            : undefined
-        )
+        if (isNewBankDetailsJourneyEnabled) {
+          const invoices = await api.getInvoicesV2(
+            periodStart,
+            periodEnd,
+            reimbursmentPoint !== DEFAULT_INVOICES_FILTERS.reimbursementPointId
+              ? parseInt(reimbursmentPoint)
+              : undefined
+          )
+          setInvoices(invoices)
+        } else {
+          const invoices = await api.getInvoices(
+            periodStart,
+            periodEnd,
+            reimbursmentPoint !== DEFAULT_INVOICES_FILTERS.reimbursementPointId
+              ? parseInt(reimbursmentPoint)
+              : undefined
+          )
+          setInvoices(
+            invoices.map((invoice: InvoiceResponseModel) => ({
+              ...invoice,
+              bankAccountLabel: invoice.reimbursementPointName,
+            }))
+          )
+        }
 
-        setInvoices(invoices)
         setIsLoading(false)
         setHasError(false)
       } catch (error) {
@@ -106,7 +120,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
     const getReimbursementPointsResult = async () => {
       const result = await api.getReimbursementPoints()
 
-      setReimbursementPointsOptions(
+      setFilterOptions(
         sortByLabel(
           result.map((item) => ({
             value: String(item.id),
@@ -116,15 +130,32 @@ const ReimbursementsInvoices = (): JSX.Element => {
       )
     }
 
+    const getBankAccountOptions = async () => {
+      const result = await api.getBankAccounts()
+
+      setFilterOptions(
+        sortByLabel(
+          result.map((item) => ({
+            value: String(item.id),
+            label: item.label,
+          }))
+        )
+      )
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    getReimbursementPointsResult()
+    if (isNewBankDetailsJourneyEnabled) {
+      getBankAccountOptions()
+    } else {
+      getReimbursementPointsResult()
+    }
   }, [])
 
   if (isLoading) {
     return <Spinner />
   }
 
-  if (reimbursementPointsOptions.length === 0) {
+  if (filterOptions.length === 0) {
     return (
       <div className={stylesNoResult['no-refunds']}>
         {isNewBankDetailsJourneyEnabled && <BannerReimbursementsInfo />}
@@ -152,7 +183,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
         disable={hasNoInvoicesYetForNonAdmin}
         initialFilters={INITIAL_FILTERS}
         loadInvoices={loadInvoices}
-        selectableOptions={reimbursementPointsOptions}
+        selectableOptions={filterOptions}
         setAreFiltersDefault={setAreFiltersDefault}
         setFilters={setFilters}
         setHasSearchedOnce={setHasSearchedOnce}
