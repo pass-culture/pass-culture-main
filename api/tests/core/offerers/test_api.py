@@ -1771,8 +1771,11 @@ class RejectOffererTest:
         assert user_offerer_query.one().validationStatus == ValidationStatus.REJECTED
         assert offerers_models.ApiKey.query.count() == 0
 
-    @patch("pcapi.core.mails.transactional.send_new_offerer_rejection_email_to_pro", return_value=True)
-    def test_send_rejection_confirmation_email(self, send_new_offerer_rejection_email_to_pro):
+    @patch("pcapi.core.mails.transactional.send_offerer_attachment_rejection_email_to_pro")
+    @patch("pcapi.core.mails.transactional.send_new_offerer_rejection_email_to_pro")
+    def test_send_rejection_confirmation_email(
+        self, send_new_offerer_rejection_email_to_pro, send_offerer_attachment_rejection_email_to_pro
+    ):
         # Given
         admin = users_factories.AdminFactory()
         offerer = offerers_factories.NotValidatedOffererFactory()
@@ -1783,6 +1786,7 @@ class RejectOffererTest:
 
         # Then
         send_new_offerer_rejection_email_to_pro.assert_called_once_with(offerer)
+        send_offerer_attachment_rejection_email_to_pro.assert_not_called()  # one email is enough
 
     def test_action_is_logged(self):
         # Given

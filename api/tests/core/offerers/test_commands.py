@@ -25,5 +25,5 @@ class CheckActiveOfferersTest:
         with freezegun.freeze_time("2024-12-24 23:00:00"):
             run_command(app, "check_active_offerers")
 
-        # Only check that the task is called; its behavior is tested in test_api.py
+        # Only check that the task is called; its behavior is tested in offerers/test_task.py
         mock_get_siren.assert_called_once_with(offerer.siren, with_address=False, raise_if_non_public=False)
