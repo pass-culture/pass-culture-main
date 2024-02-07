@@ -2,12 +2,16 @@ from dataclasses import dataclass
 import logging
 
 import pcapi.connectors.big_query.queries as big_query
+import pcapi.connectors.big_query.queries.adage_playlists as bq_playlists
 from pcapi.connectors.big_query.queries.base import BaseQuery
 import pcapi.core.educational.models as educational_models
 from pcapi.models import db
 
 
 logger = logging.getLogger(__name__)
+
+
+BIGQUERY_PLAYLIST_BATCH_SIZE = 100_000
 
 
 @dataclass
@@ -34,16 +38,18 @@ QUERY_DESC = {
 }
 
 
+BigQueryPlaylistModels = list[
+    bq_playlists.ClassroomPlaylistModel | bq_playlists.LocalOfferersModel | bq_playlists.NewTemplateOffersPlaylistModel
+]
+
+
 def synchronize_institution_playlist(
     playlist_type: educational_models.PlaylistType,
     institution: educational_models.EducationalInstitution,
-    bq_extra_filters: dict,
+    rows: BigQueryPlaylistModels,
 ) -> None:
-    bq_extra_filters = {k: v for k, v in bq_extra_filters.items() if v}
-    bq_filters = {"institution_id": str(institution.id), **bq_extra_filters}
-
     ctx = QUERY_DESC[playlist_type]
-    new_rows = {int(getattr(row, ctx.bq_attr_name)): row.distance_in_km for row in ctx.query().execute(**bq_filters)}
+    new_rows = {int(getattr(row, ctx.bq_attr_name)): row.distance_in_km for row in rows}
 
     actual_rows = {
         getattr(row, ctx.local_attr_name): row
@@ -88,30 +94,27 @@ def synchronize_institution_playlist(
         db.session.bulk_update_mappings(educational_models.CollectivePlaylist, playlist_items_to_update)
 
 
-def synchronize_collective_playlist(playlist_type: educational_models.PlaylistType, with_range: bool = False) -> None:
-    institutions = educational_models.EducationalInstitution.query.all()
-    for institution in institutions:
+def synchronize_collective_playlist(playlist_type: educational_models.PlaylistType) -> None:
+    ctx = QUERY_DESC[playlist_type]
+    institution = None
+    institution_rows: BigQueryPlaylistModels = []
+    for row in ctx.query().execute(page_size=BIGQUERY_PLAYLIST_BATCH_SIZE):
+        current_institution_id = int(getattr(row, "institution_id"))
+        if institution is None:
+            institution = educational_models.EducationalInstitution.query.get(current_institution_id)
+        if institution.id != current_institution_id:
+            try:
+                synchronize_institution_playlist(playlist_type, institution, institution_rows)
+            except Exception:  # pylint: disable=broad-exception-caught
+                logger.exception("Failed to synchronize institution %s playlist from BigQuery", institution.id)
+                db.session.rollback()
+            institution = educational_models.EducationalInstitution.query.get(current_institution_id)
+            institution_rows = []
+        institution_rows.append(row)
+    # Don't forget to synchronize the latest institution
+    if institution and institution_rows:
         try:
-            extra_args = _compute_extra_args(institution.ruralLevel, with_range)
-            synchronize_institution_playlist(playlist_type, institution, extra_args)
-            # Might be a shame that this will clear the initial institution query and will refetch
-            # the institution every time. Small price to pay I guess.
-            db.session.commit()
-        except Exception:  # pylint: disable=broad-except
-            logger.exception("Failed to synchronize playlist %s for institution %s", playlist_type, institution)
+            synchronize_institution_playlist(playlist_type, institution, institution_rows)
+        except Exception:  # pylint: disable=broad-exception-caught
+            logger.exception("Failed to synchronize institution %s playlist from BigQuery", institution.id)
             db.session.rollback()
-
-
-def _compute_extra_args(rural_level: educational_models.InstitutionRuralLevel, with_range: bool = False) -> dict:
-    if with_range:
-        max_range = {
-            educational_models.InstitutionRuralLevel.URBAIN_DENSE: 3,
-            educational_models.InstitutionRuralLevel.URBAIN_DENSITE_INTERMEDIAIRE: 10,
-            educational_models.InstitutionRuralLevel.RURAL_SOUS_FORTE_INFLUENCE_D_UN_POLE: 15,
-            educational_models.InstitutionRuralLevel.RURAL_SOUS_FAIBLE_INFLUENCE_D_UN_POLE: 60,
-            educational_models.InstitutionRuralLevel.RURAL_AUTONOME_PEU_DENSE: 60,
-            educational_models.InstitutionRuralLevel.RURAL_AUTONOME_TRES_PEU_DENSE: 60,
-            None: 60,
-        }.get(rural_level, 60)
-        return {"range": max_range}
-    return {}
