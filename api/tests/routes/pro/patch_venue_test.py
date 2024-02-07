@@ -361,6 +361,64 @@ class Returns200Test:
             }
         }
 
+    def test_should_update_permanent_venue_opening_hours(self, client) -> None:
+        # given
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, isPermanent=True)
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        # when
+        venue_data = populate_missing_data_from_venue(
+            {
+                "venueOpeningHours": [
+                    # We are only changing MONDAY opening Hours, TUESDAY is already like following
+                    {"weekday": "MONDAY", "timespan": [["10:00", "13:00"], ["14:00", "19:30"]]},
+                    {"weekday": "TUESDAY", "timespan": [["10:00", "13:00"], ["14:00", "19:30"]]},
+                ],
+                "contact": None,
+            },
+            venue,
+        )
+
+        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        assert response.status_code == 200
+        assert len(venue.action_history) == 1
+
+        tuesday_opening_hours = next(
+            (
+                opening_hours["TUESDAY"]
+                for opening_hours in response.json["venueOpeningHours"]
+                if "TUESDAY" in opening_hours
+            ),
+            None,
+        )
+        assert tuesday_opening_hours[0] == {"open": "10:00", "close": "13:00"}
+        assert tuesday_opening_hours[1] == {"open": "14:00", "close": "19:30"}
+
+        assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
+        assert venue.action_history[0].extraData == {
+            "modified_info": {
+                "openingHours.MONDAY.timespan": {
+                    "old_info": ["[840, 1170]"],
+                    "new_info": ["[600, 780]", "[840, 1170]"],
+                },
+            }
+        }
+
+    def test_should_not_update_opening_hours_when_response_is_none(self, client) -> None:
+        # given
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, isPermanent=True)
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+
+        # when
+        venue_data = populate_missing_data_from_venue({"contact": None}, venue)
+
+        # then
+        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        assert response.status_code == 200
+        assert len(venue.action_history) == 0
+
 
 class Returns400Test:
     @pytest.mark.parametrize("data, key", venue_malformed_test_data)
