@@ -45,6 +45,7 @@ class ReferenceScheme(Base, Model):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     # known names and prefixes are:
     #   - invoice.reference: F
+    #   - debit_note.reference: A
     name: str = sqla.Column(sqla.Text, nullable=False)
     prefix: str = sqla.Column(sqla.Text, nullable=False)
     year = sqla.Column(sqla.Integer)
