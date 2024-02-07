@@ -1581,6 +1581,9 @@ def test_generate_bank_accounts_file():
         name='Name1\n "with double quotes"   ', siret='siret 1 "t"', managingOfferer=offerer
     )
     venue_3 = offerers_factories.VenueFactory(managingOfferer=offerer)
+    venue_4 = offerers_factories.VenueFactory(managingOfferer=offerer)
+    venue_5 = offerers_factories.VenueFactory(managingOfferer=offerer)
+    venue_6 = offerers_factories.VenueFactory(managingOfferer=offerer)
     bank_account_1 = factories.BankAccountFactory(
         label="old-label", iban="older-iban", bic="older-bic", offerer=offerer
     )
@@ -1588,6 +1591,8 @@ def test_generate_bank_accounts_file():
     bank_account_3 = factories.BankAccountFactory(
         label="newer-label", iban="newer-iban", bic="newer-bic", offerer=offerer
     )
+    bank_account_4 = factories.BankAccountFactory(label="Fourth bank account", offerer=offerer)
+    _bank_account_5 = factories.BankAccountFactory(label="Fifth bank account", offerer=offerer)
     offerers_factories.VenueBankAccountLinkFactory(
         venue=venue_1,
         bankAccount=bank_account_1,
@@ -1601,9 +1606,23 @@ def test_generate_bank_accounts_file():
     offerers_factories.VenueBankAccountLinkFactory(
         venue=venue_3,
         bankAccount=bank_account_3,
-        timespan=[
-            now - datetime.timedelta(days=1),
-        ],
+        timespan=[now - datetime.timedelta(days=3), now - datetime.timedelta(days=1)],
+    )
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue_4,
+        bankAccount=bank_account_3,
+        timespan=(now - datetime.timedelta(days=3), now - datetime.timedelta(days=1)),
+    )
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue_5,
+        bankAccount=bank_account_4,
+        timespan=(now - datetime.timedelta(days=3), now - datetime.timedelta(days=1)),
+    )
+
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue_6,
+        bankAccount=bank_account_4,
+        timespan=(now - datetime.timedelta(days=3), now - datetime.timedelta(days=1)),
     )
 
     n_queries = 1  # select reimbursement point data
@@ -1613,14 +1632,15 @@ def test_generate_bank_accounts_file():
     with path.open(encoding="utf-8") as fp:
         reader = csv.DictReader(fp, quoting=csv.QUOTE_NONNUMERIC)
         rows = list(reader)
-    assert len(rows) == 1
-    assert rows[0] == {
-        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_2.id),
-        "SIREN de la structure": bank_account_2.offerer.siren,
-        "Nom de la structure - Libellé des coordonnées bancaires": "Nom de la structure - some-label",
-        "IBAN": "some-iban",
-        "BIC": "some-bic",
-    }
+    assert len(rows) == 3
+    for row, bank_account in zip(rows, [bank_account_2, bank_account_3, bank_account_4]):
+        assert row == {
+            "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account.id),
+            "SIREN de la structure": bank_account.offerer.siren,
+            "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account.offerer.name} - {bank_account.label}",
+            "IBAN": bank_account.iban,
+            "BIC": bank_account.bic,
+        }
 
 
 @clean_temporary_files
