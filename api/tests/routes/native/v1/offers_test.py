@@ -239,6 +239,7 @@ class OffersTest:
             "publicName": "il est venu le temps des names",
             "isPermanent": False,
             "timezone": "Europe/Paris",
+            "bannerUrl": offer.venue.bannerUrl,
         }
         assert response.json["withdrawalDetails"] == "modalité de retrait"
 
