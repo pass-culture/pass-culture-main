@@ -833,6 +833,7 @@ class CreateOffererTest(PostEndpointHelper):
     @pytest.mark.parametrize(
         "siret,expected_warning",
         [
+            ("00000000000001", "Le SIRET 00000000000001 n'existe pas"),
             ("90000009900001", "L'établissement portant le SIRET 90000009900001 est fermé"),
             (
                 "12345678900001",
