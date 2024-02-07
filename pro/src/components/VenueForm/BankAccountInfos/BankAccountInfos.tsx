@@ -4,7 +4,6 @@ import { BankAccountResponseModel } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import FormLayout from 'components/FormLayout'
-import fullNextIcon from 'icons/full-next.svg'
 import { TextInput } from 'ui-kit'
 
 interface BankAccountInfosProps {
@@ -24,13 +23,11 @@ const BankAccountInfos = ({ venueBankAccount }: BankAccountInfosProps) => {
         />
       )}
       <Callout
-        type={CalloutVariant.INFO}
+        variant={CalloutVariant.INFO}
         links={[
           {
-            linkTitle: 'Gérer les remboursements',
-            isExternal: false,
+            label: 'Gérer les remboursements',
             href: '/remboursements/informations-bancaires',
-            icon: fullNextIcon,
           },
         ]}
       >
