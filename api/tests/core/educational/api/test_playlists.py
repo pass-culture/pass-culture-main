@@ -41,9 +41,21 @@ class SynchronizePlaylistsTest:
         mock_path = "pcapi.connectors.big_query.TestingBackend.run_query"
         with patch(mock_path) as mock_run_query:
             mock_run_query.return_value = [
-                {"collective_offer_id": str(offers[0].id), "distance_in_km": initial_distance},
-                {"collective_offer_id": str(offers[1].id), "distance_in_km": updated_distance},
-                {"collective_offer_id": str(offers[3].id), "distance_in_km": updated_distance},
+                {
+                    "institution_id": str(institution.id),
+                    "collective_offer_id": str(offers[0].id),
+                    "distance_in_km": initial_distance,
+                },
+                {
+                    "institution_id": str(institution.id),
+                    "collective_offer_id": str(offers[1].id),
+                    "distance_in_km": updated_distance,
+                },
+                {
+                    "institution_id": str(institution.id),
+                    "collective_offer_id": str(offers[3].id),
+                    "distance_in_km": updated_distance,
+                },
             ]
             playlist_api.synchronize_collective_playlist(playlist_type)
 
@@ -106,9 +118,21 @@ class SynchronizePlaylistsTest:
         mock_path = "pcapi.connectors.big_query.TestingBackend.run_query"
         with patch(mock_path) as mock_run_query:
             mock_run_query.return_value = [
-                {"venue_id": str(venues[0].id), "distance_in_km": initial_distance},
-                {"venue_id": str(venues[1].id), "distance_in_km": updated_distance},
-                {"venue_id": str(venues[3].id), "distance_in_km": updated_distance},
+                {
+                    "institution_id": str(institution.id),
+                    "venue_id": str(venues[0].id),
+                    "distance_in_km": initial_distance,
+                },
+                {
+                    "institution_id": str(institution.id),
+                    "venue_id": str(venues[1].id),
+                    "distance_in_km": updated_distance,
+                },
+                {
+                    "institution_id": str(institution.id),
+                    "venue_id": str(venues[3].id),
+                    "distance_in_km": updated_distance,
+                },
             ]
             playlist_api.synchronize_collective_playlist(playlist_type)
 

@@ -7,6 +7,7 @@ from .base import BaseQuery
 
 
 class ClassroomPlaylistModel(pydantic_v1.BaseModel):
+    institution_id: str
     collective_offer_id: str
     distance_in_km: float
 
@@ -16,16 +17,20 @@ class ClassroomPlaylistQuery(BaseQuery):
         SELECT
             collective_offer_id,
             distance_in_km,
+            institution_id
         FROM
             `{settings.BIG_QUERY_TABLE_BASENAME}.adage_home_playlist_moving_offerers`
         WHERE
-            institution_id = @institution_id
+            distance_in_km <= 60
+        ORDER BY
+            institution_id
     """
 
     model = ClassroomPlaylistModel
 
 
 class NewTemplateOffersPlaylistModel(pydantic_v1.BaseModel):
+    institution_id: str
     collective_offer_id: str
     distance_in_km: float
 
@@ -34,21 +39,21 @@ class NewTemplateOffersPlaylistQuery(BaseQuery):
     raw_query = f"""
         SELECT
             distinct collective_offer_id,
-            distance_in_km
+            distance_in_km,
+            institution_id
         FROM
             `{settings.BIG_QUERY_TABLE_BASENAME}.adage_home_playlist_new_template_offers`
         WHERE
-            institution_id = @institution_id
-        AND
             distance_in_km <= 60
-        ORDER BY distance_in_km ASC
-        LIMIT 10
+        ORDER BY
+            institution_id
     """
 
     model = NewTemplateOffersPlaylistModel
 
 
 class LocalOfferersModel(pydantic_v1.BaseModel):
+    institution_id: str
     venue_id: str
     distance_in_km: float
 
@@ -56,15 +61,17 @@ class LocalOfferersModel(pydantic_v1.BaseModel):
 class LocalOfferersQuery(BaseQuery):
     raw_query = f"""
         SELECT
-            distinct venue_id,
-            distance_in_km
+            institution_id,
+            venue_id,
+            MIN(distance_in_km) as distance_in_km
         FROM
             `{settings.BIG_QUERY_TABLE_BASENAME}.adage_home_playlist_local_offerers`
         WHERE
-            distance_in_km <= @range
-            and institution_id = @institution_id
-        LIMIT
-            10
+            distance_in_km <= 60
+        GROUP BY
+            institution_id, venue_id
+        ORDER BY
+            institution_id, venue_id
     """
 
     model = LocalOfferersModel
