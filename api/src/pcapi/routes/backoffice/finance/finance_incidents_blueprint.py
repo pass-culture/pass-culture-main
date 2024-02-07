@@ -28,13 +28,18 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models import feature
+from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.finance import forms
 from pcapi.routes.backoffice.finance import validation
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.offerers import forms as offerer_forms
+from pcapi.utils import date as date_utils
 from pcapi.utils.human_ids import humanize
+
+
+TOKEN_LENGTH = 6
 
 
 finance_incidents_blueprint = utils.child_backoffice_blueprint(
@@ -45,27 +50,105 @@ finance_incidents_blueprint = utils.child_backoffice_blueprint(
 )
 
 
-def _get_incidents() -> list[finance_models.FinanceIncident]:
-    # TODO (akarki): implement the search and filters for the incidents page
-    query = finance_models.FinanceIncident.query.options(
-        sa.orm.joinedload(
-            finance_models.BookingFinanceIncident, finance_models.FinanceIncident.booking_finance_incidents
-        ).load_only(
-            finance_models.BookingFinanceIncident.id,
-            finance_models.BookingFinanceIncident.newTotalAmount,
-        ),
-        sa.orm.joinedload(offerer_models.Venue, finance_models.FinanceIncident.venue)
+def _get_incidents(
+    form: forms.GetIncidentsSearchForm,
+) -> list[finance_models.FinanceIncident]:
+    query = (
+        finance_models.FinanceIncident.query.join(finance_models.FinanceIncident.venue)
+        .outerjoin(finance_models.FinanceIncident.booking_finance_incidents)
+        .outerjoin(finance_models.BookingFinanceIncident.booking)
+        .outerjoin(finance_models.BookingFinanceIncident.collectiveBooking)
+        .outerjoin(educational_models.CollectiveBooking.collectiveStock)
+    )
+
+    if form.status.data:
+        # When filtering on status, always exclude closed incidents
+        query = query.filter(
+            finance_models.FinanceIncident.status.in_(form.status.data),
+            sa.not_(finance_models.FinanceIncident.isClosed),
+        )
+
+    if form.offerer.data:
+        query = query.filter(offerer_models.Venue.managingOffererId.in_(form.offerer.data))
+
+    if form.venue.data:
+        query = query.filter(offerer_models.Venue.id.in_(form.venue.data))
+
+    if form.from_date.data or form.to_date.data:
+        query = query.join(
+            history_models.ActionHistory,
+            sa.and_(
+                history_models.ActionHistory.financeIncidentId == finance_models.FinanceIncident.id,
+                history_models.ActionHistory.actionType == history_models.ActionType.FINANCE_INCIDENT_CREATED,
+            ),
+        )
+
+        if form.from_date.data:
+            from_datetime = date_utils.date_to_localized_datetime(form.from_date.data, datetime.min.time())
+            query = query.filter(history_models.ActionHistory.actionDate >= from_datetime)
+
+        if form.to_date.data:
+            to_datetime = date_utils.date_to_localized_datetime(form.to_date.data, datetime.max.time())
+            query = query.filter(history_models.ActionHistory.actionDate <= to_datetime)
+
+    if form.q.data:
+        search_query = form.q.data
+        or_filters = []
+
+        if search_query.isnumeric():
+            or_filters.extend(
+                [
+                    finance_models.FinanceIncident.id == int(search_query),
+                    bookings_models.Booking.id == int(search_query),
+                    educational_models.CollectiveBooking.id == int(search_query),
+                ]
+            )
+
+        if len(search_query) == TOKEN_LENGTH:
+            or_filters.append(bookings_models.Booking.token == search_query)
+
+        if or_filters:
+            query = query.filter(sa.or_(*or_filters))
+        else:
+            flash("Le format de la recherche ne correspond ni à un ID ni à une contremarque", "info")
+            query = query.filter(sa.false)
+
+    query = query.options(
+        sa.orm.contains_eager(finance_models.FinanceIncident.venue)
         .load_only(offerer_models.Venue.id, offerer_models.Venue.name, offerer_models.Venue.publicName)
         .joinedload(offerer_models.Venue.managingOfferer)
         .load_only(offerer_models.Offerer.id, offerer_models.Offerer.name),
+        sa.orm.contains_eager(finance_models.FinanceIncident.booking_finance_incidents)
+        .load_only(finance_models.BookingFinanceIncident.id, finance_models.BookingFinanceIncident.newTotalAmount)
+        .contains_eager(finance_models.BookingFinanceIncident.booking)
+        .load_only(bookings_models.Booking.amount, bookings_models.Booking.quantity),
+        sa.orm.contains_eager(finance_models.FinanceIncident.booking_finance_incidents)
+        .contains_eager(finance_models.BookingFinanceIncident.collectiveBooking)
+        .load_only(educational_models.CollectiveBooking.id)
+        .contains_eager(educational_models.CollectiveBooking.collectiveStock)
+        .load_only(educational_models.CollectiveStock.price),
+        sa.orm.contains_eager(finance_models.FinanceIncident.booking_finance_incidents)
+        .joinedload(finance_models.BookingFinanceIncident.finance_events)  # because of: isClosed
+        .load_only(finance_models.FinanceEvent.id),
     )
+
     return query.order_by(sa.desc(finance_models.FinanceIncident.id)).all()
 
 
 @finance_incidents_blueprint.route("", methods=["GET"])
 def list_incidents() -> utils.BackofficeResponse:
-    incidents = _get_incidents()
-    return render_template("finance/incidents/list.html", rows=incidents)
+    search_form = forms.GetIncidentsSearchForm(formdata=utils.get_query_params())
+
+    incidents = _get_incidents(search_form)
+
+    autocomplete.prefill_offerers_choices(search_form.offerer)
+    autocomplete.prefill_venues_choices(search_form.venue)
+
+    return render_template(
+        "finance/incidents/list.html",
+        rows=incidents,
+        form=search_form,
+    )
 
 
 def render_finance_incident(incident: finance_models.FinanceIncident) -> utils.BackofficeResponse:

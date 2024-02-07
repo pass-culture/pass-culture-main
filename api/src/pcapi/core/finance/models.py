@@ -16,6 +16,7 @@ from uuid import UUID
 import psycopg2.extras
 import sqlalchemy as sqla
 import sqlalchemy.dialects.postgresql as sqla_psql
+from sqlalchemy.ext.hybrid import hybrid_property
 import sqlalchemy.ext.mutable as sqla_mutable
 import sqlalchemy.orm as sqla_orm
 
@@ -303,7 +304,7 @@ class FinanceEvent(Base, Model):
         sqla.BigInteger, sqla.ForeignKey("collective_booking.id"), index=True, nullable=True
     )
     collectiveBooking: sqla_orm.Mapped["educational_models.CollectiveBooking | None"] = sqla_orm.relationship(
-        "CollectiveBooking", foreign_keys=[collectiveBookingId]
+        "CollectiveBooking", foreign_keys=[collectiveBookingId], backref="finance_events"
     )
     bookingFinanceIncidentId = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("booking_finance_incident.id"), index=True, nullable=True
@@ -1014,7 +1015,7 @@ class FinanceIncident(Base, Model):
             for booking_incident in self.booking_finance_incidents
         )
 
-    @property
+    @hybrid_property
     def isClosed(self) -> bool:
         # FOR REVIEW (to remove): We could have simply started from cashflow to simplify the code,
         # but this would have caused an additional request for each call
@@ -1027,6 +1028,18 @@ class FinanceIncident(Base, Model):
                 for event in booking_incident.finance_events
             )
             for booking_incident in self.booking_finance_incidents
+        )
+
+    @isClosed.expression  # type: ignore [no-redef]
+    def isClosed(cls) -> bool:  # pylint: disable=no-self-argument
+        return (
+            sqla.exists()
+            .where(BookingFinanceIncident.incidentId == cls.id)
+            .where(FinanceEvent.bookingFinanceIncidentId == BookingFinanceIncident.id)
+            .where(Pricing.eventId == FinanceEvent.id)
+            .where(CashflowPricing.pricingId == Pricing.id)
+            .where(Cashflow.id == CashflowPricing.cashflowId)
+            .where(Cashflow.status == CashflowStatus.ACCEPTED)
         )
 
 

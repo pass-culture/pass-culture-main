@@ -51,14 +51,79 @@ def invoiced_collective_pricing_fixture() -> list:
     return finance_factories.CollectivePricingFactory(status=finance_models.PricingStatus.INVOICED)
 
 
+@pytest.fixture(scope="function", name="incidents")
+def incidents_fixture() -> tuple:
+    incident1 = finance_factories.IndividualBookingFinanceIncidentFactory(
+        booking=bookings_factories.BookingFactory(id=20),
+        incident__status=finance_models.IncidentStatus.CREATED,
+    ).incident
+    history_factories.ActionHistoryFactory(
+        actionType=history_models.ActionType.FINANCE_INCIDENT_CREATED,
+        financeIncident=incident1,
+        actionDate=(datetime.date.today() - datetime.timedelta(days=1)).isoformat(),
+    )
+
+    incident2 = finance_factories.CollectiveBookingFinanceIncidentFactory(
+        collectiveBooking=educational_factories.CollectiveBookingFactory(id=30),
+        incident__status=finance_models.IncidentStatus.VALIDATED,
+    ).incident
+
+    incident3 = finance_factories.FinanceIncidentFactory(status=finance_models.IncidentStatus.CANCELLED)
+
+    # TODO: créer un FinanceEvent pour chaque incident
+    return incident1, incident2, incident3
+
+
+@pytest.fixture(scope="function", name="closed_incident")
+def closed_incident_fixture() -> tuple:
+    # FIXME: we should not call all these apis but I was told there was no way to get a closed event with factories
+    venue = offerers_factories.VenueFactory(pricing_point="self", reimbursement_point="self")
+    finance_factories.BankInformationFactory(venue=venue)
+    booking = bookings_factories.ReimbursedBookingFactory(stock__offer__venue=venue)
+    original_event = finance_factories.UsedBookingFinanceEventFactory(booking=booking)
+    original_pricing = api.price_event(original_event)
+    original_pricing.status = finance_models.PricingStatus.INVOICED
+
+    original_finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+        booking=booking,
+        incident__status=finance_models.IncidentStatus.VALIDATED,
+        incident__venue=venue,
+        incident__forceDebitNote=True,
+    ).incident
+    events_to_price = []
+    events_to_price.extend(
+        api._create_finance_events_from_incident(
+            original_finance_incident.booking_finance_incidents[0],
+            incident_validation_date=datetime.datetime.utcnow(),
+        )
+    )
+    booking = bookings_factories.UsedBookingFactory(stock__offer__venue=venue, amount=20)
+    events_to_price.append(
+        finance_factories.FinanceEventFactory(
+            venue=venue, booking=booking, status=finance_models.FinanceEventStatus.READY
+        )
+    )
+
+    for event in events_to_price:
+        api.price_event(event)
+
+    cashflow_batch = api.generate_cashflows_and_payment_files(datetime.datetime.utcnow())
+    generated_cashflow = cashflow_batch.cashflows[0]
+    generated_cashflow.status = finance_models.CashflowStatus.ACCEPTED
+
+    db.session.flush()
+
+    return original_finance_incident
+
+
 class ListIncidentsTest(GetEndpointHelper):
     endpoint = "backoffice_web.finance_incidents.list_incidents"
     needed_permission = perm_models.Permissions.READ_INCIDENTS
 
-    expected_num_queries = 0
-    expected_num_queries += 1  # Fetch Session
-    expected_num_queries += 1  # Fetch User
-    expected_num_queries += 1  # Fetch Finance Incidents
+    # Fetch Session
+    # Fetch User
+    # Fetch Finance Incidents
+    expected_num_queries = 3
 
     def test_list_incidents_without_filter(self, authenticated_client):
         incidents = finance_factories.FinanceIncidentFactory.create_batch(10)
@@ -75,6 +140,133 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["ID"] == str(last_created_incident.id)
         assert rows[0]["Statut de l'incident"] == "Créé"
         assert rows[0]["Type d'incident"] == "Trop Perçu"
+
+    def test_list_incident_by_incident_id(self, authenticated_client, incidents):
+        searched_id = str(incidents[0].id)
+
+        with testing.assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=searched_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == searched_id
+        assert rows[0]["Statut de l'incident"] == "Créé"
+        assert rows[0]["Type de résa"] == "Individuelle"
+        assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
+        assert rows[0]["Montant total"] == filters.format_cents(incidents[0].due_amount_by_offerer)
+        assert rows[0]["Structure"] == incidents[0].venue.managingOfferer.name
+        assert rows[0]["Porteur de l'offre (lieu)"] == incidents[0].venue.name
+        assert rows[0]["Origine de la demande"] == incidents[0].details["origin"]
+
+    def test_list_incident_by_booking_id(self, authenticated_client, incidents):
+        searched_id = str(incidents[0].booking_finance_incidents[0].bookingId)
+
+        with testing.assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=searched_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(incidents[0].id)
+        assert rows[0]["Statut de l'incident"] == "Créé"
+        assert rows[0]["Type de résa"] == "Individuelle"
+        assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
+        assert rows[0]["Montant total"] == filters.format_cents(incidents[0].due_amount_by_offerer)
+        assert rows[0]["Structure"] == incidents[0].venue.managingOfferer.name
+        assert rows[0]["Porteur de l'offre (lieu)"] == incidents[0].venue.name
+        assert rows[0]["Origine de la demande"] == incidents[0].details["origin"]
+
+    def test_list_incident_by_collective_booking_id(self, authenticated_client, incidents):
+        searched_id = str(incidents[1].booking_finance_incidents[0].collectiveBookingId)
+
+        with testing.assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=searched_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(incidents[1].id)
+        assert rows[0]["Statut de l'incident"] == "Terminé"
+        assert rows[0]["Type de résa"] == "Collective"
+        assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[1].booking_finance_incidents))
+        assert rows[0]["Montant total"] == filters.format_cents(incidents[1].due_amount_by_offerer)
+        assert rows[0]["Structure"] == incidents[1].venue.managingOfferer.name
+        assert rows[0]["Porteur de l'offre (lieu)"] == incidents[1].venue.name
+        assert rows[0]["Origine de la demande"] == incidents[1].details["origin"]
+
+    def test_list_incident_by_token(self, authenticated_client, incidents):
+        searched_id = incidents[0].booking_finance_incidents[0].booking.token
+
+        with testing.assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=searched_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(incidents[0].id)
+        assert rows[0]["Statut de l'incident"] == "Créé"
+        assert rows[0]["Type de résa"] == "Individuelle"
+        assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
+        assert rows[0]["Montant total"] == filters.format_cents(incidents[0].due_amount_by_offerer)
+        assert rows[0]["Structure"] == incidents[0].venue.managingOfferer.name
+        assert rows[0]["Porteur de l'offre (lieu)"] == incidents[0].venue.name
+        assert rows[0]["Origine de la demande"] == incidents[0].details["origin"]
+
+    def test_list_incident_by_status(self, authenticated_client, incidents, closed_incident):
+        with testing.assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(self.endpoint, status=[finance_models.IncidentStatus.VALIDATED.name])
+            )
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1  # closed incident is excluded
+        assert rows[0]["ID"] == str(incidents[1].id)
+
+    def test_list_incident_by_offerer(self, authenticated_client, incidents):
+        offerer_id = incidents[0].venue.managingOffererId
+
+        with testing.assert_num_queries(self.expected_num_queries + 1):  # +1 to prefill offerer selection in form
+            response = authenticated_client.get(url_for(self.endpoint, offerer=offerer_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(incidents[0].id)
+        assert rows[0]["Statut de l'incident"] == "Créé"
+        assert rows[0]["Type de résa"] == "Individuelle"
+        assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
+        assert rows[0]["Montant total"] == filters.format_cents(incidents[0].due_amount_by_offerer)
+        assert rows[0]["Structure"] == incidents[0].venue.managingOfferer.name
+        assert rows[0]["Porteur de l'offre (lieu)"] == incidents[0].venue.name
+        assert rows[0]["Origine de la demande"] == incidents[0].details["origin"]
+
+    def test_list_incident_by_venue(self, authenticated_client, incidents):
+        venue_id = incidents[1].venueId
+
+        with testing.assert_num_queries(self.expected_num_queries + 1):  # +1 to prefill venue selection in form
+            response = authenticated_client.get(url_for(self.endpoint, venue=venue_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(incidents[1].id)
+
+    def test_list_incident_by_dates(self, authenticated_client, incidents):
+        with testing.assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(
+                    self.endpoint,
+                    from_date=(datetime.date.today() - datetime.timedelta(days=3)).isoformat(),
+                    to_date=(datetime.date.today() - datetime.timedelta(days=1)).isoformat(),
+                )
+            )
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(incidents[0].id)
 
 
 class GetIncidentCancellationFormTest(GetEndpointHelper):
