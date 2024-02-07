@@ -507,6 +507,8 @@ class GetOffererStatsDataTest:
         offerer_inactive_collective_offers,
         offerer_active_collective_offer_templates,
         offerer_inactive_collective_offer_templates,
+        offerer_expired_offers,
+        offerer_expired_collective_offers,
         individual_offerer_bookings,
         collective_offerer_booking,
     ):
@@ -518,8 +520,8 @@ class GetOffererStatsDataTest:
             stats = offerer_blueprint.get_stats_data(offerer_id)
         assert stats["active"]["individual"] == 2
         assert stats["active"]["collective"] == 5
-        assert stats["inactive"]["individual"] == 5
-        assert stats["inactive"]["collective"] == 11
+        assert stats["inactive"]["individual"] == 9
+        assert stats["inactive"]["collective"] == 15
 
         total_revenue = stats["total_revenue"]
 
