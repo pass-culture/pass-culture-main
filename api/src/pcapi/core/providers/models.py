@@ -4,6 +4,7 @@ import decimal
 import enum
 import typing
 
+import sqlalchemy as sa
 from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
 from sqlalchemy import CheckConstraint
@@ -138,6 +139,9 @@ class VenueProvider(PcObject, Base, Model, DeactivableMixin):
     provider: sa_orm.Mapped["Provider"] = relationship("Provider", foreign_keys=[providerId], backref="venueProviders")
 
     venueIdAtOfferProvider: str = Column(String(70), nullable=True)
+
+    # This column is unused by our code but by the data team
+    dateCreated: datetime.datetime = Column(DateTime, nullable=False, server_default=sa.func.now())
 
     lastSyncDate = Column(DateTime, nullable=True)
 
