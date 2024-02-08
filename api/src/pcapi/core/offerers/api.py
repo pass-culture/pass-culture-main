@@ -285,7 +285,7 @@ def create_venue(
     if venue_data.contact:
         upsert_venue_contact(venue, venue_data.contact)
 
-    ava = educational_address_api.new_venue(venue)
+    ava = educational_address_api.new_venue_address(venue)
     repository.save(venue, ava)
 
     if venue.siret:
