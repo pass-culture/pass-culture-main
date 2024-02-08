@@ -80,8 +80,8 @@ def _get_online_bookings_happening_soon() -> sa.orm.query.Query:
         .join(Offer)
         .join(Venue)
         .options(
-            sa.orm.joinedload(booking_models.Booking.user),
-            sa.orm.joinedload(booking_models.Booking.stock).joinedload(Stock.offer).joinedload(Offer.venue),
+            sa.orm.joinedload(booking_models.Booking.user, innerjoin=True),
+            sa.orm.contains_eager(booking_models.Booking.stock).contains_eager(Stock.offer).contains_eager(Offer.venue),
         )
         .filter(
             booking_models.Booking.status == booking_models.BookingStatus.CONFIRMED,
