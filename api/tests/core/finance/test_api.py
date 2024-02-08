@@ -2440,6 +2440,99 @@ def test_generate_invoice_file_new_journey():
     }
 
 
+class GenerateDebitNotesLegacyTest:
+    @mock.patch("pcapi.core.finance.api._generate_debit_note_html_legacy")
+    @mock.patch("pcapi.core.finance.api._store_invoice_pdf")
+    @clean_temporary_files
+    @override_features(WIP_ENABLE_FINANCE_INCIDENT=True, WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
+    def test_when_there_is_no_debit_not_to_generate(self, _mocked1, _mocked2):
+        user = users_factories.RichBeneficiaryFactory()
+        venue_kwargs = {
+            "pricing_point": "self",
+            "reimbursement_point": "self",
+        }
+        venue = offerers_factories.VenueFactory(**venue_kwargs)
+        book_offer = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        factories.CustomReimbursementRuleFactory(amount=2850, offer=book_offer)
+
+        incident_booking1_event = factories.UsedBookingFinanceEventFactory(
+            booking__stock=offers_factories.StockFactory(offer=book_offer, price=30, quantity=1),
+            booking__user=user,
+            booking__amount=30,
+            booking__quantity=1,
+        )
+
+        api.price_event(incident_booking1_event)
+        incident_booking1_event.booking.pricings[0].status = models.PricingStatus.INVOICED
+        db.session.flush()
+
+        booking_total_incident = factories.IndividualBookingFinanceIncidentFactory(
+            incident__status=models.IncidentStatus.VALIDATED,
+            incident__forceDebitNote=True,
+            incident__venue=venue,
+            booking=incident_booking1_event.booking,
+            newTotalAmount=-incident_booking1_event.booking.total_amount * 100,
+        )
+        incident_event = api._create_finance_events_from_incident(
+            booking_total_incident, datetime.datetime.utcnow(), commit=True
+        )
+
+        api.price_event(incident_event[0])
+
+        batch = api.generate_cashflows_and_payment_files(datetime.datetime.utcnow())
+
+        api.generate_debit_notes(batch)
+
+        invoices = models.Invoice.query.all()
+        assert len(invoices) == 0
+
+
+class GenerateDebitNotesTest:
+    @mock.patch("pcapi.core.finance.api._generate_debit_note_html")
+    @mock.patch("pcapi.core.finance.api._store_invoice_pdf")
+    @clean_temporary_files
+    @override_features(WIP_ENABLE_FINANCE_INCIDENT=True, WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
+    def test_when_there_is_no_debit_not_to_generate(self, _mocked1, _mocked2):
+        user = users_factories.RichBeneficiaryFactory()
+        venue_kwargs = {
+            "pricing_point": "self",
+        }
+        venue = offerers_factories.VenueFactory(**venue_kwargs)
+        book_offer = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        factories.CustomReimbursementRuleFactory(amount=2850, offer=book_offer)
+
+        incident_booking1_event = factories.UsedBookingFinanceEventFactory(
+            booking__stock=offers_factories.StockFactory(offer=book_offer, price=30, quantity=1),
+            booking__user=user,
+            booking__amount=30,
+            booking__quantity=1,
+        )
+
+        api.price_event(incident_booking1_event)
+        incident_booking1_event.booking.pricings[0].status = models.PricingStatus.INVOICED
+        db.session.flush()
+
+        booking_total_incident = factories.IndividualBookingFinanceIncidentFactory(
+            incident__status=models.IncidentStatus.VALIDATED,
+            incident__forceDebitNote=True,
+            incident__venue=venue,
+            booking=incident_booking1_event.booking,
+            newTotalAmount=-incident_booking1_event.booking.total_amount * 100,
+        )
+        incident_event = api._create_finance_events_from_incident(
+            booking_total_incident, datetime.datetime.utcnow(), commit=True
+        )
+
+        api.price_event(incident_event[0])
+
+        batch = api.generate_cashflows_and_payment_files(datetime.datetime.utcnow())
+
+        api.generate_debit_notes(batch)
+
+        invoices = models.Invoice.query.all()
+        assert len(invoices) == 0
+
+
 @pytest.fixture(name="invoice_data_legacy")
 def invoice_test_data_legacy():
     venue_kwargs = {

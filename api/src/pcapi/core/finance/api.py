@@ -1905,8 +1905,7 @@ def _get_cashflows_by_bank_accounts(batch: models.CashflowBatch, only_debit_note
 
     rows = query.group_by(models.Cashflow.bankAccountId).all()
 
-    if not rows:
-        # Probably a mistake in the batch id input
+    if not rows and not only_debit_notes:  # Probably a mistake in the batch id input
         raise exceptions.NoInvoiceToGenerate()
 
     return rows
