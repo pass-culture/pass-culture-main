@@ -1999,6 +1999,7 @@ def generate_invoice_file_legacy(batch: models.CashflowBatch) -> pathlib.Path:
             .with_entities(
                 models.Invoice,
                 models.Invoice.reimbursementPointId.label("reimbursement_point_id"),
+                models.PricingLine.id.label("pricing_line_id"),  # ensures we have every PricingLine in the result
                 models.PricingLine.category.label("pricing_line_category"),
                 models.Deposit.type.label("deposit_type"),
                 models.PricingLine.amount.label("pricing_line_amount"),
@@ -2022,6 +2023,7 @@ def generate_invoice_file_legacy(batch: models.CashflowBatch) -> pathlib.Path:
             .with_entities(
                 models.Invoice,
                 models.Invoice.reimbursementPointId.label("reimbursement_point_id"),
+                models.PricingLine.id.label("pricing_line_id"),  # ensures we have every PricingLine in the result
                 models.PricingLine.category.label("pricing_line_category"),
                 educational_models.EducationalDeposit.ministry.label("ministry"),
                 models.PricingLine.amount.label("pricing_line_amount"),
@@ -2085,6 +2087,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
             .with_entities(
                 models.Invoice,
                 models.Invoice.bankAccountId.label("bank_account_id"),
+                models.PricingLine.id.label("pricing_line_id"),  # ensures we have every PricingLine in the result
                 models.PricingLine.category.label("pricing_line_category"),
                 models.Deposit.type.label("deposit_type"),
                 models.PricingLine.amount.label("pricing_line_amount"),
@@ -2108,6 +2111,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
             .with_entities(
                 models.Invoice,
                 models.Invoice.bankAccountId.label("bank_account_id"),
+                models.PricingLine.id.label("pricing_line_id"),  # ensures we have every PricingLine in the result
                 models.PricingLine.category.label("pricing_line_category"),
                 educational_models.EducationalDeposit.ministry.label("ministry"),
                 models.PricingLine.amount.label("pricing_line_amount"),
