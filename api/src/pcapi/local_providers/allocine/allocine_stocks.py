@@ -1,5 +1,6 @@
 from datetime import datetime
 import decimal
+import logging
 
 import sqlalchemy as sa
 
@@ -21,6 +22,8 @@ from pcapi.repository.providable_queries import get_last_update_for_provider
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import local_datetime_to_default_timezone
 
+
+logger = logging.getLogger(__name__)
 
 ACCEPTED_FEATURES_MAPPING = {
     allocine_serializers.AllocineShowtimeDiffusionVersion.DUBBED: ShowtimeFeatures.VF.value,
@@ -67,6 +70,12 @@ class AllocineStocks(LocalProvider):
             self.log_provider_event(
                 providers_models.LocalProviderEventType.SyncError,
                 f"Product not found for movie {self.movie.internalId}",
+            )
+            logger.warning(
+                "Product not found for movie %s",
+                self.movie.internalId,
+                extra={"allocineId": self.movie.internalId, "theaterId": self.theater_id},
+                technical_message_id="allocineId.not_found",
             )
             return []
 
@@ -151,6 +160,11 @@ class AllocineStocks(LocalProvider):
             self.log_provider_event(
                 providers_models.LocalProviderEventType.SyncError,
                 f"Error: showtime with UUID {showtime_uuid} cannot be found",
+            )
+            logger.warning(
+                "Showtime with UUID %s cannot be found",
+                showtime_uuid,
+                extra={"allocineId": self.movie.internalId, "theaterId": self.theater_id},
             )
             return
 
