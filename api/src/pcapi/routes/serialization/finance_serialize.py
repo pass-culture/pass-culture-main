@@ -159,7 +159,7 @@ class BankAccountResponseModel(BaseModel):
     label: str
     obfuscatedIban: str
     bic: str
-    dsApplicationId: int
+    dsApplicationId: int | None
     status: finance_models.BankAccountApplicationStatus
     dateCreated: datetime.datetime
     dateLastStatusUpdate: datetime.datetime | None

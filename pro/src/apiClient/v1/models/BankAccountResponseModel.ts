@@ -8,7 +8,7 @@ export type BankAccountResponseModel = {
   bic: string;
   dateCreated: string;
   dateLastStatusUpdate?: string | null;
-  dsApplicationId: number;
+  dsApplicationId?: number | null;
   id: number;
   isActive: boolean;
   label: string;
