@@ -2030,6 +2030,18 @@ def test_generate_invoice_file_legacy_journey():
         amount=100,
         category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
     )
+    # add a pricing with identical pricing line values, to make sure it's taken into account
+    pricing_with_same_values_as_pricing_1 = factories.PricingFactory(
+        status=models.PricingStatus.VALIDATED,
+        booking__stock__offer__venue=venue,
+        amount=-1000,
+    )
+    pline11_identical = factories.PricingLineFactory(pricing=pricing_with_same_values_as_pricing_1)
+    pline12_identical = factories.PricingLineFactory(
+        pricing=pricing_with_same_values_as_pricing_1,
+        amount=100,
+        category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
+    )
 
     # eac pricing
     year1 = EducationalYearFactory()
@@ -2084,7 +2096,7 @@ def test_generate_invoice_file_legacy_journey():
     cashflow1 = factories.CashflowFactory(
         bankInformation=bank_info1,
         reimbursementPoint=reimbursement_point1,
-        pricings=[pricing1, pricing2, *incidents_pricings],
+        pricings=[pricing1, pricing_with_same_values_as_pricing_1, pricing2, *incidents_pricings],
         status=models.CashflowStatus.ACCEPTED,
     )
     invoice1 = factories.InvoiceFactory(
@@ -2128,7 +2140,7 @@ def test_generate_invoice_file_legacy_journey():
             reader = csv.DictReader(csv_textfile, quoting=csv.QUOTE_NONNUMERIC)
             rows = list(reader)
 
-    assert len(rows) == 6
+    assert len(rows) == 8
     assert rows[0] == {
         "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
@@ -2147,8 +2159,27 @@ def test_generate_invoice_file_legacy_journey():
         "Ministère": "",
         "Somme des tickets de facturation": pline12.amount,
     }
-    # collective pricing lines
+    # individual pricing lines indentical to first pricing lines
     assert rows[2] == {
+        "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point1.id),
+        "Date du justificatif": datetime.date.today().isoformat(),
+        "Référence du justificatif": invoice1.reference,
+        "Type de ticket de facturation": pline11_identical.category.value,
+        "Type de réservation": "PC",
+        "Ministère": "",
+        "Somme des tickets de facturation": pline11_identical.amount,
+    }
+    assert rows[3] == {
+        "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point1.id),
+        "Date du justificatif": datetime.date.today().isoformat(),
+        "Référence du justificatif": invoice1.reference,
+        "Type de ticket de facturation": pline12_identical.category.value,
+        "Type de réservation": "PC",
+        "Ministère": "",
+        "Somme des tickets de facturation": pline12_identical.amount,
+    }
+    # collective pricing lines
+    assert rows[4] == {
         "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
@@ -2157,7 +2188,7 @@ def test_generate_invoice_file_legacy_journey():
         "Ministère": "AGRICULTURE",
         "Somme des tickets de facturation": pline21.amount,
     }
-    assert rows[3] == {
+    assert rows[5] == {
         "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
@@ -2167,7 +2198,7 @@ def test_generate_invoice_file_legacy_journey():
         "Somme des tickets de facturation": pline22.amount,
     }
     # incident rows
-    assert rows[4] == {
+    assert rows[6] == {
         "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
@@ -2176,7 +2207,7 @@ def test_generate_invoice_file_legacy_journey():
         "Ministère": "",
         "Somme des tickets de facturation": -1000,
     }
-    assert rows[5] == {
+    assert rows[7] == {
         "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
@@ -2205,6 +2236,18 @@ def test_generate_invoice_file_new_journey():
     pline11 = factories.PricingLineFactory(pricing=pricing1)
     pline12 = factories.PricingLineFactory(
         pricing=pricing1,
+        amount=100,
+        category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
+    )
+    # add a pricing with identical pricing line values, to make sure it's taken into account
+    pricing_with_same_values_as_pricing_1 = factories.PricingFactory(
+        status=models.PricingStatus.VALIDATED,
+        booking__stock__offer__venue=venue,
+        amount=-1000,
+    )
+    pline11_identical = factories.PricingLineFactory(pricing=pricing_with_same_values_as_pricing_1)
+    pline12_identical = factories.PricingLineFactory(
+        pricing=pricing_with_same_values_as_pricing_1,
         amount=100,
         category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
     )
@@ -2261,7 +2304,7 @@ def test_generate_invoice_file_new_journey():
 
     cashflow1 = factories.CashflowFactory(
         bankAccount=bank_account_1,
-        pricings=[pricing1, pricing2, *incidents_pricings],
+        pricings=[pricing1, pricing_with_same_values_as_pricing_1, pricing2, *incidents_pricings],
         status=models.CashflowStatus.ACCEPTED,
     )
     invoice1 = factories.InvoiceFactory(
@@ -2299,7 +2342,7 @@ def test_generate_invoice_file_new_journey():
             reader = csv.DictReader(csv_textfile, quoting=csv.QUOTE_NONNUMERIC)
             rows = list(reader)
 
-    assert len(rows) == 6
+    assert len(rows) == 8
     assert rows[0] == {
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
@@ -2318,8 +2361,27 @@ def test_generate_invoice_file_new_journey():
         "Ministère": "",
         "Somme des tickets de facturation": pline12.amount,
     }
-    # collective pricing lines
+    # individual pricing lines indentical to first pricing lines
     assert rows[2] == {
+        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
+        "Date du justificatif": datetime.date.today().isoformat(),
+        "Référence du justificatif": invoice1.reference,
+        "Type de ticket de facturation": pline11_identical.category.value,
+        "Type de réservation": "PC",
+        "Ministère": "",
+        "Somme des tickets de facturation": pline11_identical.amount,
+    }
+    assert rows[3] == {
+        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
+        "Date du justificatif": datetime.date.today().isoformat(),
+        "Référence du justificatif": invoice1.reference,
+        "Type de ticket de facturation": pline12_identical.category.value,
+        "Type de réservation": "PC",
+        "Ministère": "",
+        "Somme des tickets de facturation": pline12_identical.amount,
+    }
+    # collective pricing lines
+    assert rows[4] == {
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
@@ -2328,7 +2390,7 @@ def test_generate_invoice_file_new_journey():
         "Ministère": "AGRICULTURE",
         "Somme des tickets de facturation": pline21.amount,
     }
-    assert rows[3] == {
+    assert rows[5] == {
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
@@ -2338,7 +2400,7 @@ def test_generate_invoice_file_new_journey():
         "Somme des tickets de facturation": pline22.amount,
     }
     # incident rows
-    assert rows[4] == {
+    assert rows[6] == {
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
@@ -2347,7 +2409,7 @@ def test_generate_invoice_file_new_journey():
         "Ministère": "",
         "Somme des tickets de facturation": -1000,
     }
-    assert rows[5] == {
+    assert rows[7] == {
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
