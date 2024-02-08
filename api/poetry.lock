@@ -1636,17 +1636,18 @@ protobuf = ["protobuf (<5.0.0dev)"]
 
 [[package]]
 name = "google-cloud-tasks"
-version = "2.16.0"
+version = "2.16.1"
 description = "Google Cloud Tasks API client library"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "google-cloud-tasks-2.16.0.tar.gz", hash = "sha256:a326e46f37aa138b16e913793fb005255deb6a14c2ca4c099dd43cb809a18821"},
-    {file = "google_cloud_tasks-2.16.0-py2.py3-none-any.whl", hash = "sha256:dcb2bf36baddede51fca62ef1d7ce54dbadd628f612d53aebeea94b8575088d2"},
+    {file = "google-cloud-tasks-2.16.1.tar.gz", hash = "sha256:eb5947370127b3dfdd9d2b8f54f5e8b0191f9ceb16bbb1fd546b0fb7e2ed6b6c"},
+    {file = "google_cloud_tasks-2.16.1-py2.py3-none-any.whl", hash = "sha256:3949d55e088ee43b154f2f27f590ec1afd6b7812ba2a6ebd59b6977b49d11a17"},
 ]
 
 [package.dependencies]
 google-api-core = {version = ">=1.34.0,<2.0.dev0 || >=2.11.dev0,<3.0.0dev", extras = ["grpc"]}
+google-auth = ">=2.14.1,<3.0.0dev"
 grpc-google-iam-v1 = ">=0.12.4,<1.0.0dev"
 proto-plus = ">=1.22.3,<2.0.0dev"
 protobuf = ">=3.19.5,<3.20.0 || >3.20.0,<3.20.1 || >3.20.1,<4.21.0 || >4.21.0,<4.21.1 || >4.21.1,<4.21.2 || >4.21.2,<4.21.3 || >4.21.3,<4.21.4 || >4.21.4,<4.21.5 || >4.21.5,<5.0.0dev"
@@ -5715,4 +5716,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "374514f6a24f779b229886f84d88374c2ca811316e89883470ca647a434863d4"
+content-hash = "c07d9dc81a6267ad12ec9dfa3ef295f8a5667959b984370501532ea4b236a161"
