@@ -1344,3 +1344,9 @@ def get_user_favorite_offers_from_uai(redactor_id: int | None, uai: str) -> set[
         .filter(educational_models.EducationalRedactor.id == redactor_id)
     )
     return {offer.id for offer in query}
+
+
+def get_venue_base_query() -> BaseQuery:
+    return offerers_models.Venue.query.filter(
+        offerers_models.Venue.adageId.is_not(None),
+    ).options(sa.orm.joinedload(offerers_models.Venue.adage_addresses))

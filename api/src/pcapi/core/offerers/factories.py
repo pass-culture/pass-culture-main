@@ -155,7 +155,7 @@ class VenueFactory(BaseFactory):
     ) -> typing.Sequence["AdageVenueAddress"]:
         from pcapi.core.educational.factories import AdageVenueAddressFactory
 
-        if not create:
+        if not create or not venue.adageId:
             return []
         return [AdageVenueAddressFactory(venue=venue)]
 

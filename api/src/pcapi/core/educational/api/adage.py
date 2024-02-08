@@ -8,6 +8,7 @@ from pydantic.v1 import parse_obj_as
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational.api import address as address_api
 from pcapi.core.educational.api.venue import get_relative_venues_by_siret
 from pcapi.core.mails.transactional import send_eac_offerer_activation_email
 from pcapi.core.offerers import models as offerers_models
@@ -93,15 +94,22 @@ def synchronize_adage_ids_on_venues() -> None:
 
     adage_cultural_partners = get_cultural_partners(force_update=True)
 
-    filtered_cultural_partner_by_ids = {}
+    adage_ids_venues = {}  # adage ids as keys, venue ids as values
+    filtered_cultural_partner_by_ids = {}  # venue ids as keys, response object as values
+
     for cultural_partner in adage_cultural_partners.partners:
         if cultural_partner.venueId is not None and (cultural_partner.synchroPass and cultural_partner.actif == 1):
             filtered_cultural_partner_by_ids[cultural_partner.venueId] = cultural_partner
+            adage_ids_venues[str(cultural_partner.id)] = cultural_partner.venueId
 
-    deactivated_venues: list[offerers_models.Venue] = offerers_models.Venue.query.filter(
-        offerers_models.Venue.id.not_in(filtered_cultural_partner_by_ids.keys()),
-        offerers_models.Venue.adageId.is_not(None),
-    ).all()
+    deactivated_venues: list[offerers_models.Venue] = (
+        educational_repository.get_venue_base_query()
+        .filter(
+            offerers_models.Venue.id.not_in(filtered_cultural_partner_by_ids.keys()),
+            offerers_models.Venue.adageId.is_not(None),
+        )
+        .all()
+    )
 
     for venue in deactivated_venues:
         _remove_venue_from_eac(venue)
@@ -122,6 +130,9 @@ def synchronize_adage_ids_on_venues() -> None:
             venue.adageInscriptionDate = datetime.utcnow()
 
         venue.adageId = str(filtered_cultural_partner_by_ids[venue.id].id)
+
+    address_api.upsert_venues_addresses(adage_ids_venues)
+    address_api.unlink_unknown_venue_addresses(adage_ids_venues.keys())
 
     db.session.commit()
 

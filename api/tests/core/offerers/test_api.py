@@ -390,7 +390,7 @@ class DeleteVenueTest:
         assert finance_models.BankAccount.query.filter(finance_models.BankAccount.id == bank_account_id).one_or_none()
 
     def test_delete_cascade_venue_should_remove_adage_addresses(self):
-        venue = offerers_factories.VenueFactory()
+        venue = offerers_factories.CollectiveVenueFactory()
         assert venue.adage_addresses
 
         offerers_api.delete_venue(venue.id)
