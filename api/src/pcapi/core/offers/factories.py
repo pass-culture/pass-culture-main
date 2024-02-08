@@ -75,11 +75,7 @@ def build_extra_data_from_subcategory(subcategory_id: str, set_all_fields: bool)
         )
     )
     for field in conditional_fields:
-        if (
-            not set_all_fields
-            and not subcategory.conditional_fields[field].is_required_in_internal_form
-            and random.choice([True, False])
-        ):
+        if not set_all_fields and not subcategory.conditional_fields[field].is_required_in_internal_form:
             continue
         match field:
             case item if item in name_fields:
@@ -87,8 +83,9 @@ def build_extra_data_from_subcategory(subcategory_id: str, set_all_fields: bool)
             case subcategories.ExtraDataFieldEnum.EAN.value:
                 extradata[field] = fake.ean13()
             case subcategories.ExtraDataFieldEnum.GTL_ID.value:
-                # GTLS are only for synchronized books thus it's handeled by product factory
-                continue
+                if subcategory_id == subcategories.LIVRE_PAPIER.id:
+                    continue
+                extradata[field] = fake.ean8()
             case subcategories.ExtraDataFieldEnum.VISA.value:
                 extradata[field] = fake.ean()
             case subcategories.ExtraDataFieldEnum.MUSIC_TYPE.value:
