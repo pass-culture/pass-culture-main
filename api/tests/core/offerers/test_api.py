@@ -389,6 +389,14 @@ class DeleteVenueTest:
         assert offerers_models.VenueBankAccountLink.query.count() == 0
         assert finance_models.BankAccount.query.filter(finance_models.BankAccount.id == bank_account_id).one_or_none()
 
+    def test_delete_cascade_venue_should_remove_adage_addresses(self):
+        venue = offerers_factories.VenueFactory()
+
+        offerers_api.delete_venue(venue.id)
+
+        assert offerers_models.Venue.query.count() == 0
+        assert educational_models.AdageVenueAddress.query.count() == 0
+
 
 class EditVenueTest:
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
