@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react'
 import cn from 'classnames'
 import { compareAsc, format } from 'date-fns'
 
@@ -105,6 +106,19 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
     currentSortingColumn,
     currentSortingMode
   )
+
+  sortedInvoices.forEach((invoice) => {
+    try {
+      format(new Date(invoice.date.replace('-', '/')), 'dd/MM/yyyy')
+    } catch (error) {
+      Sentry.addBreadcrumb({
+        message: 'Invalid date',
+        level: 'info',
+        data: { invoiceId: invoice.reference, date: invoice.date },
+      })
+      Sentry.captureException(error)
+    }
+  })
 
   return (
     <table role="table" className={styles['invoices-table']}>
@@ -254,6 +268,7 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
           </th>
         </tr>
       </thead>
+
       <tbody className={styles['body']}>
         {sortedInvoices.map((invoice) => {
           return (
@@ -267,7 +282,9 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
                 )}
                 data-label="Date du justificatif"
               >
-                {format(new Date(invoice.date.replace('-', '/')), 'dd/MM/yyyy')}
+                {invoice.date}
+                {/* This line is causing a bug, waiting for Sentry details to decomment it */}
+                {/* {format(new Date(invoice.date.replace('-', '/')), 'dd/MM/yyyy')} */}
               </td>
               {isFinanceIncidentEnabled ? (
                 <td
