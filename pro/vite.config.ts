@@ -27,7 +27,6 @@ export default defineConfig(({ mode }) => {
       createHtmlPlugin({
         minify: true,
         inject: { data: { mode } },
-        viteNext: true,
       }),
       visualizer({ filename: 'bundleStats.html' }) as PluginOption,
     ],
