@@ -93,21 +93,21 @@ describe('reimbursementsWithFilters', () => {
     expect(screen.queryAllByRole('columnheader').length).toEqual(5)
 
     const firstLine = [
-      '02/11/2022',
+      '2022-11-02',
       'First reimbursement point',
       'J123456789',
       'VIR7',
       '+100,00&nbsp;€',
     ]
     const secondLine = [
-      '03/11/2022',
+      '2022-11-03',
       'Second reimbursement point',
       'J666666666',
       'N/A',
       '-50,00&nbsp;€',
     ]
     const thirdLine = [
-      '02/10/2023',
+      '2023-10-02',
       'First reimbursement point',
       'J987654321',
       'VIR9, VIR12',
