@@ -2044,21 +2044,34 @@ def test_generate_invoice_file_legacy_journey():
         booking__stock__offer__venue=venue,
         amount=-1000,
     )
-    pline11 = factories.PricingLineFactory(pricing=pricing1)
+    pline11 = factories.PricingLineFactory(pricing=pricing1, amount=-1100)
     pline12 = factories.PricingLineFactory(
         pricing=pricing1,
         amount=100,
         category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
     )
+
     # add a pricing with identical pricing line values, to make sure it's taken into account
     pricing_with_same_values_as_pricing_1 = factories.PricingFactory(
         status=models.PricingStatus.VALIDATED,
         booking__stock__offer__venue=venue,
         amount=-1000,
     )
-    pline11_identical = factories.PricingLineFactory(pricing=pricing_with_same_values_as_pricing_1)
+    pline11_identical = factories.PricingLineFactory(pricing=pricing_with_same_values_as_pricing_1, amount=-1100)
     pline12_identical = factories.PricingLineFactory(
         pricing=pricing_with_same_values_as_pricing_1,
+        amount=100,
+        category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
+    )
+
+    pricing2 = factories.PricingFactory(
+        status=models.PricingStatus.VALIDATED,
+        booking__stock__offer__venue=venue,
+        amount=-1000,
+    )
+    pline21 = factories.PricingLineFactory(pricing=pricing2, amount=-1100)
+    pline22 = factories.PricingLineFactory(
+        pricing=pricing2,
         amount=100,
         category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
     )
@@ -2069,7 +2082,7 @@ def test_generate_invoice_file_legacy_journey():
     deposit = EducationalDepositFactory(
         educationalInstitution=educational_institution, educationalYear=year1, ministry=Ministry.AGRICULTURE.name
     )
-    pricing2 = factories.CollectivePricingFactory(
+    pricing3 = factories.CollectivePricingFactory(
         amount=-3000,
         collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
         collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
@@ -2077,16 +2090,16 @@ def test_generate_invoice_file_legacy_journey():
         collectiveBooking__educationalYear=deposit.educationalYear,
         status=models.PricingStatus.VALIDATED,
     )
-    pline21 = factories.PricingLineFactory(pricing=pricing2)
-    pline22 = factories.PricingLineFactory(
-        pricing=pricing2,
+    pline31 = factories.PricingLineFactory(pricing=pricing3, amount=-3300)
+    pline32 = factories.PricingLineFactory(
+        pricing=pricing3,
         amount=300,
         category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
     )
 
     # Create booking for overpayment finance incident
     incident_booking = bookings_factories.ReimbursedBookingFactory(
-        amount=12,
+        amount=18,
         dateUsed=datetime.datetime.utcnow(),
         stock__offer__name="Une histoire plutôt bien",
         stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
@@ -2094,16 +2107,23 @@ def test_generate_invoice_file_legacy_journey():
     )
 
     used_event = factories.UsedBookingFinanceEventFactory(booking=incident_booking)
-    factories.PricingFactory(
+    incident_booking_original_pricing = factories.PricingFactory(
         booking=incident_booking,
         event=used_event,
         status=models.PricingStatus.INVOICED,
         valueDate=datetime.datetime.utcnow(),
+        amount=-1800,
+    )
+    factories.PricingLineFactory(pricing=incident_booking_original_pricing, amount=-1800)
+    factories.PricingLineFactory(
+        pricing=incident_booking_original_pricing,
+        amount=0,
+        category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
     )
 
     # Create finance incident on the booking above (incident amount: 2€)
     booking_finance_incident = factories.IndividualBookingFinanceIncidentFactory(
-        booking=incident_booking, newTotalAmount=1000
+        booking=incident_booking, newTotalAmount=1600
     )
     incident_events = api._create_finance_events_from_incident(
         booking_finance_incident, datetime.datetime.utcnow(), commit=True
@@ -2116,7 +2136,7 @@ def test_generate_invoice_file_legacy_journey():
     cashflow1 = factories.CashflowFactory(
         bankInformation=bank_info1,
         reimbursementPoint=reimbursement_point1,
-        pricings=[pricing1, pricing_with_same_values_as_pricing_1, pricing2, *incidents_pricings],
+        pricings=[pricing1, pricing_with_same_values_as_pricing_1, pricing2, pricing3, *incidents_pricings],
         status=models.CashflowStatus.ACCEPTED,
     )
     invoice1 = factories.InvoiceFactory(
@@ -2136,12 +2156,12 @@ def test_generate_invoice_file_legacy_journey():
         pricing_point=pricing_point2,
         reimbursement_point=reimbursement_point2,
     )
-    pline3 = factories.PricingLineFactory()
-    pricing3 = pline3.pricing
+    pline4 = factories.PricingLineFactory()
+    pricing4 = pline4.pricing
     cashflow2 = factories.CashflowFactory(
         bankInformation=bank_info2,
         reimbursementPoint=reimbursement_point2,
-        pricings=[pricing3],
+        pricings=[pricing4],
         status=models.CashflowStatus.ACCEPTED,
     )
     factories.InvoiceFactory(
@@ -2160,7 +2180,7 @@ def test_generate_invoice_file_legacy_journey():
             reader = csv.DictReader(csv_textfile, quoting=csv.QUOTE_NONNUMERIC)
             rows = list(reader)
 
-    assert len(rows) == 8
+    assert len(rows) == 4
     assert rows[0] == {
         "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
@@ -2168,7 +2188,10 @@ def test_generate_invoice_file_legacy_journey():
         "Type de ticket de facturation": pline11.category.value,
         "Type de réservation": "PC",
         "Ministère": "",
-        "Somme des tickets de facturation": pline11.amount,
+        "Somme des tickets de facturation": pline11.amount
+        + pline11_identical.amount
+        + pline21.amount
+        + 200,  # 200 is the incident amount
     }
     assert rows[1] == {
         "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point1.id),
@@ -2177,64 +2200,26 @@ def test_generate_invoice_file_legacy_journey():
         "Type de ticket de facturation": pline12.category.value,
         "Type de réservation": "PC",
         "Ministère": "",
-        "Somme des tickets de facturation": pline12.amount,
+        "Somme des tickets de facturation": pline12.amount + pline12_identical.amount + pline22.amount,
     }
-    # individual pricing lines indentical to first pricing lines
+    # collective pricing lines
     assert rows[2] == {
         "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
-        "Type de ticket de facturation": pline11_identical.category.value,
-        "Type de réservation": "PC",
-        "Ministère": "",
-        "Somme des tickets de facturation": pline11_identical.amount,
+        "Type de ticket de facturation": pline31.category.value,
+        "Type de réservation": "EACC",
+        "Ministère": "AGRICULTURE",
+        "Somme des tickets de facturation": pline31.amount,
     }
     assert rows[3] == {
         "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
-        "Type de ticket de facturation": pline12_identical.category.value,
-        "Type de réservation": "PC",
-        "Ministère": "",
-        "Somme des tickets de facturation": pline12_identical.amount,
-    }
-    # collective pricing lines
-    assert rows[4] == {
-        "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point1.id),
-        "Date du justificatif": datetime.date.today().isoformat(),
-        "Référence du justificatif": invoice1.reference,
-        "Type de ticket de facturation": pline21.category.value,
+        "Type de ticket de facturation": pline32.category.value,
         "Type de réservation": "EACC",
         "Ministère": "AGRICULTURE",
-        "Somme des tickets de facturation": pline21.amount,
-    }
-    assert rows[5] == {
-        "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point1.id),
-        "Date du justificatif": datetime.date.today().isoformat(),
-        "Référence du justificatif": invoice1.reference,
-        "Type de ticket de facturation": pline22.category.value,
-        "Type de réservation": "EACC",
-        "Ministère": "AGRICULTURE",
-        "Somme des tickets de facturation": pline22.amount,
-    }
-    # incident rows
-    assert rows[6] == {
-        "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point1.id),
-        "Date du justificatif": datetime.date.today().isoformat(),
-        "Référence du justificatif": invoice1.reference,
-        "Type de ticket de facturation": models.PricingLineCategory.OFFERER_REVENUE.value,
-        "Type de réservation": "PC",
-        "Ministère": "",
-        "Somme des tickets de facturation": -1000,
-    }
-    assert rows[7] == {
-        "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point1.id),
-        "Date du justificatif": datetime.date.today().isoformat(),
-        "Référence du justificatif": invoice1.reference,
-        "Type de ticket de facturation": models.PricingLineCategory.OFFERER_CONTRIBUTION.value,
-        "Type de réservation": "PC",
-        "Ministère": "",
-        "Somme des tickets de facturation": 0,
+        "Somme des tickets de facturation": pline32.amount,
     }
 
 
@@ -2253,21 +2238,34 @@ def test_generate_invoice_file_new_journey():
         booking__stock__offer__venue=venue,
         amount=-1000,
     )
-    pline11 = factories.PricingLineFactory(pricing=pricing1)
+    pline11 = factories.PricingLineFactory(pricing=pricing1, amount=-1100)
     pline12 = factories.PricingLineFactory(
         pricing=pricing1,
         amount=100,
         category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
     )
+
     # add a pricing with identical pricing line values, to make sure it's taken into account
     pricing_with_same_values_as_pricing_1 = factories.PricingFactory(
         status=models.PricingStatus.VALIDATED,
         booking__stock__offer__venue=venue,
         amount=-1000,
     )
-    pline11_identical = factories.PricingLineFactory(pricing=pricing_with_same_values_as_pricing_1)
+    pline11_identical = factories.PricingLineFactory(pricing=pricing_with_same_values_as_pricing_1, amount=-1100)
     pline12_identical = factories.PricingLineFactory(
         pricing=pricing_with_same_values_as_pricing_1,
+        amount=100,
+        category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
+    )
+
+    pricing2 = factories.PricingFactory(
+        status=models.PricingStatus.VALIDATED,
+        booking__stock__offer__venue=venue,
+        amount=-1000,
+    )
+    pline21 = factories.PricingLineFactory(pricing=pricing2, amount=-1100)
+    pline22 = factories.PricingLineFactory(
+        pricing=pricing2,
         amount=100,
         category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
     )
@@ -2278,7 +2276,7 @@ def test_generate_invoice_file_new_journey():
     deposit = EducationalDepositFactory(
         educationalInstitution=educational_institution, educationalYear=year1, ministry=Ministry.AGRICULTURE.name
     )
-    pricing2 = factories.CollectivePricingFactory(
+    pricing3 = factories.CollectivePricingFactory(
         amount=-3000,
         collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
         collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
@@ -2286,16 +2284,16 @@ def test_generate_invoice_file_new_journey():
         collectiveBooking__educationalYear=deposit.educationalYear,
         status=models.PricingStatus.VALIDATED,
     )
-    pline21 = factories.PricingLineFactory(pricing=pricing2)
-    pline22 = factories.PricingLineFactory(
-        pricing=pricing2,
+    pline31 = factories.PricingLineFactory(pricing=pricing3, amount=-3300)
+    pline32 = factories.PricingLineFactory(
+        pricing=pricing3,
         amount=300,
         category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
     )
 
     # Create booking for overpayment finance incident
     incident_booking = bookings_factories.ReimbursedBookingFactory(
-        amount=12,
+        amount=18,
         dateUsed=datetime.datetime.utcnow(),
         stock__offer__name="Une histoire plutôt bien",
         stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
@@ -2303,16 +2301,23 @@ def test_generate_invoice_file_new_journey():
     )
 
     used_event = factories.UsedBookingFinanceEventFactory(booking=incident_booking)
-    factories.PricingFactory(
+    incident_booking_original_pricing = factories.PricingFactory(
         booking=incident_booking,
         event=used_event,
         status=models.PricingStatus.INVOICED,
         valueDate=datetime.datetime.utcnow(),
+        amount=-1800,
+    )
+    factories.PricingLineFactory(pricing=incident_booking_original_pricing, amount=-1800)
+    factories.PricingLineFactory(
+        pricing=incident_booking_original_pricing,
+        amount=0,
+        category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
     )
 
     # Create finance incident on the booking above (incident amount: 2€)
     booking_finance_incident = factories.IndividualBookingFinanceIncidentFactory(
-        booking=incident_booking, newTotalAmount=1000
+        booking=incident_booking, newTotalAmount=1600
     )
     incident_events = api._create_finance_events_from_incident(
         booking_finance_incident, datetime.datetime.utcnow(), commit=True
@@ -2324,7 +2329,7 @@ def test_generate_invoice_file_new_journey():
 
     cashflow1 = factories.CashflowFactory(
         bankAccount=bank_account_1,
-        pricings=[pricing1, pricing_with_same_values_as_pricing_1, pricing2, *incidents_pricings],
+        pricings=[pricing1, pricing_with_same_values_as_pricing_1, pricing2, pricing3, *incidents_pricings],
         status=models.CashflowStatus.ACCEPTED,
     )
     invoice1 = factories.InvoiceFactory(
@@ -2339,11 +2344,11 @@ def test_generate_invoice_file_new_journey():
     offerer2 = venue2.managingOfferer
     bank_account_2 = factories.BankAccountFactory(offerer=offerer2)
     offerers_factories.VenueBankAccountLinkFactory(venue=venue2, bankAccount=bank_account_2)
-    pline3 = factories.PricingLineFactory()
-    pricing3 = pline3.pricing
+    pline4 = factories.PricingLineFactory()
+    pricing4 = pline4.pricing
     cashflow2 = factories.CashflowFactory(
         bankAccount=bank_account_2,
-        pricings=[pricing3],
+        pricings=[pricing4],
         status=models.CashflowStatus.ACCEPTED,
     )
     factories.InvoiceFactory(
@@ -2362,7 +2367,7 @@ def test_generate_invoice_file_new_journey():
             reader = csv.DictReader(csv_textfile, quoting=csv.QUOTE_NONNUMERIC)
             rows = list(reader)
 
-    assert len(rows) == 8
+    assert len(rows) == 4
     assert rows[0] == {
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
@@ -2370,7 +2375,10 @@ def test_generate_invoice_file_new_journey():
         "Type de ticket de facturation": pline11.category.value,
         "Type de réservation": "PC",
         "Ministère": "",
-        "Somme des tickets de facturation": pline11.amount,
+        "Somme des tickets de facturation": pline11.amount
+        + pline11_identical.amount
+        + pline21.amount
+        + 200,  # 200 is the incident amount
     }
     assert rows[1] == {
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
@@ -2379,64 +2387,26 @@ def test_generate_invoice_file_new_journey():
         "Type de ticket de facturation": pline12.category.value,
         "Type de réservation": "PC",
         "Ministère": "",
-        "Somme des tickets de facturation": pline12.amount,
+        "Somme des tickets de facturation": pline12.amount + pline12_identical.amount + pline22.amount,
     }
-    # individual pricing lines indentical to first pricing lines
+    # collective pricing lines
     assert rows[2] == {
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
-        "Type de ticket de facturation": pline11_identical.category.value,
-        "Type de réservation": "PC",
-        "Ministère": "",
-        "Somme des tickets de facturation": pline11_identical.amount,
+        "Type de ticket de facturation": pline31.category.value,
+        "Type de réservation": "EACC",
+        "Ministère": "AGRICULTURE",
+        "Somme des tickets de facturation": pline31.amount,
     }
     assert rows[3] == {
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
-        "Type de ticket de facturation": pline12_identical.category.value,
-        "Type de réservation": "PC",
-        "Ministère": "",
-        "Somme des tickets de facturation": pline12_identical.amount,
-    }
-    # collective pricing lines
-    assert rows[4] == {
-        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
-        "Date du justificatif": datetime.date.today().isoformat(),
-        "Référence du justificatif": invoice1.reference,
-        "Type de ticket de facturation": pline21.category.value,
+        "Type de ticket de facturation": pline32.category.value,
         "Type de réservation": "EACC",
         "Ministère": "AGRICULTURE",
-        "Somme des tickets de facturation": pline21.amount,
-    }
-    assert rows[5] == {
-        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
-        "Date du justificatif": datetime.date.today().isoformat(),
-        "Référence du justificatif": invoice1.reference,
-        "Type de ticket de facturation": pline22.category.value,
-        "Type de réservation": "EACC",
-        "Ministère": "AGRICULTURE",
-        "Somme des tickets de facturation": pline22.amount,
-    }
-    # incident rows
-    assert rows[6] == {
-        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
-        "Date du justificatif": datetime.date.today().isoformat(),
-        "Référence du justificatif": invoice1.reference,
-        "Type de ticket de facturation": models.PricingLineCategory.OFFERER_REVENUE.value,
-        "Type de réservation": "PC",
-        "Ministère": "",
-        "Somme des tickets de facturation": -1000,
-    }
-    assert rows[7] == {
-        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
-        "Date du justificatif": datetime.date.today().isoformat(),
-        "Référence du justificatif": invoice1.reference,
-        "Type de ticket de facturation": models.PricingLineCategory.OFFERER_CONTRIBUTION.value,
-        "Type de réservation": "PC",
-        "Ministère": "",
-        "Somme des tickets de facturation": 0,
+        "Somme des tickets de facturation": pline32.amount,
     }
 
 
