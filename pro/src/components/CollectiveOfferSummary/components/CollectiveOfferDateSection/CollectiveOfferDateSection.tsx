@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
+import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import { CollectiveOfferTemplate } from 'core/OfferEducational'
 import { getRangeToFrenchText, toDateStrippedOfTimezone } from 'utils/date'
@@ -23,7 +23,7 @@ export default function CollectiveOfferDateSection({
 
   return (
     <SummarySubSection title="Date et heure">
-      <SummaryRow description={description} />
+      <SummaryDescriptionList descriptions={[{ text: description }]} />
     </SummarySubSection>
   )
 }

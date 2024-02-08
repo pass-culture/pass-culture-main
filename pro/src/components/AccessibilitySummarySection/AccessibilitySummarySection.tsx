@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
+import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import { CollectiveOfferTemplate, CollectiveOffer } from 'core/OfferEducational'
 import { IndividualOffer } from 'core/Offers/types'
@@ -21,7 +21,7 @@ const AccessibilitySummarySection = ({
       !offer.motorDisabilityCompliant &&
       !offer.mentalDisabilityCompliant &&
       !offer.audioDisabilityCompliant && (
-        <SummaryRow description="Non accessible" />
+        <SummaryDescriptionList descriptions={[{ text: 'Non accessible' }]} />
       )}
 
     {offer.visualDisabilityCompliant && (

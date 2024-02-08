@@ -4,7 +4,10 @@ import {
   EducationalInstitutionResponseModel,
   EducationalRedactorResponseModel,
 } from 'apiClient/v1'
-import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
+import {
+  Description,
+  SummaryDescriptionList,
+} from 'components/SummaryLayout/SummaryDescriptionList'
 
 interface CollectiveOfferStockSectionProps {
   institution?: EducationalInstitutionResponseModel | null
@@ -33,24 +36,24 @@ const CollectiveOfferStockSection = ({
     )
   }
 
-  return (
-    <>
-      <SummaryRow
-        title="Établissement scolaire auquel vous adressez votre offre"
-        description={getVisibilityDescription(institution)}
-      />
-      {teacher && (
-        <SummaryRow
-          title="Enseignant avec qui vous avez construit cette offre"
-          description={
-            <div>
-              {teacher.firstName} {teacher.lastName}
-            </div>
-          }
-        />
-      )}
-    </>
-  )
+  const descriptions: Description[] = [
+    {
+      title: 'Établissement scolaire auquel vous adressez votre offre',
+      text: getVisibilityDescription(institution),
+    },
+  ]
+  if (teacher) {
+    descriptions.push({
+      title: 'Enseignant avec qui vous avez construit cette offre',
+      text: (
+        <div>
+          {teacher.firstName} {teacher.lastName}
+        </div>
+      ),
+    })
+  }
+
+  return <SummaryDescriptionList descriptions={descriptions} />
 }
 
 export default CollectiveOfferStockSection

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
+import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 
 interface CollectiveOfferNotificationSectionProps {
@@ -12,9 +12,9 @@ const CollectiveOfferNotificationSection = ({
 }: CollectiveOfferNotificationSectionProps) => {
   return (
     <SummarySubSection title="Notifications des réservations">
-      {bookingEmails.map((email) => (
-        <SummaryRow description={email} key={email} />
-      ))}
+      <SummaryDescriptionList
+        descriptions={bookingEmails.map((email) => ({ text: email }))}
+      />
     </SummarySubSection>
   )
 }

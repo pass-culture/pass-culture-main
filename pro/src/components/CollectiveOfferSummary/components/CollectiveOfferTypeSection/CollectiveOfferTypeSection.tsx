@@ -1,6 +1,9 @@
 import React, { useMemo } from 'react'
 
-import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
+import {
+  Description,
+  SummaryDescriptionList,
+} from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import {
   CollectiveOffer,
@@ -39,45 +42,48 @@ export default function CollectiveOfferTypeSection({
     return
   }, [offer.subcategoryId])
   const isFormatActive = useActiveFeature('WIP_ENABLE_FORMAT')
+
+  const offerTypeDescriptions: Description[] = []
+
+  if (isFormatActive) {
+    offerTypeDescriptions.push({
+      title: 'Format',
+      text: offer.formats?.join(', ') || DEFAULT_RECAP_VALUE,
+    })
+  } else {
+    offerTypeDescriptions.push(
+      { title: 'Catégorie', text: category?.label || DEFAULT_RECAP_VALUE },
+      {
+        title: 'Sous-catégorie',
+        text: subCategory?.label || DEFAULT_RECAP_VALUE,
+      }
+    )
+  }
+  offerTypeDescriptions.push({
+    title: 'Domaine artistique et culturel',
+    text: offer.domains.map((domain) => domain.name).join(', '),
+  })
+  offerTypeDescriptions.push({
+    title: 'Dispositif national',
+    text: offer.nationalProgram?.name || DEFAULT_RECAP_VALUE,
+  })
+
   return (
     <>
       <SummarySubSection title="Type d’offre">
-        {isFormatActive ? (
-          <SummaryRow
-            title="Format"
-            description={offer.formats?.join(', ') || DEFAULT_RECAP_VALUE}
-          />
-        ) : (
-          <>
-            <SummaryRow
-              title="Catégorie"
-              description={category?.label || DEFAULT_RECAP_VALUE}
-            />
-            <SummaryRow
-              title="Sous-catégorie"
-              description={subCategory?.label || DEFAULT_RECAP_VALUE}
-            />
-          </>
-        )}
-
-        <SummaryRow
-          title="Domaine artistique et culturel"
-          description={offer.domains.map((domain) => domain.name).join(', ')}
-        />
-        <SummaryRow
-          title="Dispositif national"
-          description={offer.nationalProgram?.name || DEFAULT_RECAP_VALUE}
-        />
+        <SummaryDescriptionList descriptions={offerTypeDescriptions} />
       </SummarySubSection>
+
       <SummarySubSection title="Informations artistiques">
-        <SummaryRow title="Titre de l’offre" description={offer.name} />
-        <SummaryRow
-          title="Description"
-          description={offer.description || DEFAULT_RECAP_VALUE}
-        />
-        <SummaryRow
-          title="Durée"
-          description={formatDuration(offer.durationMinutes)}
+        <SummaryDescriptionList
+          descriptions={[
+            { title: 'Titre de l’offre', text: offer.name },
+            {
+              title: 'Description',
+              text: offer.description || DEFAULT_RECAP_VALUE,
+            },
+            { title: 'Durée', text: formatDuration(offer.durationMinutes) },
+          ]}
         />
       </SummarySubSection>
     </>
