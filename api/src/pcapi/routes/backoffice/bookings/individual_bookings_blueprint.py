@@ -243,7 +243,7 @@ def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
         flash("Impossible d'annuler une réservation déjà annulée", "warning")
     except bookings_exceptions.BookingIsAlreadyRefunded:
         # The same exception is issued when Pricing is PROCESSED or when INVOICED with Payment
-        flash("Impossible d'annuler une réservation déjà valorisée ou remboursée", "warning")
+        flash("Cette réservation est en train d’être remboursée, il est impossible de l’invalider", "warning")
     except bookings_exceptions.BookingIsAlreadyUsed:
         flash("Impossible d'annuler une réservation déjà utilisée", "warning")
     except Exception as exc:  # pylint: disable=broad-except
