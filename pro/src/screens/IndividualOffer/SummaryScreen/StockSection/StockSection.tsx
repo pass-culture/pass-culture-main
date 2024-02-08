@@ -7,7 +7,7 @@ import {
   StockStatsResponseModel,
 } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
+import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
@@ -106,9 +106,9 @@ const StockSection = ({ offer, canBeDuo }: StockSectionProps): JSX.Element => {
         aria-label="Modifier les stocks et prix"
       >
         {stockWarningText && (
-          <SummaryRow
+          <SummaryDescriptionList
             className={styles['stock-section-warning']}
-            description={stockWarningText}
+            descriptions={[{ text: stockWarningText }]}
           />
         )}
 

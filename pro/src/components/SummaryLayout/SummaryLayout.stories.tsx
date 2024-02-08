@@ -2,8 +2,8 @@ import React from 'react'
 import { withRouter } from 'storybook-addon-react-router-v6'
 
 import { SummaryContent } from './SummaryContent'
+import { SummaryDescriptionList } from './SummaryDescriptionList'
 import { SummaryLayout } from './SummaryLayout'
-import { SummaryRow } from './SummaryRow'
 import { SummarySection } from './SummarySection'
 import { SummarySubSection } from './SummarySubSection'
 
@@ -19,34 +19,48 @@ const Template = () => (
       <SummaryContent>
         <SummarySection title="Lorem ipsum dolor sit amet" editLink="/">
           <SummarySubSection title="Sub section title">
-            <SummaryRow
-              description="Lorem ipsum dolor sit amet. Et libero officia 33 perferendis quam ut tempore quos hic dolorum? Hic repellat nemo facilis magnam aut eaque fuga ex magnam cupiditate eos consequatur repellat. Cum enim repellendus qui omnis impedit et autem quod rem libero officiis est rerum possimus."
-              title="Lorem"
+            <SummaryDescriptionList
+              descriptions={[
+                {
+                  title: 'Lorem',
+                  text: 'Lorem ipsum dolor sit amet. Et libero officia 33 perferendis quam ut tempore quos hic dolorum? Hic repellat nemo facilis magnam aut eaque fuga ex magnam cupiditate eos consequatur repellat. Cum enim repellendus qui omnis impedit et autem quod rem libero officiis est rerum possimus.',
+                },
+              ]}
             />
           </SummarySubSection>
         </SummarySection>
         <SummarySection title="Lorem ipsum dolor sit amet" editLink="/">
           <SummarySubSection title="Sub section title">
-            <SummaryRow
-              description="Description  : Lorem ipsum dolor sit amet. Et libero officia 33 perferendis quam ut tempore quos hic dolorum? Hic repellat nemo facilis magnam aut eaque fuga ex magnam cupiditate eos consequatur repellat. Cum enim repellendus qui omnis impedit et autem quod rem libero officiis est rerum possimus."
-              title="Lorem"
-            />
-            <SummaryRow
-              description="Lorem ipsum dolor sit amet"
-              title="Lorem"
+            <SummaryDescriptionList
+              descriptions={[
+                {
+                  title: 'Lorem',
+                  text: 'Lorem ipsum dolor sit amet. Et libero officia 33 perferendis quam ut tempore quos hic dolorum? Hic repellat nemo facilis magnam aut eaque fuga ex magnam cupiditate eos consequatur repellat. Cum enim repellendus qui omnis impedit et autem quod rem libero officiis est rerum possimus.',
+                },
+                {
+                  title: 'Ipsum',
+                  text: 'Lorem ipsum dolor sit amet',
+                },
+              ]}
             />
           </SummarySubSection>
+
           <SummarySubSection title="Sub section title">
-            <SummaryRow description="Pas de titre" />
+            <SummaryDescriptionList descriptions={[{ text: 'Pas de titre' }]} />
           </SummarySubSection>
+
           <SummarySubSection title="Sub section title">
-            <SummaryRow
-              description="Description  : Lorem ipsum dolor sit amet. Et libero officia 33 perferendis quam ut tempore quos hic dolorum? Hic repellat nemo facilis magnam aut eaque fuga ex magnam cupiditate eos consequatur repellat. Cum enim repellendus qui omnis impedit et autem quod rem libero officiis est rerum possimus."
-              title="Lorem"
-            />
-            <SummaryRow
-              description="Lorem ipsum dolor sit amet"
-              title="Lorem"
+            <SummaryDescriptionList
+              descriptions={[
+                {
+                  title: 'Lorem',
+                  text: 'Lorem ipsum dolor sit amet. Et libero officia 33 perferendis quam ut tempore quos hic dolorum? Hic repellat nemo facilis magnam aut eaque fuga ex magnam cupiditate eos consequatur repellat. Cum enim repellendus qui omnis impedit et autem quod rem libero officiis est rerum possimus.',
+                },
+                {
+                  title: 'Ipsum',
+                  text: 'Lorem ipsum dolor sit amet',
+                },
+              ]}
             />
           </SummarySubSection>
         </SummarySection>

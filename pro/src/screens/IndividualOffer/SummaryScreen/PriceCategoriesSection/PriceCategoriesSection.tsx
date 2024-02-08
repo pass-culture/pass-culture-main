@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
+import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
@@ -38,9 +38,13 @@ export const PriceCategoriesSection = ({ offer, canBeDuo }: Props) => {
         </div>
       ))}
       {canBeDuo && (
-        <SummaryRow
-          title='Accepter les réservations "Duo"'
-          description={offer.isDuo ? 'Oui' : 'Non'}
+        <SummaryDescriptionList
+          descriptions={[
+            {
+              title: 'Accepter les réservations "Duo"',
+              text: offer.isDuo ? 'Oui' : 'Non',
+            },
+          ]}
         />
       )}
     </SummarySection>

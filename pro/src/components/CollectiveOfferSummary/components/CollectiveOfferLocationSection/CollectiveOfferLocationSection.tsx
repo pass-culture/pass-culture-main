@@ -1,6 +1,9 @@
 import React from 'react'
 
-import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
+import {
+  Description,
+  SummaryDescriptionList,
+} from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
 import { useGetVenue } from 'core/Venue/adapters/getVenueAdapter'
@@ -30,17 +33,19 @@ export default function CollectiveOfferLocationSection({
     return null
   }
 
+  const descriptions: Description[] = [
+    { text: formatOfferEventAddress(offer.offerVenue, venue) },
+  ]
+  if (interventionAreas) {
+    descriptions.push({
+      title: 'Zone de mobilité pour l’évènement',
+      text: interventionAreas,
+    })
+  }
+
   return (
     <SummarySubSection title="Lieu de l’évènement">
-      <SummaryRow
-        description={formatOfferEventAddress(offer.offerVenue, venue)}
-      />
-      {interventionAreas && (
-        <SummaryRow
-          title="Zone de mobilité pour l’évènement"
-          description={interventionAreas}
-        />
-      )}
+      <SummaryDescriptionList descriptions={descriptions} />
     </SummarySubSection>
   )
 }
