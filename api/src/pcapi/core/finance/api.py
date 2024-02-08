@@ -1989,24 +1989,34 @@ def generate_invoice_file_legacy(batch: models.CashflowBatch) -> pathlib.Path:
         "Somme des tickets de facturation",
     ]
 
-    def get_data(base_query: BaseQuery) -> BaseQuery:
+    def get_data(query: BaseQuery) -> BaseQuery:
         return (
-            base_query.join(bookings_models.Booking.deposit)
+            query.join(models.Pricing.lines)
+            .join(bookings_models.Booking.deposit)
             .filter(models.Cashflow.batchId == batch.id)
-            .order_by(models.Invoice.id, models.Pricing.id, models.PricingLine.id)
+            .group_by(
+                models.Invoice.id,
+                models.Invoice.date,
+                models.Invoice.reference,
+                models.Invoice.reimbursementPointId,
+                models.PricingLine.category,
+                models.Deposit.type,
+            )
             .with_entities(
-                models.Invoice,
+                models.Invoice.id,
+                models.Invoice.date.label("invoice_date"),
+                models.Invoice.reference.label("invoice_reference"),
                 models.Invoice.reimbursementPointId.label("reimbursement_point_id"),
-                models.PricingLine.id.label("pricing_line_id"),  # ensures we have every PricingLine in the result
                 models.PricingLine.category.label("pricing_line_category"),
                 models.Deposit.type.label("deposit_type"),
-                models.PricingLine.amount.label("pricing_line_amount"),
+                sqla_func.sum(models.PricingLine.amount).label("pricing_line_amount"),
             )
         )
 
-    def get_collective_data(base_query: BaseQuery) -> BaseQuery:
+    def get_collective_data(query: BaseQuery) -> BaseQuery:
         return (
-            base_query.join(educational_models.CollectiveBooking.educationalInstitution)
+            query.join(models.Pricing.lines)
+            .join(educational_models.CollectiveBooking.educationalInstitution)
             .join(
                 educational_models.EducationalDeposit,
                 sqla.and_(
@@ -2017,50 +2027,100 @@ def generate_invoice_file_legacy(batch: models.CashflowBatch) -> pathlib.Path:
                 ),
             )
             .filter(models.Cashflow.batchId == batch.id)
-            .order_by(models.Invoice.id, models.Pricing.id, models.PricingLine.id)
+            .group_by(
+                models.Invoice.id,
+                models.Invoice.date,
+                models.Invoice.reference,
+                models.Invoice.reimbursementPointId,
+                models.PricingLine.category,
+                educational_models.EducationalDeposit.ministry,
+            )
             .with_entities(
-                models.Invoice,
+                models.Invoice.id,
+                models.Invoice.date.label("invoice_date"),
+                models.Invoice.reference.label("invoice_reference"),
                 models.Invoice.reimbursementPointId.label("reimbursement_point_id"),
-                models.PricingLine.id.label("pricing_line_id"),  # ensures we have every PricingLine in the result
                 models.PricingLine.category.label("pricing_line_category"),
                 educational_models.EducationalDeposit.ministry.label("ministry"),
-                models.PricingLine.amount.label("pricing_line_amount"),
+                sqla_func.sum(models.PricingLine.amount).label("pricing_line_amount"),
             )
         )
 
-    query = get_data(
-        models.Invoice.query.join(models.Invoice.cashflows)
-        .join(models.Cashflow.pricings)
-        .join(models.Pricing.lines)
-        .join(models.Pricing.booking)
+    indiv_query = get_data(
+        models.Invoice.query.join(models.Invoice.cashflows).join(models.Cashflow.pricings).join(models.Pricing.booking)
     )
-    collective_query = get_collective_data(
+    indiv_incident_query = get_data(
         models.Invoice.query.join(models.Invoice.cashflows)
         .join(models.Cashflow.pricings)
-        .join(models.Pricing.lines)
-        .join(models.Pricing.collectiveBooking)
-    )
-    incident_query = get_data(
-        models.Invoice.query.join(models.Invoice.cashflows)
-        .join(models.Cashflow.pricings)
-        .join(models.Pricing.lines)
         .join(models.Pricing.event)
         .join(models.FinanceEvent.bookingFinanceIncident)
         .join(models.BookingFinanceIncident.booking)
     )
-    incident_collective_query = get_collective_data(
+
+    indiv_data = (
+        indiv_query.union(indiv_incident_query)
+        .group_by(
+            sqla.column("invoice_date"),
+            sqla.column("invoice_reference"),
+            sqla.column("reimbursement_point_id"),
+            sqla.column("pricing_line_category"),
+            sqla.column("deposit_type"),
+        )
+        .with_entities(
+            sqla.column("invoice_date"),
+            sqla.column("invoice_reference"),
+            sqla.column("reimbursement_point_id"),
+            sqla.column("pricing_line_category"),
+            sqla.column("deposit_type"),
+            sqla_func.sum(sqla.column("pricing_line_amount")).label("pricing_line_amount"),
+        )
+        .order_by(
+            sqla.column("invoice_reference"), sqla.column("deposit_type"), sqla.column("pricing_line_category").desc()
+        )
+        .all()
+    )
+
+    collective_query = get_collective_data(
         models.Invoice.query.join(models.Invoice.cashflows)
         .join(models.Cashflow.pricings)
-        .join(models.Pricing.lines)
+        .join(models.Pricing.collectiveBooking)
+    )
+
+    collective_incident_query = get_collective_data(
+        models.Invoice.query.join(models.Invoice.cashflows)
+        .join(models.Cashflow.pricings)
         .join(models.Pricing.event)
         .join(models.FinanceEvent.bookingFinanceIncident)
         .join(models.BookingFinanceIncident.collectiveBooking)
     )
 
+    collective_data = (
+        collective_query.union(collective_incident_query)
+        .group_by(
+            sqla.column("invoice_date"),
+            sqla.column("invoice_reference"),
+            sqla.column("reimbursement_point_id"),
+            sqla.column("pricing_line_category"),
+            sqla.column("ministry"),
+        )
+        .with_entities(
+            sqla.column("invoice_date"),
+            sqla.column("invoice_reference"),
+            sqla.column("reimbursement_point_id"),
+            sqla.column("pricing_line_category"),
+            sqla.column("ministry"),
+            sqla_func.sum(sqla.column("pricing_line_amount")).label("pricing_line_amount"),
+        )
+        .order_by(
+            sqla.column("invoice_reference"), sqla.column("ministry"), sqla.column("pricing_line_category").desc()
+        )
+        .all()
+    )
+
     return _write_csv(
         "invoices",
         header,
-        rows=itertools.chain(query, collective_query, incident_query, incident_collective_query),
+        rows=itertools.chain(indiv_data, collective_data),
         row_formatter=_invoice_row_formatter,
         compress=True,
     )
@@ -2077,24 +2137,34 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
         "Somme des tickets de facturation",
     ]
 
-    def get_data(base_query: BaseQuery) -> BaseQuery:
+    def get_data(query: BaseQuery) -> BaseQuery:
         return (
-            base_query.join(bookings_models.Booking.deposit)
+            query.join(models.Pricing.lines)
+            .join(bookings_models.Booking.deposit)
             .filter(models.Cashflow.batchId == batch.id)
-            .order_by(models.Invoice.id, models.Pricing.id, models.PricingLine.id)
+            .group_by(
+                models.Invoice.id,
+                models.Invoice.date,
+                models.Invoice.reference,
+                models.Invoice.bankAccountId,
+                models.PricingLine.category,
+                models.Deposit.type,
+            )
             .with_entities(
-                models.Invoice,
+                models.Invoice.id,
+                models.Invoice.date.label("invoice_date"),
+                models.Invoice.reference.label("invoice_reference"),
                 models.Invoice.bankAccountId.label("bank_account_id"),
-                models.PricingLine.id.label("pricing_line_id"),  # ensures we have every PricingLine in the result
                 models.PricingLine.category.label("pricing_line_category"),
                 models.Deposit.type.label("deposit_type"),
-                models.PricingLine.amount.label("pricing_line_amount"),
+                sqla_func.sum(models.PricingLine.amount).label("pricing_line_amount"),
             )
         )
 
-    def get_collective_data(base_query: BaseQuery) -> BaseQuery:
+    def get_collective_data(query: BaseQuery) -> BaseQuery:
         return (
-            base_query.join(educational_models.CollectiveBooking.educationalInstitution)
+            query.join(models.Pricing.lines)
+            .join(educational_models.CollectiveBooking.educationalInstitution)
             .join(
                 educational_models.EducationalDeposit,
                 sqla.and_(
@@ -2105,50 +2175,100 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
                 ),
             )
             .filter(models.Cashflow.batchId == batch.id)
-            .order_by(models.Invoice.id, models.Pricing.id, models.PricingLine.id)
+            .group_by(
+                models.Invoice.id,
+                models.Invoice.date,
+                models.Invoice.reference,
+                models.Invoice.bankAccountId,
+                models.PricingLine.category,
+                educational_models.EducationalDeposit.ministry,
+            )
             .with_entities(
-                models.Invoice,
+                models.Invoice.id,
+                models.Invoice.date.label("invoice_date"),
+                models.Invoice.reference.label("invoice_reference"),
                 models.Invoice.bankAccountId.label("bank_account_id"),
-                models.PricingLine.id.label("pricing_line_id"),  # ensures we have every PricingLine in the result
                 models.PricingLine.category.label("pricing_line_category"),
                 educational_models.EducationalDeposit.ministry.label("ministry"),
-                models.PricingLine.amount.label("pricing_line_amount"),
+                sqla_func.sum(models.PricingLine.amount).label("pricing_line_amount"),
             )
         )
 
-    query = get_data(
-        models.Invoice.query.join(models.Invoice.cashflows)
-        .join(models.Cashflow.pricings)
-        .join(models.Pricing.lines)
-        .join(models.Pricing.booking)
+    indiv_query = get_data(
+        models.Invoice.query.join(models.Invoice.cashflows).join(models.Cashflow.pricings).join(models.Pricing.booking)
     )
-    collective_query = get_collective_data(
+    indiv_incident_query = get_data(
         models.Invoice.query.join(models.Invoice.cashflows)
         .join(models.Cashflow.pricings)
-        .join(models.Pricing.lines)
-        .join(models.Pricing.collectiveBooking)
-    )
-    incident_query = get_data(
-        models.Invoice.query.join(models.Invoice.cashflows)
-        .join(models.Cashflow.pricings)
-        .join(models.Pricing.lines)
         .join(models.Pricing.event)
         .join(models.FinanceEvent.bookingFinanceIncident)
         .join(models.BookingFinanceIncident.booking)
     )
-    incident_collective_query = get_collective_data(
+
+    indiv_data = (
+        indiv_query.union(indiv_incident_query)
+        .group_by(
+            sqla.column("invoice_date"),
+            sqla.column("invoice_reference"),
+            sqla.column("bank_account_id"),
+            sqla.column("pricing_line_category"),
+            sqla.column("deposit_type"),
+        )
+        .with_entities(
+            sqla.column("invoice_date"),
+            sqla.column("invoice_reference"),
+            sqla.column("bank_account_id"),
+            sqla.column("pricing_line_category"),
+            sqla.column("deposit_type"),
+            sqla_func.sum(sqla.column("pricing_line_amount")).label("pricing_line_amount"),
+        )
+        .order_by(
+            sqla.column("invoice_reference"), sqla.column("deposit_type"), sqla.column("pricing_line_category").desc()
+        )
+        .all()
+    )
+
+    collective_query = get_collective_data(
         models.Invoice.query.join(models.Invoice.cashflows)
         .join(models.Cashflow.pricings)
-        .join(models.Pricing.lines)
+        .join(models.Pricing.collectiveBooking)
+    )
+
+    collective_incident_query = get_collective_data(
+        models.Invoice.query.join(models.Invoice.cashflows)
+        .join(models.Cashflow.pricings)
         .join(models.Pricing.event)
         .join(models.FinanceEvent.bookingFinanceIncident)
         .join(models.BookingFinanceIncident.collectiveBooking)
     )
 
+    collective_data = (
+        collective_query.union(collective_incident_query)
+        .group_by(
+            sqla.column("invoice_date"),
+            sqla.column("invoice_reference"),
+            sqla.column("bank_account_id"),
+            sqla.column("pricing_line_category"),
+            sqla.column("ministry"),
+        )
+        .with_entities(
+            sqla.column("invoice_date"),
+            sqla.column("invoice_reference"),
+            sqla.column("bank_account_id"),
+            sqla.column("pricing_line_category"),
+            sqla.column("ministry"),
+            sqla_func.sum(sqla.column("pricing_line_amount")).label("pricing_line_amount"),
+        )
+        .order_by(
+            sqla.column("invoice_reference"), sqla.column("ministry"), sqla.column("pricing_line_category").desc()
+        )
+        .all()
+    )
+
     return _write_csv(
         "invoices",
         header,
-        rows=itertools.chain(query, collective_query, incident_query, incident_collective_query),
+        rows=itertools.chain(indiv_data, collective_data),
         row_formatter=_invoice_row_formatter,
         compress=True,
     )
@@ -2157,14 +2277,16 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
 def _invoice_row_formatter(sql_row: typing.Any) -> tuple:
     if hasattr(sql_row, "ministry"):
         booking_type = "EACC"
-    elif sql_row.deposit_type == models.DepositType.GRANT_15_17:
+    elif sql_row.deposit_type == models.DepositType.GRANT_15_17.value:
         booking_type = "EACI"
-    elif sql_row.deposit_type == models.DepositType.GRANT_18:
+    elif sql_row.deposit_type == models.DepositType.GRANT_18.value:
         booking_type = "PC"
     else:
         raise ValueError("Unknown booking type (not educational nor individual)")
 
-    ministry = sql_row.ministry.name if hasattr(sql_row, "ministry") else ""
+    ministry = ""
+    if hasattr(sql_row, "ministry"):
+        ministry = sql_row.ministry
 
     if FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
         accounting_humanized_id = human_ids.humanize(sql_row.bank_account_id)
@@ -2173,9 +2295,9 @@ def _invoice_row_formatter(sql_row: typing.Any) -> tuple:
 
     return (
         accounting_humanized_id,
-        sql_row.Invoice.date.date().isoformat(),
-        sql_row.Invoice.reference,
-        sql_row.pricing_line_category.value,
+        sql_row.invoice_date.date().isoformat(),
+        sql_row.invoice_reference,
+        sql_row.pricing_line_category,
         booking_type,
         ministry,
         sql_row.pricing_line_amount,
