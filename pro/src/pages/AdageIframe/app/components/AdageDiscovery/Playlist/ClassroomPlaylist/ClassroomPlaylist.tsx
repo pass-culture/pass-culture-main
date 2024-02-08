@@ -59,7 +59,7 @@ export const ClassroomPlaylist = ({
       })}
       title={
         <h2 className={styles['playlist-carousel-title']}>
-          Ces interventions peuvent avoir lieu dans votre classe
+          Ces interventions peuvent avoir lieu dans votre établissement
         </h2>
       }
       onLastCarouselElementVisible={() =>
