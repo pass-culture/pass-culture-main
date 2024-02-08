@@ -42,7 +42,10 @@ def cancel_collective_booking(booking_id: int) -> None:
     except educational_exceptions.CollectiveBookingAlreadyCancelled:
         raise ApiErrors({"booking": "Impossible d'annuler une réservation déjà annulée"}, status_code=403)
     except educational_exceptions.BookingIsAlreadyRefunded:
-        raise ApiErrors({"booking": "Impossible d'annuler une réservation remboursée"}, status_code=403)
+        raise ApiErrors(
+            {"booking": "Cette réservation est en train d’être remboursée, il est impossible de l’invalider"},
+            status_code=403,
+        )
 
     educational_api_booking.notify_redactor_that_booking_has_been_cancelled(booking)
     educational_api_booking.notify_pro_that_booking_has_been_cancelled(booking)

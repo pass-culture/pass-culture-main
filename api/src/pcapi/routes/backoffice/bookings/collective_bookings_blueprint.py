@@ -221,7 +221,7 @@ def mark_booking_as_cancelled(collective_booking_id: int) -> utils.BackofficeRes
     except educational_exceptions.CollectiveBookingAlreadyCancelled:
         flash("Impossible d'annuler une réservation déjà annulée", "warning")
     except educational_exceptions.BookingIsAlreadyRefunded:
-        flash("Impossible d'annuler une réservation remboursée", "warning")
+        flash("Cette réservation est en train d’être remboursée, il est impossible de l’invalider", "warning")
     except Exception as exc:  # pylint: disable=broad-except
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:

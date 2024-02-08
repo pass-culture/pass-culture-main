@@ -557,7 +557,10 @@ class CancelCollectiveBookingTest(PostEndpointHelper):
         assert reimbursed.status == old_status
 
         redirected_response = authenticated_client.get(response.headers["location"])
-        assert "Impossible d'annuler une réservation remboursée" in html_parser.extract_alert(redirected_response.data)
+        assert (
+            "Cette réservation est en train d’être remboursée, il est impossible de l’invalider"
+            in html_parser.extract_alert(redirected_response.data)
+        )
 
     def test_cant_cancel_cancelled_booking(self, authenticated_client, collective_bookings):
         cancelled = collective_bookings[2]

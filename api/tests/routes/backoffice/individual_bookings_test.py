@@ -586,7 +586,7 @@ class CancelBookingTest(PostEndpointHelper):
         redirected_response = authenticated_client.get(response.headers["location"])
         assert (
             html_parser.extract_alert(redirected_response.data)
-            == "Impossible d'annuler une réservation déjà valorisée ou remboursée"
+            == "Cette réservation est en train d’être remboursée, il est impossible de l’invalider"
         )
 
     def test_cant_cancel_reimbursed_booking(self, authenticated_client, bookings):
@@ -607,7 +607,7 @@ class CancelBookingTest(PostEndpointHelper):
         redirected_response = authenticated_client.get(response.headers["location"])
         assert (
             html_parser.extract_alert(redirected_response.data)
-            == "Impossible d'annuler une réservation déjà valorisée ou remboursée"
+            == "Cette réservation est en train d’être remboursée, il est impossible de l’invalider"
         )
 
     def test_cant_cancel_cancelled_booking(self, authenticated_client, bookings):
