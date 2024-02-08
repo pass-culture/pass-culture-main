@@ -4,7 +4,7 @@ import { api } from 'apiClient/api'
 import { GetOfferStockResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
-import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
+import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
@@ -73,9 +73,9 @@ export const StocksSummaryScreen = () => {
       aria-label="Modifier les stocks et prix"
     >
       {stockWarningText && (
-        <SummaryRow
+        <SummaryDescriptionList
           className={styles['stock-section-warning']}
-          description={stockWarningText}
+          descriptions={[{ text: stockWarningText }]}
         />
       )}
 

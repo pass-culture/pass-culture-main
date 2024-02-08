@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { GetCollectiveOfferRequestResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import ActionsBarSticky from 'components/ActionsBarSticky'
-import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
+import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { Events } from 'core/FirebaseEvents/constants'
 import {
@@ -112,63 +112,72 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
           </div>
           <SummarySection title="Détails de la demande">
             <div className={styles['eac-section']}>
-              <SummaryRow
-                title="Demande reçue le"
-                description={
-                  informations?.dateCreated
-                    ? getDateToFrenchText(informations?.dateCreated)
-                    : '-'
-                }
-              />
-              <SummaryRow
-                title="Offre concernée"
-                description={offerTemplate?.name}
-              />
-            </div>
-            <div className={styles['eac-section']}>
-              <SummaryRow
-                title="Etablissement scolaire"
-                description={
-                  <div>
-                    {`${informations?.institution.institutionType} ${informations?.institution.name}`.trim()}
-                    <br />
-                    {`${informations?.institution.postalCode} ${informations?.institution.city}`}
-                  </div>
-                }
-              />
-              <SummaryRow
-                title="Prénom et nom de l’enseignant"
-                description={`${informations?.redactor.firstName} ${informations?.redactor.lastName} `}
-              />
-              <SummaryRow
-                title="Téléphone"
-                description={informations?.phoneNumber ?? '-'}
-              />
-              <SummaryRow
-                title="Email"
-                description={informations?.redactor.email}
+              <SummaryDescriptionList
+                descriptions={[
+                  {
+                    title: 'Demande reçue le',
+                    text: informations?.dateCreated
+                      ? getDateToFrenchText(informations?.dateCreated)
+                      : '-',
+                  },
+                  {
+                    title: 'Offre concernée',
+                    text: offerTemplate?.name,
+                  },
+                ]}
               />
             </div>
 
-            <SummaryRow
-              title="Nombre d'élèves"
-              description={informations?.totalStudents ?? '-'}
-            />
-            <SummaryRow
-              title="Nombre d'accompagnateurs"
-              description={informations?.totalTeachers ?? '-'}
-            />
-            <SummaryRow
-              title="Date souhaitée"
-              description={
-                informations?.requestedDate
-                  ? getDateToFrenchText(informations?.requestedDate)
-                  : '-'
-              }
-            />
-            <SummaryRow
-              title="Descriptif de la demande"
-              description={informations?.comment}
+            <div className={styles['eac-section']}>
+              <SummaryDescriptionList
+                descriptions={[
+                  {
+                    title: 'Etablissement scolaire',
+                    text: (
+                      <div>
+                        {`${informations?.institution.institutionType} ${informations?.institution.name}`.trim()}
+                        <br />
+                        {`${informations?.institution.postalCode} ${informations?.institution.city}`}
+                      </div>
+                    ),
+                  },
+                  {
+                    title: "Prénom et nom de l'enseignant",
+                    text: `${informations?.redactor.firstName} ${informations?.redactor.lastName}`,
+                  },
+                  {
+                    title: 'Téléphone',
+                    text: informations?.phoneNumber ?? '-',
+                  },
+                  {
+                    title: 'Email',
+                    text: informations?.redactor.email,
+                  },
+                ]}
+              />
+            </div>
+
+            <SummaryDescriptionList
+              descriptions={[
+                {
+                  title: "Nombre d'élèves",
+                  text: informations?.totalStudents ?? '-',
+                },
+                {
+                  title: "Nombre d'accompagnateurs",
+                  text: informations?.totalTeachers ?? '-',
+                },
+                {
+                  title: 'Date souhaitée',
+                  text: informations?.requestedDate
+                    ? getDateToFrenchText(informations?.requestedDate)
+                    : '-',
+                },
+                {
+                  title: 'Descriptif de la demande',
+                  text: informations?.comment,
+                },
+              ]}
             />
           </SummarySection>
           <ActionsBarSticky>

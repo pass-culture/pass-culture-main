@@ -3,7 +3,10 @@ import { useEffect, useState } from 'react'
 import { api } from 'apiClient/api'
 import AccessibilitySummarySection from 'components/AccessibilitySummarySection'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
+import {
+  Description,
+  SummaryDescriptionList,
+} from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
@@ -68,6 +71,128 @@ const OfferSummary = ({
     return <Spinner />
   }
 
+  const offerTypeDescriptions: Description[] = [
+    { title: 'Catégorie', text: offerData.categoryName },
+    { title: 'Sous-catégorie', text: offerData.subCategoryName },
+  ]
+  if (conditionalFields.includes('musicType')) {
+    offerTypeDescriptions.push({
+      title: 'Genre musical',
+      text: offerData.musicTypeName || '-',
+    })
+  }
+  if (offerData.musicSubTypeName && !isTiteliveMusicGenreEnabled) {
+    offerTypeDescriptions.push({
+      title: 'Sous-genre',
+      text: offerData.musicSubTypeName,
+    })
+  }
+  if (offerData.gtl_id) {
+    offerTypeDescriptions.push({
+      title: 'gtl_id',
+      text: offerData.gtl_id,
+    })
+  }
+  if (conditionalFields.includes('showType')) {
+    offerTypeDescriptions.push({
+      title: 'Type de spectacle',
+      text: offerData.showTypeName || '-',
+    })
+  }
+  if (offerData.showSubTypeName) {
+    offerTypeDescriptions.push({
+      title: 'Sous-type',
+      text: offerData.showSubTypeName,
+    })
+  }
+
+  const artisticInfoDescriptions: Description[] = [
+    { title: 'Titre de l’offre', text: offerData.name },
+    { title: 'Description', text: offerData.description || '-' },
+  ]
+  if (conditionalFields.includes('speaker')) {
+    artisticInfoDescriptions.push({
+      title: 'Intervenant',
+      text: offerData.speaker,
+    })
+  }
+  if (conditionalFields.includes('author')) {
+    artisticInfoDescriptions.push({ title: 'Auteur', text: offerData.author })
+  }
+  if (conditionalFields.includes('visa')) {
+    artisticInfoDescriptions.push({
+      title: 'Visa d’exploitation',
+      text: offerData.visa,
+    })
+  }
+  if (conditionalFields.includes('ean')) {
+    artisticInfoDescriptions.push({ title: 'EAN-13', text: offerData.ean })
+  }
+  if (conditionalFields.includes('stageDirector')) {
+    artisticInfoDescriptions.push({
+      title: 'Metteur en scène',
+      text: offerData.stageDirector,
+    })
+  }
+  if (conditionalFields.includes('performer')) {
+    artisticInfoDescriptions.push({
+      title: 'Interprète',
+      text: offerData.performer,
+    })
+  }
+  if (conditionalFields.includes('durationMinutes')) {
+    artisticInfoDescriptions.push({
+      title: 'Durée',
+      text: offerData.durationMinutes
+        ? `${offerData.durationMinutes} min`
+        : '-',
+    })
+  }
+
+  const practicalInfoDescriptions: Description[] = [
+    { title: 'Structure', text: offerData.offererName },
+    {
+      title: 'Lieu',
+      text:
+        /* istanbul ignore next: DEBT, TO FIX */
+        offerData.venuePublicName || offerData.venueName,
+    },
+    {
+      title: 'Informations de retrait',
+      text:
+        /* istanbul ignore next: DEBT, TO FIX */
+        offerData.withdrawalDetails || ' - ',
+    },
+  ]
+  if (offerData.withdrawalType) {
+    practicalInfoDescriptions.push({
+      title: 'Précisez la façon dont vous distribuerez les billets',
+      text: OFFER_WITHDRAWAL_TYPE_LABELS[offerData.withdrawalType],
+    })
+  }
+  if (offerData.withdrawalDelay) {
+    practicalInfoDescriptions.push({
+      title: 'Heure de retrait',
+      text: `${humanizeDelay(offerData.withdrawalDelay)} avant le début de l’évènement`,
+    })
+  }
+  if (isBookingContactEnabled && offerData.bookingContact) {
+    practicalInfoDescriptions.push({
+      title: 'Email de contact',
+      text:
+        /* istanbul ignore next: DEBT, TO FIX */
+        offerData.bookingContact || ' - ',
+    })
+  }
+  if (conditionalFields.includes('url')) {
+    practicalInfoDescriptions.push({
+      title: 'URL d’accès à l’offre',
+      text:
+        /* istanbul ignore next: DEBT, TO FIX */
+        offerData.url || ' - ',
+    })
+  }
+
   return (
     <SummarySection
       title="Détails de l’offre"
@@ -75,202 +200,40 @@ const OfferSummary = ({
       aria-label="Modifier les détails de l’offre"
     >
       <SummarySubSection title="Type d’offre">
-        <SummaryRow title="Catégorie" description={offerData.categoryName} />
-        <SummaryRow
-          title="Sous-catégorie"
-          description={offerData.subCategoryName}
-        />
-
-        {conditionalFields.includes('musicType') && (
-          <SummaryRow
-            title="Genre musical"
-            description={
-              /* istanbul ignore next: DEBT, TO FIX */
-              offerData.musicTypeName || '-'
-            }
-          />
-        )}
-        {offerData.musicSubTypeName && !isTiteliveMusicGenreEnabled && (
-          <SummaryRow
-            title="Sous-genre"
-            description={offerData.musicSubTypeName}
-          />
-        )}
-        {offerData.gtl_id && (
-          <SummaryRow title="gtl_id" description={offerData.gtl_id} />
-        )}
-        {
-          /* istanbul ignore next: DEBT, TO FIX */
-          conditionalFields.includes('showType') && (
-            <SummaryRow
-              title="Type de spectacle"
-              description={
-                /* istanbul ignore next: DEBT, TO FIX */
-                offerData.showTypeName || '-'
-              }
-            />
-          )
-        }
-        {
-          /* istanbul ignore next: DEBT, TO FIX */
-          offerData.showSubTypeName && (
-            <SummaryRow
-              title="Sous-type"
-              description={offerData.showSubTypeName}
-            />
-          )
-        }
+        <SummaryDescriptionList descriptions={offerTypeDescriptions} />
       </SummarySubSection>
 
       <SummarySubSection title="Informations artistiques">
-        <SummaryRow title="Titre de l’offre" description={offerData.name} />
-        <SummaryRow
-          title="Description"
-          description={
-            /* istanbul ignore next: DEBT, TO FIX */
-            offerData.description || ' - '
-          }
-        />
-
-        {
-          /* istanbul ignore next: DEBT, TO FIX */
-          conditionalFields.includes('speaker') && (
-            <SummaryRow title="Intervenant" description={offerData.speaker} />
-          )
-        }
-        {
-          /* istanbul ignore next: DEBT, TO FIX */
-          conditionalFields.includes('author') && (
-            <SummaryRow title="Auteur" description={offerData.author} />
-          )
-        }
-        {
-          /* istanbul ignore next: DEBT, TO FIX */
-          conditionalFields.includes('visa') && (
-            <SummaryRow
-              title="Visa d’exploitation"
-              description={offerData.visa}
-            />
-          )
-        }
-        {
-          /* istanbul ignore next: DEBT, TO FIX */
-          conditionalFields.includes('ean') && (
-            <SummaryRow title="EAN-13" description={offerData.ean} />
-          )
-        }
-        {
-          /* istanbul ignore next: DEBT, TO FIX */
-          conditionalFields.includes('stageDirector') && (
-            <SummaryRow
-              title="Metteur en scène"
-              description={offerData.stageDirector}
-            />
-          )
-        }
-        {
-          /* istanbul ignore next: DEBT, TO FIX */
-          conditionalFields.includes('performer') && (
-            <SummaryRow title="Interprète" description={offerData.performer} />
-          )
-        }
-        {
-          /* istanbul ignore next: DEBT, TO FIX */
-          conditionalFields.includes('durationMinutes') && (
-            <SummaryRow
-              title="Durée"
-              description={
-                offerData.durationMinutes
-                  ? `${offerData.durationMinutes} min`
-                  : '-'
-              }
-            />
-          )
-        }
+        <SummaryDescriptionList descriptions={artisticInfoDescriptions} />
       </SummarySubSection>
 
       <SummarySubSection title="Informations pratiques">
-        <SummaryRow title="Structure" description={offerData.offererName} />
-        <SummaryRow
-          title="Lieu"
-          description={
-            /* istanbul ignore next: DEBT, TO FIX */ offerData.venuePublicName ||
-            offerData.venueName
-          }
-        />
-
-        <SummaryRow
-          title="Informations de retrait"
-          description={
-            /* istanbul ignore next: DEBT, TO FIX */
-            offerData.withdrawalDetails || ' - '
-          }
-        />
-
-        {
-          /* istanbul ignore next: DEBT, TO FIX */
-          offerData.withdrawalType && (
-            <SummaryRow
-              title="Précisez la façon dont vous distribuerez les billets"
-              description={
-                OFFER_WITHDRAWAL_TYPE_LABELS[offerData.withdrawalType]
-              }
-            />
-          )
-        }
-
-        {
-          /* istanbul ignore next: DEBT, TO FIX */
-          offerData.withdrawalDelay && (
-            <SummaryRow
-              title="Heure de retrait"
-              description={`${humanizeDelay(
-                offerData.withdrawalDelay
-              )} avant le début de l’évènement`}
-            />
-          )
-        }
-
-        {isBookingContactEnabled && offerData.bookingContact && (
-          <SummaryRow
-            title="Email de contact"
-            description={
-              /* istanbul ignore next: DEBT, TO FIX */
-              offerData.bookingContact || ' - '
-            }
-          />
-        )}
-
-        {conditionalFields.includes('url') && (
-          <SummaryRow
-            title="URL d’accès à l’offre"
-            description={
-              /* istanbul ignore next: DEBT, TO FIX */
-              offerData.url || ' - '
-            }
-          />
-        )}
+        <SummaryDescriptionList descriptions={practicalInfoDescriptions} />
       </SummarySubSection>
 
       <AccessibilitySummarySection offer={offer} />
 
       <SummarySubSection title="Lien pour le grand public">
-        <SummaryRow
-          title="URL de votre site ou billetterie"
-          description={
-            /* istanbul ignore next: DEBT, TO FIX */
-            offerData.externalTicketOfficeUrl || ' - '
-          }
+        <SummaryDescriptionList
+          descriptions={[
+            {
+              title: 'URL de votre site ou billetterie',
+              /* istanbul ignore next: DEBT, TO FIX */
+              text: offerData.externalTicketOfficeUrl || ' - ',
+            },
+          ]}
         />
       </SummarySubSection>
 
       <SummarySubSection title="Notifications des réservations">
-        <SummaryRow
-          title="Email auquel envoyer les notifications"
-          description={
-            /* istanbul ignore next: DEBT, TO FIX */
-            offerData.bookingEmail || ' - '
-          }
+        <SummaryDescriptionList
+          descriptions={[
+            {
+              title: 'Email auquel envoyer les notifications',
+              /* istanbul ignore next: DEBT, TO FIX */
+              text: offerData.bookingEmail || ' - ',
+            },
+          ]}
         />
       </SummarySubSection>
     </SummarySection>

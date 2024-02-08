@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { StockStatsResponseModel } from 'apiClient/v1'
-import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
+import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { FORMAT_DD_MM_YYYY } from 'utils/date'
 import { pluralizeString } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
@@ -51,11 +51,13 @@ const RecurrenceSection = ({
   }
 
   return (
-    <>
-      <SummaryRow title="Nombre de dates" description={formattedStockCount} />
-      <SummaryRow title="Période concernée" description={periodText} />
-      <SummaryRow title="Capacité totale" description={totalCapacity} />
-    </>
+    <SummaryDescriptionList
+      descriptions={[
+        { title: 'Nombre de dates', text: formattedStockCount },
+        { title: 'Période concernée', text: periodText },
+        { title: 'Capacité totale', text: totalCapacity },
+      ]}
+    />
   )
 }
 

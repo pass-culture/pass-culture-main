@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { SummaryRow } from 'components/SummaryLayout/SummaryRow'
+import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 
 interface CollectiveOfferContactSectionProps {
@@ -14,8 +14,12 @@ const CollectiveOfferContactSection = ({
 }: CollectiveOfferContactSectionProps) => {
   return (
     <SummarySubSection title="Contact">
-      <SummaryRow title="Téléphone" description={phone} />
-      <SummaryRow title="Email" description={email} />
+      <SummaryDescriptionList
+        descriptions={[
+          { title: 'Téléphone', text: phone },
+          { title: 'Email', text: email },
+        ]}
+      />
     </SummarySubSection>
   )
 }
