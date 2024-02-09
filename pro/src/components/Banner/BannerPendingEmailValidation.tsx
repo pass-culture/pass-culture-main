@@ -1,6 +1,7 @@
 import React from 'react'
 
-import { Banner } from 'ui-kit'
+import Callout from 'components/Callout/Callout'
+import { CalloutVariant } from 'components/Callout/types'
 
 import styles from './BannerPendingEmailValidation.module.scss'
 
@@ -9,20 +10,21 @@ interface Props {
 }
 
 const BannerPendingEmailValidation = ({ email }: Props): JSX.Element => (
-  <Banner
+  <Callout
     links={[
       {
         href: 'https://aide.passculture.app/hc/fr/articles/5723750427676',
         label: 'Je n’ai pas reçu le lien de confirmation',
+        isExternal: true,
       },
     ]}
-    type="attention"
+    variant={CalloutVariant.WARNING}
     className={styles['banner-email-adress']}
   >
     Pour valider ce changement, un lien de confirmation valable 24 heures vous a
     été envoyé à l’adresse :
     <span className={styles['banner-email-adress-email']}> {email}</span>
-  </Banner>
+  </Callout>
 )
 
 export default BannerPendingEmailValidation

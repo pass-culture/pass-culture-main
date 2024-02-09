@@ -62,10 +62,12 @@ export const WithLink: StoryObj<typeof Banner> = {
       {
         href: 'https://pro.testing.passculture.team',
         label: 'Lien vers le pass culture',
+        isExternal: true,
       },
       {
         href: '#',
         label: 'Un autre lien',
+        isExternal: true,
       },
     ],
     minimalStyle: false,

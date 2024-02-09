@@ -2,11 +2,11 @@ import cn from 'classnames'
 import React from 'react'
 
 import { CalloutVariant } from 'components/Callout/types'
+import fullErrorIcon from 'icons/full-error.svg'
+import fullInfoIcon from 'icons/full-info.svg'
+import fullValidIcon from 'icons/full-validate.svg'
+import fullWarningIcon from 'icons/full-warning.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
-import strokeErrorIcon from 'icons/stroke-error.svg'
-import strokeInfoIcon from 'icons/stroke-info.svg'
-import strokeValidIcon from 'icons/stroke-valid.svg'
-import strokeWarningIcon from 'icons/stroke-warning.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import LinkNodes, { Link } from '../../ui-kit/Banners/LinkNodes/LinkNodes'
@@ -41,16 +41,16 @@ const Callout = ({
   /* istanbul ignore next: graphic variations */
   switch (variant) {
     case CalloutVariant.WARNING:
-      calloutIcon = { src: strokeWarningIcon, alt: 'Attention' }
+      calloutIcon = { src: fullWarningIcon, alt: 'Attention' }
       break
     case CalloutVariant.SUCCESS:
-      calloutIcon = { src: strokeValidIcon, alt: 'Confirmation' }
+      calloutIcon = { src: fullValidIcon, alt: 'Confirmation' }
       break
     case CalloutVariant.ERROR:
-      calloutIcon = { src: strokeErrorIcon, alt: 'Erreur' }
+      calloutIcon = { src: fullErrorIcon, alt: 'Erreur' }
       break
     default:
-      calloutIcon = { src: strokeInfoIcon, alt: 'Information' }
+      calloutIcon = { src: fullInfoIcon, alt: 'Information' }
       break
   }
 

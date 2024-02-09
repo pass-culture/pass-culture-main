@@ -40,6 +40,7 @@ import fullTrashIcon from 'icons/full-trash.svg'
 import fullUpIcon from 'icons/full-up.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
 import fullWaitIcon from 'icons/full-wait.svg'
+import fullWarningIcon from 'icons/full-warning.svg'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
 import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
@@ -166,6 +167,7 @@ export const fullIcons: IconListItem[] = [
   { src: fullStarIcon },
   { src: fullDeskIcon },
   { src: fullBurgerkIcon },
+  { src: fullWarningIcon },
   { src: fullDisclosureCloseIcon, viewBox: '0 0 16 16' }, // TODO clean viewbox
   { src: fullDisclosureOpenIcon, viewBox: '0 0 16 16' }, // TODO clean viewbox
 ]
