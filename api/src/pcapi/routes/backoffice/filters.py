@@ -1022,6 +1022,10 @@ def format_finance_incident_type(incident_kind: finance_models.IncidentType) -> 
             return incident_kind.value
 
 
+def field_list_get_number_from_name(field_name: str) -> str:
+    return field_name.split("-")[1]
+
+
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
@@ -1086,6 +1090,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["parse_referrer"] = parse_referrer
     app.jinja_env.filters["unescape"] = html.unescape
     app.jinja_env.filters["action_to_name"] = action_to_name
+    app.jinja_env.filters["field_list_get_number_from_name"] = field_list_get_number_from_name
     app.jinja_env.filters["pc_pro_bank_account_link"] = urls.build_pc_pro_bank_account_link
     app.jinja_env.filters["pc_pro_offer_link"] = urls.build_pc_pro_offer_link
     app.jinja_env.filters["pc_pro_offerer_link"] = urls.build_pc_pro_offerer_link

@@ -67,10 +67,14 @@ class PcFieldList extends PcAddOn {
   }
 
   #generateNextElementNumber = ($ul) => {
-    const { entriesCount } = $ul.dataset
-    const nextFieldNumber = Number(entriesCount) + 1
-    $ul.dataset.entriesCount = nextFieldNumber
-    return nextFieldNumber
+    const $$children = $ul.querySelectorAll("li")
+    let currentNumber = -1
+    if ($$children.length > 0)
+    {
+        const $lastLi = $$children[$$children.length - 1]
+        currentNumber = Number($lastLi.dataset.fieldNumber)
+    }
+    return currentNumber + 1
   }
 
   #generateElementName = (originalName, newNumber) => {
@@ -177,6 +181,7 @@ class PcFieldList extends PcAddOn {
 
   #resetAndRenameElement = ($li, newNumber) => {
     const { resetAndRenameFunctionName } = $li.firstElementChild.dataset
+    $li.dataset.fieldNumber = newNumber
     if (resetAndRenameFunctionName) {
       this[resetAndRenameFunctionName]($li, newNumber)
     } else {
@@ -232,8 +237,6 @@ class PcFieldList extends PcAddOn {
     const { fieldListContainerId } = event.target.dataset
     const $fieldListContainer = this.#getFieldListContainerFromId(fieldListContainerId)
     const $ul = $fieldListContainer.querySelector(PcFieldList.PC_FIELD_LIST_UL_SELECTOR)
-    const { entriesCount: previousCount } = $ul.dataset
-    $ul.dataset.entriesCount = Number(previousCount) - 1
     const $li = event.target.parentElement // remove button is within li
     $li.remove()
     this.#filterMinEntries($ul)
