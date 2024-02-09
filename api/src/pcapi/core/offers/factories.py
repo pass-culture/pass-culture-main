@@ -11,6 +11,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.factories import BaseFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.models as offers_models
+from pcapi.core.providers.titelive_gtl import GTLS
 import pcapi.core.users.factories as users_factories
 from pcapi.domain import music_types
 from pcapi.domain import show_types
@@ -23,7 +24,7 @@ class ProductFactory(BaseFactory):
     class Meta:
         model = models.Product
 
-    subcategoryId = subcategories.CARTE_MUSEE.id
+    subcategoryId = subcategories.SUPPORT_PHYSIQUE_FILM.id
     name = factory.Sequence("Product {}".format)
     description = factory.Sequence("A passionate description of product {}".format)
 
@@ -37,6 +38,16 @@ class ProductFactory(BaseFactory):
         # Graciously provide the required idAtProviders if lastProvider is given.
         if kwargs.get("lastProvider") and not kwargs.get("idAtProviders"):
             kwargs["idAtProviders"] = uuid.uuid4()
+
+        if "extraData" not in kwargs:
+            subcategory_id = kwargs.get("subcategoryId")
+            assert isinstance(
+                subcategory_id, str
+            )  # if the subcategoryId was not given in the factory, it will get the default subcategoryId
+            kwargs["extraData"] = build_extra_data_from_subcategory(
+                subcategory_id, kwargs.pop("set_all_fields", False), True
+            )
+
         return super()._create(model_class, *args, **kwargs)
 
 
@@ -48,7 +59,9 @@ class ThingProductFactory(ProductFactory):
     subcategoryId = subcategories.SUPPORT_PHYSIQUE_FILM.id
 
 
-def build_extra_data_from_subcategory(subcategory_id: str, set_all_fields: bool) -> offers_models.OfferExtraData:
+def build_extra_data_from_subcategory(
+    subcategory_id: str, set_all_fields: bool, build_for_product: bool = False
+) -> offers_models.OfferExtraData:
     fake = faker.Faker(locale="fr_FR")
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT.get(subcategory_id)
     if not subcategory:
@@ -84,8 +97,10 @@ def build_extra_data_from_subcategory(subcategory_id: str, set_all_fields: bool)
                 extradata[field] = fake.ean13()
             case subcategories.ExtraDataFieldEnum.GTL_ID.value:
                 if subcategory_id == subcategories.LIVRE_PAPIER.id:
-                    continue
-                extradata[field] = fake.ean8()
+                    if build_for_product:
+                        extradata[field] = random.choice(list(GTLS.keys()))
+                else:
+                    extradata[field] = fake.ean8()
             case subcategories.ExtraDataFieldEnum.VISA.value:
                 extradata[field] = fake.ean()
             case subcategories.ExtraDataFieldEnum.MUSIC_TYPE.value:
