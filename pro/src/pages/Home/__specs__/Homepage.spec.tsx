@@ -10,6 +10,7 @@ import * as router from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { RemoteContextProvider } from 'context/remoteConfigContext'
+import { SAVED_OFFERER_ID_KEY } from 'core/shared'
 import * as useAnalytics from 'hooks/useAnalytics'
 import {
   defaultGetOffererVenueResponseModel,
@@ -17,7 +18,7 @@ import {
 } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { Homepage, SAVED_OFFERER_ID_KEY } from '../Homepage'
+import { Homepage } from '../Homepage'
 
 vi.mock('@firebase/remote-config', () => ({
   getValue: () => ({ asString: () => 'GE' }),

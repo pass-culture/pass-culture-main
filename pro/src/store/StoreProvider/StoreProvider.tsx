@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 import { api } from 'apiClient/api'
+import { SAVED_OFFERER_ID_KEY } from 'core/shared'
 import { updateFeatures } from 'store/features/reducer'
-import { updateUser } from 'store/user/reducer'
+import { updateSelectedOffererId, updateUser } from 'store/user/reducer'
 import Spinner from 'ui-kit/Spinner/Spinner'
+import { localStorageAvailable } from 'utils/localStorageAvailable'
 
 interface StoreProviderProps {
   children: JSX.Element | JSX.Element[]
@@ -42,6 +44,12 @@ const StoreProvider = ({
 
     const getStoreInitialState = async () => {
       await Promise.all([initializeUser(), initializeFeatures()])
+      const isLocalStorageAvailable = localStorageAvailable()
+
+      if (isLocalStorageAvailable) {
+        const savedOffererId = localStorage.getItem(SAVED_OFFERER_ID_KEY)
+        dispatch(updateSelectedOffererId(Number(savedOffererId)))
+      }
       setIsStoreInitialized(true)
     }
 

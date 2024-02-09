@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useLocation, useSearchParams } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import {
@@ -10,7 +10,6 @@ import {
 import ReimbursementBankAccount from 'components/ReimbursementBankAccount/ReimbursementBankAccount'
 import { useReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
-import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullLinkIcon from 'icons/full-link.svg'
@@ -18,9 +17,7 @@ import fullMoreIcon from 'icons/full-more.svg'
 import LinkVenuesDialog from 'pages/Reimbursements/BankInformations/LinkVenuesDialog'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import SelectInput from 'ui-kit/form/Select/SelectInput'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import { sortByLabel } from 'utils/strings'
 
 import AddBankInformationsDialog from './AddBankInformationsDialog'
 import styles from './BankInformations.module.scss'
@@ -32,55 +29,17 @@ const BankInformations = (): JSX.Element => {
 
   const [showAddBankInformationsDialog, setShowAddBankInformationsDialog] =
     useState(false)
-  const { offerers, selectedOfferer, setSelectedOfferer } =
-    useReimbursementContext()
+  const { selectedOfferer } = useReimbursementContext()
 
   const [isOffererBankAccountsLoading, setIsOffererBankAccountsLoading] =
     useState<boolean>(false)
   const [selectedOffererBankAccounts, setSelectedOffererBankAccounts] =
     useState<GetOffererBankAccountsResponseModel | null>(null)
-  const [searchParams, setSearchParams] = useSearchParams()
-  const [isOffererLoading, setIsOffererLoading] = useState<boolean>(false)
   const [selectedBankAccount, setSelectedBankAccount] =
     useState<BankAccountResponseModel | null>(null)
-  const { structure: offererId } = Object.fromEntries(searchParams)
   const [bankAccountVenues, setBankAccountVenues] = useState<
     Array<ManagedVenues>
   >([])
-
-  const offererOptions: SelectOption[] =
-    offerers && offerers.length > 1
-      ? sortByLabel(
-          offerers.map((item) => ({
-            value: item['id'].toString(),
-            label: item['name'],
-          }))
-        )
-      : []
-
-  const updateOfferer = async (newOffererId: string) => {
-    if (newOffererId !== '') {
-      setIsOffererLoading(true)
-      const offerer = await api.getOfferer(Number(newOffererId))
-      setSelectedOfferer(offerer)
-      setIsOffererLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    if (!offerers || offerers.length === 0) {
-      return
-    }
-
-    if (offererId) {
-      void updateOfferer(offererId)
-    }
-    if (searchParams.has('structure')) {
-      searchParams.delete('structure')
-      setSearchParams(searchParams)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   useEffect(() => {
     const getSelectedOffererBankAccounts = async (
@@ -106,15 +65,12 @@ const BankInformations = (): JSX.Element => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedOfferer])
 
-  if (isOffererBankAccountsLoading || isOffererLoading) {
+  if (isOffererBankAccountsLoading) {
     return <Spinner />
   }
 
-  async function closeDialog(update?: boolean) {
+  function closeDialog() {
     if (selectedOfferer !== null) {
-      if (update) {
-        await updateOfferer(selectedOfferer.id.toString())
-      }
       setSelectedBankAccount(null)
     }
   }
@@ -157,22 +113,6 @@ const BankInformations = (): JSX.Element => {
           En savoir plus
         </ButtonLink>
       </div>
-      {offerers && offerers.length > 1 && (
-        <div className={styles['select-offerer-section']}>
-          <div className={styles['select-offerer-input']}>
-            <div className={styles['select-offerer-input-label']}>
-              <label htmlFor="selected-offerer">Structure</label>
-            </div>
-            <SelectInput
-              onChange={(e) => updateOfferer(e.target.value)}
-              data-testid="select-input-offerer"
-              name="offererId"
-              options={offererOptions}
-              value={selectedOfferer?.id.toString() ?? ''}
-            />
-          </div>
-        </div>
-      )}
       {selectedOffererBankAccounts &&
         selectedOffererBankAccounts?.bankAccounts.length > 0 && (
           <div className={styles['bank-accounts']}>
