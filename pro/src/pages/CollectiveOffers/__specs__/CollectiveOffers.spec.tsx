@@ -1,7 +1,7 @@
+import { Store } from '@reduxjs/toolkit'
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
-import type { Store } from 'redux'
 
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
