@@ -10,7 +10,7 @@ import pcapi.core.finance.api as finance_api
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.models as providers_models
 from pcapi.core.providers.repository import get_provider_by_local_class
-from pcapi.local_providers.chunk_manager import get_existing_pc_obj
+from pcapi.local_providers.chunk_manager import get_object_from_current_chunks
 from pcapi.local_providers.chunk_manager import save_chunks
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
@@ -177,6 +177,33 @@ class LocalProvider(Iterator):
             self.erroredThumbs,
         )
 
+    def get_existing_object(
+        self,
+        model_type: type[offers_models.Product | offers_models.Offer | offers_models.Stock],
+        id_at_providers: str,
+    ) -> offers_models.Product | offers_models.Offer | offers_models.Stock | None:
+        # exception to the ProvidableMixin because Offer no longer extends this class
+        # idAtProviders has been replaced by idAtProvider property
+        lookup = {}
+        if model_type == offers_models.Offer:
+            lookup["idAtProvider"] = id_at_providers
+        else:
+            lookup["idAtProviders"] = id_at_providers
+        query = model_type.query.filter_by(**lookup)
+        if model_type == offers_models.Stock:
+            query = query.with_for_update()
+
+        return query.one_or_none()
+
+    def get_existing_pc_obj(
+        self, providable_info: ProvidableInfo, chunk_to_insert: dict, chunk_to_update: dict
+    ) -> offers_models.Product | offers_models.Offer | offers_models.Stock | None:
+        object_in_current_chunk = get_object_from_current_chunks(providable_info, chunk_to_insert, chunk_to_update)
+        if object_in_current_chunk is None:
+            return self.get_existing_object(providable_info.type, providable_info.id_at_providers)
+
+        return object_in_current_chunk
+
     def updateObjects(self, limit: int | None = None) -> None:
         # pylint: disable=too-many-nested-blocks
         if self.venue_provider and not self.venue_provider.isActive:
@@ -206,7 +233,7 @@ class LocalProvider(Iterator):
 
             for providable_info in providable_infos:
                 chunk_key = providable_info.id_at_providers + "|" + str(providable_info.type.__name__)
-                pc_object = get_existing_pc_obj(providable_info, chunk_to_insert, chunk_to_update)
+                pc_object = self.get_existing_pc_obj(providable_info, chunk_to_insert, chunk_to_update)
                 last_update_for_current_provider = get_last_update_for_provider(self.provider.id, pc_object)
 
                 if pc_object is None:

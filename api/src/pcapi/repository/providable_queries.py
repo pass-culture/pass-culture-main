@@ -39,24 +39,6 @@ def _extract_dict_values_from_chunk(matching_tuples_in_chunk: list[tuple[str, Mo
     return list(dictify_pc_object(pc_object_item) for pc_object_key, pc_object_item in matching_tuples_in_chunk)
 
 
-def get_existing_object(
-    model_type: type[offers_models.Product | offers_models.Offer | offers_models.Stock],
-    id_at_providers: str,
-) -> offers_models.Product | offers_models.Offer | offers_models.Stock | None:
-    # exception to the ProvidableMixin because Offer no longer extends this class
-    # idAtProviders has been replaced by idAtProvider property
-    lookup = {}
-    if model_type == offers_models.Offer:
-        lookup["idAtProvider"] = id_at_providers
-    else:
-        lookup["idAtProviders"] = id_at_providers
-    query = model_type.query.filter_by(**lookup)
-    if model_type == offers_models.Stock:
-        query = query.with_for_update()
-
-    return query.one_or_none()
-
-
 def get_last_update_for_provider(
     provider_id: int,
     pc_obj: offers_models.Product | offers_models.Offer | offers_models.Stock | None,
