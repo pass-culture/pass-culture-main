@@ -7,6 +7,9 @@ import pcapi.utils.cinema_providers as cinema_providers_utils
     "uuid,result",
     [
         ("123%12345678912345#111/2022-12-12 11:00:00", 111),
+        ("123%12345678912345#3/2022-12-12 11:00:00", 3),
+        ("123%12345678912345#111", 111),
+        ("123%12345678912345#5", 5),
         ("123445+43423", None),
         (None, None),
         ("movie_id%%siret#show_id/showtime", None),
