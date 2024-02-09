@@ -1492,7 +1492,7 @@ def notify_users_before_deletion_of_suspended_account() -> None:
         transactional_mails.send_email_before_deletion_of_suspended_account(account)
 
 
-def anonymize_user(user: users_models.User, *, force: bool = False) -> None:
+def anonymize_user(user: users_models.User, *, author: users_models.User | None = None, force: bool = False) -> bool:
     """
     Anonymize the given User. If force is True, the function will anonymize the user even if they have an address and
     we cannot find an iris for it.
@@ -1503,10 +1503,10 @@ def anonymize_user(user: users_models.User, *, force: bool = False) -> None:
             iris = get_iris_from_address(address=user.address, postcode=user.postalCode)
         except (api_adresse.AdresseApiException, api_adresse.InvalidFormatException) as exc:
             logger.exception("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
-            return
+            return False
 
         if not iris and not force:
-            return
+            return False
 
     try:
         push_api.delete_user_attributes(user_id=user.id, can_be_asynchronously_retried=True)
@@ -1514,10 +1514,10 @@ def anonymize_user(user: users_models.User, *, force: bool = False) -> None:
         # If is_retryable it is a real error. If this flag is False then it means the email is unknown for brevo.
         if exc.is_retryable:
             logger.exception("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
-            return
+            return False
     except Exception as exc:  # pylint: disable=broad-exception-caught
         logger.exception("Could not anonymize user", extra={"user_id": user.id, "exc": str(exc)})
-        return
+        return False
 
     for beneficiary_fraud_check in user.beneficiaryFraudChecks:
         beneficiary_fraud_check.resultContent = None
@@ -1561,10 +1561,11 @@ def anonymize_user(user: users_models.User, *, force: bool = False) -> None:
         db.session.add(
             history_models.ActionHistory(
                 actionType=history_models.ActionType.USER_ANONYMIZED,
+                authorUser=author,
                 userId=user.id,
             )
         )
-    return
+    return True
 
 
 def _remove_external_user(user: users_models.User) -> bool:
