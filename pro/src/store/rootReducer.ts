@@ -1,4 +1,4 @@
-import { combineReducers } from 'redux'
+import { combineReducers } from '@reduxjs/toolkit'
 
 import { featuresReducer } from 'store/features/reducer'
 import { notificationsReducer } from 'store/notifications/reducer'
