@@ -13,9 +13,9 @@ from pcapi.core.finance import models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
+from pcapi.models import feature
 
 
 logger = logging.getLogger(__name__)
@@ -173,8 +173,12 @@ def create_specific_invoice() -> None:
     logger.info("Created specific Invoice")
 
 
-@override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
 def create_specific_invoice_with_bank_account() -> None:
+    feature.Feature.query.filter(feature.Feature.name == "WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY").update(
+        {"isActive": True}, synchronize_session=False
+    )
+    db.session.commit()
+
     logger.info("create_specific_invoice_with_bank_account")
     offerer = offerers_factories.OffererFactory(name="0 - Structure avec justificatif et compte bancaire")
     bank_account = finance_factories.BankAccountFactory(offerer=offerer)
@@ -298,6 +302,11 @@ def create_specific_invoice_with_bank_account() -> None:
         cashflow_ids=cashflow_ids,
     )
     logger.info("Created specific Invoice")
+
+    feature.Feature.query.filter(feature.Feature.name == "WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY").update(
+        {"isActive": False}, synchronize_session=False
+    )
+    db.session.commit()
 
 
 def create_specific_cashflow_batch_without_invoice() -> None:
