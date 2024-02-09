@@ -168,7 +168,6 @@ export const fullIcons: IconListItem[] = [
   { src: fullWarningIcon },
   { src: fullDeskIcon },
   { src: fullBurgerkIcon },
-  { src: fullWarningIcon },
   { src: fullDisclosureCloseIcon, viewBox: '0 0 16 16' }, // TODO clean viewbox
   { src: fullDisclosureOpenIcon, viewBox: '0 0 16 16' }, // TODO clean viewbox
 ]
