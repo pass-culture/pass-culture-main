@@ -18,6 +18,7 @@ import {
 import { Audience } from 'core/shared'
 import getUserValidatedOfferersNamesAdapter from 'core/shared/adapters/getUserValidatedOfferersNamesAdapter'
 import { SelectOption } from 'custom_types/form'
+import useActiveFeature from 'hooks/useActiveFeature'
 import fullPlusIcon from 'icons/full-plus.svg'
 import strokeLibraryIcon from 'icons/stroke-library.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
@@ -76,6 +77,8 @@ const Offers = ({
   const [areAllOffersSelected, setAreAllOffersSelected] = useState(false)
   const [selectedOfferIds, setSelectedOfferIds] = useState<string[]>([])
 
+  const isNewSideBarNavigation = useActiveFeature('WIP_ENABLE_PRO_SIDE_NAV')
+
   const { isAdmin } = currentUser
   const currentPageOffersSubset = offers.slice(
     (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
@@ -108,6 +111,8 @@ const Offers = ({
   )
 
   const [isOffererValidated, setIsOffererValidated] = useState<boolean>(false)
+  const displayCreateOfferButton =
+    !isNewSideBarNavigation && !isAdmin && isOffererValidated
 
   useEffect(() => {
     const loadValidatedUserOfferers = async () => {
@@ -128,16 +133,15 @@ const Offers = ({
     }
   }, [])
 
-  const actionLink =
-    isAdmin || !isOffererValidated ? undefined : (
-      <ButtonLink
-        variant={ButtonVariant.PRIMARY}
-        link={{ isExternal: false, to: '/offre/creation' }}
-        icon={fullPlusIcon}
-      >
-        Créer une offre
-      </ButtonLink>
-    )
+  const actionLink = displayCreateOfferButton ? (
+    <ButtonLink
+      variant={ButtonVariant.PRIMARY}
+      link={{ isExternal: false, to: '/offre/creation' }}
+      icon={fullPlusIcon}
+    >
+      Créer une offre
+    </ButtonLink>
+  ) : undefined
 
   const nbSelectedOffers = areAllOffersSelected
     ? offers.length

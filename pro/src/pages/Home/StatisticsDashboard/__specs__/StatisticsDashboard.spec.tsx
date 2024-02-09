@@ -1,14 +1,11 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
 import { api } from 'apiClient/api'
 import { defaultGetOffererResponseModel } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import {
-  StatisticsDashboard,
-  StatisticsDashboardProps,
-} from '../StatisticsDashboard'
+import { StatisticsDashboard } from '../StatisticsDashboard'
 
 vi.mock('apiClient/api', () => ({
   api: {
@@ -19,7 +16,8 @@ vi.mock('apiClient/api', () => ({
 
 const renderStatisticsDashboard = (
   hasActiveOffer = true,
-  props: Partial<StatisticsDashboardProps> = {}
+  features: string[] = [],
+  isAdmin = false
 ) =>
   renderWithProviders(
     <StatisticsDashboard
@@ -28,8 +26,18 @@ const renderStatisticsDashboard = (
         isValidated: true,
         hasActiveOffer: hasActiveOffer,
       }}
-      {...props}
-    />
+    />,
+    {
+      storeOverrides: {
+        user: {
+          currentUser: {
+            id: 12,
+            isAdmin,
+          },
+        },
+      },
+      features,
+    }
   )
 
 describe('StatisticsDashboard', () => {
@@ -114,5 +122,25 @@ describe('StatisticsDashboard', () => {
     expect(screen.getByText('Dernière mise à jour :')).toBeInTheDocument()
 
     expect(screen.getByText('Vos offres publiées')).toBeInTheDocument()
+  })
+
+  it('should display the create offer button by default', () => {
+    renderStatisticsDashboard(false)
+
+    waitFor(() => {
+      expect(screen.getByText(/Créer une offre/)).toBeInTheDocument()
+    })
+  })
+
+  it('should display the create offer button with the WIP_ENABLE_PRO_SIDE_NAV FF enabled and the user is Admin', () => {
+    renderStatisticsDashboard(false, ['WIP_ENABLE_PRO_SIDE_NAV'], true)
+
+    expect(screen.getByText(/Créer une offre/)).toBeInTheDocument()
+  })
+
+  it("should not display the create offer button with the WIP_ENABLE_PRO_SIDE_NAV FF enabled and the user isn't Admin", () => {
+    renderStatisticsDashboard(false, ['WIP_ENABLE_PRO_SIDE_NAV'], false)
+
+    expect(screen.queryByText(/Créer une offre/)).not.toBeInTheDocument()
   })
 })

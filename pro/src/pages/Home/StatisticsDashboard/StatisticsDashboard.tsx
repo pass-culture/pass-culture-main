@@ -7,6 +7,8 @@ import {
   GetOffererResponseModel,
   GetOffererStatsResponseModel,
 } from 'apiClient/v1'
+import useActiveFeature from 'hooks/useActiveFeature'
+import useCurrentUser from 'hooks/useCurrentUser'
 import fullMoreIcon from 'icons/full-more.svg'
 import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
 import { ButtonLink } from 'ui-kit/Button'
@@ -21,13 +23,20 @@ import { MostViewedOffers } from './MostViewedOffers'
 import { OfferStats } from './OfferStats'
 import styles from './StatisticsDashboard.module.scss'
 
-export interface StatisticsDashboardProps {
+interface StatisticsDashboardProps {
   offerer: GetOffererResponseModel
 }
 
 export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
   const [stats, setStats] = useState<GetOffererStatsResponseModel | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+
+  const { currentUser } = useCurrentUser()
+
+  const isNewSideBarNavigation = useActiveFeature('WIP_ENABLE_PRO_SIDE_NAV')
+
+  const displayCreateOfferButton =
+    (isNewSideBarNavigation && currentUser.isAdmin) || !isNewSideBarNavigation
 
   useEffect(() => {
     const loadStats = async () => {
@@ -46,16 +55,18 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
       <div className={styles['header']}>
         <h2 className={styles['title']}>Présence sur le pass Culture</h2>
 
-        <ButtonLink
-          variant={ButtonVariant.PRIMARY}
-          link={{
-            isExternal: false,
-            to: `/offre/creation?structure=${offerer.id}`,
-          }}
-          icon={fullMoreIcon}
-        >
-          Créer une offre
-        </ButtonLink>
+        {displayCreateOfferButton && (
+          <ButtonLink
+            variant={ButtonVariant.PRIMARY}
+            link={{
+              isExternal: false,
+              to: `/offre/creation?structure=${offerer.id}`,
+            }}
+            icon={fullMoreIcon}
+          >
+            Créer une offre
+          </ButtonLink>
+        )}
       </div>
 
       {!isLoading && (
