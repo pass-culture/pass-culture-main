@@ -10,7 +10,6 @@ import {
   ApiError,
   EditVenueBodyModel,
   GetVenueResponseModel,
-  SharedCurrentUserResponseModel,
   VenueTypeCode,
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
@@ -43,16 +42,19 @@ const venueLabels: SelectOption[] = [
 ]
 
 const renderForm = (
-  currentUser: SharedCurrentUserResponseModel,
   initialValues: VenueFormValues,
-  isCreatingVenue: boolean,
   venue: Venue,
-  hasBookingQuantity?: boolean
+  isAdmin = false,
+  hasBookingQuantity?: boolean,
+  features: string[] = []
 ) => {
   const storeOverrides = {
     user: {
       initialized: true,
-      currentUser,
+      currentUser: {
+        id: 'user_id',
+        isAdmin,
+      },
     },
   }
 
@@ -87,7 +89,11 @@ const renderForm = (
       </Routes>
       <Notification />
     </>,
-    { storeOverrides, initialRouterEntries: ['/structures/AE/lieux/creation'] }
+    {
+      storeOverrides,
+      initialRouterEntries: ['/structures/AE/lieux/creation'],
+      features,
+    }
   )
 }
 
@@ -357,15 +363,7 @@ describe('VenueFormScreen', () => {
   })
 
   it('should display an error when the venue could not be updated', async () => {
-    renderForm(
-      {
-        id: 12,
-        isAdmin: true,
-      } as SharedCurrentUserResponseModel,
-      formValues,
-      false,
-      venue
-    )
+    renderForm(formValues, venue, true)
 
     vi.spyOn(api, 'editVenue').mockRejectedValue(
       new ApiError(
@@ -390,15 +388,7 @@ describe('VenueFormScreen', () => {
 
   it('should let update the virtual venue with limited fields', async () => {
     formValues.isVenueVirtual = true
-    renderForm(
-      {
-        id: 12,
-        isAdmin: true,
-      } as SharedCurrentUserResponseModel,
-      formValues,
-      false,
-      venue
-    )
+    renderForm(formValues, venue, true)
 
     const editVenue = vi
       .spyOn(api, 'editVenue')
@@ -414,15 +404,7 @@ describe('VenueFormScreen', () => {
     formValues.postalCode = ''
     formValues.departmentCode = ''
 
-    renderForm(
-      {
-        id: 12,
-        isAdmin: true,
-      } as SharedCurrentUserResponseModel,
-      formValues,
-      false,
-      venue
-    )
+    renderForm(formValues, venue, true)
     const adressInput = screen.getByLabelText('Adresse postale *')
 
     await userEvent.type(adressInput, '12 rue des fleurs')
@@ -437,15 +419,7 @@ describe('VenueFormScreen', () => {
 
   it('should not display error on submit when venue is virtual', async () => {
     formValues.isVenueVirtual = true
-    renderForm(
-      {
-        id: 12,
-        isAdmin: true,
-      } as SharedCurrentUserResponseModel,
-      formValues,
-      false,
-      venue
-    )
+    renderForm(formValues, venue, true)
     const adressInput = screen.getByLabelText('Adresse postale *')
 
     await userEvent.type(adressInput, '12 rue des fleurs')
@@ -461,15 +435,7 @@ describe('VenueFormScreen', () => {
   it('should diplay only some fields when the venue is virtual', async () => {
     venue.isVirtual = true
 
-    renderForm(
-      {
-        id: 12,
-        isAdmin: false,
-      } as SharedCurrentUserResponseModel,
-      formValues,
-      false,
-      venue
-    )
+    renderForm(formValues, venue, false)
 
     await waitFor(() => {
       expect(screen.queryByTestId('wrapper-publicName')).not.toBeInTheDocument()
@@ -494,15 +460,7 @@ describe('VenueFormScreen', () => {
   describe('Displaying with new onboarding', () => {
     it('should display new onboarding wording labels', async () => {
       venue.isVirtual = false
-      renderForm(
-        {
-          id: 12,
-          isAdmin: false,
-        } as SharedCurrentUserResponseModel,
-        formValues,
-        false,
-        venue
-      )
+      renderForm(formValues, venue, false)
 
       await waitFor(() => {
         expect(screen.queryByTestId('wrapper-publicName')).toBeInTheDocument()
@@ -559,16 +517,7 @@ describe('VenueFormScreen', () => {
     })
 
     it('should display withdrawal and submit on confirm dialog button when offer has bookingQuantity and withdrawalDetails is updated and isWithdrawalAppliedOnAllOffers is true', async () => {
-      renderForm(
-        {
-          id: 12,
-          isAdmin: true,
-        } as SharedCurrentUserResponseModel,
-        formValues,
-        false,
-        venue,
-        true
-      )
+      renderForm(formValues, venue, true, true)
 
       const editVenue = vi
         .spyOn(api, 'editVenue')
@@ -626,16 +575,7 @@ describe('VenueFormScreen', () => {
     })
 
     it('should display withdrawal dialog and submit on cancel click and should not send mail', async () => {
-      renderForm(
-        {
-          id: 12,
-          isAdmin: false,
-        } as SharedCurrentUserResponseModel,
-        formValues,
-        false,
-        venue,
-        true
-      )
+      renderForm(formValues, venue, false, true)
 
       const editVenue = vi
         .spyOn(api, 'editVenue')
@@ -693,16 +633,7 @@ describe('VenueFormScreen', () => {
     it("should not display withdrawal if offer has no bookingQuantity or withdrawalDetails doesn't change or isWithdrawalAppliedOnAllOffers is not check", async () => {
       expectedEditVenue.isWithdrawalAppliedOnAllOffers = false
 
-      renderForm(
-        {
-          id: 12,
-          isAdmin: false,
-        } as SharedCurrentUserResponseModel,
-        formValues,
-        false,
-        venue,
-        false
-      )
+      renderForm(formValues, venue, false)
 
       const editVenue = vi
         .spyOn(api, 'editVenue')
@@ -734,16 +665,7 @@ describe('VenueFormScreen', () => {
     })
 
     it('should close withdrawal dialog and not submit if user close dialog', async () => {
-      renderForm(
-        {
-          id: 12,
-          isAdmin: false,
-        } as SharedCurrentUserResponseModel,
-        formValues,
-        false,
-        venue,
-        true
-      )
+      renderForm(formValues, venue, false, true)
 
       const editVenue = vi
         .spyOn(api, 'editVenue')
@@ -800,16 +722,7 @@ describe('VenueFormScreen', () => {
     })
 
     it('should not display withdrawal dialog if withdrawalDetails value after update is the same', async () => {
-      renderForm(
-        {
-          id: 12,
-          isAdmin: false,
-        } as SharedCurrentUserResponseModel,
-        formValues,
-        false,
-        venue,
-        true
-      )
+      renderForm(formValues, venue, false)
 
       await waitFor(() => {
         expect(
@@ -846,16 +759,12 @@ describe('VenueFormScreen', () => {
   describe('EAC Section', () => {
     it('should display eac section if offerer is eligble to eac and ff active', async () => {
       renderForm(
-        {
-          id: 12,
-          isAdmin: false,
-        } as SharedCurrentUserResponseModel,
         formValues,
-        false,
         {
           ...venue,
           hasAdageId: true,
-        }
+        },
+        false
       )
       await waitFor(
         () => expect(api.canOffererCreateEducationalOffer).toHaveBeenCalled
@@ -871,17 +780,13 @@ describe('VenueFormScreen', () => {
         'error'
       )
       renderForm(
-        {
-          id: 12,
-          isAdmin: false,
-        } as SharedCurrentUserResponseModel,
         formValues,
-        false,
         {
           ...venue,
           hasAdageId: false,
           collectiveDmsApplication: { ...defaultCollectiveDmsApplication },
-        }
+        },
+        false
       )
       await waitFor(
         () => expect(api.canOffererCreateEducationalOffer).toHaveBeenCalled
@@ -894,16 +799,12 @@ describe('VenueFormScreen', () => {
         'error'
       )
       renderForm(
-        {
-          id: 12,
-          isAdmin: false,
-        } as SharedCurrentUserResponseModel,
         formValues,
-        false,
         {
           ...venue,
           hasAdageId: false,
-        }
+        },
+        false
       )
       await waitFor(
         () => expect(api.canOffererCreateEducationalOffer).toHaveBeenCalled
@@ -913,6 +814,22 @@ describe('VenueFormScreen', () => {
           name: 'Mes informations pour les enseignants',
         })
       ).not.toBeInTheDocument()
+    })
+  })
+
+  it('should display the create button offer by default', () => {
+    renderForm(formValues, venue, false)
+
+    waitFor(() => {
+      expect(screen.getByText(/Créer une offre/)).toBeInTheDocument()
+    })
+  })
+
+  it('should not display the create offer button with the WIP_ENABLE_PRO_SIDE_NAV FF enabled', () => {
+    renderForm(formValues, venue, false, false, ['WIP_ENABLE_PRO_SIDE_NAV'])
+
+    waitFor(() => {
+      expect(screen.queryByText(/Créer une offre/)).not.toBeInTheDocument()
     })
   })
 })

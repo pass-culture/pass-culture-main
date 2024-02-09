@@ -65,6 +65,7 @@ export const VenueEditionFormScreen = ({
   const isNewBankDetailsEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
+  const isNewSideBarNavigation = useActiveFeature('WIP_ENABLE_PRO_SIDE_NAV')
 
   const handleCancelWithdrawalDialog = () => {
     setShouldSendMail(false)
@@ -191,11 +192,15 @@ export const VenueEditionFormScreen = ({
         <div className={style['title-page']}>
           <Title level={1}>Lieu</Title>
 
-          <a href={`/offre/creation?lieu=${initialId}&structure=${offerer.id}`}>
-            <Button variant={ButtonVariant.PRIMARY} icon={fullPlusIcon}>
-              <span>Créer une offre</span>
-            </Button>
-          </a>
+          {!isNewSideBarNavigation && (
+            <a
+              href={`/offre/creation?lieu=${initialId}&structure=${offerer.id}`}
+            >
+              <Button variant={ButtonVariant.PRIMARY} icon={fullPlusIcon}>
+                <span>Créer une offre</span>
+              </Button>
+            </a>
+          )}
         </div>
         <Title level={2} className={style['venue-name']}>
           {
