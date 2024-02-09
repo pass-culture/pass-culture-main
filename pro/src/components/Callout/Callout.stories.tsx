@@ -33,6 +33,7 @@ export const WithLink: StoryObj<typeof Callout> = {
       {
         href: 'https://pro.testing.passculture.team',
         label: 'Lien interne au pass culture pro',
+        isExternal: true,
       },
       {
         href: 'https://pro.testing.passculture.team',
