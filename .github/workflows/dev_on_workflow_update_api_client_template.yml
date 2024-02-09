@@ -160,3 +160,6 @@ jobs:
               echo "Please run 'yarn generate:api:client:local' and add the changes to the commit(s) that change the API."
               exit 1
             fi
+      - name: 'Show pcapi log when it fails'
+        if: failure()
+        run: docker logs pc-api
