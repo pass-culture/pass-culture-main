@@ -1,13 +1,12 @@
 {% set field_id = random_hash() %}
 <div class="d-flex flex-column justify-content-center"
      data-field-list-container="{{ field.name }}-{{ field_id }}">
-  <ul data-entries-count="{{ field|length }}"
-      {% if field.max_entries %}data-max-entries="{{ field.max_entries }}"{% endif %}
+  <ul {% if field.max_entries %}data-max-entries="{{ field.max_entries }}"{% endif %}
       {% if field.min_entries %}data-min-entries="{{ field.min_entries }}"{% endif %}
       data-field-name="{{ field.name }}"
       class="field-list list-unstyled flex-grow">
     {% for subfield in field %}
-      <li class="d-flex align-items-start justify-content-between gap-2 pt-2">
+      <li class="d-flex align-items-start justify-content-between gap-2 pt-2" data-field-number={{ subfield.name|field_list_get_number_from_name }}>
         {{ subfield }}
         <button class="btn btn-primary field-list-rm-btn align-self-center"
                 type="button">
