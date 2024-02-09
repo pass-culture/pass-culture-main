@@ -199,6 +199,40 @@
                 </div>
               </div>
             {% endif %}
+            {% if anonymize_form %}
+              <button class="btn btn-outline-primary lead fw-bold mt-2 justify-content-end"
+                      data-bs-toggle="modal"
+                      data-bs-target="#review-anonymization_confirmation"
+                      type="button">Anonymiser</button>
+              <div class="modal modal-lg fade"
+                   id="review-anonymization_confirmation"
+                   tabindex="-1"
+                   aria-labelledby="review-anonymization_confirmation-label"
+                   aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <form action="{{ anonymize_public_accounts_dst }}"
+                          name="{{ anonymize_public_accounts_dst }}"
+                          method="post">
+                      <div class="modal-header">
+                        <h5 class="modal-title">Anonymiser les données</h5>
+                      </div>
+                      <div class="modal-body">
+                        <div class="form-floating my-3">{{ build_form_fields_group(anonymize_form) }}</div>
+                      </div>
+                      {{ anonymize_form.csrf_token }}
+                      <div class="modal-footer">
+                        <button type="button"
+                                class="btn btn-outline-primary"
+                                data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit"
+                                class="btn btn-primary">Enregistrer</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              {% endif %}
+            </div>
           </div>
         </div>
       </div>

@@ -15,6 +15,7 @@ from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
 from markupsafe import escape
 import sqlalchemy as sa
+from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.bookings import models as bookings_models
@@ -109,6 +110,55 @@ def _apply_search_filters(query: BaseQuery, search_filters: list[str]) -> BaseQu
         return query
 
     return query.filter(sa.or_(*or_filters))
+
+
+def is_beneficiary_anonymizable(user: users_models.User) -> bool:
+
+    if (
+        not user.has_pro_role
+        and not user.has_non_attached_pro_role
+        and not user.has_admin_role
+        and not user.is_beneficiary
+        and not user.beneficiaryFraudChecks
+    ):
+        if users_models.UserRole.ANONYMIZED not in user.roles:
+            if not user.deposit_expiration_date or (
+                user.deposit_expiration_date and user.deposit_expiration_date < datetime.datetime.utcnow()
+            ):
+                return True
+    return False
+
+
+@public_accounts_blueprint.route("<int:user_id>/anonymize", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT)
+def anonymize_public_account(user_id: int) -> utils.BackofficeResponse:
+    user = (
+        users_models.User.query.filter_by(id=user_id)
+        .options(sa.orm.joinedload(users_models.User.deposits))
+        .one_or_none()
+    )
+
+    if not user:
+        raise NotFound()
+
+    if not is_beneficiary_anonymizable(user):
+        raise BadRequest()
+
+    form = empty_forms.EmptyForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(url_for("backoffice_web.public_accounts.get_public_account", user_id=user_id), code=303)
+
+    user_anonymized = users_api.anonymize_user(user, author=current_user, force=True)
+    if not user_anonymized:
+        flash("Une erreur est survenue lors de l'anonymisation de l'utilisateur", "warning")
+        return redirect(url_for(".get_public_account", user_id=user_id))
+
+    db.session.commit()
+
+    flash("Les informations de l'utilisateur ont été anonymisées", "success")
+
+    return redirect(url_for(".get_public_account", user_id=user_id))
 
 
 @public_accounts_blueprint.route("/search", methods=["GET"])
@@ -267,6 +317,7 @@ def render_public_account_details(
     kwargs = {}
 
     if utils.has_current_user_permission(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT):
+
         if not edit_account_form:
             edit_account_form = account_forms.EditAccountForm(
                 last_name=user.lastName,
@@ -297,6 +348,13 @@ def render_public_account_details(
                 "manual_review_dst": url_for(".review_public_account", user_id=user.id),
                 "send_validation_code_form": empty_forms.EmptyForm(),
                 "manual_phone_validation_form": empty_forms.EmptyForm(),
+                "anonymize_form": (
+                    empty_forms.EmptyForm()
+                    if is_beneficiary_anonymizable(user)
+                    and utils.has_current_user_permission(perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT)
+                    else None
+                ),
+                "anonymize_public_accounts_dst": url_for(".anonymize_public_account", user_id=user.id),
             }
         )
 
