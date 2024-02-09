@@ -33,7 +33,7 @@ export const NoFilteredBookings = ({
       icon={fullRefresh}
       onClick={resetFilters}
     >
-      Réinitialiser les filtres
+      Afficher toutes les réservations
     </Button>
   </div>
 )

@@ -11,7 +11,7 @@ describe('components | NoFilteredBookings', () => {
       resetFilters: vi.fn(),
     }
     render(<NoFilteredBookings {...props} />)
-    const resetButton = screen.getByText('Réinitialiser les filtres')
+    const resetButton = screen.getByText('Afficher toutes les réservations')
 
     // when
     await userEvent.click(resetButton)
