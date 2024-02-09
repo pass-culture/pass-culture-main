@@ -37,6 +37,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS,
         perm_models.Permissions.PRO_FRAUD_ACTIONS,
         perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS,
+        perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT,
     ],
     "support_n1": [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
@@ -155,6 +156,11 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_REIMBURSEMENT_RULES,
         perm_models.Permissions.CREATE_REIMBURSEMENT_RULES,
         perm_models.Permissions.MANAGE_TECH_PARTNERS,
+    ],
+    "dpo": [
+        perm_models.Permissions.READ_PUBLIC_ACCOUNT,
+        perm_models.Permissions.MANAGE_PERMISSIONS,
+        perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT,
     ],
 }
 

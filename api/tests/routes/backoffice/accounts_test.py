@@ -545,6 +545,15 @@ class GetPublicAccountTest(GetEndpointHelper):
             user = users_factories.UserFactory(isActive=False)
             return url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
 
+    class AnonymizeUserButtonTest(button_helpers.ButtonHelper):
+        needed_permission = perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT
+        button_label = "Anonymiser"
+
+        @property
+        def path(self):
+            user = users_factories.UserFactory()
+            return url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+
     @pytest.mark.parametrize(
         "index,expected_badge",
         [(0, "Pass 15-17"), (1, "Pass 18"), (3, None)],
@@ -2403,3 +2412,50 @@ class RegistrationStepTest:
         users_factories.DepositGrantFactory(user=user)
         tunnel_end = _get_tunnel(user, eligibility_history, fraud_reviews_desc)
         assert tunnel_end["progress"] == 100
+
+
+class AnonymizePublicAccountTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.anonymize_public_account"
+    endpoint_kwargs = {"user_id": 1}
+    needed_permission = perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT
+
+    def test_anonymize_public_account(
+        self,
+        legit_user,
+        authenticated_client,
+    ):
+        user = users_factories.UserFactory()
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id)
+        assert response.status_code == 302
+
+        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
+        assert response.location == expected_url
+
+        assert "Anonymous" in user.firstName
+        assert user.roles == [users_models.UserRole.ANONYMIZED]
+        history = history_models.ActionHistory.query.one_or_none()
+        assert history.actionType == history_models.ActionType.USER_ANONYMIZED
+        assert history.authorUser == legit_user
+        assert history.user == user
+
+    @pytest.mark.parametrize(
+        "role",
+        [
+            users_models.UserRole.PRO,
+            users_models.UserRole.NON_ATTACHED_PRO,
+            users_models.UserRole.BENEFICIARY,
+            users_models.UserRole.UNDERAGE_BENEFICIARY,
+            users_models.UserRole.ADMIN,
+        ],
+    )
+    def test_anonymize_public_account_when_user_does_not_meet_criteria(
+        self,
+        legit_user,
+        authenticated_client,
+        role,
+    ):
+        user = users_factories.UserFactory(roles=[role])
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id)
+        assert response.status_code == 400

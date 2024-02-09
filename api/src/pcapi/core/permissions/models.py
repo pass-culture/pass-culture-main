@@ -32,6 +32,7 @@ class Permissions(enum.Enum):
 
     READ_PUBLIC_ACCOUNT = "visualiser un compte bénéficiaire/grand public"
     MANAGE_PUBLIC_ACCOUNT = "gérer un compte bénéficiaire/grand public"
+    ANONYMIZE_PUBLIC_ACCOUNT = "Anonymiser un compte grand public"
 
     SUSPEND_USER = "suspendre un compte jeune"
     UNSUSPEND_USER = "réactiver un compte jeune"
@@ -159,6 +160,7 @@ class Roles(enum.Enum):
     LECTURE_SEULE = "lecture_seule"
     QA = "qa"
     GLOBAL_ACCESS = "global_access"
+    DPO = "dpo"
 
 
 def sync_db_roles(session: sa.orm.Session) -> None:
