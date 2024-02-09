@@ -171,6 +171,7 @@ describe('screens:StocksThing', () => {
           roles: [],
           isEmailValidated: true,
         },
+        selectedOffererId: null,
       },
     }
 
