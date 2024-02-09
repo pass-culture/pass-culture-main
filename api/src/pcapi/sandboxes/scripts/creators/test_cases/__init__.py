@@ -89,7 +89,7 @@ def create_offers_with_gtls() -> None:
         city="LA ROCHE-SUR-YON",
         departementCode="85",
     )
-    create_offers_with_gtl_id("03050300)", 10, librairie_manga)  # 10 mangas
+    create_offers_with_gtl_id("03050300", 10, librairie_manga)  # 10 mangas
 
 
 def create_offers_for_each_gtl_level_1(size_per_gtl_level_1: int, venue: offerers_models.Venue) -> None:
@@ -124,17 +124,10 @@ def create_offers_with_gtl_id(gtl_id: str, size_per_gtl: int, venue: offerers_mo
 
 def create_offers_with_same_ean() -> None:
     offers = []
-    ean = Fake.ean13()
-    author = Fake.name()
     product = offers_factories.ProductFactory(
         name="Le livre du pass Culture",
         subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
         lastProvider=providers_factory.PublicApiProviderFactory(name="BookProvider"),
-        idAtProviders=ean,
-        extraData={
-            "ean": ean,
-            "author": author,
-        },
     )
     for venue_data in venues_mock.venues:
         offers.append(
@@ -289,11 +282,8 @@ def create_single_book_author(venues: list[offerers_models.Venue]) -> None:
 
 def create_book_in_multiple_venues(venues: list[offerers_models.Venue]) -> None:
     # an author with 1 book in multiple venues
-    author = Fake.name()
-    ean = Fake.ean13()
     product = offers_factories.ProductFactory(
         subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
-        extraData={"ean": ean, "author": author},
     )
     for venue in venues[:3]:
         offer = offers_factories.OfferFactory(
