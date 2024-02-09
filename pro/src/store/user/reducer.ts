@@ -4,10 +4,12 @@ import { SharedCurrentUserResponseModel } from 'apiClient/v1'
 
 type UserState = {
   currentUser: null | SharedCurrentUserResponseModel
+  selectedOffererId: number | null
 }
 
 export const initialState: UserState = {
   currentUser: null,
+  selectedOffererId: null,
 }
 
 const userSlice = createSlice({
@@ -20,9 +22,15 @@ const userSlice = createSlice({
     ) => {
       state.currentUser = action.payload
     },
+    updateSelectedOffererId: (
+      state: UserState,
+      action: PayloadAction<number>
+    ) => {
+      state.selectedOffererId = action.payload
+    },
   },
 })
 
 export const userReducer = userSlice.reducer
 
-export const { updateUser } = userSlice.actions
+export const { updateUser, updateSelectedOffererId } = userSlice.actions

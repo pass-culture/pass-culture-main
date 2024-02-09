@@ -20,3 +20,5 @@ export const FORM_ERROR_MESSAGE =
   'Une ou plusieurs erreurs sont présentes dans le formulaire'
 
 export const NBSP = '\u00a0'
+
+export const SAVED_OFFERER_ID_KEY = 'homepageSelectedOffererId'
