@@ -54,6 +54,7 @@ def invoiced_collective_pricing_fixture() -> list:
 @pytest.fixture(scope="function", name="incidents")
 def incidents_fixture() -> tuple:
     incident1 = finance_factories.IndividualBookingFinanceIncidentFactory(
+        id=36,
         booking=bookings_factories.BookingFactory(id=20),
         incident__status=finance_models.IncidentStatus.CREATED,
     ).incident
@@ -64,11 +65,15 @@ def incidents_fixture() -> tuple:
     )
 
     incident2 = finance_factories.CollectiveBookingFinanceIncidentFactory(
+        id=37,
         collectiveBooking=educational_factories.CollectiveBookingFactory(id=30),
         incident__status=finance_models.IncidentStatus.VALIDATED,
     ).incident
 
-    incident3 = finance_factories.FinanceIncidentFactory(status=finance_models.IncidentStatus.CANCELLED)
+    incident3 = finance_factories.FinanceIncidentFactory(
+        id=38,
+        status=finance_models.IncidentStatus.CANCELLED,
+    )
 
     # TODO: créer un FinanceEvent pour chaque incident
     return incident1, incident2, incident3
