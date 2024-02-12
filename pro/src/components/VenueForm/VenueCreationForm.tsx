@@ -127,7 +127,6 @@ export const VenueCreationForm = ({
 
         {canOffererCreateCollectiveOffer && isSiretValued && (
           <CollectiveVenueInformationsCreation
-            isCreatingVenue={true}
             canCreateCollectiveOffer={canOffererCreateCollectiveOffer}
           />
         )}
