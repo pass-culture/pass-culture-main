@@ -29,7 +29,7 @@ const Tooltip = ({
         className={cn(
           styles['tooltip'],
           {
-            ['visually-hidden']: visuallyHidden,
+            [styles['tooltip-hidden']]: visuallyHidden,
           },
           tooltipContentClassName
         )}
