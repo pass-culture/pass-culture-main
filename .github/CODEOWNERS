@@ -1,3 +1,4 @@
-### DevOps team should be notified if a modification on workflow is done
+### DevOps team is notified to guarantee consistency and security good practices
+### ci-owners team is notified to maintain and improve
 
-/.github/workflows/ @pass-culture/sherif-ops @pass-culture/sherif-devlead
+/.github/workflows/ @pass-culture/sherif-ops @pass-culture/main-ci-owners
