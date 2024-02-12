@@ -9,13 +9,17 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import AdageOffer from '../AdageOffer'
 
+function renderAdageOffer() {
+  return renderWithProviders(
+    <AdageUserContextProvider adageUser={defaultAdageUser}>
+      <AdageOffer offer={defaultCollectiveTemplateOffer} />
+    </AdageUserContextProvider>
+  )
+}
+
 describe('AdageOffer', () => {
   it('should display the offer information sections', () => {
-    renderWithProviders(
-      <AdageUserContextProvider adageUser={defaultAdageUser}>
-        <AdageOffer offer={defaultCollectiveTemplateOffer} />
-      </AdageUserContextProvider>
-    )
+    renderAdageOffer()
 
     expect(
       screen.getByRole('heading', { name: 'Détails de l’offre' })
@@ -25,6 +29,14 @@ describe('AdageOffer', () => {
     ).toBeInTheDocument()
     expect(
       screen.getByRole('heading', { name: 'Public concerné' })
+    ).toBeInTheDocument()
+  })
+
+  it('should show the offer cultural partner infos for a collective offer', () => {
+    renderAdageOffer()
+
+    expect(
+      screen.getByRole('heading', { name: 'Partenaire culturel' })
     ).toBeInTheDocument()
   })
 })

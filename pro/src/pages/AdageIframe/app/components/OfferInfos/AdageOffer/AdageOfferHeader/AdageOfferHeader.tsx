@@ -39,7 +39,8 @@ export default function AdageOfferHeader({ offer }: AdageOfferProps) {
       )) ||
       'Tout au long de l’année scolaire (l’offre est permanente)')
 
-  const studentLevels = offer.students.join(', ')
+  const studentLevels =
+    offer.students.length > 1 ? 'Multiniveaux' : offer.students[0]
 
   let offerVenueLabel = `${offer.venue.postalCode}, ${offer.venue.city}`
   if (offer.offerVenue) {

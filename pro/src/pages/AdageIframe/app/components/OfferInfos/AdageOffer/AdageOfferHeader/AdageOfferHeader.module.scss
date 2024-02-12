@@ -91,16 +91,11 @@
 
   .offer-header-actions {
     justify-content: unset;
+    gap: rem.torem(8px);
   }
 
   .offer-header-share-button-tooltip-content {
     width: auto;
-  }
-}
-
-@media (min-width: size.$mobile) {
-  .offer-header-actions {
-    gap: rem.torem(8px);
   }
 }
 
