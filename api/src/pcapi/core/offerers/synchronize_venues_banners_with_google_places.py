@@ -1,3 +1,4 @@
+import datetime
 import logging
 
 import googlemaps
@@ -144,7 +145,10 @@ def synchronize_venues_banners_with_google_places(
     images_ignored_due_to_ratio = []
     banner_synchronized_venue_ids = set()
     for venue in venues_without_photos:
-        if not venue.googlePlacesInfo:
+        if venue.googlePlacesInfo:
+            if (datetime.datetime.utcnow() - venue.googlePlacesInfo.updateDate).days > 62:
+                continue
+        else:
             place_id = get_place_id(venue.name, venue.address, venue.city, venue.postalCode)
             if not place_id:
                 continue
