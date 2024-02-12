@@ -1302,13 +1302,13 @@ asymmetric-crypto = ["cryptography (>=3.3.1)"]
 
 [[package]]
 name = "flask-limiter"
-version = "3.5.0"
+version = "3.5.1"
 description = "Rate limiting for flask applications"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "Flask-Limiter-3.5.0.tar.gz", hash = "sha256:13a3491b994c49f7cb4706587a38ca47e8162b576530472df38be68104f299c0"},
-    {file = "Flask_Limiter-3.5.0-py3-none-any.whl", hash = "sha256:dbda4174f44e6cb858c6eb75e7488186f2977dd5d33d7028ba1aabf179de1bee"},
+    {file = "Flask-Limiter-3.5.1.tar.gz", hash = "sha256:8117e1040e5d5c31bf667d3b649fcba325f979d814a3d76a3a2331c3eab63c5e"},
+    {file = "Flask_Limiter-3.5.1-py3-none-any.whl", hash = "sha256:d40526719994197da180caa870ba01e722ed6a70a75790021638dbf29aae82ee"},
 ]
 
 [package.dependencies]
@@ -5720,4 +5720,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "e58df229dbff17d05029b714d9914b03775cbc832731d8b1b70c36466fc74f81"
+content-hash = "9afc8063a86533c5b8036a2ce82b3853b2f7ebce61c9c27cc24d9dbe0d5edfcb"
