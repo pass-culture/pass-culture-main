@@ -26,11 +26,15 @@ import styles from './OfferInfos.module.scss'
 
 export const OfferInfos = () => {
   const { state, pathname } = useLocation()
-  const { offerId } = useParams()
+  const { offerId: offerIdInParams } = useParams()
   const [searchParams] = useSearchParams()
   const adageAuthToken = searchParams.get('token')
 
   const parentRouteInUrl = pathname.split('/')[2] ?? 'recherche'
+
+  const isOfferTemplate = !offerIdInParams?.startsWith('B-')
+  //  Bookable offers ids are prefixed with B- while template offers ids are prefixed with T-, or not prefixed for legacy reasons.
+  const offerId = offerIdInParams?.split('-')[1] ?? offerIdInParams
 
   const [offer, setOffer] = useState<
     CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
@@ -81,9 +85,9 @@ export const OfferInfos = () => {
     async function getOffer() {
       setLoading(true)
       try {
-        const fetchedOffer = await apiAdage.getCollectiveOfferTemplate(
-          Number(offerId)
-        )
+        const fetchedOffer = isOfferTemplate
+          ? await apiAdage.getCollectiveOfferTemplate(Number(offerId))
+          : await apiAdage.getCollectiveOffer(Number(offerId))
         setOffer(fetchedOffer)
       } finally {
         setLoading(false)
@@ -94,7 +98,7 @@ export const OfferInfos = () => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       getOffer()
     }
-  }, [offerId, state?.offer])
+  }, [offerId, state?.offer, isOfferTemplate])
 
   if (loading) {
     return <Spinner />

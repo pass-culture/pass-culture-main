@@ -6,6 +6,7 @@ import { apiAdage } from 'apiClient/api'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
   defaultAdageUser,
+  defaultCollectiveOffer,
   defaultCollectiveTemplateOffer,
 } from 'utils/adageFactories'
 import {
@@ -18,6 +19,7 @@ import { OfferInfos } from '../OfferInfos'
 vi.mock('apiClient/api', () => ({
   apiAdage: {
     getCollectiveOfferTemplate: vi.fn(),
+    getCollectiveOffer: vi.fn(),
   },
 }))
 
@@ -151,7 +153,7 @@ describe('OfferInfos', () => {
     expect(fetchOfferSpy).toHaveBeenCalledWith(1)
   })
 
-  it('should render the now offer info page sections if the ff is enabled', () => {
+  it('should render the new offer info page sections if the ff is enabled', () => {
     renderOfferInfos(defaultAdageUser, {
       features: ['WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN'],
     })
@@ -159,5 +161,34 @@ describe('OfferInfos', () => {
     expect(screen.getByRole('heading', { name: 'Détails de l’offre' }))
     expect(screen.getByRole('heading', { name: 'Informations pratiques' }))
     expect(screen.getByRole('heading', { name: 'Public concerné' }))
+  })
+
+  it('should fetch a bookable offer if the id in url is prefixed with "B-"', async () => {
+    vi.spyOn(router, 'useLocation').mockReturnValueOnce({
+      ...defaultUseLocationValue,
+      state: { offer: null },
+    })
+
+    vi.spyOn(router, 'useParams').mockImplementationOnce(() => {
+      return {
+        offerId: 'B-1',
+      }
+    })
+
+    const fetchOfferTemplateSpy = vi
+      .spyOn(apiAdage, 'getCollectiveOfferTemplate')
+      .mockResolvedValueOnce(defaultCollectiveTemplateOffer)
+
+    const fetchOfferSpy = vi
+      .spyOn(apiAdage, 'getCollectiveOffer')
+      .mockResolvedValueOnce(defaultCollectiveOffer)
+
+    renderOfferInfos()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(fetchOfferTemplateSpy).not.toHaveBeenCalled()
+
+    expect(fetchOfferSpy).toHaveBeenCalledWith(1)
   })
 })
