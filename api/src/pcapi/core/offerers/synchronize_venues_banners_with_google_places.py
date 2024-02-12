@@ -66,11 +66,15 @@ def get_venues_without_photo(begin: int, end: int | None, limit: int | None = No
     return venues
 
 
-def get_place_id(name: str, address: str | None) -> str | None:
+def get_place_id(name: str, address: str | None, city: str | None, postal_code: str | None) -> str | None:
     gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
     address = address or ""
+    city = city or ""
+    postal_code = postal_code or ""
     result = FindPlaceResponse.model_validate(
-        gmaps.find_place(input=name + address, input_type="textquery", fields=["place_id"])
+        gmaps.find_place(
+            input=" ".join([name, address, postal_code, city]), input_type="textquery", fields=["place_id"]
+        )
     )
     if result.status != "OK" or not result.candidates:
         return None
@@ -140,10 +144,8 @@ def synchronize_venues_banners_with_google_places(
     images_ignored_due_to_ratio = []
     banner_synchronized_venue_ids = set()
     for venue in venues_without_photos:
-        if venue.googlePlacesInfo:
-            nb_places_found += 1
-        else:
-            place_id = get_place_id(venue.name, venue.address)
+        if not venue.googlePlacesInfo:
+            place_id = get_place_id(venue.name, venue.address, venue.city, venue.postalCode)
             if not place_id:
                 continue
             venue.googlePlacesInfo = offerers_models.GooglePlacesInfo(placeId=place_id)
