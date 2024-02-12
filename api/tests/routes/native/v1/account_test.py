@@ -39,7 +39,7 @@ from pcapi.core.users import testing as users_testing
 from pcapi.core.users import young_status
 from pcapi.core.users.api import create_phone_validation_token
 import pcapi.core.users.constants as users_constants
-from pcapi.core.users.email import request_email_update
+from pcapi.core.users.email import request_email_update_with_credentials
 from pcapi.core.users.email import update as email_update
 from pcapi.core.users.email.repository import get_email_update_latest_event
 from pcapi.core.users.utils import ALGORITHM_HS_256
@@ -1242,7 +1242,7 @@ class GetEMailUpdateStatusTest:
 
     def test_can_retrieve_email_update_status(self, client):
         user = users_factories.UserFactory(email=self.old_email)
-        request_email_update(user, self.new_email, settings.TEST_DEFAULT_PASSWORD)
+        request_email_update_with_credentials(user, self.new_email, settings.TEST_DEFAULT_PASSWORD)
 
         response = client.with_token(user.email).get("/native/v1/profile/email_update/status")
 
@@ -1260,7 +1260,7 @@ class GetEMailUpdateStatusTest:
 
     def test_expired_token_is_reported(self, app, client):
         user = users_factories.UserFactory(email=self.old_email)
-        request_email_update(user, self.new_email, settings.TEST_DEFAULT_PASSWORD)
+        request_email_update_with_credentials(user, self.new_email, settings.TEST_DEFAULT_PASSWORD)
 
         with mock.patch.object(app.redis_client, "ttl", return_value=-1):
             response = client.with_token(user.email).get("/native/v1/profile/email_update/status")
@@ -1272,7 +1272,7 @@ class GetEMailUpdateStatusTest:
 
     def test_assume_expired_if_no_token_expiration(self, app, client):
         user = users_factories.UserFactory(email=self.old_email)
-        request_email_update(user, self.new_email, settings.TEST_DEFAULT_PASSWORD)
+        request_email_update_with_credentials(user, self.new_email, settings.TEST_DEFAULT_PASSWORD)
 
         redis_key = token_utils.Token.get_redis_key(token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION, user.id)
         redis_value = app.redis_client.get(redis_key)

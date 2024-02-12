@@ -718,8 +718,8 @@ class UserEmailHistory(PcObject, Base, Model):
     oldUserEmail: str = sa.Column(sa.String(120), nullable=False, unique=False, index=True)
     oldDomainEmail: str = sa.Column(sa.String(120), nullable=False, unique=False, index=True)
 
-    newUserEmail: str = sa.Column(sa.String(120), nullable=False, unique=False, index=True)
-    newDomainEmail: str = sa.Column(sa.String(120), nullable=False, unique=False, index=True)
+    newUserEmail: str | None = sa.Column(sa.String(120), nullable=True, unique=False, index=True)
+    newDomainEmail: str | None = sa.Column(sa.String(120), nullable=True, unique=False, index=True)
 
     creationDate: datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
 
@@ -729,11 +729,11 @@ class UserEmailHistory(PcObject, Base, Model):
     def _build(
         cls,
         user: User,
-        new_email: str,
+        new_email: str | None,
         event_type: EmailHistoryEventTypeEnum,
     ) -> "UserEmailHistory":
         old_user_email, old_domain_email = split_email(user.email)
-        new_user_email, new_domain_email = split_email(new_email)
+        new_user_email, new_domain_email = split_email(new_email) if new_email else (None, None)
         return cls(
             user=user,
             oldUserEmail=old_user_email,
@@ -744,7 +744,9 @@ class UserEmailHistory(PcObject, Base, Model):
         )
 
     @classmethod
-    def build_update_request(cls, user: User, new_email: str, by_admin: bool = False) -> "UserEmailHistory":
+    def build_update_request(
+        cls, user: User, new_email: str | None = None, by_admin: bool = False
+    ) -> "UserEmailHistory":
         if by_admin:
             return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.ADMIN_UPDATE_REQUEST)
         return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.UPDATE_REQUEST)
