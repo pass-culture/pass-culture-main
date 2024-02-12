@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetCollectiveVenueResponseModel } from 'apiClient/v1'
-import { AppLayout } from 'app/AppLayout'
 import MandatoryInfo from 'components/FormLayout/FormLayoutMandatoryInfo'
 import {
   EducationalCategories,
@@ -13,9 +12,6 @@ import {
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
-import fullBackIcon from 'icons/full-back.svg'
-import { Banner, Title, ButtonLink } from 'ui-kit'
-import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
@@ -127,33 +123,15 @@ export const CollectiveDataEdition = (): JSX.Element | null => {
       fetchData()
     }
   }, [])
+
   if (!venueId || !offererId) {
     return null
   }
+
   return (
-    <AppLayout>
-      <ButtonLink
-        link={{
-          to: `/structures/${offererId}/lieux/${venueId}#venue-collective-data`,
-          isExternal: false,
-        }}
-        variant={ButtonVariant.TERNARY}
-        icon={fullBackIcon}
-        className={styles['go-back-link']}
-      >
-        Retour page lieu
-      </ButtonLink>
-      <Title level={1} className={styles['title']}>
-        Mes informations pour les enseignants
-      </Title>
-      <Banner type="notification-info">
-        Ce formulaire vous permet de renseigner des informations complémentaires
-        concernant votre établissement et les actions menées auprès du public
-        scolaire. Ces informations seront visibles par les enseignants et chefs
-        d’établissement sur ADAGE. Cela leur permettra de mieux comprendre votre
-        démarche d’éducation artistique et culturelle.
-      </Banner>
+    <>
       <MandatoryInfo className={styles.mandatory} />
+
       {isLoading ? (
         <Spinner className={styles.spinner} />
       ) : (
@@ -168,10 +146,6 @@ export const CollectiveDataEdition = (): JSX.Element | null => {
           categories={categories}
         />
       )}
-    </AppLayout>
+    </>
   )
 }
-
-// Lazy-loaded by react-router-dom
-// ts-unused-exports:disable-next-line
-export const Component = CollectiveDataEdition

@@ -201,7 +201,7 @@ describe('CollectiveDataEdition', () => {
 
       const phoneField = screen.getByLabelText(/Numéro de téléphone/)
       await userEvent.type(phoneField, '0612345678')
-      await userEvent.click(screen.getByText('Retour page lieu'))
+      await userEvent.click(screen.getByText('Annuler et quitter'))
 
       await waitFor(() =>
         expect(
