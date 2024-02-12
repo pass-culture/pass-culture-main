@@ -9,14 +9,15 @@ import {
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import CollectiveVenueInformations, {
-  CollectiveVenueInformationsProps,
-} from '../CollectiveVenueInformations'
+import {
+  CollectiveVenueInformationsEdition,
+  CollectiveVenueInformationsEditionProps,
+} from '../CollectiveVenueInformationsEdition'
 
 const renderCollectiveVenueInformations = (
-  props: CollectiveVenueInformationsProps
+  props: CollectiveVenueInformationsEditionProps
 ) => {
-  renderWithProviders(<CollectiveVenueInformations {...props} />)
+  renderWithProviders(<CollectiveVenueInformationsEdition {...props} />)
 }
 
 describe('CollectiveVenueInformations', () => {
@@ -38,6 +39,7 @@ describe('CollectiveVenueInformations', () => {
       )
     ).toBeInTheDocument()
   })
+
   it('should display timeline if venue has adage id since less than 30 days', () => {
     renderCollectiveVenueInformations({
       venue: {
@@ -58,6 +60,7 @@ describe('CollectiveVenueInformations', () => {
       )
     ).toBeInTheDocument()
   })
+
   it('should display eac section if venue has adage id since more than 30 days', () => {
     renderCollectiveVenueInformations({
       venue: {

@@ -9,17 +9,17 @@ import { EACInformation } from '../EACInformation'
 
 import CollectiveDmsTimeline from './CollectiveDmsTimeline/CollectiveDmsTimeline'
 
-export interface CollectiveVenueInformationsProps {
+export interface CollectiveVenueInformationsEditionProps {
   venue?: Venue
   isCreatingVenue: boolean
   canCreateCollectiveOffer: boolean
 }
 
-const CollectiveVenueInformations = ({
+export const CollectiveVenueInformationsEdition = ({
   venue,
   isCreatingVenue,
   canCreateCollectiveOffer,
-}: CollectiveVenueInformationsProps) => {
+}: CollectiveVenueInformationsEditionProps) => {
   const hasAdageIdForMoreThan30Days = Boolean(
     venue?.hasAdageId &&
       venue?.adageInscriptionDate &&
@@ -66,5 +66,3 @@ const CollectiveVenueInformations = ({
     </FormLayout.Section>
   )
 }
-
-export default CollectiveVenueInformations

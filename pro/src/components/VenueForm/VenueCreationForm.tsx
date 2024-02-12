@@ -19,7 +19,7 @@ import RouteLeavingGuard, { BlockerFunction } from '../RouteLeavingGuard'
 
 import { Accessibility } from './Accessibility'
 import { Activity } from './Activity'
-import CollectiveVenueInformations from './CollectiveVenueInformations/CollectiveVenueInformations'
+import { CollectiveVenueInformationsCreation } from './CollectiveVenueInformations/CollectiveVenueInformationsCreation'
 import { Contact } from './Contact'
 import { ImageUploaderVenue } from './ImageUploaderVenue'
 import { Informations } from './Informations'
@@ -126,7 +126,7 @@ export const VenueCreationForm = ({
         <Contact isVenueVirtual={initialIsVirtual} isCreatingVenue={true} />
 
         {canOffererCreateCollectiveOffer && isSiretValued && (
-          <CollectiveVenueInformations
+          <CollectiveVenueInformationsCreation
             isCreatingVenue={true}
             canCreateCollectiveOffer={canOffererCreateCollectiveOffer}
           />
