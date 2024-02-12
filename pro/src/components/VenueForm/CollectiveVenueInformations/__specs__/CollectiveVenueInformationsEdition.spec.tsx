@@ -30,7 +30,6 @@ describe('CollectiveVenueInformations', () => {
           state: DMSApplicationstatus.EN_CONSTRUCTION,
         },
       },
-      isCreatingVenue: false,
       canCreateCollectiveOffer: false,
     })
     expect(
@@ -51,7 +50,6 @@ describe('CollectiveVenueInformations', () => {
           state: DMSApplicationstatus.ACCEPTE,
         },
       },
-      isCreatingVenue: false,
       canCreateCollectiveOffer: true,
     })
     expect(
@@ -72,7 +70,6 @@ describe('CollectiveVenueInformations', () => {
           state: DMSApplicationstatus.ACCEPTE,
         },
       },
-      isCreatingVenue: false,
       canCreateCollectiveOffer: true,
     })
     expect(
