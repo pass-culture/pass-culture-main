@@ -16,7 +16,7 @@ import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/Reimburse
 import { Accessibility } from './Accessibility'
 import { Activity } from './Activity'
 import BankAccountInfos from './BankAccountInfos/BankAccountInfos'
-import CollectiveVenueInformations from './CollectiveVenueInformations/CollectiveVenueInformations'
+import { CollectiveVenueInformationsEdition } from './CollectiveVenueInformations/CollectiveVenueInformationsEdition'
 import { Contact } from './Contact'
 import { ImageUploaderVenue } from './ImageUploaderVenue'
 import { Informations } from './Informations'
@@ -128,7 +128,7 @@ export const VenueEditionForm = ({
 
         {(canOffererCreateCollectiveOffer ||
           Boolean(venue?.collectiveDmsApplication)) && (
-          <CollectiveVenueInformations
+          <CollectiveVenueInformationsEdition
             venue={venue}
             isCreatingVenue={false}
             canCreateCollectiveOffer={canOffererCreateCollectiveOffer}
