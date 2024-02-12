@@ -17,6 +17,7 @@ export interface ContactButtonProps {
   userEmail?: string | null
   userRole: AdageFrontRoles
   isInSuggestions?: boolean
+  children?: React.ReactNode
 }
 
 const ContactButton = ({
@@ -29,6 +30,7 @@ const ContactButton = ({
   userEmail,
   userRole,
   isInSuggestions,
+  children,
 }: ContactButtonProps): JSX.Element => {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -54,7 +56,7 @@ const ContactButton = ({
     <>
       <div className={`prebooking-button-container ${className}`}>
         <Button className="prebooking-button" onClick={handleButtonClick}>
-          Contacter
+          {children ?? 'Contacter'}
         </Button>
       </div>
       {isModalOpen && (

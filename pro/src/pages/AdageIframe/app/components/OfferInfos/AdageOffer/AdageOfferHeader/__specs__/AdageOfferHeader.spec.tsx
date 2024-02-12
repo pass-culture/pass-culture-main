@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 
-import { AdageFrontRoles } from 'apiClient/adage'
+import { AdageFrontRoles, StudentLevels } from 'apiClient/adage'
 import { OfferAddressType } from 'apiClient/v1'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
@@ -160,5 +160,16 @@ describe('AdageOfferHeader', () => {
         'Tout au long de l’année scolaire (l’offre est permanente)'
       )
     ).toBeInTheDocument()
+  })
+
+  it('should show "Multiniveaux" instead of the list of student levels when there are more than 1', () => {
+    renderAdageOfferHeader({
+      offer: {
+        ...defaultCollectiveTemplateOffer,
+        students: [StudentLevels.CAP_1RE_ANN_E, StudentLevels.COLL_GE_3E],
+      },
+    })
+
+    expect(screen.getByText('Multiniveaux')).toBeInTheDocument()
   })
 })
