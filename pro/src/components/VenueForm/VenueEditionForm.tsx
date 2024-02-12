@@ -130,7 +130,6 @@ export const VenueEditionForm = ({
           Boolean(venue?.collectiveDmsApplication)) && (
           <CollectiveVenueInformationsEdition
             venue={venue}
-            isCreatingVenue={false}
             canCreateCollectiveOffer={canOffererCreateCollectiveOffer}
           />
         )}

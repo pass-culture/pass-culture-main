@@ -11,13 +11,11 @@ import CollectiveDmsTimeline from './CollectiveDmsTimeline/CollectiveDmsTimeline
 
 export interface CollectiveVenueInformationsEditionProps {
   venue?: Venue
-  isCreatingVenue: boolean
   canCreateCollectiveOffer: boolean
 }
 
 export const CollectiveVenueInformationsEdition = ({
   venue,
-  isCreatingVenue,
   canCreateCollectiveOffer,
 }: CollectiveVenueInformationsEditionProps) => {
   const hasAdageIdForMoreThan30Days = Boolean(
@@ -28,8 +26,7 @@ export const CollectiveVenueInformationsEdition = ({
   const shouldEACInformationSection =
     hasAdageIdForMoreThan30Days ||
     ((!venue?.adageInscriptionDate || !venue?.collectiveDmsApplication) &&
-      canCreateCollectiveOffer) ||
-    isCreatingVenue
+      canCreateCollectiveOffer)
 
   const hasRefusedDmsApplication =
     venue?.collectiveDmsApplication?.state === DMSApplicationstatus.REFUSE ||
@@ -37,11 +34,7 @@ export const CollectiveVenueInformationsEdition = ({
 
   return (
     <FormLayout.Section
-      title={
-        isCreatingVenue
-          ? 'Mes informations pour les enseignants'
-          : 'A destination des scolaires'
-      }
+      title="A destination des scolaires"
       id="venue-collective-data"
       description={
         venue?.hasAdageId ||
@@ -61,7 +54,7 @@ export const CollectiveVenueInformationsEdition = ({
         />
       )}
       {shouldEACInformationSection && (
-        <EACInformation venue={venue} isCreatingVenue={isCreatingVenue} />
+        <EACInformation venue={venue} isCreatingVenue={false} />
       )}
     </FormLayout.Section>
   )
