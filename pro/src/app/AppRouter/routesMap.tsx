@@ -102,16 +102,8 @@ const routes: RouteConfig[] = [
   },
   {
     lazy: () => import('pages/VenueEdition/VenueEdition'),
-    path: '/structures/:offererId/lieux/:venueId',
+    path: '/structures/:offererId/lieux/:venueId/*',
     title: 'Modifier un lieu',
-  },
-  {
-    lazy: () =>
-      import(
-        'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
-      ),
-    path: '/structures/:offererId/lieux/:venueId/eac',
-    title: 'Modifier les informations pour les enseignants d’un lieu',
   },
   {
     lazy: () => import('pages/OfferType/OfferType'),
