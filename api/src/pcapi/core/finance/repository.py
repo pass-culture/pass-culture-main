@@ -954,7 +954,12 @@ def get_bank_account_with_current_venues_links(offerer_id: int, bank_account_id:
         .options(
             sqla_orm.contains_eager(models.BankAccount.offerer)
             .contains_eager(offerers_models.Offerer.managedVenues)
-            .load_only(offerers_models.Venue.id)
+            .load_only(
+                offerers_models.Venue.id,
+                offerers_models.Venue.name,
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.bookingEmail,
+            )
             .contains_eager(offerers_models.Venue.pricing_point_links)
             .load_only(offerers_models.VenuePricingPointLink.timespan)
         )
