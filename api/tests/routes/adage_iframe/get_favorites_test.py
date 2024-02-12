@@ -42,8 +42,12 @@ class GetFavoriteOfferTest:
             email=educational_redactor.email, uai=educational_institution.institutionId
         )
 
-        # when
-        with assert_num_queries(3):
+        # fetch redactor (1 query)
+        # fetch collective offer (1 query)
+        # fetch collective offer images data (1 query)
+        # fetch collective offer template (1 query)
+        # fetch collective offer template images data (1 query)
+        with assert_num_queries(5):
             response = test_client.get(
                 "/adage-iframe/collective/favorites",
             )
@@ -72,16 +76,17 @@ class GetFavoriteOfferTest:
                         "educationalPriceDetail": stock.priceDetail,
                     },
                     "venue": {
-                        "id": stock.collectiveOffer.venue.id,
+                        "adageId": None,
                         "address": "1 boulevard Poissonnière",
                         "city": "Paris",
                         "distance": None,
+                        "id": stock.collectiveOffer.venue.id,
+                        "imgUrl": None,
+                        "managingOfferer": {"name": stock.collectiveOffer.venue.managingOfferer.name},
                         "name": stock.collectiveOffer.venue.name,
                         "postalCode": "75000",
                         "publicName": stock.collectiveOffer.venue.publicName,
                         "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
-                        "managingOfferer": {"name": stock.collectiveOffer.venue.managingOfferer.name},
-                        "adageId": None,
                     },
                     "students": ["Lycée - Seconde"],
                     "offerVenue": {
@@ -141,16 +146,17 @@ class GetFavoriteOfferTest:
                     "isFavorite": True,
                     "name": collective_offer_template.name,
                     "venue": {
-                        "id": collective_offer_template.venue.id,
+                        "adageId": None,
                         "address": "1 boulevard Poissonnière",
                         "city": "Paris",
+                        "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
                         "distance": None,
+                        "id": collective_offer_template.venue.id,
+                        "imgUrl": None,
+                        "managingOfferer": {"name": collective_offer_template.venue.managingOfferer.name},
                         "name": collective_offer_template.venue.name,
                         "postalCode": "75000",
                         "publicName": collective_offer_template.venue.publicName,
-                        "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
-                        "managingOfferer": {"name": collective_offer_template.venue.managingOfferer.name},
-                        "adageId": None,
                     },
                     "students": ["Lycée - Seconde"],
                     "offerVenue": {
@@ -192,7 +198,18 @@ class GetFavoriteOfferTest:
     def test_get_favorite_offer_only_test(self, client):
         educational_institution = educational_factories.EducationalInstitutionFactory()
         national_program = educational_factories.NationalProgramFactory()
-        stock = educational_factories.CollectiveStockFactory(
+        stock1 = educational_factories.CollectiveStockFactory(
+            beginningDatetime=datetime(2021, 5, 15),
+            collectiveOffer__name="offer name",
+            collectiveOffer__description="offer description",
+            price=10,
+            collectiveOffer__students=[StudentLevels.GENERAL2],
+            collectiveOffer__educational_domains=[educational_factories.EducationalDomainFactory()],
+            collectiveOffer__institution=educational_institution,
+            collectiveOffer__teacher=educational_factories.EducationalRedactorFactory(),
+            collectiveOffer__nationalProgramId=national_program.id,
+        )
+        stock2 = educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime(2021, 5, 15),
             collectiveOffer__name="offer name",
             collectiveOffer__description="offer description",
@@ -204,15 +221,18 @@ class GetFavoriteOfferTest:
             collectiveOffer__nationalProgramId=national_program.id,
         )
         educational_redactor = educational_factories.EducationalRedactorFactory(
-            favoriteCollectiveOffers=[stock.collectiveOffer],
+            favoriteCollectiveOffers=[stock1.collectiveOffer, stock2.collectiveOffer],
         )
 
         test_client = client.with_adage_token(
             email=educational_redactor.email, uai=educational_institution.institutionId
         )
 
-        # when
-        with assert_num_queries(3):
+        # fetch redactor (1 query)
+        # fetch collective offer (1 query)
+        # fetch collective offer template (1 query)
+        # fetch images data (1 query)
+        with assert_num_queries(4):
             response = test_client.get(
                 "/adage-iframe/collective/favorites",
             )
@@ -222,9 +242,9 @@ class GetFavoriteOfferTest:
         assert not response.json["favoritesTemplate"]
 
     def test_get_favorite_template_only_test(self, client):
-        collective_offer_template = educational_factories.CollectiveOfferTemplateFactory()
+        collective_offer_templates = educational_factories.CollectiveOfferTemplateFactory.create_batch(2)
         educational_redactor = educational_factories.EducationalRedactorFactory(
-            favoriteCollectiveOfferTemplates=[collective_offer_template],
+            favoriteCollectiveOfferTemplates=collective_offer_templates,
         )
         educational_institution = educational_factories.EducationalInstitutionFactory()
 
@@ -232,11 +252,14 @@ class GetFavoriteOfferTest:
             email=educational_redactor.email, uai=educational_institution.institutionId
         )
 
-        # when
-        with assert_num_queries(3):
+        # fetch redactor (1 query)
+        # fetch collective offer (1 query)
+        # fetch collective offer template (1 query)
+        # fetch images data (1 query)
+        with assert_num_queries(4):
             response = test_client.get(
                 "/adage-iframe/collective/favorites",
             )
-        assert response.status_code == 200
-        assert not response.json["favoritesOffer"]
-        assert response.json["favoritesTemplate"]
+            assert response.status_code == 200
+            assert not response.json["favoritesOffer"]
+            assert response.json["favoritesTemplate"]
