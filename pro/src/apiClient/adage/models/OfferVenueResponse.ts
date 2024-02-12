@@ -11,6 +11,7 @@ export type OfferVenueResponse = {
   coordinates: Coordinates;
   distance?: number | null;
   id: number;
+  imgUrl?: string | null;
   managingOfferer: OfferManagingOffererResponse;
   name: string;
   postalCode?: string | null;

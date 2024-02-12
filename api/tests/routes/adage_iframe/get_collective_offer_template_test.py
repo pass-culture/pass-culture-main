@@ -39,9 +39,11 @@ def offer_fixture():
 
 class CollectiveOfferTemplateTest:
     def test_get_collective_offer_template(self, eac_client, redactor):
+        IMG_URL = "http://localhost/some/picture.png"
         venue = offerers_factories.VenueFactory()
         offer = educational_factories.CollectiveOfferTemplateFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
+            venue__bannerUrl=IMG_URL,
             name="offer name",
             description="offer description",
             priceDetail="détail du prix",
@@ -73,16 +75,17 @@ class CollectiveOfferTemplateTest:
             "name": "offer name",
             "subcategoryLabel": offer.subcategory.app_label,
             "venue": {
+                "adageId": None,
                 "address": "1 boulevard Poissonnière",
                 "city": "Paris",
                 "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
                 "distance": None,
                 "id": offer.venue.id,
+                "imgUrl": IMG_URL,
+                "managingOfferer": {"name": offer.venue.managingOfferer.name},
                 "name": offer.venue.name,
                 "postalCode": "75000",
                 "publicName": offer.venue.publicName,
-                "managingOfferer": {"name": offer.venue.managingOfferer.name},
-                "adageId": None,
             },
             "interventionArea": offer.interventionArea,
             "audioDisabilityCompliant": False,
@@ -146,7 +149,8 @@ class CollectiveOfferTemplateTest:
         # 2. fetch collective offer and related data
         # 3. fetch the offerVenue's details (Venue)
         # 4. find out if its a redactor's favorite
-        with assert_num_queries(4):
+        # 5. fetch the venue's images
+        with assert_num_queries(5):
             response = eac_client.get(url)
 
         assert response.status_code == 200
@@ -176,7 +180,8 @@ class CollectiveOfferTemplateTest:
         # 2. fetch collective offer and related data
         # 3. fetch the offerVenue's details (Venue)
         # 4. find out if its a redactor's favorite
-        with assert_num_queries(4):
+        # 5. fetch the venue's images
+        with assert_num_queries(5):
             response = eac_client.get(url)
 
         assert response.status_code == 200
@@ -194,7 +199,8 @@ class CollectiveOfferTemplateTest:
         # 1. fetch redactor
         # 2. fetch collective offer template and related data
         # 3. find out if its a redactor's favorite
-        with assert_num_queries(3):
+        # 4. fetch the venue's images
+        with assert_num_queries(4):
             response = eac_client.get(dst)
 
         assert response.status_code == 200
@@ -226,7 +232,8 @@ class CollectiveOfferTemplateTest:
 
         # 1. fetch redactor
         # 2. fetch collective offer and related data
-        with assert_num_queries(2):
+        # 3. fetch the venue's images
+        with assert_num_queries(3):
             response = eac_client.get(dst)
 
         assert response.status_code == 200
