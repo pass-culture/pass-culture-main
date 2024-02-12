@@ -42,3 +42,7 @@ $arrow-triangle-height: rem.torem(8px);
     transform: translate(-50%);
   }
 }
+
+.tooltip-hidden {
+  @include a11y.visually-hidden;
+}
