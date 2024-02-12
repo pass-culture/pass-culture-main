@@ -3697,6 +3697,26 @@ def test_public_api(client):
                     },
                     "summary": "get_venue <GET>",
                     "tags": [],
+                },
+            },
+            "/native/v2/profile/update_email": {
+                "post": {
+                    "description": "",
+                    "operationId": "post__native_v2_profile_update_email",
+                    "parameters": [],
+                    "responses": {
+                        "204": {"description": "No Content"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "update_user_email <POST>",
+                    "tags": [],
                 }
             },
         },

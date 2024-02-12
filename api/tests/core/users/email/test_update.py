@@ -35,7 +35,7 @@ class RequestEmailUpdateTest:
         user = users_factories.UserFactory(email=old_email, password=password)
         new_email = "pypy@test.com"
 
-        email_update.request_email_update(user, new_email, password)
+        email_update.request_email_update_with_credentials(user, new_email, password)
 
         reloaded_user = User.query.get(user.id)
         assert len(reloaded_user.email_history) == 1

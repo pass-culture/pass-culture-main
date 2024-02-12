@@ -83,7 +83,7 @@ def reset_recredit_amount_to_show(user: users_models.User) -> serializers.UserPr
 @authenticated_and_active_user_required
 def update_user_email(user: users_models.User, body: serializers.UserProfileEmailUpdate) -> None:
     try:
-        email_api.request_email_update(user, body.email, body.password)
+        email_api.request_email_update_with_credentials(user, body.email, body.password)
     except exceptions.EmailUpdateTokenExists:
         raise account_errors.EmailUpdatePendingError()
     except exceptions.EmailUpdateLimitReached:
