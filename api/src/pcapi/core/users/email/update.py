@@ -31,17 +31,49 @@ class EmailChangeAction(enum.Enum):
 
 
 def _build_link_for_email_change_action(
-    action: EmailChangeAction, new_email: str, expiration_date: datetime, token: str
+    action: EmailChangeAction, new_email: str | None, expiration_date: datetime, token: str
 ) -> str:
     expiration = int(expiration_date.timestamp())
     path = action.value
     params = {
         "token": token,
         "expiration_timestamp": expiration,
-        "new_email": new_email,
     }
+    if new_email:
+        params["new_email"] = new_email
 
     return generate_firebase_dynamic_link(path, params)
+
+
+def send_confirmation_email_for_email_change(user: models.User) -> None:
+    """Generate a Token
+    Generate a link with the token
+    Send an email with the link"""
+
+    expiration_date = generate_email_change_token_expiration_date()
+    encoded_token = token_utils.Token.create(
+        token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION,
+        constants.EMAIL_CHANGE_TOKEN_LIFE_TIME,
+        user.id,
+    ).encoded_token
+
+    link_for_email_change_confirmation = _build_link_for_email_change_action(
+        EmailChangeAction.CONFIRMATION,
+        new_email=None,
+        expiration_date=expiration_date,
+        token=encoded_token,
+    )
+    link_for_email_change_cancellation = _build_link_for_email_change_action(
+        EmailChangeAction.CANCELLATION,
+        new_email=None,
+        expiration_date=expiration_date,
+        token=encoded_token,
+    )
+    transactional_mails.send_confirmation_email_change_email(
+        user,
+        link_for_email_change_confirmation,
+        link_for_email_change_cancellation,
+    )
 
 
 def generate_and_send_beneficiary_confirmation_email_for_email_change(user: models.User, new_email: str) -> None:
@@ -101,7 +133,18 @@ def generate_and_send_beneficiary_validation_email_for_email_change(user: models
     )
 
 
-def request_email_update(user: models.User, new_email: str, password: str) -> None:
+def request_email_update(user: models.User) -> None:
+    check_no_ongoing_email_update_request(user)
+    check_email_update_attempts_count(user)
+
+    email_history = models.UserEmailHistory.build_update_request(user=user)
+    db.session.add(email_history)
+
+    increment_email_update_attempts_count(user)
+    send_confirmation_email_for_email_change(user)
+
+
+def request_email_update_with_credentials(user: models.User, new_email: str, password: str) -> None:
     check_no_ongoing_email_update_request(user)
     check_email_update_attempts_count(user)
     check_user_password(user, password)
