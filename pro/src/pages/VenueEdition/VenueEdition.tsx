@@ -1,4 +1,11 @@
-import { Navigate, useParams } from 'react-router-dom'
+import {
+  generatePath,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  useParams,
+} from 'react-router-dom'
 
 import { OfferStatus } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
@@ -12,6 +19,7 @@ import { useAdapter } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import fullPlusIcon from 'icons/full-more.svg'
+import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
 import {
   getFilteredOffersAdapter,
   Payload,
@@ -21,6 +29,7 @@ import { Title } from 'ui-kit'
 import Button from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
+import Tabs, { Tab } from 'ui-kit/Tabs/Tabs'
 
 import useGetProviders from '../../core/Venue/adapters/getProviderAdapter/useGetProvider'
 import useGetVenueProviders from '../../core/Venue/adapters/getVenueProviderAdapter/useGetVenueProvider'
@@ -39,6 +48,9 @@ export const VenueEdition = (): JSX.Element | null => {
     venueId: string
   }>()
   const notify = useNotification()
+  const location = useLocation()
+
+  // TODO: refactor with the new loading pattern once we know which one to use
   const {
     isLoading: isLoadingVenue,
     error: errorVenue,
@@ -105,6 +117,24 @@ export const VenueEdition = (): JSX.Element | null => {
     return null
   }
 
+  if (
+    isLoadingVenue ||
+    isLoadingVenueTypes ||
+    isLoadingVenueLabels ||
+    isLoadingProviders ||
+    isLoadingVenueProviders ||
+    isLoadingOfferer ||
+    isLoadingVenueOffers ||
+    !offerer ||
+    !venue
+  ) {
+    return (
+      <AppLayout>
+        <Spinner />
+      </AppLayout>
+    )
+  }
+
   const {
     id: initialId,
     isVirtual: initialIsVirtual,
@@ -112,69 +142,91 @@ export const VenueEdition = (): JSX.Element | null => {
     name: initialName,
   } = venue || {}
 
+  const tabs: Tab[] = [
+    {
+      key: 'individual',
+      label: 'Pour le grand public',
+      url: generatePath('/structures/:offererId/lieux/:venueId', {
+        offererId: String(offerer.id),
+        venueId: String(venue.id),
+      }),
+    },
+    {
+      key: 'collective',
+      label: 'Pour les enseignants',
+      url: generatePath('/structures/:offererId/lieux/:venueId/eac', {
+        offererId: String(offerer.id),
+        venueId: String(venue.id),
+      }),
+    },
+  ]
+  const activeStep = location.pathname.includes('eac')
+    ? 'collective'
+    : 'individual'
+
   return (
     <AppLayout>
-      {isLoadingVenue ||
-      isLoadingVenueTypes ||
-      isLoadingVenueLabels ||
-      isLoadingProviders ||
-      isLoadingVenueProviders ||
-      isLoadingOfferer ||
-      isLoadingVenueOffers ? (
-        <Spinner />
-      ) : (
-        <div>
-          <div className={styles['venue-form-heading']}>
-            <div className={styles['title-page']}>
-              <Title level={1}>Lieu</Title>
+      <div>
+        <div className={styles['venue-form-heading']}>
+          <div className={styles['title-page']}>
+            <Title level={1}>Lieu</Title>
 
-              {!isNewSideBarNavigation && (
-                <a
-                  href={`/offre/creation?lieu=${initialId}&structure=${offerer.id}`}
-                >
-                  <Button variant={ButtonVariant.PRIMARY} icon={fullPlusIcon}>
-                    <span>Créer une offre</span>
-                  </Button>
-                </a>
-              )}
-            </div>
-            <Title level={2} className={styles['venue-name']}>
-              {
-                /* istanbul ignore next: DEBT, TO FIX */ initialIsVirtual
-                  ? `${offerer.name} (Offre numérique)`
-                  : publicName || initialName
-              }
-            </Title>
+            {!isNewSideBarNavigation && (
+              <a
+                href={`/offre/creation?lieu=${initialId}&structure=${offerer.id}`}
+              >
+                <Button variant={ButtonVariant.PRIMARY} icon={fullPlusIcon}>
+                  <span>Créer une offre</span>
+                </Button>
+              </a>
+            )}
+          </div>
+          <Title level={2} className={styles['venue-name']}>
             {
-              /* istanbul ignore next: DEBT, TO FIX */
-              !isNewBankDetailsEnabled && (
-                <>
-                  {/* For the screen reader to spell-out the id, we add a
+              /* istanbul ignore next: DEBT, TO FIX */ initialIsVirtual
+                ? `${offerer.name} (Offre numérique)`
+                : publicName || initialName
+            }
+          </Title>
+          {
+            /* istanbul ignore next: DEBT, TO FIX */
+            !isNewBankDetailsEnabled && (
+              <>
+                {/* For the screen reader to spell-out the id, we add a
                 visually hidden span with a space between each character.
                 The other span will be hidden from the screen reader. */}
-                  <span className={styles['identifier-hidden']}>
-                    Identifiant du lieu : {venue.dmsToken.split('').join(' ')}
-                  </span>
-                  <span aria-hidden={true}>
-                    Identifiant du lieu : {venue.dmsToken}
-                  </span>
-                </>
-              )
-            }
-          </div>
-
-          <VenueEditionFormScreen
-            initialValues={setInitialFormValues(venue)}
-            offerer={offerer}
-            venueTypes={venueTypes}
-            venueLabels={venueLabels}
-            providers={providers}
-            venue={venue}
-            venueProviders={venueProviders}
-            hasBookingQuantity={venue?.id ? hasBookingQuantity : false}
-          />
+                <span className={styles['identifier-hidden']}>
+                  Identifiant du lieu : {venue.dmsToken.split('').join(' ')}
+                </span>
+                <span aria-hidden={true}>
+                  Identifiant du lieu : {venue.dmsToken}
+                </span>
+              </>
+            )
+          }
         </div>
-      )}
+
+        <Tabs tabs={tabs} selectedKey={activeStep} />
+
+        <Routes>
+          <Route
+            path=""
+            element={
+              <VenueEditionFormScreen
+                initialValues={setInitialFormValues(venue)}
+                offerer={offerer}
+                venueTypes={venueTypes}
+                venueLabels={venueLabels}
+                providers={providers}
+                venue={venue}
+                venueProviders={venueProviders}
+                hasBookingQuantity={venue?.id ? hasBookingQuantity : false}
+              />
+            }
+          />
+          <Route path="eac" element={<CollectiveDataEdition />} />
+        </Routes>
+      </div>
     </AppLayout>
   )
 }

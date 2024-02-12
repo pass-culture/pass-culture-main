@@ -38,7 +38,7 @@ const renderVenueEdition = (
   return renderWithProviders(
     <Routes>
       <Route
-        path="/structures/:offererId/lieux/:venueId"
+        path="/structures/:offererId/lieux/:venueId/*"
         element={<VenueEdition />}
       />
       <Route path="/accueil" element={<h1>Home</h1>} />
