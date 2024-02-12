@@ -265,7 +265,7 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
 
     ean_list_to_create = ean_to_create_or_update - ean_list_to_update
     offers_to_index = []
-    with repository.atomic():
+    with repository.transaction():
         if ean_list_to_create:
             created_offers = []
             existing_products = _get_existing_products(ean_list_to_create)
