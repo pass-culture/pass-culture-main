@@ -61,7 +61,8 @@ class CollectiveOfferTest:
         # 2. fetch collective offer and related data
         # 3. fetch the offerVenue's details (Venue)
         # 4. find out if its a redactor's favorite
-        with assert_num_queries(4):
+        # 5. fetch the venue's images
+        with assert_num_queries(5):
             response = eac_client.get(dst)
 
         # Then
@@ -83,16 +84,17 @@ class CollectiveOfferTest:
             },
             "subcategoryLabel": offer.subcategory.app_label,
             "venue": {
+                "adageId": None,
                 "address": "1 boulevard Poissonnière",
                 "city": "Paris",
                 "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
                 "distance": None,
                 "id": offer.venue.id,
+                "imgUrl": None,
+                "managingOfferer": {"name": offer.venue.managingOfferer.name},
                 "name": offer.venue.name,
                 "postalCode": "75000",
                 "publicName": offer.venue.publicName,
-                "managingOfferer": {"name": offer.venue.managingOfferer.name},
-                "adageId": None,
             },
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": False,
@@ -150,7 +152,8 @@ class CollectiveOfferTest:
         # 1. fetch redactor
         # 2. fetch collective offer and related data
         # 3. find out if its a redactor's favorite
-        with assert_num_queries(3):
+        # 4. fetch the venue's images
+        with assert_num_queries(4):
             response = eac_client.get(dst)
 
         # Then
@@ -195,7 +198,8 @@ class CollectiveOfferTest:
 
         # 1. fetch redactor
         # 2. fetch collective offer and related data
-        with assert_num_queries(2):
+        # 3. fetch the venue's images
+        with assert_num_queries(3):
             response = eac_client.get(dst)
 
         assert response.status_code == 200

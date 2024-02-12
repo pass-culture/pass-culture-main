@@ -60,7 +60,8 @@ class GetClassroomPlaylistTest(SharedPlaylistsErrorTests):
         # fetch redactor (1 query)
         # fetch redactor's favorites (1 query)
         # fetch playlist data (1 query)
-        with assert_num_queries(4):
+        # fetch images data (1 query)
+        with assert_num_queries(5):
             response = iframe_client.get(url_for(self.endpoint))
 
             assert response.status_code == 200
@@ -124,7 +125,8 @@ class GetNewTemplateOffersPlaylistQueryTest(SharedPlaylistsErrorTests):
         # fetch redactor (1 query)
         # fetch redactor's favorites (1 query)
         # fetch playlist data (1 query)
-        with assert_num_queries(4):
+        # fetch images data (1 query)
+        with assert_num_queries(5):
             response = iframe_client.get(url_for(self.endpoint))
 
             assert response.status_code == 200

@@ -65,6 +65,7 @@ class OfferVenueResponse(BaseModel):
     managingOfferer: OfferManagingOffererResponse
     adageId: str | None
     distance: Decimal | None
+    bannerUrl: str | None = Field(alias="imgUrl")
 
     class Config:
         orm_mode = True

@@ -973,12 +973,16 @@ def get_collective_offer_templates_for_playlist_query(
         .joinedload(
             offerers_models.Venue.managingOfferer,
             innerjoin=True,
-        )
-    )
-    query = query.options(
+        ),
         sa.orm.joinedload(educational_models.CollectivePlaylist.collective_offer_template).joinedload(
             educational_models.CollectiveOfferTemplate.domains
         ),
+        sa.orm.joinedload(educational_models.CollectivePlaylist.collective_offer_template)
+        .joinedload(
+            educational_models.CollectiveOfferTemplate.venue,
+            innerjoin=True,
+        )
+        .selectinload(offerers_models.Venue.googlePlacesInfo),
     )
     return query
 
@@ -1311,19 +1315,14 @@ def get_all_offer_by_redactor_id(redactor_id: int) -> list[educational_models.Co
             sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
                 educational_models.CollectiveStock.collectiveBookings
             ),
-        )
-        .options(
             sa_orm.joinedload(educational_models.CollectiveOffer.nationalProgram),
-        )
-        .options(
             sa_orm.joinedload(educational_models.CollectiveOffer.domains),
-        )
-        .options(
             sa_orm.joinedload(educational_models.CollectiveOffer.teacher),
-        )
-        .options(
             sa_orm.joinedload(educational_models.CollectiveOffer.venue).joinedload(
                 offerers_models.Venue.managingOfferer
+            ),
+            sa_orm.joinedload(educational_models.CollectiveOffer.venue).selectinload(
+                offerers_models.Venue.googlePlacesInfo
             ),
         )
         .filter(educational_models.EducationalRedactor.id == redactor_id)
@@ -1341,9 +1340,10 @@ def get_all_offer_template_by_redactor_id(redactor_id: int) -> list[educational_
             sa_orm.joinedload(educational_models.CollectiveOfferTemplate.venue).joinedload(
                 offerers_models.Venue.managingOfferer
             ),
-        )
-        .options(
             sa_orm.joinedload(educational_models.CollectiveOfferTemplate.domains),
+            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.venue).selectinload(
+                offerers_models.Venue.googlePlacesInfo
+            ),
         )
         .filter(educational_models.EducationalRedactor.id == redactor_id)
         .all()
