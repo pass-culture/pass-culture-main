@@ -29,12 +29,22 @@
 
   &-body {
     padding: rem.torem(24px);
+    display: flex;
+    flex-direction: column;
+    gap: rem.torem(24px);
   }
 
   &-main {
     display: flex;
+    flex-grow: 1;
     flex-direction: column;
     gap: rem.torem(32px);
+  }
+
+  &-side {
+    width: 100%;
+    max-width: 100%;
+    flex-shrink: 0;
   }
 }
 
@@ -73,6 +83,17 @@
         color: colors.$grey-medium;
       }
     }
+  }
+}
+
+@media (min-width: size.$tablet) {
+  .offer-body {
+    flex-direction: row;
+  }
+
+  .offer-side {
+    width: rem.torem(480px);
+    max-width: 50%;
   }
 }
 
