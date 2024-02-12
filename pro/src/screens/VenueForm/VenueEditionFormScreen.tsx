@@ -14,18 +14,13 @@ import { Offerer } from 'core/Offerers/types'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import { Providers, Venue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
-import fullPlusIcon from 'icons/full-more.svg'
 import strokeMailIcon from 'icons/stroke-mail.svg'
-import { Button, Title } from 'ui-kit'
-import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { serializeEditVenueBodyModel } from './serializers'
 import { venueSubmitRedirectUrl } from './utils/venueSubmitRedirectUrl'
-import style from './VenueEditionFormScreen.module.scss'
 
 interface VenueEditionProps {
   initialValues: VenueFormValues
@@ -61,11 +56,6 @@ export const VenueEditionFormScreen = ({
 
   const [isWithdrawalDialogOpen, setIsWithdrawalDialogOpen] =
     useState<boolean>(false)
-
-  const isNewBankDetailsEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
-  )
-  const isNewSideBarNavigation = useActiveFeature('WIP_ENABLE_PRO_SIDE_NAV')
 
   const handleCancelWithdrawalDialog = () => {
     setShouldSendMail(false)
@@ -179,80 +169,31 @@ export const VenueEditionFormScreen = ({
     validationSchema: formValidationSchema,
   })
 
-  const {
-    id: initialId,
-    isVirtual: initialIsVirtual,
-    publicName: publicName,
-    name: initialName,
-  } = venue || {}
-
   return (
-    <div>
-      <div className={style['venue-form-heading']}>
-        <div className={style['title-page']}>
-          <Title level={1}>Lieu</Title>
+    <FormikProvider value={formik}>
+      <form onSubmit={formik.handleSubmit}>
+        <VenueEditionForm
+          updateIsSiretValued={setIsSiretValued}
+          venueTypes={venueTypes}
+          venueLabels={venueLabels}
+          venueProvider={venueProviders}
+          provider={providers}
+          venue={venue}
+          offerer={offerer}
+        />
+      </form>
 
-          {!isNewSideBarNavigation && (
-            <a
-              href={`/offre/creation?lieu=${initialId}&structure=${offerer.id}`}
-            >
-              <Button variant={ButtonVariant.PRIMARY} icon={fullPlusIcon}>
-                <span>Créer une offre</span>
-              </Button>
-            </a>
-          )}
-        </div>
-        <Title level={2} className={style['venue-name']}>
-          {
-            /* istanbul ignore next: DEBT, TO FIX */ initialIsVirtual
-              ? `${offerer.name} (Offre numérique)`
-              : publicName || initialName
-          }
-        </Title>
-        {
-          /* istanbul ignore next: DEBT, TO FIX */
-          !isNewBankDetailsEnabled && (
-            <>
-              {/* For the screen reader to spell-out the id, we add a
-                visually hidden span with a space between each character.
-                The other span will be hidden from the screen reader. */}
-              <span className={style['identifier-hidden']}>
-                Identifiant du lieu : {venue.dmsToken.split('').join(' ')}
-              </span>
-              <span aria-hidden={true}>
-                Identifiant du lieu : {venue.dmsToken}
-              </span>
-            </>
-          )
-        }
-      </div>
-
-      <FormikProvider value={formik}>
-        <form onSubmit={formik.handleSubmit}>
-          <VenueEditionForm
-            updateIsSiretValued={setIsSiretValued}
-            venueTypes={venueTypes}
-            venueLabels={venueLabels}
-            venueProvider={venueProviders}
-            provider={providers}
-            venue={venue}
-            offerer={offerer}
-            initialIsVirtual={initialIsVirtual}
-          />
-        </form>
-
-        {isWithdrawalDialogOpen && (
-          <ConfirmDialog
-            cancelText="Ne pas envoyer"
-            confirmText="Envoyer un email"
-            leftButtonAction={handleCancelWithdrawalDialog}
-            onCancel={() => setIsWithdrawalDialogOpen(false)}
-            onConfirm={handleConfirmWithdrawalDialog}
-            icon={strokeMailIcon}
-            title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
-          />
-        )}
-      </FormikProvider>
-    </div>
+      {isWithdrawalDialogOpen && (
+        <ConfirmDialog
+          cancelText="Ne pas envoyer"
+          confirmText="Envoyer un email"
+          leftButtonAction={handleCancelWithdrawalDialog}
+          onCancel={() => setIsWithdrawalDialogOpen(false)}
+          onConfirm={handleConfirmWithdrawalDialog}
+          icon={strokeMailIcon}
+          title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
+        />
+      )}
+    </FormikProvider>
   )
 }

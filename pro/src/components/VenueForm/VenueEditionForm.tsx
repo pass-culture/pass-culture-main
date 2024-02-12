@@ -34,7 +34,6 @@ interface VenueFormProps {
   provider?: Providers[]
   venueProvider?: VenueProviderResponse[]
   venue: Venue
-  initialIsVirtual?: boolean
 }
 
 export const VenueEditionForm = ({
@@ -45,7 +44,6 @@ export const VenueEditionForm = ({
   provider,
   venueProvider,
   venue,
-  initialIsVirtual = false,
 }: VenueFormProps) => {
   const {
     values: { isPermanent },
@@ -76,7 +74,7 @@ export const VenueEditionForm = ({
       <FormLayout fullWidthActions>
         <FormLayout.MandatoryInfo />
 
-        {!initialIsVirtual && provider && venueProvider && (
+        {!venue.isVirtual && provider && venueProvider && (
           <OffersSynchronization
             provider={provider}
             venueProvider={venueProvider}
@@ -88,7 +86,7 @@ export const VenueEditionForm = ({
           isCreatedEntity={false}
           readOnly={true}
           updateIsSiretValued={updateIsSiretValued}
-          isVenueVirtual={initialIsVirtual}
+          isVenueVirtual={venue.isVirtual}
           siren={offerer.siren}
         />
 
@@ -99,7 +97,7 @@ export const VenueEditionForm = ({
           )
         }
 
-        {!initialIsVirtual && (
+        {!venue.isVirtual && (
           <FormLayout.Section
             title="Adresse du lieu"
             description="Cette adresse sera utilisée pour permettre aux jeunes de géolocaliser votre lieu."
@@ -113,18 +111,18 @@ export const VenueEditionForm = ({
         <Activity
           venueTypes={venueTypes}
           venueLabels={venueLabels}
-          isVenueVirtual={initialIsVirtual}
+          isVenueVirtual={venue.isVirtual}
           isCreatingVenue={false}
         />
 
-        {!initialIsVirtual && (
+        {!venue.isVirtual && (
           <>
             <Accessibility isCreatingVenue={false} />
             <WithdrawalDetails />
           </>
         )}
 
-        <Contact isVenueVirtual={initialIsVirtual} isCreatingVenue={false} />
+        <Contact isVenueVirtual={venue.isVirtual} isCreatingVenue={false} />
 
         {(canOffererCreateCollectiveOffer ||
           Boolean(venue?.collectiveDmsApplication)) && (
