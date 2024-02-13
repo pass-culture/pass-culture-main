@@ -151,7 +151,7 @@ FROM api-flask AS pcapi-tests
 USER root
 
 RUN apt-get update && \
-    apt-get install -y git --no-install-recommends && \
+    apt-get install -y git npm --no-install-recommends && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists*
 
@@ -159,3 +159,6 @@ COPY --chown=pcapi:pcapi tests/ tests
 COPY --chown=pcapi:pcapi pyproject.toml .
 
 USER pcapi
+
+RUN npm config set prefix "$HOME/.local/"
+RUN npm install --global squawk-cli

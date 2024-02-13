@@ -254,6 +254,7 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
                 withdrawal_delay=body.withdrawal_delay,
                 withdrawal_details=body.withdrawal_details,
                 withdrawal_type=body.withdrawal_type,
+                is_from_private_api=True,
             )
 
     except exceptions.OfferCreationBaseException as error:
@@ -375,6 +376,7 @@ def patch_offer(
                 withdrawalDetails=update_body.get("withdrawalDetails", offers_api.UNCHANGED),
                 withdrawalType=update_body.get("withdrawalType", offers_api.UNCHANGED),
                 shouldSendMail=update_body.get("shouldSendMail") or False,
+                is_from_private_api=True,
             )
     except (exceptions.OfferCreationBaseException, exceptions.OfferEditionBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)

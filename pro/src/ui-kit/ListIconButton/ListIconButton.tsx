@@ -13,6 +13,7 @@ interface ListIconButtonProps extends React.HTMLProps<HTMLButtonElement> {
   icon: string
   innerRef?: React.RefObject<HTMLButtonElement>
   className?: string
+  tooltipContentClassName?: string
   onClick?: () => void
   url?: string
   isExternal?: boolean
@@ -23,6 +24,7 @@ const LIST_ICON_SIZE = '16'
 const ListIconButton = ({
   children,
   className,
+  tooltipContentClassName,
   icon,
   innerRef,
   onClick,
@@ -43,7 +45,8 @@ const ListIconButton = ({
   const content = !buttonAttrs?.disabled ? (
     <Tooltip
       content={children}
-      className={styles['tooltip']}
+      tooltipContainerClassName={styles['tooltip']}
+      tooltipContentClassName={tooltipContentClassName}
       visuallyHidden={isTooltipHidden}
     >
       {svgicon}

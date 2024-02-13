@@ -39,6 +39,7 @@ class InvalidFormatException(AdresseException):
 class AddressInfo(pydantic_v1.BaseModel):
     id: str
     label: str
+    postcode: str
     latitude: float
     longitude: float
     score: float
@@ -49,21 +50,45 @@ def _get_backend() -> "BaseBackend":
     return backend_class()
 
 
+def get_municipality_centroid(city: str, postcode: str | None = None, citycode: str | None = None) -> AddressInfo:
+    """Return information about the requested city."""
+    return _get_backend().get_municipality_centroid(postcode=postcode, citycode=citycode, city=city)
+
+
 def get_address(address: str, postcode: str | None = None, city: str | None = None) -> AddressInfo:
     """Return information about the requested address."""
     return _get_backend().get_single_address_result(address=address, postcode=postcode, city=city)
 
 
 class BaseBackend:
+    def get_municipality_centroid(
+        self, city: str, postcode: str | None = None, citycode: str | None = None
+    ) -> AddressInfo:
+        raise NotImplementedError()
+
     def get_single_address_result(self, address: str, postcode: str | None, city: str | None = None) -> AddressInfo:
         raise NotImplementedError()
 
 
 class TestingBackend(BaseBackend):
+    def get_municipality_centroid(
+        self, city: str, postcode: str | None = None, citycode: str | None = None
+    ) -> AddressInfo:
+        # Used to check non-diffusible SIREN/SIRET
+        return AddressInfo(
+            id="06029",
+            label="Cannes",
+            postcode="06400",
+            score=0.9549627272727272,
+            latitude=43.555468,
+            longitude=7.004585,
+        )
+
     def get_single_address_result(self, address: str, postcode: str | None, city: str | None = None) -> AddressInfo:
         return AddressInfo(
             id="75101_9575_00003",
             label="3 Rue de Valois 75001 Paris",
+            postcode="75001",
             score=0.9651727272727272,
             latitude=48.87171,
             longitude=2.308289,
@@ -98,11 +123,14 @@ class ApiAdresseBackend(BaseBackend):
             raise AdresseApiException("Unexpected non-JSON response from Adresse API")
         return data
 
-    def _get_municipality_centroid(self, city: str, postcode: str) -> AddressInfo:
+    def get_municipality_centroid(
+        self, city: str, postcode: str | None = None, citycode: str | None = None
+    ) -> AddressInfo:
         """Fallback to querying the city, because the q parameter must contain part of the address label"""
         parameters = {
             "q": city,
             "postcode": postcode,
+            "citycode": citycode,
             "type": "municipality",
             "autocomplete": 0,
             "limit": 1,
@@ -138,7 +166,7 @@ class ApiAdresseBackend(BaseBackend):
                 extra={"queried_address": address, "postcode": postcode},
             )
             if city is not None and postcode is not None:
-                return self._get_municipality_centroid(city=city, postcode=postcode)
+                return self.get_municipality_centroid(city=city, postcode=postcode)
             raise NoResultException
 
         result = self._format_result(data)
@@ -172,4 +200,5 @@ class ApiAdresseBackend(BaseBackend):
             longitude=coordinates[0],
             score=properties["score"],
             label=properties["label"],
+            postcode=properties["postcode"],
         )

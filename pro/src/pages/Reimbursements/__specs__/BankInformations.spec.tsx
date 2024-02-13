@@ -53,13 +53,11 @@ function renderBankInformations() {
   renderWithProviders(
     <ReimbursementContext.Provider
       value={{
-        offerers: [{ name: 'toto', id: 1 }],
         selectedOfferer: {
           ...defaultGetOffererResponseModel,
           name: 'toto',
           id: 1,
         },
-        setOfferers: () => undefined,
         setSelectedOfferer: () => undefined,
       }}
     >

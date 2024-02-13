@@ -35,8 +35,8 @@ def create_data_thing_products() -> dict[str, offers_models.Product]:
             mock_index = (product_creation_counter + thing_subcategories_list_index) % len(MOCK_NAMES_DATA)
 
             name = "{} / {}".format(thing_subcategory.id, MOCK_NAMES_DATA[mock_index])
-            is_online_only = thing_subcategory.is_online_only
-            url = "https://ilestencoretemps.fr/" if is_online_only else None
+            if thing_subcategory.is_online_only:
+                continue
 
             thing_product = offers_factories.ProductFactory(
                 extraData={"author": MOCK_AUTHOR_NAMES[mock_index]},
@@ -44,7 +44,6 @@ def create_data_thing_products() -> dict[str, offers_models.Product]:
                 idAtProviders=str(id_at_providers),
                 name=MOCK_NAMES_DATA[mock_index],
                 subcategoryId=thing_subcategory.id,
-                url=url,
             )
 
             extraData = {}

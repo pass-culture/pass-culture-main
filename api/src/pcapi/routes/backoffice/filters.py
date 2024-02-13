@@ -974,6 +974,18 @@ def format_gtl_as_csr(gtl_id: str) -> Csr | None:
 def format_finance_incident_status(incident_status: finance_models.IncidentStatus) -> str:
     match incident_status:
         case finance_models.IncidentStatus.CREATED:
+            return "Créé"
+        case finance_models.IncidentStatus.CANCELLED:
+            return "Annulé"
+        case finance_models.IncidentStatus.VALIDATED:
+            return "Validé"
+        case _:
+            return incident_status.value
+
+
+def format_finance_incident_status_badge(incident_status: finance_models.IncidentStatus) -> str:
+    match incident_status:
+        case finance_models.IncidentStatus.CREATED:
             return '<span class="badge text-bg-secondary">Créé</span>'
         case finance_models.IncidentStatus.CANCELLED:
             return '<span class="badge text-bg-danger">Annulé</span>'
@@ -1008,6 +1020,10 @@ def format_finance_incident_type(incident_kind: finance_models.IncidentType) -> 
             return f'<span class="badge text-bg-light">{kind_str}</span>'
         case _:
             return incident_kind.value
+
+
+def field_list_get_number_from_name(field_name: str) -> str:
+    return field_name.split("-")[1]
 
 
 def install_template_filters(app: Flask) -> None:
@@ -1074,6 +1090,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["parse_referrer"] = parse_referrer
     app.jinja_env.filters["unescape"] = html.unescape
     app.jinja_env.filters["action_to_name"] = action_to_name
+    app.jinja_env.filters["field_list_get_number_from_name"] = field_list_get_number_from_name
     app.jinja_env.filters["pc_pro_bank_account_link"] = urls.build_pc_pro_bank_account_link
     app.jinja_env.filters["pc_pro_offer_link"] = urls.build_pc_pro_offer_link
     app.jinja_env.filters["pc_pro_offerer_link"] = urls.build_pc_pro_offerer_link
@@ -1086,6 +1103,6 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["pc_backoffice_public_account_link_in_comment"] = (
         urls.build_backoffice_public_account_link_in_comment
     )
-    app.jinja_env.filters["format_finance_incident_status"] = format_finance_incident_status
+    app.jinja_env.filters["format_finance_incident_status_badge"] = format_finance_incident_status_badge
     app.jinja_env.filters["format_finance_incident_type"] = format_finance_incident_type
     app.jinja_env.filters["format_finance_incident_type_str"] = format_finance_incident_type_str

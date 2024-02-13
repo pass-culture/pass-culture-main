@@ -1,15 +1,20 @@
 import datetime
 import decimal
+import random
 import typing
 import uuid
 
 import factory
+from factory.faker import faker
 
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.factories import BaseFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.models as offers_models
+from pcapi.core.providers.titelive_gtl import GTLS
 import pcapi.core.users.factories as users_factories
+from pcapi.domain import music_types
+from pcapi.domain import show_types
 from pcapi.models.offer_mixin import OfferValidationType
 
 from . import models
@@ -19,7 +24,7 @@ class ProductFactory(BaseFactory):
     class Meta:
         model = models.Product
 
-    subcategoryId = subcategories.CARTE_MUSEE.id
+    subcategoryId = subcategories.SUPPORT_PHYSIQUE_FILM.id
     name = factory.Sequence("Product {}".format)
     description = factory.Sequence("A passionate description of product {}".format)
 
@@ -33,6 +38,16 @@ class ProductFactory(BaseFactory):
         # Graciously provide the required idAtProviders if lastProvider is given.
         if kwargs.get("lastProvider") and not kwargs.get("idAtProviders"):
             kwargs["idAtProviders"] = uuid.uuid4()
+
+        if "extraData" not in kwargs:
+            subcategory_id = kwargs.get("subcategoryId")
+            assert isinstance(
+                subcategory_id, str
+            )  # if the subcategoryId was not given in the factory, it will get the default subcategoryId
+            kwargs["extraData"] = build_extra_data_from_subcategory(
+                subcategory_id, kwargs.pop("set_all_fields", False), True
+            )
+
         return super()._create(model_class, *args, **kwargs)
 
 
@@ -42,6 +57,70 @@ class EventProductFactory(ProductFactory):
 
 class ThingProductFactory(ProductFactory):
     subcategoryId = subcategories.SUPPORT_PHYSIQUE_FILM.id
+
+
+def build_extra_data_from_subcategory(
+    subcategory_id: str, set_all_fields: bool, build_for_product: bool = False
+) -> offers_models.OfferExtraData:
+    fake = faker.Faker(locale="fr_FR")
+    subcategory = subcategories.ALL_SUBCATEGORIES_DICT.get(subcategory_id)
+    if not subcategory:
+        raise ValueError(f"Unknown subcategory {subcategory_id}")
+    extradata: offers_models.OfferExtraData = {}
+    name_fields = [
+        subcategories.ExtraDataFieldEnum.AUTHOR.value,
+        subcategories.ExtraDataFieldEnum.PERFORMER.value,
+        subcategories.ExtraDataFieldEnum.SPEAKER.value,
+        subcategories.ExtraDataFieldEnum.STAGE_DIRECTOR.value,
+    ]
+    conditional_fields = (
+        sorted(  # we sort to ensure MUSIC_SUB_TYPE and SHOW_SUB_TYPE is always after MUSIC_TYPE and SHOW_TYPE
+            subcategory.conditional_fields,
+            key=lambda field: (
+                1
+                if field
+                in [
+                    subcategories.ExtraDataFieldEnum.MUSIC_SUB_TYPE.value,
+                    subcategories.ExtraDataFieldEnum.SHOW_SUB_TYPE.value,
+                ]
+                else 0
+            ),
+        )
+    )
+    for field in conditional_fields:
+        if not set_all_fields and not subcategory.conditional_fields[field].is_required_in_internal_form:
+            continue
+        match field:
+            case item if item in name_fields:
+                extradata[field] = fake.name()  # type: ignore [literal-required]
+            case subcategories.ExtraDataFieldEnum.EAN.value:
+                extradata[field] = fake.ean13()
+            case subcategories.ExtraDataFieldEnum.GTL_ID.value:
+                if subcategory_id == subcategories.LIVRE_PAPIER.id:
+                    if build_for_product:
+                        extradata[field] = random.choice(list(GTLS.keys()))
+                else:
+                    extradata[field] = fake.ean8()
+            case subcategories.ExtraDataFieldEnum.VISA.value:
+                extradata[field] = fake.ean()
+            case subcategories.ExtraDataFieldEnum.MUSIC_TYPE.value:
+                extradata[field] = str(random.choice(music_types.music_types).code)
+            case subcategories.ExtraDataFieldEnum.MUSIC_SUB_TYPE.value:
+                music_type_code = extradata.get(subcategories.ExtraDataFieldEnum.MUSIC_TYPE.value)
+                assert music_type_code
+                music_type = music_types.MUSIC_TYPES_BY_CODE.get(int(music_type_code))
+                assert music_type
+                extradata[field] = str(random.choice(music_type.children).code)
+            case subcategories.ExtraDataFieldEnum.SHOW_TYPE.value:
+                extradata[field] = str(random.choice(show_types.show_types).code)
+            case subcategories.ExtraDataFieldEnum.SHOW_SUB_TYPE.value:
+                show_type_code = extradata.get(subcategories.ExtraDataFieldEnum.SHOW_TYPE.value)
+                assert show_type_code
+                show_type = show_types.SHOW_TYPES_BY_CODE.get(int(show_type_code))
+                assert show_type
+                extradata[field] = str(random.choice(show_type.children).code)
+
+    return offers_models.OfferExtraData(**extradata)
 
 
 class OfferFactory(BaseFactory):
@@ -57,7 +136,6 @@ class OfferFactory(BaseFactory):
     motorDisabilityCompliant = False
     visualDisabilityCompliant = False
     lastValidationType = OfferValidationType.AUTO
-    extraData = None
 
     @classmethod
     def _create(
@@ -75,6 +153,15 @@ class OfferFactory(BaseFactory):
                 models.OfferValidationStatus.REJECTED,
                 models.OfferValidationStatus.PENDING,
             )
+        if "extraData" not in kwargs:
+            product = kwargs.get("product")
+            if product:
+                kwargs["extraData"] = product.extraData
+            subcategory_id = kwargs.get("subcategoryId")
+            assert isinstance(
+                subcategory_id, str
+            )  # if the subcategoryId was not given in the factory, it will get the default subcategoryId
+            kwargs["extraData"] = build_extra_data_from_subcategory(subcategory_id, kwargs.pop("set_all_fields", False))
 
         return super()._create(model_class, *args, **kwargs)
 

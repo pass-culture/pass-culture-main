@@ -9,36 +9,36 @@ $arrow-triangle-height: rem.torem(8px);
   position: relative;
   display: flex;
   justify-content: center;
+}
 
-  .tooltip {
-    @include fonts.caption;
+.tooltip {
+  @include fonts.caption;
 
-    display: block;
-    align-self: start;
-    color: colors.$white;
-    padding: rem.torem(4px);
-    max-width: rem.torem(200px);
-    border-radius: rem.torem(3px);
+  display: block;
+  align-self: start;
+  color: colors.$white;
+  padding: rem.torem(4px);
+  max-width: rem.torem(200px);
+  border-radius: rem.torem(3px);
+  position: absolute;
+  text-align: center;
+  width: max-content;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, calc(-120% - #{$arrow-triangle-height}));
+  background-color: colors.$secondary-dark;
+
+  &::after {
+    content: "";
     position: absolute;
-    text-align: center;
-    width: max-content;
-    top: 0;
+    margin-bottom: 4px;
+    width: 0;
+    height: 0;
+    border-width: $arrow-triangle-height;
+    border-style: solid;
+    border-color: colors.$secondary-dark transparent transparent transparent;
+    bottom: -($arrow-triangle-height * 2);
     left: 50%;
-    transform: translate(-50%, calc(-120% - #{$arrow-triangle-height}));
-    background-color: colors.$secondary-dark;
-
-    &::after {
-      content: "";
-      position: absolute;
-      margin-bottom: 4px;
-      width: 0;
-      height: 0;
-      border-width: $arrow-triangle-height;
-      border-style: solid;
-      border-color: colors.$secondary-dark transparent transparent transparent;
-      bottom: -($arrow-triangle-height * 2);
-      left: 50%;
-      transform: translate(-50%);
-    }
+    transform: translate(-50%);
   }
 }

@@ -1,9 +1,14 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useParams, useSearchParams } from 'react-router-dom'
 
-import { AdageFrontRoles } from 'apiClient/adage'
+import {
+  AdageFrontRoles,
+  CollectiveOfferTemplateResponseModel,
+  CollectiveOfferResponseModel,
+} from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import Breadcrumb, { Crumb } from 'components/Breadcrumb/Breadcrumb'
+import useActiveFeature from 'hooks/useActiveFeature'
 import strokePassIcon from 'icons/stroke-pass.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import strokeStarIcon from 'icons/stroke-star.svg'
@@ -12,8 +17,10 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import useAdageUser from '../../hooks/useAdageUser'
+import { HydratedCollectiveOfferTemplate } from '../../types/offers'
 import Offer from '../OffersInstantSearch/OffersSearch/Offers/Offer'
 
+import AdageOffer from './AdageOffer/AdageOffer'
 import offerInfosFallback from './assets/offer-infos-fallback.svg'
 import styles from './OfferInfos.module.scss'
 
@@ -25,10 +32,16 @@ export const OfferInfos = () => {
 
   const parentRouteInUrl = pathname.split('/')[2] ?? 'recherche'
 
-  const [offer, setOffer] = useState(state?.offer)
+  const [offer, setOffer] = useState<
+    CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
+  >(state?.offer)
   const [loading, setLoading] = useState(false)
 
   const { adageUser } = useAdageUser()
+
+  const isNewOfferInfoEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN'
+  )
 
   const crumbForCurrentRoute: { [key: string]: Crumb } = {
     recherche: {
@@ -105,12 +118,20 @@ export const OfferInfos = () => {
               ]}
             />
           </div>
-          <Offer
-            offer={{ ...offer, isTemplate: true }}
-            position={0}
-            queryId=""
-            openDetails={true}
-          />
+          {isNewOfferInfoEnabled ? (
+            <AdageOffer offer={offer} />
+          ) : (
+            <div className={styles['offer-container']}>
+              <Offer
+                //  TODO : Remove the "as". The "as" is temporary while the isTemplate adage rework isn't finished
+                //  Ultimately, HydratedCollectiveOfferTemplate wil be the same model as CollectiveOfferTemplateResponseModel
+                offer={offer as HydratedCollectiveOfferTemplate}
+                position={0}
+                queryId=""
+                openDetails={true}
+              />
+            </div>
+          )}
         </>
       ) : (
         <div className={styles['offers-info-fallback']}>

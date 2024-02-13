@@ -1,9 +1,11 @@
 from datetime import datetime
+from io import BytesIO
 
 from flask import flash
 from flask import redirect
 from flask import render_template
 from flask import request
+from flask import send_file
 from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
@@ -12,14 +14,18 @@ from werkzeug.exceptions import NotFound
 
 from pcapi.connectors.dms import api as dms_api
 from pcapi.core.finance import models as finance_models
+from pcapi.core.finance import repository as finance_repository
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro import forms as pro_forms
+from pcapi.routes.serialization import reimbursement_csv_serialize
 from pcapi.utils.human_ids import humanize
 
 from . import forms
@@ -100,12 +106,62 @@ def get_history(bank_account_id: int) -> utils.BackofficeResponse:
                 users_models.User.id, users_models.User.firstName, users_models.User.lastName
             ),
         )
+        .options(
+            sa.orm.joinedload(history_models.ActionHistory.venue).load_only(
+                offerers_models.Venue.id, offerers_models.Venue.name, offerers_models.Venue.publicName
+            )
+        )
         .all()
     )
 
     return render_template(
         "bank_account/get/history.html",
         actions=actions_history,
+    )
+
+
+@bank_blueprint.route("/<int:bank_account_id>/invoices", methods=["GET"])
+def get_invoices(bank_account_id: int) -> utils.BackofficeResponse:
+    invoices = (
+        finance_models.Invoice.query.filter(finance_models.Invoice.bankAccountId == bank_account_id)
+        .options(
+            sa.orm.joinedload(finance_models.Invoice.cashflows)
+            .load_only(finance_models.Cashflow.batchId)
+            .joinedload(finance_models.Cashflow.batch)
+            .load_only(finance_models.CashflowBatch.label),
+        )
+        .order_by(finance_models.Invoice.date.desc())
+    ).all()
+
+    return render_template(
+        "bank_account/get/invoices.html",
+        invoices=invoices,
+        bank_account_id=bank_account_id,
+    )
+
+
+@bank_blueprint.route("/<int:bank_account_id>/reimbursement-details", methods=["POST"])
+def download_reimbursement_details(bank_account_id: int) -> utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(
+            request.referrer or url_for("backoffice_web.bank_account.get", bank_account_id=bank_account_id), code=303
+        )
+
+    invoices = finance_models.Invoice.query.filter(finance_models.Invoice.id.in_(form.object_ids_list)).all()
+    is_new_journey_active = FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active()
+    reimbursement_details = [
+        reimbursement_csv_serialize.ReimbursementDetails(details, is_new_journey_active)
+        for details in finance_repository.find_all_invoices_finance_details([invoice.id for invoice in invoices])
+    ]
+    export_data = reimbursement_csv_serialize.generate_reimbursement_details_csv(reimbursement_details)
+    export_date = datetime.utcnow().strftime("%Y-%m-%d-%H-%M")
+    return send_file(
+        BytesIO(export_data.encode("utf-8-sig")),
+        as_attachment=True,
+        download_name=f"details_remboursements_{bank_account_id}_{export_date}.csv",
+        mimetype="text/csv",
     )
 
 

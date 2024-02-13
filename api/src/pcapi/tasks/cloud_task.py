@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import hashlib
 import json
 import logging
@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 AUTHORIZATION_HEADER_KEY = "AUTHORIZATION"
 AUTHORIZATION_HEADER_VALUE = f"Bearer {settings.CLOUD_TASK_BEARER_TOKEN}"
 CLOUD_TASK_SUBPATH = "/cloud-tasks"
+REQUEST_TIMEOUT = datetime.timedelta(seconds=10)
 
 
 def get_client() -> tasks_v2.CloudTasksClient:
@@ -34,7 +35,7 @@ def enqueue_task(
     queue: str,
     http_request: tasks_v2.HttpRequest,
     task_id: str | None = None,
-    schedule_time: datetime | None = None,
+    schedule_time: datetime.datetime | None = None,
     task_request_timeout: int | None = None,
 ) -> str | None:
     client = get_client()
@@ -69,6 +70,7 @@ def enqueue_task(
                 multiplier=settings.CLOUD_TASK_RETRY_MULTIPLIER,
                 deadline=settings.CLOUD_TASK_RETRY_DEADLINE,
             ),
+            timeout=REQUEST_TIMEOUT.total_seconds(),
         )
     except AlreadyExists:
         logger.info("Task on queue %s url %s already retried", queue, http_request.url)
@@ -77,7 +79,7 @@ def enqueue_task(
         logger.exception(
             "Failed to enqueue a task: %s",
             exc,
-            extra={"queue": queue, "task_url": http_request.url, "body": http_request.body},
+            extra={"queue": queue, "task_url": http_request.url, "body": http_request.body, "exc": str(exc)},
         )
         return None
 
@@ -112,7 +114,7 @@ def enqueue_internal_task(
     # id is recommended".
     task_id = hashlib.sha1(json.dumps(payload, sort_keys=True).encode()).hexdigest() if deduplicate else None
 
-    schedule_time = datetime.utcnow() + relativedelta(seconds=delayed_seconds) if delayed_seconds else None
+    schedule_time = datetime.datetime.utcnow() + relativedelta(seconds=delayed_seconds) if delayed_seconds else None
 
     return enqueue_task(
         queue, http_request, task_id=task_id, schedule_time=schedule_time, task_request_timeout=task_request_timeout

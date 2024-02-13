@@ -150,6 +150,7 @@ export const MultiSelectAutocomplete = ({
           hasError={searchMeta.touched && !!searchMeta.error}
           type="text"
           disabled={disabled}
+          aria-required={!isOptional}
           {...searchField}
           maxLength={filterMaxLength}
         />

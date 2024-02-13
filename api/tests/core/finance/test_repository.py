@@ -59,7 +59,7 @@ class GetReimbursementPointsTest:
         assert reimbursement_points == [reimbursement_point1]
 
 
-class GetInvoicesQueryTest:
+class GetInvoicesQueryLegacyTest:
     def test_basics(self):
         offerer = offerers_factories.OffererFactory()
         pro = users_factories.ProFactory()
@@ -76,7 +76,7 @@ class GetInvoicesQueryTest:
         offerer2 = reimbursement_point3.managingOfferer
         offerers_factories.NotValidatedUserOffererFactory(user=pro, offerer=offerer2)
 
-        invoices = repository.get_invoices_query(pro).order_by(models.Invoice.id)
+        invoices = repository.get_invoices_query_legacy(pro).order_by(models.Invoice.id)
         assert list(invoices) == [invoice1, invoice2]
 
     def test_filter_on_date(self):
@@ -97,7 +97,7 @@ class GetInvoicesQueryTest:
             date=datetime.date(2021, 8, 1),
         )
 
-        invoices = repository.get_invoices_query(
+        invoices = repository.get_invoices_query_legacy(
             pro,
             date_from=datetime.date(2021, 7, 1),
             date_until=datetime.date(2021, 8, 1),
@@ -113,7 +113,7 @@ class GetInvoicesQueryTest:
         reimbursement_point2 = offerers_factories.VenueFactory(managingOfferer=offerer, reimbursement_point="self")
         _invoice2 = factories.InvoiceFactory(reimbursementPoint=reimbursement_point2)
 
-        invoices = repository.get_invoices_query(
+        invoices = repository.get_invoices_query_legacy(
             pro,
             reimbursement_point_id=reimbursement_point1.id,
         )
@@ -131,7 +131,7 @@ class GetInvoicesQueryTest:
         other_reimbursement_point = offerers_factories.VenueFactory(reimbursement_point="self")
         _invoice2 = factories.InvoiceFactory(reimbursementPoint=other_reimbursement_point)
 
-        invoices = repository.get_invoices_query(
+        invoices = repository.get_invoices_query_legacy(
             pro1,
             reimbursement_point_id=other_reimbursement_point.id,
         )
@@ -145,9 +145,109 @@ class GetInvoicesQueryTest:
 
         admin = users_factories.AdminFactory()
 
-        invoices = repository.get_invoices_query(
+        invoices = repository.get_invoices_query_legacy(
             admin,
             reimbursement_point_id=reimbursement_point1.id,
+        )
+        assert list(invoices) == [invoice1]
+
+    def test_admin_without_filter(self):
+        factories.InvoiceFactory()
+        admin = users_factories.AdminFactory()
+
+        invoices = repository.get_invoices_query_legacy(admin)
+        assert invoices.count() == 0
+
+
+class GetInvoicesQueryTest:
+    def test_basics(self):
+        offerer = offerers_factories.OffererFactory()
+        pro = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        bank_account1 = factories.BankAccountFactory(offerer=offerer)
+        invoice1 = factories.InvoiceFactory(bankAccount=bank_account1)
+        bank_account2 = factories.BankAccountFactory(offerer=offerer)
+        invoice2 = factories.InvoiceFactory(bankAccount=bank_account2)
+        other_bank_account = factories.BankAccountFactory()
+        _other_invoice = factories.InvoiceFactory(bankAccount=other_bank_account)
+
+        bank_account3 = factories.BankAccountFactory()
+        factories.InvoiceFactory(bankAccount=bank_account3, amount=-15000000)
+        offerer2 = bank_account3.offerer
+        offerers_factories.NotValidatedUserOffererFactory(user=pro, offerer=offerer2)
+
+        invoices = repository.get_invoices_query(pro).order_by(models.Invoice.id)
+        assert list(invoices) == [invoice1, invoice2]
+
+    def test_filter_on_date(self):
+        offerer = offerers_factories.OffererFactory()
+        pro = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        bank_account = factories.BankAccountFactory(offerer=offerer)
+        _invoice_before = factories.InvoiceFactory(
+            bankAccount=bank_account,
+            date=datetime.date(2021, 6, 15),
+        )
+        invoice_within = factories.InvoiceFactory(
+            bankAccount=bank_account,
+            date=datetime.date(2021, 7, 1),
+        )
+        _invoice_after = factories.InvoiceFactory(
+            bankAccount=bank_account,
+            date=datetime.date(2021, 8, 1),
+        )
+
+        invoices = repository.get_invoices_query(
+            pro,
+            date_from=datetime.date(2021, 7, 1),
+            date_until=datetime.date(2021, 8, 1),
+        )
+        assert list(invoices) == [invoice_within]
+
+    def test_filter_on_bank_account(self):
+        offerer = offerers_factories.OffererFactory()
+        pro = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        bank_account1 = factories.BankAccountFactory(offerer=offerer)
+        invoice1 = factories.InvoiceFactory(bankAccount=bank_account1)
+        bank_account2 = factories.BankAccountFactory(offerer=offerer)
+        _invoice2 = factories.InvoiceFactory(bankAccount=bank_account2)
+
+        invoices = repository.get_invoices_query(
+            pro,
+            bank_account_id=bank_account1.id,
+        )
+        assert list(invoices) == [invoice1]
+
+    def test_wrong_bank_account(self):
+        # Make sure that specifying a bank account id that belongs to
+        # another offerer does not return anything.
+        offerer = offerers_factories.OffererFactory()
+        pro1 = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro1, offerer=offerer)
+        bank_account = factories.BankAccountFactory(offerer=offerer)
+        _invoice1 = factories.InvoiceFactory(bankAccount=bank_account)
+
+        other_bank_account = factories.BankAccountFactory()
+        _invoice2 = factories.InvoiceFactory(bankAccount=other_bank_account)
+
+        invoices = repository.get_invoices_query(
+            pro1,
+            bank_account_id=other_bank_account.id,
+        )
+        assert invoices.count() == 0
+
+    def test_admin_filter_on_bank_account(self):
+        bank_account1 = factories.BankAccountFactory()
+        invoice1 = factories.InvoiceFactory(bankAccount=bank_account1)
+        bank_account2 = factories.BankAccountFactory()
+        _invoice2 = factories.InvoiceFactory(bankAccount=bank_account2)
+
+        admin = users_factories.AdminFactory()
+
+        invoices = repository.get_invoices_query(
+            admin,
+            bank_account_id=bank_account1.id,
         )
         assert list(invoices) == [invoice1]
 

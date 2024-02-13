@@ -118,6 +118,7 @@
         {% call build_details_tabs_wrapper() %}
           {{ build_details_tab("linked-venues", "Lieux associés", active_tab == 'linked_venues') }}
           {{ build_details_tab("history", "Historique du compte bancaire", active_tab == 'history') }}
+          {{ build_details_tab("invoices", "Remboursements", active_tab == 'invoices') }}
         {% endcall %}
         {% call build_details_tabs_content_wrapper() %}
           {% call build_details_tab_content("linked-venues", active_tab == 'linked_venues') %}
@@ -127,6 +128,11 @@
           {% endcall %}
           {% call build_details_tab_content("history", active_tab == 'history') %}
             <turbo-frame data-turbo="false" id="bank_account_history_frame" loading="lazy" src="{{ url_for("backoffice_web.bank_account.get_history", bank_account_id=bank_account.id) }}">
+            {{ build_loading_spinner() }}
+            </turbo-frame>
+          {% endcall %}
+          {% call build_details_tab_content("invoices", active_tab == 'invoices') %}
+            <turbo-frame data-turbo="false" id="bank_account_invoices_frame" loading="lazy" src="{{ url_for("backoffice_web.bank_account.get_invoices", bank_account_id=bank_account.id) }}">
             {{ build_loading_spinner() }}
             </turbo-frame>
           {% endcall %}

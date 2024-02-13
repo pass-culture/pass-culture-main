@@ -103,6 +103,7 @@ const TextInput = ({
           ref={refForInput}
           rightIcon={rightIcon}
           leftIcon={leftIcon}
+          aria-required={!isOptional}
           onKeyDown={(event) => {
             if (type === 'number') {
               if (regexIsNavigationKey.test(event.key)) {

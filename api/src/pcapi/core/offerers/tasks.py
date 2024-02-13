@@ -4,6 +4,7 @@ from pcapi import settings
 from pcapi.connectors import sirene
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
+from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models import db
@@ -44,10 +45,18 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
 
         with transaction():
             db.session.add(offerers_models.OffererTagMapping(offererId=offerer.id, tagId=tag.id))
-            history_api.add_action(
-                history_models.ActionType.INFO_MODIFIED,
-                None,
-                offerer=offerer,
-                comment="La structure est détectée comme inactive via l'API Sirene (INSEE)",
-                modified_info={"tags": {"new_info": tag.label}},
-            )
+            if offerer.isWaitingForValidation:
+                offerers_api.reject_offerer(
+                    offerer=offerer,
+                    author_user=None,
+                    comment="La structure est détectée comme inactive via l'API Sirene (INSEE)",
+                    modified_info={"tags": {"new_info": tag.label}},
+                )
+            else:
+                history_api.add_action(
+                    history_models.ActionType.INFO_MODIFIED,
+                    None,
+                    offerer=offerer,
+                    comment="La structure est détectée comme inactive via l'API Sirene (INSEE)",
+                    modified_info={"tags": {"new_info": tag.label}},
+                )

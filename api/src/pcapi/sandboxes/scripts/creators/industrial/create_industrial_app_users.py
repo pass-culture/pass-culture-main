@@ -18,7 +18,6 @@ from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
-from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.models import db
 
@@ -160,21 +159,12 @@ def create_industrial_app_other_users() -> dict[str, User]:
 
     users_by_name = {}
 
-    validation_prefix, validation_suffix = "AZERTY", 123
-    validation_suffix += 1
-
     variants = itertools.product(DEPARTEMENT_CODES, OTHER_USERS_TAGS)
 
     for index, (departement_code, tag) in enumerate(variants, start=0):
         short_tag = "".join([chunk[0].upper() for chunk in tag.split("-")])
 
-        if tag == "has-signed-up":
-            reset_password_token = "{}{}".format(validation_prefix, validation_suffix)
-            validation_suffix += 1
-            needs_to_fill_cultural_survey = True
-        else:
-            needs_to_fill_cultural_survey = False
-            reset_password_token = None
+        needs_to_fill_cultural_survey = bool(tag == "has-signed-up")
 
         email = f"pctest.autre{departement_code}.{tag}@example.com"
 
@@ -188,13 +178,6 @@ def create_industrial_app_other_users() -> dict[str, User]:
             postalCode="{}100".format(departement_code),
         )
 
-        if reset_password_token:
-            users_factories.TokenFactory(
-                user=user,
-                value=reset_password_token,
-                expirationDate=datetime.utcnow() + timedelta(hours=24),
-                type=TokenType.RESET_PASSWORD,
-            )
         user_key = f"jeune{departement_code} {tag}"
         users_by_name[user_key] = user
 

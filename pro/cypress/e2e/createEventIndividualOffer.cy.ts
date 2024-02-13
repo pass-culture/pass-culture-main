@@ -1,5 +1,7 @@
 describe('Create an individual offer (event)', () => {
   it('should create an individual offer', () => {
+    cy.setFeatureFlags([{ name: 'WIP_ENABLE_PRO_SIDE_NAV', isActive: false }])
+
     cy.login({
       email: 'pro_adage_eligible@example.com',
       password: 'user@AZERTY123',

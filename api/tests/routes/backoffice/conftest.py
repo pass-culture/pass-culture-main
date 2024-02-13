@@ -1,5 +1,6 @@
 import datetime
 
+import factory
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
@@ -49,6 +50,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_PRO_ENTITY,
         perm_models.Permissions.MANAGE_PRO_ENTITY,
         perm_models.Permissions.DELETE_PRO_ENTITY,
+        perm_models.Permissions.CREATE_PRO_ENTITY,
         perm_models.Permissions.MANAGE_BOOKINGS,
         perm_models.Permissions.READ_BOOKINGS,
         perm_models.Permissions.READ_OFFERS,
@@ -130,6 +132,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_PRO_ENTITY,
         perm_models.Permissions.MANAGE_PRO_ENTITY,
         perm_models.Permissions.DELETE_PRO_ENTITY,
+        perm_models.Permissions.CREATE_PRO_ENTITY,
         perm_models.Permissions.MOVE_SIRET,
         perm_models.Permissions.ADVANCED_PRO_SUPPORT,
         perm_models.Permissions.MANAGE_BOOKINGS,
@@ -262,6 +265,15 @@ def venue_with_accepted_reimbursement_point_fixture(
 ):
     offerers_factories.VenueReimbursementPointLinkFactory(
         venue=venue_with_no_bank_info,
+        timespan=[
+            datetime.datetime.utcnow() - datetime.timedelta(days=365),
+            datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        ],
+        reimbursementPoint=venue_with_accepted_bank_info,
+    )
+    offerers_factories.VenueReimbursementPointLinkFactory(
+        venue=venue_with_no_bank_info,
+        timespan=[datetime.datetime.utcnow() - datetime.timedelta(days=1), None],
         reimbursementPoint=venue_with_accepted_bank_info,
     )
     offerers_factories.VenueBankAccountLinkFactory(
@@ -428,6 +440,36 @@ def offerer_active_collective_offers_fixture(offerer, venue_with_accepted_bank_i
         validation=offers_models.OfferValidationStatus.DRAFT.value,
     )
     return approved_offers + [rejected_offer, pending_offer, draft_offer]
+
+
+@pytest.fixture
+def offerer_expired_offers(offerer, venue_with_accepted_bank_info):
+    offers = offers_factories.OfferFactory.create_batch(
+        size=4,
+        venue=venue_with_accepted_bank_info,
+        validation=offers_models.OfferValidationStatus.APPROVED.value,
+    )
+    offers_factories.StockFactory.create_batch(
+        size=4,
+        offer=factory.Iterator(offers),
+        isSoftDeleted=False,
+        bookingLimitDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=10),
+    )
+    return offers
+
+
+@pytest.fixture
+def offerer_expired_collective_offers(offerer, venue_with_accepted_bank_info):
+    stocks = educational_factories.CollectiveStockFactory.create_batch(
+        size=4,
+        price=1337,
+        beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=10),
+    )
+    return educational_factories.CollectiveOfferFactory.create_batch(
+        size=4,
+        venue=venue_with_accepted_bank_info,
+        collectiveStock=factory.Iterator(stocks),
+    )
 
 
 @pytest.fixture(name="offerer_inactive_collective_offers")

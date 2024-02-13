@@ -222,6 +222,7 @@ export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =
     hasCreatedOffer: false,
     hasMissingReimbursementPoint: false,
     isVirtual: false,
+    isVisibleInApp: true,
     name: 'Mon super lieu',
     id: 0,
     venueTypeCode: VenueTypeCode.LIEU_ADMINISTRATIF,

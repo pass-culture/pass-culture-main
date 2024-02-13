@@ -32,6 +32,7 @@ export interface CategoriesProps {
   showAddVenueBanner?: boolean
   offerSubtype: INDIVIDUAL_OFFER_SUBTYPE | null
   venueList: IndividualOfferVenueItem[]
+  isEvent: boolean | null
 }
 
 const buildCategoryOptions = (
@@ -62,6 +63,7 @@ const Categories = ({
   showAddVenueBanner = false,
   offerSubtype,
   venueList,
+  isEvent,
 }: CategoriesProps): JSX.Element => {
   const {
     values: { categoryId, subCategoryFields, offererId },
@@ -114,7 +116,7 @@ const Categories = ({
     )
     if (filteredVenueList.length === 1) {
       await setFieldValue('venueId', filteredVenueList[0].id.toString())
-      onVenueChange(
+      await onVenueChange(
         setFieldValue,
         filteredVenueList,
         filteredVenueList[0].id.toString()
@@ -151,7 +153,8 @@ const Categories = ({
   }
 
   const hasSubCategory = categoryId !== FORM_DEFAULT_VALUES.categoryId
-  const hasMusicType = subCategoryFields.includes('musicType')
+  const hasMusicType =
+    subCategoryFields.includes('gtl_id') && categoryId !== 'LIVRE'
   const hasShowType = subCategoryFields.includes('showType')
 
   return (
@@ -227,7 +230,10 @@ const Categories = ({
       )}
 
       {hasMusicType && (
-        <MusicTypes readOnly={readOnlyFields.includes('musicType')} />
+        <MusicTypes
+          readOnly={readOnlyFields.includes('gtl_id')}
+          isEvent={isEvent}
+        />
       )}
 
       {hasShowType && (

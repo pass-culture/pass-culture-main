@@ -1581,6 +1581,9 @@ def test_generate_bank_accounts_file():
         name='Name1\n "with double quotes"   ', siret='siret 1 "t"', managingOfferer=offerer
     )
     venue_3 = offerers_factories.VenueFactory(managingOfferer=offerer)
+    venue_4 = offerers_factories.VenueFactory(managingOfferer=offerer)
+    venue_5 = offerers_factories.VenueFactory(managingOfferer=offerer)
+    venue_6 = offerers_factories.VenueFactory(managingOfferer=offerer)
     bank_account_1 = factories.BankAccountFactory(
         label="old-label", iban="older-iban", bic="older-bic", offerer=offerer
     )
@@ -1588,6 +1591,8 @@ def test_generate_bank_accounts_file():
     bank_account_3 = factories.BankAccountFactory(
         label="newer-label", iban="newer-iban", bic="newer-bic", offerer=offerer
     )
+    bank_account_4 = factories.BankAccountFactory(label="Fourth bank account", offerer=offerer)
+    _bank_account_5 = factories.BankAccountFactory(label="Fifth bank account", offerer=offerer)
     offerers_factories.VenueBankAccountLinkFactory(
         venue=venue_1,
         bankAccount=bank_account_1,
@@ -1601,9 +1606,23 @@ def test_generate_bank_accounts_file():
     offerers_factories.VenueBankAccountLinkFactory(
         venue=venue_3,
         bankAccount=bank_account_3,
-        timespan=[
-            now - datetime.timedelta(days=1),
-        ],
+        timespan=[now - datetime.timedelta(days=3), now - datetime.timedelta(days=1)],
+    )
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue_4,
+        bankAccount=bank_account_3,
+        timespan=(now - datetime.timedelta(days=3), now - datetime.timedelta(days=1)),
+    )
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue_5,
+        bankAccount=bank_account_4,
+        timespan=(now - datetime.timedelta(days=3), now - datetime.timedelta(days=1)),
+    )
+
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue_6,
+        bankAccount=bank_account_4,
+        timespan=(now - datetime.timedelta(days=3), now - datetime.timedelta(days=1)),
     )
 
     n_queries = 1  # select reimbursement point data
@@ -1613,14 +1632,15 @@ def test_generate_bank_accounts_file():
     with path.open(encoding="utf-8") as fp:
         reader = csv.DictReader(fp, quoting=csv.QUOTE_NONNUMERIC)
         rows = list(reader)
-    assert len(rows) == 1
-    assert rows[0] == {
-        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_2.id),
-        "SIREN de la structure": bank_account_2.offerer.siren,
-        "Nom de la structure - Libellé des coordonnées bancaires": "Nom de la structure - some-label",
-        "IBAN": "some-iban",
-        "BIC": "some-bic",
-    }
+    assert len(rows) == 3
+    for row, bank_account in zip(rows, [bank_account_2, bank_account_3, bank_account_4]):
+        assert row == {
+            "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account.id),
+            "SIREN de la structure": bank_account.offerer.siren,
+            "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account.offerer.name} - {bank_account.label}",
+            "IBAN": bank_account.iban,
+            "BIC": bank_account.bic,
+        }
 
 
 @clean_temporary_files
@@ -2030,6 +2050,18 @@ def test_generate_invoice_file_legacy_journey():
         amount=100,
         category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
     )
+    # add a pricing with identical pricing line values, to make sure it's taken into account
+    pricing_with_same_values_as_pricing_1 = factories.PricingFactory(
+        status=models.PricingStatus.VALIDATED,
+        booking__stock__offer__venue=venue,
+        amount=-1000,
+    )
+    pline11_identical = factories.PricingLineFactory(pricing=pricing_with_same_values_as_pricing_1)
+    pline12_identical = factories.PricingLineFactory(
+        pricing=pricing_with_same_values_as_pricing_1,
+        amount=100,
+        category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
+    )
 
     # eac pricing
     year1 = EducationalYearFactory()
@@ -2084,7 +2116,7 @@ def test_generate_invoice_file_legacy_journey():
     cashflow1 = factories.CashflowFactory(
         bankInformation=bank_info1,
         reimbursementPoint=reimbursement_point1,
-        pricings=[pricing1, pricing2, *incidents_pricings],
+        pricings=[pricing1, pricing_with_same_values_as_pricing_1, pricing2, *incidents_pricings],
         status=models.CashflowStatus.ACCEPTED,
     )
     invoice1 = factories.InvoiceFactory(
@@ -2128,7 +2160,7 @@ def test_generate_invoice_file_legacy_journey():
             reader = csv.DictReader(csv_textfile, quoting=csv.QUOTE_NONNUMERIC)
             rows = list(reader)
 
-    assert len(rows) == 6
+    assert len(rows) == 8
     assert rows[0] == {
         "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
@@ -2147,8 +2179,27 @@ def test_generate_invoice_file_legacy_journey():
         "Ministère": "",
         "Somme des tickets de facturation": pline12.amount,
     }
-    # collective pricing lines
+    # individual pricing lines indentical to first pricing lines
     assert rows[2] == {
+        "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point1.id),
+        "Date du justificatif": datetime.date.today().isoformat(),
+        "Référence du justificatif": invoice1.reference,
+        "Type de ticket de facturation": pline11_identical.category.value,
+        "Type de réservation": "PC",
+        "Ministère": "",
+        "Somme des tickets de facturation": pline11_identical.amount,
+    }
+    assert rows[3] == {
+        "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point1.id),
+        "Date du justificatif": datetime.date.today().isoformat(),
+        "Référence du justificatif": invoice1.reference,
+        "Type de ticket de facturation": pline12_identical.category.value,
+        "Type de réservation": "PC",
+        "Ministère": "",
+        "Somme des tickets de facturation": pline12_identical.amount,
+    }
+    # collective pricing lines
+    assert rows[4] == {
         "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
@@ -2157,7 +2208,7 @@ def test_generate_invoice_file_legacy_journey():
         "Ministère": "AGRICULTURE",
         "Somme des tickets de facturation": pline21.amount,
     }
-    assert rows[3] == {
+    assert rows[5] == {
         "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
@@ -2167,7 +2218,7 @@ def test_generate_invoice_file_legacy_journey():
         "Somme des tickets de facturation": pline22.amount,
     }
     # incident rows
-    assert rows[4] == {
+    assert rows[6] == {
         "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
@@ -2176,7 +2227,7 @@ def test_generate_invoice_file_legacy_journey():
         "Ministère": "",
         "Somme des tickets de facturation": -1000,
     }
-    assert rows[5] == {
+    assert rows[7] == {
         "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
@@ -2205,6 +2256,18 @@ def test_generate_invoice_file_new_journey():
     pline11 = factories.PricingLineFactory(pricing=pricing1)
     pline12 = factories.PricingLineFactory(
         pricing=pricing1,
+        amount=100,
+        category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
+    )
+    # add a pricing with identical pricing line values, to make sure it's taken into account
+    pricing_with_same_values_as_pricing_1 = factories.PricingFactory(
+        status=models.PricingStatus.VALIDATED,
+        booking__stock__offer__venue=venue,
+        amount=-1000,
+    )
+    pline11_identical = factories.PricingLineFactory(pricing=pricing_with_same_values_as_pricing_1)
+    pline12_identical = factories.PricingLineFactory(
+        pricing=pricing_with_same_values_as_pricing_1,
         amount=100,
         category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
     )
@@ -2261,7 +2324,7 @@ def test_generate_invoice_file_new_journey():
 
     cashflow1 = factories.CashflowFactory(
         bankAccount=bank_account_1,
-        pricings=[pricing1, pricing2, *incidents_pricings],
+        pricings=[pricing1, pricing_with_same_values_as_pricing_1, pricing2, *incidents_pricings],
         status=models.CashflowStatus.ACCEPTED,
     )
     invoice1 = factories.InvoiceFactory(
@@ -2299,7 +2362,7 @@ def test_generate_invoice_file_new_journey():
             reader = csv.DictReader(csv_textfile, quoting=csv.QUOTE_NONNUMERIC)
             rows = list(reader)
 
-    assert len(rows) == 6
+    assert len(rows) == 8
     assert rows[0] == {
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
@@ -2318,8 +2381,27 @@ def test_generate_invoice_file_new_journey():
         "Ministère": "",
         "Somme des tickets de facturation": pline12.amount,
     }
-    # collective pricing lines
+    # individual pricing lines indentical to first pricing lines
     assert rows[2] == {
+        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
+        "Date du justificatif": datetime.date.today().isoformat(),
+        "Référence du justificatif": invoice1.reference,
+        "Type de ticket de facturation": pline11_identical.category.value,
+        "Type de réservation": "PC",
+        "Ministère": "",
+        "Somme des tickets de facturation": pline11_identical.amount,
+    }
+    assert rows[3] == {
+        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
+        "Date du justificatif": datetime.date.today().isoformat(),
+        "Référence du justificatif": invoice1.reference,
+        "Type de ticket de facturation": pline12_identical.category.value,
+        "Type de réservation": "PC",
+        "Ministère": "",
+        "Somme des tickets de facturation": pline12_identical.amount,
+    }
+    # collective pricing lines
+    assert rows[4] == {
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
@@ -2328,7 +2410,7 @@ def test_generate_invoice_file_new_journey():
         "Ministère": "AGRICULTURE",
         "Somme des tickets de facturation": pline21.amount,
     }
-    assert rows[3] == {
+    assert rows[5] == {
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
@@ -2338,7 +2420,7 @@ def test_generate_invoice_file_new_journey():
         "Somme des tickets de facturation": pline22.amount,
     }
     # incident rows
-    assert rows[4] == {
+    assert rows[6] == {
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
@@ -2347,7 +2429,7 @@ def test_generate_invoice_file_new_journey():
         "Ministère": "",
         "Somme des tickets de facturation": -1000,
     }
-    assert rows[5] == {
+    assert rows[7] == {
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
@@ -2356,6 +2438,99 @@ def test_generate_invoice_file_new_journey():
         "Ministère": "",
         "Somme des tickets de facturation": 0,
     }
+
+
+class GenerateDebitNotesLegacyTest:
+    @mock.patch("pcapi.core.finance.api._generate_debit_note_html_legacy")
+    @mock.patch("pcapi.core.finance.api._store_invoice_pdf")
+    @clean_temporary_files
+    @override_features(WIP_ENABLE_FINANCE_INCIDENT=True, WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
+    def test_when_there_is_no_debit_not_to_generate(self, _mocked1, _mocked2):
+        user = users_factories.RichBeneficiaryFactory()
+        venue_kwargs = {
+            "pricing_point": "self",
+            "reimbursement_point": "self",
+        }
+        venue = offerers_factories.VenueFactory(**venue_kwargs)
+        book_offer = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        factories.CustomReimbursementRuleFactory(amount=2850, offer=book_offer)
+
+        incident_booking1_event = factories.UsedBookingFinanceEventFactory(
+            booking__stock=offers_factories.StockFactory(offer=book_offer, price=30, quantity=1),
+            booking__user=user,
+            booking__amount=30,
+            booking__quantity=1,
+        )
+
+        api.price_event(incident_booking1_event)
+        incident_booking1_event.booking.pricings[0].status = models.PricingStatus.INVOICED
+        db.session.flush()
+
+        booking_total_incident = factories.IndividualBookingFinanceIncidentFactory(
+            incident__status=models.IncidentStatus.VALIDATED,
+            incident__forceDebitNote=True,
+            incident__venue=venue,
+            booking=incident_booking1_event.booking,
+            newTotalAmount=-incident_booking1_event.booking.total_amount * 100,
+        )
+        incident_event = api._create_finance_events_from_incident(
+            booking_total_incident, datetime.datetime.utcnow(), commit=True
+        )
+
+        api.price_event(incident_event[0])
+
+        batch = api.generate_cashflows_and_payment_files(datetime.datetime.utcnow())
+
+        api.generate_debit_notes(batch)
+
+        invoices = models.Invoice.query.all()
+        assert len(invoices) == 0
+
+
+class GenerateDebitNotesTest:
+    @mock.patch("pcapi.core.finance.api._generate_debit_note_html")
+    @mock.patch("pcapi.core.finance.api._store_invoice_pdf")
+    @clean_temporary_files
+    @override_features(WIP_ENABLE_FINANCE_INCIDENT=True, WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
+    def test_when_there_is_no_debit_not_to_generate(self, _mocked1, _mocked2):
+        user = users_factories.RichBeneficiaryFactory()
+        venue_kwargs = {
+            "pricing_point": "self",
+        }
+        venue = offerers_factories.VenueFactory(**venue_kwargs)
+        book_offer = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        factories.CustomReimbursementRuleFactory(amount=2850, offer=book_offer)
+
+        incident_booking1_event = factories.UsedBookingFinanceEventFactory(
+            booking__stock=offers_factories.StockFactory(offer=book_offer, price=30, quantity=1),
+            booking__user=user,
+            booking__amount=30,
+            booking__quantity=1,
+        )
+
+        api.price_event(incident_booking1_event)
+        incident_booking1_event.booking.pricings[0].status = models.PricingStatus.INVOICED
+        db.session.flush()
+
+        booking_total_incident = factories.IndividualBookingFinanceIncidentFactory(
+            incident__status=models.IncidentStatus.VALIDATED,
+            incident__forceDebitNote=True,
+            incident__venue=venue,
+            booking=incident_booking1_event.booking,
+            newTotalAmount=-incident_booking1_event.booking.total_amount * 100,
+        )
+        incident_event = api._create_finance_events_from_incident(
+            booking_total_incident, datetime.datetime.utcnow(), commit=True
+        )
+
+        api.price_event(incident_event[0])
+
+        batch = api.generate_cashflows_and_payment_files(datetime.datetime.utcnow())
+
+        api.generate_debit_notes(batch)
+
+        invoices = models.Invoice.query.all()
+        assert len(invoices) == 0
 
 
 @pytest.fixture(name="invoice_data_legacy")
@@ -3416,7 +3591,7 @@ class GenerateInvoiceHtmlLegacyTest:
     def generate_and_compare_invoice(self, stocks, reimbursement_point, venue):
         user = users_factories.RichBeneficiaryFactory()
         book_offer = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
-        factories.CustomReimbursementRuleFactory(rate=0.95, offer=book_offer)
+        factories.CustomReimbursementRuleFactory(amount=2850, offer=book_offer)
 
         for stock in stocks:
             finance_event = factories.UsedBookingFinanceEventFactory(
@@ -3519,14 +3694,14 @@ class GenerateInvoiceHtmlLegacyTest:
         )
         expected_invoice_html = expected_invoice_html.replace(
             'content: "Relevé n°F220000001 du 30/01/2022";',
-            f'content: "Relevé n°F{cashflows[0].batch.cutoff.year % 100}0000001 du {cashflows[0].batch.cutoff.strftime("%d/%m/%Y")}";',
+            f'content: "Relevé n°{invoice.reference} du {cashflows[0].batch.cutoff.strftime("%d/%m/%Y")}";',
         )
         start_period, end_period = api.get_invoice_period(cashflows[0].batch.cutoff)
         expected_invoice_html = expected_invoice_html.replace(
             "Remboursement des réservations validées entre le 01/01/22 et le 14/01/22, sauf cas exceptionnels.",
             f'Remboursement des réservations validées entre le {start_period.strftime("%d/%m/%y")} et le {end_period.strftime("%d/%m/%y")}, sauf cas exceptionnels.',
         )
-        expected_invoice_html = expected_invoice_html.replace("\n    <p><b>SIRET :</b> 85331845900023</p>", "")
+
         assert expected_invoice_html == invoice_html
 
     @override_features(WIP_ENABLE_FINANCE_INCIDENT=True, WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
@@ -3566,13 +3741,197 @@ class GenerateInvoiceHtmlLegacyTest:
         self.generate_and_compare_invoice(stocks, reimbursement_point, venue)
 
 
+class GenerateDebitNoteHtmlLegacyTest:
+    TEST_FILES_PATH = pathlib.Path(tests.__path__[0]) / "files"
+
+    def generate_and_compare_invoice(self, reimbursement_point, venue):
+        user = users_factories.RichBeneficiaryFactory()
+        book_offer = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        factories.CustomReimbursementRuleFactory(amount=2850, offer=book_offer)
+
+        incident_booking1_event = factories.UsedBookingFinanceEventFactory(
+            booking__stock=offers_factories.StockFactory(offer=book_offer, price=30, quantity=1),
+            booking__user=user,
+            booking__amount=30,
+            booking__quantity=1,
+        )
+        api.price_event(incident_booking1_event)
+
+        incident_booking2_event = factories.UsedBookingFinanceEventFactory(
+            booking__stock=offers_factories.StockFactory(offer=book_offer, price=30, quantity=1),
+            booking__user=user,
+            booking__amount=30,
+            booking__quantity=1,
+        )
+        api.price_event(incident_booking2_event)
+
+        # Mark incident bookings as already invoiced
+        incident_booking1_event.booking.pricings[0].status = models.PricingStatus.INVOICED
+        incident_booking2_event.booking.pricings[0].status = models.PricingStatus.INVOICED
+
+        db.session.flush()
+
+        incident_events = []
+        # create total overpayment incident (30 €)
+        booking_total_incident = factories.IndividualBookingFinanceIncidentFactory(
+            incident__status=models.IncidentStatus.VALIDATED,
+            incident__forceDebitNote=True,
+            incident__venue=venue,
+            booking=incident_booking1_event.booking,
+            newTotalAmount=-incident_booking1_event.booking.total_amount * 100,
+        )
+        incident_events += api._create_finance_events_from_incident(
+            booking_total_incident, datetime.datetime.utcnow(), commit=True
+        )
+
+        # create partial overpayment incident
+        booking_partial_incident = factories.IndividualBookingFinanceIncidentFactory(
+            incident__status=models.IncidentStatus.VALIDATED,
+            incident__forceDebitNote=False,
+            incident__venue=venue,
+            booking=incident_booking2_event.booking,
+            newTotalAmount=2000,
+        )
+        incident_events += api._create_finance_events_from_incident(
+            booking_partial_incident, datetime.datetime.utcnow(), commit=True
+        )
+
+        for event in incident_events:
+            api.price_event(event)
+
+        batch = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
+
+        cashflows = models.Cashflow.query.order_by(models.Cashflow.id).all()
+        cashflow_ids = [c.id for c in cashflows]
+        invoice = api._generate_invoice_legacy(
+            reimbursement_point_id=reimbursement_point.id,
+            cashflow_ids=cashflow_ids,
+            is_debit_note=True,
+        )
+        batch = models.CashflowBatch.query.get(batch.id)
+        invoice_html = api._generate_debit_note_html_legacy(invoice, batch)
+        expected_generated_file_name = "rendered_debit_note_legacy.html"
+
+        with open(self.TEST_FILES_PATH / "invoice" / expected_generated_file_name, "r", encoding="utf-8") as f:
+            expected_invoice_html = f.read()
+        # We need to replace Cashflow IDs and dates that were used when generating the expected html
+
+        expected_invoice_html = expected_invoice_html.replace(
+            'content: "Relevé n°A240000001 du 26/01/2024";',
+            f'content: "Relevé n°{invoice.reference} du {cashflows[0].batch.cutoff.strftime("%d/%m/%Y")}";',
+        )
+        assert expected_invoice_html == invoice_html
+
+    @override_features(WIP_ENABLE_FINANCE_INCIDENT=True)
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
+    def test_basics(self, invoice_data_legacy):
+        reimbursement_point, stock, venue = invoice_data_legacy
+
+        del stock  # we don't need it
+
+        self.generate_and_compare_invoice(reimbursement_point, venue)
+
+
+class GenerateDebitNoteHtmlTest:
+    TEST_FILES_PATH = pathlib.Path(tests.__path__[0]) / "files"
+
+    def generate_and_compare_invoice(self, bank_account, venue):
+        user = users_factories.RichBeneficiaryFactory()
+        book_offer = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        factories.CustomReimbursementRuleFactory(amount=2850, offer=book_offer)
+
+        incident_booking1_event = factories.UsedBookingFinanceEventFactory(
+            booking__stock=offers_factories.StockFactory(offer=book_offer, price=30, quantity=1),
+            booking__user=user,
+            booking__amount=30,
+            booking__quantity=1,
+        )
+        api.price_event(incident_booking1_event)
+
+        incident_booking2_event = factories.UsedBookingFinanceEventFactory(
+            booking__stock=offers_factories.StockFactory(offer=book_offer, price=30, quantity=1),
+            booking__user=user,
+            booking__amount=30,
+            booking__quantity=1,
+        )
+        api.price_event(incident_booking2_event)
+
+        # Mark incident bookings as already invoiced
+        incident_booking1_event.booking.pricings[0].status = models.PricingStatus.INVOICED
+        incident_booking2_event.booking.pricings[0].status = models.PricingStatus.INVOICED
+
+        db.session.flush()
+
+        incident_events = []
+        # create total overpayment incident (30 €)
+        booking_total_incident = factories.IndividualBookingFinanceIncidentFactory(
+            incident__status=models.IncidentStatus.VALIDATED,
+            incident__forceDebitNote=True,
+            incident__venue=venue,
+            booking=incident_booking1_event.booking,
+            newTotalAmount=-incident_booking1_event.booking.total_amount * 100,
+        )
+        incident_events += api._create_finance_events_from_incident(
+            booking_total_incident, datetime.datetime.utcnow(), commit=True
+        )
+
+        # create partial overpayment incident
+        booking_partial_incident = factories.IndividualBookingFinanceIncidentFactory(
+            incident__status=models.IncidentStatus.VALIDATED,
+            incident__forceDebitNote=False,
+            incident__venue=venue,
+            booking=incident_booking2_event.booking,
+            newTotalAmount=2000,
+        )
+        incident_events += api._create_finance_events_from_incident(
+            booking_partial_incident, datetime.datetime.utcnow(), commit=True
+        )
+
+        for event in incident_events:
+            api.price_event(event)
+
+        batch = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
+
+        cashflows = models.Cashflow.query.order_by(models.Cashflow.id).all()
+        cashflow_ids = [c.id for c in cashflows]
+        invoice = api._generate_invoice(
+            bank_account_id=bank_account.id,
+            cashflow_ids=cashflow_ids,
+            is_debit_note=True,
+        )
+        batch = models.CashflowBatch.query.get(batch.id)
+        invoice_html = api._generate_debit_note_html(invoice, batch)
+        expected_generated_file_name = "rendered_debit_note.html"
+
+        with open(self.TEST_FILES_PATH / "invoice" / expected_generated_file_name, "r", encoding="utf-8") as f:
+            expected_invoice_html = f.read()
+        # We need to replace Cashflow IDs and dates that were used when generating the expected html
+
+        expected_invoice_html = expected_invoice_html.replace(
+            'content: "Relevé n°A240000001 du 26/01/2024";',
+            f'content: "Relevé n°{invoice.reference} du {cashflows[0].batch.cutoff.strftime("%d/%m/%Y")}";',
+        )
+        assert expected_invoice_html == invoice_html
+
+    @override_features(WIP_ENABLE_FINANCE_INCIDENT=True)
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
+    def test_basics(self, invoice_data):
+        bank_account, stocks, venue = invoice_data
+
+        del stocks  # we don't need it
+
+        self.generate_and_compare_invoice(bank_account, venue)
+
+
 class GenerateInvoiceHtmlTest:
     TEST_FILES_PATH = pathlib.Path(tests.__path__[0]) / "files"
 
     def generate_and_compare_invoice(self, stocks, bank_account, venue):
         user = users_factories.RichBeneficiaryFactory()
         book_offer = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
-        factories.CustomReimbursementRuleFactory(rate=0.95, offer=book_offer)
+        factories.CustomReimbursementRuleFactory(amount=2850, offer=book_offer)
 
         for stock in stocks:
             finance_event = factories.UsedBookingFinanceEventFactory(
@@ -3663,6 +4022,7 @@ class GenerateInvoiceHtmlTest:
         expected_generated_file_name = "rendered_invoice.html"
         with open(self.TEST_FILES_PATH / "invoice" / expected_generated_file_name, "r", encoding="utf-8") as f:
             expected_invoice_html = f.read()
+
         # We need to replace Cashflow IDs and dates that were used when generating the expected html
         expected_invoice_html = expected_invoice_html.replace(
             '<td class="cashflow_batch_label">1</td>',
@@ -3674,14 +4034,13 @@ class GenerateInvoiceHtmlTest:
         )
         expected_invoice_html = expected_invoice_html.replace(
             'content: "Relevé n°F220000001 du 30/01/2022";',
-            f'content: "Relevé n°F{cashflows[0].batch.cutoff.year % 100}0000001 du {cashflows[0].batch.cutoff.strftime("%d/%m/%Y")}";',
+            f'content: "Relevé n°{invoice.reference} du {cashflows[0].batch.cutoff.strftime("%d/%m/%Y")}";',
         )
         start_period, end_period = api.get_invoice_period(cashflows[0].batch.cutoff)
         expected_invoice_html = expected_invoice_html.replace(
             "Remboursement des réservations validées entre le 01/01/22 et le 14/01/22, sauf cas exceptionnels.",
             f'Remboursement des réservations validées entre le {start_period.strftime("%d/%m/%y")} et le {end_period.strftime("%d/%m/%y")}, sauf cas exceptionnels.',
         )
-        expected_invoice_html = expected_invoice_html.replace("\n    <p><b>SIRET :</b> 85331845900023</p>", "")
         assert expected_invoice_html == invoice_html
 
     @override_features(WIP_ENABLE_FINANCE_INCIDENT=True, WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)

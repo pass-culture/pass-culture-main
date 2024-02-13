@@ -67,6 +67,7 @@ const DatePicker = ({
         maxDate={maxDate}
         minDate={minDate}
         onChange={onCustomChange}
+        aria-required={!isOptional}
       />
     </FieldLayout>
   )

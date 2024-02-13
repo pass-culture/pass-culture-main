@@ -88,6 +88,7 @@ def create_digital_venue(offerer: models.Offerer) -> models.Venue:
 def update_venue(
     venue: models.Venue,
     author: users_models.User,
+    opening_days: list[serialize_base.VenueOpeningHoursModel] | None = None,
     contact_data: serialize_base.VenueContactModel | None = None,
     criteria: list[criteria_models.Criterion] | T_UNCHANGED = UNCHANGED,
     admin_update: bool = False,
@@ -111,6 +112,17 @@ def update_venue(
         target = venue.contact if venue.contact is not None else offerers_models.VenueContact()
         venue_snapshot.trace_update(contact_data.dict(), target=target, field_name_template="contact.{}")
         upsert_venue_contact(venue, contact_data)
+
+    if opening_days:
+        for opening_hours_data in opening_days:
+            weekday = models.Weekday(opening_hours_data.weekday.upper())
+            target = get_venue_opening_hours_by_weekday(venue, weekday)
+            venue_snapshot.trace_update(
+                opening_hours_data.dict(),
+                target=target,
+                field_name_template=f"openingHours.{opening_hours_data.weekday}.{{}}",
+            )
+            upsert_venue_opening_hours(venue, opening_hours_data)
 
     if criteria is not UNCHANGED:
         if set(venue.criteria) != set(criteria):
@@ -228,6 +240,29 @@ def upsert_venue_contact(venue: models.Venue, contact_data: serialize_base.Venue
     venue_contact.social_medias = contact_data.social_medias or {}
 
     repository.save(venue_contact)
+    return venue
+
+
+def upsert_venue_opening_hours(
+    venue: models.Venue, opening_hours_data: serialize_base.VenueOpeningHoursModel
+) -> models.Venue:
+    """
+    Create and attach OpeningHours for a given weekday to a Venue if it has none.
+    Update (replace) an existing OpeningHours list otherwise.
+    """
+    weekday = models.Weekday(opening_hours_data.weekday.upper())
+    venue_opening_hours = get_venue_opening_hours_by_weekday(venue, weekday)
+
+    modifications = {
+        field: value
+        for field, value in opening_hours_data.dict().items()
+        if venue_opening_hours.field_exists_and_has_changed(field, value)
+    }
+    if not modifications:
+        return venue
+    venue_opening_hours.venue = venue
+    venue_opening_hours.timespan = opening_hours_data.timespan
+    repository.save(venue_opening_hours)
     return venue
 
 
@@ -654,6 +689,8 @@ def _fill_in_offerer(
 def auto_tag_new_offerer(
     offerer: offerers_models.Offerer, siren_info: sirene.SirenInfo | None, user: users_models.User
 ) -> None:
+    tag_names_to_apply = set()
+
     if siren_info:
         tag_label = APE_TAG_MAPPING.get(siren_info.ape_code)
         if tag_label:
@@ -666,27 +703,25 @@ def auto_tag_new_offerer(
             else:
                 offerer.tags.append(tag)
 
-        if siren_info.siren in settings.EPN_SIREN:
-            tag_name = "ecosysteme-epn"
-            tag = offerers_models.OffererTag.query.filter_by(name=tag_name).one_or_none()
-            if not tag:
-                logger.error(
-                    "Could not assign tag to offerer: tag not found in DB",
-                    extra={"offerer": offerer.id, "tag_name": tag_name},
-                )
-            else:
-                offerer.tags.append(tag)
+        if not siren_info.diffusible:
+            tag_names_to_apply.add("non-diffusible")
 
-    if (user.email).split("@")[-1] in set(settings.NATIONAL_PARTNERS_EMAIL_DOMAINS.split(",")):
-        tag_name = "partenaire-national"
-        tag = offerers_models.OffererTag.query.filter_by(name=tag_name).one_or_none()
-        if not tag:
+        if siren_info.siren in settings.EPN_SIREN:
+            tag_names_to_apply.add("ecosysteme-epn")
+
+    if user.email.split("@")[-1] in set(settings.NATIONAL_PARTNERS_EMAIL_DOMAINS.split(",")):
+        tag_names_to_apply.add("partenaire-national")
+
+    if tag_names_to_apply:
+        tags = offerers_models.OffererTag.query.filter(offerers_models.OffererTag.name.in_(tag_names_to_apply)).all()
+        if len(tags) != len(tag_names_to_apply):
+            missing_tags = tag_names_to_apply - set(tag.name for tag in tags)
             logger.error(
                 "Could not assign tag to offerer: tag not found in DB",
-                extra={"offerer": offerer.id, "tag_name": tag_name},
+                extra={"offerer": offerer.id, "tag_name": ",".join(missing_tags)},
             )
-        else:
-            offerer.tags.append(tag)
+        offerer.tags.extend(tags)
+
     db.session.add(offerer)
 
 
@@ -708,10 +743,15 @@ def create_offerer(
     user: users_models.User,
     offerer_informations: offerers_serialize.CreateOffererQueryModel,
     new_onboarding_info: NewOnboardingInfo | None = None,
+    author: users_models.User | None = None,
+    comment: str | None = None,
+    **kwargs: typing.Any,
 ) -> models.UserOfferer:
     offerer = offerers_repository.find_offerer_by_siren(offerer_informations.siren)
     is_new = False
-    comment = None
+
+    if author is None:
+        author = user
 
     if offerer is not None:
         # The user can have his attachment rejected or deleted to the structure,
@@ -732,14 +772,19 @@ def create_offerer(
             # history is kept with same id and siren
             is_new = True
             _fill_in_offerer(offerer, offerer_informations)
-            comment = "Nouvelle demande sur un SIREN précédemment rejeté"
+            comment = (comment + "\n" if comment else "") + "Nouvelle demande sur un SIREN précédemment rejeté"
         else:
             user_offerer.validationStatus = ValidationStatus.NEW
             user_offerer.dateCreated = datetime.utcnow()
             extra_data: dict[str, typing.Any] = {}
             _add_new_onboarding_info_to_extra_data(new_onboarding_info, extra_data)
             history_api.add_action(
-                history_models.ActionType.USER_OFFERER_NEW, user, user=user, offerer=offerer, **extra_data
+                history_models.ActionType.USER_OFFERER_NEW,
+                author,
+                user=user,
+                offerer=offerer,
+                comment=comment,
+                **extra_data,
             )
     else:
         is_new = True
@@ -751,7 +796,7 @@ def create_offerer(
 
     assert offerer.siren  # helps mypy until Offerer.siren is set as NOT NULL
     try:
-        siren_info = sirene.get_siren(offerer.siren)
+        siren_info = sirene.get_siren(offerer.siren, raise_if_non_public=False)
     except sirene.SireneException as exc:
         logger.info("Could not fetch info from Sirene API", extra={"exc": exc})
         siren_info = None
@@ -763,9 +808,10 @@ def create_offerer(
         if siren_info:
             extra_data = {"sirene_info": dict(siren_info)}
         _add_new_onboarding_info_to_extra_data(new_onboarding_info, extra_data)
+        extra_data.update(kwargs)
 
         history_api.add_action(
-            history_models.ActionType.OFFERER_NEW, user, user=user, offerer=offerer, comment=comment, **extra_data
+            history_models.ActionType.OFFERER_NEW, author, user=user, offerer=offerer, comment=comment, **extra_data
         )
 
     # keep commit with repository.save() as long as siren is validated in pcapi.validation.models.offerer
@@ -901,8 +947,9 @@ def set_offerer_attachment_pending(
 
 def reject_offerer_attachment(
     user_offerer: offerers_models.UserOfferer,
-    author_user: users_models.User,
+    author_user: users_models.User | None,
     comment: str | None = None,
+    send_email: bool = True,
     commit: bool = True,
 ) -> None:
     user_offerer.validationStatus = ValidationStatus.REJECTED
@@ -916,7 +963,8 @@ def reject_offerer_attachment(
         comment=comment,
     )
 
-    transactional_mails.send_offerer_attachment_rejection_email_to_pro(user_offerer)
+    if send_email:
+        transactional_mails.send_offerer_attachment_rejection_email_to_pro(user_offerer)
 
     remove_pro_role_and_add_non_attached_pro_role([user_offerer.user])
 
@@ -988,7 +1036,7 @@ def validate_offerer(offerer: models.Offerer, author_user: users_models.User) ->
 
 
 def reject_offerer(
-    offerer: offerers_models.Offerer, author_user: users_models.User, comment: str | None = None
+    offerer: offerers_models.Offerer, author_user: users_models.User | None, **action_args: typing.Any
 ) -> None:
     if offerer.isRejected:
         raise exceptions.OffererAlreadyRejectedException()
@@ -1006,7 +1054,7 @@ def reject_offerer(
         author_user,
         offerer=offerer,
         user=first_user_to_register_offerer,
-        comment=comment,
+        **action_args,
     )
 
     if applicants:
@@ -1015,7 +1063,11 @@ def reject_offerer(
     users_offerer = offerers_models.UserOfferer.query.filter_by(offererId=offerer.id).all()
     for user_offerer in users_offerer:
         reject_offerer_attachment(
-            user_offerer, author_user, "Compte pro rejeté suite au rejet de la structure", commit=False
+            user_offerer,
+            author_user,
+            "Compte pro rejeté suite au rejet de la structure",
+            send_email=(user_offerer.user not in applicants),  # do not send a second email
+            commit=False,
         )
 
     remove_pro_role_and_add_non_attached_pro_role(applicants)
@@ -1481,8 +1533,8 @@ def get_offerer_offers_stats(offerer_id: int, max_offer_count: int = 0) -> dict:
         return sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
             sa.select(
                 sa.case(
-                    (offer_class.isActive.is_(True), "active"),  # type: ignore [attr-defined]
-                    (offer_class.isActive.is_(False), "inactive"),  # type: ignore [attr-defined]
+                    (sa.and_(offer_class.isActive.is_(True), offer_class.is_expired.is_(False)), "active"),  # type: ignore [attr-defined]
+                    else_="inactive",
                 ).label("status"),
                 sa.func.count(offer_class.id).label("number"),
             )
@@ -1508,7 +1560,7 @@ def get_offerer_offers_stats(offerer_id: int, max_offer_count: int = 0) -> dict:
                     ),
                 ),
             )
-            .group_by(offer_class.isActive)
+            .group_by("status")
             .subquery()
         )
 
@@ -2067,3 +2119,10 @@ def add_timespan(opening_hours: models.OpeningHours, new_timespan: NumericRange)
     else:
         opening_hours.timespan = [new_timespan]
     db.session.commit()
+
+
+def get_venue_opening_hours_by_weekday(venue: models.Venue, weekday: models.Weekday) -> models.OpeningHours:
+    for opening_hours in venue.openingHours:
+        if opening_hours.weekday == weekday:
+            return opening_hours
+    return models.OpeningHours(weekday=weekday)

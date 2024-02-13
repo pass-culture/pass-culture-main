@@ -73,7 +73,7 @@ describe('AdageDiscover classRoomPlaylist', () => {
 
     expect(
       await screen.findByText(
-        'Ces interventions peuvent avoir lieu dans votre classe'
+        'Ces interventions peuvent avoir lieu dans votre établissement'
       )
     ).toBeInTheDocument()
   })

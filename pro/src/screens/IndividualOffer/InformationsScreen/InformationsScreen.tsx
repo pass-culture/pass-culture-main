@@ -5,12 +5,12 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import FormLayout from 'components/FormLayout'
 import {
-  IndividualOfferFormValues,
   IndividualOfferForm,
+  IndividualOfferFormValues,
+  getValidationSchema,
   setDefaultInitialFormValues,
   setFormReadOnlyFields,
   setInitialFormValues,
-  getValidationSchema,
 } from 'components/IndividualOfferForm'
 import {
   getFilteredVenueListByCategoryStatus,
@@ -178,9 +178,6 @@ const InformationsScreen = ({
       { replace: true }
     )
 
-    const isEvent = subCategories.find(
-      (subcategory) => subcategory.id === formik.values.subcategoryId
-    )?.isEvent
     const nextStep =
       mode === OFFER_WIZARD_MODE.EDITION
         ? OFFER_WIZARD_STEP_IDS.SUMMARY
@@ -224,6 +221,11 @@ const InformationsScreen = ({
     enableReinitialize: true,
   })
 
+  const isEvent =
+    subCategories.find(
+      (subcategory) => subcategory.id === formik.values.subcategoryId
+    )?.isEvent ?? isOfferSubtypeEvent(offerSubtype)
+
   const handlePreviousStepOrBackToReadOnly = () => {
     const queryParams = new URLSearchParams(location.search)
     const queryOffererId = queryParams.get('structure')
@@ -263,6 +265,7 @@ const InformationsScreen = ({
             onImageDelete={onImageDelete}
             imageOffer={imageOffer}
             offerSubtype={offerSubtype}
+            isEvent={isEvent}
           />
 
           <ActionBar

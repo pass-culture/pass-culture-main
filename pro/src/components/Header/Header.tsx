@@ -1,9 +1,12 @@
-import classnames from 'classnames'
+import cn from 'classnames'
+import { ForwardedRef, forwardRef } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
+import fullBurgerIcon from 'icons/full-burger.svg'
+import fullLogoutIcon from 'icons/full-logout.svg'
 import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import deskIcon from 'icons/stroke-desk.svg'
@@ -12,191 +15,279 @@ import strokeHomeIcon from 'icons/stroke-home.svg'
 import strokeLogoutIcon from 'icons/stroke-logout.svg'
 import strokeOffersIcon from 'icons/stroke-offers.svg'
 import strokePieIcon from 'icons/stroke-pie.svg'
+import { Button } from 'ui-kit'
+import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+
+import styles from './Header.module.scss'
 
 const NAV_ITEM_ICON_SIZE = '24'
 
-const Header = () => {
-  const { logEvent } = useAnalytics()
-  const location = useLocation()
-  const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
+type HeaderProps = {
+  lateralPanelOpen?: boolean
+  setLateralPanelOpen?: (state: boolean) => void
+  focusCloseButton?: () => void
+}
+const Header = forwardRef(
+  (
+    {
+      lateralPanelOpen = false,
+      setLateralPanelOpen = () => undefined,
+      focusCloseButton = () => undefined,
+    }: HeaderProps,
+    openButtonRef: ForwardedRef<HTMLButtonElement>
+  ) => {
+    const { logEvent } = useAnalytics()
+    const location = useLocation()
+    const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
+    const isNewSideBarNavigation = useActiveFeature('WIP_ENABLE_PRO_SIDE_NAV')
 
-  return (
-    <header className="menu-v2" id="header-navigation">
-      <nav aria-label="Menu principal">
-        <div className="nav-brand">
-          <NavLink
-            className={classnames('logo', 'nav-item')}
-            to={'/accueil'}
+    function onSignoutClick() {
+      logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
+    }
+
+    if (isNewSideBarNavigation) {
+      return (
+        <header className={styles['top-menu']} id="top-navigation">
+          <Button
+            ref={openButtonRef}
+            aria-expanded={lateralPanelOpen}
+            className={styles['burger-icon']}
+            variant={ButtonVariant.TERNARY}
             onClick={() => {
-              logEvent?.(Events.CLICKED_PRO, { from: location.pathname })
+              setLateralPanelOpen(!lateralPanelOpen)
+              focusCloseButton()
             }}
+            aria-label="Menu"
+            aria-controls="lateral-panel"
           >
-            <SvgIcon
-              alt="Pass Culture pro, l’espace des acteurs culturels"
-              src={logoPassCultureProIcon}
-              viewBox="0 0 119 40"
-              width="119"
-            />
-          </NavLink>
-        </div>
-
-        <ul className="nav-menu">
-          <li>
+            <SvgIcon src={fullBurgerIcon} alt="" width="25" />
+          </Button>
+          <div className={styles['nav-brand']}>
             <NavLink
-              className={({ isActive }) =>
-                classnames('nav-item', {
-                  ['nav-item-selected']: isActive,
-                })
-              }
-              onClick={() => {
-                logEvent?.(Events.CLICKED_HOME, { from: location.pathname })
-              }}
+              className={styles['logo']}
               to={'/accueil'}
-            >
-              <SvgIcon
-                className="nav-item-icon"
-                src={strokeHomeIcon}
-                alt=""
-                width={NAV_ITEM_ICON_SIZE}
-              />
-              Accueil
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              className={({ isActive }) =>
-                classnames('nav-item', {
-                  ['nav-item-selected']: isActive,
-                })
-              }
               onClick={() => {
-                logEvent?.(Events.CLICKED_TICKET, { from: location.pathname })
+                logEvent?.(Events.CLICKED_PRO, { from: location.pathname })
               }}
-              to="/guichet"
             >
               <SvgIcon
-                className="nav-item-icon"
-                src={deskIcon}
-                alt=""
-                width={NAV_ITEM_ICON_SIZE}
+                alt="Pass Culture pro, l’espace des acteurs culturels"
+                src={logoPassCultureProIcon}
+                viewBox="0 0 119 40"
+                width="119"
               />
-              Guichet
             </NavLink>
-          </li>
-          <li>
+          </div>
+
+          {/* These buttons do the same.
+            The first one is displayed only on tablet and smaller to get rid of the right margin (and has an alt)
+            The second one is displayed on larger screen sizes
+        */}
+          <Button
+            className={styles['logout-mobile']}
+            onClick={onSignoutClick}
+            variant={ButtonVariant.TERNARY}
+            icon={fullLogoutIcon}
+            iconPosition={IconPositionEnum.CENTER}
+            alt="Se déconnecter"
+          />
+          <Button
+            className={styles['logout']}
+            onClick={onSignoutClick}
+            variant={ButtonVariant.TERNARY}
+            icon={fullLogoutIcon}
+          >
+            <span className={styles['logout-label']}>Se déconnecter</span>
+          </Button>
+        </header>
+      )
+    }
+
+    return (
+      <header className={styles['menu-v2']} id="header-navigation">
+        <nav className={styles['nav']} aria-label="Menu principal">
+          <div className={styles['nav-brand']}>
             <NavLink
-              className={({ isActive }) =>
-                classnames('nav-item', {
-                  ['nav-item-selected']: isActive,
-                })
-              }
+              className={cn('logo', 'nav-item')}
+              to={'/accueil'}
               onClick={() => {
-                logEvent?.(Events.CLICKED_OFFER, { from: location.pathname })
+                logEvent?.(Events.CLICKED_PRO, { from: location.pathname })
               }}
-              to="/offres"
             >
               <SvgIcon
-                className="nav-item-icon"
-                src={strokeOffersIcon}
-                alt=""
-                width={NAV_ITEM_ICON_SIZE}
+                alt="Pass Culture pro, l’espace des acteurs culturels"
+                src={logoPassCultureProIcon}
+                viewBox="0 0 119 40"
+                width="119"
               />
-              Offres
             </NavLink>
-          </li>
-          <li>
-            <NavLink
-              className={({ isActive }) =>
-                classnames('nav-item', {
-                  ['nav-item-selected']: isActive,
-                })
-              }
-              onClick={() => {
-                logEvent?.(Events.CLICKED_BOOKING, { from: location.pathname })
-              }}
-              to="/reservations"
-            >
-              <SvgIcon
-                alt=""
-                src={strokeCalendarIcon}
-                className="nav-item-icon"
-                width={NAV_ITEM_ICON_SIZE}
-              />
-              Réservations
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              className={({ isActive }) =>
-                classnames('nav-item', {
-                  ['nav-item-selected']: isActive,
-                })
-              }
-              onClick={() => {
-                logEvent?.(Events.CLICKED_REIMBURSEMENT, {
-                  from: location.pathname,
-                })
-              }}
-              to="/remboursements/justificatifs"
-            >
-              <SvgIcon
-                className="nav-item-icon"
-                src={strokeEuroIcon}
-                alt=""
-                width={NAV_ITEM_ICON_SIZE}
-              />
-              Gestion financière
-            </NavLink>
-          </li>
-          {isOffererStatsActive && (
+          </div>
+
+          <ul className={styles['nav-menu']}>
             <li>
               <NavLink
                 className={({ isActive }) =>
-                  classnames('nav-item', {
-                    ['nav-item-selected']: isActive,
+                  cn(styles['nav-item'], {
+                    [styles['nav-item-selected']]: isActive,
                   })
                 }
                 onClick={() => {
-                  logEvent?.(Events.CLICKED_STATS, {
+                  logEvent?.(Events.CLICKED_HOME, { from: location.pathname })
+                }}
+                to={'/accueil'}
+              >
+                <SvgIcon
+                  className={styles['nav-item-icon']}
+                  src={strokeHomeIcon}
+                  alt=""
+                  width={NAV_ITEM_ICON_SIZE}
+                />
+                Accueil
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                className={({ isActive }) =>
+                  cn(styles['nav-item'], {
+                    [styles['nav-item-selected']]: isActive,
+                  })
+                }
+                onClick={() => {
+                  logEvent?.(Events.CLICKED_TICKET, { from: location.pathname })
+                }}
+                to="/guichet"
+              >
+                <SvgIcon
+                  className={styles['nav-item-icon']}
+                  src={deskIcon}
+                  alt=""
+                  width={NAV_ITEM_ICON_SIZE}
+                />
+                Guichet
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                className={({ isActive }) =>
+                  cn(styles['nav-item'], {
+                    [styles['nav-item-selected']]: isActive,
+                  })
+                }
+                onClick={() => {
+                  logEvent?.(Events.CLICKED_OFFER, { from: location.pathname })
+                }}
+                to="/offres"
+              >
+                <SvgIcon
+                  className={styles['nav-item-icon']}
+                  src={strokeOffersIcon}
+                  alt=""
+                  width={NAV_ITEM_ICON_SIZE}
+                />
+                Offres
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                className={({ isActive }) =>
+                  cn(styles['nav-item'], {
+                    [styles['nav-item-selected']]: isActive,
+                  })
+                }
+                onClick={() => {
+                  logEvent?.(Events.CLICKED_BOOKING, {
                     from: location.pathname,
                   })
                 }}
-                to="/statistiques"
+                to="/reservations"
               >
                 <SvgIcon
-                  src={strokePieIcon}
                   alt=""
-                  className="nav-item-icon"
+                  src={strokeCalendarIcon}
+                  className={styles['nav-item-icon']}
                   width={NAV_ITEM_ICON_SIZE}
                 />
-                Statistiques
+                Réservations
               </NavLink>
             </li>
-          )}
-          <li>
-            <div className="separator" />
+            <li>
+              <NavLink
+                className={({ isActive }) =>
+                  cn(styles['nav-item'], {
+                    [styles['nav-item-selected']]: isActive,
+                  })
+                }
+                onClick={() => {
+                  logEvent?.(Events.CLICKED_REIMBURSEMENT, {
+                    from: location.pathname,
+                  })
+                }}
+                to="/remboursements/justificatifs"
+              >
+                <SvgIcon
+                  className={styles['nav-item-icon']}
+                  src={strokeEuroIcon}
+                  alt=""
+                  width={NAV_ITEM_ICON_SIZE}
+                />
+                Gestion financière
+              </NavLink>
+            </li>
+            {isOffererStatsActive && (
+              <li>
+                <NavLink
+                  className={({ isActive }) =>
+                    cn(styles['nav-item'], {
+                      [styles['nav-item-selected']]: isActive,
+                    })
+                  }
+                  onClick={() => {
+                    logEvent?.(Events.CLICKED_STATS, {
+                      from: location.pathname,
+                    })
+                  }}
+                  to="/statistiques"
+                >
+                  <SvgIcon
+                    src={strokePieIcon}
+                    alt=""
+                    className={styles['nav-item-icon']}
+                    width={NAV_ITEM_ICON_SIZE}
+                  />
+                  Statistiques
+                </NavLink>
+              </li>
+            )}
+            <li>
+              <div className={styles['separator']} />
 
-            <NavLink
-              className="nav-item icon-only"
-              onClick={() =>
-                logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
-              }
-              to={`${location.pathname}?logout`}
-              data-testid="logout-link"
-            >
-              <SvgIcon
-                src={strokeLogoutIcon}
-                alt="Déconnexion"
-                className="nav-item-icon signout-icon"
-                width={NAV_ITEM_ICON_SIZE}
-              />
-            </NavLink>
-          </li>
-        </ul>
-      </nav>
-    </header>
-  )
-}
+              <NavLink
+                className={cn(styles['nav-item'], styles['icon-only'])}
+                onClick={() =>
+                  logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
+                }
+                to={`${location.pathname}?logout`}
+                data-testid="logout-link"
+                title="Déconnexion"
+              >
+                <SvgIcon
+                  src={strokeLogoutIcon}
+                  alt="Déconnexion"
+                  className={cn(
+                    styles['nav-item-icon'],
+                    styles['signout-icon']
+                  )}
+                  width={NAV_ITEM_ICON_SIZE}
+                />
+              </NavLink>
+            </li>
+          </ul>
+        </nav>
+      </header>
+    )
+  }
+)
+Header.displayName = 'Header'
 
 export default Header

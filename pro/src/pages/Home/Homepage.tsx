@@ -14,6 +14,7 @@ import PendingBankAccountCallout from 'components/Callout/PendingBankAccountCall
 import { Newsletter } from 'components/Newsletter'
 import TutorialDialog from 'components/TutorialDialog'
 import { hasStatusCode } from 'core/OfferEducational'
+import { SAVED_OFFERER_ID_KEY } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 import useRemoteConfig from 'hooks/useRemoteConfig'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
@@ -31,7 +32,6 @@ import {
   getVirtualVenueFromOfferer,
 } from './venueUtils'
 
-export const SAVED_OFFERER_ID_KEY = 'homepageSelectedOffererId'
 const getSavedOffererId = (offererOptions: SelectOption[]): string | null => {
   const isLocalStorageAvailable = localStorageAvailable()
   if (!isLocalStorageAvailable) {

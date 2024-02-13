@@ -40,8 +40,6 @@ export const individualOfferFactory = (
     author: 'Chuck Norris',
     bookingEmail: 'chuck@nofucks.given',
     bookingsCount: 18,
-    musicType: 'douleur',
-    musicSubType: 'cassage de genoux',
     durationMinutes: 3,
     performer: 'Le Poing de Chuck',
     ean: 'Chuck n’est pas identifiable par un EAN',

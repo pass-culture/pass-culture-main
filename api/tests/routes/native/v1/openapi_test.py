@@ -850,7 +850,6 @@ def test_public_api(client):
                 },
                 "MovieType": {
                     "properties": {
-                        "children": {"items": {}, "nullable": True, "title": "Children", "type": "array"},
                         "label": {"title": "Label", "type": "string"},
                         "name": {"title": "Name", "type": "string"},
                     },
@@ -1179,6 +1178,7 @@ def test_public_api(client):
                 "OfferVenueResponse": {
                     "properties": {
                         "address": {"nullable": True, "title": "Address", "type": "string"},
+                        "bannerUrl": {"nullable": True, "title": "Bannerurl", "type": "string"},
                         "city": {"nullable": True, "title": "City", "type": "string"},
                         "coordinates": {"$ref": "#/components/schemas/Coordinates"},
                         "id": {"title": "Id", "type": "integer"},

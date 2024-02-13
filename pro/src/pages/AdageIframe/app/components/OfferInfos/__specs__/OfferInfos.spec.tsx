@@ -8,7 +8,10 @@ import {
   defaultAdageUser,
   defaultCollectiveTemplateOffer,
 } from 'utils/adageFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import { OfferInfos } from '../OfferInfos'
 
@@ -26,11 +29,15 @@ vi.mock('react-router-dom', async () => ({
   }),
 }))
 
-const renderOfferInfos = (user: AuthenticatedResponse = defaultAdageUser) => {
+const renderOfferInfos = (
+  user: AuthenticatedResponse = defaultAdageUser,
+  overrides?: RenderWithProvidersOptions
+) => {
   renderWithProviders(
     <AdageUserContextProvider adageUser={user}>
       <OfferInfos />
-    </AdageUserContextProvider>
+    </AdageUserContextProvider>,
+    overrides
   )
 }
 
@@ -142,5 +149,15 @@ describe('OfferInfos', () => {
     ).toBeInTheDocument()
 
     expect(fetchOfferSpy).toHaveBeenCalledWith(1)
+  })
+
+  it('should render the now offer info page sections if the ff is enabled', () => {
+    renderOfferInfos(defaultAdageUser, {
+      features: ['WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN'],
+    })
+
+    expect(screen.getByRole('heading', { name: 'Détails de l’offre' }))
+    expect(screen.getByRole('heading', { name: 'Informations pratiques' }))
+    expect(screen.getByRole('heading', { name: 'Public concerné' }))
   })
 })

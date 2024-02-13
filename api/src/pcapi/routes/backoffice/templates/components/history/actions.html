@@ -27,12 +27,14 @@
             {% elif action.actionType.name in ["RULE_CREATED","RULE_DELETED","RULE_MODIFIED"] %}
               <p>{{ action.rule.name }}</p>
               {{ build_sub_rules_extra_data(action.extraData['sub_rules_info']) }}
+            {% elif action.actionType.name in ["LINK_VENUE_BANK_ACCOUNT_DEPRECATED", "LINK_VENUE_BANK_ACCOUNT_CREATED"] %}
+              Lieu : {{ links.build_venue_name_to_details_link(action.venue) }}
             {% endif %}
             {% if action.comment %}
               <p>
                 {{ action.comment | empty_string_if_null | replace("\n", "
-                <br />
-                "|safe) }}
+                                <br />
+                                "|safe) }}
               </p>
             {% endif %}
             {% if action.extraData %}
@@ -70,7 +72,13 @@
                 {% if request.url != link %}<a href="{{ link }}">Voir l'incident #{{ linked_incident_id }}</a>{% endif %}
               {% endif %}
               {% set provider_id = action.extraData.get('provider_id') %}
-              {% if provider_id %}{{ action.extraData.get('provider_name') | empty_string_if_null }} (Provider ID : {{ provider_id }}){% endif %}
+              {% if provider_id %}{{ action.extraData.get("provider_name") | empty_string_if_null }} (Provider ID : {{ provider_id }}){% endif %}
+              {% set ds_dossier_id = action.extraData.get('ds_dossier_id') %}
+              {% if ds_dossier_id %}
+                {% set link = "https://www.demarches-simplifiees.fr/dossiers/" + ds_dossier_id|string %}
+                <a href="{{ link }}"
+                   target="_blank">Dossier Démarches Simplifiées n°{{ ds_dossier_id }}</a>
+              {% endif %}
             {% endif %}
           </td>
           <td>{{ action.authorUser.full_name if action.authorUser else None | empty_string_if_null }}</td>

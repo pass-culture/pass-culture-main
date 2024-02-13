@@ -588,6 +588,14 @@ class CollectiveOffer(
         result = query.one_or_none()
         return result[0] if result else None
 
+    @hybrid_property
+    def is_expired(self) -> bool:
+        return self.hasBeginningDatetimePassed
+
+    @is_expired.expression  # type: ignore [no-redef]
+    def is_expired(cls) -> bool:  # pylint: disable=no-self-argument
+        return cls.hasBeginningDatetimePassed
+
 
 class CollectiveOfferTemplate(
     PcObject, offer_mixin.ValidationMixin, AccessibilityMixin, StatusMixin, HasImageMixin, Base, Model
@@ -872,6 +880,14 @@ class CollectiveOfferTemplate(
             priceDetail=price_detail,
         )
 
+    @hybrid_property
+    def is_expired(self) -> bool:
+        return self.hasBeginningDatetimePassed
+
+    @is_expired.expression  # type: ignore [no-redef]
+    def is_expired(cls) -> bool:  # pylint: disable=no-self-argument
+        return cls.hasBeginningDatetimePassed
+
 
 class CollectiveStock(PcObject, Base, Model):
     __tablename__ = "collective_stock"
@@ -1007,6 +1023,8 @@ class EducationalInstitution(PcObject, Base, Model):
     collective_playlists: list[sa_orm.Mapped["CollectivePlaylist"]] = relationship(
         "CollectivePlaylist", back_populates="institution"
     )
+
+    __table_args__ = (sa.Index("ix_educational_institution_type_name_city", institutionType + " " + name + " " + city),)
 
     @property
     def full_name(self) -> str:

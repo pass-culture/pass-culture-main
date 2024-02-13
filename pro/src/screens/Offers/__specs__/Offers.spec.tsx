@@ -772,4 +772,40 @@ describe('screen Offers', () => {
       })
     )
   })
+
+  it('should display the create offer button by default for non admins with validated offerers', async () => {
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValueOnce({
+      offerersNames: [
+        {
+          id: 1,
+          name: 'Mon super cinéma',
+        },
+      ],
+    })
+
+    renderOffers(props)
+    await waitFor(() => {
+      expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
+    })
+    expect(screen.getByText(/Créer une offre/)).toBeInTheDocument()
+  })
+
+  it('should not display the create offer button with the WIP_ENABLE_PRO_SIDE_NAV FF enabled', async () => {
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValueOnce({
+      offerersNames: [
+        {
+          id: 1,
+          name: 'Mon super cinéma',
+        },
+      ],
+    })
+
+    renderOffers(props, {
+      features: ['WIP_ENABLE_PRO_SIDE_NAV'],
+    })
+    await waitFor(() => {
+      expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
+    })
+    expect(screen.queryByText(/Créer une offre/)).not.toBeInTheDocument()
+  })
 })

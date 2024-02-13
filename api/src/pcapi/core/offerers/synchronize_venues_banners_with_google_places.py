@@ -7,6 +7,8 @@ from pcapi import settings
 from pcapi.core.object_storage import delete_public_object
 from pcapi.core.object_storage import store_public_object
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.search import IndexationReason
+from pcapi.core.search import async_index_venue_ids
 from pcapi.models import db
 from pcapi.utils import image_conversion
 
@@ -64,11 +66,15 @@ def get_venues_without_photo(begin: int, end: int | None, limit: int | None = No
     return venues
 
 
-def get_place_id(name: str, address: str | None) -> str | None:
+def get_place_id(name: str, address: str | None, city: str | None, postal_code: str | None) -> str | None:
     gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
     address = address or ""
+    city = city or ""
+    postal_code = postal_code or ""
     result = FindPlaceResponse.model_validate(
-        gmaps.find_place(input=name + address, input_type="textquery", fields=["place_id"])
+        gmaps.find_place(
+            input=" ".join([name, address, postal_code, city]), input_type="textquery", fields=["place_id"]
+        )
     )
     if result.status != "OK" or not result.candidates:
         return None
@@ -124,7 +130,6 @@ def synchronize_venues_banners_with_google_places(
     start_venue_id: int, end_venue_id: int | None, limit: int | None
 ) -> None:
     venues_without_photos = get_venues_without_photo(start_venue_id, end_venue_id, limit)
-    print("the number of venues is:", len(venues_without_photos))
     logger.info(
         "[gmaps_banner_synchro] synchronize_venues_banners_with_google_places %s %s %s: the number of venues tried: %s",
         start_venue_id,
@@ -135,11 +140,12 @@ def synchronize_venues_banners_with_google_places(
     nb_places_found = 0
     nb_places_with_photo = 0
     nb_places_with_owner_photo = 0
+    nb_images_ignored_due_to_ratio_venue_id = 0
+    images_ignored_due_to_ratio = []
+    banner_synchronized_venue_ids = set()
     for venue in venues_without_photos:
-        if venue.googlePlacesInfo:
-            nb_places_found += 1
-        else:
-            place_id = get_place_id(venue.name, venue.address)
+        if not venue.googlePlacesInfo:
+            place_id = get_place_id(venue.name, venue.address, venue.city, venue.postalCode)
             if not place_id:
                 continue
             venue.googlePlacesInfo = offerers_models.GooglePlacesInfo(placeId=place_id)
@@ -161,6 +167,11 @@ def synchronize_venues_banners_with_google_places(
         try:
             venue.googlePlacesInfo.bannerUrl = save_photo_to_gcp(venue.id, photo, photo_prefix)
             venue.googlePlacesInfo.bannerMeta = photo.model_dump()
+            banner_synchronized_venue_ids.add(venue.id)
+        except image_conversion.ImageRatioError:
+            nb_images_ignored_due_to_ratio_venue_id += 1
+            images_ignored_due_to_ratio.append(venue.id)
+            continue
         except Exception as e:  # pylint: disable=broad-except
             logger.exception(
                 "[gmaps_banner_synchro]venue id: %s error %s: ",
@@ -170,8 +181,9 @@ def synchronize_venues_banners_with_google_places(
             )
             continue
     db.session.commit()
+    async_index_venue_ids(banner_synchronized_venue_ids, IndexationReason.GOOGLE_PLACES_BANNER_SYNCHRONIZATION)
     logger.info(
-        "Synchronized venues with Google Places",
+        "[gmaps_banner_synchro]Synchronized venues with Google Places",
         extra={
             "nb_places_fetched": len(venues_without_photos),
             "nb_places_found": nb_places_found,
@@ -179,6 +191,15 @@ def synchronize_venues_banners_with_google_places(
             "nb_places_with_owner_photo": nb_places_with_owner_photo,
         },
     )
+    if nb_images_ignored_due_to_ratio_venue_id:
+        logger.warning(
+            "[gmaps_banner_synchro]Images ignored due to ratio: %s",
+            nb_images_ignored_due_to_ratio_venue_id,
+            extra={
+                "nb_images_ignored_due_to_ratio_venue_id": nb_images_ignored_due_to_ratio_venue_id,
+                "concerned venue Ids": images_ignored_due_to_ratio,
+            },
+        )
 
 
 def delete_venues_banners(start_venue_id: int, end_venue_id: int | None, limit: int | None) -> None:
@@ -201,6 +222,7 @@ def delete_venues_banners(start_venue_id: int, end_venue_id: int | None, limit: 
         )
     if limit is not None:
         google_places_info_query = google_places_info_query.limit(limit)
+    venues_ids_with_deleted_banners = set()
     for place_info in google_places_info_query:
         try:
             delete_public_object(GOOGLE_PLACES_BANNER_STORAGE_FOLDER, place_info.bannerUrl.split("/")[-1])
@@ -216,7 +238,9 @@ def delete_venues_banners(start_venue_id: int, end_venue_id: int | None, limit: 
         nb_deleted_banners += 1
         place_info.bannerUrl = None
         place_info.bannerMeta = None
+        venues_ids_with_deleted_banners.add(place_info.venueId)
     db.session.commit()
+    async_index_venue_ids(venues_ids_with_deleted_banners, IndexationReason.GOOGLE_PLACES_BANNER_SYNCHRONIZATION)
     logger.info(
         "deleted old google places banners",
         extra={

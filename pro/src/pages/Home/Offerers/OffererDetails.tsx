@@ -1,20 +1,22 @@
 import cn from 'classnames'
 import React from 'react'
+import { useDispatch } from 'react-redux'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { Events, OffererLinkEvents } from 'core/FirebaseEvents/constants'
+import { SAVED_OFFERER_ID_KEY } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
 import fullAddUserIcon from 'icons/full-add-user.svg'
 import fullEditIcon from 'icons/full-edit.svg'
+import { updateSelectedOffererId } from 'store/user/reducer'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
 import { localStorageAvailable } from 'utils/localStorageAvailable'
 
 import { Card } from '../Card'
-import { SAVED_OFFERER_ID_KEY } from '../Homepage'
 
 import styles from './OffererDetails.module.scss'
 
@@ -34,6 +36,7 @@ export const OffererDetails = ({
   const { logEvent } = useAnalytics()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
+  const dispatch = useDispatch()
 
   const addOffererOption: SelectOption = {
     label: '+ Ajouter une structure',
@@ -47,7 +50,7 @@ export const OffererDetails = ({
     } else if (newOffererId !== selectedOfferer?.id.toString()) {
       searchParams.set('structure', newOffererId)
       setSearchParams(searchParams)
-
+      dispatch(updateSelectedOffererId(Number(newOffererId)))
       if (localStorageAvailable()) {
         localStorage.setItem(SAVED_OFFERER_ID_KEY, newOffererId)
       }

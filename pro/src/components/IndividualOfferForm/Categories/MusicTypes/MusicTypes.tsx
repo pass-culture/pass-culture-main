@@ -1,83 +1,48 @@
-import { useFormikContext } from 'formik'
-import React from 'react'
+import React, { useEffect } from 'react'
 
+import { api } from 'apiClient/api'
+import { GetMusicTypesResponse } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
-import {
-  FORM_DEFAULT_VALUES,
-  IndividualOfferFormValues,
-} from 'components/IndividualOfferForm'
-import { musicOptionsTree } from 'core/Offers/categoriesSubTypes'
-import { SelectOption } from 'custom_types/form'
+import { FORM_DEFAULT_VALUES } from 'components/IndividualOfferForm'
 import { Select } from 'ui-kit'
 
 interface MusicTypesProps {
   readOnly?: boolean
+  isEvent: boolean | null
 }
 
-const getMusicSubTypeOptions = (musicType: string): SelectOption[] => {
-  if (musicType === FORM_DEFAULT_VALUES.musicType) {
-    return []
-  }
+const MusicTypes = ({
+  readOnly = false,
+  isEvent = false,
+}: MusicTypesProps): JSX.Element => {
+  const [musicTypes, setMusicTypes] = React.useState<GetMusicTypesResponse>([])
 
-  const selectedMusicTypeChildren = musicOptionsTree.find(
-    (musicTypeOption) => musicTypeOption.code === parseInt(musicType)
-  )?.children
-
-  if (!selectedMusicTypeChildren) {
-    return []
-  }
-
-  return selectedMusicTypeChildren
-    .map((data) => ({
-      value: data.code.toString(),
-      label: data.label,
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
-}
-
-const MusicTypes = ({ readOnly = false }: MusicTypesProps): JSX.Element => {
-  const {
-    values: { musicType },
-  } = useFormikContext<IndividualOfferFormValues>()
-
-  const musicTypeOptions = musicOptionsTree
-    .map((data) => ({
-      value: data.code.toString(),
-      label: data.label,
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
-  const musicSubTypeOptions = getMusicSubTypeOptions(musicType)
+  useEffect(() => {
+    const getMusicTypes = async () => {
+      const musicTypes = isEvent
+        ? await api.getEventMusicTypes()
+        : await api.getAllMusicTypes()
+      setMusicTypes(musicTypes)
+    }
+    getMusicTypes() // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  }, [isEvent])
 
   return (
-    <>
-      <FormLayout.Row>
-        <Select
-          label="Genre musical"
-          name="musicType"
-          options={musicTypeOptions}
-          defaultOption={{
-            label: 'Choisir un genre musical',
-            value: FORM_DEFAULT_VALUES.musicType,
-          }}
-          disabled={readOnly}
-        />
-      </FormLayout.Row>
-
-      {musicSubTypeOptions.length > 0 && (
-        <FormLayout.Row>
-          <Select
-            label="Sous-genre"
-            name="musicSubType"
-            options={musicSubTypeOptions}
-            defaultOption={{
-              label: 'Choisir un sous-genre',
-              value: FORM_DEFAULT_VALUES.musicSubType,
-            }}
-            disabled={readOnly}
-          />
-        </FormLayout.Row>
-      )}
-    </>
+    <FormLayout.Row>
+      <Select
+        label="Genre musical"
+        name="gtl_id"
+        options={musicTypes.map((data) => ({
+          value: data.gtl_id,
+          label: data.label,
+        }))}
+        defaultOption={{
+          label: 'Choisir un genre musical',
+          value: FORM_DEFAULT_VALUES.gtl_id,
+        }}
+        disabled={readOnly}
+      />
+    </FormLayout.Row>
   )
 }
 

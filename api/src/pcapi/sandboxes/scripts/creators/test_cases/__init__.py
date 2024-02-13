@@ -22,6 +22,9 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_gdpr_users im
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import (
     create_specific_cashflow_batch_without_invoice,
 )
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import (
+    create_specific_invoice_with_bank_account,
+)
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import create_specific_invoice
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_validation_rules import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_with_custom_reimbursement_rule import (
@@ -47,9 +50,9 @@ def save_test_cases_sandbox() -> None:
     create_industrial_gdpr_users()
     create_industrial_offerer_with_custom_reimbursement_rule()
     create_specific_invoice()
+    create_specific_invoice_with_bank_account()
     create_specific_cashflow_batch_without_invoice()
     create_venue_labels(sandbox=True)
-    create_offers_with_more_extra_data()
     create_venues_with_gmaps_image()
     create_app_beneficiary()
     create_venues_with_practical_info_graphical_edge_cases()
@@ -86,7 +89,7 @@ def create_offers_with_gtls() -> None:
         city="LA ROCHE-SUR-YON",
         departementCode="85",
     )
-    create_offers_with_gtl_id("03050300)", 10, librairie_manga)  # 10 mangas
+    create_offers_with_gtl_id("03050300", 10, librairie_manga)  # 10 mangas
 
 
 def create_offers_for_each_gtl_level_1(size_per_gtl_level_1: int, venue: offerers_models.Venue) -> None:
@@ -114,7 +117,6 @@ def create_offers_with_gtl_id(gtl_id: str, size_per_gtl: int, venue: offerers_mo
         description=product.description,
         size=size_per_gtl,
         venue=venue,
-        extraData={"gtl_id": gtl_id, "author": Fake.name(), "ean": ean, "editeur": Fake.name()},
     )
     for offer in offers:
         offers_factories.StockFactory(offer=offer)
@@ -122,17 +124,10 @@ def create_offers_with_gtl_id(gtl_id: str, size_per_gtl: int, venue: offerers_mo
 
 def create_offers_with_same_ean() -> None:
     offers = []
-    ean = Fake.ean13()
-    author = Fake.name()
     product = offers_factories.ProductFactory(
         name="Le livre du pass Culture",
         subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
         lastProvider=providers_factory.PublicApiProviderFactory(name="BookProvider"),
-        idAtProviders=ean,
-        extraData={
-            "ean": ean,
-            "author": author,
-        },
     )
     for venue_data in venues_mock.venues:
         offers.append(
@@ -149,10 +144,6 @@ def create_offers_with_same_ean() -> None:
                     city=venue_data["city"],
                     departementCode=venue_data["departementCode"],
                 ),
-                extraData={
-                    "ean": ean,
-                    "author": author,
-                },
             )
         )
         for offer in offers:
@@ -175,7 +166,6 @@ def create_offer_with_ean(ean: str, venue: offerers_models.Venue, author: str) -
         name=product.name,
         subcategoryId=product.subcategoryId,
         description=product.description,
-        extraData={"ean": ean, "author": author},
         venue=venue,
     )
     offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
@@ -292,11 +282,8 @@ def create_single_book_author(venues: list[offerers_models.Venue]) -> None:
 
 def create_book_in_multiple_venues(venues: list[offerers_models.Venue]) -> None:
     # an author with 1 book in multiple venues
-    author = Fake.name()
-    ean = Fake.ean13()
     product = offers_factories.ProductFactory(
         subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
-        extraData={"ean": ean, "author": author},
     )
     for venue in venues[:3]:
         offer = offers_factories.OfferFactory(
@@ -304,7 +291,6 @@ def create_book_in_multiple_venues(venues: list[offerers_models.Venue]) -> None:
             name=product.name,
             description=product.description,
             subcategoryId=product.subcategoryId,
-            extraData={"ean": ean, "author": author},
             venue=venue,
         )
         offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
@@ -326,7 +312,6 @@ def create_books_with_the_same_author_duplicated_in_multiple_venues(venues: list
                 name=product.name,
                 subcategoryId=product.subcategoryId,
                 description=product.description,
-                extraData={"ean": ean, "author": author},
                 venue=venue,
             )
             offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
@@ -343,7 +328,6 @@ def create_books_with_the_same_author_duplicated_in_multiple_venues(venues: list
             name=product.name,
             subcategoryId=product.subcategoryId,
             description=product.description,
-            extraData={"ean": ean, "author": author},
             venue=venues[3],
         )
         offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
@@ -363,7 +347,6 @@ def create_multiauthors_books(venues: list[offerers_models.Venue]) -> None:
         name=product.name,
         subcategoryId=product.subcategoryId,
         description=product.description,
-        extraData={"ean": ean, "author": ", ".join(authors)},
         venue=venues[0],
     )
     offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
@@ -372,117 +355,9 @@ def create_multiauthors_books(venues: list[offerers_models.Venue]) -> None:
         for _ in range(4):
             create_offer_with_ean(Fake.ean13(), random.choice(venues), author=author)
 
-    # author "collectif"
     author = "collectif"
     for _ in range(3):
         create_offer_with_ean(Fake.ean13(), random.choice(venues), author=author)
-
-
-def create_offers_with_more_extra_data() -> None:
-    venue_data = random.choice(venues_mock.venues)
-    venue = offerers_factories.VenueFactory(
-        name="extra_data " + str(venue_data["name"]),
-        venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
-        latitude=venue_data["latitude"],
-        longitude=venue_data["longitude"],
-        address=venue_data["address"],
-        postalCode=venue_data["postalCode"],
-        city=venue_data["city"],
-        departementCode=venue_data["departementCode"],
-    )
-    for _ in range(2):
-        create_offers_with_gtl_id(gtl_id=random.choice(list(GTLS)), size_per_gtl=1, venue=venue)
-        creat_cine_offer_with_cast(venue)
-        create_music_offers(venue)
-        create_event_offers(venue)
-
-
-def create_music_offers(venue: offerers_models.Venue) -> None:
-    for subcategory in filter(
-        lambda subcategory: subcategories_v2.ExtraDataFieldEnum.MUSIC_TYPE in subcategory.conditional_fields,
-        list(subcategories_v2.ALL_SUBCATEGORIES),
-    ):
-        music_type = random.choice(music_types)
-        create_offers_with_extradata(
-            venue=venue,
-            extra_data={
-                "musicType": str(music_type.code),
-                "musicSubType": str(random.choice(music_type.children).code),
-                "performer": Fake.name(),
-            },
-            subcategory=subcategory,
-        )
-
-
-def create_event_offers(venue: offerers_models.Venue) -> None:
-    for subcategory in subcategories_v2.EVENT_SUBCATEGORIES.values():
-        show_type = random.choice(list(show_types))
-        create_offers_with_extradata(
-            venue=venue,
-            extra_data={
-                "showType": str(show_type.code),
-                "showSubType": str(random.choice(show_type.children).code),
-                "performer": Fake.name(),
-                "stageDirector": Fake.name(),
-                "speaker": Fake.name(),
-            },
-            subcategory=subcategory,
-        )
-
-
-def creat_cine_offer_with_cast(venue: offerers_models.Venue) -> None:
-    create_offers_with_extradata(
-        venue=venue,
-        extra_data={
-            "cast": [Fake.name() for _ in range(random.randint(1, 10))],
-            "releaseDate": Fake.date(),
-            "genres": [random.choice(movie_types).name for _ in range(random.randint(1, 4))],
-            "stageDirector": Fake.name(),
-        },
-        subcategory=subcategories_v2.SEANCE_CINE,
-    )
-
-
-def create_offers_with_extradata(
-    venue: offerers_models.Venue,
-    subcategory: subcategories_v2.Subcategory | None = None,
-    extra_data: dict | None = None,
-    should_create_product: bool = False,
-    name: str | None = None,
-    description: str | None = None,
-) -> None:
-    if not subcategory:
-        subcategory = random.choice(subcategories_v2.ALL_SUBCATEGORIES)
-    offer_adapted_factory = (
-        offers_factories.EventOfferFactory if subcategory.is_event else offers_factories.OfferFactory
-    )
-    if should_create_product:
-        product = offers_factories.ProductFactory(
-            name=name if name else "product with extradata" + Fake.sentence(nb_words=3, variable_nb_words=True)[:-1],
-            subcategoryId=subcategory.id,
-            lastProvider=providers_factory.PublicApiProviderFactory(name="BookProvider"),
-            extraData=extra_data,
-            description=description if description else Fake.paragraph(nb_sentences=5, variable_nb_sentences=True),
-        )
-        offer = offer_adapted_factory(
-            product=product,
-            name=product.name,
-            subcategoryId=product.subcategoryId,
-            description=product.description,
-            venue=venue,
-            extraData=product.extraData,
-        )
-    else:
-        offer = offer_adapted_factory(
-            name=name if name else "offer with extradata" + Fake.sentence(nb_words=3, variable_nb_words=True)[:-1],
-            subcategoryId=subcategory.id,
-            description=description if description else Fake.paragraph(nb_sentences=5, variable_nb_sentences=True),
-            venue=venue,
-            extraData=extra_data,
-        )
-    offers_factories.StockFactory(
-        offer=offer,
-    )
 
 
 def create_venues_with_gmaps_image() -> None:

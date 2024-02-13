@@ -52,13 +52,14 @@ def generate_invoices(batch_id: int) -> None:
 
     This command can be run multiple times.
     """
-
     batch = finance_models.CashflowBatch.query.get(batch_id)
     if not batch:
         print(f"Could not generate invoices for this batch, as it doesn't exist :{batch_id}")
         return
 
     finance_api.generate_invoices(batch)
+    finance_api.generate_debit_notes(batch)
+
     if settings.SLACK_GENERATE_INVOICES_FINISHED_CHANNEL:
         send_internal_message(
             channel=settings.SLACK_GENERATE_INVOICES_FINISHED_CHANNEL,

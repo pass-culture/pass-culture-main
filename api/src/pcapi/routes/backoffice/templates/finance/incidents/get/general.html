@@ -12,7 +12,7 @@
             {% if incident.isClosed %}
               <span class="badge text-bg-light">Terminé</span>
             {% else %}
-              {{ incident.status | format_finance_incident_status | safe }}
+              {{ incident.status | format_finance_incident_status_badge | safe }}
             {% endif %}
           </div>
           <div class="h5 me-1 align-middle">{{ incident.kind | format_finance_incident_type | safe }}</div>

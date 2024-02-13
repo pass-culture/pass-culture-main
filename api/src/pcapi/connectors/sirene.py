@@ -72,6 +72,7 @@ class SirenInfo(pydantic_v1.BaseModel):
         head_office_siret: pydantic_v1.constr(strip_whitespace=True, min_length=14, max_length=14)
     ape_code: str
     active: bool
+    diffusible: bool
     legal_category_code: str
     address: _Address | None
 
@@ -82,6 +83,7 @@ class SiretInfo(pydantic_v1.BaseModel):
     else:
         siret: pydantic_v1.constr(strip_whitespace=True, min_length=14, max_length=14)
     active: bool
+    diffusible: bool
     name: str
     address: _Address
     ape_code: str
@@ -141,10 +143,35 @@ class TestingBackend(BaseBackend):
         insee_code="75101",
     )
 
+    nd_address = _Address(
+        street="[ND]",
+        postal_code="[ND]",
+        city="CANNES",
+        insee_code="06029",
+    )
+
     def get_siren(self, siren: str, with_address: bool = True, raise_if_non_public: bool = True) -> SirenInfo:
         assert len(siren) == 9
         if siren == "000000000":
             raise UnknownEntityException()
+
+        # allows to get a closed offerer in dev/testing environments: any SIREN which ends with "99"
+        active = siren[7:9] != "99"
+
+        # allows to get a non-diffusible offerer in dev/testing environments: any SIREN which starts with '9'
+        if siren[0] == "9":
+            if raise_if_non_public:
+                raise NonPublicDataException()
+            return SirenInfo(
+                siren=siren,
+                name="[ND]",
+                head_office_siret=siren + "00001",
+                ape_code="90.01Z",
+                legal_category_code="1000",
+                address=self.nd_address if with_address else None,
+                active=active,
+                diffusible=False,
+            )
 
         # allows to get an offerer with a specific APE code using specific siren
         siren_ape = defaultdict(
@@ -163,11 +190,32 @@ class TestingBackend(BaseBackend):
             ape_code=siren_ape[siren],
             legal_category_code="1000",
             address=self.address if with_address else None,
-            active=True,
+            active=active,
+            diffusible=True,
         )
 
     def get_siret(self, siret: str, raise_if_non_public: bool = False) -> SiretInfo:
         assert len(siret) == 14
+
+        if siret[:9] == "000000000":
+            raise UnknownEntityException()
+
+        # allows to get a closed offerer in dev/testing environments: any SIRET like xxxxxxx99xxxxx (SIREN ends with 99)
+        active = siret[7:9] != "99"
+
+        # allows to get a non-diffusible offerer in dev/testing environments: any SIRET which starts with '9'
+        if siret[0] == "9":
+            if raise_if_non_public:
+                raise NonPublicDataException()
+            return SiretInfo(
+                siret=siret,
+                active=active,
+                diffusible=False,
+                name="[ND]",
+                address=self.nd_address,
+                ape_code="90.01Z",
+                legal_category_code="1000",
+            )
 
         siret_ape = defaultdict(
             lambda: "90.03A",
@@ -180,7 +228,8 @@ class TestingBackend(BaseBackend):
 
         return SiretInfo(
             siret=siret,
-            active=True,
+            active=active,
+            diffusible=True,
             name="MINISTERE DE LA CULTURE",
             address=self.address,
             ape_code=siret_ape[siret],
@@ -306,6 +355,7 @@ class InseeBackend(BaseBackend):
             ape_code=head_office["activitePrincipaleUniteLegale"],
             address=address,
             active=head_office["etatAdministratifUniteLegale"] == "A",
+            diffusible=data["statutDiffusionUniteLegale"] == "O",
         )
         if raise_if_non_public:
             self._check_non_public_data(info)
@@ -323,6 +373,7 @@ class InseeBackend(BaseBackend):
         info = SiretInfo(
             siret=siret,
             active=active,
+            diffusible=legal_unit_block["statutDiffusionUniteLegale"] == "O",
             name=self._get_name_from_siret_data(data),
             address=self._get_address_from_siret_data(data),
             ape_code=legal_unit_block["activitePrincipaleUniteLegale"],

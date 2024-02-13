@@ -3,8 +3,10 @@ import fullAddUserIcon from 'icons/full-add-user.svg'
 import fullArrowLeftIcon from 'icons/full-arrow-left.svg'
 import fullArrowRightIcon from 'icons/full-arrow-right.svg'
 import fullBackIcon from 'icons/full-back.svg'
+import fullBurgerkIcon from 'icons/full-burger.svg'
 import fullClearIcon from 'icons/full-clear.svg'
 import fullCodeIcon from 'icons/full-code.svg'
+import fullDeskIcon from 'icons/full-desk.svg'
 import fullDisclosureCloseIcon from 'icons/full-disclosure-close.svg'
 import fullDisclosureOpenIcon from 'icons/full-disclosure-open.svg'
 import fullDownIcon from 'icons/full-down.svg'
@@ -49,6 +51,7 @@ import strokeAccessibilityBrainIcon from 'icons/stroke-accessibility-brain.svg'
 import strokeAccessibilityEarIcon from 'icons/stroke-accessibility-ear.svg'
 import strokeAccessibilityEyeIcon from 'icons/stroke-accessibility-eye.svg'
 import strokeAccessibilityLegIcon from 'icons/stroke-accessibility-leg.svg'
+import strokeArticleIcon from 'icons/stroke-article.svg'
 import strokeBookedIcon from 'icons/stroke-booked.svg'
 import strokeBookingHold from 'icons/stroke-booking-hold.svg'
 import strokeBuildingIcon from 'icons/stroke-building.svg'
@@ -75,6 +78,7 @@ import strokeHideIcon from 'icons/stroke-hide.svg'
 import strokeHomeIcon from 'icons/stroke-home.svg'
 import strokeHourglassIcon from 'icons/stroke-hourglass.svg'
 import strokeInfoIcon from 'icons/stroke-info.svg'
+import strokeInstitutionIcon from 'icons/stroke-institution.svg'
 import strokeLeftIcon from 'icons/stroke-left.svg'
 import strokeLessIcon from 'icons/stroke-less.svg'
 import strokeLibraryIcon from 'icons/stroke-library.svg'
@@ -162,6 +166,8 @@ export const fullIcons: IconListItem[] = [
   { src: fullAddUserIcon },
   { src: fullStarIcon },
   { src: fullWarningIcon },
+  { src: fullDeskIcon },
+  { src: fullBurgerkIcon },
   { src: fullDisclosureCloseIcon, viewBox: '0 0 16 16' }, // TODO clean viewbox
   { src: fullDisclosureOpenIcon, viewBox: '0 0 16 16' }, // TODO clean viewbox
 ]
@@ -234,6 +240,8 @@ export const strokeIcons: IconListItem[] = [
   { src: strokeLibraryIcon },
   { src: strokeVenueIcon },
   { src: strokeStarIcon },
+  { src: strokeArticleIcon },
+  { src: strokeInstitutionIcon },
   { src: strokeWipIcon, viewBox: '0 0 200 156' }, // TODO standardize viewbox
   { src: strokeNoBookingIcon, viewBox: '0 0 200 156' }, // TODO standardize viewbox
   { src: strokeBookingHold, viewBox: '0 0 200 156' }, // TODO standardize viewbox

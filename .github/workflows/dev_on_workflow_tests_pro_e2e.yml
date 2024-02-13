@@ -137,6 +137,9 @@ jobs:
         with:
           path: "pro/cypress/videos"
           destination: "${{ inputs.CACHE_BUCKET_NAME }}/pro/cypress/videos/e2e-artifacts"
+      - name: 'Show pcapi log when it fails'
+        if: failure()
+        run: docker logs pc-api
 
   notification:
     name: "Notification"

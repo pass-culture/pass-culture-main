@@ -31,15 +31,18 @@ type VenuePlaylistProps = {
 const institutionRuralLevelToPlaylistTitle: {
   [key in InstitutionRuralLevel]: string
 } = {
-  'urbain dense': 'À moins de 30 minutes à pied de mon établissement',
+  'urbain dense':
+    'Partenaires culturels à moins de 30 minutes à pied de votre établissement',
   'urbain densité intermédiaire':
-    'À moins de 30 minutes de route de mon établissement',
+    'Partenaires culturels à moins de 30 minutes de route de votre établissement',
   "rural sous forte influence d'un pôle":
-    'À environ 30 minutes de route de mon établissement',
-  'rural autonome peu dense': 'À environ 1h de route de mon établissement',
+    'Partenaires culturels à environ 30 minutes de route de votre établissement',
+  'rural autonome peu dense':
+    'Partenaires culturels à environ 1h de route de votre établissement',
   "rural sous faible influence d'un pôle":
-    'À environ 1h de route de mon établissement',
-  'rural autonome très peu dense': 'À environ 1h de route de mon établissement',
+    'Partenaires culturels à environ 1h de route de votre établissement',
+  'rural autonome très peu dense':
+    'À environ 1h de route de votre établissement',
 }
 
 export const VenuePlaylist = ({
@@ -77,7 +80,7 @@ export const VenuePlaylist = ({
             ? institutionRuralLevelToPlaylistTitle[
                 adageUser.institutionRuralLevel
               ]
-            : 'À moins de 30 minutes à pied de mon établissement'}
+            : 'Partenaires culturels à moins de 30 minutes à pied de votre établissement'}
         </h2>
       }
       className={classNames(styles['playlist-carousel'], {

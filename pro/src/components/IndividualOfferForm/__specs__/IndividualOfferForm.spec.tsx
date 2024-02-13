@@ -122,6 +122,7 @@ describe('IndividualOfferForm', () => {
       onImageUpload: vi.fn(),
       onImageDelete: vi.fn(),
       offerSubtype: INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD,
+      isEvent: false,
     }
     initialValues = setDefaultInitialFormValues(
       offererNames,
@@ -202,8 +203,7 @@ describe('IndividualOfferForm', () => {
         isNational: false,
         isVenueVirtual: false,
         ean: '',
-        musicSubType: '',
-        musicType: '',
+        gtl_id: '',
         name: 'Le nom de mon offre',
         offererId: offererId.toString(),
         performer: '',
@@ -272,8 +272,7 @@ describe('IndividualOfferForm', () => {
         isNational: false,
         isVenueVirtual: true,
         ean: '',
-        musicSubType: '',
-        musicType: '',
+        gtl_id: '',
         name: 'Le nom de mon offre',
         offererId: offererId.toString(),
         performer: '',

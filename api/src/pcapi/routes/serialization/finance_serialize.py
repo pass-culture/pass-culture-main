@@ -78,6 +78,39 @@ class InvoiceListResponseModel(BaseModel):
     __root__: list[InvoiceResponseModel]
 
 
+class InvoiceListV2QueryModel(BaseModel):
+    class Config:
+        orm_mode = True
+
+    periodBeginningDate: datetime.date | None
+    periodEndingDate: datetime.date | None
+    bankAccountId: int | None
+
+
+class InvoiceResponseV2Model(BaseModel):
+    class Config:
+        orm_mode = True
+
+    reference: str
+    date: datetime.date
+    amount: float
+    url: str
+    bankAccountLabel: str | None
+    cashflowLabels: list[str]
+
+    @classmethod
+    def from_orm(cls, invoice: finance_models.Invoice) -> "InvoiceResponseV2Model":
+        invoice.bankAccountLabel = invoice.bankAccount.label
+        invoice.cashflowLabels = [cashflow.batch.label for cashflow in invoice.cashflows]
+        res = super().from_orm(invoice)
+        res.amount = -finance_utils.to_euros(res.amount)  # type: ignore [assignment, arg-type]
+        return res
+
+
+class InvoiceListV2ResponseModel(BaseModel):
+    __root__: list[InvoiceResponseV2Model]
+
+
 class LinkedVenues(BaseModel):
     """A venue that is already linked to a bank account."""
 
@@ -126,7 +159,7 @@ class BankAccountResponseModel(BaseModel):
     label: str
     obfuscatedIban: str
     bic: str
-    dsApplicationId: int
+    dsApplicationId: int | None
     status: finance_models.BankAccountApplicationStatus
     dateCreated: datetime.datetime
     dateLastStatusUpdate: datetime.datetime | None
