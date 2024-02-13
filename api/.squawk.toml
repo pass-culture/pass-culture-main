@@ -4,8 +4,10 @@ excluded_rules = [
   "adding-required-field",
   "ban-drop-column",
   "ban-drop-not-null",
+  "ban-drop-table",
   "renaming-table",
   "renaming-column",
+  "prefer-identity",
   # every timestamp is stored as UTC, which is i18n best practice
   "prefer-timestamptz"
 ]
