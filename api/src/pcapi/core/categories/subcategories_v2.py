@@ -1081,7 +1081,7 @@ CONCERT = Subcategory(
             is_required_in_external_form=True, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.GTL_ID.value: FieldCondition(
-            is_required_in_external_form=False, is_required_in_internal_form=True
+            is_required_in_external_form=False, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
     },
@@ -1113,7 +1113,7 @@ EVENEMENT_MUSIQUE = Subcategory(
             is_required_in_external_form=True, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.GTL_ID.value: FieldCondition(
-            is_required_in_external_form=False, is_required_in_internal_form=True
+            is_required_in_external_form=False, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
     },
@@ -1145,7 +1145,7 @@ LIVESTREAM_MUSIQUE = Subcategory(
             is_required_in_external_form=True, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.GTL_ID.value: FieldCondition(
-            is_required_in_external_form=False, is_required_in_internal_form=True
+            is_required_in_external_form=False, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
     },
@@ -1172,7 +1172,7 @@ ABO_CONCERT = Subcategory(
             is_required_in_external_form=True, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.GTL_ID.value: FieldCondition(
-            is_required_in_external_form=False, is_required_in_internal_form=True
+            is_required_in_external_form=False, is_required_in_internal_form=False
         ),
     },
     can_expire=True,
@@ -1201,7 +1201,7 @@ FESTIVAL_MUSIQUE = Subcategory(
             is_required_in_external_form=True, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.GTL_ID.value: FieldCondition(
-            is_required_in_external_form=False, is_required_in_internal_form=True
+            is_required_in_external_form=False, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
     },
@@ -1235,7 +1235,7 @@ SUPPORT_PHYSIQUE_MUSIQUE_CD = Subcategory(
             is_required_in_external_form=True, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.GTL_ID.value: FieldCondition(
-            is_required_in_external_form=False, is_required_in_internal_form=True
+            is_required_in_external_form=False, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
         ExtraDataFieldEnum.EAN.value: FieldCondition(is_required_in_external_form=True),
@@ -1266,7 +1266,7 @@ SUPPORT_PHYSIQUE_MUSIQUE_VINYLE = Subcategory(
             is_required_in_external_form=True, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.GTL_ID.value: FieldCondition(
-            is_required_in_external_form=False, is_required_in_internal_form=True
+            is_required_in_external_form=False, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
         ExtraDataFieldEnum.EAN.value: FieldCondition(is_required_in_external_form=True),
@@ -1297,7 +1297,7 @@ TELECHARGEMENT_MUSIQUE = Subcategory(
             is_required_in_external_form=True, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.GTL_ID.value: FieldCondition(
-            is_required_in_external_form=False, is_required_in_internal_form=True
+            is_required_in_external_form=False, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
         ExtraDataFieldEnum.EAN.value: FieldCondition(),
@@ -1348,7 +1348,7 @@ CAPTATION_MUSIQUE = Subcategory(
             is_required_in_external_form=True, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.GTL_ID.value: FieldCondition(
-            is_required_in_external_form=False, is_required_in_internal_form=True
+            is_required_in_external_form=False, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
     },
