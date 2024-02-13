@@ -154,5 +154,13 @@ def delete_pivot(name: str, pivot_id: int) -> utils.BackofficeResponse:
     else:
         if can_delete_pivot:
             flash("Le pivot a été supprimé", "success")
+        else:
+            flash(
+                (
+                    "Le pivot ne peut pas être supprimé si la synchronisation de ce cinéma est active. "
+                    "Supprimez la synchronisation et vous pourrez supprimer le pivot."
+                ),
+                "warning",
+            )
 
     return redirect(url_for(".get_pivots", active_tab=name), code=303)
