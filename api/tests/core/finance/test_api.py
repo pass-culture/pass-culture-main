@@ -3395,6 +3395,7 @@ class GenerateInvoiceLegacyTest:
 
 
 class PrepareInvoiceContextLegacyTest:
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_context(self, invoice_data_legacy):
         reimbursement_point, stocks, _venue = invoice_data_legacy
         user = users_factories.RichBeneficiaryFactory()
@@ -3437,18 +3438,21 @@ class PrepareInvoiceContextLegacyTest:
         assert context["total_contribution_amount"] == 6626
         assert context["total_reimbursed_amount"] == -2015604
 
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_get_invoice_period_second_half(self):
         cutoff = utils.get_cutoff_as_datetime(datetime.date(2020, 3, 31))
         start_period, end_period = api.get_invoice_period(cutoff)
         assert start_period == datetime.date(2020, 3, 16)
         assert end_period == datetime.date(2020, 3, 31)
 
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_get_invoice_period_first_half(self):
         cutoff = utils.get_cutoff_as_datetime(datetime.date(2020, 3, 15))
         start_period, end_period = api.get_invoice_period(cutoff)
         assert start_period == datetime.date(2020, 3, 1)
         assert end_period == datetime.date(2020, 3, 15)
 
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_common_name_is_not_empty_public_name(self):
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
         venue_kwargs = {
@@ -4101,6 +4105,7 @@ class GenerateAndStoreInvoiceTest:
     STORAGE_DIR = pathlib.Path(tests.__path__[0]) / ".." / "src" / "pcapi" / "static" / "object_store_data"
 
     @override_settings(OBJECT_STORAGE_URL=STORAGE_DIR)
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_basics(self, clear_tests_invoices_bucket, css_font_http_request_mock):
         reimbursement_point = offerers_factories.VenueFactory()
         factories.BankInformationFactory(venue=reimbursement_point, iban="FR2710010000000000000000064")

@@ -5,6 +5,7 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 
 from tests.conftest import clean_database
@@ -113,6 +114,7 @@ def test_move_siret(app):
 
 
 @override_settings(SLACK_GENERATE_INVOICES_FINISHED_CHANNEL="channel")
+@override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
 @clean_database
 def test_generate_invoices_internal_notification(app, css_font_http_request_mock):
     venue = offerers_factories.VenueFactory()

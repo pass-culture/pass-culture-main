@@ -12,6 +12,7 @@ import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.testing import override_features
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
 from pcapi.routes.serialization.reimbursement_csv_serialize import _get_validation_period
 from pcapi.routes.serialization.reimbursement_csv_serialize import _legacy_get_validation_period
@@ -28,6 +29,7 @@ reimbursement_period = (datetime.date(2022, 1, 1), in_two_days)
 @pytest.mark.usefixtures("db_session")
 @mock.patch("pcapi.core.finance.api._store_invoice_pdf", lambda **kwargs: "make it quick")
 class ReimbursementDetailsTest:
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_reimbursement_details_as_csv_individual_booking(self) -> None:
         reimbursement_point = offerers_factories.VenueFactory(
             siret="siret-rp",
@@ -138,6 +140,7 @@ class ReimbursementDetailsTest:
         assert row[next(row_number)] == "21,00"
         assert row[next(row_number)] == "offre grand public"
 
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_reimbursement_details_with_custom_rule_as_csv(self) -> None:
         # given
         custom_reimbursement_rule = finance_factories.CustomReimbursementRuleFactory(
@@ -187,6 +190,7 @@ class ReimbursementDetailsTest:
 
 
 @pytest.mark.usefixtures("db_session")
+@override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
 @mock.patch("pcapi.core.finance.api._store_invoice_pdf", lambda **kwargs: "make it quick")
 def test_generate_reimbursement_details_csv() -> None:
     # given
@@ -253,6 +257,7 @@ def test_generate_reimbursement_details_csv() -> None:
 
 
 @pytest.mark.usefixtures("db_session")
+@override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
 @mock.patch("pcapi.core.finance.api._store_invoice_pdf", lambda **kwargs: "make it quick")
 def test_find_all_offerer_reimbursement_details() -> None:
     offerer = offerers_factories.OffererFactory()
@@ -316,6 +321,7 @@ def test_find_all_offerer_reimbursement_details() -> None:
 @pytest.mark.usefixtures("db_session")
 @mock.patch("pcapi.core.finance.api._store_invoice_pdf", lambda **kwargs: "make it quick")
 class CollectiveReimbursementDetailsTest:
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_find_all_offerer_reimbursement_details_on_collective(self) -> None:
         offerer = offerers_factories.OffererFactory(siren="123456789")
         venue1 = offerers_factories.VenueFactory(
@@ -394,6 +400,7 @@ class CollectiveReimbursementDetailsTest:
             "offre collective",
         ]
 
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_reimbursement_details_as_csv_collective_booking(self) -> None:
         reimbursement_point = offerers_factories.VenueFactory(
             siret="siret-rp",
