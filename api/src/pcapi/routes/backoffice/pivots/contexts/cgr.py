@@ -21,6 +21,10 @@ logger = logging.getLogger(__name__)
 
 class CGRContext(PivotContext):
     @classmethod
+    def pivot_name(cls) -> str:
+        return "CGR"
+
+    @classmethod
     def pivot_class(cls) -> typing.Type:
         return providers_models.CGRCinemaDetails
 
@@ -98,22 +102,6 @@ class CGRContext(PivotContext):
             pivot.numCinema = num_cinema
 
         db.session.add(pivot)
-        return True
-
-    @classmethod
-    def delete_pivot(cls, pivot_id: int) -> bool:
-        pivot = providers_models.CGRCinemaDetails.query.get_or_404(pivot_id)
-        cinema_provider_pivot = pivot.cinemaProviderPivot
-        assert cinema_provider_pivot  # helps mypy
-        venue_provider = providers_models.VenueProvider.query.filter_by(
-            venueId=cinema_provider_pivot.venueId, providerId=cinema_provider_pivot.providerId
-        ).one_or_none()
-
-        if venue_provider:
-            flash("Ce lieu est toujours synchronisé avec CGR, Vous ne pouvez pas supprimer ce pivot CGR", "warning")
-            return False
-        db.session.delete(pivot)
-        db.session.delete(cinema_provider_pivot)
         return True
 
     @classmethod

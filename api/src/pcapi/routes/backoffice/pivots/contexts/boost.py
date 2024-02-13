@@ -20,6 +20,10 @@ logger = logging.getLogger(__name__)
 
 class BoostContext(PivotContext):
     @classmethod
+    def pivot_name(cls) -> str:
+        return "Boost"
+
+    @classmethod
     def pivot_class(cls) -> typing.Type:
         return providers_models.BoostCinemaDetails
 
@@ -91,24 +95,6 @@ class BoostContext(PivotContext):
 
         db.session.add(pivot)
         cls.check_if_api_call_is_ok(pivot)
-        return True
-
-    @classmethod
-    def delete_pivot(cls, pivot_id: int) -> bool:
-        pivot = providers_models.BoostCinemaDetails.query.get_or_404(pivot_id)
-        cinema_provider_pivot = pivot.cinemaProviderPivot
-        assert cinema_provider_pivot  # helps mypy
-
-        venue_provider = providers_models.VenueProvider.query.filter_by(
-            venueId=cinema_provider_pivot.venueId, providerId=cinema_provider_pivot.providerId
-        ).one_or_none()
-
-        if venue_provider:
-            flash("Ce lieu est toujours synchronisé avec Boost, vous ne pouvez pas supprimer ce pivot Boost", "warning")
-            return False
-
-        db.session.delete(pivot)
-        db.session.delete(cinema_provider_pivot)
         return True
 
     @classmethod

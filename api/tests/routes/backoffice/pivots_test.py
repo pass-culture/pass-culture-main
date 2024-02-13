@@ -4,6 +4,7 @@ from unittest.mock import patch
 from flask import url_for
 import pytest
 
+from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
@@ -655,3 +656,41 @@ class DeleteProviderTest(PostEndpointHelper):
         self.post_to_endpoint(authenticated_client, name="ems", pivot_id=ems_pivot.id)
 
         assert not providers_models.EMSCinemaDetails.query.get(ems_pivot.id)
+
+    def test_delete_pivot_history_action(self, authenticated_client, legit_user):
+        venue = offerers_factories.VenueFactory()
+        cgr_provider = providers_repository.get_provider_by_local_class("CGRStocks")
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue,
+            provider=cgr_provider,
+            idAtProvider="idProvider1010",
+        )
+        cgr_pivot = providers_factories.CGRCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+
+        response = self.post_to_endpoint(authenticated_client, name="cgr", pivot_id=cgr_pivot.id)
+        assert response.status_code == 303
+        assert not providers_models.CGRCinemaDetails.query.get(cgr_pivot.id)
+        action = history_models.ActionHistory.query.one()
+        assert action.comment == "Pivot CGR"
+        assert action.venueId == venue.id
+        assert action.actionType == history_models.ActionType.PIVOT_DELETED
+        assert action.authorUser == legit_user
+
+    def test_delete_pivot_with_venue_provider(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+        cgr_provider = providers_repository.get_provider_by_local_class("CGRStocks")
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue,
+            provider=cgr_provider,
+            idAtProvider="idProvider1010",
+        )
+        cgr_pivot = providers_factories.CGRCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+        venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider, venue=venue)
+        response = self.post_to_endpoint(authenticated_client, follow_redirects=True, name="cgr", pivot_id=cgr_pivot.id)
+        assert response.status_code == 200
+        assert providers_models.CGRCinemaDetails.query.get(cgr_pivot.id) is not None
+        assert providers_models.VenueProvider.query.get(venue_provider.id) is not None
+        assert html_parser.extract_alert(response.data) == (
+            "Le pivot ne peut pas être supprimé si la synchronisation de ce cinéma est active. "
+            "Supprimez la synchronisation et vous pourrez supprimer le pivot."
+        )

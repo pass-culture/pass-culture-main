@@ -28,7 +28,7 @@ class PostEndpointWithoutPermissionHelper(base.BaseHelper):
         # will generate a csrf token (for the logout button)
         client.get(url_for("backoffice_web.home"))
 
-    def post_to_endpoint(self, client, form=None, headers=None, **url_kwargs):
+    def post_to_endpoint(self, client, form=None, headers=None, follow_redirects=False, **url_kwargs):
         self.fetch_csrf_token(client)
 
         url = url_for(self.endpoint, **url_kwargs)
@@ -37,7 +37,7 @@ class PostEndpointWithoutPermissionHelper(base.BaseHelper):
             form = {}
 
         form.update(self.form)
-        return client.post(url, form=form, headers=headers)
+        return client.post(url, form=form, headers=headers, follow_redirects=follow_redirects)
 
     def test_not_logged_in(self, client):
         self.fetch_csrf_token(client)

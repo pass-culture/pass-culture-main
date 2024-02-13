@@ -1,15 +1,23 @@
 import typing
 
+from flask_login import current_user
 import sqlalchemy as sa
 
+from pcapi.core.history import api as history_api
+from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
+from pcapi.models import db
 from pcapi.utils.clean_accents import clean_accents
 
 from .. import forms
 
 
 class PivotContext:
+    @classmethod
+    def pivot_name(cls) -> str:
+        raise NotImplementedError()
+
     @classmethod
     def pivot_class(cls) -> typing.Type:
         raise NotImplementedError()
@@ -60,4 +68,32 @@ class PivotContext:
 
     @classmethod
     def delete_pivot(cls, pivot_id: int) -> bool:
-        raise NotImplementedError()
+        """
+        Common implementation except for Allocine for which deleting a pivot is not allowed.
+        """
+        pivot_name = cls.pivot_name()
+        pivot_model = cls.pivot_class()
+        pivot = pivot_model.query.options(
+            sa.orm.joinedload(pivot_model.cinemaProviderPivot).joinedload(providers_models.CinemaProviderPivot.venue)
+        ).get_or_404(pivot_id)
+        cinema_provider_pivot = pivot.cinemaProviderPivot
+        assert cinema_provider_pivot  # helps mypy
+
+        venue_provider = providers_models.VenueProvider.query.filter_by(
+            venueId=cinema_provider_pivot.venueId, providerId=cinema_provider_pivot.providerId
+        ).one_or_none()
+
+        if venue_provider:
+            return False
+
+        if cinema_provider_pivot.venue:
+            history_api.add_action(
+                action_type=history_models.ActionType.PIVOT_DELETED,
+                author=current_user,
+                venue=cinema_provider_pivot.venue,
+                comment=f"Pivot {pivot_name}",
+            )
+
+        db.session.delete(pivot)
+        db.session.delete(cinema_provider_pivot)
+        return True
