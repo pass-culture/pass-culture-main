@@ -1,7 +1,13 @@
 import datetime
 from decimal import Decimal
+import logging
+
+from pydantic.v1 import validator
 
 from pcapi.routes.serialization import BaseModel
+
+
+logger = logging.getLogger(__name__)
 
 
 class Seance(BaseModel):
@@ -29,6 +35,19 @@ class Film(BaseModel):
     Affiche: str
     TypeFilm: str
     Seances: list[Seance]
+
+    @validator("Seances")
+    def skip_showtimes_with_negative_remaining_quantity(cls, seances: list[Seance]) -> list[Seance]:
+        sanitized_showtimes = []
+        for seance in seances:
+            if seance.NbPlacesRestantes < 0:
+                logger.warning(
+                    "Skipping CGR showtime because of negative remaining places",
+                    extra={"showtime_quantity": seance.NbPlacesRestantes, "showtime_id": seance.IDSeance},
+                )
+                continue
+            sanitized_showtimes.append(seance)
+        return sanitized_showtimes
 
 
 class GetSancesPassCultureResponseBody(BaseModel):

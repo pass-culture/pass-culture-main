@@ -8,6 +8,7 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
+import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
@@ -258,6 +259,38 @@ class CGRStocksTest:
         assert len(created_stocks) == 1
         assert created_stocks[0].quantity == 2
         assert created_stocks[0].dnBookedQuantity == 2
+
+    def test_dont_update_stock_if_quantity_is_inconstitent(self, requests_mock):
+        cgr_provider = get_provider_by_local_class("CGRStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider, isDuoOffers=True)
+        existing_sync_stock = offers_factories.StockFactory(
+            offer__venue=venue_provider.venue, idAtProviders=f"138473%{venue_provider.venueId}%CGR#177182"
+        )
+        bookings_factories.BookingFactory(stock=existing_sync_stock)
+        quantity_before_sync = existing_sync_stock.quantity
+        requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
+
+        cinema_provider_pivot = providers_factories.CGRCinemaProviderPivotFactory(
+            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        providers_factories.CGRCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
+        )
+
+        requests_mock.post(
+            "https://cgr-cinema-0.example.com/web_service",
+            text=fixtures.cgr_response_template([fixtures.FILM_138473_WITH_INCONSISTENT_QUANTITY_STOCK]),
+        )
+        requests_mock.get("https://example.com/149341.jpg")
+
+        cgr_stocks = CGRStocks(venue_provider=venue_provider)
+        cgr_stocks.updateObjects()
+        existing_synced_stock = offers_models.Stock.query.one()
+
+        # CGR sent us a showtime with negative remaining quantity
+        # We should kept the previous value
+        # If the stock is sold out, it will be set accordingly the next time a beneficiary try to book it.
+        assert existing_synced_stock.quantity == quantity_before_sync
 
     def should_update_finance_event_when_stock_beginning_datetime_is_updated(self, requests_mock):
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
