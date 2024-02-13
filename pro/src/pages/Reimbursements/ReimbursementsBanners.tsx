@@ -20,15 +20,13 @@ const ReimbursementsBanners = (): JSX.Element => {
 
   const [isOfferersLoading, setIsOfferersLoading] = useState<boolean>(false)
 
-  const { setOfferers, setSelectedOfferer, selectedOfferer } =
-    useReimbursementContext()
+  const { setSelectedOfferer, selectedOfferer } = useReimbursementContext()
 
   useEffect(() => {
     const fetchData = async () => {
       setIsOfferersLoading(true)
       try {
         const { offerersNames } = await api.listOfferersNames()
-        setOfferers(offerersNames)
 
         if (offerersNames.length >= 1) {
           const offerer = await api.getOfferer(

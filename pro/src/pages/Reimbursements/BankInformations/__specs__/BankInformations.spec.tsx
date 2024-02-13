@@ -21,9 +21,7 @@ const renderBankInformations = (
   initialRouterEntriesOverrides = '/remboursements/informations-bancaires'
 ) => {
   const contextValues: ReimbursementContextValues = {
-    offerers: [],
     selectedOfferer: null,
-    setOfferers: () => {},
     setSelectedOfferer: () => {},
     ...customContext,
   }
@@ -66,17 +64,6 @@ describe('BankInformations page', () => {
 
     customContext = {
       selectedOfferer: offerer,
-      offerers: [
-        {
-          ...defaultGetOffererResponseModel,
-          name: 'first offerer',
-        },
-        {
-          ...defaultGetOffererResponseModel,
-          id: 2,
-          name: 'second offerer',
-        },
-      ],
     }
 
     vi.spyOn(api, 'getOffererBankAccountsAndAttachedVenues').mockResolvedValue({

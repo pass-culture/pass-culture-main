@@ -44,9 +44,8 @@ const StoreProvider = ({
 
     const getStoreInitialState = async () => {
       await Promise.all([initializeUser(), initializeFeatures()])
-      const isLocalStorageAvailable = localStorageAvailable()
 
-      if (isLocalStorageAvailable) {
+      if (localStorageAvailable()) {
         const savedOffererId = localStorage.getItem(SAVED_OFFERER_ID_KEY)
         dispatch(updateSelectedOffererId(Number(savedOffererId)))
       }
