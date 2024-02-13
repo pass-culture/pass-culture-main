@@ -19,8 +19,8 @@ import RouteLeavingGuard, { BlockerFunction } from '../RouteLeavingGuard'
 
 import { Accessibility } from './Accessibility'
 import { Activity } from './Activity'
-import { CollectiveVenueInformationsCreation } from './CollectiveVenueInformations/CollectiveVenueInformationsCreation'
 import { Contact } from './Contact'
+import { EACInformation } from './EACInformation/EACInformation'
 import { ImageUploaderVenue } from './ImageUploaderVenue'
 import { Informations } from './Informations'
 import { VenueFormActionBar } from './VenueFormActionBar'
@@ -126,9 +126,17 @@ export const VenueCreationForm = ({
         <Contact isVenueVirtual={initialIsVirtual} isCreatingVenue={true} />
 
         {canOffererCreateCollectiveOffer && isSiretValued && (
-          <CollectiveVenueInformationsCreation
-            canCreateCollectiveOffer={canOffererCreateCollectiveOffer}
-          />
+          <FormLayout.Section
+            title="Mes informations pour les enseignants"
+            id="venue-collective-data"
+            description={
+              canOffererCreateCollectiveOffer
+                ? ''
+                : 'Pour publier des offres à destination des scolaires, votre lieu doit être référencé sur ADAGE, la plateforme dédiée aux enseignants et aux chefs d’établissements.'
+            }
+          >
+            <EACInformation />
+          </FormLayout.Section>
         )}
 
         <RouteLeavingGuard
