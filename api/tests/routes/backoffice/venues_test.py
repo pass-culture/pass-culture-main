@@ -316,6 +316,7 @@ class GetVenueTest(GetEndpointHelper):
         selected_departments = html_parser.extract_select_options(response.data, "departments", selected_only=True)
         assert set(selected_departments.keys()) == {"04", "05", "06"}
 
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_get_venue(self, authenticated_client, venue):
         venue.publicName = "Le grand Rantanplan 1"
 
@@ -376,6 +377,7 @@ class GetVenueTest(GetEndpointHelper):
         assert f"Email : {venue_with_no_contact.bookingEmail}" in response_text
         assert "Numéro de téléphone :" not in response_text
 
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_get_venue_with_self_reimbursement_point(
         self, authenticated_client, venue_with_accepted_self_reimbursement_point
     ):
@@ -387,6 +389,7 @@ class GetVenueTest(GetEndpointHelper):
 
         assert "Relié à un point de remboursement : Oui" in html_parser.content_as_text(response.data)
 
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_get_venue_with_accepted_reimbursement_point(
         self, authenticated_client, venue_with_accepted_reimbursement_point
     ):
@@ -398,6 +401,7 @@ class GetVenueTest(GetEndpointHelper):
 
         assert "Relié à un point de remboursement : Oui" in html_parser.content_as_text(response.data)
 
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_get_venue_with_expired_reimbursement_point(
         self, authenticated_client, venue_with_expired_reimbursement_point
     ):
@@ -409,6 +413,7 @@ class GetVenueTest(GetEndpointHelper):
 
         assert "Relié à un point de remboursement : Non" in html_parser.content_as_text(response.data)
 
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_get_venue_dms_stats(self, authenticated_client, venue_with_draft_bank_info):
         with mock.patch("pcapi.connectors.dms.api.DMSGraphQLClient.get_bank_info_status") as bank_info_mock:
             bank_info_mock.return_value = {
@@ -432,6 +437,7 @@ class GetVenueTest(GetEndpointHelper):
         assert "Date de validation du dossier DMS CB" not in response_text
         assert "ACCÉDER AU DOSSIER DMS CB" in response_text
 
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_get_venue_dms_stats_for_accepted_file(self, authenticated_client, venue_with_draft_bank_info):
         with mock.patch("pcapi.connectors.dms.api.DMSGraphQLClient.get_bank_info_status") as bank_info_mock:
             bank_info_mock.return_value = {
@@ -456,6 +462,7 @@ class GetVenueTest(GetEndpointHelper):
         assert "Date de dépôt du dossier DMS CB" not in response_text
         assert "ACCÉDER AU DOSSIER DMS CB" in response_text
 
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_get_venue_none_dms_stats_when_no_application_id(self, authenticated_client, venue_with_accepted_bank_info):
         venue_id = venue_with_accepted_bank_info.id
 
@@ -553,6 +560,7 @@ class GetVenueTest(GetEndpointHelper):
         buttons = html_parser.extract(response.data, tag="button")
         assert "Resynchroniser les offres" not in buttons
 
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_get_virtual_venue(self, authenticated_client):
         venue = offerers_factories.VirtualVenueFactory()
 
@@ -629,6 +637,7 @@ class GetVenueStatsTest(GetEndpointHelper):
     # get feature flag: WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY (1 query)
     expected_num_queries = 11
 
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_get_venue_with_no_reimbursement_point_bank_information(
         self, authenticated_client, venue_with_accepted_bank_info
     ):
@@ -646,6 +655,7 @@ class GetVenueStatsTest(GetEndpointHelper):
         assert f"Point de remboursement : {venue_with_accepted_bank_info.common_name} " not in cards_content[2]
         assert f"Siret de valorisation : {venue_with_accepted_bank_info.common_name} " in cards_content[2]
 
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_get_venue_with_no_bank_info_bank_information(self, authenticated_client, venue_with_no_bank_info):
         venue_id = venue_with_no_bank_info.id
         url = url_for(self.endpoint, venue_id=venue_id)
@@ -660,6 +670,7 @@ class GetVenueStatsTest(GetEndpointHelper):
         assert f"Point de remboursement : {venue_with_no_bank_info.common_name}" not in cards_content[2]
         assert f"Siret de valorisation : {venue_with_no_bank_info.common_name}" in cards_content[2]
 
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_get_venue_with_accepted_reimbursement_point_bank_information(
         self, authenticated_client, venue_with_accepted_reimbursement_point
     ):
@@ -737,6 +748,7 @@ class GetVenueStatsTest(GetEndpointHelper):
         )
 
     # Remove test when WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is removed
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_get_venue_without_bank_account_feature_flag(
         self, authenticated_client, venue_with_accepted_reimbursement_point
     ):
@@ -1591,6 +1603,7 @@ class DownloadReimbursementDetailsTest(PostEndpointHelper):
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_download_reimbursement_details(self, authenticated_client):
         venue = offerers_factories.VenueFactory(pricing_point="self", reimbursement_point="self")
         booking = bookings_factories.UsedBookingFactory(stock__offer__venue=venue)

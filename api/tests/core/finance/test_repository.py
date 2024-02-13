@@ -13,6 +13,7 @@ from pcapi.core.finance.models import BankInformationStatus
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 
@@ -506,6 +507,7 @@ class FindAllOffererPaymentsTest:
         assert payment_1.booking.token in payments[0]
         assert venue_1.name in payments[0]
 
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_with_new_models(self, css_font_http_request_mock):
         stock = offers_factories.ThingStockFactory(
             offer__name="Test Book",
@@ -610,6 +612,7 @@ class FindAllOffererPaymentsTest:
         for attr, expected in specific_for_pricing.items():
             assert getattr(payments[0], attr) == expected, f"wrong {attr}"
 
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_ignore_complementary_invoices(self):
         booking = bookings_factories.UsedBookingFactory(stock__offer__venue__reimbursement_point="self")
         rpoint = booking.venue

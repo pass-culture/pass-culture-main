@@ -19,6 +19,7 @@ from pcapi.utils.date import utc_datetime_to_department_timezone
 
 
 @pytest.mark.usefixtures("db_session")
+@override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
 def test_with_venue_filter(client):
     period = datetime.date(2021, 1, 1), datetime.date(2021, 1, 15)
     offerer = offerers_factories.OffererFactory()
@@ -56,6 +57,7 @@ def test_with_venue_filter(client):
 
 
 @pytest.mark.usefixtures("db_session")
+@override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
 def test_with_reimbursement_period_filter(client):
     period = datetime.date(2021, 1, 1), datetime.date(2021, 1, 15)
     user_offerer = offerers_factories.UserOffererFactory()
@@ -129,6 +131,7 @@ def test_without_reimbursement_period(client):
 
 
 @pytest.mark.usefixtures("db_session")
+@override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
 def test_admin_can_access_reimbursements_data_with_venue_filter(client):
     # Given
     period = datetime.date(2021, 1, 1), datetime.date(2021, 1, 15)
@@ -374,6 +377,7 @@ def test_with_reimbursement_period_filter_old_bank_information_journey_with_pric
 
 
 @pytest.mark.usefixtures("db_session")
+@override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
 @pytest.mark.parametrize(
     "cutoff,fortnight",
     [(datetime.date(year=2023, month=1, day=16), "1ère"), (datetime.date(year=2023, month=1, day=1), "2nde")],
@@ -465,6 +469,7 @@ def test_with_venue_filter_old_bank_information_journey_with_pricings_and_collec
 
 
 @pytest.mark.usefixtures("db_session")
+@override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
 @pytest.mark.parametrize(
     "cutoff,fortnight",
     [(datetime.date(year=2023, month=1, day=16), "1ère"), (datetime.date(year=2023, month=1, day=1), "2nde")],

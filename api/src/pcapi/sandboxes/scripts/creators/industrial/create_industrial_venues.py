@@ -87,6 +87,12 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
                 comment = "Pas de siret car c'est comme cela."
                 siret = None
 
+            bank_account = None
+            if iban and siret:
+                bank_account = finance_factories.BankAccountFactory(
+                    offerer=offerer, iban=iban, bic=bic, dsApplicationId=application_id_prefix + str(offerer_index)
+                )
+
             venue = offerers_factories.VenueFactory(
                 managingOfferer=offerer,
                 bookingEmail=f"booking-email@offerer{offerer.id}.example.com",
@@ -97,7 +103,7 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
                 siret=siret,
                 venueTypeCode=random.choice(offerers_models.PERMENANT_VENUE_TYPES),
                 pricing_point="self" if siret else None,
-                reimbursement_point="self" if siret else None,
+                bank_account=bank_account,
             )
 
             if offerer.validationStatus == ValidationStatus.NEW:
@@ -108,14 +114,6 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
                 image_venue_counter += 1
 
             venue_by_name[venue_name] = venue
-
-            if iban and venue.siret:
-                finance_factories.BankInformationFactory(
-                    venue=venue,
-                    bic=bic,
-                    iban=iban,
-                    applicationId=application_id_prefix + str(offerer_index),
-                )
 
             # Create a second physical venue to enable removing SIRET on the first one
             if offerer_index % OFFERERS_WITH_A_SECOND_VENUE_WITH_SIRET_MODULO == 0:
