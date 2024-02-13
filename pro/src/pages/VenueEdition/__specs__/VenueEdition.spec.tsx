@@ -213,4 +213,22 @@ describe('route VenueEdition', () => {
 
     expect(await screen.findByText('Home')).toBeInTheDocument()
   })
+
+  it('should display the create button offer by default', async () => {
+    renderVenueEdition(venue.id, offerer.id)
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(screen.getByText(/Créer une offre/)).toBeInTheDocument()
+  })
+
+  it('should not display the create offer button with the WIP_ENABLE_PRO_SIDE_NAV FF enabled', async () => {
+    renderVenueEdition(venue.id, offerer.id, {
+      features: ['WIP_ENABLE_PRO_SIDE_NAV'],
+    })
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(screen.queryByText(/Créer une offre/)).not.toBeInTheDocument()
+  })
 })

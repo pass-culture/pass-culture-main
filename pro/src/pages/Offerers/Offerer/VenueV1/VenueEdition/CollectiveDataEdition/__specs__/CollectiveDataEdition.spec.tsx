@@ -12,15 +12,20 @@ import {
   mainlandInterventionOption,
   mainlandOptions,
 } from 'core/shared/interventionOptions'
+import { Venue } from 'core/Venue/types'
 import * as useNotification from 'hooks/useNotification'
 import {
   collectiveCategoryFactory,
   collectiveSubCategoryFactory,
+  defaultCollectiveDmsApplication,
   venueCollectiveDataFactory,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { CollectiveDataEdition } from '../CollectiveDataEdition'
+import {
+  CollectiveDataEdition,
+  CollectiveDataEditionProps,
+} from '../CollectiveDataEdition'
 
 // RomainC: we need this mock to accelerate this test
 // it('should select (unselect) "Toute la France" and "France métropolitaine" when selecting (unselecting) all (one) departments'
@@ -77,8 +82,9 @@ const waitForLoader = () =>
     expect(screen.getByLabelText(/Email/)).toBeInTheDocument()
   })
 
-const renderCollectiveDataEdition = () =>
-  renderWithProviders(<CollectiveDataEdition />)
+const renderCollectiveDataEdition = (
+  props: Partial<CollectiveDataEditionProps> = {}
+) => renderWithProviders(<CollectiveDataEdition {...props} />)
 
 describe('CollectiveDataEdition', () => {
   const notifyErrorMock = vi.fn()
@@ -141,13 +147,6 @@ describe('CollectiveDataEdition', () => {
   })
 
   describe('render', () => {
-    it('should render a loader while data is loading', async () => {
-      renderCollectiveDataEdition()
-
-      expect(screen.getByText(/Chargement en cours/)).toBeInTheDocument()
-      await waitForLoader()
-    })
-
     it('should render form without errors', async () => {
       renderCollectiveDataEdition()
 
@@ -179,6 +178,19 @@ describe('CollectiveDataEdition', () => {
       expect(interventionAreaField).toBeInTheDocument()
       expect(statusField).toBeInTheDocument()
       expect(culturalPartnersField).toBeInTheDocument()
+    })
+
+    it('should display dms timeline if venue has dms application and ff active', async () => {
+      renderCollectiveDataEdition({
+        venue: {
+          id: 1,
+          collectiveDmsApplication: { ...defaultCollectiveDmsApplication },
+        } as Venue,
+      })
+
+      await waitForLoader()
+
+      expect(screen.getByText('Votre dossier a été déposé')).toBeInTheDocument()
     })
 
     it('should display toaster when some data could not be loaded', async () => {
