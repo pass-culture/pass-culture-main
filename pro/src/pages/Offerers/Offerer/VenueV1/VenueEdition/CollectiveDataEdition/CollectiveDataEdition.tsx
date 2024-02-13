@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { GetCollectiveVenueResponseModel } from 'apiClient/v1'
 import MandatoryInfo from 'components/FormLayout/FormLayoutMandatoryInfo'
-import CollectiveDmsTimeline from 'components/VenueForm/CollectiveVenueInformations/CollectiveDmsTimeline/CollectiveDmsTimeline'
+import { CollectiveDmsTimeline } from 'components/VenueForm/CollectiveDmsTimeline/CollectiveDmsTimeline'
 import {
   EducationalCategories,
   getEducationalCategoriesAdapter,
