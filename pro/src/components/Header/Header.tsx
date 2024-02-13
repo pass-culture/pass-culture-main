@@ -16,7 +16,7 @@ import strokeLogoutIcon from 'icons/stroke-logout.svg'
 import strokeOffersIcon from 'icons/stroke-offers.svg'
 import strokePieIcon from 'icons/stroke-pie.svg'
 import { Button } from 'ui-kit'
-import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Header.module.scss'
@@ -25,6 +25,7 @@ const NAV_ITEM_ICON_SIZE = '24'
 
 type HeaderProps = {
   lateralPanelOpen?: boolean
+  isTopMenuVisible?: boolean
   setLateralPanelOpen?: (state: boolean) => void
   focusCloseButton?: () => void
 }
@@ -32,6 +33,7 @@ const Header = forwardRef(
   (
     {
       lateralPanelOpen = false,
+      isTopMenuVisible = false,
       setLateralPanelOpen = () => undefined,
       focusCloseButton = () => undefined,
     }: HeaderProps,
@@ -42,11 +44,7 @@ const Header = forwardRef(
     const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
     const isNewSideBarNavigation = useActiveFeature('WIP_ENABLE_PRO_SIDE_NAV')
 
-    function onSignoutClick() {
-      logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
-    }
-
-    if (isNewSideBarNavigation) {
+    if (isNewSideBarNavigation && isTopMenuVisible) {
       return (
         <header className={styles['top-menu']} id="top-navigation">
           <Button
@@ -84,22 +82,35 @@ const Header = forwardRef(
             The first one is displayed only on tablet and smaller to get rid of the right margin (and has an alt)
             The second one is displayed on larger screen sizes
         */}
-          <Button
+          <NavLink
+            onClick={() =>
+              logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
+            }
+            to={`${location.pathname}?logout}`}
             className={styles['logout-mobile']}
-            onClick={onSignoutClick}
-            variant={ButtonVariant.TERNARY}
-            icon={fullLogoutIcon}
-            iconPosition={IconPositionEnum.CENTER}
-            alt="Se déconnecter"
-          />
-          <Button
-            className={styles['logout']}
-            onClick={onSignoutClick}
-            variant={ButtonVariant.TERNARY}
-            icon={fullLogoutIcon}
           >
-            <span className={styles['logout-label']}>Se déconnecter</span>
-          </Button>
+            <SvgIcon
+              className="nav-item-icon"
+              src={fullLogoutIcon}
+              alt="Se déconnecter"
+              width="20"
+            />
+          </NavLink>
+          <NavLink
+            onClick={() =>
+              logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
+            }
+            to={`${location.pathname}?logout}`}
+            className={styles['logout']}
+          >
+            <SvgIcon
+              className="nav-item-icon"
+              src={fullLogoutIcon}
+              alt=""
+              width="20"
+            />
+            Se déconnecter
+          </NavLink>
         </header>
       )
     }

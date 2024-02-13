@@ -4,6 +4,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .sign-up-journey {
+  width: 100%;
   max-height: calc(100vh - #{size.$action-bar-sticky-height});
 }
 
