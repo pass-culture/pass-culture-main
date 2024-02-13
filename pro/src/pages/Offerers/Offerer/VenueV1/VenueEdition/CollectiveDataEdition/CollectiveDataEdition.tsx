@@ -1,15 +1,18 @@
+import { addDays, isBefore } from 'date-fns'
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetCollectiveVenueResponseModel } from 'apiClient/v1'
 import MandatoryInfo from 'components/FormLayout/FormLayoutMandatoryInfo'
+import CollectiveDmsTimeline from 'components/VenueForm/CollectiveVenueInformations/CollectiveDmsTimeline/CollectiveDmsTimeline'
 import {
   EducationalCategories,
   getEducationalCategoriesAdapter,
   getEducationalDomainsAdapter,
 } from 'core/OfferEducational'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { Venue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -58,7 +61,13 @@ const fetchCulturalPartnerIfVenueHasNoCollectiveData = async (
   }
 }
 
-export const CollectiveDataEdition = (): JSX.Element | null => {
+interface CollectiveDataEditionProps {
+  venue?: Venue
+}
+
+export const CollectiveDataEdition = ({
+  venue,
+}: CollectiveDataEditionProps): JSX.Element | null => {
   const notify = useNotification()
   const { offererId, venueId } = useParams<{
     offererId: string
@@ -128,8 +137,23 @@ export const CollectiveDataEdition = (): JSX.Element | null => {
     return null
   }
 
+  const hasAdageIdForMoreThan30Days = Boolean(
+    venue?.hasAdageId &&
+      venue?.adageInscriptionDate &&
+      isBefore(new Date(venue?.adageInscriptionDate), addDays(new Date(), -30))
+  )
+
   return (
     <>
+      {venue?.collectiveDmsApplication && (
+        <CollectiveDmsTimeline
+          collectiveDmsApplication={venue.collectiveDmsApplication}
+          hasAdageId={venue.hasAdageId}
+          hasAdageIdForMoreThan30Days={hasAdageIdForMoreThan30Days}
+          adageInscriptionDate={venue.adageInscriptionDate}
+        />
+      )}
+
       <MandatoryInfo className={styles.mandatory} />
 
       {isLoading ? (

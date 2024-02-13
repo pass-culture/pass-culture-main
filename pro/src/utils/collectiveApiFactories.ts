@@ -27,7 +27,6 @@ import {
 } from 'apiClient/v1'
 import { BOOKING_STATUS } from 'core/Bookings/constants'
 import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
-import { Venue } from 'core/Venue/types'
 
 let offerId = 1
 let stockId = 1
@@ -326,75 +325,6 @@ export const defaultCollectiveDmsApplication: DMSApplicationForEAC = {
   procedure: 456,
   state: DMSApplicationstatus.EN_CONSTRUCTION,
   venueId: 1,
-}
-
-// FIXME : to remove while this type should be used in the future
-export const defaultVenue: Venue = {
-  name: 'Lieu de test',
-  address: '1 rue de test',
-  banId: '75108_2259_00002',
-  city: 'Paris',
-  postalCode: '75000',
-  latitude: 48.856614,
-  longitude: 2.3522219,
-  collectiveDomains: [],
-  dateCreated: '',
-  isVirtual: false,
-  accessibility: {
-    none: false,
-    visual: false,
-    audio: false,
-    motor: false,
-    mental: false,
-  },
-  bannerMeta: undefined,
-  bannerUrl: '',
-  hasPendingBankInformationApplication: null,
-  demarchesSimplifieesApplicationId: null,
-  comment: '',
-  contact: {
-    email: null,
-    phoneNumber: null,
-    webSite: null,
-  },
-  description: '',
-  departmentCode: '',
-  dmsToken: '',
-  isPermanent: false,
-  isVenueVirtual: false,
-  mail: '',
-  managingOfferer: {
-    address: undefined,
-    city: '',
-    dateCreated: '',
-    demarchesSimplifieesApplicationId: undefined,
-    id: 0,
-    isValidated: false,
-    name: '',
-    postalCode: '',
-    siren: undefined,
-  },
-  id: 0,
-  pricingPoint: null,
-  publicName: '',
-  siret: '',
-  venueType: '',
-  venueLabel: null,
-  reimbursementPointId: null,
-  withdrawalDetails: '',
-  collectiveAccessInformation: '',
-  collectiveDescription: '',
-  collectiveEmail: '',
-  collectiveInterventionArea: [],
-  collectiveLegalStatus: null,
-  collectiveNetwork: [],
-  collectivePhone: '',
-  collectiveStudents: [],
-  collectiveWebsite: '',
-  adageInscriptionDate: null,
-  hasAdageId: false,
-  collectiveDmsApplication: null,
-  bankAccount: null,
 }
 
 export const defaultVenueResponseModel: GetVenueResponseModel = {

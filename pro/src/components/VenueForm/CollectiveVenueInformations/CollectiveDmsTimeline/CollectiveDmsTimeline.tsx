@@ -1,7 +1,6 @@
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import fullEditIcon from 'icons/full-edit.svg'
 import fullLinkIcon from 'icons/full-link.svg'
 import strokeValidIcon from 'icons/stroke-valid.svg'
 import strokeWrongIcon from 'icons/stroke-wrong.svg'
@@ -18,16 +17,13 @@ const CollectiveDmsTimeline = ({
   hasAdageId,
   hasAdageIdForMoreThan30Days,
   adageInscriptionDate,
-  offererId,
 }: {
   collectiveDmsApplication: DMSApplicationForEAC
   hasAdageId: boolean
   hasAdageIdForMoreThan30Days: boolean
   adageInscriptionDate: string | null
-  offererId: number
 }) => {
   const collectiveDmsApplicationLink = `https://www.demarches-simplifiees.fr/dossiers/${collectiveDmsApplication.application}/messagerie`
-  const collectiveVenueInformationsLink = `/structures/${offererId}/lieux/${collectiveDmsApplication.venueId}/eac`
   const collectiveDmsContactSupport =
     'https://aide.passculture.app/hc/fr/articles/8491401511708'
 
@@ -240,16 +236,6 @@ const CollectiveDmsTimeline = ({
             désormais visibles sur ADAGE par les enseignants et chefs
             d’établissements.
           </div>
-          <ButtonLink
-            variant={ButtonVariant.TERNARY}
-            link={{
-              to: collectiveVenueInformationsLink,
-              isExternal: true,
-            }}
-            icon={fullEditIcon}
-          >
-            Vérifier les informations de mon lieu
-          </ButtonLink>
         </div>
       </>
     ),
