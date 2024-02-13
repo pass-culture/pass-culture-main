@@ -80,6 +80,7 @@ def incidents_fixture() -> tuple:
 
 
 @pytest.fixture(scope="function", name="closed_incident")
+@override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
 def closed_incident_fixture() -> tuple:
     # FIXME: we should not call all these apis but I was told there was no way to get a closed event with factories
     venue = offerers_factories.VenueFactory(pricing_point="self", reimbursement_point="self")
@@ -296,6 +297,7 @@ class GetIncidentValidationFormTest(GetEndpointHelper):
     expected_num_queries += 1  # get incident info
     expected_num_queries += 1  # check new bank details journey FF
 
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_get_incident_validation_form(self, authenticated_client):
         booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory()
         url = url_for(self.endpoint, finance_incident_id=booking_incident.incident.id)
@@ -310,6 +312,7 @@ class GetIncidentValidationFormTest(GetEndpointHelper):
             f"sur le point de remboursement {booking_incident.incident.venue.name}." in text_content
         )
 
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_no_script_injection_in_venue_name(self, authenticated_client):
         venue = offerers_factories.VenueFactory(name="<script>alert('coucou')</script>")
         booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(incident__venue=venue)
@@ -696,6 +699,7 @@ class GetIncidentTest(GetEndpointHelper):
     expected_num_queries += 1  # Fetch Incidents infos
     expected_num_queries += 1  # Check new bank details journey FF
 
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_get_incident(self, authenticated_client, finance_incident):
         url = url_for(self.endpoint, finance_incident_id=finance_incident.id)
 
@@ -1404,6 +1408,7 @@ class ForceDebitNoteTest(PostEndpointHelper):
         finance_incident = finance_models.FinanceIncident.query.get(original_finance_incident.id)
         assert finance_incident.forceDebitNote is False
 
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_force_debit_note_on_finished_incident(self, authenticated_client):
         venue = offerers_factories.VenueFactory(pricing_point="self", reimbursement_point="self")
         finance_factories.BankInformationFactory(venue=venue)
@@ -1519,6 +1524,7 @@ class CancelDebitNoteTest(PostEndpointHelper):
         finance_incident = finance_models.FinanceIncident.query.get(original_finance_incident.id)
         assert finance_incident.forceDebitNote == original_finance_incident.forceDebitNote
 
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_cancel_debit_note_on_finished_incident(self, authenticated_client):
         venue = offerers_factories.VenueFactory(pricing_point="self", reimbursement_point="self")
         finance_factories.BankInformationFactory(venue=venue)

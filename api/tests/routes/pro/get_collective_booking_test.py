@@ -17,6 +17,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_get_collective_booking(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CollectiveBookingFactory(
@@ -61,6 +62,7 @@ class Returns200Test:
             "offererId": booking.venue.managingOffererId,
         }
 
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_get_collective_booking_with_banking_informations(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CollectiveBookingFactory(
