@@ -143,8 +143,8 @@ export const CollectiveDataEdition = ({
     }
   }, [])
 
-  if (!venueId || !offererId) {
-    return null
+  if (!venueId || !offererId || isLoading) {
+    return <Spinner className={styles.spinner} />
   }
 
   const hasAdageIdForMoreThan30Days = Boolean(
@@ -164,24 +164,20 @@ export const CollectiveDataEdition = ({
         />
       )}
 
-      {canCreateCollectiveOffer && (
+      {venue?.hasAdageId && canCreateCollectiveOffer && (
         <>
           <MandatoryInfo className={styles.mandatory} />
 
-          {isLoading ? (
-            <Spinner className={styles.spinner} />
-          ) : (
-            <CollectiveDataForm
-              statuses={statuses}
-              domains={domains}
-              culturalPartners={culturalPartners}
-              venueId={venueId}
-              offererId={offererId}
-              venueCollectiveData={venueCollectiveData}
-              adageVenueCollectiveData={adageVenueCollectiveData}
-              categories={categories}
-            />
-          )}
+          <CollectiveDataForm
+            statuses={statuses}
+            domains={domains}
+            culturalPartners={culturalPartners}
+            venueId={venueId}
+            offererId={offererId}
+            venueCollectiveData={venueCollectiveData}
+            adageVenueCollectiveData={adageVenueCollectiveData}
+            categories={categories}
+          />
         </>
       )}
     </>
