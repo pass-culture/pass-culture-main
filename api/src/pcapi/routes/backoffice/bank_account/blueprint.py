@@ -106,6 +106,11 @@ def get_history(bank_account_id: int) -> utils.BackofficeResponse:
                 users_models.User.id, users_models.User.firstName, users_models.User.lastName
             ),
         )
+        .options(
+            sa.orm.joinedload(history_models.ActionHistory.venue).load_only(
+                offerers_models.Venue.id, offerers_models.Venue.name, offerers_models.Venue.publicName
+            )
+        )
         .all()
     )
 
