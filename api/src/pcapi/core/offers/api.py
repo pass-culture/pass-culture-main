@@ -39,9 +39,12 @@ import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offerers.models as offerers_models
+from pcapi.core.providers.constants import GTL_IDS_BY_MUSIC_GENRE_CODE
+from pcapi.core.providers.constants import MUSIC_SLUG_BY_GTL_ID
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.models as providers_models
 import pcapi.core.users.models as users_models
+from pcapi.domain import music_types
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.models import db
 from pcapi.models import feature
@@ -143,6 +146,17 @@ def _format_extra_data(subcategory_id: str, extra_data: dict[str, typing.Any] | 
         if extra_data.get(field_name):
             # FIXME (2023-03-16): Currently not supported by mypy https://github.com/python/mypy/issues/7178
             formatted_extra_data[field_name] = extra_data.get(field_name)  # type: ignore[literal-required]
+        # FIXME (2024-02-16): If gtl id is sent in the extra data, musicType and musicSubType are not sent
+        if field_name == "gtl_id" and extra_data.get("gtl_id"):
+            formatted_extra_data["musicType"] = str(
+                music_types.MUSIC_TYPES_BY_SLUG[MUSIC_SLUG_BY_GTL_ID[extra_data["gtl_id"]]].code
+            )
+            formatted_extra_data["musicSubType"] = str(
+                music_types.MUSIC_SUB_TYPES_BY_SLUG[MUSIC_SLUG_BY_GTL_ID[extra_data["gtl_id"]]].code
+            )
+        # FIXME (2024-02-16): If musicType is sent in the extra data, gtl id is not sent
+        if field_name == "musicType" and extra_data.get("musicType"):
+            formatted_extra_data["gtl_id"] = GTL_IDS_BY_MUSIC_GENRE_CODE[int(extra_data["musicType"])]
 
     return formatted_extra_data
 
