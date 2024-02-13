@@ -1,11 +1,9 @@
 import { useFormikContext } from 'formik'
-import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { VenueProviderResponse } from 'apiClient/v1'
 import { AddressSelect } from 'components/Address'
 import FormLayout from 'components/FormLayout'
-import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
 import { Offerer } from 'core/Offerers/types'
 import { Providers, Venue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
@@ -16,7 +14,6 @@ import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/Reimburse
 import { Accessibility } from './Accessibility'
 import { Activity } from './Activity'
 import BankAccountInfos from './BankAccountInfos/BankAccountInfos'
-import { CollectiveVenueInformationsEdition } from './CollectiveVenueInformations/CollectiveVenueInformationsEdition'
 import { Contact } from './Contact'
 import { ImageUploaderVenue } from './ImageUploaderVenue'
 import { Informations } from './Informations'
@@ -54,20 +51,6 @@ export const VenueEditionForm = ({
   const shouldDisplayImageVenueUploaderSection = isPermanent
   useScrollToFirstErrorAfterSubmit()
   const location = useLocation()
-
-  const [canOffererCreateCollectiveOffer, setCanOffererCreateCollectiveOffer] =
-    useState(false)
-
-  useEffect(() => {
-    const loadCanOffererCreateCollectiveOffer = async () => {
-      const response = await canOffererCreateCollectiveOfferAdapter(offerer.id)
-      setCanOffererCreateCollectiveOffer(
-        response.payload.isOffererEligibleToEducationalOffer
-      )
-    }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadCanOffererCreateCollectiveOffer()
-  }, [offerer.id])
 
   return (
     <div>
@@ -123,14 +106,6 @@ export const VenueEditionForm = ({
         )}
 
         <Contact isVenueVirtual={venue.isVirtual} isCreatingVenue={false} />
-
-        {(canOffererCreateCollectiveOffer ||
-          Boolean(venue?.collectiveDmsApplication)) && (
-          <CollectiveVenueInformationsEdition
-            venue={venue}
-            canCreateCollectiveOffer={canOffererCreateCollectiveOffer}
-          />
-        )}
 
         {(!isNewBankDetailsJourneyEnabled ||
           (isNewBankDetailsJourneyEnabled && !venue?.siret)) && (

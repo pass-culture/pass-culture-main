@@ -224,7 +224,7 @@ export const VenueEdition = (): JSX.Element | null => {
               />
             }
           />
-          <Route path="eac" element={<CollectiveDataEdition />} />
+          <Route path="eac" element={<CollectiveDataEdition venue={venue} />} />
         </Routes>
       </div>
     </AppLayout>
