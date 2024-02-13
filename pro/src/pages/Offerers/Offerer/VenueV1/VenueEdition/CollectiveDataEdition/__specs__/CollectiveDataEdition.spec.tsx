@@ -1,4 +1,8 @@
-import { screen, waitFor } from '@testing-library/react'
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
@@ -77,14 +81,12 @@ vi.mock('react-router-dom', async () => ({
   useNavigate: () => mockedUsedNavigate,
 }))
 
-const waitForLoader = () =>
-  waitFor(() => {
-    expect(screen.getByLabelText(/Email/)).toBeInTheDocument()
-  })
-
 const renderCollectiveDataEdition = (
   props: Partial<CollectiveDataEditionProps> = {}
-) => renderWithProviders(<CollectiveDataEdition {...props} />)
+) =>
+  renderWithProviders(
+    <CollectiveDataEdition venue={{ hasAdageId: true } as Venue} {...props} />
+  )
 
 describe('CollectiveDataEdition', () => {
   const notifyErrorMock = vi.fn()
@@ -144,13 +146,14 @@ describe('CollectiveDataEdition', () => {
     )
 
     vi.spyOn(api, 'getEducationalPartner').mockRejectedValue({})
+    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
   })
 
   describe('render', () => {
     it('should render form without errors', async () => {
       renderCollectiveDataEdition()
 
-      await waitForLoader()
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       const descriptionField = screen.queryByLabelText(
         'Démarche d’éducation artistique et culturelle',
@@ -188,9 +191,13 @@ describe('CollectiveDataEdition', () => {
         } as Venue,
       })
 
-      await waitForLoader()
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-      expect(screen.getByText('Votre dossier a été déposé')).toBeInTheDocument()
+      await waitFor(() => {
+        expect(
+          screen.getByText('Votre dossier a été déposé')
+        ).toBeInTheDocument()
+      })
     })
 
     it('should display toaster when some data could not be loaded', async () => {
@@ -199,7 +206,7 @@ describe('CollectiveDataEdition', () => {
       )
 
       renderCollectiveDataEdition()
-      await waitForLoader()
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       await waitFor(() => {
         expect(notifyErrorMock).toHaveBeenCalledWith(GET_DATA_ERROR_MESSAGE)
@@ -209,7 +216,7 @@ describe('CollectiveDataEdition', () => {
     it('should display popin when user is leaving page without saving', async () => {
       renderCollectiveDataEdition()
 
-      await waitForLoader()
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       const phoneField = screen.getByLabelText(/Numéro de téléphone/)
       await userEvent.type(phoneField, '0612345678')
@@ -229,7 +236,7 @@ describe('CollectiveDataEdition', () => {
     it('should display error fields', async () => {
       renderCollectiveDataEdition()
 
-      await waitForLoader()
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       const websiteField = screen.getByLabelText(/URL de votre site web/)
       const phoneField = screen.getByLabelText(/Numéro de téléphone/)
@@ -262,7 +269,7 @@ describe('CollectiveDataEdition', () => {
     it('should not display error fields when fields are valid', async () => {
       renderCollectiveDataEdition()
 
-      await waitForLoader()
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       const websiteField = screen.getByLabelText(/URL de votre site web/)
       const phoneField = screen.getByLabelText(/Numéro de téléphone/)
@@ -295,7 +302,7 @@ describe('CollectiveDataEdition', () => {
     it('should not display error fields when fields are empty', async () => {
       renderCollectiveDataEdition()
 
-      await waitForLoader()
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       const websiteField = screen.getByLabelText(/URL de votre site web/)
       const phoneField = screen.getByLabelText(/Numéro de téléphone/)
@@ -329,7 +336,7 @@ describe('CollectiveDataEdition', () => {
     it('should select all mainland departments when clicking on "France métropolitaine"', async () => {
       renderCollectiveDataEdition()
 
-      await waitForLoader()
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       const interventionAreaField = screen.getByLabelText(/Zone de mobilité/)
       await userEvent.click(interventionAreaField)
@@ -350,7 +357,7 @@ describe('CollectiveDataEdition', () => {
     it('should select only domtom options', async () => {
       renderCollectiveDataEdition()
 
-      await waitForLoader()
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       const interventionAreaField = screen.getByLabelText(/Zone de mobilité/)
       await userEvent.click(interventionAreaField)
@@ -370,7 +377,7 @@ describe('CollectiveDataEdition', () => {
     it('should select (unselect) "France métropolitaine" when selecting (unselecting) all (one) departments', async () => {
       renderCollectiveDataEdition()
 
-      await waitForLoader()
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       const interventionAreaField = screen.getByLabelText(/Zone de mobilité/)
       await userEvent.click(interventionAreaField)
@@ -406,7 +413,7 @@ describe('CollectiveDataEdition', () => {
         })
       )
       renderCollectiveDataEdition()
-      await waitForLoader()
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       const categoryField = screen.getByLabelText(/Catégorie */)
       const subCategoryField = screen.getByLabelText(/Sous-catégorie */)
@@ -421,7 +428,7 @@ describe('CollectiveDataEdition', () => {
         subcategories: [],
       })
       renderCollectiveDataEdition()
-      await waitForLoader()
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       const subCategoryField = screen.queryByLabelText(/Sous-catégorie */)
 
@@ -430,7 +437,7 @@ describe('CollectiveDataEdition', () => {
 
     it('should display subcategory field when category is selected', async () => {
       renderCollectiveDataEdition()
-      await waitForLoader()
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       const categoryField = screen.getByLabelText(/Catégorie */)
       await userEvent.selectOptions(categoryField, 'CATEGORY_2')
 
@@ -445,7 +452,7 @@ describe('CollectiveDataEdition', () => {
         new ApiError({} as ApiRequestOptions, { status: 500 } as ApiResult, '')
       )
       renderCollectiveDataEdition()
-      await waitForLoader()
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       const emailField = screen.getByLabelText(/Email/)
       await userEvent.type(emailField, 'email@domain.com')
@@ -464,7 +471,7 @@ describe('CollectiveDataEdition', () => {
 
   it('shoud redirect to venue edition page with state', async () => {
     renderCollectiveDataEdition()
-    await waitForLoader()
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     const emailField = screen.getByLabelText(/Email/)
     await userEvent.type(emailField, 'email@domain.com')
@@ -498,7 +505,7 @@ describe('CollectiveDataEdition', () => {
 
       renderCollectiveDataEdition()
 
-      await waitForLoader()
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       const emailField = screen.getByLabelText(/Email/)
 
@@ -532,7 +539,7 @@ describe('CollectiveDataEdition', () => {
 
       renderCollectiveDataEdition()
 
-      await waitForLoader()
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       const websiteField = screen.getByLabelText(/URL de votre site web/)
       const statusField = screen.getByLabelText(/Statut/)
@@ -565,7 +572,7 @@ describe('CollectiveDataEdition', () => {
 
       renderCollectiveDataEdition()
 
-      await waitForLoader()
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       expect(api.getEducationalPartner).not.toHaveBeenCalled()
     })
