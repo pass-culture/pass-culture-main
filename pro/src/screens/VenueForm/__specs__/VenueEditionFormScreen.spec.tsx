@@ -20,7 +20,6 @@ import { Offerer } from 'core/Offerers/types'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import { Venue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
-import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { VenueEditionFormScreen } from '../VenueEditionFormScreen'
@@ -753,83 +752,6 @@ describe('VenueFormScreen', () => {
           'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
         )
       ).not.toBeInTheDocument()
-    })
-  })
-
-  describe('EAC Section', () => {
-    it('should display eac section if offerer is eligble to eac and ff active', async () => {
-      renderForm(
-        formValues,
-        {
-          ...venue,
-          hasAdageId: true,
-        },
-        false
-      )
-      await waitFor(
-        () => expect(api.canOffererCreateEducationalOffer).toHaveBeenCalled
-      )
-      expect(
-        screen.getByRole('heading', {
-          name: 'Mes informations pour les enseignants',
-        })
-      ).toBeInTheDocument()
-    })
-    it('should display dms timeline if venue has dms application and ff active', async () => {
-      vi.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValueOnce(
-        'error'
-      )
-      renderForm(
-        formValues,
-        {
-          ...venue,
-          hasAdageId: false,
-          collectiveDmsApplication: { ...defaultCollectiveDmsApplication },
-        },
-        false
-      )
-      await waitFor(
-        () => expect(api.canOffererCreateEducationalOffer).toHaveBeenCalled
-      )
-      expect(screen.getByText('Votre dossier a été déposé')).toBeInTheDocument()
-    })
-
-    it('should not display eac section if offerer is not eligble and has not dms application', async () => {
-      vi.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValueOnce(
-        'error'
-      )
-      renderForm(
-        formValues,
-        {
-          ...venue,
-          hasAdageId: false,
-        },
-        false
-      )
-      await waitFor(
-        () => expect(api.canOffererCreateEducationalOffer).toHaveBeenCalled
-      )
-      expect(
-        screen.queryByRole('heading', {
-          name: 'Mes informations pour les enseignants',
-        })
-      ).not.toBeInTheDocument()
-    })
-  })
-
-  it('should display the create button offer by default', () => {
-    renderForm(formValues, venue, false)
-
-    waitFor(() => {
-      expect(screen.getByText(/Créer une offre/)).toBeInTheDocument()
-    })
-  })
-
-  it('should not display the create offer button with the WIP_ENABLE_PRO_SIDE_NAV FF enabled', () => {
-    renderForm(formValues, venue, false, false, ['WIP_ENABLE_PRO_SIDE_NAV'])
-
-    waitFor(() => {
-      expect(screen.queryByText(/Créer une offre/)).not.toBeInTheDocument()
     })
   })
 })

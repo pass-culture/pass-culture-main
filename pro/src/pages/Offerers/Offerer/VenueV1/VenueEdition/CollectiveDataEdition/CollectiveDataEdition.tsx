@@ -11,6 +11,7 @@ import {
   getEducationalCategoriesAdapter,
   getEducationalDomainsAdapter,
 } from 'core/OfferEducational'
+import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { Venue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
@@ -61,7 +62,7 @@ const fetchCulturalPartnerIfVenueHasNoCollectiveData = async (
   }
 }
 
-interface CollectiveDataEditionProps {
+export interface CollectiveDataEditionProps {
   venue?: Venue
 }
 
@@ -86,6 +87,9 @@ export const CollectiveDataEdition = ({
     useState<GetCollectiveVenueResponseModel | null>(null)
   const [adageVenueCollectiveData, setAdageVenueCollectiveData] =
     useState<GetCollectiveVenueResponseModel | null>(null)
+  const [canCreateCollectiveOffer, setCanCreateCollectiveOffer] = useState<
+    boolean | null
+  >(null)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -95,6 +99,7 @@ export const CollectiveDataEdition = ({
         getCulturalPartnersAdapter(),
         getVenueCollectiveDataAdapter(Number(venueId) ?? ''),
         getEducationalCategoriesAdapter(),
+        canOffererCreateCollectiveOfferAdapter(Number(offererId)),
       ])
 
       if (allResponses.some((response) => !response.isOk)) {
@@ -107,12 +112,17 @@ export const CollectiveDataEdition = ({
         culturalPartnersResponse,
         venueResponse,
         categoriesResponse,
+        canOffererCreateCollectiveOfferResponse,
       ] = allResponses
 
       setDomains(domainsResponse.payload)
       setStatuses(statusesResponse.payload)
       setCulturalPartners(culturalPartnersResponse.payload)
       setCategories(categoriesResponse.payload)
+      setCanCreateCollectiveOffer(
+        canOffererCreateCollectiveOfferResponse.payload
+          .isOffererEligibleToEducationalOffer
+      )
       if (venueResponse.isOk) {
         if (venueHasCollectiveInformation(venueResponse.payload)) {
           setVenueCollectiveData(venueResponse.payload)
@@ -154,21 +164,25 @@ export const CollectiveDataEdition = ({
         />
       )}
 
-      <MandatoryInfo className={styles.mandatory} />
+      {canCreateCollectiveOffer && (
+        <>
+          <MandatoryInfo className={styles.mandatory} />
 
-      {isLoading ? (
-        <Spinner className={styles.spinner} />
-      ) : (
-        <CollectiveDataForm
-          statuses={statuses}
-          domains={domains}
-          culturalPartners={culturalPartners}
-          venueId={venueId}
-          offererId={offererId}
-          venueCollectiveData={venueCollectiveData}
-          adageVenueCollectiveData={adageVenueCollectiveData}
-          categories={categories}
-        />
+          {isLoading ? (
+            <Spinner className={styles.spinner} />
+          ) : (
+            <CollectiveDataForm
+              statuses={statuses}
+              domains={domains}
+              culturalPartners={culturalPartners}
+              venueId={venueId}
+              offererId={offererId}
+              venueCollectiveData={venueCollectiveData}
+              adageVenueCollectiveData={adageVenueCollectiveData}
+              categories={categories}
+            />
+          )}
+        </>
       )}
     </>
   )
