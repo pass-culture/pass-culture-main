@@ -12,7 +12,7 @@ import { getDateToFrenchText } from 'utils/date'
 
 import styles from './CollectiveDmsTimeline.module.scss'
 
-const CollectiveDmsTimeline = ({
+export const CollectiveDmsTimeline = ({
   collectiveDmsApplication,
   hasAdageId,
   hasAdageIdForMoreThan30Days,
@@ -421,5 +421,3 @@ const CollectiveDmsTimeline = ({
       throw new Error('Invalid dms status')
   }
 }
-
-export default CollectiveDmsTimeline

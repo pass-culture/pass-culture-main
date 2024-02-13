@@ -8,7 +8,7 @@ import * as useAnalytics from 'hooks/useAnalytics'
 import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import CollectiveDmsTimeline from '..'
+import { CollectiveDmsTimeline } from '../CollectiveDmsTimeline'
 
 const mockLogEvent = vi.fn()
 
@@ -17,7 +17,6 @@ const renderCollectiveDmsTimeline = ({
   hasAdageId = false,
   hasAdageIdForMoreThan30Days = false,
   adageInscriptionDate = null,
-  offererId = 12,
 }: {
   collectiveDmsApplication: DMSApplicationForEAC
   hasAdageId?: boolean
@@ -31,7 +30,6 @@ const renderCollectiveDmsTimeline = ({
       hasAdageId={hasAdageId}
       hasAdageIdForMoreThan30Days={hasAdageIdForMoreThan30Days}
       adageInscriptionDate={adageInscriptionDate}
-      offererId={offererId}
     />
   )
 }
