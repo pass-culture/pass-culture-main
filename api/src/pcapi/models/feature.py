@@ -61,6 +61,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"
     ENABLE_PRO_ACCOUNT_CREATION = "Permettre l'inscription des comptes professionels"
     ENABLE_PRO_BOOKINGS_V2 = "Activer l'affichage de la page booking avec la nouvelle architecture."
+    ENABLE_PRO_TITELIVE_MUSIC_GENRES = "Activer l'utilisation des genres musicaux Titelive pour les pros"
 
     ENABLE_UBBLE = "Active la vérification d'identité par Ubble"
     ENABLE_UBBLE_SUBSCRIPTION_LIMITATION = "Active la limitation en fonction de l'âge lors de pic d'inscription"
@@ -158,6 +159,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_FRONT_IMAGE_RESIZING,
     FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,
     FeatureToggle.ENABLE_PRO_BOOKINGS_V2,
+    FeatureToggle.ENABLE_PRO_TITELIVE_MUSIC_GENRES,
     FeatureToggle.ENABLE_UBBLE_SUBSCRIPTION_LIMITATION,
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
     FeatureToggle.ENABLE_EAC_FINANCIAL_PROTECTION,
