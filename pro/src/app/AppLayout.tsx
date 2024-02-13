@@ -3,6 +3,7 @@ import React, { useRef, useState } from 'react'
 
 import DomainNameBanner from 'components/DomainNameBanner'
 import Header from 'components/Header/Header'
+import SideNavLinks from 'components/SideNavLinks/SideNavLinks'
 import SkipLinks from 'components/SkipLinks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
@@ -31,51 +32,15 @@ export const AppLayout = ({
 
   const openButtonRef = useRef<HTMLButtonElement>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const navPanel = useRef<HTMLDivElement>(null)
 
   return (
     <>
-      <div
-        id="lateral-panel"
-        className={classnames({
-          'lateral-panel-wrapper': true,
-          open: lateralPanelOpen,
-        })}
-      >
-        <div className={'lateral-panel-menu'}>
-          <div
-            className={classnames({
-              'lateral-panel-nav': true,
-              'lateral-panel-nav-open': lateralPanelOpen,
-            })}
-          >
-            <Button
-              aria-expanded={lateralPanelOpen}
-              variant={ButtonVariant.TERNARY}
-              onClick={() => {
-                setLateralPanelOpen(!lateralPanelOpen)
-                openButtonRef.current?.focus()
-              }}
-              aria-label="Fermer"
-              aria-controls="lateral-panel"
-              ref={closeButtonRef}
-              className={styles['lateral-panel-nav-button']}
-            >
-              <SvgIcon src={strokeCloseIcon} alt="" width="24" />
-            </Button>
-            <SvgIcon
-              alt="Pass Culture pro, l’espace des acteurs culturels"
-              src={logoPassCultureProIcon}
-              viewBox="0 0 119 40"
-              width="119"
-              className="logo"
-            />
-          </div>
-        </div>
-      </div>
       <SkipLinks />
       {layout == 'basic' && (
         <Header
           lateralPanelOpen={lateralPanelOpen}
+          isTopMenuVisible={layout === 'basic'}
           setLateralPanelOpen={setLateralPanelOpen}
           focusCloseButton={() => {
             setTimeout(() => {
@@ -85,31 +50,93 @@ export const AppLayout = ({
           ref={openButtonRef}
         />
       )}
-      <main
-        id="content"
-        className={classnames(
-          {
-            page: true,
-            [`${pageName}-page`]: true,
-            'page-content': isNewSideBarNavigation,
-            container: layout === 'basic',
-
-            'without-nav': layout === 'without-nav',
-          },
-          className
-        )}
+      <div
+        className={classnames({
+          'page-layout': true,
+          'page-layout-full': layout === 'without-nav',
+        })}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape' && lateralPanelOpen) {
+            setLateralPanelOpen(false)
+          }
+        }}
       >
-        {layout === 'funnel' || layout === 'without-nav' ? (
-          children
-        ) : (
-          <div className="page-content">
-            <div className={classnames('after-notification-content')}>
-              <DomainNameBanner />
-              {children}
+        {isNewSideBarNavigation && layout == 'basic' && (
+          <nav
+            id="lateral-panel"
+            className={classnames({
+              'lateral-panel-wrapper': true,
+              open: lateralPanelOpen,
+            })}
+            ref={navPanel}
+            aria-label="Menu principal"
+          >
+            <div className={'lateral-panel-menu'}>
+              {lateralPanelOpen && (
+                <div
+                  className={classnames({
+                    'lateral-panel-nav': true,
+                    'lateral-panel-nav-open': lateralPanelOpen,
+                  })}
+                >
+                  <Button
+                    aria-expanded={lateralPanelOpen}
+                    variant={ButtonVariant.TERNARY}
+                    onClick={() => {
+                      setLateralPanelOpen(!lateralPanelOpen)
+                      openButtonRef.current?.focus()
+                    }}
+                    aria-label="Fermer"
+                    aria-controls="lateral-panel"
+                    ref={closeButtonRef}
+                    className={styles['lateral-panel-nav-button']}
+                  >
+                    <SvgIcon src={strokeCloseIcon} alt="" width="24" />
+                  </Button>
+                  <SvgIcon
+                    alt="Pass Culture pro, l’espace des acteurs culturels"
+                    src={logoPassCultureProIcon}
+                    viewBox="0 0 119 40"
+                    width="119"
+                    className="logo"
+                  />
+                </div>
+              )}
+              <SideNavLinks isLateralPanelOpen={lateralPanelOpen} />
             </div>
-          </div>
+          </nav>
         )}
-      </main>
+
+        <main
+          id="content"
+          className={classnames(
+            {
+              page: true,
+              [`${pageName}-page`]: true,
+              'container-full': isNewSideBarNavigation && layout === 'basic',
+              container: layout === 'basic',
+              'without-nav': layout === 'without-nav',
+            },
+            className
+          )}
+        >
+          {layout === 'funnel' || layout === 'without-nav' ? (
+            children
+          ) : (
+            <div
+              className={classnames({
+                'page-content': true,
+                'page-content-old': !isNewSideBarNavigation,
+              })}
+            >
+              <div className={classnames('after-notification-content')}>
+                <DomainNameBanner />
+                {children}
+              </div>
+            </div>
+          )}
+        </main>
+      </div>
     </>
   )
 }
