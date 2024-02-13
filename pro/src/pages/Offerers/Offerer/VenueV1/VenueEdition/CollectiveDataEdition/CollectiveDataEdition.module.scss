@@ -15,9 +15,13 @@
 
 .go-back-link {
   margin-bottom: rem.torem(30px);
-  color: colors.$primary
+  color: colors.$primary;
 }
 
 .mandatory {
+  margin-top: rem.torem(32px);
+}
+
+.timeline {
   margin-top: rem.torem(32px);
 }

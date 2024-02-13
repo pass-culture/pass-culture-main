@@ -16,6 +16,7 @@ import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { Venue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
+import { PartnerPageCollectiveSection } from 'pages/Home/Offerers/PartnerPageCollectiveSection'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
@@ -143,7 +144,7 @@ export const CollectiveDataEdition = ({
     }
   }, [])
 
-  if (!venueId || !offererId || isLoading) {
+  if (!venueId || !offererId || !venue || isLoading) {
     return <Spinner className={styles.spinner} />
   }
 
@@ -155,13 +156,23 @@ export const CollectiveDataEdition = ({
 
   return (
     <>
+      <PartnerPageCollectiveSection
+        venueId={venue.id}
+        hasAdageId={venue.hasAdageId}
+        collectiveDmsApplications={
+          venue.collectiveDmsApplication ? [venue.collectiveDmsApplication] : []
+        }
+      />
+
       {venue?.collectiveDmsApplication && (
-        <CollectiveDmsTimeline
-          collectiveDmsApplication={venue.collectiveDmsApplication}
-          hasAdageId={venue.hasAdageId}
-          hasAdageIdForMoreThan30Days={hasAdageIdForMoreThan30Days}
-          adageInscriptionDate={venue.adageInscriptionDate}
-        />
+        <div className={styles['timeline']}>
+          <CollectiveDmsTimeline
+            collectiveDmsApplication={venue.collectiveDmsApplication}
+            hasAdageId={venue.hasAdageId}
+            hasAdageIdForMoreThan30Days={hasAdageIdForMoreThan30Days}
+            adageInscriptionDate={venue.adageInscriptionDate}
+          />
+        </div>
       )}
 
       {venue?.hasAdageId && canCreateCollectiveOffer && (
