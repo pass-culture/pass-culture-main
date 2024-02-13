@@ -181,10 +181,15 @@ class GetBankAccountHistoryTest(GetEndpointHelper):
         assert html_parser.count_table_rows(response.data) == 0
 
     def test_get_history(self, authenticated_client, legit_user):
-        bank_account = finance_factories.BankAccountFactory()
+        venue = offerers_factories.VenueFactory()
+        bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
+        offerers_factories.VenueBankAccountLinkFactory(
+            venue=venue, bankAccount=bank_account, timespan=(datetime.datetime.utcnow(),)
+        )
 
         action = history_factories.ActionHistoryFactory(
             bankAccount=bank_account,
+            venue=venue,
             actionType=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
             authorUser=legit_user,
             user=legit_user,
@@ -199,14 +204,21 @@ class GetBankAccountHistoryTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert rows[0]["Type"] == history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED.value
+        assert f"Lieu : {venue.common_name}" in rows[0]["Commentaire"]
+        assert url_for("backoffice_web.venue.get", venue_id=venue.id) in str(response.data)
         assert rows[0]["Date/Heure"].startswith(action.actionDate.strftime("Le %d/%m/%Y à "))
         assert rows[0]["Auteur"] == action.authorUser.full_name
 
     def test_get_full_sorted_history(self, authenticated_client, legit_user):
-        bank_account = finance_factories.BankAccountFactory()
+        venue = offerers_factories.VenueFactory()
+        bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
+        offerers_factories.VenueBankAccountLinkFactory(
+            venue=venue, bankAccount=bank_account, timespan=(datetime.datetime.utcnow(),)
+        )
 
         link_action = history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 3, 13, 1),
+            venue=venue,
             actionType=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
             authorUser=legit_user,
             user=legit_user,
@@ -214,6 +226,7 @@ class GetBankAccountHistoryTest(GetEndpointHelper):
         )
         unlink_action = history_factories.ActionHistoryFactory(
             actionDate=datetime.datetime(2022, 10, 4, 14, 2),
+            venue=venue,
             actionType=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
             authorUser=legit_user,
             user=legit_user,
@@ -230,10 +243,14 @@ class GetBankAccountHistoryTest(GetEndpointHelper):
         assert len(rows) == 2
 
         assert rows[0]["Type"] == "Lieu dissocié d'un compte bancaire"
+        assert f"Lieu : {venue.common_name}" in rows[0]["Commentaire"]
+        assert url_for("backoffice_web.venue.get", venue_id=venue.id) in str(response.data)
         assert rows[0]["Date/Heure"].startswith(unlink_action.actionDate.strftime("Le %d/%m/%Y à "))
         assert rows[0]["Auteur"] == legit_user.full_name
 
         assert rows[1]["Type"] == "Lieu associé à un compte bancaire"
+        assert f"Lieu : {venue.common_name}" in rows[0]["Commentaire"]
+        assert url_for("backoffice_web.venue.get", venue_id=venue.id) in str(response.data)
         assert rows[1]["Date/Heure"].startswith(link_action.actionDate.strftime("Le %d/%m/%Y à "))
         assert rows[1]["Auteur"] == legit_user.full_name
 
