@@ -188,7 +188,7 @@ def refuse_collective_booking(educational_booking_id: int) -> educational_models
             exceptions.EducationalBookingNotRefusable,
             exceptions.CollectiveBookingAlreadyCancelled,
         ) as exception:
-            logger.error(
+            logger.info(
                 "User from adage trying to refuse collective booking that cannot be refused",
                 extra={
                     "collective_booking_id": collective_booking.id,
