@@ -2099,14 +2099,15 @@ class DeleteStocksTest:
 class FormatExtraDataTest:
     def test_format_extra_data(self):
         extra_data = {
-            "musicType": "1",  # applicable and filled
+            "musicType": "-1",  # applicable and filled
             "musicSubType": "100",  # applicable and filled
             "other": "value",  # not applicable field
             "performer": "",  # applicable but empty
         }
         assert api._format_extra_data(subcategories.FESTIVAL_MUSIQUE.id, extra_data) == {
-            "musicType": "1",
+            "musicType": "-1",
             "musicSubType": "100",
+            "gtl_id": "19000000",
         }
 
 

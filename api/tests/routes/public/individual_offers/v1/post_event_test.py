@@ -102,6 +102,7 @@ class PostEventTest:
             "author": "Ray Charles",
             "musicType": "880",
             "musicSubType": "894",
+            "gtl_id": "04000000",
             "performer": "Nicolas Jaar",
         }
         assert created_offer.bookingEmail == "nicoj@example.com"
@@ -174,7 +175,7 @@ class PostEventTest:
 
         assert response.status_code == 200
         created_offer = offers_models.Offer.query.one()
-        assert created_offer.extraData == {"musicType": "-1", "musicSubType": "-1"}
+        assert created_offer.extraData == {"musicType": "-1", "musicSubType": "-1", "gtl_id": "19000000"}
 
         assert response.json["categoryRelatedFields"] == {
             "author": None,
