@@ -13,6 +13,10 @@ from .base import PivotContext
 
 class AllocineContext(PivotContext):
     @classmethod
+    def pivot_name(cls) -> str:
+        return "AlloCine"
+
+    @classmethod
     def pivot_class(cls) -> typing.Type:
         return providers_models.AllocinePivot
 

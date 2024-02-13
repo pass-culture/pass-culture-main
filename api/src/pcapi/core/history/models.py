@@ -67,6 +67,8 @@ class ActionType(enum.Enum):
     RULE_CREATED = "Création d'une règle de conformité"
     RULE_DELETED = "Suppression d'une règle de conformité"
     RULE_MODIFIED = "Modification d'une règle de conformité"
+    # Pivot changes
+    PIVOT_DELETED = "Suppression d'un pivot"
 
 
 ACTION_HISTORY_ORDER_BY = "ActionHistory.actionDate.asc().nulls_first()"

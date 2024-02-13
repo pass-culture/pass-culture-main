@@ -22,6 +22,10 @@ logger = logging.getLogger(__name__)
 
 class CineofficeContext(PivotContext):
     @classmethod
+    def pivot_name(cls) -> str:
+        return "CDS"
+
+    @classmethod
     def pivot_class(cls) -> typing.Type:
         return providers_models.CDSCinemaDetails
 
@@ -93,22 +97,6 @@ class CineofficeContext(PivotContext):
         db.session.add(pivot)
 
         cls.check_if_api_call_is_ok(account_id=account_id, api_token=api_token)
-
-        return True
-
-    @classmethod
-    def delete_pivot(cls, pivot_id: int) -> bool:
-        pivot = providers_models.CDSCinemaDetails.query.get_or_404(pivot_id)
-        cinema_provider_pivot = pivot.cinemaProviderPivot
-        assert cinema_provider_pivot  # helps mypy
-        venue_provider = providers_models.VenueProvider.query.filter_by(
-            venueId=cinema_provider_pivot.venueId, providerId=cinema_provider_pivot.providerId
-        ).one_or_none()
-        if venue_provider:
-            flash("Ce lieu est toujours synchronisé avec CDS, Vous ne pouvez pas supprimer ce pivot CDS", "warning")
-            return False
-        db.session.delete(pivot)
-        db.session.delete(cinema_provider_pivot)
 
         return True
 
