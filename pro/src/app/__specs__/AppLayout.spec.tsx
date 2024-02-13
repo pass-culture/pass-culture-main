@@ -59,7 +59,6 @@ describe('src | AppLayout', () => {
       options.features = ['WIP_ENABLE_PRO_SIDE_NAV']
       renderApp(props, options)
 
-      expect(screen.queryByText('Accueil')).not.toBeInTheDocument()
       expect(screen.getByText('Se déconnecter')).toBeInTheDocument()
       expect(screen.queryByAltText('Menu')).not.toBeInTheDocument()
     })

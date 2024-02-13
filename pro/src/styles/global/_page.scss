@@ -62,14 +62,19 @@ main {
 
   &.container {
     position: relative;
-    max-width: rem.torem(size.$main-content-width);
-    margin: rem.torem(-88px) auto 0 auto;
     padding-bottom: calc(size.$action-bar-sticky-height + rem.torem(16px));
+    width: 100%;
 
     .page-content {
       background: colors.$white;
       box-shadow: 0 0 rem.torem(60px) colors.$large-shadow;
       border-radius: rem.torem(10px);
+      margin: rem.torem(26px) auto 0 auto;
+      max-width: rem.torem(size.$main-content-width);
+
+      &-old {
+        margin: rem.torem(-88px) auto 0 auto;
+      }
 
       .after-notification-content {
         padding: size.$main-content-padding;
@@ -82,8 +87,9 @@ main {
     }
   }
 
-  &.page-content {
-    margin: rem.torem(26px) auto 0;
+  &.container-full {
+    margin-top: rem.torem(26px);
+    overflow-y: scroll;
   }
 
   &.spinner-container {
@@ -96,9 +102,9 @@ main {
   &-wrapper {
     display: none;
     position: fixed;
-    height: 100%;
     width: 100%;
     z-index: zIndex.$lateral-menu-backdrop-z-index;
+    min-height: calc(100vh - size.$top-menu-height);
 
     &::before {
       content: " ";
@@ -146,5 +152,40 @@ main {
     .logo {
       width: rem.torem(80px);
     }
+  }
+}
+
+@media (min-width: size.$tablet) {
+  .lateral-panel {
+    &-wrapper {
+      position: initial;
+      display: block;
+      width: rem.torem(268px);
+
+      &::before {
+        display: none;
+      }
+    }
+
+    &-menu {
+      position: initial;
+      height: 100%;
+      width: 100%;
+      box-shadow: rem.torem(0) rem.torem(6px) rem.torem(16px)
+        colors.$large-shadow;
+    }
+
+    &-nav {
+      display: none;
+    }
+  }
+}
+
+.page-layout {
+  display: flex;
+  height: calc(100vh - size.$top-menu-height);
+
+  &-full {
+    height: 100%;
   }
 }
