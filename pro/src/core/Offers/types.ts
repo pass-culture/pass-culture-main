@@ -105,7 +105,7 @@ export interface IndividualOffer {
   id: number
   author: string
   bookingEmail?: string | null
-  bookingsCount: number
+  bookingsCount?: number | null
   description?: string | null
   durationMinutes?: number | null
   hasStocks: boolean

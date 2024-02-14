@@ -179,7 +179,7 @@ export const PriceCategoriesScreen = ({
           confirmText="Confirmer la modification"
           cancelText="Annuler"
         >
-          {offer.bookingsCount > 0 && (
+          {(offer.bookingsCount ?? 0) > 0 && (
             <>
               Le tarif restera inchangé pour les personnes ayant déjà réservé
               cette offre.
