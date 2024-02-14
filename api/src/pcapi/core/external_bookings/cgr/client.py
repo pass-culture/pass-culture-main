@@ -26,6 +26,7 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         self.cgr_cinema_details = get_cgr_cinema_details(cinema_id)
 
     def get_films(self) -> list[cgr_serializers.Film]:
+        logger.info("Fetching CGR movies", extra={"cinema_id": self.cinema_id})
         response = get_seances_pass_culture(self.cgr_cinema_details)
         return response.ObjetRetour.Films
 
@@ -33,6 +34,7 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         key_template=constants.CGR_SHOWTIMES_STOCKS_CACHE_KEY, expire=constants.CGR_SHOWTIMES_STOCKS_CACHE_TIMEOUT
     )
     def get_film_showtimes_stocks(self, film_id: str) -> str:
+        logger.info("Fetching CGR showtimes", extra={"cinema_id": self.cinema_id})
         response = get_seances_pass_culture(self.cgr_cinema_details, allocine_film_id=int(film_id))
 
         try:
@@ -46,6 +48,10 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     def book_ticket(
         self, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
     ) -> list[external_bookings_models.Ticket]:
+        logger.info(
+            "Booking CGR external ticket",
+            extra={"show_id": show_id, "cinema_id": self.cinema_id, "booking_token": booking.token},
+        )
         assert booking.cancellationLimitDate  # for typing; a movie screening is always an event
         book_show_body = cgr_serializers.ReservationPassCultureBody(
             pIDSeances=show_id,
@@ -99,6 +105,7 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     def cancel_booking(self, barcodes: list[str]) -> None:
         barcodes_set = set(barcodes)
         for barcode in barcodes_set:
+            logger.info("Cancelling CGR external booking", extra={"barcode": barcode, "cinema_id": self.cinema_id})
             annulation_pass_culture(self.cgr_cinema_details, barcode)
             logger.info("CGR Booking Cancelled", extra={"barcode": barcode})
 
