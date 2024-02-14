@@ -637,3 +637,22 @@ class OffererPatchBankAccountsTest:
         }
         assert len(venue.bankAccountLinks) == 1
         assert venue.current_bank_account_link.bankAccountId == first_bank_account.id
+
+    @pytest.mark.usefixtures("db_session")
+    def test_send_deprecation_link_mail_fail_silently_when_no_email(self, client):
+        offerer = offerers_factories.OffererFactory()
+        pro_user = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+        offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            pricing_point="self",
+            bank_account=bank_account,
+            bookingEmail=None,
+        )
+
+        http_client = client.with_session_auth(pro_user.email)
+
+        response = http_client.patch(f"/offerers/{offerer.id}/bank-accounts/{bank_account.id}", json={"venues_ids": []})
+
+        assert response.status_code == 204
