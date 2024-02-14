@@ -50,14 +50,8 @@ export const serializeOfferApi = (
 
   const offer: IndividualOffer = {
     ...apiOffer,
-    bookingEmail: apiOffer.bookingEmail || '',
-    bookingContact: apiOffer.bookingContact || '',
     bookingsCount: apiOffer.bookingsCount || 0,
-    description: apiOffer.description || '',
     durationMinutes: apiOffer.durationMinutes || null,
-    url: apiOffer.url || '',
-    externalTicketOfficeUrl: apiOffer.externalTicketOfficeUrl || '',
-    withdrawalDetails: apiOffer.withdrawalDetails || '',
     withdrawalDelay:
       apiOffer.withdrawalDelay === undefined ? null : apiOffer.withdrawalDelay,
     withdrawalType: apiOffer.withdrawalType || null,
