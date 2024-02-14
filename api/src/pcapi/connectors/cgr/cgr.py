@@ -10,17 +10,20 @@ from pcapi import settings
 from pcapi.connectors.cgr.exceptions import CGRAPIException
 from pcapi.connectors.serialization import cgr_serializers
 from pcapi.core.providers import models as providers_models
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils import requests
 from pcapi.utils.crypto import decrypt
 
 
 logger = logging.getLogger(__name__)
 
+CGR_TIMEOUT = 10
+
 
 def get_cgr_service_proxy(cinema_url: str) -> ServiceProxy:
     # https://docs.python-zeep.org/en/master/transport.html#caching
     cache = InMemoryCache()
-    transport = requests.CustomZeepTransport(cache=cache, timeout=10, operation_timeout=10)
+    transport = requests.CustomZeepTransport(cache=cache, timeout=CGR_TIMEOUT, operation_timeout=CGR_TIMEOUT)
     client = Client(wsdl=f"{cinema_url}?wsdl", transport=transport)
     service = client.create_service(binding_name="{urn:GestionCinemaWS}GestionCinemaWSSOAPBinding", address=cinema_url)
     return service
@@ -50,19 +53,24 @@ def reservation_pass_culture(
     password = decrypt(cinema_details.password)
     cinema_url = cinema_details.cinemaUrl
     service = get_cgr_service_proxy(cinema_url)
-    response = service.ReservationPassCulture(
-        User=user,
-        mdp=password,
-        pIDSeances=body.pIDSeances,
-        pNumCinema=body.pNumCinema,
-        pPUTTC=body.pPUTTC,
-        pNBPlaces=body.pNBPlaces,
-        pNom=body.pNom,
-        pPrenom=body.pPrenom,
-        pEmail=body.pEmail,
-        pToken=body.pToken,
-        pDateLimiteAnnul=body.pDateLimiteAnnul,
-    )
+    params = {
+        "User": user,
+        "mdp": password,
+        "pIDSeances": body.pIDSeances,
+        "pNumCinema": body.pNumCinema,
+        "pPUTTC": body.pPUTTC,
+        "pNBPlaces": body.pNBPlaces,
+        "pNom": body.pNom,
+        "pPrenom": body.pPrenom,
+        "pEmail": body.pEmail,
+        "pToken": body.pToken,
+        "pDateLimiteAnnul": body.pDateLimiteAnnul,
+    }
+
+    if FeatureToggle.ENABLE_CGR_TIMEOUT.is_active():
+        params["pTimeoutReservation"] = CGR_TIMEOUT
+
+    response = service.ReservationPassCulture(**params)
     response = json.loads(response)
     _check_response_is_ok(response, "ReservationPassCulture")
     return parse_obj_as(cgr_serializers.ReservationPassCultureResponse, response)
