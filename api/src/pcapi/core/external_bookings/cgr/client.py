@@ -2,8 +2,6 @@ import datetime
 import json
 import logging
 
-from requests.exceptions import ReadTimeout
-
 from pcapi.connectors.cgr.cgr import annulation_pass_culture
 from pcapi.connectors.cgr.cgr import get_seances_pass_culture
 from pcapi.connectors.cgr.cgr import reservation_pass_culture
@@ -60,16 +58,7 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             pToken=booking.token,
             pDateLimiteAnnul=booking.cancellationLimitDate.isoformat(),
         )
-        try:
-            response = reservation_pass_culture(self.cgr_cinema_details, book_show_body)
-        except ReadTimeout as exc:
-            annulation_pass_culture(self.cgr_cinema_details, token=booking.token)
-            logger.info(
-                "ReadTimeout on CGR side while booking an offer, token has been sent to prevent booking creation on their side",
-                extra={"booking_token": booking.token},
-            )
-            raise exc
-
+        response = reservation_pass_culture(self.cgr_cinema_details, book_show_body)
         logger.info(
             "Booked CGR Ticket",
             extra={
@@ -110,7 +99,7 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     def cancel_booking(self, barcodes: list[str]) -> None:
         barcodes_set = set(barcodes)
         for barcode in barcodes_set:
-            annulation_pass_culture(self.cgr_cinema_details, qr_code=barcode)
+            annulation_pass_culture(self.cgr_cinema_details, barcode)
             logger.info("CGR Booking Cancelled", extra={"barcode": barcode})
 
     def get_shows_remaining_places(self, shows_id: list[int]) -> dict[str, int]:
