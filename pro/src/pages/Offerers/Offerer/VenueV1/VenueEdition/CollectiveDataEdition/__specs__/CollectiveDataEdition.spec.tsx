@@ -457,7 +457,9 @@ describe('CollectiveDataEdition', () => {
       const emailField = screen.getByLabelText(/Email/)
       await userEvent.type(emailField, 'email@domain.com')
 
-      const submitButton = screen.getByRole('button', { name: 'Enregistrer' })
+      const submitButton = screen.getByRole('button', {
+        name: 'Enregistrer et quitter',
+      })
       expect(submitButton).not.toBeDisabled()
       await userEvent.click(submitButton)
 
@@ -476,7 +478,9 @@ describe('CollectiveDataEdition', () => {
     const emailField = screen.getByLabelText(/Email/)
     await userEvent.type(emailField, 'email@domain.com')
 
-    const submitButton = screen.getByRole('button', { name: 'Enregistrer' })
+    const submitButton = screen.getByRole('button', {
+      name: 'Enregistrer et quitter',
+    })
     await userEvent.click(submitButton)
 
     expect(mockedUsedNavigate).toHaveBeenCalledWith('/structures/O1/lieux/V1', {
@@ -560,7 +564,9 @@ describe('CollectiveDataEdition', () => {
       })
 
       expect(api.getEducationalPartner).toHaveBeenCalledWith('1234567890')
-      expect(screen.getByRole('button', { name: 'Enregistrer' })).toBeEnabled()
+      expect(
+        screen.getByRole('button', { name: 'Enregistrer et quitter' })
+      ).toBeEnabled()
     })
 
     it('should not call educational partner if venue has no siret and no collective data', async () => {

@@ -23,10 +23,6 @@
     color: colors.$grey-dark;
   }
 
-  &-step-button {
-    margin-top: rem.torem(8px);
-  }
-
   &-infobox {
     border-radius: rem.torem(5px);
     padding: rem.torem(16px);
@@ -52,22 +48,5 @@
       color: colors.$valid;
       width: rem.torem(20px);
     }
-  }
-
-  &-step-description {
-    margin: rem.torem(8px) rem.torem(0);
-  }
-}
-
-.refused-state {
-  display: flex;
-  align-items: center;
-  margin-bottom: rem.torem(16px);
-  gap: rem.torem(10px);
-
-  &-icon {
-    fill: colors.$error;
-    width: rem.torem(16px);
-    height: rem.torem(16px);
   }
 }
