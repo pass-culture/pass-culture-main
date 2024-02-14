@@ -152,6 +152,7 @@
                   {% if has_permission("FEATURE_FLIPPING") %}{{ menu_section_item("Feature flipping", "backoffice_web.list_feature_flags") }}{% endif %}
                   {% if get_setting("ENABLE_TEST_USER_GENERATION") %}
                     {{ menu_section_item("Générateur d'utilisateurs de test", "backoffice_web.generate_user") }}
+                    {{ menu_section_item("Suppression d'utilisateur", "backoffice_web.delete_user") }}
                   {% endif %}
                 {% endcall %}
               </div>
