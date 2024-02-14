@@ -165,6 +165,7 @@ export const fullIcons: IconListItem[] = [
   { src: fullArrowLeftIcon },
   { src: fullAddUserIcon },
   { src: fullStarIcon },
+  { src: fullWarningIcon },
   { src: fullDeskIcon },
   { src: fullBurgerkIcon },
   { src: fullWarningIcon },
