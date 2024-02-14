@@ -138,7 +138,7 @@ const InformationsScreen = ({
 
       const showWithdrawalMailDialog =
         offer?.isActive &&
-        offer.bookingsCount > 0 &&
+        (offer.bookingsCount ?? 0) > 0 &&
         hasWithdrawalInformationsChanged
       if (showWithdrawalMailDialog && !isWithdrawalMailDialogOpen) {
         setIsWithdrawalMailDialogOpen(true)

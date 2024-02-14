@@ -50,7 +50,6 @@ export const serializeOfferApi = (
 
   const offer: IndividualOffer = {
     ...apiOffer,
-    bookingsCount: apiOffer.bookingsCount || 0,
     image: serializeOfferApiImage(apiOffer),
     accessibility: {
       ...baseAccessibility,
