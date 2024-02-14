@@ -306,34 +306,6 @@ def test_serialize_venue_with_one_bookable_offer():
     assert serialized["has_at_least_one_bookable_offer"]
 
 
-def test_serialize_collective_offer_without_institution():
-    collective_offer = educational_factories.CollectiveStockFactory().collectiveOffer
-    serialized = algolia.AlgoliaBackend().serialize_collective_offer(collective_offer)
-    assert serialized["offer"]["educationalInstitutionUAICode"] == "all"
-
-
-def test_serialize_collective_offer_in_monaco():
-    collective_offer = educational_factories.CollectiveStockFactory(
-        collectiveOffer__venue__postalCode="98000",
-    ).collectiveOffer
-    serialized = algolia.AlgoliaBackend().serialize_collective_offer(collective_offer)
-    assert serialized["venue"]["academy"] == "Nice"
-
-
-def test_serialize_collective_offer_in_corsica():
-    corsica_2a = educational_factories.CollectiveStockFactory(
-        collectiveOffer__venue__postalCode="20113"
-    ).collectiveOffer
-    serialized = algolia.AlgoliaBackend().serialize_collective_offer(corsica_2a)
-    assert serialized["venue"]["departmentCode"] == "2A"
-
-    corsica_2b = educational_factories.CollectiveStockFactory(
-        collectiveOffer__venue__postalCode="20213"
-    ).collectiveOffer
-    serialized = algolia.AlgoliaBackend().serialize_collective_offer(corsica_2b)
-    assert serialized["venue"]["departmentCode"] == "2B"
-
-
 def test_serialize_collective_offer_template():
     domain1 = educational_factories.EducationalDomainFactory(name="Danse")
     domain2 = educational_factories.EducationalDomainFactory(name="Architecture")
