@@ -126,7 +126,7 @@ describe('IndivualOfferLayout', () => {
 
   it('should display provider banner', () => {
     const offer = individualOfferFactory({
-      lastProviderName: 'boost',
+      lastProvider: { name: 'boost' },
     })
 
     renderIndivualOfferLayout({
@@ -140,7 +140,7 @@ describe('IndivualOfferLayout', () => {
 
   it('should not display provider banner when no provider is provided', () => {
     const offer = individualOfferFactory({
-      lastProviderName: '',
+      lastProvider: { name: '' },
     })
 
     renderIndivualOfferLayout({

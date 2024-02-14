@@ -60,9 +60,9 @@ const IndivualOfferLayout = ({
 
       {offer && withStepper && <OfferStatusBanner status={offer.status} />}
 
-      {offer?.lastProviderName && (
+      {offer?.lastProvider?.name && (
         <SynchronizedProviderInformation
-          providerName={offer?.lastProviderName}
+          providerName={offer?.lastProvider?.name}
         />
       )}
 

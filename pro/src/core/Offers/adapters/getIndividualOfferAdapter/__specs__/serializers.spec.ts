@@ -123,7 +123,6 @@ describe('serializer', () => {
       isNonFreeOffer: true,
       isThing: true,
       lastProvider: null,
-      lastProviderName: null,
       gtl_id: '',
       name: 'Le nom de l’offre 1',
       id: 1,

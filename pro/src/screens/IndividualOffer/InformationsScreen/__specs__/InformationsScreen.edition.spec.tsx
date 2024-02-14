@@ -169,7 +169,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       withdrawalDetails: 'Offer withdrawalDetails',
       withdrawalDelay: 140,
       withdrawalType: WithdrawalTypeEnum.ON_SITE,
-      lastProviderName: null,
       lastProvider: null,
       status: OfferStatus.ACTIVE,
     })
