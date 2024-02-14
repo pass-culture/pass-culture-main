@@ -68,19 +68,12 @@ def reservation_pass_culture(
     return parse_obj_as(cgr_serializers.ReservationPassCultureResponse, response)
 
 
-def annulation_pass_culture(
-    cinema_details: providers_models.CGRCinemaDetails, qr_code: str | None = None, token: str | None = None
-) -> None:
-    if not qr_code and not token:
-        raise AssertionError("Either QRCode or token is mandatory")
-    payload = {
-        "User": settings.CGR_API_USER,
-        "mdp": decrypt(cinema_details.password),
-        "pQrCode": qr_code or token,
-    }
+def annulation_pass_culture(cinema_details: providers_models.CGRCinemaDetails, qr_code: str) -> None:
+    user = settings.CGR_API_USER
+    password = decrypt(cinema_details.password)
     cinema_url = cinema_details.cinemaUrl
     service = get_cgr_service_proxy(cinema_url)
-    response = service.AnnulationPassCulture(**payload)
+    response = service.AnnulationPassCulture(User=user, mdp=password, pQrCode=qr_code)
     response = json.loads(response)
     _check_response_is_ok(response, "AnnulationPassCulture")
 
