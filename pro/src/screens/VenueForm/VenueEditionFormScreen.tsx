@@ -20,7 +20,6 @@ import useNotification from 'hooks/useNotification'
 import strokeMailIcon from 'icons/stroke-mail.svg'
 
 import { serializeEditVenueBodyModel } from './serializers'
-import { venueSubmitRedirectUrl } from './utils/venueSubmitRedirectUrl'
 
 interface VenueEditionProps {
   initialValues: VenueFormValues
@@ -106,7 +105,7 @@ export const VenueEditionFormScreen = ({
         )
       )
 
-      navigate(venueSubmitRedirectUrl(false, offerer.id, currentUser))
+      navigate('/accueil')
 
       if (currentUser.isAdmin) {
         notify.success(PATCH_SUCCESS_MESSAGE)

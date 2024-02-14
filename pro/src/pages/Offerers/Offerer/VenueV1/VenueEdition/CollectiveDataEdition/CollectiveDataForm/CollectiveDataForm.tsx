@@ -45,7 +45,6 @@ type CollectiveDataFormProps = {
   domains: SelectOption[]
   culturalPartners: SelectOption[]
   venueId: string
-  offererId: string
   venueCollectiveData: GetCollectiveVenueResponseModel | null
   adageVenueCollectiveData: GetCollectiveVenueResponseModel | null
   categories: EducationalCategories
@@ -88,7 +87,6 @@ const CollectiveDataForm = ({
   domains,
   culturalPartners,
   venueId,
-  offererId,
   venueCollectiveData,
   adageVenueCollectiveData,
   categories,
@@ -135,12 +133,7 @@ const CollectiveDataForm = ({
       values: extractInitialValuesFromVenue(response.payload, categories),
     })
 
-    navigate(`/structures/${offererId}/lieux/${venueId}`, {
-      state: {
-        collectiveDataEditionSuccess: response.message,
-        scrollToElementId: 'venue-collective-data',
-      },
-    })
+    navigate('/accueil')
   }
 
   const formik = useFormik<CollectiveDataFormValues>({
@@ -325,10 +318,7 @@ const CollectiveDataForm = ({
             <ActionsBarSticky.Left>
               <ButtonLink
                 variant={ButtonVariant.SECONDARY}
-                link={{
-                  isExternal: false,
-                  to: `/structures/${offererId}/lieux/${venueId}`,
-                }}
+                link={{ isExternal: false, to: `/accueil` }}
               >
                 Annuler et quitter
               </ButtonLink>

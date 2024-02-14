@@ -483,13 +483,7 @@ describe('CollectiveDataEdition', () => {
     })
     await userEvent.click(submitButton)
 
-    expect(mockedUsedNavigate).toHaveBeenCalledWith('/structures/O1/lieux/V1', {
-      state: {
-        collectiveDataEditionSuccess:
-          'Vos informations ont bien été enregistrées',
-        scrollToElementId: 'venue-collective-data',
-      },
-    })
+    expect(mockedUsedNavigate).toHaveBeenCalledWith('/accueil')
   })
 
   describe('prefill', () => {
