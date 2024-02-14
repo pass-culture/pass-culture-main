@@ -22,7 +22,7 @@ const renderVanueFormActionBar = ({
 
   renderWithProviders(
     <Formik initialValues={{}} onSubmit={vi.fn()}>
-      <VenueFormActionBar isCreatingVenue={isCreatingVenue} offererId={59} />
+      <VenueFormActionBar isCreatingVenue={isCreatingVenue} />
     </Formik>,
     { storeOverrides, features: ['WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY'] }
   )

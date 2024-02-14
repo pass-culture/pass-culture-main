@@ -149,7 +149,7 @@ export const VenueCreationForm = ({
           <p>Les informations non enregistrées seront perdues.</p>
         </RouteLeavingGuard>
 
-        <VenueFormActionBar offererId={offerer.id} isCreatingVenue={true} />
+        <VenueFormActionBar isCreatingVenue={true} />
       </FormLayout>
     </div>
   )
