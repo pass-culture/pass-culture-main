@@ -80,34 +80,6 @@ def notify_educational_redactor_on_collective_offer_or_stock_edit(
         )
 
 
-def unindex_expired_collective_offers(process_all_expired: bool = False) -> None:
-    """Unindex collective offers that have expired.
-
-    By default, process collective offers that have expired within the last 2
-    days. For example, if run on Thursday (whatever the time), this
-    function handles collective offers that have expired between Tuesday 00:00
-    and Wednesday 23:59 (included).
-
-    If ``process_all_expired`` is true, process... well all expired
-    collective offers.
-    """
-    start_of_day = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
-    interval = (
-        datetime.datetime(2000, 1, 1) if process_all_expired else start_of_day - datetime.timedelta(days=2),
-        start_of_day,
-    )
-
-    page = 0
-    limit = settings.ALGOLIA_DELETING_COLLECTIVE_OFFERS_CHUNK_SIZE
-    while collective_offer_ids := _get_expired_collective_offer_ids(interval, page, limit):
-        logger.info(
-            "[ALGOLIA] Found %d expired collective offers to unindex",
-            len(collective_offer_ids),
-        )
-        search.unindex_collective_offer_ids(collective_offer_ids)
-        page += 1
-
-
 def unindex_expired_collective_offers_template(process_all_expired: bool = False) -> None:
     """Unindex collective offers template that have expired."""
     page = 0
@@ -359,7 +331,6 @@ def create_collective_offer_template_from_collective_offer(
     db.session.add(collective_offer_template)
     db.session.commit()
 
-    search.unindex_collective_offer_ids([offer.id])
     logger.info(
         "Collective offer template has been created and regular collective offer deleted",
         extra={
@@ -705,16 +676,6 @@ def attach_image(
 
 
 # PRIVATE
-
-
-def _get_expired_collective_offer_ids(
-    interval: tuple[datetime.datetime, datetime.datetime],
-    page: int,
-    limit: int,
-) -> list[int]:
-    collective_offers = educational_repository.get_expired_collective_offers(interval)
-    collective_offers = collective_offers.offset(page * limit).limit(limit)
-    return [offer_id for offer_id, in collective_offers.with_entities(educational_models.CollectiveOffer.id)]
 
 
 def _get_expired_collective_offer_template_ids(
