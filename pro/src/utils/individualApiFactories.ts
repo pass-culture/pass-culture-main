@@ -51,7 +51,6 @@ export const individualOfferFactory = (
     visa: 'USA',
     withdrawalDetails: 'Vient le chercher',
     withdrawalType: WithdrawalTypeEnum.ON_SITE,
-    lastProviderName: null,
     lastProvider: null,
     externalTicketOfficeUrl: '',
     hasStocks: true,

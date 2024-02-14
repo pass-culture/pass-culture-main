@@ -134,7 +134,6 @@ export interface IndividualOffer {
   withdrawalDetails?: string | null
   withdrawalDelay?: number | null
   withdrawalType?: WithdrawalTypeEnum | null
-  lastProviderName: string | null
   lastProvider?: GetOfferLastProviderResponseModel | null
   status: OfferStatus
   bookingContact?: string | null

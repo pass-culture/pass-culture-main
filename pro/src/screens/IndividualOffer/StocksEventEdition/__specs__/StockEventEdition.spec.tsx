@@ -439,7 +439,6 @@ describe('screens:StocksEventEdition', () => {
       ...apiOffer.lastProvider,
       name: 'ciné office',
     }
-    apiOffer.lastProviderName = 'ciné office'
     await renderStockEventScreen(apiOffer, apiStocks)
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks_count: apiStocks.length,

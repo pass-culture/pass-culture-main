@@ -130,7 +130,6 @@ describe('Summary', () => {
         lastProvider: {
           name: 'Ciné Office',
         },
-        lastProviderName: 'Ciné Office',
         accessibility: {
           visual: false,
           audio: false,

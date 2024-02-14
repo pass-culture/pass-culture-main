@@ -22,7 +22,7 @@ describe('PriceCategories', () => {
 
   it('should not disabled field for allociné', () => {
     renderPriceCategories({
-      offer: individualOfferFactory({ lastProviderName: 'allociné' }),
+      offer: individualOfferFactory({ lastProvider: { name: 'allociné' } }),
     })
 
     expect(screen.getByLabelText('Prix par personne *')).not.toBeDisabled()
@@ -31,10 +31,7 @@ describe('PriceCategories', () => {
   it('should disabled field for provider', () => {
     renderPriceCategories({
       offer: individualOfferFactory({
-        lastProvider: {
-          name: 'provider',
-        },
-        lastProviderName: 'provider',
+        lastProvider: { name: 'provider' },
       }),
     })
 
