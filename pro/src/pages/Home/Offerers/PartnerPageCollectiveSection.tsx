@@ -14,12 +14,14 @@ export type PartnerPageCollectiveSectionProps = {
   collectiveDmsApplications: DMSApplicationForEAC[]
   venueId: number
   hasAdageId: boolean
+  displayTitle?: boolean
 }
 
 export function PartnerPageCollectiveSection({
   collectiveDmsApplications,
   venueId,
   hasAdageId,
+  displayTitle = false,
 }: PartnerPageCollectiveSectionProps) {
   const { logEvent } = useAnalytics()
 
@@ -39,11 +41,19 @@ export function PartnerPageCollectiveSection({
     })
   }
 
+  const header = displayTitle ? (
+    <h4 className={styles['details-title']}>Enseignants</h4>
+  ) : (
+    <span className={styles['details-normal']}>
+      État de votre activité sur ADAGE :
+    </span>
+  )
+
   if (hasAdageId) {
     return (
       <section className={styles['details']}>
         <div>
-          <h4 className={styles['details-title']}>Enseignants</h4>
+          {header}
           <Tag variant={TagVariant.LIGHT_GREEN}>Référencé sur ADAGE</Tag>
         </div>
 
@@ -58,7 +68,7 @@ export function PartnerPageCollectiveSection({
     return (
       <section className={styles['details']}>
         <div>
-          <h4 className={styles['details-title']}>Enseignants</h4>
+          {header}
           <Tag variant={TagVariant.LIGHT_BLUE}>Non référencé sur ADAGE</Tag>
         </div>
 
@@ -106,7 +116,7 @@ export function PartnerPageCollectiveSection({
     return (
       <section className={styles['details']}>
         <div>
-          <h4 className={styles['details-title']}>Enseignants</h4>
+          {header}
           <Tag variant={TagVariant.LIGHT_BLUE}>Non référencé sur ADAGE</Tag>
         </div>
 
@@ -125,7 +135,7 @@ export function PartnerPageCollectiveSection({
   return (
     <section className={styles['details']}>
       <div>
-        <h4 className={styles['details-title']}>Enseignants</h4>
+        {header}
         <Tag variant={TagVariant.LIGHT_YELLOWN}>Référencement en cours</Tag>
       </div>
 

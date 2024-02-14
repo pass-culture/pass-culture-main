@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetCollectiveVenueResponseModel } from 'apiClient/v1'
+import Callout from 'components/Callout/Callout'
 import MandatoryInfo from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { CollectiveDmsTimeline } from 'components/VenueForm/CollectiveDmsTimeline/CollectiveDmsTimeline'
 import {
@@ -154,8 +155,19 @@ export const CollectiveDataEdition = ({
       isBefore(new Date(venue?.adageInscriptionDate), addDays(new Date(), -30))
   )
 
+  const showCollectiveDataForm = Boolean(
+    venue?.hasAdageId && canCreateCollectiveOffer
+  )
+
   return (
     <>
+      {showCollectiveDataForm && (
+        <Callout title="Les informations suivantes sont visibles par les enseignants et établissements sur ADAGE">
+          Cela leur permet de mieux comprendre votre démarche d’éducation
+          artistique et culturelle.
+        </Callout>
+      )}
+
       <PartnerPageCollectiveSection
         venueId={venue.id}
         hasAdageId={venue.hasAdageId}
@@ -175,7 +187,7 @@ export const CollectiveDataEdition = ({
         </div>
       )}
 
-      {venue?.hasAdageId && canCreateCollectiveOffer && (
+      {showCollectiveDataForm && (
         <>
           <MandatoryInfo className={styles.mandatory} />
 

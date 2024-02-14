@@ -64,6 +64,13 @@
   margin-right: rem.torem(8px);
 }
 
+.details-normal {
+  @include fonts.body-important;
+
+  margin-right: rem.torem(8px);
+  color: colors.$grey-dark;
+}
+
 .details-description {
   margin-top: rem.torem(8px);
 }
