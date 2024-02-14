@@ -79,7 +79,7 @@ describe('CollectiveDmsTimeline', () => {
         ...defaultCollectiveDmsApplication,
         state: DMSApplicationstatus.REFUSE,
       },
-      expectedLabel: 'Votre demande de référencement a été refusée.',
+      expectedLabel: 'Votre demande de référencement a été refusée',
     },
     {
       collectiveDmsApplication: {
@@ -146,7 +146,7 @@ describe('CollectiveDmsTimeline', () => {
         },
       })
       const dmsLink = screen.getByRole('link', {
-        name: 'Consulter ma messagerie sur Démarches Simplifiées',
+        name: /Consulter ma messagerie sur Démarches Simplifiées/,
       })
 
       dmsLink.addEventListener('click', (e) => {

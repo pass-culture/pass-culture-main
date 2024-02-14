@@ -1,9 +1,10 @@
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
+import Callout from 'components/Callout/Callout'
+import { CalloutVariant } from 'components/Callout/types'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import fullLinkIcon from 'icons/full-link.svg'
 import strokeValidIcon from 'icons/stroke-valid.svg'
-import strokeWrongIcon from 'icons/stroke-wrong.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -251,88 +252,53 @@ export const CollectiveDmsTimeline = ({
   }
 
   const refusedByDms = (
-    <>
-      <div className={styles['refused-state']}>
-        <SvgIcon
-          src={strokeWrongIcon}
-          className={styles['refused-state-icon']}
-          alt=""
-        />
-        <span>Votre demande de référencement a été refusée.</span>
-      </div>
-      <div>
-        <div className={styles['timeline-step-description']}>
-          Votre demande de référencement a été refusée le {processingDate} par
-          la commission régionale de référencement qui rassemble des
-          représentants du rectorat et de la DRAC de votre territoire. Nous vous
-          invitons à consulter votre messagerie sur Démarches Simplifiées afin
-          d’en savoir plus sur les raisons de ce refus.
-        </div>
-        <div className={styles['timeline-step-button']}>
-          <ButtonLink
-            variant={ButtonVariant.TERNARY}
-            link={{
-              to: collectiveDmsApplicationLink,
-              isExternal: true,
-            }}
-            icon={fullLinkIcon}
-            onClick={() => logClickOnDmsLink(DMSApplicationstatus.REFUSE)}
-          >
-            Consulter ma messagerie sur Démarches Simplifiées
-          </ButtonLink>
-          <ButtonLink
-            variant={ButtonVariant.TERNARY}
-            link={{
-              to: collectiveDmsContactSupport,
-              isExternal: true,
-            }}
-            icon={fullLinkIcon}
-          >
-            Contacter les membres de la commission de mon territoire
-          </ButtonLink>
-        </div>
-      </div>
-    </>
+    <Callout
+      variant={CalloutVariant.ERROR}
+      title="Votre demande de référencement a été refusée"
+      links={[
+        {
+          href: collectiveDmsApplicationLink,
+          label: 'Consulter ma messagerie sur Démarches Simplifiées',
+          isExternal: true,
+          onClick: () => logClickOnDmsLink(DMSApplicationstatus.REFUSE),
+        },
+        {
+          href: collectiveDmsContactSupport,
+          label: 'Contacter les membres de la commission de mon territoire',
+          isExternal: true,
+        },
+      ]}
+    >
+      Votre demande de référencement a été refusée le {processingDate} par la
+      commission régionale de référencement qui rassemble des représentants du
+      rectorat et de la DRAC de votre territoire. Nous vous invitons à consulter
+      votre messagerie sur Démarches Simplifiées afin d’en savoir plus sur les
+      raisons de ce refus.
+    </Callout>
   )
+
   const droppedByDms = (
-    <>
-      <div className={styles['refused-state']}>
-        <SvgIcon
-          src={strokeWrongIcon}
-          className={styles['refused-state-icon']}
-          alt=""
-        />
-        <span>Votre demande de référencement a été classée sans suite</span>
-      </div>
-      <div className={styles['timeline-step-description']}>
-        Nous vous invitons à consulter votre messagerie sur Démarches
-        Simplifiées afin d’en savoir plus.
-        <div className={styles['timeline-step-button']}>
-          <ButtonLink
-            variant={ButtonVariant.TERNARY}
-            link={{
-              to: collectiveDmsApplicationLink,
-              isExternal: true,
-            }}
-            icon={fullLinkIcon}
-            onClick={() => logClickOnDmsLink(DMSApplicationstatus.SANS_SUITE)}
-          >
-            Consulter ma messagerie sur Démarches Simplifiées
-          </ButtonLink>
-          <ButtonLink
-            variant={ButtonVariant.TERNARY}
-            link={{
-              to: collectiveDmsContactSupport,
-              isExternal: true,
-            }}
-            icon={fullLinkIcon}
-          >
-            Contacter les services des Ministères de l’Education Nationale et de
-            la Culture
-          </ButtonLink>
-        </div>
-      </div>
-    </>
+    <Callout
+      variant={CalloutVariant.ERROR}
+      title="Votre demande de référencement a été classée sans suite"
+      links={[
+        {
+          href: collectiveDmsApplicationLink,
+          label: 'Consulter ma messagerie sur Démarches Simplifiées',
+          isExternal: true,
+          onClick: () => logClickOnDmsLink(DMSApplicationstatus.SANS_SUITE),
+        },
+        {
+          href: collectiveDmsContactSupport,
+          label:
+            'Contacter les services des Ministères de l’Education Nationale et de la Culture',
+          isExternal: true,
+        },
+      ]}
+    >
+      Nous vous invitons à consulter votre messagerie sur Démarches Simplifiées
+      afin d’en savoir plus.
+    </Callout>
   )
   if (
     hasAdageId &&

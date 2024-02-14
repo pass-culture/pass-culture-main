@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { GetCollectiveVenueResponseModel, StudentLevels } from 'apiClient/v1'
+import ActionsBarSticky from 'components/ActionsBarSticky'
 import FormLayout from 'components/FormLayout'
 import {
   EducationalCategories,
@@ -319,20 +320,28 @@ const CollectiveDataForm = ({
               />
             </FormLayout.Row>
           </div>
-          <FormLayout.Actions>
-            <ButtonLink
-              variant={ButtonVariant.SECONDARY}
-              link={{
-                isExternal: false,
-                to: `/structures/${offererId}/lieux/${venueId}`,
-              }}
-            >
-              Annuler et quitter
-            </ButtonLink>
-            <SubmitButton isLoading={isLoading}>Enregistrer</SubmitButton>
-          </FormLayout.Actions>
+
+          <ActionsBarSticky>
+            <ActionsBarSticky.Left>
+              <ButtonLink
+                variant={ButtonVariant.SECONDARY}
+                link={{
+                  isExternal: false,
+                  to: `/structures/${offererId}/lieux/${venueId}`,
+                }}
+              >
+                Annuler et quitter
+              </ButtonLink>
+            </ActionsBarSticky.Left>
+            <ActionsBarSticky.Right>
+              <SubmitButton isLoading={isLoading}>
+                Enregistrer et quitter
+              </SubmitButton>
+            </ActionsBarSticky.Right>
+          </ActionsBarSticky>
         </form>
       </FormikProvider>
+
       <RouteLeavingGuardVenueCollectiveDataEdition
         shouldBlock={formik.dirty && !isClickingFromActionBar}
       />
