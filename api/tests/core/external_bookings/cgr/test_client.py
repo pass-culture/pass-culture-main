@@ -2,11 +2,13 @@ import json
 
 import pytest
 
+from pcapi.connectors.cgr.cgr import InMemoryCache
 from pcapi.connectors.cgr.exceptions import CGRAPIException
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.external_bookings.cgr.client as cgr_client
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 
 from tests.connectors.cgr import soap_definitions
@@ -15,7 +17,14 @@ from tests.local_providers.cinema_providers.cgr import fixtures
 
 @pytest.mark.usefixtures("db_session")
 class BookTicketTest:
-    def test_should_book_one_ticket(self, requests_mock, app):
+    @pytest.mark.parametrize(
+        "ff_activated,web_definition",
+        [
+            (False, soap_definitions.WEB_SERVICE_DEFINITION),
+            (True, soap_definitions.WEB_SERVICE_DEFINITION_WITH_TIMEOUT),
+        ],
+    )
+    def test_should_book_one_ticket(self, ff_activated, web_definition, requests_mock, app):
         beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiary@example.com")
         showtime_stock = offers_factories.EventStockFactory()
         booking = bookings_factories.BookingFactory(user=beneficiary, quantity=1, amount=5.5, stock=showtime_stock)
@@ -25,16 +34,18 @@ class BookTicketTest:
         )
         cinema_id = cinema_details.cinemaProviderPivot.idAtProvider
 
-        requests_mock.get(
-            "http://cgr-cinema-0.example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION
-        )
+        requests_mock.get("http://cgr-cinema-0.example.com/web_service?wsdl", text=web_definition)
         post_adapter = requests_mock.post(
             "http://cgr-cinema-0.example.com/web_service",
             text=fixtures.cgr_reservation_response_template(fixtures.ONE_TICKET_RESPONSE),
         )
 
-        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id)
-        tickets = cgr.book_ticket(show_id=177182, booking=booking, beneficiary=beneficiary)
+        with override_features(ENABLE_CGR_TIMEOUT=ff_activated):
+            cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id)
+            tickets = cgr.book_ticket(show_id=177182, booking=booking, beneficiary=beneficiary)
+            # zeep cache the return of the SOAP API, which make the tests fail since we changed the web definition between those two.
+            # Invalidate it
+            InMemoryCache._cache = {}
 
         assert len(tickets) == 1
         assert tickets[0].barcode == "CINE999508637111"
