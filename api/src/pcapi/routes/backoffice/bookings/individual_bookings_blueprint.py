@@ -257,7 +257,7 @@ def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
 @individual_bookings_blueprint.route("/batch-validate", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def get_batch_validate_individual_bookings_form() -> utils.BackofficeResponse:
-    form = empty_forms.EmptyForm()
+    form = empty_forms.BatchForm()
     return render_template(
         "components/turbo/modal_form.html",
         form=form,
