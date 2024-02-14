@@ -3,22 +3,16 @@ import React from 'react'
 
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import FormLayout from 'components/FormLayout'
-import useCurrentUser from 'hooks/useCurrentUser'
 import { ButtonLink, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { VenueFormValues } from '../types'
 
 interface VenueFormActionBarProps {
-  offererId: number
   isCreatingVenue: boolean
 }
 
-const VenueFormActionBar = ({
-  offererId,
-  isCreatingVenue,
-}: VenueFormActionBarProps) => {
-  const { currentUser } = useCurrentUser()
+const VenueFormActionBar = ({ isCreatingVenue }: VenueFormActionBarProps) => {
   const { isSubmitting } = useFormikContext<VenueFormValues>()
 
   return (
@@ -28,7 +22,7 @@ const VenueFormActionBar = ({
           <ButtonLink
             variant={ButtonVariant.SECONDARY}
             link={{
-              to: currentUser.isAdmin ? `/structures/${offererId}` : '/accueil',
+              to: '/accueil',
               isExternal: false,
             }}
           >

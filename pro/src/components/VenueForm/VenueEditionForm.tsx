@@ -120,7 +120,7 @@ export const VenueEditionForm = ({
           <BankAccountInfos venueBankAccount={venue.bankAccount} />
         )}
 
-        <VenueFormActionBar offererId={offerer.id} isCreatingVenue={false} />
+        <VenueFormActionBar isCreatingVenue={false} />
       </FormLayout>
     </div>
   )

@@ -196,7 +196,6 @@ export const CollectiveDataEdition = ({
             domains={domains}
             culturalPartners={culturalPartners}
             venueId={venueId}
-            offererId={offererId}
             venueCollectiveData={venueCollectiveData}
             adageVenueCollectiveData={adageVenueCollectiveData}
             categories={categories}
