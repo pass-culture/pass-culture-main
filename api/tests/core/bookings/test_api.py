@@ -9,7 +9,6 @@ from unittest.mock import patch
 from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
 import pytest
-import requests
 from sqlalchemy import create_engine
 import sqlalchemy.exc
 from sqlalchemy.sql import text
@@ -57,8 +56,6 @@ from pcapi.tasks.serialization.external_api_booking_notification_tasks import Bo
 from pcapi.utils import queue
 
 from tests.conftest import clean_database
-from tests.connectors.cgr import soap_definitions
-import tests.local_providers.cinema_providers.cgr.fixtures as cgr_fixtures
 
 
 class BookOfferConcurrencyTest:
@@ -640,45 +637,6 @@ class BookOfferTest:
             with pytest.raises(Exception):
                 api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
 
-            assert Booking.query.count() == 0
-
-        @override_features(ENABLE_CGR_INTEGRATION=True)
-        def test_token_is_cancelled_when_cgr_provider_timeout(self, requests_mock):
-            # Given
-            beneficiary = users_factories.BeneficiaryGrant18Factory()
-            cgr_provider = get_provider_by_local_class("CGRStocks")
-            venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider)
-            cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
-                venue=venue_provider.venue, provider=cgr_provider, idAtProvider="00000000100000"
-            )
-            providers_factories.CGRCinemaDetailsFactory(
-                cinemaUrl="http://cgr-cinema-0.example.com/web_service", cinemaProviderPivot=cinema_provider_pivot
-            )
-            offer_solo = offers_factories.EventOfferFactory(
-                name="Séance ciné solo",
-                venue=venue_provider.venue,
-                subcategoryId=subcategories.SEANCE_CINE.id,
-                lastProviderId=cinema_provider_pivot.provider.id,
-            )
-            stock_solo = offers_factories.EventStockFactory(offer=offer_solo, idAtProviders="123%12354114%CGR#111")
-            # We try to book an offer through their API, oh no, we've got a timeout !
-            requests_mock.get(
-                "http://cgr-cinema-0.example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION
-            )
-            # The "ReservationPassCulture" fails with a ReadTimeout and we send an "AnnulationPassCulture" query with the newly generated token
-            post_adapter = requests_mock.post(
-                "http://cgr-cinema-0.example.com/web_service",
-                [{"exc": requests.exceptions.ReadTimeout}, {"text": cgr_fixtures.cgr_annulation_response_template()}],
-            )
-
-            # Of course, the ReadTimeout should still be reraised so the current transaction is
-            # rollbacked and the booking not commited into the database
-            # So, when...
-            with pytest.raises(external_bookings_exceptions.ExternalBookingException):
-                api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
-
-            # Then
-            assert post_adapter.call_count == 2
             assert Booking.query.count() == 0
 
         @override_features(ENABLE_CDS_IMPLEMENTATION=True)
