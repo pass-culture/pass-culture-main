@@ -92,6 +92,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_CGR_INTEGRATION = "Active la synchonisation de stocks et la réservation via CGR"
     ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC = "Activer le passage automatique des synchronisations Allociné à EMS"
     LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC = "Stocker dans Google Drive les cinémas EMS activables"
+    ENABLE_CGR_TIMEOUT = "Envoyer la valeur de notre timeout lors d'une réservation CGR"
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
     WIP_BEHIND_L7_LOAD_BALANCER = "À activer/désactiver en même temps que le load balancer L7"
     WIP_ENABLE_OFFER_CREATION_API_V1 = "Active la création d'offres via l'API v1"
@@ -167,6 +168,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
     FeatureToggle.LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC,
     FeatureToggle.ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC,
+    FeatureToggle.ENABLE_CGR_TIMEOUT,
     FeatureToggle.WIP_ENABLE_COMPLIANCE_CALL,
     FeatureToggle.WIP_ENABLE_DIFFUSE_HELP,
     FeatureToggle.WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API,
