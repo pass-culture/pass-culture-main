@@ -118,7 +118,6 @@ describe('screens:StocksThing', () => {
       venue: offerVenueFactory({
         departementCode: '75',
       }),
-      lastProviderName: 'Ciné Office',
       subcategoryId: 'CANBEDUO',
     })
     props = {

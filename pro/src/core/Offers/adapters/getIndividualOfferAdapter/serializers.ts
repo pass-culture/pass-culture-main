@@ -55,7 +55,6 @@ export const serializeOfferApi = (
       ...baseAccessibility,
       [AccessiblityEnum.NONE]: !Object.values(baseAccessibility).includes(true),
     },
-    lastProviderName: apiOffer.lastProvider?.name || null,
     ...serializeOfferApiExtraData(apiOffer),
   }
 
