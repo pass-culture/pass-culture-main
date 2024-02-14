@@ -16,9 +16,6 @@ class SearchBackend:
     def enqueue_offer_ids(self, offer_ids: Iterable[int]) -> None:
         raise NotImplementedError()
 
-    def enqueue_collective_offer_ids(self, collective_offer_ids: Iterable[int]) -> None:
-        raise NotImplementedError()
-
     def enqueue_collective_offer_template_ids(self, collective_offer_template_ids: Iterable[int]) -> None:
         raise NotImplementedError()
 
@@ -26,9 +23,6 @@ class SearchBackend:
         raise NotImplementedError()
 
     def enqueue_venue_ids_in_error(self, venue_ids: Iterable[int]) -> None:
-        raise NotImplementedError()
-
-    def enqueue_collective_offer_ids_in_error(self, collective_offer_ids: Iterable[int]) -> None:
         raise NotImplementedError()
 
     def enqueue_collective_offer_template_ids_in_error(self, collective_offer_template_ids: Iterable[int]) -> None:
@@ -55,9 +49,6 @@ class SearchBackend:
     def index_offers(self, offers: "Iterable[offers_models.Offer]", last_30_days_bookings: dict[int, int]) -> None:
         raise NotImplementedError()
 
-    def index_collective_offers(self, collective_offers: "Iterable[educational_models.CollectiveOffer]") -> None:
-        raise NotImplementedError()
-
     def index_collective_offer_templates(
         self, collective_offer_templates: "Iterable[educational_models.CollectiveOfferTemplate]"
     ) -> None:
@@ -78,9 +69,6 @@ class SearchBackend:
     def unindex_all_collective_offers(self, *, only_template: bool = False, only_non_template: bool = False) -> None:
         raise NotImplementedError()
 
-    def unindex_collective_offer_ids(self, collective_offer_ids: Iterable[int]) -> None:
-        raise NotImplementedError()
-
     def unindex_collective_offer_template_ids(self, collective_offer_template_ids: Iterable[int]) -> None:
         raise NotImplementedError()
 
@@ -88,13 +76,6 @@ class SearchBackend:
         raise NotImplementedError()
 
     def pop_venue_ids_from_queue(
-        self,
-        count: int,
-        from_error_queue: bool = False,
-    ) -> contextlib.AbstractContextManager:
-        raise NotImplementedError()
-
-    def pop_collective_offer_ids_from_queue(
         self,
         count: int,
         from_error_queue: bool = False,

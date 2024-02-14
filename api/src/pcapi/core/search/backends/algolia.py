@@ -43,9 +43,7 @@ REDIS_VENUE_IDS_FOR_OFFERS_NAME = "search:algolia:venue-ids-for-offers:list"
 REDIS_VENUE_IDS_TO_INDEX = "search:algolia:venue-ids-to-index:list"
 REDIS_VENUE_IDS_IN_ERROR_TO_INDEX = "search:algolia:venue-ids-in-error-to-index:list"
 
-REDIS_COLLECTIVE_OFFER_IDS_TO_INDEX = "search:algolia:collective-offer-ids-to-index:list"
 REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_TO_INDEX = "search:algolia:collective-offer-template-ids-to-index:list"
-REDIS_COLLECTIVE_OFFER_IDS_IN_ERROR_TO_INDEX = "search:algolia:collective-offer-ids-in-error-to-index:list"
 REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_IN_ERROR_TO_INDEX = (
     "search:algolia:collective-offer-template-ids-in-error-to-index:list"
 )
@@ -55,9 +53,7 @@ QUEUES = (
     REDIS_VENUE_IDS_FOR_OFFERS_NAME,
     REDIS_VENUE_IDS_TO_INDEX,
     REDIS_VENUE_IDS_IN_ERROR_TO_INDEX,
-    REDIS_COLLECTIVE_OFFER_IDS_TO_INDEX,
     REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_TO_INDEX,
-    REDIS_COLLECTIVE_OFFER_IDS_IN_ERROR_TO_INDEX,
     REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_IN_ERROR_TO_INDEX,
 )
 REDIS_HASHMAP_INDEXED_OFFERS_NAME = "indexed_offers"
@@ -161,18 +157,6 @@ class AlgoliaBackend(base.SearchBackend):
     def enqueue_offer_ids_in_error(self, offer_ids: Iterable[int]) -> None:
         self._enqueue_ids(offer_ids, REDIS_OFFER_IDS_IN_ERROR_NAME)
 
-    def enqueue_collective_offer_ids(self, collective_offer_ids: Iterable[int]) -> None:
-        self._enqueue_ids(
-            collective_offer_ids,
-            REDIS_COLLECTIVE_OFFER_IDS_TO_INDEX,
-        )
-
-    def enqueue_collective_offer_ids_in_error(self, collective_offer_ids: Iterable[int]) -> None:
-        self._enqueue_ids(
-            collective_offer_ids,
-            REDIS_COLLECTIVE_OFFER_IDS_IN_ERROR_TO_INDEX,
-        )
-
     def enqueue_collective_offer_template_ids(
         self,
         collective_offer_template_ids: Iterable[int],
@@ -229,17 +213,6 @@ class AlgoliaBackend(base.SearchBackend):
             queue = REDIS_VENUE_IDS_IN_ERROR_TO_INDEX
         else:
             queue = REDIS_VENUE_IDS_TO_INDEX
-        return self._pop_ids_from_queue(queue, count)
-
-    def pop_collective_offer_ids_from_queue(
-        self,
-        count: int,
-        from_error_queue: bool = False,
-    ) -> contextlib.AbstractContextManager:
-        if from_error_queue:
-            queue = REDIS_COLLECTIVE_OFFER_IDS_IN_ERROR_TO_INDEX
-        else:
-            queue = REDIS_COLLECTIVE_OFFER_IDS_TO_INDEX
         return self._pop_ids_from_queue(queue, count)
 
     def pop_collective_offer_template_ids_from_queue(
@@ -381,14 +354,6 @@ class AlgoliaBackend(base.SearchBackend):
         finally:
             pipeline.reset()
 
-    def index_collective_offers(
-        self,
-        collective_offers: Iterable[educational_models.CollectiveOffer],
-    ) -> None:
-        # TODO(jeremieb): to remove, once we are sure that removing this
-        # function won't break anything
-        pass
-
     def index_collective_offer_templates(
         self,
         collective_offer_templates: Iterable[educational_models.CollectiveOfferTemplate],
@@ -436,11 +401,6 @@ class AlgoliaBackend(base.SearchBackend):
         if not venue_ids:
             return
         self.algolia_venues_client.delete_objects(venue_ids)
-
-    def unindex_collective_offer_ids(self, collective_offer_ids: Iterable[int]) -> None:
-        if not collective_offer_ids:
-            return
-        self.algolia_collective_offers_client.delete_objects(collective_offer_ids)
 
     def unindex_collective_offer_template_ids(self, collective_offer_template_ids: Iterable[int]) -> None:
         if not collective_offer_template_ids:
@@ -624,55 +584,6 @@ class AlgoliaBackend(base.SearchBackend):
             "has_at_least_one_bookable_offer": has_at_least_one_bookable_offer,
             "date_created": venue.dateCreated.timestamp(),
             "postalCode": venue.postalCode,
-        }
-
-    @classmethod
-    def serialize_collective_offer(cls, collective_offer: educational_models.CollectiveOffer) -> dict:
-        venue = collective_offer.venue
-        offerer = venue.managingOfferer
-        date_created = collective_offer.dateCreated.timestamp()
-        beginning_datetime = collective_offer.collectiveStock.beginningDatetime.timestamp()
-        department_code = get_department_code_from_postal_code(venue.postalCode)
-        latitude, longitude = educational_api_offer.get_offer_coordinates(collective_offer)
-
-        raw_formats = collective_offer.get_formats()
-        formats = [fmt.value for fmt in raw_formats] if raw_formats else None
-
-        return {
-            "objectID": collective_offer.id,
-            "offer": {
-                "dateCreated": date_created,
-                "name": collective_offer.name,
-                "students": [student.value for student in collective_offer.students],
-                "subcategoryId": collective_offer.subcategoryId,
-                "domains": [domain.id for domain in collective_offer.domains],
-                "educationalInstitutionUAICode": (
-                    collective_offer.institution.institutionId if collective_offer.institution else "all"
-                ),
-                "interventionArea": collective_offer.interventionArea,
-                "schoolInterventionArea": (
-                    collective_offer.interventionArea
-                    if collective_offer.offerVenue.get("addressType") == "school"
-                    else None
-                ),
-                "eventAddressType": collective_offer.offerVenue.get("addressType"),
-                "beginningDatetime": beginning_datetime,
-                "description": remove_stopwords(collective_offer.description),
-            },
-            "offerer": {
-                "name": offerer.name,
-            },
-            "venue": {
-                "academy": get_academy_from_department(department_code),
-                "departmentCode": department_code,
-                "id": venue.id,
-                "name": venue.name,
-                "publicName": venue.publicName,
-                "adageId": venue.adageId,
-            },
-            "_geoloc": format_coordinates(latitude, longitude),
-            "isTemplate": False,
-            "formats": formats,
         }
 
     @classmethod

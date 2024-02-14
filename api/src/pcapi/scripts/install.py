@@ -28,7 +28,6 @@ def install_commands(app: flask.Flask) -> None:
         "pcapi.scripts.check_pre_migrations",
         "pcapi.scripts.external_users.commands",
         "pcapi.scripts.full_index_offers",
-        "pcapi.scripts.full_index_collective_offers",
         "pcapi.scripts.install_data",
         "pcapi.scripts.provider.check_provider_api",
         "pcapi.scripts.sandbox",

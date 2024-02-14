@@ -29,10 +29,6 @@ class FakeOffer:
         ("enqueue_offer_ids", algolia.REDIS_OFFER_IDS_NAME),
         ("enqueue_offer_ids_in_error", algolia.REDIS_OFFER_IDS_IN_ERROR_NAME),
         (
-            "enqueue_collective_offer_ids_in_error",
-            algolia.REDIS_COLLECTIVE_OFFER_IDS_IN_ERROR_TO_INDEX,
-        ),
-        (
             "enqueue_collective_offer_template_ids",
             algolia.REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_TO_INDEX,
         ),
@@ -59,11 +55,6 @@ def test_enqueue_functions(enqueue_function_name, queue):
     [
         ("pop_offer_ids_from_queue", False, algolia.REDIS_OFFER_IDS_NAME),
         ("pop_offer_ids_from_queue", True, algolia.REDIS_OFFER_IDS_IN_ERROR_NAME),
-        (
-            "pop_collective_offer_ids_from_queue",
-            True,
-            algolia.REDIS_COLLECTIVE_OFFER_IDS_IN_ERROR_TO_INDEX,
-        ),
         (
             "pop_collective_offer_template_ids_from_queue",
             False,
@@ -189,16 +180,6 @@ def test_unindex_venue_ids(app):
     with requests_mock.Mocker() as mock:
         posted = mock.post("https://dummy-app-id.algolia.net/1/indexes/venues/batch", json={})
         backend.unindex_venue_ids([1])
-        posted_json = posted.last_request.json()
-        assert posted_json["requests"][0]["action"] == "deleteObject"
-        assert posted_json["requests"][0]["body"]["objectID"] == 1
-
-
-def test_unindex_collective_offer_ids():
-    backend = get_backend()
-    with requests_mock.Mocker() as mock:
-        posted = mock.post("https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers/batch", json={})
-        backend.unindex_collective_offer_ids([1])
         posted_json = posted.last_request.json()
         assert posted_json["requests"][0]["action"] == "deleteObject"
         assert posted_json["requests"][0]["body"]["objectID"] == 1

@@ -659,18 +659,6 @@ def unindex_all_collective_offer_templates() -> None:
     pass
 
 
-def unindex_collective_offer_ids(collective_offer_ids: Iterable[int]) -> None:
-    if not collective_offer_ids:
-        return
-    backend = _get_backend()
-    try:
-        backend.unindex_collective_offer_ids(collective_offer_ids)
-    except Exception:  # pylint: disable=broad-except
-        if settings.IS_RUNNING_TESTS:
-            raise
-        logger.exception("Could not unindex collective offers", extra={"collective_offers": collective_offer_ids})
-
-
 def unindex_collective_offer_template_ids(collective_offer_template_ids: Iterable[int]) -> None:
     if not collective_offer_template_ids:
         return

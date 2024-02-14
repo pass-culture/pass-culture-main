@@ -5,7 +5,6 @@ import click
 
 from pcapi import settings
 from pcapi.core import search
-from pcapi.core.educational.api.offer import unindex_expired_collective_offers
 from pcapi.core.educational.api.offer import unindex_expired_collective_offers_template
 import pcapi.core.educational.repository as collective_offers_repository
 from pcapi.core.offerers import api as offerers_api
@@ -35,15 +34,6 @@ def index_offers_in_algolia_by_venue() -> None:
     search.index_offers_of_venues_in_queue()
 
 
-@blueprint.cli.command("index_collective_offers")
-@log_cron_with_transaction
-def index_collective_offers() -> None:
-    """Pop collective offers from indexation queue and reindex them."""
-    # TODO(jeremieb): to remove, once we are sure that removing this
-    # function won't break anything (eg. deactivate cron tasks)
-    pass  # pylint: disable=unnecessary-pass
-
-
 @blueprint.cli.command("index_collective_offer_templates")
 @log_cron_with_transaction
 def index_collective_offer_templates() -> None:
@@ -63,18 +53,6 @@ def delete_expired_offers_in_algolia() -> None:
     offers_api.unindex_expired_offers()
 
 
-@blueprint.cli.command("delete_expired_collective_offers_in_algolia")
-@log_cron_with_transaction
-def delete_expired_collective_offers_in_algolia() -> None:
-    """Unindex collective offers that have expired.
-
-    By default, process collective offers that have expired within the last 2
-    days. For example, if run on Thursday (whatever the time), this
-    function handles collective offers that have expired between Tuesday 00:00
-    and Wednesday 23:59 (included)."""
-    unindex_expired_collective_offers()
-
-
 @blueprint.cli.command("delete_expired_collective_offers_template_in_algolia")
 @log_cron_with_transaction
 def delete_expired_collective_offers_template_in_algolia() -> None:
@@ -87,15 +65,6 @@ def delete_expired_collective_offers_template_in_algolia() -> None:
 def index_offers_in_error_in_algolia_by_offer() -> None:
     """Pop offers from the error queue and reindex them."""
     search.index_offers_in_queue(from_error_queue=True)
-
-
-@blueprint.cli.command("index_collective_offers_in_error")
-@log_cron_with_transaction
-def index_collective_offers_in_error() -> None:
-    """Pop collective offers from the error queue and reindex them."""
-    # TODO(jeremieb): to remove, once we are sure that removing this
-    # function won't break anything (eg. deactivate cron tasks)
-    pass  # pylint: disable=unnecessary-pass
 
 
 @blueprint.cli.command("index_collective_offers_templates_in_error")
@@ -163,28 +132,6 @@ def partially_index_offers(
         starting_page=starting_page,
         last_page=last_page,
     )
-
-
-@blueprint.cli.command("partially_index_collective_offers")
-@click.option("--clear", help="Clear search index first", type=bool, default=False)
-@click.option("--batch-size", help="Number of offers per page", type=int, default=10_000)
-@click.option("--starting-page", help="Starting page (first is 1)", type=int, default=1)
-@click.option("--last-page", help="Last page of offers to index", type=int, default=None)
-def partially_index_collective_offers(
-    clear: bool,
-    batch_size: int,
-    starting_page: int,
-    last_page: int,
-) -> None:
-    """Index a subset of collective offers.
-
-    This function fetches active offers by batch and then only reindex
-    offers that are eligible for search. You control the first and
-    last pages of the batches (starting from page 1).
-    """
-    # TODO(jeremieb): to remove, once we are sure that removing this
-    # function won't break anything (eg. deactivate cron tasks)
-    pass  # pylint: disable=unnecessary-pass
 
 
 @blueprint.cli.command("partially_index_collective_offer_templates")

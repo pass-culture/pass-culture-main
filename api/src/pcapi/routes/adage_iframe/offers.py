@@ -50,37 +50,6 @@ def get_educational_offers_categories(
     )
 
 
-@blueprint.adage_iframe.route("/collective/all-offers", methods=["GET"])
-@spectree_serialize(response_model=serializers.ListCollectiveOffersResponseModel, api=blueprint.api)
-@adage_jwt_required
-def get_educational_eligible_offers_by_uai(
-    authenticated_information: AuthenticatedInformation,
-) -> serializers.ListCollectiveOffersResponseModel:
-    # TODO(jeremieb): remove since it should return only indexable
-    # collective offers...and we won't index them anymore.
-    # Keep the route for now to avoid any breaking change.
-    if authenticated_information.uai is None:
-        raise ApiErrors({"institutionId": "institutionId is required"}, status_code=400)
-
-    list_offers_by_uai = educational_repository.get_all_collective_offers_by_institutionUAI(
-        uai=authenticated_information.uai
-    )
-
-    redactor = _get_redactor(authenticated_information)
-
-    current_user_favorite_offers = educational_repository.get_user_favorite_offers_from_uai(
-        redactor_id=redactor.id if redactor else None, uai=authenticated_information.uai
-    )
-
-    serialized_favorite_offers = [
-        serialize_collective_offer(offer=offer, is_favorite=offer.id in current_user_favorite_offers)
-        for offer in list_offers_by_uai
-        if offer.is_eligible_for_search
-    ]
-
-    return serializers.ListCollectiveOffersResponseModel(collectiveOffers=serialized_favorite_offers)
-
-
 @blueprint.adage_iframe.route("/offers/formats", methods=["GET"])
 @spectree_serialize(response_model=serializers.EacFormatsResponseModel, api=blueprint.api)
 @adage_jwt_required

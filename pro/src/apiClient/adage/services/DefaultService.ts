@@ -68,21 +68,6 @@ export class DefaultService {
     });
   }
   /**
-   * get_educational_eligible_offers_by_uai <GET>
-   * @returns ListCollectiveOffersResponseModel OK
-   * @throws ApiError
-   */
-  public getEducationalEligibleOffersByUai(): CancelablePromise<ListCollectiveOffersResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/adage-iframe/collective/all-offers',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
    * book_collective_offer <POST>
    * @param requestBody
    * @returns BookCollectiveOfferResponse OK

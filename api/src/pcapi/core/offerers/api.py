@@ -354,7 +354,6 @@ def delete_venue(venue_id: int) -> None:
     db.session.commit()
 
     search.unindex_offer_ids(offer_ids_to_delete["individual_offer_ids_to_delete"])
-    search.unindex_collective_offer_ids(offer_ids_to_delete["collective_offer_ids_to_delete"])
     search.unindex_collective_offer_template_ids(offer_ids_to_delete["collective_offer_template_ids_to_delete"])
     search.unindex_venue_ids([venue_id])
 
@@ -1878,16 +1877,12 @@ def delete_offerer(offerer_id: int) -> None:
 
     offer_ids_to_delete: dict = {
         "individual_offer_ids_to_delete": [],
-        "collective_offer_ids_to_delete": [],
         "collective_offer_template_ids_to_delete": [],
     }
     for venue_id in venue_ids:
         venue_offer_ids_to_delete = _delete_objects_linked_to_venue(venue_id)
         offer_ids_to_delete["individual_offer_ids_to_delete"] += venue_offer_ids_to_delete[
             "individual_offer_ids_to_delete"
-        ]
-        offer_ids_to_delete["collective_offer_ids_to_delete"] += venue_offer_ids_to_delete[
-            "collective_offer_ids_to_delete"
         ]
 
         offer_ids_to_delete["collective_offer_template_ids_to_delete"] += venue_offer_ids_to_delete[
@@ -1923,7 +1918,6 @@ def delete_offerer(offerer_id: int) -> None:
     db.session.commit()
 
     search.unindex_offer_ids(offer_ids_to_delete["individual_offer_ids_to_delete"])
-    search.unindex_collective_offer_ids(offer_ids_to_delete["collective_offer_ids_to_delete"])
     search.unindex_collective_offer_template_ids(offer_ids_to_delete["collective_offer_template_ids_to_delete"])
     search.unindex_venue_ids(venue_ids_subquery)
 

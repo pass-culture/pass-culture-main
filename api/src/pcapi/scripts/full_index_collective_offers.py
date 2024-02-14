@@ -28,16 +28,6 @@ def _get_eta(end: int, current: int, elapsed_per_batch: list) -> str:
     return eta
 
 
-@blueprint.cli.command("full_index_collective_offers")
-@click.argument("start", type=int, required=True)
-@click.argument("end", type=int, required=True)
-def full_index_collective_offers(start: int, end: int) -> None:
-    """Reindex all active collective offers."""
-    # TODO(jeremieb): to remove, once we are sure that removing this
-    # function won't break anything (eg. deactivate cron tasks)
-    pass  # pylint: disable=unnecessary-pass
-
-
 @blueprint.cli.command("full_index_collective_template_offers")
 @click.argument("start", type=int, required=True)
 @click.argument("end", type=int, required=True)
