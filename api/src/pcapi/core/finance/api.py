@@ -3570,7 +3570,7 @@ def update_bank_account_venues_links(
         )
 
         for venue in venues:
-            if venue.id in venues_links_to_deprecate:
+            if venue.id in venues_links_to_deprecate and venue.bookingEmail:
                 transactional_mails.send_venue_bank_account_link_deprecated(
                     venue.common_name, bank_account.label, venue.bookingEmail
                 )
