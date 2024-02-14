@@ -61,7 +61,7 @@ const setInitialFormValues = (
     stageDirector: offer.stageDirector,
     visa: offer.visa,
     durationMinutes:
-      offer.durationMinutes === null
+      offer.durationMinutes === null || offer.durationMinutes === undefined
         ? undefined
         : serializeDurationHour(offer.durationMinutes),
     url: offer.url || FORM_DEFAULT_VALUES['url'],
