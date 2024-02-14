@@ -196,7 +196,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     schoolType = sa.Column(sa.Enum(SchoolTypeEnum, create_constraint=False), nullable=True)
     trusted_devices: list["TrustedDevice"] = orm.relationship("TrustedDevice", back_populates="user")
     login_device_history: list["LoginDeviceHistory"] = orm.relationship("LoginDeviceHistory", back_populates="user")
-    single_sign_ons: list["SingleSignOn"] = orm.relationship("SingleSignOn", back_populates="user")
+    single_sign_ons: list["SingleSignOn"] = orm.relationship("SingleSignOn", back_populates="user", cascade="delete")
     validatedBirthDate = sa.Column(sa.Date, nullable=True)  # validated by an Identity Provider
     backoffice_profile: orm.Mapped["BackOfficeUserProfile"] = orm.relationship(
         "BackOfficeUserProfile", uselist=False, back_populates="user"

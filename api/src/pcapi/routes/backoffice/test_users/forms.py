@@ -37,3 +37,7 @@ class UserGeneratorForm(utils.PCForm):
         default=GeneratedSubscriptionStep.EMAIL_VALIDATION.name,
     )
     transition_17_18 = fields.PCCheckboxField("Transition 17-18")
+
+
+class UserDeletionForm(utils.PCForm):
+    email = fields.PCEmailField("compte_sso_jeune@example.com")

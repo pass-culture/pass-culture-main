@@ -1,9 +1,12 @@
+import logging
 from urllib.parse import urlencode
 
 from flask import flash
 from flask import redirect
 from flask import render_template
 from flask import url_for
+from markupsafe import Markup
+from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import NotFound
 
 from pcapi import settings
@@ -12,10 +15,16 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import generator as users_generator
 from pcapi.core.users import models as users_models
+from pcapi.models import db
+from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import blueprint
 from pcapi.routes.backoffice import utils
 
 from . import forms
+
+
+logger = logging.getLogger(__name__)
 
 
 @blueprint.backoffice_web.route("/admin/user-generator", methods=["GET"])
@@ -99,3 +108,50 @@ def _get_user_if_exists(user_id: str | None) -> users_models.User | None:
         return None
 
     return users_models.User.query.get(int(user_id))
+
+
+@blueprint.backoffice_web.route("/admin/delete", methods=["GET"])
+@utils.custom_login_required(redirect_to=".home")
+def get_user_deletion_form() -> str:
+    form = forms.UserDeletionForm()
+    return render_template("admin/users_deletion.html", form=form)
+
+
+@blueprint.backoffice_web.route("/admin/delete", methods=["POST"])
+@atomic()
+@utils.custom_login_required(redirect_to=".home")
+def delete_user() -> utils.BackofficeResponse:
+    if not settings.ENABLE_TEST_USER_GENERATION:
+        raise NotFound()
+
+    form = forms.UserDeletionForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return render_template("admin/users_deletion.html", form=form), 400
+
+    email = form.email.data
+    user = users_models.User.query.filter_by(email=email).one_or_none()
+    if not user:
+        flash(
+            Markup("L'adresse email <b>{email}</b> n'a pas été trouvée.").format(email=email),
+            "warning",
+        )
+        return render_template("admin/users_deletion.html", form=form), 400
+
+    try:
+        db.session.delete(user)
+        db.session.flush()
+    except IntegrityError as e:
+        logger.info(e)
+        mark_transaction_as_invalid()
+        flash(
+            Markup("Le compte de l'utilisateur <b>{email}</b> n'a pas pu être supprimé.").format(email=email),
+            "warning",
+        )
+        return redirect(url_for("backoffice_web.delete_user"), code=303)
+
+    flash(
+        Markup("Le compte de l'utilisateur <b>{email}</b> a été supprimé").format(email=email),
+        "success",
+    )
+    return redirect(url_for("backoffice_web.delete_user"), code=303)
