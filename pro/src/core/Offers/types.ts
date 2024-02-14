@@ -107,7 +107,7 @@ export interface IndividualOffer {
   bookingEmail?: string | null
   bookingsCount: number
   description?: string | null
-  durationMinutes: number | null
+  durationMinutes?: number | null
   hasStocks: boolean
   isActive: boolean
   isActivable: boolean
@@ -133,7 +133,7 @@ export interface IndividualOffer {
   visa: string
   withdrawalDetails?: string | null
   withdrawalDelay?: number | null
-  withdrawalType: WithdrawalTypeEnum | null
+  withdrawalType?: WithdrawalTypeEnum | null
   lastProviderName: string | null
   lastProvider?: GetOfferLastProviderResponseModel | null
   status: OfferStatus
