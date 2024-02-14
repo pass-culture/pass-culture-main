@@ -51,10 +51,6 @@ export const serializeOfferApi = (
   const offer: IndividualOffer = {
     ...apiOffer,
     bookingsCount: apiOffer.bookingsCount || 0,
-    durationMinutes: apiOffer.durationMinutes || null,
-    withdrawalDelay:
-      apiOffer.withdrawalDelay === undefined ? null : apiOffer.withdrawalDelay,
-    withdrawalType: apiOffer.withdrawalType || null,
     image: serializeOfferApiImage(apiOffer),
     accessibility: {
       ...baseAccessibility,

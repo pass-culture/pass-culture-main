@@ -109,7 +109,6 @@ describe('serializer', () => {
       author: '',
       bookingsCount: 123,
       dateCreated: '2020-04-12T19:31:12Z',
-      durationMinutes: null,
       ean: '',
       image: undefined,
       hasBookingLimitDatetimesPassed: false,
@@ -155,8 +154,6 @@ describe('serializer', () => {
         publicName: 'Mon Lieu',
       },
       visa: '',
-      withdrawalDelay: null,
-      withdrawalType: null,
     }
 
     expect(serializeOfferApi(offerApi)).toEqual(offerSerialized)
