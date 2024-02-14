@@ -104,9 +104,9 @@ export interface IndividualOfferImage {
 export interface IndividualOffer {
   id: number
   author: string
-  bookingEmail: string
+  bookingEmail?: string | null
   bookingsCount: number
-  description: string
+  description?: string | null
   durationMinutes: number | null
   hasStocks: boolean
   isActive: boolean
@@ -127,11 +127,11 @@ export interface IndividualOffer {
   speaker: string
   subcategoryId: string
   image?: IndividualOfferImage
-  url: string
-  externalTicketOfficeUrl: string
+  url?: string | null
+  externalTicketOfficeUrl?: string | null
   venue: GetOfferVenueResponseModel
   visa: string
-  withdrawalDetails: string | null
+  withdrawalDetails?: string | null
   withdrawalDelay?: number | null
   withdrawalType: WithdrawalTypeEnum | null
   lastProviderName: string | null

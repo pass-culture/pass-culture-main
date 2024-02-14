@@ -107,14 +107,10 @@ describe('serializer', () => {
         visual: false,
       },
       author: '',
-      bookingEmail: '',
-      bookingContact: '',
       bookingsCount: 123,
       dateCreated: '2020-04-12T19:31:12Z',
-      description: '',
       durationMinutes: null,
       ean: '',
-      externalTicketOfficeUrl: '',
       image: undefined,
       hasBookingLimitDatetimesPassed: false,
       hasStocks: true,
@@ -140,7 +136,6 @@ describe('serializer', () => {
       stageDirector: '',
       status: OfferStatus.ACTIVE,
       subcategoryId: 'SEANCE_CINE',
-      url: '',
       venue: {
         id: 1,
         audioDisabilityCompliant: true,
@@ -161,7 +156,6 @@ describe('serializer', () => {
       },
       visa: '',
       withdrawalDelay: null,
-      withdrawalDetails: '',
       withdrawalType: null,
     }
 
