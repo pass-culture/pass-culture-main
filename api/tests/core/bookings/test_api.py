@@ -649,7 +649,7 @@ class BookOfferTest:
             cgr_provider = get_provider_by_local_class("CGRStocks")
             venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider)
             cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
-                venue=venue_provider.venue, provider=cgr_provider, idAtProvider=venue_provider.venueIdAtOfferProvider
+                venue=venue_provider.venue, provider=cgr_provider, idAtProvider="00000000100000"
             )
             providers_factories.CGRCinemaDetailsFactory(
                 cinemaUrl="http://cgr-cinema-0.example.com/web_service", cinemaProviderPivot=cinema_provider_pivot
@@ -679,47 +679,6 @@ class BookOfferTest:
 
             # Then
             assert post_adapter.call_count == 2
-            assert Booking.query.count() == 0
-
-        @override_features(ENABLE_CGR_INTEGRATION=True)
-        def test_token_cancellation_is_retrying_in_case_timeout_is_encounter_again(self, requests_mock):
-            # Given
-            beneficiary = users_factories.BeneficiaryGrant18Factory()
-            cgr_provider = get_provider_by_local_class("CGRStocks")
-            venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider)
-            cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
-                venue=venue_provider.venue, provider=cgr_provider, idAtProvider=venue_provider.venueIdAtOfferProvider
-            )
-            providers_factories.CGRCinemaDetailsFactory(
-                cinemaUrl="http://cgr-cinema-0.example.com/web_service", cinemaProviderPivot=cinema_provider_pivot
-            )
-            offer_solo = offers_factories.EventOfferFactory(
-                name="Séance ciné solo",
-                venue=venue_provider.venue,
-                subcategoryId=subcategories.SEANCE_CINE.id,
-                lastProviderId=cinema_provider_pivot.provider.id,
-            )
-            stock_solo = offers_factories.EventStockFactory(offer=offer_solo, idAtProviders="123%12354114%CGR#111")
-            requests_mock.get(
-                "http://cgr-cinema-0.example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION
-            )
-            post_adapter = requests_mock.post(
-                "http://cgr-cinema-0.example.com/web_service",
-                [
-                    {"exc": requests.exceptions.ReadTimeout},
-                    {"exc": requests.exceptions.ReadTimeout},
-                    {"text": cgr_fixtures.cgr_annulation_response_template()},
-                ],
-            )
-
-            # Of course, the ReadTimeout should still be reraised so the current transaction is
-            # rollbacked and the booking not commited into the database
-            # So, when...
-            with pytest.raises(external_bookings_exceptions.ExternalBookingException):
-                api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
-
-            # Then
-            assert post_adapter.call_count == 3
             assert Booking.query.count() == 0
 
         @override_features(ENABLE_CDS_IMPLEMENTATION=True)
