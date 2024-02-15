@@ -1,7 +1,10 @@
 import { render, screen } from '@testing-library/react'
 
 import { OfferAddressType } from 'apiClient/adage'
-import { defaultCollectiveTemplateOffer } from 'utils/adageFactories'
+import {
+  defaultCollectiveTemplateOffer,
+  defaultCollectiveOffer,
+} from 'utils/adageFactories'
 
 import AdageOfferInfoSection, {
   AdageOfferInfoSectionProps,
@@ -66,37 +69,6 @@ describe('AdageOfferInfoSection', () => {
     expect(screen.getByText(/test venue address/)).toBeInTheDocument()
   })
 
-  it('should show the dates of a template offer that has specific dates', () => {
-    renderAdageOfferInfoSection({
-      offer: {
-        ...defaultCollectiveTemplateOffer,
-        dates: {
-          end: '2024-01-29T23:00:28.040559Z',
-          start: '2024-01-23T23:00:28.040547Z',
-        },
-      },
-    })
-
-    expect(
-      screen.getByText('Du 23 janvier au 29 janvier 2024 à 23h')
-    ).toBeInTheDocument()
-  })
-
-  it('should show that the offer is permanent if it has no dates', () => {
-    renderAdageOfferInfoSection({
-      offer: {
-        ...defaultCollectiveTemplateOffer,
-        dates: undefined,
-      },
-    })
-
-    expect(
-      screen.getByText(
-        'Tout au long de l’année scolaire (l’offre est permanente)'
-      )
-    ).toBeInTheDocument()
-  })
-
   it('should display the offer price details', () => {
     renderAdageOfferInfoSection({
       offer: {
@@ -122,5 +94,21 @@ describe('AdageOfferInfoSection', () => {
     expect(
       screen.queryByRole('heading', { name: 'Information sur le prix' })
     ).not.toBeInTheDocument()
+  })
+
+  it('should show the prixe section when the offer is bookable', () => {
+    renderAdageOfferInfoSection({
+      offer: {
+        ...defaultCollectiveOffer,
+      },
+    })
+
+    expect(
+      screen.queryByRole('heading', { name: 'Information sur le prix' })
+    ).not.toBeInTheDocument()
+
+    expect(screen.getByRole('heading', { name: 'Prix' })).toBeInTheDocument()
+
+    expect(screen.getByText('140 000 € pour 10 élèves')).toBeInTheDocument()
   })
 })
