@@ -56,16 +56,16 @@ FRENCH_DATE_FORMAT = "%d/%m/%Y"
 class FrenchParserInfo(parserinfo):
     WEEKDAYS = [
         ("lun.", "Lundi"),
-        ("mar.", "Mardi"),  # TODO: "Tues"
+        ("mar.", "Mardi"),
         ("mer.", "Mercredi"),
-        ("jeu.", "Jeudi"),  # TODO: "Thurs"
+        ("jeu.", "Jeudi"),
         ("ven.", "Vendredi"),
         ("sam.", "Samedi"),
         ("dim.", "Dimanche"),
     ]
     MONTHS = [
         ("janv.", "Janvier"),
-        ("fevr.", "Février"),  # TODO: "Febr"
+        ("fevr.", "Février"),
         ("mars", "Mars"),
         ("avr.", "Avril"),
         ("mai", "Mai"),
