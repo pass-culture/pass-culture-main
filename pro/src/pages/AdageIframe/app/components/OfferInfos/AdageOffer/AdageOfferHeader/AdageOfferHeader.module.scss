@@ -51,6 +51,14 @@
   }
 }
 
+.offer-header-details-institution {
+  margin-top: rem.torem(8px);
+
+  &-name {
+    @include fonts.body-important;
+  }
+}
+
 .offer-header-details-infos {
   margin-top: rem.torem(32px);
   display: flex;

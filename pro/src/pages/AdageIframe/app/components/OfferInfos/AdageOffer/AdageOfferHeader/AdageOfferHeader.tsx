@@ -4,19 +4,25 @@ import {
   AdageFrontRoles,
 } from 'apiClient/adage'
 import { OfferAddressType } from 'apiClient/v1'
-import { isCollectiveOfferTemplate } from 'core/OfferEducational'
+import { isCollectiveOfferBookable } from 'core/OfferEducational'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
+import strokeEuroIcon from 'icons/stroke-euro.svg'
 import strokeLocationIcon from 'icons/stroke-location.svg'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { HydratedCollectiveOfferTemplate } from 'pages/AdageIframe/app/types/offers'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { getRangeToFrenchText, toDateStrippedOfTimezone } from 'utils/date'
 
 import OfferFavoriteButton from '../../../OffersInstantSearch/OffersSearch/Offers/OfferFavoriteButton/OfferFavoriteButton'
 import OfferShareLink from '../../../OffersInstantSearch/OffersSearch/Offers/OfferShareLink/OfferShareLink'
 import { getOfferVenueAndOffererName } from '../../../OffersInstantSearch/OffersSearch/Offers/utils/getOfferVenueAndOffererName'
+import {
+  getFormattedDatesForBookableOffer,
+  getFormattedDatesForTemplateOffer,
+} from '../utils/adageOfferDates'
+import { getBookableOfferInstitutionAndTeacherName } from '../utils/adageOfferInstitution'
+import { getBookableOfferStockPrice } from '../utils/adageOfferStocks'
 
 import styles from './AdageOfferHeader.module.scss'
 
@@ -26,18 +32,9 @@ export type AdageOfferProps = {
 
 export default function AdageOfferHeader({ offer }: AdageOfferProps) {
   const { adageUser } = useAdageUser()
+  const isOfferBookable = isCollectiveOfferBookable(offer)
 
   const venueAndOffererName = getOfferVenueAndOffererName(offer.venue)
-
-  const formattedDates =
-    isCollectiveOfferTemplate(offer) &&
-    ((offer.dates?.start &&
-      offer.dates?.end &&
-      getRangeToFrenchText(
-        toDateStrippedOfTimezone(offer.dates.start),
-        toDateStrippedOfTimezone(offer.dates.end)
-      )) ||
-      'Tout au long de l’année scolaire (l’offre est permanente)')
 
   const studentLevels =
     offer.students.length > 1 ? 'Multiniveaux' : offer.students[0]
@@ -100,6 +97,14 @@ export default function AdageOfferHeader({ offer }: AdageOfferProps) {
             {venueAndOffererName}
           </span>
         </div>
+        {isOfferBookable && offer.educationalInstitution && (
+          <div className={styles['offer-header-details-institution']}>
+            Adressé à{' '}
+            <span className={styles['offer-header-details-institution-name']}>
+              {getBookableOfferInstitutionAndTeacherName(offer)}
+            </span>
+          </div>
+        )}
         <ul className={styles['offer-header-details-infos']}>
           <li className={styles['offer-header-details-info']}>
             <SvgIcon src={strokeLocationIcon} alt="" width="16" />
@@ -108,8 +113,19 @@ export default function AdageOfferHeader({ offer }: AdageOfferProps) {
 
           <li className={styles['offer-header-details-info']}>
             <SvgIcon src={strokeCalendarIcon} alt="" width="16" />
-            <span>{formattedDates}</span>
+            <span>
+              {isOfferBookable
+                ? getFormattedDatesForBookableOffer(offer)
+                : getFormattedDatesForTemplateOffer(offer)}
+            </span>
           </li>
+
+          {isOfferBookable && (
+            <li className={styles['offer-header-details-info']}>
+              <SvgIcon src={strokeEuroIcon} alt="" width="16" />
+              <span>{getBookableOfferStockPrice(offer)}</span>
+            </li>
+          )}
 
           <li className={styles['offer-header-details-info']}>
             <SvgIcon src={strokeUserIcon} alt="" width="16" />
