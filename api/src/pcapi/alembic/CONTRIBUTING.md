@@ -115,9 +115,11 @@ Pour désactiver le lint sur une seule expression SQL, le commentaire `-- squawk
 
 ```python
 def upgrade() -> None:
-    op.execute("-- squawk:ignore-next-statement")
+    op.execute("select 1 -- squawk:ignore-next-statement")
     op.execute(sql_statement_that_would_upset_squawk)
 ```
+
+Note : le `select 1` permet d'éviter une requête vide, ce que SQLAlchemy n'apprécie pas du tout.
 
 # Squasher les migrations
 
