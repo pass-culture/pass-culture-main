@@ -24,8 +24,14 @@ class SynchronizeVenueProvidersApisTest:
         parallel_venue_provider_1 = factories.VenueProviderFactory(provider=parallel_provider)
         parallel_venue_provider_2 = factories.VenueProviderFactory(provider=parallel_provider)
 
-        with testing.assert_num_queries(6):
-            # FIXME(viconnex): there is N+1 queries because we don't use joinedload
+        queries = 1  # select providers and their venue providers
+        # 1 select for each VenueProvider of not_parallel_provider,
+        # in `synchronize_venue_providers_task()`
+        queries += 2
+        # 1 select for all VenueProvider of parallel_provider,
+        # in `synchronize_venue_providers_task()`
+        queries += 1
+        with testing.assert_num_queries(queries):
             commands._synchronize_venue_providers_apis()
 
         assert len(mock_synchronize_venue_providers.call_args_list) == 3

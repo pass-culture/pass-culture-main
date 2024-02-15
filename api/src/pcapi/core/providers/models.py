@@ -134,14 +134,21 @@ class VenueProvider(PcObject, Base, Model, DeactivableMixin):
 
     isFromAllocineProvider = sa_orm.column_property(  # type: ignore [misc]
         sa.exists(
-            sa.select(Provider.id).where(sa.and_(Provider.id == providerId, Provider.localClass == "AllocineStocks"))
+            sa.select(Provider.id)
+            .where(sa.and_(Provider.id == providerId, Provider.localClass == "AllocineStocks"))
+            .correlate_except(Provider)
         )
     )
 
     isFromCinemaProvider = sa_orm.column_property(  # type: ignore [misc]
-        sa.exists(sa.select(Provider.id)).where(
-            sa.and_(Provider.id == providerId, Provider.localClass.in_(provider_constants.CINEMA_PROVIDER_NAMES))
+        sa.exists(sa.select(Provider.id))
+        .where(
+            sa.and_(
+                Provider.id == providerId,
+                Provider.localClass.in_(provider_constants.CINEMA_PROVIDER_NAMES),
+            )
         )
+        .correlate_except(Provider)
     )
 
     __mapper_args__ = {

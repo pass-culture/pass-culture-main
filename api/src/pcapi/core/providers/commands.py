@@ -2,6 +2,7 @@ import logging
 from time import time
 
 import click
+import sqlalchemy as sa
 
 from pcapi.core.providers import allocine_movie_list
 import pcapi.core.providers.repository as providers_repository
@@ -28,11 +29,15 @@ def synchronize_venue_providers_apis() -> None:
 
 
 def _synchronize_venue_providers_apis() -> None:
-    # FIXME(viconnex): we should joinedload(Provider.venueProviders) to avoir N+1 queries but sqlalchemy is not able to build the request
-    providers_apis = models.Provider.query.filter(
-        models.Provider.isActive,
-        models.Provider.apiUrl.is_not(None),
-    ).all()
+    providers_apis = (
+        models.Provider.query.filter(
+            models.Provider.isActive,
+            models.Provider.apiUrl.is_not(None),
+        )
+        .join(models.Provider.venueProviders)
+        .options(sa.orm.contains_eager(models.Provider.venueProviders))
+        .all()
+    )
 
     for provider in providers_apis:
         venue_provider_ids = [
