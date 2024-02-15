@@ -62,8 +62,6 @@ def get_user_with_credentials(identifier: str, password: str, allow_inactive: bo
 
 
 def _find_user_by_email_query(email: str) -> BaseQuery:
-    # FIXME (dbaty, 2021-05-02): remove call to `func.lower()` once
-    # all emails have been sanitized in the database.
     return models.User.query.filter(func.lower(models.User.email) == email_utils.sanitize_email(email))
 
 
