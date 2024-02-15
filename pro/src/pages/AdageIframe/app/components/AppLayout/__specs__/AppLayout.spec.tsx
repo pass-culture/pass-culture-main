@@ -111,7 +111,7 @@ const renderAppLayout = (
 }
 
 const featureOverrides = {
-  features: ['WIP_ENABLE_MARSEILLE', 'WIP_ENABLE_DISCOVERY'],
+  features: ['WIP_ENABLE_MARSEILLE'],
 }
 
 describe('AppLayout', () => {
