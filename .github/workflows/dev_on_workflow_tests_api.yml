@@ -163,7 +163,7 @@ jobs:
           SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
 
   tests-database:
-    name: "Tests database schema"
+    name: "Test database schema"
     env:
       RUN_ENV: tests
       DATABASE_URL_TEST: postgresql://pytest:pytest@postgres:5432/pass_culture
@@ -185,6 +185,17 @@ jobs:
           POSTGRES_DB: pass_culture
     steps:
       - uses: actions/checkout@v4.1.1
+        with:
+          # On a feature branch, we must fetch the whole history to
+          # find the common ancestor with master (see `git merge-base`
+          # below). On master, the latest commit is enough.
+          fetch-depth: ${{ github.ref == 'master' && 1 || 0 }}
+          # By default, on a feature branch, the GitHub Action checks
+          # out a merge commit of the pull request (i.e. an artificial
+          # commit that would be the result of the merge of the
+          # feature branch on top of the master branch). We don't want
+          # that, we want the latest commit of the branch.
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v2"
         with:
@@ -211,12 +222,15 @@ jobs:
           registry: "europe-west1-docker.pkg.dev"
           username: oauth2accesstoken
           password: ${{ steps.openid-auth.outputs.access_token }}
-      - uses: actions/checkout@v4.1.1
-        with:
-          ref: ${{ github.base_ref }}
-          sparse-checkout: |
-            api/alembic_version_conflict_detection.txt
-          sparse-checkout-cone-mode: false
+      - name: "Checkout HEAD (on master) or the parent of the first commit (pull request)"
+        run: |
+          if [[ "${{ github.ref }}" == "master" ]];
+          then SHA="HEAD"
+          else
+            git fetch origin master
+            SHA=$(git merge-base HEAD origin/master)
+          fi
+          git checkout ${SHA}
       - name: "Get base alembic pre and post heads"
         id: "base_heads"
         run: |
