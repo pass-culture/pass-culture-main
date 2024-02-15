@@ -290,6 +290,12 @@ jobs:
               sed '/squawk:ignore-next-statement/,/;$/d' |
               squawk --config .squawk.toml ||
               status_code=1
+            YELLOW='\033[0;33m'
+            RESET='\033[0m'
+            if status_code=1;then
+              echo -e "${YELLOW}Hint: An SQL statement can be ignored if preceded by \`-- squawk:ignore-next-statement\`.${RESET}" 
+              echo -e "${YELLOW}See https://github.com/pass-culture/pass-culture-main/blob/master/api/src/pcapi/alembic/CONTRIBUTING.md#lint${RESET}";
+            fi
             exit $status_code
       - name: "Lint migration downgrades"
         uses: addnab/docker-run-action@v3
