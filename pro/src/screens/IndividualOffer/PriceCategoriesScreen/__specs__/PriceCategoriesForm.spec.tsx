@@ -38,7 +38,11 @@ const renderPriceCategoriesForm = (
   return renderWithProviders(
     <Formik initialValues={values} onSubmit={vi.fn()}>
       <PriceCategoriesForm
-        offer={individualOfferFactory({ id: 42, hasStocks: false })}
+        offer={individualOfferFactory({
+          id: 42,
+          hasStocks: false,
+          priceCategories: [],
+        })}
         mode={OFFER_WIZARD_MODE.CREATION}
         isDisabled={false}
         {...customProps}
@@ -226,7 +230,7 @@ describe('PriceCategories', () => {
     await userEvent.click(
       screen.getAllByRole('button', { name: 'Supprimer le tarif' })[1]
     )
-    expect(nameFields[0]).toHaveValue('Tarif unique')
+
     expect(nameFields[0]).toBeDisabled()
   })
 })

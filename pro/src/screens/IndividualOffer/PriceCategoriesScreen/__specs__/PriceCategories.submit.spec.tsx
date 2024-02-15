@@ -115,6 +115,7 @@ describe('PriceCategories', () => {
     renderPriceCategories({
       offer: individualOfferFactory({
         priceCategories: [priceCategoryFactory({ id: 666 })],
+        bookingsCount: 10,
       }),
     })
     await userEvent.type(

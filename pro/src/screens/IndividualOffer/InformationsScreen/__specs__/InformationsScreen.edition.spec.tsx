@@ -417,6 +417,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
         venue: offerVenueFactory({ id: virtualVenueId }),
         subcategoryId: SubcategoryIdEnum.ABO_JEU_VIDEO,
         isEvent: false,
+        bookingsCount: 1,
       }
       props = {
         venueId: virtualVenueId.toString(),
@@ -484,6 +485,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
         venue: offerVenueFactory({ id: virtualVenueId }),
         subcategoryId: SubcategoryIdEnum.ABO_JEU_VIDEO,
         isEvent: false,
+        bookingsCount: 1,
       }
       props = {
         venueId: virtualVenueId.toString(),
@@ -700,6 +702,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
           isEvent: false,
           withdrawalType: WithdrawalTypeEnum.ON_SITE,
           withdrawalDelay: 0,
+          bookingsCount: 1,
         }
         if (contextOverride.subCategories) {
           contextOverride.subCategories[0].conditionalFields = [
