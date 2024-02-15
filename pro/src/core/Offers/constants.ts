@@ -109,8 +109,6 @@ export const COLLECTIVE_OFFER_TYPES_OPTIONS: SelectOption[] = [
 export const ADMINS_DISABLED_FILTERS_MESSAGE =
   'Sélectionnez une structure et/ou un lieu pour activer les filtres'
 
-export const LIVRE_PAPIER_SUBCATEGORY_ID = 'LIVRE_PAPIER'
-
 export const SYNCHRONIZED_OFFER_EDITABLE_FIELDS = {
   ALL_PROVIDERS: [
     'audioDisabilityCompliant',

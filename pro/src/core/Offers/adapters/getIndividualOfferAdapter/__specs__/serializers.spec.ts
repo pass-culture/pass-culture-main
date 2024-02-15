@@ -1,4 +1,8 @@
-import { GetIndividualOfferResponseModel, OfferStatus } from 'apiClient/v1'
+import {
+  GetIndividualOfferResponseModel,
+  OfferStatus,
+  SubcategoryIdEnum,
+} from 'apiClient/v1'
 import { IndividualOffer } from 'core/Offers/types'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
 
@@ -131,7 +135,7 @@ describe('serializer', () => {
       speaker: '',
       stageDirector: '',
       status: OfferStatus.ACTIVE,
-      subcategoryId: 'SEANCE_CINE',
+      subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
       venue: {
         id: 1,
         audioDisabilityCompliant: true,

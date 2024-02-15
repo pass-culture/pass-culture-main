@@ -10,6 +10,7 @@ import {
   GetIndividualOfferResponseModel,
   GetMusicTypesResponse,
   OfferStatus,
+  SubcategoryIdEnum,
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
@@ -90,7 +91,10 @@ const renderSummary = (
 const categories = [individualOfferCategoryFactory({ id: 'A' })]
 
 const subCategories = [
-  individualOfferSubCategoryFactory({ categoryId: 'A' }),
+  individualOfferSubCategoryFactory({
+    id: String(SubcategoryIdEnum.CONCERT),
+    categoryId: 'A',
+  }),
   individualOfferSubCategoryFactory({ categoryId: 'A' }),
 ]
 
@@ -135,7 +139,7 @@ describe('Summary', () => {
         audioDisabilityCompliant: false,
         visualDisabilityCompliant: false,
         description: 'ma description',
-        subcategoryId: subCategories[0].id,
+        subcategoryId: SubcategoryIdEnum.CONCERT,
         url: 'https://offer-url.example.com',
         withdrawalDetails: 'détails de retrait',
         externalTicketOfficeUrl: 'https://grand-public-url.example.com',

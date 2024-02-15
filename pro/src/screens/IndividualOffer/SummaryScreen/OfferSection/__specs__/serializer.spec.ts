@@ -1,6 +1,7 @@
 import {
   CategoryResponseModel,
   OfferStatus,
+  SubcategoryIdEnum,
   SubcategoryResponseModel,
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
@@ -34,7 +35,7 @@ describe('routes::Summary::serializers', () => {
       showType: '',
       stageDirector: 'Offer stageDirector',
       speaker: 'Offer speaker',
-      subcategoryId: 'SCID',
+      subcategoryId: SubcategoryIdEnum.CONCERT,
       url: 'https://offer.example.com',
       externalTicketOfficeUrl: 'https://external.example.com',
       visa: '',
@@ -52,7 +53,7 @@ describe('routes::Summary::serializers', () => {
     ]
     subCategoryList = [
       individualOfferSubCategoryFactory({
-        id: 'SCID',
+        id: SubcategoryIdEnum.CONCERT,
         categoryId: 'CID',
         proLabel: 'sub-category proLabel',
         isEvent: true,
@@ -77,7 +78,7 @@ describe('routes::Summary::serializers', () => {
       description: 'Offer description',
       categoryName: 'Catégorie',
       subCategoryName: 'sub-category proLabel',
-      subcategoryId: 'SCID',
+      subcategoryId: SubcategoryIdEnum.CONCERT,
       venueName: 'Le nom du lieu 1',
       venuePublicName: 'Mon Lieu',
       venueDepartmentCode: '78',

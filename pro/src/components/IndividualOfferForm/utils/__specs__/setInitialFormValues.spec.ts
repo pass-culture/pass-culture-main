@@ -1,4 +1,8 @@
-import { SubcategoryResponseModel, WithdrawalTypeEnum } from 'apiClient/v1'
+import {
+  SubcategoryIdEnum,
+  SubcategoryResponseModel,
+  WithdrawalTypeEnum,
+} from 'apiClient/v1'
 import { IndividualOffer } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 import { offerVenueFactory, offererFactory } from 'utils/apiFactories'
@@ -36,7 +40,7 @@ describe('setFormReadOnlyFields', () => {
       showType: '',
       stageDirector: 'Offer stageDirector',
       speaker: 'Offer speaker',
-      subcategoryId: 'SCID',
+      subcategoryId: SubcategoryIdEnum.CONCERT,
       url: 'https://offer.example.com',
       externalTicketOfficeUrl: 'https://external.example.com',
       visa: '',
@@ -50,7 +54,7 @@ describe('setFormReadOnlyFields', () => {
     })
     subCategoryList = [
       individualOfferSubCategoryFactory({
-        id: 'SCID',
+        id: SubcategoryIdEnum.CONCERT,
         categoryId: 'CID',
         isEvent: true,
         conditionalFields: ['stageDirector', 'speaker', 'author', 'performer'],
@@ -89,7 +93,7 @@ describe('setFormReadOnlyFields', () => {
         'durationMinutes',
         'isDuo',
       ],
-      subcategoryId: 'SCID',
+      subcategoryId: SubcategoryIdEnum.CONCERT,
       venueId: venueId.toString(),
       withdrawalDelay: 140,
       withdrawalDetails: 'Offer withdrawalDetails',
