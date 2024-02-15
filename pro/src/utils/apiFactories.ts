@@ -99,6 +99,10 @@ export const GetIndividualOfferFactory = (
     lastProvider: null,
     bookingsCount: 0,
     isNonFreeOffer: true,
+    visualDisabilityCompliant: true,
+    audioDisabilityCompliant: true,
+    motorDisabilityCompliant: true,
+    mentalDisabilityCompliant: true,
     ...customOffer,
   }
 }

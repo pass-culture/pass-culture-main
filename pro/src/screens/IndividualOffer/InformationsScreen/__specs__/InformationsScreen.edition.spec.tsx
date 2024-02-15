@@ -20,7 +20,6 @@ import {
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import { AccessiblityEnum } from 'core/shared'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { offerVenueFactory } from 'utils/apiFactories'
@@ -145,13 +144,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       isDuo: false,
       isEvent: true,
       isDigital: false,
-      accessibility: {
-        [AccessiblityEnum.AUDIO]: true,
-        [AccessiblityEnum.MENTAL]: true,
-        [AccessiblityEnum.MOTOR]: true,
-        [AccessiblityEnum.VISUAL]: true,
-        [AccessiblityEnum.NONE]: false,
-      },
       isNational: false,
       name: 'Offer name',
       gtl_id: '07000000',
