@@ -16,7 +16,12 @@ def get_movie_list() -> list[allocine_serializers.AllocineMovie]:
     has_next_page = True
     end_cursor = ""
     while has_next_page:
-        response = api_allocine.get_movie_list_page(end_cursor)
+        try:
+            response = api_allocine.get_movie_list_page(end_cursor)
+        except api_allocine.AllocineException as exc:
+            logger.exception("Could not get movies page at cursor '%s'. Error: '%s'", end_cursor, exc)
+            break
+
         movie_list += response.movieList.movies
         end_cursor = response.movieList.pageInfo.endCursor
         has_next_page = response.movieList.pageInfo.hasNextPage
