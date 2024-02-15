@@ -80,6 +80,8 @@ export interface CategorySubtypeItem {
 export interface OfferExtraData {
   author?: string
   gtl_id?: string
+  musicType?: string
+  musicSubType?: string
   performer?: string
   ean?: string
   showType?: string
@@ -117,6 +119,8 @@ export interface IndividualOffer {
   accessibility: AccessibiltyFormValues
   isNational: boolean
   name: string
+  musicType?: string
+  musicSubType?: string
   gtl_id?: string
   performer: string
   priceCategories?: PriceCategoryResponseModel[] | null

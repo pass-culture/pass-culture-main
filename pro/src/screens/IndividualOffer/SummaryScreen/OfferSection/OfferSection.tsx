@@ -35,6 +35,9 @@ const OfferSummary = ({
   const isBookingContactEnabled = useActiveFeature(
     'WIP_MANDATORY_BOOKING_CONTACT'
   )
+  const isTiteliveMusicGenreEnabled = useActiveFeature(
+    'ENABLE_PRO_TITELIVE_MUSIC_GENRES'
+  )
 
   const [offerData, setOfferData] = useState<OfferSectionData>()
   useEffect(() => {
@@ -47,6 +50,7 @@ const OfferSummary = ({
         offer,
         categories,
         subCategories,
+        isTiteliveMusicGenreEnabled,
         musicTypes
       )
       setOfferData(data)
@@ -85,6 +89,12 @@ const OfferSummary = ({
               /* istanbul ignore next: DEBT, TO FIX */
               offerData.musicTypeName || '-'
             }
+          />
+        )}
+        {offerData.musicSubTypeName && !isTiteliveMusicGenreEnabled && (
+          <SummaryRow
+            title="Sous-genre"
+            description={offerData.musicSubTypeName}
           />
         )}
         {offerData.gtl_id && (
