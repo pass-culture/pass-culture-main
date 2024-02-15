@@ -16,7 +16,7 @@ from tests.connectors import fixtures
 
 
 class GetMovieListTest:
-    def should_return_request_response_from_api(self, requests_mock):
+    def test_returns_request_response_from_api(self, requests_mock):
         # Given
         expected_result = fixtures.MOVIE_LIST
         requests_mock.get(
@@ -30,7 +30,7 @@ class GetMovieListTest:
         # Then
         assert api_response == allocine_serializers.AllocineMovieListResponseAdapter.validate_python(expected_result)
 
-    def test_should_raise_exception_when_api_call_fails(self, requests_mock):
+    def test_raises_exception_when_api_call_fails(self, requests_mock):
         # Given
         requests_mock.get(
             "https://graph-api-proxy.allocine.fr/api/query/movieList?after=",
@@ -45,7 +45,7 @@ class GetMovieListTest:
         # Then
         assert str(exception.value) == "Error getting API Allocine data to get movie list, error=400"
 
-    def test_should_raise_exception_when_api_call_fails_with_connection_error(self, requests_mock):
+    def test_raises_exception_when_api_call_fails_with_connection_error(self, requests_mock):
         requests_mock.get(
             "https://graph-api-proxy.allocine.fr/api/query/movieList?after=",
             exc=Exception,
@@ -57,7 +57,7 @@ class GetMovieListTest:
         # Then
         assert str(allocine_exception.value) == "Error connecting Allocine API to get movie list"
 
-    def test_shoud_extract_allocine_id_from_response(self, requests_mock):
+    def test_extracts_allocine_id_from_response(self, requests_mock):
         # Given
         allocine_response = copy.deepcopy(fixtures.MOVIE_LIST)
         allocine_response["movieList"]["edges"][0]["node"]["credits"]["edges"][0]["node"]["person"] = None
@@ -70,7 +70,7 @@ class GetMovieListTest:
         # Then
         assert str(exception.value).endswith("Allocine Id: 131136")
 
-    def test_shoud_not_extract_allocine_id_from_response(self, requests_mock, caplog):
+    def test_doesnt_extract_allocine_id_from_response(self, requests_mock, caplog):
         # Given
         allocine_response = copy.deepcopy(fixtures.MOVIE_LIST)
         del allocine_response["movieList"]["edges"]
