@@ -101,8 +101,7 @@ export interface IndividualOfferImage {
   cropParams?: CropParams
 }
 
-export interface IndividualOffer
-  extends Omit<GetIndividualOfferResponseModel, 'subcategoryId'> {
+export interface IndividualOffer extends GetIndividualOfferResponseModel {
   id: number
   author: string
   bookingEmail?: string | null
@@ -125,7 +124,6 @@ export interface IndividualOffer
   showType: string
   stageDirector: string
   speaker: string
-  subcategoryId: string
   image?: IndividualOfferImage
   url?: string | null
   externalTicketOfficeUrl?: string | null

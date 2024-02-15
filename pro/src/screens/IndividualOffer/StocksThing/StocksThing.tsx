@@ -4,17 +4,14 @@ import React, { useEffect, useState } from 'react'
 import { useFetcher, useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { GetOfferStockResponseModel } from 'apiClient/v1'
+import { GetOfferStockResponseModel, SubcategoryIdEnum } from 'apiClient/v1'
 import FormLayout, { FormLayoutDescription } from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { StockFormActions } from 'components/StockFormActions'
 import { StockFormRowAction } from 'components/StockFormActions/types'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
-import {
-  LIVRE_PAPIER_SUBCATEGORY_ID,
-  OFFER_WIZARD_MODE,
-} from 'core/Offers/constants'
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
@@ -225,7 +222,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   let links
   if (!offer.isDigital) {
     description = `Les bénéficiaires ont ${
-      offer.subcategoryId === LIVRE_PAPIER_SUBCATEGORY_ID ? '10' : '30'
+      offer.subcategoryId === SubcategoryIdEnum.LIVRE_PAPIER ? '10' : '30'
     } jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.`
   } else {
     description = `Les bénéficiaires ont 30 jours pour annuler leurs réservations d’offres numériques.

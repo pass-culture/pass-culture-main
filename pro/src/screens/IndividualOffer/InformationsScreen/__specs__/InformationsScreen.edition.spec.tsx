@@ -8,6 +8,7 @@ import {
   GetIndividualOfferResponseModel,
   OfferStatus,
   PatchOfferBodyModel,
+  SubcategoryIdEnum,
   SubcategoryResponseModel,
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
@@ -118,12 +119,12 @@ describe('screens:IndividualOffer::Informations:edition', () => {
     const categories = [individualOfferCategoryFactory({ id: 'CID' })]
     subCategories = [
       individualOfferSubCategoryFactory({
-        id: 'SCID virtual',
+        id: SubcategoryIdEnum.ABO_JEU_VIDEO,
         categoryId: 'CID',
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
       }),
       individualOfferSubCategoryFactory({
-        id: 'SCID physical',
+        id: SubcategoryIdEnum.CONCERT,
         categoryId: 'CID',
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
       }),
@@ -153,7 +154,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       showType: '',
       stageDirector: 'Offer stageDirector',
       speaker: 'Offer speaker',
-      subcategoryId: 'SCID physical',
+      subcategoryId: SubcategoryIdEnum.CONCERT,
       image: undefined,
       url: 'https://offer.example.com',
       externalTicketOfficeUrl: 'https://external.example.com',
@@ -242,7 +243,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
     contextOverride.offer = {
       ...offer,
       venue: offerVenueFactory({ id: virtualVenueId }),
-      subcategoryId: 'SCID virtual',
+      subcategoryId: SubcategoryIdEnum.ABO_JEU_VIDEO,
       isEvent: false,
       withdrawalDelay: undefined,
       withdrawalType: null,
@@ -414,7 +415,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       contextOverride.offer = {
         ...offer,
         venue: offerVenueFactory({ id: virtualVenueId }),
-        subcategoryId: 'SCID virtual',
+        subcategoryId: SubcategoryIdEnum.ABO_JEU_VIDEO,
         isEvent: false,
       }
       props = {
@@ -481,7 +482,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       contextOverride.offer = {
         ...offer,
         venue: offerVenueFactory({ id: virtualVenueId }),
-        subcategoryId: 'SCID virtual',
+        subcategoryId: SubcategoryIdEnum.ABO_JEU_VIDEO,
         isEvent: false,
       }
       props = {
@@ -563,7 +564,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
         contextOverride.offer = {
           ...offer,
           venue: offerVenueFactory({ id: virtualVenueId }),
-          subcategoryId: 'SCID virtual',
+          subcategoryId: SubcategoryIdEnum.ABO_JEU_VIDEO,
           isEvent: true,
           withdrawalDelay: undefined,
           withdrawalType: null,
@@ -619,7 +620,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       contextOverride.offer = {
         ...offer,
         venue: offerVenueFactory({ id: virtualVenueId }),
-        subcategoryId: 'SCID virtual',
+        subcategoryId: SubcategoryIdEnum.ABO_JEU_VIDEO,
         isEvent: true,
         withdrawalDelay: undefined,
         withdrawalType: WithdrawalTypeEnum.NO_TICKET,
@@ -695,7 +696,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
         contextOverride.offer = {
           ...offer,
           venue: offerVenueFactory({ id: virtualVenueId }),
-          subcategoryId: 'SCID virtual',
+          subcategoryId: SubcategoryIdEnum.ABO_JEU_VIDEO,
           isEvent: false,
           withdrawalType: WithdrawalTypeEnum.ON_SITE,
           withdrawalDelay: 0,

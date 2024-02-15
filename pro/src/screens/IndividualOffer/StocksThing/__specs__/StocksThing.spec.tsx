@@ -9,6 +9,7 @@ import {
   ApiError,
   GetIndividualOfferResponseModel,
   GetOfferStockResponseModel,
+  SubcategoryIdEnum,
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
@@ -18,10 +19,7 @@ import {
   IndividualOfferContextValues,
   IndividualOfferContext,
 } from 'context/IndividualOfferContext'
-import {
-  LIVRE_PAPIER_SUBCATEGORY_ID,
-  OFFER_WIZARD_MODE,
-} from 'core/Offers/constants'
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
 import {
   getIndividualOfferPath,
@@ -118,7 +116,7 @@ describe('screens:StocksThing', () => {
       venue: offerVenueFactory({
         departementCode: '75',
       }),
-      subcategoryId: 'CANBEDUO',
+      subcategoryId: SubcategoryIdEnum.CINE_PLEIN_AIR,
     })
     props = {
       offer,
@@ -127,7 +125,10 @@ describe('screens:StocksThing', () => {
       offerId: offerId,
       offer,
       subCategories: [
-        individualOfferSubCategoryFactory({ id: 'CANBEDUO', canBeDuo: true }),
+        individualOfferSubCategoryFactory({
+          id: SubcategoryIdEnum.CINE_PLEIN_AIR,
+          canBeDuo: true,
+        }),
       ],
     })
     vi.spyOn(api, 'getOffer').mockResolvedValue(
@@ -162,7 +163,6 @@ describe('screens:StocksThing', () => {
   it('should render digital stock thing', async () => {
     props.offer = {
       ...offer,
-      subcategoryId: 'TESTID',
       isDigital: true,
     }
     await renderStockThingScreen([], props, contextValue)
@@ -179,7 +179,7 @@ describe('screens:StocksThing', () => {
   it('should render digital book', async () => {
     props.offer = {
       ...offer,
-      subcategoryId: LIVRE_PAPIER_SUBCATEGORY_ID,
+      subcategoryId: SubcategoryIdEnum.LIVRE_PAPIER,
       isDigital: false,
     }
     await renderStockThingScreen([], props, contextValue)
