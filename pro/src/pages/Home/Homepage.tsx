@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { RouteObject, useLoaderData, useSearchParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -18,6 +19,7 @@ import { SAVED_OFFERER_ID_KEY } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 import useRemoteConfig from 'hooks/useRemoteConfig'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
+import { updateSelectedOffererId } from 'store/user/reducer'
 import { localStorageAvailable } from 'utils/localStorageAvailable'
 import { sortByLabel } from 'utils/strings'
 
@@ -40,7 +42,7 @@ const getSavedOffererId = (offererOptions: SelectOption[]): string | null => {
 
   const savedOffererId = localStorage.getItem(SAVED_OFFERER_ID_KEY)
   if (
-    !savedOffererId ||
+    savedOffererId &&
     !offererOptions.map((option) => option.value).includes(savedOffererId)
   ) {
     return null
@@ -60,6 +62,7 @@ export const Homepage = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState(false)
   const [isUserOffererValidated, setIsUserOffererValidated] = useState(false)
   const { remoteConfigData } = useRemoteConfig()
+  const dispatch = useDispatch()
 
   const hasNoVenueVisible = useMemo(() => {
     const physicalVenues = getPhysicalVenuesFromOfferer(selectedOfferer)
@@ -87,6 +90,8 @@ export const Homepage = (): JSX.Element => {
       try {
         const offerer = await api.getOfferer(Number(offererId))
         setSelectedOfferer(offerer)
+        localStorage.setItem(SAVED_OFFERER_ID_KEY, offererId)
+        dispatch(updateSelectedOffererId(Number(offererId)))
         setIsUserOffererValidated(true)
       } catch (error) {
         /* istanbul ignore next: DEBT, TO FIX */
