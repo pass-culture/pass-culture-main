@@ -157,6 +157,7 @@ const ModalImageCrop = ({
               placeholder="Photographe..."
               required={false}
               type="text"
+              isOptional
             />
           </div>
           <Divider />
