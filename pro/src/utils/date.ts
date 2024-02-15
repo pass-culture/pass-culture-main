@@ -44,7 +44,7 @@ export const getDateToFrenchText = (dateIsoString: string) => {
   return format(noTimeZoneDate, FORMAT_DD_MMMM_YYYY, { locale: fr })
 }
 
-function getDateTimeToFrenchText(
+export function getDateTimeToFrenchText(
   date: Date,
   options: Intl.DateTimeFormatOptions = {
     day: '2-digit',

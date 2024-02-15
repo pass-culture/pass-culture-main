@@ -3,10 +3,14 @@ import {
   CollectiveOfferTemplateResponseModel,
 } from 'apiClient/adage'
 import { OfferAddressType } from 'apiClient/v1'
-import { isCollectiveOfferTemplate } from 'core/OfferEducational'
-import { getRangeToFrenchText, toDateStrippedOfTimezone } from 'utils/date'
+import { isCollectiveOfferBookable } from 'core/OfferEducational'
 
 import styles from '../AdageOffer.module.scss'
+import {
+  getFormattedDatesForBookableOffer,
+  getFormattedDatesForTemplateOffer,
+} from '../utils/adageOfferDates'
+import { getBookableOfferStockPrice } from '../utils/adageOfferStocks'
 
 export type AdageOfferInfoSectionProps = {
   offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
@@ -42,15 +46,7 @@ export default function AdageOfferInfoSection({
 
   const location = getLocationForOfferVenue(offerVenue)
 
-  const dates =
-    isCollectiveOfferTemplate(offer) &&
-    ((offer.dates?.start &&
-      offer.dates?.end &&
-      getRangeToFrenchText(
-        toDateStrippedOfTimezone(offer.dates.start),
-        toDateStrippedOfTimezone(offer.dates.end)
-      )) ||
-      'Tout au long de l’année scolaire (l’offre est permanente)')
+  const isOfferBookable = isCollectiveOfferBookable(offer)
 
   return (
     <>
@@ -63,14 +59,17 @@ export default function AdageOfferInfoSection({
 
       <div className={styles['offer-section-group-item']}>
         <h3 className={styles['offer-section-group-item-subtitle']}>Date</h3>
-        {dates}
+        {isOfferBookable
+          ? getFormattedDatesForBookableOffer(offer)
+          : getFormattedDatesForTemplateOffer(offer)}
       </div>
 
-      {offer.educationalPriceDetail && (
+      {(isOfferBookable || offer.educationalPriceDetail) && (
         <div className={styles['offer-section-group-item']}>
           <h3 className={styles['offer-section-group-item-subtitle']}>
-            Information sur le prix
+            {isOfferBookable ? 'Prix' : 'Information sur le prix'}
           </h3>
+          {isOfferBookable && <p>{getBookableOfferStockPrice(offer)}</p>}
           {offer.educationalPriceDetail}
         </div>
       )}

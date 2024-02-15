@@ -1,4 +1,8 @@
-import { EacFormat } from 'apiClient/adage'
+import {
+  CollectiveOfferResponseModel,
+  CollectiveOfferTemplateResponseModel,
+  EacFormat,
+} from 'apiClient/adage'
 import {
   EducationalInstitutionResponseModel,
   OfferAddressType,
@@ -117,6 +121,10 @@ export const isCollectiveOfferTemplate = (
 ): value is CollectiveOfferTemplate =>
   // Could be enhanced to check that it is also a GetCollectiveOfferTemplateResponseModel
   hasProperty(value, 'isTemplate') && value.isTemplate === true
+
+export const isCollectiveOfferBookable = (
+  value: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
+): value is CollectiveOfferResponseModel => !value.isTemplate
 
 export type VisibilityFormValues = {
   visibility: 'all' | 'one'

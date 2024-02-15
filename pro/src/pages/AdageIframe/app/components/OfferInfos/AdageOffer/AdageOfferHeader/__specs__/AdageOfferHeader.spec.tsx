@@ -172,4 +172,26 @@ describe('AdageOfferHeader', () => {
 
     expect(screen.getByText('Multiniveaux')).toBeInTheDocument()
   })
+
+  it('should show the institution and the price if the offer is bookable', () => {
+    renderAdageOfferHeader({
+      offer: {
+        ...defaultCollectiveOffer,
+        educationalInstitution: {
+          name: 'My institution',
+          city: 'Paris',
+          postalCode: '75000',
+          id: 1,
+        },
+        stock: {
+          ...defaultCollectiveOffer.stock,
+          numberOfTickets: 100,
+          price: 12000,
+        },
+      },
+    })
+
+    expect(screen.getByText('12 000 € pour 100 élèves')).toBeInTheDocument()
+    expect(screen.getByText(/My institution/)).toBeInTheDocument()
+  })
 })
