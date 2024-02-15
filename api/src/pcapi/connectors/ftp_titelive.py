@@ -31,7 +31,6 @@ def get_zip_file_from_ftp(zip_file_name: str, folder_name: str) -> ZipFile:
     file_path = "RETR " + folder_name + "/" + zip_file_name
     logger.info("Downloading file %s", file_path)
     connect_to_titelive_ftp().retrbinary(file_path, data_file.write)
-    # FIXME: this should be a with statement. Requires titelive sync to be rewritten
     return ZipFile(data_file, "r")
 
 
