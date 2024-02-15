@@ -29,6 +29,8 @@ import {
   GetBookingResponse,
 } from 'apiClient/v2'
 
+import { priceCategoryFactory } from './individualApiFactories'
+
 let offerId = 1
 let venueId = 1
 let offererId = 1
@@ -84,7 +86,7 @@ export const GetIndividualOfferFactory = (
     isActive: true,
     isActivable: true,
     isEditable: true,
-    isEvent: false,
+    isEvent: true,
     isThing: true,
     id: currentOfferId,
     status: OfferStatus.ACTIVE,
@@ -103,6 +105,7 @@ export const GetIndividualOfferFactory = (
     audioDisabilityCompliant: true,
     motorDisabilityCompliant: true,
     mentalDisabilityCompliant: true,
+    priceCategories: [priceCategoryFactory()],
     ...customOffer,
   }
 }
