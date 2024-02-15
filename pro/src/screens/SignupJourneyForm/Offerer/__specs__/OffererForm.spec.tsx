@@ -214,4 +214,35 @@ describe('screens:SignupJourney::OffererForm', () => {
     await userEvent.click(screen.getByText('Submit'))
     expect(await screen.findByText('Le SIRET n’existe pas')).toBeInTheDocument()
   })
+
+  it('should render error message when siret is not visible', async () => {
+    vi.spyOn(api, 'getSiretInfo').mockRejectedValueOnce(
+      new ApiError(
+        {} as ApiRequestOptions,
+        {
+          status: 400,
+          body: {
+            global: [
+              'Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles.',
+            ],
+          },
+        } as ApiResult,
+        ''
+      )
+    )
+
+    renderOffererForm({
+      initialValues: initialValues,
+      contextValue,
+    })
+
+    await userEvent.type(
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres *'),
+      '12345678900001'
+    )
+    await userEvent.click(screen.getByText('Submit'))
+    expect(
+      await screen.findByText('Le SIRET n’est pas visible')
+    ).toBeInTheDocument()
+  })
 })
