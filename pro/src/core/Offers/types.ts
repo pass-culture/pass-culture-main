@@ -76,6 +76,8 @@ export interface CategorySubtypeItem {
 export interface OfferExtraData {
   author?: string
   gtl_id?: string
+  musicType?: string
+  musicSubType?: string
   performer?: string
   ean?: string
   showType?: string
@@ -102,6 +104,8 @@ export interface IndividualOffer extends GetIndividualOfferResponseModel {
   isEvent: boolean
   isDigital: boolean
   isNational: boolean
+  musicType?: string
+  musicSubType?: string
   gtl_id?: string
   performer: string
   ean: string

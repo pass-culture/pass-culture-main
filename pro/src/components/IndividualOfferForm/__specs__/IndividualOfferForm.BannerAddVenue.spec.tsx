@@ -39,7 +39,7 @@ const renderIndividualOfferForm = ({
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
-      validationSchema={getValidationSchema()}
+      validationSchema={getValidationSchema(false)}
     >
       <IndividualOfferForm {...props} />
     </Formik>,
