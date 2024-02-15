@@ -26,7 +26,12 @@ const FilterByVenue = ({
   }))
 
   return (
-    <FieldLayout label="Lieu" name="lieu" className={styles['venue-filter']}>
+    <FieldLayout
+      label="Lieu"
+      name="lieu"
+      className={styles['venue-filter']}
+      isOptional
+    >
       <SelectInput
         defaultOption={ALL_VENUES_OPTION}
         onChange={(event) =>

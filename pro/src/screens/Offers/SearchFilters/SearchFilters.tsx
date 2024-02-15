@@ -151,7 +151,7 @@ const SearchFilters = ({
       )}
 
       <form onSubmit={requestFilteredOffers}>
-        <FieldLayout label={searchByOfferNameLabel} name="offre">
+        <FieldLayout label={searchByOfferNameLabel} name="offre" isOptional>
           <BaseInput
             type="text"
             disabled={disableAllFilters}
@@ -163,7 +163,7 @@ const SearchFilters = ({
         </FieldLayout>
 
         <FormLayout.Row inline>
-          <FieldLayout label="Lieu" name="lieu">
+          <FieldLayout label="Lieu" name="lieu" isOptional>
             <SelectInput
               defaultOption={ALL_VENUES_OPTION}
               onChange={storeSelectedVenue}
@@ -175,7 +175,7 @@ const SearchFilters = ({
           </FieldLayout>
 
           {isFormatActive && audience === Audience.COLLECTIVE ? (
-            <FieldLayout label="Format" name="format">
+            <FieldLayout label="Format" name="format" isOptional>
               <SelectInput
                 defaultOption={ALL_FORMATS_OPTION}
                 onChange={storeSelectedFormat}
@@ -186,7 +186,7 @@ const SearchFilters = ({
               />
             </FieldLayout>
           ) : (
-            <FieldLayout label="Catégories" name="categorie">
+            <FieldLayout label="Catégories" name="categorie" isOptional>
               <SelectInput
                 defaultOption={ALL_CATEGORIES_OPTION}
                 onChange={storeSelectedCategory}
@@ -199,7 +199,11 @@ const SearchFilters = ({
           )}
 
           {audience === Audience.INDIVIDUAL && (
-            <FieldLayout label="Mode de création" name="creationMode">
+            <FieldLayout
+              label="Mode de création"
+              name="creationMode"
+              isOptional
+            >
               <SelectInput
                 onChange={storeCreationMode}
                 disabled={disableAllFilters}
@@ -211,7 +215,11 @@ const SearchFilters = ({
           )}
 
           {audience === Audience.COLLECTIVE && (
-            <FieldLayout label="Type de l’offre" name="collectiveOfferType">
+            <FieldLayout
+              label="Type de l’offre"
+              name="collectiveOfferType"
+              isOptional
+            >
               <SelectInput
                 onChange={storeCollectiveOfferType}
                 disabled={disableAllFilters}
