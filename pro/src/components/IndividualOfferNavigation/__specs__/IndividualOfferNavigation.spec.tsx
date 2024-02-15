@@ -270,6 +270,7 @@ describe('test IndividualOfferNavigation', () => {
     it('should render tabs navigation in edition', () => {
       const offer = individualOfferFactory({
         id: offerId,
+        isEvent: true,
       })
 
       renderIndividualOfferNavigation(

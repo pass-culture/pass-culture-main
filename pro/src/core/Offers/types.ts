@@ -3,11 +3,7 @@ import {
   EacFormat,
   EducationalInstitutionResponseModel,
   GetIndividualOfferResponseModel,
-  GetOfferLastProviderResponseModel,
-  GetOfferVenueResponseModel,
   OfferStatus,
-  PriceCategoryResponseModel,
-  WithdrawalTypeEnum,
 } from 'apiClient/v1'
 import { CropParams } from 'components/ImageUploader'
 import { CollectiveOfferStatus } from 'core/OfferEducational'
@@ -102,37 +98,17 @@ export interface IndividualOfferImage {
 }
 
 export interface IndividualOffer extends GetIndividualOfferResponseModel {
-  id: number
   author: string
-  bookingEmail?: string | null
-  bookingsCount?: number | null
-  description?: string | null
-  durationMinutes?: number | null
-  hasStocks: boolean
-  isActive: boolean
-  isActivable: boolean
-  isDuo: boolean
   isEvent: boolean
   isDigital: boolean
   isNational: boolean
-  name: string
   gtl_id?: string
   performer: string
-  priceCategories?: PriceCategoryResponseModel[] | null
   ean: string
   showSubType: string
   showType: string
   stageDirector: string
   speaker: string
   image?: IndividualOfferImage
-  url?: string | null
-  externalTicketOfficeUrl?: string | null
-  venue: GetOfferVenueResponseModel
   visa: string
-  withdrawalDetails?: string | null
-  withdrawalDelay?: number | null
-  withdrawalType?: WithdrawalTypeEnum | null
-  lastProvider?: GetOfferLastProviderResponseModel | null
-  status: OfferStatus
-  bookingContact?: string | null
 }

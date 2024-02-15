@@ -44,6 +44,7 @@ export const PriceCategoriesForm = ({
 }: PriceCategoriesFormProps): JSX.Element => {
   const { setFieldValue, setValues, values } =
     useFormikContext<PriceCategoriesFormValues>()
+
   const notify = useNotification()
   const [currentDeletionIndex, setCurrentDeletionIndex] = useState<
     number | null

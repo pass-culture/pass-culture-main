@@ -5,13 +5,10 @@ import {
   GetOfferStockResponseModel,
   GetVenueResponseModel,
   PriceCategoryResponseModel,
-  SubcategoryIdEnum,
   SubcategoryResponseModel,
   VenueListItemResponseModel,
   VenueTypeCode,
-  WithdrawalTypeEnum,
 } from 'apiClient/v1'
-import { OfferStatus } from 'apiClient/v2'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import { IndividualOfferContextValues } from 'context/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
@@ -35,34 +32,14 @@ export const individualOfferFactory = (
   return {
     ...GetIndividualOfferFactory(),
     id: offerId++,
-    name: "Un sale quart d'heure en 3 minutes",
-    description: 'Ça va faire mal',
     author: 'Chuck Norris',
-    bookingEmail: 'chuck@nofucks.given',
-    bookingsCount: 18,
-    durationMinutes: 3,
     performer: 'Le Poing de Chuck',
     ean: 'Chuck n’est pas identifiable par un EAN',
     showType: 'Cinéma',
     showSubType: 'PEGI 18',
     stageDirector: 'JCVD',
     speaker: "Chuck Norris n'a pas besoin de doubleur",
-    url: 'http://chucknorrisfacts.fr/',
     visa: 'USA',
-    withdrawalDetails: 'Vient le chercher',
-    withdrawalType: WithdrawalTypeEnum.ON_SITE,
-    lastProvider: null,
-    externalTicketOfficeUrl: '',
-    hasStocks: true,
-    isDuo: true,
-    isEvent: true,
-    isDigital: false,
-    isNational: true,
-    isActive: true,
-    isActivable: true,
-    status: OfferStatus.ACTIVE,
-    subcategoryId: SubcategoryIdEnum.CINE_PLEIN_AIR,
-    priceCategories: [priceCategoryFactory()],
     ...customOffer,
   }
 }

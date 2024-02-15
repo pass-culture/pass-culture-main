@@ -120,7 +120,7 @@ describe('serializer', () => {
       isDigital: false,
       isDuo: true,
       isEditable: true,
-      isEvent: false,
+      isEvent: true,
       isNational: true,
       isNonFreeOffer: true,
       isThing: true,
@@ -129,7 +129,13 @@ describe('serializer', () => {
       name: 'Le nom de l’offre 1',
       id: 1,
       performer: '',
-      priceCategories: undefined,
+      priceCategories: [
+        {
+          id: 1,
+          label: 'mon label',
+          price: 66.6,
+        },
+      ],
       showSubType: '',
       showType: '',
       speaker: '',
