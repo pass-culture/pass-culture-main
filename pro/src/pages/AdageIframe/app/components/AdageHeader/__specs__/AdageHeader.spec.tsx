@@ -75,12 +75,12 @@ describe('AdageHeader', () => {
     ).toBeInTheDocument()
     expect(
       screen.queryByRole('link', { name: 'Découvrir' })
-    ).not.toBeInTheDocument()
+    ).toBeInTheDocument()
     screen.queryByRole('link', { name: /Solde prévisionnel/ })
   })
 
   it('should render adage header with link for discovery', async () => {
-    renderAdageHeader(user, { features: ['WIP_ENABLE_DISCOVERY'] })
+    renderAdageHeader(user)
     await waitFor(() =>
       expect(
         apiAdage.getEducationalInstitutionWithBudget

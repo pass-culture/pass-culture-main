@@ -2,7 +2,6 @@ import cn from 'classnames'
 import { NavLink } from 'react-router-dom'
 
 import { AdageFrontRoles, AdageHeaderLink } from 'apiClient/adage'
-import useActiveFeature from 'hooks/useActiveFeature'
 import strokePassIcon from 'icons/stroke-pass.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import strokeStarIcon from 'icons/stroke-star.svg'
@@ -27,28 +26,24 @@ export const AdageHeaderMenu = ({
     adageUser: { role, offersCount },
   } = useAdageUser()
 
-  const isDiscoveryActive = useActiveFeature('WIP_ENABLE_DISCOVERY')
-
   return (
     <ul className={styles['adage-header-menu']}>
       {role !== AdageFrontRoles.READONLY && (
         <>
-          {isDiscoveryActive && (
-            <li className={styles['adage-header-menu-item']}>
-              <NavLink
-                to={`/adage-iframe/decouverte?token=${adageAuthToken}`}
-                className={({ isActive }) => {
-                  return cn(styles['adage-header-link'], {
-                    [styles['adage-header-link-active']]: isActive,
-                  })
-                }}
-                onClick={() => logAdageLinkClick(AdageHeaderLink.DISCOVERY)}
-              >
-                <SvgIcon src={strokePassIcon} alt="" width="20" />
-                Découvrir
-              </NavLink>
-            </li>
-          )}
+          <li className={styles['adage-header-menu-item']}>
+            <NavLink
+              to={`/adage-iframe/decouverte?token=${adageAuthToken}`}
+              className={({ isActive }) => {
+                return cn(styles['adage-header-link'], {
+                  [styles['adage-header-link-active']]: isActive,
+                })
+              }}
+              onClick={() => logAdageLinkClick(AdageHeaderLink.DISCOVERY)}
+            >
+              <SvgIcon src={strokePassIcon} alt="" width="20" />
+              Découvrir
+            </NavLink>
+          </li>
           <li className={styles['adage-header-menu-item']}>
             <NavLink
               to={`/adage-iframe/recherche?token=${adageAuthToken}`}
