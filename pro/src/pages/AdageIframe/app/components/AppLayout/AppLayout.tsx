@@ -22,7 +22,6 @@ export const AppLayout = (): JSX.Element => {
 
   const isFullWidthPage =
     pathname === '/adage-iframe/decouverte' || pathname.includes('/offre/')
-  const isDiscoveryActive = useActiveFeature('WIP_ENABLE_DISCOVERY')
   const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
   const isUserInMarseilleProgram = (adageUser.programs ?? []).some(
     (prog) => prog.name === MARSEILLE_EN_GRAND
@@ -33,7 +32,6 @@ export const AppLayout = (): JSX.Element => {
   const offerId = params.get('offerid')
 
   const redirectToSearch =
-    !isDiscoveryActive ||
     venueId ||
     redirectToMarseilleSearch ||
     adageUser.role === AdageFrontRoles.READONLY
