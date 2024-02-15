@@ -1,4 +1,5 @@
 import { GetIndividualOfferResponseModel, OfferStatus } from 'apiClient/v1'
+import { IndividualOffer } from 'core/Offers/types'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
 
 import {
@@ -98,14 +99,11 @@ describe('serializer', () => {
     const offerApi: GetIndividualOfferResponseModel = GetIndividualOfferFactory(
       { bookingsCount: 123 }
     )
-    const offerSerialized = {
-      accessibility: {
-        audio: false,
-        mental: false,
-        motor: false,
-        none: true,
-        visual: false,
-      },
+    const offerSerialized: IndividualOffer = {
+      audioDisabilityCompliant: true,
+      visualDisabilityCompliant: true,
+      mentalDisabilityCompliant: true,
+      motorDisabilityCompliant: true,
       author: '',
       bookingsCount: 123,
       dateCreated: '2020-04-12T19:31:12Z',

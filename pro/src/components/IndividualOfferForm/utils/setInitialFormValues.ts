@@ -4,6 +4,7 @@ import {
   IndividualOfferFormValues,
 } from 'components/IndividualOfferForm'
 import { IndividualOffer } from 'core/Offers/types'
+import { AccessiblityEnum } from 'core/shared'
 
 import buildSubcategoryFields from './buildSubCategoryFields'
 
@@ -31,6 +32,13 @@ const setInitialFormValues = (
     subcategory
   )
 
+  const baseAccessibility = {
+    [AccessiblityEnum.VISUAL]: offer.visualDisabilityCompliant || false,
+    [AccessiblityEnum.MENTAL]: offer.mentalDisabilityCompliant || false,
+    [AccessiblityEnum.AUDIO]: offer.audioDisabilityCompliant || false,
+    [AccessiblityEnum.MOTOR]: offer.motorDisabilityCompliant || false,
+  }
+
   return {
     isEvent: offer.isEvent,
     subCategoryFields: subcategoryFields,
@@ -50,7 +58,10 @@ const setInitialFormValues = (
     withdrawalDelay:
       offer.withdrawalDelay === null ? undefined : offer.withdrawalDelay,
     withdrawalType: offer.withdrawalType || undefined,
-    accessibility: offer.accessibility,
+    accessibility: {
+      ...baseAccessibility,
+      [AccessiblityEnum.NONE]: !Object.values(baseAccessibility).includes(true),
+    },
     bookingEmail: offer.bookingEmail || '',
     bookingContact: offer.bookingContact || undefined,
     receiveNotificationEmails: !!offer.bookingEmail,

@@ -1,6 +1,5 @@
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { IndividualOffer, IndividualOfferImage } from 'core/Offers/types'
-import { AccessiblityEnum } from 'core/shared'
 
 export const serializeOfferApiExtraData = (
   apiOffer: GetIndividualOfferResponseModel
@@ -41,20 +40,9 @@ export const serializeOfferApiImage = (
 export const serializeOfferApi = (
   apiOffer: GetIndividualOfferResponseModel
 ): IndividualOffer => {
-  const baseAccessibility = {
-    [AccessiblityEnum.VISUAL]: apiOffer.visualDisabilityCompliant || false,
-    [AccessiblityEnum.MENTAL]: apiOffer.mentalDisabilityCompliant || false,
-    [AccessiblityEnum.AUDIO]: apiOffer.audioDisabilityCompliant || false,
-    [AccessiblityEnum.MOTOR]: apiOffer.motorDisabilityCompliant || false,
-  }
-
   const offer: IndividualOffer = {
     ...apiOffer,
     image: serializeOfferApiImage(apiOffer),
-    accessibility: {
-      ...baseAccessibility,
-      [AccessiblityEnum.NONE]: !Object.values(baseAccessibility).includes(true),
-    },
     ...serializeOfferApiExtraData(apiOffer),
   }
 

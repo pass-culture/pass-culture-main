@@ -130,13 +130,10 @@ describe('Summary', () => {
         lastProvider: {
           name: 'Ciné Office',
         },
-        accessibility: {
-          visual: false,
-          audio: false,
-          motor: false,
-          mental: false,
-          none: true,
-        },
+        motorDisabilityCompliant: false,
+        mentalDisabilityCompliant: false,
+        audioDisabilityCompliant: false,
+        visualDisabilityCompliant: false,
         description: 'ma description',
         subcategoryId: subCategories[0].id,
         url: 'https://offer-url.example.com',

@@ -98,7 +98,6 @@ export const serializeOfferSectionData = (
     withdrawalDetails: offer.withdrawalDetails || '',
     withdrawalType: offer.withdrawalType || null,
     withdrawalDelay: offer.withdrawalDelay || null,
-    accessibility: offer.accessibility,
     status: offer.status,
 
     isDuo: offer.isDuo,

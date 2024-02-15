@@ -19,7 +19,7 @@ import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 
-import { offerVenueFactory } from './apiFactories'
+import { GetIndividualOfferFactory } from './apiFactories'
 
 let offerId = 1
 let stockId = 1
@@ -33,8 +33,8 @@ export const individualOfferFactory = (
   customOffer: Partial<IndividualOffer> = {}
 ): IndividualOffer => {
   return {
+    ...GetIndividualOfferFactory(),
     id: offerId++,
-    venue: offerVenueFactory(),
     name: "Un sale quart d'heure en 3 minutes",
     description: 'Ça va faire mal',
     author: 'Chuck Norris',
@@ -57,13 +57,6 @@ export const individualOfferFactory = (
     isDuo: true,
     isEvent: true,
     isDigital: false,
-    accessibility: {
-      visual: true,
-      mental: true,
-      motor: true,
-      audio: true,
-      none: false,
-    },
     isNational: true,
     isActive: true,
     isActivable: true,
