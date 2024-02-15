@@ -6,7 +6,6 @@ import {
 } from 'apiClient/v1'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
-import { AccessiblityEnum } from 'core/shared'
 import {
   individualOfferFactory,
   individualOfferSubCategoryFactory,
@@ -28,13 +27,6 @@ describe('routes::Summary::serializers', () => {
       description: 'Offer description',
       durationMinutes: 140,
       isDuo: false,
-      accessibility: {
-        [AccessiblityEnum.AUDIO]: true,
-        [AccessiblityEnum.MENTAL]: true,
-        [AccessiblityEnum.MOTOR]: true,
-        [AccessiblityEnum.VISUAL]: true,
-        [AccessiblityEnum.NONE]: false,
-      },
       name: 'Offer name',
       performer: 'Offer performer',
       ean: '',
@@ -96,13 +88,6 @@ describe('routes::Summary::serializers', () => {
       withdrawalDetails: 'Offer withdrawalDetails',
       withdrawalDelay: 140,
       withdrawalType: WithdrawalTypeEnum.ON_SITE,
-      accessibility: {
-        [AccessiblityEnum.AUDIO]: true,
-        [AccessiblityEnum.MENTAL]: true,
-        [AccessiblityEnum.MOTOR]: true,
-        [AccessiblityEnum.VISUAL]: true,
-        [AccessiblityEnum.NONE]: false,
-      },
       isDuo: false,
       url: 'https://offer.example.com',
       externalTicketOfficeUrl: 'https://external.example.com',

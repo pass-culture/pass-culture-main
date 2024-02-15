@@ -2,6 +2,7 @@ import {
   CollectiveOffersBookingResponseModel,
   EacFormat,
   EducationalInstitutionResponseModel,
+  GetIndividualOfferResponseModel,
   GetOfferLastProviderResponseModel,
   GetOfferVenueResponseModel,
   OfferStatus,
@@ -10,7 +11,6 @@ import {
 } from 'apiClient/v1'
 import { CropParams } from 'components/ImageUploader'
 import { CollectiveOfferStatus } from 'core/OfferEducational'
-import { AccessibiltyFormValues } from 'core/shared'
 
 import { ALL_FORMATS, ALL_STATUS } from './constants'
 
@@ -101,7 +101,8 @@ export interface IndividualOfferImage {
   cropParams?: CropParams
 }
 
-export interface IndividualOffer {
+export interface IndividualOffer
+  extends Omit<GetIndividualOfferResponseModel, 'subcategoryId'> {
   id: number
   author: string
   bookingEmail?: string | null
@@ -114,7 +115,6 @@ export interface IndividualOffer {
   isDuo: boolean
   isEvent: boolean
   isDigital: boolean
-  accessibility: AccessibiltyFormValues
   isNational: boolean
   name: string
   gtl_id?: string

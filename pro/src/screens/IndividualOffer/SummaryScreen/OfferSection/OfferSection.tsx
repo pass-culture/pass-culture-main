@@ -13,7 +13,6 @@ import {
 } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
-import { AccessiblityEnum } from 'core/shared'
 import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -243,21 +242,7 @@ const OfferSummary = ({
         )}
       </SummarySubSection>
 
-      <AccessibilitySummarySection
-        noDisabilityCompliance={offerData.accessibility[AccessiblityEnum.NONE]}
-        visualDisabilityCompliant={
-          offerData.accessibility[AccessiblityEnum.VISUAL]
-        }
-        mentalDisabilityCompliant={
-          offerData.accessibility[AccessiblityEnum.MENTAL]
-        }
-        motorDisabilityCompliant={
-          offerData.accessibility[AccessiblityEnum.MOTOR]
-        }
-        audioDisabilityCompliant={
-          offerData.accessibility[AccessiblityEnum.AUDIO]
-        }
-      />
+      <AccessibilitySummarySection offer={offer} />
 
       <SummarySubSection title="Lien pour le grand public">
         <SummaryRow

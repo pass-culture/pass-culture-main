@@ -27,13 +27,6 @@ describe('setFormReadOnlyFields', () => {
       isDuo: false,
       isEvent: true,
       isDigital: false,
-      accessibility: {
-        [AccessiblityEnum.AUDIO]: true,
-        [AccessiblityEnum.MENTAL]: true,
-        [AccessiblityEnum.MOTOR]: true,
-        [AccessiblityEnum.VISUAL]: true,
-        [AccessiblityEnum.NONE]: false,
-      },
       isNational: false,
       name: 'Offer name',
       gtl_id: '',
