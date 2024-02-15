@@ -16,7 +16,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Categories, { CategoriesProps } from '../Categories'
 import { CATEGORIES_DEFAULT_VALUES } from '../constants'
-import validationSchema from '../validationSchema'
+import { getValidationSchema } from '../validationSchema'
 
 const renderCategories = ({
   initialValues,
@@ -31,13 +31,14 @@ const renderCategories = ({
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
-      validationSchema={yup.object().shape(validationSchema)}
+      validationSchema={yup.object().shape(getValidationSchema(true))}
     >
       <Form>
         <Categories {...props} />
         <SubmitButton isLoading={false}>Submit</SubmitButton>
       </Form>
-    </Formik>
+    </Formik>,
+    { features: ['ENABLE_PRO_TITELIVE_MUSIC_GENRES'] }
   )
 }
 
@@ -140,6 +141,8 @@ describe('IndividualOffer section: Categories', () => {
         isEvent: false,
         ean: '',
         gtl_id: '',
+        musicType: '',
+        musicSubType: '',
         performer: '',
         showSubType: '101',
         showType: '100',

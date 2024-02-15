@@ -6,6 +6,8 @@ export const serializeOfferApiExtraData = (
 ) => ({
   author: apiOffer.extraData?.author || '',
   gtl_id: apiOffer.extraData?.gtl_id || '',
+  musicType: apiOffer.extraData?.musicType || '',
+  musicSubType: apiOffer.extraData?.musicSubType || '',
   performer: apiOffer.extraData?.performer || '',
   ean: apiOffer.extraData?.ean || '',
   showType: apiOffer.extraData?.showType || '',
