@@ -83,8 +83,9 @@ const ApiKey = ({
       <Banner
         links={[
           {
-            href: 'https://www.notion.so/passcultureapp/pass-Culture-Int-grations-techniques-231e16685c9a438b97bdcd7737cdd4d1',
+            href: 'https://aide.passculture.app/hc/fr/articles/4411999022225--Acteurs-Culturels-Comment-obtenir-sa-clé-API-sur-son-compte-pass-Culture-Pro',
             label: 'En savoir plus sur les clés API',
+            isExternal: true,
           },
         ]}
         type="notification-info"
