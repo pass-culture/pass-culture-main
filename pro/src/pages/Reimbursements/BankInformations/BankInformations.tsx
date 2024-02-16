@@ -29,7 +29,7 @@ const BankInformations = (): JSX.Element => {
 
   const [showAddBankInformationsDialog, setShowAddBankInformationsDialog] =
     useState(false)
-  const { selectedOfferer } = useReimbursementContext()
+  const { selectedOfferer, setSelectedOfferer } = useReimbursementContext()
 
   const [isOffererBankAccountsLoading, setIsOffererBankAccountsLoading] =
     useState<boolean>(false)
@@ -69,8 +69,20 @@ const BankInformations = (): JSX.Element => {
     return <Spinner />
   }
 
-  function closeDialog() {
+  const updateOfferer = async (newOffererId: string) => {
+    if (newOffererId !== '') {
+      setIsOffererBankAccountsLoading(true)
+      const offerer = await api.getOfferer(Number(newOffererId))
+      setSelectedOfferer(offerer)
+      setIsOffererBankAccountsLoading(false)
+    }
+  }
+
+  async function closeDialog(update?: boolean) {
     if (selectedOfferer !== null) {
+      if (update) {
+        await updateOfferer(selectedOfferer.id.toString())
+      }
       setSelectedBankAccount(null)
     }
   }
