@@ -57,6 +57,7 @@ common_user_attributes = attributes_models.UserAttributes(
 
 common_pro_attributes = attributes_models.ProAttributes(
     is_pro=True,
+    is_active_pro=True,
     is_user_email=True,
     is_booking_email=True,
     offerers_names=["Offerer Name 1", "Offerer Name 2"],

@@ -54,6 +54,7 @@ class UserAttributes:
 class ProAttributes:
     # Attributes always set:
     is_pro: bool  # Always True
+    is_active_pro: bool  # Set when email (venue or validated attachment) is related to at least one validated offerer
     is_user_email: bool  # Email address is set at least for a user account
     is_booking_email: bool  # Email address is set as bookingEmail for at least one active venue
     marketing_email_subscription: bool
