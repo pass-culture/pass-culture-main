@@ -74,6 +74,7 @@ py7zr = "^0.20.8"
 pyproj = "^3.6.1"
 googlemaps = "^4.10.0"
 rq-exporter = "^2.1.2"
+rapidfuzz = "^3.6.1"
 
 [tool.poetry.group.dev]
 optional = true

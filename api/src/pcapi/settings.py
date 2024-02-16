@@ -504,3 +504,8 @@ ENABLE_TEST_ROUTES = bool(int(os.environ.get("ENABLE_TEST_ROUTES", 0)))
 
 # GOOGLE MAPS
 GOOGLE_MAPS_API_KEY = secrets_utils.get("GOOGLE_MAPS_API_KEY")
+
+# ACCESLIBRE
+ACCESLIBRE_BACKEND = os.environ.get("ACCESLIBRE_BACKEND")
+ACCESLIBRE_API_KEY = secrets_utils.get("ACCESLIBRE_API_KEY")
+ACCESLIBRE_API_URL = "https://acceslibre.beta.gouv.fr/api/erps/"
