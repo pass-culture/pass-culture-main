@@ -86,4 +86,16 @@ describe('ButtonLink', () => {
 
     expect(onClick).not.toHaveBeenCalled()
   })
+
+  it('should not be considered the current page if not specified', () => {
+    renderWithProviders(
+      <ButtonLink link={{ to: '#' }} isDisabled>
+        test
+      </ButtonLink>
+    )
+
+    expect(
+      screen.getByRole('link', { name: 'test' }).getAttribute('aria-current')
+    ).toEqual('false')
+  })
 })
