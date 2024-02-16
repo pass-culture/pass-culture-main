@@ -194,6 +194,11 @@ def test_update_external_pro_user_attributes(
         venueLabelId=None,
     )
 
+    # Offerer and venue should be ignored when building attributes: not yet validated
+    offerers_factories.VenueFactory(
+        managingOfferer=offerers_factories.UserNotValidatedOffererFactory(user=pro_user).offerer, bookingEmail=email
+    )
+
     if create_dms_accepted:
         finance_factories.BankInformationFactory(venue=venue4, status=BankInformationStatus.ACCEPTED)
     else:
@@ -275,11 +280,23 @@ def test_update_external_pro_user_attributes(
 
 def test_update_external_pro_user_attributes_no_offerer_no_venue():
     user = ProFactory()
-    user_email = user.email
 
-    # only 2 queries: user and venue - no booking or offer to check without offerer
-    with assert_num_queries(3):
-        attributes = get_pro_attributes(user_email)
+    _check_user_without_validated_offerer(user)
+
+
+def test_update_external_non_attached_pro_user_attributes():
+    user_offerer = offerers_factories.UserNotValidatedOffererFactory()
+    offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, bookingEmail=user_offerer.user.email)
+
+    _check_user_without_validated_offerer(user_offerer.user)
+
+
+def _check_user_without_validated_offerer(user):
+    email = user.email
+
+    # no booking or offer to check without offerer
+    with assert_num_queries(EXPECTED_PRO_ATTR_NUM_QUERIES - 2):
+        attributes = get_pro_attributes(email)
 
     assert attributes.is_pro is True
     assert attributes.is_user_email is True
