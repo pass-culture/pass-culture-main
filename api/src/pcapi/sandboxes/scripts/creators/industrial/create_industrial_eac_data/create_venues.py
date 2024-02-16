@@ -235,7 +235,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
         siret="45650053700018",
-        adageId="98763",
+        adageId="98762",
         adageInscriptionDate=datetime.utcnow() - timedelta(days=30),
     )
     educational_factories.CollectiveDmsApplicationFactory(
