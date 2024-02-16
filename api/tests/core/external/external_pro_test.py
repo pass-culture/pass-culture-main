@@ -231,6 +231,7 @@ def test_update_external_pro_user_attributes(
         attributes = get_pro_attributes(email)
 
     assert attributes.is_pro is True
+    assert attributes.is_active_pro is True
     assert attributes.is_user_email is True
     assert attributes.is_booking_email is True
     assert attributes.marketing_email_subscription is enable_subscription
@@ -299,6 +300,7 @@ def _check_user_without_validated_offerer(user):
         attributes = get_pro_attributes(email)
 
     assert attributes.is_pro is True
+    assert attributes.is_active_pro is False
     assert attributes.is_user_email is True
     assert attributes.is_booking_email is False
     assert attributes.marketing_email_subscription is True
@@ -343,6 +345,7 @@ def test_update_external_pro_booking_email_attributes():
         attributes = get_pro_attributes(email)
 
     assert attributes.is_pro is True
+    assert attributes.is_active_pro is True
     assert attributes.is_user_email is False
     assert attributes.is_booking_email is True
     assert attributes.marketing_email_subscription is True
@@ -374,6 +377,7 @@ def test_update_external_pro_removed_email_attributes():
         attributes = get_pro_attributes("removed@example.net")
 
     assert attributes.is_pro is True
+    assert attributes.is_active_pro is False
     assert attributes.is_user_email is False
     assert attributes.is_booking_email is False
     assert attributes.marketing_email_subscription is False

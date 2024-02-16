@@ -290,6 +290,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
 
     return models.ProAttributes(
         is_pro=True,
+        is_active_pro=bool(offerers_names),
         is_user_email=bool(user),
         is_booking_email=bool(venues),
         marketing_email_subscription=marketing_email_subscription,
