@@ -14,6 +14,7 @@ const BannerPendingEmailValidation = ({ email }: Props): JSX.Element => (
       {
         href: 'https://aide.passculture.app/hc/fr/articles/5723750427676',
         label: 'Je n’ai pas reçu le lien de confirmation',
+        isExternal: true,
       },
     ]}
     type="attention"

@@ -90,11 +90,13 @@ const FormVenue = ({
             {
               href: 'https://www.demarches-simplifiees.fr/commencer/demande-de-referencement-sur-adage',
               label: 'Faire une demande de référencement',
+              isExternal: true,
             },
             {
               href: 'https://aide.passculture.app/hc/fr/articles/5700215550364',
               label:
                 'Ma demande de référencement a été acceptée mais je ne peux toujours pas créer d’offres collectives',
+              isExternal: true,
             },
           ]}
         >
