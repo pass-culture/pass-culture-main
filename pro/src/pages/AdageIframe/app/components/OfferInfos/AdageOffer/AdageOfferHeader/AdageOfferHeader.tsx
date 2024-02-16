@@ -99,7 +99,7 @@ export default function AdageOfferHeader({ offer }: AdageOfferProps) {
         </div>
         {isOfferBookable && offer.educationalInstitution && (
           <div className={styles['offer-header-details-institution']}>
-            Adressé à{' '}
+            Adressée à{' '}
             <span className={styles['offer-header-details-institution-name']}>
               {getBookableOfferInstitutionAndTeacherName(offer)}
             </span>

@@ -2,10 +2,7 @@ import {
   CollectiveOfferTemplateResponseModel,
   CollectiveOfferResponseModel,
 } from 'apiClient/adage'
-import {
-  isCollectiveOfferTemplate,
-  isCollectiveOfferBookable,
-} from 'core/OfferEducational'
+import { isCollectiveOfferBookable } from 'core/OfferEducational'
 import strokeArticleIcon from 'icons/stroke-article.svg'
 import strokeInfoIcon from 'icons/stroke-info.svg'
 import strokeInstitutionIcon from 'icons/stroke-institution.svg'
@@ -18,6 +15,7 @@ import AdageOfferInfoSection from './AdageOfferDetailsSection/AdageOfferInfoSect
 import AdageOfferPartnerSection from './AdageOfferDetailsSection/AdageOfferPartnerSection'
 import AdageOfferPublicSection from './AdageOfferDetailsSection/AdageOfferPublicSection'
 import AdageOfferHeader from './AdageOfferHeader/AdageOfferHeader'
+import AdageOfferInstitutionPanel from './AdageOfferInstitutionPanel/AdageOfferInstitutionPanel'
 import AdageOfferPartnerPanel from './AdageOfferPartnerPanel/AdageOfferPartnerPanel'
 
 type AdageOfferProps = {
@@ -87,12 +85,12 @@ export default function AdageOffer({ offer }: AdageOfferProps) {
           )}
         </div>
         <div className={styles['offer-side']}>
-          {isCollectiveOfferTemplate(offer) ? (
-            <AdageOfferPartnerPanel offer={offer} />
+          {isOfferBookable ? (
+            (offer.teacher || offer.educationalInstitution) && (
+              <AdageOfferInstitutionPanel offer={offer} />
+            )
           ) : (
-            <>
-              {/* TODO : Here will go the school infos for a bookable offer */}
-            </>
+            <AdageOfferPartnerPanel offer={offer} />
           )}
         </div>
       </div>
