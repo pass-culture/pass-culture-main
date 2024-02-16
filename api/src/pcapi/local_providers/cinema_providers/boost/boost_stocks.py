@@ -2,6 +2,8 @@ from datetime import datetime
 import decimal
 from typing import Iterator
 
+import sqlalchemy as sa
+
 from pcapi.connectors.serialization import boost_serializers
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.external_bookings.boost.client import BoostClientAPI
@@ -50,6 +52,10 @@ class BoostStocks(LocalProvider):
 
     def __next__(self) -> list[ProvidableInfo]:
         showtime = next(self.showtimes)
+        self.product = self.get_movie_product(showtime.film)
+        if not self.product:
+            return []
+
         if self.showtimes_filter_ff_is_active:
             self.showtime_details = showtime
         else:
@@ -89,8 +95,6 @@ class BoostStocks(LocalProvider):
         offer.withdrawalDetails = self.venue.withdrawalDetails
 
         self.update_from_movie_information(offer, self.showtime_details.film.to_generic_movie())
-
-        offer.name = self.showtime_details.film.titleCnc
         offer.subcategoryId = subcategories.SEANCE_CINE.id
 
         is_new_offer_to_insert = offer.id is None
@@ -158,6 +162,12 @@ class BoostStocks(LocalProvider):
             price_category = self.get_or_create_price_category(price, price_label)
             stock.priceCategory = price_category
 
+    def get_movie_product(self, film: boost_serializers.Film2) -> offers_models.Product | None:
+        product = offers_models.Product.query.filter(
+            offers_models.Product.extraData["allocineId"].cast(sa.Integer) == film.idFilmAllocine
+        ).one_or_none()
+        return product
+
     def get_or_create_price_category(self, price: decimal.Decimal, price_label: str) -> offers_models.PriceCategory:
         if self.last_offer not in self.price_category_lists_by_offer:
             self.price_category_lists_by_offer[self.last_offer] = (
@@ -188,12 +198,15 @@ class BoostStocks(LocalProvider):
 
         return price_category_label
 
-    def update_from_movie_information(self, obj: offers_models.Offer, movie_information: Movie) -> None:
-        if movie_information.description:
-            obj.description = movie_information.description
-        if movie_information.duration:
-            obj.durationMinutes = movie_information.duration
-        obj.extraData = {"visa": movie_information.visa}
+    def update_from_movie_information(self, offer: offers_models.Offer, movie_information: Movie) -> None:
+        assert self.product and self.product.extraData
+        offer.name = self.product.name
+        offer.description = self.product.description
+        offer.durationMinutes = self.product.durationMinutes
+        offer.extraData = offers_models.OfferExtraData()
+        offer.extraData.update(self.product.extraData)
+        offer.extraData["visa"] = self.product.extraData.get("visa") or movie_information.visa
+        offer.product = self.product
 
     def get_object_thumb(self) -> bytes:
         image_url = self.showtime_details.film.posterUrl
