@@ -3,8 +3,10 @@ import React, { useEffect, useState } from 'react'
 
 import { VenueListItemResponseModel } from 'apiClient/v1'
 import ButtonDownloadCSV from 'components/ButtonDownloadCSV'
+import { useReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
 import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
 import { SelectOption } from 'custom_types/form'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
 import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
 import { ButtonLink } from 'ui-kit/Button'
@@ -46,6 +48,10 @@ const ReimbursementsDetails = (): JSX.Element => {
     currentUser.isAdmin && venue === ALL_VENUES_OPTION_ID
   const shouldDisableButtons =
     !isPeriodFilterSelected || requireVenueFilterForAdmin
+  const { selectedOfferer } = useReimbursementContext()
+  const isNewBankDetailsJourneyEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
+  )
 
   const buildAndSortVenueFilterOptions = (
     venues: VenueListItemResponseModel[]
@@ -63,6 +69,9 @@ const ReimbursementsDetails = (): JSX.Element => {
   useEffect(() => {
     const loadVenues = async () => {
       const venuesResponse = await getVenuesForOffererAdapter({
+        offererId: isNewBankDetailsJourneyEnabled
+          ? selectedOfferer?.id.toString()
+          : '',
         activeOfferersOnly: true,
       })
       const selectOptions = buildAndSortVenueFilterOptions(
@@ -71,9 +80,8 @@ const ReimbursementsDetails = (): JSX.Element => {
       setVenuesOptions(selectOptions)
       setIsLoading(false)
     }
-
     void loadVenues()
-  }, [])
+  }, [selectedOfferer])
 
   useEffect(() => {
     const params: CsvQueryParams = {}

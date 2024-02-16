@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { api } from 'apiClient/api'
 import { InvoiceResponseModel, InvoiceResponseV2Model } from 'apiClient/v1'
 import { BannerReimbursementsInfo } from 'components/Banner'
+import { useReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
@@ -44,6 +45,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
   const [areFiltersDefault, setAreFiltersDefault] = useState(true)
   const [filterOptions, setFilterOptions] = useState<SelectOption[]>([])
   const [hasSearchedOnce, setHasSearchedOnce] = useState(false)
+  const { selectedOfferer } = useReimbursementContext()
 
   const hasNoSearchResult =
     !hasError && invoices?.length === 0 && hasSearchedOnce
@@ -131,11 +133,16 @@ const ReimbursementsInvoices = (): JSX.Element => {
     }
 
     const getBankAccountOptions = async () => {
-      const result = await api.getBankAccounts()
+      if (!selectedOfferer) {
+        return
+      }
+      const result = await api.getOffererBankAccountsAndAttachedVenues(
+        selectedOfferer.id
+      )
 
       setFilterOptions(
         sortByLabel(
-          result.map((item) => ({
+          result.bankAccounts.map((item) => ({
             value: String(item.id),
             label: item.label,
           }))
@@ -143,13 +150,14 @@ const ReimbursementsInvoices = (): JSX.Element => {
       )
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     if (isNewBankDetailsJourneyEnabled) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       getBankAccountOptions()
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       getReimbursementPointsResult()
     }
-  }, [])
+  }, [isNewBankDetailsJourneyEnabled, selectedOfferer])
 
   if (isLoading) {
     return <Spinner />
