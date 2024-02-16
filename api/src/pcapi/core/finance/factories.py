@@ -206,7 +206,7 @@ class PricingLineFactory(BaseFactory):
         model = models.PricingLine
 
     pricing = factory.SubFactory(PricingFactory)
-    amount = factory.LazyAttribute(lambda line: -line.pricing.amount)
+    amount = factory.LazyAttribute(lambda line: line.pricing.amount)
     category = models.PricingLineCategory.OFFERER_REVENUE
 
 
