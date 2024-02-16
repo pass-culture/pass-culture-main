@@ -53,6 +53,7 @@ class SendinblueAttributes(Enum):
     HAS_COMPLETED_ID_CHECK = "HAS_COMPLETED_ID_CHECK"
     HAS_OFFERS = "HAS_OFFERS"
     INITIAL_CREDIT = "INITIAL_CREDIT"
+    IS_ACTIVE_PRO = "IS_ACTIVE_PRO"
     IS_BENEFICIARY = "IS_BENEFICIARY"
     IS_BENEFICIARY_18 = "IS_BENEFICIARY_18"
     IS_BOOKING_EMAIL = "IS_BOOKING_EMAIL"
@@ -194,6 +195,7 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
         SendinblueAttributes.HAS_COMPLETED_ID_CHECK.value: _get_attr(attributes, "has_completed_id_check"),
         SendinblueAttributes.HAS_OFFERS.value: _get_attr(attributes, "has_offers"),
         SendinblueAttributes.INITIAL_CREDIT.value: _get_attr(attributes, "domains_credit", lambda v: v.all.initial),
+        SendinblueAttributes.IS_ACTIVE_PRO.value: _get_attr(attributes, "is_active_pro"),
         SendinblueAttributes.IS_BENEFICIARY.value: _get_attr(attributes, "is_beneficiary"),
         SendinblueAttributes.IS_BENEFICIARY_18.value: _get_attr(
             attributes, "roles", lambda v: users_models.UserRole.BENEFICIARY.value in v
