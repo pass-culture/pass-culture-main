@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react'
 import cn from 'classnames'
 import { useField } from 'formik'
 import React, { useEffect, useState } from 'react'
@@ -6,8 +7,10 @@ import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
+import { SENT_DATA_ERROR_MESSAGE } from 'core/shared'
 import { Venue } from 'core/Venue/types'
 import useActiveFeature from 'hooks/useActiveFeature'
+import useNotification from 'hooks/useNotification'
 import fullLinkIcon from 'icons/full-link.svg'
 import strokeValidIcon from 'icons/stroke-valid.svg'
 import { ButtonLink } from 'ui-kit/Button'
@@ -18,7 +21,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './PricingPoint.module.scss'
 
-interface PricingPointProps {
+export interface PricingPointProps {
   offerer: GetOffererResponseModel
   venue: Venue
   setVenueHasPricingPoint: (venueHasPricingPoint: boolean) => void
@@ -35,6 +38,8 @@ const PricingPoint = ({
     useState(false)
   const [isBannerVisible, setIsBannerVisible] = useState(true)
   const [pricingPointSelectField] = useField({ name: 'venueSiret' })
+  const [isSubmitingPricingPoint, setIsSubmitingPricingPoint] = useState(false)
+  const notify = useNotification()
 
   const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
@@ -44,19 +49,23 @@ const PricingPoint = ({
     setCanSubmit(!pricingPointSelectField.value)
   }, [pricingPointSelectField.value])
 
-  const handleClick = () => {
+  const handleClick = async () => {
     const pricingPointId = pricingPointSelectField.value
     if (venue?.id) {
-      api
-        .linkVenueToPricingPoint(venue.id, {
+      setIsSubmitingPricingPoint(true)
+      try {
+        await api.linkVenueToPricingPoint(venue.id, {
           pricingPointId: pricingPointId,
         })
-        .then(() => {
-          setIsInputDisabled(true)
-          setVenueHasPricingPoint(true)
-          setIsBannerVisible(false)
-          setIsConfirmSiretDialogOpen(false)
-        })
+        setIsInputDisabled(true)
+        setVenueHasPricingPoint(true)
+        setIsBannerVisible(false)
+        setIsConfirmSiretDialogOpen(false)
+      } catch (error) {
+        notify.error(SENT_DATA_ERROR_MESSAGE)
+        Sentry.captureException(error)
+      }
+      setIsSubmitingPricingPoint(false)
     }
   }
   const pricingPointOptions = [
@@ -113,6 +122,7 @@ const PricingPoint = ({
           icon={strokeValidIcon}
           title="Êtes-vous sûr de vouloir sélectionner"
           secondTitle={`ce lieu avec SIRET\u00a0?`}
+          isLoading={isSubmitingPricingPoint}
         >
           <p className={styles['text-dialog']}>
             Vous avez sélectionné un lieu avec SIRET qui sera utilisé pour le
