@@ -142,6 +142,7 @@ def test_format_sendinblue_user():
         "HAS_COMPLETED_ID_CHECK": True,
         "HAS_OFFERS": None,
         "INITIAL_CREDIT": Decimal("300.00"),
+        "IS_ACTIVE_PRO": None,
         "IS_BENEFICIARY": True,
         "IS_BENEFICIARY_18": True,
         "IS_BOOKING_EMAIL": None,
