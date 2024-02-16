@@ -2,6 +2,12 @@ import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
+import { BankAccountResponseModel } from 'apiClient/v1'
+import { ReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
+import {
+  defaultBankAccountResponseModel,
+  defaultGetOffererResponseModel,
+} from 'utils/apiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -24,10 +30,24 @@ const renderReimbursementsInvoices = (options?: RenderWithProvidersOptions) => {
       initialized: true,
     },
   }
-  renderWithProviders(<ReimbursementsInvoices />, {
-    storeOverrides,
-    ...options,
-  })
+  renderWithProviders(
+    <ReimbursementContext.Provider
+      value={{
+        selectedOfferer: {
+          ...defaultGetOffererResponseModel,
+          name: 'toto',
+          id: 1,
+        },
+        setSelectedOfferer: () => undefined,
+      }}
+    >
+      <ReimbursementsInvoices />
+    </ReimbursementContext.Provider>,
+    {
+      storeOverrides,
+      ...options,
+    }
+  )
 }
 
 const BASE_INVOICES = [
@@ -70,12 +90,14 @@ const BASE_REIMBURSEMENT_POINTS = [
   },
 ]
 
-const BASE_BANK_ACCOUNTS = [
+const BASE_BANK_ACCOUNTS: Array<BankAccountResponseModel> = [
   {
+    ...defaultBankAccountResponseModel,
     id: 1,
     label: 'My first bank account',
   },
   {
+    ...defaultBankAccountResponseModel,
     id: 2,
     label: 'My second bank account',
   },
@@ -87,7 +109,14 @@ describe('reimbursementsWithFilters', () => {
     vi.spyOn(api, 'getReimbursementPoints').mockResolvedValueOnce(
       BASE_REIMBURSEMENT_POINTS
     )
-    vi.spyOn(api, 'getBankAccounts').mockResolvedValueOnce(BASE_BANK_ACCOUNTS)
+    vi.spyOn(
+      api,
+      'getOffererBankAccountsAndAttachedVenues'
+    ).mockResolvedValueOnce({
+      id: 1,
+      bankAccounts: BASE_BANK_ACCOUNTS,
+      managedVenues: [],
+    })
   })
 
   it('shoud render a table with invoices', async () => {
