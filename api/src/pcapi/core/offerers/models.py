@@ -752,35 +752,9 @@ class AccessibilityProvider(PcObject, Base, Model):
     externalAccessibilityId: str | None = Column(
         Text,
         nullable=True,
-        unique=True,
     )
     externalAccessibilityData: dict | None = sa.Column(MutableDict.as_mutable(JSONB), nullable=True)
     lastUpdateAtProvider: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
-
-    def _build_provider_url(self) -> str:
-        """
-        returns providers url
-        """
-        raise NotImplementedError()
-
-    def match_external_venue(self) -> None:
-        """
-        Try to find a venue at our accessibility provider that matches our venue
-        """
-        raise NotImplementedError()
-
-    def update_venue_accessibility(self) -> None:
-        """
-        From the uuid at the provider, we collect accessibility data and transform them into
-        the 4 criteriums in our AccessibilityMixin
-        """
-        raise NotImplementedError()
-
-    def get_last_update_at_provider(self) -> None:
-        """
-        Request API to get latest update
-        """
-        raise NotImplementedError()
 
 
 class OpeningHours(PcObject, Base, Model):

@@ -16,6 +16,7 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
+from pcapi.connectors.acceslibre import find_venue_at_accessibility_provider
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.connectors.entreprise import models as sirene_models
 from pcapi.connectors.entreprise import sirene
@@ -2129,3 +2130,18 @@ def get_venue_opening_hours_by_weekday(venue: models.Venue, weekday: models.Week
         if opening_hours.weekday == weekday:
             return opening_hours
     return models.OpeningHours(weekday=weekday)
+
+
+def set_accessibility_provider_id(venue: models.Venue) -> None:
+    if not venue.accessibilityProvider:
+        venue.accessibilityProvider = models.AccessibilityProvider(
+            externalAccessibilityId=find_venue_at_accessibility_provider(
+                name=venue.name,
+                public_name=venue.publicName,
+                siret=venue.siret,
+                ban_id=venue.banId,
+                city=venue.city,
+                postal_code=venue.postalCode,
+            )
+        )
+        db.session.add(venue.accessibilityProvider)

@@ -1,5 +1,6 @@
 import datetime
 import typing
+import uuid
 
 import factory
 
@@ -404,3 +405,11 @@ class OffererStatsFactory(BaseFactory):
         model = models.OffererStats
 
     syncDate = factory.LazyFunction(lambda: datetime.date.today() - datetime.timedelta(hours=3))
+
+
+class AccessibilityProviderFactory(BaseFactory):
+    class Meta:
+        model = models.AccessibilityProvider
+
+    venue = factory.SubFactory(VenueFactory)
+    externalAccessibilityId = factory.LazyFunction(lambda: str(uuid.uuid4()))
