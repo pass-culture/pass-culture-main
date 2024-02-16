@@ -74,6 +74,7 @@ def format_pro_attributes(pro_attributes: attributes_models.ProAttributes) -> di
         "HAS_BOOKINGS": pro_attributes.has_bookings,
         "HAS_OFFERS": pro_attributes.has_offers,
         "HAS_INDIVIDUAL_OFFERS": pro_attributes.has_individual_offers,
+        "IS_ACTIVE_PRO": pro_attributes.is_active_pro,
         "IS_BOOKING_EMAIL": pro_attributes.is_booking_email,
         "IS_EAC": pro_attributes.is_eac,
         "IS_PERMANENT": pro_attributes.isPermanent,
