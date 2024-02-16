@@ -13,6 +13,10 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS,
         perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT,
     ],
+    "codir_admin": [
+        perm_models.Permissions.READ_INCIDENTS,
+        perm_models.Permissions.MANAGE_INCIDENTS,
+    ],
     "support_n1": [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
     ],
