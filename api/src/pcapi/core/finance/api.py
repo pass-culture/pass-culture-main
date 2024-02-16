@@ -2284,9 +2284,7 @@ def _invoice_row_formatter(sql_row: typing.Any) -> tuple:
     else:
         raise ValueError("Unknown booking type (not educational nor individual)")
 
-    ministry = ""
-    if hasattr(sql_row, "ministry"):
-        ministry = sql_row.ministry
+    ministry = getattr(sql_row, "ministry", "")
 
     if FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
         accounting_humanized_id = human_ids.humanize(sql_row.bank_account_id)
