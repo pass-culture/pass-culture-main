@@ -161,6 +161,7 @@ const CollectiveOfferConfirmation = ({
             href: `https://aide.passculture.app/hc/fr/articles/4416082284945--Acteurs-Culturels-Quel-est-le-cycle-de-vie-de-mon-offre-collective-de-sa-cr%C3%A9ation-%C3%A0-son-remboursement`,
             label:
               'Quel est le cycle de vie d’une offre collective, de sa création à son remboursement',
+            isExternal: true,
           },
         ]}
       >
