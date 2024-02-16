@@ -90,7 +90,11 @@ describe('Reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY enabled
 
     vi.spyOn(api, 'getOfferer').mockResolvedValue(selectedOfferer)
     vi.spyOn(api, 'getReimbursementPoints').mockResolvedValue([])
-    vi.spyOn(api, 'getBankAccounts').mockResolvedValue([])
+    vi.spyOn(api, 'getOffererBankAccountsAndAttachedVenues').mockResolvedValue({
+      bankAccounts: [],
+      id: 1,
+      managedVenues: [],
+    })
   })
 
   it('should render reimbursement page', async () => {
