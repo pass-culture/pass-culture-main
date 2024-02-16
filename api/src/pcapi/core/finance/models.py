@@ -56,7 +56,7 @@ class Deposit(PcObject, Base, Model):
 
     dateUpdated = sqla.Column(sqla.DateTime, nullable=True, onupdate=sqla.func.now())
 
-    expirationDate = sqla.Column(sqla.DateTime, nullable=True)
+    expirationDate = sqla.Column(sqla.DateTime, nullable=True, index=True)
 
     version: int = sqla.Column(sqla.SmallInteger, nullable=False)
 
