@@ -2644,18 +2644,6 @@
     magic-string "^0.30.0"
     rollup "^2.25.0 || ^3.3.0"
 
-"@storybook/channels@7.6.15":
-  version "7.6.15"
-  resolved "https://registry.yarnpkg.com/@storybook/channels/-/channels-7.6.15.tgz#12e57275643fd2af790fe2903dc247a348ddc472"
-  integrity sha512-UPDYRzGkygYFa8QUpEiumWrvZm4u4RKVzgiBt9C4RmHORqkkZzL9LXhaZJp2SmIz1ND5gx6KR5ze8ZnAdwxxoQ==
-  dependencies:
-    "@storybook/client-logger" "7.6.15"
-    "@storybook/core-events" "7.6.15"
-    "@storybook/global" "^5.0.0"
-    qs "^6.10.0"
-    telejson "^7.2.0"
-    tiny-invariant "^1.3.1"
-
 "@storybook/channels@7.6.16":
   version "7.6.16"
   resolved "https://registry.yarnpkg.com/@storybook/channels/-/channels-7.6.16.tgz#0aa15f77356211270d2dad8a7e257ed7374ade50"
@@ -2714,13 +2702,6 @@
     ts-dedent "^2.0.0"
     util-deprecate "^1.0.2"
 
-"@storybook/client-logger@7.6.15":
-  version "7.6.15"
-  resolved "https://registry.yarnpkg.com/@storybook/client-logger/-/client-logger-7.6.15.tgz#fc75c91376202801f55696b8949f266c44c76578"
-  integrity sha512-n+K8IqnombqiQNnywVovS+lK61tvv/XSfgPt0cgvoF/hJZB0VDOMRjWsV+v9qQpj1TQEl1lLWeJwZMthTWupJA==
-  dependencies:
-    "@storybook/global" "^5.0.0"
-
 "@storybook/client-logger@7.6.16":
   version "7.6.16"
   resolved "https://registry.yarnpkg.com/@storybook/client-logger/-/client-logger-7.6.16.tgz#73782e461bfd29f94c3006e6ebe6f90294ca339b"
@@ -2772,35 +2753,6 @@
     "@storybook/client-logger" "7.6.16"
     "@storybook/preview-api" "7.6.16"
 
-"@storybook/core-common@7.6.15":
-  version "7.6.15"
-  resolved "https://registry.yarnpkg.com/@storybook/core-common/-/core-common-7.6.15.tgz#8ba894b91c514c9dd03b20f963118c7233e4a78f"
-  integrity sha512-VGmcLJ5U1r1s8/YnLbKcyB4GnNL+/sZIPqwlcSKzDXO76HoVFv1kywf7PbASote7P3gdhLSxBdg95LH2bdIbmw==
-  dependencies:
-    "@storybook/core-events" "7.6.15"
-    "@storybook/node-logger" "7.6.15"
-    "@storybook/types" "7.6.15"
-    "@types/find-cache-dir" "^3.2.1"
-    "@types/node" "^18.0.0"
-    "@types/node-fetch" "^2.6.4"
-    "@types/pretty-hrtime" "^1.0.0"
-    chalk "^4.1.0"
-    esbuild "^0.18.0"
-    esbuild-register "^3.5.0"
-    file-system-cache "2.3.0"
-    find-cache-dir "^3.0.0"
-    find-up "^5.0.0"
-    fs-extra "^11.1.0"
-    glob "^10.0.0"
-    handlebars "^4.7.7"
-    lazy-universal-dotenv "^4.0.0"
-    node-fetch "^2.0.0"
-    picomatch "^2.3.0"
-    pkg-dir "^5.0.0"
-    pretty-hrtime "^1.0.3"
-    resolve-from "^5.0.0"
-    ts-dedent "^2.0.0"
-
 "@storybook/core-common@7.6.16":
   version "7.6.16"
   resolved "https://registry.yarnpkg.com/@storybook/core-common/-/core-common-7.6.16.tgz#be5de3cd56df03653feb8576dc19dad6a62721f8"
@@ -2828,13 +2780,6 @@
     pkg-dir "^5.0.0"
     pretty-hrtime "^1.0.3"
     resolve-from "^5.0.0"
-    ts-dedent "^2.0.0"
-
-"@storybook/core-events@7.6.15":
-  version "7.6.15"
-  resolved "https://registry.yarnpkg.com/@storybook/core-events/-/core-events-7.6.15.tgz#8c9b78a4b09099548bace869d689ad92d237d229"
-  integrity sha512-i4YnjGecbpGyrFe0340sPhQ9QjZZEBqvMy6kF4XWt6DYLHxZmsTj1HEdvxVl4Ej7V49Vw0Dm8MepJ1d4Y8MKrQ==
-  dependencies:
     ts-dedent "^2.0.0"
 
 "@storybook/core-events@7.6.16":
@@ -2969,11 +2914,6 @@
   resolved "https://registry.yarnpkg.com/@storybook/manager/-/manager-7.6.16.tgz#98335dbd865c74351ba6cc1ed2d617362fb0df49"
   integrity sha512-CPDhgT4jjF0CDgLDxT/R+amMJXpXxSsVp+XzahPbEB9Yu4v0W0HW3f2vSuNJXwpfofrPSkbJweO/oC4ioOtavw==
 
-"@storybook/node-logger@7.6.15":
-  version "7.6.15"
-  resolved "https://registry.yarnpkg.com/@storybook/node-logger/-/node-logger-7.6.15.tgz#df14693e10ca82c9580bba68363d062215f74655"
-  integrity sha512-C+sCvRjR+5uVU3VTrfyv7/RlPBxesAjIucUAK0keGyIZ7sFQYCPdkm4m/C4s+TcubgAzVvuoUHlRrSppdA7WzQ==
-
 "@storybook/node-logger@7.6.16":
   version "7.6.16"
   resolved "https://registry.yarnpkg.com/@storybook/node-logger/-/node-logger-7.6.16.tgz#6ae9380b52dba770d669f293c79a161c7d450237"
@@ -2983,26 +2923,6 @@
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@storybook/preset-scss/-/preset-scss-1.0.3.tgz#8ac834545c642dada0f64f510ef08dfb882e9737"
   integrity sha512-o9Iz6wxPeNENrQa2mKlsDKynBfqU2uWaRP80HeWp4TkGgf7/x3DVF2O7yi9N0x/PI1qzzTTpxlQ90D62XmpiTw==
-
-"@storybook/preview-api@7.6.15":
-  version "7.6.15"
-  resolved "https://registry.yarnpkg.com/@storybook/preview-api/-/preview-api-7.6.15.tgz#d0b099b324eeeeaef714a01f81dd8b1d5b8f31f7"
-  integrity sha512-2KN9vlizF6sFlYsJEGnFqcQaJXs4TTdawC1VazVdtaMSHANDxxDu8F1cP+u7lpPH3DkNZUmTGQDBYfYY9xR0eQ==
-  dependencies:
-    "@storybook/channels" "7.6.15"
-    "@storybook/client-logger" "7.6.15"
-    "@storybook/core-events" "7.6.15"
-    "@storybook/csf" "^0.1.2"
-    "@storybook/global" "^5.0.0"
-    "@storybook/types" "7.6.15"
-    "@types/qs" "^6.9.5"
-    dequal "^2.0.2"
-    lodash "^4.17.21"
-    memoizerific "^1.11.3"
-    qs "^6.10.0"
-    synchronous-promise "^2.0.15"
-    ts-dedent "^2.0.0"
-    util-deprecate "^1.0.2"
 
 "@storybook/preview-api@7.6.16":
   version "7.6.16"
@@ -3106,16 +3026,6 @@
     "@storybook/client-logger" "7.6.16"
     "@storybook/global" "^5.0.0"
     memoizerific "^1.11.3"
-
-"@storybook/types@7.6.15":
-  version "7.6.15"
-  resolved "https://registry.yarnpkg.com/@storybook/types/-/types-7.6.15.tgz#80411ea62bb56a0bc28ce5ece6f577957f3d049f"
-  integrity sha512-tLH0lK6SXECSfMpKin9bge+7XiHZII17n6jc9ZI1TfSBZJyq3M6VzWh2r1C2lC97FlkcKXjIwM3n8h1xNjnI+A==
-  dependencies:
-    "@storybook/channels" "7.6.15"
-    "@types/babel__core" "^7.0.0"
-    "@types/express" "^4.7.0"
-    file-system-cache "2.3.0"
 
 "@storybook/types@7.6.16":
   version "7.6.16"
@@ -9443,10 +9353,10 @@ safe-regex-test@^1.0.0:
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
 
-sass@^1.70.0:
-  version "1.70.0"
-  resolved "https://registry.yarnpkg.com/sass/-/sass-1.70.0.tgz#761197419d97b5358cb25f9dd38c176a8a270a75"
-  integrity sha512-uUxNQ3zAHeAx5nRFskBnrWzDUJrrvpCPD5FNAoRvTi0WwremlheES3tg+56PaVtCs5QDRX5CBLxxKMDJMEa1WQ==
+sass@^1.71.0:
+  version "1.71.0"
+  resolved "https://registry.yarnpkg.com/sass/-/sass-1.71.0.tgz#b3085759b9b2ab503a977aecb7e91153bf941117"
+  integrity sha512-HKKIKf49Vkxlrav3F/w6qRuPcmImGVbIXJ2I3Kg0VMA+3Bav+8yE9G5XmP5lMj6nl4OlqbPftGAscNaNu28b8w==
   dependencies:
     chokidar ">=3.0.0 <4.0.0"
     immutable "^4.0.0"
