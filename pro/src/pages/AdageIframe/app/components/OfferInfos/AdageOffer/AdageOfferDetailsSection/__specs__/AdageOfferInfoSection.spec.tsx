@@ -96,7 +96,7 @@ describe('AdageOfferInfoSection', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should show the prixe section when the offer is bookable', () => {
+  it('should show the price section when the offer is bookable', () => {
     renderAdageOfferInfoSection({
       offer: {
         ...defaultCollectiveOffer,

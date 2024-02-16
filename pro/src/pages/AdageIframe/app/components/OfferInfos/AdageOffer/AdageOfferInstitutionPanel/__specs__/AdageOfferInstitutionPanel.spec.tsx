@@ -1,0 +1,52 @@
+import { screen } from '@testing-library/react'
+
+import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
+import { defaultAdageUser, defaultCollectiveOffer } from 'utils/adageFactories'
+import { renderWithProviders } from 'utils/renderWithProviders'
+
+import AdageOfferInstitutionPanel, {
+  AdageOfferInstitutionPanelProps,
+} from '../AdageOfferInstitutionPanel'
+
+function renderAdageOfferInstitutionPanel(
+  props: AdageOfferInstitutionPanelProps = {
+    offer: defaultCollectiveOffer,
+  },
+  user = defaultAdageUser
+) {
+  return renderWithProviders(
+    <AdageUserContextProvider adageUser={user}>
+      <AdageOfferInstitutionPanel {...props} />
+    </AdageUserContextProvider>
+  )
+}
+
+describe('AdageOfferPartnerPanel', () => {
+  it('should render the instution panel', () => {
+    renderAdageOfferInstitutionPanel()
+
+    expect(
+      screen.getByRole('heading', { name: 'Offre adressée à :' })
+    ).toBeInTheDocument()
+
+    expect(screen.getByText('À préréserver')).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('button', { name: /Préréserver l’offre/ })
+    ).toBeInTheDocument()
+  })
+
+  it("should not show the booking limit date if it's not available", () => {
+    renderAdageOfferInstitutionPanel({
+      offer: {
+        ...defaultCollectiveOffer,
+        stock: {
+          ...defaultCollectiveOffer.stock,
+          bookingLimitDatetime: undefined,
+        },
+      },
+    })
+
+    expect(screen.queryByText('À préréserver')).not.toBeInTheDocument()
+  })
+})

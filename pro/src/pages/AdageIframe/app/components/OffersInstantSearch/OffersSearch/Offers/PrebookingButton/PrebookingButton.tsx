@@ -21,6 +21,8 @@ const PrebookingButton = ({
   offerId,
   queryId,
   isInSuggestions,
+  children,
+  hideLimitDate,
 }: {
   className?: string
   stock: OfferStockResponse
@@ -28,6 +30,8 @@ const PrebookingButton = ({
   offerId: number
   queryId: string
   isInSuggestions?: boolean
+  children?: React.ReactNode
+  hideLimitDate?: boolean
 }): JSX.Element | null => {
   const [hasPrebookedOffer, setHasPrebookedOffer] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -84,10 +88,10 @@ const PrebookingButton = ({
               className="prebooking-button"
               onClick={() => handleBookingModalButtonClick(stock.id)}
             >
-              Préréserver
+              {children ?? 'Préréserver'}
             </Button>
 
-            {stock.bookingLimitDatetime && (
+            {!hideLimitDate && stock.bookingLimitDatetime && (
               <span className="prebooking-button-booking-limit">
                 avant le :{' '}
                 {format(new Date(stock.bookingLimitDatetime), 'dd/MM/yyyy')}
