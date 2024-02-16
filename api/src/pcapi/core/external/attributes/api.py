@@ -2,7 +2,8 @@ from collections import Counter
 from collections import defaultdict
 from datetime import datetime
 
-from sqlalchemy import or_
+import sqlalchemy as sa
+from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import load_only
 
@@ -139,7 +140,8 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
     attributes = {}
 
     user = (
-        users_repository.find_pro_user_by_email_query(email)
+        # Also fetch NON_ATTACHED_PRO so that if user is found, user id first name and last name are filled
+        users_repository.find_pro_or_non_attached_pro_user_by_email_query(email)
         .filter(users_models.User.isActive.is_(True))
         .options(
             load_only(
@@ -149,7 +151,9 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
             joinedload(users_models.User.UserOfferers)
             .load_only(offerers_models.UserOfferer.offererId, offerers_models.UserOfferer.validationStatus)
             .joinedload(offerers_models.UserOfferer.offerer)
-            .load_only(offerers_models.Offerer.name, offerers_models.Offerer.isActive)
+            .load_only(
+                offerers_models.Offerer.name, offerers_models.Offerer.isActive, offerers_models.Offerer.validationStatus
+            )
             .joinedload(offerers_models.Offerer.tags)
             .load_only(offerers_models.OffererTag.label),
             # Fetch all attachments to these offerers, to check if current user is the "creator" (first user)
@@ -186,7 +190,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         offerers = [
             user_offerer.offerer
             for user_offerer in user.UserOfferers
-            if (user_offerer.isValidated and user_offerer.offerer.isActive)
+            if (user_offerer.isValidated and user_offerer.offerer.isActive and user_offerer.offerer.isValidated)
         ]
 
         # A pro user is considered as:
@@ -229,8 +233,14 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
 
     venues = (
         offerers_models.Venue.query.filter_by(bookingEmail=email)
-        .join(offerers_models.Offerer)
-        .filter(offerers_models.Offerer.isActive)
+        .join(
+            offerers_models.Offerer,
+            sa.and_(  # type: ignore [type-var]
+                offerers_models.Offerer.id == offerers_models.Venue.managingOffererId,
+                offerers_models.Offerer.isActive,
+                offerers_models.Offerer.isValidated,
+            ),
+        )
         .options(
             load_only(
                 offerers_models.Venue.publicName,
@@ -242,7 +252,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
                 offerers_models.Venue.isVirtual,
                 offerers_models.Venue.isPermanent,
             ),
-            joinedload(offerers_models.Venue.managingOfferer)
+            contains_eager(offerers_models.Venue.managingOfferer)
             .load_only(offerers_models.Offerer.name)
             .joinedload(offerers_models.Offerer.tags)
             .load_only(offerers_models.OffererTag.label),
@@ -303,6 +313,8 @@ def _check_if_pro_attribute_has_collective_offers(user: users_models.User) -> bo
         .join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
         .join(offerers_models.UserOfferer, offerers_models.Offerer.UserOfferers)
         .filter(
+            offerers_models.Offerer.isActive,
+            offerers_models.Offerer.isValidated,
             offerers_models.UserOfferer.isValidated,
             offerers_models.UserOfferer.userId == user.id,
             educational_models.CollectiveOffer.status.in_([OfferStatus.ACTIVE, OfferStatus.SOLD_OUT]),  # type: ignore [attr-defined]
@@ -316,6 +328,8 @@ def _check_if_pro_attribute_has_collective_offers(user: users_models.User) -> bo
         .join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
         .join(offerers_models.UserOfferer, offerers_models.Offerer.UserOfferers)
         .filter(
+            offerers_models.Offerer.isActive,
+            offerers_models.Offerer.isValidated,
             offerers_models.UserOfferer.isValidated,
             offerers_models.UserOfferer.userId == user.id,
             educational_models.CollectiveOfferTemplate.status == OfferStatus.ACTIVE,
@@ -323,7 +337,7 @@ def _check_if_pro_attribute_has_collective_offers(user: users_models.User) -> bo
         .exists()
     )
 
-    result = db.session.query(or_(collective_offer_query, collective_offer_template_query)).scalar()
+    result = db.session.query(sa.or_(collective_offer_query, collective_offer_template_query)).scalar()
     return bool(result)
 
 
