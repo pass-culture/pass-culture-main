@@ -234,6 +234,7 @@ def price_events(
 
     This function is normally called by a cron job.
     """
+    # FIXME: DEBUG ONLY  # trigger CI
     # The upper bound on `pricingOrderingDate` avoids selecting a very
     # recent event that may have been COMMITed to the database just
     # before another event with a slightly older date (see note in
