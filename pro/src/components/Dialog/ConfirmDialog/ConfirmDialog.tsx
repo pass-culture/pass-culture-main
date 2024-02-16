@@ -19,6 +19,7 @@ type ConfirmDialogProps = DialogProps & {
 const ConfirmDialog = ({
   onConfirm,
   onCancel,
+  isLoading,
   title,
   secondTitle,
   confirmText,
@@ -47,7 +48,12 @@ const ConfirmDialog = ({
         >
           {cancelText}
         </Button>
-        <Button onClick={onConfirm} testId="confirm-dialog-button-confirm">
+        <Button
+          onClick={onConfirm}
+          isLoading={isLoading}
+          disabled={isLoading}
+          testId="confirm-dialog-button-confirm"
+        >
           {confirmText}
         </Button>
       </div>
