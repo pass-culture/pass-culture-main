@@ -12,7 +12,11 @@ import {
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import BankInformations from 'pages/Reimbursements/BankInformations/BankInformations'
-import { defaultGetOffererResponseModel } from 'utils/apiFactories'
+import {
+  defaultBankAccountResponseModel,
+  defaultGetOffererResponseModel,
+  defaultManagedVenues,
+} from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 const renderBankInformations = (
@@ -244,5 +248,35 @@ describe('BankInformations page', () => {
         offererId: 1,
       }
     )
+  })
+
+  it('should update displayed link venue after closing link venue dialog', async () => {
+    vi.spyOn(api, 'getOffererBankAccountsAndAttachedVenues').mockResolvedValue({
+      id: 1,
+      bankAccounts: [{ ...defaultBankAccountResponseModel }],
+      managedVenues: [{ ...defaultManagedVenues }],
+    })
+
+    renderBankInformations(
+      {
+        ...customContext,
+        selectedOfferer: {
+          ...defaultGetOffererResponseModel,
+          hasValidBankAccount: true,
+        },
+      },
+      store
+    )
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    await userEvent.click(screen.getByRole('button', { name: 'Modifier' }))
+
+    await userEvent.click(
+      screen.getByRole('checkbox', { name: 'Mon super lieu' })
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Confirmer' }))
+
+    expect(api.getOfferer).toHaveBeenCalledWith(1)
   })
 })
