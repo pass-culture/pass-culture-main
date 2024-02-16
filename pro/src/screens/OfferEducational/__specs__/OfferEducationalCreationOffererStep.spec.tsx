@@ -67,7 +67,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
       ).toBeInTheDocument()
 
       expect(
-        screen.getByRole('link', { name: 'Faire une demande de référencement' })
+        screen.getByRole('link', { name: /Faire une demande de référencement/ })
       ).toBeInTheDocument()
 
       expect(screen.queryByLabelText('Lieu')).not.toBeInTheDocument()
