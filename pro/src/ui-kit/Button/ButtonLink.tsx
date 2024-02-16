@@ -117,7 +117,7 @@ const ButtonLink = ({
       to={absoluteUrl}
       {...disabled}
       aria-label={linkProps['aria-label']}
-      aria-current={linkProps['aria-current']}
+      aria-current={linkProps['aria-current'] ?? false}
     >
       {body}
     </Link>
