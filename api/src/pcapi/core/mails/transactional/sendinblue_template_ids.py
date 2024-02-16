@@ -209,3 +209,4 @@ class TransactionalEmail(Enum):
     # Finance incidents
     RETRIEVE_INCIDENT_AMOUNT_ON_INDIVIDUAL_BOOKINGS = models.Template(id_prod=1111, id_not_prod=150)
     RETRIEVE_INCIDENT_AMOUNT_ON_COLLECTIVE_BOOKINGS = models.Template(id_prod=1112, id_not_prod=151)
+    COMMERCIAL_GESTURE_REIMBURSEMENT = models.Template(id_prod=1187, id_not_prod=157)

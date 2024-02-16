@@ -145,6 +145,7 @@ class Roles(enum.Enum):
     """
 
     ADMIN = "admin"
+    CODIR_ADMIN = "codir_admin"
     SUPPORT_N1 = "support_n1"
     SUPPORT_N2 = "support_n2"
     SUPPORT_PRO = "support_pro"

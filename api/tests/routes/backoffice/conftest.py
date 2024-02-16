@@ -166,6 +166,10 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_PERMISSIONS,
         perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT,
     ],
+    "codir_admin": [
+        perm_models.Permissions.READ_INCIDENTS,
+        perm_models.Permissions.MANAGE_INCIDENTS,
+    ],
 }
 
 

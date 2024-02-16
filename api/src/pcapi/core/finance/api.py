@@ -59,6 +59,7 @@ import pcapi.core.history.models as history_models
 from pcapi.core.logging import log_elapsed
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.mails.transactional import send_booking_cancellation_by_pro_to_beneficiary_email
+from pcapi.core.mails.transactional.finance_incidents.finance_incident_notification import send_commercial_gesture_email
 from pcapi.core.mails.transactional.finance_incidents.finance_incident_notification import send_finance_incident_emails
 from pcapi.core.object_storage import store_public_object
 from pcapi.core.offerers import repository as offerers_repository
@@ -3977,17 +3978,20 @@ def validate_finance_incident(finance_incident: models.FinanceIncident, force_de
     db.session.commit()
 
     # send mail to pro
-    send_finance_incident_emails(finance_incident)
-
-    # send mail to beneficiaries or educational redactor
-    for booking_incident in finance_incident.booking_finance_incidents:
-        if not booking_incident.is_partial:
-            if booking_incident.collectiveBooking:
-                educational_api_booking.notify_reimburse_collective_booking(
-                    collective_booking=booking_incident.collectiveBooking, reason="NO_EVENT"
-                )
-            else:
-                send_booking_cancellation_by_pro_to_beneficiary_email(booking_incident.booking)
+    match finance_incident.kind:
+        case models.IncidentType.OVERPAYMENT:
+            send_finance_incident_emails(finance_incident)
+            # send mail to beneficiaries or educational redactor
+            for booking_incident in finance_incident.booking_finance_incidents:
+                if not booking_incident.is_partial:
+                    if booking_incident.collectiveBooking:
+                        educational_api_booking.notify_reimburse_collective_booking(
+                            collective_booking=booking_incident.collectiveBooking, reason="NO_EVENT"
+                        )
+                    else:
+                        send_booking_cancellation_by_pro_to_beneficiary_email(booking_incident.booking)
+        case models.IncidentType.COMMERCIAL_GESTURE:
+            send_commercial_gesture_email(finance_incident)
 
 
 def cancel_finance_incident(incident: models.FinanceIncident, comment: str) -> None:
