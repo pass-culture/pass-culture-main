@@ -28,7 +28,7 @@ const getMusicData = (
 
   const offerMusicType = offer.musicType
   const offerMusicSubType = offer.musicSubType
-  if (offerMusicType === undefined || offerMusicSubType === undefined) {
+  if (!offerMusicType || !offerMusicSubType) {
     return {}
   }
   const musicTypeItem = musicOptionsTree.find(
