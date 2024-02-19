@@ -706,7 +706,7 @@ def get_last_30_days_bookings_for_eans() -> dict[str, int]:
     return ean_booking_count
 
 
-def update_products_last_30_days_booking_count() -> None:
+def update_products_last_30_days_booking_count(batch_size: int = 1000) -> None:
     updated_eans = update_product_last_30_days_bookings()
     if not updated_eans:
         return
@@ -715,11 +715,19 @@ def update_products_last_30_days_booking_count() -> None:
         offers_models.Offer.extraData["ean"].astext.in_(updated_eans)
     ).with_entities(offers_models.Offer.id)
 
-    batch_size = 1000
     logger.info("Starting to reindex offers with ean booked recently. Ean count: %s", len(updated_eans))
-    for batch in range(0, len(updated_eans), batch_size):
-        offer_ids_to_reindex = {offer_id for offer_id, in offer_ids_to_reindex_query.offset(batch).limit(batch_size)}
-        logger.info("Reindexing offers with ean booked recently. Batch count: %s", len(offer_ids_to_reindex))
+
+    offer_ids_to_reindex = []
+    for (offer_id,) in offer_ids_to_reindex_query:
+        offer_ids_to_reindex.append(offer_id)
+        if len(offer_ids_to_reindex) == batch_size:
+            logger.info("Reindexing offers with ean booked recently. Batch count: %s", len(offer_ids_to_reindex))
+            async_index_offer_ids(
+                offer_ids_to_reindex,
+                reason=IndexationReason.BOOKING_COUNT_CHANGE,
+            )
+            offer_ids_to_reindex = []
+    if offer_ids_to_reindex:
         async_index_offer_ids(
             offer_ids_to_reindex,
             reason=IndexationReason.BOOKING_COUNT_CHANGE,
