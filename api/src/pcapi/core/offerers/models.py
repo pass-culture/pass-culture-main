@@ -743,6 +743,7 @@ class GooglePlacesInfo(PcObject, Base, Model):
     placeId = Column(Text, nullable=False, unique=True)
     bannerUrl: str | None = Column(Text, nullable=True, name="bannerUrl")
     bannerMeta: dict | None = Column(MutableDict.as_mutable(JSONB), nullable=True)
+    updateDate: datetime = Column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now())
 
 
 class AccessibilityProvider(PcObject, Base, Model):
