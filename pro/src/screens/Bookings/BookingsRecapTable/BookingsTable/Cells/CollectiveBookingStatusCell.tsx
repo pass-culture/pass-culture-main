@@ -25,7 +25,6 @@ export function CollectiveBookingStatusCell({
     <div
       className={cn(
         styles['booking-status-label'],
-        styles['booking-status-wrapper'],
         bookingDisplayInfo?.statusClassName
       )}
     >

@@ -8,16 +8,16 @@
   border-radius: rem.torem(5px);
   padding: rem.torem(5px) rem.torem(7px);
   white-space: nowrap;
-}
-
-.bs-tooltip {
-  white-space: initial;
-}
-
-.booking-status-wrapper {
   line-height: rem.torem(19px);
   position: relative;
   width: fit-content;
+  border: none;
+  text-align: left;
+
+  &:focus-visible {
+    outline: rem.torem(1px) solid colors.$black;
+    outline-offset: rem.torem(2px);
+  }
 }
 
 .booking-status-icon {
@@ -28,12 +28,8 @@
   vertical-align: middle;
 }
 
-.booking-status-wrapper .bs-tooltip {
-  display: none;
-}
-
-.booking-status-wrapper:focus .bs-tooltip,
-.booking-status-wrapper:hover .bs-tooltip {
+.bs-tooltip {
+  white-space: initial;
   background-color: colors.$white;
   border-radius: rem.torem(4px);
   box-shadow: 0 rem.torem(2px) rem.torem(10px) 0 colors.$large-shadow;

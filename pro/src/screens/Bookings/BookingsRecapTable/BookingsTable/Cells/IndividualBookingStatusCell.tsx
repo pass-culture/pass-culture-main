@@ -2,6 +2,7 @@ import cn from 'classnames'
 
 import { BookingRecapResponseModel } from 'apiClient/v1'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
 import { formatPrice } from 'utils/formatPrice'
 
 import { getBookingStatusDisplayInformations } from '../../utils/bookingStatusConverter'
@@ -16,9 +17,11 @@ export type IndividualBookingStatusCellProps = {
 export const IndividualBookingStatusCell = ({
   booking,
 }: IndividualBookingStatusCellProps) => {
+  const { isTooltipHidden, ...tooltipProps } = useTooltipProps({})
   const bookingDisplayInfo = getBookingStatusDisplayInformations(
     booking.bookingStatus
   )
+
   const offerName = booking.stock.offerName
 
   const statusName = bookingDisplayInfo?.status.toLowerCase()
@@ -29,10 +32,11 @@ export const IndividualBookingStatusCell = ({
   }
 
   return (
-    <div
+    <button
+      type="button"
+      {...tooltipProps}
       className={cn(
         styles['booking-status-label'],
-        styles['booking-status-wrapper'],
         bookingDisplayInfo?.statusClassName
       )}
     >
@@ -46,14 +50,16 @@ export const IndividualBookingStatusCell = ({
       )}
 
       <span>{statusName}</span>
-      <div className={styles['bs-tooltip']}>
-        <div className={styles['bs-offer-title']}>{offerName}</div>
-        <div className={styles['bs-offer-amount']}>{`Prix : ${amount}`}</div>
-        <div className={styles['bs-history-title']}>Historique</div>
-        <BookingStatusCellHistory
-          bookingStatusHistory={booking.bookingStatusHistory}
-        />
-      </div>
-    </div>
+      {!isTooltipHidden && (
+        <div className={styles['bs-tooltip']}>
+          <div className={styles['bs-offer-title']}>{offerName}</div>
+          <div className={styles['bs-offer-amount']}>{`Prix : ${amount}`}</div>
+          <div className={styles['bs-history-title']}>Historique</div>
+          <BookingStatusCellHistory
+            bookingStatusHistory={booking.bookingStatusHistory}
+          />
+        </div>
+      )}
+    </button>
   )
 }
