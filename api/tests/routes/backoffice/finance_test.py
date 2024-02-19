@@ -132,7 +132,8 @@ class ListIncidentsTest(GetEndpointHelper):
     expected_num_queries = 3
 
     def test_list_incidents_without_filter(self, authenticated_client):
-        incidents = finance_factories.FinanceIncidentFactory.create_batch(10)
+        partial_booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(newTotalAmount=8.10)
+        total_booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(newTotalAmount=0)
 
         url = url_for(self.endpoint)
 
@@ -141,11 +142,15 @@ class ListIncidentsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == len(incidents)
-        last_created_incident = incidents[-1]
-        assert rows[0]["ID"] == str(last_created_incident.id)
+        assert len(rows) == 2
+        assert rows[0]["ID"] == str(total_booking_incident.incident.id)
         assert rows[0]["Statut de l'incident"] == "Créé"
         assert rows[0]["Type d'incident"] == "Trop Perçu"
+        assert rows[0]["Nature"] == "Total"
+        assert rows[1]["ID"] == str(partial_booking_incident.incident.id)
+        assert rows[1]["Statut de l'incident"] == "Créé"
+        assert rows[1]["Type d'incident"] == "Trop Perçu"
+        assert rows[1]["Nature"] == "Partiel"
 
     def test_list_incident_by_incident_id(self, authenticated_client, incidents):
         searched_id = str(incidents[0].id)
@@ -158,6 +163,8 @@ class ListIncidentsTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["ID"] == searched_id
         assert rows[0]["Statut de l'incident"] == "Créé"
+        assert rows[0]["Type d'incident"] == "Trop Perçu"
+        assert rows[0]["Nature"] == "Total"
         assert rows[0]["Type de résa"] == "Individuelle"
         assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
         assert rows[0]["Montant total"] == filters.format_cents(incidents[0].due_amount_by_offerer)
@@ -176,6 +183,8 @@ class ListIncidentsTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["ID"] == str(incidents[0].id)
         assert rows[0]["Statut de l'incident"] == "Créé"
+        assert rows[0]["Type d'incident"] == "Trop Perçu"
+        assert rows[0]["Nature"] == "Total"
         assert rows[0]["Type de résa"] == "Individuelle"
         assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
         assert rows[0]["Montant total"] == filters.format_cents(incidents[0].due_amount_by_offerer)
@@ -194,6 +203,8 @@ class ListIncidentsTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["ID"] == str(incidents[1].id)
         assert rows[0]["Statut de l'incident"] == "Terminé"
+        assert rows[0]["Type d'incident"] == "Trop Perçu"
+        assert rows[0]["Nature"] == "Total"
         assert rows[0]["Type de résa"] == "Collective"
         assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[1].booking_finance_incidents))
         assert rows[0]["Montant total"] == filters.format_cents(incidents[1].due_amount_by_offerer)
@@ -212,6 +223,8 @@ class ListIncidentsTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["ID"] == str(incidents[0].id)
         assert rows[0]["Statut de l'incident"] == "Créé"
+        assert rows[0]["Type d'incident"] == "Trop Perçu"
+        assert rows[0]["Nature"] == "Total"
         assert rows[0]["Type de résa"] == "Individuelle"
         assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
         assert rows[0]["Montant total"] == filters.format_cents(incidents[0].due_amount_by_offerer)
@@ -241,6 +254,8 @@ class ListIncidentsTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["ID"] == str(incidents[0].id)
         assert rows[0]["Statut de l'incident"] == "Créé"
+        assert rows[0]["Type d'incident"] == "Trop Perçu"
+        assert rows[0]["Nature"] == "Total"
         assert rows[0]["Type de résa"] == "Individuelle"
         assert rows[0]["Nb. Réservation(s)"] == str(len(incidents[0].booking_finance_incidents))
         assert rows[0]["Montant total"] == filters.format_cents(incidents[0].due_amount_by_offerer)
@@ -707,8 +722,10 @@ class GetIncidentTest(GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        content = html_parser.content_as_text(response.data)
+        badges = html_parser.extract(response.data, tag="span", class_="badge")
+        assert badges == ["Créé", "Trop Perçu", "Total"]
 
+        content = html_parser.content_as_text(response.data)
         assert f"ID : {finance_incident.id}" in content
         assert f"Lieu porteur de l'offre : {finance_incident.venue.name}" in content
         assert f"Incident créé par : {finance_incident.details['author']}" in content
@@ -726,8 +743,10 @@ class GetIncidentTest(GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        content = html_parser.content_as_text(response.data)
+        badges = html_parser.extract(response.data, tag="span", class_="badge")
+        assert badges == ["Créé", "Trop Perçu", "Total"]
 
+        content = html_parser.content_as_text(response.data)
         assert f"ID : {finance_incident.id}" in content
         assert f"Lieu porteur de l'offre : {finance_incident.venue.name}" in content
         assert f"Incident créé par : {finance_incident.details['author']}" in content
