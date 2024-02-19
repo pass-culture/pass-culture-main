@@ -29,6 +29,8 @@
               {{ build_sub_rules_extra_data(action.extraData['sub_rules_info']) }}
             {% elif action.actionType.name in ["LINK_VENUE_BANK_ACCOUNT_DEPRECATED", "LINK_VENUE_BANK_ACCOUNT_CREATED"] %}
               Lieu : {{ links.build_venue_name_to_details_link(action.venue) }}
+            {% elif action.actionType.name == "OFFERER_ATTESTATION_CHECKED" %}
+              L'état positif ou négatif de l'attestation {{ action.extraData['provider'] }} a été visualisé
             {% endif %}
             {% if action.comment %}
               <p>

@@ -701,7 +701,7 @@ def non_diffusible_tag_fixture():
 class CreateOffererTest(PostEndpointHelper):
     """
     Create non-diffusible offerer and venue.
-    TestingBackend is used in pcapi.connectors.sirene => Any SIREN/SIRET starting with '9' is non-diffusible
+    TestingBackend is used in pcapi.connectors.entreprise => Any SIREN/SIRET starting with '9' is non-diffusible
     """
 
     endpoint = "backoffice_web.pro.create_offerer"
@@ -769,6 +769,7 @@ class CreateOffererTest(PostEndpointHelper):
                 "active": True,
                 "address": {"city": "CANNES", "insee_code": "06029", "postal_code": "[ND]", "street": "[ND]"},
                 "ape_code": "90.01Z",
+                "ape_label": "Arts du spectacle vivant",
                 "diffusible": False,
                 "head_office_siret": "90000000100001",
                 "legal_category_code": "1000",

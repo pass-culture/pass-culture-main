@@ -223,7 +223,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["withdrawalDetails"] == ["ensure this value has at most 500 characters"]
 
-    @override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
+    @override_settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
     def test_with_inactive_siret(self, requests_mock, client):
         siret = "30255917810045"
         requests_mock.get(

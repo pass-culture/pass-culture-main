@@ -5,6 +5,7 @@ import re
 from flask import url_for
 import pytest
 
+from pcapi.connectors.entreprise.backends.testing import TestingBackend
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import factories as educational_factories
@@ -3373,3 +3374,219 @@ class UpdateIndividualOffererSubscriptionTest(PostEndpointHelper):
             "backoffice_web.offerer.get", offerer_id=offerer.id, active_tab="subscription", _external=True
         )
         self._assert_data(individual_subscription, form_data)
+
+
+class GetEntrepriseInfoTest(GetEndpointHelper):
+    endpoint = "backoffice_web.offerer.get_entreprise_info"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_ENTREPRISE_INFO
+
+    # get session (1 query)
+    # get user with profile and permissions (1 query)
+    # get offerer (1 query)
+    expected_num_queries = 3
+
+    def test_offerer_entreprise_info(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory(siren="123456789")
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        db.session.expire_all()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        # Values come from TestingBackend, check display
+        sirene_content = html_parser.extract_cards_text(response.data)[0]
+        assert "Nom : MINISTERE DE LA CULTURE" in sirene_content
+        assert "SIRET du siège social : 12345678900001" in sirene_content
+        assert "Adresse : 3 RUE DE VALOIS" in sirene_content
+        assert "Code postal : 75001" in sirene_content
+        assert "Ville : PARIS" in sirene_content
+        assert "SIREN actif : Oui" in sirene_content
+        assert "Diffusible : Oui" in sirene_content
+        assert "Catégorie juridique : Entrepreneur individuel" in sirene_content
+        assert "Code APE : 90.03A" in sirene_content
+        assert "Activité principale : Création artistique relevant des arts plastiques" in sirene_content
+
+    def test_siren_not_found(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory(siren="000000000")
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        db.session.expire_all()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        # Values come from TestingBackend, check display
+        sirene_content = html_parser.extract_cards_text(response.data)[0]
+        assert (
+            "Ce SIREN est inconnu dans la base de données Sirene, y compris dans les non-diffusibles" in sirene_content
+        )
+
+    def test_offerer_not_found(self, authenticated_client):
+        url = url_for(self.endpoint, offerer_id=1)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 404
+
+
+class GetEntrepriseInfoRcsTest(GetEndpointHelper):
+    endpoint = "backoffice_web.offerer.get_entreprise_rcs_info"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_ENTREPRISE_INFO
+
+    # get session (1 query)
+    # get user with profile and permissions (1 query)
+    # get offerer (1 query)
+    expected_num_queries = 3
+
+    def test_get_rcs_info_registered(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory(siren="010000000")
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        db.session.expire_all()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        # Values come from TestingBackend, check display
+        content = html_parser.content_as_text(response.data)
+        assert "Activité commerciale : Oui" in content
+        assert "Date d'immatriculation : 02/01/2023" in content
+        assert "Date de radiation" not in content
+        assert "Activité du siège social : TEST" in content
+
+    def test_get_rcs_info_not_registered(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory(siren="020000000")
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        db.session.expire_all()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        # Values come from TestingBackend, check display
+        content = html_parser.content_as_text(response.data)
+        assert content == "Activité commerciale : Non"
+
+    def test_get_rcs_info_deregistered(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory(siren="030000099")
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        db.session.expire_all()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        # Values come from TestingBackend, check display
+        content = html_parser.content_as_text(response.data)
+        assert "Activité commerciale : Oui" in content
+        assert "Date d'immatriculation : 02/01/2023" in content
+        assert "Date de radiation : 31/12/2023" in content
+        assert "Activité du siège social : TEST" in content
+
+
+class GetEntrepriseInfoUrssafTest(GetEndpointHelper):
+    endpoint = "backoffice_web.offerer.get_entreprise_urssaf_info"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_SENSITIVE_INFO
+
+    # get session (1 query)
+    # get user with profile and permissions (1 query)
+    # get offerer (1 query)
+    # insert action (1 query)
+    # release savepoint (1 query)
+    expected_num_queries = 5
+
+    def test_get_urssaf_info_ok(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory(siren="123456789")
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        db.session.expire_all()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        # Values come from TestingBackend, check display
+        content = html_parser.content_as_text(response.data)
+        assert "À jour des cotisations sociales : Oui" in content
+        assert "État : La délivrance de l'attestation de vigilance a été validée par l'Urssaf." in content
+        expected_dates = TestingBackend._get_urssaf_dates()
+        assert (
+            f"Attestation de vigilance valide du {expected_dates[0].strftime('%d/%m/%Y')} "
+            f"au {expected_dates[1].strftime('%d/%m/%Y')}" in content
+        )
+
+    def test_get_urssaf_info_taxes_not_paid(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory(siren="009000000")
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        db.session.expire_all()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        # Values come from TestingBackend, check display
+        content = html_parser.content_as_text(response.data)
+        assert "À jour des cotisations sociales : Non" in content
+        assert (
+            "État : La délivrance de l'attestation de vigilance a été refusée par l'Urssaf car l'entité n'est pas à "
+            "jour de ses cotisations sociales." in content
+        )
+        assert "Attestation de vigilance valide" not in content
+
+
+class GetEntrepriseInfoDgfipTest(GetEndpointHelper):
+    endpoint = "backoffice_web.offerer.get_entreprise_dgfip_info"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_SENSITIVE_INFO
+
+    # get session (1 query)
+    # get user with profile and permissions (1 query)
+    # get offerer (1 query)
+    # insert action (1 query)
+    # release savepoint (1 query)
+    expected_num_queries = 5
+
+    def test_get_dgfip_info_ok(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory(siren="123456789")
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        db.session.expire_all()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        # Values come from TestingBackend, check display
+        content = html_parser.content_as_text(response.data)
+        assert "À jour des obligations fiscales : Oui" in content
+        assert f"Date de délivrance de l'attestation : {datetime.date.today().strftime('%d/%m/%Y')}" in content
+        assert (
+            f"Date de la période analysée : {(datetime.date.today() - datetime.timedelta(days=10)).strftime('%d/%m/%Y')}"
+            in content
+        )
+
+    def test_get_dgfip_info_taxes_not_paid(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory(siren="009000000")
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        db.session.expire_all()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        # Values come from TestingBackend, check display
+        content = html_parser.content_as_text(response.data)
+        assert "À jour des obligations fiscales : Non" in content
+        assert "Date de délivrance de l'attestation" not in content
+        assert "Date de la période analysée" not in content

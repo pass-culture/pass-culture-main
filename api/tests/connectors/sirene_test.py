@@ -1,13 +1,14 @@
 import pytest
 import requests_mock
 
-from pcapi.connectors import sirene
+from pcapi.connectors.entreprise import exceptions
+from pcapi.connectors.entreprise import sirene
 from pcapi.core.testing import override_settings
 
 from . import sirene_test_data
 
 
-@override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
+@override_settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
 def test_get_siren():
     siren = "123456789"
     with requests_mock.Mocker() as mock:
@@ -36,7 +37,7 @@ def test_get_siren():
     assert siren_info.siren == siren
 
 
-@override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
+@override_settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
 def test_get_siren_of_entreprise_individuelle():
     siren = "123456789"
     with requests_mock.Mocker() as mock:
@@ -54,7 +55,7 @@ def test_get_siren_of_entreprise_individuelle():
         assert siren_info.name == "PIERRE EXEMPLE"
 
 
-@override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
+@override_settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
 def test_get_siren_without_address():
     siren = "123456789"
     with requests_mock.Mocker() as mock:
@@ -68,7 +69,7 @@ def test_get_siren_without_address():
         assert siren_info.address is None
 
 
-@override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
+@override_settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
 def test_get_siren_with_non_public_data():
     siren = "123456789"
     with requests_mock.Mocker() as mock:
@@ -80,11 +81,11 @@ def test_get_siren_with_non_public_data():
             f"https://api.insee.fr/entreprises/sirene/V3/siret/{siren}00001",
             json=sirene_test_data.RESPONSE_SIRET_COMPANY_WITH_NON_PUBLIC_DATA,
         )
-        with pytest.raises(sirene.NonPublicDataException):
+        with pytest.raises(exceptions.NonPublicDataException):
             sirene.get_siren(siren)
 
 
-@override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
+@override_settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
 def test_get_siren_with_non_public_data_do_not_raise():
     siren = "123456789"
     with requests_mock.Mocker() as mock:
@@ -103,7 +104,7 @@ def test_get_siren_with_non_public_data_do_not_raise():
         assert siren_info.diffusible is False
 
 
-@override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
+@override_settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
 def test_get_siret():
     siret = "12345678900017"
     with requests_mock.Mocker() as mock:
@@ -125,7 +126,7 @@ def test_get_siret():
     assert siret_info.siret == siret
 
 
-@override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
+@override_settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
 def test_get_siret_of_entreprise_individuelle():
     siret = "12345678900045"
     with requests_mock.Mocker() as mock:
@@ -140,7 +141,7 @@ def test_get_siret_of_entreprise_individuelle():
         assert siret_info.name == "PIERRE EXEMPLE"
 
 
-@override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
+@override_settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
 def test_get_siret_with_non_public_data():
     siret = "12345678900017"
     with requests_mock.Mocker() as mock:
@@ -148,11 +149,11 @@ def test_get_siret_with_non_public_data():
             f"https://api.insee.fr/entreprises/sirene/V3/siret/{siret}",
             json=sirene_test_data.RESPONSE_SIRET_COMPANY_WITH_NON_PUBLIC_DATA,
         )
-        with pytest.raises(sirene.NonPublicDataException):
+        with pytest.raises(exceptions.NonPublicDataException):
             sirene.get_siret(siret)
 
 
-@override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
+@override_settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
 def test_get_siret_with_non_public_data_do_not_raise():
     siret = "12345678900017"
     with requests_mock.Mocker() as mock:
@@ -167,7 +168,7 @@ def test_get_siret_with_non_public_data_do_not_raise():
         assert siret_info.diffusible is False
 
 
-@override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
+@override_settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
 def test_get_legal_category():
     siren = "123456789"
     with requests_mock.Mocker() as mock:
@@ -178,7 +179,7 @@ def test_get_legal_category():
         assert sirene.get_legal_category_code(siren) == "5499"
 
 
-@override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
+@override_settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
 def test_siret_is_active():
     siret = "12345678900017"
     with requests_mock.Mocker() as mock:
@@ -193,15 +194,15 @@ def test_siret_is_active():
 @pytest.mark.parametrize(
     "status_code,expected_exception",
     [
-        (301, sirene.UnknownEntityException),
-        (400, sirene.InvalidFormatException),
-        (403, sirene.NonPublicDataException),
-        (404, sirene.UnknownEntityException),
-        (500, sirene.SireneApiException),
-        (503, sirene.SireneApiException),
+        (301, exceptions.UnknownEntityException),
+        (400, exceptions.InvalidFormatException),
+        (403, exceptions.NonPublicDataException),
+        (404, exceptions.UnknownEntityException),
+        (500, exceptions.ApiException),
+        (503, exceptions.ApiException),
     ],
 )
-@override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
+@override_settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
 def test_error_handling(status_code, expected_exception):
     siret = "invalid"
     with requests_mock.Mocker() as mock:
@@ -213,7 +214,7 @@ def test_error_handling(status_code, expected_exception):
             sirene.get_siret(siret)
 
 
-@override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
+@override_settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
 def test_error_handling_on_non_json_response():
     siret = "anything"
     with requests_mock.Mocker() as mock:
@@ -222,5 +223,5 @@ def test_error_handling_on_non_json_response():
             status_code=200,
             text="non-JSON content",
         )
-        with pytest.raises(sirene.SireneApiException):
+        with pytest.raises(exceptions.ApiException):
             sirene.get_siret(siret)

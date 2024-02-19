@@ -4,7 +4,8 @@ from unittest.mock import patch
 import pytest
 
 from pcapi import settings
-from pcapi.connectors import sirene
+from pcapi.connectors.entreprise import exceptions as sirene_exceptions
+from pcapi.connectors.entreprise import models as sirene_models
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
@@ -34,11 +35,11 @@ class CheckOffererIsActiveTest:
         assert response.status_code == 204
         assert not offerer.tags
 
-    @patch("pcapi.connectors.sirene.get_siren")
+    @patch("pcapi.connectors.entreprise.sirene.get_siren")
     def test_tag_inactive_offerer(self, mock_get_siren, client, siren_caduc_tag):
         offerer = offerers_factories.OffererFactory()
 
-        mock_get_siren.return_value = sirene.SirenInfo(
+        mock_get_siren.return_value = sirene_models.SirenInfo(
             siren=offerer.siren,
             name=offerer.name,
             head_office_siret=offerer.siren + "00001",
@@ -65,12 +66,12 @@ class CheckOffererIsActiveTest:
         assert action.offererId == offerer.id
         assert action.extraData == {"modified_info": {"tags": {"new_info": siren_caduc_tag.label}}}
 
-    @patch("pcapi.connectors.sirene.get_siren")
+    @patch("pcapi.connectors.entreprise.sirene.get_siren")
     def test_reject_inactive_offerer_waiting_for_validation(self, mock_get_siren, client, siren_caduc_tag):
         offerer = offerers_factories.PendingOffererFactory()
         user_offerer = offerers_factories.UserNotValidatedOffererFactory(offerer=offerer)
 
-        mock_get_siren.return_value = sirene.SirenInfo(
+        mock_get_siren.return_value = sirene_models.SirenInfo(
             siren=offerer.siren,
             name=offerer.name,
             head_office_siret=offerer.siren + "00001",
@@ -112,11 +113,11 @@ class CheckOffererIsActiveTest:
         assert mails_testing.outbox[0]["To"] == user_offerer.user.email
         assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.NEW_OFFERER_REJECTION.value)
 
-    @patch("pcapi.connectors.sirene.get_siren")
+    @patch("pcapi.connectors.entreprise.sirene.get_siren")
     def test_do_not_tag_inactive_offerer(self, mock_get_siren, client, siren_caduc_tag):
         offerer = offerers_factories.OffererFactory()
 
-        mock_get_siren.return_value = sirene.SirenInfo(
+        mock_get_siren.return_value = sirene_models.SirenInfo(
             siren=offerer.siren,
             name=offerer.name,
             head_office_siret=offerer.siren + "00001",
@@ -136,7 +137,7 @@ class CheckOffererIsActiveTest:
         assert response.status_code == 204
         assert not offerer.tags
 
-    @patch("pcapi.connectors.sirene.get_siren", side_effect=sirene.UnknownEntityException())
+    @patch("pcapi.connectors.entreprise.sirene.get_siren", side_effect=sirene_exceptions.UnknownEntityException())
     def test_siren_not_found(self, mock_get_siren, client, siren_caduc_tag):
         offerer = offerers_factories.OffererFactory()
 

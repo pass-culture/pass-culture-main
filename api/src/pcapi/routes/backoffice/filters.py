@@ -23,6 +23,7 @@ from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.fraud import models as fraud_models
+from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
@@ -156,6 +157,17 @@ def format_bool(data: bool | None, none_display: str = "") -> str:
     if data:
         return "Oui"
     return "Non"
+
+
+def format_bool_badge(data: bool | None, none_display: str = "") -> str:
+    if data is None:
+        return none_display
+
+    if data:
+        return Markup(
+            '<span class="mx-2 pb-1 badge rounded-pill text-bg-success"><i class="bi bi-check-circle"></i> Oui</span>'
+        )
+    return Markup('<span class="mx-2 pb-1 badge rounded-pill text-bg-dark"><i class="bi bi-x-circle"></i> Non</span>')
 
 
 def format_string_list(data: list[str] | None) -> str:
@@ -1032,6 +1044,10 @@ def field_list_get_number_from_name(field_name: str) -> str:
     return field_name.split("-")[1]
 
 
+def format_legal_category_code(code: int | str) -> str:
+    return offerers_constants.CODE_TO_CATEGORY_MAPPING.get(int(code), "Inconnu")
+
+
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
@@ -1041,6 +1057,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_booking_status"] = format_booking_status
     app.jinja_env.filters["format_booking_status_long"] = format_booking_status_long
     app.jinja_env.filters["format_bool"] = format_bool
+    app.jinja_env.filters["format_bool_badge"] = format_bool_badge
     app.jinja_env.filters["format_cents"] = format_cents
     app.jinja_env.filters["format_rate"] = format_rate
     app.jinja_env.filters["format_rate_multiply_by_100"] = format_rate_multiply_by_100
@@ -1071,6 +1088,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_eligibility_type"] = format_eligibility_type
     app.jinja_env.filters["format_fraud_check_url"] = format_fraud_check_url
     app.jinja_env.filters["format_fraud_action_dict_url"] = format_fraud_action_dict_url
+    app.jinja_env.filters["format_legal_category_code"] = format_legal_category_code
     app.jinja_env.filters["format_role"] = format_role
     app.jinja_env.filters["format_state"] = format_state
     app.jinja_env.filters["format_reason_label"] = format_reason_label

@@ -1,0 +1,44 @@
+<turbo-frame id="offerer_rcs_frame">
+{% if rcs_info %}
+  <div class="row">
+    <p class="mb-1">
+      <span class="fw-bold">Activité commerciale :</span> {{ rcs_info.registered | format_bool_badge }}
+      {% if rcs_info.deregistration_date %}
+        <span class="mx-2 pb-1 badge rounded-pill text-bg-dark"><i class="bi bi-x-circle"></i> Radié</span>
+      {% endif %}
+    </p>
+    {% if rcs_info.registered %}
+      <p class="mb-1">
+        <span class="fw-bold">Date d'immatriculation :</span> {{ rcs_info.registration_date | format_date }}
+      </p>
+      {% if rcs_info.deregistration_date %}
+        <p class="mb-1">
+          <span class="fw-bold">Date de radiation :</span> {{ rcs_info.deregistration_date | format_date }}
+        </p>
+      {% endif %}
+      <p class="mb-1">
+        <span class="fw-bold">Activité du siège social :</span> {{ rcs_info.head_office_activity }}
+      </p>
+      {% if rcs_info.corporate_officers %}
+        <p class="mb-1">
+          <span class="fw-bold">Mandataires sociaux :</span>
+          <ul class="mx-4 mb-0">
+            {% for officer in rcs_info.corporate_officers %}<li>{{ officer.role }} : {{ officer.name }}</li>{% endfor %}
+          </ul>
+        </p>
+      {% endif %}
+      {% if rcs_info.observations %}
+        <p class="mb-1">
+          <span class="fw-bold">Observations :</span>
+          <ul class="mx-4 mb-0">
+            {% for observation in rcs_info.observations %}<li>{{ observation.date | format_date }} : {{ observation.label }}</li>{% endfor %}
+          </ul>
+        </p>
+      {% endif %}
+    {% endif %}
+  </div>
+{% else %}
+  <span class="mr-2 pb-1 badge rounded-pill text-bg-warning"><i class="bi bi-exclamation-triangle"></i> Erreur</span>
+  {{ rcs_error }}
+{% endif %}
+</turbo-frame>

@@ -5,7 +5,9 @@ import typing
 from flask_wtf import FlaskForm
 import wtforms
 
-from pcapi.connectors import sirene
+from pcapi.connectors.entreprise import exceptions as sirene_exceptions
+from pcapi.connectors.entreprise import models as sirene_models
+from pcapi.connectors.entreprise import sirene
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.repository import find_offerer_by_siren
 from pcapi.core.users import models as users_models
@@ -104,7 +106,7 @@ class CreateOffererForm(FlaskForm):
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
         super().__init__(*args, **kwargs)
         self._user: users_models.User | None = None
-        self._siret_info: sirene.SiretInfo | None = None
+        self._siret_info: sirene_models.SiretInfo | None = None
 
     @property
     def user(self) -> users_models.User:
@@ -112,7 +114,7 @@ class CreateOffererForm(FlaskForm):
         return self._user
 
     @property
-    def siret_info(self) -> sirene.SiretInfo:
+    def siret_info(self) -> sirene_models.SiretInfo:
         assert self._siret_info, "siret has not been validated"
         return self._siret_info
 
@@ -131,9 +133,9 @@ class CreateOffererForm(FlaskForm):
 
             try:
                 siret_info = sirene.get_siret(siret.data, raise_if_non_public=False)
-            except sirene.UnknownEntityException:
+            except sirene_exceptions.UnknownEntityException:
                 raise wtforms.validators.ValidationError(f"Le SIRET {siret.data} n'existe pas")
-            except sirene.SireneApiException:
+            except sirene_exceptions.ApiException:
                 raise wtforms.validators.ValidationError("Une erreur s'est produite lors de l'appel à l'API Sirene")
 
             if not siret_info.active:

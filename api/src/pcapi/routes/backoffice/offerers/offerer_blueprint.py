@@ -12,9 +12,12 @@ import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
 from pcapi.connectors.dms.models import GraphQLApplicationStates
+from pcapi.connectors.entreprise import api as entreprise_api
+from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.finance import models as finance_models
+from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -832,3 +835,92 @@ def update_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
     db.session.commit()
 
     return _self_redirect(offerer_id, active_tab="subscription")
+
+
+EI_CATEGORY_CODE = 1000
+PUBLIC_CATEGORIES_MIN_CODE = 7000
+
+
+@offerer_blueprint.route("/api-entreprise", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.READ_PRO_ENTREPRISE_INFO)
+def get_entreprise_info(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+
+    data: dict[str, typing.Any] = {}
+    siren_info = None
+
+    try:
+        siren_info = entreprise_api.get_siren(offerer.siren, with_address=True, raise_if_non_public=False)
+        data["siren_info"] = siren_info
+    except entreprise_exceptions.UnknownEntityException:
+        data["siren_error"] = "Ce SIREN est inconnu dans la base de données Sirene, y compris dans les non-diffusibles"
+    except entreprise_exceptions.SireneException as error:
+        data["siren_error"] = str(error) or "Une erreur s'est produite lors de l'appel à API Entreprise"
+
+    # Only data from INSEE is retrieved in this endpoint.
+    # Then other endpoints below will be called in turbo-frames, so that we have one API call per endpoint.
+    # This ensures that a long API call does not block other information or makes the current endpoint timeout.
+
+    # I don't have a list but corporate taxes do not apply at least to "Entreprise Individuelle" and public structures
+    if siren_info and siren_info.legal_category_code:
+        legal_category_code = int(siren_info.legal_category_code)
+        data["show_dgfip_card"] = (
+            legal_category_code != EI_CATEGORY_CODE and legal_category_code < PUBLIC_CATEGORIES_MIN_CODE
+        )
+
+    return render_template("offerer/get/details/entreprise_info.html", offerer_id=offerer_id, **data)
+
+
+@offerer_blueprint.route("/api-entreprise/rcs", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.READ_PRO_ENTREPRISE_INFO)
+def get_entreprise_rcs_info(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+
+    data: dict[str, typing.Any] = {}
+
+    try:
+        data["rcs_info"] = entreprise_api.get_rcs(offerer.siren)
+    except entreprise_exceptions.EntrepriseException as error:
+        data["rcs_error"] = str(error) or "Une erreur s'est produite lors de l'appel à API Entreprise"
+
+    return render_template("offerer/get/details/entreprise_info_rcs.html", **data)
+
+
+@offerer_blueprint.route("/api-entreprise/urssaf", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.READ_PRO_SENSITIVE_INFO)
+def get_entreprise_urssaf_info(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+
+    data: dict[str, typing.Any] = {}
+
+    try:
+        data["urssaf_info"] = entreprise_api.get_urssaf(offerer.siren)
+    except entreprise_exceptions.EntrepriseException as error:
+        data["urssaf_error"] = str(error) or "Une erreur s'est produite lors de l'appel à API Entreprise"
+    else:
+        history_api.add_action(
+            history_models.ActionType.OFFERER_ATTESTATION_CHECKED, current_user, offerer=offerer, provider="URSSAF"
+        )
+        db.session.commit()
+
+    return render_template("offerer/get/details/entreprise_info_urssaf.html", **data)
+
+
+@offerer_blueprint.route("/api-entreprise/dgfip", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.READ_PRO_SENSITIVE_INFO)
+def get_entreprise_dgfip_info(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+
+    data: dict[str, typing.Any] = {}
+
+    try:
+        data["dgfip_info"] = entreprise_api.get_dgfip(offerer.siren)
+    except entreprise_exceptions.EntrepriseException as error:
+        data["dgfip_error"] = str(error) or "Une erreur s'est produite lors de l'appel à API Entreprise"
+    else:
+        history_api.add_action(
+            history_models.ActionType.OFFERER_ATTESTATION_CHECKED, current_user, offerer=offerer, provider="DGFIP"
+        )
+        db.session.commit()
+
+    return render_template("offerer/get/details/entreprise_info_dgfip.html", **data)

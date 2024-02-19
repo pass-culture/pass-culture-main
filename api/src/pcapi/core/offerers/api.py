@@ -16,7 +16,9 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
-from pcapi.connectors import sirene
+from pcapi.connectors.entreprise import exceptions as sirene_exceptions
+from pcapi.connectors.entreprise import models as sirene_models
+from pcapi.connectors.entreprise import sirene
 import pcapi.connectors.thumb_storage as storage
 from pcapi.core import search
 from pcapi.core.bookings import models as bookings_models
@@ -690,7 +692,7 @@ def _fill_in_offerer(
 
 
 def auto_tag_new_offerer(
-    offerer: offerers_models.Offerer, siren_info: sirene.SirenInfo | None, user: users_models.User
+    offerer: offerers_models.Offerer, siren_info: sirene_models.SirenInfo | None, user: users_models.User
 ) -> None:
     tag_names_to_apply = set()
 
@@ -800,7 +802,7 @@ def create_offerer(
     assert offerer.siren  # helps mypy until Offerer.siren is set as NOT NULL
     try:
         siren_info = sirene.get_siren(offerer.siren, raise_if_non_public=False)
-    except sirene.SireneException as exc:
+    except sirene_exceptions.SireneException as exc:
         logger.info("Could not fetch info from Sirene API", extra={"exc": exc})
         siren_info = None
 

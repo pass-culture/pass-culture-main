@@ -492,7 +492,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["venueTypeCode"] == ["(: invalide"]
 
-    @patch("pcapi.connectors.sirene.siret_is_active", return_value=False)
+    @patch("pcapi.connectors.entreprise.sirene.siret_is_active", return_value=False)
     def test_with_inactive_siret(self, mocked_siret_is_active, client):
         venue = offerers_factories.VenueFactory()
         user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)

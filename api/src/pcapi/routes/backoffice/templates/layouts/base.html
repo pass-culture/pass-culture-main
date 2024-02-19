@@ -14,7 +14,7 @@
     {% set icon_path = get_setting("BACKOFFICE_FAVICON_PATH") if get_setting else "favicon_default.ico" %}
     <link rel="icon"
           type="image/x-icon"
-          href="{{ url_for('static', filename='backoffice/favicon/' + icon_path ) }}" />
+          href="{{ url_for('static', filename='backoffice/favicon/' + icon_path) }}" />
     <!-- Bootstrap icons -->
     <link href="{{ url_for('static', filename='backoffice/css/bootstrap-icons@1.9.1/font/bootstrap-icons.css') }}"
           rel="stylesheet"
@@ -67,6 +67,7 @@
     <script src="{{ url_for('static', filename='backoffice/js/addons/pc-form.js') }}"></script>
     <script src="{{ url_for('static', filename='backoffice/js/addons/pc-pro-search-form.js') }}"></script>
     <script src="{{ url_for('static', filename='backoffice/js/addons/pc-strip-query-string.js') }}"></script>
+    <script src="{{ url_for('static', filename='backoffice/js/addons/pc-hide-on-click.js') }}"></script>
     <script>
       const app = new PcBackofficeApp({
         addOns: [
@@ -89,6 +90,7 @@
           PcForm,
           PcProSearchForm,
           PcStripQueryString,
+          PcHideOnClick,
         ]
       })
     </script>

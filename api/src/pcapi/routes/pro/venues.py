@@ -5,7 +5,7 @@ from flask_login import login_required
 import pydantic.v1 as pydantic_v1
 import sqlalchemy.orm as sqla_orm
 
-from pcapi.connectors import sirene
+from pcapi.connectors.entreprise import sirene
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models

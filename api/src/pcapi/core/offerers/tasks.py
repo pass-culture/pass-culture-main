@@ -1,7 +1,8 @@
 import logging
 
 from pcapi import settings
-from pcapi.connectors import sirene
+from pcapi.connectors.entreprise import exceptions as sirene_exceptions
+from pcapi.connectors.entreprise import sirene
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
@@ -25,7 +26,7 @@ class CheckOffererSirenRequest(BaseModel):
 def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
     try:
         siren_info = sirene.get_siren(payload.siren, with_address=False, raise_if_non_public=False)
-    except sirene.SireneException as exc:
+    except sirene_exceptions.SireneException as exc:
         logger.info("Could not fetch info from Sirene API", extra={"siren": payload.siren, "exc": exc})
         return
 

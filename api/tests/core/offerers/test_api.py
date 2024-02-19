@@ -10,7 +10,7 @@ import jwt
 import pytest
 import sqlalchemy as sa
 
-from pcapi.connectors import sirene
+from pcapi.connectors.entreprise import models as sirene_models
 from pcapi.core import search
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
@@ -59,7 +59,7 @@ def test_new_offerer_auto_tagging(db_session, ape_code, expected_tag):
     # given
     gen_offerer_tags()
     offerer = offerers_factories.OffererFactory()
-    siren_info = sirene.SirenInfo(
+    siren_info = sirene_models.SirenInfo(
         ape_code=ape_code,
         siren="777123456",
         name="this is not a name",

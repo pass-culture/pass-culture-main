@@ -1,0 +1,97 @@
+{% from "components/turbo/spinner.html" import build_loading_spinner with context %}
+<turbo-frame id="offerer_entreprise_frame">
+<div class="card my-1 border-0">
+  <div class="card-body my-2">
+    <h5 class="card-title">Données INSEE</h5>
+    <div class="card-body">
+      {% if siren_info %}
+        <div class="row">
+          {% if not siren_info.diffusible %}
+            <p>
+              <span class="fw-bold">Attention !</span> Cette entreprise a choisi de rendre son nom et son adresse non-diffusibles.
+              <br />
+              Ces informations ne doivent être utilisées qu'à des fins de vérification et ne doivent en aucun cas être partagées.
+            </p>
+          {% endif %}
+          <div class="col-6">
+            <p class="mb-1">
+              <span class="fw-bold">Nom :</span> {{ siren_info.name }}
+            </p>
+            <p class="mb-1">
+              <span class="fw-bold">SIRET du siège social :</span>
+              {% if siren_info.head_office_siret %}
+                <a href="{{ url_for("backoffice_web.pro.search_pro", pro_type='VENUE', q=siren_info.head_office_siret) }}">
+                  {{ siren_info.head_office_siret }}
+                </a>
+              {% endif %}
+            </p>
+            <p class="mb-1">
+              <span class="fw-bold">Adresse :</span> {{ siren_info.address.street }}
+            </p>
+            <p class="mb-1">
+              <span class="fw-bold">Code postal :</span> {{ siren_info.address.postal_code }}
+            </p>
+            <p class="mb-1">
+              <span class="fw-bold">Ville :</span> {{ siren_info.address.city }}
+            </p>
+          </div>
+          <div class="col-6">
+            <p class="mb-1">
+              <span class="fw-bold">SIREN actif :</span> {{ siren_info.active | format_bool_badge }}
+            </p>
+            <p class="mb-1">
+              <span class="fw-bold">Diffusible :</span> {{ siren_info.diffusible | format_bool_badge }}
+            </p>
+            <p class="mb-1">
+              <span class="fw-bold">Catégorie juridique :</span> {{ siren_info.legal_category_code | format_legal_category_code }}
+            </p>
+            <p class="mb-1">
+              <span class="fw-bold">Code APE :</span> {{ siren_info.ape_code }}
+            </p>
+            <p class="mb-1">
+              <span class="fw-bold">Activité principale :</span> {{ siren_info.ape_label }}
+            </p>
+          </div>
+        </div>
+      {% else %}
+        <span class="mr-2 pb-1 badge rounded-pill text-bg-warning"><i class="bi bi-exclamation-triangle"></i> Erreur</span>
+        {{ siren_error }}
+      {% endif %}
+    </div>
+  </div>
+  {% if siren_info %}
+    <div class="card-body my-2">
+      <h5 class="card-title">Données RCS (Infogreffe)</h5>
+      <div class="card-body">
+        <turbo-frame data-turbo="false" id="offerer_rcs_frame" loading="lazy" src="{{ url_for("backoffice_web.offerer.get_entreprise_rcs_info", offerer_id=offerer_id) }}">
+        {{ build_loading_spinner() }}
+        </turbo-frame>
+      </div>
+    </div>
+    {% if has_permission("READ_PRO_SENSITIVE_INFO") %}
+      <div class="card-body my-2">
+        <h5 class="card-title">Données URSSAF</h5>
+        <div class="card-body">
+          <turbo-frame data-turbo="true" id="offerer_urssaf_frame">
+          <a href="{{ url_for("backoffice_web.offerer.get_entreprise_urssaf_info", offerer_id=offerer_id) }}"
+             class="btn btn-md btn-outline-primary fw-bold pc-hide-on-click"><i class="bi bi-arrow-clockwise"></i> Vérifier</a>
+          <div class="d-none pc-show-on-click">{{ build_loading_spinner() }}</div>
+          </turbo-frame>
+        </div>
+      </div>
+      {% if show_dgfip_card %}
+        <div class="card-body my-2">
+          <h5 class="card-title">Données DGFIP</h5>
+          <div class="card-body">
+            <turbo-frame data-turbo="true" id="offerer_dgfip_frame">
+            <a href="{{ url_for("backoffice_web.offerer.get_entreprise_dgfip_info", offerer_id=offerer_id) }}"
+               class="btn btn-md btn-outline-primary fw-bold pc-hide-on-click"><i class="bi bi-arrow-clockwise"></i> Vérifier</a>
+            <div class="d-none pc-show-on-click">{{ build_loading_spinner() }}</div>
+            </turbo-frame>
+          </div>
+        </div>
+      {% endif %}
+    {% endif %}
+  {% endif %}
+</div>
+</turbo-frame>
