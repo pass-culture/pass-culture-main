@@ -5,7 +5,6 @@ import { useLocation } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { DMSApplicationForEAC } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
-import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
 import {
   COLLECTIVE_OFFER_SUBTYPE,
   OFFER_TYPES,
@@ -81,13 +80,16 @@ const CollectiveOfferType = ({
       }
 
       if (offererId) {
-        const { isOk, message, payload } =
-          await canOffererCreateCollectiveOfferAdapter(Number(offererId))
-
-        if (!isOk) {
-          notify.error(message)
+        try {
+          const { canCreate } = await api.canOffererCreateEducationalOffer(
+            Number(offererId)
+          )
+          setIsEligible(canCreate)
+        } catch (error) {
+          notify.error(
+            'Une erreur technique est survenue lors de la vérification de votre éligibilité.'
+          )
         }
-        setIsEligible(payload.isOffererEligibleToEducationalOffer)
       }
     }
 

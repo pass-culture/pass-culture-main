@@ -5,7 +5,6 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.categories import subcategories_v2 as subcategories
-from pcapi.core.educational.exceptions import CulturalPartnerNotFoundException
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.factories import CollectiveOfferFactory
@@ -619,8 +618,7 @@ class Returns403Test:
         }
 
         with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-            side_effect=CulturalPartnerNotFoundException,
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer", return_value=False
         ):
             response = client.patch("/collective/offers/all-active-status", json=data)
 
@@ -706,8 +704,7 @@ class Returns404Test:
         # WHEN
         client = client.with_session_auth("user@example.com")
         with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-            side_effect=CulturalPartnerNotFoundException,
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer", return_value=False
         ):
             response = client.patch(f"/collective/offers/{offer.id}", json=data)
 

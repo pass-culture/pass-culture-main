@@ -3,6 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 import * as router from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import { CollectiveOffer } from 'core/OfferEducational'
 import * as patchCollectiveOfferAdapter from 'core/OfferEducational/adapters/patchCollectiveOfferAdapter'
 import { RootState } from 'store/rootReducer'
@@ -16,6 +17,7 @@ import { OfferEducationalProps } from '../OfferEducational'
 vi.mock('apiClient/api', () => ({
   api: {
     editCollectiveOffer: vi.fn(),
+    canOffererCreateEducationalOffer: vi.fn(),
   },
 }))
 
@@ -51,6 +53,9 @@ describe('screens | OfferEducational : event address step', () => {
     }
 
     vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
+    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue({
+      canCreate: true,
+    })
   })
 
   it('should redirect to stock on submit', async () => {

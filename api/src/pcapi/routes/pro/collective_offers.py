@@ -253,9 +253,7 @@ def edit_collective_offer(
 
     new_values = body.dict(exclude_unset=True)
 
-    try:
-        offerers_api.can_offerer_create_educational_offer(offerer.id)
-    except educational_exceptions.CulturalPartnerNotFoundException:
+    if not offerers_api.can_offerer_create_educational_offer(offerer.id):
         raise ApiErrors({"Partner": "User not in Adage can't edit the offer"}, status_code=403)
 
     try:
@@ -347,9 +345,7 @@ def edit_collective_offer_template(
 
     new_values = body.dict(exclude_unset=True)
 
-    try:
-        offerers_api.can_offerer_create_educational_offer(offerer.id)
-    except educational_exceptions.CulturalPartnerNotFoundException:
+    if not offerers_api.can_offerer_create_educational_offer(offerer.id):
         raise ApiErrors({"Partner": "User not in Adage can't edit the offer"}, status_code=403)
 
     try:
@@ -389,15 +385,14 @@ def patch_all_collective_offers_active_status(
     body: collective_offers_serialize.PatchAllCollectiveOffersActiveStatusBodyModel,
 ) -> None:
     if body.is_active:
-        try:
-            if body.offerer_id:
-                offerers_api.can_offerer_create_educational_offer(body.offerer_id)
-            else:
-                offerers_ids = {user_offerer.offererId for user_offerer in current_user.UserOfferers}
-                for offerer_id in offerers_ids:
-                    offerers_api.can_offerer_create_educational_offer(offerer_id)
-        except educational_exceptions.CulturalPartnerNotFoundException:
-            raise ApiErrors({"Partner": ["User not in Adage can't edit the offer"]}, status_code=403)
+        if body.offerer_id:
+            if not offerers_api.can_offerer_create_educational_offer(body.offerer_id):
+                raise ApiErrors({"Partner": ["User not in Adage can't edit the offer"]}, status_code=403)
+        else:
+            offerers_ids = {user_offerer.offererId for user_offerer in current_user.UserOfferers}
+            for offerer_id in offerers_ids:
+                if not offerers_api.can_offerer_create_educational_offer(offerer_id):
+                    raise ApiErrors({"Partner": ["User not in Adage can't edit the offer"]}, status_code=403)
 
     filters = {
         "user_id": current_user.id,
@@ -427,9 +422,7 @@ def patch_collective_offers_active_status(
     if body.is_active:
         offerers_ids = educational_repository.get_offerer_ids_from_collective_offers_ids(body.ids)
         for offerer_id in offerers_ids:
-            try:
-                offerers_api.can_offerer_create_educational_offer(offerer_id)
-            except educational_exceptions.CulturalPartnerNotFoundException:
+            if not offerers_api.can_offerer_create_educational_offer(offerer_id):
                 raise ApiErrors({"Partner": ["User not in Adage can't edit the offer"]}, status_code=403)
 
     collective_query = educational_api_offer.get_query_for_collective_offers_by_ids_for_user(current_user, body.ids)
@@ -448,9 +441,7 @@ def patch_collective_offers_template_active_status(
     if body.is_active:
         offerers_ids = educational_repository.get_offerer_ids_from_collective_offers_template_ids(body.ids)
         for offerer_id in offerers_ids:
-            try:
-                offerers_api.can_offerer_create_educational_offer(offerer_id)
-            except educational_exceptions.CulturalPartnerNotFoundException:
+            if not offerers_api.can_offerer_create_educational_offer(offerer_id):
                 raise ApiErrors({"Partner": ["User not in Adage can't edit the offer"]}, status_code=403)
 
     collective_template_query = educational_api_offer.get_query_for_collective_offers_template_by_ids_for_user(

@@ -119,7 +119,9 @@ vi.spyOn(api, 'getSiretInfo').mockResolvedValue({
   legal_category_code: '1000',
 })
 
-vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
+vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue({
+  canCreate: true,
+})
 
 vi.mock('apiClient/adresse', async () => {
   return {

@@ -93,7 +93,9 @@ describe('OfferType', () => {
       offerersNames: [{ id: 1, name: 'Ma super structure' }],
     })
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue([])
-    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
+    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue({
+      canCreate: true,
+    })
 
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
@@ -367,7 +369,9 @@ describe('OfferType', () => {
   })
 
   it('should display error message if trying to duplicate without template offer', async () => {
-    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
+    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue({
+      canCreate: true,
+    })
     const notifyError = vi.fn()
     const notifsImport = (await vi.importActual(
       'hooks/useNotification'

@@ -3,7 +3,6 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core import testing
-from pcapi.core.educational.exceptions import CulturalPartnerNotFoundException
 from pcapi.core.educational.factories import CollectiveOfferFactory
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 from pcapi.core.educational.models import CollectiveOfferTemplate
@@ -96,7 +95,7 @@ class Returns403Test:
 
         with patch(
             "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
-            side_effect=CulturalPartnerNotFoundException,
+            return_value=False,
         ):
             response = client.patch("/collective/offers-template/active-status", json=data)
 

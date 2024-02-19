@@ -5,7 +5,6 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { GetEducationalOffererResponseModel } from 'apiClient/v1'
 import OfferEducationalActions from 'components/OfferEducationalActions'
 import {
-  CanOffererCreateCollectiveOffer,
   OfferEducationalFormValues,
   Mode,
   isCollectiveOffer,
@@ -36,7 +35,6 @@ export interface OfferEducationalProps {
   setOffer: (offer: CollectiveOffer | CollectiveOfferTemplate) => void
   categories: EducationalCategories
   userOfferers: GetEducationalOffererResponseModel[]
-  getIsOffererEligible?: CanOffererCreateCollectiveOffer
   mode: Mode
   isOfferBooked?: boolean
   isOfferActive?: boolean
@@ -54,7 +52,6 @@ const OfferEducational = ({
   userOfferers,
   domainsOptions,
   nationalPrograms,
-  getIsOffererEligible,
   mode,
   isOfferBooked = false,
   isTemplate,
@@ -178,7 +175,6 @@ const OfferEducational = ({
         <form onSubmit={formik.handleSubmit}>
           <OfferEducationalForm
             categories={categories}
-            getIsOffererEligible={getIsOffererEligible}
             mode={mode}
             userOfferers={userOfferers}
             domainsOptions={domainsOptions}

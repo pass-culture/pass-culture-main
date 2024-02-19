@@ -54,7 +54,7 @@ class CanOffererCreateEducationalOfferTest:
 
             response = client.with_session_auth(pro.email).get(f"/offerers/{offerer.id}/eac-eligibility")
 
-        assert response.status_code == 204
+        assert response.status_code == 200
 
     def test_offerer_can_create_educational_offer_already_known(self, client: Any) -> None:
         venue = offerers_factories.VenueFactory(adageId="pouet")
@@ -64,7 +64,7 @@ class CanOffererCreateEducationalOfferTest:
             response = client.with_session_auth(pro.email).get(f"/offerers/{venue.managingOffererId}/eac-eligibility")
             adage_client.assert_not_called()
 
-        assert response.status_code == 204
+        assert response.status_code == 200
 
     def test_offerer_cannot_create_educational_offer_because_not_in_adage(self, client: Any) -> None:
         offerer = offerers_factories.OffererFactory()
@@ -81,8 +81,8 @@ class CanOffererCreateEducationalOfferTest:
 
             response = client.with_session_auth(pro.email).get(f"/offerers/{offerer.id}/eac-eligibility")
 
-        assert response.status_code == 404
-        assert response.json == {"offerer": "not found in adage"}
+        assert response.status_code == 200
+        assert response.json == {"canCreate": False}
 
     def test_offerer_cannot_create_educational_offer_because_adage_failed(self, client: Any) -> None:
         offerer = offerers_factories.OffererFactory()

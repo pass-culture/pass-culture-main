@@ -146,7 +146,9 @@ describe('CollectiveDataEdition', () => {
     )
 
     vi.spyOn(api, 'getEducationalPartner').mockRejectedValue({})
-    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
+    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue({
+      canCreate: true,
+    })
   })
 
   describe('render', () => {
@@ -202,6 +204,19 @@ describe('CollectiveDataEdition', () => {
 
     it('should display toaster when some data could not be loaded', async () => {
       vi.spyOn(api, 'getVenuesEducationalStatuses').mockRejectedValueOnce(
+        new ApiError({} as ApiRequestOptions, { status: 500 } as ApiResult, '')
+      )
+
+      renderCollectiveDataEdition()
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+      await waitFor(() => {
+        expect(notifyErrorMock).toHaveBeenCalledWith(GET_DATA_ERROR_MESSAGE)
+      })
+    })
+
+    it('should display error when could not verify offerer eligibility', async () => {
+      vi.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValueOnce(
         new ApiError({} as ApiRequestOptions, { status: 500 } as ApiResult, '')
       )
 
