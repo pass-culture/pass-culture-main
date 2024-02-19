@@ -5,9 +5,9 @@ import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetOfferStockResponseModel, StocksOrderedBy } from 'apiClient/v1'
+import { GetIndividualOfferFactory } from 'utils/apiFactories'
 import {
   individualGetOfferStockResponseModelFactory,
-  individualOfferFactory,
   priceCategoryFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -64,7 +64,7 @@ const renderStocksEventList = async (
         priceCategoryFactory({ label: 'Label', price: 30.5, id: 3 }),
       ]}
       departmentCode={props.departmentCode ?? '78'}
-      offer={individualOfferFactory({ id: offerId })}
+      offer={GetIndividualOfferFactory({ id: offerId })}
       {...props}
     />
   )

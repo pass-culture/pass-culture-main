@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
-import { individualOfferFactory } from 'utils/individualApiFactories'
+import { GetIndividualOfferFactory } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
@@ -15,14 +15,14 @@ const renderPriceCategories = (props: PriceCategoriesScreenProps) =>
 
 describe('PriceCategories', () => {
   it('should render without error', () => {
-    renderPriceCategories({ offer: individualOfferFactory() })
+    renderPriceCategories({ offer: GetIndividualOfferFactory() })
 
     expect(screen.getByText('Tarifs')).toBeInTheDocument()
   })
 
   it('should not disabled field for allociné', () => {
     renderPriceCategories({
-      offer: individualOfferFactory({ lastProvider: { name: 'allociné' } }),
+      offer: GetIndividualOfferFactory({ lastProvider: { name: 'allociné' } }),
     })
 
     expect(screen.getByLabelText('Prix par personne *')).not.toBeDisabled()
@@ -30,7 +30,7 @@ describe('PriceCategories', () => {
 
   it('should disabled field for provider', () => {
     renderPriceCategories({
-      offer: individualOfferFactory({
+      offer: GetIndividualOfferFactory({
         lastProvider: { name: 'provider' },
       }),
     })
@@ -40,7 +40,7 @@ describe('PriceCategories', () => {
 
   it('should disabled field for pending offer', () => {
     renderPriceCategories({
-      offer: individualOfferFactory({ status: OfferStatus.PENDING }),
+      offer: GetIndividualOfferFactory({ status: OfferStatus.PENDING }),
     })
 
     expect(screen.getByLabelText('Prix par personne *')).toBeDisabled()
@@ -48,7 +48,7 @@ describe('PriceCategories', () => {
 
   it('should disabled field for rejected offer', () => {
     renderPriceCategories({
-      offer: individualOfferFactory({ status: OfferStatus.REJECTED }),
+      offer: GetIndividualOfferFactory({ status: OfferStatus.REJECTED }),
     })
 
     expect(screen.getByLabelText('Prix par personne *')).toBeDisabled()

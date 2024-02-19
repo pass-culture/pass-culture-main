@@ -12,11 +12,11 @@ import {
 } from 'context/IndividualOfferContext'
 import { IndividualOffer } from 'core/Offers/types'
 import { RootState } from 'store/rootReducer'
-import { offerVenueFactory } from 'utils/apiFactories'
 import {
-  individualOfferContextFactory,
-  individualOfferFactory,
-} from 'utils/individualApiFactories'
+  GetIndividualOfferFactory,
+  offerVenueFactory,
+} from 'utils/apiFactories'
+import { individualOfferContextFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { Confirmation } from '../Confirmation'
@@ -82,7 +82,7 @@ describe('Confirmation', () => {
         },
       },
     }
-    offer = individualOfferFactory({
+    offer = GetIndividualOfferFactory({
       venue: offerVenueFactory({
         id: venueId,
         managingOfferer: {

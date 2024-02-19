@@ -11,10 +11,7 @@ import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
-import {
-  individualOfferFactory,
-  priceCategoryFactory,
-} from 'utils/individualApiFactories'
+import { priceCategoryFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
@@ -64,7 +61,7 @@ describe('PriceCategories', () => {
 
   it('should notify and submit when clicking on Enregistrer et continuer in creation', async () => {
     renderPriceCategories({
-      offer: individualOfferFactory({ hasStocks: false }),
+      offer: GetIndividualOfferFactory({ hasStocks: false }),
     })
     await userEvent.type(
       screen.getByLabelText('Intitulé du tarif *'),
@@ -82,7 +79,7 @@ describe('PriceCategories', () => {
 
   it('should display price modification modal', async () => {
     renderPriceCategories({
-      offer: individualOfferFactory({
+      offer: GetIndividualOfferFactory({
         bookingsCount: 0,
         priceCategories: [priceCategoryFactory({ id: 666 })],
       }),
@@ -113,7 +110,7 @@ describe('PriceCategories', () => {
 
   it('should display price modification modal with booking', async () => {
     renderPriceCategories({
-      offer: individualOfferFactory({
+      offer: GetIndividualOfferFactory({
         priceCategories: [priceCategoryFactory({ id: 666 })],
         bookingsCount: 10,
       }),
@@ -144,7 +141,7 @@ describe('PriceCategories', () => {
 
   it('should notify and submit when clicking on Enregistrer les modifications in edition', async () => {
     renderPriceCategories(
-      { offer: individualOfferFactory({ hasStocks: false }) },
+      { offer: GetIndividualOfferFactory({ hasStocks: false }) },
       generatePath(
         getIndividualOfferPath({
           step: OFFER_WIZARD_STEP_IDS.TARIFS,
@@ -170,7 +167,7 @@ describe('PriceCategories', () => {
     vi.spyOn(api, 'postPriceCategories').mockRejectedValue({})
 
     renderPriceCategories(
-      { offer: individualOfferFactory({ hasStocks: false }) },
+      { offer: GetIndividualOfferFactory({ hasStocks: false }) },
       generatePath(
         getIndividualOfferPath({
           step: OFFER_WIZARD_STEP_IDS.TARIFS,

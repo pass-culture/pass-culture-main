@@ -5,11 +5,12 @@ import {
 } from 'apiClient/v1'
 import { IndividualOffer } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
-import { offerVenueFactory, offererFactory } from 'utils/apiFactories'
 import {
-  individualOfferFactory,
-  individualOfferSubCategoryFactory,
-} from 'utils/individualApiFactories'
+  GetIndividualOfferFactory,
+  offerVenueFactory,
+  offererFactory,
+} from 'utils/apiFactories'
+import { individualOfferSubCategoryFactory } from 'utils/individualApiFactories'
 
 import setInitialFormValues from '../setInitialFormValues'
 
@@ -20,7 +21,7 @@ describe('setFormReadOnlyFields', () => {
   const offererId = 12
 
   beforeEach(() => {
-    offer = individualOfferFactory({
+    offer = GetIndividualOfferFactory({
       id: 12,
       extraData: {
         author: 'Offer author',

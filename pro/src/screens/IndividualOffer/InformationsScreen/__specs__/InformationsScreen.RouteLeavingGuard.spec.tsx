@@ -17,10 +17,10 @@ import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { ButtonLink } from 'ui-kit'
+import { GetIndividualOfferFactory } from 'utils/apiFactories'
 import {
   individualOfferCategoryFactory,
   individualOfferContextFactory,
-  individualOfferFactory,
   individualOfferSubCategoryFactory,
   individualOfferVenueItemFactory,
 } from 'utils/individualApiFactories'
@@ -115,7 +115,7 @@ describe('screens:IndividualOffer::Informations::creation', () => {
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
-    offer = individualOfferFactory()
+    offer = GetIndividualOfferFactory()
 
     const categories = [
       individualOfferCategoryFactory({ id: 'A' }),

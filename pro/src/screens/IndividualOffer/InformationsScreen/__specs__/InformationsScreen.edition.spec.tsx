@@ -23,11 +23,13 @@ import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { offerVenueFactory } from 'utils/apiFactories'
+import {
+  GetIndividualOfferFactory,
+  offerVenueFactory,
+} from 'utils/apiFactories'
 import {
   individualOfferCategoryFactory,
   individualOfferContextFactory,
-  individualOfferFactory,
   individualOfferSubCategoryFactory,
   individualOfferVenueItemFactory,
 } from 'utils/individualApiFactories'
@@ -135,7 +137,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       isVirtual: true,
     })
 
-    offer = individualOfferFactory({
+    offer = GetIndividualOfferFactory({
       id: offerId,
       extraData: {
         author: 'Offer author',
