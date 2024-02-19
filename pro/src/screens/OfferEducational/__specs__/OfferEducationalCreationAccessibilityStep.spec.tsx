@@ -2,6 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
+import { api } from 'apiClient/api'
 import { RootState } from 'store/rootReducer'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -31,6 +32,9 @@ describe('screens | OfferEducational : event address step', () => {
         ]),
       },
     }
+    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue({
+      canCreate: true,
+    })
   })
 
   it('should prefill intervention and accessibility fields with venue intervention field when selecting venue', async () => {

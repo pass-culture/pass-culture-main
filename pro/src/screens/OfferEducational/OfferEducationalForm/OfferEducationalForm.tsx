@@ -1,6 +1,7 @@
 import { useFormikContext } from 'formik'
 import React, { useCallback, useEffect, useState } from 'react'
 
+import { api } from 'apiClient/api'
 import { GetEducationalOffererResponseModel } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import BannerPublicApi from 'components/Banner/BannerPublicApi'
@@ -56,7 +57,6 @@ export type OfferEducationalFormProps = Omit<
 const OfferEducationalForm = ({
   categories,
   userOfferers,
-  getIsOffererEligible,
   mode,
   domainsOptions,
   nationalPrograms,
@@ -88,24 +88,23 @@ const OfferEducationalForm = ({
 
       if (selectedOfferer) {
         const checkOffererEligibilityToEducationalOffer = async () => {
-          if (mode === Mode.EDITION || !getIsOffererEligible) {
+          if (mode === Mode.EDITION || mode === Mode.READ_ONLY) {
             setIsEligible(true)
             return
           }
 
           setIsLoading(true)
 
-          const { isOk, message, payload } = await getIsOffererEligible(
-            selectedOfferer.id
-          )
-
-          if (isOk) {
-            setIsEligible(payload.isOffererEligibleToEducationalOffer)
-          }
-
-          if (!isOk) {
-            /* istanbul ignore next: TO FIX -> issue when trying to mock useNotification */
-            notify.error(message)
+          try {
+            const { canCreate } = await api.canOffererCreateEducationalOffer(
+              selectedOfferer.id
+            )
+            setIsEligible(canCreate)
+          } catch (error) {
+            setIsEligible(false)
+            notify.error(
+              'Une erreur technique est survenue lors de la vérification de votre éligibilité.'
+            )
           }
 
           setIsLoading(false)
@@ -132,7 +131,7 @@ const OfferEducationalForm = ({
         }
       }
     },
-    [values.offererId, userOfferers, notify, getIsOffererEligible, mode]
+    [values.offererId, userOfferers, notify, mode]
   )
 
   useEffect(() => {

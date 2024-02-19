@@ -8,7 +8,7 @@ import {
 let venueId = 1
 
 export const managedVenueFactory = (
-  userVenueExtends: Partial<GetEducationalOffererVenueResponseModel>
+  userVenueExtends: Partial<GetEducationalOffererVenueResponseModel> = {}
 ): GetEducationalOffererVenueResponseModel => {
   const currentVenueId = venueId++
   return merge(
@@ -33,7 +33,7 @@ export const managedVenuesFactory = (
 let offererId = 1
 
 export const userOffererFactory = (
-  userOffererExtends: Partial<GetEducationalOffererResponseModel>
+  userOffererExtends: Partial<GetEducationalOffererResponseModel> = {}
 ): GetEducationalOffererResponseModel => {
   const currentOffererId = offererId++
   return {

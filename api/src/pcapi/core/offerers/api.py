@@ -1220,27 +1220,21 @@ def delete_venue_banner(venue: models.Venue) -> None:
     )
 
 
-def can_offerer_create_educational_offer(offerer_id: int) -> None:
+def can_offerer_create_educational_offer(offerer_id: int) -> bool:
     import pcapi.core.educational.adage_backends as adage_client
 
     if settings.CAN_COLLECTIVE_OFFERER_IGNORE_ADAGE:
-        return
+        return True
 
     if offerers_repository.offerer_has_venue_with_adage_id(offerer_id):
-        return
+        return True
 
     siren = offerers_repository.find_siren_by_offerer_id(offerer_id)
     try:
         response = adage_client.get_adage_offerer(siren)
-        if len(response) == 0:
-            raise educational_exceptions.CulturalPartnerNotFoundException(
-                "No venue has been found for the selected siren"
-            )
-    except (
-        educational_exceptions.CulturalPartnerNotFoundException,
-        educational_exceptions.AdageException,
-    ) as exception:
-        raise exception
+        return len(response) != 0
+    except educational_exceptions.CulturalPartnerNotFoundException:
+        return False
 
 
 def can_venue_create_educational_offer(venue_id: int) -> None:

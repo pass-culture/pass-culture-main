@@ -105,8 +105,6 @@ vi.spyOn(api, 'getSiretInfo').mockResolvedValue({
   legal_category_code: '1000',
 })
 
-vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
-
 vi.mock('apiClient/adresse', async () => {
   return {
     ...((await vi.importActual('apiClient/adresse')) ?? {}),
@@ -212,6 +210,9 @@ describe('VenueFormScreen', () => {
       isWithdrawalAppliedOnAllOffers: false,
       reimbursementPointId: 91,
     }
+    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue({
+      canCreate: true,
+    })
   })
 
   it('should redirect user with the new creation journey', async () => {

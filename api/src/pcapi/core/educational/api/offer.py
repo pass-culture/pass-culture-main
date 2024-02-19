@@ -337,7 +337,9 @@ def get_venue_and_check_access_for_offer_creation(
         rest.check_user_has_access_to_offerer(user, offerer_id=template.venue.managingOffererId)
     venue: offerers_models.Venue = offerers_models.Venue.query.get_or_404(offer_data.venue_id)
     rest.check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
-    offerers_api.can_offerer_create_educational_offer(venue.managingOffererId)
+    if not offerers_api.can_offerer_create_educational_offer(venue.managingOffererId):
+        raise exceptions.CulturalPartnerNotFoundException("No venue has been found for the selected siren")
+
     offer_validation.check_offer_subcategory_is_valid(offer_data.subcategory_id)
     offer_validation.check_offer_is_eligible_for_educational(offer_data.subcategory_id)
     return venue

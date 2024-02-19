@@ -12,7 +12,6 @@ import {
   getEducationalCategoriesAdapter,
   getEducationalDomainsAdapter,
 } from 'core/OfferEducational'
-import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { Venue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
@@ -101,8 +100,15 @@ export const CollectiveDataEdition = ({
         getCulturalPartnersAdapter(),
         getVenueCollectiveDataAdapter(Number(venueId) ?? ''),
         getEducationalCategoriesAdapter(),
-        canOffererCreateCollectiveOfferAdapter(Number(offererId)),
       ])
+
+      try {
+        const { canCreate: canOffererCreateCollectiveOffer } =
+          await api.canOffererCreateEducationalOffer(Number(offererId))
+        setCanCreateCollectiveOffer(canOffererCreateCollectiveOffer)
+      } catch {
+        notify.error(GET_DATA_ERROR_MESSAGE)
+      }
 
       if (allResponses.some((response) => !response.isOk)) {
         notify.error(GET_DATA_ERROR_MESSAGE)
@@ -114,17 +120,12 @@ export const CollectiveDataEdition = ({
         culturalPartnersResponse,
         venueResponse,
         categoriesResponse,
-        canOffererCreateCollectiveOfferResponse,
       ] = allResponses
 
       setDomains(domainsResponse.payload)
       setStatuses(statusesResponse.payload)
       setCulturalPartners(culturalPartnersResponse.payload)
       setCategories(categoriesResponse.payload)
-      setCanCreateCollectiveOffer(
-        canOffererCreateCollectiveOfferResponse.payload
-          .isOffererEligibleToEducationalOffer
-      )
       if (venueResponse.isOk) {
         if (venueHasCollectiveInformation(venueResponse.payload)) {
           setVenueCollectiveData(venueResponse.payload)

@@ -371,3 +371,7 @@ class GetOffererV2StatsResponseModel(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class CanOffererCreateCollectiveOfferResponseModel(BaseModel):
+    canCreate: bool

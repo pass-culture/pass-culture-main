@@ -64,12 +64,6 @@ export type OfferEducationalFormValues = {
   formats?: EacFormat[]
 }
 
-export type CanOffererCreateCollectiveOffer = Adapter<
-  number,
-  { isOffererEligibleToEducationalOffer: boolean },
-  { isOffererEligibleToEducationalOffer: false }
->
-
 export enum Mode {
   CREATION,
   EDITION,
