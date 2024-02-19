@@ -187,7 +187,7 @@ def test_create_offerer_action_is_logged(client):
     assert action.offererId == response.json["id"]
 
 
-@override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
+@override_settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
 def test_with_inactive_siren(requests_mock, client):
     siren = "123456789"
     requests_mock.get(

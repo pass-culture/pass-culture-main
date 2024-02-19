@@ -1,6 +1,6 @@
 from flask_login import login_required
 
-from pcapi.connectors import sirene
+from pcapi.connectors.entreprise import sirene
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import sirene as sirene_serializers
 from pcapi.serialization.decorator import spectree_serialize

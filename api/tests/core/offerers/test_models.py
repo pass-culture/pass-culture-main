@@ -6,7 +6,7 @@ import sqlalchemy as sa
 from sqlalchemy.exc import IntegrityError
 
 from pcapi import settings
-from pcapi.connectors import sirene
+from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.core.educational import factories as educational_factories
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
@@ -254,7 +254,7 @@ class OffererLegalCategoryTest:
             "label": "Entrepreneur individuel",
         }
 
-    @patch("pcapi.connectors.sirene.get_siren", side_effect=sirene.UnknownEntityException())
+    @patch("pcapi.connectors.entreprise.sirene.get_siren", side_effect=sirene_exceptions.UnknownEntityException())
     def test_offerer_legal_category_on_error(self, get_siren_mock):
         offerer = factories.OffererFactory.build()
         assert offerer.legal_category == {

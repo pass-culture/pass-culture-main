@@ -18,7 +18,8 @@ from sqlalchemy.orm import Query
 
 from pcapi import settings
 from pcapi.connectors import api_adresse
-from pcapi.connectors import sirene
+from pcapi.connectors.entreprise import exceptions as sirene_exceptions
+from pcapi.connectors.entreprise import sirene
 from pcapi.core import mails as mails_api
 from pcapi.core import token as token_utils
 import pcapi.core.bookings.models as bookings_models
@@ -774,7 +775,7 @@ def import_pro_user_and_offerer_from_csv(pro_user: ImportUserFromCsvModel) -> mo
 
     try:
         siren_info = sirene.get_siren(offerer.siren or "")
-    except sirene.SireneException as exc:
+    except sirene_exceptions.SireneException as exc:
         logger.info("Could not fetch info from Sirene API", extra={"exc": exc})
         siren_info = None
 

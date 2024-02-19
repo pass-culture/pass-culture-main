@@ -42,9 +42,10 @@ from sqlalchemy.sql.sqltypes import LargeBinary
 from werkzeug.utils import cached_property
 
 from pcapi import settings
-from pcapi.connectors import sirene
 from pcapi.connectors.big_query.queries.offerer_stats import OffererViewsModel
 from pcapi.connectors.big_query.queries.offerer_stats import TopOffersData
+from pcapi.connectors.entreprise import exceptions as sirene_exceptions
+from pcapi.connectors.entreprise import sirene
 from pcapi.core.educational import models as educational_models
 import pcapi.core.finance.models as finance_models
 from pcapi.models import Base
@@ -1050,7 +1051,7 @@ class Offerer(
         if self.siren:
             try:
                 code = sirene.get_legal_category_code(self.siren)
-            except sirene.SireneException as exc:
+            except sirene_exceptions.SireneException as exc:
                 logger.warning(
                     "Error on Sirene API when retrieving legal category",
                     extra={"exc": exc, "siren": self.siren},

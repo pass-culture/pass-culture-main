@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.connectors import sirene
+from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
@@ -93,7 +93,7 @@ class Returns200Test:
 
 
 class Returns400Test:
-    @patch("pcapi.connectors.sirene.get_siret", side_effect=sirene.UnknownEntityException())
+    @patch("pcapi.connectors.entreprise.sirene.get_siret", side_effect=sirene_exceptions.UnknownEntityException())
     def test_siret_unknown(self, _get_siret_mock, client):
         user = users_factories.UserFactory()
 
@@ -105,7 +105,7 @@ class Returns400Test:
         assert offerers_models.UserOfferer.query.count() == 0
         assert offerers_models.Venue.query.count() == 0
 
-    @patch("pcapi.connectors.sirene.get_siret", side_effect=sirene.NonPublicDataException())
+    @patch("pcapi.connectors.entreprise.sirene.get_siret", side_effect=sirene_exceptions.NonPublicDataException())
     def test_non_diffusible_siret(self, _get_siret_mock, client):
         user = users_factories.UserFactory()
 
@@ -118,7 +118,7 @@ class Returns400Test:
         assert offerers_models.UserOfferer.query.count() == 0
         assert offerers_models.Venue.query.count() == 0
 
-    @override_settings(SIRENE_BACKEND="pcapi.connectors.sirene.InseeBackend")
+    @override_settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
     def test_inactive_siret(self, requests_mock, client):
         siret = REQUEST_BODY["siret"]
 
@@ -140,7 +140,7 @@ class Returns400Test:
 
 
 class Returns500Test:
-    @patch("pcapi.connectors.sirene.get_siret", side_effect=sirene.SireneApiException())
+    @patch("pcapi.connectors.entreprise.sirene.get_siret", side_effect=sirene_exceptions.ApiException())
     def test_sirene_api_ko(self, _get_siret_mock, client):
         user = users_factories.UserFactory()
 

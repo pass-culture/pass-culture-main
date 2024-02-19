@@ -1,0 +1,23 @@
+<turbo-frame id="offerer_urssaf_frame">
+{% if urssaf_info %}
+  <div class="row">
+    <div class="col-12">
+      <p class="mb-1">
+        <span class="fw-bold">À jour des cotisations sociales :</span> {{ urssaf_info.attestation_delivered | format_bool_badge }}
+      </p>
+      <p class="mb-1">
+        <span class="fw-bold">État :</span> {{ urssaf_info.details }}
+      </p>
+      {% if urssaf_info.attestation_delivered %}
+        <p class="mb-1">
+          <span class="fw-bold">Attestation de vigilance valide du</span> {{ urssaf_info.validity_start_date | format_date }}
+          <span class="fw-bold">au</span> {{ urssaf_info.validity_end_date | format_date }}
+        </p>
+      {% endif %}
+    </div>
+  </div>
+{% else %}
+  <span class="mr-2 pb-1 badge rounded-pill text-bg-warning"><i class="bi bi-exclamation-triangle"></i> Erreur</span>
+  {{ urssaf_error }}
+{% endif %}
+</turbo-frame>
