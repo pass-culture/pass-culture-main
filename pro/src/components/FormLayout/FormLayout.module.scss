@@ -3,7 +3,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_size.scss" as size;
 
-$info-box-width: rem.torem(316px);
+$info-box-width: clamp(rem.torem(240px), 29vw, rem.torem(316px));
 $info-box-margin-left: rem.torem(24px);
 
 .form-layout {
@@ -123,7 +123,7 @@ $info-box-margin-left: rem.torem(24px);
       position: absolute;
       top: 0;
       right: calc(
-        -#{$info-box-margin-left} - #{$info-box-width}
+        -#{$info-box-margin-left} - $info-box-width
       ); // calc(-margin-left - width)
 
       &-inner {
