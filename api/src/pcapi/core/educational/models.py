@@ -1,6 +1,5 @@
 from datetime import date
 from datetime import datetime
-from datetime import time
 import decimal
 from decimal import Decimal
 import enum
@@ -758,12 +757,11 @@ class CollectiveOfferTemplate(
     def hasEndDatePassed(self) -> bool:
         if not self.end:
             return False
-        return self.end <= datetime.combine(datetime.utcnow(), time.max)
+        return self.end < datetime.utcnow()
 
     @hasEndDatePassed.expression  # type: ignore[no-redef]
     def hasEndDatePassed(cls) -> Exists:  # pylint: disable=no-self-argument
-        today = datetime.combine(datetime.utcnow(), time.max)
-        return cls.dateRange.contained_by(psycopg2.extras.DateTimeRange(upper=today))
+        return cls.dateRange.contained_by(psycopg2.extras.DateTimeRange(upper=datetime.utcnow()))
 
     @hybrid_property
     def hasBookingLimitDatetimesPassed(self) -> bool:

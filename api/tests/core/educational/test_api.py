@@ -154,7 +154,7 @@ class UnindexExpiredOffersTest:
             dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=9),
             dateRange=db_utils.make_timerange(
                 start=datetime.datetime.utcnow() - datetime.timedelta(days=7),
-                end=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+                end=datetime.datetime.utcnow() - datetime.timedelta(hours=1),
             ),
         )
         # Non expired template offer with dateRange overlapping today
