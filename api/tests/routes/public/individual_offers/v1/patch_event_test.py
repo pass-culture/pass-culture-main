@@ -131,6 +131,7 @@ class PatchEventTest:
             withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
             withdrawalDelay=86400,
             withdrawalDetails="Around there",
+            description="A description",
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -141,6 +142,7 @@ class PatchEventTest:
                 "eventDuration": 40,
                 "enableDoubleBookings": "true",
                 "itemCollectionDetails": "Here !",
+                "description": "A new description",
                 "image": {"file": image_data.GOOD_IMAGE},
             },
         )
@@ -152,6 +154,7 @@ class PatchEventTest:
         assert event_offer.bookingContact == "test@myemail.com"
         assert event_offer.bookingEmail == "test@myemail.com"
         assert event_offer.withdrawalDetails == "Here !"
+        assert event_offer.description == "A new description"
 
         assert offers_models.Mediation.query.one()
         assert (
@@ -217,3 +220,20 @@ class PatchEventReturns404Test:
         )
 
         assert response.status_code == 404
+
+
+@pytest.mark.usefixtures("db_session")
+class PatchEventReturns400Test:
+    def test_edit_product_offer_with_long_description(self, client):
+        _, api_key = utils.create_offerer_provider_linked_to_venue()
+        thing_offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=api_key.offerer, isActive=True, lastProvider=api_key.provider
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/events/{thing_offer.id}",
+            json={"desciption": "A" * 1001},
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"desciption": ["extra fields not permitted"]}

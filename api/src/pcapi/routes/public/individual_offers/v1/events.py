@@ -239,6 +239,7 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
                 isActive=update_body.get("is_active", offers_api.UNCHANGED),
                 isDuo=update_body.get("is_duo", offers_api.UNCHANGED),
                 withdrawalDetails=update_body.get("withdrawal_details", offers_api.UNCHANGED),
+                description=update_body.get("description", offers_api.UNCHANGED),
                 **utils.compute_accessibility_edition_fields(update_body.get("accessibility")),
             )
             if body.image:

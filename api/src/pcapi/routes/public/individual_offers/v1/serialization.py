@@ -554,6 +554,7 @@ class OfferEditionBase(serialization.ConfiguredBaseModel):
     is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
     withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
     image: ImageBody | None
+    description: str | None = DESCRIPTION_FIELD_MODEL
 
     class Config:
         extra = "forbid"
