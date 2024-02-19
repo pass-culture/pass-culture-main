@@ -1,13 +1,15 @@
 import format from 'date-fns/format'
 import React, { useEffect, useState } from 'react'
 
-import { BookingRecapResponseModel } from 'apiClient/v1'
+import {
+  BookingRecapResponseModel,
+  GetIndividualOfferResponseModel,
+} from 'apiClient/v1'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import {
   DEFAULT_PRE_FILTERS,
   EMPTY_FILTER_VALUE,
 } from 'core/Bookings/constants'
-import { IndividualOffer } from 'core/Offers/types'
 import strokeBookingHold from 'icons/stroke-booking-hold.svg'
 import { getFilteredBookingsRecapAdapter } from 'pages/Bookings/adapters'
 import { IndividualBookingsTable } from 'screens/Bookings/BookingsRecapTable/BookingsTable/IndividualBookingsTable'
@@ -20,7 +22,7 @@ import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import styles from './BookingsSummary.module.scss'
 
 interface BookingsSummaryScreenProps {
-  offer: IndividualOffer
+  offer: GetIndividualOfferResponseModel
 }
 
 export const BookingsSummaryScreen = ({

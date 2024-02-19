@@ -2,8 +2,8 @@ import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import React from 'react'
 
 import { api } from 'apiClient/api'
+import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { IndividualOfferContext } from 'context/IndividualOfferContext'
-import { IndividualOffer } from 'core/Offers/types'
 import {
   GetIndividualOfferFactory,
   bookingRecapFactory,
@@ -13,7 +13,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { BookingsSummaryScreen } from '../BookingsSummary'
 
-const render = (offer: IndividualOffer) => {
+const render = (offer: GetIndividualOfferResponseModel) => {
   const contextValue = individualOfferContextFactory({ offer })
 
   renderWithProviders(

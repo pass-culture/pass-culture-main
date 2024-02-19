@@ -1,9 +1,9 @@
 import {
+  GetIndividualOfferResponseModel,
   SubcategoryIdEnum,
   SubcategoryResponseModel,
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
-import { IndividualOffer } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 import {
   GetIndividualOfferFactory,
@@ -15,7 +15,7 @@ import { individualOfferSubCategoryFactory } from 'utils/individualApiFactories'
 import setInitialFormValues from '../setInitialFormValues'
 
 describe('setFormReadOnlyFields', () => {
-  let offer: IndividualOffer
+  let offer: GetIndividualOfferResponseModel
   let subCategoryList: SubcategoryResponseModel[]
   const venueId = 13
   const offererId = 12

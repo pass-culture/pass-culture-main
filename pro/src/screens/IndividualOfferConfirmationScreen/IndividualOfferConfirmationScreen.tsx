@@ -1,5 +1,6 @@
 import React from 'react'
 
+import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import {
   Events,
@@ -7,7 +8,6 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 import { OFFER_STATUS_PENDING } from 'core/Offers/constants'
-import { IndividualOffer } from 'core/Offers/types'
 import useAnalytics from 'hooks/useAnalytics'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
@@ -20,7 +20,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import styles from './IndividualOfferConfirmationScreen.module.scss'
 
 interface IndividualOfferConfirmationScreenProps {
-  offer: IndividualOffer
+  offer: GetIndividualOfferResponseModel
 }
 
 const IndividualOfferConfirmationScreen = ({

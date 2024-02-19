@@ -1,9 +1,12 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { useLoaderData, useNavigate } from 'react-router-dom'
 
-import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
+import {
+  CategoryResponseModel,
+  GetIndividualOfferResponseModel,
+  SubcategoryResponseModel,
+} from 'apiClient/v1'
 import { OffererName } from 'core/Offerers/types'
-import { IndividualOffer } from 'core/Offers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -15,7 +18,7 @@ import { getWizardData } from './adapters'
 
 export interface IndividualOfferContextValues {
   offerId: number | null
-  offer: IndividualOffer | null
+  offer: GetIndividualOfferResponseModel | null
   categories: CategoryResponseModel[]
   subCategories: SubcategoryResponseModel[]
   subcategory?: SubcategoryResponseModel

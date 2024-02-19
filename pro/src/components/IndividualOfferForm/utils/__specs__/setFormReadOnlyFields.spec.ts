@@ -7,7 +7,6 @@ import {
   OFFER_STATUS_PENDING,
   OFFER_STATUS_REJECTED,
 } from 'core/Offers/constants'
-import { IndividualOffer } from 'core/Offers/types'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
 
 import { FORM_DEFAULT_VALUES } from '../../constants'
@@ -68,11 +67,11 @@ describe('setFormReadOnlyFields', () => {
       (field: string) =>
         !['accessibility', 'externalTicketOfficeUrl'].includes(field)
     )
-    const offer = {
+    const offer = GetIndividualOfferFactory({
       lastProvider: {
         name: 'AnySyncProviderName',
       },
-    } as IndividualOffer
+    })
     const readOnlyFields = setFormReadOnlyFields(offer)
     expect(readOnlyFields.sort()).toStrictEqual(expectedReadOnlyFields.sort())
   })

@@ -1,7 +1,7 @@
 import { api } from 'apiClient/api'
+import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { updateIndividualOffer } from 'core/Offers/adapters'
 import { serializePatchOffer } from 'core/Offers/adapters/updateIndividualOffer/serializers'
-import { IndividualOffer } from 'core/Offers/types'
 
 import postPriceCategoriesAdapter from '../adapters/postPriceCategoriesAdapter'
 import { serializePriceCategories } from '../adapters/serializePriceCategories'
@@ -11,7 +11,7 @@ import { PriceCategoriesFormValues, PriceCategoryFormik } from './types'
 
 export const submitToApi = async (
   values: PriceCategoriesFormValues,
-  offer: IndividualOffer,
+  offer: GetIndividualOfferResponseModel,
   resetForm: PriceCategoryFormik['resetForm']
 ) => {
   const serializedOffer = serializePatchOffer({

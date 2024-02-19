@@ -1,5 +1,4 @@
-import { OfferStatus } from 'apiClient/v1'
-import { IndividualOffer } from 'core/Offers/types'
+import { GetIndividualOfferResponseModel, OfferStatus } from 'apiClient/v1'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
 import { individualGetOfferStockResponseModelFactory } from 'utils/individualApiFactories'
 
@@ -7,7 +6,7 @@ import { StockThingFormValues } from '../../types'
 import setFormReadOnlyFields from '../setFormReadOnlyFields'
 
 describe('StockThingForm::utils::setFormReadOnlyFields', () => {
-  let offer: IndividualOffer
+  let offer: GetIndividualOfferResponseModel
   let currentStock: StockThingFormValues
   beforeEach(() => {
     offer = GetIndividualOfferFactory()

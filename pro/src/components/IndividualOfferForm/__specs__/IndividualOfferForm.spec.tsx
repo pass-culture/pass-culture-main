@@ -3,7 +3,11 @@ import { userEvent } from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
 import React from 'react'
 
-import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
+import {
+  CategoryResponseModel,
+  GetIndividualOfferResponseModel,
+  SubcategoryResponseModel,
+} from 'apiClient/v1'
 import {
   IndividualOfferContextValues,
   IndividualOfferContext,
@@ -13,7 +17,6 @@ import {
   CATEGORY_STATUS,
   INDIVIDUAL_OFFER_SUBTYPE,
 } from 'core/Offers/constants'
-import { IndividualOffer } from 'core/Offers/types'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { SubmitButton } from 'ui-kit'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
@@ -142,7 +145,7 @@ describe('IndividualOfferForm', () => {
     expect(await screen.findByText('Type d’offre')).toBeInTheDocument()
   })
 
-  const imageSectionDataset: (IndividualOffer | undefined)[] = [
+  const imageSectionDataset: (GetIndividualOfferResponseModel | undefined)[] = [
     GetIndividualOfferFactory(),
     undefined,
   ]

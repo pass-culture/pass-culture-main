@@ -5,7 +5,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { GetStocksResponseModel, StocksOrderedBy } from 'apiClient/v1'
+import {
+  GetIndividualOfferResponseModel,
+  GetStocksResponseModel,
+  StocksOrderedBy,
+} from 'apiClient/v1'
 import { OfferStatus } from 'apiClient/v2'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import DialogBox from 'components/DialogBox'
@@ -18,7 +22,6 @@ import { NoResultsRow } from 'components/StocksEventList/NoResultsRow'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
 import { STOCKS_PER_PAGE } from 'components/StocksEventList/StocksEventList'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { IndividualOffer } from 'core/Offers/types'
 import { isOfferDisabled } from 'core/Offers/utils'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { SelectOption } from 'custom_types/form'
@@ -107,7 +110,7 @@ function resetFormWithNewPage({
 }
 
 interface StocksEventEditionProps {
-  offer: IndividualOffer
+  offer: GetIndividualOfferResponseModel
 }
 
 const StocksEventEdition = ({

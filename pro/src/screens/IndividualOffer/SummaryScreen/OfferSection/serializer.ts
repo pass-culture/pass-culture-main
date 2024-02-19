@@ -1,5 +1,6 @@
 import {
   CategoryResponseModel,
+  GetIndividualOfferResponseModel,
   GetMusicTypesResponse,
   SubcategoryResponseModel,
 } from 'apiClient/v1'
@@ -7,11 +8,10 @@ import {
   musicOptionsTree,
   showOptionsTree,
 } from 'core/Offers/categoriesSubTypes'
-import { IndividualOffer } from 'core/Offers/types'
 
 const getMusicData = (
   isTiteliveMusicGenreEnabled: boolean,
-  offer: IndividualOffer,
+  offer: GetIndividualOfferResponseModel,
   musicTypes?: GetMusicTypesResponse,
   gtl_id?: string
 ): {
@@ -47,7 +47,7 @@ const getMusicData = (
 }
 
 const serializerOfferSubCategoryFields = (
-  offer: IndividualOffer,
+  offer: GetIndividualOfferResponseModel,
   isTiteliveMusicGenreEnabled: boolean,
   subCategory?: SubcategoryResponseModel,
   musicTypes?: GetMusicTypesResponse
@@ -118,7 +118,7 @@ const serializerOfferSubCategoryFields = (
 export type OfferSectionData = ReturnType<typeof serializeOfferSectionData>
 
 export const serializeOfferSectionData = (
-  offer: IndividualOffer,
+  offer: GetIndividualOfferResponseModel,
   categories: CategoryResponseModel[],
   subCategories: SubcategoryResponseModel[],
   isTiteliveMusicGenreEnabled: boolean,

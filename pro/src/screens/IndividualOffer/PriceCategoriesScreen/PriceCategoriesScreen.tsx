@@ -2,12 +2,12 @@ import { FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { IndividualOffer } from 'core/Offers/types'
 import { isOfferAllocineSynchronized, isOfferDisabled } from 'core/Offers/utils'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'hooks'
@@ -23,7 +23,7 @@ import { validationSchema } from './form/validationSchema'
 import { PriceCategoriesForm } from './PriceCategoriesForm'
 
 export interface PriceCategoriesScreenProps {
-  offer: IndividualOffer
+  offer: GetIndividualOfferResponseModel
 }
 
 const hasFieldChange = (

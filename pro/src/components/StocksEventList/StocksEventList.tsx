@@ -4,13 +4,13 @@ import { useFetcher, useSearchParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import {
+  GetIndividualOfferResponseModel,
   GetStocksResponseModel,
   PriceCategoryResponseModel,
   StocksOrderedBy,
 } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import { Events } from 'core/FirebaseEvents/constants'
-import { IndividualOffer } from 'core/Offers/types'
 import useAnalytics from 'hooks/useAnalytics'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import useNotification from 'hooks/useNotification'
@@ -54,7 +54,7 @@ export interface StocksEvent {
 export interface StocksEventListProps {
   priceCategories: PriceCategoryResponseModel[]
   departmentCode?: string | null
-  offer: IndividualOffer
+  offer: GetIndividualOfferResponseModel
   readonly?: boolean
   onStocksLoad?: (hasStocks: boolean) => void
   canAddStocks?: boolean

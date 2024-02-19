@@ -1,16 +1,18 @@
-import { GetOfferStockResponseModel } from 'apiClient/v1'
+import {
+  GetIndividualOfferResponseModel,
+  GetOfferStockResponseModel,
+} from 'apiClient/v1'
 import {
   OFFER_STATUS_REJECTED,
   OFFER_STATUS_PENDING,
 } from 'core/Offers/constants'
-import { IndividualOffer } from 'core/Offers/types'
 import { isAllocineProvider } from 'core/Providers'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../constants'
 import { StockThingFormValues } from '../types'
 
 const setFormReadOnlyFields = (
-  offer: IndividualOffer,
+  offer: GetIndividualOfferResponseModel,
   stocks: GetOfferStockResponseModel[],
   currentStock: StockThingFormValues
 ): string[] => {
