@@ -1060,7 +1060,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
 
     def test_get_managed_venues(self, authenticated_client, offerer):
         other_offerer = offerers_factories.OffererFactory()
-        venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer, isPermanent=True)
         venue_2 = offerers_factories.VenueFactory(managingOfferer=offerer)
         offerers_factories.VenueRegistrationFactory(venue=venue_2)
         educational_factories.CollectiveDmsApplicationFactory(venue=venue_2)
@@ -1080,21 +1080,23 @@ class GetOffererVenuesTest(GetEndpointHelper):
 
         assert rows[0]["ID"] == str(venue_1.id)
         assert rows[0]["SIRET"] == venue_1.siret
+        assert rows[0]["Permanent"] == "Lieu permanent"
         assert rows[0]["Nom"] == venue_1.name
         assert rows[0]["Activité principale"] == venue_1.venueTypeCode.value
         assert not rows[0].get("Type de lieu")
         assert rows[0]["Présence web"] == ""
         assert rows[0]["Offres cibles"] == ""
-        assert rows[0]["Statut du dossier DMS Adage"] == ""
+        assert rows[0]["Statut DMS Adage"] == ""
 
         assert rows[1]["ID"] == str(venue_2.id)
         assert rows[1]["SIRET"] == venue_2.siret
+        assert rows[1]["Permanent"] == ""
         assert rows[1]["Nom"] == venue_2.name
         assert rows[1]["Activité principale"] == venue_2.venueTypeCode.value
         assert not rows[1].get("Type de lieu")
         assert rows[1]["Présence web"] == "https://example.com https://pass.culture.fr"
         assert rows[1]["Offres cibles"] == "Indiv. et coll."
-        assert rows[1]["Statut du dossier DMS Adage"] == "En construction"
+        assert rows[1]["Statut DMS Adage"] == "En construction"
 
 
 class GetOffererBankAccountTest(GetEndpointHelper):
