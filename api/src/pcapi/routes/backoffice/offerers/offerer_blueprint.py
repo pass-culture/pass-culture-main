@@ -658,6 +658,7 @@ def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.siret,
                 offerers_models.Venue.venueTypeCode,
+                offerers_models.Venue.isPermanent,
                 offerers_models.Venue.isVirtual,
                 offerers_models.Venue.managingOffererId,
             ),
