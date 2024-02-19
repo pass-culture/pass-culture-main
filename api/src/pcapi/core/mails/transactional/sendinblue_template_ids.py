@@ -50,7 +50,7 @@ class TransactionalEmail(Enum):
     EMAIL_CONFIRMATION = models.Template(
         id_prod=201, id_not_prod=15, tags=["jeunes_confirmation_mail"], use_priority_queue=True
     )
-    ONLINE_EVENT_REMINDER = models.Template(id_prod=1092, id_not_prod=154)
+    ONLINE_EVENT_REMINDER = models.Template(id_prod=1092, id_not_prod=154, send_to_ehp=False)
     EXPIRED_BOOKING_TO_BENEFICIARY = models.Template(id_prod=145, id_not_prod=34, tags=["jeunes_resa_expiree"])
     FRAUD_SUSPICION = models.Template(id_prod=82, id_not_prod=24, tags=["jeunes_compte_en_cours_d_analyse"])
     NEW_PASSWORD_REQUEST = models.Template(
