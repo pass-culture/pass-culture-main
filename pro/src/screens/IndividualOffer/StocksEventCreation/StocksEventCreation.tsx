@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import StocksEventList from 'components/StocksEventList'
-import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'hooks'
 import useNotification from 'hooks/useNotification'
@@ -14,7 +14,7 @@ import { HelpSection } from './HelpSection/HelpSection'
 import styles from './StocksEventCreation.module.scss'
 
 export interface StocksEventCreationProps {
-  offer: IndividualOffer
+  offer: GetIndividualOfferResponseModel
 }
 
 export const StocksEventCreation = ({

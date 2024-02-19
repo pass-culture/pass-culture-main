@@ -1,15 +1,15 @@
+import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import {
   OFFER_STATUS_PENDING,
   OFFER_STATUS_REJECTED,
 } from 'core/Offers/constants'
-import { IndividualOffer } from 'core/Offers/types'
 import { isOfferSynchronized } from 'core/Offers/utils'
 import { isAllocineProvider } from 'core/Providers'
 
 import { FORM_DEFAULT_VALUES } from '../constants'
 
 const setFormReadOnlyFieldsForSynchronizedOffer = (
-  offer: IndividualOffer
+  offer: GetIndividualOfferResponseModel
 ): string[] => {
   const editableFields: string[] = ['accessibility', 'externalTicketOfficeUrl']
   if (isAllocineProvider(offer.lastProvider)) {
@@ -22,7 +22,7 @@ const setFormReadOnlyFieldsForSynchronizedOffer = (
 }
 
 const setFormReadOnlyFields = (
-  offer: IndividualOffer | null,
+  offer: GetIndividualOfferResponseModel | null,
   isAdmin?: boolean
 ): string[] => {
   const readOnlyField: string[] = []

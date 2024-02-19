@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { IndividualOffer } from 'core/Offers/types'
+import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { getIndividualOfferImage } from 'screens/IndividualOffer/utils/getIndividualOfferImage'
 
 import style from './OfferAppPreview.module.scss'
@@ -8,7 +8,7 @@ import { OptionsIcons } from './OptionsIcons'
 import { VenueDetails } from './VenueDetails'
 
 export interface OfferAppPreviewProps {
-  offer: IndividualOffer
+  offer: GetIndividualOfferResponseModel
 }
 
 const OfferAppPreview = ({ offer }: OfferAppPreviewProps): JSX.Element => {

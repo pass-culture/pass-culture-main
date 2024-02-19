@@ -1,11 +1,11 @@
+import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import StocksEventList from 'components/StocksEventList'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
-import { IndividualOffer } from 'core/Offers/types'
 
 import { EventCancellationBanner } from '../StocksEventEdition/EventCancellationBanner'
 
 interface RecurrenceSummaryProps {
-  offer: IndividualOffer
+  offer: GetIndividualOfferResponseModel
   stocks: StocksEvent[]
 }
 

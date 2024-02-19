@@ -1,4 +1,4 @@
-import { IndividualOffer } from 'core/Offers/types'
+import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 
 import { FIRST_INITIAL_PRICE_CATEGORY } from './constants'
 import { PriceCategoriesFormValues, PriceCategoryForm } from './types'
@@ -11,7 +11,7 @@ const sortPriceCategories = (a: PriceCategoryForm, b: PriceCategoryForm) => {
 }
 
 export const computeInitialValues = (
-  offer: IndividualOffer
+  offer: GetIndividualOfferResponseModel
 ): PriceCategoriesFormValues => {
   const initialPriceCategories =
     !offer.priceCategories || offer?.priceCategories.length === 0

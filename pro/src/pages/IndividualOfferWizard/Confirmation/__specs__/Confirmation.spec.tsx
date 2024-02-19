@@ -10,7 +10,6 @@ import {
   IndividualOfferContextValues,
   IndividualOfferContext,
 } from 'context/IndividualOfferContext'
-import { IndividualOffer } from 'core/Offers/types'
 import { RootState } from 'store/rootReducer'
 import {
   GetIndividualOfferFactory,
@@ -68,7 +67,7 @@ const renderOffer = (
 describe('Confirmation', () => {
   let store: any
   let contextOverride: Partial<IndividualOfferContextValues>
-  let offer: IndividualOffer
+  let offer: GetIndividualOfferResponseModel
   const venueId = 45
   const offererId = 51
 

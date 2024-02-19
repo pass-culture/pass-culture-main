@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import {
+  GetIndividualOfferResponseModel,
   GetOfferStockResponseModel,
   OfferStatus,
   StockStatsResponseModel,
@@ -10,7 +11,6 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/cons
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'hooks'
 import useNotification from 'hooks/useNotification'
@@ -20,7 +20,7 @@ import RecurrenceSection from './RecurrenceSection/RecurrenceSection'
 import styles from './StockSection.module.scss'
 import StockThingSection from './StockThingSection/StockThingSection'
 
-export const getStockWarningText = (offer: IndividualOffer) => {
+export const getStockWarningText = (offer: GetIndividualOfferResponseModel) => {
   if (!offer.hasStocks) {
     return 'Vous n’avez aucun stock renseigné.'
   }
@@ -37,7 +37,7 @@ export const getStockWarningText = (offer: IndividualOffer) => {
 }
 
 export interface StockSectionProps {
-  offer: IndividualOffer
+  offer: GetIndividualOfferResponseModel
   canBeDuo?: boolean
 }
 

@@ -2,9 +2,9 @@
 import { useLocation, useParams, Outlet, RouteObject } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import { IndividualOfferContextProvider } from 'context/IndividualOfferContext'
-import { IndividualOffer } from 'core/Offers/types'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { parse } from 'utils/query-string'
 
@@ -32,7 +32,9 @@ const IndividualOfferWizard = () => {
 // ts-unused-exports:disable-next-line
 export const Component: RouteObject['Component'] = IndividualOfferWizard
 
-export type IndividualOfferWizardLoaderData = { offer: IndividualOffer | null }
+export type IndividualOfferWizardLoaderData = {
+  offer: GetIndividualOfferResponseModel | null
+}
 
 // ts-unused-exports:disable-next-line
 export const loader: RouteObject['loader'] = async ({

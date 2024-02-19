@@ -7,7 +7,6 @@ import {
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
-import { IndividualOffer } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 
 import { updateIndividualOffer } from '..'
@@ -85,7 +84,7 @@ describe('updateIndividualOffer', () => {
     const nonHumanizedofferId = 1234
     const offer = {
       id: nonHumanizedofferId,
-    } as IndividualOffer
+    } as GetIndividualOfferResponseModel
 
     vi.spyOn(api, 'patchOffer').mockResolvedValue(
       {} as GetIndividualOfferResponseModel
@@ -165,7 +164,7 @@ describe('updateIndividualOffer', () => {
       lastProvider: {
         name: 'provider',
       },
-    } as IndividualOffer
+    } as GetIndividualOfferResponseModel
     vi.spyOn(api, 'patchOffer').mockResolvedValue(
       {} as GetIndividualOfferResponseModel
     )

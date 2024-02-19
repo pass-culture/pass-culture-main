@@ -4,7 +4,11 @@ import React, { useEffect, useState } from 'react'
 import { useFetcher, useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { GetOfferStockResponseModel, SubcategoryIdEnum } from 'apiClient/v1'
+import {
+  GetIndividualOfferResponseModel,
+  GetOfferStockResponseModel,
+  SubcategoryIdEnum,
+} from 'apiClient/v1'
 import FormLayout, { FormLayoutDescription } from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
@@ -12,7 +16,6 @@ import { StockFormActions } from 'components/StockFormActions'
 import { StockFormRowAction } from 'components/StockFormActions/types'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { useOfferWizardMode } from 'hooks'
@@ -39,7 +42,7 @@ import setFormReadOnlyFields from './utils/setFormReadOnlyFields'
 import { getValidationSchema } from './validationSchema'
 
 export interface StocksThingProps {
-  offer: IndividualOffer
+  offer: GetIndividualOfferResponseModel
 }
 
 const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {

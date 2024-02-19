@@ -19,7 +19,6 @@ import {
   IndividualOfferContextValues,
 } from 'context/IndividualOfferContext'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import * as pcapi from 'repository/pcapi/pcapi'
@@ -109,7 +108,7 @@ const scrollIntoViewMock = vi.fn()
 describe('screens:IndividualOffer::Informations:edition', () => {
   let props: InformationsScreenProps
   let contextOverride: IndividualOfferContextValues
-  let offer: IndividualOffer
+  let offer: GetIndividualOfferResponseModel
   let subCategories: SubcategoryResponseModel[]
   const offererId = 1
   const physicalVenueId = 1
