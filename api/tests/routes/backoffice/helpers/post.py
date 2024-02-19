@@ -1,6 +1,7 @@
 from flask import g
 from flask import url_for
 
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 
 from . import base
@@ -28,7 +29,15 @@ class PostEndpointWithoutPermissionHelper(base.BaseHelper):
         # will generate a csrf token (for the logout button)
         client.get(url_for("backoffice_web.home"))
 
-    def post_to_endpoint(self, client, form=None, headers=None, follow_redirects=False, **url_kwargs):
+    def post_to_endpoint(
+        self,
+        client,
+        form=None,
+        headers=None,
+        follow_redirects=False,
+        expected_num_queries: int | None = None,
+        **url_kwargs,
+    ):
         self.fetch_csrf_token(client)
 
         url = url_for(self.endpoint, **url_kwargs)
@@ -37,6 +46,11 @@ class PostEndpointWithoutPermissionHelper(base.BaseHelper):
             form = {}
 
         form.update(self.form)
+
+        if expected_num_queries is not None:
+            with assert_num_queries(expected_num_queries):
+                return client.post(url, form=form, headers=headers, follow_redirects=follow_redirects)
+
         return client.post(url, form=form, headers=headers, follow_redirects=follow_redirects)
 
     def test_not_logged_in(self, client):
