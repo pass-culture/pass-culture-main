@@ -45,7 +45,7 @@ const OfferSummary = ({
   useEffect(() => {
     const updateOfferData = async () => {
       let musicTypes
-      if (offer.gtl_id) {
+      if (offer.extraData?.gtl_id) {
         musicTypes = await api.getAllMusicTypes()
       }
       const data = serializeOfferSectionData(

@@ -22,12 +22,12 @@ const getMusicData = (
   if (isTiteliveMusicGenreEnabled) {
     return {
       musicTypeName: musicTypes?.find((item) => item.gtl_id === gtl_id)?.label,
-      gtl_id: offer.gtl_id,
+      gtl_id: offer.extraData?.gtl_id,
     }
   }
 
-  const offerMusicType = offer.musicType
-  const offerMusicSubType = offer.musicSubType
+  const offerMusicType = offer.extraData?.musicType
+  const offerMusicSubType = offer.extraData?.musicSubType
   if (!offerMusicType || !offerMusicSubType) {
     return {}
   }
@@ -82,33 +82,34 @@ const serializerOfferSubCategoryFields = (
     }
   }
   const showType = showOptionsTree.find(
-    (item) => item.code === parseInt(offer.showType, 10)
+    (item) => item.code === parseInt(offer.extraData?.showType, 10)
   )
   const showSubType = showType?.children.find(
-    (item) => item.code === parseInt(offer.showSubType, 10)
+    (item) => item.code === parseInt(offer.extraData?.showSubType, 10)
   )
 
   const { musicTypeName, musicSubTypeName, gtl_id } = getMusicData(
     isTiteliveMusicGenreEnabled,
     offer,
     musicTypes,
-    offer.gtl_id
+    offer.extraData?.gtl_id
   )
 
   const defaultValue = (fieldName: string) =>
     subCategory.conditionalFields.includes(fieldName) ? ' - ' : ''
   return {
-    author: offer.author || defaultValue('author'),
-    stageDirector: offer.stageDirector || defaultValue('stageDirector'),
+    author: offer.extraData?.author || defaultValue('author'),
+    stageDirector:
+      offer.extraData?.stageDirector || defaultValue('stageDirector'),
     musicTypeName: musicTypeName || defaultValue('musicType'),
     musicSubTypeName: musicSubTypeName || defaultValue('musicSubType'),
     gtl_id: gtl_id,
     showTypeName: showType?.label || defaultValue('showType'),
     showSubTypeName: showSubType?.label || defaultValue('showSubType'),
-    speaker: offer.speaker || defaultValue('speaker'),
-    visa: offer.visa || defaultValue('visa'),
-    performer: offer.performer || defaultValue('performer'),
-    ean: offer.ean || defaultValue('ean'),
+    speaker: offer.extraData?.speaker || defaultValue('speaker'),
+    visa: offer.extraData?.visa || defaultValue('visa'),
+    performer: offer.extraData?.performer || defaultValue('performer'),
+    ean: offer.extraData?.ean || defaultValue('ean'),
     durationMinutes:
       offer.durationMinutes?.toString() || defaultValue('durationMinutes'),
   }
