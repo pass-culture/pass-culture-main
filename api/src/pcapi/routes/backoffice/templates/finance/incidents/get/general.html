@@ -12,20 +12,21 @@
             {% if incident.isClosed %}
               <span class="badge text-bg-light">Terminé</span>
             {% else %}
-              {{ incident.status | format_finance_incident_status_badge | safe }}
+              {{ incident.status | format_finance_incident_status_badge }}
             {% endif %}
           </div>
-          <div class="h5 me-1 align-middle">{{ incident.kind | format_finance_incident_type | safe }}</div>
+          <div class="h5 me-1 align-middle">{{ incident.kind | format_finance_incident_type }}</div>
+          <div class="h5 me-1 align-middle">{{ incident.is_partial | format_finance_incident_nature_badge }}</div>
           <div class="d-flex justify-content-end flex-grow-1 gap-2">
             {% if has_permission("MANAGE_INCIDENTS") and incident.status.value == 'created' %}
               <button class="btn btn-outline-primary"
                       data-bs-toggle="modal"
                       data-bs-target="#reject-finance-incident-modal-{{ incident.id }}">Annuler l'incident</button>
-              {{ build_lazy_modal(url_for('backoffice_web.finance_incidents.get_finance_incident_cancellation_form', finance_incident_id=incident.id), "reject-finance-incident-modal-" + incident.id|string) }}
+              {{ build_lazy_modal(url_for('backoffice_web.finance_incidents.get_finance_incident_cancellation_form', finance_incident_id=incident.id) , "reject-finance-incident-modal-" + incident.id|string) }}
               <button class="btn btn-outline-primary"
                       data-bs-toggle="modal"
                       data-bs-target="#finance-incident-validation-modal-{{ incident.id }}">Valider l'incident</button>
-              {{ build_lazy_modal(url_for('backoffice_web.finance_incidents.get_finance_incident_validation_form', finance_incident_id=incident.id), "finance-incident-validation-modal-" + incident.id|string) }}
+              {{ build_lazy_modal(url_for('backoffice_web.finance_incidents.get_finance_incident_validation_form', finance_incident_id=incident.id) , "finance-incident-validation-modal-" + incident.id|string) }}
             {% elif has_permission("MANAGE_INCIDENTS") and incident.status.value == 'validated' and not incident.isClosed %}
               {% if incident.forceDebitNote %}
                 <button class="btn btn-outline-primary"
@@ -33,12 +34,12 @@
                         data-bs-target="#finance-incident-cancel-debit-note-modal-{{ incident.id }}">
                   Annuler la note de débit, récupérer l'argent sur les justificatifs
                 </button>
-                {{ build_lazy_modal(url_for('backoffice_web.finance_incidents.get_finance_incident_cancel_debit_note_form', finance_incident_id=incident.id), "finance-incident-cancel-debit-note-modal-" + incident.id|string) }}
+                {{ build_lazy_modal(url_for('backoffice_web.finance_incidents.get_finance_incident_cancel_debit_note_form', finance_incident_id=incident.id) , "finance-incident-cancel-debit-note-modal-" + incident.id|string) }}
               {% else %}
                 <button class="btn btn-outline-primary"
                         data-bs-toggle="modal"
                         data-bs-target="#finance-incident-force-debit-note-modal-{{ incident.id }}">Demander la note de débit</button>
-                {{ build_lazy_modal(url_for('backoffice_web.finance_incidents.get_finance_incident_force_debit_note_form', finance_incident_id=incident.id), "finance-incident-force-debit-note-modal-" + incident.id|string) }}
+                {{ build_lazy_modal(url_for('backoffice_web.finance_incidents.get_finance_incident_force_debit_note_form', finance_incident_id=incident.id) , "finance-incident-force-debit-note-modal-" + incident.id|string) }}
               {% endif %}
             {% endif %}
           </div>
