@@ -260,7 +260,7 @@ const InformationsScreen = ({
 
   return (
     <FormikProvider value={formik}>
-      <FormLayout small>
+      <FormLayout fullWidthActions>
         <form onSubmit={formik.handleSubmit}>
           <IndividualOfferForm
             offererNames={offererNames}

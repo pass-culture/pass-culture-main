@@ -141,61 +141,63 @@ const OfferEducationalForm = ({
   }, [])
 
   return (
-    <FormLayout className={styles['educational-form']} small>
-      {isCollectiveOffer(offer) && offer.isPublicApi && (
-        <BannerPublicApi className={styles['banner-space']}>
-          Offre importée automatiquement
-        </BannerPublicApi>
-      )}
-      <FormLayout.MandatoryInfo />
+    <>
+      <FormLayout className={styles['educational-form']} fullWidthActions>
+        {isCollectiveOffer(offer) && offer.isPublicApi && (
+          <BannerPublicApi className={styles['banner-space']}>
+            Offre importée automatiquement
+          </BannerPublicApi>
+        )}
+        <FormLayout.MandatoryInfo />
 
-      <FormVenue
-        isEligible={isEligible}
-        mode={mode}
-        isOfferCreated={isOfferCreated}
-        userOfferers={userOfferers}
-        venuesOptions={venuesOptions}
-        categories={categories}
-        onChangeOfferer={onOffererChange}
-        offer={offer}
-      />
-      {isEligible && values.offererId && values.venueId ? (
-        <>
-          <FormOfferType
-            categories={categories.educationalCategories}
-            subCategories={categories.educationalSubCategories}
-            domainsOptions={domainsOptions}
-            nationalPrograms={nationalPrograms}
-            disableForm={mode === Mode.READ_ONLY}
-          />
-          <FormImageUploader
-            onImageDelete={onImageDelete}
-            onImageUpload={onImageUpload}
-            imageOffer={imageOffer}
-          />
-          {isTemplate && (
-            <FormDates
+        <FormVenue
+          isEligible={isEligible}
+          mode={mode}
+          isOfferCreated={isOfferCreated}
+          userOfferers={userOfferers}
+          venuesOptions={venuesOptions}
+          categories={categories}
+          onChangeOfferer={onOffererChange}
+          offer={offer}
+        />
+        {isEligible && values.offererId && values.venueId ? (
+          <>
+            <FormOfferType
+              categories={categories.educationalCategories}
+              subCategories={categories.educationalSubCategories}
+              domainsOptions={domainsOptions}
+              nationalPrograms={nationalPrograms}
               disableForm={mode === Mode.READ_ONLY}
-              dateCreated={offer?.dateCreated}
             />
-          )}
-          <FormPracticalInformation
-            currentOfferer={currentOfferer}
-            venuesOptions={venuesOptions}
-            disableForm={mode === Mode.READ_ONLY}
-          />
-          {isTemplate && (
-            <FormPriceDetails disableForm={mode === Mode.READ_ONLY} />
-          )}
-          <FormParticipants
-            disableForm={mode === Mode.READ_ONLY}
-            isTemplate={isTemplate}
-          />
-          <FormAccessibility disableForm={mode === Mode.READ_ONLY} />
-          <FormContact disableForm={mode === Mode.READ_ONLY} />
-          <FormNotifications disableForm={mode === Mode.READ_ONLY} />
-        </>
-      ) : null}
+            <FormImageUploader
+              onImageDelete={onImageDelete}
+              onImageUpload={onImageUpload}
+              imageOffer={imageOffer}
+            />
+            {isTemplate && (
+              <FormDates
+                disableForm={mode === Mode.READ_ONLY}
+                dateCreated={offer?.dateCreated}
+              />
+            )}
+            <FormPracticalInformation
+              currentOfferer={currentOfferer}
+              venuesOptions={venuesOptions}
+              disableForm={mode === Mode.READ_ONLY}
+            />
+            {isTemplate && (
+              <FormPriceDetails disableForm={mode === Mode.READ_ONLY} />
+            )}
+            <FormParticipants
+              disableForm={mode === Mode.READ_ONLY}
+              isTemplate={isTemplate}
+            />
+            <FormAccessibility disableForm={mode === Mode.READ_ONLY} />
+            <FormContact disableForm={mode === Mode.READ_ONLY} />
+            <FormNotifications disableForm={mode === Mode.READ_ONLY} />
+          </>
+        ) : null}
+      </FormLayout>
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
           <ButtonLink
@@ -214,7 +216,7 @@ const OfferEducationalForm = ({
           </SubmitButton>
         </ActionsBarSticky.Left>
       </ActionsBarSticky>
-    </FormLayout>
+    </>
   )
 }
 

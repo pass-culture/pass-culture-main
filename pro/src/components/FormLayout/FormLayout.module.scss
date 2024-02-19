@@ -9,10 +9,6 @@ $info-box-margin-left: rem.torem(24px);
 .form-layout {
   background-color: colors.$white;
 
-  &.small {
-    width: rem.torem(486px);
-  }
-
   &.full-width-actions {
     @media (min-width: size.$tablet) {
       & > *:not(.form-layout-actions) {

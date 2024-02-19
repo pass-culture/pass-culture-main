@@ -298,16 +298,15 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
           minExpirationDate={minExpirationDate}
         />
       )}
+      <form onSubmit={formik.handleSubmit} data-testid="stock-thing-form">
+        <FormLayout>
+          <div aria-current="page">
+            <FormLayoutDescription
+              description={description}
+              links={links}
+              isBanner
+            />
 
-      <FormLayout>
-        <div aria-current="page">
-          <FormLayoutDescription
-            description={description}
-            links={links}
-            isBanner
-          />
-
-          <form onSubmit={formik.handleSubmit} data-testid="stock-thing-form">
             <div className={styles['stock-form-row']}>
               <div className={styles['stock-form']}>
                 <TextInput
@@ -396,43 +395,41 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                 </div>
               )}
             </div>
-
-            <ActionBar
-              onClickPrevious={handlePreviousStepOrBackToReadOnly}
-              step={OFFER_WIZARD_STEP_IDS.STOCKS}
-              isDisabled={formik.isSubmitting || isDisabled}
-              dirtyForm={formik.dirty}
-            />
-          </form>
-        </div>
-      </FormLayout>
-
-      {canBeDuo && (
-        <FormLayout small>
-          <FormLayout.Section
-            className={styles['duo-section']}
-            title="Réservations “Duo”"
-          >
-            <FormLayout.Row
-              sideComponent={
-                <InfoBox>
-                  Cette option permet au bénéficiaire de venir accompagné. La
-                  seconde place sera délivrée au même tarif que la première,
-                  quel que soit l’accompagnateur.
-                </InfoBox>
-              }
-            >
-              <Checkbox
-                label="Accepter les réservations “Duo“"
-                name="isDuo"
-                disabled={isDisabled}
-                withBorder
-              />
-            </FormLayout.Row>
-          </FormLayout.Section>
+          </div>
         </FormLayout>
-      )}
 
+        {canBeDuo && (
+          <FormLayout fullWidthActions>
+            <FormLayout.Section
+              className={styles['duo-section']}
+              title="Réservations “Duo”"
+            >
+              <FormLayout.Row
+                sideComponent={
+                  <InfoBox>
+                    Cette option permet au bénéficiaire de venir accompagné. La
+                    seconde place sera délivrée au même tarif que la première,
+                    quel que soit l’accompagnateur.
+                  </InfoBox>
+                }
+              >
+                <Checkbox
+                  label="Accepter les réservations “Duo“"
+                  name="isDuo"
+                  disabled={isDisabled}
+                  withBorder
+                />
+              </FormLayout.Row>
+            </FormLayout.Section>
+          </FormLayout>
+        )}
+        <ActionBar
+          onClickPrevious={handlePreviousStepOrBackToReadOnly}
+          step={OFFER_WIZARD_STEP_IDS.STOCKS}
+          isDisabled={formik.isSubmitting || isDisabled}
+          dirtyForm={formik.dirty}
+        />
+      </form>
       <RouteLeavingGuardIndividualOffer
         when={formik.dirty && !formik.isSubmitting}
       />

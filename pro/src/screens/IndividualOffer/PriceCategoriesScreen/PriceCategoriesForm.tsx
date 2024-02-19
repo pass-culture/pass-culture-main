@@ -240,7 +240,7 @@ export const PriceCategoriesForm = ({
       </FormLayout>
 
       {canBeDuo && (
-        <FormLayout small>
+        <FormLayout fullWidthActions>
           <FormLayout.Section
             className={styles['duo-section']}
             title="Réservations “Duo”"
