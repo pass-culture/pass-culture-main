@@ -20,7 +20,6 @@ import {
   IndividualOfferContext,
 } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { IndividualOffer } from 'core/Offers/types'
 import {
   getIndividualOfferPath,
   getIndividualOfferUrl,
@@ -109,7 +108,7 @@ const renderStockThingScreen = async (
 describe('screens:StocksThing', () => {
   let props: StocksThingProps
   let contextValue: IndividualOfferContextValues
-  let offer: IndividualOffer
+  let offer: GetIndividualOfferResponseModel
   const offerId = 1
 
   beforeEach(() => {

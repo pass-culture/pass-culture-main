@@ -1,7 +1,11 @@
-import { PatchOfferBodyModel, WithdrawalTypeEnum } from 'apiClient/v1'
+import {
+  GetIndividualOfferResponseModel,
+  PatchOfferBodyModel,
+  WithdrawalTypeEnum,
+} from 'apiClient/v1'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
 import { SYNCHRONIZED_OFFER_EDITABLE_FIELDS } from 'core/Offers/constants'
-import { OfferExtraData, IndividualOffer } from 'core/Offers/types'
+import { OfferExtraData } from 'core/Offers/types'
 import { isAllocineOffer } from 'core/Providers/utils/localProvider'
 import { AccessiblityEnum } from 'core/shared'
 
@@ -42,7 +46,7 @@ export const serializeDurationMinutes = (
   return minutes + hours * 60
 }
 interface SerializePatchOffer {
-  offer: IndividualOffer
+  offer: GetIndividualOfferResponseModel
   formValues: Partial<IndividualOfferFormValues>
   shouldSendMail?: boolean
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
+import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import AccessibilitySummarySection from 'components/AccessibilitySummarySection'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import {
@@ -14,7 +15,6 @@ import {
   OFFER_WITHDRAWAL_TYPE_LABELS,
   OFFER_WIZARD_MODE,
 } from 'core/Offers/constants'
-import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -24,7 +24,7 @@ import { OfferSectionData, serializeOfferSectionData } from './serializer'
 import humanizeDelay from './utils'
 
 interface OfferSummaryProps {
-  offer: IndividualOffer
+  offer: GetIndividualOfferResponseModel
   conditionalFields: string[]
 }
 

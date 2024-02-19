@@ -12,6 +12,7 @@ import * as router from 'react-router-dom'
 import { api } from 'apiClient/api'
 import {
   ApiError,
+  GetIndividualOfferResponseModel,
   GetOfferStockResponseModel,
   OfferStatus,
   SubcategoryIdEnum,
@@ -23,7 +24,6 @@ import Notification from 'components/Notification/Notification'
 import { STOCKS_PER_PAGE } from 'components/StocksEventList/StocksEventList'
 import { IndividualOfferContextProvider } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { IndividualOffer } from 'core/Offers/types'
 import {
   getIndividualOfferPath,
   getIndividualOfferUrl,
@@ -52,7 +52,7 @@ vi.mock('react-router-dom', async () => ({
 }))
 
 const renderStockEventScreen = async (
-  apiOffer: IndividualOffer,
+  apiOffer: GetIndividualOfferResponseModel,
   apiStocks: GetOfferStockResponseModel[] = [],
   stocksCount?: number,
   searchParams = ''
@@ -153,7 +153,7 @@ const priceCategoryId = '1'
 const otherPriceCategoryId = '2'
 
 describe('screens:StocksEventEdition', () => {
-  let apiOffer: IndividualOffer
+  let apiOffer: GetIndividualOfferResponseModel
   let apiStocks: GetOfferStockResponseModel[]
 
   beforeEach(() => {

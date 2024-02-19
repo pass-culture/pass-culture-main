@@ -2,7 +2,6 @@ import {
   CollectiveOffersBookingResponseModel,
   EacFormat,
   EducationalInstitutionResponseModel,
-  GetIndividualOfferResponseModel,
   OfferStatus,
 } from 'apiClient/v1'
 import { CropParams } from 'components/ImageUploader'
@@ -98,5 +97,3 @@ export interface IndividualOfferImage {
   credit: string | null
   cropParams?: CropParams
 }
-
-export interface IndividualOffer extends GetIndividualOfferResponseModel {}

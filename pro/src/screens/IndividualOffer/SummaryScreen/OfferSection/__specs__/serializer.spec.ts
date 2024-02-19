@@ -1,19 +1,19 @@
 import {
   CategoryResponseModel,
+  GetIndividualOfferResponseModel,
   OfferStatus,
   SubcategoryIdEnum,
   SubcategoryResponseModel,
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
-import { IndividualOffer } from 'core/Offers/types'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
 import { individualOfferSubCategoryFactory } from 'utils/individualApiFactories'
 
 import { serializeOfferSectionData } from '../serializer'
 
 describe('routes::Summary::serializers', () => {
-  let offer: IndividualOffer
+  let offer: GetIndividualOfferResponseModel
   let categories: CategoryResponseModel[]
   let subCategoryList: SubcategoryResponseModel[]
 

@@ -1,11 +1,11 @@
 import React from 'react'
 
+import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { FormLayoutDescription } from 'components/FormLayout'
-import { IndividualOffer } from 'core/Offers/types'
 import { isOfferDisabled } from 'core/Offers/utils'
 
 interface EventCancellationBannerProps {
-  offer: IndividualOffer
+  offer: GetIndividualOfferResponseModel
 }
 
 export const EventCancellationBanner = ({

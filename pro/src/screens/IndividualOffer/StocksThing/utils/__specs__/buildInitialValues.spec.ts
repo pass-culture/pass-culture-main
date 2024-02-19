@@ -1,4 +1,4 @@
-import { IndividualOffer } from 'core/Offers/types'
+import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import {
   GetIndividualOfferFactory,
   offerVenueFactory,
@@ -9,7 +9,7 @@ import { STOCK_THING_FORM_DEFAULT_VALUES } from '../../constants'
 import buildInitialValues from '../buildInitialValues'
 
 describe('StockThingForm::utils::buildInitialValues', () => {
-  let offer: IndividualOffer
+  let offer: GetIndividualOfferResponseModel
   beforeEach(() => {
     offer = GetIndividualOfferFactory({
       venue: offerVenueFactory({ departementCode: '93' }),

@@ -4,10 +4,10 @@ import { FieldArray, useFormikContext } from 'formik'
 import { useState } from 'react'
 
 import { api } from 'apiClient/api'
+import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { IndividualOffer } from 'core/Offers/types'
 import useNotification from 'hooks/useNotification'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
@@ -30,7 +30,7 @@ import { PriceCategoriesFormValues, PriceCategoryForm } from './form/types'
 import styles from './PriceCategoriesForm.module.scss'
 
 export interface PriceCategoriesFormProps {
-  offer: IndividualOffer
+  offer: GetIndividualOfferResponseModel
   mode: OFFER_WIZARD_MODE
   isDisabled: boolean
   canBeDuo?: boolean

@@ -1,7 +1,9 @@
 import { format } from 'date-fns'
 
-import { GetOfferStockResponseModel } from 'apiClient/v1'
-import { IndividualOffer } from 'core/Offers/types'
+import {
+  GetIndividualOfferResponseModel,
+  GetOfferStockResponseModel,
+} from 'apiClient/v1'
 import { FORMAT_ISO_DATE_ONLY, isDateValid } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
@@ -9,7 +11,7 @@ import { STOCK_THING_FORM_DEFAULT_VALUES } from '../constants'
 import { StockThingFormValues } from '../types'
 
 const buildInitialValues = (
-  offer: IndividualOffer,
+  offer: GetIndividualOfferResponseModel,
   stocks: GetOfferStockResponseModel[]
 ): StockThingFormValues => {
   if (stocks.length === 0) {

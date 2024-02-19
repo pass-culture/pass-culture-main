@@ -1,9 +1,9 @@
 import cn from 'classnames'
 import React from 'react'
 
+import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { IndividualOfferNavigation } from 'components/IndividualOfferNavigation/IndividualOfferNavigation'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { IndividualOffer } from 'core/Offers/types'
 
 import Status from '../Status/Status'
 import SynchronizedProviderInformation from '../SynchronisedProviderInfos/SynchronizedProviderInformation'
@@ -15,7 +15,7 @@ export interface IndivualOfferLayoutProps {
   title: string
   withStepper?: boolean
   children: JSX.Element | JSX.Element[]
-  offer: IndividualOffer | null
+  offer: GetIndividualOfferResponseModel | null
   mode: OFFER_WIZARD_MODE
 }
 

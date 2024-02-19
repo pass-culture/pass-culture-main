@@ -1,7 +1,7 @@
 import { api } from 'apiClient/api'
+import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { updateIndividualOffer } from 'core/Offers/adapters'
 import { serializePatchOffer } from 'core/Offers/adapters/updateIndividualOffer/serializers'
-import { IndividualOffer } from 'core/Offers/types'
 
 import upsertStocksThingAdapter from './adapters/upsertStocksThingAdapter'
 import { StockThingFormValues, StockThingFormik } from './types'
@@ -9,7 +9,7 @@ import buildInitialValues from './utils/buildInitialValues'
 
 export const submitToApi = async (
   values: StockThingFormValues,
-  offer: IndividualOffer,
+  offer: GetIndividualOfferResponseModel,
   resetForm: StockThingFormik['resetForm'],
   setErrors: StockThingFormik['setErrors']
 ) => {

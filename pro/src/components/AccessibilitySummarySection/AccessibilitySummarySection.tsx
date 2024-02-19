@@ -1,16 +1,19 @@
 import React from 'react'
 
+import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import { CollectiveOfferTemplate, CollectiveOffer } from 'core/OfferEducational'
-import { IndividualOffer } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 import { AccessibilityLabel } from 'ui-kit/AccessibilityLabel'
 
 import styles from './AccessibilitySummarySection.module.scss'
 
 interface AccessibilitySummarySectionProps {
-  offer: IndividualOffer | CollectiveOfferTemplate | CollectiveOffer
+  offer:
+    | GetIndividualOfferResponseModel
+    | CollectiveOfferTemplate
+    | CollectiveOffer
 }
 
 const AccessibilitySummarySection = ({
