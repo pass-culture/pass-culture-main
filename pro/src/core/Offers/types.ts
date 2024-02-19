@@ -99,6 +99,4 @@ export interface IndividualOfferImage {
   cropParams?: CropParams
 }
 
-export interface IndividualOffer extends GetIndividualOfferResponseModel {
-  image?: IndividualOfferImage
-}
+export interface IndividualOffer extends GetIndividualOfferResponseModel {}

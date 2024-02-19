@@ -158,7 +158,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       isNational: false,
       name: 'Offer name',
       subcategoryId: SubcategoryIdEnum.CONCERT,
-      image: undefined,
       url: 'https://offer.example.com',
       externalTicketOfficeUrl: 'https://external.example.com',
       withdrawalDetails: 'Offer withdrawalDetails',
@@ -308,9 +307,8 @@ describe('screens:IndividualOffer::Informations:edition', () => {
   it('should delete offer image', async () => {
     contextOverride.offer = {
       ...offer,
-      image: {
-        originalUrl: 'https://image.url',
-        url: 'https://image.url',
+      activeMediation: {
+        thumbUrl: 'https://image.url',
         credit: 'John Do',
       },
     }
@@ -336,9 +334,8 @@ describe('screens:IndividualOffer::Informations:edition', () => {
   it('should display an error on delete offer image api failure', async () => {
     contextOverride.offer = {
       ...offer,
-      image: {
-        originalUrl: 'https://image.url',
-        url: 'https://image.url',
+      activeMediation: {
+        thumbUrl: 'https://image.url',
         credit: 'John Do',
       },
     }

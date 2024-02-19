@@ -9,6 +9,7 @@ import { SENT_DATA_ERROR_MESSAGE } from 'core/shared'
 import useNotification from 'hooks/useNotification'
 
 import { imageFileToDataUrl } from '../InformationsScreen/utils/files'
+import { getIndividualOfferImage } from '../utils/getIndividualOfferImage'
 
 export const useIndividualOfferImageUpload = () => {
   const notify = useNotification()
@@ -19,7 +20,7 @@ export const useIndividualOfferImageUpload = () => {
   >(undefined)
   const [imageOffer, setImageOffer] = useState<
     IndividualOfferImage | undefined
-  >(offer && offer.image ? offer.image : undefined)
+  >(offer ? getIndividualOfferImage(offer) : undefined)
 
   const handleImageOnSubmit = useCallback(
     async (

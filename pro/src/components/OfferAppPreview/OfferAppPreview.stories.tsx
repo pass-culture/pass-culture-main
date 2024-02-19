@@ -33,7 +33,7 @@ Default.args = {
 
 export const NoImage = Template.bind({})
 NoImage.args = {
-  offer: individualOfferFactory({ ...baseOfferData, image: undefined }),
+  offer: individualOfferFactory({ ...baseOfferData }),
 }
 
 export const NotDuo = Template.bind({})
