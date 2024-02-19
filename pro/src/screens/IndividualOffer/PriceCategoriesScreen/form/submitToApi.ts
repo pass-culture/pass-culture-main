@@ -1,7 +1,5 @@
-import {
-  getIndividualOfferAdapter,
-  updateIndividualOffer,
-} from 'core/Offers/adapters'
+import { api } from 'apiClient/api'
+import { updateIndividualOffer } from 'core/Offers/adapters'
 import { serializePatchOffer } from 'core/Offers/adapters/updateIndividualOffer/serializers'
 import { IndividualOffer } from 'core/Offers/types'
 
@@ -38,11 +36,8 @@ export const submitToApi = async (
     throw new Error(priceCategoriesMessage)
   }
 
-  const response = await getIndividualOfferAdapter(offer.id)
-  if (response.isOk) {
-    const updatedOffer = response.payload
-    resetForm({
-      values: computeInitialValues(updatedOffer),
-    })
-  }
+  const updatedOffer = await api.getOffer(offer.id)
+  resetForm({
+    values: computeInitialValues(updatedOffer),
+  })
 }
