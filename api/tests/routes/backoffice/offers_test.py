@@ -1088,7 +1088,15 @@ class BatchEditOfferTest(PostEndpointHelper):
             "object_ids": parameter_ids,
         }
 
-        response = self.post_to_endpoint(authenticated_client, form=base_form)
+        # Expected queries:
+        # 1 x user_session
+        # 1 x user
+        # 1 x all offers
+        # 1 x all criteria
+        # 1 x update offers (for 3 offers)
+        # 1 x insert into offer_criterion (for 3 insertions)
+        # 1 x release savepoint
+        response = self.post_to_endpoint(authenticated_client, form=base_form, expected_num_queries=7)
         assert response.status_code == 303
 
         for offer in offers:
@@ -1194,7 +1202,11 @@ class BatchOfferValidateTest(PostEndpointHelper):
     def test_batch_validate_offers(self, legit_user, authenticated_client):
         offers = offers_factories.OfferFactory.create_batch(3, validation=offers_models.OfferValidationStatus.DRAFT)
         parameter_ids = ",".join(str(offer.id) for offer in offers)
-        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
+
+        # user_session, user, select offer (3 in 1 query), update offer (3 in 1 query), release savepoint
+        response = self.post_to_endpoint(
+            authenticated_client, form={"object_ids": parameter_ids}, expected_num_queries=5
+        )
 
         assert response.status_code == 303
         for offer in offers:

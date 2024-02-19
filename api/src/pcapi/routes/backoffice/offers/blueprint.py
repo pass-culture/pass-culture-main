@@ -565,7 +565,11 @@ def batch_edit_offer() -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer, 400)
 
-    offers = offers_models.Offer.query.filter(offers_models.Offer.id.in_(form.object_ids_list)).all()
+    offers = (
+        offers_models.Offer.query.filter(offers_models.Offer.id.in_(form.object_ids_list))
+        .options(sa.orm.joinedload(offers_models.Offer.criteria))
+        .all()
+    )
     criteria = criteria_models.Criterion.query.filter(criteria_models.Criterion.id.in_(form.criteria.data)).all()
 
     previous_criteria = set.intersection(*[set(offer.criteria) for offer in offers])
@@ -584,7 +588,10 @@ def batch_edit_offer() -> utils.BackofficeResponse:
         elif form.rankingWeight.data:
             offer.rankingWeight = form.rankingWeight.data
 
-        repository.save(offer)
+        db.session.add(offer)
+
+    # A single commit at the end avoids refreshing other offers in the loop
+    db.session.commit()
 
     search.async_index_offer_ids(
         form.object_ids_list,
@@ -678,7 +685,15 @@ def reject_offer(offer_id: int) -> utils.BackofficeResponse:
 
 def _batch_validate_offers(offer_ids: list[int]) -> None:
     new_validation = offers_models.OfferValidationStatus.APPROVED
-    offers = offers_models.Offer.query.filter(offers_models.Offer.id.in_(offer_ids)).all()
+    offers = (
+        offers_models.Offer.query.filter(offers_models.Offer.id.in_(offer_ids))
+        .options(
+            sa.orm.joinedload(offers_models.Offer.venue).load_only(
+                offerers_models.Venue.bookingEmail, offerers_models.Venue.name, offerers_models.Venue.publicName
+            )
+        )
+        .all()
+    )
 
     for offer in offers:
         if offer.validation != new_validation:
@@ -689,7 +704,7 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
             offer.lastValidationAuthorUserId = current_user.id
             offer.isActive = True
 
-            repository.save(offer)
+            db.session.add(offer)
 
             recipients = (
                 [offer.venue.bookingEmail]
@@ -699,6 +714,9 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
             transactional_mails.send_offer_validation_status_update_email(
                 offer, old_validation, new_validation, recipients
             )
+
+    # A single commit at the end avoids refreshing other offers in the loop
+    db.session.commit()
 
     search.async_index_offer_ids(
         offer_ids,
