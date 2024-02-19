@@ -9,11 +9,13 @@ import {
 } from 'context/IndividualOfferContext'
 import { IndividualOffer } from 'core/Offers/types'
 import { RootState } from 'store/rootReducer'
-import { offerVenueFactory } from 'utils/apiFactories'
+import {
+  GetIndividualOfferFactory,
+  offerVenueFactory,
+} from 'utils/apiFactories'
 import {
   individualGetOfferStockResponseModelFactory,
   individualOfferContextFactory,
-  individualOfferFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -40,7 +42,7 @@ describe('screens:Stocks', () => {
   const offerId = 12
 
   beforeEach(() => {
-    offer = individualOfferFactory({
+    offer = GetIndividualOfferFactory({
       id: offerId,
       venue: offerVenueFactory({
         departementCode: '75',
@@ -60,7 +62,7 @@ describe('screens:Stocks', () => {
   })
 
   it('should render stock thing', async () => {
-    contextOverride.offer = individualOfferFactory({
+    contextOverride.offer = GetIndividualOfferFactory({
       ...contextOverride.offer,
       isEvent: false,
       isDigital: false,
@@ -75,7 +77,7 @@ describe('screens:Stocks', () => {
   })
 
   it('should render stock event', async () => {
-    contextOverride.offer = individualOfferFactory({
+    contextOverride.offer = GetIndividualOfferFactory({
       ...contextOverride.offer,
       isEvent: true,
     })
@@ -94,7 +96,7 @@ describe('screens:Stocks', () => {
   it.each(offerStatusWithoutBanner)(
     'should not render stock description banner',
     async (offerStatus) => {
-      contextOverride.offer = individualOfferFactory({
+      contextOverride.offer = GetIndividualOfferFactory({
         ...contextOverride.offer,
         isEvent: true,
         status: offerStatus,
@@ -121,7 +123,7 @@ describe('screens:Stocks', () => {
   it.each(offerStatusWithBanner)(
     'should render stock description banner',
     async (offerStatus) => {
-      contextOverride.offer = individualOfferFactory({
+      contextOverride.offer = GetIndividualOfferFactory({
         ...contextOverride.offer,
         isEvent: true,
         status: offerStatus,

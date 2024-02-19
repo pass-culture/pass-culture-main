@@ -7,7 +7,6 @@ import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
-import { individualOfferFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
@@ -38,7 +37,7 @@ const renderPriceCategoriesForm = (
   return renderWithProviders(
     <Formik initialValues={values} onSubmit={vi.fn()}>
       <PriceCategoriesForm
-        offer={individualOfferFactory({
+        offer={GetIndividualOfferFactory({
           id: 42,
           hasStocks: false,
           priceCategories: [],
@@ -187,7 +186,7 @@ describe('PriceCategories', () => {
     }
 
     renderPriceCategoriesForm(values, {
-      offer: individualOfferFactory({ id: 42, hasStocks: true }),
+      offer: GetIndividualOfferFactory({ id: 42, hasStocks: true }),
     })
 
     // I can cancel

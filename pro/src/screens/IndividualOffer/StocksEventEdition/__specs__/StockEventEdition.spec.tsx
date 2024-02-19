@@ -31,11 +31,9 @@ import {
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import { Stocks } from 'pages/IndividualOfferWizard/Stocks/Stocks'
 import { ButtonLink } from 'ui-kit'
+import { GetIndividualOfferFactory } from 'utils/apiFactories'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
-import {
-  individualGetOfferStockResponseModelFactory,
-  individualOfferFactory,
-} from 'utils/individualApiFactories'
+import { individualGetOfferStockResponseModelFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 vi.mock('utils/date', async () => {
@@ -164,7 +162,7 @@ describe('screens:StocksEventEdition', () => {
         bookingsQuantity: 4,
       }),
     ]
-    apiOffer = individualOfferFactory({
+    apiOffer = GetIndividualOfferFactory({
       bookingEmail: 'test@example.com',
       description: 'A passionate description of product 80',
       durationMinutes: null,

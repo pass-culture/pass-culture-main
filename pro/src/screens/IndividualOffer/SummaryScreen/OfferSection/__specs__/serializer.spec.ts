@@ -7,10 +7,8 @@ import {
 } from 'apiClient/v1'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
-import {
-  individualOfferFactory,
-  individualOfferSubCategoryFactory,
-} from 'utils/individualApiFactories'
+import { GetIndividualOfferFactory } from 'utils/apiFactories'
+import { individualOfferSubCategoryFactory } from 'utils/individualApiFactories'
 
 import { serializeOfferSectionData } from '../serializer'
 
@@ -20,7 +18,7 @@ describe('routes::Summary::serializers', () => {
   let subCategoryList: SubcategoryResponseModel[]
 
   beforeEach(() => {
-    offer = individualOfferFactory({
+    offer = GetIndividualOfferFactory({
       id: 12,
       extraData: {
         author: 'Offer author',

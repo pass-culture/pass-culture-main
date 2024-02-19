@@ -1,14 +1,14 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
 
-import { individualOfferFactory } from 'utils/individualApiFactories'
+import { GetIndividualOfferFactory } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { PriceCategoriesSection } from '../PriceCategoriesSection'
 
 describe('StockEventSection', () => {
   it('should render correctly', () => {
-    const offer = individualOfferFactory()
+    const offer = GetIndividualOfferFactory()
 
     renderWithProviders(<PriceCategoriesSection offer={offer} canBeDuo />)
 
@@ -19,7 +19,7 @@ describe('StockEventSection', () => {
   })
 
   it('should render correctly when offer cannot be duo', () => {
-    const offer = individualOfferFactory()
+    const offer = GetIndividualOfferFactory()
 
     renderWithProviders(
       <PriceCategoriesSection offer={offer} canBeDuo={false} />
