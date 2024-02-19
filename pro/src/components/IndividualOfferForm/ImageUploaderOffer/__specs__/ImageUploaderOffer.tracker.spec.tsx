@@ -7,10 +7,8 @@ import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { IndividualOfferContext } from 'context/IndividualOfferContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import {
-  individualOfferContextFactory,
-  individualOfferFactory,
-} from 'utils/individualApiFactories'
+import { GetIndividualOfferFactory } from 'utils/apiFactories'
+import { individualOfferContextFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ImageUploaderOffer, {
@@ -24,7 +22,7 @@ const TEST_OFFER_ID = 12
 const renderImageUploaderOffer = (props: ImageUploaderOfferProps) => {
   const contextValue = individualOfferContextFactory({
     offerId: TEST_OFFER_ID,
-    offer: individualOfferFactory({ id: TEST_OFFER_ID }),
+    offer: GetIndividualOfferFactory({ id: TEST_OFFER_ID }),
   })
 
   return renderWithProviders(

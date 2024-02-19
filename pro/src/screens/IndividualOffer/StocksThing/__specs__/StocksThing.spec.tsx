@@ -26,12 +26,14 @@ import {
   getIndividualOfferUrl,
 } from 'core/Offers/utils/getIndividualOfferUrl'
 import { ButtonLink } from 'ui-kit'
-import { offerVenueFactory } from 'utils/apiFactories'
+import {
+  GetIndividualOfferFactory,
+  offerVenueFactory,
+} from 'utils/apiFactories'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import {
   individualGetOfferStockResponseModelFactory,
   individualOfferContextFactory,
-  individualOfferFactory,
   individualOfferSubCategoryFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -111,7 +113,7 @@ describe('screens:StocksThing', () => {
   const offerId = 1
 
   beforeEach(() => {
-    offer = individualOfferFactory({
+    offer = GetIndividualOfferFactory({
       id: offerId,
       venue: offerVenueFactory({
         departementCode: '75',

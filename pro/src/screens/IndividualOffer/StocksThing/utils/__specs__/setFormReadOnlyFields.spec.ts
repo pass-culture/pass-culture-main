@@ -1,9 +1,7 @@
 import { OfferStatus } from 'apiClient/v1'
 import { IndividualOffer } from 'core/Offers/types'
-import {
-  individualGetOfferStockResponseModelFactory,
-  individualOfferFactory,
-} from 'utils/individualApiFactories'
+import { GetIndividualOfferFactory } from 'utils/apiFactories'
+import { individualGetOfferStockResponseModelFactory } from 'utils/individualApiFactories'
 
 import { StockThingFormValues } from '../../types'
 import setFormReadOnlyFields from '../setFormReadOnlyFields'
@@ -12,7 +10,7 @@ describe('StockThingForm::utils::setFormReadOnlyFields', () => {
   let offer: IndividualOffer
   let currentStock: StockThingFormValues
   beforeEach(() => {
-    offer = individualOfferFactory()
+    offer = GetIndividualOfferFactory()
     currentStock = {} as StockThingFormValues
   })
   const disabledStatus = [OfferStatus.REJECTED, OfferStatus.PENDING]

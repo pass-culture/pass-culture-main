@@ -16,10 +16,10 @@ import {
 import { IndividualOffer } from 'core/Offers/types'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { SubmitButton } from 'ui-kit'
+import { GetIndividualOfferFactory } from 'utils/apiFactories'
 import {
   individualOfferCategoryFactory,
   individualOfferContextFactory,
-  individualOfferFactory,
   individualOfferSubCategoryFactory,
   individualOfferVenueItemFactory,
 } from 'utils/individualApiFactories'
@@ -143,7 +143,7 @@ describe('IndividualOfferForm', () => {
   })
 
   const imageSectionDataset: (IndividualOffer | undefined)[] = [
-    individualOfferFactory(),
+    GetIndividualOfferFactory(),
     undefined,
   ]
   it.each(imageSectionDataset)(

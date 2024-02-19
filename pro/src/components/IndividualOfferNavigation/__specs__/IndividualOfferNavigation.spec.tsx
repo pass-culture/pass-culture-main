@@ -9,10 +9,8 @@ import {
 } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import {
-  individualOfferContextFactory,
-  individualOfferFactory,
-} from 'utils/individualApiFactories'
+import { GetIndividualOfferFactory } from 'utils/apiFactories'
+import { individualOfferContextFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OFFER_WIZARD_STEP_IDS } from '../constants'
@@ -93,7 +91,7 @@ describe('test IndividualOfferNavigation', () => {
 
     it('should render steps when no offer is given', async () => {
       renderIndividualOfferNavigation({
-        offer: individualOfferFactory({ isEvent: false }),
+        offer: GetIndividualOfferFactory({ isEvent: false }),
       })
 
       expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
@@ -111,7 +109,7 @@ describe('test IndividualOfferNavigation', () => {
     })
 
     it('should render steps when offer without stock is given', async () => {
-      const offer = individualOfferFactory({
+      const offer = GetIndividualOfferFactory({
         hasStocks: false,
         isEvent: false,
       })
@@ -134,7 +132,7 @@ describe('test IndividualOfferNavigation', () => {
     })
 
     it('should render steps when offer and stock are given', async () => {
-      const offer = individualOfferFactory({
+      const offer = GetIndividualOfferFactory({
         isEvent: false,
       })
 
@@ -157,7 +155,7 @@ describe('test IndividualOfferNavigation', () => {
 
     it('should render steps on Information', () => {
       renderIndividualOfferNavigation(
-        { offer: individualOfferFactory({ isEvent: false }) },
+        { offer: GetIndividualOfferFactory({ isEvent: false }) },
         generatePath(
           getIndividualOfferPath({
             step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
@@ -176,7 +174,7 @@ describe('test IndividualOfferNavigation', () => {
 
     it('should render steps on Stocks', () => {
       renderIndividualOfferNavigation(
-        { offer: individualOfferFactory({ isEvent: false }) },
+        { offer: GetIndividualOfferFactory({ isEvent: false }) },
         generatePath(
           getIndividualOfferPath({
             step: OFFER_WIZARD_STEP_IDS.STOCKS,
@@ -195,7 +193,7 @@ describe('test IndividualOfferNavigation', () => {
 
     it('should render steps on Summary', () => {
       renderIndividualOfferNavigation(
-        { offer: individualOfferFactory({ isEvent: false }) },
+        { offer: GetIndividualOfferFactory({ isEvent: false }) },
         generatePath(
           getIndividualOfferPath({
             step: OFFER_WIZARD_STEP_IDS.SUMMARY,
@@ -216,7 +214,7 @@ describe('test IndividualOfferNavigation', () => {
       renderIndividualOfferNavigation(
         {
           offer: {
-            ...individualOfferFactory(),
+            ...GetIndividualOfferFactory(),
             isEvent: true,
           },
         },
@@ -243,7 +241,7 @@ describe('test IndividualOfferNavigation', () => {
       renderIndividualOfferNavigation(
         {
           offer: {
-            ...individualOfferFactory(),
+            ...GetIndividualOfferFactory(),
             isEvent: false,
           },
         },
@@ -268,7 +266,7 @@ describe('test IndividualOfferNavigation', () => {
 
   describe('in edition', () => {
     it('should render tabs navigation in edition', () => {
-      const offer = individualOfferFactory({
+      const offer = GetIndividualOfferFactory({
         id: offerId,
         isEvent: true,
       })
@@ -291,7 +289,7 @@ describe('test IndividualOfferNavigation', () => {
     })
 
     it('should render steps on Information', () => {
-      const offer = individualOfferFactory({
+      const offer = GetIndividualOfferFactory({
         id: offerId,
         isEvent: false,
       })
@@ -317,7 +315,7 @@ describe('test IndividualOfferNavigation', () => {
     })
 
     it('should render steps on Stocks', () => {
-      const offer = individualOfferFactory({
+      const offer = GetIndividualOfferFactory({
         id: offerId,
         isEvent: false,
       })

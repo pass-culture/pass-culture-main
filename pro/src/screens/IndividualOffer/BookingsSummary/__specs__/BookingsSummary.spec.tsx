@@ -4,11 +4,11 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import { IndividualOfferContext } from 'context/IndividualOfferContext'
 import { IndividualOffer } from 'core/Offers/types'
-import { bookingRecapFactory } from 'utils/apiFactories'
 import {
-  individualOfferContextFactory,
-  individualOfferFactory,
-} from 'utils/individualApiFactories'
+  GetIndividualOfferFactory,
+  bookingRecapFactory,
+} from 'utils/apiFactories'
+import { individualOfferContextFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { BookingsSummaryScreen } from '../BookingsSummary'
@@ -25,7 +25,7 @@ const render = (offer: IndividualOffer) => {
 
 describe('BookingsSummary', () => {
   it('should render a list of bookings', async () => {
-    const offer = individualOfferFactory({ name: 'Offre de test' })
+    const offer = GetIndividualOfferFactory({ name: 'Offre de test' })
 
     vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
       bookingsRecap: [
@@ -49,7 +49,7 @@ describe('BookingsSummary', () => {
   })
 
   it('should render a message when no bookings', async () => {
-    const offer = individualOfferFactory({ name: 'Offre de test' })
+    const offer = GetIndividualOfferFactory({ name: 'Offre de test' })
 
     vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
       bookingsRecap: [],

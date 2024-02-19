@@ -1,8 +1,10 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
 
-import { bookingRecapFactory } from 'utils/apiFactories'
-import { individualOfferFactory } from 'utils/individualApiFactories'
+import {
+  GetIndividualOfferFactory,
+  bookingRecapFactory,
+} from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
@@ -15,7 +17,7 @@ const renderIndividualBookingTable = (props: IndividualBookingsTableProps) =>
 
 describe('CollectiveTableRow', () => {
   it('should render a table with bookings', () => {
-    const offer = individualOfferFactory({ name: 'Offre de test' })
+    const offer = GetIndividualOfferFactory({ name: 'Offre de test' })
 
     const props: IndividualBookingsTableProps = {
       bookings: [

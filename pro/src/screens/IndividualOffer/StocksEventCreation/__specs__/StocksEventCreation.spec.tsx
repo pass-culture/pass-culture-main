@@ -15,11 +15,9 @@ import {
   getIndividualOfferUrl,
 } from 'core/Offers/utils/getIndividualOfferUrl'
 import { ButtonLink } from 'ui-kit'
+import { GetIndividualOfferFactory } from 'utils/apiFactories'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
-import {
-  individualGetOfferStockResponseModelFactory,
-  individualOfferFactory,
-} from 'utils/individualApiFactories'
+import { individualGetOfferStockResponseModelFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
@@ -104,7 +102,7 @@ describe('StocksEventCreation', () => {
 
   it('should notify when clicking on Enregistrer et continuer without stock', async () => {
     await renderStockEventCreation([], {
-      offer: individualOfferFactory(),
+      offer: GetIndividualOfferFactory(),
     })
     expect(screen.getByText('Comment faire ?')).toBeInTheDocument()
 
@@ -118,7 +116,7 @@ describe('StocksEventCreation', () => {
   it('should not show help section if there are stocks already and show table', async () => {
     await renderStockEventCreation(
       [individualGetOfferStockResponseModelFactory({ priceCategoryId: 1 })],
-      { offer: individualOfferFactory() }
+      { offer: GetIndividualOfferFactory() }
     )
 
     expect(screen.queryByText('Comment faire ?')).not.toBeInTheDocument()
@@ -126,7 +124,7 @@ describe('StocksEventCreation', () => {
   })
 
   it('should display new stocks banner for several stocks', async () => {
-    await renderStockEventCreation([], { offer: individualOfferFactory() })
+    await renderStockEventCreation([], { offer: GetIndividualOfferFactory() })
 
     await userEvent.click(screen.getByText('Ajouter une ou plusieurs dates'))
 
@@ -159,7 +157,7 @@ describe('StocksEventCreation', () => {
   })
 
   it('should redirect to previous page on click to Retour', async () => {
-    await renderStockEventCreation([], { offer: individualOfferFactory() })
+    await renderStockEventCreation([], { offer: GetIndividualOfferFactory() })
 
     await userEvent.click(screen.getByText('Retour'))
 
@@ -170,7 +168,7 @@ describe('StocksEventCreation', () => {
     await renderStockEventCreation(
       [individualGetOfferStockResponseModelFactory()],
       {
-        offer: individualOfferFactory(),
+        offer: GetIndividualOfferFactory(),
       }
     )
 
@@ -182,7 +180,7 @@ describe('StocksEventCreation', () => {
   it('should notify when there is not yet stocks', async () => {
     vi.spyOn(api, 'upsertStocks').mockRejectedValueOnce({})
 
-    await renderStockEventCreation([], { offer: individualOfferFactory() })
+    await renderStockEventCreation([], { offer: GetIndividualOfferFactory() })
 
     await userEvent.click(screen.getByText('Enregistrer et continuer'))
 

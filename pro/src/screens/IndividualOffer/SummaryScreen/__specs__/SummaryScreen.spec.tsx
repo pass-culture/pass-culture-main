@@ -32,7 +32,6 @@ import {
 import {
   individualOfferCategoryFactory,
   individualOfferContextFactory,
-  individualOfferFactory,
   individualOfferSubCategoryFactory,
   individualOfferVenueItemFactory,
 } from 'utils/individualApiFactories'
@@ -128,7 +127,7 @@ describe('Summary', () => {
       },
     ]
     customContext = {
-      offer: individualOfferFactory({
+      offer: GetIndividualOfferFactory({
         isEvent: false,
         name: 'mon offre',
         lastProvider: {
@@ -362,7 +361,7 @@ describe('Summary', () => {
     it('should display redirect modal if first offer', async () => {
       const venueId = 1
       const context = {
-        offer: individualOfferFactory({
+        offer: GetIndividualOfferFactory({
           venue: offerVenueFactory({ id: venueId }),
         }),
         offerOfferer: { name: 'offerOffererName', id: 1 },
@@ -402,7 +401,7 @@ describe('Summary', () => {
 
     it('should display redirect modal if first non free offer', async () => {
       const context = {
-        offer: individualOfferFactory(),
+        offer: GetIndividualOfferFactory(),
         offerOfferer: { name: 'offerOffererName', id: 1 },
         venueList: [individualOfferVenueItemFactory()],
       }
@@ -452,7 +451,7 @@ describe('Summary', () => {
 
     it('should not display redirect modal if hasPendingBankAccount is true', async () => {
       const context = {
-        offer: individualOfferFactory(),
+        offer: GetIndividualOfferFactory(),
         offerOfferer: { name: 'offerOffererName', id: 1 },
         venueList: [individualOfferVenueItemFactory()],
       }
@@ -495,7 +494,7 @@ describe('Summary', () => {
 
     it('should not display redirect modal if offer is free', async () => {
       const context = {
-        offer: individualOfferFactory(),
+        offer: GetIndividualOfferFactory(),
         venueList: [individualOfferVenueItemFactory()],
       }
 
@@ -527,7 +526,7 @@ describe('Summary', () => {
 
     it('should not display redirect modal if venue hasNonFreeOffers', async () => {
       const context = {
-        offer: individualOfferFactory(),
+        offer: GetIndividualOfferFactory(),
         venueList: [individualOfferVenueItemFactory()],
       }
 
