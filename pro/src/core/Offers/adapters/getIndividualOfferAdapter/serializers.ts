@@ -1,22 +1,6 @@
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { IndividualOffer, IndividualOfferImage } from 'core/Offers/types'
 
-export const serializeOfferApiExtraData = (
-  apiOffer: GetIndividualOfferResponseModel
-) => ({
-  author: apiOffer.extraData?.author || '',
-  gtl_id: apiOffer.extraData?.gtl_id || '',
-  musicType: apiOffer.extraData?.musicType || '',
-  musicSubType: apiOffer.extraData?.musicSubType || '',
-  performer: apiOffer.extraData?.performer || '',
-  ean: apiOffer.extraData?.ean || '',
-  showType: apiOffer.extraData?.showType || '',
-  showSubType: apiOffer.extraData?.showSubType || '',
-  speaker: apiOffer.extraData?.speaker || '',
-  stageDirector: apiOffer.extraData?.stageDirector || '',
-  visa: apiOffer.extraData?.visa || '',
-})
-
 export const serializeOfferApiImage = (
   apiOffer: GetIndividualOfferResponseModel
 ): IndividualOfferImage | undefined => {
@@ -45,7 +29,6 @@ export const serializeOfferApi = (
   const offer: IndividualOffer = {
     ...apiOffer,
     image: serializeOfferApiImage(apiOffer),
-    ...serializeOfferApiExtraData(apiOffer),
   }
 
   return offer

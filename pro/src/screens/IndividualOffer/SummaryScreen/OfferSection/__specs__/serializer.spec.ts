@@ -22,23 +22,25 @@ describe('routes::Summary::serializers', () => {
   beforeEach(() => {
     offer = individualOfferFactory({
       id: 12,
-      author: 'Offer author',
+      extraData: {
+        author: 'Offer author',
+        performer: 'Offer performer',
+        ean: '',
+        showSubType: '',
+        showType: '',
+        stageDirector: 'Offer stageDirector',
+        speaker: 'Offer speaker',
+        visa: '',
+      },
       bookingEmail: 'booking@email.com',
       bookingContact: 'alfonsoLeBg@exampple.com',
       description: 'Offer description',
       durationMinutes: 140,
       isDuo: false,
       name: 'Offer name',
-      performer: 'Offer performer',
-      ean: '',
-      showSubType: '',
-      showType: '',
-      stageDirector: 'Offer stageDirector',
-      speaker: 'Offer speaker',
       subcategoryId: SubcategoryIdEnum.CONCERT,
       url: 'https://offer.example.com',
       externalTicketOfficeUrl: 'https://external.example.com',
-      visa: '',
       withdrawalDetails: 'Offer withdrawalDetails',
       withdrawalDelay: 140,
       withdrawalType: WithdrawalTypeEnum.ON_SITE,
@@ -111,8 +113,11 @@ describe('routes::Summary::serializers', () => {
   it('should serialize data with showType', () => {
     offer = {
       ...offer,
-      showType: '400',
-      showSubType: '401',
+      extraData: {
+        ...offer.extraData,
+        showType: '400',
+        showSubType: '401',
+      },
     }
     const offerSerialized = serializeOfferSectionData(
       offer,

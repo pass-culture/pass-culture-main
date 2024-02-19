@@ -100,19 +100,5 @@ export interface IndividualOfferImage {
 }
 
 export interface IndividualOffer extends GetIndividualOfferResponseModel {
-  author: string
-  isEvent: boolean
-  isDigital: boolean
-  isNational: boolean
-  musicType?: string
-  musicSubType?: string
-  gtl_id?: string
-  performer: string
-  ean: string
-  showSubType: string
-  showType: string
-  stageDirector: string
-  speaker: string
   image?: IndividualOfferImage
-  visa: string
 }
