@@ -20,7 +20,7 @@ $info-box-margin-left: rem.torem(24px);
       }
     }
 
-    .form-layout-actions {  
+    .form-layout-actions {
       justify-content: space-between;
     }
   }
@@ -97,23 +97,14 @@ $info-box-margin-left: rem.torem(24px);
 
   &-row-info {
     position: relative;
+    margin-bottom: rem.torem(16px);
 
     &-field {
       width: 100%;
     }
 
     &-info {
-      width: $info-box-width;
-      position: absolute;
-      top: 0;
-      right: calc(
-        -#{$info-box-margin-left} - #{$info-box-width}
-      ); // calc(-margin-left - width)
-
-      &-inner {
-        background: colors.$white;
-        position: absolute;
-      }
+      width: 100%;
     }
   }
 }
@@ -129,6 +120,20 @@ $info-box-margin-left: rem.torem(24px);
   .form-layout {
     &-row.inline-group {
       flex-wrap: unset;
+    }
+
+    &-row-info-info {
+      width: $info-box-width;
+      position: absolute;
+      top: 0;
+      right: calc(
+        -#{$info-box-margin-left} - #{$info-box-width}
+      ); // calc(-margin-left - width)
+
+      &-inner {
+        position: absolute;
+        background: colors.$white;
+      }
     }
   }
 }
