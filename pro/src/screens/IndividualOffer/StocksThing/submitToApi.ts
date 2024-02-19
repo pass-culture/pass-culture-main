@@ -1,8 +1,5 @@
 import { api } from 'apiClient/api'
-import {
-  getIndividualOfferAdapter,
-  updateIndividualOffer,
-} from 'core/Offers/adapters'
+import { updateIndividualOffer } from 'core/Offers/adapters'
 import { serializePatchOffer } from 'core/Offers/adapters/updateIndividualOffer/serializers'
 import { IndividualOffer } from 'core/Offers/types'
 
@@ -44,12 +41,10 @@ export const submitToApi = async (
   }
 
   const [offerResponse, stockResponse] = await Promise.all([
-    getIndividualOfferAdapter(offer.id),
+    api.getOffer(offer.id),
     api.getStocks(offer.id),
   ])
-  if (offerResponse.isOk) {
-    resetForm({
-      values: buildInitialValues(offerResponse.payload, stockResponse.stocks),
-    })
-  }
+  resetForm({
+    values: buildInitialValues(offerResponse, stockResponse.stocks),
+  })
 }

@@ -3,9 +3,9 @@ import type { FieldArrayRenderProps } from 'formik'
 import { FieldArray, useFormikContext } from 'formik'
 import { useState } from 'react'
 
+import { api } from 'apiClient/api'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import FormLayout from 'components/FormLayout'
-import { getIndividualOfferAdapter } from 'core/Offers/adapters'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
 import useNotification from 'hooks/useNotification'
@@ -100,14 +100,11 @@ export const PriceCategoriesForm = ({
           requestBody: requestBody,
         })
       }
-      const response = await getIndividualOfferAdapter(offer.id)
-      if (response.isOk) {
-        const updatedOffer = response.payload
-        await setValues({
-          ...values,
-          priceCategories: computeInitialValues(updatedOffer).priceCategories,
-        })
-      }
+      const updatedOffer = await api.getOffer(offer.id)
+      await setValues({
+        ...values,
+        priceCategories: computeInitialValues(updatedOffer).priceCategories,
+      })
     }
   }
 

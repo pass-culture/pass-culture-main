@@ -1,9 +1,9 @@
 /* istanbul ignore file */
 import { useLocation, useParams, Outlet, RouteObject } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import { AppLayout } from 'app/AppLayout'
 import { IndividualOfferContextProvider } from 'context/IndividualOfferContext'
-import { getIndividualOfferAdapter } from 'core/Offers/adapters'
 import { IndividualOffer } from 'core/Offers/types'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { parse } from 'utils/query-string'
@@ -44,9 +44,10 @@ export const loader: RouteObject['loader'] = async ({
     }
   }
 
-  const response = await getIndividualOfferAdapter(Number(params.offerId))
+  const offer = await api.getOffer(Number(params.offerId))
+
   return {
-    offer: response.payload,
+    offer,
   }
 }
 
