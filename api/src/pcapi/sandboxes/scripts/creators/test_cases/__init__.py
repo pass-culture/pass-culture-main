@@ -11,12 +11,9 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import factories as offers_factories
-from pcapi.core.providers import factories as providers_factory
+from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.users import factories as users_factories
-from pcapi.domain.movie_types import movie_types
-from pcapi.domain.music_types import music_types
-from pcapi.domain.show_types import show_types
 from pcapi.repository import atomic
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_gdpr_users import create_industrial_gdpr_users
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import (
@@ -42,6 +39,7 @@ Fake = faker.Faker(locale="fr_FR")
 def save_test_cases_sandbox() -> None:
     create_offers_with_gtls()
     create_offers_with_same_ean()
+    create_allocine_venues()
     create_venues_across_cities()
     create_offers_for_each_subcategory()
     create_offers_with_same_author()
@@ -106,7 +104,7 @@ def create_offers_with_gtl_id(gtl_id: str, size_per_gtl: int, venue: offerers_mo
     ean = Fake.ean13()
     product = offers_factories.ProductFactory(
         subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
-        lastProvider=providers_factory.PublicApiProviderFactory(name="BookProvider"),
+        lastProvider=providers_factories.PublicApiProviderFactory(name="BookProvider"),
         idAtProviders=ean,
         extraData={"gtl_id": gtl_id, "author": Fake.name(), "ean": ean},
     )
@@ -127,7 +125,7 @@ def create_offers_with_same_ean() -> None:
     product = offers_factories.ProductFactory(
         name="Le livre du pass Culture",
         subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
-        lastProvider=providers_factory.PublicApiProviderFactory(name="BookProvider"),
+        lastProvider=providers_factories.PublicApiProviderFactory(name="BookProvider"),
     )
     for venue_data in venues_mock.venues:
         offers.append(
@@ -157,7 +155,7 @@ def create_offers_with_same_ean() -> None:
 def create_offer_with_ean(ean: str, venue: offerers_models.Venue, author: str) -> None:
     product = offers_factories.ProductFactory(
         subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
-        lastProvider=providers_factory.PublicApiProviderFactory(name="BookProvider"),
+        lastProvider=providers_factories.PublicApiProviderFactory(name="BookProvider"),
         idAtProviders=ean,
         extraData={"ean": ean, "author": author},
     )
@@ -169,6 +167,35 @@ def create_offer_with_ean(ean: str, venue: offerers_models.Venue, author: str) -
         venue=venue,
     )
     offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
+
+
+def create_allocine_venues() -> None:
+    for venue_data in venues_mock.cinemas_venues:
+        allocine_offerer = offerers_factories.OffererFactory(name="Structure du lieu synchro allociné")
+        offerers_factories.UserOffererFactory(offerer=allocine_offerer, user__email="api@example.com")
+        allocine_synchonized_venue = offerers_factories.VenueFactory(
+            name=venue_data["name"],
+            venueTypeCode=offerers_models.VenueTypeCode.MOVIE,
+            latitude=venue_data["latitude"],
+            longitude=venue_data["longitude"],
+            address=venue_data["address"],
+            postalCode=venue_data["postalCode"],
+            city=venue_data["city"],
+            departementCode=venue_data["departementCode"],
+        )
+        allocine_provider = providers_factories.AllocineProviderFactory(isActive=True)
+        theater = providers_factories.AllocineTheaterFactory(
+            siret=allocine_synchonized_venue.siret,
+            theaterId=venue_data["theaterId"],
+            internalId=venue_data["internalId"],
+        )
+        pivot = providers_factories.AllocinePivotFactory(
+            venue=allocine_synchonized_venue, theaterId=theater.theaterId, internalId=theater.internalId
+        )
+        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(
+            venue=allocine_synchonized_venue, provider=allocine_provider, venueIdAtOfferProvider=pivot.theaterId
+        )
+        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
 
 
 def create_venues_across_cities() -> None:

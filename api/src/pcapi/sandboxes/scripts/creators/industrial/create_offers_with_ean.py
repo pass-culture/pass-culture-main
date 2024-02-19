@@ -5,7 +5,7 @@ from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
-from pcapi.core.providers import factories as providers_factory
+from pcapi.core.providers import factories as providers_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 
@@ -17,7 +17,7 @@ def create_offers_with_ean() -> None:
     odd_criteria = criteria_factories.CriterionFactory(name="Librairie impaire")
     even_criteria = criteria_factories.CriterionFactory(name="Librairie paire")
     products = []
-    provider = providers_factory.PublicApiProviderFactory(name="BookProvider")
+    provider = providers_factories.PublicApiProviderFactory(name="BookProvider")
     for i in range(1, 5):
         ean = f"9780000000{i:03}"
         products.append(
