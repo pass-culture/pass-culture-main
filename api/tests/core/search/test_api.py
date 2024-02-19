@@ -333,6 +333,21 @@ class UpdateProductBookingCountTest:
         with assert_no_duplicated_queries():
             search.update_products_last_30_days_booking_count()
 
+    @mock.patch("pcapi.core.search.update_product_last_30_days_bookings")
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_all_offers_are_indexed(self, mock_async_index_offer_ids, mock_update_product_last_30_days_bookings, app):
+        ean = "1234567890123"
+        mock_update_product_last_30_days_bookings.return_value = [ean]
+        offer1 = offers_factories.OfferFactory(extraData={"ean": ean})
+        offer2 = offers_factories.OfferFactory(extraData={"ean": ean})
+        print(offer1.extraData)
+
+        search.update_products_last_30_days_booking_count(1)
+
+        assert mock_async_index_offer_ids.call_count == 2
+        mock_async_index_offer_ids.assert_any_call([offer1.id], reason=search.IndexationReason.BOOKING_COUNT_CHANGE)
+        mock_async_index_offer_ids.assert_any_call([offer2.id], reason=search.IndexationReason.BOOKING_COUNT_CHANGE)
+
 
 class ReadProductBookingCountTest:
     def test_is_reindexed(self):
