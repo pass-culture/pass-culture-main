@@ -105,13 +105,16 @@
     "indexLanguages": [
         "fr"
     ],
-    "enableReRanking": false,
+    "enableReRanking": true,
     "reRankingApplyFilter": [
         [
-            "offer.searchGroupNamev2:-LIVRES"
+            "offer.searchGroupNamev2:SPECTACLES"
         ],
         [
-            "offer.searchGroupNamev2:-FILMS_SERIES_CINEMA"
+            "offer.searchGroupNamev2:CONCERTS_FESTIVALS"
+        ],
+        [
+            "offer.searchGroupNamev2:MUSEES_VISITES_CULTURELLES"
         ]
     ],
     "numericAttributesForFiltering": null
