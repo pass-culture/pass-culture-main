@@ -108,7 +108,7 @@ const routes: RouteConfig[] = [
   {
     lazy: () => import('pages/OfferType/OfferType'),
     path: '/offre/creation',
-    title: 'Selection du type d’offre',
+    title: 'Choix de la nature de l’offre - Créer une offre',
   },
   {
     lazy: () => import('pages/Offers/OffersRoute'),
