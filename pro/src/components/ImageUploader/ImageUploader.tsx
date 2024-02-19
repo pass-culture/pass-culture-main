@@ -31,7 +31,7 @@ const ImageUploader = ({
   const { imageUrl, originalImageUrl, credit, cropParams } = initialValues
 
   return (
-    <div className={cn(className, styles['image-uploader-image-container'])}>
+    <div className={cn(styles['image-uploader-image-container'], className)}>
       {imageUrl && originalImageUrl ? (
         <>
           <ImagePreview
