@@ -50,11 +50,11 @@ const setInitialFormValues = (
     isDuo: offer.isDuo,
     categoryId: subcategory.categoryId,
     subcategoryId: offer.subcategoryId,
-    showType: offer.showType,
-    showSubType: offer.showSubType,
-    gtl_id: offer.gtl_id,
-    musicType: offer.musicType,
-    musicSubType: offer.musicSubType,
+    showType: offer.extraData?.showType || '',
+    showSubType: offer.extraData?.showSubType || '',
+    gtl_id: offer.extraData?.gtl_id || '',
+    musicType: offer.extraData?.musicType || '',
+    musicSubType: offer.extraData?.musicSubType || '',
     withdrawalDetails:
       offer.withdrawalDetails || FORM_DEFAULT_VALUES['withdrawalDetails'],
     withdrawalDelay:
@@ -67,12 +67,12 @@ const setInitialFormValues = (
     bookingEmail: offer.bookingEmail || '',
     bookingContact: offer.bookingContact || undefined,
     receiveNotificationEmails: !!offer.bookingEmail,
-    author: offer.author,
-    performer: offer.performer,
-    ean: offer.ean,
-    speaker: offer.speaker,
-    stageDirector: offer.stageDirector,
-    visa: offer.visa,
+    author: offer.extraData?.author || '',
+    performer: offer.extraData?.performer || '',
+    ean: offer.extraData?.ean || '',
+    speaker: offer.extraData?.speaker || '',
+    stageDirector: offer.extraData?.stageDirector || '',
+    visa: offer.extraData?.visa || '',
     durationMinutes:
       offer.durationMinutes === null || offer.durationMinutes === undefined
         ? undefined

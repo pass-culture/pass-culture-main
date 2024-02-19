@@ -32,14 +32,6 @@ export const individualOfferFactory = (
   return {
     ...GetIndividualOfferFactory(),
     id: offerId++,
-    author: 'Chuck Norris',
-    performer: 'Le Poing de Chuck',
-    ean: 'Chuck n’est pas identifiable par un EAN',
-    showType: 'Cinéma',
-    showSubType: 'PEGI 18',
-    stageDirector: 'JCVD',
-    speaker: "Chuck Norris n'a pas besoin de doubleur",
-    visa: 'USA',
     ...customOffer,
   }
 }
