@@ -1,8 +1,6 @@
 import { api } from 'apiClient/api'
 import { IndividualOffer } from 'core/Offers/types'
 
-import { serializeOfferApi } from './serializers'
-
 type GetIndividualOfferAdapter = Adapter<
   number | undefined,
   IndividualOffer,
@@ -28,7 +26,7 @@ const getIndividualOfferAdapter: GetIndividualOfferAdapter = async (
     return {
       isOk: true,
       message: '',
-      payload: serializeOfferApi(offerApi),
+      payload: offerApi,
     }
   } catch (error) {
     return FAILING_RESPONSE

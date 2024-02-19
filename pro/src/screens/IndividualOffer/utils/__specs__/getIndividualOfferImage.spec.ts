@@ -1,14 +1,14 @@
-import { GetIndividualOfferResponseModel } from 'apiClient/v1'
+import { GetIndividualOfferFactory } from 'utils/apiFactories'
 
-import { serializeOfferApiImage } from '../serializers'
+import { getIndividualOfferImage } from '../getIndividualOfferImage'
 
-describe('serializer', () => {
+describe('getIndividualOfferImage', () => {
   const serializeOfferApiImageDataSet = [
     {
       activeMediation: {
         thumbUrl: 'https://image.url',
         credit: 'John Do',
-      } as unknown as GetIndividualOfferResponseModel[],
+      },
       expectedImage: {
         originalUrl: 'https://image.url',
         url: 'https://image.url',
@@ -16,20 +16,20 @@ describe('serializer', () => {
       },
     },
     {
-      activeMediation: {} as unknown as GetIndividualOfferResponseModel[],
+      activeMediation: {},
       expectedImage: undefined,
     },
     {
       activeMediation: {
         credit: 'John Do',
-      } as unknown as GetIndividualOfferResponseModel[],
+      },
       expectedImage: undefined,
     },
     {
       activeMediation: {
         thumbUrl: 'https://image.url',
         credit: null,
-      } as unknown as GetIndividualOfferResponseModel[],
+      },
       expectedImage: {
         originalUrl: 'https://image.url',
         url: 'https://image.url',
@@ -38,23 +38,23 @@ describe('serializer', () => {
     },
   ]
   it.each(serializeOfferApiImageDataSet)(
-    'serializeOfferApiImage from mediation',
+    'using image from mediation',
     ({ activeMediation, expectedImage }) => {
-      const offerApi = {
+      const offerApi = GetIndividualOfferFactory({
         activeMediation,
-      } as unknown as GetIndividualOfferResponseModel
+      })
 
-      expect(serializeOfferApiImage(offerApi)).toEqual(expectedImage)
+      expect(getIndividualOfferImage(offerApi)).toEqual(expectedImage)
     }
   )
 
-  it('serializeOfferApiImage from thumbUrl', () => {
-    const offerApi = {
+  it('using image from thumbUrl', () => {
+    const offer = GetIndividualOfferFactory({
       thumbUrl: 'https://image.url',
-      mediations: [],
-    } as unknown as GetIndividualOfferResponseModel
+      activeMediation: undefined,
+    })
 
-    expect(serializeOfferApiImage(offerApi)).toEqual({
+    expect(getIndividualOfferImage(offer)).toEqual({
       originalUrl: 'https://image.url',
       url: 'https://image.url',
       credit: '',
