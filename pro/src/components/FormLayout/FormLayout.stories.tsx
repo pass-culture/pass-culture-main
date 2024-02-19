@@ -59,10 +59,6 @@ const Template: ComponentStory<typeof FormLayout> = (args) => (
 
 export const Default = Template.bind({})
 
-Default.args = {
-  small: false,
-}
-
 const DemoInformationBox = () => (
   <div>
     <h4>Information sur champs</h4>
@@ -123,5 +119,5 @@ const TemplateDesigned: ComponentStory<typeof FormLayout> = (args) => (
 export const Designed = TemplateDesigned.bind({})
 
 Designed.args = {
-  small: true,
+  fullWidthActions: true,
 }
