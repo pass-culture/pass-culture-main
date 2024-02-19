@@ -1,8 +1,10 @@
 import datetime
+from unittest.mock import patch
 
 from flask import url_for
 import pytest
 
+from pcapi.core.bookings import factories as booking_factory
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.criteria import models as criteria_models
@@ -334,3 +336,35 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
             else:
                 assert offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
                 assert datetime.datetime.utcnow() - offer.lastValidationDate < datetime.timedelta(seconds=5)
+
+    @pytest.mark.parametrize(
+        "validation_status",
+        [
+            OfferValidationStatus.DRAFT,
+            OfferValidationStatus.PENDING,
+            OfferValidationStatus.REJECTED,
+            OfferValidationStatus.APPROVED,
+        ],
+    )
+    @patch("pcapi.core.bookings.api.send_booking_cancellation_by_pro_to_beneficiary_email")
+    def test_check_mail_edit_product_gcu_compatibility(self, mock_mail, authenticated_client, validation_status):
+        provider = providers_factories.APIProviderFactory()
+        product_1 = offers_factories.ThingProductFactory(
+            description="premier produit inapproprié",
+            extraData={"ean": "9781234567890"},
+            isGcuCompatible=not validation_status == OfferValidationStatus.REJECTED,
+            lastProvider=provider,
+        )
+        venue = offerers_factories.VenueFactory()
+        offers_factories.StockFactory(
+            offer=offers_factories.OfferFactory(product=product_1, venue=venue, validation=validation_status),
+            bookings=[booking_factory.BookingFactory()],
+        )
+        offers_factories.StockFactory(
+            offer=offers_factories.OfferFactory(product=product_1, venue=venue),
+            bookings=[booking_factory.BookingFactory()],
+        )
+
+        self.post_to_endpoint(authenticated_client, form={"ean": "9781234567890"})
+
+        mock_mail.assert_called()

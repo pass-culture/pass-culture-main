@@ -741,7 +741,7 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
             # modifications of the offer; we save them here first
             repository.save(offer)
 
-            cancelled_bookings = bookings_api.cancel_bookings_from_rejected_offer(offer)
+            cancelled_bookings = bookings_api.cancel_bookings_from_rejected_offer(offer, None)
 
             if cancelled_bookings:
                 # FIXME: La notification indique que l'offreur a annulé alors que c'est la fraude

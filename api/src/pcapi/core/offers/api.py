@@ -39,6 +39,7 @@ import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offerers.models as offerers_models
+from pcapi.core.offers import models as offers_models
 from pcapi.core.providers.constants import GTL_IDS_BY_MUSIC_GENRE_CODE
 from pcapi.core.providers.constants import MUSIC_SLUG_BY_GTL_ID
 import pcapi.core.providers.exceptions as providers_exceptions
@@ -917,7 +918,9 @@ def add_criteria_to_offers(
 
 
 def reject_inappropriate_product(
-    ean: str, author: users_models.User | None, send_booking_cancellation_emails: bool = True
+    ean: str,
+    author: users_models.User | None,
+    send_booking_cancellation_emails: bool = True,
 ) -> bool:
     product = models.Product.query.filter(
         models.Product.extraData["ean"].astext == ean, models.Product.idAtProviders.is_not(None)
@@ -958,7 +961,8 @@ def reject_inappropriate_product(
     offer_ids = []
     for offer in offers:
         offer_ids.append(offer.id)
-        bookings = bookings_api.cancel_bookings_from_rejected_offer(offer)
+        offer_cgu_incompatible = is_offer_cgu_incompatible(offer)
+        bookings = bookings_api.cancel_bookings_from_rejected_offer(offer, offer_cgu_incompatible)
         if send_booking_cancellation_emails:
             for booking in bookings:
                 transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(
@@ -980,6 +984,10 @@ def reject_inappropriate_product(
         )
 
     return True
+
+
+def is_offer_cgu_incompatible(offer: offers_models.Offer) -> bool:
+    return offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
 
 
 def deactivate_permanently_unavailable_products(ean: str) -> bool:

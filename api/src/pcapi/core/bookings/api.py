@@ -27,6 +27,9 @@ import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
 import pcapi.core.mails.transactional as transactional_mails
+from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_beneficiary import (
+    send_booking_cancellation_by_pro_to_beneficiary_email,
+)
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import repository as offers_repository
 import pcapi.core.offers.exceptions as offers_exceptions
@@ -568,7 +571,9 @@ def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
     external_bookings_api.cancel_booking(stock.offer.venueId, barcodes)
 
 
-def _cancel_bookings_from_stock(stock: offers_models.Stock, reason: BookingCancellationReasons) -> list[Booking]:
+def _cancel_bookings_from_stock(
+    stock: offers_models.Stock, reason: BookingCancellationReasons, offer_cgu_incompatible: bool | None
+) -> list[Booking]:
     """
     Cancel multiple bookings and update the users' credit information on Batch.
     Note that this will not reindex the stock.offer in Algolia
@@ -577,6 +582,8 @@ def _cancel_bookings_from_stock(stock: offers_models.Stock, reason: BookingCance
     for booking in stock.bookings:
         if _cancel_booking(booking, reason, cancel_even_if_used=typing.cast(bool, stock.offer.isEvent)):
             deleted_bookings.append(booking)
+            if offer_cgu_incompatible:
+                send_booking_cancellation_by_pro_to_beneficiary_email(booking)
 
     return deleted_bookings
 
@@ -597,13 +604,18 @@ def cancel_booking_by_offerer(booking: Booking) -> None:
 
 
 def cancel_bookings_from_stock_by_offerer(stock: offers_models.Stock) -> list[Booking]:
-    return _cancel_bookings_from_stock(stock, BookingCancellationReasons.OFFERER)
+    return _cancel_bookings_from_stock(stock, BookingCancellationReasons.OFFERER, None)
 
 
-def cancel_bookings_from_rejected_offer(offer: offers_models.Offer) -> list[Booking]:
+def cancel_bookings_from_rejected_offer(
+    offer: offers_models.Offer,
+    offer_cgu_incompatible: bool | None,
+) -> list[Booking]:
     cancelled_bookings = []
     for stock in offer.stocks:
-        cancelled_bookings.extend(_cancel_bookings_from_stock(stock, BookingCancellationReasons.FRAUD))
+        cancelled_bookings.extend(
+            _cancel_bookings_from_stock(stock, BookingCancellationReasons.FRAUD, offer_cgu_incompatible)
+        )
     logger.info(
         "Cancelled bookings for rejected offer",
         extra={
