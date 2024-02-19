@@ -25,17 +25,21 @@ def test_update_sendinblue_batch_users(app):
 
 @clean_database
 def test_update_sendinblue_pro(app):
+    users_factories.UserFactory()  # excluded
+    users_factories.AdminFactory()  # excluded
     offerers_factories.UserOffererFactory(user__email="first@example.com")
     offerers_factories.UserOffererFactory(user__email="second@example.com")
     offerers_factories.VenueFactory(bookingEmail="third@example.com")
+    offerers_factories.UserNotValidatedOffererFactory(user__email="fourth@example.com")
 
     result = run_command(app, "update_sendinblue_pro")
 
-    assert len(testing.sendinblue_requests) == 3
+    assert len(testing.sendinblue_requests) == 4
     assert {request["email"] for request in testing.sendinblue_requests} == {
         "first@example.com",
         "second@example.com",
         "third@example.com",
+        "fourth@example.com",
     }
 
     assert "Exception" not in result.stdout
