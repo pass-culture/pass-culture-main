@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { IndividualOffer } from 'core/Offers/types'
+import { getIndividualOfferImage } from 'screens/IndividualOffer/utils/getIndividualOfferImage'
 
 import style from './OfferAppPreview.module.scss'
 import { OptionsIcons } from './OptionsIcons'
@@ -12,6 +13,7 @@ export interface OfferAppPreviewProps {
 
 const OfferAppPreview = ({ offer }: OfferAppPreviewProps): JSX.Element => {
   const { venue } = offer
+  const image = getIndividualOfferImage(offer)
 
   const cropPreviewText = (text: string, maxLength = 300): string => {
     if (text.trim().length > maxLength) {
@@ -23,10 +25,10 @@ const OfferAppPreview = ({ offer }: OfferAppPreviewProps): JSX.Element => {
   return (
     <div className={style['offer-preview-container']}>
       <div className={style['offer-img-container']}>
-        {offer.image ? (
+        {image ? (
           <img
             className={style['offer-img']}
-            src={offer.image?.url}
+            src={image?.url}
             alt="Image de l’offre"
           />
         ) : (
