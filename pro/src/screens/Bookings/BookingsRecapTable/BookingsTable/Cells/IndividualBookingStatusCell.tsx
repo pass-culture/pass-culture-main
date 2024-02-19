@@ -1,56 +1,21 @@
 import cn from 'classnames'
-import React from 'react'
 
-import {
-  BookingRecapResponseModel,
-  CollectiveBookingResponseModel,
-} from 'apiClient/v1'
+import { BookingRecapResponseModel } from 'apiClient/v1'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { formatPrice } from 'utils/formatPrice'
 
-import {
-  getBookingStatusDisplayInformations,
-  getCollectiveBookingStatusDisplayInformations,
-} from '../../utils/bookingStatusConverter'
+import { getBookingStatusDisplayInformations } from '../../utils/bookingStatusConverter'
 
 import styles from './BookingStatusCell.module.scss'
 import { BookingStatusCellHistory } from './BookingStatusCellHistory'
 
-export interface BookingStatusCellProps {
-  booking: BookingRecapResponseModel | CollectiveBookingResponseModel
-  isCollectiveStatus: boolean
+export type IndividualBookingStatusCellProps = {
+  booking: BookingRecapResponseModel
 }
 
-export const BookingStatusCell = ({
+export const IndividualBookingStatusCell = ({
   booking,
-  isCollectiveStatus,
-}: BookingStatusCellProps) => {
-  if (isCollectiveStatus) {
-    const lastBookingStatus = booking.bookingStatusHistory.slice(-1)[0].status
-    const bookingDisplayInfo =
-      getCollectiveBookingStatusDisplayInformations(lastBookingStatus)
-    if (!bookingDisplayInfo) {
-      return null
-    }
-
-    return (
-      <div
-        className={cn(
-          styles['booking-status-label'],
-          styles['booking-status-wrapper'],
-          bookingDisplayInfo?.statusClassName
-        )}
-      >
-        <SvgIcon
-          src={bookingDisplayInfo.icon}
-          alt=""
-          className={styles['booking-status-icon']}
-        />
-        <span>{bookingDisplayInfo.status.toLowerCase()}</span>
-      </div>
-    )
-  }
-
+}: IndividualBookingStatusCellProps) => {
   const bookingDisplayInfo = getBookingStatusDisplayInformations(
     booking.bookingStatus
   )

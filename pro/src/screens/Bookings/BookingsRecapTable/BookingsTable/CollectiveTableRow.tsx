@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/CollectiveBookingByIdResponseModel'
@@ -14,9 +14,9 @@ import {
   BookingOfferCell,
   InstitutionCell,
   NumberOfTicketsAndPriceCell,
-  BookingStatusCell,
   DetailsButtonCell,
 } from './Cells'
+import { CollectiveBookingStatusCell } from './Cells/CollectiveBookingStatusCell'
 import CollectiveBookingDetails from './CollectiveBookingDetails'
 import getCollectiveBookingAdapter from './getCollectiveBookingAdapter'
 
@@ -107,7 +107,7 @@ export const CollectiveTableRow = ({
         <td
           className={cn(styles['table-cell'], styles['column-booking-status'])}
         >
-          <BookingStatusCell booking={booking} isCollectiveStatus={true} />
+          <CollectiveBookingStatusCell booking={booking} />
         </td>
 
         <td className={cn(styles['table-cell'])}>
