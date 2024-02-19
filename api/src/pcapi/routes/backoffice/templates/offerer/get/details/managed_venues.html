@@ -7,10 +7,11 @@
       <th scope="col">ID</th>
       <th scope="col">Nom</th>
       <th scope="col">SIRET</th>
+      <th scope="col">Permanent</th>
       <th scope="col">Activité principale</th>
       <th scope="col">Présence web</th>
       <th scope="col">Offres cibles</th>
-      <th scope="col">Statut du dossier DMS Adage</th>
+      <th scope="col">Statut DMS Adage</th>
     </tr>
   </thead>
   <tbody>
@@ -20,6 +21,9 @@
         <td class="fw-bolder">{{ links.build_venue_name_to_details_link(venue, text_attr="id") }}</td>
         <td class="text-break">{{ links.build_venue_name_to_pc_pro_link(venue) }}</td>
         <td>{{ links.build_siret_to_external_link(venue) }}</td>
+        <td>
+          {% if venue.isPermanent %}<span class="visually-hidden">Lieu permanent</span><i class="bi bi-check-circle-fill"></i>{% endif %}
+        </td>
         <td>{{ venue.venueTypeCode.value }}</td>
         <td>
           {% if venue.web_presence %}
