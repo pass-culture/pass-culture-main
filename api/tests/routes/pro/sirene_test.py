@@ -2,16 +2,16 @@ from unittest import mock
 
 import pytest
 
-from pcapi.connectors import sirene
+from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 import pcapi.core.users.factories as users_factories
 
 
 def get_siren_raises(siren, with_address):
-    raise sirene.NonPublicDataException()
+    raise sirene_exceptions.NonPublicDataException()
 
 
 def get_siret_raises(siret):
-    raise sirene.NonPublicDataException()
+    raise sirene_exceptions.NonPublicDataException()
 
 
 class GetSirenTest:
@@ -25,12 +25,12 @@ class GetSirenTest:
             "address": {
                 "street": "3 RUE DE VALOIS",
                 "postalCode": "75001",
-                "city": "Paris",
+                "city": "PARIS",
             },
             "ape_code": "90.03A",
         }
 
-    @mock.patch("pcapi.connectors.sirene.get_siren", get_siren_raises)
+    @mock.patch("pcapi.connectors.entreprise.sirene.get_siren", get_siren_raises)
     def test_siren_error(self, client):
         siren = "123456789"
         response = client.get(f"/sirene/siren/{siren}")
@@ -56,14 +56,14 @@ class GetSiretTest:
             "address": {
                 "street": "3 RUE DE VALOIS",
                 "postalCode": "75001",
-                "city": "Paris",
+                "city": "PARIS",
             },
             "ape_code": "90.03A",
             "legal_category_code": "1000",
         }
 
     @pytest.mark.usefixtures("db_session")
-    @mock.patch("pcapi.connectors.sirene.get_siret", get_siret_raises)
+    @mock.patch("pcapi.connectors.entreprise.sirene.get_siret", get_siret_raises)
     def test_siret_error(self, client):
         pro = users_factories.ProFactory()
         siret = "12345678900001"

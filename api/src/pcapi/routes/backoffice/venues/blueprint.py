@@ -14,8 +14,10 @@ from markupsafe import Markup
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
-from pcapi.connectors import sirene
 from pcapi.connectors.dms import api as dms_api
+from pcapi.connectors.entreprise import api as entreprise_api
+from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
+from pcapi.connectors.entreprise import sirene
 from pcapi.core import search
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
@@ -662,7 +664,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
             if not sirene.siret_is_active(new_siret):
                 flash("Ce SIRET n'est plus actif, on ne peut pas l'attribuer à ce lieu", "warning")
                 return render_venue_details(venue, form), 400
-        except sirene.SireneException:
+        except entreprise_exceptions.SireneException:
             unavailable_sirene = True
         else:
             unavailable_sirene = False
@@ -1025,3 +1027,20 @@ def remove_siret(venue_id: int) -> utils.BackofficeResponse:
         return _render_remove_siret_content(venue, form=form, error=str(exc))
 
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
+
+
+@venue_blueprint.route("/<int:venue_id>/protected-info", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.READ_PRO_ENTREPRISE_INFO)
+def get_entreprise_info(venue_id: int) -> utils.BackofficeResponse:
+    venue = offerers_models.Venue.query.get_or_404(venue_id)
+    siret_info = None
+    siret_error = None
+
+    try:
+        siret_info = entreprise_api.get_siret(venue.siret, raise_if_non_public=False)
+    except entreprise_exceptions.UnknownEntityException:
+        siret_error = "Ce SIRET est inconnu dans la base de données Sirene, y compris dans les non-diffusibles"
+    except entreprise_exceptions.SireneException:
+        siret_error = "Une erreur s'est produite lors de l'appel à API Entreprise"
+
+    return render_template("venue/get/entreprise_info.html", siret_info=siret_info, siret_error=siret_error)

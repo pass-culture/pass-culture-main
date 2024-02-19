@@ -30,6 +30,7 @@ class ActionType(enum.Enum):
     OFFERER_REJECTED = "Structure rejetée"
     OFFERER_SUSPENDED = "Structure désactivée"
     OFFERER_UNSUSPENDED = "Structure réactivée"
+    OFFERER_ATTESTATION_CHECKED = "Attestation consultée"
     # Validation process for user-offerer relationships:
     USER_OFFERER_NEW = "Nouveau rattachement"
     USER_OFFERER_PENDING = "Rattachement mis en attente"

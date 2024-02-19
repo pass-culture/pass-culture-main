@@ -40,6 +40,8 @@ class Permissions(enum.Enum):
     MANAGE_PRO_ENTITY = "gérer une structure, un lieu ou un compte pro"
     DELETE_PRO_ENTITY = "supprimer une structure ou un lieu"
     CREATE_PRO_ENTITY = "créer une structure"
+    READ_PRO_ENTREPRISE_INFO = "visualiser les données INSEE/RCS d'une structure"
+    READ_PRO_SENSITIVE_INFO = "vérifier les attestations URSSAF/DGFIP d'une structure"
 
     MOVE_SIRET = "support pro avancé : déplacer ou supprimer un SIRET"
     ADVANCED_PRO_SUPPORT = "support pro avancé"

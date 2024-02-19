@@ -1303,7 +1303,7 @@ class UpdateVenueTest(PostEndpointHelper):
         db.session.refresh(venue)
         assert venue.siret is None
 
-    @patch("pcapi.connectors.sirene.siret_is_active", return_value=False)
+    @patch("pcapi.connectors.entreprise.sirene.siret_is_active", return_value=False)
     def test_update_venue_create_siret_inactive(self, mock_siret_is_active, authenticated_client, offerer):
         venue = offerers_factories.VenueWithoutSiretFactory()
 
@@ -2314,3 +2314,58 @@ class PostDeleteVenueProviderTest(PostEndpointHelper):
 
         response = authenticated_client.get(response.location)
         assert "Impossible d'effacer le lien entre le lieu et Allociné." in html_parser.extract_alert(response.data)
+
+
+class GetEntrepriseInfoTest(GetEndpointHelper):
+    endpoint = "backoffice_web.venue.get_entreprise_info"
+    endpoint_kwargs = {"venue_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_ENTREPRISE_INFO
+
+    # get session (1 query)
+    # get user with profile and permissions (1 query)
+    # get venue (1 query)
+    expected_num_queries = 3
+
+    def test_venue_entreprise_info(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(siret="12345678900012")
+        url = url_for(self.endpoint, venue_id=venue.id)
+
+        db.session.expire_all()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        # Values come from TestingBackend, check display
+        sirene_content = html_parser.extract_cards_text(response.data)[0]
+        assert "Nom : MINISTERE DE LA CULTURE" in sirene_content
+        assert "Adresse : 3 RUE DE VALOIS" in sirene_content
+        assert "Code postal : 75001" in sirene_content
+        assert "Ville : PARIS" in sirene_content
+        assert "SIRET actif : Oui" in sirene_content
+        assert "Diffusible : Oui" in sirene_content
+        assert "Code APE : 90.03A" in sirene_content
+        assert "Activité principale : Création artistique relevant des arts plastiques" in sirene_content
+
+    def test_siret_not_found(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(siret="00000000000001")
+        url = url_for(self.endpoint, venue_id=venue.id)
+
+        db.session.expire_all()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        # Values come from TestingBackend, check display
+        sirene_content = html_parser.extract_cards_text(response.data)[0]
+        assert (
+            "Ce SIRET est inconnu dans la base de données Sirene, y compris dans les non-diffusibles" in sirene_content
+        )
+
+    def test_venue_not_found(self, authenticated_client):
+        url = url_for(self.endpoint, venue_id=1)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 404

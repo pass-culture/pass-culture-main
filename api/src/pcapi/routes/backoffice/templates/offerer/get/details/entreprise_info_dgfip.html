@@ -1,0 +1,22 @@
+<turbo-frame id="offerer_dgfip_frame">
+{% if dgfip_info %}
+  <div class="row">
+    <div class="col-12">
+      <p class="mb-1">
+        <span class="fw-bold">À jour des obligations fiscales :</span> {{ dgfip_info.attestation_delivered | format_bool_badge }}
+        {% if dgfip_info.attestation_delivered %}
+          <p class="mb-1">
+            <span class="fw-bold">Date de délivrance de l'attestation :</span> {{ dgfip_info.attestation_date | format_date }}
+          </p>
+          <p class="mb-1">
+            <span class="fw-bold">Date de la période analysée :</span> {{ dgfip_info.verified_date | format_date }}
+          </p>
+        {% endif %}
+      </p>
+    </div>
+  </div>
+{% else %}
+  <span class="mr-2 pb-1 badge rounded-pill text-bg-warning"><i class="bi bi-exclamation-triangle"></i> Erreur</span>
+  {{ dgfip_error }}
+{% endif %}
+</turbo-frame>

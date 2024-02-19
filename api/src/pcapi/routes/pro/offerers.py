@@ -5,11 +5,11 @@ from flask_login import login_required
 import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
-from pcapi.connectors import sirene
 from pcapi.connectors.api_recaptcha import ReCaptchaException
 from pcapi.connectors.api_recaptcha import check_web_recaptcha_token
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
 from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
+from pcapi.connectors.entreprise import sirene
 import pcapi.core.educational.exceptions as educational_exceptions
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.exceptions as finance_exceptions
