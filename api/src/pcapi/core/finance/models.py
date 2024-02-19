@@ -1001,6 +1001,10 @@ class FinanceIncident(Base, Model):
     forceDebitNote: bool = sqla.Column(sqla.Boolean, nullable=False, server_default="false", default=False)
 
     @property
+    def is_partial(self) -> bool:
+        return any(booking_incident.is_partial for booking_incident in self.booking_finance_incidents)
+
+    @property
     def relates_to_collective_bookings(self) -> bool:
         return any(booking_incident.collectiveBooking for booking_incident in self.booking_finance_incidents)
 

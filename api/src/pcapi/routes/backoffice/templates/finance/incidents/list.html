@@ -25,6 +25,7 @@
                 <th scope="col">ID</th>
                 <th scope="col">Statut de l'incident</th>
                 <th scope="col">Type d'incident</th>
+                <th scope="col">Nature</th>
                 <th scope="col">Type de résa</th>
                 <th scope="col">Nb. Réservation(s)</th>
                 <th scope="col">Montant total</th>
@@ -48,10 +49,11 @@
                     {% if incident.isClosed %}
                       <span class="badge text-bg-light">Terminé</span>
                     {% else %}
-                      {{ incident.status | format_finance_incident_status_badge | safe }}
+                      {{ incident.status | format_finance_incident_status_badge }}
                     {% endif %}
                   </td>
-                  <td>{{ incident.kind | format_finance_incident_type | safe }}</td>
+                  <td>{{ incident.kind | format_finance_incident_type }}</td>
+                  <td>{{ incident.is_partial | format_finance_incident_nature_badge }}</td>
                   <td>{{ "Collective" if incident.relates_to_collective_bookings else "Individuelle" }}</td>
                   <td>{{ incident.booking_finance_incidents | length }}</td>
                   <td>{{ incident.due_amount_by_offerer | format_cents }}</td>

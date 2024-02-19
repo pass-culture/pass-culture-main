@@ -983,14 +983,20 @@ def format_finance_incident_status(incident_status: finance_models.IncidentStatu
             return incident_status.value
 
 
+def format_finance_incident_nature_badge(is_partial: bool) -> str:
+    if is_partial:
+        return Markup('<span class="badge text-bg-info">Partiel</span>')
+    return Markup('<span class="badge text-bg-secondary">Total</span>')
+
+
 def format_finance_incident_status_badge(incident_status: finance_models.IncidentStatus) -> str:
     match incident_status:
         case finance_models.IncidentStatus.CREATED:
-            return '<span class="badge text-bg-secondary">Créé</span>'
+            return Markup('<span class="badge text-bg-secondary">Créé</span>')
         case finance_models.IncidentStatus.CANCELLED:
-            return '<span class="badge text-bg-danger">Annulé</span>'
+            return Markup('<span class="badge text-bg-danger">Annulé</span>')
         case finance_models.IncidentStatus.VALIDATED:
-            return '<span class="badge text-bg-success">Validé</span>'
+            return Markup('<span class="badge text-bg-success">Validé</span>')
 
 
 def format_finance_incident_type_str(incident_kind: finance_models.IncidentType) -> str:
@@ -1011,13 +1017,13 @@ def format_finance_incident_type(incident_kind: finance_models.IncidentType) -> 
     kind_str = format_finance_incident_type_str(incident_kind)
     match incident_kind:
         case finance_models.IncidentType.OVERPAYMENT:
-            return f'<span class="badge text-bg-warning">{kind_str}</span>'
+            return Markup('<span class="badge text-bg-warning">{kind}</span>').format(kind=kind_str)
         case finance_models.IncidentType.FRAUD:
-            return f'<span class="badge text-bg-danger">{kind_str}</span>'
+            return Markup('<span class="badge text-bg-danger">{kind}</span>').format(kind=kind_str)
         case finance_models.IncidentType.COMMERCIAL_GESTURE:
-            return f'<span class="badge text-bg-success">{kind_str}</span>'
+            return Markup('<span class="badge text-bg-success">{kind}</span>').format(kind=kind_str)
         case finance_models.IncidentType.OFFER_PRICE_REGULATION:
-            return f'<span class="badge text-bg-light">{kind_str}</span>'
+            return Markup('<span class="badge text-bg-light">{kind}</span>').format(kind=kind_str)
         case _:
             return incident_kind.value
 
@@ -1103,6 +1109,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["pc_backoffice_public_account_link_in_comment"] = (
         urls.build_backoffice_public_account_link_in_comment
     )
+    app.jinja_env.filters["format_finance_incident_nature_badge"] = format_finance_incident_nature_badge
     app.jinja_env.filters["format_finance_incident_status_badge"] = format_finance_incident_status_badge
     app.jinja_env.filters["format_finance_incident_type"] = format_finance_incident_type
     app.jinja_env.filters["format_finance_incident_type_str"] = format_finance_incident_type_str
