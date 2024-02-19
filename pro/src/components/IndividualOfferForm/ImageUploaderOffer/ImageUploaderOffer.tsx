@@ -12,6 +12,7 @@ import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import { InfoBox } from 'ui-kit'
 
+import styles from './ImageUploaderOffer.module.scss'
 import { buildInitialValues } from './utils'
 
 export interface ImageUploaderOfferProps {
@@ -49,6 +50,7 @@ const ImageUploaderOffer = ({
         }
       >
         <ImageUploader
+          className={styles['image-uploader']}
           onImageUpload={onImageUpload}
           onImageDelete={onImageDelete}
           initialValues={buildInitialValues(imageOffer)}
