@@ -17,6 +17,22 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import style from './ModalImageCrop.module.scss'
 import { getCropMaxDimension } from './utils'
 
+export function clamp(input: number, min: number, max: number): number {
+  return input < min ? min : input > max ? max : input
+}
+
+export function map(
+  current: number,
+  in_min: number,
+  in_max: number,
+  out_min: number,
+  out_max: number
+): number {
+  const mapped: number =
+    ((current - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min
+  return clamp(mapped, out_min, out_max)
+}
+
 interface ModalImageCropProps {
   image: File
   credit: string
@@ -64,15 +80,30 @@ const ModalImageCrop = ({
     (maxWidth - 10) / // Add few security pixel to garantie that max zoom will never be 399px.
       minWidth
   )
+
+  // POC 1 en js c'est la hess :
+  const vw = Math.max(
+    document.documentElement.clientWidth || 0,
+    window.innerWidth || 0
+  )
+
+  // quand view port < y px -> Height = qqch d'autre au mini
+  // quand view port > x px -> Height = qqch au maxi
+  // entre les deux un ratio
+  //-> mapper la valeur
+
+  // POC 2 : css is the answer
+  //  Maybe using css-only would solve the small screen dimensions + auto resize adaptation
+
   const canvasHeight: number = {
     [UploaderModeEnum.OFFER]: 384,
     [UploaderModeEnum.OFFER_COLLECTIVE]: 384,
-    [UploaderModeEnum.VENUE]: 244,
+    [UploaderModeEnum.VENUE]: (map(vw, 200, 2000, 10, 244) * 3) / 2,
   }[mode]
   const imageEditorConfig: ImageEditorConfig = {
     [UploaderModeEnum.OFFER]: {
       canvasHeight,
-      canvasWidth: (canvasHeight * 6) / 9,
+      canvasWidth: (canvasHeight * 2) / 3,
       cropBorderColor: '#FFF',
       cropBorderHeight: 50,
       cropBorderWidth: 105,
@@ -80,7 +111,7 @@ const ModalImageCrop = ({
     },
     [UploaderModeEnum.OFFER_COLLECTIVE]: {
       canvasHeight,
-      canvasWidth: (canvasHeight * 6) / 9,
+      canvasWidth: (canvasHeight * 2) / 3,
       cropBorderColor: '#FFF',
       cropBorderHeight: 50,
       cropBorderWidth: 105,
