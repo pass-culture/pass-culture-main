@@ -108,6 +108,7 @@ vi.mock('apiClient/api', () => ({
   api: {
     postCreateVenue: vi.fn(),
     getSiretInfo: vi.fn(),
+    canOffererCreateEducationalOffer: vi.fn(),
   },
 }))
 
@@ -157,6 +158,9 @@ describe('venue form trackers', () => {
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
+    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue({
+      canCreate: true,
+    })
   })
 
   it('should track success of form submit', async () => {

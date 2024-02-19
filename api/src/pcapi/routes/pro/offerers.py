@@ -162,13 +162,17 @@ def create_offerer(body: offerers_serialize.CreateOffererQueryModel) -> offerers
 
 @private_api.route("/offerers/<int:offerer_id>/eac-eligibility", methods=["GET"])
 @login_required
-@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
-def can_offerer_create_educational_offer(offerer_id: int) -> None:
+@spectree_serialize(
+    on_success_status=200,
+    response_model=offerers_serialize.CanOffererCreateCollectiveOfferResponseModel,
+    api=blueprint.pro_private_schema,
+)
+def can_offerer_create_educational_offer(
+    offerer_id: int,
+) -> offerers_serialize.CanOffererCreateCollectiveOfferResponseModel:
     try:
-        api.can_offerer_create_educational_offer(offerer_id)
-    except educational_exceptions.CulturalPartnerNotFoundException:
-        logger.info("This offerer has not been found in Adage", extra={"offerer_id": offerer_id})
-        raise ApiErrors({"offerer": "not found in adage"}, 404)
+        can_create_educational_offer = api.can_offerer_create_educational_offer(offerer_id)
+        return offerers_serialize.CanOffererCreateCollectiveOfferResponseModel(canCreate=can_create_educational_offer)
     except educational_exceptions.AdageException:
         logger.info("Api call failed", extra={"offerer_id": offerer_id})
         raise ApiErrors({"adage_api": "error"}, 500)

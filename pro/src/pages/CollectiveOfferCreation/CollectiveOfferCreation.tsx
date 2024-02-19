@@ -5,7 +5,6 @@ import { AppLayout } from 'app/AppLayout'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import { Mode, isCollectiveOffer } from 'core/OfferEducational'
-import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import {
@@ -47,7 +46,6 @@ export const CollectiveOfferCreation = ({
             nationalPrograms={offerEducationalFormData.nationalPrograms}
             offer={offer}
             setOffer={setOffer}
-            getIsOffererEligible={canOffererCreateCollectiveOfferAdapter}
             mode={Mode.CREATION}
             isTemplate={isTemplate}
           />

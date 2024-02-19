@@ -6,7 +6,6 @@ from flask import url_for
 import pytest
 
 from pcapi.core.categories import subcategories_v2 as subcategories
-from pcapi.core.educational.exceptions import CulturalPartnerNotFoundException
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 from pcapi.core.educational.factories import EducationalDomainFactory
@@ -269,7 +268,7 @@ class Returns403Test:
     def test_cultural_partner_not_found(self, pro_client, offer):
         data = {"name": "Update some random field"}
 
-        with patch(PATCH_CAN_CREATE_OFFER_PATH, side_effect=CulturalPartnerNotFoundException):
+        with patch(PATCH_CAN_CREATE_OFFER_PATH, return_value=False):
             response = pro_client.patch(f"/collective/offers-template/{offer.id}", json=data)
 
         assert response.status_code == 403

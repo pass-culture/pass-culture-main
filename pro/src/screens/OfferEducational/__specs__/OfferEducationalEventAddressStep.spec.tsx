@@ -2,6 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
+import { api } from 'apiClient/api'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
@@ -29,6 +30,9 @@ describe('screens | OfferEducational : event address step', () => {
           ]),
         },
       }
+      vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue({
+        canCreate: true,
+      })
     })
 
     it('should display venue radio buttons with pre-selected offerer venue and a disabled select', async () => {
@@ -121,6 +125,9 @@ describe('screens | OfferEducational : event address step', () => {
           ]),
         },
       }
+      vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue({
+        canCreate: true,
+      })
     })
 
     it('should require an offer venue selection from the user', async () => {

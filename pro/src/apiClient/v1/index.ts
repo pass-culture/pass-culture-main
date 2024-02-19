@@ -26,6 +26,7 @@ export type { BookingRecapResponseStockModel } from './models/BookingRecapRespon
 export { BookingRecapStatus } from './models/BookingRecapStatus';
 export { BookingStatusFilter } from './models/BookingStatusFilter';
 export type { BookingStatusHistoryResponseModel } from './models/BookingStatusHistoryResponseModel';
+export type { CanOffererCreateCollectiveOfferResponseModel } from './models/CanOffererCreateCollectiveOfferResponseModel';
 export type { CategoriesResponseModel } from './models/CategoriesResponseModel';
 export type { CategoryResponseModel } from './models/CategoryResponseModel';
 export type { ChangePasswordBodyModel } from './models/ChangePasswordBodyModel';
