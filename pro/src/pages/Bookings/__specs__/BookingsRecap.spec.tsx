@@ -391,10 +391,9 @@ describe('components | BookingsRecap | Pro user', () => {
     }
     const spyGetBookingsPro = vi
       .spyOn(api, 'getBookingsPro')
-
       .mockResolvedValueOnce(paginatedBookingRecapReturned)
-
       .mockResolvedValueOnce(secondPaginatedBookingRecapReturned)
+
     const { submitFilters } = await renderBookingsRecap(store)
 
     // When
@@ -405,12 +404,9 @@ describe('components | BookingsRecap | Pro user', () => {
     await submitFilters()
 
     // Then
-    const secondBookingRecap = await screen.findAllByText(
-      bookings2.stock.offerName
-    )
-    expect(secondBookingRecap).toHaveLength(2)
-    const firstBookingRecap = screen.getAllByText(bookings1.stock.offerName)
-    expect(firstBookingRecap).toHaveLength(2)
+    expect(screen.getByText(bookings2.stock.offerName)).toBeInTheDocument()
+
+    expect(screen.getByText(bookings1.stock.offerName)).toBeInTheDocument()
 
     expect(api.getBookingsPro).toHaveBeenCalledTimes(2)
     expect(
@@ -581,10 +577,9 @@ describe('components | BookingsRecap | Pro user', () => {
       bookingsRecap: [otherVenueBooking],
     }
     vi.spyOn(api, 'getBookingsPro')
-
       .mockResolvedValueOnce(otherVenuePaginatedBookingRecapReturned)
-
       .mockResolvedValueOnce(paginatedBookingRecapReturned)
+
     const { submitFilters } = await renderBookingsRecap(store)
 
     await userEvent.selectOptions(
@@ -592,7 +587,6 @@ describe('components | BookingsRecap | Pro user', () => {
       otherVenue.id.toString()
     )
     await submitFilters()
-    await screen.findAllByText(otherVenueBooking.stock.offerName)
 
     // When
     await userEvent.selectOptions(
@@ -602,10 +596,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await submitFilters()
 
     // Then
-    const firstBookingRecap = await screen.findAllByText(
-      booking.stock.offerName
-    )
-    expect(firstBookingRecap).toHaveLength(2)
+    expect(screen.getByText(booking.stock.offerName)).toBeInTheDocument()
     expect(
       screen.queryByText(otherVenueBooking.stock.offerName)
     ).not.toBeInTheDocument()

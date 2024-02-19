@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 
 import { bookingRecapFactory } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -44,7 +45,7 @@ describe('IndividualBookingsStatusCell', () => {
     expect(title).toBeInTheDocument()
   })
 
-  it('should display the offer title and history title and amount when it is not free', () => {
+  it('should display the offer title and history title and amount when it is not free', async () => {
     const expectedHistoryTitle = 'Historique'
     const props = {
       booking: bookingRecapFactory({
@@ -73,6 +74,9 @@ describe('IndividualBookingsStatusCell', () => {
 
     renderIndividualBookingStatusCell(props)
 
+    const tooltipButton = screen.getByRole('button')
+    await userEvent.click(tooltipButton)
+
     const title = screen.getByText(expectedHistoryTitle, { selector: 'div' })
     expect(title).toBeInTheDocument()
     const offer = screen.getByText('Matrix', { selector: 'div' })
@@ -81,7 +85,7 @@ describe('IndividualBookingsStatusCell', () => {
     expect(amount).toBeInTheDocument()
   })
 
-  it('should display the booking amount when it is not free', () => {
+  it('should display the booking amount when it is not free', async () => {
     const props = {
       booking: bookingRecapFactory({
         stock: {
@@ -109,13 +113,16 @@ describe('IndividualBookingsStatusCell', () => {
 
     renderIndividualBookingStatusCell(props)
 
+    const tooltipButton = screen.getByRole('button')
+    await userEvent.click(tooltipButton)
+
     const offer = screen.getByText('Matrix', { selector: 'div' })
     expect(offer).toBeInTheDocument()
     const amount = screen.getByText('Prix : 10,00 €', { selector: 'div' })
     expect(amount).toBeInTheDocument()
   })
 
-  it('should display the appropriate message when the offer is free', () => {
+  it('should display the appropriate message when the offer is free', async () => {
     const props = {
       isCollectiveStatus: false,
       booking: bookingRecapFactory({
@@ -143,13 +150,16 @@ describe('IndividualBookingsStatusCell', () => {
 
     renderIndividualBookingStatusCell(props)
 
+    const tooltipButton = screen.getByRole('button')
+    await userEvent.click(tooltipButton)
+
     const offer = screen.getByText('Matrix', { selector: 'div' })
     expect(offer).toBeInTheDocument()
     const amount = screen.getByText('Prix : Gratuit', { selector: 'div' })
     expect(amount).toBeInTheDocument()
   })
 
-  it('should display all the history dates present in booking recap history', () => {
+  it('should display all the history dates present in booking recap history', async () => {
     const expectedNumberOfHistoryDates = 3
     const props = {
       isCollectiveStatus: false,
@@ -185,6 +195,9 @@ describe('IndividualBookingsStatusCell', () => {
     }
 
     renderIndividualBookingStatusCell(props)
+
+    const tooltipButton = screen.getByRole('button')
+    await userEvent.click(tooltipButton)
 
     const historyCellReserved = screen.getByText('Réservée : 04/01/2020 20:31')
     expect(historyCellReserved).toBeInTheDocument()
