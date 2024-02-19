@@ -5,6 +5,8 @@ This command should be run when a new attribute is added for pro users or when i
 
 import time
 
+import sqlalchemy as sa
+
 from pcapi.core.external.attributes.api import get_pro_attributes
 from pcapi.core.external.sendinblue import update_contact_attributes
 from pcapi.core.offerers.models import Venue
@@ -27,9 +29,9 @@ def get_all_pro_users_emails() -> set[str]:
     rows = (
         db.session.query(User.email)
         .filter(
-            User.isActive.is_(True),
-            User.has_pro_role.is_(True),  # type: ignore [attr-defined]
-            User.has_admin_role.is_(False),  # type: ignore [attr-defined]
+            User.isActive,
+            sa.or_(User.has_pro_role, User.has_non_attached_pro_role),  # type: ignore [type-var]
+            sa.not_(User.has_admin_role),
         )
         .all()
     )
