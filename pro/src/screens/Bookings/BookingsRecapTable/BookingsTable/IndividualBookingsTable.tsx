@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 
 import { BookingRecapResponseModel } from 'apiClient/v1'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
@@ -26,8 +26,8 @@ import {
   BeneficiaryCell,
   BookingDateCell,
   BookingTokenCell,
-  BookingStatusCell,
 } from './Cells'
+import { IndividualBookingStatusCell } from './Cells/IndividualBookingStatusCell'
 
 enum IndividualBookingsSortingColumn {
   OFFER_NAME = 'OFFER_NAME',
@@ -264,10 +264,7 @@ export const IndividualBookingsTable = ({
                     styles['column-booking-status']
                   )}
                 >
-                  <BookingStatusCell
-                    booking={booking}
-                    isCollectiveStatus={false}
-                  />
+                  <IndividualBookingStatusCell booking={booking} />
                 </td>
               </tr>
             ))}

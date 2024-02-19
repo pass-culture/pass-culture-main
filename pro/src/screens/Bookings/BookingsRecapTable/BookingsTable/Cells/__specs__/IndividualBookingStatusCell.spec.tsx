@@ -1,18 +1,20 @@
 import { screen } from '@testing-library/react'
-import React from 'react'
 
 import { bookingRecapFactory } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { BookingStatusCell, BookingStatusCellProps } from '../BookingStatusCell'
+import {
+  IndividualBookingStatusCell,
+  IndividualBookingStatusCellProps,
+} from '../IndividualBookingStatusCell'
 
-const renderBookingStatusCell = (props: BookingStatusCellProps) =>
-  renderWithProviders(<BookingStatusCell {...props} />)
+const renderIndividualBookingStatusCell = (
+  props: IndividualBookingStatusCellProps
+) => renderWithProviders(<IndividualBookingStatusCell {...props} />)
 
-describe('BookingsStatusCell', () => {
+describe('IndividualBookingsStatusCell', () => {
   it('should display the status label', () => {
-    const props: BookingStatusCellProps = {
-      isCollectiveStatus: false,
+    const props = {
       booking: bookingRecapFactory({
         stock: {
           eventBeginningDatetime: '2020-06-05T16:31:59.102163+02:00',
@@ -36,7 +38,7 @@ describe('BookingsStatusCell', () => {
       }),
     }
 
-    renderBookingStatusCell(props)
+    renderIndividualBookingStatusCell(props)
 
     const title = screen.getByText('validée', { selector: 'span' })
     expect(title).toBeInTheDocument()
@@ -44,8 +46,7 @@ describe('BookingsStatusCell', () => {
 
   it('should display the offer title and history title and amount when it is not free', () => {
     const expectedHistoryTitle = 'Historique'
-    const props: BookingStatusCellProps = {
-      isCollectiveStatus: false,
+    const props = {
       booking: bookingRecapFactory({
         stock: {
           eventBeginningDatetime: '2020-06-05T16:31:59.102163+02:00',
@@ -70,7 +71,7 @@ describe('BookingsStatusCell', () => {
       }),
     }
 
-    renderBookingStatusCell(props)
+    renderIndividualBookingStatusCell(props)
 
     const title = screen.getByText(expectedHistoryTitle, { selector: 'div' })
     expect(title).toBeInTheDocument()
@@ -81,8 +82,7 @@ describe('BookingsStatusCell', () => {
   })
 
   it('should display the booking amount when it is not free', () => {
-    const props: BookingStatusCellProps = {
-      isCollectiveStatus: false,
+    const props = {
       booking: bookingRecapFactory({
         stock: {
           eventBeginningDatetime: '2020-06-05T16:31:59.102163+02:00',
@@ -107,7 +107,7 @@ describe('BookingsStatusCell', () => {
       }),
     }
 
-    renderBookingStatusCell(props)
+    renderIndividualBookingStatusCell(props)
 
     const offer = screen.getByText('Matrix', { selector: 'div' })
     expect(offer).toBeInTheDocument()
@@ -116,7 +116,7 @@ describe('BookingsStatusCell', () => {
   })
 
   it('should display the appropriate message when the offer is free', () => {
-    const props: BookingStatusCellProps = {
+    const props = {
       isCollectiveStatus: false,
       booking: bookingRecapFactory({
         stock: {
@@ -141,7 +141,7 @@ describe('BookingsStatusCell', () => {
       }),
     }
 
-    renderBookingStatusCell(props)
+    renderIndividualBookingStatusCell(props)
 
     const offer = screen.getByText('Matrix', { selector: 'div' })
     expect(offer).toBeInTheDocument()
@@ -151,7 +151,7 @@ describe('BookingsStatusCell', () => {
 
   it('should display all the history dates present in booking recap history', () => {
     const expectedNumberOfHistoryDates = 3
-    const props: BookingStatusCellProps = {
+    const props = {
       isCollectiveStatus: false,
       booking: bookingRecapFactory({
         stock: {
@@ -184,7 +184,7 @@ describe('BookingsStatusCell', () => {
       }),
     }
 
-    renderBookingStatusCell(props)
+    renderIndividualBookingStatusCell(props)
 
     const historyCellReserved = screen.getByText('Réservée : 04/01/2020 20:31')
     expect(historyCellReserved).toBeInTheDocument()
