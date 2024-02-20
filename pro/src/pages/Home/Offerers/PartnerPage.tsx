@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useLoaderData } from 'react-router-dom'
 
-import { api } from 'apiClient/api'
 import {
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
@@ -86,16 +85,6 @@ export const PartnerPage = ({
     }
   }
 
-  const handleOnImageDelete = async () => {
-    try {
-      await api.deleteVenueBanner(venue.id)
-
-      setImageValues(buildInitialValues())
-    } catch {
-      notify.error('Une erreur est survenue. Merci de réessayer plus tard.')
-    }
-  }
-
   const logButtonAddClick = () => {
     logEvent?.(Events.CLICKED_ADD_IMAGE, {
       venueId: venue.id,
@@ -110,7 +99,7 @@ export const PartnerPage = ({
         <ImageUploader
           className={styles['image-uploader']}
           onImageUpload={handleOnImageUpload}
-          onImageDelete={handleOnImageDelete}
+          onImageDelete={() => {}}
           initialValues={imageValues}
           mode={UploaderModeEnum.VENUE}
           hideActionButtons
