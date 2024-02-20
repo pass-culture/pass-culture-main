@@ -100,20 +100,18 @@ main {
     width: 100%;
     z-index: zIndex.$lateral-menu-backdrop-z-index;
 
-
     &::before {
-      content: ' ';
+      content: " ";
       display: block;
       position: fixed;
       inset: 0;
-      background: rgba(colors.$input-text-color, .48);
+      background: rgba(colors.$input-text-color, 0.48);
     }
 
     &.open {
       display: block;
     }
   }
-
 
   &-menu {
     background: colors.$white;
@@ -130,6 +128,20 @@ main {
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    &-open {
+      padding: 0 rem.torem(16px) 0 0;
+    }
+
+    &-button {
+      display: inline-flex;
+      width: rem.torem(50px);
+      height: rem.torem(50px);
+      justify-content: center;
+      align-items: center;
+      gap: 24px;
+      flex-shrink: 0;
+    }
 
     .logo {
       width: rem.torem(80px);
