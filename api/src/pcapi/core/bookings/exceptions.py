@@ -59,6 +59,14 @@ class BookingIsAlreadyUsed(Exception):
     pass
 
 
+class BookingIsNotUsed(Exception):
+    pass
+
+
+class BookingHasActivationCode(Exception):
+    pass
+
+
 class BookingHasAlreadyBeenUsed(ClientError):
     def __init__(self) -> None:
         super().__init__("booking", "Cette offre a déjà été utilisée")

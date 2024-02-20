@@ -15,7 +15,6 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.repository import repository
 
@@ -472,21 +471,18 @@ class CheckOffererCanCancelBookingTest:
 class CheckCanBeMarkAsUnusedTest:
     def test_should_raise_resource_gone_error_if_not_used(self):
         booking = factories.BookingFactory()
-        with pytest.raises(api_errors.ResourceGoneError) as exc:
+        with pytest.raises(exceptions.BookingIsNotUsed):
             validation.check_can_be_mark_as_unused(booking)
-        assert exc.value.errors["booking"] == ["Cette réservation n'a pas encore été validée"]
 
     def test_should_raise_resource_gone_error_if_cancelled(self):
         booking = factories.CancelledBookingFactory()
-        with pytest.raises(api_errors.ResourceGoneError) as exc:
+        with pytest.raises(exceptions.BookingIsAlreadyCancelled):
             validation.check_can_be_mark_as_unused(booking)
-        assert exc.value.errors["booking"] == ["Cette réservation a été annulée"]
 
     def test_should_raise_resource_gone_error_if_reimbursed(self):
         booking = factories.ReimbursedBookingFactory()
-        with pytest.raises(api_errors.ResourceGoneError) as exc:
+        with pytest.raises(exceptions.BookingIsAlreadyRefunded):
             validation.check_can_be_mark_as_unused(booking)
-        assert exc.value.errors["payment"] == ["Le remboursement est en cours de traitement"]
 
 
 @pytest.mark.usefixtures("db_session")

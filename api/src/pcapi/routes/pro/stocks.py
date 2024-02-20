@@ -6,6 +6,7 @@ from sqlalchemy import and_
 from sqlalchemy import or_
 import sqlalchemy.orm as sqla_orm
 
+from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offerers.repository as offerers_repository
@@ -14,6 +15,8 @@ import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.validation as offers_validation
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.api_errors import ForbiddenError
+from pcapi.models.api_errors import ResourceGoneError
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.public.books_stocks import serialization
@@ -189,7 +192,17 @@ def upsert_stocks(
     except offers_exceptions.OfferEditionBaseException as error:
         raise ApiErrors(error.errors, status_code=400)
 
-    offers_api.handle_stocks_edition(edited_stocks_with_update_info)
+    try:
+        offers_api.handle_stocks_edition(edited_stocks_with_update_info)
+    except booking_exceptions.BookingIsAlreadyCancelled:
+        raise ResourceGoneError({"booking": ["Cette réservation a été annulée"]})
+    except booking_exceptions.BookingIsAlreadyRefunded:
+        raise ResourceGoneError({"payment": ["Le remboursement est en cours de traitement"]})
+    except booking_exceptions.BookingHasActivationCode:
+        raise ForbiddenError({"booking": ["Cette réservation ne peut pas être marquée comme inutilisée"]})
+    except booking_exceptions.BookingIsNotUsed:
+        raise ResourceGoneError({"booking": ["Cette contremarque n'a pas encore été validée"]})
+
     return serialization.StocksResponseModel(stocks_count=len(upserted_stocks))
 
 
