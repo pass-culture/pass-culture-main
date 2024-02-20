@@ -4,11 +4,11 @@ import { Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
+import { GetOffererNameResponseModel } from 'apiClient/v1'
 import {
   IndividualOfferFormValues,
   setDefaultInitialFormValues,
 } from 'components/IndividualOfferForm'
-import { OffererName } from 'core/Offerers/types'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
 
@@ -54,7 +54,7 @@ describe('IndividualOffer section: venue', () => {
   }
 
   beforeEach(() => {
-    const offererNames: OffererName[] = [
+    const offererNames: GetOffererNameResponseModel[] = [
       firstOfferer,
       secondOfferer,
       thirdOfferer,

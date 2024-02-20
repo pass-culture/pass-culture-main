@@ -4,9 +4,9 @@ import { useLoaderData, useNavigate } from 'react-router-dom'
 import {
   CategoryResponseModel,
   GetIndividualOfferResponseModel,
+  GetOffererNameResponseModel,
   SubcategoryResponseModel,
 } from 'apiClient/v1'
-import { OffererName } from 'core/Offerers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -23,9 +23,9 @@ export interface IndividualOfferContextValues {
   subCategories: SubcategoryResponseModel[]
   subcategory?: SubcategoryResponseModel
   setSubcategory: (p?: SubcategoryResponseModel) => void
-  offererNames: OffererName[]
+  offererNames: GetOffererNameResponseModel[]
   venueList: IndividualOfferVenueItem[]
-  offerOfferer?: OffererName | null
+  offerOfferer?: GetOffererNameResponseModel | null
   showVenuePopin: Record<string, boolean>
 }
 
@@ -72,7 +72,9 @@ export function IndividualOfferContextProvider({
     SubcategoryResponseModel[]
   >([])
   const [subcategory, setSubcategory] = useState<SubcategoryResponseModel>()
-  const [offererNames, setOffererNames] = useState<OffererName[]>([])
+  const [offererNames, setOffererNames] = useState<
+    GetOffererNameResponseModel[]
+  >([])
   const [venueList, setVenueList] = useState<IndividualOfferVenueItem[]>([])
   const [showVenuePopin, setShowVenuePopin] = useState<Record<string, boolean>>(
     {}

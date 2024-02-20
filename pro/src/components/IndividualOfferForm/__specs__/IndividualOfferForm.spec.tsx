@@ -6,13 +6,13 @@ import React from 'react'
 import {
   CategoryResponseModel,
   GetIndividualOfferResponseModel,
+  GetOffererNameResponseModel,
   SubcategoryResponseModel,
 } from 'apiClient/v1'
 import {
   IndividualOfferContextValues,
   IndividualOfferContext,
 } from 'context/IndividualOfferContext'
-import { OffererName } from 'core/Offerers/types'
 import {
   CATEGORY_STATUS,
   INDIVIDUAL_OFFER_SUBTYPE,
@@ -76,7 +76,7 @@ describe('IndividualOfferForm', () => {
   let props: IndividualOfferFormProps
   let categories: CategoryResponseModel[] = []
   let subCategories: SubcategoryResponseModel[] = []
-  let offererNames: OffererName[]
+  let offererNames: GetOffererNameResponseModel[]
   let venueList: IndividualOfferVenueItem[]
   const offererId = 2
   const physicalVenueId = 1
