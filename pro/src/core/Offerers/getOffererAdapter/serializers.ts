@@ -7,13 +7,5 @@ export const serializeOffererApi = (
 ): Offerer => {
   return <Offerer>{
     ...offerer,
-    address: offerer.address || '',
-    demarchesSimplifieesApplicationId:
-      offerer.demarchesSimplifieesApplicationId || '',
-    hasAvailablePricingPoints: offerer.hasAvailablePricingPoints || undefined,
-    hasDigitalVenueAtLeastOneOffer:
-      offerer.hasDigitalVenueAtLeastOneOffer || undefined,
-    isValidated: offerer.isValidated || undefined,
-    isActive: offerer.isActive || undefined,
   }
 }
