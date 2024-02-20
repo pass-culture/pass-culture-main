@@ -199,6 +199,7 @@ class AllocineShowtimeProjection(Enum):
     HFR = "HFR"
     F_3DHFR = "F_3DHFR"
     IMAX_3D_HFR = "IMAX_3D_HFR"
+    LASER = "LASER"
 
 
 class AllocineBacklink(pydantic.BaseModel):
