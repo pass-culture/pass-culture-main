@@ -575,4 +575,48 @@ describe('offer', () => {
       screen.queryByText('Partager l’offre par email')
     ).not.toBeInTheDocument()
   })
+
+  it('should show the redirect button instead of the expand button when the ff is enabled', () => {
+    renderOffer(
+      {
+        ...offerProps,
+        offer: {
+          ...defaultCollectiveTemplateOffer,
+          isTemplate: true,
+        },
+      },
+      undefined,
+      {
+        features: ['WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN'],
+      }
+    )
+
+    expect(
+      screen.queryByRole('button', { name: 'en savoir plus' })
+    ).not.toBeInTheDocument()
+
+    const redirectLink = screen.getByRole('link', {
+      name: 'Nouvelle fenêtre Découvrir l’offre',
+    })
+
+    expect(redirectLink).toBeInTheDocument()
+
+    expect(redirectLink.getAttribute('href')).toContain(
+      `offerid/${defaultCollectiveTemplateOffer.id}`
+    )
+  })
+
+  it('should redirect to the bookable offer url with the "B-" when the offer is bookable', () => {
+    renderOffer(offerProps, undefined, {
+      features: ['WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN'],
+    })
+
+    const redirectLink = screen.getByRole('link', {
+      name: 'Nouvelle fenêtre Découvrir l’offre',
+    })
+
+    expect(redirectLink.getAttribute('href')).toContain(
+      `offerid/B-${offerProps.offer.id}`
+    )
+  })
 })
