@@ -531,6 +531,7 @@ class AlgoliaBackend(base.SearchBackend):
             "distinct": distinct,
             "objectID": offer.id,
             "offer": {
+                "allocineId": extra_data.get("allocineId"),
                 "artist": artist.strip() or None,
                 "bookMacroSection": macro_section,
                 "dateCreated": date_created,

@@ -59,6 +59,7 @@ def test_serialize_offer():
         "distinct": "2221001648",
         "objectID": offer.id,
         "offer": {
+            "allocineId": None,
             "artist": "Author Performer Speaker Stage Director",
             "bookMacroSection": macro_section,
             "dateCreated": offer.dateCreated.timestamp(),
