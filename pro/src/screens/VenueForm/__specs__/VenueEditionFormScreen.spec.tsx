@@ -16,10 +16,10 @@ import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
 import { VenueFormValues } from 'components/VenueForm'
-import { Offerer } from 'core/Offerers/types'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import { Venue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
+import { defaultGetOffererResponseModel } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { VenueEditionFormScreen } from '../VenueEditionFormScreen'
@@ -66,7 +66,11 @@ const renderForm = (
             <>
               <VenueEditionFormScreen
                 initialValues={initialValues}
-                offerer={{ id: 12, siren: '881457238' } as Offerer}
+                offerer={{
+                  ...defaultGetOffererResponseModel,
+                  id: 12,
+                  siren: '881457238',
+                }}
                 venueTypes={venueTypes}
                 venueLabels={venueLabels}
                 providers={[]}

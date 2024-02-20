@@ -4,12 +4,12 @@ import { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import {
+  GetOffererResponseModel,
   SharedCurrentUserResponseModel,
   VenueProviderResponse,
 } from 'apiClient/v1'
 import { AddressSelect } from 'components/Address'
 import FormLayout from 'components/FormLayout'
-import { Offerer } from 'core/Offerers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { Providers } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
@@ -31,7 +31,7 @@ import { VenueFormActionBar } from './VenueFormActionBar'
 import { VenueFormValues } from '.'
 
 interface VenueFormProps {
-  offerer: Offerer
+  offerer: GetOffererResponseModel
   updateIsSiretValued: (isSiretValued: boolean) => void
   venueTypes: SelectOption[]
   venueLabels: SelectOption[]
