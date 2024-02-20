@@ -142,6 +142,7 @@ export const AdageDiscovery = () => {
                     trackPlaylistElementClicked({
                       playlistId: DOMAINS_PLAYLIST,
                       playlistType: AdagePlaylistType.DOMAIN,
+                      elementId: elm.value,
                       index,
                     })
                   }
