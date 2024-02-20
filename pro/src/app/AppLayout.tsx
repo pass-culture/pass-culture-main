@@ -11,6 +11,8 @@ import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
+import styles from './AppLayout.module.scss'
+
 export interface AppLayoutProps {
   children?: React.ReactNode
   pageName?: string
@@ -40,7 +42,12 @@ export const AppLayout = ({
         })}
       >
         <div className={'lateral-panel-menu'}>
-          <div className={'lateral-panel-nav'}>
+          <div
+            className={classnames({
+              'lateral-panel-nav': true,
+              'lateral-panel-nav-open': lateralPanelOpen,
+            })}
+          >
             <Button
               aria-expanded={lateralPanelOpen}
               variant={ButtonVariant.TERNARY}
@@ -51,8 +58,9 @@ export const AppLayout = ({
               aria-label="Fermer"
               aria-controls="lateral-panel"
               ref={closeButtonRef}
+              className={styles['lateral-panel-nav-button']}
             >
-              <SvgIcon src={strokeCloseIcon} alt="" width="25" />
+              <SvgIcon src={strokeCloseIcon} alt="" width="24" />
             </Button>
             <SvgIcon
               alt="Pass Culture pro, l’espace des acteurs culturels"
