@@ -192,4 +192,13 @@ def patch_booking_keep_by_token(token: str) -> None:
         # We should not end up here, thanks to the `login_or_api_key_required` decorator.
         raise ForbiddenError()
 
-    bookings_api.mark_as_unused(booking)
+    try:
+        bookings_api.mark_as_unused(booking)
+    except exceptions.BookingIsAlreadyCancelled:
+        raise api_errors.ResourceGoneError({"booking": ["Cette réservation a été annulée"]})
+    except exceptions.BookingIsNotUsed:
+        raise api_errors.ResourceGoneError({"booking": ["Cette réservation n'a pas encore été validée"]})
+    except exceptions.BookingHasActivationCode:
+        raise api_errors.ForbiddenError({"booking": ["Cette réservation ne peut pas être marquée comme inutilisée"]})
+    except exceptions.BookingIsAlreadyRefunded:
+        raise api_errors.ResourceGoneError({"payment": ["Le remboursement est en cours de traitement"]})

@@ -11,7 +11,6 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.models import User
-from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
@@ -142,32 +141,18 @@ def check_is_usable(booking: Booking) -> None:
         )
 
 
-# FIXME (dbaty, 2020-10-19): I moved this function from validation/routes/bookings.py. It
-# should not raise HTTP-related exceptions. It should rather raise
-# generic exceptions such as `BookingIsAlreadyUsed` and the calling
-# route should have an exception handler that turns it into the
-# desired HTTP-related exception (such as ResourceGone and Forbidden)
-# See also functions below.
 def check_can_be_mark_as_unused(booking: Booking) -> None:
     if booking.stock.canHaveActivationCodes and booking.activationCode:
-        forbidden = api_errors.ForbiddenError()
-        forbidden.add_error("booking", "Cette réservation ne peut pas être marquée comme inutilisée")
-        raise forbidden
+        raise exceptions.BookingHasActivationCode()
 
     if booking.status == BookingStatus.CANCELLED:
-        resource_gone = api_errors.ResourceGoneError()
-        resource_gone.add_error("booking", "Cette réservation a été annulée")
-        raise resource_gone
+        raise exceptions.BookingIsAlreadyCancelled()
 
     if finance_repository.has_reimbursement(booking):
-        gone = api_errors.ResourceGoneError()
-        gone.add_error("payment", "Le remboursement est en cours de traitement")
-        raise gone
+        raise exceptions.BookingIsAlreadyRefunded()
 
     if booking.status is not BookingStatus.USED:
-        gone = api_errors.ResourceGoneError()
-        gone.add_error("booking", "Cette réservation n'a pas encore été validée")
-        raise gone
+        raise exceptions.BookingIsNotUsed()
 
 
 def check_activation_code_available(stock: Stock) -> None:

@@ -3,6 +3,7 @@ import copy
 import sqlalchemy as sqla
 
 from pcapi import repository
+from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offers import api as offers_api
@@ -603,6 +604,14 @@ def patch_event_date(
         offers_api.handle_stocks_edition([(stock_to_edit, is_beginning_updated)])
     except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
+    except booking_exceptions.BookingIsAlreadyCancelled:
+        raise api_errors.ResourceGoneError({"booking": ["Cette réservation a été annulée"]})
+    except booking_exceptions.BookingIsAlreadyRefunded:
+        raise api_errors.ResourceGoneError({"payment": ["Le remboursement est en cours de traitement"]})
+    except booking_exceptions.BookingHasActivationCode:
+        raise api_errors.ForbiddenError({"booking": ["Cette réservation ne peut pas être marquée comme inutilisée"]})
+    except booking_exceptions.BookingIsNotUsed:
+        raise api_errors.ResourceGoneError({"booking": ["Cette contremarque n'a pas encore été validée"]})
     return serialization.DateResponse.build_date(edited_date)
 
 
