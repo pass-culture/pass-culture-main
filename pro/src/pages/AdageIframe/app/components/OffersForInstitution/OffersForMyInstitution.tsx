@@ -36,9 +36,7 @@ const OffersForMyInstitution = (): JSX.Element => {
           }))
         )
       } catch (e) {
-        sendSentryCustomError(
-          `error when fetching offers for my institution ${e}`
-        )
+        sendSentryCustomError(e)
       } finally {
         setLoadingOffers(false)
       }

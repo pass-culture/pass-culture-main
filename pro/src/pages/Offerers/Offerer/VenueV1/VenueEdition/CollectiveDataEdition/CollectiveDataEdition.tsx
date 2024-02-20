@@ -54,9 +54,7 @@ const fetchCulturalPartnerIfVenueHasNoCollectiveData = async (
       })),
     }
   } catch (e) {
-    sendSentryCustomError(
-      `error when fetching cultural educational partner ${e}`
-    )
+    sendSentryCustomError(e)
 
     return null
   }
