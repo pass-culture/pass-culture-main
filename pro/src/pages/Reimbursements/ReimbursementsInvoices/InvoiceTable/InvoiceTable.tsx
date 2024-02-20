@@ -91,9 +91,6 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
   const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
-  const isFinanceIncidentEnabled = useActiveFeature(
-    'WIP_ENABLE_FINANCE_INCIDENT'
-  )
   const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
     useColumnSorting<InvoicesOrderedBy>()
 
@@ -147,85 +144,57 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
               )}
             </SortArrow>
           </th>
-          {isFinanceIncidentEnabled ? (
-            <th
-              role="columnheader"
-              scope="col"
-              className={cn(styles['header'], styles['document-type-column'])}
-            >
-              Type de document
-              <SortArrow
-                sortingMode={
-                  currentSortingColumn === InvoicesOrderedBy.DOCUMENT_TYPE
-                    ? currentSortingMode
-                    : SortingMode.NONE
-                }
-                onClick={() => {
-                  onColumnHeaderClick(InvoicesOrderedBy.DOCUMENT_TYPE)
-                }}
-              >
-                {currentSortingColumn === InvoicesOrderedBy.DOCUMENT_TYPE && (
-                  <span className="visually-hidden">
-                    Tri par type de document{' '}
-                    {giveSortingModeForAlly(currentSortingMode)} activé.
-                  </span>
-                )}
-              </SortArrow>
-            </th>
-          ) : (
-            <th
-              role="columnheader"
-              scope="col"
-              className={cn(styles['header'], styles['document-type-column'])}
-            >
-              {isNewBankDetailsJourneyEnabled
-                ? 'Compte bancaire'
-                : 'Point de remboursement'}
-              <SortArrow
-                sortingMode={
-                  currentSortingColumn ===
-                  InvoicesOrderedBy.REIMBURSEMENT_POINT_NAME
-                    ? currentSortingMode
-                    : SortingMode.NONE
-                }
-                onClick={() => {
-                  onColumnHeaderClick(
-                    InvoicesOrderedBy.REIMBURSEMENT_POINT_NAME
-                  )
-                }}
-              >
-                {currentSortingColumn ===
-                  InvoicesOrderedBy.REIMBURSEMENT_POINT_NAME && (
-                  <span className="visually-hidden">
-                    Tri par{' '}
-                    {isNewBankDetailsJourneyEnabled
-                      ? 'compte bancaire '
-                      : 'point de remboursement '}
-                    {giveSortingModeForAlly(currentSortingMode)} activé.
-                  </span>
-                )}
-              </SortArrow>
-            </th>
-          )}
+
           <th
             role="columnheader"
             scope="col"
-            className={cn(styles['header'], styles['reference-column'])}
+            className={cn(styles['header'], styles['document-type-column'])}
           >
-            N° du justificatif
+            Type de document
             <SortArrow
               sortingMode={
-                currentSortingColumn === InvoicesOrderedBy.REFERENCE
+                currentSortingColumn === InvoicesOrderedBy.DOCUMENT_TYPE
                   ? currentSortingMode
                   : SortingMode.NONE
               }
               onClick={() => {
-                onColumnHeaderClick(InvoicesOrderedBy.REFERENCE)
+                onColumnHeaderClick(InvoicesOrderedBy.DOCUMENT_TYPE)
               }}
             >
-              {currentSortingColumn === InvoicesOrderedBy.REFERENCE && (
+              {currentSortingColumn === InvoicesOrderedBy.DOCUMENT_TYPE && (
                 <span className="visually-hidden">
-                  Tri par n° de justificatif{' '}
+                  Tri par type de document{' '}
+                  {giveSortingModeForAlly(currentSortingMode)} activé.
+                </span>
+              )}
+            </SortArrow>
+          </th>
+          <th
+            role="columnheader"
+            scope="col"
+            className={cn(styles['header'], styles['bank-account-column'])}
+          >
+            {isNewBankDetailsJourneyEnabled
+              ? 'Compte bancaire'
+              : 'Point de remboursement'}
+            <SortArrow
+              sortingMode={
+                currentSortingColumn ===
+                InvoicesOrderedBy.REIMBURSEMENT_POINT_NAME
+                  ? currentSortingMode
+                  : SortingMode.NONE
+              }
+              onClick={() => {
+                onColumnHeaderClick(InvoicesOrderedBy.REIMBURSEMENT_POINT_NAME)
+              }}
+            >
+              {currentSortingColumn ===
+                InvoicesOrderedBy.REIMBURSEMENT_POINT_NAME && (
+                <span className="visually-hidden">
+                  Tri par{' '}
+                  {isNewBankDetailsJourneyEnabled
+                    ? 'compte bancaire '
+                    : 'point de remboursement '}
                   {giveSortingModeForAlly(currentSortingMode)} activé.
                 </span>
               )}
@@ -282,49 +251,39 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
                 {/* This line is causing a bug, waiting for Sentry details to decomment it */}
                 {/* {format(new Date(invoice.date.replace('-', '/')), 'dd/MM/yyyy')} */}
               </td>
-              {isFinanceIncidentEnabled ? (
-                <td
-                  role="cell"
-                  className={cn(styles['data'], styles['document-type-column'])}
-                  data-label="Type de document"
-                >
-                  {invoice.amount >= 0 ? (
-                    <span className={styles['document-type-content']}>
-                      <SvgIcon
-                        src={strokeMoreIcon}
-                        alt=""
-                        className={styles['more-icon']}
-                        width="16"
-                      />
-                      Justificatif de remboursement
-                    </span>
-                  ) : (
-                    <span className={styles['document-type-content']}>
-                      <SvgIcon
-                        src={strokeLessIcon}
-                        alt=""
-                        className={styles['less-icon']}
-                        width="16"
-                      />
-                      Justificatif de&nbsp;trop&nbsp;perçu
-                    </span>
-                  )}
-                </td>
-              ) : (
-                <td
-                  role="cell"
-                  className={cn(styles['data'], styles['document-type-column'])}
-                  data-label="Point de remboursement"
-                >
-                  {invoice.bankAccountLabel}
-                </td>
-              )}
               <td
                 role="cell"
-                className={cn(styles['data'], styles['reference-column'])}
-                data-label="N° du justificatif"
+                className={cn(styles['data'], styles['document-type-column'])}
+                data-label="Type de document"
               >
-                {invoice.reference}
+                {invoice.amount >= 0 ? (
+                  <span className={styles['document-type-content']}>
+                    <SvgIcon
+                      src={strokeMoreIcon}
+                      alt=""
+                      className={styles['more-icon']}
+                      width="16"
+                    />
+                    Remboursement
+                  </span>
+                ) : (
+                  <span className={styles['document-type-content']}>
+                    <SvgIcon
+                      src={strokeLessIcon}
+                      alt=""
+                      className={styles['less-icon']}
+                      width="16"
+                    />
+                    Trop&nbsp;perçu
+                  </span>
+                )}
+              </td>
+              <td
+                role="cell"
+                className={cn(styles['data'], styles['bank-account-column'])}
+                data-label="Point de remboursement"
+              >
+                {invoice.bankAccountLabel}
               </td>
               {/* For now only one label is possible by invoice. */}
               <td
