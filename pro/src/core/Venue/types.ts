@@ -91,6 +91,7 @@ export interface Venue {
   hasAdageId: boolean
   collectiveDmsApplication: DMSApplicationForEAC | null
   bankAccount: BankAccountResponseModel | null
+  isVisibleInApp?: boolean
 }
 
 export type Providers = {
