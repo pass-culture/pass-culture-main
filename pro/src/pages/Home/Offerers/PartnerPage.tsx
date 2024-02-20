@@ -16,14 +16,9 @@ import {
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import fullDuplicateIcon from 'icons/full-duplicate.svg'
-import fullLinkIcon from 'icons/full-link.svg'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
-import { Button, ButtonLink } from 'ui-kit'
+import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { copyTextToClipboard } from 'ui-kit/CopyLink/CopyLink'
-import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
-import { WEBAPP_URL } from 'utils/config'
 
 import { Card } from '../Card'
 import { HomepageLoaderData } from '../Homepage'
@@ -31,6 +26,7 @@ import { VenueOfferSteps } from '../VenueOfferSteps/VenueOfferSteps'
 
 import styles from './PartnerPage.module.scss'
 import { PartnerPageCollectiveSection } from './PartnerPageCollectiveSection'
+import { PartnerPageIndividualSection } from './PartnerPageIndividualSection'
 
 export interface PartnerPageProps {
   offerer: GetOffererResponseModel
@@ -117,22 +113,6 @@ export const PartnerPage = ({
     })
   }
 
-  const logVenueLinkClick = () => {
-    logEvent?.(Events.CLICKED_PARTNER_BLOCK_PREVIEW_VENUE_LINK, {
-      venueId: venue.id,
-    })
-  }
-
-  const copyVenueLink = async () => {
-    await copyTextToClipboard(venuePreviewLink)
-    notify.success('Lien copié !')
-    logEvent?.(Events.CLICKED_PARTNER_BLOCK_COPY_VENUE_LINK, {
-      venueId: venue.id,
-    })
-  }
-
-  const venuePreviewLink = `${WEBAPP_URL}/lieu/${venue.id}`
-
   return (
     <Card>
       <div className={styles['header']}>
@@ -176,42 +156,10 @@ export const PartnerPage = ({
         isInsidePartnerBlock
       />
 
-      {/* TODO handle not visible case (https://passculture.atlassian.net/browse/PC-26280) */}
-      <section className={styles['details']}>
-        <div>
-          <h4 className={styles['details-title']}>Grand public</h4>
-          <Tag variant={TagVariant.LIGHT_GREEN}>Visible</Tag>
-        </div>
-
-        <p className={styles['details-description']}>
-          Votre page partenaire est visible sur l’application pass Culture.
-        </p>
-
-        <ButtonLink
-          variant={ButtonVariant.TERNARY}
-          icon={fullLinkIcon}
-          link={{
-            to: venuePreviewLink,
-            isExternal: true,
-            target: '_blank',
-          }}
-          svgAlt="Nouvelle fenêtre"
-          className={styles['details-link']}
-          onClick={logVenueLinkClick}
-        >
-          Voir ma page dans l’application
-        </ButtonLink>
-
-        <Button
-          variant={ButtonVariant.TERNARY}
-          icon={fullDuplicateIcon}
-          className={styles['details-link']}
-          onClick={copyVenueLink}
-        >
-          Copier le lien de la page
-        </Button>
-      </section>
-
+      <PartnerPageIndividualSection
+        venueId={venue.id}
+        isVisibleInApp={Boolean(venue.isVisibleInApp)}
+      />
       <PartnerPageCollectiveSection
         collectiveDmsApplications={venue.collectiveDmsApplications}
         venueId={venue.id}
