@@ -1,10 +1,9 @@
 import { useFormikContext } from 'formik'
 import { useLocation } from 'react-router-dom'
 
-import { VenueProviderResponse } from 'apiClient/v1'
+import { GetOffererResponseModel, VenueProviderResponse } from 'apiClient/v1'
 import { AddressSelect } from 'components/Address'
 import FormLayout from 'components/FormLayout'
-import { Offerer } from 'core/Offerers/types'
 import { Providers, Venue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
@@ -24,7 +23,7 @@ import { WithdrawalDetails } from './WithdrawalDetails'
 import { VenueFormValues } from '.'
 
 interface VenueFormProps {
-  offerer: Offerer
+  offerer: GetOffererResponseModel
   updateIsSiretValued: (isSiretValued: boolean) => void
   venueTypes: SelectOption[]
   venueLabels: SelectOption[]
