@@ -162,6 +162,7 @@ class Returns200Test:
                 "obfuscatedIban": f"""XXXX XXXX XXXX {bank_account_link.bankAccount.iban[-4:]}""",
                 "status": bank_account_link.bankAccount.status.value,
             },
+            "isVisibleInApp": True,
         }
         db.session.expire_all()
 
