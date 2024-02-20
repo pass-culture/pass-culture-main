@@ -193,3 +193,16 @@ class PatchBookingByTokenReturns410Test:
 
         assert response.status_code == 410
         assert response.json == {"booking": "This booking has already been canceled"}
+
+    def test_when_booking_is_used(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        product_offer = offers_factories.ThingOfferFactory(venue=venue)
+        product_stock = offers_factories.StockFactory(offer=product_offer)
+        booking = bookings_factories.UsedBookingFactory(stock=product_stock)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/bookings/v1/cancel/token/{booking.token.lower()}",
+        )
+
+        assert response.status_code == 410
+        assert response.json == {"booking": "This booking has been validated"}

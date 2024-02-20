@@ -1182,7 +1182,7 @@ class CancelByOffererTest:
 
     def test_raise_if_already_used(self):
         booking = bookings_factories.UsedBookingFactory()
-        with pytest.raises(exceptions.BookingIsAlreadyRefunded):
+        with pytest.raises(exceptions.BookingIsAlreadyUsed):
             api.cancel_booking_by_offerer(booking)
         assert booking.status is BookingStatus.USED
         assert not booking.cancellationReason

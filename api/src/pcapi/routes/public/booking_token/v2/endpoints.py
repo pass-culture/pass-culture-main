@@ -159,7 +159,7 @@ def patch_cancel_booking_by_token(token: str) -> None:
         bookings_api.cancel_booking_by_offerer(booking)
     except exceptions.BookingIsAlreadyCancelled:
         raise api_errors.ResourceGoneError({"global": ["Cette contremarque a déjà été annulée"]})
-    except exceptions.BookingIsAlreadyRefunded:
+    except (exceptions.BookingIsAlreadyRefunded, exceptions.BookingIsAlreadyUsed):
         raise api_errors.ForbiddenError({"global": ["Impossible d'annuler une réservation consommée"]})
     except external_bookings_exceptions.ExternalBookingException:
         raise api_errors.ApiErrors({"global": ["L'annulation de réservation a échoué."]})
