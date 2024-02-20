@@ -20,7 +20,7 @@ export function useLoadFeatureFlags() {
         const response = await api.listFeatures()
         dispatch(updateFeatures(response))
       } catch (e) {
-        sendSentryCustomError(`error when fetching features ${e}`)
+        sendSentryCustomError(e)
       }
     }
     if (!lastLoaded || lastLoaded < Date.now() - THIRTY_MINUTES) {

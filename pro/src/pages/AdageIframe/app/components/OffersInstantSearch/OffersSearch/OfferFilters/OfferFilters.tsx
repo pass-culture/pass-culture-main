@@ -116,7 +116,7 @@ export const OfferFilters = ({
           }))
         )
       } catch (e) {
-        sendSentryCustomError(`error when retrieving academies options ${e}`)
+        sendSentryCustomError(e)
       }
     }
 

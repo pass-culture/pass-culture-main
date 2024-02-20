@@ -45,9 +45,7 @@ export const AdageHeader = () => {
       } catch (e) {
         notify.error(GET_DATA_ERROR_MESSAGE)
 
-        sendSentryCustomError(
-          `error when retrieving educational institution budget ${adageUser.uai} ${e}`
-        )
+        sendSentryCustomError(e, { uai: adageUser.uai })
       } finally {
         setIsLoading(false)
       }
