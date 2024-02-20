@@ -68,7 +68,7 @@ const getWizardData: GetIndividualOfferAdapter = async ({
       subCategories: categoriesResponse.subcategories,
     }
   } catch (e) {
-    sendSentryCustomError(`error when fetching categories ${e}`)
+    sendSentryCustomError(e)
     return Promise.resolve(FAILING_RESPONSE)
   }
 

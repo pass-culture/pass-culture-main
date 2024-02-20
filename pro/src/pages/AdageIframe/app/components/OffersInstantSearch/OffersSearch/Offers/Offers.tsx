@@ -126,9 +126,7 @@ export const Offers = ({
               }
             }
           } catch (e) {
-            sendSentryCustomError(
-              `error when retrieving adage offer ${hit.objectID} ${e}`
-            )
+            sendSentryCustomError(e, { adageOfferId: hit.objectID })
 
             return {}
           }
@@ -156,10 +154,7 @@ export const Offers = ({
         setFetchedOffers(offersFromHitsMap)
       })
       .catch((e) => {
-        sendSentryCustomError(
-          `error when filtering offer results ${e}`,
-          'data-processing'
-        )
+        sendSentryCustomError(e, undefined, 'data-processing')
       })
       .finally(() => {
         setQueriesAreLoading(false)
