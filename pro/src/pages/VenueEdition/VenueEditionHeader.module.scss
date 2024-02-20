@@ -1,0 +1,59 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_size.scss" as size;
+@use "styles/variables/_colors.scss" as colors;
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: rem.torem(24px);
+  margin-bottom: rem.torem(32px);
+
+  @media (min-width: size.$tablet) {
+    flex-direction: row;
+    gap: rem.torem(32px);
+  }
+}
+
+.image-uploader {
+  align-self: center;
+
+  > button,
+  > img {
+    width: rem.torem(376px) !important;
+    height: rem.torem(232px) !important;
+  }
+}
+
+.venue-type {
+  @include fonts.body-important;
+
+  color: colors.$grey-dark;
+  text-transform: uppercase;
+}
+
+.venue-name {
+  @include fonts.title3;
+
+  margin-top: rem.torem(16px);
+  margin-bottom: rem.torem(16px);
+}
+
+.venue-address {
+  margin-bottom: rem.torem(16px);
+}
+
+.separator {
+  border-top: 2px solid colors.$grey-medium;
+  margin-top: rem.torem(16px);
+  margin-bottom: rem.torem(16px);
+  background: none; // override default style
+}
+
+.venue-button {
+  width: 100%;
+
+  @media (min-width: size.$tablet) {
+    width: auto;
+  }
+}
