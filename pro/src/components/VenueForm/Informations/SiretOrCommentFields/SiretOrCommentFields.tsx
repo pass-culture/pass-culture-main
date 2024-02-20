@@ -21,7 +21,7 @@ export interface SiretOrCommentInterface {
   // TODO Albéric: not sure why there are two states, could be refactored
   updateIsSiretValued: (isSiretValued: boolean) => void
   setIsSiretValued?: (isSiretValued: boolean) => void
-  siren: string
+  siren?: string | null
 }
 
 const SiretOrCommentFields = ({

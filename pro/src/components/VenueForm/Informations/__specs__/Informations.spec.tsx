@@ -45,8 +45,8 @@ const renderInformations = ({
   props: InformationsProps
 }) => {
   const generateSiretOrCommentValidationSchema = generateSiretValidationSchema(
-    '123456789',
-    true
+    true,
+    '123456789'
   )
 
   const validationSchema = generateSiretOrCommentValidationSchema.concat(
