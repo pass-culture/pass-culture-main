@@ -14,7 +14,7 @@ export interface InformationsProps {
   updateIsSiretValued: (value: boolean) => void
   setIsSiretValued?: (value: boolean) => void
   isVenueVirtual: boolean
-  siren: string
+  siren?: string | null
 }
 
 const Informations = ({

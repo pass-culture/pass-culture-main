@@ -6,12 +6,17 @@ import { unhumanizeSiret } from 'core/Venue/utils'
 export const valideSiretLength = (siret: string) =>
   unhumanizeSiret(siret).length === 14
 
-export const isSiretStartingWithSiren = (siret: string, siren: string) =>
+export const isSiretStartingWithSiren = (
+  siret: string,
+  siren?: string | null
+) =>
+  siren !== null &&
+  siren !== undefined &&
   unhumanizeSiret(siret).startsWith(siren)
 
 const generateSiretValidationSchema = (
-  siren: string,
-  isSiretValued: boolean
+  isSiretValued: boolean,
+  siren?: string | null
 ) => {
   const siretValidationSchema = {
     siret: yup.string().when('isVenueVirtual', {
@@ -22,7 +27,7 @@ const generateSiretValidationSchema = (
           .test(
             'len',
             'Le SIRET doit comporter 14 caractères',
-            (siret) => !!siret && valideSiretLength(siret)
+            (siret) => Boolean(siret) && valideSiretLength(siret)
           )
           .test(
             'correspondingToSiren',

@@ -10,6 +10,5 @@ export interface Offerer extends GetOffererResponseModel {
   fieldsUpdated: Array<string>
   idAtProviders?: string | null
   lastProviderId?: string | null
-  siren: string
   dsToken: string
 }
