@@ -1,12 +1,13 @@
 import {
   GetOffererNameResponseModel,
+  GetOffererResponseModel,
   GetOffererVenueResponseModel,
   OffererApiKey,
 } from 'apiClient/v1'
 
 export type OffererName = GetOffererNameResponseModel
 
-export interface Offerer {
+export interface Offerer extends GetOffererResponseModel {
   address?: string | null
   apiKey: OffererApiKey
   city: string
