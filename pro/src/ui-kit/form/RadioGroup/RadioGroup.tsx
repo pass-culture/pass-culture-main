@@ -52,6 +52,7 @@ const RadioGroup = ({
       hideFooter={hideFooter}
       legend={legend}
       name={`radio-group-${name}`}
+      isOptional // There should always be an element selected in a radio group, thus it doesn't need to be marked as required
     >
       {group.map((item) => (
         <div className={styles['radio-group-item']} key={item.label}>
