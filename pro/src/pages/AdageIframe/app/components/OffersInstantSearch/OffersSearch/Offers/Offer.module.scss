@@ -76,7 +76,7 @@ $offer-image-width: rem.torem(176px);
   }
 
   &-details-container {
-    padding: rem.torem(16px) rem.torem(16px) rem.torem(16px) rem.torem(0);
+    padding: rem.torem(16px) rem.torem(16px) 0 0;
     position: relative;
     width: 100%;
 
@@ -151,7 +151,7 @@ $offer-image-width: rem.torem(176px);
   }
 
   &-description {
-    margin: 0 0 rem.torem(24px);
+    margin: 0 0 rem.torem(20px);
     white-space: pre-line;
   }
 

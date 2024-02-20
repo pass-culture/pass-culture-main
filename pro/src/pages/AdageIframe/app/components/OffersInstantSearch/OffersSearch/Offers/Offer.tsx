@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 
 import { AdageFrontRoles, OfferAddressType } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import useActiveFeature from 'hooks/useActiveFeature'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullUpIcon from 'icons/full-up.svg'
 import strokeFranceIcon from 'icons/stroke-france.svg'
@@ -50,6 +51,10 @@ const Offer = ({
 }: OfferProps): JSX.Element => {
   const [displayDetails, setDisplayDetails] = useState(openDetails)
   const { adageUser } = useAdageUser()
+
+  const isNewOfferInfoEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN'
+  )
 
   const canAddOfferToFavorites =
     offer.isTemplate && adageUser.role !== AdageFrontRoles.READONLY
@@ -236,24 +241,45 @@ const Offer = ({
           <p className={style['offer-description']}>
             {formatDescription(offer.description)}
           </p>
-          <div className={style['offer-footer']}>
-            <button
-              className={style['offer-see-more']}
-              onClick={() => openOfferDetails(offer)}
-              type="button"
+          {isNewOfferInfoEnabled ? (
+            <ButtonLink
+              variant={
+                offer.isTemplate
+                  ? ButtonVariant.PRIMARY
+                  : ButtonVariant.SECONDARY
+              }
+              link={{
+                isExternal: true,
+                to: `${document.referrer}adage/passculture/offres/offerid/${offer.isTemplate ? '' : 'B-'}${offer.id}`,
+                target: '_blank',
+              }}
+              icon={fullLinkIcon}
+              svgAlt="Nouvelle fenêtre"
             >
-              <SvgIcon
-                alt=""
-                src={fullUpIcon}
-                className={cn(style['offer-see-more-icon'], {
-                  [style['offer-see-more-icon-closed']]: !displayDetails,
-                })}
-                width="16"
-              />
-              en savoir plus
-            </button>
-          </div>
-          {displayDetails && <OfferDetails offer={offer} />}
+              Découvrir l’offre
+            </ButtonLink>
+          ) : (
+            <>
+              <div className={style['offer-footer']}>
+                <button
+                  className={style['offer-see-more']}
+                  onClick={() => openOfferDetails(offer)}
+                  type="button"
+                >
+                  <SvgIcon
+                    alt=""
+                    src={fullUpIcon}
+                    className={cn(style['offer-see-more-icon'], {
+                      [style['offer-see-more-icon-closed']]: !displayDetails,
+                    })}
+                    width="16"
+                  />
+                  en savoir plus
+                </button>
+              </div>
+              {displayDetails && <OfferDetails offer={offer} />}
+            </>
+          )}
         </div>
       </div>
     </div>
