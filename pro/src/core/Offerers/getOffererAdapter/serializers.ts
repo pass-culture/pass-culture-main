@@ -15,6 +15,5 @@ export const serializeOffererApi = (
       offerer.hasDigitalVenueAtLeastOneOffer || undefined,
     isValidated: offerer.isValidated || undefined,
     isActive: offerer.isActive || undefined,
-    siren: offerer.siren || '',
   }
 }

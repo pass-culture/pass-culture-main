@@ -67,7 +67,7 @@ describe('components | SiretOrCommentFields', () => {
     const setIsFieldNameFrozen = vi.fn()
     const updateIsSiretValued = vi.fn()
     const setIsSiretValued = vi.fn()
-    validationSchema = generateSiretValidationSchema('012345678', true)
+    validationSchema = generateSiretValidationSchema(true, '012345678')
     initialValues = { comment: '', siret: '', isVenueVirtual: false }
     props = {
       isCreatedEntity: true,
@@ -290,7 +290,7 @@ describe('components | SiretOrCommentFields', () => {
         initialValues,
         onSubmit,
         props,
-        validationSchema: generateSiretValidationSchema('', false),
+        validationSchema: generateSiretValidationSchema(false, null),
       })
 
       const toggle = screen.getByRole('button', {
