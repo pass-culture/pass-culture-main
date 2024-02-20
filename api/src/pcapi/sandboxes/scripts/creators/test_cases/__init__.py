@@ -171,7 +171,7 @@ def create_offer_with_ean(ean: str, venue: offerers_models.Venue, author: str) -
 
 def create_allocine_venues() -> None:
     for venue_data in venues_mock.cinemas_venues:
-        allocine_offerer = offerers_factories.OffererFactory(name="Structure du lieu synchro allociné")
+        allocine_offerer = offerers_factories.OffererFactory(name=f"Structure du lieu allocine {venue_data['name']}")
         offerers_factories.UserOffererFactory(offerer=allocine_offerer, user__email="api@example.com")
         allocine_synchonized_venue = offerers_factories.VenueFactory(
             name=venue_data["name"],
@@ -182,6 +182,7 @@ def create_allocine_venues() -> None:
             postalCode=venue_data["postalCode"],
             city=venue_data["city"],
             departementCode=venue_data["departementCode"],
+            managingOfferer=allocine_offerer,
         )
         allocine_provider = providers_factories.AllocineProviderFactory(isActive=True)
         theater = providers_factories.AllocineTheaterFactory(
@@ -193,7 +194,10 @@ def create_allocine_venues() -> None:
             venue=allocine_synchonized_venue, theaterId=theater.theaterId, internalId=theater.internalId
         )
         allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(
-            venue=allocine_synchonized_venue, provider=allocine_provider, venueIdAtOfferProvider=pivot.theaterId
+            internalId=theater.internalId,
+            provider=allocine_provider,
+            venue=allocine_synchonized_venue,
+            venueIdAtOfferProvider=pivot.theaterId,
         )
         providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
 
