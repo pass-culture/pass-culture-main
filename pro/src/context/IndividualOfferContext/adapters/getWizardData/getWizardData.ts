@@ -1,7 +1,10 @@
 import { api } from 'apiClient/api'
-import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
+import {
+  CategoryResponseModel,
+  GetOffererNameResponseModel,
+  SubcategoryResponseModel,
+} from 'apiClient/v1'
 import { getOffererNamesAdapter } from 'core/Offerers/adapters'
-import { OffererName } from 'core/Offerers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { getIndividualOfferVenuesAdapter } from 'core/Venue/adapters/getIndividualOfferVenuesAdapter'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
@@ -10,13 +13,13 @@ import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 interface GetWizardDataArgs {
   offerOffererId?: string
   offerOffererName?: string
-  offerer?: OffererName
+  offerer?: GetOffererNameResponseModel
   queryOffererId?: string
   isAdmin?: boolean
 }
 
 interface OfferWizardData {
-  offererNames: OffererName[]
+  offererNames: GetOffererNameResponseModel[]
   venueList: IndividualOfferVenueItem[]
   categoriesData: {
     categories: CategoryResponseModel[]

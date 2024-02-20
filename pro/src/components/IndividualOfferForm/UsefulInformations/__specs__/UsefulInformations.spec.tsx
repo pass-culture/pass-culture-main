@@ -4,13 +4,12 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { WithdrawalTypeEnum } from 'apiClient/v1'
+import { GetOffererNameResponseModel, WithdrawalTypeEnum } from 'apiClient/v1'
 import {
   IndividualOfferFormValues,
   setDefaultInitialFormValues,
 } from 'components/IndividualOfferForm'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
-import { OffererName } from 'core/Offerers/types'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { SubmitButton } from 'ui-kit'
@@ -57,7 +56,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
   let venueList: IndividualOfferVenueItem[]
 
   beforeEach(() => {
-    const offererNames: OffererName[] = [
+    const offererNames: GetOffererNameResponseModel[] = [
       {
         id: offererId,
         name: 'Offerer AE',

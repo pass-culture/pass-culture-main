@@ -1,8 +1,8 @@
+import { GetOffererNameResponseModel } from 'apiClient/v1'
 import {
   FORM_DEFAULT_VALUES,
   IndividualOfferFormValues,
 } from 'components/IndividualOfferForm'
-import { OffererName } from 'core/Offerers/types'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import {
   individualOfferSubCategoryFactory,
@@ -13,7 +13,7 @@ import setDefaultInitialFormValues from '../setDefaultInitialFormValues'
 
 describe('setDefaultInitialFormValues', () => {
   let expectedInitialValues: IndividualOfferFormValues
-  let offererNames: OffererName[]
+  let offererNames: GetOffererNameResponseModel[]
   let offererId: string | null
   let venueId: string | null
   let venueList: IndividualOfferVenueItem[]

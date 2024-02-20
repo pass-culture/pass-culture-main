@@ -1,11 +1,15 @@
 import { api } from 'apiClient/api'
-import { OffererName } from 'core/Offerers/types'
+import { GetOffererNameResponseModel } from 'apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 
 interface Params {
   offererId?: number
 }
-type GetOffererNamesAdapter = Adapter<Params, OffererName[], OffererName[]>
+type GetOffererNamesAdapter = Adapter<
+  Params,
+  GetOffererNameResponseModel[],
+  GetOffererNameResponseModel[]
+>
 const FAILING_RESPONSE = {
   isOk: false,
   message: GET_DATA_ERROR_MESSAGE,

@@ -1,15 +1,17 @@
-import { SubcategoryResponseModel } from 'apiClient/v1'
+import {
+  GetOffererNameResponseModel,
+  SubcategoryResponseModel,
+} from 'apiClient/v1'
 import {
   FORM_DEFAULT_VALUES,
   IndividualOfferFormValues,
 } from 'components/IndividualOfferForm'
-import { OffererName } from 'core/Offerers/types'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 
 import buildSubcategoryFields from './buildSubCategoryFields'
 
 const setDefaultInitialFormValues = (
-  offererNames: OffererName[],
+  offererNames: GetOffererNameResponseModel[],
   offererId: string | null,
   venueId: string | null,
   venueList: IndividualOfferVenueItem[],

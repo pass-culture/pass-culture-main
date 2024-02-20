@@ -3,8 +3,11 @@ import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
 
-import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
-import { OffererName } from 'core/Offerers/types'
+import {
+  CategoryResponseModel,
+  GetOffererNameResponseModel,
+  SubcategoryResponseModel,
+} from 'apiClient/v1'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import {
@@ -53,7 +56,7 @@ describe('IndividualOfferForm', () => {
   let props: IndividualOfferFormProps
   let categories: CategoryResponseModel[] = []
   let subCategories: SubcategoryResponseModel[] = []
-  let offererNames: OffererName[]
+  let offererNames: GetOffererNameResponseModel[]
   let venueList: IndividualOfferVenueItem[]
 
   beforeEach(() => {

@@ -1,11 +1,13 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
-import { SubcategoryResponseModel } from 'apiClient/v1'
+import {
+  GetOffererNameResponseModel,
+  SubcategoryResponseModel,
+} from 'apiClient/v1'
 import { OfferRefundWarning, WithdrawalReminder } from 'components/Banner'
 import FormLayout from 'components/FormLayout'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
-import { OffererName } from 'core/Offerers/types'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { Checkbox, InfoBox, TextArea, TextInput } from 'ui-kit'
@@ -17,7 +19,7 @@ import { TicketWithdrawal } from './TicketWithdrawal'
 import { Venue } from './Venue'
 
 export interface UsefulInformationsProps {
-  offererNames: OffererName[]
+  offererNames: GetOffererNameResponseModel[]
   venueList: IndividualOfferVenueItem[]
   isUserAdmin: boolean
   offerSubCategory?: SubcategoryResponseModel

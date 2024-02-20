@@ -1,11 +1,14 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
-import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
+import {
+  CategoryResponseModel,
+  GetOffererNameResponseModel,
+  SubcategoryResponseModel,
+} from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
-import { OffererName } from 'core/Offerers/types'
 import {
   CATEGORY_STATUS,
   INDIVIDUAL_OFFER_SUBTYPE,
@@ -25,7 +28,7 @@ import { UsefulInformations } from './UsefulInformations'
 import { getFilteredVenueListBySubcategory } from './utils/getFilteredVenueList'
 
 export interface IndividualOfferFormProps {
-  offererNames: OffererName[]
+  offererNames: GetOffererNameResponseModel[]
   venueList: IndividualOfferVenueItem[]
   categories: CategoryResponseModel[]
   subCategories: SubcategoryResponseModel[]
