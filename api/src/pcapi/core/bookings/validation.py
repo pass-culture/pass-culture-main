@@ -101,8 +101,10 @@ def check_beneficiary_can_cancel_booking(user: User, booking: Booking) -> None:
 def check_booking_can_be_cancelled(booking: Booking) -> None:
     if booking.status == BookingStatus.CANCELLED:
         raise exceptions.BookingIsAlreadyCancelled()
-    if booking.is_used_or_reimbursed:
+    if booking.status == BookingStatus.REIMBURSED:
         raise exceptions.BookingIsAlreadyRefunded()
+    if booking.status == BookingStatus.USED:
+        raise exceptions.BookingIsAlreadyUsed()
 
 
 def check_booking_cancellation_limit_date(booking: Booking) -> None:

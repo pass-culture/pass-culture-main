@@ -464,7 +464,7 @@ class CheckOffererCanCancelBookingTest:
 
     def test_raise_if_already_used(self):
         booking = factories.UsedBookingFactory()
-        with pytest.raises(exceptions.BookingIsAlreadyRefunded):
+        with pytest.raises(exceptions.BookingIsAlreadyUsed):
             validation.check_booking_can_be_cancelled(booking)
 
 
