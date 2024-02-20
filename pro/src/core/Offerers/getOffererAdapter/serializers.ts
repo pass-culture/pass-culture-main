@@ -6,6 +6,7 @@ export const serializeOffererApi = (
   offerer: GetOffererResponseModel
 ): Offerer => {
   return <Offerer>{
+    ...offerer,
     address: offerer.address || '',
     apiKey: offerer.apiKey || null,
     city: offerer.city || '',
