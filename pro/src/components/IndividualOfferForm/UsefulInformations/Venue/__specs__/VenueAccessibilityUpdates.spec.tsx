@@ -4,8 +4,8 @@ import { Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
+import { GetOffererNameResponseModel } from 'apiClient/v1'
 import { Accessibility } from 'components/IndividualOfferForm/Accessibility'
-import { OffererName } from 'core/Offerers/types'
 import { AccessiblityEnum, AccessibiltyFormValues } from 'core/shared'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
@@ -71,7 +71,7 @@ describe('IndividualOffer section: venue', () => {
   const onSubmit = vi.fn()
 
   beforeEach(() => {
-    const offererNames: OffererName[] = [
+    const offererNames: GetOffererNameResponseModel[] = [
       {
         id: 1,
         name: 'Offerer AE',

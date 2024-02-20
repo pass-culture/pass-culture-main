@@ -1,17 +1,17 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
+import { GetOffererNameResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
 import { IndividualOfferForm } from 'components/IndividualOfferForm/types'
-import { OffererName } from 'core/Offerers/types'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { Select } from 'ui-kit'
 
 import { buildOffererOptions, buildVenueOptions } from './utils'
 
 export interface VenueProps {
-  offererNames: OffererName[]
+  offererNames: GetOffererNameResponseModel[]
   venueList: IndividualOfferVenueItem[]
   readOnlyFields?: string[]
 }

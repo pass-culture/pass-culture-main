@@ -1,9 +1,13 @@
 import { api } from 'apiClient/api'
-import { OffererName } from 'core/Offerers/types'
+import { GetOffererNameResponseModel } from 'apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { useAdapter } from 'hooks'
 
-type GetOffererNamesAdapter = Adapter<void, OffererName[], OffererName[]>
+type GetOffererNamesAdapter = Adapter<
+  void,
+  GetOffererNameResponseModel[],
+  GetOffererNameResponseModel[]
+>
 
 const FAILING_RESPONSE = {
   isOk: false,
@@ -56,7 +60,10 @@ const useGetOffererNames = ({
   offererId = null,
 }: UseAdapterArgs) => {
   const adapter = getOffererNamesAdapter(isAdmin, offererId)
-  return useAdapter<OffererName[], OffererName[]>(adapter)
+  return useAdapter<
+    GetOffererNameResponseModel[],
+    GetOffererNameResponseModel[]
+  >(adapter)
 }
 
 export default useGetOffererNames

@@ -1,9 +1,9 @@
-import { OffererName } from 'core/Offerers/types'
+import { GetOffererNameResponseModel } from 'apiClient/v1'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 
 export const buildOffererOptions = (
-  offererNames: OffererName[]
+  offererNames: GetOffererNameResponseModel[]
 ): {
   offererOptions: SelectOption[]
   isDisabled: boolean
