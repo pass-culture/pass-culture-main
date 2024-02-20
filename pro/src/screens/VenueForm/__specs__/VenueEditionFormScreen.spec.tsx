@@ -363,6 +363,20 @@ describe('VenueFormScreen', () => {
     }
   })
 
+  it('should display the partner info', async () => {
+    renderForm(formValues, venue, false)
+
+    expect(
+      await screen.findByText(
+        'Les informations que vous renseignez ci-dessous sont affichées dans votre page partenaire, visible sur l’application pass Culture'
+      )
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('État de votre page partenaire sur l’application :')
+    ).toBeInTheDocument()
+    expect(screen.getByText('Non visible')).toBeInTheDocument()
+  })
+
   it('should display an error when the venue could not be updated', async () => {
     renderForm(formValues, venue, true)
 

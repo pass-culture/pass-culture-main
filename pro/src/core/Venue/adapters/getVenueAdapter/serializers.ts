@@ -77,6 +77,7 @@ export const serializeVenueApi = (venue: GetVenueResponseModel): Venue => {
       venue.collectiveDmsApplications
     ),
     bankAccount: venue.bankAccount || null,
+    isVisibleInApp: venue?.isVisibleInApp,
   }
 }
 
