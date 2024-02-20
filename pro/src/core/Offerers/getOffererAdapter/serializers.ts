@@ -8,9 +8,6 @@ export const serializeOffererApi = (
   return <Offerer>{
     ...offerer,
     address: offerer.address || '',
-    apiKey: offerer.apiKey || null,
-    city: offerer.city || '',
-    dateCreated: offerer.dateCreated || '',
     demarchesSimplifieesApplicationId:
       offerer.demarchesSimplifieesApplicationId || '',
     hasAvailablePricingPoints: offerer.hasAvailablePricingPoints || undefined,
@@ -18,9 +15,6 @@ export const serializeOffererApi = (
       offerer.hasDigitalVenueAtLeastOneOffer || undefined,
     isValidated: offerer.isValidated || undefined,
     isActive: offerer.isActive || undefined,
-    name: offerer.name || '',
-    id: offerer.id || 0,
-    postalCode: offerer.postalCode || '',
     siren: offerer.siren || '',
     managedVenues: offerer.managedVenues || [],
   }
