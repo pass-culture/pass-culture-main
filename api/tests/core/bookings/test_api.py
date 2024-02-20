@@ -48,7 +48,6 @@ from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
-from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models import feature
 import pcapi.notifications.push.testing as push_testing
@@ -1295,14 +1294,14 @@ class MarkAsUnusedTest:
 
     def test_raise_if_not_yet_used(self):
         booking = bookings_factories.BookingFactory()
-        with pytest.raises(api_errors.ResourceGoneError):
+        with pytest.raises(exceptions.BookingIsNotUsed):
             api.mark_as_unused(booking)
         assert booking.status is not BookingStatus.USED
 
     def test_raise_if_has_reimbursement(self):
         booking = bookings_factories.UsedBookingFactory()
         finance_factories.PricingFactory(booking=booking, status=finance_models.PricingStatus.PROCESSED)
-        with pytest.raises(api_errors.ResourceGoneError):
+        with pytest.raises(exceptions.BookingIsAlreadyRefunded):
             api.mark_as_unused(booking)
         assert booking.status is BookingStatus.USED
 
@@ -1311,7 +1310,7 @@ class MarkAsUnusedTest:
         digital_stock = offers_factories.StockWithActivationCodesFactory()
         first_activation_code = digital_stock.activationCodes[0]
         booking = bookings_factories.UsedBookingFactory(stock__offer=offer, activationCode=first_activation_code)
-        with pytest.raises(api_errors.ForbiddenError):
+        with pytest.raises(exceptions.BookingHasActivationCode):
             api.mark_as_unused(booking)
         assert booking.status is BookingStatus.USED
 
