@@ -16,6 +16,5 @@ export const serializeOffererApi = (
     isValidated: offerer.isValidated || undefined,
     isActive: offerer.isActive || undefined,
     siren: offerer.siren || '',
-    managedVenues: offerer.managedVenues || [],
   }
 }
