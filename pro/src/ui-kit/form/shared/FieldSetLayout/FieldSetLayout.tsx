@@ -13,6 +13,7 @@ interface FieldSetLayoutProps {
   name: string
   hideFooter?: boolean
   dataTestId?: string
+  isOptional?: boolean
 }
 
 const FieldSetLayout = ({
@@ -23,6 +24,7 @@ const FieldSetLayout = ({
   name,
   hideFooter = false,
   dataTestId,
+  isOptional = false,
 }: FieldSetLayoutProps): JSX.Element => {
   return (
     <fieldset
@@ -30,7 +32,10 @@ const FieldSetLayout = ({
       data-testid={dataTestId}
     >
       {legend && (
-        <legend className={styles['fieldset-layout-legend']}>{legend}</legend>
+        <legend className={styles['fieldset-layout-legend']}>
+          {legend}
+          {!isOptional && ' *'}
+        </legend>
       )}
 
       <div> {children} </div>

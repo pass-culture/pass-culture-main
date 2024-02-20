@@ -19,6 +19,7 @@ interface CheckboxGroupProps {
   }[]
   className?: string
   disabled?: boolean
+  isOptional?: boolean
 }
 
 const CheckboxGroup = ({
@@ -27,6 +28,7 @@ const CheckboxGroup = ({
   legend,
   className,
   disabled,
+  isOptional,
 }: CheckboxGroupProps): JSX.Element => {
   const [, meta, helpers] = useField({ name: groupName })
 
@@ -36,6 +38,7 @@ const CheckboxGroup = ({
       error={meta.touched && !!meta.error ? meta.error : undefined}
       legend={legend}
       name={groupName}
+      isOptional={isOptional}
     >
       {group.map((item) => (
         <div className={styles['checkbox-group-item']} key={item.name}>
