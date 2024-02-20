@@ -4,12 +4,11 @@ import { useLocation, useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
-import { VenueProviderResponse } from 'apiClient/v1'
+import { GetOffererResponseModel, VenueProviderResponse } from 'apiClient/v1'
 import { validationSchema, VenueFormValues } from 'components/VenueForm'
 import { generateSiretValidationSchema } from 'components/VenueForm/Informations/SiretOrCommentFields'
 import { VenueCreationForm } from 'components/VenueForm/VenueCreationForm'
 import { Events } from 'core/FirebaseEvents/constants'
-import { Offerer } from 'core/Offerers/types'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import { Providers } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
@@ -24,7 +23,7 @@ import style from './VenueCreationFormScreen.module.scss'
 
 interface VenueEditionProps {
   initialValues: VenueFormValues
-  offerer: Offerer
+  offerer: GetOffererResponseModel
   venueTypes: SelectOption[]
   venueLabels: SelectOption[]
   providers?: Providers[]

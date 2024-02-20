@@ -1,10 +1,11 @@
+import { GetOffererResponseModel } from 'apiClient/v1'
 import { useAdapter } from 'hooks'
-
-import { Offerer } from '../types'
 
 import getOffererAdapter from './getOffererAdapter'
 
 const useGetOfferer = (offererId?: string) =>
-  useAdapter<Offerer, null>(() => getOffererAdapter(Number(offererId)))
+  useAdapter<GetOffererResponseModel, null>(() =>
+    getOffererAdapter(Number(offererId))
+  )
 
 export default useGetOfferer

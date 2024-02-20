@@ -1,10 +1,11 @@
 import { api } from 'apiClient/api'
+import { GetOffererResponseModel } from 'apiClient/v1'
 
-import { Offerer } from '../types'
-
-import { serializeOffererApi } from './serializers'
-
-type GetOffererAdapter = Adapter<number | undefined, Offerer, null>
+type GetOffererAdapter = Adapter<
+  number | undefined,
+  GetOffererResponseModel,
+  null
+>
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
@@ -23,7 +24,7 @@ const getOffererAdapter: GetOffererAdapter = async (offererId) => {
     return {
       isOk: true,
       message: '',
-      payload: serializeOffererApi(venueApi),
+      payload: venueApi,
     }
   } catch (error) {
     return FAILING_RESPONSE

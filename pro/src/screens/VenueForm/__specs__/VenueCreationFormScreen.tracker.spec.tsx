@@ -7,9 +7,9 @@ import createFetchMock from 'vitest-fetch-mock'
 import { api } from 'apiClient/api'
 import { VenueFormValues } from 'components/VenueForm'
 import { Events } from 'core/FirebaseEvents/constants'
-import { Offerer } from 'core/Offerers/types'
 import { SelectOption } from 'custom_types/form'
 import * as useAnalytics from 'hooks/useAnalytics'
+import { defaultGetOffererResponseModel } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { VenueCreationFormScreen } from '../VenueCreationFormScreen'
@@ -87,7 +87,11 @@ const renderForm = () => {
         element={
           <VenueCreationFormScreen
             initialValues={formValues}
-            offerer={{ id: 12, siren: '881457238' } as Offerer}
+            offerer={{
+              ...defaultGetOffererResponseModel,
+              id: 12,
+              siren: '881457238',
+            }}
             venueTypes={venueTypes}
             venueLabels={venueLabels}
             providers={[]}

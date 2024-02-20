@@ -1,9 +1,9 @@
 import { SharedCurrentUserResponseModel } from 'apiClient/v1'
+import { defaultGetOffererResponseModel } from 'utils/apiFactories'
 
-import { Offerer } from '../../../core/Offerers/types'
 import { venueSubmitRedirectUrl } from '../utils/venueSubmitRedirectUrl'
 
-const offerer = { id: 1 } as Offerer
+const offerer = { ...defaultGetOffererResponseModel }
 
 describe('redirect url after submit', () => {
   it.each([true, false])(
