@@ -102,6 +102,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
       }
     },
     [
+      isNewBankDetailsJourneyEnabled,
       INITIAL_FILTERS,
       filters.periodEnd,
       filters.periodStart,

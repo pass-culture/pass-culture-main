@@ -22,6 +22,7 @@
   @include fonts.caption;
 
   content: attr(data-label);
+  text-align: left;
 }
 
 .body .row:nth-child(n + 1):nth-child(odd) {
@@ -35,10 +36,9 @@
 .document-type-content {
   display: flex;
   gap: rem.torem(8px);
+}
 
-  // FIXME: made in order to make icon + text be to the right
-  // otherwise the text go to the right but not the icon
-  width: min-content;
+.bank-account-column {
   text-align: right;
 }
 
@@ -76,12 +76,11 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
+    padding: rem.torem(20px) rem.torem(8px) rem.torem(20px) 0;
   }
 
-  .data,
-  .header {
-    padding: rem.torem(20px) rem.torem(8px);
-
+  .data {
+    padding: rem.torem(20px) 0;
   }
 
   .data::before {
@@ -94,27 +93,29 @@
   }
 
   .document-type-column {
-    width: rem.torem(230px);
+    width: rem.torem(200px);
   }
 
   .document-type-content {
-    width: rem.torem(230px);
     text-align: left;
   }
 
-  .reference-column {
-    width: rem.torem(130px);
+  .bank-account-column {
+    width: rem.torem(180px);
+    text-align: left;
   }
 
   .label-column {
     width: rem.torem(120px);
+    justify-content: center;
+    text-align: right;
   }
 
   .amount-column {
     cursor: default;
     text-align: right;
     width: rem.torem(140px);
-    justify-content: flex-end;
+    justify-content: flex-start;
   }
 
   .invoice-data {

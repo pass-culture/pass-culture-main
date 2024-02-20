@@ -135,22 +135,22 @@ describe('reimbursementsWithFilters', () => {
 
     const firstLine = [
       '2022-11-02',
+      '<span class="document-type-content"><svg class="more-icon" viewBox="0 0 48 48" aria-hidden="true" width="16"><use xlink:href="/icons/stroke-more.svg#icon"></use></svg>Remboursement</span>',
       'First reimbursement point',
-      'J123456789',
       'VIR7',
       '+100,00&nbsp;€',
     ]
     const secondLine = [
       '2022-11-03',
+      '<span class="document-type-content"><svg class="less-icon" viewBox="0 0 48 48" aria-hidden="true" width="16"><use xlink:href="/icons/stroke-less.svg#icon"></use></svg>Trop&nbsp;perçu</span>',
       'Second reimbursement point',
-      'J666666666',
       'N/A',
       '-50,00&nbsp;€',
     ]
     const thirdLine = [
       '2023-10-02',
+      '<span class="document-type-content"><svg class="more-icon" viewBox="0 0 48 48" aria-hidden="true" width="16"><use xlink:href="/icons/stroke-more.svg#icon"></use></svg>Remboursement</span>',
       'First reimbursement point',
-      'J987654321',
       'VIR9, VIR12',
       '+75,00&nbsp;€',
     ]
@@ -192,10 +192,8 @@ describe('reimbursementsWithFilters', () => {
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-    expect(
-      screen.getByText('Justificatif de remboursement')
-    ).toBeInTheDocument()
-    expect(screen.getByText('Justificatif de trop perçu')).toBeInTheDocument()
+    expect(screen.getByText('Remboursement')).toBeInTheDocument()
+    expect(screen.getByText('Trop perçu')).toBeInTheDocument()
   })
 
   it('shoud render no invoice yet information block', async () => {
@@ -333,18 +331,6 @@ describe('reimbursementsWithFilters', () => {
         name: 'Trier par ordre croissant',
       })[1]
     )
-    expect(
-      screen.getByText('Tri par n° de justificatif ascendant activé.')
-    ).toBeInTheDocument()
-
-    await userEvent.click(
-      screen.getAllByRole('img', {
-        name: 'Trier par ordre croissant',
-      })[2]
-    )
-    expect(
-      screen.getByText('Tri par n° de virement ascendant activé.')
-    ).toBeInTheDocument()
   })
 
   it('should not display invoice banner if FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is off', async () => {
