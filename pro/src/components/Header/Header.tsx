@@ -61,7 +61,7 @@ const Header = forwardRef(
             aria-label="Menu"
             aria-controls="lateral-panel"
           >
-            <SvgIcon src={fullBurgerIcon} alt="" width="25" />
+            <SvgIcon src={fullBurgerIcon} alt="" width="24" />
           </Button>
           <div className={styles['nav-brand']}>
             <NavLink
