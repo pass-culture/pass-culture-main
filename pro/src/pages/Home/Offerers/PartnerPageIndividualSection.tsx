@@ -14,11 +14,13 @@ import styles from './PartnerPage.module.scss'
 type PartnerPageIndividualSectionProps = {
   venueId: number
   isVisibleInApp: boolean
+  displayTitle?: boolean
 }
 
 export function PartnerPageIndividualSection({
   venueId,
   isVisibleInApp,
+  displayTitle = false,
 }: PartnerPageIndividualSectionProps) {
   const notify = useNotification()
   const { logEvent } = useAnalytics()
@@ -41,7 +43,13 @@ export function PartnerPageIndividualSection({
   return (
     <section className={styles['details']}>
       <div>
-        <h4 className={styles['details-title']}>Grand public</h4>
+        {displayTitle ? (
+          <h4 className={styles['details-title']}>Grand public</h4>
+        ) : (
+          <span className={styles['details-normal']}>
+            État de votre page partenaire sur l’application :
+          </span>
+        )}
         {isVisibleInApp ? (
           <Tag variant={TagVariant.LIGHT_GREEN}>Visible</Tag>
         ) : (

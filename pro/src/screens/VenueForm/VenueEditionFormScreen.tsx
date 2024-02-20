@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { VenueProviderResponse } from 'apiClient/v1'
+import Callout from 'components/Callout/Callout'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { validationSchema, VenueFormValues } from 'components/VenueForm'
 import { generateSiretValidationSchema } from 'components/VenueForm/Informations/SiretOrCommentFields'
@@ -18,8 +19,10 @@ import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import strokeMailIcon from 'icons/stroke-mail.svg'
+import { PartnerPageIndividualSection } from 'pages/Home/Offerers/PartnerPageIndividualSection'
 
 import { serializeEditVenueBodyModel } from './serializers'
+import styles from './VenueEditionFormScreen.module.scss'
 
 interface VenueEditionProps {
   initialValues: VenueFormValues
@@ -46,7 +49,6 @@ export const VenueEditionFormScreen = ({
   const location = useLocation()
   const notify = useNotification()
   const [isSiretValued, setIsSiretValued] = useState(Boolean(venue.siret))
-
   const { logEvent } = useAnalytics()
 
   const { currentUser } = useCurrentUser()
@@ -169,30 +171,37 @@ export const VenueEditionFormScreen = ({
   })
 
   return (
-    <FormikProvider value={formik}>
-      <form onSubmit={formik.handleSubmit}>
-        <VenueEditionForm
-          updateIsSiretValued={setIsSiretValued}
-          venueTypes={venueTypes}
-          venueLabels={venueLabels}
-          venueProvider={venueProviders}
-          provider={providers}
-          venue={venue}
-          offerer={offerer}
-        />
-      </form>
+    <>
+      <Callout title="Les informations que vous renseignez ci-dessous sont affichées dans votre page partenaire, visible sur l’application pass Culture" />
+      <PartnerPageIndividualSection
+        venueId={venue.id}
+        isVisibleInApp={Boolean(venue.isVisibleInApp)}
+      />
+      <FormikProvider value={formik}>
+        <form onSubmit={formik.handleSubmit} className={styles['venue-form']}>
+          <VenueEditionForm
+            updateIsSiretValued={setIsSiretValued}
+            venueTypes={venueTypes}
+            venueLabels={venueLabels}
+            venueProvider={venueProviders}
+            provider={providers}
+            venue={venue}
+            offerer={offerer}
+          />
+        </form>
 
-      {isWithdrawalDialogOpen && (
-        <ConfirmDialog
-          cancelText="Ne pas envoyer"
-          confirmText="Envoyer un email"
-          leftButtonAction={handleCancelWithdrawalDialog}
-          onCancel={() => setIsWithdrawalDialogOpen(false)}
-          onConfirm={handleConfirmWithdrawalDialog}
-          icon={strokeMailIcon}
-          title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
-        />
-      )}
-    </FormikProvider>
+        {isWithdrawalDialogOpen && (
+          <ConfirmDialog
+            cancelText="Ne pas envoyer"
+            confirmText="Envoyer un email"
+            leftButtonAction={handleCancelWithdrawalDialog}
+            onCancel={() => setIsWithdrawalDialogOpen(false)}
+            onConfirm={handleConfirmWithdrawalDialog}
+            icon={strokeMailIcon}
+            title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
+          />
+        )}
+      </FormikProvider>
+    </>
   )
 }
