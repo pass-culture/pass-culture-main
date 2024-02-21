@@ -33,6 +33,8 @@ vi.mock(
   }
 )
 
+window.scrollTo = vi.fn().mockImplementation(() => {})
+
 vi.mock('react-instantsearch', async () => {
   return {
     ...((await vi.importActual('react-instantsearch')) ?? {}),
