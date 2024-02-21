@@ -32,9 +32,9 @@ const DialogBox: FunctionComponent<DialogProps> = ({
       })}
     >
       {hasCloseButton && (
-        <span className={styles['dialog-box-close-container']}>
+        <div className={styles['dialog-box-close-container']}>
           <CloseButton onCloseClick={onDismiss} />
-        </span>
+        </div>
       )}
       <section className={extraClassNames}>{children}</section>
     </DialogContent>
