@@ -1,11 +1,136 @@
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/variables/_size.scss" as size;
+@use "styles/variables/_z-index.scss" as zIndex;
 
-.lateral-panel-nav-button {
-  display: inline-flex;
-  width: rem.torem(50px);
-  height: rem.torem(50px);
-  justify-content: center;
-  align-items: center;
-  gap: 24px;
-  flex-shrink: 0;
+.page-layout {
+  display: flex;
+  height: calc(100vh - size.$top-menu-height);
+
+  &-full {
+    height: 100%;
+  }
+}
+
+.container {
+  position: relative;
+  padding-bottom: calc(size.$action-bar-sticky-height + rem.torem(16px));
+  width: 100%;
+
+  &-without-nav {
+    display: flex;
+    flex-direction: column;
+
+    @media (min-width: size.$tablet) {
+      flex-direction: row;
+      width: 100%;
+      margin: 0 auto;
+    }
+  }
+
+  &-full {
+    margin-top: rem.torem(26px);
+    overflow-y: scroll;
+  }
+}
+
+.page-content {
+  background: colors.$white;
+  box-shadow: 0 0 rem.torem(60px) colors.$large-shadow;
+  border-radius: rem.torem(10px);
+  margin: rem.torem(26px) auto 0 auto;
+  max-width: rem.torem(size.$main-content-width);
+
+  &-old {
+    margin: rem.torem(-88px) auto 0 auto;
+  }
+
+  .after-notification-content {
+    padding: size.$main-content-padding;
+    position: relative;
+  }
+}
+
+.lateral-panel {
+  &-wrapper {
+    display: none;
+    position: fixed;
+    width: 100%;
+    z-index: zIndex.$lateral-menu-backdrop-z-index;
+    min-height: calc(100vh - size.$top-menu-height);
+
+    &::before {
+      content: " ";
+      display: block;
+      position: fixed;
+      inset: 0;
+      background: rgba(colors.$input-text-color, 0.48);
+    }
+
+    &-open {
+      display: block;
+    }
+  }
+
+  &-menu {
+    background: colors.$white;
+    z-index: zIndex.$lateral-menu-z-index;
+    position: fixed;
+    max-width: rem.torem(268px);
+    inset: 0;
+  }
+
+  &-nav {
+    padding: 0 rem.torem(16px);
+    height: rem.torem(50px);
+    box-shadow: 0 3px 4px 0 rgb(103 104 107 / 10%);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &-open {
+      padding: 0 rem.torem(16px) 0 0;
+    }
+
+    &-button {
+      display: inline-flex;
+      width: rem.torem(50px);
+      height: rem.torem(50px);
+      justify-content: center;
+      align-items: center;
+      gap: 24px;
+      flex-shrink: 0;
+    }
+
+    .logo {
+      width: rem.torem(80px);
+    }
+  }
+}
+
+@media (min-width: size.$tablet) {
+  .lateral-panel {
+    &-wrapper {
+      position: initial;
+      display: block;
+      width: rem.torem(268px);
+
+      &::before {
+        display: none;
+      }
+    }
+
+    &-menu {
+      position: initial;
+      height: 100%;
+      width: 100%;
+      box-shadow: rem.torem(0) rem.torem(6px) rem.torem(16px)
+        colors.$large-shadow;
+    }
+
+    &-nav {
+      display: none;
+    }
+  }
 }

@@ -8,6 +8,8 @@ import { updateSelectedOffererId, updateUser } from 'store/user/reducer'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { localStorageAvailable } from 'utils/localStorageAvailable'
 
+import styles from './StoreProvider.module.scss'
+
 interface StoreProviderProps {
   children: JSX.Element | JSX.Element[]
   isAdageIframe?: boolean
@@ -58,7 +60,7 @@ const StoreProvider = ({
 
   if (!isStoreInitialized) {
     return (
-      <main id="content" className="spinner-container">
+      <main id="content" className={styles['spinner-container']}>
         <Spinner />
       </main>
     )

@@ -126,7 +126,7 @@ export const Desk = (): JSX.Element => {
   return (
     <AppLayout>
       <Titles title="Guichet" />
-      <p className="advice">
+      <p className={styles.advice}>
         Saisissez les contremarques présentées par les bénéficiaires afin de les
         valider ou de les invalider.
       </p>
