@@ -537,8 +537,8 @@ def change_email(
             raise exceptions.EmailExistsError() from error
         raise
 
-    sessions = models.UserSession.query.filter_by(userId=current_user.id)
-    repository.delete(*sessions)
+    models.UserSession.query.filter_by(userId=current_user.id).delete(synchronize_session=False)
+    db.session.commit()
 
     logger.info("User has changed their email", extra={"user": current_user.id})
 
