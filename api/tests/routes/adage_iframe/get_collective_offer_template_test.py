@@ -95,6 +95,8 @@ class CollectiveOfferTemplateTest:
             "durationMinutes": None,
             "contactEmail": offer.contactEmail,
             "contactPhone": offer.contactPhone,
+            "contactForm": offer.contactForm.value,
+            "contactUrl": offer.contactUrl,
             "offerVenue": {
                 "addressType": "offererVenue",
                 "address": venue.address,

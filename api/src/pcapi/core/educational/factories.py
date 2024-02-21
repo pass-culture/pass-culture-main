@@ -95,6 +95,8 @@ class CollectiveOfferTemplateFactory(BaseFactory):
     students = [models.StudentLevels.GENERAL2]
     contactEmail = "collectiveofferfactory+contact@example.com"
     contactPhone = "+33199006328"
+    contactUrl = None
+    contactForm = models.OfferContactFormEnum.FORM
     offerVenue = {
         "addressType": "other",
         "otherAddress": "1 rue des polissons, Paris 75017",

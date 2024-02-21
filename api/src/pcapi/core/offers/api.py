@@ -69,7 +69,7 @@ from . import validation
 
 logger = logging.getLogger(__name__)
 
-AnyOffer = educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate | models.Offer
+AnyOffer = educational_api_offer.AnyCollectiveOffer | models.Offer
 
 OFFERS_RECAP_LIMIT = 501
 STOCK_LIMIT_TO_DELETE = 50
@@ -397,8 +397,9 @@ def update_collective_offer_template(offer_id: int, new_values: dict) -> None:
     )
 
 
-def _update_collective_offer(offer: AnyOffer, new_values: dict) -> list[str]:
+def _update_collective_offer(offer: educational_api_offer.AnyCollectiveOffer, new_values: dict) -> list[str]:
     validation.check_validation_status(offer)
+    validation.check_contact_request(offer, new_values)
     # This variable is meant for Adage mailing
     updated_fields = []
     for key, value in new_values.items():
