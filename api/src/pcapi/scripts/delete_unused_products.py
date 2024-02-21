@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 # STAGING
 PROVIDER_PRODUCT_RANGE = {
     1: {"min": None, "max": None},
-    4: {"min": None, "max": None},
+    4: {"min": 1, "max": 343},
     9: {"min": None, "max": None},
     16: {"min": None, "max": None},
     17: {"min": None, "max": None},
@@ -93,7 +93,12 @@ def execute_request(provider_id: int, min_product_id: int, max_product_id: int, 
                         if image.ok:
                             try:
                                 mediation = offers_api.create_mediation(
-                                    user=None, credit=None, offer=offer, image_as_bytes=image.content, keep_ratio=True
+                                    user=None,
+                                    credit=None,
+                                    offer=offer,
+                                    image_as_bytes=image.content,
+                                    keep_ratio=True,
+                                    check_image_validity=False,
                                 )
                                 db.session.add(mediation)
                             except (ImageTooSmall, UnidentifiedImage) as exc:
