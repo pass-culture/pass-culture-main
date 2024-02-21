@@ -3,13 +3,13 @@
 FROM python:3.11-slim AS builder
 
 RUN apt-get update \
-	&& apt-get -y install \
-		gcc \
-		g++ \
-		libgdal-dev \
-		libpq-dev  && \
-        apt-get clean && \
-        rm -rf /var/lib/apt/lists*
+    && apt-get -y install \
+    gcc \
+    g++ \
+    libgdal-dev \
+    libpq-dev  && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists*
 
 RUN useradd -rm -d /home/pcapi -u 1000 pcapi
 
@@ -70,9 +70,7 @@ RUN apt-get update \
     libpangoft2-1.0-0 \
     libpq5 \
     libxmlsec1-openssl \
-    xmlsec1 && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists*
+    xmlsec1
 
 WORKDIR /usr/src/app
 
@@ -100,10 +98,7 @@ FROM lib-dev AS api-flask
 
 USER root
 
-RUN apt-get update && \
-    apt-get --no-install-recommends -y install curl postgresql-client libgdal-dev && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists*
+RUN apt-get --no-install-recommends -y install curl postgresql-client libgdal-dev
 
 USER pcapi
 
@@ -116,8 +111,8 @@ FROM lib-prod AS pcapi
 WORKDIR /usr/src/app
 
 RUN pip install \
-		--no-cache-dir \
-		--editable .
+    --no-cache-dir \
+    --editable .
 
 ENTRYPOINT exec ./entrypoint.sh
 
@@ -127,13 +122,12 @@ FROM pcapi AS pcapi-console
 
 USER root
 
-RUN apt update && \
-    apt install --no-install-recommends -y curl less gnupg2 && \
+RUN apt-get install --no-install-recommends -y curl less gnupg2 && \
     curl -s https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/pgsql.gpg && \
     echo "deb [signed-by=/etc/apt/trusted.gpg.d/pgsql.gpg] http://apt.postgresql.org/pub/repos/apt/ `. /etc/os-release && \
     echo $VERSION_CODENAME`-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
-    apt update && \
-    apt --no-install-recommends -y install postgresql-client-12 && \
+    apt-get update && \
+    apt-get --no-install-recommends -y install postgresql-client-12 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists*
 
@@ -145,8 +139,7 @@ FROM api-flask AS pcapi-tests
 
 USER root
 
-RUN apt-get update && \
-    apt-get install -y git npm --no-install-recommends && \
+RUN apt-get install -y git npm --no-install-recommends && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists*
 
