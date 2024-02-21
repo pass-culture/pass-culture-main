@@ -24,37 +24,24 @@ logger = logging.getLogger(__name__)
 |---------+----------------+-----------------------------------------------------------|
 | 118     | 1              | à supprimer ? ex OpenAgenda                               |
 | 263     | 4              | Experimentation Spreadsheet (Offres)                      |
-| 2167156 | 9              | TiteLive (Epagine / Place des libraires.com)              |
-| 174206  | 16             | TiteLive (Epagine / Place des libraires.com) Descriptions |
-| 132140  | 17             | TiteLive (Epagine / Place des libraires.com) Thumbs       |
-| 569453  | 19             | Init TiteLive (Epagine / Place des libraires.com)         |
-| 137867  | 20             | Init TiteLive Descriptions                                |
 | 10552   | 22             | Allociné                                                  |
 | 15558   | 70             | Ciné Office                                               |
 | 4326    | 71             | Boost                                                     |
 | 1       | 1073           | CGR                                                       |
 | 1023    | 1081           | EMS                                                       |
-| 929587  | 1082           | TiteLive API Epagine                                      |
-| 550     | 1097           | Allocine Products                                         |
 +---------+----------------+-----------------------------------------------------------+
 """
 
 # STAGING
 PROVIDER_PRODUCT_RANGE = {
-    1: {"min": None, "max": None},
+    1: {"min": 655, "max": 1620},
     4: {"min": 1, "max": 343},
-    9: {"min": None, "max": None},
-    16: {"min": None, "max": None},
-    17: {"min": None, "max": None},
-    19: {"min": None, "max": None},
     20: {"min": None, "max": None},
     22: {"min": None, "max": None},
     70: {"min": None, "max": None},
     71: {"min": None, "max": None},
-    1073: {"min": None, "max": None},
+    1073: {"min": 4952981, "max": 4952981},
     1081: {"min": None, "max": None},
-    1082: {"min": None, "max": None},
-    1097: {"min": None, "max": None},
 }
 
 CHUNK_SIZE = 1000
@@ -136,10 +123,8 @@ def execute_request(provider_id: int, min_product_id: int, max_product_id: int, 
                     # Handle delete errors
                     print(f"Error deleting products: {e}")
 
-    end_provider = time.time()
-    print(f"Provider {provider_id} took {end_provider - start_provider:.2f}")
-    print(f"Deleted products = {products_id_to_delete}")
-    print(f"Not deleted products = {not_deleted_products}")
+            print(f"Deleted products = {products_id_to_delete}")
+            print(f"Not deleted products = {not_deleted_products}")
 
 
 def get_max_provider_id(provider_id: int) -> int:
