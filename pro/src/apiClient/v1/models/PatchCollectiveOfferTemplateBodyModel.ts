@@ -5,13 +5,16 @@
 import type { CollectiveOfferVenueBodyModel } from './CollectiveOfferVenueBodyModel';
 import type { DateRangeModel } from './DateRangeModel';
 import type { EacFormat } from './EacFormat';
+import type { OfferContactFormEnum } from './OfferContactFormEnum';
 import type { StudentLevels } from './StudentLevels';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 export type PatchCollectiveOfferTemplateBodyModel = {
   audioDisabilityCompliant?: boolean | null;
   bookingEmails?: Array<string> | null;
   contactEmail?: string | null;
+  contactForm?: OfferContactFormEnum | null;
   contactPhone?: string | null;
+  contactUrl?: string | null;
   dates?: DateRangeModel | null;
   description?: string | null;
   domains?: Array<number> | null;

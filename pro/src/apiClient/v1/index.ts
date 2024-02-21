@@ -158,6 +158,7 @@ export type { MusicTypeResponse } from './models/MusicTypeResponse';
 export type { NationalProgramModel } from './models/NationalProgramModel';
 export type { NewPasswordBodyModel } from './models/NewPasswordBodyModel';
 export { OfferAddressType } from './models/OfferAddressType';
+export { OfferContactFormEnum } from './models/OfferContactFormEnum';
 export type { OfferDomain } from './models/OfferDomain';
 export type { OffererApiKey } from './models/OffererApiKey';
 export { OffererMemberStatus } from './models/OffererMemberStatus';

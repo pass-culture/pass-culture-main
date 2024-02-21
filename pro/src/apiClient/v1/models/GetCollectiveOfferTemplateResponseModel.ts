@@ -6,6 +6,7 @@ import type { CollectiveOfferOfferVenueResponseModel } from './CollectiveOfferOf
 import type { EacFormat } from './EacFormat';
 import type { GetCollectiveOfferVenueResponseModel } from './GetCollectiveOfferVenueResponseModel';
 import type { NationalProgramModel } from './NationalProgramModel';
+import type { OfferContactFormEnum } from './OfferContactFormEnum';
 import type { OfferDomain } from './OfferDomain';
 import type { OfferStatus } from './OfferStatus';
 import type { StudentLevels } from './StudentLevels';
@@ -15,7 +16,9 @@ export type GetCollectiveOfferTemplateResponseModel = {
   audioDisabilityCompliant?: boolean | null;
   bookingEmails: Array<string>;
   contactEmail: string;
+  contactForm?: OfferContactFormEnum | null;
   contactPhone?: string | null;
+  contactUrl?: string | null;
   dateCreated: string;
   dates?: TemplateDatesModel | null;
   description: string;

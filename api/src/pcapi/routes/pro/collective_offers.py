@@ -371,6 +371,9 @@ def edit_collective_offer_template(
         )
     except offers_exceptions.OfferEditionBaseException as error:
         raise ApiErrors(error.errors, status_code=400)
+    except offers_exceptions.CollectiveOfferContactRequestError as err:
+        raise ApiErrors({f"contact[{err.fields}]": err.msg}, status_code=400)
+
     offer = educational_api_offer.get_collective_offer_template_by_id(offer_id)
     return collective_offers_serialize.GetCollectiveOfferTemplateResponseModel.from_orm(offer)
 

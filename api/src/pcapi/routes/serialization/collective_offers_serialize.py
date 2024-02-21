@@ -18,6 +18,7 @@ from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
+from pcapi.core.educational.models import OfferContactFormEnum
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import validation as offers_validation
@@ -34,11 +35,6 @@ from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.image_conversion import CropParams
 from pcapi.validation.routes.offers import check_collective_offer_name_length_is_valid
-
-
-T_GetCollectiveOfferBaseResponseModel = typing.TypeVar(
-    "T_GetCollectiveOfferBaseResponseModel", bound="GetCollectiveOfferBaseResponseModel"
-)
 
 
 def validate_venue_id(venue_id: int | str | None) -> int | None:
@@ -321,6 +317,10 @@ class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseMode
     priceDetail: PriceDetail | None = Field(alias="educationalPriceDetail")
     dates: TemplateDatesModel | None
     isTemplate: bool = True
+    contactEmail: str
+    contactPhone: str | None
+    contactUrl: str | None
+    contactForm: OfferContactFormEnum | None
 
     class Config:
         orm_mode = True
@@ -644,6 +644,8 @@ class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):
     priceDetail: PriceDetail | None
     domains: list[int] | None
     dates: DateRangeModel | None
+    contactUrl: str | None
+    contactForm: OfferContactFormEnum | None
 
     @validator("domains")
     def validate_domains_collective_offer_template_edition(
@@ -654,6 +656,18 @@ class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):
             raise ValueError("domains must have at least one value")
 
         return domains
+
+    @root_validator
+    def validate_contact_fields(cls, values: dict) -> dict:
+        email = values.get("contactEmail")
+        phone = values.get("contactPhone")
+        url = values.get("contactUrl")
+        form = values.get("contactForm")
+
+        if url and any([email, phone, form]):
+            raise ValueError("error: url and form are both not null")
+
+        return values
 
     class Config:
         alias_generator = to_camel
