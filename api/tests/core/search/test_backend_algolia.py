@@ -322,8 +322,17 @@ class ProcessingQueueTest:
         processing_too_recent = f"{main_queue}:processing:{timestamp_too_recent}"
         redis.sadd(processing_too_recent, "4", "5", "6")
 
+        # Populate Redis so that we trigger pagination over Redis keys.
+        dummy_keys = [f"test_clean_processing_queues:dummy:{i}" for i in range(100)]
+        for key in dummy_keys:
+            redis.sadd(key, 1)
+
         assert redis.scard(main_queue) == 0
         backend.clean_processing_queues()
+
+        # Remove dummy keys to simplify tests below.
+        for key in dummy_keys:
+            redis.delete(key)
 
         # Items of the old processing queue have been moved to the
         # main queue. The recent processing queue has been left
