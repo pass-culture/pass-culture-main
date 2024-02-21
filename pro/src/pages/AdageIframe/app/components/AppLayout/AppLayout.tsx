@@ -1,5 +1,11 @@
 import classNames from 'classnames'
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import {
+  Navigate,
+  Route,
+  Routes,
+  ScrollRestoration,
+  useLocation,
+} from 'react-router-dom'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -44,6 +50,7 @@ export const AppLayout = (): JSX.Element => {
         })}
         id="content"
       >
+        <ScrollRestoration />
         <Routes>
           <Route
             path=""
