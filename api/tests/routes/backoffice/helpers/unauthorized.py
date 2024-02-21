@@ -4,6 +4,7 @@ import typing
 
 import pytest
 
+from pcapi.core.permissions import api as perm_api
 from pcapi.core.permissions import factories as perm_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import factories as users_factories
@@ -49,7 +50,7 @@ class UnauthorizedHelperBase(base.BaseHelper, metaclass=abc.ABCMeta):
             permissions=[perms_in_db[perm.name] for perm in perm_models.Permissions if perm not in in_permissions]
         )
 
-        user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user, roles=[role])
+        perm_api.create_backoffice_profile(user, roles=[role])
 
         assert len(user.backoffice_profile.permissions) == len(perm_models.Permissions) - len(in_permissions)
         for perm in in_permissions:

@@ -30,7 +30,6 @@ pytestmark = [
 @pytest.fixture(scope="function", name="beneficiary_fraud_admin")
 def beneficiary_fraud_admin_fixture(roles_with_permissions: None) -> users_models.User:
     user = users_factories.UserFactory(roles=["ADMIN"])
-    user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
     backoffice_api.upsert_roles(user, {perm_models.Roles.FRAUDE_JEUNES})
     db.session.flush()
     return user
@@ -39,7 +38,6 @@ def beneficiary_fraud_admin_fixture(roles_with_permissions: None) -> users_model
 @pytest.fixture(scope="function", name="pro_fraud_admin")
 def pro_fraud_admin_fixture(roles_with_permissions: None) -> users_models.User:
     user = users_factories.UserFactory(roles=["ADMIN"])
-    user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
     backoffice_api.upsert_roles(user, {perm_models.Roles.FRAUDE_CONFORMITE})
     db.session.flush()
     return user
@@ -48,7 +46,6 @@ def pro_fraud_admin_fixture(roles_with_permissions: None) -> users_models.User:
 @pytest.fixture(scope="function", name="fraude_jeunes_admin")
 def fraude_jeunes_admin_fixture(roles_with_permissions: None) -> users_models.User:
     user = users_factories.UserFactory(roles=["ADMIN"])
-    user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
     backoffice_api.upsert_roles(user, {perm_models.Roles.FRAUDE_JEUNES})
     db.session.flush()
     return user
@@ -57,7 +54,6 @@ def fraude_jeunes_admin_fixture(roles_with_permissions: None) -> users_models.Us
 @pytest.fixture(scope="function", name="support_n2_admin")
 def support_n2_fixture(roles_with_permissions: None) -> users_models.User:
     user = users_factories.UserFactory(roles=["ADMIN"])
-    user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
     backoffice_api.upsert_roles(user, {perm_models.Roles.SUPPORT_N2})
     db.session.flush()
     return user
@@ -66,7 +62,6 @@ def support_n2_fixture(roles_with_permissions: None) -> users_models.User:
 @pytest.fixture(scope="function", name="super_admin")
 def super_admin_fixture(roles_with_permissions: None) -> users_models.User:
     user = users_factories.UserFactory(roles=["ADMIN"])
-    user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
     backoffice_api.upsert_roles(user, {perm_models.Roles.ADMIN})
     db.session.flush()
     return user

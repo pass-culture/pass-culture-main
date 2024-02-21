@@ -1,6 +1,7 @@
 import pytest
 import sqlalchemy as sa
 
+from pcapi.core.permissions import api as perm_api
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -25,7 +26,7 @@ class ButtonHelper:
     @property
     def unauthorized_user(self) -> users_models.User:
         user = users_factories.UserFactory()
-        user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
+        perm_api.create_backoffice_profile(user)
 
         query = perm_models.Role.query.options(sa.orm.joinedload(perm_models.Role.permissions))
         roles_without_needed_permission = [
