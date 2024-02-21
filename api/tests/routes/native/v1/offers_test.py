@@ -634,11 +634,10 @@ class ReportOfferTest:
         #   * select offer
         #   * get user
         #   * insert report
-        #   * release savepoint
         #
         #   * reload user
         #   * select offer
-        with assert_num_queries(6):
+        with assert_num_queries(5):
             response = client.post(f"/native/v1/offer/{offer.id}/report", json={"reason": "INAPPROPRIATE"})
             assert response.status_code == 204
 
@@ -664,11 +663,10 @@ class ReportOfferTest:
         #   * select offer
         #   * get user
         #   * insert report
-        #   * release savepoint
         #
         #   * reload user
         #   * select offer
-        with assert_num_queries(6):
+        with assert_num_queries(5):
             data = {"reason": "OTHER", "customReason": "saynul"}
             response = client.post(f"/native/v1/offer/{offer.id}/report", json=data)
             assert response.status_code == 204

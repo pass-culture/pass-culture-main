@@ -1485,7 +1485,6 @@ class AutoMarkAsUsedAfterEventTest:
         )
         # fmt: on
         queries += 1  # update all collective bookings
-        queries += 1  # commit
 
         with assert_num_queries(queries):
             api.auto_mark_as_used_after_event()

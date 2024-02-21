@@ -122,17 +122,15 @@ class CollectiveOffersPublicPostOfferTest:
         # 10. fetch offer
         # 11. fetch offer validation rule
         # 12. update collective offer
-        # 13. savepoint
-        # 14. fetch collective offer
-        # 15. update collective offer
-        # 16. savepoint
-        # 17. fetch collective offer
-        # 18. fetch national program
-        # 19. fetch collective stock
-        # 20. fetch collective booking
-        # 21. fetch educational domain
-        # 22. fetch educational institution
-        with assert_num_queries(22):
+        # 13. fetch collective offer
+        # 14. update collective offer
+        # 15. fetch collective offer
+        # 16. fetch national program
+        # 17. fetch collective stock
+        # 18. fetch collective booking
+        # 19. fetch educational domain
+        # 20. fetch educational institution
+        with assert_num_queries(20):
             with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
                 response = public_client.post("/v2/collective/offers/", json=payload)
 
