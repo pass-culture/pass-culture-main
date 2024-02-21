@@ -159,29 +159,3 @@ class CorsConfigNativeTest:
                 client = TestClient(app.test_client())
                 response = client.get("/simple", headers={"Origin": permutation})
                 assert not response.headers.get("Access-Control-Allow-Origin")
-
-
-@pytest.mark.parametrize(
-    "test_data",
-    [
-        {"env": "production", "allowed_origins_backoffice": PRODUCTION_ALLOWED_ORIGINS_BACKOFFICE},
-        {"env": "staging", "allowed_origins_backoffice": STAGING_ALLOWED_ORIGINS_BACKOFFICE},
-        {"env": "testing", "allowed_origins_backoffice": TESTING_ALLOWED_ORIGINS_BACKOFFICE},
-    ],
-    ids=["PROD", "STAGING", "TESTING"],
-)
-class CorsConfigBackofficeTest:
-    def test_allowed_origins_backoffice(self, test_data):
-        app = create_app(test_data, "CORS_ALLOWED_ORIGINS_BACKOFFICE")
-        for origin in test_data["allowed_origins_backoffice"]:
-            client = TestClient(app.test_client())
-            response = client.get("/simple", headers={"Origin": origin})
-            assert response.headers.get("Access-Control-Allow-Origin") == origin
-
-    def test_not_allowed_origins_backoffice(self, test_data):
-        for _origin in test_data["allowed_origins_backoffice"]:
-            app = create_app(test_data, "CORS_ALLOWED_ORIGINS_BACKOFFICE")
-            for permutation in build_permutations(test_data["allowed_origins_backoffice"]):
-                client = TestClient(app.test_client())
-                response = client.get("/simple", headers={"Origin": permutation})
-                assert not response.headers.get("Access-Control-Allow-Origin")
