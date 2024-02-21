@@ -3473,6 +3473,7 @@ def create_deposit(
         user=beneficiary,
         expirationDate=granted_deposit.expiration_date,
     )
+    db.session.add(deposit)
 
     # Edge-cases: Validation of the registration occured over a birthday
     # Then we need to add recredit to compensate
