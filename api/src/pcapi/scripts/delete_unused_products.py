@@ -71,8 +71,6 @@ def execute_request(provider_id: int, min_product_id: int, max_product_id: int, 
 
                 for offer in offers:
                     # make_transient(offer)
-                    offer.productId = None
-                    db.session.add(offer)
                     # If the offer doesn't have an image but the product does
                     # Transfer the product image to the offers
                     if not offer.activeMediation and product.thumbUrl:
@@ -95,9 +93,11 @@ def execute_request(provider_id: int, min_product_id: int, max_product_id: int, 
                                 print(f"Must not delete product {product.id}: {exc}")
                             else:
                                 db.session.add(mediation)
+
+                    offer.productId = None
                     updated_offers.append(offer)
 
-                # db.session.add_all(updated_offers)
+                db.session.add_all(updated_offers)
                 for o in updated_offers:
                     print("authorId:", o.authorId)
                     print("lastProviderId:", o.lastProviderId)
