@@ -48,7 +48,7 @@ def include_object(
     return True
 
 
-def run_migrations() -> None:
+def run_online_migrations() -> None:
     db_options = []
     if settings.DB_MIGRATION_LOCK_TIMEOUT:
         db_options.append("-c lock_timeout=%i" % settings.DB_MIGRATION_LOCK_TIMEOUT)
@@ -81,7 +81,6 @@ def run_migrations() -> None:
                     include_schemas=True,
                     transaction_per_migration=True,
                     compare_server_default=True,
-                    literal_binds=context.is_offline_mode(),
                 )
                 with context.begin_transaction():
                     context.run_migrations()
@@ -109,3 +108,9 @@ def run_migrations() -> None:
             attempt,
             extra={"attempt": attempt, "max_attempts": settings.DB_MIGRATION_MAX_ATTEMPTS},
         )
+
+
+def run_offline_migrations():
+    """Run migrations *without* a SQL connection."""
+    context.configure(url=settings.DATABASE_URL, literal_binds=True)
+    context.run_migrations()

@@ -2,7 +2,8 @@ from logging.config import fileConfig
 
 from alembic import context
 
-from pcapi.alembic.run_migrations import run_migrations
+from pcapi.alembic.run_migrations import run_offline_migrations
+from pcapi.alembic.run_migrations import run_online_migrations
 from pcapi.models import install_models
 
 
@@ -14,4 +15,8 @@ config = context.config
 fileConfig(config.config_file_name, disable_existing_loggers=False)
 
 install_models()
-run_migrations()
+
+if context.is_offline_mode():
+    run_offline_migrations()
+else:
+    run_online_migrations()
