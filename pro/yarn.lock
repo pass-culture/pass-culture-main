@@ -2941,19 +2941,6 @@
   resolved "https://registry.yarnpkg.com/@storybook/docs-mdx/-/docs-mdx-0.1.0.tgz#33ba0e39d1461caf048b57db354b2cc410705316"
   integrity sha512-JDaBR9lwVY4eSH5W8EGHrhODjygPd6QImRbwjAuJNEnY0Vw4ie3bPkeGfnacB3OBW6u/agqPv2aRlR46JcAQLg==
 
-"@storybook/docs-tools@7.6.16":
-  version "7.6.16"
-  resolved "https://registry.yarnpkg.com/@storybook/docs-tools/-/docs-tools-7.6.16.tgz#61a2c3178ca6a0537855f0aa7a562b46276fe337"
-  integrity sha512-meuq5uLGBLOSJXKeCt9iEH0uVKgGqwfEBi2T4E2w3BcubC/6oQ3VeZl25/KO+l1XcLmOg9LkN2ZOtLV9TEiVLQ==
-  dependencies:
-    "@storybook/core-common" "7.6.16"
-    "@storybook/preview-api" "7.6.16"
-    "@storybook/types" "7.6.16"
-    "@types/doctrine" "^0.0.3"
-    assert "^2.1.0"
-    doctrine "^3.0.0"
-    lodash "^4.17.21"
-
 "@storybook/docs-tools@7.6.17":
   version "7.6.17"
   resolved "https://registry.yarnpkg.com/@storybook/docs-tools/-/docs-tools-7.6.17.tgz#4c38025be46c991bfe994bd82996708210e51d2f"
@@ -6945,9 +6932,9 @@ invariant@^2.2.4:
     loose-envify "^1.0.0"
 
 ip@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/ip/-/ip-2.0.0.tgz#4cf4ab182fee2314c75ede1276f8c80b479936da"
-  integrity sha512-WKa+XuLG1A1R0UWhl2+1XQSi+fZWMsYKffMZTTYsiZaUD8k2yDAj5atimTUD2TZkyCkNEeYE5NhFZmupOGtjYQ==
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/ip/-/ip-2.0.1.tgz#e8f3595d33a3ea66490204234b77636965307105"
+  integrity sha512-lJUL9imLTNi1ZfXT+DU6rBBdbiKGBuay9B6xGSPVjUeQwaH1RIGqef8RZkUtHioLmSNpPR5M4HVKJGm1j8FWVQ==
 
 ipaddr.js@1.9.1:
   version "1.9.1"
