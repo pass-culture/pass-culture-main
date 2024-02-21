@@ -618,8 +618,8 @@ class EditVenueTest:
             website=venue.contact.website,
         )
 
-        # nothing has changed, nothing to save but commit() causes RELEASE SAVEPOINT before updating external data
-        with assert_num_queries(1):
+        # nothing has changed, nothing to save
+        with assert_num_queries(0):
             offerers_api.update_venue(venue, contact_data=contact_data, author=user, **venue_data)
 
         assert history_models.ActionHistory.query.count() == 0

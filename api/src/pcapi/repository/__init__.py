@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 from dataclasses import dataclass
 import functools
+import logging
 from types import TracebackType
 import typing
 
@@ -10,9 +11,7 @@ from pcapi import settings
 from pcapi.models import db
 
 
-# FIXME: cue for queries count in tests to remove when all routes will be atomics
-if settings.IS_RUNNING_TESTS:
-    _test_is_session_managed: bool = False
+logger = logging.getLogger(__name__)
 
 
 # DEPRECATED in favor of @atomic() because @transaction() is not reentrant
@@ -30,6 +29,26 @@ def transaction() -> typing.Iterator[None]:
 class AtomicContext:
     autoflush: bool
     invalid_transaction: bool
+
+
+@dataclass
+class OnCommitCallback:
+    func: typing.Callable[[], typing.Any]
+    robust: bool
+
+    def __call__(self) -> bool:
+        try:
+            self.func()
+        except Exception as exp:  # pylint: disable=broad-exception-caught
+            logger.error(
+                "An error was raised in the post commit callbacks",
+                extra={
+                    "exception": exp,
+                    "robust": self.robust,
+                },
+            )
+            return self.robust
+        return True
 
 
 class atomic:
@@ -93,17 +112,19 @@ def mark_transaction_as_invalid() -> None:
     atomic_contexts = getattr(g, "_atomic_contexts", [])
     if atomic_contexts:
         atomic_contexts[-1].invalid_transaction = True
-    else:
-        if _is_managed_session():
-            g._session_to_commit = False
+    elif _is_managed_session():
+        g._session_to_commit = False
 
 
 def _mark_session_management() -> None:
     g._session_to_commit = True
     g._managed_session = True
-    if settings.IS_RUNNING_TESTS:
-        global _test_is_session_managed  # pylint: disable=global-statement
-        _test_is_session_managed = True
+    g._on_commit_callbacks = []
+
+
+def is_managed_transaction() -> bool:
+    """check if we are in a managed transaction block either with `@atomic()` or `with atomic:`"""
+    return bool(getattr(g, "_atomic_contexts", False)) or _is_managed_session()
 
 
 def _is_managed_session() -> bool:
@@ -111,25 +132,49 @@ def _is_managed_session() -> bool:
 
 
 def _manage_session() -> None:
-    if _is_managed_session():
-        if g._session_to_commit:
-            db.session.commit()
-        else:
-            db.session.rollback()
-
-        del g._session_to_commit
-        del g._managed_session
-
-
-def _test_helper_get_is_session_managed() -> bool:
-    if settings.IS_RUNNING_TESTS:
-        return _test_is_session_managed
-    raise RuntimeError("This global variable is only available for test purpose")
-
-
-def _test_helper_reset_is_session_managed() -> None:
-    if settings.IS_RUNNING_TESTS:
-        global _test_is_session_managed  # pylint: disable=global-statement
-        _test_is_session_managed = False
+    if not _is_managed_session():
+        return
+    success = False
+    if g._session_to_commit:
+        db.session.commit()
+        success = True
     else:
-        raise RuntimeError("This global variable is only available for test purpose")
+        db.session.rollback()
+
+    del g._session_to_commit
+    del g._managed_session
+    if success:
+        on_commit_callbacks = getattr(g, "_on_commit_callbacks", [])
+        for callback in on_commit_callbacks:
+            if not callback():
+                break
+    del g._on_commit_callbacks
+
+
+def on_commit(func: typing.Callable[[], typing.Any], *, robust: bool = False) -> None:
+    """
+    Hook to execute code after the transaction has been commit. This code will be called outside any
+    sql transaction.
+
+    func: a function taking no arguments to call. If your function takes argument you can use the
+        function `patial` from `functools` to add the arguments.
+    robust: whether or not we should continue to call the other functions after this one failed.
+
+    example
+    ```
+    from functools import partial
+    from pcapi.repository import on_commit
+
+    def function(argument1, argument2):
+        ...
+
+    # inside the atomic bloc:
+    on_commit(
+        func=partial(function, argument1=1, argument2='foo'),
+        robust=False,
+    )
+    ```
+    """
+    if not _is_managed_session():
+        raise NotImplementedError("on_commit transaction hook is only supported in managed sessions")
+    g._on_commit_callbacks.append(OnCommitCallback(func=func, robust=robust))

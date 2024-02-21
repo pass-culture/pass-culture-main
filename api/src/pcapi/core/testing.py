@@ -16,7 +16,6 @@ import sqlalchemy.engine
 import sqlalchemy.event
 import sqlalchemy.orm
 
-from pcapi import repository
 from pcapi import settings
 from pcapi.models import db
 from pcapi.models.feature import Feature
@@ -46,11 +45,6 @@ def assert_no_duplicated_queries() -> collections.abc.Generator[None, None, None
     flask._app_ctx_stack._query_logger = []  # type: ignore [attr-defined]
     yield
     queries = flask._app_ctx_stack._query_logger.copy()  # type: ignore [attr-defined]
-
-    # ignore session management in query count for compatibility with old tests
-    managed_session = repository._test_helper_get_is_session_managed()
-    if managed_session and queries and queries[-1]["statement"].startswith("RELEASE SAVEPOINT sa_savepoint_"):
-        queries.pop()
 
     statements = [query["statement"] for query in queries if "from feature" not in query["statement"].lower()]
 
@@ -87,11 +81,6 @@ def assert_num_queries(expected_n_queries: int) -> collections.abc.Generator[Non
     yield
     queries = flask._app_ctx_stack._query_logger.copy()  # type: ignore [attr-defined]
 
-    # ignore session management in query count for compatibility with old tests
-    managed_session = repository._test_helper_get_is_session_managed()
-    if managed_session and queries and queries[-1]["statement"].startswith("RELEASE SAVEPOINT sa_savepoint_"):
-        queries.pop()
-
     if len(queries) != expected_n_queries:
         details = "\n".join(_format_sql_query(query, i, len(queries)) for i, query in enumerate(queries, start=1))
         pytest.fail(
@@ -120,7 +109,7 @@ def _record_end_of_query(statement: str, parameters: dict, **kwargs: dict) -> No
     # FIXME (dbaty, 2020-10-23): SQLAlchemy issues savepoints. This is
     # probably due to the way we configure it, which should probably
     # be changed.
-    if statement.startswith("SAVEPOINT"):
+    if statement.startswith("SAVEPOINT") or statement.startswith("RELEASE SAVEPOINT"):
         return
     # Do not record the query if we're not within the
     # assert_num_queries context manager.
