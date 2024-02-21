@@ -969,11 +969,6 @@ def exclude_offers_from_inactive_venue_provider(query: flask_sqlalchemy.BaseQuer
     )
 
 
-def get_next_product_id_from_database() -> int:
-    sequence: sa.Sequence = sa.Sequence("product_id_seq")
-    return db.session.execute(sequence)
-
-
 def get_next_offer_id_from_database() -> int:
     sequence: sa.Sequence = sa.Sequence("offer_id_seq")
     return db.session.execute(sequence)
