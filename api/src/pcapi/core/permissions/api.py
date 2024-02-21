@@ -60,3 +60,9 @@ def update_role(
 def get_concrete_roles(roles: typing.Collection[perm_models.Roles]) -> typing.Collection[perm_models.Role]:
     names = [role.value for role in roles]
     return perm_models.Role.query.filter(perm_models.Role.name.in_(names)).all()
+
+
+def create_backoffice_profile(user: users_models.User, roles: list[perm_models.Role] | None = None) -> None:
+    backoffice_profile = perm_models.BackOfficeUserProfile(user=user, roles=roles or [])
+    db.session.add(backoffice_profile)
+    user.backoffice_profile = backoffice_profile

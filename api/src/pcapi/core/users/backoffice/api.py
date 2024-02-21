@@ -11,7 +11,7 @@ def upsert_roles(
     user: models.User, roles: typing.Collection[perm_models.Roles]
 ) -> perm_models.BackOfficeUserProfile | None:
     if not user.backoffice_profile:
-        user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
+        perm_api.create_backoffice_profile(user)
 
     if not user.backoffice_profile.roles:
         user.backoffice_profile.roles = []

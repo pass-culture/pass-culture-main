@@ -13,7 +13,7 @@ def validate(venue: Venue, api_errors: ApiErrors) -> ApiErrors:
 
     if venue.managingOffererId:
         if not venue.managingOfferer:
-            managing_offerer = offerers_models.Offerer.query.get(venue.managingOffererId)
+            managing_offerer = offerers_models.Offerer.query.filter_by(id=venue.managingOffererId).one()
         else:
             managing_offerer = venue.managingOfferer
         if not managing_offerer.siren:

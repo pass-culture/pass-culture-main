@@ -11,6 +11,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.permissions import api as perm_api
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.users import factories as users_factories
@@ -176,7 +177,7 @@ def legit_user_fixture(roles_with_permissions: None) -> users_models.User:
         roles=["ADMIN"],
     )
 
-    user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
+    perm_api.create_backoffice_profile(user)
     backoffice_api.upsert_roles(user, list(perm_models.Roles))
 
     db.session.flush()

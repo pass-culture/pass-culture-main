@@ -208,7 +208,7 @@ class BackOfficeUserProfile(Base, Model):
     user: sa.orm.Mapped["User"] = sa.orm.relationship(
         "User", foreign_keys=[userId], uselist=False, back_populates="backoffice_profile"
     )
-    roles: sa.orm.Mapped["Role"] = sa.orm.relationship(
+    roles: sa.orm.Mapped["list[Role]"] = sa.orm.relationship(
         "Role", secondary=role_backoffice_profile_table, back_populates="profiles"
     )
 
