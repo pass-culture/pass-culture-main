@@ -1,4 +1,3 @@
-from datetime import datetime
 import logging
 from pprint import pprint
 import re
@@ -104,17 +103,3 @@ class PcObject:
                 " doit être dans cette liste : " + ",".join(map(lambda x: '"' + x + '"', value_error.args[3])),
             )
         return PcObject.restize_global_error(value_error)
-
-
-def _deserialize_datetime(value: str | None) -> datetime | None:
-    if value is None:
-        return None
-
-    valid_formats = ["%Y-%m-%dT%H:%M:%S.%fZ", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%dT%H:%M:%SZ"]
-    for format_ in valid_formats:
-        try:
-            return datetime.strptime(value, format_)
-        except ValueError:
-            pass
-
-    raise TypeError()
