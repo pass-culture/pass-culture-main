@@ -8,17 +8,6 @@ from pcapi.models import db
 from pcapi.repository import repository
 
 
-def get_redactors_favorites_subset(
-    redactor: educational_models.EducationalRedactor, offer_ids: typing.Collection[int]
-) -> typing.Collection[int]:
-    query = educational_models.CollectiveOfferEducationalRedactor.query.filter(
-        educational_models.CollectiveOfferEducationalRedactor.educationalRedactorId == redactor.id,
-        educational_models.CollectiveOfferEducationalRedactor.collectiveOfferId.in_(offer_ids),
-    ).options(sa.orm.load_only(educational_models.CollectiveOfferEducationalRedactor.collectiveOfferId))
-
-    return {row.collectiveOfferId for row in query}
-
-
 def get_redactors_favorite_templates_subset(
     redactor: educational_models.EducationalRedactor, offer_ids: typing.Collection[int]
 ) -> typing.Collection[int]:
