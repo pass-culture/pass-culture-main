@@ -2,7 +2,7 @@ import React from 'react'
 import { NavLink, useSearchParams } from 'react-router-dom'
 
 import { LocalOfferersPlaylistOffer } from 'apiClient/adage'
-import strokeVenueIcon from 'icons/stroke-venue.svg'
+import strokeInstitutionIcon from 'icons/stroke-institution.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './VenueCard.module.scss'
@@ -37,7 +37,7 @@ const VenueCard = ({
         <div
           className={`${styles['venue-image']} ${styles['venue-image-fallback']}`}
         >
-          <SvgIcon src={strokeVenueIcon} width="80" alt="" />
+          <SvgIcon src={strokeInstitutionIcon} width="80" alt="" />
         </div>
       )}
       <div className={styles['venue-infos']}>
