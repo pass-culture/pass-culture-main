@@ -320,20 +320,27 @@ def get_incident_creation_form() -> utils.BackofficeResponse:
 )
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def get_collective_booking_incident_creation_form(collective_booking_id: int) -> utils.BackofficeResponse:
-    collective_booking: educational_models.CollectiveBooking = educational_models.CollectiveBooking.query.options(
-        sa.orm.joinedload(educational_models.CollectiveBooking.educationalInstitution).load_only(
-            educational_models.EducationalInstitution.name
-        ),
-        sa.orm.joinedload(educational_models.CollectiveBooking.pricings).load_only(
-            finance_models.Pricing.amount,
-        ),
-        sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock)
-        .load_only(
-            educational_models.CollectiveStock.beginningDatetime, educational_models.CollectiveStock.numberOfTickets
+    collective_booking: educational_models.CollectiveBooking = (
+        educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id)
+        .options(
+            sa.orm.joinedload(educational_models.CollectiveBooking.educationalInstitution).load_only(
+                educational_models.EducationalInstitution.name
+            ),
+            sa.orm.joinedload(educational_models.CollectiveBooking.pricings).load_only(
+                finance_models.Pricing.amount,
+            ),
+            sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock)
+            .load_only(
+                educational_models.CollectiveStock.beginningDatetime, educational_models.CollectiveStock.numberOfTickets
+            )
+            .joinedload(educational_models.CollectiveStock.collectiveOffer)
+            .load_only(educational_models.CollectiveOffer.name),
         )
-        .joinedload(educational_models.CollectiveStock.collectiveOffer)
-        .load_only(educational_models.CollectiveOffer.name),
-    ).get_or_404(collective_booking_id)
+        .one_or_none()
+    )
+    if not collective_booking:
+        raise NotFound()
+
     form = forms.CollectiveIncidentCreationForm(kind=finance_models.IncidentType.OVERPAYMENT.name)
     additional_data = _initialize_collective_booking_additional_data(collective_booking)
 
@@ -433,6 +440,10 @@ def create_individual_booking_incident() -> utils.BackofficeResponse:
 @finance_incidents_blueprint.route("/create-from-collective-booking/<int:collective_booking_id>/", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def create_collective_booking_incident(collective_booking_id: int) -> utils.BackofficeResponse:
+    collective_booking = educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id).one_or_none()
+    if not collective_booking:
+        raise NotFound()
+
     redirect_url = request.referrer or url_for("backoffice_web.collective_bookings.list_collective_bookings")
     form = forms.CollectiveIncidentCreationForm()
 
@@ -440,7 +451,6 @@ def create_collective_booking_incident(collective_booking_id: int) -> utils.Back
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer, 303)
 
-    collective_booking = educational_models.CollectiveBooking.query.get_or_404(collective_booking_id)
     is_commercial_gesture = form.kind.data == finance_models.IncidentType.COMMERCIAL_GESTURE.name
 
     booking_has_no_incident = validation.check_incident_collective_booking(collective_booking)
@@ -510,7 +520,9 @@ def _initialize_collective_booking_additional_data(collective_booking: education
 @finance_incidents_blueprint.route("/<int:finance_incident_id>/comment", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def comment_incident(finance_incident_id: int) -> utils.BackofficeResponse:
-    incident = finance_models.FinanceIncident.query.get_or_404(finance_incident_id)
+    incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident_id).one_or_none()
+    if not incident:
+        raise NotFound()
 
     form = offerer_forms.CommentForm()
 

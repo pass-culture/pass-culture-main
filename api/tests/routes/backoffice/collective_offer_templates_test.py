@@ -365,7 +365,7 @@ class ValidateCollectiveOfferTemplateFormTest(GetEndpointHelper):
 
         url = url_for(self.endpoint, collective_offer_template_id=collective_offer_template.id)
 
-        with assert_num_queries(2):  # session + current user
+        with assert_num_queries(3):  # session + current user + collective offer
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -445,7 +445,7 @@ class RejectCollectiveOfferTemplateFormTest(GetEndpointHelper):
 
         form_url = url_for(self.endpoint, collective_offer_template_id=collective_offer_template.id)
 
-        with assert_num_queries(2):  # session + current user
+        with assert_num_queries(3):  # session + current user + collective offer
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 
@@ -497,7 +497,9 @@ class BatchCollectiveOfferTemplatesValidateTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
         assert response.status_code == 303
         assert collective_offer_template.validation == OfferValidationStatus.PENDING
-        collective_offer_template = educational_models.CollectiveOfferTemplate.query.get(collective_offer_template.id)
+        collective_offer_template = educational_models.CollectiveOfferTemplate.query.filter_by(
+            id=collective_offer_template.id
+        ).one()
         assert collective_offer_template.validation == OfferValidationStatus.PENDING
         non_existing_collective_offer_template = educational_models.CollectiveOfferTemplate.query.filter(
             educational_models.CollectiveOfferTemplate.id.in_(fake_offer_ids)
@@ -561,7 +563,9 @@ class BatchCollectiveOfferTemplatesRejectTest(PostEndpointHelper):
 
         assert response.status_code == 303
         assert collective_offer_template.validation == OfferValidationStatus.PENDING
-        collective_offer_template = educational_models.CollectiveOfferTemplate.query.get(collective_offer_template.id)
+        collective_offer_template = educational_models.CollectiveOfferTemplate.query.filter_by(
+            id=collective_offer_template.id
+        ).one()
         assert collective_offer_template.validation == OfferValidationStatus.PENDING
         non_existing_collective_offer_templates = educational_models.CollectiveOfferTemplate.query.filter(
             educational_models.CollectiveOfferTemplate.id.in_(fake_offer_ids)
