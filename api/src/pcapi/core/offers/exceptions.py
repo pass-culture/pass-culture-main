@@ -109,16 +109,6 @@ class OfferCreationBaseException(ClientError):
     pass
 
 
-class MissingEAN(OfferCreationBaseException):
-    def __init__(self) -> None:
-        super().__init__("ean", "field required")
-
-
-class NotEligibleEAN(OfferCreationBaseException):
-    def __init__(self) -> None:
-        super().__init__("ean", "product not eligible to pass Culture")
-
-
 class OfferCannotBeDuo(OfferCreationBaseException):
     def __init__(self) -> None:
         super().__init__("enableDoubleBookings", "the category chosen does not allow double bookings")
