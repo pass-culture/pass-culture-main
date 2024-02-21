@@ -744,8 +744,3 @@ def update_product_last_30_days_bookings() -> list[offers_models.Product]:
 def clean_processing_queues() -> None:
     backend = _get_backend()
     backend.clean_processing_queues()
-
-
-def remove_duplicates_from_venue_indexation_queue() -> None:
-    backend = _get_backend()
-    backend.remove_duplicates_from_venue_indexation_queue()

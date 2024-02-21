@@ -218,4 +218,5 @@ def clean_indexation_processing_queues() -> None:
 @blueprint.cli.command("remove_duplicates_from_venue_indexation_queue")
 @log_cron_with_transaction
 def remove_duplicates_from_venue_indexation_queue() -> None:
-    search.remove_duplicates_from_venue_indexation_queue()
+    # TODO (lixxday) : remove after cron is removed
+    pass

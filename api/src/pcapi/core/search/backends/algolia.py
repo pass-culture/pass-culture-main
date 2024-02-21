@@ -36,16 +36,16 @@ logger = logging.getLogger(__name__)
 Numeric = float | decimal.Decimal
 
 
-REDIS_OFFER_IDS_NAME = "search:algolia:offer-ids:list"
-REDIS_OFFER_IDS_IN_ERROR_NAME = "search:algolia:offer-ids-in-error:list"
-REDIS_VENUE_IDS_FOR_OFFERS_NAME = "search:algolia:venue-ids-for-offers:list"
+REDIS_OFFER_IDS_NAME = "search:algolia:offer-ids:set"
+REDIS_OFFER_IDS_IN_ERROR_NAME = "search:algolia:offer-ids-in-error:set"
+REDIS_VENUE_IDS_FOR_OFFERS_NAME = "search:algolia:venue-ids-for-offers:set"
 
-REDIS_VENUE_IDS_TO_INDEX = "search:algolia:venue-ids-to-index:list"
-REDIS_VENUE_IDS_IN_ERROR_TO_INDEX = "search:algolia:venue-ids-in-error-to-index:list"
+REDIS_VENUE_IDS_TO_INDEX = "search:algolia:venue-ids-to-index:set"
+REDIS_VENUE_IDS_IN_ERROR_TO_INDEX = "search:algolia:venue-ids-in-error-to-index:set"
 
-REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_TO_INDEX = "search:algolia:collective-offer-template-ids-to-index:list"
+REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_TO_INDEX = "search:algolia:collective-offer-template-ids-to-index:set"
 REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_IN_ERROR_TO_INDEX = (
-    "search:algolia:collective-offer-template-ids-in-error-to-index:list"
+    "search:algolia:collective-offer-template-ids-in-error-to-index:set"
 )
 QUEUES = (
     REDIS_OFFER_IDS_NAME,
@@ -189,7 +189,7 @@ class AlgoliaBackend(base.SearchBackend):
             return
 
         try:
-            self.redis_client.lpush(queue, *ids)
+            self.redis_client.sadd(queue, *ids)
         except redis.exceptions.RedisError:
             logger.exception("Could not add ids to indexation queue", extra={"ids": ids, "queue": queue})
 
@@ -268,14 +268,12 @@ class AlgoliaBackend(base.SearchBackend):
         timestamp = datetime.datetime.utcnow().timestamp()
         processing_queue = f"{queue}:processing:{timestamp}"
         try:
+            ids = self.redis_client.srandmember(queue, count)
             with self.redis_client.pipeline(transaction=True) as pipeline:
-                for _ in range(count):
-                    # Google Cloud has Redis 5.0. When it's migrated to 6.2 or
-                    # newer, we can use `lmove` or `smove` instead.
-                    pipeline.rpoplpush(queue, processing_queue)
-                results = pipeline.execute()
-                # `results` may contain `None` if there were less than {count} items.
-                batch = {int(id_) for id_ in results if id_ is not None}  # str -> int
+                for id_ in ids:
+                    pipeline.smove(queue, processing_queue, id_)
+                pipeline.execute()
+                batch = {int(id_) for id_ in ids}  # str -> int
                 logger.info(
                     "Moved batch of object ids to index to processing queue",
                     extra={
@@ -308,7 +306,7 @@ class AlgoliaBackend(base.SearchBackend):
             queue = REDIS_OFFER_IDS_NAME
 
         try:
-            return self.redis_client.llen(queue)
+            return self.redis_client.scard(queue)
         except redis.exceptions.RedisError:
             if settings.IS_RUNNING_TESTS:
                 raise
@@ -649,12 +647,9 @@ class AlgoliaBackend(base.SearchBackend):
                     continue  # less than 1 hour ago, too recent, could still be processing
                 with redis_client.pipeline(transaction=True) as pipeline:
                     try:
-                        count = redis_client.llen(processing_queue)
-                        for _i in range(count):
-                            # Google Cloud has Redis 5.0. When it's migrated to 6.2 or
-                            # newer, we can use `lmove` or `smove` instead.
-                            pipeline.rpoplpush(processing_queue, originating_queue)
-                            pipeline.execute()
+                        for id_ in redis_client.smembers(processing_queue):
+                            pipeline.smove(processing_queue, originating_queue, id_)
+                        pipeline.execute()
                     except Exception:  # pylint: disable=broad-exception-caught
                         # That's not critical: the processing queue will
                         # still be here, and can be handled in the next run
@@ -671,29 +666,6 @@ class AlgoliaBackend(base.SearchBackend):
                             "Found old processing queue, moved back items to originating queue",
                             extra={"queue": originating_queue, "processing_queue": processing_queue},
                         )
-
-    def remove_duplicates_from_venue_indexation_queue(self) -> None:
-        """Pop items from the REDIS_VENUE_IDS_TO_INDEX, remove
-        duplicate and reinject them.
-
-        FIXME (dbaty, 2023-12-19): this is temporary, until we
-        transform queues from lists to sets. See notes in this module
-        about using `smove` instead of `rpoplpush`.
-        """
-        queue = REDIS_VENUE_IDS_TO_INDEX
-        count = self.redis_client.llen(queue)
-        with self._pop_ids_from_queue(queue, count) as venue_ids:
-            if not venue_ids:
-                return
-            # At this point, `venue_ids` is the set of deduplicated ids.
-            self.redis_client.lpush(queue, *venue_ids)
-            logger.info(
-                "Deduplicated ids in venue indexation queue",
-                extra={
-                    "initial_count": count,
-                    "deduplicated_count": len(venue_ids),
-                },
-            )
 
 
 def position(venue: offerers_models.Venue) -> dict[str, float]:
