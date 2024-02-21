@@ -3531,8 +3531,7 @@ class GetEntrepriseInfoUrssafTest(GetEndpointHelper):
     # get user with profile and permissions (1 query)
     # get offerer (1 query)
     # insert action (1 query)
-    # release savepoint (1 query)
-    expected_num_queries = 5
+    expected_num_queries = 4
 
     def test_get_urssaf_info_ok(self, authenticated_client):
         offerer = offerers_factories.OffererFactory(siren="123456789")
@@ -3583,8 +3582,7 @@ class GetEntrepriseInfoDgfipTest(GetEndpointHelper):
     # get user with profile and permissions (1 query)
     # get offerer (1 query)
     # insert action (1 query)
-    # release savepoint (1 query)
-    expected_num_queries = 5
+    expected_num_queries = 4
 
     def test_get_dgfip_info_ok(self, authenticated_client):
         offerer = offerers_factories.OffererFactory(siren="123456789")

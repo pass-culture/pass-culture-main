@@ -405,7 +405,6 @@ class PriceEventTest:
         queries += 1  # update status of FinanceEvent
         queries += 1  # insert 1 Pricing
         queries += 1  # insert 2 PricingLine
-        queries += 1  # commit
         with assert_num_queries(queries):
             api.price_event(event)
 
@@ -1157,7 +1156,6 @@ class GenerateCashflowsLegacyTest:
         n_queries = 0
         n_queries += 1  # compute next CashflowBatch.label
         n_queries += 1  # insert CashflowBatch
-        n_queries += 1  # commit
         n_queries += 1  # check FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY
         n_queries += 1  # select CashflowBatch again after commit
         n_queries += 1  # select reimbursement points and bank account ids to process
@@ -1169,7 +1167,6 @@ class GenerateCashflowsLegacyTest:
                 1,  # select pricings to...
                 1,  # update Pricing.status
                 1,  # ... insert CashflowPricing
-                1,  # commit
             )
         )
 
@@ -1442,7 +1439,6 @@ class GenerateCashflowsTest:
         n_queries = 0
         n_queries += 1  # compute next CashflowBatch.label
         n_queries += 1  # insert CashflowBatch
-        n_queries += 1  # commit
         n_queries += 1  # check FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY
         n_queries += 1  # select CashflowBatch again after commit
         n_queries += 1  # select reimbursement points and bank account ids to process
@@ -1454,7 +1450,6 @@ class GenerateCashflowsTest:
                 1,  # select pricings to...
                 1,  # update Pricing.status
                 1,  # ... insert CashflowPricing
-                1,  # commit
             )
         )
 
@@ -2616,7 +2611,6 @@ class GenerateInvoiceTest:
         + 1  # update Pricing.status
         + 1  # update Booking.status
         + 1  # FF is cached in all test due to generate_cashflows call
-        + 1  # commit
     )
 
     @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
@@ -2979,7 +2973,6 @@ class GenerateInvoiceLegacyTest:
         + 1  # update Pricing.status
         + 1  # update Booking.status
         + 1  # FF is cached in all test due to generate_cashflows call
-        + 1  # commit
     )
 
     @time_machine.travel(datetime.datetime(2022, 1, 15))

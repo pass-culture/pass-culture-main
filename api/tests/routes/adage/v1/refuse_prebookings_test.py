@@ -44,9 +44,8 @@ class Returns200Test:
 
         # 1. re-fetch collective booking with related data (1 query)
         # 2. update booking (1 query)
-        # 3. savepoint (1 query)
-        # 4. re-fetch collective booking with related data (1 query)
-        with assert_num_queries(4):
+        # 3. re-fetch collective booking with related data (1 query)
+        with assert_num_queries(3):
             response = client.post(f"/adage/v1/prebookings/{booking_id}/refuse")
 
         refused_collective_booking = CollectiveBooking.query.filter(

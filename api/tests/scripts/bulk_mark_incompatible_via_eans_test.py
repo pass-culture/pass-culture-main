@@ -27,7 +27,7 @@ class BulkUpdateIsGcuCompatibleViaEansTest:
 
         queries = 1  # update product
         queries += 1  # select offer
-        queries += 2  # update offer; commit
+        queries += 1  # update offer
         queries *= 2  # two batches
 
         # When

@@ -147,13 +147,7 @@ class CancelExpiredBookingsTest:
         book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
         booking_factories.BookingFactory.create_batch(size=10, stock__offer__product=book, dateCreated=two_months_ago)
         n_queries = 1  # select initial booking ids
-        n_queries += 1  # release savepoint/COMMIT
-        n_queries += 4 * (
-            1  # update booking
-            + 1  # select booking stockId
-            + 1  # update stock dnBookedQuantity
-            + 1  # release savepoint/COMMIT
-        )
+        n_queries += 4 * (1 + 1 + 1)  # update booking  # select booking stockId  # update stock dnBookedQuantity
 
         with assert_num_queries(n_queries):
             handle_expired_bookings.cancel_expired_individual_bookings(batch_size=3)
@@ -234,11 +228,7 @@ class CancelExpiredCollectiveBookingsTest:
         now = datetime.utcnow()
         yesterday = now - timedelta(days=1)
         educational_factories.PendingCollectiveBookingFactory.create_batch(size=10, confirmationLimitDate=yesterday)
-        n_queries = (
-            +1  # select collective_booking ids
-            + 1  # release savepoint/COMMIT
-            + 4 * (1 + 1)  # update collective_booking  # release savepoint/COMMIT
-        )
+        n_queries = +1 + 4 * (1)  # select collective_booking ids  # update collective_booking
 
         with assert_num_queries(n_queries):
             handle_expired_bookings.cancel_expired_collective_bookings(batch_size=3)

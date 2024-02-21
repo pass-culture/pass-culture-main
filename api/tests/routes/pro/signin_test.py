@@ -131,10 +131,9 @@ class Returns200Test:
         # When
         # 1. fetch user
         # 2. stamp session
-        # 3. savepoint
-        # 4. fetch user for serialization
-        # 5. fetch user offerer
-        with assert_num_queries(5):
+        # 3. fetch user for serialization
+        # 4. fetch user offerer
+        with assert_num_queries(4):
             response = client.post("/users/signin", json=data)
 
         # Then

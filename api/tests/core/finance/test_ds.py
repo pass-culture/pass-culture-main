@@ -680,10 +680,9 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         # Update the bank account status
         # Update the current status history row
         # Create a new status history row
-        # Deprecate venue-bank_account link
         # Create an ActionHistory
-        # savepoint
-        with assert_num_queries(8):
+        # Deprecate venue-bank_account link
+        with assert_num_queries(7):
             mark_without_continuation_applications()
 
         action_occurred = ActionOccurred(
