@@ -124,7 +124,7 @@ def acquire_lock(name: str) -> None:
     lock_bytestring = name.encode()
     lock_id = int(hashlib.sha256(lock_bytestring).hexdigest()[:14], 16)
     with log_elapsed(logger, "Waited to acquire advisory lock", extra={"lock_name": name}):
-        db.session.execute(sqla.select([sqla.func.pg_advisory_xact_lock(lock_id)]))
+        db.session.execute(sqla.select(sqla.func.pg_advisory_xact_lock(lock_id)))
 
 
 @blueprint.cli.command("detect_invalid_indexes")
