@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/react'
 import cn from 'classnames'
 import { compareAsc, format } from 'date-fns'
 
@@ -16,6 +15,7 @@ import strokeMoreIcon from 'icons/stroke-more.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { FORMAT_DD_MM_YYYY } from 'utils/date'
 import { formatPrice } from 'utils/formatPrice'
 
 import styles from './InvoiceTable.module.scss'
@@ -99,19 +99,6 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
     currentSortingColumn,
     currentSortingMode
   )
-
-  sortedInvoices.forEach((invoice) => {
-    try {
-      format(new Date(invoice.date.replace('-', '/')), 'dd/MM/yyyy')
-    } catch (error) {
-      Sentry.addBreadcrumb({
-        message: 'Invalid date',
-        level: 'info',
-        data: { invoiceId: invoice.reference, date: invoice.date },
-      })
-      Sentry.captureException(error)
-    }
-  })
 
   return (
     <table role="table" className={styles['invoices-table']}>
@@ -247,9 +234,7 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
                 )}
                 data-label="Date du justificatif"
               >
-                {invoice.date}
-                {/* This line is causing a bug, waiting for Sentry details to decomment it */}
-                {/* {format(new Date(invoice.date.replace('-', '/')), 'dd/MM/yyyy')} */}
+                {format(new Date(invoice.date), FORMAT_DD_MM_YYYY)}
               </td>
               <td
                 role="cell"
