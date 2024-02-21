@@ -134,21 +134,21 @@ describe('reimbursementsWithFilters', () => {
     expect(screen.queryAllByRole('columnheader').length).toEqual(5)
 
     const firstLine = [
-      '2022-11-02',
+      '02/11/2022',
       '<span class="document-type-content"><svg class="more-icon" viewBox="0 0 48 48" aria-hidden="true" width="16"><use xlink:href="/icons/stroke-more.svg#icon"></use></svg>Remboursement</span>',
       'First reimbursement point',
       'VIR7',
       '+100,00&nbsp;€',
     ]
     const secondLine = [
-      '2022-11-03',
+      '03/11/2022',
       '<span class="document-type-content"><svg class="less-icon" viewBox="0 0 48 48" aria-hidden="true" width="16"><use xlink:href="/icons/stroke-less.svg#icon"></use></svg>Trop&nbsp;perçu</span>',
       'Second reimbursement point',
       'N/A',
       '-50,00&nbsp;€',
     ]
     const thirdLine = [
-      '2023-10-02',
+      '02/10/2023',
       '<span class="document-type-content"><svg class="more-icon" viewBox="0 0 48 48" aria-hidden="true" width="16"><use xlink:href="/icons/stroke-more.svg#icon"></use></svg>Remboursement</span>',
       'First reimbursement point',
       'VIR9, VIR12',
