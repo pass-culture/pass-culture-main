@@ -165,17 +165,19 @@ const Offer = ({
                 {offer.isTemplate ? (
                   <>
                     <OfferShareLink offer={offer} />
-                    <ContactButton
-                      className={style['offer-prebooking-button']}
-                      contactEmail={offer.contactEmail}
-                      contactPhone={offer.contactPhone}
-                      offerId={offer.id}
-                      position={position}
-                      queryId={queryId}
-                      userEmail={adageUser.email}
-                      userRole={adageUser.role}
-                      isInSuggestions={isInSuggestions}
-                    />
+                    {!isNewOfferInfoEnabled && (
+                      <ContactButton
+                        className={style['offer-prebooking-button']}
+                        contactEmail={offer.contactEmail}
+                        contactPhone={offer.contactPhone}
+                        offerId={offer.id}
+                        position={position}
+                        queryId={queryId}
+                        userEmail={adageUser.email}
+                        userRole={adageUser.role}
+                        isInSuggestions={isInSuggestions}
+                      />
+                    )}
                   </>
                 ) : (
                   <PrebookingButton

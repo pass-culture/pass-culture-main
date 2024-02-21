@@ -619,4 +619,20 @@ describe('offer', () => {
       `offerid/B-${offerProps.offer.id}`
     )
   })
+
+  it('should not display contact button when FF is active', () => {
+    renderOffer(
+      {
+        ...offerProps,
+        offer: {
+          ...defaultCollectiveTemplateOffer,
+          isTemplate: true,
+        },
+      },
+      user,
+      { features: ['WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN'] }
+    )
+
+    expect(screen.queryByText('Contacter')).not.toBeInTheDocument()
+  })
 })
