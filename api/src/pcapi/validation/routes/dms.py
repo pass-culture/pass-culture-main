@@ -33,12 +33,3 @@ def require_dms_token(route_function: Callable[..., Any]) -> Callable:
         return route_function(*args, **kwargs)
 
     return validate_dms_token
-
-
-class BankInformationDmsFormModel(pydantic_v1.BaseModel):
-    dossier_id: str
-    procedure_id: str
-
-
-class BankInformationDmsResponseModel(pydantic_v1.BaseModel):
-    pass
