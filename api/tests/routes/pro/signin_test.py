@@ -46,7 +46,6 @@ class Returns200Test:
             "departementCode": None,
             "email": "user@example.com",
             "firstName": "Jean",
-            "hasPhysicalVenues": False,
             "hasSeenProTutorials": True,
             "hasSeenProRgs": False,
             "id": user.id,

@@ -7,6 +7,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.testing import AUTHENTICATION_QUERIES
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
@@ -26,7 +27,12 @@ class Returns200Test:
         booking_id = booking.id
 
         client = client.with_session_auth(user_offerer.user.email)
-        with assert_num_queries(6):
+        queries = AUTHENTICATION_QUERIES
+        queries += 1  # select booking
+        queries += 1  # select exists user_offerer (access check)
+        queries += 1  # select feature
+        queries += 1  # select reimbursement point
+        with assert_num_queries(queries):
             response = client.get(f"collective/bookings/{booking_id}")
 
         assert response.status_code == 200
@@ -121,7 +127,12 @@ class Returns200Test:
         booking_id = booking.id
 
         client = client.with_session_auth(user_offerer.user.email)
-        with assert_num_queries(6):
+        queries = AUTHENTICATION_QUERIES
+        queries += 1  # select booking
+        queries += 1  # select exists user_offerer (access check)
+        queries += 1  # select feature
+        queries += 1  # select bank account
+        with assert_num_queries(queries):
             response = client.get(f"collective/bookings/{booking_id}")
 
         assert response.status_code == 200
@@ -171,7 +182,12 @@ class Returns200Test:
         booking_id = booking.id
 
         client = client.with_session_auth(user_offerer.user.email)
-        with assert_num_queries(6):
+        queries = AUTHENTICATION_QUERIES
+        queries += 1  # select booking
+        queries += 1  # select exists user_offerer (access check)
+        queries += 1  # select feature
+        queries += 1  # select bank account
+        with assert_num_queries(queries):
             response = client.get(f"collective/bookings/{booking_id}")
 
         assert response.status_code == 200

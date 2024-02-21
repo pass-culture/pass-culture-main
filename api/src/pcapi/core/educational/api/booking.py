@@ -263,7 +263,10 @@ def get_collective_booking_by_id(booking_id: int) -> educational_models.Collecti
                 educational_models.EducationalRedactor.lastName,
             ),
             sa.orm.joinedload(educational_models.CollectiveBooking.educationalInstitution),
-            sa.orm.joinedload(educational_models.CollectiveBooking.venue).load_only(offerers_models.Venue.postalCode),
+            sa.orm.joinedload(educational_models.CollectiveBooking.venue).load_only(
+                offerers_models.Venue.postalCode,
+                offerers_models.Venue.managingOffererId,
+            ),
         )
         .options(
             sa.orm.load_only(

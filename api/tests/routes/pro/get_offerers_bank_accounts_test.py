@@ -59,12 +59,13 @@ class OfferersBankAccountTest:
         # When
         http_client = client.with_session_auth(pro_user.email)
 
+        offerer_id = offerer.id  # avoid extra SQL query below
         # Fetch the session
         # Fetch the user
         # Check user permission on offerer
         # Fetch offerer, bank_accounts and related/linked venues
         with assert_num_queries(4):
-            response = http_client.get(f"/offerers/{offerer.id}/bank-accounts")
+            response = http_client.get(f"/offerers/{offerer_id}/bank-accounts")
 
         # Then
         assert response.status_code == 200
@@ -97,12 +98,13 @@ class OfferersBankAccountTest:
         # When
         http_client = client.with_session_auth(pro_user.email)
 
+        offerer_id = offerer.id  # avoid extra SQL query below
         # Fetch the session
         # Fetch the user
         # Check user permission on offerer
         # Fetch offerer, bank_accounts and related/linked venues
         with assert_num_queries(4):
-            response = http_client.get(f"/offerers/{offerer.id}/bank-accounts")
+            response = http_client.get(f"/offerers/{offerer_id}/bank-accounts")
 
         # Then
         assert response.status_code == 200
@@ -153,12 +155,13 @@ class OfferersBankAccountTest:
         # When
         http_client = client.with_session_auth(pro_user.email)
 
+        offerer_id = offerer.id  # avoid extra SQL query below
         # Fetch the session
         # Fetch the user
         # Check user permission on offerer
         # Fetch offerer, bank_accounts and related/linked venues
         with assert_num_queries(4):
-            response = http_client.get(f"/offerers/{offerer.id}/bank-accounts")
+            response = http_client.get(f"/offerers/{offerer_id}/bank-accounts")
 
         # Then
         assert response.status_code == 200
@@ -186,12 +189,13 @@ class OfferersBankAccountTest:
         # When
         http_client = client.with_session_auth(pro_user.email)
 
+        offerer_id = offerer.id  # avoid extra SQL query below
         # Fetch the session
         # Fetch the user
         # Check user permission on offerer
         # Fetch offerer, bank_accounts and related/linked venues
         with assert_num_queries(4):
-            response = http_client.get(f"/offerers/{offerer.id}/bank-accounts")
+            response = http_client.get(f"/offerers/{offerer_id}/bank-accounts")
 
         # Then
         assert response.status_code == 200
@@ -224,12 +228,13 @@ class OfferersBankAccountTest:
         # When
         http_client = client.with_session_auth(pro_user.email)
 
+        offerer_id = offerer.id  # avoid extra SQL query below
         # Fetch the session
         # Fetch the user
         # Check user permission on offerer
         # Fetch offerer, bank_accounts and related/linked venues
         with assert_num_queries(4):
-            response = http_client.get(f"/offerers/{offerer.id}/bank-accounts")
+            response = http_client.get(f"/offerers/{offerer_id}/bank-accounts")
 
         # Then
         assert response.status_code == 200
@@ -274,12 +279,13 @@ class OfferersBankAccountTest:
         # When
         http_client = client.with_session_auth(pro_user.email)
 
+        offerer_id = offerer.id  # avoid extra SQL query below
         # Fetch the session
         # Fetch the user
         # Check user permission on offerer
         # Fetch offerer, bank_accounts and related/linked venues
         with assert_num_queries(4):
-            response = http_client.get(f"/offerers/{offerer.id}/bank-accounts")
+            response = http_client.get(f"/offerers/{offerer_id}/bank-accounts")
 
         # Then
         assert response.status_code == 200

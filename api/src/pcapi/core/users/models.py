@@ -398,14 +398,6 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return self.deposit.expirationDate > datetime.utcnow() if self.deposit else False  # type: ignore [operator]
 
     @property
-    def hasPhysicalVenues(self) -> bool:
-        for user_offerer in self.UserOfferers:
-            if any(not venue.isVirtual for venue in user_offerer.offerer.managedVenues):
-                return True
-
-        return False
-
-    @property
     def is_eligible(self) -> bool:
         return self.eligibility is not None
 
