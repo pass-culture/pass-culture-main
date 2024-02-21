@@ -52,8 +52,8 @@ export const AppLayout = ({
       )}
       <div
         className={classnames({
-          'page-layout': true,
-          'page-layout-full': layout === 'without-nav',
+          [styles['page-layout']]: true,
+          [styles['page-layout-full']]: layout === 'without-nav',
         })}
         onKeyDown={(e) => {
           if (e.key === 'Escape' && lateralPanelOpen) {
@@ -65,18 +65,18 @@ export const AppLayout = ({
           <nav
             id="lateral-panel"
             className={classnames({
-              'lateral-panel-wrapper': true,
-              open: lateralPanelOpen,
+              [styles['lateral-panel-wrapper']]: true,
+              [styles['lateral-panel-wrapper-open']]: lateralPanelOpen,
             })}
             ref={navPanel}
             aria-label="Menu principal"
           >
-            <div className={'lateral-panel-menu'}>
+            <div className={styles['lateral-panel-menu']}>
               {lateralPanelOpen && (
                 <div
                   className={classnames({
-                    'lateral-panel-nav': true,
-                    'lateral-panel-nav-open': lateralPanelOpen,
+                    [styles['lateral-panel-nav']]: true,
+                    [styles['lateral-panel-nav-open']]: lateralPanelOpen,
                   })}
                 >
                   <Button
@@ -113,9 +113,10 @@ export const AppLayout = ({
             {
               page: true,
               [`${pageName}-page`]: true,
-              'container-full': isNewSideBarNavigation && layout === 'basic',
-              container: layout === 'basic',
-              'without-nav': layout === 'without-nav',
+              [styles['container-full']]:
+                isNewSideBarNavigation && layout === 'basic',
+              [styles.container]: layout === 'basic',
+              [styles['container-without-nav']]: layout === 'without-nav',
             },
             className
           )}
@@ -125,11 +126,11 @@ export const AppLayout = ({
           ) : (
             <div
               className={classnames({
-                'page-content': true,
-                'page-content-old': !isNewSideBarNavigation,
+                [styles['page-content']]: true,
+                [styles['page-content-old']]: !isNewSideBarNavigation,
               })}
             >
-              <div className={classnames('after-notification-content')}>
+              <div className={styles['after-notification-content']}>
                 <DomainNameBanner />
                 {children}
               </div>

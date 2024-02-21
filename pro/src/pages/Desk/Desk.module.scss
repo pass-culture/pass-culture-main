@@ -40,3 +40,18 @@
   text-align: left;
   margin-top: rem.torem(16px);
 }
+
+.advice {
+  @include fonts.title4;
+
+  margin-bottom: rem.torem(32px);
+
+  a {
+    border-bottom: rem.torem(1px) solid;
+
+    &:focus,
+    &:hover {
+      color: colors.$primary;
+    }
+  }
+}

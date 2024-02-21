@@ -93,7 +93,7 @@ const Header = forwardRef(
               className="nav-item-icon"
               src={fullLogoutIcon}
               alt="Se déconnecter"
-              width="20"
+              width="24"
             />
           </NavLink>
           <NavLink
