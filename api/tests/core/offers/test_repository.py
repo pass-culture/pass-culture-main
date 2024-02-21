@@ -9,7 +9,6 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.offers import api
 from pcapi.core.offers import factories
 from pcapi.core.offers import models
 from pcapi.core.offers import repository
@@ -1134,49 +1133,6 @@ class CheckStockConsistenceTest:
 
         stock_ids = set(repository.check_stock_consistency())
         assert stock_ids == {stock2.id, stock4.id, stock6.id}
-
-
-@pytest.mark.usefixtures("db_session")
-class GetBookingCountByOfferTest:
-    def test_get_booking_count(self):
-        # Given
-        offer = factories.OfferFactory()
-        stock = factories.StockFactory(offer=offer, quantity=5)
-        stock_from_another_offer = factories.StockFactory()
-        bookings_factories.BookingFactory.create_batch(2, stock=stock)
-        bookings_factories.UsedBookingFactory.create_batch(1, stock=stock)
-        bookings_factories.CancelledBookingFactory.create_batch(1, stock=stock)
-        bookings_factories.BookingFactory.create_batch(3, stock=stock_from_another_offer)
-
-        # When
-        booking_count = repository.get_bookings_count_by_offer(offer_id=offer.id)
-
-        # Then
-        assert booking_count == 3
-
-    def test_get_booking_count_with_no_bookings(self):
-        # Given
-        offer = factories.OfferFactory()
-        factories.StockFactory(offer=offer, quantity=2)
-
-        # When
-        booking_count = repository.get_bookings_count_by_offer(offer_id=offer.id)
-
-        # Then
-        assert booking_count == 0
-
-    def test_get_booking_count_on_soft_deleted_stock(self):
-        # Given
-        offer = factories.OfferFactory()
-        stock = factories.StockFactory(offer=offer, quantity=5)
-        bookings_factories.BookingFactory.create_batch(2, stock=stock)
-        api.delete_stock(stock)
-
-        # When
-        booking_count = repository.get_bookings_count_by_offer(offer_id=offer.id)
-
-        # Then
-        assert booking_count == 0
 
 
 @pytest.mark.usefixtures("db_session")
