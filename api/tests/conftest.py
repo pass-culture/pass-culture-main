@@ -88,7 +88,7 @@ def build_backoffice_app():
 
             from pcapi.core.users.models import User
 
-            user = User.query.get(user_id)
+            user = User.query.filter_by(id=user_id).one()
 
             login_user(user, remember=True)
             login_manager.stamp_session(user)
