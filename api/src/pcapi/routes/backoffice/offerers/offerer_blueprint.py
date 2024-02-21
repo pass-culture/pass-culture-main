@@ -256,11 +256,7 @@ def get_stats_data(offerer_id: int) -> dict:
 
 @offerer_blueprint.route("/stats", methods=["GET"])
 def get_stats(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.filter_by(id=offerer_id).one_or_none()
-    if not offerer:
-        raise NotFound()
-
-    data = get_stats_data(offerer.id)
+    data = get_stats_data(offerer_id)
     return render_template(
         "offerer/get/stats.html",
         stats=data,

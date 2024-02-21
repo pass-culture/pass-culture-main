@@ -463,37 +463,41 @@ class GetUpdatePivotFormTest(GetEndpointHelper):
 
     def test_get_update_pivot_form_boost(self, authenticated_client):
         boost_pivot = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="http://example.com/boost1")
+        boost_pivot_id = boost_pivot.id
 
         db.session.expire(boost_pivot)
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, name="boost", pivot_id=boost_pivot.id))
+            response = authenticated_client.get(url_for(self.endpoint, name="boost", pivot_id=boost_pivot_id))
             assert response.status_code == 200
 
     def test_get_update_pivot_form_cgr(self, authenticated_client):
         cgr_pivot = providers_factories.CGRCinemaDetailsFactory(cinemaUrl="http://example.com/another_web_service")
+        cgr_pivot_id = cgr_pivot.id
 
         db.session.expire(cgr_pivot)
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, name="cgr", pivot_id=cgr_pivot.id))
+            response = authenticated_client.get(url_for(self.endpoint, name="cgr", pivot_id=cgr_pivot_id))
             assert response.status_code == 200
 
     def test_get_update_pivot_form_cineoffice(self, authenticated_client):
         cineoffice_pivot = providers_factories.CDSCinemaDetailsFactory()
+        cineoffice_pivot_id = cineoffice_pivot.id
 
         db.session.expire(cineoffice_pivot)
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, name="cineoffice", pivot_id=cineoffice_pivot.id))
+            response = authenticated_client.get(url_for(self.endpoint, name="cineoffice", pivot_id=cineoffice_pivot_id))
             assert response.status_code == 200
 
     @patch("pcapi.routes.backoffice.pivots.contexts.ems.EMSContext.check_if_api_call_is_ok")
     def test_get_update_pivot_form_ems(self, mocked_healthcheck, authenticated_client):
         ems_pivot = providers_factories.EMSCinemaDetailsFactory()
+        ems_pivot_id = ems_pivot.id
         db.session.expire(ems_pivot)
         with assert_num_queries(6):
-            response = authenticated_client.get(url_for(self.endpoint, name="ems", pivot_id=ems_pivot.id))
+            response = authenticated_client.get(url_for(self.endpoint, name="ems", pivot_id=ems_pivot_id))
             assert response.status_code == 200
 
 
