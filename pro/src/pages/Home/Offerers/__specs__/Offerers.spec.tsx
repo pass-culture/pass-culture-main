@@ -49,16 +49,13 @@ describe('Offerers', () => {
   })
 
   it("should display the carnet d'adresses", () => {
-    renderOfferers(
-      {
-        selectedOfferer: {
-          ...defaultGetOffererResponseModel,
-          managedVenues: [defaultGetOffererVenueResponseModel],
-          isActive: true,
-        },
+    renderOfferers({
+      selectedOfferer: {
+        ...defaultGetOffererResponseModel,
+        managedVenues: [defaultGetOffererVenueResponseModel],
+        isActive: true,
       },
-      { features: ['WIP_PARTNER_PAGE'] }
-    )
+    })
 
     expect(screen.getByText('Carnet d’adresses')).toBeInTheDocument()
   })

@@ -21,6 +21,7 @@ const virtualVenue = {
   isVirtual: true,
   name: 'Le Sous-sol (Offre numérique)',
   publicName: null,
+  isPermanent: false,
 }
 const physicalVenue = {
   ...defaultGetOffererVenueResponseModel,
@@ -28,6 +29,7 @@ const physicalVenue = {
   isVirtual: false,
   name: 'Le Sous-sol (Offre physique)',
   publicName: null,
+  isPermanent: false,
 }
 const physicalVenueWithPublicName = {
   ...defaultGetOffererVenueResponseModel,
@@ -35,6 +37,7 @@ const physicalVenueWithPublicName = {
   isVirtual: false,
   name: 'Le deuxième Sous-sol (Offre physique)',
   publicName: 'Le deuxième Sous-sol',
+  isPermanent: false,
 }
 
 describe('VenueList', () => {
