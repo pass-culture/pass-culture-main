@@ -1071,7 +1071,7 @@ def _filter_user_accounts(accounts: BaseQuery, search_term: str) -> BaseQuery:
         filters.append(sa.or_(*term_filters) if len(term_filters) > 1 else term_filters[0])
 
     # each result must match all terms in any column
-    accounts = accounts.filter(*filters).from_self()
+    accounts = accounts.filter(*filters)
 
     if name_term:
         name_term = name_term.lower()
@@ -1147,19 +1147,15 @@ def get_public_account_base_query() -> BaseQuery:
     # However, some young users, including beneficiaries, work for organizations and are associated with offerers
     # using the same email as their personal account. So let's include "pro" users who are beneficiaries (doesn't
     # include those who are only in the subscription process).
-    public_accounts = (
-        models.User.query.outerjoin(users_models.User.backoffice_profile)
-        .filter(
-            sa.or_(
-                sa.and_(
-                    models.User.has_pro_role.is_(False),  # type: ignore [attr-defined]
-                    models.User.has_non_attached_pro_role.is_(False),  # type: ignore [attr-defined]
-                    perm_models.BackOfficeUserProfile.id.is_(None),
-                ),
-                models.User.is_beneficiary.is_(True),  # type: ignore [attr-defined]
+    public_accounts = models.User.query.outerjoin(users_models.User.backoffice_profile).filter(
+        sa.or_(
+            sa.and_(
+                models.User.has_pro_role.is_(False),  # type: ignore [attr-defined]
+                models.User.has_non_attached_pro_role.is_(False),  # type: ignore [attr-defined]
+                perm_models.BackOfficeUserProfile.id.is_(None),
             ),
-        )
-        .distinct(models.User.id)
+            models.User.is_beneficiary.is_(True),  # type: ignore [attr-defined]
+        ),
     )
     return public_accounts
 
