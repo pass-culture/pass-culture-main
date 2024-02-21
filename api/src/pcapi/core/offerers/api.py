@@ -1912,7 +1912,7 @@ def delete_offerer(offerer_id: int) -> None:
         synchronize_session=False
     )
 
-    offerers_models.Offerer.query.filter(offerers_models.Offerer.id == offerer_id).delete()
+    offerers_models.Offerer.query.filter(offerers_models.Offerer.id == offerer_id).delete(synchronize_session=False)
 
     db.session.commit()
 
