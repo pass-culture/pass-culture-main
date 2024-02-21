@@ -973,8 +973,9 @@ def reject_inappropriate_product(
     )
 
     if offer_ids:
-        favorites = users_models.Favorite.query.filter(users_models.Favorite.offerId.in_(offer_ids)).all()
-        repository.delete(*favorites)
+        users_models.Favorite.query.filter(users_models.Favorite.offerId.in_(offer_ids)).delete(
+            synchronize_session=False
+        )
         search.async_index_offer_ids(
             offer_ids,
             reason=search.IndexationReason.PRODUCT_REJECTION,

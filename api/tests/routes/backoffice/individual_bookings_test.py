@@ -495,29 +495,29 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
 
     def test_uncancel_booking_insufficient_funds(self, authenticated_client, bookings):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
-        cancelled_booking = bookings_factories.CancelledBookingFactory(user=beneficiary, stock__price="250")
+        booking_id = bookings_factories.CancelledBookingFactory(user=beneficiary, stock__price="250").id
         bookings_factories.ReimbursedBookingFactory(user=beneficiary, stock__price="100")
 
-        response = self.post_to_endpoint(authenticated_client, booking_id=cancelled_booking.id)
+        response = self.post_to_endpoint(authenticated_client, booking_id=booking_id)
 
         assert response.status_code == 303
 
-        db.session.refresh(cancelled_booking)
-        assert cancelled_booking.status == bookings_models.BookingStatus.CANCELLED
+        booking = bookings_models.Booking.query.filter_by(id=booking_id).one()
+        assert booking.status == bookings_models.BookingStatus.CANCELLED
 
         redirected_response = authenticated_client.get(response.headers["location"])
         assert "The user does not have enough credit to book" in html_parser.extract_alert(redirected_response.data)
 
     def test_uncancel_booking_no_stock(self, authenticated_client, bookings):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
-        cancelled_booking = bookings_factories.CancelledBookingFactory(user=beneficiary, quantity=2, stock__quantity=1)
+        booking_id = bookings_factories.CancelledBookingFactory(user=beneficiary, quantity=2, stock__quantity=1).id
 
-        response = self.post_to_endpoint(authenticated_client, booking_id=cancelled_booking.id)
+        response = self.post_to_endpoint(authenticated_client, booking_id=booking_id)
 
         assert response.status_code == 303
 
-        db.session.refresh(cancelled_booking)
-        assert cancelled_booking.status == bookings_models.BookingStatus.CANCELLED
+        booking = bookings_models.Booking.query.filter_by(id=booking_id).one()
+        assert booking.status == bookings_models.BookingStatus.CANCELLED
 
         redirected_response = authenticated_client.get(response.headers["location"])
         assert 'Number of bookings cannot exceed "stock.quantity"' in html_parser.extract_alert(

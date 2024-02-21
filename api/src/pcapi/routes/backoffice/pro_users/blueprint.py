@@ -188,7 +188,7 @@ def delete(user_id: int) -> utils.BackofficeResponse:
     payload = DeleteBatchUserAttributesRequest(user_id=user.id)
     delete_user_attributes_task.delay(payload)
 
-    users_models.User.query.filter(users_models.User.id == user_id).delete()
+    users_models.User.query.filter(users_models.User.id == user_id).delete(synchronize_session=False)
     db.session.commit()
     flash("Le compte a été supprimé", "success")
     return redirect(url_for("backoffice_web.pro.search_pro"), code=303)

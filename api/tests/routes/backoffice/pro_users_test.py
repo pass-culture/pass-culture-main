@@ -423,6 +423,7 @@ class DeleteProUserTest(PostEndpointHelper):
         user = users_factories.UserFactory(roles=[users_models.UserRole.NON_ATTACHED_PRO])
         history_factories.SuspendedUserActionHistoryFactory(user=user)
         user_id = user.id
+        user_email = user.email
         form = {"email": user.email}
 
         response = self.post_to_endpoint(authenticated_client, user_id=user_id, form=form)
@@ -430,7 +431,7 @@ class DeleteProUserTest(PostEndpointHelper):
         assert response.status_code == 303
         assert response.location == url_for("backoffice_web.pro.search_pro", _external=True)
 
-        mails_api.delete_contact.assert_called_once_with(user.email)
+        mails_api.delete_contact.assert_called_once_with(user_email)
         DeleteBatchUserAttributesRequest.assert_called_once_with(user_id=user_id)
         delete_user_attributes_task.delay.assert_called_once_with("canary")
         assert users_models.User.query.filter(users_models.User.id == user_id).count() == 0
