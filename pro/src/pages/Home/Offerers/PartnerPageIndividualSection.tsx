@@ -11,7 +11,7 @@ import { WEBAPP_URL } from 'utils/config'
 
 import styles from './PartnerPage.module.scss'
 
-type PartnerPageIndividualSectionProps = {
+export type PartnerPageIndividualSectionProps = {
   venueId: number
   isVisibleInApp: boolean
   displayTitle?: boolean
@@ -58,32 +58,38 @@ export function PartnerPageIndividualSection({
       </div>
 
       <p className={styles['details-description']}>
-        Votre page partenaire est visible sur l’application pass Culture.
+        {isVisibleInApp
+          ? 'Votre page partenaire est visible sur l’application pass Culture.'
+          : 'Votre page n’est pas visible par les utilisateurs de l’application pass Culture. Vos offres publiées restent cependant visibles et réservables par les bénéficiaires.'}
       </p>
 
-      <ButtonLink
-        variant={ButtonVariant.TERNARY}
-        icon={fullLinkIcon}
-        link={{
-          to: venuePreviewLink,
-          isExternal: true,
-          target: '_blank',
-        }}
-        svgAlt="Nouvelle fenêtre"
-        className={styles['details-link']}
-        onClick={logVenueLinkClick}
-      >
-        Voir ma page dans l’application
-      </ButtonLink>
+      {isVisibleInApp && (
+        <>
+          <ButtonLink
+            variant={ButtonVariant.TERNARY}
+            icon={fullLinkIcon}
+            link={{
+              to: venuePreviewLink,
+              isExternal: true,
+              target: '_blank',
+            }}
+            svgAlt="Nouvelle fenêtre"
+            className={styles['details-link']}
+            onClick={logVenueLinkClick}
+          >
+            Voir ma page dans l’application
+          </ButtonLink>
 
-      <Button
-        variant={ButtonVariant.TERNARY}
-        icon={fullDuplicateIcon}
-        className={styles['details-link']}
-        onClick={copyVenueLink}
-      >
-        Copier le lien de la page
-      </Button>
+          <Button
+            variant={ButtonVariant.TERNARY}
+            icon={fullDuplicateIcon}
+            className={styles['details-link']}
+            onClick={copyVenueLink}
+          >
+            Copier le lien de la page
+          </Button>
+        </>
+      )}
     </section>
   )
 }
