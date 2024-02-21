@@ -21,19 +21,17 @@ COPY ./pyproject.toml ./poetry.lock ./
 
 ENV PATH=$PATH:/home/pcapi/.local/bin
 
-RUN pip install poetry poetry-plugin-export
+RUN pip install poetry
 
 WORKDIR /home/pcapi
 
-# FIXME (dramelet, 2024-02-05) this is to avoid a warning about "poetry-plugin-export" not being installed,
-# even if it is installed. That line can be removed once Poetry does not warn us anymore.
-RUN poetry config warnings.export false
-
 RUN poetry check --lock
 
-RUN poetry export -o requirements.txt --without dev
+ENV VIRTUAL_ENV=/home/pcapi/.local
 
-RUN pip install -r requirements.txt
+RUN python -m venv $VIRTUAL_ENV
+
+RUN poetry install --without dev --no-root
 
 ########## DEV BUILDER ##########
 
@@ -41,9 +39,7 @@ FROM builder AS builder-dev
 
 RUN poetry check --lock
 
-RUN poetry export -o requirements-dev.txt --only dev
-
-RUN pip install -r requirements-dev.txt
+RUN poetry install --only dev
 
 ########## SOURCES ##########
 
@@ -97,7 +93,6 @@ COPY --from=builder /home/pcapi/.local /home/pcapi/.local
 FROM lib AS lib-dev
 
 COPY --from=builder-dev /home/pcapi/.local /home/pcapi/.local
-
 
 ######### DEV ##########
 
