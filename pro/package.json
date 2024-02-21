@@ -106,7 +106,7 @@
     "openapi-typescript-codegen": "^0.27.0",
     "prettier": "^3.2.5",
     "rollup-plugin-visualizer": "^5.12.0",
-    "sass": "^1.71.0",
+    "sass": "^1.71.1",
     "storybook": "^7.6.16",
     "storybook-addon-react-router-v6": "^2.0.10",
     "stylelint": "^16.2.1",
