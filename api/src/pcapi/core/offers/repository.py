@@ -631,14 +631,6 @@ def check_stock_consistency() -> list[int]:
     ]
 
 
-def get_bookings_count_by_offer(offer_id: int) -> int:
-    return (
-        models.Stock.query.filter(models.Stock.offerId == offer_id)
-        .with_entities(sa.func.coalesce(sa.func.sum(models.Stock.dnBookedQuantity), 0))
-        .scalar()
-    )
-
-
 def find_event_stocks_happening_in_x_days(number_of_days: int) -> flask_sqlalchemy.BaseQuery:
     target_day = datetime.datetime.utcnow() + datetime.timedelta(days=number_of_days)
     start = datetime.datetime.combine(target_day, datetime.time.min)
