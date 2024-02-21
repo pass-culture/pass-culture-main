@@ -99,6 +99,3 @@ class SearchBackend:
 
     def clean_processing_queues(self) -> None:
         raise NotImplementedError()
-
-    def remove_duplicates_from_venue_indexation_queue(self) -> None:
-        raise NotImplementedError()
