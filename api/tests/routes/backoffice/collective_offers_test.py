@@ -923,7 +923,7 @@ class BatchCollectiveOffersValidateTest(PostEndpointHelper):
 
         assert response.status_code == 303
         assert collective_offer.validation == OfferValidationStatus.PENDING
-        collective_offer_template = educational_models.CollectiveOffer.query.get(collective_offer.id)
+        collective_offer_template = educational_models.CollectiveOffer.query.filter_by(id=collective_offer.id).one()
         assert collective_offer_template.validation == OfferValidationStatus.PENDING
         non_existing_collective_offers = educational_models.CollectiveOffer.query.filter(
             educational_models.CollectiveOffer.id.in_(fake_offer_ids)
@@ -976,7 +976,7 @@ class BatchCollectiveOffersRejectTest(PostEndpointHelper):
 
         assert response.status_code == 303
         assert collective_offer.validation == OfferValidationStatus.PENDING
-        collective_offer_template = educational_models.CollectiveOffer.query.get(collective_offer.id)
+        collective_offer_template = educational_models.CollectiveOffer.query.filter_by(id=collective_offer.id).one()
         assert collective_offer_template.validation == OfferValidationStatus.PENDING
         non_existing_collective_offers = educational_models.CollectiveOffer.query.filter(
             educational_models.CollectiveOffer.id.in_(fake_offer_ids)

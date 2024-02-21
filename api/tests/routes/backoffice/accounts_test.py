@@ -952,7 +952,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         )
         assert response.location == expected_url
 
-        user_to_edit = users_models.User.query.get(user_to_edit.id)
+        user_to_edit = users_models.User.query.filter_by(id=user_to_edit.id).one()
         assert user_to_edit.email == expected_new_email
         assert user_to_edit.phoneNumber == new_phone_number
         assert user_to_edit.idPieceNumber == user_to_edit.idPieceNumber
@@ -1011,7 +1011,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         )
         assert response.location == expected_url
 
-        user = users_models.User.query.get(user_to_edit.id)
+        user = users_models.User.query.filter_by(id=user_to_edit.id).one()
         assert user.firstName == base_form["first_name"].strip()
         assert user.lastName == base_form["last_name"].strip()
         assert user.email == base_form["email"]
@@ -1103,7 +1103,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert response.status_code == 400
         assert html_parser.extract_alert(response.data) == "L'email est déjà associé à un autre utilisateur"
 
-        user_to_edit = users_models.User.query.get(user_to_edit.id)
+        user_to_edit = users_models.User.query.filter_by(id=user_to_edit.id).one()
         assert user_to_edit.email != other_user.email
 
     def test_invalid_postal_code(self, authenticated_client):
@@ -1132,7 +1132,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user_to_edit.id, form=base_form)
         assert response.status_code == 303
 
-        user_to_edit = users_models.User.query.get(user_to_edit.id)
+        user_to_edit = users_models.User.query.filter_by(id=user_to_edit.id).one()
         assert user_to_edit.idPieceNumber is None
 
     def test_invalid_phone_number(self, authenticated_client):
@@ -1149,7 +1149,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user_to_edit.id, form=base_form)
         assert response.status_code == 400
 
-        user_to_edit = users_models.User.query.get(user_to_edit.id)
+        user_to_edit = users_models.User.query.filter_by(id=user_to_edit.id).one()
         assert user_to_edit.phoneNumber == old_phone_number
         assert html_parser.extract_alert(response.data) == "Le numéro de téléphone est invalide"
 
@@ -1166,7 +1166,7 @@ class ResendValidationEmailTest(PostEndpointHelper):
         assert response.status_code == 303
 
         # check that validation is unchanged
-        updated_user: users_models.User = users_models.User.query.get(user.id)
+        updated_user: users_models.User = users_models.User.query.filter_by(id=user.id).one()
         assert updated_user.isEmailValidated is False
 
         # check that a new token has been generated
@@ -1297,7 +1297,7 @@ class UpdatePublicAccountReviewTest(PostEndpointHelper):
         expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
         assert response.location == expected_url
 
-        user = users_models.User.query.get(user.id)
+        user = users_models.User.query.filter_by(id=user.id).one()
 
         assert len(user.beneficiaryFraudReviews) == 1
         fraud_review = user.beneficiaryFraudReviews[0]
@@ -1322,7 +1322,7 @@ class UpdatePublicAccountReviewTest(PostEndpointHelper):
         expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
         assert response.location == expected_url
 
-        user = users_models.User.query.get(user.id)
+        user = users_models.User.query.filter_by(id=user.id).one()
 
         assert len(user.beneficiaryFraudReviews) == 1
         fraud_review = user.beneficiaryFraudReviews[0]
@@ -1356,7 +1356,7 @@ class UpdatePublicAccountReviewTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=base_form)
         assert response.status_code == 303
 
-        user = users_models.User.query.get(user.id)
+        user = users_models.User.query.filter_by(id=user.id).one()
         assert not user.deposits
 
     def test_reason_not_compulsory(self, authenticated_client):
@@ -1373,7 +1373,7 @@ class UpdatePublicAccountReviewTest(PostEndpointHelper):
         expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
         assert response.location == expected_url
 
-        user = users_models.User.query.get(user.id)
+        user = users_models.User.query.filter_by(id=user.id).one()
 
         assert len(user.deposits) == 1
         assert len(user.beneficiaryFraudReviews) == 1
@@ -1395,7 +1395,7 @@ class UpdatePublicAccountReviewTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=base_form)
         assert response.status_code == 303
 
-        user = users_models.User.query.get(user.id)
+        user = users_models.User.query.filter_by(id=user.id).one()
         assert not user.deposits
 
     def test_accepte_underage_beneficiary_already_beneficiary(self, authenticated_client, legit_user):
@@ -1412,7 +1412,7 @@ class UpdatePublicAccountReviewTest(PostEndpointHelper):
         expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
         assert response.location == expected_url
 
-        user = users_models.User.query.get(user.id)
+        user = users_models.User.query.filter_by(id=user.id).one()
         assert len(user.beneficiaryFraudReviews) == 0
         assert user.roles == [users_models.UserRole.BENEFICIARY]
 

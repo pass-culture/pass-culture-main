@@ -247,7 +247,7 @@ class SuspendOffererTest(PostEndpointHelper):
         response = authenticated_client.get(response.location)
         assert html_parser.extract_alert(response.data) == f"La structure {offerer.name} ({offerer.id}) a été suspendue"
 
-        updated_offerer = offerers_models.Offerer.query.get(offerer.id)
+        updated_offerer = offerers_models.Offerer.query.filter_by(id=offerer.id).one()
         assert not updated_offerer.isActive
 
         action = history_models.ActionHistory.query.one()
@@ -270,7 +270,7 @@ class SuspendOffererTest(PostEndpointHelper):
             == "Impossible de suspendre une structure juridique pour laquelle il existe des réservations"
         )
 
-        not_updated_offerer = offerers_models.Offerer.query.get(offerer.id)
+        not_updated_offerer = offerers_models.Offerer.query.filter_by(id=offerer.id).one()
         assert not_updated_offerer.isActive
 
         assert history_models.ActionHistory.query.count() == 0
@@ -293,7 +293,7 @@ class UnsuspendOffererTest(PostEndpointHelper):
         response = authenticated_client.get(response.location)
         assert html_parser.extract_alert(response.data) == f"La structure {offerer.name} ({offerer.id}) a été réactivée"
 
-        updated_offerer = offerers_models.Offerer.query.get(offerer.id)
+        updated_offerer = offerers_models.Offerer.query.filter_by(id=offerer.id).one()
         assert updated_offerer.isActive
 
         action = history_models.ActionHistory.query.one()
@@ -394,7 +394,7 @@ class UpdateOffererTest(PostEndpointHelper):
         history_url = url_for("backoffice_web.offerer.get_history", offerer_id=offerer_to_edit.id)
         history_response = authenticated_client.get(history_url)
 
-        offerer_to_edit = offerers_models.Offerer.query.get(offerer_to_edit.id)
+        offerer_to_edit = offerers_models.Offerer.query.filter_by(id=offerer_to_edit.id).one()
         assert offerer_to_edit.name == new_name
         assert offerer_to_edit.city == new_city
         assert offerer_to_edit.postalCode == new_postal_code
@@ -442,7 +442,7 @@ class UpdateOffererTest(PostEndpointHelper):
         history_url = url_for("backoffice_web.offerer.get_history", offerer_id=offerer_to_edit.id)
         history_response = authenticated_client.get(history_url)
 
-        updated_offerer = offerers_models.Offerer.query.get(offerer_to_edit.id)
+        updated_offerer = offerers_models.Offerer.query.filter_by(id=offerer_to_edit.id).one()
         assert updated_offerer.city == "Brest"
         assert updated_offerer.postalCode == "29200"
         assert updated_offerer.address == "Place de la Liberté"

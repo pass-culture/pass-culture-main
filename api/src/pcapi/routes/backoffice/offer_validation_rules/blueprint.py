@@ -8,6 +8,7 @@ from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
 import sqlalchemy as sa
+from werkzeug.exceptions import NotFound
 
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
@@ -289,7 +290,9 @@ def create_rule() -> utils.BackofficeResponse:
 
 @offer_validation_rules_blueprint.route("/<int:rule_id>/delete", methods=["GET"])
 def get_delete_offer_validation_rule_form(rule_id: int) -> utils.BackofficeResponse:
-    rule_to_delete = offers_models.OfferValidationRule.query.get(rule_id)
+    rule_to_delete = offers_models.OfferValidationRule.query.filter_by(id=rule_id).one_or_none()
+    if not rule_to_delete:
+        raise NotFound()
 
     return render_template(
         "components/turbo/modal_form.html",
@@ -379,7 +382,9 @@ def get_edit_offer_validation_rule_form(rule_id: int) -> utils.BackofficeRespons
 
 @offer_validation_rules_blueprint.route("/<int:rule_id>/edit", methods=["POST"])
 def edit_rule(rule_id: int) -> utils.BackofficeResponse:
-    rule_to_update = offers_models.OfferValidationRule.query.get(rule_id)
+    rule_to_update = offers_models.OfferValidationRule.query.filter_by(id=rule_id).one_or_none()
+    if not rule_to_update:
+        raise NotFound()
 
     form = forms.CreateOfferValidationRuleForm()
     if not form.validate():
@@ -410,7 +415,9 @@ def edit_rule(rule_id: int) -> utils.BackofficeResponse:
 
             # edit existing subrule
             if sub_rule_data["id"]:
-                sub_rule_to_update = offers_models.OfferValidationSubRule.query.get(int(sub_rule_data["id"]))
+                sub_rule_to_update = offers_models.OfferValidationSubRule.query.filter_by(
+                    id=int(sub_rule_data["id"])
+                ).one()
                 is_different_sub_rule = any(
                     [
                         sub_rule_to_update.model

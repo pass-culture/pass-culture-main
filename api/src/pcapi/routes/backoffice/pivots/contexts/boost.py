@@ -57,7 +57,7 @@ class BoostContext(PivotContext):
         password = form.password.data
         cinema_url = form.cinema_url.data + "/" if not form.cinema_url.data.endswith("/") else form.cinema_url.data
 
-        venue = offerers_models.Venue.query.get(venue_id)
+        venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
         if not venue:
             flash(Markup("Le lieu id={venue_id} n'existe pas").format(venue_id=venue_id), "warning")
             return False

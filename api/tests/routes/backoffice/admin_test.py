@@ -84,10 +84,10 @@ class UpdateRoleTest(PostEndpointHelper):
         expected_url = url_for("backoffice_web.get_roles", _external=True)
         assert response.location == expected_url
 
-        role_to_edit = perm_models.Role.query.get(role_to_edit.id)
+        role_to_edit = perm_models.Role.query.filter_by(id=role_to_edit.id).one()
         assert role_to_edit.permissions == new_perms
 
-        role_not_to_edit = perm_models.Role.query.get(role_not_to_edit.id)
+        role_not_to_edit = perm_models.Role.query.filter_by(id=role_not_to_edit.id).one()
         assert role_not_to_edit.permissions == old_perms
 
     def test_update_role_with_empty_permissions(self, authenticated_client):

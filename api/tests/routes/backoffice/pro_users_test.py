@@ -195,7 +195,7 @@ class UpdateProUserTest(PostEndpointHelper):
         history_url = url_for("backoffice_web.pro_user.get_details", user_id=user_to_edit.id)
         response = authenticated_client.get(history_url)
 
-        user_to_edit = users_models.User.query.get(user_to_edit.id)
+        user_to_edit = users_models.User.query.filter_by(id=user_to_edit.id).one()
         assert user_to_edit.lastName == new_last_name
         assert user_to_edit.email == expected_new_email
         assert user_to_edit.postalCode == expected_new_postal_code

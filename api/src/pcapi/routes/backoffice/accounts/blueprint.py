@@ -875,7 +875,9 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
 @public_accounts_blueprint.route("/<int:user_id>/resend-validation-email", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def resend_validation_email(user_id: int) -> utils.BackofficeResponse:
-    user = users_models.User.query.get_or_404(user_id)
+    user = users_models.User.query.filter_by(id=user_id).one_or_none()
+    if not user:
+        raise NotFound()
 
     if user.has_admin_role or user.has_pro_role:
         flash("Cette action n'est pas supportée pour les utilisateurs admin ou pro", "warning")

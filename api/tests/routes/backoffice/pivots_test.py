@@ -634,28 +634,28 @@ class DeleteProviderTest(PostEndpointHelper):
 
         self.post_to_endpoint(authenticated_client, name="boost", pivot_id=boost_pivot.id)
 
-        assert not providers_models.BoostCinemaDetails.query.get(boost_pivot.id)
+        assert not providers_models.BoostCinemaDetails.query.filter_by(id=boost_pivot.id).first()
 
     def test_delete_pivot_cgr(self, authenticated_client):
         cgr_pivot = providers_factories.CGRCinemaDetailsFactory()
 
         self.post_to_endpoint(authenticated_client, name="cgr", pivot_id=cgr_pivot.id)
 
-        assert not providers_models.CGRCinemaDetails.query.get(cgr_pivot.id)
+        assert not providers_models.CGRCinemaDetails.query.filter_by(id=cgr_pivot.id).first()
 
     def test_delete_pivot_cineoffice(self, authenticated_client):
         cineoffice_pivot = providers_factories.CDSCinemaDetailsFactory()
 
         self.post_to_endpoint(authenticated_client, name="cineoffice", pivot_id=cineoffice_pivot.id)
 
-        assert not providers_models.CDSCinemaDetails.query.get(cineoffice_pivot.id)
+        assert not providers_models.CDSCinemaDetails.query.filter_by(id=cineoffice_pivot.id).first()
 
     def test_delete_pivot_ems(self, authenticated_client):
         ems_pivot = providers_factories.EMSCinemaDetailsFactory()
 
         self.post_to_endpoint(authenticated_client, name="ems", pivot_id=ems_pivot.id)
 
-        assert not providers_models.EMSCinemaDetails.query.get(ems_pivot.id)
+        assert not providers_models.EMSCinemaDetails.query.filter_by(id=ems_pivot.id).first()
 
     def test_delete_pivot_history_action(self, authenticated_client, legit_user):
         venue = offerers_factories.VenueFactory()
@@ -669,7 +669,7 @@ class DeleteProviderTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, name="cgr", pivot_id=cgr_pivot.id)
         assert response.status_code == 303
-        assert not providers_models.CGRCinemaDetails.query.get(cgr_pivot.id)
+        assert not providers_models.CGRCinemaDetails.query.filter_by(id=cgr_pivot.id).first()
         action = history_models.ActionHistory.query.one()
         assert action.comment == "Pivot CGR"
         assert action.venueId == venue.id
@@ -688,8 +688,8 @@ class DeleteProviderTest(PostEndpointHelper):
         venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider, venue=venue)
         response = self.post_to_endpoint(authenticated_client, follow_redirects=True, name="cgr", pivot_id=cgr_pivot.id)
         assert response.status_code == 200
-        assert providers_models.CGRCinemaDetails.query.get(cgr_pivot.id) is not None
-        assert providers_models.VenueProvider.query.get(venue_provider.id) is not None
+        assert providers_models.CGRCinemaDetails.query.filter_by(id=cgr_pivot.id).one()
+        assert providers_models.VenueProvider.query.filter_by(id=venue_provider.id).one()
         assert html_parser.extract_alert(response.data) == (
             "Le pivot ne peut pas être supprimé si la synchronisation de ce cinéma est active. "
             "Supprimez la synchronisation et vous pourrez supprimer le pivot."

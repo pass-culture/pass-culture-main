@@ -56,7 +56,7 @@ class EMSContext(PivotContext):
         venue_id = form.venue_id.data
         cinema_id = form.cinema_id.data
 
-        venue = offerers_models.Venue.query.get(venue_id)
+        venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
         if not venue:
             flash(Markup("Le lieu id={venue_id} n'existe pas").format(venue_id=venue_id), "warning")
             return False

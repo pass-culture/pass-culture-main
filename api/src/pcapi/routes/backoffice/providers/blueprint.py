@@ -7,6 +7,7 @@ from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
 import sqlalchemy as sa
+from werkzeug.exceptions import NotFound
 
 from pcapi.core.external import zendesk_sell
 from pcapi.core.history import api as history_api
@@ -133,7 +134,10 @@ def _get_or_create_offerer(form: forms.CreateProviderForm) -> tuple[offerers_mod
 
 @providers_blueprint.route("/<int:provider_id>/update", methods=["GET"])
 def get_update_provider_form(provider_id: int) -> utils.BackofficeResponse:
-    provider = providers_models.Provider.query.get(provider_id)
+    provider = providers_models.Provider.query.filter_by(id=provider_id).one_or_none()
+    if not provider:
+        raise NotFound()
+
     form = forms.EditProviderForm(
         name=provider.name,
         logo_url=provider.logoUrl,
@@ -159,7 +163,9 @@ def get_update_provider_form(provider_id: int) -> utils.BackofficeResponse:
 
 @providers_blueprint.route("/<int:provider_id>/update", methods=["POST"])
 def update_provider(provider_id: int) -> utils.BackofficeResponse:
-    provider = providers_models.Provider.query.get(provider_id)
+    provider = providers_models.Provider.query.filter_by(id=provider_id).one_or_none()
+    if not provider:
+        raise NotFound()
 
     form = forms.EditProviderForm()
     if not form.validate():

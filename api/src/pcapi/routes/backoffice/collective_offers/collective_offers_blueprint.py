@@ -11,6 +11,7 @@ from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
 from markupsafe import escape
 import sqlalchemy as sa
+from werkzeug.exceptions import NotFound
 
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import models as educational_models
@@ -322,7 +323,9 @@ def get_advanced_search_form() -> utils.BackofficeResponse:
 @blueprint.route("/<int:collective_offer_id>/validate", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_validate_collective_offer_form(collective_offer_id: int) -> utils.BackofficeResponse:
-    collective_offer = educational_models.CollectiveOffer.query.get_or_404(collective_offer_id)
+    collective_offer = educational_models.CollectiveOffer.query.filter_by(id=collective_offer_id).one_or_none()
+    if not collective_offer:
+        raise NotFound()
 
     form = empty_forms.EmptyForm()
 
