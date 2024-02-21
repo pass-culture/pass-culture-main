@@ -16,7 +16,6 @@ export type SharedCurrentUserResponseModel = {
   email: string;
   externalIds?: Record<string, any> | null;
   firstName?: string | null;
-  hasPhysicalVenues?: boolean | null;
   hasSeenProRgs?: boolean | null;
   hasSeenProTutorials?: boolean | null;
   id: number;

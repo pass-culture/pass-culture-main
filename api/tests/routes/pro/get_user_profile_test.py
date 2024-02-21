@@ -41,7 +41,6 @@ class Returns200Test:
             "email": "toto@example.com",
             "externalIds": {},
             "firstName": "Jean",
-            "hasPhysicalVenues": False,
             "hasSeenProTutorials": True,
             "hasSeenProRgs": False,
             "id": user.id,

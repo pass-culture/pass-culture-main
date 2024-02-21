@@ -304,19 +304,6 @@ class UserTest:
             )
             assert user.eligibility is user_models.EligibilityType.AGE18
 
-    def test_hasPhysicalVenue(self):
-        user = users_factories.UserFactory()
-        assert not user.hasPhysicalVenues
-
-        offerer = offerers_factories.UserOffererFactory(user=user).offerer
-        assert not user.hasPhysicalVenues
-
-        offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-        assert not user.hasPhysicalVenues
-
-        offerers_factories.VenueFactory(managingOfferer=offerer)
-        assert user.hasPhysicalVenues
-
     def test_full_name(self):
         # hybrid property: check both Python and SQL expressions
 

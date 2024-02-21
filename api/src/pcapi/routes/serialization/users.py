@@ -141,7 +141,6 @@ class SharedLoginUserResponseModel(BaseModel):
     departementCode: str | None
     email: str
     firstName: str | None
-    hasPhysicalVenues: bool | None
     hasSeenProTutorials: bool | None
     # FIXME (mageoffray, 2022-04-04): Optional can be removed after
     # post-deploy migrations have been done
@@ -182,7 +181,6 @@ class SharedCurrentUserResponseModel(BaseModel):
     email: str
     externalIds: dict | None
     firstName: str | None
-    hasPhysicalVenues: bool | None
     hasSeenProTutorials: bool | None
     hasSeenProRgs: bool | None
     id: int
