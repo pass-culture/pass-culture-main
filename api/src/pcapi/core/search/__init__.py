@@ -1,5 +1,4 @@
 from collections.abc import Collection
-import dataclasses
 import datetime
 import enum
 import logging
@@ -19,7 +18,6 @@ import pcapi.core.offers.repository as offers_repository
 from pcapi.core.search.backends import base
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import repository
 from pcapi.utils import requests
 from pcapi.utils.module_loading import import_string
 
@@ -458,12 +456,6 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
 
 
 DEFAULT_DAYS_FOR_LAST_BOOKINGS = 30
-
-
-@dataclasses.dataclass
-class BookingsCount:
-    booking_count_by_offer_id: dict[int, int]
-    booking_count_by_ean: dict[str, int]
 
 
 def get_offers_booking_count_by_id(
