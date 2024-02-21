@@ -59,6 +59,9 @@ STANDARD_THUMBNAIL_HEIGHT = 600
 ACCEPTED_THUMBNAIL_FORMATS = ("png", "jpg", "jpeg", "mpo", "webp")
 
 
+AnyCollectiveOffer = educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate
+
+
 def check_provider_can_edit_stock(
     offer: models.Offer, editing_provider: providers_models.Provider | None = None
 ) -> None:
@@ -282,6 +285,25 @@ def check_validation_status(
 ) -> None:
     if offer.validation in (models.OfferValidationStatus.REJECTED, models.OfferValidationStatus.PENDING):
         raise exceptions.RejectedOrPendingOfferNotEditable()
+
+
+def check_contact_request(offer: AnyCollectiveOffer, in_data: dict) -> None:
+    if isinstance(offer, educational_models.CollectiveOffer):
+        # collective offers are not concerned, for now.
+        return
+
+    set_phone = in_data["contactPhone"] if "contactPhone" in in_data else offer.contactPhone
+    set_url = in_data["contactUrl"] if "contactUrl" in in_data else offer.contactUrl
+    set_form = in_data["contactForm"] if "contactForm" in in_data else offer.contactForm
+
+    if not any((set_phone, set_url)):
+        raise exceptions.AllNullContactRequestDataError()
+
+    if not set_url and not set_form:
+        raise exceptions.UrlandFormBothSetError()
+
+    if set_url and any((set_phone, set_form)):
+        raise exceptions.UrlSetError()
 
 
 def check_offer_is_digital(offer: models.Offer) -> None:

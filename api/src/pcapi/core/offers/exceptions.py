@@ -299,3 +299,23 @@ class BookingsHaveOtherPricingPoint(MoveOfferBaseException):
         super().__init__(
             "Il existe des réservations valorisées sur un autre point de valorisation que celui du nouveau lieu"
         )
+
+
+class CollectiveOfferContactRequestError(Exception):
+    msg = ""
+    fields = "all"
+
+
+class AllNullContactRequestDataError(CollectiveOfferContactRequestError):
+    msg = "All contact information are null"
+    fields = "all"
+
+
+class UrlandFormBothSetError(CollectiveOfferContactRequestError):
+    msg = "Url and form can not both be used"
+    fields = "url,form"
+
+
+class UrlSetError(CollectiveOfferContactRequestError):
+    msg = "Url set and other fields are too"
+    fields = "all"

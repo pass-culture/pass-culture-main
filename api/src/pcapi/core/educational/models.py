@@ -285,6 +285,10 @@ class StatusMixin:
         )
 
 
+class OfferContactFormEnum(enum.Enum):
+    FORM = "form"
+
+
 class CollectiveOffer(
     PcObject, Base, offer_mixin.ValidationMixin, AccessibilityMixin, StatusMixin, HasImageMixin, Model
 ):
@@ -638,10 +642,6 @@ class CollectiveOfferTemplate(
         server_default="{}",
     )
 
-    contactEmail: str = sa.Column(sa.String(120), nullable=False)
-
-    contactPhone: str | None = sa.Column(sa.Text, nullable=True)
-
     offerVenue: dict = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)
 
     interventionArea: list[str] = sa.Column(
@@ -701,6 +701,16 @@ class CollectiveOfferTemplate(
         "CollectivePlaylist", back_populates="collective_offer_template"
     )
 
+    contactEmail: str = sa.Column(sa.String(120), nullable=False)
+    contactPhone: str | None = sa.Column(sa.Text, nullable=True)
+    contactUrl: str | None = sa.Column(sa.Text, nullable=True)
+    contactForm: OfferContactFormEnum | None = sa.Column(
+        MagicEnum(OfferContactFormEnum),
+        nullable=True,
+        server_default=OfferContactFormEnum.FORM.value,
+        default=OfferContactFormEnum.FORM,
+    )
+
     @declared_attr
     def __table_args__(self):
         parent_args = []
@@ -720,7 +730,13 @@ class CollectiveOfferTemplate(
                 'AND lower("dateRange")::date >= "dateCreated"::date)',
                 name="template_dates_non_empty_daterange",
             ),
+            sa.CheckConstraint(
+                '("contactUrl" is null and "contactForm" is not null) '
+                'or ("contactUrl" is not null and "contactForm" is null)',
+                name="collective_offer_tmpl_contact_request_form_switch_constraint",
+            ),
         ]
+
         return tuple(parent_args)
 
     @property

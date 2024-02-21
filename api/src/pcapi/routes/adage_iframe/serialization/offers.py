@@ -265,8 +265,6 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
     venue: OfferVenueResponse
     students: list[educational_models.StudentLevels]
     offerVenue: CollectiveOfferOfferVenue
-    contactEmail: str
-    contactPhone: str | None
     durationMinutes: int | None
     educationalPriceDetail: str | None
     offerId: int | None
@@ -279,6 +277,10 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
     dates: TemplateDatesModel | None
     formats: typing.Sequence[EacFormat] | None
     isTemplate: bool = True
+    contactEmail: str
+    contactPhone: str | None
+    contactUrl: str | None
+    contactForm: educational_models.OfferContactFormEnum | None
 
     @classmethod
     def build(
@@ -309,8 +311,6 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
                 city=offerVenue.city if offerVenue else None,
                 **offer.offerVenue,
             ),
-            contactEmail=offer.contactEmail,
-            contactPhone=offer.contactPhone,
             durationMinutes=offer.durationMinutes,
             offerId=offer.offerId,
             educationalPriceDetail=offer.priceDetail,
@@ -326,6 +326,10 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
             visualDisabilityCompliant=offer.visualDisabilityCompliant,
             dates=dates,
             formats=offer.get_formats(),
+            contactEmail=offer.contactEmail,
+            contactPhone=offer.contactPhone,
+            contactUrl=offer.contactUrl,
+            contactForm=offer.contactForm,
         )
 
     class Config:
