@@ -12,6 +12,7 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import strokePassIcon from 'icons/stroke-pass.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import strokeStarIcon from 'icons/stroke-star.svg'
+import strokeVenueIcon from 'icons/stroke-venue.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -72,14 +73,23 @@ export const OfferInfos = () => {
       },
       icon: strokeStarIcon,
     },
+    ['mon-etablissement']: {
+      title: 'Mon établissement',
+      link: {
+        isExternal: false,
+        to: `/adage-iframe/mon-etablissement?token=${adageAuthToken}`,
+      },
+      icon: strokeVenueIcon,
+    },
   }
 
-  const originCrumb: Crumb =
-    crumbForCurrentRoute[
-      adageUser.role === AdageFrontRoles.READONLY
-        ? 'recherche'
-        : parentRouteInUrl
-    ]
+  const originCrumb: Crumb = isOfferTemplate
+    ? crumbForCurrentRoute[
+        adageUser.role === AdageFrontRoles.READONLY
+          ? 'recherche'
+          : parentRouteInUrl
+      ]
+    : crumbForCurrentRoute['mon-etablissement']
 
   useEffect(() => {
     async function getOffer() {

@@ -98,6 +98,8 @@ vi.mock('hooks/useIsElementVisible', () => ({
   default: vi.fn().mockImplementation(() => [false, false]),
 }))
 
+window.scrollTo = vi.fn().mockImplementation(() => {})
+
 const renderAppLayout = (
   options?: RenderWithProvidersOptions,
   user = defaultAdageUser
