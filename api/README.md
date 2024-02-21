@@ -38,6 +38,12 @@ soit en utilisant `pyenv`.
 La génération de PDF via `weasyprint` nécessite également de suivre
 ces [étapes](https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#installation) d'installation.
 
+Le lint des migrations, effectué lors du [hook de precommit](../.githooks/pre-commit), nécessite [Squawk — a linter for Postgres migrations](https://squawkhq.com/).
+
+``` shell
+npm install --global squawk-cli
+```
+
 ### Poetry
 
 On utilise Poetry pour gérer nos dépendances. Par défaut, Poetry crée l'environnement virtuel dans un dossier
