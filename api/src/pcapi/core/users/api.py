@@ -841,7 +841,9 @@ def create_pro_user(pro_user: ImportUserFromCsvModel | ProUserCreationBodyV2Mode
 
     if settings.IS_INTEGRATION:
         new_pro_user.add_beneficiary_role()
-        new_pro_user.validatedBirthDate = new_pro_user.dateOfBirth
+        eighteen_years_ago = datetime.datetime.utcnow() - datetime.timedelta(days=366 * 18)
+        new_pro_user.dateOfBirth = eighteen_years_ago
+        new_pro_user.validatedBirthDate = new_pro_user.dateOfBirth.date()
         deposit = finance_api.create_deposit(new_pro_user, "integration_signup", models.EligibilityType.AGE18)
         new_pro_user.deposits = [deposit]
 
