@@ -605,7 +605,10 @@ def batch_edit_offer() -> utils.BackofficeResponse:
 @list_offers_blueprint.route("/<int:offer_id>/edit", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def edit_offer(offer_id: int) -> utils.BackofficeResponse:
-    offer = offers_models.Offer.query.get_or_404(offer_id)
+    offer = offers_models.Offer.query.filter_by(id=offer_id).one_or_none()
+    if not offer:
+        raise NotFound()
+
     form = forms.EditOfferForm()
 
     if not form.validate():

@@ -544,17 +544,18 @@ class CancelCollectiveBookingTest(PostEndpointHelper):
     def test_cant_cancel_reimbursed_booking(self, authenticated_client, collective_bookings):
         reimbursed = collective_bookings[4]
         old_status = reimbursed.status
+        booking_id = reimbursed.id
 
         response = self.post_to_endpoint(
             authenticated_client,
-            collective_booking_id=reimbursed.id,
+            collective_booking_id=booking_id,
             form={"reason": educational_models.CollectiveBookingCancellationReasons.BACKOFFICE.value},
         )
 
         assert response.status_code == 303
 
-        db.session.refresh(reimbursed)
-        assert reimbursed.status == old_status
+        booking = educational_models.CollectiveBooking.query.filter_by(id=booking_id).one()
+        assert booking.status == old_status
 
         redirected_response = authenticated_client.get(response.headers["location"])
         assert (
@@ -565,17 +566,18 @@ class CancelCollectiveBookingTest(PostEndpointHelper):
     def test_cant_cancel_cancelled_booking(self, authenticated_client, collective_bookings):
         cancelled = collective_bookings[2]
         old_status = cancelled.status
+        booking_id = cancelled.id
 
         response = self.post_to_endpoint(
             authenticated_client,
-            collective_booking_id=cancelled.id,
+            collective_booking_id=booking_id,
             form={"reason": educational_models.CollectiveBookingCancellationReasons.BACKOFFICE.value},
         )
 
         assert response.status_code == 303
 
-        db.session.refresh(cancelled)
-        assert cancelled.status == old_status
+        booking = educational_models.CollectiveBooking.query.filter_by(id=booking_id).one()
+        assert booking.status == old_status
 
         redirected_response = authenticated_client.get(response.headers["location"])
 

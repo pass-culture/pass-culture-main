@@ -3,6 +3,7 @@ from flask import url_for
 from markupsafe import Markup
 import requests
 import sqlalchemy as sa
+from werkzeug.exceptions import NotFound
 from werkzeug.utils import redirect
 
 from pcapi import settings
@@ -125,7 +126,10 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
 @zendesk_sell_blueprint.route("/venue/<int:venue_id>/update", methods=["POST"])
 def update_venue(venue_id: int) -> utils.BackofficeResponse:
-    venue = offerers_models.Venue.query.get_or_404(venue_id)
+    venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
+    if not venue:
+        raise NotFound()
+
     url = url_for("backoffice_web.venue.get", venue_id=venue_id)
 
     if venue.isVirtual or not venue.isPermanent:

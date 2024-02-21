@@ -435,7 +435,7 @@ class ValidateIncidentTest(PostEndpointHelper):
         content = html_parser.content_as_text(response.data)
         assert "L'incident a été validé" in content
 
-        updated_incident = finance_models.FinanceIncident.query.get(booking_incident.incidentId)
+        updated_incident = finance_models.FinanceIncident.query.filter_by(id=booking_incident.incidentId).one()
         assert updated_incident.status == finance_models.IncidentStatus.VALIDATED
         assert updated_incident.forceDebitNote == force_debit_note
 
@@ -588,7 +588,7 @@ class ValidateIncidentTest(PostEndpointHelper):
             html_parser.extract_alert(authenticated_client.get(response.location).data)
             == "L'incident ne peut être validé que s'il est au statut 'créé'."
         )
-        finance_incident = finance_models.FinanceIncident.query.get(finance_incident.id)
+        finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident.id).one()
         assert finance_incident.status == initial_status
         assert finance_models.FinanceEvent.query.count() == 0
         assert len(mails_testing.outbox) == 0
@@ -861,7 +861,7 @@ class GetCollectiveBookingIncidentFormTest(PostEndpointHelper):
     endpoint_kwargs = {"collective_booking_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
-    expected_num_queries = 10
+    expected_num_queries = 9
 
     def test_get_form(self, authenticated_client, invoiced_collective_pricing):
         collective_booking = educational_factories.ReimbursedCollectiveBookingFactory(
@@ -1403,7 +1403,7 @@ class ForceDebitNoteTest(PostEndpointHelper):
 
         assert response.status_code == 200
         assert "Une note de débit sera générée à la prochaine échéance." in html_parser.extract_alert(response.data)
-        updated_finance_incident = finance_models.FinanceIncident.query.get(finance_incident.id)
+        updated_finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident.id).one()
         assert updated_finance_incident.forceDebitNote is True
 
     @pytest.mark.parametrize(
@@ -1424,7 +1424,7 @@ class ForceDebitNoteTest(PostEndpointHelper):
 
         alert = html_parser.extract_alert(redirected_response.data)
         assert "Cette action ne peut être effectuée que sur un incident validé non terminé." == alert
-        finance_incident = finance_models.FinanceIncident.query.get(original_finance_incident.id)
+        finance_incident = finance_models.FinanceIncident.query.filter_by(id=original_finance_incident.id).one()
         assert finance_incident.forceDebitNote is False
 
     @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
@@ -1468,7 +1468,7 @@ class ForceDebitNoteTest(PostEndpointHelper):
 
         alert = html_parser.extract_alert(redirected_response.data)
         assert "Cette action ne peut être effectuée que sur un incident validé non terminé." == alert
-        finance_incident = finance_models.FinanceIncident.query.get(original_finance_incident.id)
+        finance_incident = finance_models.FinanceIncident.query.filter_by(id=original_finance_incident.id).one()
         assert finance_incident.forceDebitNote is False
 
 
@@ -1517,7 +1517,7 @@ class CancelDebitNoteTest(PostEndpointHelper):
             "VENUE_NAME": venue.publicName,
             "OFFER_NAME": booking.stock.offer.name,
         }
-        updated_finance_incident = finance_models.FinanceIncident.query.get(finance_incident.id)
+        updated_finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident.id).one()
         assert updated_finance_incident.forceDebitNote is False
 
     @pytest.mark.parametrize(
@@ -1540,7 +1540,7 @@ class CancelDebitNoteTest(PostEndpointHelper):
 
         alert = html_parser.extract_alert(redirected_response.data)
         assert "Cette action ne peut être effectuée que sur un incident validé non terminé." == alert
-        finance_incident = finance_models.FinanceIncident.query.get(original_finance_incident.id)
+        finance_incident = finance_models.FinanceIncident.query.filter_by(id=original_finance_incident.id).one()
         assert finance_incident.forceDebitNote == original_finance_incident.forceDebitNote
 
     @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
@@ -1587,5 +1587,5 @@ class CancelDebitNoteTest(PostEndpointHelper):
 
         alert = html_parser.extract_alert(redirected_response.data)
         assert "Cette action ne peut être effectuée que sur un incident validé non terminé." == alert
-        finance_incident = finance_models.FinanceIncident.query.get(original_finance_incident.id)
+        finance_incident = finance_models.FinanceIncident.query.filter_by(id=original_finance_incident.id).one()
         assert finance_incident.forceDebitNote == original_finance_incident.forceDebitNote

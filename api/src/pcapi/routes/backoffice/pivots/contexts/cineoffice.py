@@ -3,6 +3,7 @@ import typing
 
 from flask import flash
 from markupsafe import Markup
+from werkzeug.exceptions import NotFound
 
 from pcapi import settings
 from pcapi.connectors import cine_digital_service
@@ -35,7 +36,9 @@ class CineofficeContext(PivotContext):
 
     @classmethod
     def get_edit_form(cls, pivot_id: int) -> forms.EditCineOfficeForm:
-        pivot = providers_models.CDSCinemaDetails.query.get_or_404(pivot_id)
+        pivot = providers_models.CDSCinemaDetails.query.filter_by(id=pivot_id).one_or_none()
+        if not pivot:
+            raise NotFound()
         form = forms.EditCineOfficeForm(
             venue_id=[pivot.cinemaProviderPivot.venue.id],
             cinema_id=pivot.cinemaProviderPivot.idAtProvider,
@@ -56,7 +59,7 @@ class CineofficeContext(PivotContext):
         cinema_id = form.cinema_id.data
         api_token = form.api_token.data
 
-        venue = offerers_models.Venue.query.get(venue_id)
+        venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
         if not venue:
             flash(Markup("Le lieu id={venue_id} n'existe pas").format(venue_id=venue_id), "warning")
             return False
@@ -84,7 +87,9 @@ class CineofficeContext(PivotContext):
 
     @classmethod
     def update_pivot(cls, form: forms.EditCineOfficeForm, pivot_id: int) -> bool:
-        pivot = providers_models.CDSCinemaDetails.query.get_or_404(pivot_id)
+        pivot = providers_models.CDSCinemaDetails.query.filter_by(id=pivot_id).one_or_none()
+        if not pivot:
+            raise NotFound()
         account_id = form.account_id.data
         cinema_id = form.cinema_id.data
         api_token = form.api_token.data

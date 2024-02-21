@@ -7,6 +7,7 @@ from flask import request
 from flask import url_for
 from markupsafe import Markup
 import sqlalchemy as sa
+from werkzeug.exceptions import NotFound
 
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.permissions import models as perm_models
@@ -129,7 +130,10 @@ def get_create_tag_form() -> utils.BackofficeResponse:
 @tags_blueprint.route("/<int:tag_id>/update", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
 def update_tag(tag_id: int) -> utils.BackofficeResponse:
-    tag = criteria_models.Criterion.query.get_or_404(tag_id)
+    tag = criteria_models.Criterion.query.filter_by(id=tag_id).one_or_none()
+    if not tag:
+        raise NotFound()
+
     form = criteria_forms.EditCriterionForm()
     form.categories.choices = [(cat.id, cat.label) for cat in get_tags_categories()]
 
@@ -158,7 +162,9 @@ def update_tag(tag_id: int) -> utils.BackofficeResponse:
 @tags_blueprint.route("/<int:tag_id>/edit", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
 def get_update_tag_form(tag_id: int) -> utils.BackofficeResponse:
-    tag = criteria_models.Criterion.query.get_or_404(tag_id)
+    tag = criteria_models.Criterion.query.filter_by(id=tag_id).one_or_none()
+    if not tag:
+        raise NotFound()
 
     form = criteria_forms.EditCriterionForm(
         name=tag.name,
@@ -182,7 +188,9 @@ def get_update_tag_form(tag_id: int) -> utils.BackofficeResponse:
 @tags_blueprint.route("/<int:tag_id>/delete", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_TAGS_N2)
 def delete_tag(tag_id: int) -> utils.BackofficeResponse:
-    tag = criteria_models.Criterion.query.get_or_404(tag_id)
+    tag = criteria_models.Criterion.query.filter_by(id=tag_id).one_or_none()
+    if not tag:
+        raise NotFound()
 
     try:
         db.session.delete(tag)
@@ -198,7 +206,9 @@ def delete_tag(tag_id: int) -> utils.BackofficeResponse:
 @tags_blueprint.route("/<int:tag_id>/delete", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.MANAGE_TAGS_N2)
 def get_delete_tag_form(tag_id: int) -> utils.BackofficeResponse:
-    tag = criteria_models.Criterion.query.get_or_404(tag_id)
+    tag = criteria_models.Criterion.query.filter_by(id=tag_id).one_or_none()
+    if not tag:
+        raise NotFound()
 
     information = Markup(
         "Le tag <strong>{name}</strong> sera définitivement supprimé de la base de données et retiré de toutes les "

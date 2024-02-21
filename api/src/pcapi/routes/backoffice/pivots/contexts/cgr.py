@@ -3,6 +3,7 @@ import typing
 
 from flask import flash
 from markupsafe import Markup
+from werkzeug.exceptions import NotFound
 
 from pcapi.connectors.cgr import cgr
 from pcapi.core.offerers import models as offerers_models
@@ -34,7 +35,9 @@ class CGRContext(PivotContext):
 
     @classmethod
     def get_edit_form(cls, pivot_id: int) -> forms.EditCGRForm:
-        pivot = providers_models.CGRCinemaDetails.query.get_or_404(pivot_id)
+        pivot = providers_models.CGRCinemaDetails.query.filter_by(id=pivot_id).one_or_none()
+        if not pivot:
+            raise NotFound()
 
         form = forms.EditCGRForm(
             venue_id=[pivot.cinemaProviderPivot.venue.id],
@@ -57,7 +60,7 @@ class CGRContext(PivotContext):
         cinema_url = form.cinema_url.data.rstrip("/")
         cinema_password = form.password.data
 
-        venue = offerers_models.Venue.query.get(venue_id)
+        venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
         if not venue:
             flash(Markup("Le lieu id={venue_id} n'existe pas").format(venue_id=venue_id), "warning")
             return False
@@ -88,7 +91,9 @@ class CGRContext(PivotContext):
 
     @classmethod
     def update_pivot(cls, form: forms.EditCGRForm, pivot_id: int) -> bool:
-        pivot = providers_models.CGRCinemaDetails.query.get_or_404(pivot_id)
+        pivot = providers_models.CGRCinemaDetails.query.filter_by(id=pivot_id).one_or_none()
+        if not pivot:
+            raise NotFound()
 
         if pivot.cinemaProviderPivot is None:
             flash("Le provider n'a pas de pivot", "warning")  #  Demander le message le mieux adapté

@@ -12,6 +12,7 @@ from flask_login import current_user
 from markupsafe import Markup
 import sqlalchemy as sa
 from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import NotFound
 
 from pcapi import settings
 from pcapi.core.bookings import models as bookings_models
@@ -187,7 +188,10 @@ def get_collective_booking_xlsx_download() -> utils.BackofficeResponse:
 @collective_bookings_blueprint.route("/<int:collective_booking_id>/mark-as-used", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def mark_booking_as_used(collective_booking_id: int) -> utils.BackofficeResponse:
-    collective_booking = educational_models.CollectiveBooking.query.get_or_404(collective_booking_id)
+    collective_booking = educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id).one_or_none()
+    if not collective_booking:
+        raise NotFound()
+
     if collective_booking.status != educational_models.CollectiveBookingStatus.CANCELLED:
         flash("Impossible de valider une réservation qui n'est pas annulée", "warning")
         return _redirect_after_collective_booking_action()
@@ -205,7 +209,9 @@ def mark_booking_as_used(collective_booking_id: int) -> utils.BackofficeResponse
 @collective_bookings_blueprint.route("/<int:collective_booking_id>/cancel", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def mark_booking_as_cancelled(collective_booking_id: int) -> utils.BackofficeResponse:
-    collective_booking = educational_models.CollectiveBooking.query.get_or_404(collective_booking_id)
+    collective_booking = educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id).one_or_none()
+    if not collective_booking:
+        raise NotFound()
 
     form = booking_forms.CancelCollectiveBookingForm()
     if not form.validate():

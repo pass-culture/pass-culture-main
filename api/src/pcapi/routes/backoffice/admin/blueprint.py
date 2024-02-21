@@ -4,6 +4,7 @@ from flask import render_template
 from flask import url_for
 from flask_login import current_user
 import sqlalchemy as sa
+from werkzeug.exceptions import NotFound
 
 from pcapi import settings
 from pcapi.core.history import models as history_models
@@ -109,7 +110,10 @@ def disable_feature_flag(feature_flag_id: int) -> utils.BackofficeResponse:
 
 
 def toggle_feature_flag(feature_flag_id: int, set_to_active: bool) -> utils.BackofficeResponse:
-    feature_flag = feature_models.Feature.query.get_or_404(feature_flag_id)
+    feature_flag = feature_models.Feature.query.filter_by(id=feature_flag_id).one_or_none()
+    if not feature_flag:
+        raise NotFound()
+
     if feature_flag.isActive == set_to_active:
         flash(
             f"Le feature flag {feature_flag.name} est déjà " + ("activé" if feature_flag.isActive else "désactivé"),

@@ -807,7 +807,7 @@ class ValidateCollectiveOfferFormTest(GetEndpointHelper):
 
         form_url = url_for(self.endpoint, collective_offer_id=collective_offer.id)
 
-        with assert_num_queries(2):  # session + current user
+        with assert_num_queries(3):  # session + current user + collective offer
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 
@@ -875,7 +875,7 @@ class RejectCollectiveOfferFormTest(GetEndpointHelper):
 
         form_url = url_for(self.endpoint, collective_offer_id=collective_offer.id)
 
-        with assert_num_queries(2):  # session + current user
+        with assert_num_queries(3):  # session + current user + collective_offer
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 
@@ -923,7 +923,7 @@ class BatchCollectiveOffersValidateTest(PostEndpointHelper):
 
         assert response.status_code == 303
         assert collective_offer.validation == OfferValidationStatus.PENDING
-        collective_offer_template = educational_models.CollectiveOffer.query.get(collective_offer.id)
+        collective_offer_template = educational_models.CollectiveOffer.query.filter_by(id=collective_offer.id).one()
         assert collective_offer_template.validation == OfferValidationStatus.PENDING
         non_existing_collective_offers = educational_models.CollectiveOffer.query.filter(
             educational_models.CollectiveOffer.id.in_(fake_offer_ids)
@@ -976,7 +976,7 @@ class BatchCollectiveOffersRejectTest(PostEndpointHelper):
 
         assert response.status_code == 303
         assert collective_offer.validation == OfferValidationStatus.PENDING
-        collective_offer_template = educational_models.CollectiveOffer.query.get(collective_offer.id)
+        collective_offer_template = educational_models.CollectiveOffer.query.filter_by(id=collective_offer.id).one()
         assert collective_offer_template.validation == OfferValidationStatus.PENDING
         non_existing_collective_offers = educational_models.CollectiveOffer.query.filter(
             educational_models.CollectiveOffer.id.in_(fake_offer_ids)

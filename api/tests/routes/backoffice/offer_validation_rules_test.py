@@ -647,7 +647,7 @@ class GetDeleteOfferValidationRuleFormTest(GetEndpointHelper):
     endpoint_kwargs = {"rule_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
-    expected_num_queries = 2  # session + current user
+    expected_num_queries = 3  # session + current user + rule
 
     def test_get_delete_form_test(self, legit_user, authenticated_client):
         rule = offers_factories.OfferValidationRuleFactory(name="First rule of robotics")
@@ -759,7 +759,7 @@ class GetEditOfferValidationRuleFormTest(GetEndpointHelper):
         )
         form_url = url_for(self.endpoint, rule_id=rule.id)
 
-        with assert_num_queries(3):  # session + current user
+        with assert_num_queries(4):  # session + current user + rule + sub rule
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 

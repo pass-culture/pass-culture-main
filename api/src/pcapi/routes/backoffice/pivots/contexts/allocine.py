@@ -1,6 +1,7 @@
 import typing
 
 import sqlalchemy as sa
+from werkzeug.exceptions import NotFound
 
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
@@ -45,7 +46,9 @@ class AllocineContext(PivotContext):
 
     @classmethod
     def get_edit_form(cls, pivot_id: int) -> forms.EditAllocineForm:
-        pivot = providers_models.AllocinePivot.query.get_or_404(pivot_id)
+        pivot = providers_models.AllocinePivot.query.filter_by(id=pivot_id).one_or_none()
+        if not pivot:
+            raise NotFound()
         return forms.EditAllocineForm(
             venue_id=[pivot.venueId],
             theater_id=pivot.theaterId,
@@ -64,7 +67,9 @@ class AllocineContext(PivotContext):
 
     @classmethod
     def update_pivot(cls, form: forms.EditAllocineForm, pivot_id: int) -> bool:
-        pivot = providers_models.AllocinePivot.query.get_or_404(pivot_id)
+        pivot = providers_models.AllocinePivot.query.filter_by(id=pivot_id).one_or_none()
+        if not pivot:
+            raise NotFound()
         pivot.venueId = form.venue_id.data[0]
         pivot.theaterId = form.theater_id.data
         pivot.internalId = form.internal_id.data

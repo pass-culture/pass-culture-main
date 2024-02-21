@@ -107,7 +107,7 @@ def _get_user_if_exists(user_id: str | None) -> users_models.User | None:
     if user_id is None:
         return None
 
-    return users_models.User.query.get(int(user_id))
+    return users_models.User.query.filter_by(id=int(user_id)).one_or_none()
 
 
 @blueprint.backoffice_web.route("/admin/delete", methods=["GET"])
