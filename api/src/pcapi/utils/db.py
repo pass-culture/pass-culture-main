@@ -1,7 +1,6 @@
 import datetime
 import enum
 import hashlib
-import json
 import logging
 import typing
 
@@ -12,7 +11,6 @@ import sqlalchemy.engine as sqla_engine
 import sqlalchemy.types as sqla_types
 
 from pcapi.core.logging import log_elapsed
-from pcapi.models import Model
 from pcapi.models import db
 import pcapi.scheduled_tasks.decorators as cron_decorators
 from pcapi.utils.blueprint import Blueprint
@@ -103,88 +101,6 @@ def make_timerange(
 
 class BadSortError(Exception):
     pass
-
-
-def get_ordering_clauses(
-    model: type[Model],
-    sorts: typing.Iterable[str],
-) -> list[sqla.sql.elements.ColumnElement | sqla.sql.elements.UnaryExpression]:
-    """
-    `sorts` should contains string in the form of:
-    - an optional `-` prefix specifying a sort descending direction (ascending by default)
-    - the name of a `model`'s attribute
-
-    example:
-    - "-city" for the `model.city` field in descending order
-    - "email" for the `model.email` field in ascending order
-    """
-    ordering_clauses = []
-    bad_sorts = []
-    for sort in sorts:
-        *desc, field_name = sort.split("-")
-        try:
-            field = getattr(model, field_name)
-        except AttributeError:
-            bad_sorts.append(
-                (
-                    sort,
-                    f"model `{model.__name__}` does not have a `{field_name}` attribute",
-                )
-            )
-        else:
-            if desc:
-                field = field.desc()
-            ordering_clauses.append(field)
-
-    if bad_sorts:
-        raise BadSortError("bad sort provided: " ", ".join((f"{sort}: {message}" for sort, message in bad_sorts)))
-
-    return ordering_clauses
-
-
-def get_ordering_clauses_from_json(
-    model: type[Model],
-    sorts: str,
-) -> list[sqla.sql.ColumnElement | sqla.sql.elements.UnaryExpression]:
-    """
-    `sorts` should contain a JSON string specifying a list of dicts containing the following keys:
-    - field: the name of a field
-    - order: `asc` or `desc` (optional, `asc` by default)
-
-    example:
-    - [{"field": "city", "order", "desc"}] for the `model.city` field in descending order
-    - [{"field": "email"}] for the `model.email` field in ascending order
-    """
-    try:
-        parsed_sorts = json.loads(sorts)
-    except json.JSONDecodeError:
-        raise BadSortError("bad sort provided: invalid JSON")
-
-    ordering_clauses = []
-    bad_sorts = []
-    for sort in parsed_sorts:
-        try:
-            field_name = sort["field"]
-        except KeyError:
-            bad_sorts.append("a sort clause is missing the 'field' key")
-            continue
-        except TypeError:
-            bad_sorts.append("bad sort format")
-            continue
-        else:
-            try:
-                field = getattr(model, field_name)
-            except AttributeError:
-                bad_sorts.append(f"model `{model.__name__}` does not have a `{field_name}` attribute")
-            else:
-                if sort.get("order", "asc") == "desc":
-                    field = field.desc()
-                ordering_clauses.append(field)
-
-    if bad_sorts:
-        raise BadSortError("bad sort provided: " ", ".join((f"{message}" for message in bad_sorts)))
-
-    return ordering_clauses
 
 
 def acquire_lock(name: str) -> None:
