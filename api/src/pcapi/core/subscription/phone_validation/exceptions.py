@@ -44,7 +44,3 @@ class NotValidCode(PhoneVerificationException):
     def __init__(self, remaining_attempts: int | None = None):
         self.remaining_attempts = remaining_attempts
         super().__init__()
-
-
-class ExpiredCode(NotValidCode):
-    pass
