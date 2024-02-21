@@ -12,7 +12,7 @@ import strokePieIcon from 'icons/stroke-pie.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './SideNavLinks.module.scss'
-const NAV_ITEM_ICON_SIZE = '16'
+const NAV_ITEM_ICON_SIZE = '20'
 
 interface SideNavLinksProps {
   isLateralPanelOpen: boolean
