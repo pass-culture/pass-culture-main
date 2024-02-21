@@ -851,15 +851,6 @@ def create_pro_user(pro_user: ImportUserFromCsvModel | ProUserCreationBodyV2Mode
     return new_pro_user
 
 
-def _generate_user_offerer_when_existing_offerer(
-    new_user: models.User, offerer: offerers_models.Offerer
-) -> offerers_models.UserOfferer:
-    user_offerer = offerers_api.grant_user_offerer_access(offerer, new_user)
-    if not settings.IS_INTEGRATION:
-        user_offerer.validationStatus = ValidationStatus.NEW
-    return user_offerer
-
-
 def _generate_offerer(user_data: ImportUserFromCsvModel) -> offerers_models.Offerer:
     offerer = offerers_models.Offerer()
     if offerer.is_soft_deleted():
