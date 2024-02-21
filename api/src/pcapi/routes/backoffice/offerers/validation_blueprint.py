@@ -176,7 +176,9 @@ def reject_offerer(offerer_id: int) -> utils.BackofficeResponse:
 @validation_blueprint.route("/offerer/<int:offerer_id>/pending", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def get_offerer_pending_form(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+    offerer = offerers_models.Offerer.query.filter_by(id=offerer_id).one_or_none()
+    if not offerer:
+        raise NotFound()
 
     form = offerer_forms.CommentAndTagOffererForm(tags=_filter_homologation_tags(offerer.tags))
 

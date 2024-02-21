@@ -3,6 +3,7 @@ import typing
 
 from flask import flash
 from markupsafe import Markup
+from werkzeug.exceptions import NotFound
 
 from pcapi.connectors import boost
 from pcapi.core.external_bookings.boost import exceptions as boost_exceptions
@@ -33,7 +34,9 @@ class BoostContext(PivotContext):
 
     @classmethod
     def get_edit_form(cls, pivot_id: int) -> forms.EditBoostForm:
-        pivot = providers_models.BoostCinemaDetails.query.get_or_404(pivot_id)
+        pivot = providers_models.BoostCinemaDetails.query.filter_by(id=pivot_id).one_or_none()
+        if not pivot:
+            raise NotFound()
         form = forms.EditBoostForm(
             venue_id=[pivot.cinemaProviderPivot.venue.id],
             cinema_id=pivot.cinemaProviderPivot.idAtProvider,
@@ -57,7 +60,7 @@ class BoostContext(PivotContext):
         password = form.password.data
         cinema_url = form.cinema_url.data + "/" if not form.cinema_url.data.endswith("/") else form.cinema_url.data
 
-        venue = offerers_models.Venue.query.get(venue_id)
+        venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
         if not venue:
             flash(Markup("Le lieu id={venue_id} n'existe pas").format(venue_id=venue_id), "warning")
             return False
@@ -83,7 +86,9 @@ class BoostContext(PivotContext):
 
     @classmethod
     def update_pivot(cls, form: forms.EditBoostForm, pivot_id: int) -> bool:
-        pivot = providers_models.BoostCinemaDetails.query.get_or_404(pivot_id)
+        pivot = providers_models.BoostCinemaDetails.query.filter_by(id=pivot_id).one_or_none()
+        if not pivot:
+            raise NotFound()
         assert pivot.cinemaProviderPivot
         pivot.cinemaProviderPivot.idAtProvider = str(form.cinema_id.data)
         pivot.username = form.username.data

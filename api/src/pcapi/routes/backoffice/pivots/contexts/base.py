@@ -2,6 +2,7 @@ import typing
 
 from flask_login import current_user
 import sqlalchemy as sa
+from werkzeug.exceptions import NotFound
 
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
@@ -73,9 +74,17 @@ class PivotContext:
         """
         pivot_name = cls.pivot_name()
         pivot_model = cls.pivot_class()
-        pivot = pivot_model.query.options(
-            sa.orm.joinedload(pivot_model.cinemaProviderPivot).joinedload(providers_models.CinemaProviderPivot.venue)
-        ).get_or_404(pivot_id)
+        pivot = (
+            pivot_model.query.options(
+                sa.orm.joinedload(pivot_model.cinemaProviderPivot).joinedload(
+                    providers_models.CinemaProviderPivot.venue
+                )
+            )
+            .filter_by(id=pivot_id)
+            .one_or_none()
+        )
+        if not pivot:
+            raise NotFound()
         cinema_provider_pivot = pivot.cinemaProviderPivot
         assert cinema_provider_pivot  # helps mypy
 

@@ -10,6 +10,7 @@ from flask import url_for
 from markupsafe import Markup
 import pytz
 import sqlalchemy as sa
+from werkzeug.exceptions import NotFound
 
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.finance import api as finance_api
@@ -263,7 +264,11 @@ def get_create_custom_reimbursement_rule_form() -> utils.BackofficeResponse:
 @custom_reimbursement_rules_blueprint.route("/<int:reimbursement_rule_id>/edit", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.CREATE_REIMBURSEMENT_RULES)
 def get_edit_custom_reimbursement_rule_form(reimbursement_rule_id: int) -> utils.BackofficeResponse:
-    custom_reimbursement_rule = finance_models.CustomReimbursementRule.query.get_or_404(reimbursement_rule_id)
+    custom_reimbursement_rule = finance_models.CustomReimbursementRule.query.filter_by(
+        id=reimbursement_rule_id
+    ).one_or_none()
+    if not custom_reimbursement_rule:
+        raise NotFound()
 
     # upper bound is exclusive, and we want to show the last day included in the date range
     end_datetime = custom_reimbursement_rule.timespan.upper
@@ -292,7 +297,11 @@ def get_edit_custom_reimbursement_rule_form(reimbursement_rule_id: int) -> utils
 @custom_reimbursement_rules_blueprint.route("/<int:reimbursement_rule_id>/edit", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.CREATE_REIMBURSEMENT_RULES)
 def edit_custom_reimbursement_rule(reimbursement_rule_id: int) -> utils.BackofficeResponse:
-    custom_reimbursement_rule = finance_models.CustomReimbursementRule.query.get_or_404(reimbursement_rule_id)
+    custom_reimbursement_rule = finance_models.CustomReimbursementRule.query.filter_by(
+        id=reimbursement_rule_id
+    ).one_or_none()
+    if not custom_reimbursement_rule:
+        raise NotFound()
 
     form = custom_reimbursement_rule_forms.EditCustomReimbursementRuleForm()
     if not form.validate():

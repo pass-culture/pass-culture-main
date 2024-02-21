@@ -30,7 +30,7 @@ def update_role(
     raise_error_on_empty_role_name(name)
 
     permissions = perm_models.Permission.query.filter(perm_models.Permission.id.in_(permission_ids)).all()
-    role = perm_models.Role.query.get(id_)
+    role = perm_models.Role.query.filter_by(id=id_).one()
 
     added_roles = set(permissions) - set(role.permissions)
     removed_roles = set(role.permissions) - set(permissions)

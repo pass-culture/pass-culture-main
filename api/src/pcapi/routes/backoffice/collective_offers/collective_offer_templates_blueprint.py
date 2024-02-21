@@ -141,9 +141,11 @@ def list_collective_offer_templates() -> utils.BackofficeResponse:
 @list_collective_offer_templates_blueprint.route("/<int:collective_offer_template_id>/validate", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_validate_collective_offer_template_form(collective_offer_template_id: int) -> utils.BackofficeResponse:
-    collective_offer_template = educational_models.CollectiveOfferTemplate.query.get_or_404(
-        collective_offer_template_id
-    )
+    collective_offer_template = educational_models.CollectiveOfferTemplate.query.filter_by(
+        id=collective_offer_template_id
+    ).one_or_none()
+    if not collective_offer_template:
+        raise NotFound()
 
     form = empty_forms.EmptyForm()
 
@@ -173,9 +175,11 @@ def validate_collective_offer_template(collective_offer_template_id: int) -> uti
 @list_collective_offer_templates_blueprint.route("/<int:collective_offer_template_id>/reject", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_reject_collective_offer_template_form(collective_offer_template_id: int) -> utils.BackofficeResponse:
-    collective_offer_template = educational_models.CollectiveOfferTemplate.query.get_or_404(
-        collective_offer_template_id
-    )
+    collective_offer_template = educational_models.CollectiveOfferTemplate.query.filter_by(
+        id=collective_offer_template_id
+    ).one_or_none()
+    if not collective_offer_template:
+        raise NotFound()
 
     form = empty_forms.EmptyForm()
 

@@ -13,6 +13,7 @@ from flask_login import current_user
 from markupsafe import Markup
 import sqlalchemy as sa
 from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import NotFound
 
 from pcapi import settings
 from pcapi.core.bookings import api as bookings_api
@@ -212,7 +213,10 @@ def get_individual_booking_xlsx_download() -> utils.BackofficeResponse:
 @individual_bookings_blueprint.route("/<int:booking_id>/mark-as-used", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
-    booking = bookings_models.Booking.query.get_or_404(booking_id)
+    booking = bookings_models.Booking.query.filter_by(id=booking_id).one_or_none()
+    if not booking:
+        raise NotFound()
+
     if booking.status != bookings_models.BookingStatus.CANCELLED:
         flash("Impossible de valider une réservation qui n'est pas annulée", "warning")
         return _redirect_after_individual_booking_action()
@@ -230,7 +234,9 @@ def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
 @individual_bookings_blueprint.route("/<int:booking_id>/cancel", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
-    booking = bookings_models.Booking.query.get_or_404(booking_id)
+    booking = bookings_models.Booking.query.filter_by(id=booking_id).one_or_none()
+    if not booking:
+        raise NotFound()
 
     form = booking_forms.CancelIndividualBookingForm()
     if not form.validate():

@@ -211,7 +211,7 @@ class UpdateProviderTest(PostEndpointHelper):
         created_provider_alert = html_parser.extract_alert(redirected_response.data)
         assert created_provider_alert == f'Le partenaire {form_data["name"]} a été modifié.'
 
-        updated_provider = providers_models.Provider.query.get(provider.id)
+        updated_provider = providers_models.Provider.query.filter_by(id=provider.id).one()
         assert updated_provider.name == form_data["name"]
         assert updated_provider.logoUrl == form_data["logo_url"]
         assert updated_provider.enabledForPro == form_data["enabled_for_pro"]
@@ -240,7 +240,7 @@ class UpdateProviderTest(PostEndpointHelper):
         created_provider_alert = html_parser.extract_alert(redirected_response.data)
         assert created_provider_alert == f'Le partenaire {form_data["name"]} a été modifié.'
 
-        updated_provider = providers_models.Provider.query.get(provider.id)
+        updated_provider = providers_models.Provider.query.filter_by(id=provider.id).one()
         assert updated_provider.name == form_data["name"]
         assert updated_provider.logoUrl is None
         assert updated_provider.enabledForPro == form_data["enabled_for_pro"]
@@ -288,7 +288,7 @@ class UpdateProviderTest(PostEndpointHelper):
         created_provider_alert = html_parser.extract_alert(redirected_response.data)
         assert created_provider_alert == f'Le partenaire {form_data["name"]} a été modifié.'
 
-        updated_provider = providers_models.Provider.query.get(provider.id)
+        updated_provider = providers_models.Provider.query.filter_by(id=provider.id).one()
         assert updated_provider.isActive == False
         assert venue_provider_1.isActive == False
         assert offer_1_1.isActive == False

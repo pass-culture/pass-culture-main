@@ -5,6 +5,7 @@ from flask import request
 from flask import url_for
 from markupsafe import Markup
 import sqlalchemy as sa
+from werkzeug.exceptions import NotFound
 
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
@@ -104,8 +105,12 @@ def create_offerer_tag() -> utils.BackofficeResponse:
 @offerer_tag_blueprint.route("/<int:offerer_tag_id>/update", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERER_TAG)
 def update_offerer_tag(offerer_tag_id: int) -> utils.BackofficeResponse:
+    offerer_tag_to_update = offerers_models.OffererTag.query.filter_by(id=offerer_tag_id).one_or_none()
+    if not offerer_tag_to_update:
+        raise NotFound()
+
     categories = get_offerer_tag_categories()
-    offerer_tag_to_update = offerers_models.OffererTag.query.get_or_404(offerer_tag_id)
+
     form = offerer_forms.EditOffererTagForm()
     form.categories.choices = [(cat.id, cat.label or cat.name) for cat in categories]
 
@@ -133,7 +138,9 @@ def update_offerer_tag(offerer_tag_id: int) -> utils.BackofficeResponse:
 @offerer_tag_blueprint.route("/<int:offerer_tag_id>/delete", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_TAGS_N2)
 def delete_offerer_tag(offerer_tag_id: int) -> utils.BackofficeResponse:
-    offerer_tag_to_delete = offerers_models.OffererTag.query.get_or_404(offerer_tag_id)
+    offerer_tag_to_delete = offerers_models.OffererTag.query.filter_by(id=offerer_tag_id).one_or_none()
+    if not offerer_tag_to_delete:
+        raise NotFound()
 
     try:
         db.session.delete(offerer_tag_to_delete)

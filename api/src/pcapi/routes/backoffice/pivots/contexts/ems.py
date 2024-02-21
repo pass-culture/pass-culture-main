@@ -3,6 +3,7 @@ import logging
 
 from flask import flash
 from markupsafe import Markup
+from werkzeug.exceptions import NotFound
 
 from pcapi.connectors.ems import EMSScheduleConnector
 from pcapi.core.offerers import models as offerers_models
@@ -32,7 +33,11 @@ class EMSContext(PivotContext):
 
     @classmethod
     def get_edit_form(cls, pivot_id: int) -> forms.EditPivotForm:
-        pivot: providers_models.EMSCinemaDetails = providers_models.EMSCinemaDetails.query.get_or_404(pivot_id)
+        pivot: providers_models.EMSCinemaDetails = providers_models.EMSCinemaDetails.query.filter_by(
+            id=pivot_id
+        ).one_or_none()
+        if not pivot:
+            raise NotFound()
 
         # help mypy
         assert pivot.cinemaProviderPivot
@@ -56,7 +61,7 @@ class EMSContext(PivotContext):
         venue_id = form.venue_id.data[0]
         cinema_id = form.cinema_id.data
 
-        venue = offerers_models.Venue.query.get(venue_id)
+        venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
         if not venue:
             flash(Markup("Le lieu id={venue_id} n'existe pas").format(venue_id=venue_id), "warning")
             return False
@@ -91,7 +96,11 @@ class EMSContext(PivotContext):
 
     @classmethod
     def update_pivot(cls, form: forms.EditEMSForm, pivot_id: int) -> bool:
-        pivot: providers_models.EMSCinemaDetails = providers_models.EMSCinemaDetails.query.get_or_404(pivot_id)
+        pivot: providers_models.EMSCinemaDetails = providers_models.EMSCinemaDetails.query.filter_by(
+            id=pivot_id
+        ).one_or_none()
+        if not pivot:
+            raise NotFound()
 
         if not pivot.cinemaProviderPivot:
             flash("Le provider n'a pas de pivot", "warning")
