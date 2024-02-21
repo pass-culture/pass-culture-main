@@ -4,10 +4,7 @@ import {
   IndividualOfferFormValues,
 } from 'components/IndividualOfferForm'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
-import {
-  individualOfferSubCategoryFactory,
-  individualOfferVenueItemFactory,
-} from 'utils/individualApiFactories'
+import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
 
 import setDefaultInitialFormValues from '../setDefaultInitialFormValues'
 
@@ -118,51 +115,5 @@ describe('setDefaultInitialFormValues', () => {
     expectedInitialValues.withdrawalDetails =
       FORM_DEFAULT_VALUES.withdrawalDetails
     expect(initialValues).toStrictEqual(expectedInitialValues)
-  })
-
-  it('should return initial values with subcategory', () => {
-    const subcategory = individualOfferSubCategoryFactory({
-      canBeDuo: true,
-    })
-
-    const initialValues = setDefaultInitialFormValues(
-      offererNames,
-      offererId,
-      venueId,
-      venueList,
-      isBookingContactEnabled,
-      subcategory
-    )
-
-    expect(initialValues.subcategoryId).toStrictEqual(subcategory.id)
-    expect(initialValues.categoryId).toStrictEqual(subcategory.categoryId)
-    expect(initialValues.subCategoryFields).toStrictEqual([
-      ...subcategory.conditionalFields,
-      'isDuo',
-    ])
-  })
-
-  it('should return subCategoryFields for subcategory who can be withrawable', () => {
-    const subcategory = individualOfferSubCategoryFactory({
-      canBeDuo: true,
-      canBeWithdrawable: true,
-    })
-
-    const initialValues = setDefaultInitialFormValues(
-      offererNames,
-      offererId,
-      venueId,
-      venueList,
-      isBookingContactEnabled,
-      subcategory
-    )
-
-    expect(initialValues.subCategoryFields).toStrictEqual([
-      ...subcategory.conditionalFields,
-      'isDuo',
-      'withdrawalType',
-      'withdrawalDelay',
-      'bookingContact',
-    ])
   })
 })

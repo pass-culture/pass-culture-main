@@ -12,15 +12,13 @@ const IndividualOfferWizard = () => {
   const { currentUser } = useCurrentUser()
   const { offerId } = useParams<{ offerId: string }>()
   const { search } = useLocation()
-  const { structure: offererId, 'sous-categorie': querySubcategoryId } =
-    parse(search)
+  const { structure: offererId } = parse(search)
   return (
     <AppLayout>
       <IndividualOfferContextProvider
         isUserAdmin={currentUser.isAdmin}
         offerId={offerId === 'creation' ? undefined : offerId}
         queryOffererId={offererId}
-        querySubcategoryId={querySubcategoryId}
       >
         <Outlet />
       </IndividualOfferContextProvider>
