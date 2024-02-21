@@ -237,8 +237,8 @@ def index_offers_in_queue(stop_only_when_empty: bool = False, from_error_queue: 
                 break
 
             logger.info(
-                "Fetched offers from indexation queue",
-                extra={"count": len(offer_ids)},
+                "Fetched offer ids from indexation queue",
+                extra={"count": len(offer_ids), "offer_ids": offer_ids},
             )
             try:
                 reindex_offer_ids(offer_ids, from_error_queue=from_error_queue)
