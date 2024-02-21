@@ -11,29 +11,33 @@ def install_database_extensions() -> None:
 
 
 def _create_text_search_configuration_if_not_exists() -> None:
-    db.engine.execute(text("CREATE EXTENSION IF NOT EXISTS unaccent;"))
+    with db.engine.begin() as connection:
+        connection.execute(text("CREATE EXTENSION IF NOT EXISTS unaccent;"))
 
-    french_unaccent_configuration_query = db.engine.execute(
-        text("SELECT * FROM pg_ts_config WHERE cfgname='french_unaccent';")
-    )
-    if french_unaccent_configuration_query.fetchone() is None:
-        db.engine.execute(text("CREATE TEXT SEARCH CONFIGURATION french_unaccent ( COPY = french );"))
-        db.engine.execute(
-            text(
-                "ALTER TEXT SEARCH CONFIGURATION french_unaccent"
-                " ALTER MAPPING FOR hword, hword_part, word WITH unaccent, french_stem;"
-            )
+        french_unaccent_configuration_query = connection.execute(
+            text("SELECT * FROM pg_ts_config WHERE cfgname='french_unaccent';")
         )
+        if french_unaccent_configuration_query.fetchone() is None:
+            connection.execute(text("CREATE TEXT SEARCH CONFIGURATION french_unaccent ( COPY = french );"))
+            connection.execute(
+                text(
+                    "ALTER TEXT SEARCH CONFIGURATION french_unaccent"
+                    " ALTER MAPPING FOR hword, hword_part, word WITH unaccent, french_stem;"
+                )
+            )
 
 
 def _create_index_btree_gist_extension() -> None:
-    db.engine.execute(text("CREATE EXTENSION IF NOT EXISTS btree_gist;"))
+    with db.engine.begin() as connection:
+        connection.execute(text("CREATE EXTENSION IF NOT EXISTS btree_gist;"))
 
 
 def _create_postgis_extension() -> None:
-    db.engine.execute(text("CREATE EXTENSION IF NOT EXISTS postgis;"))
+    with db.engine.begin() as connection:
+        connection.execute(text("CREATE EXTENSION IF NOT EXISTS postgis;"))
 
 
 def _create_pgcrypto_extension() -> None:
     # The `pgcrypto` is required to use `gen_random_uuid()` until PostgreSQL 13.
-    db.engine.execute(text("CREATE EXTENSION IF NOT EXISTS pgcrypto;"))
+    with db.engine.begin() as connection:
+        connection.execute(text("CREATE EXTENSION IF NOT EXISTS pgcrypto;"))
