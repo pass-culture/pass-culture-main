@@ -50,7 +50,6 @@ export interface IndividualOfferContextProviderProps {
   isUserAdmin: boolean
   offerId?: string
   queryOffererId?: string
-  querySubcategoryId?: string
 }
 
 export function IndividualOfferContextProvider({
@@ -58,7 +57,6 @@ export function IndividualOfferContextProvider({
   isUserAdmin,
   offerId,
   queryOffererId,
-  querySubcategoryId,
 }: IndividualOfferContextProviderProps) {
   const { offer } = useLoaderData() as IndividualOfferWizardLoaderData
   const notify = useNotification()
@@ -104,11 +102,6 @@ export function IndividualOfferContextProvider({
           })
           setShowVenuePopin(venuesPopinDisplaying)
         }
-        setSubcategory(
-          response.payload.categoriesData.subCategories.find(
-            (s) => s.id === querySubcategoryId
-          )
-        )
       } else {
         setCategories([])
         setSubCategories([])

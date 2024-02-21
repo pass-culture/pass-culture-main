@@ -12,10 +12,7 @@ import {
   setFormReadOnlyFields,
   setInitialFormValues,
 } from 'components/IndividualOfferForm'
-import {
-  getFilteredVenueListByCategoryStatus,
-  getFilteredVenueListBySubcategory,
-} from 'components/IndividualOfferForm/utils/getFilteredVenueList'
+import { getFilteredVenueListByCategoryStatus } from 'components/IndividualOfferForm/utils/getFilteredVenueList'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
@@ -78,19 +75,9 @@ const InformationsScreen = ({
   )
 
   const queryParams = new URLSearchParams(location.search)
-  const querySubcategoryId = queryParams.get('sous-categorie')
   const queryOfferType = queryParams.get('offer-type')
-  const querySubcategory = subCategories.find(
-    (subcategory) => subcategory.id === querySubcategoryId
-  )
 
-  // querySubcategoryId & queryOfferType are mutually exclusive
-  // but since it's on url, the user still could enter both
-  // if it happens, we don't filter subcategories
-  // so the user can always choose among all subcategories
-  const offerSubtype = getOfferSubtypeFromParam(
-    querySubcategoryId ? null : queryOfferType
-  )
+  const offerSubtype = getOfferSubtypeFromParam(queryOfferType)
   const categoryStatus = getCategoryStatusFromOfferSubtype(offerSubtype)
   const [filteredCategories, filteredSubCategories] = filterCategories(
     categories,
@@ -99,13 +86,10 @@ const InformationsScreen = ({
     isOfferSubtypeEvent(offerSubtype)
   )
 
-  const filteredVenueList = querySubcategory
-    ? getFilteredVenueListBySubcategory(venueList, querySubcategory).filter(
-        (venue) => venue.managingOffererId === Number(offererId)
-      )
-    : getFilteredVenueListByCategoryStatus(venueList, categoryStatus).filter(
-        (venue) => venue.managingOffererId === Number(offererId)
-      )
+  const filteredVenueList = getFilteredVenueListByCategoryStatus(
+    venueList,
+    categoryStatus
+  ).filter((venue) => venue.managingOffererId === Number(offererId))
 
   // offer is null when we are creating a new offer
   const initialValues: IndividualOfferFormValues =
@@ -115,8 +99,7 @@ const InformationsScreen = ({
           offererId,
           venueId,
           filteredVenueList,
-          isBookingContactEnabled,
-          querySubcategory
+          isBookingContactEnabled
         )
       : setInitialFormValues(offer, subCategories, isBookingContactEnabled)
 
