@@ -105,7 +105,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API = "Activer la création d'évènements avec tickets dans l'API publique"
     WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY = "Activer le nouveau parcours de dépôt de coordonnées bancaires"
     WIP_ENABLE_DOUBLE_MODEL_WRITING = "Activer la double écriture des coordonnées bancaires"
-    WIP_CATEGORY_SELECTION = "Activer la nouvelle sélection de catégories"
     WIP_ENABLE_RATE_LIMITING = "Active le rate limiting"
     WIP_ENABLE_COMPLIANCE_CALL = "Activer les appels à l'API Compliance pour donner un score aux offres"
     WIP_ENABLE_MOCK_UBBLE = "Utiliser le mock Ubble à la place du vrai Ubble"
@@ -167,7 +166,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
     FeatureToggle.LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC,
     FeatureToggle.ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC,
-    FeatureToggle.WIP_CATEGORY_SELECTION,
     FeatureToggle.WIP_ENABLE_COMPLIANCE_CALL,
     FeatureToggle.WIP_ENABLE_DIFFUSE_HELP,
     FeatureToggle.WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API,
@@ -196,7 +194,6 @@ if settings.IS_TESTING:
     testing_features_disabled_by_default = set(FEATURES_DISABLED_BY_DEFAULT)
     features_to_enable = {
         FeatureToggle.ENABLE_CHARLIE_BOOKINGS_API,
-        FeatureToggle.WIP_CATEGORY_SELECTION,
         FeatureToggle.WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API,
         FeatureToggle.WIP_ENABLE_OFFER_CREATION_API_V1,
     }
