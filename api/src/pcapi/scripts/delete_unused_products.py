@@ -18,28 +18,59 @@ from pcapi.repository import transaction
 logger = logging.getLogger(__name__)
 
 
+"""
++---------+----------------+-----------------------------------------------------------+
+| count   | lastProviderId | name                                                      |
+|---------+----------------+-----------------------------------------------------------|
+| 118     | 1              | à supprimer ? ex OpenAgenda                               |
+| 263     | 4              | Experimentation Spreadsheet (Offres)                      |
+| 2167156 | 9              | TiteLive (Epagine / Place des libraires.com)              |
+| 174206  | 16             | TiteLive (Epagine / Place des libraires.com) Descriptions |
+| 132140  | 17             | TiteLive (Epagine / Place des libraires.com) Thumbs       |
+| 569453  | 19             | Init TiteLive (Epagine / Place des libraires.com)         |
+| 137867  | 20             | Init TiteLive Descriptions                                |
+| 10552   | 22             | Allociné                                                  |
+| 15558   | 70             | Ciné Office                                               |
+| 4326    | 71             | Boost                                                     |
+| 1       | 1073           | CGR                                                       |
+| 1023    | 1081           | EMS                                                       |
+| 929587  | 1082           | TiteLive API Epagine                                      |
+| 550     | 1097           | Allocine Products                                         |
++---------+----------------+-----------------------------------------------------------+
+"""
+
 # STAGING
-PROVIDER_IDS = [22, 70, 71, 1073, 1081]
-PROVIDER_IDS = [1073]
+PROVIDER_PRODUCT_RANGE = {
+    1: {"min": None, "max": None},
+    4: {"min": None, "max": None},
+    9: {"min": None, "max": None},
+    16: {"min": None, "max": None},
+    17: {"min": None, "max": None},
+    19: {"min": None, "max": None},
+    20: {"min": None, "max": None},
+    22: {"min": None, "max": None},
+    70: {"min": None, "max": None},
+    71: {"min": None, "max": None},
+    1073: {"min": None, "max": None},
+    1081: {"min": None, "max": None},
+    1082: {"min": None, "max": None},
+    1097: {"min": None, "max": None},
+}
 
 CHUNK_SIZE = 1000
 
 
 def get_products_to_delete(product_id: int, provider_id: int) -> Generator[offers_models.Product, None, None]:
-    query = offers_models.Product.query.filter(
+    return offers_models.Product.query.filter(
         offers_models.Product.lastProviderId == provider_id,  # pylint: disable=comparison-with-callable
         offers_models.Product.id.between(product_id, product_id + CHUNK_SIZE),
     ).options(joinedload(offers_models.Product.offers))
-    for product in query:
-        yield product
 
 
-def execute_request(
-    provider_id: int, min_provider_id: int, max_product_id_for_provider: int, dry_run: bool = True
-) -> None:
-    print(f"Starting for {provider_id = }")
+def execute_request(provider_id: int, min_product_id: int, max_product_id: int, dry_run: bool = True) -> None:
+    print(f"Starting for {provider_id = } in range ({min_product_id}, {max_product_id})")
     start_provider = time.time()
-    for chunk_start_id in range(min_provider_id, max_product_id_for_provider, CHUNK_SIZE):
+    for chunk_start_id in range(min_product_id, max_product_id, CHUNK_SIZE):
         with transaction():
             product_to_delete = get_products_to_delete(chunk_start_id, provider_id)
             products_id_to_delete = []
@@ -86,7 +117,7 @@ def execute_request(
                     not_deleted_products.append(product.id)
 
                 print(
-                    f"{product.id = } / {max_product_id_for_provider} ({time.time() - start_provider:.2f}s) (Estimated time {(time.time() - start_provider) / ((product.id - min_provider_id or 1) / (max_product_id_for_provider - min_provider_id)):.2f})"
+                    f"{product.id = } / {max_product_id} ({time.time() - start_provider:.2f}s) (Estimated time {(time.time() - start_provider) / ((product.id - min_product_id or 1) / (max_product_id - min_product_id)):.2f})"
                 )
 
             if dry_run:
@@ -107,7 +138,7 @@ def execute_request(
 
 
 def get_max_provider_id(provider_id: int) -> int:
-    return (
+    return PROVIDER_PRODUCT_RANGE[provider_id]["max"] or (
         Product.query.filter(Product.lastProviderId == provider_id)  # pylint: disable=comparison-with-callable
         .with_entities(sa.func.max(Product.id))
         .scalar()
@@ -115,24 +146,15 @@ def get_max_provider_id(provider_id: int) -> int:
 
 
 def get_min_provider_id(provider_id: int) -> int:
-    return (
+    return PROVIDER_PRODUCT_RANGE[provider_id]["min"] or (
         Product.query.filter(Product.lastProviderId == provider_id)  # pylint: disable=comparison-with-callable
         .with_entities(sa.func.min(Product.id))
         .scalar()
     )
 
 
-def delete_unused_products(dry_run: bool = True) -> None:
-    start_min_max_queries = time.time()
-    product_range_by_provider = [
-        (provider_id, get_min_provider_id(provider_id), get_max_provider_id(provider_id))
-        for provider_id in PROVIDER_IDS
-    ]
-    min_max_queries_duration = time.time() - start_min_max_queries
-    print(f"Initial queries took {min_max_queries_duration:.2f}s")
-    print(product_range_by_provider)
-    for provider_id, min_provider_id, max_provider_id in product_range_by_provider:
-        execute_request(provider_id, min_provider_id, max_provider_id, dry_run)
+def delete_unused_products(provider_id: int, dry_run: bool = True) -> None:
+    execute_request(provider_id, get_min_provider_id(provider_id), get_max_provider_id(provider_id), dry_run)
 
 
 if __name__ == "__main__":
@@ -150,7 +172,15 @@ if __name__ == "__main__":
         action="store_false",
         default=True,
     )
+    parser.add_argument(
+        "--provider-id",
+        "-p",
+        help="choose the provider you want to delete products from",
+        dest="provider_id",
+        type=int,
+        required=True,
+    )
 
     args = parser.parse_args()
     with app.app_context():
-        delete_unused_products(args.dry_run)
+        delete_unused_products(args.provider_id, args.dry_run)
