@@ -28,7 +28,3 @@ def get_offerer_name(booking: Booking) -> str:
 
 def get_venue_address(booking: Booking) -> str:
     return booking.stock.offer.venue.address
-
-
-def get_booking_firstname(booking: Booking) -> str | None:
-    return booking.firstName
