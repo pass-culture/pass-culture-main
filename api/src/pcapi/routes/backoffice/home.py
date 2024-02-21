@@ -78,7 +78,7 @@ def _get_fraud_stats() -> dict[str, typing.Any]:
         )
     ).one()
 
-    return dict(stats)
+    return stats._mapping
 
 
 @blueprint.backoffice_web.route("/", methods=["GET"])
