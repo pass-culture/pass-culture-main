@@ -108,7 +108,7 @@ cd $DIR/api
 # To disable some checks, set DISABLED_API_PRE_COMMIT_CHECKS
 # environment variable. For example:
 #
-#     export DISABLED_API_PRE_COMMIT_CHECKS="mypy,pylint"
+#     export DISABLED_API_PRE_COMMIT_CHECKS="mypy,pylint,squawk"
 #
 
 ALEMBIC_STAGED_FILES=$(git diff --staged --name-only -- './src/pcapi/alembic/versions/*.py' | grep '^api/*' | sed 's|^api\/||g')
@@ -119,6 +119,47 @@ if [[ "$ALEMBIC_STAGED_FILES" != "" ]]; then
   # Sort heads: "pre" then "post" (the output of Alembic is not stable)
   alembic --config alembic.ini heads | sort --key 2 --reverse >alembic_version_conflict_detection.txt
   git add alembic_version_conflict_detection.txt
+
+  if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",squawk," ]]; then
+    squawk_output_path=$(mktemp --tmpdir squawk-output-from-pre-commit-hook.XXXXXXXX)
+    squawk_lint_status_code=0
+    lint_alembic() {
+      local operation="$1"
+      local migration_range="$2"
+
+      env_local_file=".env.local.secret"
+      if [ -f "$env_local_file" ] && grep -q "^DATABASE_URL" "$env_local_file"; then
+        # backend is launched locally
+        alembic "$operation" "$migration_range" --sql 2>>"${squawk_output_path}" |
+          sed '/squawk:ignore-next-statement/,/;$/d' | # see alembic/CONTRIBUTING.md
+          squawk >>"${squawk_output_path}" || squawk_lint_status_code=1
+      else
+        # backend is launched through docker
+        pc alembic "$operation" "$migration_range" --sql 2>>"${squawk_output_path}" |
+          tail -n +2 | # ignore `pc` logging of executed bash commands
+          sed '/squawk:ignore-next-statement/,/;$/d' |
+          squawk >>"${squawk_output_path}" || squawk_lint_status_code=1
+      fi
+    }
+
+    base_commit=$(git merge-base HEAD origin/master)
+    base_alembic_versions=$(git --no-pager show "$base_commit":api/alembic_version_conflict_detection.txt)
+    base_pre=$(echo "$base_alembic_versions" | head --lines 1 | cut --fields 1 --delimiter " ")
+    base_post=$(echo "$base_alembic_versions" | tail --lines 1 | cut --fields 1 --delimiter " ")
+    lint_alembic upgrade "$base_pre":pre@head
+    lint_alembic upgrade "$base_post":post@head
+    lint_alembic downgrade post@head:"$base_post"
+    lint_alembic downgrade pre@head:"$base_pre"
+
+    if [ $squawk_lint_status_code -ne 0 ]; then
+      cat "${squawk_output_path}"
+      echo -e "\033[2K\r\033[0;31msquawk: Some migrations are not respecting zero-downtime best practices\033[0m"
+      exit $squawk_lint_status_code
+    else
+      echo -e "\033[2K\r\033[0;92msquawk: Migrations are respecting zero-downtime best practices\033[0m"
+      echo -e "\033[2K\r\033[0;92msquawk: However, the migrations can still time out if done on big tables such as Offer, Product, Stock or Booking\033[0m"
+    fi
+  fi
 fi
 
 counter=0
