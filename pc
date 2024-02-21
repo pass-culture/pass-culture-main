@@ -13,7 +13,6 @@ where:
   -e  specify environment to target (default: development)
   -b  specify backend to connect with local app (default: localhost)
   -f  file to upload to pod
-  -t  specify version you want to deploy (create tag with this name)
   c  command that you want to run
 
 Commands:
@@ -254,7 +253,7 @@ elif [[ "$CMD" == "set-git-config" ]]; then
 
 # Create symlink to use "pc" command (admin rights may be needed)
 elif [[ "$CMD" == "symlink" ]]; then
-  RUN='cd /usr/local/bin && ln -sf '"$(pwd)"'/pc pc && chmod +x pc && chmod +x '"$(pwd)"'/pc'
+  RUN='cd /usr/local/bin && ln -sf '"$(pwd)"'/pc pc && chmod +x pc && chmod +x '"$(pwd)"'/pc && cd /etc/bash_completion.d && ln -sf '"$(pwd)"'/scripts/autocomplete autocomplete && chmod +x autocomplete && chmod +x '"$(pwd)"'/scripts/autocomplete'
 
 # =============================================
 # Administration commands
