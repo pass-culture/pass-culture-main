@@ -1,7 +1,6 @@
 import React from 'react'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
-import useActiveFeature from 'hooks/useActiveFeature'
 
 import {
   getVirtualVenueFromOfferer,
@@ -16,13 +15,12 @@ export interface VenueListProps {
 }
 
 export const VenueList = ({ offerer }: VenueListProps) => {
-  const isPartnerPageActive = useActiveFeature('WIP_PARTNER_PAGE')
   const virtualVenue = getVirtualVenueFromOfferer(offerer)
   const basePhysicalVenues = getPhysicalVenuesFromOfferer(offerer)
 
-  const physicalVenues = isPartnerPageActive
-    ? basePhysicalVenues.filter((venue) => !venue.isPermanent)
-    : basePhysicalVenues
+  const physicalVenues = basePhysicalVenues.filter(
+    (venue) => !venue.isPermanent
+  )
 
   const indexLastPhysicalVenues = physicalVenues.length - 1
 
