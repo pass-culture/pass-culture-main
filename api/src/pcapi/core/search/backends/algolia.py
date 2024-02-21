@@ -640,32 +640,40 @@ class AlgoliaBackend(base.SearchBackend):
         redis_client = current_app.redis_client
         for originating_queue in QUEUES:
             # There a very few queues, no need to paginate with `_cursor`.
-            _cursor, processing_queues = redis_client.scan(0, f"{originating_queue}:processing:*")
-            for processing_queue in processing_queues:
-                timestamp = float(processing_queue.rsplit(":")[-1])
-                if timestamp > datetime.datetime.utcnow().timestamp() - 60 * 60:
-                    continue  # less than 1 hour ago, too recent, could still be processing
-                with redis_client.pipeline(transaction=True) as pipeline:
-                    try:
-                        for id_ in redis_client.smembers(processing_queue):
-                            pipeline.smove(processing_queue, originating_queue, id_)
-                        pipeline.execute()
-                    except Exception:  # pylint: disable=broad-exception-caught
-                        # That's not critical: the processing queue will
-                        # still be here, and can be handled in the next run
-                        # of this function. But we raise a warning because
-                        # it may denote a problem with our code or with
-                        # Redis.
-                        logger.exception(
-                            "Failed to handle indexation processing queue: %s (will try again)",
-                            processing_queue,
-                            exc_info=True,
-                        )
-                    else:
-                        logger.info(
-                            "Found old processing queue, moved back items to originating queue",
-                            extra={"queue": originating_queue, "processing_queue": processing_queue},
-                        )
+            pattern = f"{originating_queue}:processing:*"
+            cursor = 0
+            while 1:
+                cursor, processing_queues = redis_client.scan(cursor, pattern)
+                for processing_queue in processing_queues:
+                    timestamp = float(processing_queue.rsplit(":")[-1])
+                    if timestamp > datetime.datetime.utcnow().timestamp() - 60 * 60:
+                        continue  # less than 1 hour ago, too recent, could still be processing
+                    self._clean_processing_queue(processing_queue, originating_queue)
+                if cursor == 0:  # back to start, we have been through the pagination
+                    break
+
+    def _clean_processing_queue(self, processing_queue: str, originating_queue: str) -> None:
+        redis_client = current_app.redis_client
+        with redis_client.pipeline(transaction=True) as pipeline:
+            try:
+                for id_ in redis_client.smembers(processing_queue):
+                    pipeline.smove(processing_queue, originating_queue, id_)
+                pipeline.execute()
+            except Exception:  # pylint: disable=broad-exception-caught
+                # That's not critical: the processing queue will
+                # still be here, and can be handled in the next run
+                # of this function. But we raise a warning because
+                # it may denote a problem with our code or with
+                # Redis.
+                logger.exception(
+                    "Failed to handle indexation processing queue: %s (will try again)",
+                    processing_queue,
+                )
+            else:
+                logger.info(
+                    "Found old processing queue, moved back items to originating queue",
+                    extra={"queue": originating_queue, "processing_queue": processing_queue},
+                )
 
 
 def position(venue: offerers_models.Venue) -> dict[str, float]:
