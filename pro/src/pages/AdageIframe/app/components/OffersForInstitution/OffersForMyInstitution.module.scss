@@ -2,7 +2,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 
 .no-results {
-  margin-top: rem.torem(32px);
+  padding-bottom: rem.torem(32px);
   text-align: center;
 
   &-svg {

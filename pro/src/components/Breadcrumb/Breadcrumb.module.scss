@@ -9,6 +9,14 @@
     gap: rem.torem(8px);
     flex-wrap: wrap;
 
+    &-last {
+      @include fonts.caption;
+
+      display: inline-flex;
+      align-items: center;
+      white-space: break-spaces;
+    }
+
     &-item {
       display: flex;
       align-items: center;

@@ -4,7 +4,6 @@ import { CalloutVariant } from 'components/Callout/types'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullMailIcon from 'icons/full-mail.svg'
 import strokeInstitutionIcon from 'icons/stroke-institution.svg'
-import strokeVenueIcon from 'icons/stroke-venue.svg'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -62,7 +61,7 @@ export default function AdageOfferPartnerPanel({
           />
         ) : (
           <div className={styles['partner-panel-info-image-fallback']}>
-            <SvgIcon src={strokeVenueIcon} alt="" width="32" />
+            <SvgIcon src={strokeInstitutionIcon} alt="" width="32" />
           </div>
         )}
 

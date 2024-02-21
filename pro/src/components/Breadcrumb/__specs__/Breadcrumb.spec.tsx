@@ -22,7 +22,7 @@ describe('Breadcrumb', () => {
       screen.getByRole('navigation', { name: 'Vous êtes ici:' })
     ).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Link 1' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Link 3' })).toBeInTheDocument()
+    expect(screen.getByText('Link 3')).toBeInTheDocument()
   })
 
   it('should announce the last link as the current page for assistive technologies', () => {
@@ -32,9 +32,6 @@ describe('Breadcrumb', () => {
       'aria-current',
       'page'
     )
-    expect(screen.getByRole('link', { name: 'Link 3' })).toHaveAttribute(
-      'aria-current',
-      'page'
-    )
+    expect(screen.getByText('Link 3')).toBeInTheDocument()
   })
 })

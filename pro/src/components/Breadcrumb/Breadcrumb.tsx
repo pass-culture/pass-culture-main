@@ -24,26 +24,31 @@ export default function Breadcrumb({ crumbs }: BreadcrumbProps) {
           const isLast = i === crumbs.length - 1
           return (
             <li className={styles['breadcrumb-list-item']} key={crumb.link.to}>
-              <ButtonLink
-                link={{
-                  ...crumb.link,
-                  'aria-current': isLast ? 'page' : undefined,
-                }}
-                className={styles['breadcrumb-list-item-link']}
-                variant={ButtonVariant.QUATERNARYPINK}
-              >
-                <>
-                  {crumb.icon && (
-                    <SvgIcon
-                      src={crumb.icon}
-                      alt=""
-                      width="16"
-                      className={styles['breadcrumb-list-item-link-icon']}
-                    />
-                  )}
+              {isLast ? (
+                <span className={styles['breadcrumb-list-last']}>
                   {crumb.title}
-                </>
-              </ButtonLink>
+                </span>
+              ) : (
+                <ButtonLink
+                  link={{
+                    ...crumb.link,
+                  }}
+                  className={styles['breadcrumb-list-item-link']}
+                  variant={ButtonVariant.QUATERNARYPINK}
+                >
+                  <>
+                    {crumb.icon && (
+                      <SvgIcon
+                        src={crumb.icon}
+                        alt=""
+                        width="16"
+                        className={styles['breadcrumb-list-item-link-icon']}
+                      />
+                    )}
+                    {crumb.title}
+                  </>
+                </ButtonLink>
+              )}
               {!isLast && (
                 <SvgIcon
                   alt=""
