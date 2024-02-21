@@ -314,7 +314,7 @@ class DeleteOffererTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer_to_delete.id)
         assert response.status_code == 303
-        assert offerers_models.Offerer.query.filter(offerers_models.Offerer.id == offerer_to_delete.id).count() == 0
+        assert offerers_models.Offerer.query.filter(offerers_models.Offerer.id == offerer_to_delete_id).count() == 0
 
         expected_url = url_for("backoffice_web.pro.search_pro", _external=True)
         assert response.location == expected_url
