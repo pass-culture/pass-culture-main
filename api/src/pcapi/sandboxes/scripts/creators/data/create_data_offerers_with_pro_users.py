@@ -72,7 +72,6 @@ def create_data_offerers_with_pro_users() -> tuple[dict[str, Offerer], dict[str,
     user_offerers_by_name = {}
 
     user_index = 0
-    user_validation_suffix = 123
 
     # loop on locations to create offerers and associated users
     incremented_siren = 555555555
@@ -103,7 +102,6 @@ def create_data_offerers_with_pro_users() -> tuple[dict[str, Offerer], dict[str,
         last_name = MOCK_LAST_NAMES[user_index % len(MOCK_LAST_NAMES)]
         email = get_email(f"{first_name}_Data", last_name, domain)
         user_name = f"{first_name} {last_name}"
-        user_validation_token = None
         offerer.validationStatus = ValidationStatus.VALIDATED
         pro = users_factories.ProFactory(
             departementCode=departement_code,
@@ -112,10 +110,8 @@ def create_data_offerers_with_pro_users() -> tuple[dict[str, Offerer], dict[str,
             lastName=last_name,
             postalCode=f"{departement_code}100",
             phoneNumber="+33100000001",
-            validationToken=user_validation_token,
         )
         users_by_name[user_name] = pro
-        user_validation_suffix += 1
         user_index += 1
 
         # user_offerer with None as validation token
@@ -133,7 +129,6 @@ def create_data_offerers_with_pro_users() -> tuple[dict[str, Offerer], dict[str,
             last_name = MOCK_LAST_NAMES[user_index % len(MOCK_LAST_NAMES)]
             email = get_email(f"{first_name}_data", last_name, domain)
             user_name = f"{first_name} {last_name} DATA"
-            user_validation_token = None
             pro = users_factories.ProFactory(
                 departementCode=departement_code,
                 email=email,
@@ -141,18 +136,14 @@ def create_data_offerers_with_pro_users() -> tuple[dict[str, Offerer], dict[str,
                 lastName=last_name,
                 postalCode=f"{departement_code}100",
                 phoneNumber="+33100000002",
-                validationToken=user_validation_token,
             )
             users_by_name[user_name] = pro
             user_index += 1
-            user_validation_suffix += 1
-
-            user_offerer_validation_status = ValidationStatus.VALIDATED
 
             user_offerers_by_name[f"{user_name} / {offerer_name}"] = offerers_factories.UserOffererFactory(
                 offerer=offerer,
                 user=pro,
-                validationStatus=user_offerer_validation_status,
+                validationStatus=ValidationStatus.VALIDATED,
             )
 
     objects_to_save = list(offerers_by_name.values()) + list(users_by_name.values())

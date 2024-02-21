@@ -1,5 +1,4 @@
 import datetime
-import logging
 import random
 
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
@@ -7,23 +6,6 @@ from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTE
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
-
-
-logger = logging.getLogger(__name__)
-
-randint_10_000 = random.randint(1, 10_000)
-
-offer_count_cases = [
-    [0, 0, 0, False],
-    [0, 0, 0, True],
-    [0, False],
-    [0, True],
-    [0, 0, True],
-    [randint_10_000, 0, 0, True],
-    [randint_10_000, randint_10_000, 0, True],
-    [randint_10_000, randint_10_000, randint_10_000, True],
-    [randint_10_000, True],
-]
 
 
 def create_top_30_days_offerers_stats(
