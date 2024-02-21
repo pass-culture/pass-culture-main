@@ -1,4 +1,3 @@
-import { SubcategoryIdEnum } from 'apiClient/v1'
 import {
   COLLECTIVE_OFFER_SUBTYPE,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
@@ -11,5 +10,4 @@ export interface OfferTypeFormValues {
   collectiveOfferSubtype: COLLECTIVE_OFFER_SUBTYPE
   collectiveOfferSubtypeDuplicate: COLLECTIVE_OFFER_SUBTYPE_DUPLICATE
   individualOfferSubtype: INDIVIDUAL_OFFER_SUBTYPE | ''
-  individualOfferSubcategory: SubcategoryIdEnum | 'OTHER' | ''
 }

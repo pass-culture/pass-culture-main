@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -43,7 +42,6 @@ const renderOfferTypes = (venueId?: string) => {
 
   renderWithProviders(<OfferType />, {
     storeOverrides,
-    features: ['WIP_CATEGORY_SELECTION'],
     initialRouterEntries: [`/creation${venueId ? `?lieu=${venueId}` : ''}`],
   })
 }
@@ -86,10 +84,6 @@ describe('screens:IndividualOffer::OfferType', () => {
   it('should redirect with the offer type when venue and type selected', async () => {
     renderOfferTypes('123')
 
-    expect(
-      await screen.findByText('Quelle est la catégorie de l’offre ?')
-    ).toBeInTheDocument()
-    await userEvent.click(screen.getByText('Autre'))
     await userEvent.click(screen.getByText('Un évènement physique daté'))
     await userEvent.click(screen.getByText('Étape suivante'))
 
@@ -99,37 +93,13 @@ describe('screens:IndividualOffer::OfferType', () => {
     })
   })
 
-  it('should diable button when type or subcategory was not selected', async () => {
+  it('should diable button when type was not selected', async () => {
     renderOfferTypes('123')
-
-    expect(
-      await screen.findByText('Quelle est la catégorie de l’offre ?')
-    ).toBeInTheDocument()
-
-    // subcategory is not selected
-    expect(screen.getByText('Étape suivante')).toBeDisabled()
-
-    await userEvent.click(screen.getByText('Autre'))
 
     // type is not selected
     expect(screen.getByText('Étape suivante')).toBeDisabled()
 
     await userEvent.click(screen.getByText('Un évènement physique daté'))
     expect(screen.getByText('Étape suivante')).not.toBeDisabled()
-  })
-
-  it('should redirect with subcategory when venue and subcategory selected', async () => {
-    renderOfferTypes('123')
-
-    expect(
-      await screen.findByText('Quelle est la catégorie de l’offre ?')
-    ).toBeInTheDocument()
-    await userEvent.click(screen.getByText('Ma sous-catégorie préférée'))
-    await userEvent.click(screen.getByText('Étape suivante'))
-
-    expect(mockNavigate).toHaveBeenCalledWith({
-      pathname: '/offre/individuelle/creation/informations',
-      search: 'lieu=123&sous-categorie=SPECTACLE_REPRESENTATION',
-    })
   })
 })

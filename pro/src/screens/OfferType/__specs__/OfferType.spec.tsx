@@ -1,15 +1,9 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import {
-  CancelablePromise,
-  GetOffererResponseModel,
-  SubcategoryIdEnum,
-  VenueTypeCode,
-} from 'apiClient/v1'
+import { CancelablePromise, GetOffererResponseModel } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as useNotification from 'hooks/useNotification'
@@ -19,11 +13,6 @@ import {
   defaultGetOffererResponseModel,
 } from 'utils/apiFactories'
 import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
-import {
-  individualOfferCategoryFactory,
-  individualOfferSubCategoryResponseModelFactory,
-  individualOfferVenueResponseModelFactory,
-} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferType from '../OfferType'
@@ -75,7 +64,6 @@ const renderOfferTypes = (structureId?: string, venueId?: string) => {
     </Routes>,
     {
       storeOverrides: { user: { currentUser: { isAdmin: false } } },
-      features: ['WIP_CATEGORY_SELECTION'],
       initialRouterEntries: [
         `/creation${
           structureId
@@ -264,57 +252,12 @@ describe('OfferType', () => {
         {
           from: 'OfferFormHomepage',
           offerType: expectedSearch,
-          subcategoryId: '',
           to: 'informations',
           used: 'StickyButtons',
         }
       )
     }
   )
-
-  it('should log and redirect with subcategory when arriving with venue and chosen a subcategory', async () => {
-    vi.spyOn(api, 'getCategories').mockResolvedValue({
-      categories: [individualOfferCategoryFactory()],
-      subcategories: [
-        individualOfferSubCategoryResponseModelFactory({
-          // id should match venueType in venueTypeSubcategoriesMapping
-          id: SubcategoryIdEnum.SPECTACLE_REPRESENTATION,
-          proLabel: 'Ma sous-catégorie préférée',
-        }),
-      ],
-    })
-    vi.spyOn(api, 'getVenue').mockResolvedValue({
-      ...individualOfferVenueResponseModelFactory({
-        venueTypeCode: 'OTHER' as VenueTypeCode, // cast is needed because VenueTypeCode in apiClient is defined in french, but sent by api in english
-      }),
-    })
-
-    // there is a venue in url
-    renderOfferTypes('1', '1')
-
-    expect(
-      await screen.findByText('Quelle est la catégorie de l’offre ?')
-    ).toBeInTheDocument()
-    await userEvent.click(screen.getByText('Ma sous-catégorie préférée'))
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Étape suivante' })
-    )
-
-    expect(screen.getByText('Création individuel')).toBeInTheDocument()
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'OfferFormHomepage',
-        offerType: '',
-        subcategoryId: 'SPECTACLE_REPRESENTATION',
-        to: 'informations',
-        used: 'StickyButtons',
-      }
-    )
-  })
 
   it('should select duplicate template offer', async () => {
     const offersRecap = [collectiveOfferFactory()]

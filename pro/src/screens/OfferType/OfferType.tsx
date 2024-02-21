@@ -39,7 +39,6 @@ const OfferType = (): JSX.Element => {
     collectiveOfferSubtypeDuplicate:
       COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER,
     individualOfferSubtype: '',
-    individualOfferSubcategory: '',
   }
 
   const [hasCollectiveTemplateOffer, setHasCollectiveTemplateOffer] =
@@ -50,7 +49,6 @@ const OfferType = (): JSX.Element => {
     if (values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO) {
       logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
         offerType: values.individualOfferSubtype,
-        subcategoryId: values.individualOfferSubcategory,
         to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         from: OFFER_FORM_HOMEPAGE,
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
@@ -59,11 +57,6 @@ const OfferType = (): JSX.Element => {
       const params = new URLSearchParams(location.search)
       if (values.individualOfferSubtype) {
         params.append('offer-type', values.individualOfferSubtype)
-      } else if (
-        values.individualOfferSubcategory &&
-        values.individualOfferSubcategory !== 'OTHER'
-      ) {
-        params.append('sous-categorie', values.individualOfferSubcategory)
       }
 
       return navigate({
@@ -113,16 +106,10 @@ const OfferType = (): JSX.Element => {
   const isDisabledForEducationnal =
     values.offerType === OFFER_TYPES.EDUCATIONAL && !isEligible
 
-  const hasNotChosenSubcategory =
-    values.individualOfferSubcategory === '' ||
-    values.individualOfferSubcategory === 'OTHER'
-
   const hasNotChosenOfferType = values.individualOfferSubtype === ''
 
   const isDisableForIndividual =
-    values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO &&
-    hasNotChosenOfferType &&
-    hasNotChosenSubcategory
+    values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && hasNotChosenOfferType
 
   return (
     <div className={styles['offer-type-container']}>
