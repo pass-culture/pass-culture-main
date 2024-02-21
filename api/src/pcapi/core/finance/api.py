@@ -44,6 +44,7 @@ from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
 import pytz
 import sqlalchemy as sqla
+from sqlalchemy import text
 import sqlalchemy.orm as sqla_orm
 import sqlalchemy.sql.functions as sqla_func
 
@@ -1316,7 +1317,8 @@ def generate_payment_files(batch: models.CashflowBatch) -> None:
 
     logger.info("Updating cashflow status")
     db.session.execute(
-        """
+        text(
+            """
         WITH updated AS (
           UPDATE cashflow
           SET status = :under_review
@@ -1326,7 +1328,8 @@ def generate_payment_files(batch: models.CashflowBatch) -> None:
         INSERT INTO cashflow_log
             ("cashflowId", "statusBefore", "statusAfter")
             SELECT updated.cashflow_id, 'pending', 'under review' FROM updated
-    """,
+    """
+        ),
         params={
             "batch_id": batch.id,
             "pending": models.CashflowStatus.PENDING.value,
@@ -2355,21 +2358,24 @@ def _generate_invoice_legacy(
     # SQLAlchemy ORM cannot call `update()` if a query has been JOINed.
     with log_elapsed(logger, "Updating status of pricings"):
         db.session.execute(
-            """
+            text(
+                """
             UPDATE pricing
             SET status = :status
             FROM cashflow_pricing
             WHERE
               cashflow_pricing."pricingId" = pricing.id
               AND cashflow_pricing."cashflowId" IN :cashflow_ids
-            """,
+            """
+            ),
             {"status": models.PricingStatus.INVOICED.value, "cashflow_ids": tuple(cashflow_ids)},
         )
 
     # Booking.status: USED -> REIMBURSED (but keep CANCELLED as is)
     with log_elapsed(logger, "Updating status of individual bookings"):
         db.session.execute(
-            """
+            text(
+                """
             UPDATE booking
             SET
               status =
@@ -2383,7 +2389,8 @@ def _generate_invoice_legacy(
               booking.id = pricing."bookingId"
               AND pricing.id = cashflow_pricing."pricingId"
               AND cashflow_pricing."cashflowId" IN :cashflow_ids
-            """,
+            """
+            ),
             {
                 "cancelled": bookings_models.BookingStatus.CANCELLED.value,
                 "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
@@ -2395,7 +2402,8 @@ def _generate_invoice_legacy(
     # CollectiveBooking.status: USED -> REIMBURSED (but keep CANCELLED as is)
     with log_elapsed(logger, "Updating status of collective bookings"):
         db.session.execute(
-            """
+            text(
+                """
             UPDATE collective_booking
             SET
             status =
@@ -2409,7 +2417,8 @@ def _generate_invoice_legacy(
                 collective_booking.id = pricing."collectiveBookingId"
             AND pricing.id = cashflow_pricing."pricingId"
             AND cashflow_pricing."cashflowId" IN :cashflow_ids
-            """,
+            """
+            ),
             {
                 "cancelled": bookings_models.BookingStatus.CANCELLED.value,
                 "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
@@ -2537,21 +2546,24 @@ def _generate_invoice(
     # SQLAlchemy ORM cannot call `update()` if a query has been JOINed.
     with log_elapsed(logger, "Updating status of pricings"):
         db.session.execute(
-            """
+            text(
+                """
             UPDATE pricing
             SET status = :status
             FROM cashflow_pricing
             WHERE
               cashflow_pricing."pricingId" = pricing.id
               AND cashflow_pricing."cashflowId" IN :cashflow_ids
-            """,
+            """
+            ),
             {"status": models.PricingStatus.INVOICED.value, "cashflow_ids": tuple(cashflow_ids)},
         )
 
     # Booking.status: USED -> REIMBURSED (but keep CANCELLED as is)
     with log_elapsed(logger, "Updating status of individual bookings"):
         db.session.execute(
-            """
+            text(
+                """
             UPDATE booking
             SET
               status =
@@ -2565,7 +2577,8 @@ def _generate_invoice(
               booking.id = pricing."bookingId"
               AND pricing.id = cashflow_pricing."pricingId"
               AND cashflow_pricing."cashflowId" IN :cashflow_ids
-            """,
+            """
+            ),
             {
                 "cancelled": bookings_models.BookingStatus.CANCELLED.value,
                 "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
@@ -2577,7 +2590,8 @@ def _generate_invoice(
     # CollectiveBooking.status: USED -> REIMBURSED (but keep CANCELLED as is)
     with log_elapsed(logger, "Updating status of collective bookings"):
         db.session.execute(
-            """
+            text(
+                """
             UPDATE collective_booking
             SET
             status =
@@ -2591,7 +2605,8 @@ def _generate_invoice(
                 collective_booking.id = pricing."collectiveBookingId"
             AND pricing.id = cashflow_pricing."pricingId"
             AND cashflow_pricing."cashflowId" IN :cashflow_ids
-            """,
+            """
+            ),
             {
                 "cancelled": bookings_models.BookingStatus.CANCELLED.value,
                 "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
