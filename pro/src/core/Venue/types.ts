@@ -37,7 +37,7 @@ export type VenueCollectiveInformation = Pick<
   | 'collectiveSubCategoryId'
 >
 
-export interface Venue {
+export interface Venue extends GetVenueResponseModel {
   collectiveDomains: Array<GetVenueDomainResponseModel>
   dateCreated: string
   isVirtual: boolean
