@@ -335,26 +335,42 @@ class MarkWithoutContinuationApplicationDetail(BaseModel):
             dms_models.GraphQLApplicationStates.on_going,
         ):
             if self.processing_error_pc is not None:
+                logger.info(
+                    "[DS] application is older than the dead line application", extra={"application_id": self.number}
+                )
                 if (
                     "adage" not in self.processing_error_pc.string_value
                     and "rct" not in self.processing_error_pc.string_value
                 ):
+                    logger.info("[DS] application is not about adage nor rct", extra={"application_id": self.number})
                     return True
                 if (
                     "rct" in self.processing_error_pc.string_value
                     and self.processing_error_pc.updated_at < dead_line_annotation
                 ):
+                    logger.info(
+                        "[DS] application is about `rct` but older than the dead line annotation",
+                        extra={"application_id": self.number},
+                    )
                     return True
             elif self.waiting_for_offerer_validation is not None and self.waiting_for_adage_validation is not None:
                 if (
                     self.waiting_for_offerer_validation.checked is True
                     and self.waiting_for_offerer_validation.updated_at < dead_line_annotation
                 ) and self.waiting_for_adage_validation.checked is False:
+                    logger.info(
+                        "[DS] application is waiting for offerer validation for too long",
+                        extra={"application_id": self.number},
+                    )
                     return True
                 if (
                     self.waiting_for_offerer_validation.checked is False
                     and self.waiting_for_adage_validation.checked is False
                 ):
+                    logger.info(
+                        "[DS] application is not waiting for validation of any kind",
+                        extra={"application_id": self.number},
+                    )
                     return True
 
         return False
