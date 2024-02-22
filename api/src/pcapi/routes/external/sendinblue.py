@@ -4,6 +4,7 @@ import logging
 from flask import request
 
 from pcapi import settings
+from pcapi.core.external.attributes.api import update_external_user
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
@@ -80,6 +81,9 @@ def _toggle_marketing_email_subscription(subscribe: bool) -> None:
         else {"marketing_email": subscribe}
     )
     repository.save(user)
+
+    # Sendinblue is already up-to-date from originating automation, update marketing preference in Batch
+    update_external_user(user, skip_sendinblue=True)
 
 
 @public_api.route("/webhooks/sendinblue/unsubscribe", methods=["POST"])

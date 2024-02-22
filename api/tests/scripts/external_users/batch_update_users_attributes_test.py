@@ -98,6 +98,7 @@ def test_format_batch_user():
         "u.first_name": "Jeanne",
         "u.has_completed_id_check": True,
         "u.last_name": "Doux",
+        "u.marketing_email_subscription": True,
         "u.marketing_push_subscription": True,
         "u.most_booked_movie_genre": None,
         "u.most_booked_music_type": None,
