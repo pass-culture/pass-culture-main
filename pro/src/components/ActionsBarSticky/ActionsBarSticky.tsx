@@ -23,7 +23,7 @@ const ActionsBarSticky = ({
     return () => {
       dispatch(setIsStickyBarOpen(false))
     }
-  }, [])
+  }, [dispatch])
 
   return (
     <div

@@ -1,6 +1,7 @@
-import type { ComponentStory } from '@storybook/react'
-import React from 'react'
+import type { StoryObj } from '@storybook/react'
+import { Provider } from 'react-redux'
 
+import { configureTestStore } from 'store/testUtils'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -8,25 +9,34 @@ import ActionsBarSticky from './ActionsBarSticky'
 
 export default {
   title: 'components/ActionsBarSticky',
-  component: ActionsBarSticky,
+  component: ActionBar,
+  decorators: [
+    (Story: any) => (
+      <div
+        style={{
+          position: 'fixed',
+          left: '0',
+          right: '0',
+        }}
+      >
+        <div
+          style={{
+            width: '874px',
+            height: '1500px',
+            backgroundColor: 'lightblue',
+            margin: 'auto',
+          }}
+        >
+          <Story />
+        </div>
+      </div>
+    ),
+  ],
 }
 
-const Template: ComponentStory<typeof ActionsBarSticky> = () => (
-  <div
-    style={{
-      position: 'fixed',
-      left: '0',
-      right: '0',
-    }}
-  >
-    <div
-      style={{
-        width: '874px',
-        height: '1500px',
-        backgroundColor: 'lightblue',
-        margin: 'auto',
-      }}
-    >
+function ActionBar() {
+  return (
+    <Provider store={configureTestStore({})}>
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
           <Button>Bouton Gauche</Button>
@@ -38,10 +48,12 @@ const Template: ComponentStory<typeof ActionsBarSticky> = () => (
           <Button variant={ButtonVariant.SECONDARY}>Encore un</Button>
         </ActionsBarSticky.Right>
       </ActionsBarSticky>
-    </div>
-  </div>
-)
+    </Provider>
+  )
+}
 
-export const Default = Template.bind({})
-
-Default.args = {}
+export const Default: StoryObj<typeof ActionBar> = {
+  args: {
+    size: 'medium',
+  },
+}
