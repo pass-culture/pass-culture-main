@@ -298,10 +298,9 @@ def get_incident_creation_form() -> utils.BackofficeResponse:
             )
 
         form.total_amount.data = sum(booking.total_amount for booking in bookings)
-
         additional_data = _initialize_additional_data(bookings)
         if len(bookings) > 1:
-            form.total_amount.flags.disabled = True
+            form.total_amount.flags.readonly = True
             information = "Il n'est possible de créer qu'un incident trop perçu total si plusieurs réservations sont sélectionnées."
 
     return render_template(
