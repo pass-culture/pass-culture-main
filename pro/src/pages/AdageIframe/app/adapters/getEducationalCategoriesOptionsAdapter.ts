@@ -1,6 +1,6 @@
 import { CategoriesResponseModel } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { Adapter, Option } from 'pages/AdageIframe/app/types'
+import { Option } from 'pages/AdageIframe/app/types'
 
 type Params = null
 

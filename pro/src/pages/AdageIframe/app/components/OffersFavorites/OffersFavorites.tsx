@@ -4,9 +4,9 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
 } from 'apiClient/adage'
+import { apiAdage } from 'apiClient/api'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
-import { getFavoriteOffersAdapter } from '../../adapters/getFavoriteOffersAdapter'
 import Offer from '../OffersInstantSearch/OffersSearch/Offers/Offer'
 
 import styles from './OffersFavorites.module.scss'
@@ -22,14 +22,10 @@ export const OffersFavorites = () => {
   useEffect(() => {
     const fetchFavorites = async () => {
       setIsLoading(true)
-      return await getFavoriteOffersAdapter().then((response) => {
-        setIsLoading(false)
-
-        if (!response.isOk) {
-          return
-        }
-        setFavoriteOffers(response.payload)
-      })
+      const offers =
+        (await apiAdage.getCollectiveFavorites())?.favoritesTemplate ?? []
+      setFavoriteOffers(offers)
+      setIsLoading(false)
     }
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     fetchFavorites()
