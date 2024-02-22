@@ -741,7 +741,9 @@ class GooglePlacesInfo(PcObject, Base, Model):
         BigInteger, ForeignKey("venue.id", ondelete="CASCADE"), nullable=False, index=True, unique=True
     )
     venue: sa_orm.Mapped[Venue] = relationship("Venue", foreign_keys=[venueId], back_populates="googlePlacesInfo")
-    placeId: str | None = Column(Text, nullable=True, unique=True)
+    # Some venues are duplicated in our database. They are all linked to the same item on
+    # Google Places, so this column cannot be unique.
+    placeId: str | None = Column(Text, nullable=True, unique=False)
     bannerUrl: str | None = Column(Text, nullable=True, name="bannerUrl")
     bannerMeta: dict | None = Column(MutableDict.as_mutable(JSONB), nullable=True)
     updateDate: datetime = Column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now())
