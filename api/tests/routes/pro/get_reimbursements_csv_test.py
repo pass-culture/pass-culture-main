@@ -11,6 +11,7 @@ import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.testing import AUTHENTICATION_QUERIES
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
@@ -221,9 +222,16 @@ def test_with_venue_filter_old_bank_information_journey_with_pricings(client, cu
     offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
     # When
-    with assert_num_queries(14):
-        response = client.with_session_auth(pro.email).get(
-            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&venueId={venue1.id}"
+    client = client.with_session_auth(pro.email)
+    venue1_id = venue1.id  # avoid extra SQL query below
+    queries = AUTHENTICATION_QUERIES
+    queries += 1  # select offerer
+    queries += 1  # select features
+    queries += 1  # select booking and related items
+    queries += 1  # select educational redactor
+    with assert_num_queries(queries):
+        response = client.get(
+            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&venueId={venue1_id}"
         )
         assert response.status_code == 200
 
@@ -325,9 +333,16 @@ def test_with_reimbursement_period_filter_old_bank_information_journey_with_pric
     )
 
     # When
-    with assert_num_queries(14):
-        response = client.with_session_auth(pro.email).get(
-            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&venueId={venue.id}"
+    client = client.with_session_auth(pro.email)
+    venue_id = venue.id  # avoid extra SQL query below
+    queries = AUTHENTICATION_QUERIES
+    queries += 1  # select offerer
+    queries += 1  # select features
+    queries += 1  # select booking and related items
+    queries += 1  # select educational redactor
+    with assert_num_queries(queries):
+        response = client.get(
+            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&venueId={venue_id}"
         )
         assert response.status_code == 200
     # Then
@@ -408,9 +423,16 @@ def test_with_venue_filter_old_bank_information_journey_with_pricings_and_collec
     offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
     # When
-    with assert_num_queries(14):
-        response = client.with_session_auth(pro.email).get(
-            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&venueId={venue1.id}"
+    client = client.with_session_auth(pro.email)
+    venue1_id = venue1.id  # avoid extra SQL query below
+    queries = AUTHENTICATION_QUERIES
+    queries += 1  # select offerer
+    queries += 1  # select features
+    queries += 1  # select booking and related items
+    queries += 1  # select educational redactor
+    with assert_num_queries(queries):
+        response = client.get(
+            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&venueId={venue1_id}"
         )
         assert response.status_code == 200
 
@@ -528,9 +550,16 @@ def test_with_reimbursement_period_filter_old_bank_information_journey_with_pric
     )
 
     # When
-    with assert_num_queries(14):
-        response = client.with_session_auth(pro.email).get(
-            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&venueId={venue.id}"
+    client = client.with_session_auth(pro.email)
+    venue_id = venue.id  # avoid extra SQL query below
+    queries = AUTHENTICATION_QUERIES
+    queries += 1  # select offerer
+    queries += 1  # select features
+    queries += 1  # select booking and related items
+    queries += 1  # select educational redactor
+    with assert_num_queries(queries):
+        response = client.get(
+            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&venueId={venue_id}"
         )
         assert response.status_code == 200
 
@@ -624,9 +653,16 @@ def test_with_venue_filter_new_bank_account_journey_with_pricings(client, cutoff
     offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
     # When
-    with assert_num_queries(14):
-        response = client.with_session_auth(pro.email).get(
-            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&venueId={venue1.id}"
+    client = client.with_session_auth(pro.email)
+    venue1_id = venue1.id  # avoid extra SQL query below
+    queries = AUTHENTICATION_QUERIES
+    queries += 1  # select offerer
+    queries += 1  # select features
+    queries += 1  # select booking and related items
+    queries += 1  # select educational redactor
+    with assert_num_queries(queries):
+        response = client.get(
+            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&venueId={venue1_id}"
         )
         assert response.status_code == 200
 
@@ -728,9 +764,16 @@ def test_with_reimbursement_period_filter_new_bank_account_journey_with_pricings
     )
 
     # When
-    with assert_num_queries(14):
-        response = client.with_session_auth(pro.email).get(
-            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&venueId={venue.id}"
+    client = client.with_session_auth(pro.email)
+    venue_id = venue.id  # avoid extra SQL query below
+    queries = AUTHENTICATION_QUERIES
+    queries += 1  # select offerer
+    queries += 1  # select features
+    queries += 1  # select booking and related items
+    queries += 1  # select educational redactor
+    with assert_num_queries(queries):
+        response = client.get(
+            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&venueId={venue_id}"
         )
         assert response.status_code == 200
 
@@ -817,9 +860,16 @@ def test_with_venue_filter_new_bank_account_journey_with_pricings_collective_use
     offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
     # When
-    with assert_num_queries(14):
-        response = client.with_session_auth(pro.email).get(
-            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&venueId={venue1.id}"
+    client = client.with_session_auth(pro.email)
+    venue1_id = venue1.id  # avoid extra SQL query below
+    queries = AUTHENTICATION_QUERIES
+    queries += 1  # select offerer
+    queries += 1  # select features
+    queries += 1  # select booking and related items
+    queries += 1  # select educational redactor
+    with assert_num_queries(queries):
+        response = client.get(
+            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&venueId={venue1_id}"
         )
         assert response.status_code == 200
 
@@ -933,9 +983,16 @@ def test_with_reimbursement_period_filter_new_bank_account_journey_with_pricings
     )
 
     # When
-    with assert_num_queries(14):
-        response = client.with_session_auth(pro.email).get(
-            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&venueId={venue.id}"
+    client = client.with_session_auth(pro.email)
+    venue_id = venue.id  # avoid extra SQL query below
+    queries = AUTHENTICATION_QUERIES
+    queries += 1  # select offerer
+    queries += 1  # select features
+    queries += 1  # select booking and related items
+    queries += 1  # select educational redactor
+    with assert_num_queries(queries):
+        response = client.get(
+            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&venueId={venue_id}"
         )
         assert response.status_code == 200
 
