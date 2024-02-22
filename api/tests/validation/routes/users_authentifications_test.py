@@ -55,10 +55,6 @@ class ApiKeyRequiredTest:
             offerer=offerer,
             provider=provider,
         )
-        providers_factories.OffererProviderFactory(
-            offerer=offerer,
-            provider=provider,
-        )
         app = self._make_app()
         client = TestClient(app.test_client())
 

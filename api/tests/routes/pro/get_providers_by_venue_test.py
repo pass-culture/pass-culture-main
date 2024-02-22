@@ -26,14 +26,14 @@ def test_venue_has_known_allocine_id(client):
         "id": allocine_provider.id,
         "isActive": True,
         "name": "Allociné",
-        "hasOffererProvider": False,
+        "hasApiKey": False,
     } in response.json
     assert {
         "enabledForPro": True,
         "id": other_provider.id,
         "isActive": True,
         "name": other_provider.name,
-        "hasOffererProvider": False,
+        "hasApiKey": False,
     } in response.json
 
 
@@ -57,7 +57,7 @@ def test_venue_has_no_allocine_id(client):
         "id": other_provider.id,
         "isActive": True,
         "name": other_provider.name,
-        "hasOffererProvider": False,
+        "hasApiKey": False,
     } in response.json
     assert allocine_provider.id not in [p["id"] for p in response.json]
 
@@ -72,10 +72,7 @@ def test_venue_has_offerer_provider(client):
         name=name,
         localClass=None,
     )
-    offerer_provider = providers_factories.OffererProviderFactory(
-        provider=provider,
-    )
-    offerers_factories.ApiKeyFactory(offerer=offerer_provider.offerer)
+    offerers_factories.ApiKeyFactory(provider=provider)
 
     providers_factories.VenueProviderFactory(venue=venue, provider=provider)
 
@@ -92,7 +89,7 @@ def test_venue_has_offerer_provider(client):
             "id": provider.id,
             "isActive": True,
             "name": provider.name,
-            "hasOffererProvider": True,
+            "hasApiKey": True,
         }
     ]
 

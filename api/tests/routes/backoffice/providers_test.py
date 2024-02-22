@@ -38,7 +38,6 @@ class GetProvidersPageTest(GetEndpointHelper):
     def test_get_providers(self, authenticated_client):
         offerer = offerers_factories.OffererFactory(name="Individual Offer API consumer")
         provider = providers_factories.ProviderFactory(name=offerer.name)
-        providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
         offerers_factories.ApiKeyFactory(offerer=offerer, provider=provider)
 
         with assert_num_queries(self.expected_num_queries):
@@ -93,8 +92,8 @@ class CreateProviderTest(PostEndpointHelper):
         assert created_provider.cancelExternalUrl == form_data["cancel_external_url"]
         assert created_provider.notificationExternalUrl == form_data["notification_external_url"]
 
-        assert created_provider.offererProvider is not None
-        created_offerer = created_provider.offererProvider.offerer
+        assert created_provider.apiKeys is not None
+        created_offerer = created_provider.apiKeys.offerer
         assert created_offerer.name == form_data["name"]
         assert created_offerer.city == form_data["city"]
         assert created_offerer.postalCode == form_data["postal_code"]
@@ -138,7 +137,7 @@ class CreateProviderTest(PostEndpointHelper):
         assert created_provider.notificationExternalUrl == form_data["notification_external_url"]
 
         assert offerers_models.Offerer.query.count() == 1
-        assert created_provider.offererProvider.offerer == offerer
+        assert created_provider.apiKeys.offerer == offerer
         assert offerer.name != form_data["name"]
         assert offerer.city != form_data["city"]
         assert offerer.postalCode != form_data["postal_code"]
@@ -176,7 +175,7 @@ class CreateProviderTest(PostEndpointHelper):
         assert created_provider.notificationExternalUrl is None
 
         assert offerers_models.Offerer.query.count() == 1
-        assert created_provider.offererProvider.offerer == offerer
+        assert created_provider.apiKeys.offerer == offerer
         assert offerer.name != form_data["name"]
         assert offerer.city != form_data["city"]
         assert offerer.postalCode != form_data["postal_code"]
@@ -193,8 +192,7 @@ class UpdateProviderTest(PostEndpointHelper):
     def test_update_provider(self, authenticated_client):
         provider = providers_factories.ProviderFactory()
         offerer = offerers_factories.OffererFactory()
-        providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
-
+        offerers_factories.ApiKeyFactory(offerer=offerer, provider=provider)
         form_data = {
             "name": "Individual Offer API consumer",
             "logo_url": "https://example.org/image.png",
@@ -226,7 +224,7 @@ class UpdateProviderTest(PostEndpointHelper):
     def test_update_provider_with_minimal_data(self, authenticated_client):
         provider = providers_factories.ProviderFactory()
         offerer = offerers_factories.OffererFactory()
-        providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
+        offerers_factories.ApiKeyFactory(offerer=offerer, provider=provider)
 
         form_data = {
             "name": "Individual Offer API consumer",
@@ -255,7 +253,7 @@ class UpdateProviderTest(PostEndpointHelper):
     def test_disable_offer_when_disabling_provider(self, authenticated_client):
         provider = providers_factories.ProviderFactory()
         offerer = offerers_factories.OffererFactory()
-        providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
+        offerers_factories.ApiKeyFactory(offerer=offerer, provider=provider)
 
         venue_provider_1 = providers_factories.VenueProviderFactory(provider=provider)
         offer_1_1 = offers_factories.OfferFactory(venue=venue_provider_1.venue, lastProvider=provider, isActive=True)

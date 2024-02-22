@@ -69,7 +69,7 @@ const VenueProviderForm = ({
       saveVenueProvider={createVenueProvider}
       siret={venue.siret}
       venueId={venue.id}
-      hasOffererProvider={provider.hasOffererProvider}
+      hasApiKey={provider.hasApiKey}
       offererId={venue.managingOfferer.id}
     />
   )

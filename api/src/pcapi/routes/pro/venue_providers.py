@@ -97,7 +97,7 @@ def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
     # We don't want to start a synchronization for providers linked to an offerer
     # since creating a venue_provider in this case only delegate the right for an
     # offerer to create offers for this venue. (we don't synchronize anything ourselves)
-    if not new_venue_provider.provider.hasOffererProvider:
+    if not new_venue_provider.provider.hasApiKey:
         venue_provider_job.delay(new_venue_provider.id)
 
     if new_venue_provider.isFromAllocineProvider:

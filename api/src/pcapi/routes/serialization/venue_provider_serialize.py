@@ -23,7 +23,7 @@ class ProviderResponse(BaseModel):
     name: str
     id: int
     isActive: bool
-    hasOffererProvider: bool
+    hasApiKey: bool
 
     class Config:
         orm_mode = True

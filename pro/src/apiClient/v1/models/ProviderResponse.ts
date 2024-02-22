@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type ProviderResponse = {
-  hasOffererProvider: boolean;
+  hasApiKey: boolean;
   id: number;
   isActive: boolean;
   name: string;

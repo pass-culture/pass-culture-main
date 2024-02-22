@@ -61,10 +61,6 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
         "CollectiveOfferTemplate", back_populates="provider"
     )
 
-    offererProvider: sa_orm.Mapped["offerers_models.OffererProvider"] = sa_orm.relationship(
-        "OffererProvider", back_populates="provider", uselist=False
-    )
-
     # presence of this field signifies the provider implements pass Culture's individual offers API
     apiKeys: sa_orm.Mapped["offerers_models.ApiKey"] = sa_orm.relationship("ApiKey", back_populates="provider")
 
@@ -84,12 +80,12 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
         return bool(self.bookingExternalUrl and self.cancelExternalUrl)
 
     @property
-    def hasOffererProvider(self) -> bool:
-        return bool(self.offererProvider)
+    def hasApiKey(self) -> bool:
+        return bool(self.apiKeys)
 
     @property
     def implements_provider_api(self) -> bool:
-        return self.apiUrl is not None and not self.offererProvider
+        return self.apiUrl is not None and not self.apiKeys
 
     def getProviderAPI(self) -> ProviderAPI:
         return ProviderAPI(

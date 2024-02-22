@@ -78,7 +78,7 @@ def check_update_only_allowed_fields_for_offer_from_provider(
 ) -> None:
     if provider.isAllocine:
         rejected_fields = updated_fields - EDITABLE_FIELDS_FOR_ALLOCINE_OFFER
-    elif provider.hasOffererProvider:
+    elif provider.apiKeys:
         rejected_fields = updated_fields - EDITABLE_FIELDS_FOR_INDIVIDUAL_OFFERS_API_PROVIDER
     else:
         rejected_fields = updated_fields - EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER

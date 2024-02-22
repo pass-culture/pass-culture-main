@@ -34,15 +34,12 @@ providers_blueprint = utils.child_backoffice_blueprint(
 
 @providers_blueprint.route("", methods=["GET"])
 def get_providers() -> utils.BackofficeResponse:
-    providers = (
-        providers_models.Provider.query.options(
-            sa.orm.joinedload(providers_models.Provider.offererProvider)
-            .joinedload(offerers_models.OffererProvider.offerer)
-            .load_only(offerers_models.Offerer.city, offerers_models.Offerer.postalCode, offerers_models.Offerer.siren)
-        )
-        .options(sa.orm.joinedload(providers_models.Provider.apiKeys).load_only(offerers_models.ApiKey.id))
-        .all()
-    )
+    providers = providers_models.Provider.query.options(
+        sa.orm.joinedload(providers_models.Provider.apiKeys)
+        .load_only(offerers_models.ApiKey.id)
+        .joinedload(offerers_models.ApiKey.offerer)
+        .load_only(offerers_models.Offerer.city, offerers_models.Offerer.postalCode, offerers_models.Offerer.siren)
+    ).all()
     return render_template("providers/get.html", providers=providers)
 
 
@@ -83,9 +80,8 @@ def create_provider() -> utils.BackofficeResponse:
             hmacKey=generate_hmac_key(),
         )
         offerer, is_offerer_new = _get_or_create_offerer(form)
-        offerer_provider = offerers_models.OffererProvider(offerer=offerer, provider=provider)
         api_key, clear_secret = offerers_api.generate_provider_api_key(provider)
-        db.session.add_all([provider, offerer, offerer_provider, api_key])
+        db.session.add_all([provider, offerer, api_key])
 
         history_api.add_action(
             history_models.ActionType.OFFERER_NEW,

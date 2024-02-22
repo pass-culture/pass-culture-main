@@ -835,7 +835,7 @@ class CancelByBeneficiaryTest:
         provider = providers_factories.ProviderFactory(
             name="Technical provider", localClass=None, notificationExternalUrl="http://external.api.com/notify"
         )
-        providers_factories.OffererProviderFactory(provider=provider)
+        offerer_factories.ApiKeyFactory(provider=provider)
         stock = offers_factories.StockFactory(
             offer__lastProvider=provider,
             offer__venue__address="1 boulevard Poissonniere",
@@ -878,7 +878,7 @@ class CancelByBeneficiaryTest:
         provider = providers_factories.ProviderFactory(
             name="Technical provider", localClass=None, notificationExternalUrl="http://external.api.com/notify"
         )
-        providers_factories.OffererProviderFactory(provider=provider)
+        offerer_factories.ApiKeyFactory(provider=provider)
         stock = offers_factories.EventStockFactory(
             offer__lastProvider=provider,
             offer__venue__address="1 boulevard Poissonniere",
@@ -987,7 +987,6 @@ class CancelByBeneficiaryTest:
             bookingExternalUrl=external_url + "/book",
             cancelExternalUrl=external_url + "/cancel",
         )
-        providers_factories.OffererProviderFactory(provider=provider)
         stock = offers_factories.EventStockFactory(
             lastProvider=provider,
             offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
@@ -995,7 +994,7 @@ class CancelByBeneficiaryTest:
             idAtProviders="",
         )
         booking = bookings_factories.BookingFactory(stock=stock)
-        offerer_factories.ApiKeyFactory(offerer=booking.offerer)
+        offerer_factories.ApiKeyFactory(offerer=booking.offerer, provider=provider)
         external_bookings_factories.ExternalBookingFactory(booking=booking, barcode="1234567890123")
         requests_mock.post(
             external_url + "/cancel",
@@ -1016,7 +1015,6 @@ class CancelByBeneficiaryTest:
             bookingExternalUrl=external_url + "/book",
             cancelExternalUrl=external_url + "/cancel",
         )
-        providers_factories.OffererProviderFactory(provider=provider)
         stock = offers_factories.EventStockFactory(
             lastProvider=provider,
             offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
@@ -1024,7 +1022,7 @@ class CancelByBeneficiaryTest:
             idAtProviders="",
         )
         booking = bookings_factories.BookingFactory(stock=stock)
-        offerer_factories.ApiKeyFactory(offerer=booking.offerer)
+        offerer_factories.ApiKeyFactory(offerer=booking.offerer, provider=provider)
         external_bookings_factories.ExternalBookingFactory(booking=booking, barcode="1234567890123")
         requests_mock.post(
             external_url + "/cancel",
@@ -1108,7 +1106,6 @@ class CancelByBeneficiaryTest:
             bookingExternalUrl=external_url + "/book",
             cancelExternalUrl=external_url + "/cancel",
         )
-        providers_factories.OffererProviderFactory(provider=provider)
         stock = offers_factories.EventStockFactory(
             lastProvider=provider,
             offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
@@ -1118,7 +1115,7 @@ class CancelByBeneficiaryTest:
             dnBookedQuantity=4,
         )
         booking = bookings_factories.BookingFactory(stock=stock)
-        offerer_factories.ApiKeyFactory(offerer=booking.offerer)
+        offerer_factories.ApiKeyFactory(offerer=booking.offerer, provider=provider)
         external_bookings_factories.ExternalBookingFactory(booking=booking, barcode="1234567890123")
         mocked_cancel_booking.return_value = None
 

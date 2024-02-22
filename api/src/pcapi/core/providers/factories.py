@@ -8,7 +8,6 @@ import factory
 
 from pcapi.core.factories import BaseFactory
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.offerers import models as offerers_models
 import pcapi.core.providers.repository as providers_repository
 from pcapi.utils.crypto import encrypt
 
@@ -73,6 +72,7 @@ class PublicApiProviderFactory(BaseFactory):
     bookingExternalUrl = factory.Sequence("https://{}.example.org/booking".format)
     cancelExternalUrl = factory.Sequence("https://{}.example.org/booking".format)
     notificationExternalUrl = factory.Sequence("https://{}.example.org/booking".format)
+    apiKeys = factory.SubFactory(offerers_factories.ApiKeyFactory)
 
 
 class VenueProviderFactory(BaseFactory):
@@ -203,14 +203,6 @@ class AllocineVenueProviderPriceRuleFactory(BaseFactory):
     allocineVenueProvider = factory.SubFactory(AllocineVenueProviderFactory)
     priceRule = "default"
     price = decimal.Decimal("5.7")
-
-
-class OffererProviderFactory(BaseFactory):
-    class Meta:
-        model = offerers_models.OffererProvider
-
-    offerer = factory.SubFactory(offerers_factories.OffererFactory)
-    provider = factory.SubFactory(ProviderFactory)
 
 
 class LocalProviderEventFactory(BaseFactory):

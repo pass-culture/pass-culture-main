@@ -89,7 +89,7 @@ describe('route VenueEdition', () => {
         provider: {
           name: 'Ciné Office',
           id: 12,
-          hasOffererProvider: false,
+          hasApiKey: false,
           isActive: true,
         },
         quantity: 0,

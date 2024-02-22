@@ -54,7 +54,7 @@ const VenueProviderItem = ({
             />
           </div>
         </div>
-        {!venueProvider.provider.hasOffererProvider ? (
+        {!venueProvider.provider.hasApiKey ? (
           !lastSyncDate ? (
             <div className={style['venue-id-at-offer-provider-container']}>
               <div className="venue-id-at-offer-provider">

@@ -160,7 +160,7 @@ class Returns201Test:
             "id",
             "name",
             "isActive",
-            "hasOffererProvider",
+            "hasApiKey",
         }
 
     @pytest.mark.usefixtures("db_session")
@@ -558,10 +558,8 @@ class ConnectProviderToVenueTest:
     ):
         user = user_factories.AdminFactory()
         venue = offerers_factories.VenueFactory()
-        provider = providers_factories.ProviderFactory(
-            name="Technical provider", localClass=None, isActive=True, enabledForPro=True
-        )
-        providers_factories.OffererProviderFactory(offerer=venue.managingOfferer, provider=provider)
+        provider = providers_factories.PublicApiProviderFactory(name="Technical provider")
+        offerers_factories.ApiKeyFactory(provider=provider)
 
         venue_provider_data = {
             "providerId": provider.id,
@@ -585,10 +583,8 @@ class ConnectProviderToVenueTest:
     ):
         user = user_factories.AdminFactory()
         venue = offerers_factories.VenueWithoutSiretFactory()
-        provider = providers_factories.ProviderFactory(
-            name="Technical provider", localClass=None, isActive=True, enabledForPro=True
-        )
-        providers_factories.OffererProviderFactory(offerer=venue.managingOfferer, provider=provider)
+        provider = providers_factories.ProviderFactory(name="Technical provider")
+        offerers_factories.ApiKeyFactory(provider=provider)
 
         venue_provider_data = {
             "providerId": provider.id,
