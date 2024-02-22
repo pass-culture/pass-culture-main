@@ -80,17 +80,6 @@ describe('useGetVenue', () => {
 
     const venue = {
       address: '12 rue du pilas',
-      bannerMeta: {
-        image_credit: '',
-        original_image_url:
-          'https://localhost/storage/thumbs/venues/CU_1661432578',
-        crop_params: {
-          x_crop_percent: 0.005169172932330823,
-          y_crop_percent: 0,
-          height_crop_percent: 1,
-          width_crop_percent: 0.9896616541353384,
-        },
-      },
       bannerUrl: 'https://localhost/storage/thumbs/venues/CU_1661432577',
       city: 'Paris',
       collectiveDomains: [],
