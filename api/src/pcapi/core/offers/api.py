@@ -39,6 +39,7 @@ import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offerers.models as offerers_models
+from pcapi.core.offers import models as offers_models
 from pcapi.core.providers.constants import GTL_IDS_BY_MUSIC_GENRE_CODE
 from pcapi.core.providers.constants import MUSIC_SLUG_BY_GTL_ID
 import pcapi.core.providers.exceptions as providers_exceptions
@@ -1585,6 +1586,21 @@ def check_can_move_event_offer(offer: models.Offer) -> list[offerers_models.Venu
     return venues_choices
 
 
+def _get_or_create_same_price_category_label(
+    venue: offerers_models.Venue, source_price_category_label: offers_models.PriceCategoryLabel
+) -> offers_models.PriceCategoryLabel:
+    try:
+        # Use label which already exists when found, otherwise unique_label_venue constraint would cause exception
+        return next(filter(lambda pcl: pcl.label == source_price_category_label.label, venue.priceCategoriesLabel))
+    except StopIteration:
+        # Copy price category label from source to destination venue
+        new_price_category_label = offers_models.PriceCategoryLabel(
+            venue=venue, label=source_price_category_label.label
+        )
+        db.session.add(new_price_category_label)
+        return new_price_category_label
+
+
 def move_event_offer(
     offer: models.Offer, destination_venue: offerers_models.Venue, notify_beneficiary: bool = False
 ) -> None:
@@ -1630,9 +1646,21 @@ def move_event_offer(
         .all()
     )
 
+    # After offer is moved, price categories must remain linked to labels defined for the related venue.
+    # Extra SQL queries to avoid multiplying the number of rows in case of many labels
+    original_price_category_labels = {price_category.priceCategoryLabel for price_category in offer.priceCategories}
+    labels_mapping = {
+        price_category_label: _get_or_create_same_price_category_label(destination_venue, price_category_label)
+        for price_category_label in original_price_category_labels
+    }
+
     with transaction():
         offer.venue = destination_venue
         db.session.add(offer)
+
+        for price_category in offer.priceCategories:
+            price_category.priceCategoryLabel = labels_mapping[price_category.priceCategoryLabel]
+            db.session.add(price_category)
 
         for booking in bookings:
             assert not booking.isReimbursed
