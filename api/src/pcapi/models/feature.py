@@ -119,6 +119,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API = (
         "Activer les nouvelles règles de création et d'édition d'offres collecrives pour l'API publique (collective)"
     )
+    WIP_ENABLE_COLLECTIVE_CUSTOM_CONTACT = "Activer le contact personnalisé pour les offres collectives"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -183,6 +184,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_CRON_TO_UPDATE_OFFERER_STATS,
     FeatureToggle.WIP_ENABLE_PRO_SIDE_NAV,
     FeatureToggle.WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN,
+    FeatureToggle.WIP_ENABLE_COLLECTIVE_CUSTOM_CONTACT,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
