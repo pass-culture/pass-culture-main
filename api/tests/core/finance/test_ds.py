@@ -1,4 +1,6 @@
+from collections import namedtuple
 import datetime
+import random
 from unittest.mock import patch
 
 import pytest
@@ -9,9 +11,25 @@ from pcapi.connectors.dms import models as ds_models
 from pcapi.core.finance.ds import MARK_WITHOUT_CONTINUATION_MOTIVATION
 from pcapi.core.finance.ds import import_ds_bank_information_applications
 from pcapi.core.finance.ds import mark_without_continuation_applications
+from pcapi.core.finance.factories import BankAccountFactory
+from pcapi.core.finance.factories import BankAccountStatusHistoryFactory
+from pcapi.core.finance.factories import BankInformationFactory
+from pcapi.core.finance.models import BankAccount
+from pcapi.core.finance.models import BankAccountApplicationStatus
+from pcapi.core.finance.models import BankInformation
 from pcapi.core.finance.models import BankInformationStatus
+from pcapi.core.history import models as history_models
+from pcapi.core.offerers.factories import OffererFactory
+from pcapi.core.offerers.factories import VenueBankAccountLinkFactory
+from pcapi.core.offerers.factories import VenueFactory
+from pcapi.core.offerers.factories import VenueReimbursementPointLinkFactory
+from pcapi.core.offerers.models import VenueReimbursementPointLink
+from pcapi.core.testing import assert_num_queries
 
 from tests.connector_creators import demarches_simplifiees_creators as ds_creators
+
+
+ActionOccurred = namedtuple("ActionOccurred", ["type", "authorUserId", "venueId", "offererId", "bankAccountId"])
 
 
 @pytest.mark.usefixtures("db_session")
@@ -101,11 +119,15 @@ class MarkWithoutApplicationTooOldApplicationsTest:
     def test_dsv4_within_application_deadline_is_not_set_without_continuantion(
         self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
     ):
+        application_id = random.randint(1, 100000)
+        status = BankInformationStatus.DRAFT
+        BankInformationFactory(applicationId=application_id, status=status)
         dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=89)).isoformat()
         dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
+            "application_id": application_id,
             "annotations": [
                 {
                     "id": "Q2hhbXAtOTE1NDg5",
@@ -126,6 +148,9 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         mock_mark_without_continuation.assert_not_called()
         mock_archive_application.assert_not_called()
 
+        bank_information = BankInformation.query.filter_by(applicationId=application_id).one()
+        assert bank_information.status == status
+
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
@@ -133,11 +158,15 @@ class MarkWithoutApplicationTooOldApplicationsTest:
     def test_too_old_draft_dsv4_are_set_without_continuation(
         self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
     ):
+        application_id = random.randint(1, 100000)
+        status = BankInformationStatus.DRAFT
+        BankInformationFactory(applicationId=application_id, status=status)
         dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).isoformat()
         dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
+            "application_id": application_id,
             "annotations": [
                 {
                     "id": "Q2hhbXAtOTE1NDg5",
@@ -168,6 +197,10 @@ class MarkWithoutApplicationTooOldApplicationsTest:
             instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
         )
 
+        bank_information = BankInformation.query.filter_by(applicationId=application_id).one()
+        assert bank_information.status == BankInformationStatus.REJECTED
+        assert bank_information.dateModified.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp())
+
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
@@ -175,11 +208,20 @@ class MarkWithoutApplicationTooOldApplicationsTest:
     def test_too_old_on_going_dsv4_are_set_without_continuation(
         self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
     ):
+        application_id = random.randint(1, 100000)
+        status = BankInformationStatus.DRAFT
+        offerer = OffererFactory()
+        venue = VenueFactory(managingOfferer=offerer)
+        # This shouldn't happen. But if so, we need to make sure that all link are made deprecated
+        # and the bank information doesn't reference a venue anymore
+        BankInformationFactory(applicationId=application_id, status=status, venue=venue)
+        VenueReimbursementPointLinkFactory(reimbursementPoint=venue, venue=venue)
         dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
         dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.on_going.value,
             "last_modification_date": dead_line_application,
+            "application_id": application_id,
             "annotations": [
                 {
                     "id": "Q2hhbXAtOTE1NDg5",
@@ -206,6 +248,13 @@ class MarkWithoutApplicationTooOldApplicationsTest:
             instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
         )
 
+        bank_information = BankInformation.query.filter_by(applicationId=application_id).one()
+        assert bank_information.status == BankInformationStatus.REJECTED
+        assert bank_information.dateModified.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp())
+        assert bank_information.venue is None
+        link = VenueReimbursementPointLink.query.one()
+        assert link.timespan.upper is not None
+
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
@@ -213,11 +262,15 @@ class MarkWithoutApplicationTooOldApplicationsTest:
     def test_too_old_dsv4_are_set_without_continuation_if_about_rct_after_annotation_deadline(
         self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
     ):
+        application_id = random.randint(1, 100000)
+        status = BankInformationStatus.DRAFT
+        BankInformationFactory(applicationId=application_id, status=status)
         dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
         dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
+            "application_id": application_id,
             "annotations": [
                 {
                     "id": "Q2hhbXAtOTE1NDg5",
@@ -248,6 +301,9 @@ class MarkWithoutApplicationTooOldApplicationsTest:
             instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
         )
 
+        bank_information = BankInformation.query.filter_by(applicationId=application_id).one()
+        assert bank_information.status == BankInformationStatus.REJECTED
+
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
@@ -255,11 +311,15 @@ class MarkWithoutApplicationTooOldApplicationsTest:
     def test_too_old_dsv4_is_not_set_without_continuation_if_about_adage(
         self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
     ):
+        application_id = random.randint(1, 100000)
+        status = BankInformationStatus.DRAFT
+        BankInformationFactory(applicationId=application_id, status=status)
         dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
         dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
+            "application_id": application_id,
             "annotations": [
                 {
                     "id": "Q2hhbXAtOTE1NDg5",
@@ -280,6 +340,9 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         mock_mark_without_continuation.assert_not_called()
         mock_archive_application.assert_not_called()
 
+        bank_information = BankInformation.query.filter_by(applicationId=application_id).one()
+        assert bank_information.status == BankInformationStatus.DRAFT
+
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
@@ -287,11 +350,15 @@ class MarkWithoutApplicationTooOldApplicationsTest:
     def test_too_old_dsv4_is_not_set_without_continuation_if_about_rct_within_dead_line_annotation(
         self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
     ):
+        application_id = random.randint(1, 100000)
+        status = BankInformationStatus.DRAFT
+        BankInformationFactory(applicationId=application_id, status=status)
         dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
         dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=5 * 31)).astimezone().isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
+            "application_id": application_id,
             "annotations": [
                 {
                     "id": "Q2hhbXAtOTE1NDg5",
@@ -312,6 +379,9 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         mock_mark_without_continuation.assert_not_called()
         mock_archive_application.assert_not_called()
 
+        bank_information = BankInformation.query.filter_by(applicationId=application_id).one()
+        assert bank_information.status == BankInformationStatus.DRAFT
+
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
@@ -319,11 +389,15 @@ class MarkWithoutApplicationTooOldApplicationsTest:
     def test_too_old_draft_dsv5_are_set_without_continuation(
         self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
     ):
+        application_id = random.randint(1, 100000)
+        status = BankAccountApplicationStatus.DRAFT
+        BankAccountFactory(dsApplicationId=application_id, status=status)
         dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
         dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
+            "application_id": application_id,
             "annotations": [
                 {
                     "id": "Q2hhbXAtOTE1NDg5",
@@ -360,6 +434,10 @@ class MarkWithoutApplicationTooOldApplicationsTest:
             application_techid="RG9zc2llci0xNDc0MjY1NA==",
             instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
         )
+
+        bank_account = BankAccount.query.filter_by(dsApplicationId=application_id).one()
+        assert bank_account.status == BankAccountApplicationStatus.WITHOUT_CONTINUATION
+        assert bank_account.dateLastStatusUpdate.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp())
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
@@ -368,11 +446,15 @@ class MarkWithoutApplicationTooOldApplicationsTest:
     def test_too_old_on_going_dsv5_are_set_without_continuation(
         self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
     ):
+        application_id = random.randint(1, 100000)
+        status = BankAccountApplicationStatus.ON_GOING
+        BankAccountFactory(dsApplicationId=application_id, status=status)
         dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
         dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.on_going.value,
             "last_modification_date": dead_line_application,
+            "application_id": application_id,
             "annotations": [
                 {
                     "id": "Q2hhbXAtOTE1NDg5",
@@ -406,6 +488,10 @@ class MarkWithoutApplicationTooOldApplicationsTest:
             instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
         )
 
+        bank_account = BankAccount.query.filter_by(dsApplicationId=application_id).one()
+        assert bank_account.status == BankAccountApplicationStatus.WITHOUT_CONTINUATION
+        assert bank_account.dateLastStatusUpdate.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp())
+
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
@@ -413,11 +499,15 @@ class MarkWithoutApplicationTooOldApplicationsTest:
     def test_dsv5_application_about_adage_is_not_set_without_continuation(
         self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
     ):
+        application_id = random.randint(1, 100000)
+        status = BankAccountApplicationStatus.DRAFT
+        BankAccountFactory(dsApplicationId=application_id, status=status)
         dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
         dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
+            "application_id": application_id,
             "annotations": [
                 {
                     "id": "Q2hhbXAtOTE1NDg5",
@@ -444,6 +534,9 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         mock_make_on_going.assert_not_called()
         mock_mark_without_continuation.assert_not_called()
         mock_archive_application.assert_not_called()
+
+        bank_account = BankAccount.query.filter_by(dsApplicationId=application_id).one()
+        assert bank_account.status == BankAccountApplicationStatus.DRAFT
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
@@ -452,11 +545,15 @@ class MarkWithoutApplicationTooOldApplicationsTest:
     def test_dsv5_application_within_dead_line_annotation_is_not_set_without_continuation(
         self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
     ):
+        application_id = random.randint(1, 100000)
+        status = BankAccountApplicationStatus.DRAFT
+        BankAccountFactory(dsApplicationId=application_id, status=status)
         dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
         dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=5 * 31)).astimezone().isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
+            "application_id": application_id,
             "annotations": [
                 {
                     "id": "Q2hhbXAtOTE1NDg5",
@@ -483,6 +580,9 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         mock_make_on_going.assert_not_called()
         mock_mark_without_continuation.assert_not_called()
         mock_archive_application.assert_not_called()
+
+        bank_account = BankAccount.query.filter_by(dsApplicationId=application_id).one()
+        assert bank_account.status == BankAccountApplicationStatus.DRAFT
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
@@ -491,11 +591,15 @@ class MarkWithoutApplicationTooOldApplicationsTest:
     def test_dsv5_application_within_dead_line_application_is_not_set_without_continuation(
         self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
     ):
+        application_id = random.randint(1, 100000)
+        status = BankAccountApplicationStatus.DRAFT
+        BankAccountFactory(dsApplicationId=application_id, status=status)
         dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=89)).astimezone().isoformat()
         dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
+            "application_id": application_id,
             "annotations": [
                 {
                     "id": "Q2hhbXAtOTE1NDg5",
@@ -523,6 +627,9 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         mock_mark_without_continuation.assert_not_called()
         mock_archive_application.assert_not_called()
 
+        bank_account = BankAccount.query.filter_by(dsApplicationId=application_id).one()
+        assert bank_account.status == BankAccountApplicationStatus.DRAFT
+
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_on_going")
@@ -530,11 +637,23 @@ class MarkWithoutApplicationTooOldApplicationsTest:
     def test_too_old_dsv5_application_waiting_for_anything_is_mark_without_continuation(
         self, mock_graphql_client, mock_make_on_going, mock_mark_without_continuation, mock_archive_application
     ):
+        application_id = random.randint(1, 100000)
+        status = BankAccountApplicationStatus.DRAFT
+        bank_account = BankAccountFactory(dsApplicationId=application_id, status=status)
+        status_history = BankAccountStatusHistoryFactory(
+            bankAccount=bank_account, status=status, timespan=(datetime.datetime.utcnow(),)
+        )
+        venue = VenueFactory(managingOfferer=bank_account.offerer)
+        # This shouldn't happen but we need to be sure that if any venue is linked to a bank account
+        # that is going to be marked without continuation, it's unlinked.
+        # We don't want any Cashflow to be generated using non valid bank accounts
+        VenueBankAccountLinkFactory(bankAccount=bank_account, venue=venue)
         dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).isoformat()
         dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).isoformat()
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
+            "application_id": application_id,
             "annotations": [
                 {
                     "id": "Q2hhbXAtOTE1NDg5",
@@ -556,7 +675,24 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         response = ds_creators.get_bank_info_response_procedure_v5(**application_meta_data)
         mock_graphql_client.side_effect = [empty_response, empty_response, response, empty_response]
 
-        mark_without_continuation_applications()
+        # Fetch the bank information (if any)
+        # Fetch the bank account
+        # Update the bank account status
+        # Update the current status history row
+        # Create a new status history row
+        # Deprecate venue-bank_account link
+        # Create an ActionHistory
+        # savepoint
+        with assert_num_queries(8):
+            mark_without_continuation_applications()
+
+        action_occurred = ActionOccurred(
+            type=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
+            venueId=venue.id,
+            bankAccountId=bank_account.id,
+            offererId=None,
+            authorUserId=None,
+        )
 
         mock_make_on_going.assert_called_once_with(
             application_techid="RG9zc2llci0xNDc0MjY1NA==",
@@ -571,3 +707,23 @@ class MarkWithoutApplicationTooOldApplicationsTest:
             application_techid="RG9zc2llci0xNDc0MjY1NA==",
             instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
         )
+
+        bank_account = BankAccount.query.filter_by(dsApplicationId=application_id).one()
+        assert bank_account.status == BankAccountApplicationStatus.WITHOUT_CONTINUATION
+        assert bank_account.dateLastStatusUpdate.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp())
+        assert bank_account.venueLinks
+        assert len(bank_account.statusHistory) == 2
+        for status_history in bank_account.statusHistory:
+            if status_history.status == BankAccountApplicationStatus.DRAFT:
+                assert status_history.timespan.upper is not None
+            elif status_history.status == BankAccountApplicationStatus.WITHOUT_CONTINUATION:
+                assert status_history.timespan.upper is None
+            else:
+                raise AssertionError("Found unexpected status")
+        for link in bank_account.venueLinks:
+            assert link.timespan.upper is not None
+
+        action_history_logged = history_models.ActionHistory.query.one()
+        assert action_history_logged.venueId == action_occurred.venueId
+        assert action_history_logged.bankAccountId == action_occurred.bankAccountId
+        assert action_history_logged.actionType == action_occurred.type

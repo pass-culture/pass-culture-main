@@ -3922,3 +3922,111 @@ def cancel_finance_incident(incident: models.FinanceIncident, comment: str) -> N
 
 def are_cashflows_being_generated() -> bool:
     return bool(app.redis_client.exists(conf.REDIS_GENERATE_CASHFLOW_LOCK))
+
+
+def unlink_reimbursement_point(bank_information: models.BankInformation) -> None:
+    """
+    Remove the reference to a venue from a bankInformation (i.e. ReimbursementPoint)
+    and close all VenueReimbursementPointLink if any.
+    """
+    assert bank_information.venue  # helps mypy
+
+    for link in offerers_models.VenueReimbursementPointLink.query.filter_by(
+        reimbursementPointId=bank_information.venue.id
+    ).all():
+        if link.timespan.upper is None:
+            link.timespan = db_utils.make_timerange(link.timespan.lower, datetime.datetime.utcnow())
+            db.session.add(link)
+
+    bank_information.venue = None
+    db.session.add(bank_information)
+    db.session.flush()
+
+
+def deprecate_venue_bank_account_links(bank_account: models.BankAccount) -> None:
+    """
+    Deprecate all up-to-date link between a bankAccount and a Venue.
+    Log that action as well by creating an ActionHistory.
+    """
+    for link in bank_account.venueLinks:
+        if link.timespan.upper is None:
+            link.timespan = db_utils.make_timerange(link.timespan.lower, datetime.datetime.utcnow())
+            action_history = history_models.ActionHistory(
+                venueId=link.venueId,
+                bankAccountId=bank_account.id,
+                actionType=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
+            )
+            db.session.add_all([link, action_history])
+
+    db.session.flush()
+
+
+def mark_bank_information_rejected(ds_application_id: int) -> None:
+    now = datetime.datetime.utcnow()
+    bank_information = (
+        models.BankInformation.query.filter_by(applicationId=ds_application_id)
+        .outerjoin(models.BankInformation.venue)
+        .options(sqla_orm.contains_eager(models.BankInformation.venue).load_only(offerers_models.Venue.id))
+        .one_or_none()
+    )
+    if not bank_information:
+        return
+
+    bank_information.status = models.BankInformationStatus.REJECTED
+    bank_information.dateModified = now
+    db.session.add(bank_information)
+    db.session.flush()
+
+    if not bank_information.venue:
+        return
+
+    # This shouldn't happen but we need to be sure that if any venue is linked to a bank information
+    # that is going to be marked as rejected, it's unlinked.
+    # We don't want any cashflows to be generated using non valid bank informations (non valid as not validated by the compliance).
+    # Hence this bank information can no longer be used by a reimbursement point
+    unlink_reimbursement_point(bank_information)
+
+
+def mark_bank_account_without_continuation(ds_application_id: int) -> None:
+    now = datetime.datetime.utcnow()
+
+    bank_account = (
+        models.BankAccount.query.filter_by(dsApplicationId=ds_application_id)
+        .outerjoin(
+            offerers_models.VenueBankAccountLink,
+            sqla.and_(
+                models.BankAccount.id == offerers_models.VenueBankAccountLink.bankAccountId,
+                offerers_models.VenueBankAccountLink.timespan.contains(now),
+            ),
+        )
+        .outerjoin(
+            models.BankAccountStatusHistory,
+            sqla.and_(
+                models.BankAccount.id == models.BankAccountStatusHistory.bankAccountId,
+                models.BankAccountStatusHistory.timespan.contains(now),
+            ),
+        )
+        .options(sqla_orm.contains_eager(models.BankAccount.venueLinks))
+        .options(sqla_orm.contains_eager(models.BankAccount.statusHistory))
+        .one_or_none()
+    )
+    if not bank_account:
+        return
+
+    bank_account.status = models.BankAccountApplicationStatus.WITHOUT_CONTINUATION
+    bank_account.dateLastStatusUpdate = now
+    if bank_account.statusHistory:
+        current_status_history = bank_account.statusHistory[0]
+        current_status_history.timespan = db_utils.make_timerange(current_status_history.timespan.lower, now)
+        db.session.add(current_status_history)
+    new_status_history = models.BankAccountStatusHistory(
+        bankAccount=bank_account, status=models.BankAccountApplicationStatus.WITHOUT_CONTINUATION, timespan=(now,)
+    )
+    db.session.add_all([bank_account, new_status_history])
+    db.session.flush()
+
+    # This shouldn't happen but we need to be sure that if any venue is linked to a bank account
+    # that is going to be marked as without continuation, it's unlinked.
+    # We don't want any cashflows to be generated using non valid bank accounts (non valid as not validated by the compliance).
+    # Hence this bank account can no longer be linked to any venue, if any.
+    deprecate_venue_bank_account_links(bank_account)
