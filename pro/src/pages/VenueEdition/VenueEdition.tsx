@@ -25,8 +25,7 @@ import {
   Payload,
 } from 'pages/Offers/adapters/getFilteredOffersAdapter'
 import { VenueEditionFormScreen } from 'screens/VenueForm/VenueEditionFormScreen'
-import { Title } from 'ui-kit'
-import Button from 'ui-kit/Button/Button'
+import { ButtonLink, Title } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import Tabs, { Tab } from 'ui-kit/Tabs/Tabs'
@@ -172,13 +171,15 @@ export const VenueEdition = (): JSX.Element | null => {
             <Title level={1}>Lieu</Title>
 
             {!isNewSideBarNavigation && (
-              <a
-                href={`/offre/creation?lieu=${initialId}&structure=${offerer.id}`}
+              <ButtonLink
+                variant={ButtonVariant.PRIMARY}
+                icon={fullPlusIcon}
+                link={{
+                  to: `/offre/creation?lieu=${initialId}&structure=${offerer.id}`,
+                }}
               >
-                <Button variant={ButtonVariant.PRIMARY} icon={fullPlusIcon}>
-                  <span>Créer une offre</span>
-                </Button>
-              </a>
+                Créer une offre
+              </ButtonLink>
             )}
           </div>
           <Title level={2} className={styles['venue-name']}>
