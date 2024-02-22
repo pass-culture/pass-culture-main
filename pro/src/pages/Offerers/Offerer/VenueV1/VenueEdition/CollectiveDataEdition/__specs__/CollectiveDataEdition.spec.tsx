@@ -18,11 +18,11 @@ import {
 } from 'core/shared/interventionOptions'
 import { Venue } from 'core/Venue/types'
 import * as useNotification from 'hooks/useNotification'
-import { defaultVenueModel } from 'utils/apiFactories'
 import {
   collectiveCategoryFactory,
   collectiveSubCategoryFactory,
   defaultCollectiveDmsApplication,
+  defaultVenueResponseModel,
   venueCollectiveDataFactory,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -189,8 +189,9 @@ describe('CollectiveDataEdition', () => {
     it('should display dms timeline if venue has dms application and ff active', async () => {
       renderCollectiveDataEdition({
         venue: {
-          ...defaultVenueModel,
+          ...defaultVenueResponseModel,
           id: 1,
+          hasAdageId: false,
           collectiveDmsApplications: [{ ...defaultCollectiveDmsApplication }],
         },
       })

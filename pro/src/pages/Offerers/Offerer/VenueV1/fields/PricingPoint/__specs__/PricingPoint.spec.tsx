@@ -7,8 +7,8 @@ import * as useNotification from 'hooks/useNotification'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
-  defaultVenueModel,
 } from 'utils/apiFactories'
+import { defaultVenueResponseModel } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import PricingPoint, { PricingPointProps } from '../PricingPoint'
@@ -27,7 +27,7 @@ describe('PricingPoint', () => {
         { ...defaultGetOffererVenueResponseModel, siret: '12345678900001' },
       ],
     },
-    venue: { ...defaultVenueModel, pricingPoint: null },
+    venue: { ...defaultVenueResponseModel, pricingPoint: null },
     setVenueHasPricingPoint: vi.fn(),
   }
 
