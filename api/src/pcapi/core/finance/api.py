@@ -1501,9 +1501,10 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
         "Montant net offreur",
     ]
 
-    def get_bookings_data(query: BaseQuery) -> BaseQuery:
+    def get_individual_data(query: BaseQuery) -> BaseQuery:
         return (
             query.filter(bookings_models.Booking.amount != 0)
+            .join(models.Pricing.cashflows)
             .join(
                 models.BankAccount,
                 models.BankAccount.id == models.Cashflow.bankAccountId,
@@ -1526,9 +1527,10 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
             )
         )
 
-    def get_collective_bookings_data(query: BaseQuery) -> BaseQuery:
+    def get_collective_data(query: BaseQuery) -> BaseQuery:
         return (
             query.join(educational_models.CollectiveBooking.collectiveStock)
+            .join(models.Pricing.cashflows)
             .join(
                 models.BankAccount,
                 models.BankAccount.id == models.Cashflow.bankAccountId,
@@ -1560,43 +1562,50 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
             )
         )
 
-    bookings_query = get_bookings_data(
-        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
-        .join(models.Pricing.cashflows)
-        .join(models.Pricing.booking)
+    indiv_query = get_individual_data(
+        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED).join(models.Pricing.booking)
     )
 
-    collective_bookings_query = get_collective_bookings_data(
+    indiv_incident_query = get_individual_data(
         models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
-        .join(models.Pricing.cashflows)
-        .join(models.Pricing.collectiveBooking)
-    )
-
-    finance_incident_bookings_query = get_bookings_data(
-        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
-        .join(models.Pricing.cashflows)
         .join(models.Pricing.event)
         .join(models.FinanceEvent.bookingFinanceIncident)
         .join(models.BookingFinanceIncident.booking)
     )
 
-    finance_incident_collective_bookings_query = get_collective_bookings_data(
+    collective_query = get_collective_data(
+        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED).join(models.Pricing.collectiveBooking)
+    )
+
+    collective_incident_query = get_collective_data(
         models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
-        .join(models.Pricing.cashflows)
         .join(models.Pricing.event)
         .join(models.FinanceEvent.bookingFinanceIncident)
         .join(models.BookingFinanceIncident.collectiveBooking)
     )
 
+    rows = (
+        indiv_query.union(indiv_incident_query, collective_query, collective_incident_query)
+        .group_by(
+            sqla.column("bank_account_id"),
+            sqla.column("bank_account_label"),
+            sqla.column("offerer_name"),
+            sqla.column("offerer_siren"),
+        )
+        .with_entities(
+            sqla.column("bank_account_id"),
+            sqla.column("bank_account_label"),
+            sqla.column("offerer_name"),
+            sqla.column("offerer_siren"),
+            sqla_func.sum(sqla.column("pricing_amount")).label("pricing_amount"),
+        )
+        .all()
+    )
+
     return _write_csv(
         "down_payment",
         header,
-        rows=itertools.chain(
-            bookings_query,
-            collective_bookings_query,
-            finance_incident_bookings_query,
-            finance_incident_collective_bookings_query,
-        ),
+        rows=rows,
         row_formatter=_payment_details_row_formatter,
     )
 
@@ -1609,9 +1618,10 @@ def _generate_payments_file_legacy(batch_id: int) -> pathlib.Path:
         "Montant net offreur",
     ]
 
-    def get_bookings_data(query: BaseQuery) -> BaseQuery:
+    def get_individual_data(query: BaseQuery) -> BaseQuery:
         return (
             query.filter(bookings_models.Booking.amount != 0)
+            .join(models.Pricing.cashflows)
             .join(
                 offerers_models.Venue,
                 offerers_models.Venue.id == models.Cashflow.reimbursementPointId,
@@ -1631,9 +1641,10 @@ def _generate_payments_file_legacy(batch_id: int) -> pathlib.Path:
             )
         )
 
-    def get_collective_bookings_data(query: BaseQuery) -> BaseQuery:
+    def get_collective_data(query: BaseQuery) -> BaseQuery:
         return (
             query.join(educational_models.CollectiveBooking.collectiveStock)
+            .join(models.Pricing.cashflows)
             .join(
                 offerers_models.Venue,
                 offerers_models.Venue.id == models.Cashflow.reimbursementPointId,
@@ -1662,43 +1673,48 @@ def _generate_payments_file_legacy(batch_id: int) -> pathlib.Path:
             )
         )
 
-    bookings_query = get_bookings_data(
-        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
-        .join(models.Pricing.cashflows)
-        .join(models.Pricing.booking)
+    indiv_query = get_individual_data(
+        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED).join(models.Pricing.booking)
     )
 
-    collective_bookings_query = get_collective_bookings_data(
+    indiv_incident_query = get_individual_data(
         models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
-        .join(models.Pricing.cashflows)
-        .join(models.Pricing.collectiveBooking)
-    )
-
-    finance_incident_bookings_query = get_bookings_data(
-        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
-        .join(models.Pricing.cashflows)
         .join(models.Pricing.event)
         .join(models.FinanceEvent.bookingFinanceIncident)
         .join(models.BookingFinanceIncident.booking)
     )
 
-    finance_incident_collective_bookings_query = get_collective_bookings_data(
+    collective_query = get_collective_data(
+        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED).join(models.Pricing.collectiveBooking)
+    )
+
+    collective_incident_query = get_collective_data(
         models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
-        .join(models.Pricing.cashflows)
         .join(models.Pricing.event)
         .join(models.FinanceEvent.bookingFinanceIncident)
         .join(models.BookingFinanceIncident.collectiveBooking)
     )
 
+    rows = (
+        indiv_query.union(indiv_incident_query, collective_query, collective_incident_query)
+        .group_by(
+            sqla.column("reimbursement_point_id"),
+            sqla.column("reimbursement_point_siret"),
+            sqla.column("reimbursement_point_name"),
+        )
+        .with_entities(
+            sqla.column("reimbursement_point_id"),
+            sqla.column("reimbursement_point_siret"),
+            sqla.column("reimbursement_point_name"),
+            sqla_func.sum(sqla.column("pricing_amount")).label("pricing_amount"),
+        )
+        .all()
+    )
+
     return _write_csv(
         "down_payment",
         header,
-        rows=itertools.chain(
-            bookings_query,
-            collective_bookings_query,
-            finance_incident_bookings_query,
-            finance_incident_collective_bookings_query,
-        ),
+        rows=rows,
         row_formatter=_payment_details_row_formatter,
     )
 
