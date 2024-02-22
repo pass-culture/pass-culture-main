@@ -159,6 +159,7 @@ def mark_without_continuation_applications() -> None:
                             instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
                             motivation=MARK_WITHOUT_CONTINUATION_MOTIVATION,
                         )
+                        application.mark_without_continuation()
                         ds_client.archive_application(
                             application_techid=application.id,
                             instructeur_techid=settings.DS_MARK_WITHOUT_CONTINUATION_INSTRUCTOR_ID,
@@ -172,3 +173,6 @@ def mark_without_continuation_applications() -> None:
                         "Error while trying to mark without continuation an application",
                         extra={"application_id": application.number},
                     )
+                    db.session.rollback()
+                else:
+                    db.session.commit()
