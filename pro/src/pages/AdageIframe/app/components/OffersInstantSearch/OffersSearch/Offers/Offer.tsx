@@ -1,7 +1,12 @@
 import cn from 'classnames'
 import React, { useState } from 'react'
 
-import { AdageFrontRoles, OfferAddressType } from 'apiClient/adage'
+import {
+  AdageFrontRoles,
+  CollectiveOfferResponseModel,
+  CollectiveOfferTemplateResponseModel,
+  OfferAddressType,
+} from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import useActiveFeature from 'hooks/useActiveFeature'
 import fullLinkIcon from 'icons/full-link.svg'
@@ -11,9 +16,8 @@ import strokeLocalisationIcon from 'icons/stroke-localisation.svg'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import {
-  HydratedCollectiveOffer,
-  HydratedCollectiveOfferTemplate,
-  isCollectiveOffer,
+  isCollectiveOfferBookable,
+  isCollectiveOfferTemplate,
 } from 'pages/AdageIframe/app/types/offers'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -33,7 +37,7 @@ import { formatDescription } from './utils/formatDescription'
 import { getOfferVenueAndOffererName } from './utils/getOfferVenueAndOffererName'
 
 export interface OfferProps {
-  offer: HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
+  offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
   queryId: string
   position: number
   afterFavoriteChange?: (isFavorite: boolean) => void
@@ -60,14 +64,16 @@ const Offer = ({
     offer.isTemplate && adageUser.role !== AdageFrontRoles.READONLY
 
   const openOfferDetails = (
-    offer: HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
+    offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
   ) => {
+    const isTemplate = isCollectiveOfferTemplate(offer)
+
     setDisplayDetails(!displayDetails)
     if (!LOGS_DATA) {
       return
     }
 
-    if (!offer.isTemplate) {
+    if (!isTemplate) {
       void apiAdage.logOfferDetailsButtonClick({
         iframeFrom: location.pathname,
         stockId: offer.stock.id,
@@ -162,7 +168,7 @@ const Offer = ({
                     queryId={queryId}
                   />
                 )}
-                {offer.isTemplate ? (
+                {isCollectiveOfferTemplate(offer) ? (
                   <>
                     <OfferShareLink offer={offer} />
                     {!isNewOfferInfoEnabled && (
@@ -215,7 +221,7 @@ const Offer = ({
                 <span>{venueAndOffererName}</span>
               )}
             </div>
-            {isCollectiveOffer(offer) && offer.teacher && (
+            {isCollectiveOfferBookable(offer) && offer.teacher && (
               <div className={style['offer-header-teacher']}>
                 <span className={style['offer-header-label']}>Destinée à </span>
                 <span>

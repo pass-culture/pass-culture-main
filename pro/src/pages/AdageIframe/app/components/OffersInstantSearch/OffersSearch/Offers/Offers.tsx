@@ -6,15 +6,16 @@ import {
 } from 'react-instantsearch'
 import { useParams } from 'react-router-dom'
 
-import { AdageFrontRoles, VenueResponse } from 'apiClient/adage'
+import {
+  AdageFrontRoles,
+  CollectiveOfferResponseModel,
+  CollectiveOfferTemplateResponseModel,
+  VenueResponse,
+} from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import useActiveFeature from 'hooks/useActiveFeature'
 import fullGoTop from 'icons/full-go-top.svg'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
-import {
-  HydratedCollectiveOffer,
-  HydratedCollectiveOfferTemplate,
-} from 'pages/AdageIframe/app/types/offers'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -40,8 +41,10 @@ export interface OffersProps {
   venue?: VenueResponse | null
 }
 
-type HydratedOffer = HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
-type OfferMap = Map<string, HydratedOffer>
+type CollectiveOffer =
+  | CollectiveOfferResponseModel
+  | CollectiveOfferTemplateResponseModel
+type OfferMap = Map<string, CollectiveOffer>
 
 export const Offers = ({
   displayStats = true,
@@ -99,7 +102,7 @@ export const Offers = ({
 
     Promise.allSettled(
       hits.map(
-        async (hit): Promise<{ hitId?: string; offer?: HydratedOffer }> => {
+        async (hit): Promise<{ hitId?: string; offer?: CollectiveOffer }> => {
           if (fetchedOffers.has(hit.objectID)) {
             return {
               hitId: hit.objectID,
@@ -165,7 +168,7 @@ export const Offers = ({
 
   const offers = hits
     .map((hit) => fetchedOffers.get(hit.objectID))
-    .filter((offer): offer is HydratedOffer => !!offer)
+    .filter((offer): offer is CollectiveOffer => !!offer)
 
   if (queriesAreLoading && offers.length === 0) {
     return (
