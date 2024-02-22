@@ -9,6 +9,7 @@ import {
   CollectiveOfferTemplate,
   EducationalCategories,
   isCollectiveOffer,
+  isCollectiveOfferTemplate,
 } from 'core/OfferEducational'
 
 import styles from './CollectiveOfferSummary.module.scss'
@@ -42,6 +43,7 @@ const CollectiveOfferSummary = ({
 }: CollectiveOfferSummaryProps) => {
   const offerManuallyCreated = isCollectiveOffer(offer) && !offer.isPublicApi
 
+  const isOfferTemplate = isCollectiveOfferTemplate(offer)
   return (
     <>
       <SummaryLayout>
@@ -77,7 +79,7 @@ const CollectiveOfferSummary = ({
             )}
           </SummarySection>
 
-          {!offer.isTemplate && (
+          {!isOfferTemplate && (
             <SummarySection
               title="Date & Prix"
               editLink={
@@ -91,7 +93,7 @@ const CollectiveOfferSummary = ({
             </SummarySection>
           )}
 
-          {!offer.isTemplate && (
+          {!isOfferTemplate && (
             <SummarySection
               title={'Établissement et enseignant'}
               editLink={

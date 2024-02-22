@@ -192,7 +192,7 @@ export const computeInitialValuesFromOffer = (
     venueId: initialVenueId,
     offererId: initialOffererId,
     priceDetail:
-      offer.isTemplate && offer.educationalPriceDetail
+      isCollectiveOfferTemplate(offer) && offer.educationalPriceDetail
         ? offer.educationalPriceDetail
         : DEFAULT_EAC_FORM_VALUES.priceDetail,
     imageUrl: offer.imageUrl || DEFAULT_EAC_FORM_VALUES.imageUrl,
@@ -201,7 +201,7 @@ export const computeInitialValuesFromOffer = (
     'search-formats': '',
     'search-interventionArea': '',
     nationalProgramId: offer.nationalProgram?.id?.toString() || '',
-    isTemplate: offer.isTemplate,
+    isTemplate: Boolean(offer.isTemplate),
     datesType: isCollectiveOfferTemplate(offer)
       ? offer.dates
         ? 'specific_dates'

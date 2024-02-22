@@ -2,6 +2,7 @@ import React from 'react'
 
 import { AppLayout } from 'app/AppLayout'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
+import { isCollectiveOfferTemplate } from 'core/OfferEducational'
 import CollectiveOfferConfirmationScreen from 'screens/CollectiveOfferConfirmation'
 import {
   MandatoryCollectiveOfferFromParamsProps,
@@ -12,7 +13,7 @@ const CollectiveOfferConfirmation = ({
   offer,
 }: MandatoryCollectiveOfferFromParamsProps): JSX.Element => {
   const getInstitutionDisplayName = () => {
-    if (offer.isTemplate) {
+    if (isCollectiveOfferTemplate(offer)) {
       return ''
     }
 

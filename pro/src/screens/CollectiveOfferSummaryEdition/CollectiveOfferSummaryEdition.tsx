@@ -13,6 +13,7 @@ import {
   CollectiveOfferTemplate,
   createOfferFromTemplate,
   EducationalCategories,
+  isCollectiveOfferTemplate,
   Mode,
 } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
@@ -61,7 +62,9 @@ const CollectiveOfferSummaryEdition = ({
       <OfferEducationalActions
         className={styles.actions}
         isBooked={
-          offer.isTemplate ? false : Boolean(offer.collectiveStock?.isBooked)
+          isCollectiveOfferTemplate(offer)
+            ? false
+            : Boolean(offer.collectiveStock?.isBooked)
         }
         offer={offer}
         reloadCollectiveOffer={reloadCollectiveOffer}
