@@ -21,7 +21,6 @@ from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import BooleanClauseList
 from sqlalchemy.sql.functions import func
 
-from pcapi import settings
 from pcapi.core.finance.enum import DepositType
 from pcapi.core.geography.models import IrisFrance
 from pcapi.core.users import constants
@@ -288,11 +287,6 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     def get_id(self) -> str:  # required by flask-login
         return str(self.id)
 
-    def is_super_admin(self) -> bool:
-        if settings.IS_PROD:
-            return self.email in settings.SUPER_ADMIN_EMAIL_ADDRESSES
-        return self.has_admin_role
-
     def remove_admin_role(self) -> None:
         if self.has_admin_role:
             self.roles.remove(UserRole.ADMIN)
@@ -501,10 +495,6 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
                 return AccountState.SUSPENDED
 
         return AccountState.INACTIVE
-
-    @property
-    def is_account_deleted(self) -> bool:
-        return self.account_state == AccountState.DELETED
 
     @property
     def is_account_suspended_upon_user_request(self) -> bool:
