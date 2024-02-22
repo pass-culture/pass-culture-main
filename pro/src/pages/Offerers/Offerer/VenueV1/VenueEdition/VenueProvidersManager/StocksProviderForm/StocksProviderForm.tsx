@@ -12,17 +12,11 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 
 import styles from './StocksProviderForm.module.scss'
 
-interface PayloadProps {
-  providerId: number
-  venueIdAtOfferProvider: string
-  venueId: number
-}
-
 export interface StocksProviderFormProps {
   offererId: number
   providerId: number
-  saveVenueProvider: (payload: PostVenueProviderBody) => boolean
-  siret: string
+  saveVenueProvider: (payload?: PostVenueProviderBody) => boolean
+  siret?: string | null
   venueId: number
   hasOffererProvider: boolean
 }
@@ -60,9 +54,9 @@ const StocksProviderForm = ({
   const handleFormSubmit = () => {
     setIsCheckingApi(true)
 
-    const payload: PayloadProps = {
+    const payload: PostVenueProviderBody = {
       providerId,
-      venueIdAtOfferProvider: siret,
+      venueIdAtOfferProvider: siret ?? undefined,
       venueId,
     }
 

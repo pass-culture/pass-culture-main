@@ -88,7 +88,6 @@ describe('useGetVenue', () => {
         [AccessiblityEnum.NONE]: true,
       },
       address: '12 rue du pilas',
-      banId: '',
       bannerMeta: {
         image_credit: '',
         original_image_url:
@@ -106,17 +105,14 @@ describe('useGetVenue', () => {
       contact: {
         email: 'test@test.com',
         phoneNumber: '0606060606',
-        webSite: 'https://test.com',
+        website: 'https://test.com',
       },
       dateCreated: '2022-07-29T12:18:43.087097Z',
-      demarchesSimplifieesApplicationId: null,
-      hasPendingBankInformationApplication: null,
       isPermanent: true,
       latitude: 12.3,
       longitude: 14.2,
       postalCode: '75000',
       publicName: 'Cinéma des iles',
-      departmentCode: '',
       description: 'description du lieu',
       dmsToken: 'dms-token-12345',
       isVirtual: false,
@@ -129,12 +125,9 @@ describe('useGetVenue', () => {
         postalCode: '75001',
       },
       id: 12,
-      pricingPoint: null,
-      reimbursementPointId: null,
       isVenueVirtual: false,
       mail: 'test@example.com',
       name: 'Lieu name',
-      siret: '',
       comment: 'commentaire lieu sans siret',
       venueLabel: null,
       venueType: 'Librairie',
@@ -148,10 +141,8 @@ describe('useGetVenue', () => {
       collectivePhone: '',
       collectiveStudents: [],
       collectiveWebsite: '',
-      adageInscriptionDate: null,
       hasAdageId: false,
       collectiveDmsApplication: null,
-      bankAccount: null,
     }
 
     await waitFor(() => {
