@@ -28,9 +28,7 @@ import {
   BookingOfferType,
   GetBookingResponse,
 } from 'apiClient/v2'
-import { Venue } from 'core/Venue/types'
 
-import { defaultVenueResponseModel } from './collectiveApiFactories'
 import { priceCategoryFactory } from './individualApiFactories'
 
 let offerId = 1
@@ -390,64 +388,3 @@ export const defaultGetCollectiveOfferResponseModel: GetCollectiveOfferResponseM
     students: [],
     venue: defaultGetCollectiveOfferVenueResponseModel,
   }
-
-export const defaultVenueModel: Venue = {
-  ...defaultVenueResponseModel,
-  collectiveDomains: [],
-  dateCreated: '2022-01-01',
-  isVirtual: false,
-  address: '12 rue des lilas',
-  banId: '1',
-  bannerMeta: null,
-  bannerUrl: 'https://www.example.com',
-  city: 'Lyon',
-  hasPendingBankInformationApplication: false,
-  demarchesSimplifieesApplicationId: null,
-  comment: '',
-  contact: {
-    email: 'test@mail.com',
-    phoneNumber: null,
-    website: null,
-  },
-  description: 'Ma super description',
-  departementCode: '69',
-  dmsToken: 'dmsToken',
-  isPermanent: true,
-  latitude: 45.75,
-  longitude: 4.85,
-  name: 'Mon super lieu',
-  managingOfferer: {
-    address: '12 rue des lilas',
-    city: 'Lyon',
-    dateCreated: '2022-01-01',
-    demarchesSimplifieesApplicationId: null,
-    id: 1,
-    isValidated: true,
-    name: 'Ma super structure',
-    postalCode: '69007',
-    siren: '123456789',
-  },
-  id: 1,
-  pricingPoint: {
-    id: 1,
-    siret: '12345678912345',
-    venueName: 'Lieu barême',
-  },
-  postalCode: '69007',
-  publicName: 'Mon super lieu',
-  siret: '12345678900001',
-  reimbursementPointId: 1,
-  withdrawalDetails: '',
-  collectiveAccessInformation: '',
-  collectiveDescription: '',
-  collectiveEmail: '',
-  collectiveInterventionArea: [],
-  collectiveLegalStatus: null,
-  collectiveNetwork: [],
-  collectivePhone: '',
-  collectiveStudents: [],
-  collectiveWebsite: '',
-  adageInscriptionDate: null,
-  hasAdageId: false,
-  bankAccount: null,
-}
