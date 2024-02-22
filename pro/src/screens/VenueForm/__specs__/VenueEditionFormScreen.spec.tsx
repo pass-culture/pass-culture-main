@@ -17,7 +17,6 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
 import { VenueFormValues } from 'components/VenueForm'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
-import { Venue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import { defaultGetOffererResponseModel } from 'utils/apiFactories'
 import { defaultVenueResponseModel } from 'utils/collectiveApiFactories'
@@ -43,7 +42,7 @@ const venueLabels: SelectOption[] = [
 
 const renderForm = (
   initialValues: VenueFormValues,
-  venue: Venue,
+  venue: GetVenueResponseModel,
   isAdmin = false,
   hasBookingQuantity?: boolean,
   features: string[] = []
@@ -256,7 +255,7 @@ const venueResponse: GetVenueResponseModel = {
 describe('VenueFormScreen', () => {
   let formValues: VenueFormValues
   let expectedEditVenue: Partial<EditVenueBodyModel>
-  let venue: Venue
+  let venue: GetVenueResponseModel
 
   beforeEach(() => {
     formValues = {
@@ -530,7 +529,7 @@ describe('VenueFormScreen', () => {
 
       const editVenue = vi
         .spyOn(api, 'editVenue')
-        .mockResolvedValue({ id: 1 } as GetVenueResponseModel)
+        .mockResolvedValue({ ...defaultVenueResponseModel, id: 1 })
 
       await waitFor(() => {
         expect(
@@ -588,7 +587,7 @@ describe('VenueFormScreen', () => {
 
       const editVenue = vi
         .spyOn(api, 'editVenue')
-        .mockResolvedValue({ id: 1 } as GetVenueResponseModel)
+        .mockResolvedValue({ ...defaultVenueResponseModel, id: 1 })
 
       await waitFor(() => {
         expect(
@@ -646,7 +645,7 @@ describe('VenueFormScreen', () => {
 
       const editVenue = vi
         .spyOn(api, 'editVenue')
-        .mockResolvedValue({ id: 1 } as GetVenueResponseModel)
+        .mockResolvedValue({ ...defaultVenueResponseModel, id: 1 })
 
       await waitFor(() => {
         expect(
@@ -678,7 +677,7 @@ describe('VenueFormScreen', () => {
 
       const editVenue = vi
         .spyOn(api, 'editVenue')
-        .mockResolvedValue({ id: 1 } as GetVenueResponseModel)
+        .mockResolvedValue({ ...defaultVenueResponseModel, id: 1 })
 
       await waitFor(() => {
         expect(

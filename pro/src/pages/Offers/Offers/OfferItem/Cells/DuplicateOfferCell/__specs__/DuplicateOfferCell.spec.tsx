@@ -6,11 +6,7 @@ import * as router from 'react-router-dom'
 import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from 'apiClient/api'
-import {
-  ApiError,
-  AttachImageResponseModel,
-  GetVenueResponseModel,
-} from 'apiClient/v1'
+import { ApiError, AttachImageResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { CollectiveOffer } from 'core/OfferEducational'
@@ -18,7 +14,10 @@ import * as createFromTemplateUtils from 'core/OfferEducational/utils/createOffe
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import * as useNotification from 'hooks/useNotification'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
+import {
+  collectiveOfferFactory,
+  defaultVenueResponseModel,
+} from 'utils/collectiveApiFactories'
 import * as localStorageAvailable from 'utils/localStorageAvailable'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -187,7 +186,9 @@ describe('DuplicateOfferCell', () => {
 
       vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
 
-      vi.spyOn(api, 'getVenue').mockResolvedValue({} as GetVenueResponseModel)
+      vi.spyOn(api, 'getVenue').mockResolvedValue({
+        ...defaultVenueResponseModel,
+      })
 
       vi.spyOn(api, 'getCategories').mockResolvedValue({
         categories: [],

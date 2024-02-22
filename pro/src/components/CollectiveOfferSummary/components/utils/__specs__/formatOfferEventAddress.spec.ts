@@ -1,6 +1,6 @@
 import { OfferAddressType } from 'apiClient/v1'
-import { Venue } from 'core/Venue/types'
 import { EVENT_ADDRESS_SCHOOL_LABEL } from 'screens/OfferEducational/constants/labels'
+import { defaultVenueResponseModel } from 'utils/collectiveApiFactories'
 
 import { formatOfferEventAddress } from '../formatOfferEventAddress'
 
@@ -14,12 +14,13 @@ describe('formatOfferEventAddress', () => {
           venueId: 12,
         },
         {
+          ...defaultVenueResponseModel,
           name: 'Offerer venue',
           publicName: '',
           postalCode: '75000',
           city: 'Paris',
           address: '12 rue Duhesme',
-        } as Venue
+        }
       )
     ).toBe('Offerer venue, 12 rue Duhesme, 75000, Paris')
   })
@@ -33,12 +34,13 @@ describe('formatOfferEventAddress', () => {
           venueId: null,
         },
         {
+          ...defaultVenueResponseModel,
           name: 'Offerer venue',
           publicName: '',
           postalCode: '75000',
           city: 'Paris',
           address: '12 rue Duhesme',
-        } as Venue
+        }
       )
     ).toBe(EVENT_ADDRESS_SCHOOL_LABEL)
   })
@@ -52,12 +54,13 @@ describe('formatOfferEventAddress', () => {
           venueId: 12,
         },
         {
+          ...defaultVenueResponseModel,
           name: 'Offerer venue',
           publicName: '',
           postalCode: '75000',
           city: 'Paris',
           address: '12 rue Duhesme',
-        } as Venue
+        }
       )
     ).toBe('A la mairie')
   })

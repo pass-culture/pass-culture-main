@@ -1,10 +1,12 @@
+import { GetVenueResponseModel } from 'apiClient/v1'
 import { AccessiblityEnum } from 'core/shared'
-import { Venue } from 'core/Venue/types'
 import { humanizeSiret } from 'core/Venue/utils'
 
 import { VenueFormValues } from '../types'
 
-const setInitialFormValues = (venue: Venue): VenueFormValues => {
+const setInitialFormValues = (
+  venue: GetVenueResponseModel
+): VenueFormValues => {
   const venueAccessibility = {
     [AccessiblityEnum.VISUAL]: venue.visualDisabilityCompliant || false,
     [AccessiblityEnum.MENTAL]: venue.mentalDisabilityCompliant || false,

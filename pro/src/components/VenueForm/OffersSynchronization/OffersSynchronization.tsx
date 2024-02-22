@@ -1,15 +1,15 @@
 import React, { useState } from 'react'
 
-import { VenueProviderResponse } from 'apiClient/v1'
+import { VenueProviderResponse, GetVenueResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
-import { Providers, Venue } from 'core/Venue/types'
+import { Providers } from 'core/Venue/types'
 import AddVenueProviderButton from 'pages/Offerers/Offerer/VenueV1/VenueEdition/VenueProvidersManager/AddVenueProviderButton'
 import VenueProviderList from 'pages/Offerers/Offerer/VenueV1/VenueEdition/VenueProvidersManager/VenueProviderList/VenueProviderList'
 
 interface OffersSynchronization {
   provider: Providers[]
   venueProvider: VenueProviderResponse[]
-  venue: Venue
+  venue: GetVenueResponseModel
 }
 
 const OffersSynchronization = ({

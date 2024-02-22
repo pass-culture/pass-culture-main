@@ -3,7 +3,10 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { GetCollectiveVenueResponseModel } from 'apiClient/v1'
+import {
+  GetCollectiveVenueResponseModel,
+  GetVenueResponseModel,
+} from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
 import MandatoryInfo from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { CollectiveDmsTimeline } from 'components/VenueForm/CollectiveDmsTimeline/CollectiveDmsTimeline'
@@ -13,7 +16,6 @@ import {
   getEducationalDomainsAdapter,
 } from 'core/OfferEducational'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { Venue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
 import { PartnerPageCollectiveSection } from 'pages/Home/Offerers/PartnerPageCollectiveSection'
@@ -65,7 +67,7 @@ const fetchCulturalPartnerIfVenueHasNoCollectiveData = async (
 }
 
 export interface CollectiveDataEditionProps {
-  venue?: Venue
+  venue?: GetVenueResponseModel
 }
 
 export const CollectiveDataEdition = ({

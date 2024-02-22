@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
-import { GetOffererResponseModel } from 'apiClient/v1'
+import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
 import Dialog from 'components/Dialog/Dialog/Dialog'
 import ReimbursmentPointDialog from 'components/ReimbursementPointDialog/ReimbursmentPointDialog'
 import { Events } from 'core/FirebaseEvents/constants'
-import { serializeVenueApi } from 'core/Venue/adapters/getVenueAdapter/serializers'
-import { Venue } from 'core/Venue/types'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import strokeWarningIcon from 'icons/stroke-warning.svg'
@@ -20,7 +18,7 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 import styles from './ReimbursementPoint.module.scss'
 
 interface ReimbursementPointV2 {
-  initialVenue: Venue
+  initialVenue: GetVenueResponseModel
   isCreatingVenue?: boolean
   offerer: GetOffererResponseModel
   venueHasPricingPoint?: boolean
@@ -82,7 +80,7 @@ const ReimbursementPoint = ({
   const closeDmsDialog = async () => {
     setIsDmsDialogOpen(false)
     const venueRequest = await api.getVenue(venue.id)
-    setVenue(serializeVenueApi(venueRequest))
+    setVenue(venueRequest)
   }
 
   useEffect(() => {

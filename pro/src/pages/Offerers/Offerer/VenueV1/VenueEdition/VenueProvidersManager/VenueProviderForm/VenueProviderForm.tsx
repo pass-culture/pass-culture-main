@@ -2,9 +2,13 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { getError, isErrorAPIError } from 'apiClient/helpers'
-import { PostVenueProviderBody, VenueProviderResponse } from 'apiClient/v1'
+import {
+  PostVenueProviderBody,
+  VenueProviderResponse,
+  GetVenueResponseModel,
+} from 'apiClient/v1'
 import { isAllocineProvider, isCinemaProvider } from 'core/Providers'
-import { Providers, Venue } from 'core/Venue/types'
+import { Providers } from 'core/Venue/types'
 import useNotification from 'hooks/useNotification'
 
 import AllocineProviderForm from '../AllocineProviderForm/AllocineProviderForm'
@@ -15,7 +19,7 @@ import { getRequestErrorStringFromErrors } from '../utils/getRequestErrorStringF
 interface VenueProviderFormProps {
   afterSubmit: (createdVenueProvider?: VenueProviderResponse) => void
   provider: Providers
-  venue: Venue
+  venue: GetVenueResponseModel
 }
 
 const VenueProviderForm = ({
