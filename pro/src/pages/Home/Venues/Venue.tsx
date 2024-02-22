@@ -59,8 +59,8 @@ export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
     setPrevOffererId(offerer?.id)
   }
 
-  const editVenueLink = `/structures/${offerer?.id}/lieux/${venue.id}?modification`
-  const reimbursementSectionLink = `/structures/${offerer?.id}/lieux/${venue.id}?modification#remboursement`
+  const editVenueLink = `/structures/${offerer?.id}/lieux/${venue.id}`
+  const reimbursementSectionLink = `/structures/${offerer?.id}/lieux/${venue.id}#remboursement`
   const venueDisplayName = venue.isVirtual
     ? 'Offres numériques'
     : venue.publicName || venue.name

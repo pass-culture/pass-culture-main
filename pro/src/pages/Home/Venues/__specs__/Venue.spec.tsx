@@ -45,10 +45,7 @@ describe('venues', () => {
 
       expect(
         screen.getByRole('link', { name: `Gérer la page de My venue` })
-      ).toHaveAttribute(
-        'href',
-        `/structures/${offererId}/lieux/${venueId}?modification`
-      )
+      ).toHaveAttribute('href', `/structures/${offererId}/lieux/${venueId}`)
     })
 
     it('should display add bank information when venue does not have a reimbursement point', () => {
@@ -61,7 +58,7 @@ describe('venues', () => {
         screen.getByRole('link', { name: 'Ajouter un RIB' })
       ).toHaveAttribute(
         'href',
-        `/structures/${offererId}/lieux/${venueId}?modification#remboursement`
+        `/structures/${offererId}/lieux/${venueId}#remboursement`
       )
     })
 
