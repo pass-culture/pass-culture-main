@@ -20,6 +20,7 @@ export const serializeVenueApi = (venue: GetVenueResponseModel): Venue => {
 
   /* istanbul ignore next: DEBT, TO FIX */
   return {
+    ...venue,
     demarchesSimplifieesApplicationId:
       venue.demarchesSimplifieesApplicationId || null,
     hasPendingBankInformationApplication:

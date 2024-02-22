@@ -20,6 +20,7 @@ import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import { Venue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import { defaultGetOffererResponseModel } from 'utils/apiFactories'
+import { defaultVenueResponseModel } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { VenueEditionFormScreen } from '../VenueEditionFormScreen'
@@ -299,6 +300,7 @@ describe('VenueFormScreen', () => {
     }
 
     venue = {
+      ...defaultVenueResponseModel,
       hasPendingBankInformationApplication: false,
       demarchesSimplifieesApplicationId: '',
       collectiveDomains: [],

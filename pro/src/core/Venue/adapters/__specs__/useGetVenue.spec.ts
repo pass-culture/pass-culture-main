@@ -158,7 +158,7 @@ describe('useGetVenue', () => {
       expect(result.current.isLoading).toBe(false)
     })
     expect(api.getVenue).toHaveBeenCalledWith(12)
-    expect(result.current.data).toEqual(venue)
+    expect(result.current.data).toMatchObject(venue)
     expect(result.current.error).toBeUndefined()
   })
 })
