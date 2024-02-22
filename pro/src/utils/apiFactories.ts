@@ -396,13 +396,6 @@ export const defaultVenueModel: Venue = {
   collectiveDomains: [],
   dateCreated: '2022-01-01',
   isVirtual: false,
-  accessibility: {
-    visual: true,
-    mental: true,
-    motor: true,
-    audio: true,
-    none: false,
-  },
   address: '12 rue des lilas',
   banId: '1',
   bannerMeta: null,
