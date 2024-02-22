@@ -1791,11 +1791,7 @@ def test_generate_payments_file_legacy_journey():
     cutoff = datetime.datetime.utcnow()
     batch_id = api.generate_cashflows(cutoff).id
 
-    n_queries = 0
-    n_queries += 1  # select pricings for bookings
-    n_queries += 1  # select pricings for collective bookings
-    n_queries += 1  # select pricings for booking incidents
-    n_queries += 1  # select pricings for collective booking incidents
+    n_queries = 1  # select pricings
     with assert_num_queries(n_queries):
         path = api._generate_payments_file_legacy(batch_id)
 
@@ -1803,7 +1799,7 @@ def test_generate_payments_file_legacy_journey():
         reader = csv.DictReader(fp, quoting=csv.QUOTE_NONNUMERIC)
         rows = list(reader)
 
-    assert len(rows) == 5
+    assert len(rows) == 2
     assert rows[0] == {
         "Identifiant du point de remboursement": human_ids.humanize(venue1.id),
         "SIRET du point de remboursement": "123456 test",
@@ -1814,25 +1810,7 @@ def test_generate_payments_file_legacy_journey():
         "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point_2.id),
         "SIRET du point de remboursement": "22222222233333",
         "Libellé du point de remboursement": "Point de remboursement du Gigantesque Cubitus",
-        "Montant net offreur": 6,
-    }
-    assert rows[2] == {
-        "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point_2.id),
-        "SIRET du point de remboursement": "22222222233333",
-        "Libellé du point de remboursement": "Point de remboursement du Gigantesque Cubitus",
-        "Montant net offreur": 15,
-    }
-    assert rows[3] == {
-        "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point_2.id),
-        "SIRET du point de remboursement": "22222222233333",
-        "Libellé du point de remboursement": "Point de remboursement du Gigantesque Cubitus",
-        "Montant net offreur": 10,
-    }
-    assert rows[4] == {
-        "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point_2.id),
-        "SIRET du point de remboursement": "22222222233333",
-        "Libellé du point de remboursement": "Point de remboursement du Gigantesque Cubitus",
-        "Montant net offreur": -2,
+        "Montant net offreur": 6 + 15 + 10 - 2,
     }
 
 
@@ -1981,11 +1959,7 @@ def test_generate_payments_file_new_journey():
     cutoff = datetime.datetime.utcnow()
     batch_id = api.generate_cashflows(cutoff).id
 
-    n_queries = 0
-    n_queries += 1  # select pricings for bookings
-    n_queries += 1  # select pricings for collective bookings
-    n_queries += 1  # select pricings for booking incidents
-    n_queries += 1  # select pricings for collective booking incidents
+    n_queries = 1  # select pricings
     with assert_num_queries(n_queries):
         path = api._generate_payments_file(batch_id)
 
@@ -1993,7 +1967,7 @@ def test_generate_payments_file_new_journey():
         reader = csv.DictReader(fp, quoting=csv.QUOTE_NONNUMERIC)
         rows = list(reader)
 
-    assert len(rows) == 5
+    assert len(rows) == 2
     assert rows[0] == {
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "SIREN de la structure": bank_account_1.offerer.siren,
@@ -2004,25 +1978,7 @@ def test_generate_payments_file_new_journey():
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_2.id),
         "SIREN de la structure": bank_account_2.offerer.siren,
         "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account_2.offerer.name} - {bank_account_2.label}",
-        "Montant net offreur": 6,
-    }
-    assert rows[2] == {
-        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_2.id),
-        "SIREN de la structure": bank_account_2.offerer.siren,
-        "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account_2.offerer.name} - {bank_account_2.label}",
-        "Montant net offreur": 15,
-    }
-    assert rows[3] == {
-        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_2.id),
-        "SIREN de la structure": bank_account_2.offerer.siren,
-        "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account_2.offerer.name} - {bank_account_2.label}",
-        "Montant net offreur": 10,
-    }
-    assert rows[4] == {
-        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_2.id),
-        "SIREN de la structure": bank_account_2.offerer.siren,
-        "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account_2.offerer.name} - {bank_account_2.label}",
-        "Montant net offreur": -2,
+        "Montant net offreur": 6 + 15 + 10 - 2,
     }
 
 
