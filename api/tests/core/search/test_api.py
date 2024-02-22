@@ -345,8 +345,8 @@ class UpdateProductBookingCountTest:
         search.update_products_last_30_days_booking_count(1)
 
         assert mock_async_index_offer_ids.call_count == 2
-        mock_async_index_offer_ids.assert_any_call([offer1.id], reason=search.IndexationReason.BOOKING_COUNT_CHANGE)
-        mock_async_index_offer_ids.assert_any_call([offer2.id], reason=search.IndexationReason.BOOKING_COUNT_CHANGE)
+        mock_async_index_offer_ids.assert_any_call({offer1.id}, reason=search.IndexationReason.BOOKING_COUNT_CHANGE)
+        mock_async_index_offer_ids.assert_any_call({offer2.id}, reason=search.IndexationReason.BOOKING_COUNT_CHANGE)
 
 
 class ReadProductBookingCountTest:

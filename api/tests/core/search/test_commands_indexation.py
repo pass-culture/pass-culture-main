@@ -60,7 +60,7 @@ def test_update_products_booking_count_and_reindex_offers(mocked_async_index_off
     bookings_factories.BookingFactory(stock=offers_factories.StockFactory(offer=offer_with_ean))
     bookings_factories.BookingFactory(stock=offers_factories.StockFactory(offer=offer_with_no_ean))
 
-    expected_to_be_reindexed = [offer_with_ean.id]
+    expected_to_be_reindexed = {offer_with_ean.id}
 
     rows = [{"id": 1, "ean": ean, "booking_count": 1}]
     with mock.patch("pcapi.connectors.big_query.TestingBackend.run_query") as mock_run_query:
@@ -91,10 +91,10 @@ def test_update_products_booking_count_and_reindex_offers_if_same_ean(mocked_asy
     offers_factories.StockFactory(offer=offer_not_booked_with_same_ean_in_offer)
     offers_factories.StockFactory(offer=offer_with_different_ean)
 
-    expected_to_be_reindexed = [
+    expected_to_be_reindexed = {
         offer_with_ean.id,
         offer_not_booked_with_same_ean_in_offer.id,
-    ]
+    }
 
     rows = [{"id": 1, "ean": ean_1, "booking_count": 1}]
     with mock.patch("pcapi.connectors.big_query.TestingBackend.run_query") as mock_run_query:
