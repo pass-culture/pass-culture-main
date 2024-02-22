@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 
+import { CollectiveOfferResponseModel } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import Callout from 'components/Callout/Callout'
 import strokeMyInstitution from 'icons/stroke-my-institution.svg'
@@ -10,7 +11,6 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
 import { AnalyticsContextProvider } from '../../providers/AnalyticsContextProvider'
-import { HydratedCollectiveOffer } from '../../types/offers'
 import Offer from '../OffersInstantSearch/OffersSearch/Offers/Offer'
 
 import styles from './OffersForMyInstitution.module.scss'
@@ -19,7 +19,7 @@ const OffersForMyInstitution = (): JSX.Element => {
   const params = new URLSearchParams(location.search)
   const adageAuthToken = params.get('token')
   const [myInstitutionOffers, setMyInstitutionOffers] = useState<
-    HydratedCollectiveOffer[]
+    CollectiveOfferResponseModel[]
   >([])
   const [loadingOffers, setLoadingOffers] = useState<boolean>(false)
 

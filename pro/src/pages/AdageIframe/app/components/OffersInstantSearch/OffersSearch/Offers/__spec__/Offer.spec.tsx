@@ -5,13 +5,13 @@ import React from 'react'
 import {
   AdageFrontRoles,
   AuthenticatedResponse,
+  CollectiveOfferResponseModel,
   EacFormat,
   OfferAddressType,
   StudentLevels,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import { HydratedCollectiveOffer } from 'pages/AdageIframe/app/types/offers'
 import {
   defaultCollectiveOffer,
   defaultCollectiveTemplateOffer,
@@ -69,8 +69,8 @@ const renderOffer = (
 }
 
 describe('offer', () => {
-  let offerInParis: HydratedCollectiveOffer
-  let offerInCayenne: HydratedCollectiveOffer
+  let offerInParis: CollectiveOfferResponseModel
+  let offerInCayenne: CollectiveOfferResponseModel
   let offerProps: OfferProps
   beforeEach(() => {
     offerInParis = { ...defaultCollectiveOffer, isTemplate: false }

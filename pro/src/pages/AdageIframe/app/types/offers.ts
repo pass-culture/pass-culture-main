@@ -2,16 +2,11 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
 } from 'apiClient/adage'
-import { hasProperty } from 'utils/types'
 
-export type HydratedCollectiveOffer = CollectiveOfferResponseModel & {
-  isTemplate: false
-}
+export const isCollectiveOfferTemplate = (
+  value: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
+): value is CollectiveOfferTemplateResponseModel => Boolean(value.isTemplate)
 
-export const isCollectiveOffer = (
-  value: unknown
-): value is HydratedCollectiveOffer =>
-  hasProperty(value, 'isTemplate') && value.isTemplate === false
-
-export type HydratedCollectiveOfferTemplate =
-  CollectiveOfferTemplateResponseModel & { isTemplate: true }
+export const isCollectiveOfferBookable = (
+  value: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
+): value is CollectiveOfferResponseModel => !value.isTemplate

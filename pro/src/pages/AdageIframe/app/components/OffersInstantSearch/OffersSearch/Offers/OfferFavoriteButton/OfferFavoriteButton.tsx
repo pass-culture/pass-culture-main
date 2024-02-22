@@ -1,21 +1,21 @@
 import cn from 'classnames'
 import { useState } from 'react'
 
+import {
+  CollectiveOfferResponseModel,
+  CollectiveOfferTemplateResponseModel,
+} from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import useNotification from 'hooks/useNotification'
 import fullStarIcon from 'icons/full-star.svg'
 import strokeStarIcon from 'icons/stroke-star.svg'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
-import {
-  HydratedCollectiveOffer,
-  HydratedCollectiveOfferTemplate,
-} from 'pages/AdageIframe/app/types/offers'
 import ListIconButton from 'ui-kit/ListIconButton'
 
 import styles from './OfferFavoriteButton.module.scss'
 
 export interface OfferFavoriteButtonProps {
-  offer: HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
+  offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
   queryId?: string
   afterFavoriteChange?: (isFavorite: boolean) => void
   isInSuggestions?: boolean
