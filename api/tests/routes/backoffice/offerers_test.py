@@ -1295,8 +1295,8 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             assert rows[0]["Date de la demande"] == "03/10/2022"
             assert rows[0]["Dernier commentaire"] == "Houlala"
             assert rows[0]["SIREN"] == user_offerer.offerer.siren
-            assert rows[0]["Email"] == user_offerer.offerer.first_user.email
-            assert rows[0]["Responsable Structure"] == user_offerer.offerer.first_user.full_name
+            assert rows[0]["Email"] == user_offerer.user.email
+            assert rows[0]["Responsable Structure"] == user_offerer.user.full_name
             assert rows[0]["Ville"] == user_offerer.offerer.city
 
             dms_adage_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")

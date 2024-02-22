@@ -198,7 +198,7 @@ def list_offerers_to_be_validated(
     )
 
     # Ensure that we join with a single user, not on all attached users (would also multiply the number of rows)
-    # Same as User.first_user: the oldest entry in the table
+    # the oldest entry in the table
     creator_user_offerer_id = (
         db.session.query(offerers_models.UserOfferer.id)
         .filter(

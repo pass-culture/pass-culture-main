@@ -1062,18 +1062,6 @@ class Offerer(
             code = label = "Donnée indisponible"
         return {"code": code, "label": label}
 
-    @property
-    def first_user(self) -> "users_models.User | None":
-        # Currently there is no way to mark a UserOfferer as the owner/creator, so we consider that this first user
-        # is the oldest entry in the table. When creator leaves the offerer, next registered user becomes the "first".
-        # The relation being preserved during a rejection or deletion, we always keep an active user
-        if not self.UserOfferers:
-            return None
-        for user_offerer in self.UserOfferers:
-            if not (user_offerer.isRejected or user_offerer.isDeleted):
-                return user_offerer.user
-        return None
-
 
 class UserOfferer(PcObject, Base, Model, ValidationStatusMixin):
     __table_name__ = "user_offerer"

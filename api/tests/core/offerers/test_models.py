@@ -358,54 +358,6 @@ class HasPendingBankInformationApplicationTest:
         assert venue.hasPendingBankInformationApplication is False
 
 
-class OffererFirstUserPropertyTest:
-    def test_first_user_when_none(self):
-        offerer = factories.OffererFactory()
-
-        assert offerer.first_user is None
-
-    def test_first_user_when_only_one(self):
-        offerer = factories.OffererFactory()
-        user_offerer = factories.UserOffererFactory(offerer=offerer)
-
-        assert offerer.first_user == user_offerer.user
-
-    def test_first_user_when_multiple(self):
-        offerer = factories.OffererFactory()
-        first = factories.UserOffererFactory(offerer=offerer)
-        factories.UserOffererFactory.create_batch(3, offerer=offerer)
-
-        assert offerer.first_user == first.user
-
-    def test_first_user_when_only_user_is_rejected(self):
-        offerer = factories.OffererFactory()
-        factories.RejectedUserOffererFactory(offerer=offerer)
-
-        assert offerer.first_user is None
-
-    def test_first_user_when_only_user_is_deleted(self):
-        offerer = factories.OffererFactory()
-        factories.DeletedUserOffererFactory(offerer=offerer)
-
-        assert offerer.first_user is None
-
-    def test_first_user_when_first_user_is_rejected_and_other_users(self):
-        offerer = factories.OffererFactory()
-        rejected_user_offerer = factories.RejectedUserOffererFactory(offerer=offerer)
-        factories.UserOffererFactory.create_batch(3, offerer=offerer)
-
-        assert offerer.first_user is not None
-        assert offerer.first_user != rejected_user_offerer.user
-
-    def test_first_user_when_first_user_is_deleted_and_other_users(self):
-        offerer = factories.OffererFactory()
-        deleted_user_offerer = factories.DeletedUserOffererFactory(offerer=offerer)
-        factories.UserOffererFactory.create_batch(3, offerer=offerer)
-
-        assert offerer.first_user is not None
-        assert offerer.first_user != deleted_user_offerer.user
-
-
 class VenueDmsAdageStatusTest:
     def test_dms_adage_status_when_no_dms_application(self):
         venue = factories.VenueFactory()
