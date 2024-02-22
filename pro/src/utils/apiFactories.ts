@@ -414,10 +414,10 @@ export const defaultVenueModel: Venue = {
   contact: {
     email: 'test@mail.com',
     phoneNumber: null,
-    webSite: null,
+    website: null,
   },
   description: 'Ma super description',
-  departmentCode: '69',
+  departementCode: '69',
   dmsToken: 'dmsToken',
   isPermanent: true,
   isVenueVirtual: false,

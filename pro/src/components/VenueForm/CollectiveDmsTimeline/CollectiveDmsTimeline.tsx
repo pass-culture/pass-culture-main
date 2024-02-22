@@ -22,7 +22,7 @@ export const CollectiveDmsTimeline = ({
   collectiveDmsApplication: DMSApplicationForEAC
   hasAdageId: boolean
   hasAdageIdForMoreThan30Days: boolean
-  adageInscriptionDate: string | null
+  adageInscriptionDate?: string | null
 }) => {
   const collectiveDmsApplicationLink = `https://www.demarches-simplifiees.fr/dossiers/${collectiveDmsApplication.application}/messagerie`
   const collectiveDmsContactSupport =

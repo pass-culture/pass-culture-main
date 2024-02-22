@@ -20,7 +20,7 @@ interface VenueProviderItemV2Props {
   afterDelete: (deletedVenueProvider: number) => void
   afterSubmit: (editedVenueProvider: VenueProviderResponse) => void
   venueProvider: VenueProviderResponse
-  venueDepartmentCode: string
+  venueDepartmentCode?: string | null
   offererId: number
 }
 
