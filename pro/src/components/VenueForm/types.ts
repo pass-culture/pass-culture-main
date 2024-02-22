@@ -1,6 +1,5 @@
+import { BannerMetaModel } from 'apiClient/v1'
 import { AccessibiltyFormValues } from 'core/shared'
-
-import { VenueBannerMetaProps } from './ImageUploaderVenue/ImageUploaderVenue'
 
 export interface VenueFormValues {
   reimbursementPointId: number | string | null
@@ -8,7 +7,7 @@ export interface VenueFormValues {
   address: string
   addressAutocomplete: string
   banId: string
-  bannerMeta: VenueBannerMetaProps | undefined | null
+  bannerMeta?: BannerMetaModel | null
   bannerUrl: string | undefined
   city: string
   comment: string

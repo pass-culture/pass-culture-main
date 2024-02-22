@@ -1,5 +1,4 @@
 import { GetVenueResponseModel } from 'apiClient/v1'
-import { VenueBannerMetaProps } from 'components/VenueForm/ImageUploaderVenue/ImageUploaderVenue'
 import { AccessibiltyFormValues } from 'core/shared'
 
 export type IndividualOfferVenueItem = {
@@ -29,9 +28,7 @@ export type VenueCollectiveInformation = Pick<
   | 'collectiveSubCategoryId'
 >
 
-export interface Venue extends GetVenueResponseModel {
-  bannerMeta: VenueBannerMetaProps | null | undefined
-}
+export interface Venue extends GetVenueResponseModel {}
 
 export type Providers = {
   id: number

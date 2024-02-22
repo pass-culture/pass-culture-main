@@ -9,10 +9,7 @@ import {
 import { ImageUploader, UploadImageValues } from 'components/ImageUploader'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
-import {
-  VenueBannerMetaProps,
-  buildInitialValues,
-} from 'components/VenueForm/ImageUploaderVenue/ImageUploaderVenue'
+import { buildInitialValues } from 'components/VenueForm/ImageUploaderVenue/ImageUploaderVenue'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
@@ -45,13 +42,7 @@ export const PartnerPage = ({
   const venueType = venueTypes.find(
     (venueType) => venueType.id === venue.venueTypeCode
   )
-  const initialValues = buildInitialValues(
-    venue.bannerUrl,
-    // There would be a lot of refactoring to remove this "as"
-    // it would ask for a global typing refactor of the image uploads
-    // on the backend & frontend to synchronise BannerMetaModel with VenueBannerMetaProps
-    (venue.bannerMeta as VenueBannerMetaProps | null | undefined) || undefined
-  )
+  const initialValues = buildInitialValues(venue.bannerUrl, venue.bannerMeta)
   const [imageValues, setImageValues] =
     useState<UploadImageValues>(initialValues)
 
