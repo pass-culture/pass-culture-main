@@ -1,12 +1,26 @@
+import { AccessiblityEnum } from 'core/shared'
 import { Venue } from 'core/Venue/types'
 import { humanizeSiret } from 'core/Venue/utils'
 
 import { VenueFormValues } from '../types'
 
 const setInitialFormValues = (venue: Venue): VenueFormValues => {
+  const venueAccessibility = {
+    [AccessiblityEnum.VISUAL]: venue.visualDisabilityCompliant || false,
+    [AccessiblityEnum.MENTAL]: venue.mentalDisabilityCompliant || false,
+    [AccessiblityEnum.AUDIO]: venue.audioDisabilityCompliant || false,
+    [AccessiblityEnum.MOTOR]: venue.motorDisabilityCompliant || false,
+    [AccessiblityEnum.NONE]: [
+      venue.visualDisabilityCompliant,
+      venue.mentalDisabilityCompliant,
+      venue.audioDisabilityCompliant,
+      venue.motorDisabilityCompliant,
+    ].every((accessibility) => accessibility === false),
+  }
+
   return {
     reimbursementPointId: venue.reimbursementPointId || '',
-    accessibility: venue.accessibility,
+    accessibility: venueAccessibility,
     address: venue.address || '',
     banId: venue.banId || '',
     addressAutocomplete: `${venue.address} ${venue.postalCode} ${venue.city}`,

@@ -306,13 +306,6 @@ describe('VenueFormScreen', () => {
       collectiveDomains: [],
       dateCreated: '2022-02-02',
       isVirtual: false,
-      accessibility: {
-        visual: false,
-        audio: false,
-        motor: false,
-        mental: false,
-        none: true,
-      },
       address: 'Address',
       banId: 'ban_id',
       bannerMeta: null,

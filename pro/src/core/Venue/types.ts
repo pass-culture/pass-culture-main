@@ -30,7 +30,6 @@ export type VenueCollectiveInformation = Pick<
 >
 
 export interface Venue extends GetVenueResponseModel {
-  accessibility: AccessibiltyFormValues
   bannerMeta: VenueBannerMetaProps | null | undefined
   collectiveDmsApplication: DMSApplicationForEAC | null
 }
