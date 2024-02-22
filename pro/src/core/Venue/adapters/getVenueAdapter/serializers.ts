@@ -25,10 +25,6 @@ export const serializeVenueApi = (venue: GetVenueResponseModel): Venue => {
     bannerMeta: venue.bannerMeta
       ? serializeBannerMetaApi(venue.bannerMeta)
       : null,
-    isVenueVirtual: venue.isVirtual,
-    mail: venue.bookingEmail || '',
-    venueLabel: venue.venueLabelId?.toString() || null,
-    venueType: venue.venueTypeCode,
     collectiveDmsApplication: getLastCollectiveDmsApplication(
       venue.collectiveDmsApplications
     ),
