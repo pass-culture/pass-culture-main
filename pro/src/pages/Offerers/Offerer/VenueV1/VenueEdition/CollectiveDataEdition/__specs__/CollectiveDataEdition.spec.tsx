@@ -18,6 +18,7 @@ import {
 } from 'core/shared/interventionOptions'
 import { Venue } from 'core/Venue/types'
 import * as useNotification from 'hooks/useNotification'
+import { defaultVenueModel } from 'utils/apiFactories'
 import {
   collectiveCategoryFactory,
   collectiveSubCategoryFactory,
@@ -188,9 +189,10 @@ describe('CollectiveDataEdition', () => {
     it('should display dms timeline if venue has dms application and ff active', async () => {
       renderCollectiveDataEdition({
         venue: {
+          ...defaultVenueModel,
           id: 1,
-          collectiveDmsApplication: { ...defaultCollectiveDmsApplication },
-        } as Venue,
+          collectiveDmsApplications: [{ ...defaultCollectiveDmsApplication }],
+        },
       })
 
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))

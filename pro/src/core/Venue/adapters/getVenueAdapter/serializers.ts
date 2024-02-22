@@ -1,7 +1,6 @@
 import { BannerMetaModel, GetVenueResponseModel } from 'apiClient/v1'
 import { VenueBannerMetaProps } from 'components/VenueForm/ImageUploaderVenue/ImageUploaderVenue'
 import { Venue } from 'core/Venue/types'
-import { getLastCollectiveDmsApplication } from 'utils/getLastCollectiveDmsApplication'
 
 export const serializeVenueApi = (venue: GetVenueResponseModel): Venue => {
   /* istanbul ignore next: DEBT, TO FIX */
@@ -10,9 +9,6 @@ export const serializeVenueApi = (venue: GetVenueResponseModel): Venue => {
     bannerMeta: venue.bannerMeta
       ? serializeBannerMetaApi(venue.bannerMeta)
       : null,
-    collectiveDmsApplication: getLastCollectiveDmsApplication(
-      venue.collectiveDmsApplications
-    ),
   }
 }
 
