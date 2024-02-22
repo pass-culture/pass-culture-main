@@ -1,7 +1,10 @@
 import React from 'react'
 
-import { OfferAddressType } from 'apiClient/adage'
-import { isCollectiveOfferTemplate } from 'core/OfferEducational'
+import {
+  CollectiveOfferResponseModel,
+  CollectiveOfferTemplateResponseModel,
+  OfferAddressType,
+} from 'apiClient/adage'
 import useActiveFeature from 'hooks/useActiveFeature'
 import buildingStrokeIcon from 'icons/stroke-building.svg'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
@@ -10,10 +13,7 @@ import strokeEuroIcon from 'icons/stroke-euro.svg'
 import strokeLocationIcon from 'icons/stroke-location.svg'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
-import {
-  HydratedCollectiveOffer,
-  HydratedCollectiveOfferTemplate,
-} from 'pages/AdageIframe/app/types/offers'
+import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types/offers'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import {
   getRangeToFrenchText,
@@ -55,12 +55,13 @@ const getLocalBeginningDatetime = (
 }
 
 export type OfferSummaryProps = {
-  offer: HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
+  offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
 }
 
 const OfferSummary = ({ offer }: OfferSummaryProps): JSX.Element => {
+  const isOfferTemplate = isCollectiveOfferTemplate(offer)
   const { subcategoryLabel, venue, offerVenue, students } = offer
-  const { beginningDatetime, numberOfTickets, price } = offer.isTemplate
+  const { beginningDatetime, numberOfTickets, price } = isOfferTemplate
     ? {
         beginningDatetime: undefined,
         numberOfTickets: undefined,

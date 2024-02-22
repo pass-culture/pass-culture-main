@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 
+import {
+  CollectiveOfferResponseModel,
+  CollectiveOfferTemplateResponseModel,
+} from 'apiClient/adage'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import { getFavoriteOffersAdapter } from '../../adapters/getFavoriteOffersAdapter'
-import {
-  HydratedCollectiveOffer,
-  HydratedCollectiveOfferTemplate,
-} from '../../types/offers'
 import Offer from '../OffersInstantSearch/OffersSearch/Offers/Offer'
 
 import styles from './OffersFavorites.module.scss'
@@ -14,7 +14,7 @@ import { OffersFavoritesNoResult } from './OffersFavoritesNoResult/OffersFavorit
 
 export const OffersFavorites = () => {
   const [favoriteOffers, setFavoriteOffers] = useState<
-    (HydratedCollectiveOffer | HydratedCollectiveOfferTemplate)[]
+    (CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel)[]
   >([])
 
   const [isLoading, setIsLoading] = useState<boolean>(false)

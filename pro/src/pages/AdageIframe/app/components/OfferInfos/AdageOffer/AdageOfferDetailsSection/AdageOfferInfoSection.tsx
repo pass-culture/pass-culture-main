@@ -3,7 +3,7 @@ import {
   CollectiveOfferTemplateResponseModel,
 } from 'apiClient/adage'
 import { OfferAddressType } from 'apiClient/v1'
-import { isCollectiveOfferBookable } from 'core/OfferEducational'
+import { isCollectiveOfferBookable } from 'pages/AdageIframe/app/types/offers'
 
 import styles from '../AdageOffer.module.scss'
 import {

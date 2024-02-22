@@ -4,14 +4,13 @@ import {
   AdageFrontRoles,
 } from 'apiClient/adage'
 import { OfferAddressType } from 'apiClient/v1'
-import { isCollectiveOfferBookable } from 'core/OfferEducational'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
 import strokeLocationIcon from 'icons/stroke-location.svg'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
-import { HydratedCollectiveOfferTemplate } from 'pages/AdageIframe/app/types/offers'
+import { isCollectiveOfferBookable } from 'pages/AdageIframe/app/types/offers'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import OfferFavoriteButton from '../../../OffersInstantSearch/OffersSearch/Offers/OfferFavoriteButton/OfferFavoriteButton'
@@ -70,23 +69,19 @@ export default function AdageOfferHeader({ offer }: AdageOfferProps) {
 
           {offer.isTemplate && (
             <div className={styles['offer-header-actions']}>
-              {/* TODO : Remove the "as". The "as" is temporary while the isTemplate adage rework isn't finished
-                Ultimately, HydratedCollectiveOfferTemplate wil be the same model as CollectiveOfferTemplateResponseModel */}
               {adageUser.role === AdageFrontRoles.REDACTOR && (
                 <OfferFavoriteButton
-                  offer={offer as HydratedCollectiveOfferTemplate}
+                  offer={offer}
                   className={styles['offer-header-action']}
                   queryId={''}
                 />
               )}
-              {/* TODO : Remove the "as". The "as" is temporary while the isTemplate adage rework isn't finished
-                Ultimately, HydratedCollectiveOfferTemplate wil be the same model as CollectiveOfferTemplateResponseModel */}
               <OfferShareLink
                 className={styles['offer-header-action']}
                 tooltipContentClassName={
                   styles['offer-header-share-button-tooltip-content']
                 }
-                offer={offer as HydratedCollectiveOfferTemplate}
+                offer={offer}
               />
             </div>
           )}

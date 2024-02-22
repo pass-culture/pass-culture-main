@@ -1,14 +1,13 @@
+import {
+  CollectiveOfferTemplateResponseModel,
+  CollectiveOfferResponseModel,
+} from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { Adapter, AdapterFailure } from 'pages/AdageIframe/app/types'
 
-import {
-  HydratedCollectiveOffer,
-  HydratedCollectiveOfferTemplate,
-} from '../types/offers'
-
 type GetFavoriteOffersAdapter = Adapter<
   void,
-  (HydratedCollectiveOffer | HydratedCollectiveOfferTemplate)[],
+  (CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel)[],
   null
 >
 
@@ -22,14 +21,13 @@ export const getFavoriteOffersAdapter: GetFavoriteOffersAdapter = async () => {
   try {
     const favoriteOffersResponse = await apiAdage.getCollectiveFavorites()
 
-    const favoriteOfferTemplatesResponse: HydratedCollectiveOfferTemplate[] = (
-      favoriteOffersResponse?.favoritesTemplate ?? []
-    ).map((offer) => ({
-      ...offer,
-      isTemplate: true,
-    }))
+    const favoriteOfferTemplatesResponse: CollectiveOfferTemplateResponseModel[] =
+      (favoriteOffersResponse?.favoritesTemplate ?? []).map((offer) => ({
+        ...offer,
+        isTemplate: true,
+      }))
 
-    const favoriteOffer: HydratedCollectiveOffer[] = (
+    const favoriteOffer: CollectiveOfferResponseModel[] = (
       favoriteOffersResponse?.favoritesOffer ?? []
     ).map((offer) => ({ ...offer, isTemplate: false }))
 

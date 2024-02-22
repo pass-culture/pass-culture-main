@@ -18,7 +18,6 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import useAdageUser from '../../hooks/useAdageUser'
-import { HydratedCollectiveOfferTemplate } from '../../types/offers'
 import Offer from '../OffersInstantSearch/OffersSearch/Offers/Offer'
 
 import AdageOffer from './AdageOffer/AdageOffer'
@@ -136,14 +135,7 @@ export const OfferInfos = () => {
             <AdageOffer offer={offer} />
           ) : (
             <div className={styles['offer-container']}>
-              <Offer
-                //  TODO : Remove the "as". The "as" is temporary while the isTemplate adage rework isn't finished
-                //  Ultimately, HydratedCollectiveOfferTemplate wil be the same model as CollectiveOfferTemplateResponseModel
-                offer={offer as HydratedCollectiveOfferTemplate}
-                position={0}
-                queryId=""
-                openDetails={true}
-              />
+              <Offer offer={offer} position={0} queryId="" openDetails={true} />
             </div>
           )}
         </>

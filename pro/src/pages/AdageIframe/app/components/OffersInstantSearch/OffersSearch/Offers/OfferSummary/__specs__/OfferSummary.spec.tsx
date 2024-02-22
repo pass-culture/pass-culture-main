@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
 
-import { HydratedCollectiveOfferTemplate } from 'pages/AdageIframe/app/types/offers'
+import { CollectiveOfferTemplateResponseModel } from 'apiClient/adage'
 import { defaultCollectiveTemplateOffer } from 'utils/adageFactories'
 import {
   RenderWithProvidersOptions,
@@ -19,7 +19,7 @@ const renderOfferSummary = (
 
 describe('offer summary', () => {
   it('should show the dates range of a template offers', () => {
-    const offer: HydratedCollectiveOfferTemplate = {
+    const offer: CollectiveOfferTemplateResponseModel = {
       ...defaultCollectiveTemplateOffer,
       dates: { start: '2023-10-24T00:00:00', end: '2023-10-24T23:59:00' },
       isTemplate: true,
@@ -29,7 +29,7 @@ describe('offer summary', () => {
   })
 
   it('should not show the dates range on template offers if the dates are not defined', () => {
-    const offer: HydratedCollectiveOfferTemplate = {
+    const offer: CollectiveOfferTemplateResponseModel = {
       ...defaultCollectiveTemplateOffer,
       dates: undefined,
       isTemplate: true,
@@ -41,7 +41,7 @@ describe('offer summary', () => {
   })
 
   it('should show that the offer is permanent when there are no dates on a template offer', () => {
-    const offer: HydratedCollectiveOfferTemplate = {
+    const offer: CollectiveOfferTemplateResponseModel = {
       ...defaultCollectiveTemplateOffer,
       dates: undefined,
       isTemplate: true,

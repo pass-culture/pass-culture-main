@@ -1,18 +1,18 @@
 import classNames from 'classnames'
 
+import {
+  CollectiveOfferResponseModel,
+  CollectiveOfferTemplateResponseModel,
+} from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import strokeShareIcon from 'icons/stroke-share.svg'
-import {
-  HydratedCollectiveOffer,
-  HydratedCollectiveOfferTemplate,
-} from 'pages/AdageIframe/app/types/offers'
 import ListIconButton from 'ui-kit/ListIconButton'
 import { LOGS_DATA } from 'utils/config'
 
 import styles from './OfferShareLink.module.scss'
 
 export interface OfferShareLinkProps {
-  offer: HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
+  offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
   className?: string
   tooltipContentClassName?: string
 }
