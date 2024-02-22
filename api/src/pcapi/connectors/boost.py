@@ -67,7 +67,7 @@ def login(cinema_details: BoostCinemaDetails, ignore_device: bool = True) -> str
     auth_payload = {
         "username": cinema_details.username,
         "password": cinema_details.password,
-        "stationName": f"pcapi - {settings.ENV}",
+        "stationName": f"pcapi - staging",
     }
     url = cinema_details.cinemaUrl + LOGIN_ENDPOINT
     request_date = datetime.datetime.utcnow()
