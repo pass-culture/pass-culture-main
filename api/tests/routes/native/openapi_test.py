@@ -609,6 +609,16 @@ def test_public_api(client):
                     "title": "E2EUbbleIdCheck",
                     "type": "object",
                 },
+                "EmailChangeConfirmationResponse": {
+                    "properties": {
+                        "accessToken": {"title": "Accesstoken", "type": "string"},
+                        "newEmailSelectionToken": {"title": "Newemailselectiontoken", "type": "string"},
+                        "refreshToken": {"title": "Refreshtoken", "type": "string"},
+                    },
+                    "required": ["accessToken", "refreshToken", "newEmailSelectionToken"],
+                    "title": "EmailChangeConfirmationResponse",
+                    "type": "object",
+                },
                 "EligibilityType": {
                     "description": "An enumeration.",
                     "enum": ["underage", "age-18"],
@@ -3698,6 +3708,37 @@ def test_public_api(client):
                     "summary": "get_venue <GET>",
                     "tags": [],
                 },
+            },
+            "/native/v2/profile/email_update/confirm": {
+                "post": {
+                    "description": "",
+                    "operationId": "post__native_v2_profile_email_update_confirm",
+                    "parameters": [],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {"schema": {"$ref": "#/components/schemas/ChangeBeneficiaryEmailBody"}}
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/EmailChangeConfirmationResponse"}
+                                }
+                            },
+                            "description": "OK",
+                        },
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "confirm_email_update <POST>",
+                    "tags": [],
+                }
             },
             "/native/v2/profile/update_email": {
                 "post": {

@@ -19,17 +19,18 @@ from pcapi.core.users.utils import encode_jwt_payload
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-def _initialize_token(user, new_email, app=None):
+def _initialize_token(user, new_email=None, app=None):
+    data = {"new_email": new_email} if new_email else None
     return token_utils.Token.create(
         type_=token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION,
         ttl=users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME,
         user_id=user.id,
-        data={"new_email": new_email},
+        data=data,
     ).encoded_token
 
 
 class RequestEmailUpdateTest:
-    def test_request_email_update_history(self):
+    def test_request_email_update_with_credentials_history(self):
         old_email = "py@test.com"
         password = "p@ssword"
         user = users_factories.UserFactory(email=old_email, password=password)
@@ -46,8 +47,47 @@ class RequestEmailUpdateTest:
         assert history.eventType == EmailHistoryEventTypeEnum.UPDATE_REQUEST
         assert history.id is not None
 
+    def test_request_email_update_history(self):
+        user = users_factories.UserFactory()
+
+        email_update.request_email_update(user)
+
+        reloaded_user = User.query.get(user.id)
+        assert len(reloaded_user.email_history) == 1
+
+        history = reloaded_user.email_history[0]
+        assert history.oldEmail == user.email
+        assert history.newUserEmail == None
+        assert history.newDomainEmail == None
+        assert history.eventType == EmailHistoryEventTypeEnum.UPDATE_REQUEST
+        assert history.id is not None
+
 
 class EmailUpdateConfirmationTest:
+    def test_email_update_confirmation(self):
+        user = users_factories.UserFactory()
+        token = _initialize_token(user)
+
+        returned_user = email_update.confirm_email_update_request(token)
+
+        assert user == returned_user
+        assert len(user.email_history) == 1
+        assert user.email_history[0].eventType == EmailHistoryEventTypeEnum.CONFIRMATION
+
+        assert not token_utils.Token.token_exists(token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION, user.id)
+
+    def test_email_update_confirmation_with_invalid_token(self):
+        user = users_factories.UserFactory()
+        _initialize_token(user)
+
+        with pytest.raises(users_exceptions.InvalidToken):
+            email_update.confirm_email_update_request("invalid token")
+
+        assert not user.email_history
+        assert token_utils.Token.token_exists(token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION, user.id)
+
+
+class EmailUpdateWithNewMailConfirmationTest:
     def test_email_update_confirmation(self, app):
         # Given
         user = users_factories.UserFactory()
@@ -55,7 +95,7 @@ class EmailUpdateConfirmationTest:
         token = _initialize_token(user, email_update_request.newEmail, app)
 
         # When
-        email_update.confirm_email_update_request(token)
+        email_update.confirm_email_update_request_and_send_mail(token)
 
         # Then
         # Email history is updated
@@ -82,7 +122,7 @@ class EmailUpdateConfirmationTest:
 
         # When
         with pytest.raises(users_exceptions.InvalidToken):
-            email_update.confirm_email_update_request(invalid_token)
+            email_update.confirm_email_update_request_and_send_mail(invalid_token)
 
         # Then
         # Email history is not updated
@@ -105,7 +145,7 @@ class EmailUpdateConfirmationTest:
 
         # When
         with pytest.raises(users_exceptions.EmailExistsError):
-            email_update.confirm_email_update_request(token)
+            email_update.confirm_email_update_request_and_send_mail(token)
 
         # Then
         # Email history is not updated
@@ -130,7 +170,7 @@ class EmailUpdateConfirmationTest:
                 "pcapi.core.users.models.UserEmailHistory.build_confirmation",
                 side_effect=IntegrityError(statement="", params=(), orig=None),
             ):
-                email_update.confirm_email_update_request(token)
+                email_update.confirm_email_update_request_and_send_mail(token)
 
         # Then
         # Email history is not updated
