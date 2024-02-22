@@ -126,9 +126,8 @@ def test_reset_stock_quantity():
 
 
 class SynchronizeStocksTest:
-    @pytest.mark.usefixtures("db_session")
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_execution(self, mock_async_index_offer_ids):
+    def test_execution(self, mock_async_index_offer_ids, db_session):
         # Given
         spec = [
             {"ref": "3010000101789", "available": 6, "price": 12},
@@ -139,6 +138,7 @@ class SynchronizeStocksTest:
             {"ref": "3010000108124", "available": 17, "price": 12},
             {"ref": "3010000108125", "available": 17, "price": 12},
             {"ref": "3010000105566", "available": 3, "price": 12},
+            {"ref": "3010000107788", "available": 2, "price": 13},
         ]
         providers_factories.APIProviderFactory(apiUrl="https://provider_url", authToken="fake_token")
         venue = offerers_factories.VenueFactory()
@@ -162,6 +162,10 @@ class SynchronizeStocksTest:
         BookingFactory(stock=stock_with_booking)
         BookingFactory(stock=stock_with_booking, quantity=2)
 
+        soft_deleted_stock = create_stock(spec[8]["ref"], siret, venue, quantity=11, isSoftDeleted=True)
+        BookingFactory(stock=soft_deleted_stock)
+        BookingFactory(stock=soft_deleted_stock, quantity=10)
+
         # When
         api.synchronize_stocks(stock_details, venue, provider_id=provider.id)
 
@@ -183,6 +187,12 @@ class SynchronizeStocksTest:
         # Test doesn't creates offer if product is unrealsed or unavailable
         offer_not_created = Offer.query.filter_by(idAtProvider=spec[7]["ref"]).one_or_none()
         assert offer_not_created is None
+
+        # Test soft deleted stocks are recovered
+        offer_with_soft_deleted_stock = Offer.query.filter_by(idAtProvider=spec[8]["ref"]).one_or_none()
+        assert offer_with_soft_deleted_stock is not None
+        db_session.refresh(soft_deleted_stock)
+        assert soft_deleted_stock.isSoftDeleted is False
 
         # Test doesn't create offer if product does not exist or not gcu compatible
         assert Offer.query.filter_by(idAtProvider=spec[3]["ref"]).count() == 0
@@ -212,7 +222,14 @@ class SynchronizeStocksTest:
 
         # Test offer reindexation
         mock_async_index_offer_ids.assert_called_with(
-            {stock.offer.id, offer.id, stock_with_booking.offer.id, created_offer.id, second_created_offer.id},
+            {
+                stock.offer.id,
+                offer.id,
+                stock_with_booking.offer.id,
+                created_offer.id,
+                second_created_offer.id,
+                offer_with_soft_deleted_stock.id,
+            },
             reason=search.IndexationReason.STOCK_SYNCHRONIZATION,
             log_extra={"provider_id": provider.id},
         )
@@ -343,9 +360,10 @@ class SynchronizeStocksTest:
             provider_id,
         )
 
-        assert update_stock_mapping == [
+        assert list(sorted(update_stock_mapping, key=lambda x: x["id"])) == [
             {
                 "id": 1,
+                "isSoftDeleted": False,
                 "quantity": 15 + 3,
                 "price": 15.78,
                 "rawProviderQuantity": 15,
@@ -353,6 +371,7 @@ class SynchronizeStocksTest:
             },
             {
                 "id": 4,
+                "isSoftDeleted": False,
                 "quantity": 15 + 3,
                 "price": 18.0,
                 "rawProviderQuantity": 15,
