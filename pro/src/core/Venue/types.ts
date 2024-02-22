@@ -1,8 +1,6 @@
 import {
   BankAccountResponseModel,
   DMSApplicationForEAC,
-  GetVenueDomainResponseModel,
-  GetVenueManagingOffererResponseModel,
   GetVenueResponseModel,
   LegalStatusResponseModel,
   StudentLevels,
@@ -38,9 +36,6 @@ export type VenueCollectiveInformation = Pick<
 >
 
 export interface Venue extends GetVenueResponseModel {
-  collectiveDomains: Array<GetVenueDomainResponseModel>
-  dateCreated: string
-  isVirtual: boolean
   accessibility: AccessibiltyFormValues
   address: string
   banId: string
@@ -57,15 +52,11 @@ export interface Venue extends GetVenueResponseModel {
   }
   description: string
   departmentCode: string
-  dmsToken: string
   isPermanent: boolean
   isVenueVirtual: boolean
   latitude: number
   longitude: number
   mail: string
-  name: string
-  managingOfferer: GetVenueManagingOffererResponseModel
-  id: number
   pricingPoint: {
     id: number
     siret: string
@@ -88,10 +79,8 @@ export interface Venue extends GetVenueResponseModel {
   collectiveStudents: Array<StudentLevels>
   collectiveWebsite: string
   adageInscriptionDate: string | null
-  hasAdageId: boolean
   collectiveDmsApplication: DMSApplicationForEAC | null
   bankAccount: BankAccountResponseModel | null
-  isVisibleInApp?: boolean
 }
 
 export type Providers = {
