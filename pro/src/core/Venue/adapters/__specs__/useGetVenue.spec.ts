@@ -130,7 +130,6 @@ describe('useGetVenue', () => {
       collectiveStudents: [],
       collectiveWebsite: '',
       hasAdageId: false,
-      collectiveDmsApplication: null,
     }
 
     await waitFor(() => {

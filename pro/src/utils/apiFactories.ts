@@ -449,6 +449,5 @@ export const defaultVenueModel: Venue = {
   collectiveWebsite: '',
   adageInscriptionDate: null,
   hasAdageId: false,
-  collectiveDmsApplication: null,
   bankAccount: null,
 }
