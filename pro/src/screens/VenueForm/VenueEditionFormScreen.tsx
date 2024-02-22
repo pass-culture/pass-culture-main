@@ -171,11 +171,16 @@ export const VenueEditionFormScreen = ({
 
   return (
     <>
-      <Callout title="Les informations que vous renseignez ci-dessous sont affichées dans votre page partenaire, visible sur l’application pass Culture" />
-      <PartnerPageIndividualSection
-        venueId={venue.id}
-        isVisibleInApp={Boolean(venue.isVisibleInApp)}
-      />
+      {venue.isPermanent && (
+        <>
+          <Callout title="Les informations que vous renseignez ci-dessous sont affichées dans votre page partenaire, visible sur l’application pass Culture" />
+          <PartnerPageIndividualSection
+            venueId={venue.id}
+            isVisibleInApp={Boolean(venue.isVisibleInApp)}
+          />
+        </>
+      )}
+
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit} className={styles['venue-form']}>
           <VenueEditionForm
