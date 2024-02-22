@@ -18,6 +18,7 @@ import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
 import { PartnerPageCollectiveSection } from 'pages/Home/Offerers/PartnerPageCollectiveSection'
 import Spinner from 'ui-kit/Spinner/Spinner'
+import { getLastCollectiveDmsApplication } from 'utils/getLastCollectiveDmsApplication'
 import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 import { venueHasCollectiveInformation } from 'utils/venueHasCollectiveInformation'
 
@@ -159,6 +160,9 @@ export const CollectiveDataEdition = ({
   const showCollectiveDataForm = Boolean(
     venue?.hasAdageId && canCreateCollectiveOffer
   )
+  const collectiveDmsApplication = getLastCollectiveDmsApplication(
+    venue.collectiveDmsApplications
+  )
 
   return (
     <>
@@ -172,15 +176,13 @@ export const CollectiveDataEdition = ({
       <PartnerPageCollectiveSection
         venueId={venue.id}
         hasAdageId={venue.hasAdageId}
-        collectiveDmsApplications={
-          venue.collectiveDmsApplication ? [venue.collectiveDmsApplication] : []
-        }
+        collectiveDmsApplications={venue.collectiveDmsApplications}
       />
 
-      {venue?.collectiveDmsApplication && (
+      {collectiveDmsApplication && (
         <div className={styles['timeline']}>
           <CollectiveDmsTimeline
-            collectiveDmsApplication={venue.collectiveDmsApplication}
+            collectiveDmsApplication={collectiveDmsApplication}
             hasAdageId={venue.hasAdageId}
             hasAdageIdForMoreThan30Days={hasAdageIdForMoreThan30Days}
             adageInscriptionDate={venue.adageInscriptionDate}

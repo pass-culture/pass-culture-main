@@ -1,4 +1,4 @@
-import { DMSApplicationForEAC, GetVenueResponseModel } from 'apiClient/v1'
+import { GetVenueResponseModel } from 'apiClient/v1'
 import { VenueBannerMetaProps } from 'components/VenueForm/ImageUploaderVenue/ImageUploaderVenue'
 import { AccessibiltyFormValues } from 'core/shared'
 
@@ -31,7 +31,6 @@ export type VenueCollectiveInformation = Pick<
 
 export interface Venue extends GetVenueResponseModel {
   bannerMeta: VenueBannerMetaProps | null | undefined
-  collectiveDmsApplication: DMSApplicationForEAC | null
 }
 
 export type Providers = {
