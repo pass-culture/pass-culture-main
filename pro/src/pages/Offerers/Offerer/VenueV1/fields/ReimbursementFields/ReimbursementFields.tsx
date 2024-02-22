@@ -1,9 +1,8 @@
 import React, { useCallback, useState } from 'react'
 
-import { GetOffererResponseModel } from 'apiClient/v1'
+import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import ReimbursementPoint from 'components/VenueForm/ReimbursementPoint/ReimbursementPoint'
-import { Venue } from 'core/Venue/types'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { Banner } from 'ui-kit'
 
@@ -12,7 +11,7 @@ import PricingPoint from '../PricingPoint'
 export interface ReimbursementFieldsProps {
   offerer: GetOffererResponseModel
   scrollToSection?: boolean
-  venue: Venue
+  venue: GetVenueResponseModel
 }
 
 const ReimbursementFields = ({

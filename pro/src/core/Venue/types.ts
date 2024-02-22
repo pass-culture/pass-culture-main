@@ -28,8 +28,6 @@ export type VenueCollectiveInformation = Pick<
   | 'collectiveSubCategoryId'
 >
 
-export interface Venue extends GetVenueResponseModel {}
-
 export type Providers = {
   id: number
   isActive: boolean

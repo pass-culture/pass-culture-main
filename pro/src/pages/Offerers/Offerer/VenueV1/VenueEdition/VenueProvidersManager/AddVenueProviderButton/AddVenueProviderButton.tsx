@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 
-import { VenueProviderResponse } from 'apiClient/v1'
+import { VenueProviderResponse, GetVenueResponseModel } from 'apiClient/v1'
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
-import { Providers, Venue } from 'core/Venue/types'
+import { Providers } from 'core/Venue/types'
 import useAnalytics from 'hooks/useAnalytics'
 import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit'
@@ -17,7 +17,7 @@ import VenueProviderForm from '../VenueProviderForm/VenueProviderForm'
 interface AddVenueProviderButtonProps {
   providers: Providers[]
   setVenueProviders: (venueProviders: VenueProviderResponse[]) => void
-  venue: Venue
+  venue: GetVenueResponseModel
 }
 
 const AddVenueProviderButton = ({

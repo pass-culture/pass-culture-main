@@ -1,7 +1,8 @@
 import { api } from 'apiClient/api'
-import { ApiError, GetVenueResponseModel } from 'apiClient/v1'
+import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { defaultVenueResponseModel } from 'utils/collectiveApiFactories'
 
 import { COLLECTIVE_DATA_FORM_INITIAL_VALUES } from '../../CollectiveDataForm/initialValues'
 import editVenueCollectiveDataAdapter from '../editVenueCollectiveDataAdapter'
@@ -30,8 +31,8 @@ describe('editVenueCollectiveDataAdapter', () => {
   it('should return success message', async () => {
     const venueId = 1
     vi.spyOn(api, 'editVenueCollectiveData').mockResolvedValueOnce({
-      id: venueId,
-    } as GetVenueResponseModel)
+      ...defaultVenueResponseModel,
+    })
     const response = await editVenueCollectiveDataAdapter({
       venueId: venueId,
       values: {
@@ -44,7 +45,7 @@ describe('editVenueCollectiveDataAdapter', () => {
 
     expect(response).toStrictEqual({
       isOk: true,
-      payload: { id: venueId },
+      payload: { ...defaultVenueResponseModel, id: venueId },
       message: 'Vos informations ont bien été enregistrées',
     })
     expect(api.editVenueCollectiveData).toHaveBeenCalledWith(venueId, {

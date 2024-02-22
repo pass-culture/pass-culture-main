@@ -2,9 +2,12 @@ import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { GetVenueResponseModel, OfferAddressType } from 'apiClient/v1'
+import { OfferAddressType } from 'apiClient/v1'
 import * as getInterventionAreaLabels from 'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea/OfferInterventionArea'
-import { collectiveOfferTemplateFactory } from 'utils/collectiveApiFactories'
+import {
+  collectiveOfferTemplateFactory,
+  defaultVenueResponseModel,
+} from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import * as formatOfferEventAddress from '../../utils/formatOfferEventAddress'
@@ -19,8 +22,8 @@ vi.mock('apiClient/api', () => ({
 describe('CollectiveOfferLocationSection', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getVenue').mockResolvedValue({
-      id: 1,
-    } as GetVenueResponseModel)
+      ...defaultVenueResponseModel,
+    })
   })
 
   it('should display the location details for an event at the school', async () => {
