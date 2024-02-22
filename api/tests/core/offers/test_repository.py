@@ -1423,8 +1423,8 @@ class GetFilteredCollectiveOffersTest:
         )
 
         offers = repository.get_collective_offers_by_filters(
-            collective_offer_prebooked.venue.managingOfferer.first_user.id,
-            False,
+            user_offerer.userId,
+            user_is_admin=False,
             status=educational_models.CollectiveOfferDisplayedStatus.PREBOOKED.value,
         )
         assert offers.all() == [collective_offer_prebooked]
@@ -1442,8 +1442,8 @@ class GetFilteredCollectiveOffersTest:
         )
 
         offers = repository.get_collective_offers_by_filters(
-            collective_offer_ended.venue.managingOfferer.first_user.id,
-            False,
+            user_offerer.userId,
+            user_is_admin=False,
             status=educational_models.CollectiveOfferDisplayedStatus.ENDED.value,
         )
         assert offers.all() == [collective_offer_ended]
@@ -1458,8 +1458,8 @@ class GetFilteredCollectiveOffersTest:
         )
 
         offers = repository.get_collective_offers_by_filters(
-            collective_offer.venue.managingOfferer.first_user.id,
-            False,
+            user_offerer.userId,
+            user_is_admin=False,
             formats=[subcategories.EacFormat.CONCERT],
         )
         assert offers.one() == collective_offer
