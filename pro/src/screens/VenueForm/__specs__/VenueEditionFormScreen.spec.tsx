@@ -322,10 +322,10 @@ describe('VenueFormScreen', () => {
       contact: {
         email: 'email',
         phoneNumber: '0606060606',
-        webSite: 'web',
+        website: 'web',
       },
       description: 'description',
-      departmentCode: '75008',
+      departementCode: '75008',
       dmsToken: '',
       isPermanent: true,
       isVenueVirtual: false,

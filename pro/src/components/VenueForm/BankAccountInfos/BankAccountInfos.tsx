@@ -7,7 +7,7 @@ import FormLayout from 'components/FormLayout'
 import { TextInput } from 'ui-kit'
 
 interface BankAccountInfosProps {
-  venueBankAccount: BankAccountResponseModel | null
+  venueBankAccount?: BankAccountResponseModel | null
 }
 
 const BankAccountInfos = ({ venueBankAccount }: BankAccountInfosProps) => {

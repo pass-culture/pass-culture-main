@@ -26,7 +26,7 @@ const VenueProviderList = ({
           afterSubmit={afterVenueProviderEdit}
           key={venueProvider.id}
           venueProvider={venueProvider}
-          venueDepartmentCode={venue.departmentCode}
+          venueDepartmentCode={venue.departementCode}
           offererId={venue.managingOfferer.id}
         />
       ))}
