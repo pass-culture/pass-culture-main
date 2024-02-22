@@ -2,6 +2,7 @@ import { useFormikContext } from 'formik'
 import React from 'react'
 
 import { api } from 'apiClient/api'
+import { BannerMetaModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { ImageUploader } from 'components/ImageUploader'
 import { UploadImageValues } from 'components/ImageUploader/ButtonImageEdit'
@@ -14,31 +15,18 @@ import { postImageToVenue } from 'repository/pcapi/pcapi'
 
 import { VenueFormValues } from '../types'
 
-interface VenueBannerMetaCropParamsProps {
-  x_crop_percent: number
-  y_crop_percent: number
-  height_crop_percent: number
-  width_crop_percent: number
-}
-
-export interface VenueBannerMetaProps {
-  image_credit: string
-  original_image_url: string
-  crop_params: VenueBannerMetaCropParamsProps
-}
-
 /* istanbul ignore next: DEBT, TO FIX */
 export const buildInitialValues = (
   bannerUrl?: string | null,
-  bannerMeta?: VenueBannerMetaProps
+  bannerMeta?: BannerMetaModel | null
 ): UploadImageValues => {
   let cropParams
   if (bannerMeta !== undefined) {
     cropParams = {
-      xCropPercent: bannerMeta.crop_params.x_crop_percent,
-      yCropPercent: bannerMeta.crop_params.y_crop_percent,
-      heightCropPercent: bannerMeta.crop_params.height_crop_percent,
-      widthCropPercent: bannerMeta.crop_params.width_crop_percent,
+      xCropPercent: bannerMeta?.crop_params?.x_crop_percent || 0,
+      yCropPercent: bannerMeta?.crop_params?.y_crop_percent || 0,
+      heightCropPercent: bannerMeta?.crop_params?.height_crop_percent || 0,
+      widthCropPercent: bannerMeta?.crop_params?.width_crop_percent || 0,
     }
   }
 
@@ -46,7 +34,7 @@ export const buildInitialValues = (
     imageUrl: bannerUrl || undefined,
     originalImageUrl: bannerMeta?.original_image_url || undefined,
     cropParams,
-    credit: bannerMeta?.image_credit,
+    credit: bannerMeta?.image_credit || '',
   }
 }
 
