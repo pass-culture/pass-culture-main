@@ -155,7 +155,7 @@ def request_email_update_with_credentials(user: models.User, new_email: str, pas
     generate_and_send_beneficiary_confirmation_email_for_email_change(user, new_email)
 
 
-def confirm_email_update_request(encoded_token: str) -> None:
+def confirm_email_update_request_and_send_mail(encoded_token: str) -> None:
     """Confirm the email update request for the given user"""
     token = token_utils.Token.load_and_check(encoded_token, token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION)
     user = models.User.query.get(token.user_id)
@@ -173,6 +173,20 @@ def confirm_email_update_request(encoded_token: str) -> None:
         raise ApiErrors(
             errors={"message": f"erreur inattendue: {error}"},
         )
+
+
+def confirm_email_update_request(encoded_token: str) -> models.User:
+    """Confirm the email update request for the given user"""
+    token = token_utils.Token.load_and_check(encoded_token, token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION)
+    user = models.User.query.get(token.user_id)
+    if not user:
+        raise exceptions.InvalidToken()
+
+    email_history = models.UserEmailHistory.build_confirmation(user)
+    db.session.add(email_history)
+    token.expire()
+
+    return user
 
 
 def cancel_email_update_request(encoded_token: str) -> None:

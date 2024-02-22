@@ -4,10 +4,12 @@ from urllib.parse import urlparse
 
 import pytest
 
+from pcapi.core import token as token_utils
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+import pcapi.core.users.constants as users_constants
 from pcapi.routes.native.v1.api_errors import account as account_errors
 
 
@@ -65,3 +67,38 @@ class UpdateUserEmailTest:
         assert second_response.status_code == 400
         assert second_response.json["error_code"] == account_errors.EMAIL_UPDATE_PENDING.code
         assert second_response.json["message"] == account_errors.EMAIL_UPDATE_PENDING.message
+
+
+class ConfirmUserEmailUpdateTest:
+    def test_email_update_confirmation(self, client):
+        user = users_factories.BeneficiaryGrant18Factory()
+        token = token_utils.Token.create(
+            type_=token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION,
+            ttl=users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME,
+            user_id=user.id,
+        ).encoded_token
+
+        response = client.post("/native/v2/profile/email_update/confirm", json={"token": token})
+
+        assert response.status_code == 200, response.json
+        assert "newEmailSelectionToken" in response.json
+        assert token_utils.Token.token_exists(token_utils.TokenType.EMAIL_CHANGE_NEW_EMAIL_SELECTION, user.id)
+
+        # ensure the access token is valid
+        protected_response = client.get(
+            "/native/v1/me", headers={"Authorization": f'Bearer {response.json["accessToken"]}'}
+        )
+        assert protected_response.status_code == 200
+
+        # ensure the refresh token is valid
+        refresh_response = client.post(
+            "/native/v1/refresh_access_token",
+            headers={"Authorization": f'Bearer {response.json["refreshToken"]}'},
+        )
+        assert refresh_response.status_code == 200
+
+    def test_email_update_confirmation_with_invalid_token(self, client):
+        response = client.post("/native/v2/profile/email_update/confirm", json={"token": "invalid token"})
+
+        assert response.status_code == 401, response.json
+        assert response.json["code"] == "INVALID_TOKEN"
