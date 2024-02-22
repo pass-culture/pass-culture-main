@@ -16,6 +16,7 @@ const BannerInvisibleSiren = ({
         label: `Modifier la visibilité de mon ${
           isNewOnboarding ? 'SIRET' : 'SIREN'
         }`,
+        isExternal: true,
       },
     ]}
     type="attention"
