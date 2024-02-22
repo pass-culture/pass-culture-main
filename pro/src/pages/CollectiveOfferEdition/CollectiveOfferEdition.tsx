@@ -2,7 +2,7 @@ import React from 'react'
 
 import { AppLayout } from 'app/AppLayout'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
-import { Mode } from 'core/OfferEducational'
+import { Mode, isCollectiveOfferTemplate } from 'core/OfferEducational'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import {
   MandatoryCollectiveOfferFromParamsProps,
@@ -22,6 +22,8 @@ const CollectiveOfferEdition = ({
     offer
   )
 
+  const isOfferTemplate = isCollectiveOfferTemplate(offer)
+
   return (
     <AppLayout>
       {!isReady || !offer ? (
@@ -37,11 +39,13 @@ const CollectiveOfferEdition = ({
             setOffer={setOffer}
             isOfferActive={offer?.isActive}
             isOfferBooked={
-              offer?.isTemplate ? false : offer?.collectiveStock?.isBooked
+              offer && isOfferTemplate
+                ? false
+                : offer?.collectiveStock?.isBooked
             }
             mode={offer?.isEditable ? Mode.EDITION : Mode.READ_ONLY}
             reloadCollectiveOffer={reloadCollectiveOffer}
-            isTemplate={offer.isTemplate}
+            isTemplate={isOfferTemplate}
           />
         </CollectiveOfferLayout>
       )}

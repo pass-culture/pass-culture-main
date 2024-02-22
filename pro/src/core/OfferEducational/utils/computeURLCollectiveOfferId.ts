@@ -1,4 +1,4 @@
 export const computeURLCollectiveOfferId = (
   offerId: number,
-  isTemplate: boolean
+  isTemplate?: boolean
 ): string => `${isTemplate ? 'T-' : ''}${offerId}`

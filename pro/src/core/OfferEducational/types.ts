@@ -1,8 +1,4 @@
-import {
-  CollectiveOfferResponseModel,
-  CollectiveOfferTemplateResponseModel,
-  EacFormat,
-} from 'apiClient/adage'
+import { EacFormat } from 'apiClient/adage'
 import {
   EducationalInstitutionResponseModel,
   OfferAddressType,
@@ -103,28 +99,19 @@ export enum EducationalOfferType {
   CLASSIC = 'CLASSIC',
 }
 
-export type CollectiveOffer = GetCollectiveOfferResponseModel & {
-  isTemplate: false
-}
+//  TODO : remove these two types that create confusion in the app
+export type CollectiveOffer = GetCollectiveOfferResponseModel
+export type CollectiveOfferTemplate = GetCollectiveOfferTemplateResponseModel
 
 export const isCollectiveOffer = (value: unknown): value is CollectiveOffer =>
   // Could be enhanced to check that it is also a GetCollectiveOfferTemplateResponseModel
   hasProperty(value, 'isTemplate') && value.isTemplate === false
-
-export type CollectiveOfferTemplate =
-  GetCollectiveOfferTemplateResponseModel & {
-    isTemplate: true
-  }
 
 export const isCollectiveOfferTemplate = (
   value: unknown
 ): value is CollectiveOfferTemplate =>
   // Could be enhanced to check that it is also a GetCollectiveOfferTemplateResponseModel
   hasProperty(value, 'isTemplate') && value.isTemplate === true
-
-export const isCollectiveOfferBookable = (
-  value: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
-): value is CollectiveOfferResponseModel => !value.isTemplate
 
 export type VisibilityFormValues = {
   visibility: 'all' | 'one'

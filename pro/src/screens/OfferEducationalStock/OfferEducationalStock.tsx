@@ -15,6 +15,7 @@ import {
   CollectiveOfferTemplate,
   EducationalOfferType,
   isCollectiveOffer,
+  isCollectiveOfferTemplate,
   MAX_DETAILS_LENGTH,
   Mode,
   OfferEducationalStockFormValues,
@@ -113,7 +114,9 @@ const OfferEducationalStock = <
       <OfferEducationalActions
         className={styles.actions}
         isBooked={
-          offer.isTemplate ? false : Boolean(offer.collectiveStock?.isBooked)
+          isCollectiveOfferTemplate(offer)
+            ? false
+            : Boolean(offer.collectiveStock?.isBooked)
         }
         offer={offer}
         reloadCollectiveOffer={reloadCollectiveOffer}

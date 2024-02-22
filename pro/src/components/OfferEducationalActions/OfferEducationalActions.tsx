@@ -7,6 +7,7 @@ import {
   CollectiveOffer,
   CollectiveOfferTemplate,
   isCollectiveOffer,
+  isCollectiveOfferTemplate,
   Mode,
   patchIsCollectiveOfferActiveAdapter,
   patchIsTemplateOfferActiveAdapter,
@@ -82,7 +83,7 @@ const OfferEducationalActions = ({
   }
 
   const activateOffer = () => {
-    if (offer.isTemplate || offer.isActive) {
+    if (isCollectiveOfferTemplate(offer) || offer.isActive) {
       setIsOfferActive(!offer.isActive)
       return
     }
