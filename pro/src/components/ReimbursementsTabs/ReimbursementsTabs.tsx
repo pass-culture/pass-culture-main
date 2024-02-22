@@ -37,7 +37,7 @@ const ReimbursementsTabs = () => {
       {
         id: STEP_ID_INVOICES,
         label: 'Justificatifs',
-        url: '/remboursements/justificatifs',
+        url: '/remboursements',
       },
       {
         id: STEP_ID_DETAILS,

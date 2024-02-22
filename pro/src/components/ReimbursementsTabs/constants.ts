@@ -16,7 +16,7 @@ export const OLD_STEP_LIST = [
   {
     id: STEP_ID_INVOICES,
     label: 'Justificatifs de remboursement',
-    url: '/remboursements/justificatifs',
+    url: '/remboursements',
   },
   {
     id: STEP_ID_DETAILS,
