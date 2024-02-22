@@ -60,12 +60,20 @@ def test_update_external_user(marketing_subscription):
     assert len(batch_testing.requests) == 2
     assert batch_testing.requests[0].get("user_id") == user.id
     assert (
+        batch_testing.requests[0].get("attribute_values", {}).get("u.marketing_email_subscription")
+        is marketing_subscription
+    )
+    assert (
         batch_testing.requests[0].get("attribute_values", {}).get("u.marketing_push_subscription")
         is marketing_subscription
     )
-    assert batch_testing.requests[0].get("user_id") == user.id
+    assert batch_testing.requests[1].get("user_id") == user.id
     assert (
-        batch_testing.requests[0].get("attribute_values", {}).get("u.marketing_push_subscription")
+        batch_testing.requests[1].get("attribute_values", {}).get("u.marketing_email_subscription")
+        is marketing_subscription
+    )
+    assert (
+        batch_testing.requests[1].get("attribute_values", {}).get("u.marketing_push_subscription")
         is marketing_subscription
     )
     assert len(sendinblue_testing.sendinblue_requests) == 1

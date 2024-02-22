@@ -49,6 +49,7 @@ def format_user_attributes(
         "u.is_current_beneficiary": user_attributes.is_current_beneficiary,
         "u.is_former_beneficiary": user_attributes.is_former_beneficiary,
         "u.last_name": user_attributes.last_name,
+        "u.marketing_email_subscription": user_attributes.marketing_email_subscription,
         "u.marketing_push_subscription": user_attributes.marketing_push_subscription,
         "u.postal_code": user_attributes.postal_code,
         "ut.roles": user_attributes.roles if user_attributes.roles else None,
