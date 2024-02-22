@@ -1849,6 +1849,40 @@ class EditOfferVenueTest(PostEndpointHelper):
             == "Le lieu de cette offre ne peut pas être modifié : 1 réservation est déjà remboursée sur cette offre"
         )
 
+    @patch("pcapi.core.search.async_index_offer_ids")
+    def test_move_event_offer_with_price_category(
+        self, mocked_async_index_offer_ids, authenticated_client, venues_in_same_offerer
+    ):
+        source_venue, destination_venue, _, _ = venues_in_same_offerer
+
+        offer = offers_factories.EventOfferFactory(venue=source_venue)
+        gold_label = offers_factories.PriceCategoryLabelFactory(label="Gold", venue=offer.venue)
+        gold_stock = offers_factories.EventStockFactory(
+            offer=offer,
+            priceCategory=offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=gold_label),
+        )
+        silver_label = offers_factories.PriceCategoryLabelFactory(label="Silver", venue=offer.venue)
+        silver_stock = offers_factories.EventStockFactory(
+            offer=offer,
+            priceCategory=offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=silver_label),
+        )
+        destination_silver_label = offers_factories.PriceCategoryLabelFactory(label="Silver", venue=destination_venue)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offer_id=offer.id,
+            form={"venue": destination_venue.id, "notify_beneficiary": ""},
+        )
+        assert response.status_code == 303
+
+        assert offer.venueId == destination_venue.id
+        assert gold_stock.priceCategory.priceCategoryLabel.venue == destination_venue
+        assert gold_stock.priceCategory.priceCategoryLabel != gold_label
+        assert gold_label.venue == source_venue
+        assert silver_stock.priceCategory.priceCategoryLabel.venue == destination_venue
+        assert silver_stock.priceCategory.priceCategoryLabel == destination_silver_label
+        assert offers_models.PriceCategoryLabel.query.count() == 4
+
 
 class GetOfferStockEditFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.offer.get_offer_stock_edit_form"
