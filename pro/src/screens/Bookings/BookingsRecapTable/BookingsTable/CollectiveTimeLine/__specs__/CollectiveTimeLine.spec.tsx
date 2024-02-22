@@ -211,10 +211,7 @@ describe('collective timeline', () => {
         screen.getByRole('link', {
           name: 'Renseigner mes coordonnées bancaires',
         })
-      ).toHaveAttribute(
-        'href',
-        '/structures/1/lieux/1?modification#reimbursement-section'
-      )
+      ).toHaveAttribute('href', '/structures/1/lieux/1#reimbursement-section')
     })
 
     it('should render steps for validated booking and missing bankInformation when FF bank details enable', () => {

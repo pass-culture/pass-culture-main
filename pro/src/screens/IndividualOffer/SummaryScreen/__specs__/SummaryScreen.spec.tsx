@@ -393,10 +393,7 @@ describe('Summary', () => {
         screen.getByRole('link', {
           name: 'Renseigner des coordonnées bancaires',
         })
-      ).toHaveAttribute(
-        'href',
-        '/structures/1/lieux/1?modification#remboursement'
-      )
+      ).toHaveAttribute('href', '/structures/1/lieux/1#remboursement')
     })
 
     it('should display redirect modal if first non free offer', async () => {
