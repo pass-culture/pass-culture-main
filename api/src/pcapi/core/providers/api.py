@@ -402,6 +402,7 @@ def _get_stocks_to_upsert(
                     "rawProviderQuantity": stock_detail.available_quantity,
                     "price": stock_detail.price,
                     "lastProviderId": provider_id,
+                    "isSoftDeleted": False,
                 }
             )
             if _should_reindex_offer(stock_detail.available_quantity, stock_detail.price, stock):
