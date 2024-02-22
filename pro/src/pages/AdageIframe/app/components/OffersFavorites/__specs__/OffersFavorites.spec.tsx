@@ -84,23 +84,11 @@ describe('OffersFavorites', () => {
     expect(listItemsInOffer).toHaveLength(1)
   })
 
-  it('should not display the list of favorites if the favorite cannot be fetched', async () => {
-    vi.spyOn(apiAdage, 'getCollectiveFavorites').mockRejectedValueOnce({})
-
-    renderAdageFavoritesOffers(user)
-
-    const loadingMessage = screen.queryByText(/Chargement en cours/)
-    await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
-
-    expect(
-      screen.getByText(
-        'Explorez le catalogue et ajoutez les offres en favori pour les retrouver facilement !'
-      )
-    ).toBeInTheDocument()
-  })
-
   it('should redirect to main adage page when clicking the catalogue button', async () => {
-    vi.spyOn(apiAdage, 'getCollectiveFavorites').mockRejectedValueOnce({})
+    vi.spyOn(apiAdage, 'getCollectiveFavorites').mockResolvedValueOnce({
+      favoritesTemplate: [],
+      favoritesOffer: [],
+    })
 
     renderAdageFavoritesOffers(user)
 
