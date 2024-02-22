@@ -401,7 +401,7 @@ const CollectiveTimeLine = ({
         <ButtonLink
           variant={ButtonVariant.TERNARY}
           link={{
-            to: `/structures/${bookingDetails.offererId}/lieux/${bookingDetails.venueId}?modification#reimbursement-section`,
+            to: `/structures/${bookingDetails.offererId}/lieux/${bookingDetails.venueId}#reimbursement-section`,
             isExternal: false,
           }}
           icon={fullLinkIcon}

@@ -45,7 +45,7 @@ export const RedirectToBankAccountDialog = ({
       redirectLink={{
         to: isNewBankDetailsJourneyEnabled
           ? `/remboursements/informations-bancaires?structure=${offerId}`
-          : `/structures/${offerId}/lieux/${venueId}?modification#remboursement`,
+          : `/structures/${offerId}/lieux/${venueId}#remboursement`,
         isExternal: false,
       }}
       onRedirect={() =>

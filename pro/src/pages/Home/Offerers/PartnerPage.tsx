@@ -139,7 +139,7 @@ export const PartnerPage = ({
             variant={ButtonVariant.SECONDARY}
             className={styles['venue-button']}
             link={{
-              to: `/structures/${offerer.id}/lieux/${venue.id}?modification`,
+              to: `/structures/${offerer.id}/lieux/${venue.id}`,
               'aria-label': `Gérer la page ${venue.name}`,
             }}
           >
