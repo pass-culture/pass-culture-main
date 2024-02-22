@@ -40,7 +40,7 @@ const renderReimbursements = (options?: RenderWithProvidersOptions) => {
       </Routes>
     </ReimbursementContextProvider>,
     {
-      initialRouterEntries: ['/remboursements/justificatifs'],
+      initialRouterEntries: ['/remboursements'],
       storeOverrides,
       ...options,
     }

@@ -223,7 +223,7 @@ const Header = forwardRef(
                     from: location.pathname,
                   })
                 }}
-                to="/remboursements/justificatifs"
+                to="/remboursements"
               >
                 <SvgIcon
                   className={styles['nav-item-icon']}
