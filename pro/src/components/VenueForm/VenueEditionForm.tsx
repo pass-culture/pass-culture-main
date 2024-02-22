@@ -1,10 +1,14 @@
 import { useFormikContext } from 'formik'
 import { useLocation } from 'react-router-dom'
 
-import { GetOffererResponseModel, VenueProviderResponse } from 'apiClient/v1'
+import {
+  GetOffererResponseModel,
+  VenueProviderResponse,
+  GetVenueResponseModel,
+} from 'apiClient/v1'
 import { AddressSelect } from 'components/Address'
 import FormLayout from 'components/FormLayout'
-import { Providers, Venue } from 'core/Venue/types'
+import { Providers } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -29,7 +33,7 @@ interface VenueFormProps {
   venueLabels: SelectOption[]
   provider?: Providers[]
   venueProvider?: VenueProviderResponse[]
-  venue: Venue
+  venue: GetVenueResponseModel
 }
 
 export const VenueEditionForm = ({

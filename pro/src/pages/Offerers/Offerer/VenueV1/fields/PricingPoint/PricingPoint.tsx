@@ -4,11 +4,10 @@ import { useField } from 'formik'
 import React, { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
-import { GetOffererResponseModel } from 'apiClient/v1'
+import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { SENT_DATA_ERROR_MESSAGE } from 'core/shared'
-import { Venue } from 'core/Venue/types'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import fullLinkIcon from 'icons/full-link.svg'
@@ -23,7 +22,7 @@ import styles from './PricingPoint.module.scss'
 
 export interface PricingPointProps {
   offerer: GetOffererResponseModel
-  venue: Venue
+  venue: GetVenueResponseModel
   setVenueHasPricingPoint: (venueHasPricingPoint: boolean) => void
 }
 

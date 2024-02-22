@@ -1,9 +1,7 @@
 import { api } from 'apiClient/api'
-import { Venue } from 'core/Venue/types'
+import { GetVenueResponseModel } from 'apiClient/v1'
 
-import { serializeVenueApi } from './serializers'
-
-type GetVenueAdapter = Adapter<number | undefined, Venue, null>
+type GetVenueAdapter = Adapter<number | undefined, GetVenueResponseModel, null>
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
@@ -22,7 +20,7 @@ const getVenueAdapter: GetVenueAdapter = async (venueId) => {
     return {
       isOk: true,
       message: '',
-      payload: serializeVenueApi(venueApi),
+      payload: venueApi,
     }
   } catch (error) {
     return FAILING_RESPONSE

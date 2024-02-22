@@ -7,7 +7,7 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { ApiError, GetVenueResponseModel } from 'apiClient/v1'
+import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
@@ -16,7 +16,6 @@ import {
   mainlandInterventionOption,
   mainlandOptions,
 } from 'core/shared/interventionOptions'
-import { Venue } from 'core/Venue/types'
 import * as useNotification from 'hooks/useNotification'
 import {
   collectiveCategoryFactory,
@@ -86,7 +85,10 @@ const renderCollectiveDataEdition = (
   props: Partial<CollectiveDataEditionProps> = {}
 ) =>
   renderWithProviders(
-    <CollectiveDataEdition venue={{ hasAdageId: true } as Venue} {...props} />
+    <CollectiveDataEdition
+      venue={{ ...defaultVenueResponseModel, hasAdageId: true }}
+      {...props}
+    />
   )
 
 describe('CollectiveDataEdition', () => {
@@ -112,8 +114,8 @@ describe('CollectiveDataEdition', () => {
     ])
     vi.spyOn(api, 'getEducationalPartners').mockResolvedValue({ partners: [] })
     vi.spyOn(api, 'editVenueCollectiveData').mockResolvedValue({
-      id: 1,
-    } as GetVenueResponseModel)
+      ...defaultVenueResponseModel,
+    })
 
     vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       success: notifySuccessMock,

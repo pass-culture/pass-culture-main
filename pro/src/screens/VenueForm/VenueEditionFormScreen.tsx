@@ -4,7 +4,11 @@ import { useLocation, useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
-import { VenueProviderResponse, GetOffererResponseModel } from 'apiClient/v1'
+import {
+  VenueProviderResponse,
+  GetOffererResponseModel,
+  GetVenueResponseModel,
+} from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { validationSchema, VenueFormValues } from 'components/VenueForm'
@@ -12,7 +16,7 @@ import { generateSiretValidationSchema } from 'components/VenueForm/Informations
 import { VenueEditionForm } from 'components/VenueForm/VenueEditionForm'
 import { Events } from 'core/FirebaseEvents/constants'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
-import { Providers, Venue } from 'core/Venue/types'
+import { Providers } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
@@ -30,7 +34,7 @@ interface VenueEditionProps {
   venueLabels: SelectOption[]
   providers?: Providers[]
   venueProviders?: VenueProviderResponse[]
-  venue: Venue
+  venue: GetVenueResponseModel
   hasBookingQuantity?: boolean
 }
 
