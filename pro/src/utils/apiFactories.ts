@@ -30,6 +30,7 @@ import {
 } from 'apiClient/v2'
 import { Venue } from 'core/Venue/types'
 
+import { defaultVenueResponseModel } from './collectiveApiFactories'
 import { priceCategoryFactory } from './individualApiFactories'
 
 let offerId = 1
@@ -391,6 +392,7 @@ export const defaultGetCollectiveOfferResponseModel: GetCollectiveOfferResponseM
   }
 
 export const defaultVenueModel: Venue = {
+  ...defaultVenueResponseModel,
   collectiveDomains: [],
   dateCreated: '2022-01-01',
   isVirtual: false,
