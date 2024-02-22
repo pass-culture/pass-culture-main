@@ -116,7 +116,7 @@ def get_email_update_status(user: users_models.User) -> serializers.EmailUpdateS
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 def confirm_email_update(body: serializers.ChangeBeneficiaryEmailBody) -> None:
     try:
-        email_api.update.confirm_email_update_request(body.token)
+        email_api.update.confirm_email_update_request_and_send_mail(body.token)
     except pydantic_v1.ValidationError:
         raise api_errors.ApiErrors(
             {"code": "INVALID_EMAIL", "message": "Adresse email invalide"},

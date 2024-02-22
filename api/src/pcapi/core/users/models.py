@@ -738,7 +738,7 @@ class UserEmailHistory(PcObject, Base, Model):
         return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.UPDATE_REQUEST)
 
     @classmethod
-    def build_confirmation(cls, user: User, new_email: str) -> "UserEmailHistory":
+    def build_confirmation(cls, user: User, new_email: str | None = None) -> "UserEmailHistory":
         return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.CONFIRMATION)
 
     @classmethod
