@@ -82,7 +82,7 @@ export const serializePatchOffer = ({
     description: sentValues.description,
     extraData: serializeExtraData(sentValues),
     isNational: sentValues.isNational,
-    isDuo: !!sentValues.isDuo,
+    isDuo: sentValues.isDuo,
     mentalDisabilityCompliant:
       sentValues.accessibility &&
       sentValues.accessibility[AccessiblityEnum.MENTAL],
