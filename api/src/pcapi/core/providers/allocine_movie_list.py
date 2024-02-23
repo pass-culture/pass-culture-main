@@ -16,36 +16,58 @@ def synchronize_products() -> None:
     allocine_ids = [movie.internalId for movie in movies]
     products_query = Product.query.filter(Product.extraData["allocineId"].cast(Integer).in_(allocine_ids))
     products_by_allocine_id = {product.extraData["allocineId"]: product for product in products_query}
-    allocine_products_provider = Provider.query.filter(
-        Provider.name == providers_constants.ALLOCINE_PRODUCTS_PROVIDER_NAME
-    ).one()
+    allocine_products_provider_id = _get_allocine_products_provider_id()
     with transaction():
         for movie in movies:
-            _upsert_product(products_by_allocine_id, movie, allocine_products_provider)
+            _upsert_product(products_by_allocine_id, movie, allocine_products_provider_id)
 
 
 def _upsert_product(
-    products_by_allocine_id: dict[int, Product], movie: allocine_serializers.AllocineMovie, provider: Provider
+    products_by_allocine_id: dict[int, Product], movie: allocine_serializers.AllocineMovie, provider_id: int
 ) -> None:
     allocine_id = movie.internalId
     product = products_by_allocine_id.get(allocine_id)
-    movie_data = _build_movie_data(movie)
-    id_at_providers = _build_movie_id_at_providers(provider, allocine_id)
     if not product:
-        product = Product(
-            description=_build_description(movie),
-            durationMinutes=movie.runtime,
-            extraData=movie_data,
-            idAtProviders=id_at_providers,
-            lastProviderId=provider.id,
-            name=movie.title,
-            subcategoryId=SEANCE_CINE.id,
-        )
+        product = create_product(movie, provider_id)
     else:
-        if product.extraData is None:
-            product.extraData = OfferExtraData()
-        product.extraData.update(movie_data)
+        update_product(product, movie)
+
     db.session.add(product)
+
+
+def create_product(movie: allocine_serializers.AllocineMovie, provider_id: int | None = None) -> Product:
+    if not provider_id:
+        provider_id = _get_allocine_products_provider_id()
+
+    allocine_id = movie.internalId
+    movie_data = _build_movie_data(movie)
+    id_at_providers = _build_movie_id_at_providers(provider_id, allocine_id)
+    product = Product(
+        description=_build_description(movie),
+        durationMinutes=movie.runtime,
+        extraData=movie_data,
+        idAtProviders=id_at_providers,
+        lastProviderId=provider_id,
+        name=movie.title,
+        subcategoryId=SEANCE_CINE.id,
+    )
+    return product
+
+
+def update_product(product: Product, movie: allocine_serializers.AllocineMovie) -> None:
+    if product.extraData is None:
+        product.extraData = OfferExtraData()
+
+    movie_data = _build_movie_data(movie)
+    product.extraData.update(movie_data)
+
+
+def _get_allocine_products_provider_id() -> int:
+    return (
+        Provider.query.filter(Provider.name == providers_constants.ALLOCINE_PRODUCTS_PROVIDER_NAME)
+        .with_entities(Provider.id)
+        .scalar()
+    )
 
 
 def _build_movie_data(movie: allocine_serializers.AllocineMovie) -> OfferExtraData:
@@ -71,8 +93,8 @@ def _build_movie_data(movie: allocine_serializers.AllocineMovie) -> OfferExtraDa
     )
 
 
-def _build_movie_id_at_providers(provider: Provider, allocine_id: int) -> str:
-    return f"{provider.id}:{allocine_id}"
+def _build_movie_id_at_providers(provider_id: int, allocine_id: int) -> str:
+    return f"{provider_id}:{allocine_id}"
 
 
 def _get_most_recent_release_date(releases: list[allocine_serializers.AllocineMovieRelease]) -> str | None:

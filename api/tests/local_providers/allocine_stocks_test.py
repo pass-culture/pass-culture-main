@@ -6,45 +6,21 @@ from unittest.mock import patch
 
 from freezegun import freeze_time
 import pytest
-import requests_mock
 
-from pcapi.connectors.api_allocine import ALLOCINE_API_URL
 from pcapi.connectors.serialization import allocine_serializers
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
-from pcapi.core.providers.allocine_movie_list import synchronize_products
 import pcapi.core.providers.factories as providers_factories
-from pcapi.core.testing import TestContextDecorator
 from pcapi.local_providers import AllocineStocks
 from pcapi.repository import repository
-from pcapi.repository import transaction
 from pcapi.utils.human_ids import humanize
 
 import tests
 from tests.domain import fixtures
 
 
-class needs_synchronized_movies(TestContextDecorator):
-    def enable(self) -> None:
-        with requests_mock.Mocker() as mock:
-            mock.get(
-                f"{ALLOCINE_API_URL}/movieList?after=",
-                json=fixtures.ALLOCINE_MOVIE_LIST_PAGE_1,
-            )
-            mock.get(
-                f"{ALLOCINE_API_URL}/movieList?after=YXJyYXljb25uZWN0aW9uOjQ5",
-                json=fixtures.ALLOCINE_MOVIE_LIST_PAGE_2,
-            )
-            synchronize_products()
-
-    def disable(self) -> None:
-        with transaction():
-            offers_models.Product.query.delete()
-
-
-@needs_synchronized_movies()
 class AllocineStocksTest:
     class InitTest:
         @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
@@ -111,7 +87,6 @@ class AllocineStocksTest:
             assert stock_providable_info.date_modified_at_provider == datetime(year=2023, month=12, day=15, hour=9)
 
 
-@needs_synchronized_movies()
 class UpdateObjectsTest:
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
@@ -164,7 +139,7 @@ class UpdateObjectsTest:
             "runtime": 21,
             "theater": {"allocine_room_id": "PXXXXX", "allocine_movie_id": 131136},
             "backlink": "https://www.allocine.fr/film/fichefilm_gen_cfilm=131136.html",
-            "synopsis": "Alors que la Première Guerre Mondiale a éclaté, et en réponse aux propos des intellectuels allemands de l'époque, Sacha Guitry filme les grands artistes de l'époque qui contribuent au rayonnement culturel de la France.",
+            "synopsis": "Alors que la Premi\u00e8re Guerre Mondiale a \u00e9clat\u00e9, et en r\u00e9ponse aux propos des intellectuels allemands de l'\u00e9poque, Sacha Guitry filme les grands artistes de l'\u00e9poque qui contribuent au rayonnement culturel de la France.",
             "companies": [
                 {"name": "Les Acacias", "activity": "Distribution"},
                 {"name": "Les Acacias", "activity": "Distribution"},
