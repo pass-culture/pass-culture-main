@@ -52,7 +52,7 @@ class CGRContext(PivotContext):
             flash("Provider CGR n'existe pas.", "warning")
             return False
 
-        venue_id = form.venue_id.data
+        venue_id = form.venue_id.data[0]
         cinema_id = form.cinema_id.data
         cinema_url = form.cinema_url.data.rstrip("/")
         cinema_password = form.password.data

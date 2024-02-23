@@ -53,7 +53,7 @@ class EMSContext(PivotContext):
             flash("Provider EMS n'existe pas", "warning")
             return False
 
-        venue_id = form.venue_id.data
+        venue_id = form.venue_id.data[0]
         cinema_id = form.cinema_id.data
 
         venue = offerers_models.Venue.query.get(venue_id)
