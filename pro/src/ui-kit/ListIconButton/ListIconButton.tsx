@@ -17,6 +17,7 @@ interface ListIconButtonProps extends React.HTMLProps<HTMLButtonElement> {
   onClick?: () => void
   url?: string
   isExternal?: boolean
+  dataTestid?: string
 }
 
 const LIST_ICON_SIZE = '16'
@@ -30,6 +31,7 @@ const ListIconButton = ({
   onClick,
   url,
   isExternal = true,
+  dataTestid,
   ...buttonAttrs
 }: ListIconButtonProps): JSX.Element => {
   const { isTooltipHidden, ...tooltipProps } = useTooltipProps(buttonAttrs)
@@ -62,6 +64,7 @@ const ListIconButton = ({
       {...buttonAttrs}
       onClick={onClick}
       type="button"
+      data-testid={dataTestid}
       {...tooltipProps}
     >
       {content}
