@@ -117,6 +117,7 @@ const OfferFavoriteButton = ({
         [styles['favorite-button-loading']]: isLoading,
         [styles['favorite-button-active']]: isFavorite,
       })}
+      dataTestid={`favorite-${isFavorite ? 'active' : 'inactive'}`}
       onClick={handleFavoriteClick}
     >
       {buttonText}
