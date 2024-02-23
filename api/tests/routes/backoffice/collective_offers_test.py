@@ -46,6 +46,7 @@ def collective_offers_fixture() -> tuple:
         collectiveOffer__formats=[subcategories.EacFormat.ATELIER_DE_PRATIQUE],
         collectiveOffer__venue__postalCode="47000",
         collectiveOffer__venue__departementCode="47",
+        price=10.1,
     ).collectiveOffer
     collective_offer_2 = educational_factories.CollectiveStockFactory(
         beginningDatetime=datetime.date.today() + datetime.timedelta(days=3),
@@ -54,6 +55,7 @@ def collective_offers_fixture() -> tuple:
         collectiveOffer__formats=[subcategories.EacFormat.PROJECTION_AUDIOVISUELLE],
         collectiveOffer__venue__postalCode="97400",
         collectiveOffer__venue__departementCode="974",
+        price=11,
     ).collectiveOffer
     collective_offer_3 = educational_factories.CollectiveStockFactory(
         beginningDatetime=datetime.date.today(),
@@ -67,6 +69,7 @@ def collective_offers_fixture() -> tuple:
         collectiveOffer__validation=offers_models.OfferValidationStatus.REJECTED,
         collectiveOffer__venue__postalCode="74000",
         collectiveOffer__venue__departementCode="74",
+        price=20,
     ).collectiveOffer
     return collective_offer_1, collective_offer_2, collective_offer_3
 
@@ -491,6 +494,41 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {collective_offers[index].id for index in expected_offer_indexes}
+
+    def test_list_collective_offers_advanced_search_by_price(self, authenticated_client, collective_offers):
+
+        collective_stock = educational_factories.CollectiveStockFactory()
+
+        query_args = {
+            "search-3-search_field": "PRICE",
+            "search-3-operator": "GREATER_THAN_OR_EQUAL_TO",
+            "search-3-price": 12.20,
+        }
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(collective_stock.collectiveOffer.id)
+
+    def test_list_collective_offers_advanced_search_by_price_no_offer_found(
+        self, authenticated_client, collective_offers
+    ):
+
+        query_args = {
+            "search-3-search_field": "PRICE",
+            "search-3-operator": "GREATER_THAN_OR_EQUAL_TO",
+            "search-3-price": 12.20,
+        }
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 0
 
     def test_list_offers_advanced_search_by_in_and_not_in_formats(self, authenticated_client, collective_offers):
         query_args = {

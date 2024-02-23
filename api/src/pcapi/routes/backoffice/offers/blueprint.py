@@ -165,6 +165,15 @@ SEARCH_FIELD_TO_PYTHON = {
         "field": "show_sub_type",
         "column": offers_models.Offer.extraData["showSubType"].astext,
     },
+    "PRICE": {
+        "field": "price",
+        "column": aliased_stock.price,
+        "inner_join": "stock",
+        "custom_filter_all_operators": sa.and_(
+            aliased_stock._bookable,
+            offers_models.Offer._released,
+        ),
+    },
 }
 
 JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {

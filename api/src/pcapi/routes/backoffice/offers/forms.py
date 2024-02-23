@@ -41,11 +41,12 @@ class IndividualOffersSearchAttributes(enum.Enum):
     STATUS = "Statut"
     OFFERER = "Structure"
     TAG = "Tag"
-    VISA = "Visa d'exploitation"
     MUSIC_TYPE = "Type de musique"
     MUSIC_SUB_TYPE = "Sous-type de musique"
     SHOW_TYPE = "Type de spectacle"
     SHOW_SUB_TYPE = "Sous-type de spectacle"
+    PRICE = "Prix"
+    VISA = "Visa d'exploitation"
 
 
 operator_no_require_value = ["NOT_EXIST"]
@@ -89,6 +90,14 @@ form_field_configuration = {
     "MUSIC_SUB_TYPE": {"field": "music_sub_type", "operator": ["IN", "NOT_IN"]},
     "SHOW_TYPE": {"field": "show_type", "operator": ["IN", "NOT_IN"]},
     "SHOW_SUB_TYPE": {"field": "show_sub_type", "operator": ["IN", "NOT_IN"]},
+    "PRICE": {
+        "field": "price",
+        "operator": [
+            "EQUALS",
+            "GREATER_THAN_OR_EQUAL_TO",
+            "LESS_THAN",
+        ],
+    },
 }
 
 
@@ -121,6 +130,7 @@ class GetOffersBaseFields(forms_utils.PCForm):
 class OfferAdvancedSearchSubForm(forms_utils.PCForm):
     class Meta:
         csrf = False
+        locales = ["fr_FR", "fr"]
 
     json_data = json.dumps(
         {
@@ -142,6 +152,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
                 "music_sub_type",
                 "show_type",
                 "show_sub_type",
+                "price",
             ],
             "sub_rule_type_field_name": "search_field",
             "operator_field_name": "operator",
@@ -207,6 +218,14 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         validators=[
             wtforms.validators.Optional(""),
             wtforms.validators.NumberRange(min=0, max=(2**63) - 1, message="Doit être inférieur à %(max)d"),
+        ],
+    )
+    price = fields.PCDecimalField(
+        "Prix",
+        use_locale=True,
+        validators=[
+            wtforms.validators.Optional(""),
+            wtforms.validators.NumberRange(min=0, message="Doit contenir un nombre positif"),
         ],
     )
     offerer = fields.PCTomSelectField(

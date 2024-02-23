@@ -268,6 +268,10 @@ def generate_search_query(
 
         field_value = meta_field.get("special", lambda x: x)(search_data.get(meta_field["field"]))
 
+        custom_filter_all_operators = meta_field.get("custom_filter_all_operators")
+        if custom_filter_all_operators is not None:
+            filters.append(custom_filter_all_operators)
+
         if custom_filter := meta_field.get("custom_filters", {}).get(operator):
             filters.append(custom_filter(field_value))
             continue

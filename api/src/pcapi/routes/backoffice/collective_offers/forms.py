@@ -34,6 +34,7 @@ class CollectiveOffersSearchAttributes(enum.Enum):
     NAME = "Nom de l'offre"
     STATUS = "Statut"
     OFFERER = "Structure"
+    PRICE = "Prix"
 
 
 operator_no_require_value = ["NOT_EXIST"]
@@ -70,6 +71,7 @@ form_field_configuration = {
     "STATUS": {"field": "status", "operator": ["IN", "NOT_IN"]},
     "VENUE": {"field": "venue", "operator": ["IN", "NOT_IN"]},
     "VALIDATION": {"field": "validation", "operator": ["IN", "NOT_IN"]},
+    "PRICE": {"field": "price", "operator": ["EQUALS", "LESS_THAN", "GREATER_THAN_OR_EQUAL_TO"]},
 }
 
 
@@ -92,6 +94,7 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
                 "status",
                 "venue",
                 "validation",
+                "price",
             ],
             "sub_rule_type_field_name": "search_field",
             "operator_field_name": "operator",
@@ -138,6 +141,13 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
         validators=[
             wtforms.validators.Optional(""),
             wtforms.validators.NumberRange(min=0, max=(2**63) - 1, message="Doit être inférieur à %(max)d"),
+        ],
+    )
+    price = fields.PCDecimalField(
+        "Prix",
+        validators=[
+            wtforms.validators.Optional(""),
+            wtforms.validators.NumberRange(min=0, message="Doit contenir un nombre positif"),
         ],
     )
     offerer = fields.PCTomSelectField(
