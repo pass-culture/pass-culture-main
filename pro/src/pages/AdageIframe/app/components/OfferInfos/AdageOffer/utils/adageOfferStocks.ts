@@ -7,5 +7,7 @@ export function getBookableOfferStockPrice(
     style: 'currency',
     currency: 'EUR',
     minimumFractionDigits: 0,
-  }).format(offer.stock.price)} pour ${offer.stock.numberOfTickets} élèves`
+  }).format(
+    offer.stock.price / 100
+  )} pour ${offer.stock.numberOfTickets} élèves`
 }

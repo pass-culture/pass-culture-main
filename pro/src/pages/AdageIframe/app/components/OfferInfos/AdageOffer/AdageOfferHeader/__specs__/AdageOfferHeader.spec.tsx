@@ -191,7 +191,7 @@ describe('AdageOfferHeader', () => {
       },
     })
 
-    expect(screen.getByText('12 000 € pour 100 élèves')).toBeInTheDocument()
+    expect(screen.getByText('120 € pour 100 élèves')).toBeInTheDocument()
     expect(screen.getByText(/My institution/)).toBeInTheDocument()
   })
 })

@@ -66,22 +66,31 @@ const Offer = ({
   const openOfferDetails = (
     offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
   ) => {
-    const isTemplate = isCollectiveOfferTemplate(offer)
-
     setDisplayDetails(!displayDetails)
+
+    triggerOfferDetailClickLog(offer)
+  }
+
+  function triggerOfferDetailClickLog(
+    offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
+  ) {
     if (!LOGS_DATA) {
       return
     }
 
+    const isTemplate = isCollectiveOfferTemplate(offer)
+
     if (!isTemplate) {
-      void apiAdage.logOfferDetailsButtonClick({
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      apiAdage.logOfferDetailsButtonClick({
         iframeFrom: location.pathname,
         stockId: offer.stock.id,
         queryId: queryId,
         isFromNoResult: isInSuggestions,
       })
     } else {
-      void apiAdage.logOfferTemplateDetailsButtonClick({
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      apiAdage.logOfferTemplateDetailsButtonClick({
         iframeFrom: location.pathname,
         offerId: offer.id,
         queryId: queryId,
@@ -256,6 +265,7 @@ const Offer = ({
                   ? ButtonVariant.PRIMARY
                   : ButtonVariant.SECONDARY
               }
+              onClick={() => triggerOfferDetailClickLog(offer)}
               link={{
                 isExternal: true,
                 to: `${document.referrer}adage/passculture/offres/offerid/${offer.isTemplate ? '' : 'B-'}${offer.id}`,
