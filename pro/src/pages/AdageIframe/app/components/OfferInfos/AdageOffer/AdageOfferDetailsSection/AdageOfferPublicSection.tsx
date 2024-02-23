@@ -52,7 +52,7 @@ export default function AdageOfferPublicSection({
               {studentLevels.map((level, i) => (
                 <li key={level}>
                   {level}{' '}
-                  {i < level.length - 1 && (
+                  {i < studentLevels.length - 1 && (
                     <span className={styles['offer-section-group-list-pipe']}>
                       |
                     </span>
@@ -76,7 +76,7 @@ export default function AdageOfferPublicSection({
               {a11yLevels.map((level, i) => (
                 <li key={level}>
                   {level}{' '}
-                  {i < level.length - 1 && (
+                  {i < a11yLevels.length - 1 && (
                     <span className={styles['offer-section-group-list-pipe']}>
                       |
                     </span>
