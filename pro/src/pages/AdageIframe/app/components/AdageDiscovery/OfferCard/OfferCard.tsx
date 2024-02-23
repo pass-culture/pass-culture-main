@@ -99,7 +99,11 @@ const OfferCardComponent = ({
           })}
         </div>
 
-        <div className={styles['offer-name']} title={offer.name}>
+        <div
+          className={styles['offer-name']}
+          title={offer.name}
+          data-testid="card-offer"
+        >
           {offer.name}
         </div>
 
