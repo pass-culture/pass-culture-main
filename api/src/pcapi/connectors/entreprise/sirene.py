@@ -30,11 +30,6 @@ def get_siret(siret: str, raise_if_non_public: bool = True) -> models.SiretInfo:
     return get_backend(settings.SIRENE_BACKEND).get_siret(siret, raise_if_non_public=raise_if_non_public)
 
 
-def get_legal_category_code(siren: str) -> str:
-    """Return the code of the legal category."""
-    return get_siren(siren, with_address=False).legal_category_code
-
-
 def siret_is_active(siret: str) -> bool:
     """Return whether the requested SIRET is active."""
     siret_info = get_siret(siret)

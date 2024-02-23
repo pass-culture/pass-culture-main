@@ -169,17 +169,6 @@ def test_get_siret_with_non_public_data_do_not_raise():
 
 
 @override_settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
-def test_get_legal_category():
-    siren = "123456789"
-    with requests_mock.Mocker() as mock:
-        mock.get(
-            f"https://api.insee.fr/entreprises/sirene/V3/siren/{siren}",
-            json=sirene_test_data.RESPONSE_SIREN_COMPANY,
-        )
-        assert sirene.get_legal_category_code(siren) == "5499"
-
-
-@override_settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
 def test_siret_is_active():
     siret = "12345678900017"
     with requests_mock.Mocker() as mock:

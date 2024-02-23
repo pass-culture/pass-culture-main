@@ -39,13 +39,10 @@ from sqlalchemy.sql import expression
 from sqlalchemy.sql.elements import Case
 import sqlalchemy.sql.functions as sqla_func
 from sqlalchemy.sql.sqltypes import LargeBinary
-from werkzeug.utils import cached_property
 
 from pcapi import settings
 from pcapi.connectors.big_query.queries.offerer_stats import OffererViewsModel
 from pcapi.connectors.big_query.queries.offerer_stats import TopOffersData
-from pcapi.connectors.entreprise import exceptions as sirene_exceptions
-from pcapi.connectors.entreprise import sirene
 from pcapi.core.educational import models as educational_models
 import pcapi.core.finance.models as finance_models
 from pcapi.models import Base
@@ -66,8 +63,6 @@ from pcapi.utils.date import numranges_to_timespan_str
 import pcapi.utils.db as db_utils
 from pcapi.utils.human_ids import humanize
 import pcapi.utils.postal_code as postal_code_utils
-
-from . import constants
 
 
 if typing.TYPE_CHECKING:
@@ -1046,23 +1041,6 @@ class Offerer(
             ),
             else_=func.substring(cls.postalCode, 1, 2),
         )
-
-    @cached_property
-    def legal_category(self) -> dict:
-        code = None
-        if self.siren:
-            try:
-                code = sirene.get_legal_category_code(self.siren)
-            except sirene_exceptions.SireneException as exc:
-                logger.warning(
-                    "Error on Sirene API when retrieving legal category",
-                    extra={"exc": exc, "siren": self.siren},
-                )
-        if code:
-            label = constants.CODE_TO_CATEGORY_MAPPING.get(int(code), "")
-        else:
-            code = label = "Donnée indisponible"
-        return {"code": code, "label": label}
 
 
 class UserOfferer(PcObject, Base, Model, ValidationStatusMixin):

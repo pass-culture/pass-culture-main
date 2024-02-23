@@ -1,12 +1,10 @@
 import datetime
-from unittest.mock import patch
 
 import pytest
 import sqlalchemy as sa
 from sqlalchemy.exc import IntegrityError
 
 from pcapi import settings
-from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.core.educational import factories as educational_factories
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
@@ -244,23 +242,6 @@ class VenueNApprovedOffersTest:
         educational_factories.CollectiveOfferFactory(venue=venue, validation=offers_models.OfferValidationStatus.DRAFT)
         assert venue.nApprovedOffers == 0
         assert not venue.has_approved_offers
-
-
-class OffererLegalCategoryTest:
-    def test_offerer_legal_category(self):
-        offerer = factories.OffererFactory.build()
-        assert offerer.legal_category == {
-            "code": "1000",
-            "label": "Entrepreneur individuel",
-        }
-
-    @patch("pcapi.connectors.entreprise.sirene.get_siren", side_effect=sirene_exceptions.UnknownEntityException())
-    def test_offerer_legal_category_on_error(self, get_siren_mock):
-        offerer = factories.OffererFactory.build()
-        assert offerer.legal_category == {
-            "code": "Donnée indisponible",
-            "label": "Donnée indisponible",
-        }
 
 
 def test_save_user_offerer_raise_api_error_when_not_unique(app):
