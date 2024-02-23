@@ -365,6 +365,7 @@ def get_paginated_collective_bookings_for_educational_year(
             # ... to fetch its venue...
             sa.orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True).load_only(
                 offerers_models.Venue.id,
+                offerers_models.Venue.name,
                 offerers_models.Venue.timezone,
             )
             # ... to fetch its offerer.

@@ -21,6 +21,7 @@ def expected_serialized_booking(booking) -> dict:
         "domainIds": [domain.id for domain in booking.collectiveStock.collectiveOffer.domains],
         "domainLabels": [domain.name for domain in booking.collectiveStock.collectiveOffer.domains],
         "venueId": booking.collectiveStock.collectiveOffer.venueId,
+        "venueName": booking.collectiveStock.collectiveOffer.venue.name,
         "offererName": booking.collectiveStock.collectiveOffer.venue.managingOfferer.name,
     }
 
