@@ -4,13 +4,16 @@ from pathlib import Path
 from unittest import mock
 
 import pytest
+import sqlalchemy as sa
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.external_bookings.boost import constants as boost_constants
+from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import PriceCategory
 from pcapi.core.offers.models import PriceCategoryLabel
+from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.factories import BoostCinemaDetailsFactory
 from pcapi.core.providers.factories import BoostCinemaProviderPivotFactory
@@ -18,6 +21,7 @@ from pcapi.core.providers.factories import VenueProviderFactory
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import override_features
 from pcapi.local_providers import BoostStocks
+from pcapi.repository import transaction
 from pcapi.utils.human_ids import humanize
 
 import tests
@@ -33,6 +37,39 @@ FUTURE_DATE_STR = (datetime.date.today() + datetime.timedelta(days=boost_constan
 
 @pytest.mark.usefixtures("db_session")
 class BoostStocksTest:
+    def setup_method(self):
+        ProductFactory(
+            name="Produit allociné 1",
+            description="Description du produit allociné 1",
+            durationMinutes=111,
+            extraData={"allocineId": 263242},
+        )
+        ProductFactory(
+            name="Produit allociné 2",
+            description="Description du produit allociné 2",
+            durationMinutes=222,
+            extraData={"allocineId": 277733},
+        )
+        ProductFactory(
+            name="Produit allociné 3",
+            description="Description du produit allociné 3",
+            durationMinutes=333,
+            extraData={"allocineId": 270935},
+        )
+        ProductFactory(
+            name="Produit allociné 4",
+            description="Description du produit allociné 4",
+            durationMinutes=444,
+            extraData={"allocineId": 269975},
+        )
+
+    def teardown_method(self):
+        with transaction():
+            Product.query.delete()
+
+    def _get_product_by_allocine_id(self, allocine_id):
+        return Product.query.filter(Product.extraData["allocineId"].cast(sa.Integer) == allocine_id).one()
+
     def should_return_providable_info_on_next(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider)
@@ -122,6 +159,49 @@ class BoostStocksTest:
 
         assert get_cinema_attr_adapter.call_count == 1
 
+    def should_not_create_offers_and_stocks_if_products_dont_exist(self, requests_mock):
+        boost_provider = get_provider_by_local_class("BoostStocks")
+        venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
+        cinema_provider_pivot = BoostCinemaProviderPivotFactory(
+            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
+
+        requests_mock.get(
+            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
+        )
+        requests_mock.get(
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
+            json=fixtures.ShowtimesEndpointResponse.PAGE_1_JSON_DATA,
+        )
+        requests_mock.get(
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=2&per_page=30",
+            json=fixtures.ShowtimesEndpointResponse.PAGE_2_JSON_DATA,
+        )
+        requests_mock.get(
+            "https://cinema-0.example.com/api/showtimes/36683",
+            json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA,
+        )
+        requests_mock.get(
+            "https://cinema-0.example.com/api/showtimes/36848",
+            json=fixtures.ShowtimeDetailsEndpointResponse.ONE_PCU_PRICING_SHOWTIME_36848_DATA,
+        )
+        requests_mock.get(
+            "https://cinema-0.example.com/api/showtimes/36932",
+            json=fixtures.ShowtimeDetailsEndpointResponse.SHOWTIME_36932_DATA_NO_PC_PRICING,
+        )
+        requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
+        requests_mock.get("http://example.com/images/149489.jpg", content=bytes())
+
+        Product.query.delete()
+
+        boost_stocks = BoostStocks(venue_provider=venue_provider)
+        boost_stocks.updateObjects()
+
+        assert Offer.query.count() == 0
+        assert Stock.query.count() == 0
+        assert PriceCategory.query.count() == 0
+
     def should_fill_offer_and_and_stock_informations_for_each_movie(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
@@ -155,6 +235,7 @@ class BoostStocksTest:
         )
         requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
         requests_mock.get("http://example.com/images/149489.jpg", content=bytes())
+
         boost_stocks = BoostStocks(venue_provider=venue_provider)
         boost_stocks.updateObjects()
 
@@ -166,14 +247,14 @@ class BoostStocksTest:
         assert len(created_stocks) == 2
         assert len(created_price_categories) == 2
 
-        assert created_offers[0].name == "BLACK PANTHER : WAKANDA FOREVER"
-        assert not created_offers[0].product
+        assert created_offers[0].name == "Produit allociné 1"
+        assert created_offers[0].product == self._get_product_by_allocine_id(263242)
         assert created_offers[0].venue == venue_provider.venue
-        assert not created_offers[0].description  # FIXME
-        assert created_offers[0].durationMinutes == 162
+        assert created_offers[0].description == "Description du produit allociné 1"
+        assert created_offers[0].durationMinutes == 111
         assert created_offers[0].isDuo
         assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offers[0].extraData == {"visa": "158026"}
+        assert created_offers[0].extraData == {"visa": "158026", "allocineId": 263242}
 
         assert created_stocks[0].quantity == 96
         assert created_stocks[0].price == decimal.Decimal("6.9")
@@ -184,14 +265,14 @@ class BoostStocksTest:
         assert created_stocks[0].beginningDatetime == datetime.datetime(2022, 11, 28, 8)
         assert created_stocks[0].features == ["VF", "ICE"]
 
-        assert created_offers[1].name == "CHARLOTTE"
-        assert not created_offers[1].product
+        assert created_offers[1].name == "Produit allociné 2"
+        assert created_offers[1].product == self._get_product_by_allocine_id(277733)
         assert created_offers[1].venue == venue_provider.venue
-        assert not created_offers[1].description  # FIXME
-        assert created_offers[1].durationMinutes == 92
+        assert created_offers[1].description == "Description du produit allociné 2"
+        assert created_offers[1].durationMinutes == 222
         assert created_offers[1].isDuo
         assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offers[1].extraData == {"visa": "149489"}
+        assert created_offers[1].extraData == {"visa": "149489", "allocineId": 277733}
 
         assert created_stocks[1].quantity == 177
         assert created_stocks[1].price == decimal.Decimal("6.9")
@@ -235,6 +316,7 @@ class BoostStocksTest:
         )
         requests_mock.get("http://example.com/images/159673.jpg", content=bytes())
         requests_mock.get("http://example.com/images/159570.jpg", content=bytes())
+
         boost_stocks = BoostStocks(venue_provider=venue_provider)
         boost_stocks.updateObjects()
 
@@ -246,14 +328,14 @@ class BoostStocksTest:
         assert len(created_stocks) == 3
         assert len(created_price_categories) == 3
 
-        assert created_offers[0].name == "MISSION IMPOSSIBLE DEAD RECKONING PARTIE 1"
-        assert not created_offers[0].product
+        assert created_offers[0].name == "Produit allociné 3"
+        assert created_offers[0].product == self._get_product_by_allocine_id(270935)
         assert created_offers[0].venue == venue_provider.venue
-        assert not created_offers[0].description  # FIXME
-        assert created_offers[0].durationMinutes == 163
+        assert created_offers[0].description == "Description du produit allociné 3"
+        assert created_offers[0].durationMinutes == 333
         assert created_offers[0].isDuo
         assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offers[0].extraData == {"visa": "159673"}
+        assert created_offers[0].extraData == {"visa": "159673", "allocineId": 270935}
 
         assert created_stocks[0].quantity == 147
         assert created_stocks[0].price == decimal.Decimal("12.00")
@@ -264,14 +346,14 @@ class BoostStocksTest:
         assert created_stocks[0].beginningDatetime == datetime.datetime(2023, 9, 26, 8, 40)
         assert created_stocks[0].features == ["VF", "ICE"]
 
-        assert created_offers[1].name == "SPIDER-MAN ACROSS THE SPIDER-VERSE"
-        assert not created_offers[1].product
+        assert created_offers[1].name == "Produit allociné 4"
+        assert created_offers[1].product == self._get_product_by_allocine_id(269975)
         assert created_offers[1].venue == venue_provider.venue
-        assert not created_offers[1].description  # FIXME
-        assert created_offers[1].durationMinutes == 140
+        assert created_offers[1].description == "Description du produit allociné 4"
+        assert created_offers[1].durationMinutes == 444
         assert created_offers[1].isDuo
         assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offers[1].extraData == {"visa": "159570"}
+        assert created_offers[1].extraData == {"visa": "159570", "allocineId": 269975}
 
         assert created_stocks[1].quantity == 452
         assert created_stocks[1].price == decimal.Decimal("6.00")
@@ -342,14 +424,14 @@ class BoostStocksTest:
         assert len(created_price_categories) == 2
         assert len(created_price_category_labels) == 2
 
-        assert created_offer.name == "BLACK PANTHER : WAKANDA FOREVER"
-        assert not created_offer.product
+        assert created_offer.name == "Produit allociné 1"
+        assert created_offer.product == self._get_product_by_allocine_id(263242)
         assert created_offer.venue == venue_provider.venue
-        assert not created_offer.description  # FIXME
-        assert created_offer.durationMinutes == 162
+        assert created_offer.description == "Description du produit allociné 1"
+        assert created_offer.durationMinutes == 111
         assert created_offer.isDuo
         assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offer.extraData == {"visa": "158026"}
+        assert created_offer.extraData == {"visa": "158026", "allocineId": 263242}
 
         assert created_stocks[0].quantity == 96
         assert created_stocks[0].price == decimal.Decimal("6.9")
