@@ -176,7 +176,10 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     offer: sa_orm.Mapped["Offer"] = sa.orm.relationship("Offer", backref="stocks")
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
     price: decimal.Decimal = sa.Column(
-        sa.Numeric(10, 2), sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False
+        sa.Numeric(10, 2),
+        sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"),
+        index=True,
+        nullable=False,
     )
     priceCategoryId: int | None = sa.Column(
         sa.BigInteger, sa.ForeignKey("price_category.id"), index=True, nullable=True
