@@ -145,7 +145,7 @@ describe('updateIndividualOffer', () => {
       durationMinutes: undefined,
       externalTicketOfficeUrl: 'https://example.com',
       extraData: undefined,
-      isDuo: false,
+      isDuo: undefined,
       isNational: undefined,
       mentalDisabilityCompliant: true,
       motorDisabilityCompliant: true,
