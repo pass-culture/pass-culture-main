@@ -20,7 +20,7 @@ SET row_security = off;
 -- Name: tiger; Type: SCHEMA; Schema: -; Owner: pass_culture
 --
 
-CREATE SCHEMA tiger;
+CREATE SCHEMA IF NOT EXISTS tiger;
 
 
 
@@ -28,7 +28,7 @@ CREATE SCHEMA tiger;
 -- Name: tiger_data; Type: SCHEMA; Schema: -; Owner: pass_culture
 --
 
-CREATE SCHEMA tiger_data;
+CREATE SCHEMA IF NOT EXISTS tiger_data;
 
 
 
@@ -36,7 +36,7 @@ CREATE SCHEMA tiger_data;
 -- Name: topology; Type: SCHEMA; Schema: -; Owner: pass_culture
 --
 
-CREATE SCHEMA topology;
+CREATE SCHEMA IF NOT EXISTS topology;
 
 
 
@@ -12726,3 +12726,4 @@ ALTER TABLE ONLY public.venue
 -- PostgreSQL database dump complete
 --
 
+reset search_path
