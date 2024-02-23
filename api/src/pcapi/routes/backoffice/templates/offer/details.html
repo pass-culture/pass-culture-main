@@ -326,7 +326,7 @@
                       </p>
                     {% endif %}
                     <p class="mb-1">
-                      <span class="fw-bold">Description :</span> {{ offer.description | replace("\n", "<br />"|safe) }}
+                      <span class="fw-bold">Description :</span> {{ offer.description | empty_string_if_null | replace("\n", "<br />"| safe) }}
                     </p>
                   </div>
                   <h3>Accessibilité</h3>
