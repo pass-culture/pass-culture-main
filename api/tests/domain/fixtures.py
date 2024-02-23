@@ -309,19 +309,30 @@ ALLOCINE_MOVIE_SHOWTIME_LIST = {
                         "type": "FEATURE_FILM",
                         "runtime": "PT0H21M0S",
                         "poster": {"url": "https://fr.web.img2.acsta.net/medias/nmedia/18/78/15/02/19447537.jpg"},
-                        "synopsis": "Alors que la Première Guerre Mondiale a éclaté...",
+                        "synopsis": "Alors que la Premi\u00e8re Guerre Mondiale a \u00e9clat\u00e9, et en r\u00e9ponse aux propos des intellectuels allemands de l'\u00e9poque, Sacha Guitry filme les grands artistes de l'\u00e9poque qui contribuent au rayonnement culturel de la France.",
                         "releases": [
                             {
-                                "name": "Released",
-                                "releaseDate": {"date": "1976-12-22"},
+                                "name": "ReRelease",
+                                "releaseDate": {"date": "2023-11-01"},
                                 "data": {
                                     "tech": {
-                                        "auto_update_info": "Imported from AC_INT.dbo.EntityRelease from id [413873]"
+                                        "auto_update_info": "Imported from AC_INT.dbo.EntityRelease from id [411399]"
                                     },
                                     "visa_number": "108245",
                                 },
                                 "certificate": None,
-                            }
+                            },
+                            {
+                                "name": "Released",
+                                "releaseDate": {"date": "1915-11-22"},
+                                "data": {
+                                    "tech": {
+                                        "auto_update_info": "Imported from AC_INT.dbo.EntityRelease from id [411400]"
+                                    },
+                                    "visa_number": "108245",
+                                },
+                                "certificate": None,
+                            },
                         ],
                         "credits": {
                             "edges": [
@@ -338,11 +349,18 @@ ALLOCINE_MOVIE_SHOWTIME_LIST = {
                                 "url": "https://www.allocine.fr/film/fichefilm-131136/casting/",
                                 "label": "Casting complet du film sur AlloCin\u00e9",
                             },
-                            "edges": [],
+                            "edges": [
+                                {"node": {"actor": {"firstName": "Sacha", "lastName": "Guitry"}, "role": "(doublage)"}},
+                                {"node": {"actor": {"firstName": "Sarah", "lastName": "Bernhardt"}, "role": None}},
+                                {"node": {"actor": {"firstName": "Anatole", "lastName": "France"}, "role": None}},
+                            ],
                         },
-                        "countries": [],
-                        "genres": [],
-                        "companies": [],
+                        "countries": [{"name": "France", "alpha3": "FRA"}],
+                        "genres": ["DOCUMENTARY"],
+                        "companies": [
+                            {"activity": "Distribution", "company": {"name": "Les Acacias"}},
+                            {"activity": "Distribution", "company": {"name": "Les Acacias"}},
+                        ],
                     },
                     "showtimes": [
                         {
