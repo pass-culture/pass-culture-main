@@ -929,7 +929,10 @@ class CollectiveStock(PcObject, Base, Model):
     collectiveBookings: list["CollectiveBooking"] = relationship("CollectiveBooking", back_populates="collectiveStock")
 
     price: float = sa.Column(
-        sa.Numeric(10, 2), sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False
+        sa.Numeric(10, 2),
+        sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"),
+        index=True,
+        nullable=False,
     )
 
     bookingLimitDatetime: datetime = sa.Column(sa.DateTime, nullable=False)

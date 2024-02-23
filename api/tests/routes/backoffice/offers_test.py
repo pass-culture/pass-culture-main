@@ -86,8 +86,8 @@ def offers_fixture(criteria) -> tuple:
         author=users_factories.ProFactory(),
         extraData={"musicType": 870, "musicSubType": 871, "showType": 1510, "showSubType": 1511},
     )
-    offers_factories.StockFactory(quantity=None, offer=offer_with_unlimited_stock)
-    offers_factories.StockFactory(offer=offer_with_unlimited_stock)
+    offers_factories.StockFactory(quantity=None, offer=offer_with_unlimited_stock, price=10.1)
+    offers_factories.StockFactory(offer=offer_with_unlimited_stock, price=15)
     offers_factories.EventStockFactory(
         quantity=10,
         dnBookedQuantity=0,
@@ -485,6 +485,70 @@ class ListOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {offers[2].id}
+
+    def test_list_offers_advanced_search_by_price(self, authenticated_client, offers):
+
+        offers_factories.StockFactory(
+            price=15,
+            beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        )
+
+        query_args = {
+            "search-3-search_field": "PRICE",
+            "search-3-operator": "GREATER_THAN_OR_EQUAL_TO",
+            "search-3-price": 12.20,
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(offers[0].id)
+
+    def test_list_offers_advanced_search_by_price_multiple_stock(self, authenticated_client):
+
+        offer_with_multiple_stock_valide_and_not_valide = offers_factories.OfferFactory()
+
+        offers_factories.StockFactory(
+            price=15,
+            offer=offer_with_multiple_stock_valide_and_not_valide,
+            beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        )
+
+        offers_factories.StockFactory(
+            price=16,
+            offer=offer_with_multiple_stock_valide_and_not_valide,
+            beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=2),
+            bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=1),
+        )
+
+        query_args = {
+            "search-3-search_field": "PRICE",
+            "search-3-operator": "EQUALS",
+            "search-3-price": 16,
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(offer_with_multiple_stock_valide_and_not_valide.id)
+
+    def test_list_offers_advanced_search_by_price_no_offer_valid(self, authenticated_client, offers):
+
+        query_args = {
+            "search-3-search_field": "PRICE",
+            "search-3-operator": "GREATER_THAN_OR_EQUAL_TO",
+            "search-3-price": 120000.20,
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 0
 
     def test_list_offers_advanced_search_by_department(self, authenticated_client, offers):
         query_args = {

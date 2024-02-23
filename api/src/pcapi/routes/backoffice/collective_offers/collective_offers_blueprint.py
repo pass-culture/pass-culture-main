@@ -103,6 +103,16 @@ SEARCH_FIELD_TO_PYTHON = {
         "column": educational_models.CollectiveOffer.venueId,
     },
     "VALIDATION": {"field": "validation", "column": educational_models.CollectiveOffer.validation},
+    "PRICE": {
+        "field": "price",
+        "column": aliased_stock.price,
+        "inner_join": "stock",
+        "custom_filter_all_operators": sa.and_(
+            aliased_stock.isEventExpired.is_(False),
+            aliased_stock.hasBookingLimitDatetimePassed.is_(False),
+            educational_models.CollectiveOffer.isActive.is_(True),
+        ),
+    },
 }
 
 JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
@@ -235,7 +245,7 @@ def _get_collective_offers(form: forms.InternalSearchForm) -> list[educational_m
                 educational_models.CollectiveOffer.authorId,
             ),
             sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).load_only(
-                educational_models.CollectiveStock.beginningDatetime
+                educational_models.CollectiveStock.beginningDatetime,
             ),
             sa.orm.joinedload(educational_models.CollectiveOffer.venue).load_only(
                 offerers_models.Venue.managingOffererId,
