@@ -3,7 +3,6 @@ from datetime import datetime
 from datetime import time
 from datetime import timedelta
 from decimal import Decimal
-from typing import Collection
 from typing import Iterable
 
 from flask_sqlalchemy import BaseQuery
@@ -1187,19 +1186,6 @@ def find_pending_booking_confirmation_limit_date_in_3_days() -> list[educational
     )
     query = query.options(sa.orm.joinedload(educational_models.CollectiveBooking.educationalRedactor, innerjoin=True))
     return query.all()
-
-
-def get_paginated_active_collective_offer_ids(batch_size: int, page: int = 1) -> list[int]:
-    query = (
-        educational_models.CollectiveOffer.query.with_entities(educational_models.CollectiveOffer.id)
-        .filter(
-            educational_models.CollectiveOffer.isActive.is_(True),
-        )
-        .order_by(educational_models.CollectiveOffer.id)
-        .offset((page - 1) * batch_size)  # first page is 1, not 0
-        .limit(batch_size)
-    )
-    return [offer_id for offer_id, in query]
 
 
 def get_paginated_active_collective_offer_template_ids(batch_size: int, page: int = 1) -> list[int]:

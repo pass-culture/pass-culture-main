@@ -424,17 +424,6 @@ def index_offers_of_venues_in_queue() -> None:
         logger.exception("Could not index offers of venues from queue")
 
 
-def get_base_query_for_collective_offer_indexation() -> BaseQuery:
-    return educational_models.CollectiveOffer.query.options(
-        sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
-            educational_models.CollectiveStock.collectiveBookings
-        ),
-        sa.orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True).joinedload(
-            offerers_models.Venue.managingOfferer, innerjoin=True
-        ),
-    )
-
-
 def get_base_query_for_collective_template_offer_indexation() -> BaseQuery:
     return educational_models.CollectiveOfferTemplate.query.options(
         sa.orm.joinedload(educational_models.CollectiveOfferTemplate.venue, innerjoin=True).joinedload(
