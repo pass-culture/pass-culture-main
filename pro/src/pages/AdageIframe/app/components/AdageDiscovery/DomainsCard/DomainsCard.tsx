@@ -20,6 +20,7 @@ const DomainsCard = ({
 }: DomainsCardProps) => {
   return (
     <NavLink
+      data-testid="card-domain-link"
       className={cn(styles['container'], styles[`container-${color}`])}
       to={href}
       onClick={() => handlePlaylistElementTracking()}
