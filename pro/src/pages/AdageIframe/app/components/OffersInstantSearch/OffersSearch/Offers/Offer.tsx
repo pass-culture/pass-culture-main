@@ -1,8 +1,14 @@
 import cn from 'classnames'
 import React, { useState } from 'react'
 
-import { AdageFrontRoles, OfferAddressType } from 'apiClient/adage'
+import {
+  AdageFrontRoles,
+  CollectiveOfferResponseModel,
+  CollectiveOfferTemplateResponseModel,
+  OfferAddressType,
+} from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import { isCollectiveOfferBookable } from 'core/OfferEducational'
 import useActiveFeature from 'hooks/useActiveFeature'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullUpIcon from 'icons/full-up.svg'
@@ -63,19 +69,30 @@ const Offer = ({
     offer: HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
   ) => {
     setDisplayDetails(!displayDetails)
+
+    triggerOfferDetailClickLog(offer)
+  }
+
+  function triggerOfferDetailClickLog(
+    offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
+  ) {
     if (!LOGS_DATA) {
       return
     }
 
-    if (!offer.isTemplate) {
-      void apiAdage.logOfferDetailsButtonClick({
+    const isOfferBookable = isCollectiveOfferBookable(offer)
+
+    if (isOfferBookable) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      apiAdage.logOfferDetailsButtonClick({
         iframeFrom: location.pathname,
         stockId: offer.stock.id,
         queryId: queryId,
         isFromNoResult: isInSuggestions,
       })
     } else {
-      void apiAdage.logOfferTemplateDetailsButtonClick({
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      apiAdage.logOfferTemplateDetailsButtonClick({
         iframeFrom: location.pathname,
         offerId: offer.id,
         queryId: queryId,
@@ -250,6 +267,7 @@ const Offer = ({
                   ? ButtonVariant.PRIMARY
                   : ButtonVariant.SECONDARY
               }
+              onClick={() => triggerOfferDetailClickLog(offer)}
               link={{
                 isExternal: true,
                 to: `${document.referrer}adage/passculture/offres/offerid/${offer.isTemplate ? '' : 'B-'}${offer.id}`,
