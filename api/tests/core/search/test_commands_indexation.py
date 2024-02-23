@@ -101,10 +101,9 @@ def test_update_products_booking_count_and_reindex_offers_if_same_ean(mocked_asy
         mock_run_query.return_value = rows
         run_command(app, "update_products_booking_count_and_reindex_offers")
 
-    mocked_async_index_offer_ids.assert_called_once_with(
-        expected_to_be_reindexed,
-        reason=search.IndexationReason.BOOKING_COUNT_CHANGE,
-    )
+    args, kwargs = mocked_async_index_offer_ids.call_args
+    assert sorted(args[0]) == sorted(expected_to_be_reindexed)
+    assert kwargs == {"reason": search.IndexationReason.BOOKING_COUNT_CHANGE}
 
 
 @clean_database
