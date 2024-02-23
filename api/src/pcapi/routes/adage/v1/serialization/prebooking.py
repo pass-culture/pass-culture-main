@@ -113,6 +113,7 @@ class EducationalBookingPerYearResponse(AdageBaseResponseModel):
     domainIds: list[int]
     domainLabels: list[str]
     venueId: int | None
+    venueName: str | None
     offererName: str | None
 
 
@@ -133,6 +134,7 @@ def get_collective_bookings_per_year_response(
             domainIds=[domain.id for domain in booking.collectiveStock.collectiveOffer.domains],
             domainLabels=[domain.name for domain in booking.collectiveStock.collectiveOffer.domains],
             venueId=booking.collectiveStock.collectiveOffer.venueId,
+            venueName=booking.collectiveStock.collectiveOffer.venue.name,
             offererName=booking.collectiveStock.collectiveOffer.venue.managingOfferer.name,
         )
         for booking in bookings
