@@ -30,6 +30,9 @@ export type OfferEducationalFormValues = {
   accessibility: AccessibiltyFormValues
   phone: string
   email: string
+  contactFormType?: 'form' | 'url'
+  contactUrl?: string | null
+  contactOptions?: { phone: boolean; email: boolean; form: boolean }
   notificationEmails: string[]
   domains: string[]
   'search-domains'?: string

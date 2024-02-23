@@ -48,6 +48,12 @@ export const DEFAULT_EAC_FORM_VALUES: OfferEducationalFormValues = {
   endingDate: '',
   hour: '',
   formats: [],
+  contactOptions: {
+    phone: false,
+    email: false,
+    form: false,
+  },
+  contactFormType: 'form',
 }
 
 export const DEFAULT_EAC_STOCK_FORM_VALUES: OfferEducationalStockFormValues = {
