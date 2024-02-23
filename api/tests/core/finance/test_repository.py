@@ -252,6 +252,23 @@ class GetInvoicesQueryTest:
         )
         assert list(invoices) == [invoice1]
 
+    def test_filter_on_offerer_id(self):
+        offerer1 = offerers_factories.OffererFactory()
+        offerer2 = offerers_factories.OffererFactory()
+        pro = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer1)
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer2)
+        bank_account1 = factories.BankAccountFactory(offerer=offerer1)
+        _invoice1 = factories.InvoiceFactory(bankAccount=bank_account1)
+        bank_account2 = factories.BankAccountFactory(offerer=offerer2)
+        invoice2 = factories.InvoiceFactory(bankAccount=bank_account2)
+
+        invoices = repository.get_invoices_query(
+            pro,
+            offerer_id=offerer2.id,
+        )
+        assert list(invoices) == [invoice2]
+
     def test_admin_without_filter(self):
         factories.InvoiceFactory()
         admin = users_factories.AdminFactory()

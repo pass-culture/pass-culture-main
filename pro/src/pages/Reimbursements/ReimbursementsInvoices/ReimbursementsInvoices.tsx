@@ -75,7 +75,8 @@ const ReimbursementsInvoices = (): JSX.Element => {
             periodEnd,
             reimbursmentPoint !== DEFAULT_INVOICES_FILTERS.reimbursementPointId
               ? parseInt(reimbursmentPoint)
-              : undefined
+              : undefined,
+            selectedOfferer?.id
           )
           setInvoices(invoices)
         } else {
@@ -107,6 +108,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
       filters.periodEnd,
       filters.periodStart,
       filters.reimbursementPoint,
+      selectedOfferer?.id,
     ]
   )
 
@@ -117,7 +119,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
     // We let the dependancies table empty here to have the same behavior as the previous version :
     //  data load when we arrive on the page
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [selectedOfferer?.id])
 
   useEffect(() => {
     const getReimbursementPointsResult = async () => {

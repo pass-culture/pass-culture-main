@@ -85,6 +85,7 @@ class InvoiceListV2QueryModel(BaseModel):
     periodBeginningDate: datetime.date | None
     periodEndingDate: datetime.date | None
     bankAccountId: int | None
+    offererId: int | None
 
 
 class InvoiceResponseV2Model(BaseModel):
