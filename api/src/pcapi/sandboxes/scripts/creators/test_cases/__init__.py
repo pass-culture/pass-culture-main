@@ -12,6 +12,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.providers import factories as providers_factories
+from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.users import factories as users_factories
 from pcapi.repository import atomic
@@ -31,30 +32,32 @@ from pcapi.sandboxes.scripts.creators.industrial.create_role_permissions import 
 from pcapi.sandboxes.scripts.creators.test_cases import venues_mock
 import pcapi.sandboxes.thumbs.generic_pictures as generic_picture_thumbs
 from pcapi.scripts.venue.venue_label.create_venue_labels import create_venue_labels
+from pcapi.models import db
 
 
 Fake = faker.Faker(locale="fr_FR")
 
 
 def save_test_cases_sandbox() -> None:
-    create_offers_with_gtls()
-    create_offers_with_same_ean()
-    create_allocine_venues()
-    create_venues_across_cities()
-    create_offers_for_each_subcategory()
-    create_offers_with_same_author()
-    create_roles_with_permissions()
-    create_industrial_offer_validation_rules()
-    create_industrial_gdpr_users()
-    create_industrial_offerer_with_custom_reimbursement_rule()
-    create_specific_invoice()
-    create_specific_invoice_with_bank_account()
-    create_specific_cashflow_batch_without_invoice()
-    create_venue_labels(sandbox=True)
-    create_venues_with_gmaps_image()
-    create_app_beneficiary()
-    create_venues_with_practical_info_graphical_edge_cases()
-    create_institutional_website_offer_playlist()
+    # create_offers_with_gtls()
+    # create_offers_with_same_ean()
+    # create_allocine_venues()
+    create_boost_venues()
+    # create_venues_across_cities()
+    # create_offers_for_each_subcategory()
+    # create_offers_with_same_author()
+    # create_roles_with_permissions()
+    # create_industrial_offer_validation_rules()
+    # create_industrial_gdpr_users()
+    # create_industrial_offerer_with_custom_reimbursement_rule()
+    # create_specific_invoice()
+    # create_specific_invoice_with_bank_account()
+    # create_specific_cashflow_batch_without_invoice()
+    # create_venue_labels(sandbox=True)
+    # create_venues_with_gmaps_image()
+    # create_app_beneficiary()
+    # create_venues_with_practical_info_graphical_edge_cases()
+    # create_institutional_website_offer_playlist()
 
 
 def create_offers_with_gtls() -> None:
@@ -170,7 +173,7 @@ def create_offer_with_ean(ean: str, venue: offerers_models.Venue, author: str) -
 
 
 def create_allocine_venues() -> None:
-    for venue_data in venues_mock.cinemas_venues:
+    for venue_data in venues_mock.allocine_venues:
         allocine_offerer = offerers_factories.OffererFactory(name=f"Structure du lieu allocine {venue_data['name']}")
         offerers_factories.UserOffererFactory(offerer=allocine_offerer, user__email="api@example.com")
         allocine_synchonized_venue = offerers_factories.VenueFactory(
@@ -200,6 +203,41 @@ def create_allocine_venues() -> None:
             venueIdAtOfferProvider=pivot.theaterId,
         )
         providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
+
+
+def create_boost_venues() -> None:
+    for venue_data in venues_mock.boost_cinemas_venues:
+        boost_offerer = offerers_factories.OffererFactory(
+            name="Structure du lieu synchro Boost",
+            siren=f"{random.randrange(999999999):09}",
+        )
+        offerers_factories.UserOffererFactory(offerer=boost_offerer, user__email="api@example.com")
+        venue = offerers_factories.VenueFactory(
+            name=f"Boost - {venue_data['name']}",
+            venueTypeCode=offerers_models.VenueTypeCode.MOVIE,
+            latitude=venue_data["latitude"],
+            longitude=venue_data["longitude"],
+            address=venue_data["address"],
+            postalCode=venue_data["postalCode"],
+            city=venue_data["city"],
+            departementCode=venue_data["departementCode"],
+            managingOfferer=boost_offerer,
+            siret=f"{boost_offerer.siren}{random.randrange(99999):05}",
+        )
+        pivot = providers_factories.BoostCinemaProviderPivotFactory(
+            idAtProvider=venue.siret,
+            venue=venue,
+        )
+        providers_factories.VenueProviderFactory(
+            provider=pivot.provider,
+            venue=pivot.venue,
+        )
+        providers_factories.BoostCinemaDetailsFactory(
+            cinemaProviderPivot=pivot,
+            cinemaUrl=venue_data["cinemaUrl"],
+            username="PASS CULTURE",
+            password="",
+        )
 
 
 def create_venues_across_cities() -> None:

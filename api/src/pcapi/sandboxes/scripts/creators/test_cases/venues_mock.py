@@ -547,7 +547,7 @@ venues = [
     },
 ]
 
-cinemas_paris = [
+allocine_cinemas_paris = [
     {
         "name": "Musée national EugèneDelacroix",
         "latitude": "48.86015",
@@ -671,7 +671,7 @@ cinemas_paris = [
     },
 ]
 
-cinemas_lyon = [
+allocine_cinemas_lyon = [
     {
         "name": "CINEMA COMOEDIA",
         "latitude": "45.74737",
@@ -695,7 +695,7 @@ cinemas_lyon = [
         "internalId": "P0618",
     },
     {
-        "name": "CINEMAS LUMIERE",
+        "name": "CINEMAS LUMIERE LA BARRE",
         "latitude": "45.75746",
         "longitude": "4.83560",
         "address": "12 Rue de la Barre",
@@ -706,7 +706,7 @@ cinemas_lyon = [
         "internalId": "P0015",
     },
     {
-        "name": "CINEMAS LUMIERE",
+        "name": "CINEMAS LUMIERE CORNEILLE",
         "latitude": "45.76328",
         "longitude": "4.84383",
         "address": "68 RUE PIERRE CORNEILLE",
@@ -729,7 +729,7 @@ cinemas_lyon = [
     },
 ]
 
-cinemas_domtom = [
+allocine_cinemas_domtom = [
     {
         "name": "CINEMA REX",
         "latitude": "-21.34186",
@@ -831,4 +831,49 @@ cinemas_domtom = [
     },
 ]
 
-cinemas_venues = cinemas_paris + cinemas_lyon + cinemas_domtom
+allocine_cinemas_venues = allocine_cinemas_paris + allocine_cinemas_lyon + allocine_cinemas_domtom
+
+boost_paris_venues = [
+    {
+        "city": "Paris",
+        "name": "CINELOUXOR",
+        "address": "170 Boulevard de Magenta",
+        "latitude": 48.88347,
+        "longitude": 2.34987,
+        "cinemaUrl": "https://api-W7510.boostbilletterie.fr/",
+        "postalCode": "75010",
+        "departementCode": "75",
+    },
+    {
+        "city": "Paris",
+        "name": "SOCIETE D'EXPLOITATION DU CINEMA DU PANTHEON",
+        "address": "13 Rue Victor Cousin",
+        "latitude": 48.84751,
+        "longitude": 2.34231,
+        "cinemaUrl": "https://api-C0076.boostbilletterie.fr/",
+        "postalCode": "75005",
+        "departementCode": "75",
+    },
+    {
+        "city": "Paris",
+        "name": "EDEN PLUS",
+        "address": "24 Boulevard Poissonnière",
+        "latitude": 48.87136,
+        "longitude": 2.34490,
+        "cinemaUrl": "https://api-C0089.boostbilletterie.fr/",
+        "postalCode": "75009",
+        "departementCode": "75",
+    },
+    {
+        "city": "Paris",
+        "name": "CINE THEATRE CHAPLIN DENFERT",
+        "address": "24 Place Denfert-Rochereau",
+        "latitude": 48.83388,
+        "longitude": 2.33099,
+        "cinemaUrl": "https://api-C0153.boostbilletterie.fr/",
+        "postalCode": "75014",
+        "departementCode": "75",
+    },
+]
+
+boost_cinemas_venues = boost_paris_venues
