@@ -995,8 +995,8 @@ def user_has_bookings(user: User) -> bool:
     return db.session.query(bookings_query.filter(offerers_models.UserOfferer.userId == user.id).exists()).scalar()
 
 
-def _get_collective_offer_for_adage_base_query() -> BaseQuery:
-    return educational_models.CollectiveOffer.query.filter(
+def get_collective_offer_by_id_for_adage(offer_id: int) -> educational_models.CollectiveOffer:
+    query = educational_models.CollectiveOffer.query.filter(
         educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
     ).options(
         sa.orm.joinedload(educational_models.CollectiveOffer.nationalProgram),
@@ -1019,16 +1019,7 @@ def _get_collective_offer_for_adage_base_query() -> BaseQuery:
         ),
         sa.orm.joinedload(educational_models.CollectiveOffer.domains),
     )
-
-
-def get_collective_offer_by_id_for_adage(offer_id: int) -> educational_models.CollectiveOffer:
-    query = _get_collective_offer_for_adage_base_query()
     return query.filter(educational_models.CollectiveOffer.id == offer_id).one()
-
-
-def get_collective_offers_by_ids_for_adage(ids: Collection[int]) -> BaseQuery:
-    query = _get_collective_offer_for_adage_base_query()
-    return query.filter(educational_models.CollectiveOffer.id.in_(ids))
 
 
 def get_collective_offer_template_by_id_for_adage(offer_id: int) -> educational_models.CollectiveOffer:
