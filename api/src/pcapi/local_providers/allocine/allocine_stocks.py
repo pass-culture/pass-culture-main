@@ -9,6 +9,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models as offers_models
+from pcapi.core.providers.allocine_movie_list import create_product
 import pcapi.core.providers.models as providers_models
 from pcapi.domain.allocine import get_movie_poster
 from pcapi.domain.allocine import get_movies_showtimes
@@ -18,6 +19,8 @@ from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
+from pcapi.repository import db
+from pcapi.repository import transaction
 from pcapi.repository.providable_queries import get_last_update_for_provider
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import local_datetime_to_default_timezone
@@ -63,21 +66,15 @@ class AllocineStocks(LocalProvider):
     def __next__(self) -> list[ProvidableInfo]:
         movie_showtimes = next(self.movies_showtimes)
         self.movie = movie_showtimes.movie
-        self.product = get_movie_product(self.movie)
-        if not self.product:
-            # We don't want to create offers and stocks unless product already exists
-            # Otherwise it will create offers without allocine data
-            self.log_provider_event(
-                providers_models.LocalProviderEventType.SyncError,
-                f"Product not found for movie {self.movie.internalId}",
-            )
-            logger.warning(
-                "Product not found for movie %s",
-                self.movie.internalId,
-                extra={"allocineId": self.movie.internalId, "theaterId": self.theater_id},
-                technical_message_id="allocineId.not_found",
-            )
-            return []
+
+        # FIXME (thconte: 2024-02-23)
+        # We take advantage of the data received with this synchro to speed up
+        # the completion of our product table with allocine movies until we are
+        # confident that almost all scheduled movies are already known.
+        # On the long term, this line should only be `get_movie_product`.
+        # This can be measured with the occurences of the logs with
+        # `technical_message_id=allocineId.not_found`
+        self.product = self.get_or_create_movie_product(self.movie)
 
         self.showtimes = _filter_only_digital_and_non_experience_showtimes(movie_showtimes.showtimes)
 
@@ -217,6 +214,24 @@ class AllocineStocks(LocalProvider):
         self.price_categories_by_offer[offer].insert(0, price_category)
         return price_category
 
+    def get_or_create_movie_product(self, movie: allocine_serializers.AllocineMovie) -> offers_models.Product:
+        product = offers_models.Product.query.filter(
+            offers_models.Product.extraData["allocineId"].cast(sa.Integer) == movie.internalId
+        ).one_or_none()
+
+        if not product:
+            with transaction():
+                product = create_product(movie)
+                db.session.add(product)
+
+        logger.info(
+            "Product created for allocine Id %d",
+            movie.internalId,
+            extra={"allocineId": movie.internalId, "theaterId": self.theater_id},
+            technical_message_id="allocineId.not_found",
+        )
+        return product
+
     def apply_allocine_price_rule(self, allocine_stock: offers_models.Stock) -> decimal.Decimal:
         for price, price_rule in self.price_and_price_rule_tuples:
             if price_rule(allocine_stock):
@@ -231,13 +246,6 @@ class AllocineStocks(LocalProvider):
 
     def shall_synchronize_thumbs(self) -> bool:
         return True
-
-
-def get_movie_product(movie: allocine_serializers.AllocineMovie) -> offers_models.Product | None:
-    product = offers_models.Product.query.filter(
-        offers_models.Product.extraData["allocineId"].cast(sa.Integer) == movie.internalId
-    ).one_or_none()
-    return product
 
 
 def _filter_only_digital_and_non_experience_showtimes(
