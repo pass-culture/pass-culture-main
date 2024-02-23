@@ -267,6 +267,7 @@ def request_email_confirmation(user: models.User) -> None:
 
 
 def _email_validation_resends_key(user: models.User) -> str:
+    print("just for ci")
     return f"email_validation_resends_user_{user.id}"
 
 
