@@ -2192,6 +2192,7 @@ export class DefaultService {
    * @param periodBeginningDate
    * @param periodEndingDate
    * @param bankAccountId
+   * @param offererId
    * @returns InvoiceListV2ResponseModel OK
    * @throws ApiError
    */
@@ -2199,6 +2200,7 @@ export class DefaultService {
     periodBeginningDate?: string | null,
     periodEndingDate?: string | null,
     bankAccountId?: number | null,
+    offererId?: number | null,
   ): CancelablePromise<InvoiceListV2ResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
@@ -2207,6 +2209,7 @@ export class DefaultService {
         'periodBeginningDate': periodBeginningDate,
         'periodEndingDate': periodEndingDate,
         'bankAccountId': bankAccountId,
+        'offererId': offererId,
       },
       errors: {
         403: `Forbidden`,
