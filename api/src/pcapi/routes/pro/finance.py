@@ -53,6 +53,7 @@ def get_invoices_v2(query: finance_serialize.InvoiceListV2QueryModel) -> finance
         bank_account_id=query.bankAccountId,
         date_from=query.periodBeginningDate,
         date_until=query.periodEndingDate,
+        offerer_id=query.offererId,
     )
     invoices = invoices.options(
         sqla_orm.joinedload(finance_models.Invoice.cashflows).joinedload(finance_models.Cashflow.batch)

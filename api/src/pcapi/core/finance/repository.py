@@ -986,6 +986,7 @@ def get_bank_accounts_query(user: users_models.User) -> sqla_orm.Query:
 def get_invoices_query(
     user: users_models.User,
     bank_account_id: int | None = None,
+    offerer_id: int | None = None,
     date_from: datetime.date | None = None,
     date_until: datetime.date | None = None,
 ) -> sqla_orm.Query:
@@ -1004,12 +1005,14 @@ def get_invoices_query(
 
     if bank_account_id:
         bank_account_subquery = bank_account_subquery.filter(models.BankAccount.id == bank_account_id)
-
     elif user.has_admin_role:
         # The following intentionally returns nothing for admin users,
         # so that we do NOT return all invoices of all bank accounts
         # for them. Admin users must select a bank account.
         bank_account_subquery = bank_account_subquery.filter(False)
+
+    if offerer_id:
+        bank_account_subquery = bank_account_subquery.filter(models.BankAccount.offererId == offerer_id)
 
     invoices = models.Invoice.query.filter(
         models.Invoice.bankAccountId.in_(bank_account_subquery.with_entities(models.BankAccount.id))
