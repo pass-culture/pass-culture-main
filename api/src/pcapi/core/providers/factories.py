@@ -96,30 +96,18 @@ class CinemaProviderPivotFactory(BaseFactory):
 
 
 class BoostCinemaProviderPivotFactory(CinemaProviderPivotFactory):
-    class Meta:
-        sqlalchemy_get_or_create = ["provider"]
-
     provider = factory.LazyFunction(lambda: providers_repository.get_provider_by_local_class("BoostStocks"))
 
 
 class CDSCinemaProviderPivotFactory(CinemaProviderPivotFactory):
-    class Meta:
-        sqlalchemy_get_or_create = ["provider"]
-
     provider = factory.LazyFunction(lambda: providers_repository.get_provider_by_local_class("CDSStocks"))
 
 
 class CGRCinemaProviderPivotFactory(CinemaProviderPivotFactory):
-    class Meta:
-        sqlalchemy_get_or_create = ["provider"]
-
     provider = factory.LazyFunction(lambda: providers_repository.get_provider_by_local_class("CGRStocks"))
 
 
 class EMSCinemaProviderPivotFactory(CinemaProviderPivotFactory):
-    class Meta:
-        sqlalchemy_get_or_create = ["provider"]
-
     provider = factory.LazyFunction(lambda: providers_repository.get_provider_by_local_class("EMSStocks"))
 
 
