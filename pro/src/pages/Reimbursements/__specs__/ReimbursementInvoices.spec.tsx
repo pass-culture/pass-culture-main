@@ -222,17 +222,8 @@ describe('reimbursementsWithFilters', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(
-      screen.queryByText(
-        'Aucun justificatif de remboursement trouvé pour votre recherche'
-      )
-    ).not.toBeInTheDocument()
-
-    vi.spyOn(api, 'getInvoices').mockResolvedValueOnce([])
-    await userEvent.click(screen.getByText('Lancer la recherche'))
-
-    expect(
       screen.getByText(
-        'Aucun justificatif de remboursement trouvé pour votre recherche'
+        'Vous n’avez pas encore de justificatifs de remboursement disponibles'
       )
     ).toBeInTheDocument()
   })
