@@ -104,7 +104,9 @@ export const VenueEditionFormScreen = ({
         serializeEditVenueBodyModel(
           value,
           {
-            hideSiret: venue?.siret?.length === 0,
+            // siret is not filled in initial values it could be empty
+            // for venues without siret
+            hideSiret: value.siret.length === 0,
           },
           shouldSendMail
         )
