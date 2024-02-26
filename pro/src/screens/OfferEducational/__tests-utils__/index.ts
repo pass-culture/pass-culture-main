@@ -1,4 +1,3 @@
-export { categoriesFactory, subCategoriesFactory } from './categoryFactory'
 export {
   managedVenueFactory,
   userOfferersFactory,

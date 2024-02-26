@@ -5,7 +5,6 @@ import { Configure } from 'react-instantsearch'
 import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import Notification from 'components/Notification/Notification'
-import { defaultCategories } from 'utils/adageFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -126,9 +125,6 @@ describe('app', () => {
         institutionName: 'COLLEGE BELLEVUE',
         institutionCity: 'ALES',
       })
-      vi.spyOn(apiAdage, 'getEducationalOffersCategories').mockResolvedValue(
-        defaultCategories
-      )
       window.IntersectionObserver = vi.fn().mockImplementation(() => ({
         observe: vi.fn(),
         unobserve: vi.fn(),

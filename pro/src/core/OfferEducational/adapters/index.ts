@@ -1,5 +1,4 @@
 export * from './cancelCollectiveBookingAdapter'
-export * from './getEducationalCategoriesAdapter'
 export * from './getStockCollectiveOfferAdapter'
 export * from './getOfferersAdapter'
 export * from './patchIsOfferActiveAdapter'

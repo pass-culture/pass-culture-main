@@ -11,7 +11,6 @@ import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { CollectiveOffer } from 'core/OfferEducational'
 import * as createFromTemplateUtils from 'core/OfferEducational/utils/createOfferFromTemplate'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import * as useNotification from 'hooks/useNotification'
 import * as pcapi from 'repository/pcapi/pcapi'
 import {
@@ -191,10 +190,6 @@ describe('DuplicateOfferCell', () => {
         ...defaultVenueResponseModel,
       })
 
-      vi.spyOn(api, 'getCategories').mockResolvedValue({
-        categories: [],
-        subcategories: [],
-      })
       vi.spyOn(api, 'getNationalPrograms').mockResolvedValue([])
 
       vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
@@ -284,22 +279,6 @@ describe('DuplicateOfferCell', () => {
       expect(notifyError).toHaveBeenCalledWith(
         'Une ou plusieurs erreurs sont présentes dans le formulaire'
       )
-    })
-
-    it('should return an error when the categorie call failed', async () => {
-      vi.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(offer)
-
-      vi.spyOn(api, 'getCategories').mockRejectedValueOnce('')
-
-      renderDuplicateOfferCell()
-
-      const button = screen.getByRole('button', {
-        name: 'Dupliquer',
-      })
-
-      await userEvent.click(button)
-
-      expect(notifyError).toHaveBeenNthCalledWith(1, GET_DATA_ERROR_MESSAGE)
     })
   })
 

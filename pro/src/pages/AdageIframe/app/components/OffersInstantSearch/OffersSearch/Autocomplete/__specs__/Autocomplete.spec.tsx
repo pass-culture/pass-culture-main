@@ -2,10 +2,9 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
-import { apiAdage } from 'apiClient/api'
 import Notification from 'components/Notification/Notification'
 import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import { defaultAdageUser, defaultCategories } from 'utils/adageFactories'
+import { defaultAdageUser } from 'utils/adageFactories'
 import * as localStorageAvailable from 'utils/localStorageAvailable'
 import {
   RenderWithProvidersOptions,
@@ -59,7 +58,6 @@ const mockKeywordSuggestions = [
     query: 'mock keyword 1',
     popularity: 1,
     nb_words: 1,
-    'offer.subcategoryId': ['CINE_PLEIN_AIR'],
     formats: ['Atelier de pratique'],
     querySuggestionName: {
       exact_nb_hits: 10,
@@ -70,7 +68,6 @@ const mockKeywordSuggestions = [
     query: 'mock keyword 2',
     popularity: 2,
     nb_words: 1,
-    'offer.subcategoryId': ['RENCONTRE'],
     formats: ['Concert'],
     querySuggestionName: {
       exact_nb_hits: 5,
@@ -86,12 +83,6 @@ const mockKeywordSuggestions = [
     },
   },
 ]
-
-vi.mock('apiClient/api', () => ({
-  apiAdage: {
-    getEducationalOffersCategories: vi.fn(() => defaultCategories),
-  },
-}))
 
 let mockGetItems = vi.fn((): Array<getItems> => mockVenueSuggestions)
 let mockSourceId = 'VenueSuggestionsSource'
@@ -187,8 +178,6 @@ describe('Autocomplete', () => {
 
     const searchButton = screen.getByText('Rechercher')
     const dialogElement = screen.getByTestId('dialog')
-    // TODO : uncomment when the link is added
-    // const footerButton = screen.getByText('Comment fonctionne la recherche ?')
 
     await userEvent.click(searchButton)
     await userEvent.click(inputElement)
@@ -196,9 +185,6 @@ describe('Autocomplete', () => {
     await userEvent.tab()
     await userEvent.tab()
     await userEvent.tab()
-
-    // TODO : uncomment when the link is added
-    // expect(footerButton).toHaveFocus()
 
     expect(dialogElement).not.toHaveAttribute('open')
   })
@@ -255,10 +241,9 @@ describe('Autocomplete', () => {
   it('should disable saved history when cookies are disabled', async () => {
     renderAutocomplete()
 
-    vi.spyOn(
-      localStorageAvailable,
-      'localStorageAvailable'
-    ).mockImplementationOnce(() => false)
+    vi.spyOn(localStorageAvailable, 'localStorageAvailable').mockImplementation(
+      () => false
+    )
 
     const inputElement = screen.getByPlaceholderText(
       'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
@@ -309,23 +294,8 @@ describe('Autocomplete', () => {
     expect(keywordSuggestion).toBeInTheDocument()
   })
 
-  it('should display an error message when the categories could not be fetched', async () => {
-    vi.spyOn(apiAdage, 'getEducationalOffersCategories').mockRejectedValueOnce(
-      null
-    )
-    renderAutocomplete()
-
-    expect(
-      await screen.findByText(
-        'Nous avons rencontré un problème lors du chargemement des données'
-      )
-    ).toBeInTheDocument()
-  })
-
   it('should display format value for suggestion word ', async () => {
-    renderAutocomplete('mock keyword 1', {
-      features: ['WIP_ENABLE_FORMAT'],
-    })
+    renderAutocomplete('mock keyword 1')
 
     const inputElement = screen.getByPlaceholderText(
       'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'

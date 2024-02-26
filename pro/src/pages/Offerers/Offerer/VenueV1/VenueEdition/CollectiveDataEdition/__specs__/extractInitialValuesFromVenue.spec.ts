@@ -1,5 +1,4 @@
 import { StudentLevels } from 'apiClient/v1'
-import { EducationalCategories } from 'core/OfferEducational'
 import { VenueCollectiveInformation } from 'core/Venue/types'
 
 import { COLLECTIVE_DATA_FORM_INITIAL_VALUES } from '../CollectiveDataForm/initialValues'
@@ -22,12 +21,7 @@ describe('extractInitialValuesFromVenue', () => {
       collectiveWebsite: null,
     }
 
-    const categories: EducationalCategories = {
-      educationalCategories: [],
-      educationalSubCategories: [],
-    }
-
-    expect(extractInitialValuesFromVenue(venue, categories)).toStrictEqual({
+    expect(extractInitialValuesFromVenue(venue)).toStrictEqual({
       collectiveDescription: 'description EAC',
       collectiveStudents: [
         StudentLevels.CAP_1RE_ANN_E,
@@ -45,8 +39,6 @@ describe('extractInitialValuesFromVenue', () => {
       'search-collectiveInterventionArea': '',
       'search-collectiveNetwork': '',
       'search-collectiveStudents': '',
-      collectiveCategoryId: '',
-      collectiveSubCategoryId: undefined,
     })
   })
 })

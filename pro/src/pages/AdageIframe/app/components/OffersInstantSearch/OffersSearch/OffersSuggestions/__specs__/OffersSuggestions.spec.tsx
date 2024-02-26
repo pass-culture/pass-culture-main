@@ -235,36 +235,6 @@ describe('OffersSuggestions', () => {
           formats: ['Atelier de pratique'],
         },
       },
-      user,
-      { features: ['WIP_ENABLE_FORMAT'] }
-    )
-
-    expect(Configure).toHaveBeenCalledTimes(3)
-    expect(Configure).toHaveBeenCalledWith(
-      expect.objectContaining({
-        aroundRadius: 30_000_000,
-        facetFilters: [
-          [
-            'offer.educationalInstitutionUAICode:all',
-            'offer.educationalInstitutionUAICode:1234567A',
-          ],
-        ],
-      }),
-      {}
-    )
-    expect(
-      screen.getByText('Découvrez des offres qui relèvent d’autres formats')
-    )
-  })
-
-  it('should show the result independently of categories filter when the categories filter was set', () => {
-    renderOffersSuggestionsComponent(
-      {
-        formValues: {
-          ...props.formValues,
-          categories: [['JEUX']],
-        },
-      },
       user
     )
 
@@ -282,66 +252,7 @@ describe('OffersSuggestions', () => {
       {}
     )
     expect(
-      screen.getByText('Découvrez des offres qui relèvent d’autres catégories')
-    )
-  })
-
-  it("should clear the domains filters filters but keep the categories when clearing categories didn't give any result", () => {
-    vi.spyOn(
-      instantSearch as {
-        useInstantSearch: () => InstantSearchHookResultMock
-      },
-      'useInstantSearch'
-    ).mockImplementationOnce(() => ({
-      scopedResults: [
-        {
-          indexId: 'no_results_offers_index_0',
-          results: {
-            ...defaultUseInfiniteHitsReturn,
-            hits: [],
-            nbHits: 0,
-          },
-        },
-        {
-          indexId: 'no_results_offers_index_1',
-          results: {
-            ...defaultUseInfiniteHitsReturn,
-            nbHits: 1,
-          },
-        },
-        {
-          indexId: 'no_results_offers_index_2',
-          results: {
-            ...defaultUseInfiniteHitsReturn,
-            nbHits: 1,
-          },
-        },
-        {
-          indexId: 'no_results_offers_index_3',
-          results: {
-            ...defaultUseInfiniteHitsReturn,
-            nbHits: 1,
-          },
-        },
-      ],
-    }))
-
-    renderOffersSuggestionsComponent(
-      {
-        formValues: {
-          ...props.formValues,
-          domains: [2],
-          categories: [['JEUX']],
-        },
-      },
-      { ...user, lat: null, lon: null }
-    )
-
-    expect(Configure).toHaveBeenCalledTimes(4)
-    expect(
-      screen.getByText(
-        'Découvrez des offres qui relèvent d’autres domaines artistiques'
-      )
+      screen.getByText('Découvrez des offres qui relèvent d’autres formats')
     )
   })
 

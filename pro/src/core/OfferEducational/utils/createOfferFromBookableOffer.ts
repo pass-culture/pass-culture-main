@@ -29,10 +29,9 @@ export const createOfferFromBookableOffer = async (
     return notify.error(result.message)
   }
 
-  const { categories, offerers } = result.payload
+  const { offerers } = result.payload
 
   const initialValues = computeInitialValuesFromOffer(
-    categories,
     offerers,
     false,
     offerResponse.payload

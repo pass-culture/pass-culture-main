@@ -6,11 +6,7 @@ import { api } from 'apiClient/api'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferEducational from '../'
-import {
-  categoriesFactory,
-  defaultCreationProps,
-  subCategoriesFactory,
-} from '../__tests-utils__'
+import { defaultCreationProps } from '../__tests-utils__'
 import { OfferEducationalProps } from '../OfferEducational'
 
 describe('screens | OfferEducational : creation offer type step', () => {
@@ -27,12 +23,10 @@ describe('screens | OfferEducational : creation offer type step', () => {
   it('should display the right fields and titles', async () => {
     renderWithProviders(<OfferEducational {...props} />)
 
-    const categorySelect = await screen.findByLabelText('Catégorie *')
-    expect(categorySelect).toBeInTheDocument()
-    expect(categorySelect).toBeEnabled()
-    expect(categorySelect).toHaveValue('')
-
-    expect(screen.queryByLabelText('Sous-catégorie *')).not.toBeInTheDocument()
+    const formatSelect = await screen.findByLabelText('Format *')
+    expect(formatSelect).toBeInTheDocument()
+    expect(formatSelect).toBeEnabled()
+    expect(formatSelect).toHaveValue('')
 
     const titleInput = await screen.findByLabelText('Titre de l’offre *')
     expect(titleInput).toBeEnabled()
@@ -60,83 +54,6 @@ describe('screens | OfferEducational : creation offer type step', () => {
     expect(durationInput.getAttribute('placeholder')).toBe('HH:MM')
   })
 
-  describe('catégories and sub catégories', () => {
-    beforeEach(() => {
-      props = {
-        ...props,
-        categories: {
-          educationalCategories: categoriesFactory([
-            { id: 'CAT_1' },
-            { id: 'CAT_2' },
-          ]),
-          educationalSubCategories: subCategoriesFactory([
-            { categoryId: 'CAT_1', id: 'SUBCAT_1' },
-            { categoryId: 'CAT_1', id: 'SUBCAT_2' },
-            { categoryId: 'CAT_2', id: 'SUBCAT_3' },
-            { categoryId: 'CAT_2', id: 'SUBCAT_4' },
-          ]),
-        },
-      }
-    })
-    it('should require user to select a category before displaying subcategories', async () => {
-      renderWithProviders(<OfferEducational {...props} />)
-
-      const categorySelect = await screen.findByLabelText('Catégorie *')
-      expect(categorySelect).toBeInTheDocument()
-
-      expect(
-        screen.queryByLabelText('Sous-catégorie *')
-      ).not.toBeInTheDocument()
-
-      await userEvent.click(categorySelect)
-      await userEvent.tab()
-
-      expect(
-        await screen.findByText('Veuillez sélectionner une catégorie')
-      ).toBeInTheDocument()
-
-      await userEvent.selectOptions(categorySelect, 'CAT_1')
-
-      expect(
-        await screen.findByLabelText('Sous-catégorie *')
-      ).toBeInTheDocument()
-
-      expect(
-        screen.queryByText('Veuillez sélectionner une catégorie')
-      ).not.toBeInTheDocument()
-
-      const subCategorySelect = screen.getByLabelText('Sous-catégorie *')
-      expect(subCategorySelect.children).toHaveLength(3)
-      expect(subCategorySelect.children[0]).toHaveValue('')
-      expect(subCategorySelect.children[1]).toHaveValue('SUBCAT_1')
-      expect(subCategorySelect.children[2]).toHaveValue('SUBCAT_2')
-    })
-
-    it('should require user to select a subcategory', async () => {
-      renderWithProviders(<OfferEducational {...props} />)
-      const categorySelect = await screen.findByLabelText('Catégorie *')
-      await userEvent.selectOptions(categorySelect, 'CAT_1')
-
-      await waitFor(() =>
-        expect(screen.getByLabelText('Sous-catégorie *')).toBeInTheDocument()
-      )
-
-      const subCategorySelect = screen.getByLabelText('Sous-catégorie *')
-
-      await userEvent.click(subCategorySelect)
-      await userEvent.tab()
-
-      expect(
-        screen.getByText('Veuillez sélectionner une sous-catégorie')
-      ).toBeInTheDocument()
-
-      await userEvent.selectOptions(subCategorySelect, 'SUBCAT_1')
-
-      expect(
-        screen.queryByText('Veuillez sélectionner une sous-catégorie')
-      ).not.toBeInTheDocument()
-    })
-  })
   describe('domains', () => {
     beforeEach(() => {
       props = {
@@ -157,7 +74,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
         await screen.findByLabelText(/Domaine artistique et culturel */)
       )
 
-      await userEvent.click(screen.getByLabelText(/Catégorie */))
+      await userEvent.click(screen.getByLabelText(/Format */))
 
       expect(
         screen.getByText('Veuillez renseigner un domaine')
@@ -175,7 +92,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
 
       await userEvent.click(await screen.findByLabelText(/Domain 2/))
 
-      await userEvent.click(screen.getByLabelText(/Catégorie */))
+      await userEvent.click(screen.getByLabelText(/Format */))
 
       expect(
         screen.queryByText('Veuillez renseigner un domaine')
@@ -208,9 +125,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
 
   describe('formats', () => {
     it('should user select formats', async () => {
-      renderWithProviders(<OfferEducational {...props} />, {
-        features: ['WIP_ENABLE_FORMAT'],
-      })
+      renderWithProviders(<OfferEducational {...props} />)
 
       const selectFormat = await screen.findByTestId('select')
 

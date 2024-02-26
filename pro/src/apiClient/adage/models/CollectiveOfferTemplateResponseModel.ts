@@ -37,7 +37,6 @@ export type CollectiveOfferTemplateResponseModel = {
   offerId?: number | null;
   offerVenue: CollectiveOfferOfferVenue;
   students: Array<StudentLevels>;
-  subcategoryLabel: string;
   venue: OfferVenueResponse;
   visualDisabilityCompliant?: boolean | null;
 };

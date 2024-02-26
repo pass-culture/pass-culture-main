@@ -12,7 +12,6 @@ import {
   CollectiveOffer,
   CollectiveOfferTemplate,
   createOfferFromTemplate,
-  EducationalCategories,
   isCollectiveOfferTemplate,
   Mode,
 } from 'core/OfferEducational'
@@ -28,20 +27,17 @@ import styles from './CollectiveOfferSummaryEdition.module.scss'
 
 interface CollectiveOfferSummaryEditionProps {
   offer: CollectiveOfferTemplate | CollectiveOffer
-  categories: EducationalCategories
   reloadCollectiveOffer: () => void
   mode: Mode
 }
 
 const CollectiveOfferSummaryEdition = ({
   offer,
-  categories,
   reloadCollectiveOffer,
   mode,
 }: CollectiveOfferSummaryEditionProps) => {
   const notify = useNotification()
   const navigate = useNavigate()
-  const isFormatActive = useActiveFeature('WIP_ENABLE_FORMAT')
   const isMarseilleActive = useActiveFeature('WIP_ENABLE_MARSEILLE')
 
   const offerEditLink = `/offre/${computeURLCollectiveOfferId(
@@ -93,7 +89,6 @@ const CollectiveOfferSummaryEdition = ({
                 navigate,
                 notify,
                 offer.id,
-                isFormatActive,
                 undefined,
                 isMarseilleActive
               )
@@ -106,7 +101,6 @@ const CollectiveOfferSummaryEdition = ({
 
       <CollectiveOfferSummary
         offer={offer}
-        categories={categories}
         offerEditLink={offerEditLink}
         stockEditLink={stockEditLink}
         visibilityEditLink={visibilityEditLink}

@@ -3,9 +3,9 @@ import { addDays } from 'date-fns'
 import {
   AdageFrontRoles,
   AuthenticatedResponse,
-  CategoriesResponseModel,
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
+  EacFormat,
   EducationalInstitutionWithBudgetResponseModel,
   OfferAddressType,
 } from 'apiClient/adage'
@@ -32,7 +32,6 @@ export const defaultCollectiveTemplateOffer: CollectiveOfferTemplateResponseMode
       addressType: OfferAddressType.OFFERER_VENUE,
     },
     students: [],
-    subcategoryLabel: 'Cinéma',
     venue: {
       id: 1,
       address: '1 boulevard Poissonnière',
@@ -58,7 +57,6 @@ export const defaultCollectiveOffer: CollectiveOfferResponseModel = {
   id: 479,
   name: 'Une chouette à la mer',
   description: 'Une offre vraiment chouette',
-  subcategoryLabel: 'Cinéma',
   stock: {
     id: 825,
     beginningDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
@@ -103,6 +101,7 @@ export const defaultCollectiveOffer: CollectiveOfferResponseModel = {
   },
   students: [StudentLevels.COLL_GE_4E, StudentLevels.COLL_GE_3E],
   interventionArea: ['75', '92'],
+  formats: [EacFormat.CONCERT],
 }
 
 export const defaultAdageUser: AuthenticatedResponse = {
@@ -161,18 +160,4 @@ export const defaultUseInfiniteHitsReturn = {
   sendEvent: vi.fn(),
   bindEvent: vi.fn(),
   currentPageHits: [hit],
-}
-
-export const defaultCategories: CategoriesResponseModel = {
-  categories: [{ id: 'CINEMA', proLabel: 'Cinéma' }],
-  subcategories: [
-    {
-      id: 'CINE_PLEIN_AIR',
-      categoryId: 'CINEMA',
-    },
-    {
-      id: 'EVENEMENT_CINE',
-      categoryId: 'CINEMA',
-    },
-  ],
 }

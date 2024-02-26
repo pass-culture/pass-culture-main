@@ -5,7 +5,6 @@ import { MARSEILLE_EN_GRAND } from 'pages/AdageIframe/app/constants'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
   defaultAdageUser,
-  defaultCategories,
   defaultUseInfiniteHitsReturn,
 } from 'utils/adageFactories'
 import {
@@ -43,7 +42,6 @@ vi.mock(
 
 vi.mock('apiClient/api', () => ({
   apiAdage: {
-    getEducationalOffersCategories: vi.fn(() => defaultCategories),
     getVenueById: vi.fn(),
     authenticate: vi.fn(),
     getVenueBySiret: vi.fn(),

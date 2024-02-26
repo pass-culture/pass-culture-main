@@ -24,14 +24,8 @@ const isPhoneValid = (phone: string | undefined): boolean => {
 const isNotEmpty = (description: string | undefined): boolean =>
   description ? Boolean(description.trim().length > 0) : false
 
-export function getOfferEducationalValidationSchema(isFormatActive: boolean) {
+export function getOfferEducationalValidationSchema() {
   return yup.object().shape({
-    category: isFormatActive
-      ? yup.string()
-      : yup.string().required('Veuillez sélectionner une catégorie'),
-    subCategory: isFormatActive
-      ? yup.string()
-      : yup.string().required('Veuillez sélectionner une sous-catégorie'),
     title: yup.string().max(110).required('Veuillez renseigner un titre'),
     description: yup
       .string()
@@ -119,21 +113,17 @@ export function getOfferEducationalValidationSchema(isFormatActive: boolean) {
         test: () => domains.length > 0,
       })
     ),
-    formats: isFormatActive
-      ? yup.array().test({
-          message: 'Veuillez renseigner un format',
-          test: (format) => Boolean(format?.length && format.length > 0),
-        })
-      : yup.array(),
-    'search-formats': isFormatActive
-      ? yup.string().when('formats', (format, schema) =>
-          schema.test({
-            name: 'search-formats-invalid',
-            message: 'error',
-            test: () => format.length > 0,
-          })
-        )
-      : yup.string(),
+    formats: yup.array().test({
+      message: 'Veuillez renseigner un format',
+      test: (format) => Boolean(format?.length && format.length > 0),
+    }),
+    'search-formats': yup.string().when('formats', (format, schema) =>
+      schema.test({
+        name: 'search-formats-invalid',
+        message: 'error',
+        test: () => format.length > 0,
+      })
+    ),
     interventionArea: yup.array().when('eventAddress', {
       is: (eventAddress: { addressType: OfferAddressType }) =>
         eventAddress.addressType !== OfferAddressType.OFFERER_VENUE,

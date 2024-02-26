@@ -157,7 +157,6 @@ describe('offers', () => {
       id: 480,
       description: 'Une offre vraiment coco',
       name: 'Coco channel',
-      subcategoryLabel: 'Cinéma',
       stock: {
         id: 826,
         beginningDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
@@ -203,7 +202,6 @@ describe('offers', () => {
       id: 481,
       description: 'Une autre offre',
       name: 'Un autre titre',
-      subcategoryLabel: 'Cinéma',
       stock: {
         id: 827,
         beginningDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),

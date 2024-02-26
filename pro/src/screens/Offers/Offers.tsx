@@ -56,7 +56,7 @@ export interface OffersProps {
   ) => void
   urlSearchFilters: SearchFiltersParams
   venues: SelectOption[]
-  categories: SelectOption[]
+  categories?: SelectOption[]
 }
 
 const Offers = ({

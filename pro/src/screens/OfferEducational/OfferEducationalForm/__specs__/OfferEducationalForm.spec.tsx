@@ -32,10 +32,6 @@ const renderOfferEducationalForm = (
 }
 
 const defaultProps: OfferEducationalFormProps = {
-  categories: {
-    educationalCategories: [],
-    educationalSubCategories: [],
-  },
   userOfferers: [userOffererFactory({})],
   mode: Mode.CREATION,
   domainsOptions: [],

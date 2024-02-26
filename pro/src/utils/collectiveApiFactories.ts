@@ -3,7 +3,6 @@ import { addDays } from 'date-fns'
 
 import { EacFormat } from 'apiClient/adage'
 import {
-  CategoryResponseModel,
   CollectiveBookingBankInformationStatus,
   CollectiveBookingByIdResponseModel,
   CollectiveBookingCollectiveStockResponseModel,
@@ -21,8 +20,6 @@ import {
   OfferAddressType,
   OfferStatus,
   StudentLevels,
-  SubcategoryIdEnum,
-  SubcategoryResponseModel,
   VenueTypeCode,
 } from 'apiClient/v1'
 import { BOOKING_STATUS } from 'core/Bookings/constants'
@@ -34,8 +31,6 @@ let venueId = 1
 let offererId = 1
 let bookingId = 1
 let bookingDetailsId = 1
-let categoryId = 1
-let subCategoryId = 1
 let institutionId = 1
 
 const sharedCollectiveOfferData = {
@@ -61,7 +56,6 @@ const sharedCollectiveOfferData = {
     addressType: OfferAddressType.OTHER,
   },
   students: [StudentLevels.COLL_GE_3E],
-  subcategoryId: SubcategoryIdEnum.CINE_PLEIN_AIR,
   venueId: 'VENUE_ID',
   imageUrl: 'https://example.com/image.jpg',
   imageCredit: 'image credit',
@@ -258,45 +252,8 @@ export const venueCollectiveDataFactory = (
     collectivePhone: '',
     collectiveStudents: [],
     collectiveWebsite: '',
-    collectiveSubCategoryId: '',
     siret: '1234567890',
     ...customCollectiveData,
-  }
-}
-
-export const collectiveCategoryFactory = (
-  customCategory?: Partial<CategoryResponseModel>
-) => {
-  const currentCategoryId = categoryId++
-  return {
-    id: `CATEGORY_${currentCategoryId}`,
-    isSelectable: true,
-    proLabel: `Cat numéro ${currentCategoryId}`,
-    ...customCategory,
-  }
-}
-
-export const collectiveSubCategoryFactory = (
-  customSubCategory?: Partial<SubcategoryResponseModel>
-): SubcategoryResponseModel => {
-  const currentSubCategoryId = subCategoryId++
-  return {
-    appLabel: '',
-    canBeDuo: true,
-    canBeEducational: true,
-    canExpire: true,
-    categoryId: `CATEGORY_${currentSubCategoryId}`,
-    conditionalFields: [],
-    id: `SUB_CATEGORY_${currentSubCategoryId}`,
-    isDigitalDeposit: false,
-    isEvent: true,
-    isPhysicalDeposit: false,
-    isSelectable: true,
-    onlineOfflinePlatform: '',
-    canBeWithdrawable: false,
-    proLabel: `Sous catégorie #${currentSubCategoryId}`,
-    reimbursementRule: '',
-    ...customSubCategory,
   }
 }
 
@@ -390,7 +347,6 @@ export const defaultCollectifOfferResponseModel = {
   },
   status: OfferStatus.ACTIVE,
   students: [],
-  subcategoryId: SubcategoryIdEnum.CONCERT,
   venue: {
     isVirtual: false,
     id: 1,

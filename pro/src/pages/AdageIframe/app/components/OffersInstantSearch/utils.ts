@@ -1,7 +1,6 @@
 import { VenueResponse } from 'apiClient/adage'
 import { OfferAddressType } from 'apiClient/v1'
 import { Facets, Option } from 'pages/AdageIframe/app/types'
-import { inferCategoryLabelsFromSubcategories } from 'utils/collectiveCategories'
 
 import { studentsForData } from './OffersSearch/OfferFilters/studentsOptions'
 import { SearchFormValues } from './OffersSearch/OffersSearch'
@@ -11,7 +10,6 @@ export const ADAGE_FILTERS_DEFAULT_VALUES: SearchFormValues = {
   students: [],
   departments: [],
   academies: [],
-  categories: [],
   eventAddressType: OfferAddressType.OTHER,
   geolocRadius: 50,
   formats: [],
@@ -25,7 +23,6 @@ export const adageFiltersToFacetFilters = ({
   eventAddressType,
   departments,
   academies,
-  categories,
   formats,
   venue,
 }: {
@@ -35,7 +32,6 @@ export const adageFiltersToFacetFilters = ({
   departments: string[]
   academies: string[]
   eventAddressType: string
-  categories: string[][]
   formats: string[]
   venue: VenueResponse | null
 }) => {
@@ -84,10 +80,6 @@ export const adageFiltersToFacetFilters = ({
       break
   }
 
-  const filteredCategories: string[] = categories.flatMap((categoryValue) =>
-    categoryValue.map((subcategoryId) => `offer.subcategoryId:${subcategoryId}`)
-  )
-
   const filteredVenues = venue
     ? [
         `venue.id:${venue.id}`,
@@ -113,11 +105,6 @@ export const adageFiltersToFacetFilters = ({
   if (filteredAcademies.length > 0) {
     filtersKeys.push('academies')
     updatedFilters.push(filteredAcademies)
-  }
-
-  if (filteredCategories.length > 0) {
-    filtersKeys.push('categories')
-    updatedFilters.push(filteredCategories)
   }
 
   if (filteredFormats.length > 0) {
@@ -148,17 +135,11 @@ export const adageFiltersToFacetFilters = ({
 export const serializeFiltersForData = (
   filters: SearchFormValues,
   currentSearch: string | null,
-  categoriesOptions: Option<string[]>[],
-  domainsOptions: Option<number>[],
-  isFormatEnable: boolean
+  domainsOptions: Option<number>[]
 ) => {
   return {
     ...filters,
     query: currentSearch,
-    categories: inferCategoryLabelsFromSubcategories(
-      filters.categories,
-      categoriesOptions
-    ),
     domains: filters.domains.map(
       (domainId) =>
         domainsOptions.find((option) => option.value === Number(domainId))
@@ -168,7 +149,7 @@ export const serializeFiltersForData = (
       (student) =>
         studentsForData.find((s) => s.label === student)?.valueForData
     ),
-    formats: isFormatEnable ? filters.formats : undefined,
+    formats: filters.formats,
     venue: filters.venue
       ? [filters.venue.id, ...filters.venue.relative.map((venueId) => venueId)]
       : undefined,

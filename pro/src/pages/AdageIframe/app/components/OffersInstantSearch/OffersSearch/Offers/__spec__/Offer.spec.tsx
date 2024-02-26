@@ -78,7 +78,6 @@ describe('offer', () => {
       id: 480,
       description: 'Une offre vraiment chouette',
       name: 'Une chouette à la mer',
-      subcategoryLabel: 'Cinéma',
       stock: {
         id: 825,
         beginningDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
@@ -122,6 +121,7 @@ describe('offer', () => {
       isTemplate: false,
       nationalProgram: { name: 'Program Test', id: 123 },
       imageUrl: 'url',
+      formats: [EacFormat.CONCERT],
     }
 
     offerProps = {
@@ -143,7 +143,7 @@ describe('offer', () => {
       expect(redactorName).toBeInTheDocument()
 
       // First summary line
-      expect(screen.getByText('Cinéma')).toBeInTheDocument()
+      expect(screen.getByText('Concert')).toBeInTheDocument()
 
       expect(screen.getByText('75000, Paris')).toBeInTheDocument()
       // second summary line
@@ -165,12 +165,10 @@ describe('offer', () => {
       const offerName = await screen.findByText(offerInCayenne.name)
       expect(offerName).toBeInTheDocument()
 
-      // First summary line
-      expect(screen.getByText('Cinéma')).toBeInTheDocument()
+      expect(screen.getByText('Concert')).toBeInTheDocument()
 
       expect(screen.getByText('A la mairie')).toBeInTheDocument()
 
-      // second summary line
       expect(screen.getByText('25/09/2021 à 19:00')).toBeInTheDocument()
       expect(
         screen.queryByText('Jusqu’à', { exact: false })
@@ -499,7 +497,7 @@ describe('offer', () => {
     })
   })
 
-  it('should display format when FF is active', () => {
+  it('should display format', () => {
     renderOffer(
       {
         ...offerProps,
@@ -509,8 +507,7 @@ describe('offer', () => {
           formats: [EacFormat.CONCERT, EacFormat.REPR_SENTATION],
         },
       },
-      user,
-      { features: ['WIP_ENABLE_FORMAT'] }
+      user
     )
 
     expect(screen.getByText('Concert, Représentation')).toBeInTheDocument()

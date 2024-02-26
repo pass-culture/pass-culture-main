@@ -9,19 +9,14 @@ import { computeInitialValuesFromOffer } from '../computeInitialValuesFromOffer'
 
 describe('computeInitialValuesFromOffer', () => {
   it('should return default values when no offer is provided', () => {
-    expect(
-      computeInitialValuesFromOffer(
-        { educationalCategories: [], educationalSubCategories: [] },
-        [],
-        false
-      )
-    ).toEqual(DEFAULT_EAC_FORM_VALUES)
+    expect(computeInitialValuesFromOffer([], false)).toEqual(
+      DEFAULT_EAC_FORM_VALUES
+    )
   })
 
   it('should use email for notification emails if notification email not set', () => {
     expect(
       computeInitialValuesFromOffer(
-        { educationalCategories: [], educationalSubCategories: [] },
         [],
         false,
         collectiveOfferFactory({
@@ -34,19 +29,13 @@ describe('computeInitialValuesFromOffer', () => {
 
   it('should pre-set todays dates for a template offer creation initial values', () => {
     expect(
-      computeInitialValuesFromOffer(
-        { educationalCategories: [], educationalSubCategories: [] },
-        [],
-        true,
-        undefined
-      ).beginningDate
+      computeInitialValuesFromOffer([], true, undefined).beginningDate
     ).toEqual(formatShortDateForInput(new Date()))
   })
 
   it('should fill the time values to the start date time', () => {
     expect(
       computeInitialValuesFromOffer(
-        { educationalCategories: [], educationalSubCategories: [] },
         [],
         true,
         collectiveOfferTemplateFactory({

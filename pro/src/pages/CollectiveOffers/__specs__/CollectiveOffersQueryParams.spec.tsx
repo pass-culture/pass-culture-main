@@ -6,10 +6,7 @@ import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { CollectiveOfferResponseModel, OfferStatus } from 'apiClient/v1'
-import {
-  ALL_CATEGORIES_OPTION,
-  DEFAULT_SEARCH_FILTERS,
-} from 'core/Offers/constants'
+import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -53,30 +50,6 @@ const renderOffers = async (
   return {
     history,
   }
-}
-
-const categoriesAndSubcategories = {
-  categories: [
-    { id: 'CINEMA', proLabel: 'Cinéma', isSelectable: true },
-    { id: 'JEU', proLabel: 'Jeux', isSelectable: true },
-    { id: 'TECHNIQUE', proLabel: 'Technique', isSelectable: false },
-  ],
-  subcategories: [
-    {
-      id: 'EVENEMENT_CINE',
-      proLabel: 'Evènement ciné',
-      canBeEducational: true,
-      categoryId: 'CINEMA',
-      isSelectable: true,
-    },
-    {
-      id: 'CONCOURS',
-      proLabel: 'Concours jeux',
-      canBeEducational: false,
-      categoryId: 'JEU',
-      isSelectable: true,
-    },
-  ],
 }
 
 const proVenues = [
@@ -126,10 +99,6 @@ describe('route CollectiveOffers', () => {
     offersRecap = [collectiveOfferFactory()]
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
     vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
-    vi.spyOn(api, 'getCategories').mockResolvedValue(
-      // @ts-expect-error FIX ME
-      categoriesAndSubcategories
-    )
     vi.spyOn(api, 'getVenues').mockResolvedValue(
       // @ts-expect-error FIX ME
       { venues: proVenues }
@@ -191,44 +160,19 @@ describe('route CollectiveOffers', () => {
     })
 
     it('should have venue value be removed when user asks for all venues', async () => {
+      // Given
       vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
-      vi.spyOn(api, 'getCategories').mockResolvedValue({
-        categories: [
-          { id: 'test_id_1', proLabel: 'My test value', isSelectable: true },
-          {
-            id: 'test_id_2',
-            proLabel: 'My second test value',
-            isSelectable: true,
-          },
-        ],
-        subcategories: [
-          // @ts-expect-error FIX ME
-          {
-            id: 'test_sub_id_1',
-            categoryId: 'test_id_1',
-            isSelectable: true,
-            canBeEducational: true,
-          },
-          // @ts-expect-error FIX ME
-          {
-            id: 'test_sub_id_2',
-            categoryId: 'test_id_2',
-            canBeEducational: true,
-            isSelectable: true,
-          },
-        ],
-      })
       await renderOffers(store)
       const firstTypeOption = screen.getByRole('option', {
-        name: 'My test value',
+        name: 'Concert',
       })
-      const typeSelect = screen.getByDisplayValue(ALL_CATEGORIES_OPTION.label)
-
+      const typeSelect = screen.getByDisplayValue('Tous')
+      // When
       await userEvent.selectOptions(typeSelect, firstTypeOption)
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?categorie=test_id_1'
+        '/offres/collectives?format=Concert'
       )
     })
 

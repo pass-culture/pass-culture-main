@@ -11,7 +11,6 @@ import useNotification from 'hooks/useNotification'
 import { MARSEILLE_EN_GRAND } from 'pages/AdageIframe/app/constants'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { Facets, Option } from 'pages/AdageIframe/app/types'
-import { filterEducationalSubCategories } from 'utils/collectiveCategories'
 
 import { DEFAULT_GEO_RADIUS, MAIN_INDEX_ID } from '../OffersInstantSearch'
 import {
@@ -46,7 +45,6 @@ export interface SearchFormValues {
   departments: string[]
   academies: string[]
   eventAddressType: string
-  categories: string[][]
   geolocRadius: number
   formats: string[]
   venue: VenueResponse | null
@@ -60,10 +58,6 @@ export const OffersSearch = ({
   const { adageUser } = useAdageUser()
   const isUserAdmin = adageUser.role === AdageFrontRoles.READONLY
 
-  const [categoriesOptions, setCategoriesOptions] = useState<
-    Option<string[]>[]
-  >([])
-
   const notification = useNotification()
 
   const [domainsOptions, setDomainsOptions] = useState<Option<number>[]>([])
@@ -74,7 +68,6 @@ export const OffersSearch = ({
     (res) => res.indexId === MAIN_INDEX_ID
   )?.results
   const nbHits = mainOffersSearchResults?.nbHits
-  const isFormatEnabled = useActiveFeature('WIP_ENABLE_FORMAT')
 
   const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
   const isUserInMarseilleProgram = (adageUser.programs ?? []).some(
@@ -91,15 +84,6 @@ export const OffersSearch = ({
   })
 
   useEffect(() => {
-    const getAllCategories = async () => {
-      try {
-        const result = await apiAdage.getEducationalOffersCategories()
-
-        return setCategoriesOptions(filterEducationalSubCategories(result))
-      } catch {
-        notification.error(GET_DATA_ERROR_MESSAGE)
-      }
-    }
     const getAllDomains = async () => {
       try {
         const result = await api.listEducationalDomains()
@@ -111,8 +95,6 @@ export const OffersSearch = ({
         notification.error(GET_DATA_ERROR_MESSAGE)
       }
     }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    getAllCategories()
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     getAllDomains()
   }, [notification])
@@ -154,9 +136,7 @@ export const OffersSearch = ({
           ? serializeFiltersForData(
               formik.values,
               currentSearch,
-              categoriesOptions,
-              domainsOptions,
-              isFormatEnabled
+              domainsOptions
             )
           : {},
       })
@@ -193,9 +173,7 @@ export const OffersSearch = ({
             className={styles['search-filters']}
             localisationFilterState={localisationFilterState}
             setLocalisationFilterState={setlocalisationFilterState}
-            categoriesOptions={categoriesOptions}
             domainsOptions={domainsOptions}
-            isFormatEnabled={isFormatEnabled}
             shouldDisplayMarseilleStudentOptions={
               isMarseilleEnabled && isUserInMarseilleProgram
             }
@@ -203,7 +181,6 @@ export const OffersSearch = ({
         </div>
 
         <FiltersTags
-          categoriesOptions={categoriesOptions}
           domainsOptions={domainsOptions}
           localisationFilterState={localisationFilterState}
           setLocalisationFilterState={setlocalisationFilterState}

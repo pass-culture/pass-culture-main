@@ -55,7 +55,6 @@ export type OfferEducationalFormProps = Omit<
 }
 
 const OfferEducationalForm = ({
-  categories,
   userOfferers,
   mode,
   domainsOptions,
@@ -155,15 +154,12 @@ const OfferEducationalForm = ({
           isOfferCreated={isOfferCreated}
           userOfferers={userOfferers}
           venuesOptions={venuesOptions}
-          categories={categories}
           onChangeOfferer={onOffererChange}
           offer={offer}
         />
         {isEligible && values.offererId && values.venueId ? (
           <>
             <FormOfferType
-              categories={categories.educationalCategories}
-              subCategories={categories.educationalSubCategories}
               domainsOptions={domainsOptions}
               nationalPrograms={nationalPrograms}
               disableForm={mode === Mode.READ_ONLY}
