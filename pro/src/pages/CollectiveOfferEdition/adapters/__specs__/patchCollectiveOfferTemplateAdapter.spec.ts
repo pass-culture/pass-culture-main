@@ -3,7 +3,6 @@ import {
   ApiError,
   GetCollectiveOfferTemplateResponseModel,
   OfferAddressType,
-  SubcategoryIdEnum,
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
@@ -26,8 +25,6 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
     props = {
       offerId: offerId,
       offer: {
-        category: 'PRATIQUE_ART',
-        subCategory: SubcategoryIdEnum.ATELIER_PRATIQUE_ART,
         title: 'CollectiveOffer 0',
         description: 'A passionate description of collectiveoffer 0',
         duration: '',
@@ -57,8 +54,6 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
         hour: '10:00',
       },
       initialValues: {
-        category: 'PRATIQUE_ART',
-        subCategory: SubcategoryIdEnum.ATELIER_PRATIQUE_ART,
         title: 'CollectiveOffer 0',
         description: 'A passionate description of collectiveoffer 0',
         duration: '',

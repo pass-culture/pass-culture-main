@@ -1,5 +1,3 @@
-import { SubcategoryIdEnum } from 'apiClient/v1'
-import { EducationalCategories } from 'core/OfferEducational'
 import { VenueCollectiveInformation } from 'core/Venue/types'
 
 import { COLLECTIVE_DATA_FORM_INITIAL_VALUES } from '../initialValues'
@@ -11,8 +9,6 @@ type CollectiveDataFormValuesWithoutSearchField = Omit<
   | 'search-collectiveDomains'
   | 'search-collectiveNetwork'
   | 'search-collectiveInterventionArea'
-  | 'collectiveCategoryId'
-  | 'collectiveSubCategoryId'
 >
 
 const getValue = <T extends keyof CollectiveDataFormValuesWithoutSearchField>(
@@ -34,8 +30,7 @@ const getValue = <T extends keyof CollectiveDataFormValuesWithoutSearchField>(
 }
 
 export const extractInitialValuesFromVenue = (
-  venue: VenueCollectiveInformation,
-  categories: EducationalCategories
+  venue: VenueCollectiveInformation
 ): CollectiveDataFormValues => {
   return {
     collectiveDescription: getValue(venue, 'collectiveDescription'),
@@ -47,11 +42,6 @@ export const extractInitialValuesFromVenue = (
     collectiveDomains: getValue(venue, 'collectiveDomains'),
     collectiveNetwork: getValue(venue, 'collectiveNetwork'),
     collectiveInterventionArea: getValue(venue, 'collectiveInterventionArea'),
-    collectiveCategoryId:
-      categories.educationalSubCategories.find(
-        ({ id }) => venue.collectiveSubCategoryId === id
-      )?.categoryId ?? '',
-    collectiveSubCategoryId: venue.collectiveSubCategoryId as SubcategoryIdEnum,
     'search-collectiveStudents': '',
     'search-collectiveDomains': '',
     'search-collectiveNetwork': '',

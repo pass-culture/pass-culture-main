@@ -1,14 +1,10 @@
 import { FormikProvider, useFormik } from 'formik'
-import React, { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { GetCollectiveVenueResponseModel, StudentLevels } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import FormLayout from 'components/FormLayout'
-import {
-  EducationalCategories,
-  EducationalSubCategory,
-} from 'core/OfferEducational'
 import { handleAllFranceDepartmentOptions } from 'core/shared'
 import { venueInterventionOptions } from 'core/shared/interventionOptions'
 import { SelectOption } from 'custom_types/form'
@@ -47,39 +43,6 @@ type CollectiveDataFormProps = {
   venueId: string
   venueCollectiveData: GetCollectiveVenueResponseModel | null
   adageVenueCollectiveData: GetCollectiveVenueResponseModel | null
-  categories: EducationalCategories
-}
-
-const getCategoriesAndSubcategoriesOptions = (
-  categories: EducationalCategories,
-  availableSubCategories: EducationalSubCategory[]
-) => {
-  let categoriesOptions = categories.educationalCategories.map((item) => ({
-    value: item['id'],
-    label: item['label'],
-  }))
-  if (categoriesOptions.length > 1) {
-    categoriesOptions = [
-      { value: '', label: 'Sélectionner une catégorie' },
-      ...categoriesOptions,
-    ]
-  }
-
-  let subCategoriesOptions = availableSubCategories.map((item) => ({
-    value: item['id'],
-    label: item['label'],
-  }))
-
-  if (subCategoriesOptions.length > 1) {
-    subCategoriesOptions = [
-      { value: '', label: 'Sélectionner une sous catégorie' },
-      ...subCategoriesOptions,
-    ]
-  }
-  return {
-    categoriesOptions,
-    subCategoriesOptions,
-  }
 }
 
 const CollectiveDataForm = ({
@@ -89,7 +52,6 @@ const CollectiveDataForm = ({
   venueId,
   venueCollectiveData,
   adageVenueCollectiveData,
-  categories,
 }: CollectiveDataFormProps): JSX.Element | null => {
   const notify = useNotification()
   const navigate = useNavigate()
@@ -102,18 +64,8 @@ const CollectiveDataForm = ({
     useState<boolean>(false)
 
   const initialValues = venueCollectiveData
-    ? extractInitialValuesFromVenue(venueCollectiveData, categories)
+    ? extractInitialValuesFromVenue(venueCollectiveData)
     : COLLECTIVE_DATA_FORM_INITIAL_VALUES
-
-  const [availableSubCategories, setAvailableSubCategories] = useState<
-    EducationalSubCategory[]
-  >(
-    initialValues.collectiveCategoryId
-      ? categories.educationalSubCategories.filter(
-          (x) => x.categoryId == initialValues.collectiveCategoryId
-        )
-      : []
-  )
 
   const onSubmit = async (values: CollectiveDataFormValues) => {
     setIsLoading(true)
@@ -130,7 +82,7 @@ const CollectiveDataForm = ({
     }
 
     formik.resetForm({
-      values: extractInitialValuesFromVenue(response.payload, categories),
+      values: extractInitialValuesFromVenue(response.payload),
     })
 
     navigate('/accueil')
@@ -155,38 +107,22 @@ const CollectiveDataForm = ({
   useEffect(() => {
     formik.resetForm({
       values: venueCollectiveData
-        ? extractInitialValuesFromVenue(venueCollectiveData, categories)
+        ? extractInitialValuesFromVenue(venueCollectiveData)
         : COLLECTIVE_DATA_FORM_INITIAL_VALUES,
     })
   }, [venueCollectiveData])
 
   useEffect(() => {
     async function setExtractInitialValuesFromVenue() {
-      if (adageVenueCollectiveData && categories) {
+      if (adageVenueCollectiveData) {
         await formik.setValues(
-          extractInitialValuesFromVenue(adageVenueCollectiveData, categories)
+          extractInitialValuesFromVenue(adageVenueCollectiveData)
         )
       }
     }
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     setExtractInitialValuesFromVenue()
-  }, [adageVenueCollectiveData, categories])
-
-  const handleCategoryChange = useCallback(
-    (event: React.ChangeEvent<HTMLSelectElement>) => {
-      const newCategoryId = event.target.value
-
-      setAvailableSubCategories(
-        categories.educationalSubCategories.filter(
-          (subCategory) => subCategory.categoryId === newCategoryId
-        )
-      )
-    },
-    [categories.educationalSubCategories]
-  )
-
-  const { categoriesOptions, subCategoriesOptions } =
-    getCategoriesAndSubcategoriesOptions(categories, availableSubCategories)
+  }, [adageVenueCollectiveData])
 
   return (
     <>
@@ -228,25 +164,6 @@ const CollectiveDataForm = ({
               />
             </FormLayout.Row>
             <div className={styles.section}>Informations du lieu</div>
-            <FormLayout.Row>
-              <Select
-                label="Catégorie"
-                name="collectiveCategoryId"
-                options={categoriesOptions}
-                onChange={handleCategoryChange}
-                isOptional={true}
-              />
-            </FormLayout.Row>
-            {availableSubCategories.length > 0 && (
-              <FormLayout.Row>
-                <Select
-                  label="Sous-catégorie"
-                  name="collectiveSubCategoryId"
-                  options={subCategoriesOptions}
-                  isOptional={true}
-                />
-              </FormLayout.Row>
-            )}
             <FormLayout.Row>
               <MultiSelectAutocomplete
                 hideTags

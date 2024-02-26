@@ -4,7 +4,6 @@ import {
   OfferAddressType,
   OfferStatus,
   StudentLevels,
-  SubcategoryIdEnum,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   CollectiveOfferResponseModel,
@@ -13,27 +12,9 @@ import {
 import { AccessibiltyFormValues } from 'core/shared'
 import { hasProperty } from 'utils/types'
 
-export type EducationalCategory = {
-  id: string
-  label: string
-}
-
-export type EducationalSubCategory = {
-  id: string
-  categoryId: string
-  label: string
-}
-
-export type EducationalCategories = {
-  educationalCategories: EducationalCategory[]
-  educationalSubCategories: EducationalSubCategory[]
-}
-
 export type OfferDatesType = 'permanent' | 'specific_dates'
 
 export type OfferEducationalFormValues = {
-  category: string
-  subCategory?: SubcategoryIdEnum
   title: string
   description: string
   duration: string

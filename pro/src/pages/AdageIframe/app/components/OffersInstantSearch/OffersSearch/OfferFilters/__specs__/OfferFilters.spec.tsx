@@ -19,13 +19,11 @@ const renderOfferFilters = ({
   localisationFilterState = LocalisationFilterStates.NONE,
   adageUser = defaultAdageUser,
   storeOverrides = null,
-  isFormatEnabled = false,
 }: {
   initialValues: SearchFormValues
   localisationFilterState?: LocalisationFilterStates
   adageUser?: AuthenticatedResponse
   storeOverrides?: unknown
-  isFormatEnabled?: boolean
 }) =>
   renderWithProviders(
     <AdageUserContextProvider adageUser={adageUser}>
@@ -33,14 +31,12 @@ const renderOfferFilters = ({
         <OfferFilters
           localisationFilterState={localisationFilterState}
           setLocalisationFilterState={mockSetLocalisationFilterState}
-          categoriesOptions={[{ label: 'Cinéma', value: ['CINE_PLEIN_AIR'] }]}
           domainsOptions={[
             { value: 1, label: 'Danse' },
             { value: 2, label: 'Architecture' },
             { value: 3, label: 'Arts' },
           ]}
           shouldDisplayMarseilleStudentOptions={true}
-          isFormatEnabled={isFormatEnabled}
         />
       </Formik>
     </AdageUserContextProvider>,
@@ -54,30 +50,12 @@ const initialValues = {
   eventAddressType: '',
   departments: [],
   academies: [],
-  categories: [],
   formats: [],
   geolocRadius: 50,
   venue: null,
 }
 
 describe('OfferFilters', () => {
-  it('renders correctly', () => {
-    renderOfferFilters({ initialValues })
-
-    expect(
-      screen.getByRole('button', { name: 'Domaine artistique' })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: 'Niveau scolaire' })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: 'Type d’intervention' })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: 'Catégorie' })
-    ).toBeInTheDocument()
-  })
-
   it('should submit onclick modal search button domain artistic', async () => {
     renderOfferFilters({
       initialValues: {
@@ -95,28 +73,12 @@ describe('OfferFilters', () => {
     expect(handleSubmit).toHaveBeenCalled()
   })
 
-  it('should submit onclick modal search button cateogires', async () => {
-    renderOfferFilters({
-      initialValues: {
-        ...initialValues,
-        categories: [['test']],
-      },
-    })
-
-    await userEvent.click(screen.getByRole('button', { name: 'Catégorie (1)' }))
-
-    await userEvent.click(screen.getAllByTestId('search-button-modal')[0])
-
-    expect(handleSubmit).toHaveBeenCalled()
-  })
-
   it('should submit formats values onclick modal search button', async () => {
     renderOfferFilters({
       initialValues: {
         ...initialValues,
         formats: [EacFormat.CONCERT, EacFormat.REPR_SENTATION],
       },
-      isFormatEnabled: true,
     })
 
     await userEvent.click(screen.getByRole('button', { name: 'Format (2)' }))
@@ -344,16 +306,6 @@ describe('OfferFilters', () => {
     await userEvent.click(screen.getAllByTestId('search-button-modal')[0])
 
     expect(handleSubmit).toHaveBeenCalled()
-  })
-
-  it('should return categories options when the api call was successful', async () => {
-    renderOfferFilters({
-      initialValues: initialValues,
-    })
-
-    await userEvent.click(screen.getByRole('button', { name: 'Catégorie' }))
-
-    expect(screen.getByText('Cinéma')).toBeInTheDocument()
   })
 
   it('should sort students options with selected first but keep initial order otherwise', async () => {

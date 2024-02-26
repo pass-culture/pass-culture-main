@@ -1,17 +1,12 @@
 import { useState, useCallback, useEffect } from 'react'
 
 import { GetEducationalOffererResponseModel } from 'apiClient/v1'
-import {
-  CollectiveOffer,
-  CollectiveOfferTemplate,
-  EducationalCategories,
-} from 'core/OfferEducational'
+import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
 import getCollectiveOfferFormDataApdater from 'core/OfferEducational/adapters/getCollectiveOfferFormDataAdapter'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
 
 type OfferEducationalFormData = {
-  categories: EducationalCategories
   domains: SelectOption[]
   offerers: GetEducationalOffererResponseModel[]
   nationalPrograms: SelectOption<number>[]
@@ -25,7 +20,6 @@ const useOfferEducationalFormData = (
 } => {
   const [isReady, setIsReady] = useState<boolean>(false)
   const defaultReturnValue: OfferEducationalFormData = {
-    categories: { educationalCategories: [], educationalSubCategories: [] },
     domains: [],
     offerers: [],
     nationalPrograms: [],
@@ -44,10 +38,9 @@ const useOfferEducationalFormData = (
         notify.error(result.message)
       }
 
-      const { categories, offerers, domains, nationalPrograms } = result.payload
+      const { offerers, domains, nationalPrograms } = result.payload
 
       setData({
-        categories,
         offerers,
         domains,
         nationalPrograms,

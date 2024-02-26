@@ -10,11 +10,7 @@ import {
 import Callout from 'components/Callout/Callout'
 import MandatoryInfo from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { CollectiveDmsTimeline } from 'components/VenueForm/CollectiveDmsTimeline/CollectiveDmsTimeline'
-import {
-  EducationalCategories,
-  getEducationalCategoriesAdapter,
-  getEducationalDomainsAdapter,
-} from 'core/OfferEducational'
+import { getEducationalDomainsAdapter } from 'core/OfferEducational'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
@@ -82,10 +78,6 @@ export const CollectiveDataEdition = ({
   const [domains, setDomains] = useState<SelectOption[]>([])
   const [statuses, setStatuses] = useState<SelectOption[]>([])
   const [culturalPartners, setCulturalPartners] = useState<SelectOption[]>([])
-  const [categories, setCategories] = useState<EducationalCategories>({
-    educationalCategories: [],
-    educationalSubCategories: [],
-  })
   const [isLoading, setIsLoading] = useState(true)
   const [venueCollectiveData, setVenueCollectiveData] =
     useState<GetCollectiveVenueResponseModel | null>(null)
@@ -102,7 +94,6 @@ export const CollectiveDataEdition = ({
         getVenueEducationalStatusesAdapter(),
         getCulturalPartnersAdapter(),
         getVenueCollectiveDataAdapter(Number(venueId) ?? ''),
-        getEducationalCategoriesAdapter(),
       ])
 
       try {
@@ -122,13 +113,11 @@ export const CollectiveDataEdition = ({
         statusesResponse,
         culturalPartnersResponse,
         venueResponse,
-        categoriesResponse,
       ] = allResponses
 
       setDomains(domainsResponse.payload)
       setStatuses(statusesResponse.payload)
       setCulturalPartners(culturalPartnersResponse.payload)
-      setCategories(categoriesResponse.payload)
       if (venueResponse.isOk) {
         if (venueHasCollectiveInformation(venueResponse.payload)) {
           setVenueCollectiveData(venueResponse.payload)
@@ -203,7 +192,6 @@ export const CollectiveDataEdition = ({
             venueId={venueId}
             venueCollectiveData={venueCollectiveData}
             adageVenueCollectiveData={adageVenueCollectiveData}
-            categories={categories}
           />
         </>
       )}

@@ -14,16 +14,10 @@ import {
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
-  EducationalCategories,
   Mode,
 } from 'core/OfferEducational'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as useNotification from 'hooks/useNotification'
-import {
-  categoriesFactory,
-  subCategoriesFactory,
-} from 'screens/OfferEducational/__tests-utils__'
 import {
   collectiveOfferTemplateFactory,
   defaultVenueResponseModel,
@@ -36,8 +30,7 @@ const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 
 const renderCollectiveOfferSummaryEdition = (
-  offer: CollectiveOfferTemplate | CollectiveOffer,
-  categories: EducationalCategories
+  offer: CollectiveOfferTemplate | CollectiveOffer
 ) => {
   const storeOverrides = {
     user: {
@@ -57,7 +50,6 @@ const renderCollectiveOfferSummaryEdition = (
   renderWithProviders(
     <CollectiveOfferSummaryEdition
       offer={offer}
-      categories={categories}
       reloadCollectiveOffer={vi.fn()}
       mode={Mode.EDITION}
     />,
@@ -67,18 +59,11 @@ const renderCollectiveOfferSummaryEdition = (
 
 describe('CollectiveOfferSummary', () => {
   let offer: CollectiveOfferTemplate | CollectiveOffer
-  let categories: EducationalCategories
   const mockLogEvent = vi.fn()
   const notifyError = vi.fn()
 
   beforeEach(async () => {
     offer = collectiveOfferTemplateFactory({ isTemplate: true })
-    categories = {
-      educationalCategories: categoriesFactory([{ id: 'CAT_1' }]),
-      educationalSubCategories: subCategoriesFactory([
-        { categoryId: 'CAT_1', id: 'SUBCAT_1' },
-      ]),
-    }
 
     const notifsImport = (await vi.importActual(
       'hooks/useNotification'
@@ -96,11 +81,6 @@ describe('CollectiveOfferSummary', () => {
 
     vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(offer)
 
-    vi.spyOn(api, 'getCategories').mockResolvedValue({
-      categories: [],
-      subcategories: [],
-    })
-
     vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
       educationalOfferers: [],
     })
@@ -117,7 +97,7 @@ describe('CollectiveOfferSummary', () => {
   it('should display desactive offer option when offer is active and not booked', async () => {
     offer = collectiveOfferTemplateFactory({ isTemplate: true, isActive: true })
 
-    renderCollectiveOfferSummaryEdition(offer, categories)
+    renderCollectiveOfferSummaryEdition(offer)
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     const desactivateOffer = screen.getByRole('button', {
@@ -128,7 +108,7 @@ describe('CollectiveOfferSummary', () => {
 
   it('should log event when clicking duplicate offer button', async () => {
     offer = collectiveOfferTemplateFactory({ isTemplate: true, isActive: true })
-    renderCollectiveOfferSummaryEdition(offer, categories)
+    renderCollectiveOfferSummaryEdition(offer)
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     const duplicateOffer = screen.getByRole('button', {
@@ -148,7 +128,7 @@ describe('CollectiveOfferSummary', () => {
   it('should return an error when the collective offer could not be retrieved', async () => {
     vi.spyOn(api, 'getCollectiveOfferTemplate').mockRejectedValueOnce('')
 
-    renderCollectiveOfferSummaryEdition(offer, categories)
+    renderCollectiveOfferSummaryEdition(offer)
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -162,25 +142,6 @@ describe('CollectiveOfferSummary', () => {
     )
   })
 
-  it('should return an error when the categorie call failed', async () => {
-    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce(
-      collectiveOfferTemplateFactory({ isTemplate: true, isActive: true })
-    )
-
-    vi.spyOn(api, 'getCategories').mockRejectedValueOnce('')
-
-    renderCollectiveOfferSummaryEdition(offer, categories)
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-    const duplicateOffer = screen.getByRole('button', {
-      name: 'Créer une offre réservable pour un établissement scolaire',
-    })
-    await userEvent.click(duplicateOffer)
-
-    expect(notifyError).toHaveBeenCalledWith(GET_DATA_ERROR_MESSAGE)
-  })
-
   it('should return an error when the duplication failed', async () => {
     vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce(
       collectiveOfferTemplateFactory({ isTemplate: true, isActive: true })
@@ -189,7 +150,7 @@ describe('CollectiveOfferSummary', () => {
       new ApiError({} as ApiRequestOptions, { status: 400 } as ApiResult, '')
     )
 
-    renderCollectiveOfferSummaryEdition(offer, categories)
+    renderCollectiveOfferSummaryEdition(offer)
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -207,7 +168,7 @@ describe('CollectiveOfferSummary', () => {
   it('should return an error when trying to get offerer image', async () => {
     fetchMock.mockResponse('Service Unavailable', { status: 503 })
 
-    renderCollectiveOfferSummaryEdition(offer, categories)
+    renderCollectiveOfferSummaryEdition(offer)
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -228,7 +189,7 @@ describe('CollectiveOfferSummary', () => {
 
     vi.spyOn(global, 'fetch').mockResolvedValue(mockResponse)
 
-    renderCollectiveOfferSummaryEdition(offer, categories)
+    renderCollectiveOfferSummaryEdition(offer)
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 

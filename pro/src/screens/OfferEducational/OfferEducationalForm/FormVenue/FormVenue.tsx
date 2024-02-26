@@ -10,7 +10,6 @@ import {
   applyVenueDefaultsToFormValues,
   CollectiveOffer,
   CollectiveOfferTemplate,
-  EducationalCategories,
   OfferEducationalFormValues,
   isCollectiveOffer,
   Mode,
@@ -27,7 +26,7 @@ interface FormVenueProps {
   mode: Mode
   isOfferCreated: boolean
   offer?: CollectiveOffer | CollectiveOfferTemplate
-  categories: EducationalCategories
+
   onChangeOfferer: (event: string) => void
 }
 
@@ -38,7 +37,6 @@ const FormVenue = ({
   mode,
   isOfferCreated,
   offer,
-  categories,
   onChangeOfferer,
 }: FormVenueProps): JSX.Element => {
   const lastBookingStatus = isCollectiveOffer(offer)
@@ -126,8 +124,7 @@ const FormVenue = ({
                   applyVenueDefaultsToFormValues(
                     { ...values, venueId: event.target.value },
                     userOfferers,
-                    isOfferCreated,
-                    categories
+                    isOfferCreated
                   )
                 )
               }

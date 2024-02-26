@@ -742,20 +742,14 @@ describe('screen Offers', () => {
     })
   })
 
-  it('should display the collective offers format when the ff is enabled', () => {
-    renderOffers(
-      { ...props, audience: Audience.COLLECTIVE },
-      { features: ['WIP_ENABLE_FORMAT'] }
-    )
+  it('should display the collective offers format', () => {
+    renderOffers({ ...props, audience: Audience.COLLECTIVE })
 
     expect(screen.getByRole('combobox', { name: 'Format' }))
   })
 
-  it('should filter on the format when the ff is enabled', async () => {
-    renderOffers(
-      { ...props, audience: Audience.COLLECTIVE },
-      { features: ['WIP_ENABLE_FORMAT'] }
-    )
+  it('should filter on the format', async () => {
+    renderOffers({ ...props, audience: Audience.COLLECTIVE })
 
     const formatSelect = screen.getByRole('combobox', { name: 'Format' })
 

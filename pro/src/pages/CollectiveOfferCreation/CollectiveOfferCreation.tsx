@@ -1,4 +1,3 @@
-import React from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { AppLayout } from 'app/AppLayout'
@@ -40,7 +39,6 @@ export const CollectiveOfferCreation = ({
           requestId={requestId}
         >
           <OfferEducationalScreen
-            categories={offerEducationalFormData.categories}
             userOfferers={offerEducationalFormData.offerers}
             domainsOptions={offerEducationalFormData.domains}
             nationalPrograms={offerEducationalFormData.nationalPrograms}

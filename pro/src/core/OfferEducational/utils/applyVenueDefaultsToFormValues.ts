@@ -1,16 +1,12 @@
-import {
-  GetEducationalOffererResponseModel,
-  SubcategoryIdEnum,
-} from 'apiClient/v1'
+import { GetEducationalOffererResponseModel } from 'apiClient/v1'
 
 import { DEFAULT_EAC_FORM_VALUES } from '../constants'
-import { EducationalCategories, OfferEducationalFormValues } from '../types'
+import { OfferEducationalFormValues } from '../types'
 
 export const applyVenueDefaultsToFormValues = (
   values: OfferEducationalFormValues,
   offerers: GetEducationalOffererResponseModel[],
-  isOfferCreated: boolean,
-  categories: EducationalCategories
+  isOfferCreated: boolean
 ): OfferEducationalFormValues => {
   const venue = offerers
     ?.find(({ id }) => id.toString() === values.offererId)
@@ -19,11 +15,6 @@ export const applyVenueDefaultsToFormValues = (
   if (isOfferCreated || venue === undefined) {
     return { ...values }
   }
-
-  const venueSubCategory =
-    categories.educationalSubCategories.find(
-      ({ id }) => venue.collectiveSubCategoryId === id
-    ) ?? null
 
   const valuesWithNewVenueFields = {
     ...values,
@@ -34,10 +25,6 @@ export const applyVenueDefaultsToFormValues = (
       ...values.eventAddress,
       venueId: Number(values.venueId),
     },
-    category: venueSubCategory?.categoryId ?? DEFAULT_EAC_FORM_VALUES.category,
-    subCategory:
-      (venue.collectiveSubCategoryId as SubcategoryIdEnum) ??
-      DEFAULT_EAC_FORM_VALUES.subCategory,
   }
 
   // Change these fields only if offer is not created yet

@@ -32,7 +32,6 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
   const [offerTemplate, setOfferTemplate] = useState<CollectiveOfferTemplate>()
   const [isLoading, setIsLoading] = useState(true)
 
-  const isFormatActive = useActiveFeature('WIP_ENABLE_FORMAT')
   const isMarseilleActive = useActiveFeature('WIP_ENABLE_MARSEILLE')
 
   const { offerId, requestId } = useParams<{
@@ -51,7 +50,6 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
       navigate,
       notify,
       Number(offerId),
-      isFormatActive,
       requestId,
       isMarseilleActive
     )

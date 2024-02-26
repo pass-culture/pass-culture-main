@@ -25,7 +25,6 @@ export type VenueCollectiveInformation = Pick<
   | 'collectivePhone'
   | 'collectiveStudents'
   | 'collectiveWebsite'
-  | 'collectiveSubCategoryId'
 >
 
 export type Providers = {

@@ -6,7 +6,6 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import { CollectiveOfferResponseModel, OfferStatus } from 'apiClient/v1'
 import {
-  ALL_CATEGORIES_OPTION,
   ALL_VENUES,
   ALL_VENUES_OPTION,
   DEFAULT_SEARCH_FILTERS,
@@ -17,30 +16,6 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { CollectiveOffers } from '../CollectiveOffers'
 import { collectiveOfferFactory } from '../utils/collectiveOffersFactories'
-
-const categoriesAndSubcategories = {
-  categories: [
-    { id: 'CINEMA', proLabel: 'Cinéma', isSelectable: true },
-    { id: 'JEU', proLabel: 'Jeux', isSelectable: true },
-    { id: 'TECHNIQUE', proLabel: 'Technique', isSelectable: false },
-  ],
-  subcategories: [
-    {
-      id: 'EVENEMENT_CINE',
-      proLabel: 'Evènement ciné',
-      canBeEducational: true,
-      categoryId: 'CINEMA',
-      isSelectable: true,
-    },
-    {
-      id: 'CONCOURS',
-      proLabel: 'Concours jeux',
-      canBeEducational: false,
-      categoryId: 'JEU',
-      isSelectable: true,
-    },
-  ],
-}
 
 const proVenues = [
   {
@@ -114,10 +89,6 @@ describe('route CollectiveOffers', () => {
     }
     offersRecap = [collectiveOfferFactory()]
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
-    vi.spyOn(api, 'getCategories').mockResolvedValue(
-      // @ts-expect-error FIX ME
-      categoriesAndSubcategories
-    )
     vi.spyOn(api, 'getVenues').mockResolvedValue(
       // @ts-expect-error FIX ME
       { venues: proVenues }
@@ -126,21 +97,6 @@ describe('route CollectiveOffers', () => {
 
   describe('render', () => {
     describe('filters', () => {
-      it('should display only selectable categories eligible for EAC on filters', async () => {
-        await renderOffers(store)
-        screen.getByText('Rechercher')
-
-        expect(
-          screen.getByRole('option', { name: 'Cinéma' })
-        ).toBeInTheDocument()
-        expect(
-          screen.queryByRole('option', { name: 'Jeux' })
-        ).not.toBeInTheDocument()
-        expect(
-          screen.queryByRole('option', { name: 'Technique' })
-        ).not.toBeInTheDocument()
-      })
-
       describe('status filters', () => {
         it('should filter offers given status filter when clicking on "Appliquer"', async () => {
           await renderOffers(store)
@@ -430,32 +386,6 @@ describe('route CollectiveOffers', () => {
             undefined,
             proVenues[0].id.toString(),
             undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined
-          )
-        })
-
-        it('should load offers with selected type filter', async () => {
-          await renderOffers(store)
-          const firstTypeOption = screen.getByRole('option', {
-            name: 'Cinéma',
-          })
-          const typeSelect = screen.getByDisplayValue(
-            ALL_CATEGORIES_OPTION.label
-          )
-          await userEvent.selectOptions(typeSelect, firstTypeOption)
-
-          await userEvent.click(screen.getByText('Rechercher'))
-
-          expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'CINEMA',
             undefined,
             undefined,
             undefined,

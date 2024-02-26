@@ -1,21 +1,14 @@
 import { screen } from '@testing-library/react'
 import { Formik } from 'formik'
 
+import { DEFAULT_EAC_FORM_VALUES } from 'core/OfferEducational'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import FormOfferType, { FormTypeProps } from '../FormOfferType'
 
-const formTypeProps: FormTypeProps = {
-  categories: [],
-  disableForm: false,
-  domainsOptions: [],
-  nationalPrograms: [],
-  subCategories: [],
-}
-
-function renderFormOfferType(props: FormTypeProps) {
+const renderFormOfferType = (props: FormTypeProps) => {
   return renderWithProviders(
-    <Formik initialValues={{ title: '', domains: [] }} onSubmit={vi.fn()}>
+    <Formik initialValues={DEFAULT_EAC_FORM_VALUES} onSubmit={vi.fn()}>
       {({ handleSubmit }) => (
         <form onSubmit={handleSubmit}>
           <FormOfferType {...props} />
@@ -26,6 +19,12 @@ function renderFormOfferType(props: FormTypeProps) {
 }
 
 describe('FormOfferType', () => {
+  const formTypeProps: FormTypeProps = {
+    disableForm: false,
+    domainsOptions: [],
+    nationalPrograms: [],
+  }
+
   it('should render the form description', async () => {
     renderFormOfferType(formTypeProps)
     expect(

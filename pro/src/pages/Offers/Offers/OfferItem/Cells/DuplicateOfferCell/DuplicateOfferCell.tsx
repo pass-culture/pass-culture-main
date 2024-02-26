@@ -36,7 +36,6 @@ export const DuplicateOfferCell = ({
     !isLocalStorageAvailable ||
     localStorage.getItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY) !== 'true'
 
-  const isFormatActive = useActiveFeature('WIP_ENABLE_FORMAT')
   const isMarseilleActive = useActiveFeature('WIP_ENABLE_MARSEILLE')
 
   const onDialogConfirm = async (shouldNotDisplayModalAgain: boolean) => {
@@ -50,7 +49,6 @@ export const DuplicateOfferCell = ({
       navigate,
       notify,
       offerId,
-      isFormatActive,
       undefined,
       isMarseilleActive
     )
@@ -66,7 +64,6 @@ export const DuplicateOfferCell = ({
           navigate,
           notify,
           offerId,
-          isFormatActive,
           undefined,
           isMarseilleActive
         )

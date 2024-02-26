@@ -7,14 +7,10 @@ import { RootState } from 'store/rootReducer'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferEducational from '../'
-import {
-  categoriesFactory,
-  defaultCreationProps,
-  managedVenueFactory,
-  subCategoriesFactory,
-} from '../__tests-utils__'
+import { defaultCreationProps, managedVenueFactory } from '../__tests-utils__'
 import { userOffererFactory } from '../__tests-utils__/userOfferersFactory'
 import { OfferEducationalProps } from '../OfferEducational'
+
 describe('screens | OfferEducational : event address step', () => {
   let props: OfferEducationalProps
   let store: Partial<RootState>
@@ -25,12 +21,6 @@ describe('screens | OfferEducational : event address step', () => {
   beforeEach(() => {
     props = {
       ...defaultCreationProps,
-      categories: {
-        educationalCategories: categoriesFactory([{ id: 'CAT_1' }]),
-        educationalSubCategories: subCategoriesFactory([
-          { categoryId: 'CAT_1', id: 'SUBCAT_1' },
-        ]),
-      },
     }
     vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue({
       canCreate: true,

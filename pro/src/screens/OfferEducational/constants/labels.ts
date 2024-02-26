@@ -1,5 +1,3 @@
-export const CATEGORY_LABEL = 'Catégorie'
-export const SUBCATEGORY_LABEL = 'Sous-catégorie'
 export const TITLE_LABEL = 'Titre de l’offre'
 export const DESCRIPTION_LABEL = 'Description'
 export const DURATION_LABEL = 'Durée'

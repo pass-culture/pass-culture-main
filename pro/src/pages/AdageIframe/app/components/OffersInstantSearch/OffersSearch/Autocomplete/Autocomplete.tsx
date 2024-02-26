@@ -23,15 +23,11 @@ import { useSearchBox } from 'react-instantsearch'
 
 import { SuggestionType } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import useActiveFeature from 'hooks/useActiveFeature'
-import useNotification from 'hooks/useNotification'
 import fullClearIcon from 'icons/full-clear.svg'
 import strokeBuildingIcon from 'icons/stroke-building.svg'
 import strokeClockIcon from 'icons/stroke-clock.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
-import { getEducationalCategoriesOptionsAdapter } from 'pages/AdageIframe/app/adapters/getEducationalCategoriesOptionsAdapter'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
-import { Option } from 'pages/AdageIframe/app/types'
 import { Button, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -63,7 +59,6 @@ export type SuggestionItem = AutocompleteQuerySuggestionsHit & {
   offerer: {
     name: string
   }
-  ['offer.subcategoryId']: string[]
   formats: string[]
 }
 
@@ -109,12 +104,8 @@ export const Autocomplete = ({
   const inputRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
-  const isFormatEnable = useActiveFeature('WIP_ENABLE_FORMAT')
 
   const formik = useContext(FormikContext)
-
-  const [categories, setCategories] = useState<Option<string[]>[]>([])
-  const notify = useNotification()
 
   const RECENT_SEARCH_SOURCE_ID = 'RecentSearchSource'
   const VENUE_SUGGESTIONS_SOURCE_ID = 'VenueSuggestionsSource'
@@ -122,22 +113,6 @@ export const Autocomplete = ({
   const KEYWORD_QUERY_SUGGESTIONS_SOURCE_ID = 'KeywordQuerySuggestionsSource'
 
   const isLocalStorageEnabled = localStorageAvailable()
-
-  useEffect(() => {
-    const loadData = async () => {
-      const categoriesResponse =
-        await getEducationalCategoriesOptionsAdapter(null)
-
-      if (!categoriesResponse.isOk) {
-        return notify.error(categoriesResponse.message)
-      }
-
-      setCategories(categoriesResponse.payload.educationalCategories)
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadData()
-  }, [notify])
 
   const logAutocompleteSuggestionClick = async (
     suggestionType: SuggestionType,
@@ -263,24 +238,10 @@ export const Autocomplete = ({
             (elm) => elm.objectID === item.objectID
           )
 
-          if (isFormatEnable) {
-            if (itemId >= 0 && itemId < 3) {
-              await formik.setFieldValue('formats', [item.formats[0]])
-            } else {
-              await formik.setFieldValue('formats', [])
-            }
+          if (itemId >= 0 && itemId < 3) {
+            await formik.setFieldValue('formats', [item.formats[0]])
           } else {
-            // if the id is less than 3, the category is displayed and must be pre-selected in the filters.
-            if (itemId >= 0 && itemId < 3) {
-              const { subCategories } = getCategoriesFromSubcategory(
-                item['offer.subcategoryId'][0]
-              )
-
-              subCategories &&
-                (await formik.setFieldValue('categories', [subCategories]))
-            } else {
-              await formik.setFieldValue('categories', [])
-            }
+            await formik.setFieldValue('formats', [])
           }
           refine(item.query)
           await formik.submitForm()
@@ -323,7 +284,7 @@ export const Autocomplete = ({
           querySuggestionsPlugin,
         ],
       }),
-    [placeholder, refine, categories]
+    [placeholder, refine, isLocalStorageEnabled]
   )
 
   useEffect(() => {
@@ -381,14 +342,6 @@ export const Autocomplete = ({
       source: null,
       items: [],
     }
-
-  const getCategoriesFromSubcategory = (subCategory: string) => {
-    const result = categories?.find((objet) =>
-      objet.value.includes(subCategory)
-    )
-
-    return { label: result?.label, subCategories: result?.value }
-  }
 
   const shouldDisplayRecentSearch =
     recentSearchesSource &&
@@ -583,17 +536,7 @@ export const Autocomplete = ({
                         const shouldDisplayFormats =
                           index <= 2 && item.formats && item.formats.length > 0
 
-                        const shouldDisplayCategory =
-                          index <= 2 &&
-                          item['offer.subcategoryId'] &&
-                          item['offer.subcategoryId'].length > 0 &&
-                          !isFormatEnable
-
-                        if (shouldDisplayCategory && !isFormatEnable) {
-                          displayValue = getCategoriesFromSubcategory(
-                            item['offer.subcategoryId'][0]
-                          ).label
-                        } else if (shouldDisplayFormats) {
+                        if (shouldDisplayFormats) {
                           displayValue = item.formats[0]
                         }
 
@@ -620,9 +563,7 @@ export const Autocomplete = ({
                                 attribute={['query']}
                                 tagName="strong"
                               />
-                              {shouldDisplayCategory || shouldDisplayFormats
-                                ? ' dans '
-                                : ''}
+                              {shouldDisplayFormats ? ' dans ' : ''}
                               <span
                                 className={
                                   styles['dialog-panel-autocomplete-category']
