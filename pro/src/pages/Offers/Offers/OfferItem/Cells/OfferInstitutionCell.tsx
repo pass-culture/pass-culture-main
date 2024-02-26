@@ -2,13 +2,15 @@ import React from 'react'
 
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
 
-import styles from '../../OfferItem.module.scss'
+import styles from '../OfferItem.module.scss'
 
-const OfferInstitutionCell = ({
-  educationalInstitution,
-}: {
+interface OfferInstitutionCellProps {
   educationalInstitution?: EducationalInstitutionResponseModel | null
-}) => {
+}
+
+export const OfferInstitutionCell = ({
+  educationalInstitution,
+}: OfferInstitutionCellProps) => {
   const { name, institutionType, city } = educationalInstitution || {}
 
   let showEducationalInstitution = 'Tous les établissements'
@@ -25,5 +27,3 @@ const OfferInstitutionCell = ({
     </td>
   )
 }
-
-export default OfferInstitutionCell

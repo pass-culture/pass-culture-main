@@ -13,8 +13,8 @@ import fullTrashIcon from 'icons/full-trash.svg'
 import strokeTrashIcon from 'icons/stroke-trash.svg'
 import ListIconButton from 'ui-kit/ListIconButton/ListIconButton'
 
-import { deleteDraftOffersAdapter } from '../../../adapters/deleteDraftOffers'
-import styles from '../../OfferItem.module.scss'
+import { deleteDraftOffersAdapter } from '../../adapters/deleteDraftOffers'
+import styles from '../OfferItem.module.scss'
 
 interface DeleteDraftOffersProps {
   offer: ListOffersOfferResponseModel
