@@ -7,10 +7,7 @@ import { BannerReimbursementsInfo } from 'components/Banner'
 import { useReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
-import useCurrentUser from 'hooks/useCurrentUser'
-import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { FORMAT_ISO_DATE_ONLY, getToday } from 'utils/date'
 import { sortByLabel } from 'utils/strings'
 
@@ -18,7 +15,6 @@ import { DEFAULT_INVOICES_FILTERS } from '../_constants'
 
 import InvoicesFilters from './InvoicesFilters'
 import InvoicesNoResult from './InvoicesNoResult'
-import stylesNoResult from './InvoicesNoResult.module.scss'
 import InvoicesServerError from './InvoicesServerError'
 import InvoiceTable from './InvoiceTable/InvoiceTable'
 import NoInvoicesYet from './NoInvoicesYet'
@@ -27,7 +23,6 @@ const ReimbursementsInvoices = (): JSX.Element => {
   const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
-  const { currentUser } = useCurrentUser()
   const INITIAL_FILTERS = useMemo(() => {
     const today = getToday()
     const oneMonthAgo = subMonths(today, 1)
@@ -50,11 +45,8 @@ const ReimbursementsInvoices = (): JSX.Element => {
   const hasNoSearchResult =
     !hasError && invoices?.length === 0 && hasSearchedOnce
 
-  const hasNoInvoicesYetForNonAdmin =
-    !hasError &&
-    !currentUser.isAdmin &&
-    invoices.length === 0 &&
-    !hasSearchedOnce
+  const hasNoInvoicesYet =
+    !hasError && invoices.length === 0 && !hasSearchedOnce
 
   const loadInvoices = useCallback(
     async (shouldReset?: boolean) => {
@@ -166,32 +158,13 @@ const ReimbursementsInvoices = (): JSX.Element => {
     return <Spinner />
   }
 
-  if (filterOptions.length === 0) {
-    return (
-      <div className={stylesNoResult['no-refunds']}>
-        {isNewBankDetailsJourneyEnabled && <BannerReimbursementsInfo />}
-
-        <SvgIcon
-          src={strokeNoBookingIcon}
-          alt=""
-          viewBox="0 0 200 156"
-          className={stylesNoResult['no-refunds-icon']}
-          width="124"
-        />
-        <p className={stylesNoResult['no-refunds-title']}>
-          Aucun remboursement à afficher
-        </p>
-      </div>
-    )
-  }
-
   return (
     <>
       {isNewBankDetailsJourneyEnabled && <BannerReimbursementsInfo />}
       <InvoicesFilters
         areFiltersDefault={areFiltersDefault}
         filters={filters}
-        disable={hasNoInvoicesYetForNonAdmin}
+        disable={hasNoInvoicesYet}
         initialFilters={INITIAL_FILTERS}
         loadInvoices={loadInvoices}
         selectableOptions={filterOptions}
@@ -200,7 +173,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
         setHasSearchedOnce={setHasSearchedOnce}
       />
       {hasError && <InvoicesServerError />}
-      {hasNoInvoicesYetForNonAdmin && <NoInvoicesYet />}
+      {hasNoInvoicesYet && <NoInvoicesYet />}
       {hasNoSearchResult && (
         <InvoicesNoResult
           areFiltersDefault={areFiltersDefault}

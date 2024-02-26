@@ -138,7 +138,7 @@ const InvoicesFilters = ({
           <Button
             variant={ButtonVariant.PRIMARY}
             className={styles['button-group-search-button']}
-            disabled={!(filters.periodStart && filters.periodEnd)}
+            disabled={!filters.periodStart || !filters.periodEnd || disable}
             onClick={async () => {
               setHasSearchedOnce(true)
               await loadInvoices()
