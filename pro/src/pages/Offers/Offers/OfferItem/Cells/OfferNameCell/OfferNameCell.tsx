@@ -61,7 +61,7 @@ const OfferNameCell = ({
 
   const shouldShowCollectiveWarning =
     audience === Audience.COLLECTIVE &&
-    offer.educationalBooking?.booking_status === OFFER_STATUS_PENDING &&
+    offer.booking?.booking_status === OFFER_STATUS_PENDING &&
     shouldDisplayWarning(offer.stocks[0])
 
   return (

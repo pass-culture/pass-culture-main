@@ -1,18 +1,15 @@
 import React from 'react'
 
-import { Offer } from 'core/Offers/types'
 import penIcon from 'icons/full-edit.svg'
 import ListIconButton from 'ui-kit/ListIconButton/ListIconButton'
 
 import styles from '../../OfferItem.module.scss'
 
-const EditOfferCell = ({
-  editionOfferLink,
-}: {
-  isOfferEditable: boolean
+interface EditOfferCellProps {
   editionOfferLink: string
-  offer: Offer
-}) => {
+}
+
+export const EditOfferCell = ({ editionOfferLink }: EditOfferCellProps) => {
   return (
     <ListIconButton
       url={editionOfferLink}
@@ -23,5 +20,3 @@ const EditOfferCell = ({
     </ListIconButton>
   )
 }
-
-export default EditOfferCell

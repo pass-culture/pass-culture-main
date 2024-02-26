@@ -10,8 +10,8 @@ import {
   useOfferStockEditionURL,
 } from 'hooks/useOfferEditionURL'
 
-import CollectiveOfferItem from './CollectiveOfferItem'
-import IndividualOfferItem from './IndividualOfferItem'
+import { CollectiveOfferItem } from './CollectiveOfferItem'
+import { IndividualOfferItem } from './IndividualOfferItem'
 import styles from './OfferItem.module.scss'
 
 export type OfferItemProps = {
@@ -44,8 +44,6 @@ const OfferItem = ({
     !!isShowcase
   )
 
-  /* istanbul ignore next: DEBT, TO FIX */
-  const isOfferEditable = offer ? offer.isEditable : null
   const isOfferInactiveOrExpiredOrDisabled =
     offer.status == OFFER_STATUS_DRAFT
       ? false
@@ -68,7 +66,6 @@ const OfferItem = ({
           editionOfferLink={editionOfferLink}
           editionStockLink={editionStockLink}
           venue={venue}
-          isOfferEditable={Boolean(isOfferEditable)}
           refreshOffers={refreshOffers}
           audience={audience}
         />
@@ -80,7 +77,6 @@ const OfferItem = ({
           selectOffer={selectOffer}
           editionOfferLink={editionOfferLink}
           venue={venue}
-          isOfferEditable={Boolean(isOfferEditable)}
           audience={audience}
         />
       )}

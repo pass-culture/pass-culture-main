@@ -5,24 +5,22 @@ import { Offer } from 'core/Offers/types'
 
 import styles from '../../OfferItem.module.scss'
 import DeleteDraftCell from '../DeleteDraftCell'
-import EditOfferCell from '../EditOfferCell'
+import { EditOfferCell } from '../EditOfferCell/EditOfferCell'
 import EditStocksCell from '../EditStocksCell'
 
-interface ActionsCellsProps {
+interface IndividualActionsCellsProps {
   offer: Offer
-  isOfferEditable: boolean
   editionOfferLink: string
   editionStockLink: string
   refreshOffers: () => void
 }
 
-const IndividualActionsCells = ({
+export const IndividualActionsCells = ({
   offer,
-  isOfferEditable,
   editionOfferLink,
   editionStockLink,
   refreshOffers,
-}: ActionsCellsProps) => {
+}: IndividualActionsCellsProps) => {
   return (
     <td className={styles['actions-column']}>
       <div className={styles['actions-column-container']}>
@@ -32,14 +30,8 @@ const IndividualActionsCells = ({
           <EditStocksCell offer={offer} editionStockLink={editionStockLink} />
         )}
 
-        <EditOfferCell
-          isOfferEditable={isOfferEditable}
-          editionOfferLink={editionOfferLink}
-          offer={offer}
-        />
+        <EditOfferCell editionOfferLink={editionOfferLink} />
       </div>
     </td>
   )
 }
-
-export default IndividualActionsCells

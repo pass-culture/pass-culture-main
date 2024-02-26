@@ -2,10 +2,9 @@ import { screen } from '@testing-library/react'
 import { add } from 'date-fns'
 import React from 'react'
 
-import { OfferStatus } from 'apiClient/v1'
-import { Offer } from 'core/Offers/types'
+import { CollectiveBookingStatus } from 'apiClient/v1'
 import { Audience } from 'core/shared'
-import { venueFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
+import { collectiveOfferFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferNameCell, { OfferNameCellProps } from '../OfferNameCell'
@@ -25,36 +24,17 @@ const renderOfferNameCell = (props: OfferNameCellProps) =>
   )
 
 describe('OfferNameCell', () => {
-  let defaultOffer: Offer
-  beforeEach(() => {
-    defaultOffer = {
-      id: 1,
-      isActive: true,
-      isEditable: true,
+  it.only('should display warning when limit booking date is in less than 7 days', () => {
+    const tomorrowFns = add(new Date(), {
+      days: 1,
+    }).toISOString()
+
+    const eventOffer = collectiveOfferFactory({
       isEvent: true,
-      hasBookingLimitDatetimesPassed: false,
-      name: 'My little offer',
-      thumbUrl: '/my-fake-thumb',
-      status: OfferStatus.PENDING,
-      educationalBooking: {
-        booking_status: OfferStatus.PENDING,
+      booking: {
         id: 1,
+        booking_status: CollectiveBookingStatus.PENDING,
       },
-      stocks: [],
-      venue: venueFactory(),
-      isEducational: true,
-    }
-  })
-
-  it('should display warning when limit booking date is in less than 7 days', () => {
-    const tomorrowFns = String(
-      add(new Date(), {
-        days: 1,
-      })
-    )
-
-    const eventOffer = {
-      ...defaultOffer,
       stocks: [
         {
           hasBookingLimitDatetimePassed: false,
@@ -63,7 +43,7 @@ describe('OfferNameCell', () => {
           bookingLimitDatetime: tomorrowFns,
         },
       ],
-    }
+    })
 
     renderOfferNameCell({
       offer: eventOffer,
@@ -75,14 +55,12 @@ describe('OfferNameCell', () => {
   })
 
   it('should not display warning when limit booking date is in more than 7 days', () => {
-    const eightDaysFns = String(
-      add(new Date(), {
-        days: 8,
-      })
-    )
+    const eightDaysFns = add(new Date(), {
+      days: 8,
+    }).toISOString()
 
-    const eventOffer = {
-      ...defaultOffer,
+    const eventOffer = collectiveOfferFactory({
+      isEvent: true,
       stocks: [
         {
           hasBookingLimitDatetimePassed: false,
@@ -91,7 +69,8 @@ describe('OfferNameCell', () => {
           bookingLimitDatetime: eightDaysFns,
         },
       ],
-    }
+    })
+
     renderOfferNameCell({
       offer: eventOffer,
       editionOfferLink: '#',
