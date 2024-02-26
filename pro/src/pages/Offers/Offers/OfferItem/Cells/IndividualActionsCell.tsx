@@ -3,10 +3,11 @@ import React from 'react'
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
 import { OFFER_STATUS_DRAFT } from 'core/Offers/constants'
 
-import styles from '../../OfferItem.module.scss'
-import { DeleteDraftCell } from '../DeleteDraftCell/DeleteDraftCell'
-import { EditOfferCell } from '../EditOfferCell/EditOfferCell'
-import { EditStocksCell } from '../EditStocksCell/EditStocksCell'
+import styles from '../OfferItem.module.scss'
+
+import { DeleteDraftCell } from './DeleteDraftCell'
+import { EditOfferCell } from './EditOfferCell'
+import { EditStocksCell } from './EditStocksCell'
 
 interface IndividualActionsCellsProps {
   offer: ListOffersOfferResponseModel

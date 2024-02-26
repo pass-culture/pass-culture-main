@@ -14,7 +14,7 @@ interface CheckboxCellProps {
   selectOffer: (offerId: number, selected: boolean, isTemplate: boolean) => void
 }
 
-const CheckboxCell = ({
+export const CheckboxCell = ({
   offerName,
   isSelected,
   offerId,
@@ -40,5 +40,3 @@ const CheckboxCell = ({
     </td>
   )
 }
-
-export default CheckboxCell

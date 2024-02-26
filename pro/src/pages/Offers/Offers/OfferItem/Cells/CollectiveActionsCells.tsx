@@ -2,10 +2,11 @@ import React from 'react'
 
 import { CollectiveOfferResponseModel, OfferStatus } from 'apiClient/v1'
 
-import styles from '../../OfferItem.module.scss'
-import { BookingLinkCell } from '../BookingLinkCell/BookingLinkCell'
-import DuplicateOfferCell from '../DuplicateOfferCell/DuplicateOfferCell'
-import { EditOfferCell } from '../EditOfferCell/EditOfferCell'
+import styles from '../OfferItem.module.scss'
+
+import { BookingLinkCell } from './BookingLinkCell'
+import { DuplicateOfferCell } from './DuplicateOfferCell/DuplicateOfferCell'
+import { EditOfferCell } from './EditOfferCell'
 
 interface CollectiveActionsCellsProps {
   offer: CollectiveOfferResponseModel
