@@ -1,3 +1,5 @@
+from datetime import datetime
+from datetime import timedelta
 from unittest.mock import patch
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
@@ -102,3 +104,61 @@ class ConfirmUserEmailUpdateTest:
 
         assert response.status_code == 401, response.json
         assert response.json["code"] == "INVALID_TOKEN"
+
+
+class EmailUpdateStatusTest:
+    def test_update_request_status(self, client):
+        user = users_factories.BeneficiaryGrant18Factory()
+        users_factories.EmailUpdateEntryFactory(user=user, newUserEmail=None, newDomainEmail=None)
+        token = token_utils.Token.create(
+            type_=token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION,
+            ttl=users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME,
+            user_id=user.id,
+        )
+
+        response = client.with_token(user.email).get("/native/v2/profile/email_update/status")
+
+        assert response.status_code == 200, response.json
+        assert response.json == {
+            "newEmail": None,
+            "expired": False,
+            "status": users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST.value,
+            "token": None,
+        }
+        token.expire()
+
+    def test_status_returns_new_email_selection_token(self, client):
+        yesterday = datetime.utcnow() + timedelta(days=-1)
+        user = users_factories.BeneficiaryGrant18Factory()
+        users_factories.EmailUpdateEntryFactory(
+            user=user, creationDate=yesterday, newUserEmail=None, newDomainEmail=None
+        )
+        users_factories.EmailConfirmationEntryFactory(user=user, newUserEmail=None, newDomainEmail=None)
+        token = token_utils.Token.create(
+            type_=token_utils.TokenType.EMAIL_CHANGE_NEW_EMAIL_SELECTION,
+            ttl=users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME,
+            user_id=user.id,
+        )
+
+        response = client.with_token(user.email).get("/native/v2/profile/email_update/status")
+
+        assert response.status_code == 200, response.json
+        assert response.json == {
+            "newEmail": None,
+            "expired": False,
+            "status": users_models.EmailHistoryEventTypeEnum.CONFIRMATION.value,
+            "token": token.encoded_token,
+        }
+        token.expire()
+
+    def test_status_without_prior_history(self, client):
+        user = users_factories.BeneficiaryGrant18Factory()
+
+        response = client.with_token(user.email).get("/native/v2/profile/email_update/status")
+
+        assert response.status_code == 404, response.json
+
+    def test_status_unauthenticated(self, client):
+        response = client.get("/native/v2/profile/email_update/status")
+
+        assert response.status_code == 401, response.json
