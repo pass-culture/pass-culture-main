@@ -8,7 +8,6 @@ export type ListCollectiveBookingsQueryModel = {
   bookingPeriodEndingDate?: string | null;
   bookingStatusFilter?: CollectiveBookingStatusFilter | null;
   eventDate?: string | null;
-  extra?: string;
   page?: number;
   venueId?: number | null;
 };

@@ -130,7 +130,6 @@ export class DefaultService {
    * @param bookingPeriodEndingDate
    * @param offerType
    * @param exportType
-   * @param extra
    * @returns ListBookingsResponseModel OK
    * @throws ApiError
    */
@@ -144,7 +143,6 @@ export class DefaultService {
     bookingPeriodEndingDate?: string | null,
     offerType?: OfferType | null,
     exportType?: BookingExportType | null,
-    extra: string = 'forbid',
   ): CancelablePromise<ListBookingsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
@@ -159,7 +157,6 @@ export class DefaultService {
         'bookingPeriodEndingDate': bookingPeriodEndingDate,
         'offerType': offerType,
         'exportType': exportType,
-        'extra': extra,
       },
       errors: {
         403: `Forbidden`,
@@ -190,7 +187,6 @@ export class DefaultService {
    * @param bookingStatusFilter
    * @param bookingPeriodBeginningDate
    * @param bookingPeriodEndingDate
-   * @param extra
    * @returns ListCollectiveBookingsResponseModel OK
    * @throws ApiError
    */
@@ -201,7 +197,6 @@ export class DefaultService {
     bookingStatusFilter?: CollectiveBookingStatusFilter | null,
     bookingPeriodBeginningDate?: string | null,
     bookingPeriodEndingDate?: string | null,
-    extra: string = 'forbid',
   ): CancelablePromise<ListCollectiveBookingsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
@@ -213,7 +208,6 @@ export class DefaultService {
         'bookingStatusFilter': bookingStatusFilter,
         'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
         'bookingPeriodEndingDate': bookingPeriodEndingDate,
-        'extra': extra,
       },
       errors: {
         403: `Forbidden`,

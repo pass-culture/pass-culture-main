@@ -11,7 +11,6 @@ export type ListBookingsQueryModel = {
   bookingStatusFilter?: BookingStatusFilter | null;
   eventDate?: string | null;
   exportType?: BookingExportType | null;
-  extra?: string;
   offerId?: number | null;
   offerType?: OfferType | null;
   page?: number;
