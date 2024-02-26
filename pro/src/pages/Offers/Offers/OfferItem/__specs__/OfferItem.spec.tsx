@@ -11,6 +11,7 @@ import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import * as useAnalytics from 'hooks/useAnalytics'
+import { venueFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
 import { getToday } from 'utils/date'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -52,12 +53,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       thumbUrl: '/my-fake-thumb',
       status: OfferStatus.ACTIVE,
       stocks: [],
-      venue: {
-        isVirtual: false,
-        name: 'Paris',
-        departementCode: '973',
-        offererName: 'Offerer name',
-      },
+      venue: venueFactory(),
       isEducational: false,
     }
 
@@ -84,13 +80,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
       })
 
       it('should render an image with an empty url when offer does not have a thumb url', () => {
-        // given
         props.offer.thumbUrl = null
 
-        // when
         renderOfferItem(props)
 
-        // then
         expect(
           screen.getAllByTitle(`${eventOffer.name} - éditer l’offre`)[0]
         ).toBeInTheDocument()
@@ -99,7 +92,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
     describe('action buttons', () => {
       it('should display a button to show offer stocks', () => {
-        // given
         renderOfferItem(props)
 
         const stockLink = screen.getByRole('link', {
@@ -113,7 +105,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
       })
       describe('draft delete button', () => {
         it('should display a trash icon with a confirm dialog to delete draft offer', async () => {
-          // given
           props.offer.status = OfferStatus.DRAFT
 
           renderOfferItem(props)
@@ -135,7 +126,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
         })
 
         it('should display a notification in case of draft deletion error', async () => {
-          // given
           props.offer.status = OfferStatus.DRAFT
 
           renderOfferItem(props)
@@ -172,10 +162,8 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       describe('edit offer link', () => {
         it('should be displayed when offer is editable', () => {
-          // when
           renderOfferItem(props)
 
-          // then
           const links = screen.getAllByRole('link')
           expect(links[links.length - 1]).toHaveAttribute(
             'href',
@@ -186,10 +174,8 @@ describe('src | components | pages | Offers | OfferItem', () => {
         it('should not be displayed when offer is no editable', () => {
           props.offer.isEditable = false
 
-          // when
           renderOfferItem(props)
 
-          // then
           const links = screen.getAllByRole('link')
           expect(links[links.length - 1]).not.toHaveAttribute(
             'href',
@@ -201,10 +187,8 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
     describe('offer title', () => {
       it('should contain a link with the offer name and details link', () => {
-        // when
         renderOfferItem(props)
 
-        // then
         const offerTitle = screen.queryByText(props.offer.name as string, {
           selector: 'a',
         })
@@ -217,119 +201,95 @@ describe('src | components | pages | Offers | OfferItem', () => {
     })
 
     it('should display the venue name when venue public name is not given', () => {
-      // given
-      props.offer.venue = {
+      props.offer.venue = venueFactory({
         name: 'Paris',
         isVirtual: false,
         offererName: 'Offerer name',
-      }
+      })
 
-      // when
       renderOfferItem(props)
 
-      // then
       expect(screen.queryByText(props.offer.venue.name)).toBeInTheDocument()
     })
 
     it('should display the venue public name when is given', () => {
-      // given
-      props.offer.venue = {
+      props.offer.venue = venueFactory({
         name: 'Paris',
         publicName: 'lieu de ouf',
         isVirtual: false,
         offererName: 'Offerer name',
-      }
+      })
 
-      // when
       renderOfferItem(props)
 
-      // then
       expect(screen.queryByText('lieu de ouf')).toBeInTheDocument()
     })
 
     it('should display the offerer name with "- Offre numérique" when venue is virtual', () => {
-      // given
-      props.offer.venue = {
+      props.offer.venue = venueFactory({
         isVirtual: true,
         name: 'Gaumont Montparnasse',
         offererName: 'Gaumont',
         publicName: 'Gaumontparnasse',
-      }
+      })
 
-      // when
       renderOfferItem(props)
 
-      // then
       expect(
         screen.queryByText('Gaumont - Offre numérique')
       ).toBeInTheDocument()
     })
 
     it('should display the ean when given', () => {
-      // given
       eventOffer.productIsbn = '123456789'
 
-      // when
       renderOfferItem(props)
 
-      // then
       expect(screen.queryByText('123456789')).toBeInTheDocument()
     })
 
     describe('offer remaining quantity or institution', () => {
       it('should be 0 when individual offer has no stock', () => {
-        // when
         renderOfferItem(props)
 
-        // then
         expect(screen.queryByText('0')).toBeInTheDocument()
       })
 
       it('should be the sum of individual offer stocks remaining quantity', () => {
-        // given
         props.offer.stocks = [
           { remainingQuantity: 0 },
           { remainingQuantity: 2 },
           { remainingQuantity: 3 },
         ]
 
-        // when
         renderOfferItem(props)
 
-        // then
         expect(screen.queryByText('5')).toBeInTheDocument()
       })
 
       it('should be "illimité" when at least one stock of the individual offer is unlimited', () => {
-        // given
         props.offer.stocks = [
           { remainingQuantity: 0 },
           { remainingQuantity: 'unlimited' },
         ]
 
-        // when
         renderOfferItem(props)
 
-        // then
         expect(screen.queryByText('Illimité')).toBeInTheDocument()
       })
 
       it('should display "Tous les établissements" when offer is collective and is not assigned to a specific institution', () => {
-        // given
         props.audience = Audience.COLLECTIVE
         props.offer.educationalInstitution = null
 
-        // when
         renderOfferItem(props)
 
-        // then
         expect(
           screen.queryByText('Tous les établissements')
         ).toBeInTheDocument()
       })
 
       it('should display "Tous les établissements" when offer is collective and is assigned to a specific institution', () => {
-        // given
         props.audience = Audience.COLLECTIVE
         props.offer.educationalInstitution = {
           id: 1,
@@ -340,10 +300,8 @@ describe('src | components | pages | Offers | OfferItem', () => {
           institutionId: 'ABCDEF11',
         }
 
-        // when
         renderOfferItem(props)
 
-        // then
         expect(screen.queryByText('Collège Bellevue')).toBeInTheDocument()
       })
 
@@ -371,7 +329,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
     describe('when offer is an event product', () => {
       it('should display the correct text "2 dates"', () => {
-        // given
+        props.offer.venue = venueFactory({ departementCode: '973' })
         props.offer.stocks = [
           {
             beginningDatetime: new Date('01-01-2001'),
@@ -383,15 +341,13 @@ describe('src | components | pages | Offers | OfferItem', () => {
           },
         ]
 
-        // when
         renderOfferItem(props)
 
-        // then
         expect(screen.queryByText('2 dates')).toBeInTheDocument()
       })
 
       it('should display the beginning date time when only one date', () => {
-        // given
+        props.offer.venue = venueFactory({ departementCode: '973' })
         props.offer.stocks = [
           {
             beginningDatetime: new Date('2021-05-27T20:00:00Z'),
@@ -399,44 +355,35 @@ describe('src | components | pages | Offers | OfferItem', () => {
           },
         ]
 
-        // when
         renderOfferItem(props)
 
-        // then
         expect(screen.getByText('27/05/2021 17:00')).toBeInTheDocument()
       })
 
       it('should not display a warning when no stocks are sold out', () => {
-        // given
         props.offer.stocks = [
           { remainingQuantity: 'unlimited' },
           { remainingQuantity: 13 },
         ]
 
-        // when
         renderOfferItem(props)
 
-        // then
         expect(screen.queryByText(/épuisée/)).not.toBeInTheDocument()
       })
 
       it('should not display a warning when all stocks are sold out', () => {
-        // given
         props.offer.stocks = [
           { remainingQuantity: 0 },
           { remainingQuantity: 0 },
         ]
         eventOffer.status = OfferStatus.SOLD_OUT
 
-        // when
         renderOfferItem(props)
 
-        // then
         expect(screen.queryByText(/épuisées/)).not.toBeInTheDocument()
       })
 
       it('should display a warning with number of stocks sold out when at least one stock is sold out', () => {
-        // given
         props.offer.stocks = [
           { remainingQuantity: 0 },
           {
@@ -444,10 +391,8 @@ describe('src | components | pages | Offers | OfferItem', () => {
           },
         ]
 
-        // when
         renderOfferItem(props)
 
-        // then
         const numberOfStocks = screen.getByText('1 date épuisée', {
           selector: 'span',
         })
@@ -455,17 +400,14 @@ describe('src | components | pages | Offers | OfferItem', () => {
       })
 
       it('should pluralize number of stocks sold out when at least two stocks are sold out', () => {
-        // given
         props.offer.stocks = [
           { remainingQuantity: 0 },
           { remainingQuantity: 0 },
           { remainingQuantity: 12 },
         ]
 
-        // when
         renderOfferItem(props)
 
-        // then
         expect(
           screen.queryByText('2 dates épuisées', { selector: 'span' })
         ).toBeInTheDocument()
@@ -473,13 +415,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
     })
 
     it('should display the offer greyed when offer is inactive', () => {
-      // Given
       props.offer.isActive = false
 
-      // When
       renderOfferItem(props)
 
-      // Then
       expect(
         screen.getByLabelText('My little offer').closest('tr')
       ).toHaveClass('inactive')
@@ -492,7 +431,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
         props.offer.status = status
         renderOfferItem(props)
 
-        // Then
         expect(
           screen.getByLabelText('My little offer').closest('tr')
         ).toHaveClass('inactive')
@@ -506,7 +444,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
         props.offer.status = status
         renderOfferItem(props)
 
-        // Then
         expect(
           screen.getByLabelText('My little offer').closest('tr')
         ).not.toHaveClass('inactive')
@@ -514,13 +451,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
     )
 
     it('should have an edit link to detail page when offer is draft', () => {
-      // Given
       props.offer.status = OfferStatus.DRAFT
 
-      // When
       renderOfferItem(props)
 
-      // Then
       const links = screen.getAllByRole('link')
       expect(links[links.length - 1]).toHaveAttribute(
         'href',

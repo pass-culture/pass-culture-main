@@ -5,6 +5,7 @@ import React from 'react'
 import { OfferStatus } from 'apiClient/v1'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
+import { venueFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferNameCell, { OfferNameCellProps } from '../OfferNameCell'
@@ -40,12 +41,7 @@ describe('OfferNameCell', () => {
         id: 1,
       },
       stocks: [],
-      venue: {
-        isVirtual: false,
-        name: 'Paris',
-        departementCode: '973',
-        offererName: 'Offerer name',
-      },
+      venue: venueFactory(),
       isEducational: true,
     }
   })

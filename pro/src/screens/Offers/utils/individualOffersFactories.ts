@@ -1,5 +1,6 @@
 import { OfferStatus } from 'apiClient/v1'
-import { Offer, Venue } from 'core/Offers/types'
+import { Offer } from 'core/Offers/types'
+import { venueFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
 
 let offerId = 1
 
@@ -19,9 +20,3 @@ export const individualOfferFactory = (customOffer = {}): Offer => {
     ...customOffer,
   }
 }
-
-const venueFactory = (): Venue => ({
-  name: 'venue name',
-  offererName: 'offerer name',
-  isVirtual: false,
-})

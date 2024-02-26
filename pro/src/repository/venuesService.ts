@@ -1,9 +1,11 @@
-import { VenueListItemResponseModel } from 'apiClient/v1'
-import { Venue } from 'core/Offers/types'
+import {
+  VenueListItemResponseModel,
+  ListOffersVenueResponseModel,
+} from 'apiClient/v1'
 import { SelectOption } from 'custom_types/form'
 
 export const computeVenueDisplayName = (
-  venue: VenueListItemResponseModel | Venue
+  venue: VenueListItemResponseModel | ListOffersVenueResponseModel
 ): string => {
   if (venue.isVirtual) {
     return `${venue.offererName} - Offre numérique`
