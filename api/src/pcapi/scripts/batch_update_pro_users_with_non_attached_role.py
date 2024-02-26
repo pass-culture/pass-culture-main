@@ -17,7 +17,7 @@ from pcapi.models.validation_status_mixin import ValidationStatus
 def get_users(batch_size: int) -> Generator[User, None, None]:
     """Fetch users from database, without loading all of them at once."""
     try:
-        for user in (
+        yield from (
             User.query.join(UserOfferer)
             .filter(
                 sqla.not_(User.roles.any(UserRole.PRO)),
@@ -25,8 +25,7 @@ def get_users(batch_size: int) -> Generator[User, None, None]:
                 UserOfferer.validationStatus != ValidationStatus.VALIDATED,
             )
             .yield_per(batch_size)
-        ):
-            yield user
+        )
     except Exception as err:
         print(f"Users fetch failed: {err}")
         raise

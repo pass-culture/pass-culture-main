@@ -21,8 +21,7 @@ from pcapi.notifications.push.backends.batch import UserUpdateData
 def get_users(batch_size: int) -> Generator[User, None, None]:
     """Fetch users from database, without loading all of them at once."""
     try:
-        for user in User.query.yield_per(batch_size):
-            yield user
+        yield from User.query.yield_per(batch_size)
     except Exception as err:
         print("Users fetch failed: %s", err)
         raise

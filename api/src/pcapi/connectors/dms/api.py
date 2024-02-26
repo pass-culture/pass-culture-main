@@ -75,17 +75,15 @@ class DMSGraphQLClient:
         if page_token:
             variables["after"] = page_token
         results = self.execute_query(GET_APPLICATIONS_WITH_DETAILS_QUERY_NAME, variables=variables)
-        # pylint: disable=unsubscriptable-object
-        dms_demarche_response = dms_models.DmsProcessApplicationsResponse(**results["demarche"]["dossiers"])
-        # pylint: enable=unsubscriptable-object
+        dossiers = results["demarche"]["dossiers"]  # pylint: disable=unsubscriptable-object
+        dms_demarche_response = dms_models.DmsProcessApplicationsResponse(**dossiers)
         logger.info(
             "[DMS] Found %s applications for procedure %d (page token :%s)",
             len(dms_demarche_response.dms_applications),
             procedure_id,
             page_token,
         )
-        for application in dms_demarche_response.dms_applications:  # pylint: disable=not-an-iterable
-            yield application
+        yield from dms_demarche_response.dms_applications  # pylint: disable=not-an-iterable
 
         if dms_demarche_response.page_info.has_next_page:
             yield from self.get_applications_with_details(
@@ -101,16 +99,14 @@ class DMSGraphQLClient:
         if deletedSince:
             variables["deletedSince"] = deletedSince.isoformat()
         results = self.execute_query(GET_DELETED_APPLICATIONS_QUERY_NAME, variables=variables)
-        # pylint: disable=unsubscriptable-object
-        dms_response = dms_models.DmsDeletedApplicationsResponse(**results["demarche"]["deletedDossiers"])
-        # pylint: enable=unsubscriptable-object
+        deleted_dossiers = results["demarche"]["deletedDossiers"]  # pylint: disable=unsubscriptable-object
+        dms_response = dms_models.DmsDeletedApplicationsResponse(**deleted_dossiers)
         logger.info(
             "[DMS] Found %s deleted applications for procedure %d",
             len(dms_response.dms_deleted_applications),
             procedure_id,
         )
-        for application in dms_response.dms_deleted_applications:  # pylint: disable=not-an-iterable
-            yield application
+        yield from dms_response.dms_deleted_applications  # pylint: disable=not-an-iterable
 
         if dms_response.page_info.has_next_page:
             yield from self.get_deleted_applications(procedure_id, dms_response.page_info.end_cursor, deletedSince)
@@ -154,10 +150,11 @@ class DMSGraphQLClient:
                 "[DMS] Unexpected error when marking on going", extra={"application_techid": application_techid}
             )
             raise exceptions.DmsGraphQLApiException()
-        if response["dossierPasserEnInstruction"]["errors"]:  # pylint: disable=unsubscriptable-object
+        errors = response["dossierPasserEnInstruction"]["errors"]  # pylint: disable=unsubscriptable-object
+        if errors:
             logger.error(
                 "[DMS] Error while marking application on going %s",
-                response["dossierPasserEnInstruction"]["errors"],  # pylint: disable=unsubscriptable-object
+                errors,
                 extra={"application_techid": application_techid},
             )
             raise exceptions.DmsGraphQLApiException()
@@ -180,10 +177,11 @@ class DMSGraphQLClient:
                 extra={"application_techid": application_techid},
             )
             raise exceptions.DmsGraphQLApiException()
-        if response["dossierClasserSansSuite"]["errors"]:  # pylint: disable=unsubscriptable-object
+        errors = response["dossierClasserSansSuite"]["errors"]  # pylint: disable=unsubscriptable-object
+        if errors:
             logger.error(
                 "[DMS] Error while marking application without continuation %s",
-                response["dossierClasserSansSuite"]["errors"],  # pylint: disable=unsubscriptable-object
+                errors,
                 extra={"application_techid": application_techid},
             )
             raise exceptions.DmsGraphQLApiException()
@@ -229,24 +227,22 @@ class DMSGraphQLClient:
         if page_token:
             variables["after"] = page_token
         results = self.execute_query(GET_BANK_INFO_APPLICATIONS_QUERY_NAME, variables=variables)
-        # pylint: disable=unsubscriptable-object
-        nodes = results["demarche"]["dossiers"]["nodes"]
+        dossiers = results["demarche"]["dossiers"]  # pylint: disable=unsubscriptable-object
+        nodes = dossiers["nodes"]
         logger.info(
             "[DS] Found %s applications for procedure %d (page token: %s)",
             len(nodes),
             procedure_number,
             page_token,
         )
-        for node in nodes:
-            yield node
+        yield from nodes
 
-        # pylint: disable=unsubscriptable-object
-        if results["demarche"]["dossiers"]["pageInfo"]["hasNextPage"]:
+        if dossiers["pageInfo"]["hasNextPage"]:
             yield from self.get_pro_bank_nodes_states(
                 procedure_number=procedure_number,
                 state=state,
                 since=since,
-                page_token=results["demarche"]["dossiers"]["pageInfo"]["endCursor"],
+                page_token=dossiers["pageInfo"]["endCursor"],
             )
 
     def get_eac_nodes_siret_states(
@@ -266,27 +262,23 @@ class DMSGraphQLClient:
         if page_token:
             variables["after"] = page_token
         results = self.execute_query(GET_EAC_APPLICATIONS_STATE_SIRET, variables=variables)
-        # pylint: disable=unsubscriptable-object
-        nodes = results["demarche"]["dossiers"]["nodes"]
-        # pylint: enable=unsubscriptable-object
+        dossiers = results["demarche"]["dossiers"]  # pylint: disable=unsubscriptable-object
+        nodes = dossiers["nodes"]
         logger.info(
             "[DMS] Found %s applications for procedure %d (page token :%s)",
             len(nodes),
             procedure_number,
             page_token,
         )
-        for node in nodes:
-            yield node
+        yield from nodes
 
-        # pylint: disable=unsubscriptable-object
-        if results["demarche"]["dossiers"]["pageInfo"]["hasNextPage"]:
+        if dossiers["pageInfo"]["hasNextPage"]:
             yield from self.get_eac_nodes_siret_states(
                 procedure_number=procedure_number,
                 since=since,
                 state=state,
-                page_token=results["demarche"]["dossiers"]["pageInfo"]["endCursor"],
+                page_token=dossiers["pageInfo"]["endCursor"],
             )
-        # pylint: enable=unsubscriptable-object
 
 
 def get_dms_stats(dms_application_id: int | None, api_v4: bool = False) -> DmsStats | None:
@@ -303,7 +295,8 @@ def get_dms_stats(dms_application_id: int | None, api_v4: bool = False) -> DmsSt
     ):
         return None
 
-    state = dms_stats["dossier"]["state"]  # pylint: disable=unsubscriptable-object
+    dossier = dms_stats["dossier"]  # pylint: disable=unsubscriptable-object
+    state = dossier["state"]
     match state:
         # Be careful, "dateDerniereModification" is updated when the "dossier" is archived; this update should not be
         # considered as the validation date
@@ -325,11 +318,7 @@ def get_dms_stats(dms_application_id: int | None, api_v4: bool = False) -> DmsSt
 
     return DmsStats(
         status=state,
-        subscriptionDate=datetime.datetime.fromisoformat(
-            dms_stats["dossier"]["dateDepot"]  # pylint: disable=unsubscriptable-object
-        ),
-        lastChangeDate=datetime.datetime.fromisoformat(
-            dms_stats["dossier"][date_field]  # pylint: disable=unsubscriptable-object
-        ),
+        subscriptionDate=datetime.datetime.fromisoformat(dossier["dateDepot"]),
+        lastChangeDate=datetime.datetime.fromisoformat(dossier[date_field]),
         url=api_url,
     )

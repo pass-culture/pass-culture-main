@@ -921,9 +921,7 @@ def get_individual_bookings_from_stock(
         .with_entities(Booking.id, Booking.userId)
         .distinct()
     )
-
-    for booking in query.yield_per(1_000):
-        yield booking
+    yield from query.yield_per(1_000)
 
 
 def archive_old_bookings() -> None:
