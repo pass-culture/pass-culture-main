@@ -77,7 +77,7 @@ class BookingExportType(enum.Enum):
 class ExternalBooking(PcObject, Base, Model):
     bookingId: int = Column(BigInteger, ForeignKey("booking.id"), index=True, nullable=False)
 
-    booking: Mapped["Booking"] = relationship("Booking", foreign_keys=[bookingId], backref="externalBookings")
+    booking: Mapped["Booking"] = relationship("Booking", foreign_keys=[bookingId], back_populates="externalBookings")
 
     barcode: str = Column(String, nullable=False)
 
@@ -96,15 +96,17 @@ class Booking(PcObject, Base, Model):
 
     stockId: int = Column(BigInteger, ForeignKey("stock.id"), index=True, nullable=False)
 
-    stock: Mapped["offers_models.Stock"] = relationship("Stock", foreign_keys=[stockId], backref="bookings")
+    stock: Mapped["offers_models.Stock"] = relationship("Stock", foreign_keys=[stockId], back_populates="bookings")
 
     venueId: int = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
 
-    venue: Mapped["offerers_models.Venue"] = relationship("Venue", foreign_keys=[venueId], backref="bookings")
+    venue: Mapped["offerers_models.Venue"] = relationship("Venue", foreign_keys=[venueId], back_populates="bookings")
 
     offererId: int = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=False)
 
-    offerer: Mapped["offerers_models.Offerer"] = relationship("Offerer", foreign_keys=[offererId], backref="bookings")
+    offerer: Mapped["offerers_models.Offerer"] = relationship(
+        "Offerer", foreign_keys=[offererId], back_populates="bookings"
+    )
 
     quantity: int = Column(Integer, nullable=False, default=1)
 
@@ -116,7 +118,7 @@ class Booking(PcObject, Base, Model):
         "ActivationCode", uselist=False, back_populates="booking"
     )
 
-    user: Mapped["users_models.User"] = relationship("User", foreign_keys=[userId], backref="userBookings")
+    user: Mapped["users_models.User"] = relationship("User", foreign_keys=[userId], back_populates="userBookings")
 
     amount: Decimal = Column(Numeric(10, 2), nullable=False)
 
@@ -151,6 +153,18 @@ class Booking(PcObject, Base, Model):
 
     deposit: Mapped["finance_models.Deposit | None"] = relationship(
         "Deposit", foreign_keys=[depositId], back_populates="bookings"
+    )
+
+    finance_events: Mapped["finance_models.FinanceEvent | None"] = relationship(
+        finance_models.FinanceEvent, back_populates="booking"
+    )
+
+    pricings: Mapped[list["finance_models.Pricing"]] = relationship("Pricing", back_populates="booking")
+
+    externalBookings: Mapped[list["ExternalBooking"]] = relationship("ExternalBooking", back_populates="booking")
+
+    incidents: Mapped[list["finance_models.BookingFinanceIncident"]] = relationship(
+        "BookingFinanceIncident", back_populates="booking"
     )
 
     def mark_as_used(self) -> None:
@@ -218,7 +232,9 @@ class Booking(PcObject, Base, Model):
 
         token = self.activationCode.code if self.activationCode else self.token
 
-        return url.replace("{token}", token).replace("{offerId}", humanize(offer.id)).replace("{email}", self.email)
+        return (
+            url.replace("{token}", token).replace("{offerId}", humanize(offer.id) or "").replace("{email}", self.email)
+        )
 
     @staticmethod
     def restize_internal_error(ie: sa_exc.InternalError) -> tuple[str, str]:

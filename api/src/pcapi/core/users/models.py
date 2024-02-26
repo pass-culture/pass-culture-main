@@ -37,11 +37,17 @@ from pcapi.utils.phone_number import ParsedPhoneNumber
 
 
 if typing.TYPE_CHECKING:
+    from pcapi.core.bookings.models import Booking
     from pcapi.core.finance.models import Deposit
+    from pcapi.core.fraud.models import BeneficiaryFraudCheck
+    from pcapi.core.fraud.models import BeneficiaryFraudReview
+    from pcapi.core.history.models import ActionHistory
     from pcapi.core.offerers.models import UserOfferer
     from pcapi.core.offers.models import Mediation
     from pcapi.core.offers.models import Offer
+    from pcapi.core.offers.models import OfferReport
     from pcapi.core.permissions.models import BackOfficeUserProfile
+    from pcapi.models.beneficiary_import import BeneficiaryImport
 
 
 VOID_FIRST_NAME = ""
@@ -202,6 +208,41 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     )
     sa.Index("ix_user_validatedBirthDate", validatedBirthDate)
     pro_flags: UserProFlags = orm.relationship("UserProFlags", back_populates="user", uselist=False)
+
+    mediations: sa.orm.Mapped[list["Mediation"]] = sa.orm.relationship("Mediation", back_populates="author")
+    offers: sa.orm.Mapped[list["Offer"]] = sa.orm.relationship(
+        "Offer",
+        back_populates="author",
+        foreign_keys="[Offer.authorId]",
+    )
+    reported_offers: sa.orm.Mapped[list["OfferReport"]] = sa.orm.relationship("OfferReport", back_populates="user")
+    userBookings: sa.orm.Mapped[list["Booking"]] = sa.orm.relationship("Booking", back_populates="user")
+    favorites: orm.Mapped[list["Favorite"]] = orm.relationship("Favorite", back_populates="user")
+    email_history: sa.orm.Mapped[list["UserEmailHistory"]] = orm.relationship(
+        "UserEmailHistory", back_populates="user"  # TODO: do we need to keep passive_deletes=True ?
+    )
+    beneficiaryFraudChecks: sa.orm.Mapped[list["BeneficiaryFraudCheck"]] = sa.orm.relationship(
+        "BeneficiaryFraudCheck", back_populates="user"
+    )
+    beneficiaryFraudReviews: sa.orm.Mapped["BeneficiaryFraudReview"] = sa.orm.relationship(
+        "BeneficiaryFraudReview",
+        back_populates="user",
+        foreign_keys="[BeneficiaryFraudReview.userId]",
+    )
+    adminFraudReviews: sa.orm.Mapped["BeneficiaryFraudReview"] = sa.orm.relationship(
+        "BeneficiaryFraudReview",
+        back_populates="author",
+        foreign_keys="[BeneficiaryFraudReview.authorId]",
+    )
+    action_history: sa.orm.Mapped[list["ActionHistory"]] = sa.orm.relationship(
+        "ActionHistory",
+        back_populates="user",
+        foreign_keys="[ActionHistory.userId]",  # Doit-on garder passive_deletes=True ?
+    )
+    beneficiaryImports: sa.orm.Mapped[list["BeneficiaryImport"]] = sa.orm.relationship(
+        "BeneficiaryImport", back_populates="beneficiary"
+    )
+    deposits: sa.orm.Mapped[list["Deposit"]] = sa.orm.relationship("Deposit", back_populates="user")
 
     def __init__(self, **kwargs: typing.Any) -> None:
         kwargs.setdefault("roles", [])
@@ -653,11 +694,11 @@ class Favorite(PcObject, Base, Model):
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
 
-    user: orm.Mapped["User"] = orm.relationship("User", foreign_keys=[userId], backref="favorites")
+    user: orm.Mapped["User"] = orm.relationship("User", foreign_keys=[userId], back_populates="favorites")
 
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
 
-    offer: orm.Mapped["Offer"] = orm.relationship("Offer", foreign_keys=[offerId], backref="favorites")
+    offer: orm.Mapped["Offer"] = orm.relationship("Offer", foreign_keys=[offerId], back_populates="favorites")
 
     dateCreated = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow)
 
@@ -690,7 +731,7 @@ class UserEmailHistory(PcObject, Base, Model):
 
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), index=True, nullable=True)
     user: sa.orm.Mapped["User"] = orm.relationship(
-        "User", foreign_keys=[userId], backref=orm.backref("email_history", passive_deletes=True)
+        "User", foreign_keys=[userId], back_populates="email_history", passive_deletes=True
     )
 
     oldUserEmail: str = sa.Column(sa.String(120), nullable=False, unique=False, index=True)

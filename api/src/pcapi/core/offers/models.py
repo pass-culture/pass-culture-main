@@ -43,9 +43,11 @@ if typing.TYPE_CHECKING:
     from pcapi.core.criteria.models import Criterion
     from pcapi.core.educational.models import CollectiveOffer
     from pcapi.core.educational.models import CollectiveOfferTemplate
+    from pcapi.core.history.models import ActionHistory
     from pcapi.core.offerers.models import Offerer
     from pcapi.core.offerers.models import Venue
     from pcapi.core.providers.models import Provider
+    from pcapi.core.users.models import Favorite
     from pcapi.core.users.models import User
 
 
@@ -133,6 +135,7 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     name: str = sa.Column(sa.String(140), nullable=False)
     subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
     thumb_path_component = "products"
+    offers: list["Offer"] = sa.orm.relationship("Offer", back_populates="product")
 
     sa.Index("product_ean_idx", extraData["ean"].astext)
     sa.Index("product_allocineId_idx", extraData["allocineId"].cast(sa.Integer))
@@ -151,11 +154,11 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
 class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, DeactivableMixin):
     __tablename__ = "mediation"
 
-    author: sa_orm.Mapped["User"] | None = sa.orm.relationship("User", backref="mediations")
+    author: sa_orm.Mapped["User"] | None = sa.orm.relationship("User", back_populates="mediations")
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True)
     credit = sa.Column(sa.String(255), nullable=True)
     dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
-    offer: sa_orm.Mapped["Offer"] = sa.orm.relationship("Offer", backref="mediations")
+    offer: sa_orm.Mapped["Offer"] = sa.orm.relationship("Offer", back_populates="mediations")
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
     thumb_path_component = "mediations"
 
@@ -173,7 +176,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     )
     dateModified: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
     dnBookedQuantity: int = sa.Column(sa.BigInteger, nullable=False, server_default=sa.text("0"))
-    offer: sa_orm.Mapped["Offer"] = sa.orm.relationship("Offer", backref="stocks")
+    offer: sa_orm.Mapped["Offer"] = sa.orm.relationship("Offer", back_populates="stocks")
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
     price: decimal.Decimal = sa.Column(
         sa.Numeric(10, 2), sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False
@@ -186,6 +189,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     # FIXME: mageoffray (2024-01-05) : remove this column when Provider API is not used anymore
     rawProviderQuantity = sa.Column(sa.Integer, nullable=True)
     features: list[str] = sa.Column(postgresql.ARRAY(sa.Text), nullable=False, server_default=sa.text("'{}'::text[]"))
+    bookings: sa_orm.Mapped[list["Booking"]] = relationship("Booking", back_populates="stock")
 
     __table_args__ = (
         sa.Index(
@@ -407,9 +411,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     MAX_STOCKS_PER_OFFER = 2_500
 
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
-    author: sa_orm.Mapped["User"] | None = relationship(
-        "User", backref="offers", foreign_keys=[authorId], uselist=False
-    )
+    author: sa_orm.Mapped["User"] | None = relationship("User", foreign_keys=[authorId], back_populates="offers")
     bookingContact = sa.Column(sa.String(120), nullable=True)
     bookingEmail = sa.Column(sa.String(120), nullable=True)
     criteria: sa_orm.Mapped["Criterion"] = sa.orm.relationship(
@@ -443,13 +445,13 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     isNational: bool = sa.Column(sa.Boolean, default=False, nullable=False)
     name: str = sa.Column(sa.String(140), nullable=False)
     priceCategories: sa_orm.Mapped[list["PriceCategory"]] = sa.orm.relationship("PriceCategory", back_populates="offer")
-    product: Product = sa.orm.relationship(Product, backref="offers")
+    product: Product = sa.orm.relationship(Product, back_populates="offers")
     productId: int = sa.Column(sa.BigInteger, sa.ForeignKey("product.id"), index=True, nullable=True)
     rankingWeight = sa.Column(sa.Integer, nullable=True)
     subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
     url = sa.Column(sa.String(255), nullable=True)
     venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
-    venue: sa_orm.Mapped["Venue"] = sa.orm.relationship("Venue", foreign_keys=[venueId], backref="offers")
+    venue: sa_orm.Mapped["Venue"] = sa.orm.relationship("Venue", foreign_keys=[venueId], back_populates="offers")
     withdrawalDelay = sa.Column(sa.BigInteger, nullable=True)
     withdrawalDetails = sa.Column(sa.Text, nullable=True)
     withdrawalType = sa.Column(sa.Enum(WithdrawalTypeEnum), nullable=True)
@@ -478,6 +480,11 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     isNonFreeOffer: sa_orm.Mapped["bool"] = sa_orm.query_expression()
     bookingsCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
+
+    mediations: sa_orm.Mapped[list["Mediation"]] = sa.orm.relationship("Mediation", back_populates="offer")
+    stocks: sa_orm.Mapped[list["Stock"]] = sa.orm.relationship("Stock", back_populates="offer")
+    reports: sa.orm.Mapped[list["OfferReport"]] = sa.orm.relationship("OfferReport", back_populates="offer")
+    favorites: sa.orm.Mapped[list["Favorite"]] = sa.orm.relationship("Favorite", back_populates="offer")
 
     @property
     def isEducational(self) -> bool:
@@ -929,7 +936,7 @@ class OfferValidationSubRuleField(enum.Enum):
 class OfferValidationSubRule(PcObject, Base, Model):
     __tablename__ = "offer_validation_sub_rule"
     validationRule: sa.orm.Mapped["OfferValidationRule"] = sa.orm.relationship(
-        "OfferValidationRule", backref="subRules", order_by="OfferValidationSubRule.id.asc()"
+        "OfferValidationRule", back_populates="subRules", order_by="OfferValidationSubRule.id.asc()"
     )
     validationRuleId = sa.Column(sa.BigInteger, sa.ForeignKey("offer_validation_rule.id"), index=True, nullable=False)
     model: OfferValidationModel = sa.Column(sa.Enum(OfferValidationModel), nullable=True)
@@ -957,6 +964,13 @@ class OfferValidationRule(PcObject, Base, Model, DeactivableMixin):
         "CollectiveOfferTemplate",
         secondary="validation_rule_collective_offer_template_link",
         back_populates="flaggingValidationRules",
+    )
+    subRules: sa.orm.Mapped["OfferValidationSubRule"] = sa.orm.relationship(
+        "OfferValidationSubRule", back_populates="validationRule"
+    )
+    action_history: sa.orm.Mapped[list["ActionHistory"]] = sa.orm.relationship(
+        "ActionHistory",
+        back_populates="rule",  # Doit-on garder passive_deletes=True ?
     )
 
 
@@ -1034,9 +1048,9 @@ class OfferReport(PcObject, Base, Model):
         ),
     )
 
-    user: sa.orm.Mapped["User"] = sa.orm.relationship("User", backref="reported_offers")
+    user: sa.orm.Mapped["User"] = sa.orm.relationship("User", back_populates="reported_offers")
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
-    offer: sa.orm.Mapped["Offer"] = sa.orm.relationship("Offer", backref="reports")
+    offer: sa.orm.Mapped["Offer"] = sa.orm.relationship("Offer", back_populates="reports")
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
     reason: Reason = sa.Column(sa.Enum(Reason, create_constraint=False), nullable=False, index=True)
     reportedAt: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())

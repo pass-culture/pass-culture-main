@@ -118,7 +118,9 @@ class ActionHistory(PcObject, Base, Model):
     user: users_models.User | None = sa.orm.relationship(
         "User",
         foreign_keys=[userId],
-        backref=sa.orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
+        back_populates="action_history",
+        order_by=ACTION_HISTORY_ORDER_BY,
+        passive_deletes=True,
     )
 
     offererId: int | None = sa.Column(
@@ -127,7 +129,9 @@ class ActionHistory(PcObject, Base, Model):
     offerer: sa.orm.Mapped["offerers_models.Offerer | None"] = sa.orm.relationship(
         "Offerer",
         foreign_keys=[offererId],
-        backref=sa.orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
+        back_populates="action_history",
+        order_by=ACTION_HISTORY_ORDER_BY,
+        passive_deletes=True,
     )
 
     venueId: int | None = sa.Column(
@@ -136,7 +140,9 @@ class ActionHistory(PcObject, Base, Model):
     venue: sa.orm.Mapped["offerers_models.Venue | None"] = sa.orm.relationship(
         "Venue",
         foreign_keys=[venueId],
-        backref=sa.orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
+        back_populates="action_history",
+        order_by=ACTION_HISTORY_ORDER_BY,
+        passive_deletes=True,
     )
 
     financeIncidentId: int | None = sa.Column(
@@ -145,7 +151,9 @@ class ActionHistory(PcObject, Base, Model):
     financeIncident: sa.orm.Mapped["finance_models.FinanceIncident | None"] = sa.orm.relationship(
         "FinanceIncident",
         foreign_keys=[financeIncidentId],
-        backref=sa.orm.backref("action_history", order_by="ActionHistory.actionDate.asc()", passive_deletes=True),
+        back_populates="action_history",
+        order_by="ActionHistory.actionDate.asc()",
+        passive_deletes=True,
     )
 
     bankAccountId: int | None = sa.Column(
@@ -155,7 +163,9 @@ class ActionHistory(PcObject, Base, Model):
     bankAccount: sa.orm.Mapped["finance_models.BankAccount | None"] = sa.orm.relationship(
         "BankAccount",
         foreign_keys=[bankAccountId],
-        backref=sa.orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
+        back_populates="action_history",
+        order_by=ACTION_HISTORY_ORDER_BY,
+        passive_deletes=True,
     )
 
     ruleId: int | None = sa.Column(
@@ -165,7 +175,9 @@ class ActionHistory(PcObject, Base, Model):
     rule: sa.orm.Mapped["offers_models.OfferValidationRule | None"] = sa.orm.relationship(
         "OfferValidationRule",
         foreign_keys=[ruleId],
-        backref=sa.orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
+        back_populates="action_history",
+        order_by=ACTION_HISTORY_ORDER_BY,
+        passive_deletes=True,
     )
 
     comment = sa.Column(sa.Text(), nullable=True)
