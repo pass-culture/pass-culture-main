@@ -12,6 +12,7 @@ import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { venueFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
+import { listOffersStockFactory } from 'screens/Offers/utils/individualOffersFactories'
 import { getToday } from 'utils/date'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -257,9 +258,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should be the sum of individual offer stocks remaining quantity', () => {
         props.offer.stocks = [
-          { remainingQuantity: 0 },
-          { remainingQuantity: 2 },
-          { remainingQuantity: 3 },
+          listOffersStockFactory({ remainingQuantity: 0 }),
+          listOffersStockFactory({ remainingQuantity: 2 }),
+          listOffersStockFactory({ remainingQuantity: 3 }),
         ]
 
         renderOfferItem(props)
@@ -269,8 +270,8 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should be "illimité" when at least one stock of the individual offer is unlimited', () => {
         props.offer.stocks = [
-          { remainingQuantity: 0 },
-          { remainingQuantity: 'unlimited' },
+          listOffersStockFactory({ remainingQuantity: 0 }),
+          listOffersStockFactory({ remainingQuantity: 'unlimited' }),
         ]
 
         renderOfferItem(props)
@@ -331,14 +332,14 @@ describe('src | components | pages | Offers | OfferItem', () => {
       it('should display the correct text "2 dates"', () => {
         props.offer.venue = venueFactory({ departementCode: '973' })
         props.offer.stocks = [
-          {
-            beginningDatetime: new Date('01-01-2001'),
+          listOffersStockFactory({
+            beginningDatetime: '01-01-2001',
             remainingQuantity: 'unlimited',
-          },
-          {
-            beginningDatetime: new Date('01-01-2001'),
+          }),
+          listOffersStockFactory({
+            beginningDatetime: '01-01-2001',
             remainingQuantity: 'unlimited',
-          },
+          }),
         ]
 
         renderOfferItem(props)
@@ -349,10 +350,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
       it('should display the beginning date time when only one date', () => {
         props.offer.venue = venueFactory({ departementCode: '973' })
         props.offer.stocks = [
-          {
-            beginningDatetime: new Date('2021-05-27T20:00:00Z'),
+          listOffersStockFactory({
+            beginningDatetime: '2021-05-27T20:00:00Z',
             remainingQuantity: 10,
-          },
+          }),
         ]
 
         renderOfferItem(props)
@@ -362,8 +363,8 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should not display a warning when no stocks are sold out', () => {
         props.offer.stocks = [
-          { remainingQuantity: 'unlimited' },
-          { remainingQuantity: 13 },
+          listOffersStockFactory({ remainingQuantity: 'unlimited' }),
+          listOffersStockFactory({ remainingQuantity: 13 }),
         ]
 
         renderOfferItem(props)
@@ -373,8 +374,8 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should not display a warning when all stocks are sold out', () => {
         props.offer.stocks = [
-          { remainingQuantity: 0 },
-          { remainingQuantity: 0 },
+          listOffersStockFactory({ remainingQuantity: 0 }),
+          listOffersStockFactory({ remainingQuantity: 0 }),
         ]
         eventOffer.status = OfferStatus.SOLD_OUT
 
@@ -385,10 +386,8 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should display a warning with number of stocks sold out when at least one stock is sold out', () => {
         props.offer.stocks = [
-          { remainingQuantity: 0 },
-          {
-            remainingQuantity: 'unlimited',
-          },
+          listOffersStockFactory({ remainingQuantity: 0 }),
+          listOffersStockFactory({ remainingQuantity: 'unlimited' }),
         ]
 
         renderOfferItem(props)
@@ -401,9 +400,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should pluralize number of stocks sold out when at least two stocks are sold out', () => {
         props.offer.stocks = [
-          { remainingQuantity: 0 },
-          { remainingQuantity: 0 },
-          { remainingQuantity: 12 },
+          listOffersStockFactory({ remainingQuantity: 0 }),
+          listOffersStockFactory({ remainingQuantity: 0 }),
+          listOffersStockFactory({ remainingQuantity: 12 }),
         ]
 
         renderOfferItem(props)
@@ -517,7 +516,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
         props.audience = Audience.COLLECTIVE
         props.offer.status = OfferStatus.SOLD_OUT
         props.offer.stocks = [
-          { remainingQuantity: 0, beginningDatetime: getToday() },
+          listOffersStockFactory({
+            remainingQuantity: 0,
+            beginningDatetime: String(getToday()),
+          }),
         ]
         props.offer.educationalBooking = {
           id: 1,
@@ -538,7 +540,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
       props.audience = Audience.COLLECTIVE
       props.offer.status = OfferStatus.EXPIRED
       props.offer.stocks = [
-        { remainingQuantity: 0, beginningDatetime: getToday() },
+        listOffersStockFactory({
+          remainingQuantity: 0,
+          beginningDatetime: String(getToday()),
+        }),
       ]
       props.offer.educationalBooking = {
         id: 1,
@@ -566,7 +571,12 @@ describe('src | components | pages | Offers | OfferItem', () => {
         offer: {
           ...props.offer,
           status: OfferStatus.SOLD_OUT,
-          stocks: [{ remainingQuantity: 0, beginningDatetime: getToday() }],
+          stocks: [
+            listOffersStockFactory({
+              remainingQuantity: 0,
+              beginningDatetime: String(getToday()),
+            }),
+          ],
           educationalBooking: { id: 1, booking_status: 'PENDING' },
         },
       })
