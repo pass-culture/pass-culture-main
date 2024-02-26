@@ -8,6 +8,7 @@ import type { EacFormat } from './EacFormat';
 import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
 import type { ListOffersVenueResponseModel } from './ListOffersVenueResponseModel';
 import type { NationalProgramModel } from './NationalProgramModel';
+import type { OfferStatus } from './OfferStatus';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 export type CollectiveOfferResponseModel = {
   booking?: CollectiveOffersBookingResponseModel | null;
@@ -25,7 +26,7 @@ export type CollectiveOfferResponseModel = {
   isShowcase: boolean;
   name: string;
   nationalProgram?: NationalProgramModel | null;
-  status: string;
+  status: OfferStatus;
   stocks: Array<CollectiveOffersStockResponseModel>;
   subcategoryId?: SubcategoryIdEnum | null;
   templateId?: string | null;
