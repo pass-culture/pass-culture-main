@@ -1,4 +1,3 @@
-import datetime
 import logging
 import time
 
@@ -138,7 +137,6 @@ def _send_sms_with_retry(phone_number: str, message: str, max_attempt: int = 3) 
 def send_phone_validation_code(
     user: users_models.User,
     phone_number: str | None,
-    expiration: datetime.datetime | None = None,
     ignore_limit: bool = False,
 ) -> None:
     if not phone_number:
@@ -158,7 +156,6 @@ def send_phone_validation_code(
     phone_validation_token = users_api.create_phone_validation_token(
         user,
         phone_data.phone_number,
-        expiration=expiration,
     )
     content = f"{phone_validation_token.encoded_token} est ton code de confirmation pass Culture"
 

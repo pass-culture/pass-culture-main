@@ -1818,9 +1818,7 @@ class ValidatePhoneNumberTest:
             phoneNumber="+33607080900", dateOfBirth=datetime.utcnow() - relativedelta(years=18)
         )
         client.with_token(email=user.email)
-        token = create_phone_validation_token(
-            user, "+33607080900", expiration=datetime.utcnow() + users_constants.PHONE_VALIDATION_TOKEN_LIFE_TIME
-        )
+        token = create_phone_validation_token(user, "+33607080900")
 
         # try one attempt with wrong code
         client.post("/native/v1/validate_phone_number", {"code": "wrong code"})
@@ -1873,9 +1871,7 @@ class ValidatePhoneNumberTest:
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
 
         client.with_token(email=user.email)
-        token = create_phone_validation_token(
-            user, "+33607080900", expiration=datetime.utcnow() + users_constants.PHONE_VALIDATION_TOKEN_LIFE_TIME
-        )
+        token = create_phone_validation_token(user, "+33607080900")
 
         response = client.post("/native/v1/validate_phone_number", {"code": token.encoded_token})
 
@@ -1891,9 +1887,7 @@ class ValidatePhoneNumberTest:
             dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5),
         )
         client.with_token(email=user.email)
-        token = create_phone_validation_token(
-            user, "+33607080900", expiration=datetime.utcnow() + users_constants.PHONE_VALIDATION_TOKEN_LIFE_TIME
-        )
+        token = create_phone_validation_token(user, "+33607080900")
 
         response = client.post("/native/v1/validate_phone_number", {"code": "wrong code"})
         response = client.post("/native/v1/validate_phone_number", {"code": token.encoded_token})
@@ -1943,9 +1937,7 @@ class ValidatePhoneNumberTest:
     def test_wrong_code(self, client):
         user = users_factories.UserFactory(phoneNumber="+33607080900")
         client.with_token(email=user.email)
-        create_phone_validation_token(
-            user, "+33607080900", expiration=datetime.utcnow() + users_constants.PHONE_VALIDATION_TOKEN_LIFE_TIME
-        )
+        create_phone_validation_token(user, "+33607080900")
 
         response = client.post("/native/v1/validate_phone_number", {"code": "mauvais-code"})
 
@@ -1979,9 +1971,7 @@ class ValidatePhoneNumberTest:
     def test_expired_code(self, client):
         with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
             user = users_factories.UserFactory(phoneNumber="+33607080900")
-            token = create_phone_validation_token(
-                user, "+33607080900", expiration=datetime.utcnow() + users_constants.PHONE_VALIDATION_TOKEN_LIFE_TIME
-            )
+            token = create_phone_validation_token(user, "+33607080900")
 
             with freeze_time(datetime.utcnow() + timedelta(hours=15)):
                 client.with_token(email=user.email)
@@ -2001,9 +1991,7 @@ class ValidatePhoneNumberTest:
         )
         user = users_factories.UserFactory(phoneNumber="+33607080900")
         client.with_token(email=user.email)
-        token = create_phone_validation_token(
-            user, "+33607080900", expiration=datetime.utcnow() + users_constants.PHONE_VALIDATION_TOKEN_LIFE_TIME
-        )
+        token = create_phone_validation_token(user, "+33607080900")
 
         # try one attempt with wrong code
         response = client.post("/native/v1/validate_phone_number", {"code": token.encoded_token})

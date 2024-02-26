@@ -92,14 +92,12 @@ def create_reset_password_token(user: models.User, expiration: datetime.datetime
 def create_phone_validation_token(
     user: models.User,
     phone_number: str,
-    expiration: datetime.datetime | None = None,
 ) -> token_utils.SixDigitsToken:
-    if expiration:
-        ttl = expiration - datetime.datetime.utcnow()
-    else:
-        ttl = None
     return token_utils.SixDigitsToken.create(
-        type_=token_utils.TokenType.PHONE_VALIDATION, user_id=user.id, ttl=ttl, data={"phone_number": phone_number}
+        type_=token_utils.TokenType.PHONE_VALIDATION,
+        user_id=user.id,
+        ttl=constants.PHONE_VALIDATION_TOKEN_LIFE_TIME,
+        data={"phone_number": phone_number},
     )
 
 

@@ -1245,7 +1245,12 @@ class SendValidationCodeTest(PostEndpointHelper):
         assert sms_testing.requests[0]["recipient"] == user.phoneNumber
 
         assert token_utils.Token.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
-        assert token_utils.SixDigitsToken.get_expiration_date(token_utils.TokenType.PHONE_VALIDATION, user.id) is None
+        assert token_utils.SixDigitsToken.get_expiration_date(
+            token_utils.TokenType.PHONE_VALIDATION, user.id
+        ).timestamp() == pytest.approx(
+            (datetime.datetime.utcnow() + users_constants.PHONE_VALIDATION_TOKEN_LIFE_TIME).timestamp(),
+            1,
+        )
 
     def test_phone_validation_code_sending_ignores_limit(self, authenticated_client):
         user = users_factories.UserFactory(phoneValidationStatus=None, phoneNumber="+33612345678")
