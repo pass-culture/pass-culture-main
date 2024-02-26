@@ -706,7 +706,7 @@ def update_products_last_30_days_booking_count(batch_size: int = 1000) -> None:
                 offer_ids_to_reindex,
                 reason=IndexationReason.BOOKING_COUNT_CHANGE,
             )
-            offer_ids_to_reindex = set()
+            offer_ids_to_reindex.clear()
     if offer_ids_to_reindex:
         async_index_offer_ids(
             offer_ids_to_reindex,
