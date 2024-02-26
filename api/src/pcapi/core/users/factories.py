@@ -968,18 +968,6 @@ class EduconnectUserFactory(factory.Factory):
     school_uai = "0910620E"
 
 
-class UserEmailHistoryFactory(BaseFactory):
-    class Meta:
-        model = models.UserEmailHistory
-        abstract = True
-
-    user = factory.SubFactory(UserFactory)
-    oldUserEmail = factory.LazyAttribute(lambda o: o.user.email.split("@")[0])
-    oldDomainEmail = factory.LazyAttribute(lambda o: o.user.email.split("@")[1])
-    newUserEmail = factory.LazyAttribute(lambda o: o.user.email.split("@")[0])
-    newDomainEmail = factory.LazyAttribute(lambda o: o.user.email.split("@")[1] + ".update")
-
-
 class TrustedDeviceFactory(BaseFactory):
     class Meta:
         model = models.TrustedDevice
@@ -1008,6 +996,18 @@ class SingleSignOnFactory(BaseFactory):
     user = factory.SubFactory(UserFactory)
     ssoProvider = "google"
     ssoUserId = factory.Sequence("{}".format)
+
+
+class UserEmailHistoryFactory(BaseFactory):
+    class Meta:
+        model = models.UserEmailHistory
+        abstract = True
+
+    user = factory.SubFactory(UserFactory)
+    oldUserEmail = factory.LazyAttribute(lambda o: o.user.email.split("@")[0])
+    oldDomainEmail = factory.LazyAttribute(lambda o: o.user.email.split("@")[1])
+    newUserEmail = factory.LazyAttribute(lambda o: o.user.email.split("@")[0])
+    newDomainEmail = factory.LazyAttribute(lambda o: o.user.email.split("@")[1] + ".update")
 
 
 class EmailUpdateEntryFactory(UserEmailHistoryFactory):

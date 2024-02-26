@@ -647,6 +647,17 @@ def test_public_api(client):
                     "title": "EmailUpdateStatus",
                     "type": "object",
                 },
+                "EmailUpdateStatusResponse": {
+                    "properties": {
+                        "expired": {"title": "Expired", "type": "boolean"},
+                        "newEmail": {"nullable": True, "title": "Newemail", "type": "string"},
+                        "status": {"$ref": "#/components/schemas/EmailHistoryEventTypeEnum"},
+                        "token": {"nullable": True, "title": "Token", "type": "string"},
+                    },
+                    "required": ["expired", "status"],
+                    "title": "EmailUpdateStatusResponse",
+                    "type": "object",
+                },
                 "EmailValidationRemainingResendsResponse": {
                     "properties": {
                         "counterResetDatetime": {
@@ -3026,6 +3037,7 @@ def test_public_api(client):
             },
             "/native/v1/profile/email_update/status": {
                 "get": {
+                    "deprecated": True,
                     "description": "",
                     "operationId": "get__native_v1_profile_email_update_status",
                     "parameters": [],
@@ -3044,7 +3056,6 @@ def test_public_api(client):
                             "description": "Unprocessable Entity",
                         },
                     },
-                    "security": [{"JWTAuth": []}],
                     "summary": "get_email_update_status <GET>",
                     "tags": [],
                 }
@@ -3109,6 +3120,7 @@ def test_public_api(client):
             },
             "/native/v1/profile/update_email": {
                 "post": {
+                    "deprecated": True,
                     "description": "",
                     "operationId": "post__native_v1_profile_update_email",
                     "parameters": [],
@@ -3127,7 +3139,6 @@ def test_public_api(client):
                             "description": "Unprocessable Entity",
                         },
                     },
-                    "security": [{"JWTAuth": []}],
                     "summary": "update_user_email <POST>",
                     "tags": [],
                 }
@@ -3740,6 +3751,45 @@ def test_public_api(client):
                     "summary": "confirm_email_update <POST>",
                     "tags": [],
                 }
+            },
+            "/native/v2/profile/email_update/status": {
+                "get": {
+                    "description": "",
+                    "operationId": "get__native_v2_profile_email_update_status",
+                    "parameters": [],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/EmailUpdateStatusResponse",
+                                    },
+                                },
+                            },
+                            "description": "OK",
+                        },
+                        "403": {
+                            "description": "Forbidden",
+                        },
+                        "422": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/ValidationError",
+                                    },
+                                },
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [
+                        {
+                            "JWTAuth": [],
+                        },
+                    ],
+                    "summary": "get_email_update_status <GET>",
+                    "tags": [],
+                },
             },
             "/native/v2/profile/update_email": {
                 "post": {

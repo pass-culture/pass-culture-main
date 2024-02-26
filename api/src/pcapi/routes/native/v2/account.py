@@ -1,8 +1,11 @@
+from datetime import datetime
+
 from pcapi.core import token as token_utils
 from pcapi.core.users import api
 from pcapi.core.users import constants
 from pcapi.core.users import exceptions
 from pcapi.core.users import models as users_models
+from pcapi.core.users.email import repository as email_repository
 from pcapi.core.users.email import update as email_api
 from pcapi.models import api_errors
 from pcapi.repository import atomic
@@ -13,6 +16,28 @@ from pcapi.serialization.decorator import spectree_serialize
 
 from .. import blueprint
 from .serialization import account as serializers
+
+
+@blueprint.native_route("/profile/email_update/status", version="v2", methods=["GET"])
+@spectree_serialize(on_success_status=200, api=blueprint.api, response_model=serializers.EmailUpdateStatusResponse)
+@authenticated_and_active_user_required
+def get_email_update_status(user: users_models.User) -> serializers.EmailUpdateStatusResponse:
+    latest_email_update_event = email_repository.get_email_update_latest_event(user)
+    if not latest_email_update_event:
+        raise api_errors.ResourceNotFoundError
+
+    new_email_selection_token = None
+    if latest_email_update_event.eventType == users_models.EmailHistoryEventTypeEnum.CONFIRMATION:
+        new_email_selection_token = token_utils.Token.get_token(
+            token_utils.TokenType.EMAIL_CHANGE_NEW_EMAIL_SELECTION, user.id
+        )
+
+    return serializers.EmailUpdateStatusResponse(
+        new_email=latest_email_update_event.newEmail,
+        expired=(email_api.get_active_token_expiration(user) or datetime.min) < datetime.utcnow(),
+        status=latest_email_update_event.eventType,
+        token=new_email_selection_token.encoded_token if new_email_selection_token else None,
+    )
 
 
 @blueprint.native_route("/profile/update_email", version="v2", methods=["POST"])

@@ -764,12 +764,20 @@ class UserEmailHistory(PcObject, Base, Model):
         return func.concat(cls.oldUserEmail, "@", cls.oldDomainEmail)
 
     @hybrid_property
-    def newEmail(self) -> str:
-        return f"{self.newUserEmail}@{self.newDomainEmail}"
+    def newEmail(self) -> str | None:
+        if self.newUserEmail and self.newDomainEmail:
+            return f"{self.newUserEmail}@{self.newDomainEmail}"
+        return None
 
     @newEmail.expression  # type: ignore [no-redef]
     def newEmail(cls):  # pylint: disable=no-self-argument
-        return func.concat(cls.newUserEmail, "@", cls.newDomainEmail)
+        return sa.case(
+            (
+                sa.and_(cls.newUserEmail.is_not(None), cls.newDomainEmail.is_not(None)),
+                func.concat(cls.newUserEmail, "@", cls.newDomainEmail),
+            ),
+            else_=None,
+        )
 
 
 class UserSession(PcObject, Base, Model):
