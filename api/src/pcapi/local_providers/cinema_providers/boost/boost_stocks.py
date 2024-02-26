@@ -253,19 +253,6 @@ class BoostStocks(LocalProvider):
         return client_boost.get_cinemas_attributs()
 
 
-def _find_showtimes_by_movie_id(showtimes_information: list[dict], movie_id: int) -> list[dict]:
-    return list(
-        filter(
-            lambda showtime: showtime["show_information"].media.id == movie_id,
-            showtimes_information,
-        )
-    )
-
-
-def _get_showtimes_uuid_by_idAtProvider(id_at_provider: str) -> str:
-    return id_at_provider.split("#")[1]
-
-
 def _build_movie_uuid(film_id: int, venue: Venue) -> str:
     return f"{film_id}%{venue.id}%Boost"
 
