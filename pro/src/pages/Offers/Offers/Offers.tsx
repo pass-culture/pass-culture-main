@@ -1,9 +1,13 @@
 import React, { useCallback } from 'react'
 import { useSelector } from 'react-redux'
 
+import {
+  CollectiveOfferResponseModel,
+  ListOffersOfferResponseModel,
+} from 'apiClient/v1'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { MAX_OFFERS_TO_DISPLAY } from 'core/Offers/constants'
-import { Offer, SearchFiltersParams } from 'core/Offers/types'
+import { SearchFiltersParams } from 'core/Offers/types'
 import { hasSearchFilters, isOfferDisabled } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
@@ -27,7 +31,9 @@ type OffersProps = {
   areAllOffersSelected: boolean
   audience: Audience
   currentPageNumber: number
-  currentPageOffersSubset: Offer[]
+  currentPageOffersSubset:
+    | CollectiveOfferResponseModel[]
+    | ListOffersOfferResponseModel[]
   currentUser: { isAdmin: boolean }
   hasOffers: boolean
   isLoading: boolean

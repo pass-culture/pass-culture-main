@@ -1,12 +1,12 @@
 import React, { useCallback, useState } from 'react'
 
+import { ListOffersOfferResponseModel } from 'apiClient/v1'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import {
   Events,
   OFFER_FORM_NAVIGATION_IN,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
-import { Offer } from 'core/Offers/types'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullTrashIcon from 'icons/full-trash.svg'
@@ -17,11 +17,14 @@ import { deleteDraftOffersAdapter } from '../../../adapters/deleteDraftOffers'
 import styles from '../../OfferItem.module.scss'
 
 interface DeleteDraftOffersProps {
-  offer: Offer
+  offer: ListOffersOfferResponseModel
   refreshOffers: () => void
 }
 
-const DeleteDraftCell = ({ offer, refreshOffers }: DeleteDraftOffersProps) => {
+export const DeleteDraftCell = ({
+  offer,
+  refreshOffers,
+}: DeleteDraftOffersProps) => {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
   const { logEvent } = useAnalytics()
   const notification = useNotification()
@@ -73,5 +76,3 @@ const DeleteDraftCell = ({ offer, refreshOffers }: DeleteDraftOffersProps) => {
     </>
   )
 }
-
-export default DeleteDraftCell

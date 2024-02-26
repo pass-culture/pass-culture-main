@@ -3,7 +3,11 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { UserRole } from 'apiClient/v1'
+import {
+  ListOffersOfferResponseModel,
+  OfferStatus,
+  UserRole,
+} from 'apiClient/v1'
 import {
   ALL_CATEGORIES,
   ALL_COLLECTIVE_OFFER_TYPE,
@@ -18,9 +22,9 @@ import {
   DEFAULT_PAGE,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
-import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import * as useNotification from 'hooks/useNotification'
+import { collectiveOfferFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
 import { offererFactory } from 'utils/apiFactories'
 import {
   renderWithProviders,
@@ -89,7 +93,7 @@ describe('screen Offers', () => {
     name: string
     roles: Array<UserRole>
   }
-  let offersRecap: Offer[]
+  let offersRecap: ListOffersOfferResponseModel[]
 
   const mockNotifyError = vi.fn()
   const mockNotifyPending = vi.fn()
@@ -548,15 +552,15 @@ describe('screen Offers', () => {
     const offers = [
       individualOfferFactory({
         isActive: false,
-        status: 'REJECTED',
+        status: OfferStatus.REJECTED,
       }),
       individualOfferFactory({
         isActive: true,
-        status: 'PENDING',
+        status: OfferStatus.PENDING,
       }),
       individualOfferFactory({
         isActive: true,
-        status: 'ACTIVE',
+        status: OfferStatus.ACTIVE,
       }),
     ]
 
@@ -653,7 +657,7 @@ describe('screen Offers', () => {
       const offers = [
         individualOfferFactory({
           isActive: false,
-          status: 'DRAFT',
+          status: OfferStatus.DRAFT,
         }),
       ]
 
@@ -669,9 +673,9 @@ describe('screen Offers', () => {
 
     it('should display display error message when trying to activate collective offers with booking limit date passed', async () => {
       const offers = [
-        individualOfferFactory({
+        collectiveOfferFactory({
           isActive: false,
-          hasBookingLimitDatePassed: true,
+          hasBookingLimitDatetimesPassed: true,
         }),
       ]
 
@@ -705,15 +709,13 @@ describe('screen Offers', () => {
       // Given
       const offers = [
         individualOfferFactory(),
-        individualOfferFactory({
-          isFullyBooked: true,
-        }),
+        individualOfferFactory(),
         individualOfferFactory({
           isActive: false,
-          status: 'REJECTED',
+          status: OfferStatus.REJECTED,
         }),
         individualOfferFactory({
-          status: 'PENDING',
+          status: OfferStatus.PENDING,
         }),
       ]
 

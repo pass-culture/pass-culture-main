@@ -1,9 +1,8 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { OfferStatus } from 'apiClient/v1'
+import { CollectiveOfferResponseModel, OfferStatus } from 'apiClient/v1'
 import { CollectiveStatusLabel } from 'components/CollectiveStatusLabel'
-import { Offer } from 'core/Offers/types'
 import fullHideIcon from 'icons/full-hide.svg'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import strokeCheckIcon from 'icons/stroke-check.svg'
@@ -139,13 +138,14 @@ export const getCollectiveStatusLabel = (
   }
 }
 
-const CollectiveOfferStatusCell = ({ offer }: { offer: Offer }) => (
+interface CollectiveOfferStatusCellProps {
+  offer: CollectiveOfferResponseModel
+}
+
+export const CollectiveOfferStatusCell = ({
+  offer,
+}: CollectiveOfferStatusCellProps) => (
   <td className={styles['status-column']}>
-    {getCollectiveStatusLabel(
-      offer.status,
-      offer.educationalBooking?.booking_status
-    )}
+    {getCollectiveStatusLabel(offer.status, offer.booking?.booking_status)}
   </td>
 )
-
-export default CollectiveOfferStatusCell

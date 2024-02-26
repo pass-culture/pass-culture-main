@@ -4,14 +4,14 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { OfferStatus } from 'apiClient/v1'
+import { CollectiveOfferResponseModel, OfferStatus } from 'apiClient/v1'
 import {
   ALL_CATEGORIES_OPTION,
   ALL_VENUES,
   ALL_VENUES_OPTION,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
-import { Offer, SearchFiltersParams } from 'core/Offers/types'
+import { SearchFiltersParams } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -95,7 +95,7 @@ describe('route CollectiveOffers', () => {
     name: string
   }
   let store: any
-  let offersRecap: Offer[]
+  let offersRecap: CollectiveOfferResponseModel[]
 
   beforeEach(() => {
     currentUser = {
@@ -113,9 +113,7 @@ describe('route CollectiveOffers', () => {
       },
     }
     offersRecap = [collectiveOfferFactory()]
-    vi.spyOn(api, 'getCollectiveOffers')
-      // @ts-expect-error FIX ME
-      .mockResolvedValue(offersRecap)
+    vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
     vi.spyOn(api, 'getCategories').mockResolvedValue(
       // @ts-expect-error FIX ME
       categoriesAndSubcategories
@@ -129,11 +127,9 @@ describe('route CollectiveOffers', () => {
   describe('render', () => {
     describe('filters', () => {
       it('should display only selectable categories eligible for EAC on filters', async () => {
-        // When
         await renderOffers(store)
         screen.getByText('Rechercher')
 
-        // Then
         expect(
           screen.getByRole('option', { name: 'Cinéma' })
         ).toBeInTheDocument()
@@ -147,7 +143,6 @@ describe('route CollectiveOffers', () => {
 
       describe('status filters', () => {
         it('should filter offers given status filter when clicking on "Appliquer"', async () => {
-          // Given
           await renderOffers(store)
           await userEvent.click(
             screen.getByRole('button', {
@@ -155,9 +150,9 @@ describe('route CollectiveOffers', () => {
             })
           )
           await userEvent.click(screen.getByLabelText('Expirée'))
-          // When
+
           await userEvent.click(screen.getByText('Appliquer'))
-          // Then
+
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             undefined,
@@ -173,13 +168,11 @@ describe('route CollectiveOffers', () => {
         })
 
         it('should indicate that no offers match selected filters', async () => {
-          // Given
           vi.spyOn(api, 'getCollectiveOffers')
-            // @ts-expect-error FIX ME
             .mockResolvedValueOnce(offersRecap)
             .mockResolvedValueOnce([])
           await renderOffers(store)
-          // When
+
           await userEvent.click(
             screen.getByRole('button', {
               name: 'Statut Afficher ou masquer le filtre par statut',
@@ -187,7 +180,7 @@ describe('route CollectiveOffers', () => {
           )
           await userEvent.click(screen.getByLabelText('Expirée'))
           await userEvent.click(screen.getByText('Appliquer'))
-          // Then
+
           const noOffersForSearchFiltersText = screen.getByText(
             'Aucune offre trouvée pour votre recherche'
           )
@@ -195,12 +188,10 @@ describe('route CollectiveOffers', () => {
         })
 
         it('should not display column titles when no offers are returned', async () => {
-          // Given
           vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([])
-          // When
+
           await renderOffers(store)
 
-          // Then
           expect(screen.queryByText('Lieu', { selector: 'th' })).toBeNull()
           expect(screen.queryByText('Stock', { selector: 'th' })).toBeNull()
         })
@@ -220,7 +211,6 @@ describe('route CollectiveOffers', () => {
         })
         describe('status filter can only be used with an offerer or a venue filter for performance reasons', () => {
           it('should reset and disable status filter when venue filter is deselected', async () => {
-            // Given
             const { id: venueId, name: venueName } = proVenues[0]
             const filters = {
               venueId: venueId.toString(),
@@ -231,9 +221,9 @@ describe('route CollectiveOffers', () => {
               screen.getByDisplayValue(venueName),
               ALL_VENUES
             )
-            // When
+
             await userEvent.click(screen.getByText('Rechercher'))
-            // Then
+
             expect(
               screen.getByRole('button', {
                 name: 'Statut Afficher ou masquer le filtre par statut',
@@ -254,7 +244,6 @@ describe('route CollectiveOffers', () => {
           })
 
           it('should not reset or disable status filter when venue filter is deselected while offerer filter is applied', async () => {
-            // Given
             const { id: venueId, name: venueName } = proVenues[0]
             const filters = {
               venueId: venueId.toString(),
@@ -266,9 +255,9 @@ describe('route CollectiveOffers', () => {
               screen.getByDisplayValue(venueName),
               ALL_VENUES
             )
-            // When
+
             await userEvent.click(screen.getByText('Rechercher'))
-            // Then
+
             expect(
               screen.getByRole('button', {
                 name: /Afficher ou masquer le filtre par statut/,
@@ -289,7 +278,6 @@ describe('route CollectiveOffers', () => {
           })
 
           it('should reset and disable status filter when offerer filter is removed', async () => {
-            // Given
             const offerer = { name: 'La structure', id: 'EF' }
             // @ts-expect-error FIX ME
             vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
@@ -298,9 +286,9 @@ describe('route CollectiveOffers', () => {
               status: OfferStatus.INACTIVE,
             }
             await renderOffers(store, filters)
-            // When
+
             await userEvent.click(screen.getByTestId('remove-offerer-filter'))
-            // Then
+
             expect(
               screen.getByRole('button', {
                 name: 'Statut Afficher ou masquer le filtre par statut',
@@ -321,7 +309,6 @@ describe('route CollectiveOffers', () => {
           })
 
           it('should not reset or disable status filter when offerer filter is removed while venue filter is applied', async () => {
-            // Given
             const { id: venueId } = proVenues[0]
             const offerer = { name: 'La structure', id: 'EF' }
             // @ts-expect-error FIX ME
@@ -332,9 +319,9 @@ describe('route CollectiveOffers', () => {
               offererId: offerer.id,
             }
             await renderOffers(store, filters)
-            // When
+
             await userEvent.click(screen.getByTestId('remove-offerer-filter'))
-            // Then
+
             expect(
               screen.getByRole('button', {
                 name: /Afficher ou masquer le filtre par statut/,
@@ -355,11 +342,10 @@ describe('route CollectiveOffers', () => {
           })
 
           it('should enable status filters when venue filter is applied', async () => {
-            // Given
             const filters = { venueId: proVenues[0].id.toString() }
-            // When
+
             await renderOffers(store, filters)
-            // Then
+
             expect(
               screen.getByRole('button', {
                 name: 'Statut Afficher ou masquer le filtre par statut',
@@ -368,11 +354,10 @@ describe('route CollectiveOffers', () => {
           })
 
           it('should enable status filters when offerer filter is applied', async () => {
-            // Given
             const filters = { offererId: 'A4' }
-            // When
+
             await renderOffers(store, filters)
-            // Then
+
             expect(
               screen.getByRole('button', {
                 name: 'Statut Afficher ou masquer le filtre par statut',
@@ -384,15 +369,14 @@ describe('route CollectiveOffers', () => {
 
       describe('on click on search button', () => {
         it('should load offers with written offer name filter', async () => {
-          // Given
           await renderOffers(store)
           await userEvent.type(
             screen.getByPlaceholderText('Rechercher par nom d’offre'),
             'Any word'
           )
-          // When
+
           await userEvent.click(screen.getByText('Rechercher'))
-          // Then
+
           expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             'Any word',
             undefined,
@@ -408,15 +392,14 @@ describe('route CollectiveOffers', () => {
         })
 
         it('should store search value', async () => {
-          // Given
           await renderOffers(store)
           const searchInput = screen.getByPlaceholderText(
             'Rechercher par nom d’offre'
           )
-          // When
+
           await userEvent.type(searchInput, 'search string')
           await userEvent.click(screen.getByText('Rechercher'))
-          // Then
+
           expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             'search string',
             undefined,
@@ -432,16 +415,15 @@ describe('route CollectiveOffers', () => {
         })
 
         it('should load offers with selected venue filter', async () => {
-          // Given
           await renderOffers(store)
           const firstVenueOption = screen.getByRole('option', {
             name: proVenues[0].name,
           })
           const venueSelect = screen.getByLabelText('Lieu')
           await userEvent.selectOptions(venueSelect, firstVenueOption)
-          // When
+
           await userEvent.click(screen.getByText('Rechercher'))
-          // Then
+
           expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             undefined,
             undefined,
@@ -457,7 +439,6 @@ describe('route CollectiveOffers', () => {
         })
 
         it('should load offers with selected type filter', async () => {
-          // Given
           await renderOffers(store)
           const firstTypeOption = screen.getByRole('option', {
             name: 'Cinéma',
@@ -466,9 +447,9 @@ describe('route CollectiveOffers', () => {
             ALL_CATEGORIES_OPTION.label
           )
           await userEvent.selectOptions(typeSelect, firstTypeOption)
-          // When
+
           await userEvent.click(screen.getByText('Rechercher'))
-          // Then
+
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             undefined,
@@ -531,13 +512,12 @@ describe('route CollectiveOffers', () => {
         })
 
         it('should load offers with selected offer type', async () => {
-          // Given
           await renderOffers(store)
           const offerTypeSelect = screen.getByLabelText('Type de l’offre')
           await userEvent.selectOptions(offerTypeSelect, 'template')
-          // When
+
           await userEvent.click(screen.getByText('Rechercher'))
-          // Then
+
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             undefined,
@@ -557,36 +537,30 @@ describe('route CollectiveOffers', () => {
 
   describe('page navigation', () => {
     it('should display next page when clicking on right arrow', async () => {
-      // Given
       const offers = Array.from({ length: 11 }, () => collectiveOfferFactory())
-      vi.spyOn(api, 'getCollectiveOffers')
-        // @ts-expect-error FIX ME
-        .mockResolvedValueOnce(offers)
+      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offers)
       await renderOffers(store)
       const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
-      // When
+
       await userEvent.click(nextIcon)
-      // Then
+
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
       expect(screen.getByLabelText(offers[10].name)).toBeInTheDocument()
       expect(screen.queryByText(offers[0].name)).not.toBeInTheDocument()
     })
 
     it('should display previous page when clicking on left arrow', async () => {
-      // Given
       const offers = Array.from({ length: 11 }, () => collectiveOfferFactory())
-      vi.spyOn(api, 'getCollectiveOffers')
-        // @ts-expect-error FIX ME
-        .mockResolvedValueOnce(offers)
+      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offers)
       await renderOffers(store)
       const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
       const previousIcon = screen.getByRole('button', {
         name: 'Page précédente',
       })
       await userEvent.click(nextIcon)
-      // When
+
       await userEvent.click(previousIcon)
-      // Then
+
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
       expect(screen.getByLabelText(offers[0].name)).toBeInTheDocument()
       expect(screen.queryByText(offers[10].name)).not.toBeInTheDocument()
@@ -600,28 +574,22 @@ describe('route CollectiveOffers', () => {
       })
 
       it('should have max number page of 50', async () => {
-        // Given
-        vi.spyOn(api, 'getCollectiveOffers')
-          // @ts-expect-error FIX ME
-          .mockResolvedValueOnce(offersRecap)
-        // When
+        vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
+
         await renderOffers(store)
-        // Then
+
         expect(screen.getByText('Page 1/50')).toBeInTheDocument()
       })
 
       it('should not display the 501st offer', async () => {
-        // Given
-        vi.spyOn(api, 'getCollectiveOffers')
-          // @ts-expect-error FIX ME
-          .mockResolvedValueOnce(offersRecap)
+        vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
         await renderOffers(store)
         const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
-        // When
+
         for (let i = 1; i < 51; i++) {
           await userEvent.click(nextIcon)
         }
-        // Then
+
         expect(screen.getByLabelText(offersRecap[499].name)).toBeInTheDocument()
         expect(
           screen.queryByText(offersRecap[500].name)
@@ -633,7 +601,6 @@ describe('route CollectiveOffers', () => {
   describe('should reset filters', () => {
     it('when clicking on "afficher toutes les offres" when no offers are displayed', async () => {
       vi.spyOn(api, 'getCollectiveOffers')
-        // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
       await renderOffers(store)
@@ -700,7 +667,6 @@ describe('route CollectiveOffers', () => {
 
     it('when clicking on "Réinitialiser les filtres"', async () => {
       vi.spyOn(api, 'getCollectiveOffers')
-        // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
 

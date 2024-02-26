@@ -1,8 +1,12 @@
 import cn from 'classnames'
 import React from 'react'
 
+import {
+  CollectiveOfferResponseModel,
+  ListOffersOfferResponseModel,
+} from 'apiClient/v1'
+import { isOfferEducational } from 'core/OfferEducational'
 import { OFFER_STATUS_DRAFT } from 'core/Offers/constants'
-import { Offer } from 'core/Offers/types'
 import { isOfferDisabled } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
 import {
@@ -17,7 +21,7 @@ import styles from './OfferItem.module.scss'
 export type OfferItemProps = {
   disabled?: boolean
   isSelected?: boolean
-  offer: Offer
+  offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
   selectOffer: (offerId: number, selected: boolean, isTemplate: boolean) => void
   audience: Audience
   refreshOffers: () => void
@@ -57,7 +61,9 @@ const OfferItem = ({
         [styles['inactive']]: isOfferInactiveOrExpiredOrDisabled,
       })}
     >
-      {audience === Audience.INDIVIDUAL ? (
+      {/* TODO the audience prop could probably be removed in the future */}
+      {/* as it is redundant with the offer.isEducational property */}
+      {audience === Audience.INDIVIDUAL && !isOfferEducational(offer) && (
         <IndividualOfferItem
           disabled={disabled}
           offer={offer}
@@ -69,7 +75,8 @@ const OfferItem = ({
           refreshOffers={refreshOffers}
           audience={audience}
         />
-      ) : (
+      )}
+      {audience === Audience.COLLECTIVE && isOfferEducational(offer) && (
         <CollectiveOfferItem
           disabled={disabled}
           offer={offer}

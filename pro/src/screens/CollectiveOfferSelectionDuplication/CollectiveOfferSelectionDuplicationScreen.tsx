@@ -3,11 +3,11 @@ import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { CollectiveOfferResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import { createOfferFromTemplate } from 'core/OfferEducational'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
-import { Offer } from 'core/Offers/types'
 import { computeOffersUrl } from 'core/Offers/utils'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
@@ -30,7 +30,7 @@ import styles from './CollectiveOfferSelectionDuplication.module.scss'
 
 export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState(false)
-  const [offers, setOffers] = useState<Offer[]>([])
+  const [offers, setOffers] = useState<CollectiveOfferResponseModel[]>([])
   const [showAll, setShowAll] = useState(true)
   const notify = useNotification()
   const navigate = useNavigate()
@@ -152,7 +152,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                     label={
                       <div className={styles['offer-selection-label']}>
                         <Thumb
-                          url={offer.thumbUrl}
+                          url={offer.imageUrl}
                           className={styles['img-offer']}
                         />
                         <p className={styles['offer-title']}>

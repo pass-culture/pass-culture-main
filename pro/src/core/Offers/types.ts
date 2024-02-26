@@ -1,9 +1,4 @@
-import {
-  CollectiveOfferResponseModel,
-  EacFormat,
-  ListOffersOfferResponseModel,
-  OfferStatus,
-} from 'apiClient/v1'
+import { EacFormat, OfferStatus } from 'apiClient/v1'
 import { CropParams } from 'components/ImageUploader'
 import { CollectiveOfferStatus } from 'core/OfferEducational'
 
@@ -27,8 +22,6 @@ export type Offerer = {
   id: number
   name: string
 }
-
-export type Offer = CollectiveOfferResponseModel | ListOffersOfferResponseModel
 
 export interface CategorySubtypeItem {
   code: number

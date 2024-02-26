@@ -1,12 +1,11 @@
 import { api } from 'apiClient/api'
-import { Offer, SearchFiltersParams } from 'core/Offers/types'
+import { ListOffersOfferResponseModel } from 'apiClient/v1'
+import { SearchFiltersParams } from 'core/Offers/types'
 import { serializeApiFilters } from 'core/Offers/utils'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 
-import { serializeOffers } from './serializers'
-
 export type Payload = {
-  offers: Offer[]
+  offers: ListOffersOfferResponseModel[]
 }
 
 type GetFilteredOffersAdapter = Adapter<SearchFiltersParams, Payload, Payload>
@@ -49,7 +48,7 @@ export const getFilteredOffersAdapter: GetFilteredOffersAdapter = async (
       isOk: true,
       message: null,
       payload: {
-        offers: serializeOffers(offers),
+        offers,
       },
     }
   } catch (e) {

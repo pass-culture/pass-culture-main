@@ -1,7 +1,9 @@
 import React from 'react'
 
-import { ListOffersVenueResponseModel } from 'apiClient/v1'
-import { Offer } from 'core/Offers/types'
+import {
+  ListOffersOfferResponseModel,
+  ListOffersVenueResponseModel,
+} from 'apiClient/v1'
 import { Audience } from 'core/shared'
 
 import CheckboxCell from './Cells/CheckboxCell'
@@ -10,12 +12,12 @@ import OfferNameCell from './Cells/OfferNameCell'
 import { OfferRemainingStockCell } from './Cells/OfferRemainingStockCell/OfferRemainingStockCell'
 import OfferStatusCell from './Cells/OfferStatusCell'
 import OfferVenueCell from './Cells/OfferVenueCell'
-import ThumbCell from './Cells/ThumbCell'
+import { ThumbCell } from './Cells/ThumbCell/ThumbCell'
 
 type IndividualOfferItemProps = {
   disabled: boolean
   isSelected: boolean
-  offer: Offer
+  offer: ListOffersOfferResponseModel
   selectOffer: (offerId: number, selected: boolean, isTemplate: boolean) => void
   editionOfferLink: string
   editionStockLink: string

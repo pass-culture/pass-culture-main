@@ -1,13 +1,12 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-import { OfferStatus } from 'apiClient/v1'
-import { Offer } from 'core/Offers/types'
+import { CollectiveOfferResponseModel, OfferStatus } from 'apiClient/v1'
 import { collectiveOfferFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
 
-import CollectiveOfferStatusCell from '..'
+import { CollectiveOfferStatusCell } from '../CollectiveOfferStatusCell'
 
-const renderCollectiveStatusLabel = (offer: Offer) => {
+const renderCollectiveStatusLabel = (offer: CollectiveOfferResponseModel) => {
   return render(
     <table>
       <tbody>
@@ -54,8 +53,8 @@ describe('CollectiveStatusLabel', () => {
     ({ offerStatus, expectedLabel, bookingStatus }) => {
       const collectiveOffer = collectiveOfferFactory({
         status: offerStatus,
-        educationalBooking: bookingStatus
-          ? { booking_status: bookingStatus }
+        booking: bookingStatus
+          ? { id: 1, booking_status: bookingStatus }
           : null,
       })
       renderCollectiveStatusLabel(collectiveOffer)
@@ -64,7 +63,7 @@ describe('CollectiveStatusLabel', () => {
   )
   it('should throw error is offer status does not exist', () => {
     const collectiveOffer = collectiveOfferFactory({
-      status: 'toto',
+      status: 'toto' as OfferStatus,
     })
     expect(() => renderCollectiveStatusLabel(collectiveOffer)).toThrowError(
       'Le statut de l’offre n’est pas valide'
