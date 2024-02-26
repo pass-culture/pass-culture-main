@@ -371,7 +371,7 @@ describe('VenueFormScreen', () => {
   })
 
   it('should display an error when the venue could not be updated', async () => {
-    renderForm(formValues, venue, true)
+    renderForm(formValues, venue)
 
     vi.spyOn(api, 'editVenue').mockRejectedValue(
       new ApiError(
@@ -396,7 +396,7 @@ describe('VenueFormScreen', () => {
 
   it('should let update the virtual venue with limited fields', async () => {
     formValues.isVenueVirtual = true
-    renderForm(formValues, venue, true)
+    renderForm(formValues, venue)
 
     const editVenue = vi
       .spyOn(api, 'editVenue')
@@ -406,13 +406,33 @@ describe('VenueFormScreen', () => {
     expect(editVenue).toHaveBeenCalledWith(15, { reimbursementPointId: 91 })
   })
 
+  it('should let update venue without siret', async () => {
+    formValues.siret = ''
+    formValues.comment = 'comment'
+    const testedVenue = {
+      ...venue,
+      siret: null,
+    }
+
+    renderForm(formValues, testedVenue)
+
+    const editVenue = vi
+      .spyOn(api, 'editVenue')
+      .mockResolvedValue(venueResponse)
+
+    await userEvent.click(screen.getByText(/Enregistrer/))
+
+    expect(editVenue).toHaveBeenCalled()
+    expect(editVenue).not.toHaveBeenCalledWith(15, { siret: '' })
+  })
+
   it('should display error on submit for non virtual venues when adress is not selected from suggestions', async () => {
     formValues.addressAutocomplete = ''
     formValues.address = ''
     formValues.postalCode = ''
     formValues.departmentCode = ''
 
-    renderForm(formValues, venue, true)
+    renderForm(formValues, venue)
     const adressInput = screen.getByLabelText('Adresse postale *')
 
     await userEvent.type(adressInput, '12 rue des fleurs')
@@ -427,7 +447,7 @@ describe('VenueFormScreen', () => {
 
   it('should not display error on submit when venue is virtual', async () => {
     formValues.isVenueVirtual = true
-    renderForm(formValues, venue, true)
+    renderForm(formValues, venue)
     const adressInput = screen.getByLabelText('Adresse postale *')
 
     await userEvent.type(adressInput, '12 rue des fleurs')
