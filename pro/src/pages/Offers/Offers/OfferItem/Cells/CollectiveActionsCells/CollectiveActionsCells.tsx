@@ -4,7 +4,7 @@ import { OfferStatus } from 'apiClient/v1'
 import { Offer } from 'core/Offers/types'
 
 import styles from '../../OfferItem.module.scss'
-import BookingLinkCell from '../BookingLinkCell'
+import { BookingLinkCell } from '../BookingLinkCell/BookingLinkCell'
 import DuplicateOfferCell from '../DuplicateOfferCell/DuplicateOfferCell'
 import EditOfferCell from '../EditOfferCell'
 

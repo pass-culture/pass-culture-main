@@ -7,25 +7,26 @@ import ListIconButton from 'ui-kit/ListIconButton/ListIconButton'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
+  isDateValid,
 } from 'utils/date'
 
 interface BookingLinkCellProps {
   bookingId: number
   bookingStatus: string
-  offerEventDate?: Date | null
+  offerEventDate?: string | null
 }
 
-const BookingLinkCell = ({
+export const BookingLinkCell = ({
   bookingId,
   bookingStatus,
   offerEventDate,
 }: BookingLinkCellProps) => {
   const { logEvent } = useAnalytics()
-  if (!offerEventDate) {
+  if (!isDateValid(offerEventDate)) {
     return null
   }
   const eventDateFormated = formatBrowserTimezonedDateAsUTC(
-    offerEventDate,
+    new Date(offerEventDate),
     FORMAT_ISO_DATE_ONLY
   )
   const bookingLink = `/reservations/collectives?page=1&offerEventDate=${eventDateFormated}&bookingStatusFilter=booked&offerType=all&offerVenueId=all&bookingId=${bookingId}`
@@ -44,5 +45,3 @@ const BookingLinkCell = ({
     </ListIconButton>
   )
 }
-
-export default BookingLinkCell

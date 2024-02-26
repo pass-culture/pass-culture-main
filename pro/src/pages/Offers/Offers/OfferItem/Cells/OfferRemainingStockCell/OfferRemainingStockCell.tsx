@@ -1,25 +1,36 @@
 import React from 'react'
 
-import { Stock } from 'core/Offers/types'
+import {
+  CollectiveOffersStockResponseModel,
+  ListOffersStockResponseModel,
+} from 'apiClient/v1'
 
 import styles from '../../OfferItem.module.scss'
 
-const OfferRemainingStockCell = ({ stocks }: { stocks: Stock[] }) => {
-  const computeRemainingStockValue = (stocks: Stock[]) => {
-    let totalRemainingStock = 0
+const computeRemainingStockValue = (
+  stocks: (CollectiveOffersStockResponseModel | ListOffersStockResponseModel)[]
+) => {
+  let totalRemainingStock = 0
 
-    for (const stock of stocks) {
-      if (stock.remainingQuantity === 'unlimited') {
-        return 'Illimité'
-      }
-      totalRemainingStock += Number(stock.remainingQuantity)
+  for (const stock of stocks) {
+    if (stock.remainingQuantity === 'unlimited') {
+      return 'Illimité'
     }
-    return new Intl.NumberFormat('fr-FR').format(totalRemainingStock)
+    totalRemainingStock += Number(stock.remainingQuantity)
   }
+  return new Intl.NumberFormat('fr-FR').format(totalRemainingStock)
+}
+
+interface OfferRemainingStockCellProps {
+  stocks: (CollectiveOffersStockResponseModel | ListOffersStockResponseModel)[]
+}
+
+export const OfferRemainingStockCell = ({
+  stocks,
+}: OfferRemainingStockCellProps) => {
   return (
     <td className={styles['stock-column']}>
       {computeRemainingStockValue(stocks)}
     </td>
   )
 }
-export default OfferRemainingStockCell
