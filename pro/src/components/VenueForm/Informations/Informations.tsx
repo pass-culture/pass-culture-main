@@ -8,7 +8,7 @@ import { VenueFormValues } from '..'
 
 import SiretOrCommentFields from './SiretOrCommentFields'
 
-export interface InformationsProps {
+export type InformationsProps = {
   isCreatedEntity: boolean
   readOnly: boolean
   updateIsSiretValued: (value: boolean) => void

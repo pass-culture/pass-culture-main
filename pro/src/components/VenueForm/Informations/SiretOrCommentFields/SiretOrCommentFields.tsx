@@ -12,7 +12,7 @@ import Toggle from 'ui-kit/Toggle'
 
 import { isSiretStartingWithSiren, valideSiretLength } from './validationSchema'
 
-export interface SiretOrCommentInterface {
+export type SiretOrCommentInterface = {
   isCreatedEntity: boolean
   initialSiret?: string
   isToggleDisabled?: boolean
@@ -51,16 +51,16 @@ const SiretOrCommentFields = ({
     setIsSiretSelected(!isSiretSelected)
   }
 
-  const formatSiret = (siret: string) => {
+  const formatSiret = async (siret: string) => {
     // remove character when it's not a number
     // this way we're sure that this field only accept number
     if ((siret && /^[0-9]+$/.test(unhumanizeSiret(siret))) || !siret) {
-      setFieldValue('siret', humanizeSiret(siret))
+      await setFieldValue('siret', humanizeSiret(siret))
     }
   }
 
   const onSiretChange = async (siret: string) => {
-    formatSiret(siret)
+    await formatSiret(siret)
     if (
       !valideSiretLength(siret) ||
       !isSiretStartingWithSiren(siret, siren) ||
@@ -83,7 +83,7 @@ const SiretOrCommentFields = ({
         response.payload.values != null &&
         response.payload.values.siret.length > 0
     )
-    setFieldValue('name', response.payload.values?.name)
+    await setFieldValue('name', response.payload.values?.name)
     // getSuggestions pour récupérer les adresses
     const responseAdressDataAdapter = await getAdressDataAdapter({
       search: address,
@@ -92,8 +92,8 @@ const SiretOrCommentFields = ({
     if (!responseAdressDataAdapter.isOk) {
       return
     }
-    setFieldValue('search-addressAutocomplete', address)
-    setFieldValue('addressAutocomplete', address)
+    await setFieldValue('search-addressAutocomplete', address)
+    await setFieldValue('addressAutocomplete', address)
 
     handleAddressSelect(setFieldValue, responseAdressDataAdapter.payload[0])
   }

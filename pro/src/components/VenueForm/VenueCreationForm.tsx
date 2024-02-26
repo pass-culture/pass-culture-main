@@ -30,7 +30,7 @@ import { VenueFormActionBar } from './VenueFormActionBar'
 
 import { VenueFormValues } from '.'
 
-interface VenueFormProps {
+type VenueFormProps = {
   offerer: GetOffererResponseModel
   updateIsSiretValued: (isSiretValued: boolean) => void
   venueTypes: SelectOption[]
@@ -40,7 +40,7 @@ interface VenueFormProps {
   initialIsVirtual?: boolean
 }
 
-interface ShouldBlockVenueNavigationProps {
+type ShouldBlockVenueNavigationProps = {
   offererId: number
   user: SharedCurrentUserResponseModel
 }
@@ -90,7 +90,7 @@ export const VenueCreationForm = ({
     }
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadCanOffererCreateCollectiveOffer()
-  }, [offerer.id])
+  }, [offerer.id, notify])
 
   return (
     <div>
