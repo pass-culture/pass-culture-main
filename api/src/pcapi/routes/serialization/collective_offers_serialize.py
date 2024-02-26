@@ -103,7 +103,7 @@ class CollectiveOfferResponseModel(BaseModel):
     subcategoryId: SubcategoryIdEnum | None
     isShowcase: bool
     venue: base_serializers.ListOffersVenueResponseModel
-    status: str
+    status: OfferStatus
     educationalInstitution: EducationalInstitutionResponseModel | None
     interventionArea: list[str]
     templateId: str | None
