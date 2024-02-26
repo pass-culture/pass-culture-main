@@ -2,10 +2,14 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import {
+  CollectiveOfferResponseModel,
+  ListOffersOfferResponseModel,
+} from 'apiClient/v1'
+import { isOfferEducational } from 'core/OfferEducational'
+import {
   OFFER_STATUS_PENDING,
   OFFER_STATUS_SOLD_OUT,
 } from 'core/Offers/constants'
-import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import fullErrorIcon from 'icons/full-error.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -19,7 +23,7 @@ import styles from '../../OfferItem.module.scss'
 import { getRemainingTime, getDate, shouldDisplayWarning } from './utils'
 
 export interface OfferNameCellProps {
-  offer: Offer
+  offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
   editionOfferLink: string
   audience: Audience
 }
@@ -61,6 +65,7 @@ const OfferNameCell = ({
 
   const shouldShowCollectiveWarning =
     audience === Audience.COLLECTIVE &&
+    isOfferEducational(offer) &&
     offer.booking?.booking_status === OFFER_STATUS_PENDING &&
     shouldDisplayWarning(offer.stocks[0])
 
@@ -81,9 +86,11 @@ const OfferNameCell = ({
       >
         {offer.name}
       </Link>
-      {offer.isEvent && (
+
+      {(isOfferEducational(offer) || offer.isEvent) && (
         <span className={styles['stocks']}>
           {getDateInformations()}
+
           {shouldShowIndividualWarning && (
             <div>
               <SvgIcon
@@ -102,6 +109,7 @@ const OfferNameCell = ({
               </span>
             </div>
           )}
+
           {shouldShowCollectiveWarning && (
             <div>
               &nbsp;
@@ -123,7 +131,8 @@ const OfferNameCell = ({
           )}
         </span>
       )}
-      {offer.productIsbn && (
+
+      {!isOfferEducational(offer) && offer.productIsbn && (
         <div className={styles['isbn']}>{offer.productIsbn}</div>
       )}
     </td>

@@ -1,4 +1,4 @@
-import { Offer } from 'core/Offers/types'
+import { ListOffersOfferResponseModel } from 'apiClient/v1'
 import {
   individualOfferFactory,
   listOffersStockFactory,
@@ -7,7 +7,8 @@ import {
 import { offerHasBookingQuantity } from '../offerHasBookingQuantity'
 
 describe('offerHasBookingQuantity', () => {
-  let offers: Offer[] = []
+  let offers: ListOffersOfferResponseModel[] = []
+
   beforeEach(() => {
     const offer = individualOfferFactory()
     offers = [

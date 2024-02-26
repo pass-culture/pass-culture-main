@@ -24,13 +24,12 @@ const renderOfferNameCell = (props: OfferNameCellProps) =>
   )
 
 describe('OfferNameCell', () => {
-  it.only('should display warning when limit booking date is in less than 7 days', () => {
+  it('should display warning when limit booking date is in less than 7 days', () => {
     const tomorrowFns = add(new Date(), {
       days: 1,
     }).toISOString()
 
     const eventOffer = collectiveOfferFactory({
-      isEvent: true,
       booking: {
         id: 1,
         booking_status: CollectiveBookingStatus.PENDING,
@@ -60,7 +59,6 @@ describe('OfferNameCell', () => {
     }).toISOString()
 
     const eventOffer = collectiveOfferFactory({
-      isEvent: true,
       stocks: [
         {
           hasBookingLimitDatetimePassed: false,

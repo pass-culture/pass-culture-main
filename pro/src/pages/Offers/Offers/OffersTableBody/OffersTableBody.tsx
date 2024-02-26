@@ -1,14 +1,17 @@
 import React from 'react'
 
+import {
+  CollectiveOfferResponseModel,
+  ListOffersOfferResponseModel,
+} from 'apiClient/v1'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
-import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 
 import OfferItem from '../OfferItem/OfferItem'
 
 type OffersTableBodyProps = {
   areAllOffersSelected: boolean
-  offers: Offer[]
+  offers: (CollectiveOfferResponseModel | ListOffersOfferResponseModel)[]
   selectOffer: (
     offerId: number,
     isSelected: boolean,

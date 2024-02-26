@@ -7,6 +7,8 @@ import {
   SubcategoryIdEnum,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
+  CollectiveOfferResponseModel,
+  ListOffersOfferResponseModel,
 } from 'apiClient/v1'
 import { AccessibiltyFormValues } from 'core/shared'
 import { hasProperty } from 'utils/types'
@@ -102,6 +104,10 @@ export enum EducationalOfferType {
 //  TODO : remove these two types that create confusion in the app
 export type CollectiveOffer = GetCollectiveOfferResponseModel
 export type CollectiveOfferTemplate = GetCollectiveOfferTemplateResponseModel
+
+export const isOfferEducational = (
+  offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
+): offer is CollectiveOfferResponseModel => offer.isEducational
 
 export const isCollectiveOffer = (value: unknown): value is CollectiveOffer =>
   // Could be enhanced to check that it is also a GetCollectiveOfferTemplateResponseModel

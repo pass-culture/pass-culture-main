@@ -3,12 +3,13 @@ import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { CollectiveOfferResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import { filterEducationalCategories } from 'core/OfferEducational'
 import { getOffererAdapter } from 'core/Offers/adapters'
 import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
-import { Offer, Offerer, SearchFiltersParams } from 'core/Offers/types'
+import { Offerer, SearchFiltersParams } from 'core/Offers/types'
 import { hasSearchFilters, computeCollectiveOffersUrl } from 'core/Offers/utils'
 import { Audience } from 'core/shared/types'
 import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
@@ -32,7 +33,7 @@ export const CollectiveOffers = (): JSX.Element => {
   const dispatch = useDispatch()
 
   const [offerer, setOfferer] = useState<Offerer | null>(null)
-  const [offers, setOffers] = useState<Offer[]>([])
+  const [offers, setOffers] = useState<CollectiveOfferResponseModel[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [initialSearchFilters, setInitialSearchFilters] =
     useState<SearchFiltersParams | null>(null)

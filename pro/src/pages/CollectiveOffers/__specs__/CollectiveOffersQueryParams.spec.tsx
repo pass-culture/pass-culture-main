@@ -5,12 +5,12 @@ import React from 'react'
 import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { OfferStatus } from 'apiClient/v1'
+import { CollectiveOfferResponseModel, OfferStatus } from 'apiClient/v1'
 import {
   ALL_CATEGORIES_OPTION,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
-import { Offer, SearchFiltersParams } from 'core/Offers/types'
+import { SearchFiltersParams } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -105,7 +105,7 @@ describe('route CollectiveOffers', () => {
     name: string
   }
   let store: any
-  let offersRecap: Offer[]
+  let offersRecap: CollectiveOfferResponseModel[]
   const mockNavigate = vi.fn()
 
   beforeEach(() => {
@@ -124,9 +124,7 @@ describe('route CollectiveOffers', () => {
       },
     }
     offersRecap = [collectiveOfferFactory()]
-    vi.spyOn(api, 'getCollectiveOffers')
-      // @ts-expect-error FIX ME
-      .mockResolvedValue(offersRecap)
+    vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
     vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
     vi.spyOn(api, 'getCategories').mockResolvedValue(
       // @ts-expect-error FIX ME
@@ -140,70 +138,60 @@ describe('route CollectiveOffers', () => {
 
   describe('url query params', () => {
     it('should have page value when page value is not first page', async () => {
-      // Given
       const offersRecap = Array.from({ length: 11 }, () =>
         collectiveOfferFactory()
       )
-      vi.spyOn(api, 'getCollectiveOffers')
-        // @ts-expect-error FIX ME
-        .mockResolvedValueOnce(offersRecap)
+      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
       await renderOffers(store)
       const nextPageIcon = screen.getByRole('button', { name: 'Page suivante' })
 
-      // When
       await userEvent.click(nextPageIcon)
 
       expect(mockNavigate).toHaveBeenCalledWith('/offres/collectives?page=2')
     })
 
     it('should have offer name value when name search value is not an empty string', async () => {
-      // Given
       await renderOffers(store)
-      // When
+
       await userEvent.type(
         screen.getByPlaceholderText('Rechercher par nom d’offre'),
         'AnyWord'
       )
       await userEvent.click(screen.getByText('Rechercher'))
-      // Then
+
       expect(mockNavigate).toHaveBeenCalledWith(
         '/offres/collectives?nom-ou-isbn=AnyWord'
       )
     })
 
     it('should have offer name value be removed when name search value is an empty string', async () => {
-      // Given
       await renderOffers(store)
-      // When
+
       await userEvent.clear(
         screen.getByPlaceholderText('Rechercher par nom d’offre')
       )
       await userEvent.click(screen.getByText('Rechercher'))
-      // Then
+
       expect(mockNavigate).toHaveBeenCalledWith('/offres/collectives')
     })
 
     it('should have venue value when user filters by venue', async () => {
-      // Given
       await renderOffers(store)
       const firstVenueOption = screen.getByRole('option', {
         name: proVenues[0].name,
       })
       const venueSelect = screen.getByLabelText('Lieu')
-      // When
+
       await userEvent.selectOptions(venueSelect, firstVenueOption)
       await userEvent.click(screen.getByText('Rechercher'))
-      // Then
+
       expect(mockNavigate).toHaveBeenCalledWith(
         `/offres/collectives?lieu=${proVenues[0].id}`
       )
     })
 
     it('should have venue value be removed when user asks for all venues', async () => {
-      // Given
-      vi.spyOn(api, 'getCollectiveOffers')
-        // @ts-expect-error FIX ME
-        .mockResolvedValueOnce(offersRecap)
+      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
       vi.spyOn(api, 'getCategories').mockResolvedValue({
         categories: [
           { id: 'test_id_1', proLabel: 'My test value', isSelectable: true },
@@ -235,20 +223,17 @@ describe('route CollectiveOffers', () => {
         name: 'My test value',
       })
       const typeSelect = screen.getByDisplayValue(ALL_CATEGORIES_OPTION.label)
-      // When
+
       await userEvent.selectOptions(typeSelect, firstTypeOption)
       await userEvent.click(screen.getByText('Rechercher'))
 
-      // Then
       expect(mockNavigate).toHaveBeenCalledWith(
         '/offres/collectives?categorie=test_id_1'
       )
     })
 
     it('should have status value when user filters by status', async () => {
-      // Given
       vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([
-        // @ts-expect-error FIX ME
         collectiveOfferFactory(
           {
             id: 'KE',
@@ -266,18 +251,16 @@ describe('route CollectiveOffers', () => {
         })
       )
       await userEvent.click(screen.getByLabelText('Réservée'))
-      // When
+
       await userEvent.click(screen.getByText('Appliquer'))
-      // Then
+
       expect(mockNavigate).toHaveBeenCalledWith(
         '/offres/collectives?statut=reservee'
       )
     })
 
     it('should have status value be removed when user ask for all status', async () => {
-      // Given
       vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([
-        // @ts-expect-error FIX ME
         collectiveOfferFactory(
           {
             id: 'KE',
@@ -295,59 +278,50 @@ describe('route CollectiveOffers', () => {
         })
       )
       await userEvent.click(screen.getByLabelText('Toutes'))
-      // When
+
       await userEvent.click(screen.getByText('Appliquer'))
-      // Then
+
       expect(mockNavigate).toHaveBeenCalledWith('/offres/collectives')
     })
 
     it('should have offerer filter when user filters by offerer', async () => {
-      // Given
       const filters = { offererId: 'A4' }
       // @ts-expect-error FIX ME
       vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
         name: 'La structure',
       })
-      // When
+
       await renderOffers(store, filters)
-      // Then
+
       const offererFilter = screen.getByText('La structure')
       expect(offererFilter).toBeInTheDocument()
     })
 
     it('should have offerer value be removed when user removes offerer filter', async () => {
-      // Given
       const filters = { offererId: 'A4' }
       // @ts-expect-error FIX ME
       vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
         name: 'La structure',
       })
       await renderOffers(store, filters)
-      // When
+
       await userEvent.click(screen.getByTestId('remove-offerer-filter'))
-      // Then
+
       expect(screen.queryByText('La structure')).not.toBeInTheDocument()
     })
   })
 
   describe('page navigation', () => {
     it('should redirect to individual offers when user clicks on individual offers link', async () => {
-      // Given
-
-      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(
-        // @ts-expect-error FIX ME
-        offersRecap
-      )
+      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
       await renderOffers(store)
       screen.getByText('Rechercher')
       const individualAudienceLink = screen.getByText('Offres individuelles', {
         selector: 'span',
       })
 
-      // When
       await userEvent.click(individualAudienceLink)
 
-      // Then
       expect(screen.getByRole('heading', { name: 'Offres individuelles' }))
     })
   })
