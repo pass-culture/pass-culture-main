@@ -1301,8 +1301,7 @@ def get_venues_by_batch(
     if max_venues:
         query = query.limit(max_venues)
 
-    for venue in query.yield_per(1_000):
-        yield venue
+    yield from query.yield_per(1_000)
 
 
 def get_offerer_by_collective_offer_id(collective_offer_id: int) -> models.Offerer:
