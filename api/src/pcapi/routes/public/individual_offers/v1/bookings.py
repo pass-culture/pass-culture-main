@@ -194,6 +194,50 @@ def validate_booking_by_token(token: str) -> None:
     bookings_api.mark_as_used(booking)
 
 
+@blueprint.v1_bookings_blueprint.route("/keep/token/<token>", methods=["PATCH"])
+@spectree_serialize(
+    on_success_status=204,
+    api=blueprint.v1_bookings_schema,
+    tags=[constants.BOOKING_TAG],
+    resp=SpectreeResponse(
+        **(
+            BOOKINGS_API_BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_204": (None, "The booking's validation has been cancelled successfully"),
+                "HTTP_403": (
+                    None,
+                    "This booking's validation cannot be cancelled because you do not have the proper rights or because the token's status is not used",
+                ),
+                "HTTP_410": (None, "This booking cannot be unvalidated because it is already cancelled"),
+            }
+        )
+    ),
+)
+@api_key_required
+def cancel_booking_validation_by_token(token: str) -> None:
+    """
+    Cancel a booking's validation.
+
+    To mark a booking as unused.
+    """
+    booking = _get_booking_by_token(token)
+    if booking is None:
+        raise api_errors.ApiErrors(errors={"global": "This countermark cannot be found"}, status_code=404)
+
+    try:
+        bookings_api.mark_as_unused(booking)
+    except exceptions.BookingIsAlreadyRefunded:
+        raise api_errors.ForbiddenError({"payment": "This booking has been reimbursed"})
+    except exceptions.BookingIsNotUsed:
+        raise api_errors.ForbiddenError({"booking": "This booking has not been used"})
+    except exceptions.BookingIsAlreadyCancelled:
+        raise api_errors.ResourceGoneError({"booking": "This booking has been cancelled"})
+    except exceptions.BookingHasActivationCode:
+        raise api_errors.ForbiddenError(
+            {"booking": "This booking has validation codes, and cannot be marked as unused"}
+        )
+
+
 @blueprint.v1_bookings_blueprint.route("/cancel/token/<token>", methods=["PATCH"])
 @spectree_serialize(
     on_success_status=204,
