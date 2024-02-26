@@ -5490,13 +5490,13 @@ WTForms = ">=3.1"
 
 [[package]]
 name = "xlsxwriter"
-version = "3.1.9"
+version = "3.2.0"
 description = "A Python module for creating Excel XLSX files."
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "XlsxWriter-3.1.9-py3-none-any.whl", hash = "sha256:b61c1a0c786f82644936c0936ec96ee96cd3afb9440094232f7faef9b38689f0"},
-    {file = "XlsxWriter-3.1.9.tar.gz", hash = "sha256:de810bf328c6a4550f4ffd6b0b34972aeb7ffcf40f3d285a0413734f9b63a929"},
+    {file = "XlsxWriter-3.2.0-py3-none-any.whl", hash = "sha256:ecfd5405b3e0e228219bcaf24c2ca0915e012ca9464a14048021d21a995d490e"},
+    {file = "XlsxWriter-3.2.0.tar.gz", hash = "sha256:9977d0c661a72866a61f9f7a809e25ebbb0fb7036baa3b9fe74afcfca6b3cb8c"},
 ]
 
 [[package]]
@@ -5723,4 +5723,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "57121f5197baf9b74cbf099a6c4b622da9ea8fa3c33b748f77bf122c4a705cf6"
+content-hash = "9f9e88231ed6153a4b675c3ee02e9ee0e281e1965a53ac63d45c9e6fe82fc585"
