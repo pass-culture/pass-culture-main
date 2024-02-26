@@ -87,12 +87,6 @@ const OfferSummary = ({
       text: offerData.musicSubTypeName,
     })
   }
-  if (offerData.gtl_id) {
-    offerTypeDescriptions.push({
-      title: 'gtl_id',
-      text: offerData.gtl_id,
-    })
-  }
   if (conditionalFields.includes('showType')) {
     offerTypeDescriptions.push({
       title: 'Type de spectacle',
