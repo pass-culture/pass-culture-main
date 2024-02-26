@@ -1,5 +1,5 @@
-import { OfferStatus } from 'apiClient/v1'
-import { Offer, Venue } from 'core/Offers/types'
+import { ListOffersVenueResponseModel, OfferStatus } from 'apiClient/v1'
+import { Offer } from 'core/Offers/types'
 
 let offerId = 1
 
@@ -21,8 +21,12 @@ export const collectiveOfferFactory = (customOffer = {}): Offer => {
   }
 }
 
-const venueFactory = (): Venue => ({
+export const venueFactory = (
+  customVenue: Partial<ListOffersVenueResponseModel> = {}
+): ListOffersVenueResponseModel => ({
+  id: 1,
   name: 'venue name',
   offererName: 'offerer name',
   isVirtual: false,
+  ...customVenue,
 })

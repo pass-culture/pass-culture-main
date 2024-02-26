@@ -1,6 +1,7 @@
 import React from 'react'
 
-import { Offer, Venue } from 'core/Offers/types'
+import { ListOffersVenueResponseModel } from 'apiClient/v1'
+import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 
 import CheckboxCell from './Cells/CheckboxCell'
@@ -18,7 +19,7 @@ type IndividualOfferItemProps = {
   selectOffer: (offerId: number, selected: boolean, isTemplate: boolean) => void
   editionOfferLink: string
   editionStockLink: string
-  venue: Venue
+  venue: ListOffersVenueResponseModel
   isOfferEditable: boolean
   refreshOffers: () => void
   audience: Audience
