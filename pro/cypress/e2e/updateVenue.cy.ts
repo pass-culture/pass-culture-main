@@ -4,6 +4,7 @@ describe('Update a venue', () => {
   })
 
   it('should update a venue', () => {
+    const newName = 'Cinéma de la fin des Bisous'
     cy.login({
       // TODO: when we update the tests data to be standalone,
       // we should have an account with at least 2 permanent venues
@@ -17,7 +18,23 @@ describe('Update a venue', () => {
     cy.get('#venues').select('Cinéma de la fin Bis')
 
     cy.contains('Gérer ma page').click()
-    cy.contains('Informations du lieu')
-    cy.contains('Cinéma de la fin Bis')
+    cy.contains('Informations du lieu').should('be.visible')
+    cy.contains('Cinéma de la fin Bis').should('be.visible')
+    cy.get('#publicName').clear().type(newName)
+    cy.get('#description')
+      .clear()
+      .type('On peut ajouter des choses, vraiment fantastique !!!')
+    cy.get('#venueLabel').select('Musée de France')
+    cy.contains('Non accessible').click()
+    cy.contains('Psychique ou cognitif').click()
+    cy.contains('Auditif').click()
+    cy.get('#withdrawalDetails')
+      .clear()
+      .type(
+        'En main bien propres, avec un masque et un gel hydroalcoolique, didiou !'
+      )
+
+    cy.contains('Enregistrer et quitter').click()
+    cy.contains(newName).should('be.visible')
   })
 })

@@ -69,6 +69,8 @@ describe('Create a venue', () => {
       'a[aria-label="Gérer la page de ' + venueNameWithSiret + '"]'
     ).click()
     cy.contains('Enregistrer et quitter').click()
-    cy.contains('Bienvenue dans l’espace acteurs culturels')
+    cy.contains('Bienvenue dans l’espace acteurs culturels').should(
+      'be.visible'
+    )
   })
 })
