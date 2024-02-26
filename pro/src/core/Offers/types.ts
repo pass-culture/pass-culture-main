@@ -1,10 +1,7 @@
 import {
-  CollectiveOffersBookingResponseModel,
-  CollectiveOffersStockResponseModel,
+  CollectiveOfferResponseModel,
   EacFormat,
-  EducationalInstitutionResponseModel,
-  ListOffersStockResponseModel,
-  ListOffersVenueResponseModel,
+  ListOffersOfferResponseModel,
   OfferStatus,
 } from 'apiClient/v1'
 import { CropParams } from 'components/ImageUploader'
@@ -31,24 +28,7 @@ export type Offerer = {
   name: string
 }
 
-export type Offer = {
-  id: number
-  status: OfferStatus
-  isActive: boolean
-  hasBookingLimitDatetimesPassed: boolean
-  thumbUrl?: string | null
-  isEducational: boolean
-  name: string
-  isEvent: boolean
-  productIsbn?: string | null
-  venue: ListOffersVenueResponseModel
-  stocks: (CollectiveOffersStockResponseModel | ListOffersStockResponseModel)[]
-  isPublicApi?: boolean | null
-  isEditable: boolean
-  isShowcase?: boolean | null
-  educationalInstitution?: EducationalInstitutionResponseModel | null
-  educationalBooking?: CollectiveOffersBookingResponseModel | null
-}
+export type Offer = CollectiveOfferResponseModel | ListOffersOfferResponseModel
 
 export interface CategorySubtypeItem {
   code: number

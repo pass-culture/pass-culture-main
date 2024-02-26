@@ -1,5 +1,6 @@
 import React from 'react'
 
+import { CollectiveBookingStatus } from 'apiClient/v1'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import arrowIcon from 'icons/full-arrow-right.svg'
@@ -22,14 +23,17 @@ export const BookingLinkCell = ({
   offerEventDate,
 }: BookingLinkCellProps) => {
   const { logEvent } = useAnalytics()
+
   if (!isDateValid(offerEventDate)) {
     return null
   }
+
   const eventDateFormated = formatBrowserTimezonedDateAsUTC(
     new Date(offerEventDate),
     FORMAT_ISO_DATE_ONLY
   )
   const bookingLink = `/reservations/collectives?page=1&offerEventDate=${eventDateFormated}&bookingStatusFilter=booked&offerType=all&offerVenueId=all&bookingId=${bookingId}`
+
   return (
     <ListIconButton
       url={bookingLink}
@@ -41,7 +45,10 @@ export const BookingLinkCell = ({
         })
       }
     >
-      Voir la {bookingStatus == 'PENDING' ? 'préréservation' : 'réservation'}
+      Voir la{' '}
+      {bookingStatus == CollectiveBookingStatus.PENDING
+        ? 'préréservation'
+        : 'réservation'}
     </ListIconButton>
   )
 }
