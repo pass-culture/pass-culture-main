@@ -327,10 +327,13 @@ def get_active_token_expiration(user: models.User) -> datetime | None:
     confirmation_token_expiration = token_utils.Token.get_expiration_date(
         token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION, user.id
     )
+    new_email_selection_token_expiration = token_utils.Token.get_expiration_date(
+        token_utils.TokenType.EMAIL_CHANGE_NEW_EMAIL_SELECTION, user.id
+    )
     validation_token_expiration = token_utils.Token.get_expiration_date(
         token_utils.TokenType.EMAIL_CHANGE_VALIDATION, user.id
     )
-    return confirmation_token_expiration or validation_token_expiration
+    return confirmation_token_expiration or new_email_selection_token_expiration or validation_token_expiration
 
 
 def generate_email_change_token_expiration_date() -> datetime:

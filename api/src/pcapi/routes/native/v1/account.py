@@ -74,6 +74,7 @@ def reset_recredit_amount_to_show(user: users_models.User) -> serializers.UserPr
 
 
 @blueprint.native_route("/profile/update_email", methods=["POST"])
+@blueprint.api.validate(deprecated=True)
 @spectree_serialize(
     on_success_status=204,
     api=blueprint.api,
@@ -95,6 +96,7 @@ def update_user_email(user: users_models.User, body: serializers.UserProfileEmai
 
 
 @blueprint.native_route("/profile/email_update/status", methods=["GET"])
+@blueprint.api.validate(deprecated=True)
 @spectree_serialize(
     on_success_status=200,
     api=blueprint.api,
@@ -106,7 +108,7 @@ def get_email_update_status(user: users_models.User) -> serializers.EmailUpdateS
     if not latest_email_update_event:
         raise api_errors.ResourceNotFoundError
     return serializers.EmailUpdateStatus(
-        newEmail=latest_email_update_event.newEmail,
+        newEmail=latest_email_update_event.newEmail or "",
         expired=(email_api.get_active_token_expiration(user) or datetime.min) < datetime.utcnow(),
         status=latest_email_update_event.eventType,
     )

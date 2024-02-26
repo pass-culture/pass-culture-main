@@ -65,6 +65,13 @@ class AbstractToken(abc.ABC):
         return f"pcapi:token:{type_.value}_{key_suffix}"
 
     @classmethod
+    def get_token(cls: typing.Type[T], type_: TokenType, key_suffix: int | str | None) -> "T | None":
+        encoded_token = app.redis_client.get(cls.get_redis_key(type_, key_suffix))
+        if encoded_token is None:
+            return None
+        return cls.load_without_checking(encoded_token)
+
+    @classmethod
     def token_exists(cls: typing.Type[T], type_: TokenType, key_suffix: int | str | None) -> bool:
         return bool(app.redis_client.exists(cls.get_redis_key(type_, key_suffix)))
 
