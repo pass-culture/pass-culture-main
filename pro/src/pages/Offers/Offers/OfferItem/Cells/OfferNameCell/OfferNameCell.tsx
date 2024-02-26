@@ -28,7 +28,7 @@ export interface OfferNameCellProps {
   audience: Audience
 }
 
-const OfferNameCell = ({
+export const OfferNameCell = ({
   offer,
   editionOfferLink,
   audience,
@@ -138,5 +138,3 @@ const OfferNameCell = ({
     </td>
   )
 }
-
-export default OfferNameCell

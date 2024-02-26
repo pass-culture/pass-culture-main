@@ -7,7 +7,7 @@ import { Audience } from 'core/shared'
 import { collectiveOfferFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import OfferNameCell, { OfferNameCellProps } from '../OfferNameCell'
+import { OfferNameCell, OfferNameCellProps } from '../OfferNameCell'
 
 const renderOfferNameCell = (props: OfferNameCellProps) =>
   renderWithProviders(

@@ -21,7 +21,8 @@ import {
 import * as localStorageAvailable from 'utils/localStorageAvailable'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import DuplicateOfferCell, {
+import {
+  DuplicateOfferCell,
   LOCAL_STORAGE_HAS_SEEN_MODAL_KEY,
 } from '../DuplicateOfferCell'
 

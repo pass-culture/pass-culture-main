@@ -8,7 +8,7 @@ import {
 import { isOfferEducational } from 'core/OfferEducational'
 import Thumb from 'ui-kit/Thumb'
 
-import styles from '../../OfferItem.module.scss'
+import styles from '../OfferItem.module.scss'
 
 export const ThumbCell = ({
   offer,

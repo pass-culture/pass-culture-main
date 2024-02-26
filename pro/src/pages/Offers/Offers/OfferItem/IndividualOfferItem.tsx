@@ -6,13 +6,13 @@ import {
 } from 'apiClient/v1'
 import { Audience } from 'core/shared'
 
-import CheckboxCell from './Cells/CheckboxCell'
-import { IndividualActionsCells } from './Cells/IndividualActionsCells/IndividualActionsCell'
-import OfferNameCell from './Cells/OfferNameCell'
-import { OfferRemainingStockCell } from './Cells/OfferRemainingStockCell/OfferRemainingStockCell'
-import OfferStatusCell from './Cells/OfferStatusCell'
-import OfferVenueCell from './Cells/OfferVenueCell'
-import { ThumbCell } from './Cells/ThumbCell/ThumbCell'
+import { CheckboxCell } from './Cells/CheckboxCell'
+import { IndividualActionsCells } from './Cells/IndividualActionsCell'
+import { OfferNameCell } from './Cells/OfferNameCell/OfferNameCell'
+import { OfferRemainingStockCell } from './Cells/OfferRemainingStockCell'
+import { OfferStatusCell } from './Cells/OfferStatusCell'
+import { OfferVenueCell } from './Cells/OfferVenueCell'
+import { ThumbCell } from './Cells/ThumbCell'
 
 type IndividualOfferItemProps = {
   disabled: boolean
