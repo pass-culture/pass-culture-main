@@ -5,7 +5,7 @@ import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 
 import CheckboxCell from './Cells/CheckboxCell'
-import IndividualActionsCells from './Cells/IndividualActionsCells'
+import { IndividualActionsCells } from './Cells/IndividualActionsCells/IndividualActionsCell'
 import OfferNameCell from './Cells/OfferNameCell'
 import { OfferRemainingStockCell } from './Cells/OfferRemainingStockCell/OfferRemainingStockCell'
 import OfferStatusCell from './Cells/OfferStatusCell'
@@ -20,12 +20,11 @@ type IndividualOfferItemProps = {
   editionOfferLink: string
   editionStockLink: string
   venue: ListOffersVenueResponseModel
-  isOfferEditable: boolean
   refreshOffers: () => void
   audience: Audience
 }
 
-const IndividualOfferItem = ({
+export const IndividualOfferItem = ({
   disabled,
   offer,
   isSelected,
@@ -33,7 +32,6 @@ const IndividualOfferItem = ({
   editionOfferLink,
   editionStockLink,
   venue,
-  isOfferEditable,
   refreshOffers,
   audience,
 }: IndividualOfferItemProps) => {
@@ -65,7 +63,6 @@ const IndividualOfferItem = ({
 
       <IndividualActionsCells
         offer={offer}
-        isOfferEditable={isOfferEditable}
         editionOfferLink={editionOfferLink}
         editionStockLink={editionStockLink}
         refreshOffers={refreshOffers}
@@ -73,5 +70,3 @@ const IndividualOfferItem = ({
     </>
   )
 }
-
-export default IndividualOfferItem

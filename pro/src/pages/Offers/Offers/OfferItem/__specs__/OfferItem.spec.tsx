@@ -6,13 +6,20 @@ import { api } from 'apiClient/api'
 import { ApiError, OfferStatus } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { CollectiveBookingStatus } from 'apiClient/v2'
 import Notification from 'components/Notification/Notification'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { venueFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
-import { listOffersStockFactory } from 'screens/Offers/utils/individualOffersFactories'
+import {
+  collectiveOfferFactory,
+  venueFactory,
+} from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
+import {
+  individualOfferFactory,
+  listOffersStockFactory,
+} from 'screens/Offers/utils/individualOffersFactories'
 import { getToday } from 'utils/date'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -40,27 +47,20 @@ const renderOfferItem = (props: OfferItemProps) =>
 
 describe('src | components | pages | Offers | OfferItem', () => {
   let props: OfferItemProps
-  let eventOffer: Offer
+  let offer: Offer
   const offerId = 12
 
   beforeEach(() => {
-    eventOffer = {
+    offer = individualOfferFactory({
       id: offerId,
-      isActive: true,
-      isEditable: true,
-      isEvent: true,
       hasBookingLimitDatetimesPassed: false,
       name: 'My little offer',
       thumbUrl: '/my-fake-thumb',
-      status: OfferStatus.ACTIVE,
-      stocks: [],
-      venue: venueFactory(),
-      isEducational: false,
-    }
+    })
 
     props = {
       refreshOffers: mockRefreshOffer,
-      offer: eventOffer,
+      offer,
       selectOffer: vi.fn(),
       audience: Audience.INDIVIDUAL,
     }
@@ -69,24 +69,22 @@ describe('src | components | pages | Offers | OfferItem', () => {
   describe('render', () => {
     describe('thumb Component', () => {
       it('should render an image with url from offer when offer has a thumb url', () => {
-        // when
         renderOfferItem(props)
 
-        // then
         expect(
           within(
             screen.getAllByRole('link', { name: /éditer l’offre/ })[0]
           ).getByRole('img')
-        ).toHaveAttribute('src', eventOffer.thumbUrl)
+        ).toHaveAttribute('src', '/my-fake-thumb')
       })
 
       it('should render an image with an empty url when offer does not have a thumb url', () => {
-        props.offer.thumbUrl = null
+        props.offer = individualOfferFactory({ thumbUrl: null })
 
         renderOfferItem(props)
 
         expect(
-          screen.getAllByTitle(`${eventOffer.name} - éditer l’offre`)[0]
+          screen.getAllByTitle(`${props.offer.name} - éditer l’offre`)[0]
         ).toBeInTheDocument()
       })
     })
@@ -101,7 +99,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         expect(stockLink).toBeInTheDocument()
         expect(stockLink).toHaveAttribute(
           'href',
-          `/offre/individuelle/${eventOffer.id}/edition/stocks`
+          `/offre/individuelle/${offer.id}/edition/stocks`
         )
       })
       describe('draft delete button', () => {
@@ -168,7 +166,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           const links = screen.getAllByRole('link')
           expect(links[links.length - 1]).toHaveAttribute(
             'href',
-            `/offre/individuelle/${eventOffer.id}/recapitulatif`
+            `/offre/individuelle/${offer.id}/recapitulatif`
           )
         })
 
@@ -180,7 +178,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           const links = screen.getAllByRole('link')
           expect(links[links.length - 1]).not.toHaveAttribute(
             'href',
-            `/offre/individuelle/${eventOffer.id}/edition`
+            `/offre/individuelle/${offer.id}/edition`
           )
         })
       })
@@ -242,7 +240,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     })
 
     it('should display the ean when given', () => {
-      eventOffer.productIsbn = '123456789'
+      props.offer = individualOfferFactory({ productIsbn: '123456789' })
 
       renderOfferItem(props)
 
@@ -281,7 +279,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should display "Tous les établissements" when offer is collective and is not assigned to a specific institution', () => {
         props.audience = Audience.COLLECTIVE
-        props.offer.educationalInstitution = null
+        props.offer = collectiveOfferFactory({ booking: null })
 
         renderOfferItem(props)
 
@@ -292,14 +290,16 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should display "Tous les établissements" when offer is collective and is assigned to a specific institution', () => {
         props.audience = Audience.COLLECTIVE
-        props.offer.educationalInstitution = {
-          id: 1,
-          name: 'Collège Bellevue',
-          city: 'Alès',
-          postalCode: '30100',
-          phoneNumber: '',
-          institutionId: 'ABCDEF11',
-        }
+        props.offer = collectiveOfferFactory({
+          educationalInstitution: {
+            id: 1,
+            name: 'Collège Bellevue',
+            city: 'Alès',
+            postalCode: '30100',
+            phoneNumber: '',
+            institutionId: 'ABCDEF11',
+          },
+        })
 
         renderOfferItem(props)
 
@@ -310,8 +310,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         renderOfferItem({
           ...props,
           audience: Audience.COLLECTIVE,
-          offer: {
-            ...props.offer,
+          offer: collectiveOfferFactory({
             educationalInstitution: {
               id: 1,
               name: '',
@@ -321,7 +320,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
               institutionId: 'ABCDEF11',
               institutionType: 'LYCEE',
             },
-          },
+          }),
         })
 
         expect(screen.queryByText('LYCEE Alès')).toBeInTheDocument()
@@ -377,7 +376,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           listOffersStockFactory({ remainingQuantity: 0 }),
           listOffersStockFactory({ remainingQuantity: 0 }),
         ]
-        eventOffer.status = OfferStatus.SOLD_OUT
+        offer.status = OfferStatus.SOLD_OUT
 
         renderOfferItem(props)
 
@@ -457,7 +456,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       const links = screen.getAllByRole('link')
       expect(links[links.length - 1]).toHaveAttribute(
         'href',
-        `/offre/individuelle/${eventOffer.id}/creation/informations`
+        `/offre/individuelle/${offer.id}/creation/informations`
       )
     })
 
@@ -514,17 +513,16 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should display booking link for sold out offer with pending booking', () => {
         props.audience = Audience.COLLECTIVE
-        props.offer.status = OfferStatus.SOLD_OUT
-        props.offer.stocks = [
-          listOffersStockFactory({
-            remainingQuantity: 0,
-            beginningDatetime: String(getToday()),
-          }),
-        ]
-        props.offer.educationalBooking = {
-          id: 1,
-          booking_status: 'PENDING',
-        }
+        props.offer = collectiveOfferFactory({
+          status: OfferStatus.SOLD_OUT,
+          stocks: [
+            listOffersStockFactory({
+              remainingQuantity: 0,
+              beginningDatetime: getToday().toISOString(),
+            }),
+          ],
+          booking: { id: 1, booking_status: CollectiveBookingStatus.PENDING },
+        })
 
         renderOfferItem(props)
 
@@ -538,17 +536,19 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
     it('should display booking link for expired offer with booking', () => {
       props.audience = Audience.COLLECTIVE
-      props.offer.status = OfferStatus.EXPIRED
-      props.offer.stocks = [
-        listOffersStockFactory({
-          remainingQuantity: 0,
-          beginningDatetime: String(getToday()),
-        }),
-      ]
-      props.offer.educationalBooking = {
-        id: 1,
-        booking_status: 'USED',
-      }
+      props.offer = collectiveOfferFactory({
+        status: OfferStatus.EXPIRED,
+        stocks: [
+          listOffersStockFactory({
+            remainingQuantity: 0,
+            beginningDatetime: getToday().toISOString(),
+          }),
+        ],
+        booking: {
+          id: 1,
+          booking_status: CollectiveBookingStatus.USED,
+        },
+      })
 
       renderOfferItem(props)
 
@@ -558,6 +558,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       expect(bookingLink).toBeInTheDocument()
     })
+
     it('should log event when clicking booking link', async () => {
       const mockLogEvent = vi.fn()
       vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
@@ -568,17 +569,16 @@ describe('src | components | pages | Offers | OfferItem', () => {
       renderOfferItem({
         ...props,
         audience: Audience.COLLECTIVE,
-        offer: {
-          ...props.offer,
+        offer: collectiveOfferFactory({
           status: OfferStatus.SOLD_OUT,
           stocks: [
             listOffersStockFactory({
               remainingQuantity: 0,
-              beginningDatetime: String(getToday()),
+              beginningDatetime: getToday().toISOString(),
             }),
           ],
-          educationalBooking: { id: 1, booking_status: 'PENDING' },
-        },
+          booking: { id: 1, booking_status: CollectiveBookingStatus.PENDING },
+        }),
       })
 
       const bookingLink = screen.getByRole('link', {

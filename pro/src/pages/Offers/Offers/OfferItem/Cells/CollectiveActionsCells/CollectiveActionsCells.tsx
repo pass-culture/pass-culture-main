@@ -1,47 +1,40 @@
 import React from 'react'
 
-import { OfferStatus } from 'apiClient/v1'
-import { Offer } from 'core/Offers/types'
+import { CollectiveOfferResponseModel, OfferStatus } from 'apiClient/v1'
 
 import styles from '../../OfferItem.module.scss'
 import { BookingLinkCell } from '../BookingLinkCell/BookingLinkCell'
 import DuplicateOfferCell from '../DuplicateOfferCell/DuplicateOfferCell'
-import EditOfferCell from '../EditOfferCell'
+import { EditOfferCell } from '../EditOfferCell/EditOfferCell'
 
-interface ActionsCellsProps {
-  offer: Offer
-  isOfferEditable: boolean
+interface CollectiveActionsCellsProps {
+  offer: CollectiveOfferResponseModel
   editionOfferLink: string
 }
 
-const CollectiveActionsCells = ({
+export const CollectiveActionsCells = ({
   offer,
-  isOfferEditable,
   editionOfferLink,
-}: ActionsCellsProps) => {
+}: CollectiveActionsCellsProps) => {
   return (
     <td className={styles['actions-column']}>
       <div className={styles['actions-column-container']}>
         <DuplicateOfferCell offerId={offer.id} isShowcase={offer.isShowcase} />
+
         {(offer.status == OfferStatus.SOLD_OUT ||
           offer.status == OfferStatus.EXPIRED) &&
-          offer.educationalBooking && (
+          offer.booking && (
             <BookingLinkCell
-              bookingId={offer.educationalBooking?.id}
-              bookingStatus={offer.educationalBooking.booking_status}
+              bookingId={offer.booking.id}
+              bookingStatus={offer.booking.booking_status}
               offerEventDate={offer.stocks[0].beginningDatetime}
             />
           )}
+
         {offer.isEditable && !offer.isPublicApi && (
-          <EditOfferCell
-            offer={offer}
-            isOfferEditable={isOfferEditable}
-            editionOfferLink={editionOfferLink}
-          />
+          <EditOfferCell editionOfferLink={editionOfferLink} />
         )}
       </div>
     </td>
   )
 }
-
-export default CollectiveActionsCells
