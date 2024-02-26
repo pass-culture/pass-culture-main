@@ -1,7 +1,7 @@
 from flask import Blueprint
 from spectree import SecurityScheme
-from spectree import SpecTree
 
+from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
 
 
@@ -18,5 +18,5 @@ SECURITY_SCHEMES = [
 ]
 
 
-api = SpecTree("flask", MODE="strict", before=before_handler, PATH="/", security_schemes=SECURITY_SCHEMES)
+api = ExtendedSpecTree("flask", MODE="strict", before=before_handler, PATH="/", security_schemes=SECURITY_SCHEMES)
 api.register(adage_v1)
