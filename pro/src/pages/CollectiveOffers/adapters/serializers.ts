@@ -1,19 +1,5 @@
-import {
-  CollectiveOfferResponseModel,
-  ListOffersOfferResponseModel,
-  OfferStatus,
-} from 'apiClient/v1'
-import { Offer, Stock, Venue } from 'core/Offers/types'
-
-const serializeVenue = (
-  venue: ListOffersOfferResponseModel['venue']
-): Venue => ({
-  name: venue.name,
-  publicName: venue.publicName,
-  offererName: venue.offererName,
-  isVirtual: venue.isVirtual,
-  departementCode: venue.departementCode,
-})
+import { CollectiveOfferResponseModel, OfferStatus } from 'apiClient/v1'
+import { Offer, Stock } from 'core/Offers/types'
 
 const serializeStocks = (
   stocks: CollectiveOfferResponseModel['stocks']
@@ -42,7 +28,7 @@ export const serializeOffers = (
     name: offer.name,
     isEvent: true,
     productIsbn: null,
-    venue: serializeVenue(offer.venue),
+    venue: offer.venue,
     stocks: serializeStocks(offer.stocks),
     isPublicApi: offer.isPublicApi,
     isEditable: offer.isEditable,

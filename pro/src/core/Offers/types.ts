@@ -2,6 +2,7 @@ import {
   CollectiveOffersBookingResponseModel,
   EacFormat,
   EducationalInstitutionResponseModel,
+  ListOffersVenueResponseModel,
   OfferStatus,
 } from 'apiClient/v1'
 import { CropParams } from 'components/ImageUploader'
@@ -28,14 +29,6 @@ export type Offerer = {
   name: string
 }
 
-export type Venue = {
-  name: string
-  publicName?: string | null
-  offererName: string
-  isVirtual: boolean
-  departementCode?: string | null
-}
-
 export type Stock = {
   beginningDatetime?: Date | null
   remainingQuantity: string | number
@@ -53,7 +46,7 @@ export type Offer = {
   name: string
   isEvent: boolean
   productIsbn?: string | null
-  venue: Venue
+  venue: ListOffersVenueResponseModel
   stocks: Stock[]
   isPublicApi?: boolean | null
   isEditable: boolean
