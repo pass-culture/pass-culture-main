@@ -2,10 +2,8 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
-import { api } from 'apiClient/api'
 import { CollectiveOfferResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
-import { filterEducationalCategories } from 'core/OfferEducational'
 import { getOffererAdapter } from 'core/Offers/adapters'
 import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
@@ -20,7 +18,6 @@ import { formatAndOrderVenues } from 'repository/venuesService'
 import OffersScreen from 'screens/Offers'
 import { savePageNumber, saveSearchFilters } from 'store/offers/reducer'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import { sortByLabel } from 'utils/strings'
 
 import { getFilteredCollectiveOffersAdapter } from './adapters'
 
@@ -38,7 +35,6 @@ export const CollectiveOffers = (): JSX.Element => {
   const [initialSearchFilters, setInitialSearchFilters] =
     useState<SearchFiltersParams | null>(null)
   const [venues, setVenues] = useState<SelectOption[]>([])
-  const [categories, setCategories] = useState<SelectOption[]>([])
 
   useEffect(() => {
     const loadOfferer = async () => {
@@ -61,23 +57,6 @@ export const CollectiveOffers = (): JSX.Element => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadOfferer()
   }, [urlSearchFilters.offererId, notify])
-
-  useEffect(() => {
-    const loadCategories = async () => {
-      const categoriesAndSubcategories = await api.getCategories()
-      const categoriesOptions = filterEducationalCategories(
-        categoriesAndSubcategories
-      ).educationalCategories.map((category) => ({
-        value: category.id,
-        label: category.label,
-      }))
-
-      setCategories(sortByLabel(categoriesOptions))
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadCategories()
-  }, [])
 
   useEffect(() => {
     const loadAllVenuesByProUser = async () => {
@@ -165,7 +144,6 @@ export const CollectiveOffers = (): JSX.Element => {
       ) : (
         <OffersScreen
           audience={Audience.COLLECTIVE}
-          categories={categories}
           currentPageNumber={currentPageNumber}
           currentUser={currentUser}
           initialSearchFilters={initialSearchFilters}

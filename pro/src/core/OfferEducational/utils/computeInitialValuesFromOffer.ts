@@ -1,8 +1,4 @@
-import {
-  SubcategoryIdEnum,
-  StudentLevels,
-  GetEducationalOffererResponseModel,
-} from 'apiClient/v1'
+import { StudentLevels, GetEducationalOffererResponseModel } from 'apiClient/v1'
 import {
   formatShortDateForInput,
   formatTimeForInput,
@@ -14,10 +10,7 @@ import { DEFAULT_EAC_FORM_VALUES } from '../constants'
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
-  EducationalCategories,
   OfferEducationalFormValues,
-  EducationalCategory,
-  EducationalSubCategory,
   isCollectiveOfferTemplate,
 } from '../types'
 
@@ -35,29 +28,6 @@ const computeDurationString = (
   return `${hours > 9 ? hours : `0${hours}`}:${
     minutes > 9 ? minutes : `0${minutes}`
   }`
-}
-
-const getCategoryAndSubcategoryFromOffer = (
-  categories: EducationalCategories,
-  offer: CollectiveOffer | CollectiveOfferTemplate
-): {
-  category: EducationalCategory | null
-  subcategory: EducationalSubCategory | null
-} => {
-  const subcategory =
-    categories.educationalSubCategories.find(
-      ({ id }) => offer.subcategoryId === id
-    ) ?? null
-
-  const category =
-    categories.educationalCategories.find(
-      ({ id }) => subcategory?.categoryId === id
-    ) ?? null
-
-  return {
-    category,
-    subcategory,
-  }
 }
 
 const getInitialOffererId = (
@@ -108,7 +78,6 @@ const getInitialVenueId = (
 }
 
 export const computeInitialValuesFromOffer = (
-  categories: EducationalCategories,
   offerers: GetEducationalOffererResponseModel[],
   isTemplate: boolean,
   offer?: CollectiveOffer | CollectiveOfferTemplate,
@@ -155,15 +124,8 @@ export const computeInitialValuesFromOffer = (
   const email = offer.contactEmail
   const phone = offer.contactPhone
   const domains = offer.domains.map(({ id }) => id.toString())
-  const { category, subcategory } = getCategoryAndSubcategoryFromOffer(
-    categories,
-    offer
-  )
 
   return {
-    category: category?.id ?? '',
-    subCategory: (subcategory?.id ??
-      DEFAULT_EAC_FORM_VALUES.subCategory) as SubcategoryIdEnum,
     title: offer.name,
     description: offer.description ?? DEFAULT_EAC_FORM_VALUES.description,
     duration: computeDurationString(offer.durationMinutes),

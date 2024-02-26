@@ -14,7 +14,6 @@ import { Offerer, SearchFiltersParams } from 'core/Offers/types'
 import { hasSearchFilters } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
-import useActiveFeature from 'hooks/useActiveFeature'
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import { Button, SubmitButton } from 'ui-kit'
@@ -39,7 +38,7 @@ interface SearchFiltersProps {
   disableAllFilters: boolean
   resetFilters: () => void
   venues: SelectOption[]
-  categories: SelectOption[]
+  categories?: SelectOption[]
   audience: Audience
 }
 
@@ -55,8 +54,6 @@ const SearchFilters = ({
   categories,
   audience,
 }: SearchFiltersProps): JSX.Element => {
-  const isFormatActive = useActiveFeature('WIP_ENABLE_FORMAT')
-
   const formats: SelectOption[] = Object.values(EacFormat).map((format) => ({
     value: format,
     label: format,
@@ -174,7 +171,7 @@ const SearchFilters = ({
             />
           </FieldLayout>
 
-          {isFormatActive && audience === Audience.COLLECTIVE ? (
+          {audience === Audience.COLLECTIVE ? (
             <FieldLayout label="Format" name="format" isOptional>
               <SelectInput
                 defaultOption={ALL_FORMATS_OPTION}
@@ -186,16 +183,18 @@ const SearchFilters = ({
               />
             </FieldLayout>
           ) : (
-            <FieldLayout label="Catégories" name="categorie" isOptional>
-              <SelectInput
-                defaultOption={ALL_CATEGORIES_OPTION}
-                onChange={storeSelectedCategory}
-                disabled={disableAllFilters}
-                name="categorie"
-                options={categories}
-                value={selectedFilters.categoryId}
-              />
-            </FieldLayout>
+            categories && (
+              <FieldLayout label="Catégories" name="categorie" isOptional>
+                <SelectInput
+                  defaultOption={ALL_CATEGORIES_OPTION}
+                  onChange={storeSelectedCategory}
+                  disabled={disableAllFilters}
+                  name="categorie"
+                  options={categories}
+                  value={selectedFilters.categoryId}
+                />
+              </FieldLayout>
+            )
           )}
 
           {audience === Audience.INDIVIDUAL && (

@@ -14,13 +14,11 @@ import {
   userOffererFactory,
 } from '../__tests-utils__/userOfferersFactory'
 import {
-  CATEGORY_LABEL,
   DURATION_LABEL,
   EMAIL_LABEL,
   INTERVENTION_AREA_LABEL,
   NOTIFICATIONS_EMAIL_LABEL,
   OFFERER_LABEL,
-  SUBCATEGORY_LABEL,
   TITLE_LABEL,
   VENUE_LABEL,
 } from '../constants/labels'
@@ -58,10 +56,8 @@ describe('screens | OfferEducational', () => {
     await screen.findByLabelText(`${VENUE_LABEL} *`)
 
     const inputs = [
-      screen.getByLabelText(`${CATEGORY_LABEL} *`),
-      screen.getByLabelText(`${SUBCATEGORY_LABEL} *`),
+      screen.getByLabelText(`Format *`),
       screen.getByLabelText(`${TITLE_LABEL} *`),
-      screen.getByLabelText(`${CATEGORY_LABEL} *`),
       screen.getByLabelText(DURATION_LABEL, { exact: false }),
       screen.getByLabelText(`${OFFERER_LABEL} *`),
       screen.getByLabelText(`${VENUE_LABEL} *`),

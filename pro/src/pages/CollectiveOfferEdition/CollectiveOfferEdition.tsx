@@ -31,7 +31,6 @@ const CollectiveOfferEdition = ({
       ) : (
         <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
           <OfferEducationalScreen
-            categories={offerEducationalFormData.categories}
             userOfferers={offerEducationalFormData.offerers}
             domainsOptions={offerEducationalFormData.domains}
             nationalPrograms={offerEducationalFormData.nationalPrograms}

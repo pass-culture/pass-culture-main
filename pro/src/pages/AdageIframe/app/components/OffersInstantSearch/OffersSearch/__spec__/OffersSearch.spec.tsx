@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
-import { apiAdage, api } from 'apiClient/api'
+import { api } from 'apiClient/api'
 import { StudentLevels } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
@@ -92,7 +92,6 @@ vi.mock('apiClient/api', () => ({
     ]),
   },
   apiAdage: {
-    getEducationalOffersCategories: vi.fn(),
     getAcademies: vi.fn(() => ['Amiens', 'Paris']),
   },
 }))
@@ -414,18 +413,6 @@ describe('offersSearch component', () => {
     expect(
       screen.getByText('Dans quelle zone géographique')
     ).toBeInTheDocument()
-  })
-
-  it('should show an error message notification when categories could not be fetched', async () => {
-    vi.spyOn(apiAdage, 'getEducationalOffersCategories').mockImplementationOnce(
-      () => {
-        throw new Error()
-      }
-    )
-
-    renderOffersSearchComponent(props, user)
-
-    expect(await screen.findByText(GET_DATA_ERROR_MESSAGE)).toBeInTheDocument()
   })
 
   it('should show an error message notification when domains could not be fetched', async () => {

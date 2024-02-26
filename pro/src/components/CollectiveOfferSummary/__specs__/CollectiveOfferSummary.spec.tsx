@@ -1,11 +1,6 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
-import React from 'react'
 
 import { EacFormat } from 'apiClient/v1'
-import {
-  categoriesFactory,
-  subCategoriesFactory,
-} from 'screens/OfferEducational/__tests-utils__'
 import {
   collectiveOfferFactory,
   collectiveOfferTemplateFactory,
@@ -41,12 +36,6 @@ describe('CollectiveOfferSummary', () => {
     const offer = collectiveOfferFactory()
     props = {
       offer,
-      categories: {
-        educationalCategories: categoriesFactory([{ id: 'CAT_1' }]),
-        educationalSubCategories: subCategoriesFactory([
-          { categoryId: 'CAT_1', id: 'SUBCAT_1' },
-        ]),
-      },
     }
   })
   it('should show banner if generate from publicApi', async () => {
@@ -84,16 +73,13 @@ describe('CollectiveOfferSummary', () => {
   })
 
   it('should display format when ff is active', async () => {
-    renderCollectiveOfferSummary(
-      {
-        ...props,
-        offer: {
-          ...props.offer,
-          formats: [EacFormat.PROJECTION_AUDIOVISUELLE, EacFormat.CONCERT],
-        },
+    renderCollectiveOfferSummary({
+      ...props,
+      offer: {
+        ...props.offer,
+        formats: [EacFormat.PROJECTION_AUDIOVISUELLE, EacFormat.CONCERT],
       },
-      { features: ['WIP_ENABLE_FORMAT'] }
-    )
+    })
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(screen.getByText('Format :')).toBeInTheDocument()
@@ -103,16 +89,13 @@ describe('CollectiveOfferSummary', () => {
   })
 
   it('should display defaut format value when null and ff is active', async () => {
-    renderCollectiveOfferSummary(
-      {
-        ...props,
-        offer: {
-          ...props.offer,
-          formats: null,
-        },
+    renderCollectiveOfferSummary({
+      ...props,
+      offer: {
+        ...props.offer,
+        formats: null,
       },
-      { features: ['WIP_ENABLE_FORMAT'] }
-    )
+    })
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(screen.getByText('Format :')).toBeInTheDocument()

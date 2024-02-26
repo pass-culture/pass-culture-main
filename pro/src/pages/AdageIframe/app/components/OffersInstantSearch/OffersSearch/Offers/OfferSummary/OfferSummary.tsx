@@ -5,7 +5,6 @@ import {
   CollectiveOfferTemplateResponseModel,
   OfferAddressType,
 } from 'apiClient/adage'
-import useActiveFeature from 'hooks/useActiveFeature'
 import buildingStrokeIcon from 'icons/stroke-building.svg'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import strokeDateIcon from 'icons/stroke-date.svg'
@@ -60,7 +59,7 @@ export type OfferSummaryProps = {
 
 const OfferSummary = ({ offer }: OfferSummaryProps): JSX.Element => {
   const isOfferTemplate = isCollectiveOfferTemplate(offer)
-  const { subcategoryLabel, venue, offerVenue, students } = offer
+  const { venue, offerVenue, students } = offer
   const { beginningDatetime, numberOfTickets, price } = isOfferTemplate
     ? {
         beginningDatetime: undefined,
@@ -110,35 +109,19 @@ const OfferSummary = ({ offer }: OfferSummaryProps): JSX.Element => {
 
   const formattedPrice = getFormattedPrice(price)
 
-  const isFormatEnable = useActiveFeature('WIP_ENABLE_FORMAT')
-
   return (
     <dl className={styles['offer-summary']}>
       <div className={styles['offer-summary-item']}>
-        {isFormatEnable ? (
-          <>
-            <dt>
-              <SvgIcon
-                alt="Format"
-                src={strokeOfferIcon}
-                className={styles['offer-summary-item-icon']}
-              />
-            </dt>
-            <dd>{offer.formats?.join(', ')}</dd>
-          </>
-        ) : (
-          <>
-            <dt>
-              <SvgIcon
-                alt="Sous-catégorie"
-                src={strokeOfferIcon}
-                className={styles['offer-summary-item-icon']}
-                width="20"
-              />
-            </dt>
-            <dd>{subcategoryLabel}</dd>
-          </>
-        )}
+        <>
+          <dt>
+            <SvgIcon
+              alt="Format"
+              src={strokeOfferIcon}
+              className={styles['offer-summary-item-icon']}
+            />
+          </dt>
+          <dd>{offer.formats?.join(', ')}</dd>
+        </>
       </div>
       <div className={styles['offer-summary-item']}>
         <dt>

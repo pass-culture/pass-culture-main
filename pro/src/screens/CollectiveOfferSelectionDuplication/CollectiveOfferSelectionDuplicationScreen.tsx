@@ -34,8 +34,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   const [showAll, setShowAll] = useState(true)
   const notify = useNotification()
   const navigate = useNavigate()
-  const isFormatActive = useActiveFeature('WIP_ENABLE_FORMAT')
-  const isMarseilleActive = useActiveFeature('WIP_ENABLE_FORMAT')
+  const isMarseilleActive = useActiveFeature('WIP_ENABLE_MARSEILLE')
   const formikSearch = useFormik({
     initialValues: { searchFilter: '' },
     onSubmit: (formValues) =>
@@ -96,7 +95,6 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
       navigate,
       notify,
       Number(templateOfferId),
-      isFormatActive,
       undefined,
       isMarseilleActive
     )

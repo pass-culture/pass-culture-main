@@ -18,8 +18,6 @@ import {
 } from 'core/shared/interventionOptions'
 import * as useNotification from 'hooks/useNotification'
 import {
-  collectiveCategoryFactory,
-  collectiveSubCategoryFactory,
   defaultCollectiveDmsApplication,
   defaultVenueResponseModel,
   venueCollectiveDataFactory,
@@ -124,25 +122,6 @@ describe('CollectiveDataEdition', () => {
       pending: vi.fn(),
       close: vi.fn(),
     }))
-    collectiveSubCategoryFactory()
-    vi.spyOn(api, 'getCategories').mockResolvedValue({
-      categories: [
-        collectiveCategoryFactory({ id: 'CATEGORY_1' }),
-        collectiveCategoryFactory({ id: 'CATEGORY_2' }),
-      ],
-      subcategories: [
-        collectiveSubCategoryFactory({
-          id: 'SUB_CATEGORY_1',
-          categoryId: 'CATEGORY_1',
-        }),
-        collectiveSubCategoryFactory({
-          categoryId: 'CATEGORY_2',
-        }),
-        collectiveSubCategoryFactory({
-          categoryId: 'CATEGORY_2',
-        }),
-      ],
-    })
 
     vi.spyOn(api, 'getVenueCollectiveData').mockResolvedValue(
       venueCollectiveDataFactory()
@@ -421,48 +400,6 @@ describe('CollectiveDataEdition', () => {
 
       await userEvent.click(screen.getByLabelText(mainlandOptions[0].label))
       expect(screen.getByLabelText('France métropolitaine')).not.toBeChecked()
-    })
-  })
-
-  describe('categories', () => {
-    it('should prefill field with selected category and subcategory', async () => {
-      vi.spyOn(api, 'getVenueCollectiveData').mockResolvedValueOnce(
-        venueCollectiveDataFactory({
-          collectiveEmail: 'test@example.com',
-          collectiveSubCategoryId: 'SUB_CATEGORY_1',
-        })
-      )
-      renderCollectiveDataEdition()
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-      const categoryField = screen.getByLabelText(/Catégorie */)
-      const subCategoryField = screen.getByLabelText(/Sous-catégorie */)
-
-      expect(categoryField).toHaveValue('CATEGORY_1')
-      expect(subCategoryField).toHaveValue('SUB_CATEGORY_1')
-    })
-
-    it('should not display subcategory field if no category selected', async () => {
-      vi.spyOn(api, 'getCategories').mockResolvedValueOnce({
-        categories: [],
-        subcategories: [],
-      })
-      renderCollectiveDataEdition()
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-      const subCategoryField = screen.queryByLabelText(/Sous-catégorie */)
-
-      expect(subCategoryField).not.toBeInTheDocument()
-    })
-
-    it('should display subcategory field when category is selected', async () => {
-      renderCollectiveDataEdition()
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-      const categoryField = screen.getByLabelText(/Catégorie */)
-      await userEvent.selectOptions(categoryField, 'CATEGORY_2')
-
-      const subCategoryField = screen.getByLabelText(/Sous-catégorie */)
-      expect(subCategoryField).toBeInTheDocument()
     })
   })
 

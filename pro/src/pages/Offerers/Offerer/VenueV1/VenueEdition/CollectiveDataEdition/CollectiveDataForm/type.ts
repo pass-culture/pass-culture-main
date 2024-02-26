@@ -1,4 +1,4 @@
-import { StudentLevels, SubcategoryIdEnum } from 'apiClient/v1'
+import { StudentLevels } from 'apiClient/v1'
 
 export type CollectiveDataFormValues = {
   collectiveDescription: string
@@ -10,8 +10,6 @@ export type CollectiveDataFormValues = {
   collectiveLegalStatus: string
   collectiveNetwork: string[]
   collectiveInterventionArea: string[]
-  collectiveCategoryId: string
-  collectiveSubCategoryId: SubcategoryIdEnum | ''
   'search-collectiveStudents': string
   'search-collectiveDomains': string
   'search-collectiveNetwork': string

@@ -6,10 +6,8 @@ import { api } from 'apiClient/api'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
-  categoriesFactory,
   defaultCreationProps,
   managedVenueFactory,
-  subCategoriesFactory,
   userOfferersFactory,
 } from '../__tests-utils__'
 import { userOffererFactory } from '../__tests-utils__/userOfferersFactory'
@@ -23,12 +21,6 @@ describe('screens | OfferEducational : event address step', () => {
     beforeEach(() => {
       props = {
         ...defaultCreationProps,
-        categories: {
-          educationalCategories: categoriesFactory([{ id: 'CAT_1' }]),
-          educationalSubCategories: subCategoriesFactory([
-            { categoryId: 'CAT_1', id: 'SUBCAT_1' },
-          ]),
-        },
       }
       vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue({
         canCreate: true,
@@ -118,12 +110,6 @@ describe('screens | OfferEducational : event address step', () => {
             ],
           },
         ]),
-        categories: {
-          educationalCategories: categoriesFactory([{ id: 'CAT_1' }]),
-          educationalSubCategories: subCategoriesFactory([
-            { categoryId: 'CAT_1', id: 'SUBCAT_1' },
-          ]),
-        },
       }
       vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue({
         canCreate: true,

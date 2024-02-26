@@ -2,20 +2,14 @@ import { GetEducationalOffererResponseModel } from 'apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 
-import {
-  CollectiveOffer,
-  CollectiveOfferTemplate,
-  EducationalCategories,
-} from '../types'
+import { CollectiveOffer, CollectiveOfferTemplate } from '../types'
 import { getUserOfferersFromOffer } from '../utils'
 
-import { getEducationalCategoriesAdapter } from './getEducationalCategoriesAdapter'
 import { getEducationalDomainsAdapter } from './getEducationalDomainsAdapter'
 import { getNationalProgramsAdapter } from './getNationalProgramAdapter'
 import getOfferersAdapter from './getOfferersAdapter'
 
 type Payload = {
-  categories: EducationalCategories
   domains: SelectOption[]
   offerers: GetEducationalOffererResponseModel[]
   nationalPrograms: SelectOption<number>[]
@@ -32,10 +26,6 @@ const ERROR_RESPONSE = {
   isOk: false,
   message: GET_DATA_ERROR_MESSAGE,
   payload: {
-    categories: {
-      educationalSubCategories: [],
-      educationalCategories: [],
-    },
     domains: [],
     offerers: [],
     nationalPrograms: [],
@@ -47,7 +37,6 @@ const getCollectiveOfferFormDataApdater: GetCollectiveOfferFormDataApdater =
     try {
       const targetOffererId = offer?.venue.managingOfferer.id || offererId
       const responses = await Promise.all([
-        getEducationalCategoriesAdapter(),
         getEducationalDomainsAdapter(),
         getOfferersAdapter(targetOffererId),
         getNationalProgramsAdapter(),
@@ -56,7 +45,7 @@ const getCollectiveOfferFormDataApdater: GetCollectiveOfferFormDataApdater =
       if (responses.some((response) => response && !response.isOk)) {
         return ERROR_RESPONSE
       }
-      const [categories, domains, offerers, nationalPrograms] = responses
+      const [domains, offerers, nationalPrograms] = responses
 
       const offerersOptions = getUserOfferersFromOffer(offerers.payload, offer)
 
@@ -64,7 +53,6 @@ const getCollectiveOfferFormDataApdater: GetCollectiveOfferFormDataApdater =
         isOk: true,
         message: '',
         payload: {
-          categories: categories.payload,
           domains: domains.payload,
           offerers: offerersOptions,
           nationalPrograms: nationalPrograms.payload,

@@ -27,10 +27,7 @@ interface OfferFiltersProps {
   className?: string
   localisationFilterState: LocalisationFilterStates
   setLocalisationFilterState: (state: LocalisationFilterStates) => void
-
-  categoriesOptions: Option<string[]>[]
   domainsOptions: Option<number>[]
-  isFormatEnabled: boolean
   shouldDisplayMarseilleStudentOptions: boolean
 }
 
@@ -38,9 +35,7 @@ export const OfferFilters = ({
   className,
   localisationFilterState,
   setLocalisationFilterState,
-  categoriesOptions,
   domainsOptions,
-  isFormatEnabled,
   shouldDisplayMarseilleStudentOptions,
 }: OfferFiltersProps): JSX.Element => {
   const [modalOpenStatus, setModalOpenStatus] = useState<{
@@ -352,55 +347,30 @@ export const OfferFilters = ({
                   />
                 </ModalFilterLayout>
               </AdageButtonFilter>
-              {isFormatEnabled ? (
-                <AdageButtonFilter
-                  isActive={formik.values.formats.length > 0}
-                  title="Format"
-                  itemsLength={formik.values.formats.length}
-                  isOpen={modalOpenStatus['formats']}
-                  setIsOpen={setModalOpenStatus}
-                  filterName="formats"
-                  handleSubmit={formik.handleSubmit}
+
+              <AdageButtonFilter
+                isActive={formik.values.formats.length > 0}
+                title="Format"
+                itemsLength={formik.values.formats.length}
+                isOpen={modalOpenStatus['formats']}
+                setIsOpen={setModalOpenStatus}
+                filterName="formats"
+                handleSubmit={formik.handleSubmit}
+              >
+                <ModalFilterLayout
+                  onClean={() => onReset('formats', [])}
+                  onSearch={() => onSearch('formats')}
+                  title="Choisir un format"
                 >
-                  <ModalFilterLayout
-                    onClean={() => onReset('formats', [])}
-                    onSearch={() => onSearch('formats')}
-                    title="Choisir un format"
-                  >
-                    <AdageMultiselect
-                      placeholder="Ex: Représentation"
-                      name="formats"
-                      label="Format"
-                      options={formatsOptions}
-                      isOpen={modalOpenStatus['formats']}
-                    />
-                  </ModalFilterLayout>
-                </AdageButtonFilter>
-              ) : (
-                <AdageButtonFilter
-                  isActive={formik.values.categories.length > 0}
-                  title="Catégorie"
-                  itemsLength={formik.values.categories.length}
-                  isOpen={modalOpenStatus['categories']}
-                  setIsOpen={setModalOpenStatus}
-                  filterName="categories"
-                  handleSubmit={formik.handleSubmit}
-                >
-                  <ModalFilterLayout
-                    onClean={() => onReset('categories', [])}
-                    onSearch={() => onSearch('categories')}
-                    title="Choisir une catégorie"
-                  >
-                    <AdageMultiselect
-                      placeholder="Ex: Cinéma"
-                      name="categories"
-                      label="Catégorie"
-                      options={categoriesOptions}
-                      isOpen={modalOpenStatus['categories']}
-                    />
-                  </ModalFilterLayout>
-                </AdageButtonFilter>
-              )}
+                  <AdageMultiselect
+                    placeholder="Ex: Représentation"
+                    name="formats"
+                    label="Format"
+                    options={formatsOptions}
+                    isOpen={modalOpenStatus['formats']}
+                  />
+                </ModalFilterLayout>
+              </AdageButtonFilter>
 
               <AdageButtonFilter
                 isActive={formik.values.students.length > 0}

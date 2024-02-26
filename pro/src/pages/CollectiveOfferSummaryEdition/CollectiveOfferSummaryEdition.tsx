@@ -1,13 +1,6 @@
-import React, { useEffect, useState } from 'react'
-
 import { AppLayout } from 'app/AppLayout'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
-import {
-  EducationalCategories,
-  getEducationalCategoriesAdapter,
-  Mode,
-} from 'core/OfferEducational'
-import useNotification from 'hooks/useNotification'
+import { Mode } from 'core/OfferEducational'
 import CollectiveOfferSummaryEditionScreen from 'screens/CollectiveOfferSummaryEdition'
 import {
   MandatoryCollectiveOfferFromParamsProps,
@@ -20,28 +13,7 @@ const CollectiveOfferSummaryEdition = ({
   reloadCollectiveOffer,
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps) => {
-  const notify = useNotification()
-
-  const [categories, setCategories] = useState<EducationalCategories | null>(
-    null
-  )
-
-  useEffect(() => {
-    const loadData = async () => {
-      const categoriesResponse = await getEducationalCategoriesAdapter()
-
-      if (!categoriesResponse.isOk) {
-        return notify.error(categoriesResponse.message)
-      }
-
-      setCategories(categoriesResponse.payload)
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadData()
-  }, [])
-
-  const isReady = offer !== null && categories !== null
+  const isReady = offer !== null
 
   return (
     <AppLayout layout={'sticky-actions'}>
@@ -51,7 +23,6 @@ const CollectiveOfferSummaryEdition = ({
         <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
           <CollectiveOfferSummaryEditionScreen
             offer={offer}
-            categories={categories}
             reloadCollectiveOffer={reloadCollectiveOffer}
             mode={Mode.EDITION}
           />

@@ -11,7 +11,6 @@ import {
   isCollectiveOfferTemplate,
   CollectiveOffer,
   CollectiveOfferTemplate,
-  EducationalCategories,
   applyVenueDefaultsToFormValues,
 } from 'core/OfferEducational'
 import patchCollectiveOfferAdapter from 'core/OfferEducational/adapters/patchCollectiveOfferAdapter'
@@ -33,7 +32,6 @@ import { getOfferEducationalValidationSchema } from './validationSchema'
 export interface OfferEducationalProps {
   offer?: CollectiveOffer | CollectiveOfferTemplate
   setOffer: (offer: CollectiveOffer | CollectiveOfferTemplate) => void
-  categories: EducationalCategories
   userOfferers: GetEducationalOffererResponseModel[]
   mode: Mode
   isOfferBooked?: boolean
@@ -48,7 +46,6 @@ export interface OfferEducationalProps {
 const OfferEducational = ({
   offer,
   setOffer,
-  categories,
   userOfferers,
   domainsOptions,
   nationalPrograms,
@@ -63,7 +60,6 @@ const OfferEducational = ({
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
     useCollectiveOfferImageUpload(offer, isTemplate)
 
-  const isFormatActive = useActiveFeature('WIP_ENABLE_FORMAT')
   const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
 
   const {
@@ -73,7 +69,6 @@ const OfferEducational = ({
   } = queryParamsFromOfferer(location)
 
   const baseInitialValues = computeInitialValuesFromOffer(
-    categories,
     userOfferers,
     isTemplate,
     offer,
@@ -87,8 +82,7 @@ const OfferEducational = ({
       ? applyVenueDefaultsToFormValues(
           baseInitialValues,
           userOfferers,
-          isOfferCreated,
-          categories
+          isOfferCreated
         )
       : baseInitialValues
 
@@ -98,7 +92,6 @@ const OfferEducational = ({
       if (offer === undefined) {
         response = await postCollectiveOfferTemplateAdapter({
           offer: offerValues,
-          isFormatActive,
         })
       } else {
         response = await patchCollectiveOfferTemplateAdapter({
@@ -111,7 +104,6 @@ const OfferEducational = ({
       if (offer === undefined) {
         response = await postCollectiveOfferAdapter({
           offer: offerValues,
-          isFormatActive,
         })
       } else {
         response = await patchCollectiveOfferAdapter({
@@ -157,7 +149,7 @@ const OfferEducational = ({
   const { resetForm, ...formik } = useFormik({
     initialValues,
     onSubmit,
-    validationSchema: getOfferEducationalValidationSchema(isFormatActive),
+    validationSchema: getOfferEducationalValidationSchema(),
   })
 
   return (
@@ -174,7 +166,6 @@ const OfferEducational = ({
       <FormikProvider value={{ ...formik, resetForm }}>
         <form onSubmit={formik.handleSubmit}>
           <OfferEducationalForm
-            categories={categories}
             mode={mode}
             userOfferers={userOfferers}
             domainsOptions={domainsOptions}

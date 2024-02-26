@@ -28,10 +28,6 @@ const serializer: PatchOfferSerializer<PatchCollectiveOfferBodyModel> = {
     ...payload,
     durationMinutes: parseDuration(offer.duration),
   }),
-  subCategory: (payload, offer) => ({
-    ...payload,
-    subcategoryId: offer.subCategory,
-  }),
   accessibility: (payload, offer) => ({
     ...payload,
     mentalDisabilityCompliant: offer.accessibility.mental,
@@ -50,7 +46,6 @@ const serializer: PatchOfferSerializer<PatchCollectiveOfferBodyModel> = {
     ...payload,
     venueId: Number(offer.venueId),
   }),
-  category: (payload) => payload,
   eventAddress: (payload, offer) => {
     const eventAddressPayload = {
       ...offer.eventAddress,

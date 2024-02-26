@@ -7,7 +7,6 @@ import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
-  EducationalCategories,
   isCollectiveOffer,
   isCollectiveOfferTemplate,
 } from 'core/OfferEducational'
@@ -28,7 +27,6 @@ import CollectiveOfferVisibilitySection from './components/CollectiveOfferVisibi
 
 export interface CollectiveOfferSummaryProps {
   offer: CollectiveOfferTemplate | CollectiveOffer
-  categories: EducationalCategories
   offerEditLink?: string
   stockEditLink?: string
   visibilityEditLink?: string
@@ -36,7 +34,6 @@ export interface CollectiveOfferSummaryProps {
 
 const CollectiveOfferSummary = ({
   offer,
-  categories,
   offerEditLink,
   stockEditLink,
   visibilityEditLink,
@@ -61,7 +58,7 @@ const CollectiveOfferSummary = ({
             }
           >
             <CollectiveOfferVenueSection venue={offer.venue} />
-            <CollectiveOfferTypeSection offer={offer} categories={categories} />
+            <CollectiveOfferTypeSection offer={offer} />
             <CollectiveOfferImagePreview offer={offer} />
             {offer.isTemplate && <CollectiveOfferDateSection offer={offer} />}
             <CollectiveOfferLocationSection offer={offer} />

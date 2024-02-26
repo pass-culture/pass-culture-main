@@ -4,11 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import CollectiveOfferSummary from 'components/CollectiveOfferSummary'
-import {
-  CollectiveOffer,
-  CollectiveOfferTemplate,
-  EducationalCategories,
-} from 'core/OfferEducational'
+import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
@@ -22,14 +18,12 @@ import styles from './CollectiveOfferSummaryCreation.module.scss'
 
 interface CollectiveOfferSummaryCreationProps {
   offer: CollectiveOfferTemplate | CollectiveOffer
-  categories: EducationalCategories
   setOffer: (offer: CollectiveOffer | CollectiveOfferTemplate) => void
   offerer: GetOffererResponseModel | undefined
 }
 
 const CollectiveOfferSummaryCreation = ({
   offer,
-  categories,
   setOffer,
   offerer,
 }: CollectiveOfferSummaryCreationProps) => {
@@ -91,7 +85,6 @@ const CollectiveOfferSummaryCreation = ({
       <div className={styles['summary']}>
         <CollectiveOfferSummary
           offer={offer}
-          categories={categories}
           offerEditLink={`/offre/collectif${
             offer.isTemplate ? '/vitrine' : ''
           }/${offer.id}/creation`}

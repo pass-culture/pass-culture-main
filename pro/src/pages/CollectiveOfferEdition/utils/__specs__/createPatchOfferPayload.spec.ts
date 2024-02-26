@@ -1,8 +1,4 @@
-import {
-  EacFormat,
-  PatchCollectiveOfferBodyModel,
-  SubcategoryIdEnum,
-} from 'apiClient/v1'
+import { EacFormat, PatchCollectiveOfferBodyModel } from 'apiClient/v1'
 import { OfferAddressType } from 'apiClient/v2'
 import { OfferEducationalFormValues } from 'core/OfferEducational'
 import { buildStudentLevelsMapWithDefaultValue } from 'core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
@@ -19,9 +15,7 @@ describe('createPatchOfferPayload', () => {
     title: 'Test Offer',
     description: 'Test Description',
     offererId: 'DY',
-    category: 'CINEMA',
     duration: '1:30',
-    subCategory: SubcategoryIdEnum.ABO_JEU_VIDEO,
     accessibility: {
       mental: true,
       motor: false,
@@ -54,9 +48,7 @@ describe('createPatchOfferPayload', () => {
     title: 'Test Offer update',
     description: 'Test Description update',
     offererId: offerId,
-    category: 'JEUX',
     duration: '2:00',
-    subCategory: SubcategoryIdEnum.ABO_CONCERT,
     accessibility: {
       mental: false,
       motor: true,
@@ -92,7 +84,6 @@ describe('createPatchOfferPayload', () => {
     name: 'Test Offer update',
     description: 'Test Description update',
     durationMinutes: 120,
-    subcategoryId: SubcategoryIdEnum.ABO_CONCERT,
     mentalDisabilityCompliant: false,
     motorDisabilityCompliant: true,
     audioDisabilityCompliant: false,
