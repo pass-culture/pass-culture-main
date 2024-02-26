@@ -171,8 +171,7 @@ class ListBookingsQueryModel(BaseModel):
 
     class Config:
         alias_generator = to_camel
-
-    extra = "forbid"
+        extra = "forbid"
 
     @root_validator(pre=True)
     def booking_period_or_event_date_required(cls, values: dict) -> dict:
