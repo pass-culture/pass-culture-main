@@ -769,7 +769,7 @@ def import_pro_user_and_offerer_from_csv(pro_user: ImportUserFromCsvModel) -> mo
     repository.save(new_pro_user, user_offerer, offerer, digital_venue)
     token = token_utils.Token.create(
         token_utils.TokenType.EMAIL_VALIDATION,
-        ttl=None,
+        ttl=constants.EMAIL_VALIDATION_TOKEN_UPON_MANUAL_CREATION_LIFE_TIME,
         user_id=new_pro_user.id,
     )
 
