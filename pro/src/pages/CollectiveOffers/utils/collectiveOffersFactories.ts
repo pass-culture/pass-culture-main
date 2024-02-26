@@ -16,7 +16,7 @@ export const collectiveOfferFactory = (
     status: OfferStatus.ACTIVE,
     isActive: true,
     hasBookingLimitDatetimesPassed: true,
-    isEducational: false,
+    isEducational: true,
     name: `offer name ${offerId}`,
     venue: venueFactory(),
     stocks: [],

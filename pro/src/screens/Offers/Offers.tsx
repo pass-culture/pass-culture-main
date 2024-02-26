@@ -1,6 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react'
 
-import { UserRole } from 'apiClient/v1'
+import {
+  CollectiveOfferResponseModel,
+  ListOffersOfferResponseModel,
+  UserRole,
+} from 'apiClient/v1'
 import NoOffers from 'components/NoData'
 import {
   DEFAULT_PAGE,
@@ -9,7 +13,7 @@ import {
   NUMBER_OF_OFFERS_PER_PAGE,
   OFFER_STATUS_DRAFT,
 } from 'core/Offers/constants'
-import { Offer, Offerer, SearchFiltersParams } from 'core/Offers/types'
+import { Offerer, SearchFiltersParams } from 'core/Offers/types'
 import {
   computeCollectiveOffersUrl,
   computeOffersUrl,
@@ -40,7 +44,7 @@ export interface OffersProps {
   isLoading: boolean
   loadAndUpdateOffers: (filters: SearchFiltersParams) => Promise<void>
   offerer: Offerer | null
-  offers: Offer[]
+  offers: CollectiveOfferResponseModel[] | ListOffersOfferResponseModel[]
   setOfferer: (offerer: Offerer | null) => void
   initialSearchFilters: SearchFiltersParams
   audience: Audience

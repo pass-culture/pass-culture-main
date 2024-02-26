@@ -1,13 +1,14 @@
 import { api } from 'apiClient/api'
-import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
-import { Offer, SearchFiltersParams } from 'core/Offers/types'
+import {
+  CollectiveOfferDisplayedStatus,
+  CollectiveOfferResponseModel,
+} from 'apiClient/v1'
+import { SearchFiltersParams } from 'core/Offers/types'
 import { serializeApiFilters } from 'core/Offers/utils'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 
-import { serializeOffers } from './serializers'
-
 type Payload = {
-  offers: Offer[]
+  offers: CollectiveOfferResponseModel[]
 }
 
 type GetFilteredCollectiveOffersAdapter = Adapter<
@@ -57,7 +58,7 @@ const getFilteredCollectiveOffersAdapter: GetFilteredCollectiveOffersAdapter =
         isOk: true,
         message: null,
         payload: {
-          offers: serializeOffers(offers),
+          offers,
         },
       }
     } catch (e) {

@@ -4,8 +4,8 @@ import { Formik } from 'formik'
 import React from 'react'
 
 import { api } from 'apiClient/api'
+import { CollectiveOfferResponseModel } from 'apiClient/v1'
 import * as createFromTemplateUtils from 'core/OfferEducational/utils/createOfferFromTemplate'
-import { Offer } from 'core/Offers/types'
 import * as useNotification from 'hooks/useNotification'
 import { collectiveOfferFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -47,7 +47,10 @@ describe('CollectiveOfferConfirmation', () => {
   const notifyError = vi.fn()
 
   beforeEach(() => {
-    const offers: Offer[] = [collectiveOfferFactory(), collectiveOfferFactory()]
+    const offers: CollectiveOfferResponseModel[] = [
+      collectiveOfferFactory(),
+      collectiveOfferFactory(),
+    ]
 
     vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       success: vi.fn(),

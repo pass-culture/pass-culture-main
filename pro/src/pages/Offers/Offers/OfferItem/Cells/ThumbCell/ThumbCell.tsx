@@ -1,16 +1,20 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import { Offer } from 'core/Offers/types'
+import {
+  CollectiveOfferResponseModel,
+  ListOffersOfferResponseModel,
+} from 'apiClient/v1'
+import { isOfferEducational } from 'core/OfferEducational'
 import Thumb from 'ui-kit/Thumb'
 
 import styles from '../../OfferItem.module.scss'
 
-const ThumbCell = ({
+export const ThumbCell = ({
   offer,
   editionOfferLink,
 }: {
-  offer: Offer
+  offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
   editionOfferLink: string
 }) => {
   return (
@@ -20,10 +24,11 @@ const ThumbCell = ({
         title={`${offer.name} - éditer l’offre`}
         to={editionOfferLink}
       >
-        <Thumb url={offer.thumbUrl} className={styles['offer-thumb']} />
+        <Thumb
+          url={isOfferEducational(offer) ? offer.imageUrl : offer.thumbUrl}
+          className={styles['offer-thumb']}
+        />
       </Link>
     </td>
   )
 }
-
-export default ThumbCell

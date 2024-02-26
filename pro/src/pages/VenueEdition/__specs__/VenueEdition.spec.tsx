@@ -120,6 +120,7 @@ describe('route VenueEdition', () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
     vi.spyOn(api, 'getVenueTypes').mockResolvedValue([])
     vi.spyOn(api, 'fetchVenueLabels').mockResolvedValue([])
+    vi.spyOn(api, 'listOffers').mockResolvedValue([])
   })
 
   it('should call getVenue and display Venue Form screen on success', async () => {

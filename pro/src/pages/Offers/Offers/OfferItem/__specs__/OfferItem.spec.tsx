@@ -3,13 +3,17 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { ApiError, OfferStatus } from 'apiClient/v1'
+import {
+  ApiError,
+  CollectiveOfferResponseModel,
+  ListOffersOfferResponseModel,
+  OfferStatus,
+} from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { CollectiveBookingStatus } from 'apiClient/v2'
 import Notification from 'components/Notification/Notification'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
-import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import * as useAnalytics from 'hooks/useAnalytics'
 import {
@@ -47,7 +51,7 @@ const renderOfferItem = (props: OfferItemProps) =>
 
 describe('src | components | pages | Offers | OfferItem', () => {
   let props: OfferItemProps
-  let offer: Offer
+  let offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
   const offerId = 12
 
   beforeEach(() => {
@@ -463,7 +467,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     describe('when audience is COLLECTIVE', () => {
       it('should display a tag when offer is template', () => {
         props.audience = Audience.COLLECTIVE
-        props.offer.isShowcase = true
+        props.offer = collectiveOfferFactory({ isShowcase: true })
         renderOfferItem(props)
 
         expect(
@@ -473,7 +477,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should not display a tag when offer is not template', () => {
         props.audience = Audience.COLLECTIVE
-        props.offer.isShowcase = false
+        props.offer = collectiveOfferFactory({ isShowcase: false })
         renderOfferItem(props)
 
         expect(
@@ -483,7 +487,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should display confirm dialog when clicking on duplicate button when user did not see the modal', async () => {
         props.audience = Audience.COLLECTIVE
-        props.offer.isShowcase = true
+        props.offer = collectiveOfferFactory({ isShowcase: true })
 
         renderOfferItem(props)
 
@@ -498,7 +502,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should not display confirm dialog when clicking on duplicate button when user did see the modal', async () => {
         props.audience = Audience.COLLECTIVE
-        props.offer.isShowcase = true
+        props.offer = collectiveOfferFactory({ isShowcase: true })
         Storage.prototype.getItem = vi.fn(() => 'true')
         renderOfferItem(props)
 

@@ -112,7 +112,7 @@ describe('route Offers', () => {
     offersRecap = [
       listOffersOfferResponseModelFactory({ customVenue: proVenues[0] }),
     ]
-    vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+    vi.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
     vi.spyOn(api, 'getCategories').mockResolvedValueOnce(
       categoriesAndSubcategories
     )
@@ -230,6 +230,7 @@ describe('route Offers', () => {
             },
           }
         })
+
         describe('status filter can only be used with an offerer or a venue filter for performance reasons', () => {
           it('should reset and disable status filter when venue filter is deselected', async () => {
             const { id: venueId, name: venueName } = proVenues[0]
