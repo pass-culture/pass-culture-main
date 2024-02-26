@@ -21,7 +21,9 @@ const getMusicData = (
 } => {
   if (isTiteliveMusicGenreEnabled) {
     return {
-      musicTypeName: musicTypes?.find((item) => item.gtl_id === gtl_id)?.label,
+      musicTypeName: musicTypes?.find(
+        (item) => item.gtl_id.substring(0, 2) === gtl_id?.substring(0, 2) // Gtl_id is a string of 8 characters, only first 2 are relevant to music genre
+      )?.label,
       gtl_id: offer.extraData?.gtl_id,
     }
   }
