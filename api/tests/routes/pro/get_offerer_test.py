@@ -509,8 +509,9 @@ class GetOffererTest:
 
         response = client.get(f"/offerers/{offerer_id}")
         assert response.status_code == 200
-        assert response.json["managedVenues"][0]["hasVenueProviders"] is False
-        assert response.json["managedVenues"][1]["hasVenueProviders"] is True
+        sorted_managed_venues = sorted(response.json["managedVenues"], key=lambda x: x["name"])
+        assert sorted_managed_venues[0]["hasVenueProviders"] is True
+        assert sorted_managed_venues[1]["hasVenueProviders"] is False
         assert response.json["hasValidBankAccount"] is False
         assert response.json["hasPendingBankAccount"] is False
         assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == []
