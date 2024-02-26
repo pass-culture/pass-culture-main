@@ -47,15 +47,18 @@ describe('OfferNameCell', () => {
   })
 
   it('should display warning when limit booking date is in less than 7 days', () => {
-    const tomorrowFns = add(new Date(), {
-      days: 1,
-    })
+    const tomorrowFns = String(
+      add(new Date(), {
+        days: 1,
+      })
+    )
 
     const eventOffer = {
       ...defaultOffer,
       stocks: [
         {
-          beginningDatetime: new Date('2023-12-22T00:00:00Z'),
+          hasBookingLimitDatetimePassed: false,
+          beginningDatetime: '2023-12-22T00:00:00Z',
           remainingQuantity: 1,
           bookingLimitDatetime: tomorrowFns,
         },
@@ -72,15 +75,18 @@ describe('OfferNameCell', () => {
   })
 
   it('should not display warning when limit booking date is in more than 7 days', () => {
-    const eightDaysFns = add(new Date(), {
-      days: 8,
-    })
+    const eightDaysFns = String(
+      add(new Date(), {
+        days: 8,
+      })
+    )
 
     const eventOffer = {
       ...defaultOffer,
       stocks: [
         {
-          beginningDatetime: new Date('2022-12-22T00:00:00Z'),
+          hasBookingLimitDatetimePassed: false,
+          beginningDatetime: '2022-12-22T00:00:00Z',
           remainingQuantity: 1,
           bookingLimitDatetime: eightDaysFns,
         },

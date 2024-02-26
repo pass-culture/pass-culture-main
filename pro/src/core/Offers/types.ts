@@ -1,7 +1,9 @@
 import {
   CollectiveOffersBookingResponseModel,
+  CollectiveOffersStockResponseModel,
   EacFormat,
   EducationalInstitutionResponseModel,
+  ListOffersStockResponseModel,
   ListOffersVenueResponseModel,
   OfferStatus,
 } from 'apiClient/v1'
@@ -29,13 +31,6 @@ export type Offerer = {
   name: string
 }
 
-export type Stock = {
-  beginningDatetime?: Date | null
-  remainingQuantity: string | number
-  bookingLimitDatetime?: Date | null
-  bookingQuantity?: number | null
-}
-
 export type Offer = {
   id: number
   status: OfferStatus
@@ -47,7 +42,7 @@ export type Offer = {
   isEvent: boolean
   productIsbn?: string | null
   venue: ListOffersVenueResponseModel
-  stocks: Stock[]
+  stocks: (CollectiveOffersStockResponseModel | ListOffersStockResponseModel)[]
   isPublicApi?: boolean | null
   isEditable: boolean
   isShowcase?: boolean | null

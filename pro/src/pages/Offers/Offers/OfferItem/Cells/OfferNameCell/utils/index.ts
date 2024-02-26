@@ -1,11 +1,15 @@
 import { format } from 'date-fns-tz'
 
-import { CollectiveBookingCollectiveStockResponseModel } from 'apiClient/v1'
-import { Stock } from 'core/Offers/types'
+import {
+  CollectiveBookingCollectiveStockResponseModel,
+  CollectiveOffersStockResponseModel,
+} from 'apiClient/v1'
 import { FORMAT_DD_MM_YYYY, toDateStrippedOfTimezone } from 'utils/date'
 
 export const getRemainingTime = (
-  stock: CollectiveBookingCollectiveStockResponseModel | Stock
+  stock:
+    | CollectiveBookingCollectiveStockResponseModel
+    | CollectiveOffersStockResponseModel
 ) => {
   const { bookingLimitDatetime } = stock
   if (!bookingLimitDatetime) {
@@ -20,7 +24,9 @@ export const getRemainingTime = (
 }
 
 export const shouldDisplayWarning = (
-  stock: CollectiveBookingCollectiveStockResponseModel | Stock
+  stock:
+    | CollectiveBookingCollectiveStockResponseModel
+    | CollectiveOffersStockResponseModel
 ) => {
   const differenceDay = getRemainingTime(stock)
 
@@ -31,7 +37,9 @@ export const shouldDisplayWarning = (
 }
 
 export const getDate = (
-  stock: CollectiveBookingCollectiveStockResponseModel | Stock
+  stock:
+    | CollectiveBookingCollectiveStockResponseModel
+    | CollectiveOffersStockResponseModel
 ) => {
   const { bookingLimitDatetime } = stock
 
