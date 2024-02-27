@@ -1,4 +1,3 @@
-import { useFormikContext } from 'formik'
 import { useLocation } from 'react-router-dom'
 
 import {
@@ -18,13 +17,10 @@ import { Accessibility } from './Accessibility'
 import { Activity } from './Activity'
 import BankAccountInfos from './BankAccountInfos/BankAccountInfos'
 import { Contact } from './Contact'
-import { ImageUploaderVenue } from './ImageUploaderVenue'
 import { Informations } from './Informations'
 import { OffersSynchronization } from './OffersSynchronization'
 import { VenueFormActionBar } from './VenueFormActionBar'
 import { WithdrawalDetails } from './WithdrawalDetails'
-
-import { VenueFormValues } from '.'
 
 interface VenueFormProps {
   offerer: GetOffererResponseModel
@@ -45,13 +41,9 @@ export const VenueEditionForm = ({
   venueProvider,
   venue,
 }: VenueFormProps) => {
-  const {
-    values: { isPermanent },
-  } = useFormikContext<VenueFormValues>()
   const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
-  const shouldDisplayImageVenueUploaderSection = isPermanent
   useScrollToFirstErrorAfterSubmit()
   const location = useLocation()
 
@@ -75,13 +67,6 @@ export const VenueEditionForm = ({
           isVenueVirtual={venue.isVirtual}
           siren={offerer.siren}
         />
-
-        {
-          /* istanbul ignore next: DEBT, TO FIX */
-          !!shouldDisplayImageVenueUploaderSection && (
-            <ImageUploaderVenue isCreatingVenue={false} />
-          )
-        }
 
         {!venue.isVirtual && (
           <FormLayout.Section
