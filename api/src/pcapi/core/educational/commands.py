@@ -30,7 +30,6 @@ def reindex_all_collective_offers() -> None:
     """
     TO BE USED IN LOCAL ENV
     """
-    search.unindex_all_collective_offers()
     search.unindex_all_collective_offer_templates()
     search.index_all_collective_offers_and_templates()
 

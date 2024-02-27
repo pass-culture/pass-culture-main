@@ -189,33 +189,11 @@ def test_unindex_venue_ids(app):
         assert posted_json["requests"][0]["body"]["objectID"] == 1
 
 
-def test_unindex_all_collective_offers_for_all_objects():
+def test_unindex_all_collective_offer_templates():
     backend = get_backend()
     with requests_mock.Mocker() as mock:
         posted = mock.post("https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers/clear", json={})
-        backend.unindex_all_collective_offers()
-        assert posted.called
-
-
-def test_unindex_all_collective_offers_only_for_template():
-    backend = get_backend()
-    with requests_mock.Mocker() as mock:
-        posted = mock.post(
-            "https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers/deleteByQuery",
-            json={"facetFilter": ["isTemplate:true"]},
-        )
-        backend.unindex_all_collective_offers(only_template=True)
-        assert posted.called
-
-
-def test_unindex_all_collective_offers():
-    backend = get_backend()
-    with requests_mock.Mocker() as mock:
-        posted = mock.post(
-            "https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers/deleteByQuery",
-            json={"facetFilter": ["isTemplate:false"]},
-        )
-        backend.unindex_all_collective_offers(only_non_template=True)
+        backend.unindex_all_collective_offer_templates()
         assert posted.called
 
 
@@ -251,7 +229,7 @@ def test_index_collective_offers_templates():
         assert posted_json["requests"][2]["body"]["venue"]["departmentCode"] == "2A"
 
 
-def test_unindex_collective_offer__templatesids():
+def test_unindex_collective_offer_templates_ids():
     backend = get_backend()
     with requests_mock.Mocker() as mock:
         posted = mock.post("https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers/batch", json={})
@@ -259,14 +237,6 @@ def test_unindex_collective_offer__templatesids():
         posted_json = posted.last_request.json()
         assert posted_json["requests"][0]["action"] == "deleteObject"
         assert posted_json["requests"][0]["body"]["objectID"] == "T-1"
-
-
-def test_unindex_all_collective_offers_templates():
-    backend = get_backend()
-    with requests_mock.Mocker() as mock:
-        posted = mock.post("https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers/clear", json={})
-        backend.unindex_all_collective_offers_templates()
-        assert posted.called
 
 
 def test_remove_stopwords():

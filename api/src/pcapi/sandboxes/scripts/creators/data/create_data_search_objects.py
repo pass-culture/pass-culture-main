@@ -21,9 +21,7 @@ def create_data_search_indexed_objects() -> None:
         search.unindex_all_venues()
         search.reindex_venue_ids(venue_ids)
 
-        # Collective offers and collective offer templates are in the same index.
-        # Thus, the next line will unindex all of them.
-        search.unindex_all_collective_offers()
+        search.unindex_all_collective_offer_templates()
 
         collective_offer_template_ids = [
             collective_offer_template_id
