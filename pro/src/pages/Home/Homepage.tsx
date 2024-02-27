@@ -128,7 +128,7 @@ export const Homepage = (): JSX.Element => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       loadOfferer(selectedOffererId)
     }
-  }, [selectedOffererId])
+  }, [selectedOffererId, dispatch])
 
   useEffect(() => {
     async function logProFlags() {
@@ -140,6 +140,7 @@ export const Homepage = (): JSX.Element => {
     }
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     logProFlags()
+    // FIX ME: fixing this broke a test...
   }, [remoteConfigData?.REMOTE_CONFIG_LOADED])
 
   return (
