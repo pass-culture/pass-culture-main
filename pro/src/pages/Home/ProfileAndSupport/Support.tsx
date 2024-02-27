@@ -2,6 +2,7 @@ import React from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullMailIcon from 'icons/full-mail.svg'
@@ -17,6 +18,7 @@ import styles from './Support.module.scss'
 export const Support: () => JSX.Element | null = () => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
+  const isNewSideBarNavigation = useActiveFeature('WIP_ENABLE_PRO_SIDE_NAV')
 
   return (
     <Card>
@@ -80,37 +82,40 @@ export const Support: () => JSX.Element | null = () => {
               support-pro@passculture.app
             </ButtonLink>
           </li>
-
-          <li>
-            <ButtonLink
-              link={{
-                to: 'https://pass.culture.fr/cgu-professionnels/',
-                isExternal: true,
-                target: '_blank',
-              }}
-              icon={fullLinkIcon}
-              onClick={() =>
-                logEvent?.(Events.CLICKED_CONSULT_CGU, {
-                  from: location.pathname,
-                })
-              }
-              svgAlt="Nouvelle fenêtre"
-            >
-              Conditions Générales d’Utilisation
-            </ButtonLink>
-          </li>
-          <li>
-            <Button
-              variant={ButtonVariant.TERNARY}
-              icon={fullParametersIcon}
-              onClick={() => {
-                /* istanbul ignore next : library should be tested */
-                initCookieConsent().show()
-              }}
-            >
-              Gestion des cookies
-            </Button>
-          </li>
+          {!isNewSideBarNavigation && (
+            <>
+              <li>
+                <ButtonLink
+                  link={{
+                    to: 'https://pass.culture.fr/cgu-professionnels/',
+                    isExternal: true,
+                    target: '_blank',
+                  }}
+                  icon={fullLinkIcon}
+                  onClick={() =>
+                    logEvent?.(Events.CLICKED_CONSULT_CGU, {
+                      from: location.pathname,
+                    })
+                  }
+                  svgAlt="Nouvelle fenêtre"
+                >
+                  Conditions Générales d’Utilisation
+                </ButtonLink>
+              </li>
+              <li>
+                <Button
+                  variant={ButtonVariant.TERNARY}
+                  icon={fullParametersIcon}
+                  onClick={() => {
+                    /* istanbul ignore next : library should be tested */
+                    initCookieConsent().show()
+                  }}
+                >
+                  Gestion des cookies
+                </Button>
+              </li>
+            </>
+          )}
         </ul>
       </div>
     </Card>

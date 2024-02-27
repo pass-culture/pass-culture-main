@@ -24,7 +24,7 @@ header.menu-v2 {
 
     .nav-menu {
       display: flex;
-      height: rem.torem(72px);
+      height: rem.torem(size.$nav-height);
       justify-content: center;
 
       button.nav-item {

@@ -1,0 +1,34 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/size.scss" as size;
+
+.footer {
+  height: size.$footer-height;
+
+  &-layout-sticky-actions {
+    height: size.$footer-height + size.$action-bar-sticky-height;
+    padding-bottom: size.$action-bar-sticky-height;
+  }
+
+  &-layout-funnel {
+    height: size.$footer-height + size.$action-bar-sticky-height;
+    padding-bottom: size.$action-bar-sticky-height;
+  }
+
+  @media (min-width: size.$tablet) {
+    &-layout-without-nav {
+      margin: -#{size.$footer-height} 0 0 size.$side-logo-width;
+    }
+  }
+
+  ul {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    justify-content: space-between;
+    max-width: rem.torem(575px);
+    width: 100%;
+    margin: 0 auto;
+    gap: 16px;
+  }
+}

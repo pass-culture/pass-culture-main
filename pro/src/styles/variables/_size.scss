@@ -27,6 +27,10 @@ $dialog-box-padding: rem.torem(32px);
 $full-content-min-width: rem.torem(300px);
 $full-content-max-width: rem.torem(600px);
 $top-menu-height: rem.torem(50px);
+$nav-height: rem.torem(72px);
+$footer-height: rem.torem(72px);
+$container-padding-bottom: calc($action-bar-sticky-height + rem.torem(16px));
+$side-logo-width: 35%;
 
 // Mixin used to "center" with input
 // We are using margin-top and not flex center because when there is an error the

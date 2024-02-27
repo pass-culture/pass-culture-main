@@ -2,6 +2,7 @@ import classnames from 'classnames'
 import React, { useRef, useState } from 'react'
 
 import DomainNameBanner from 'components/DomainNameBanner'
+import Footer from 'components/Footer/Footer'
 import Header from 'components/Header/Header'
 import SideNavLinks from 'components/SideNavLinks/SideNavLinks'
 import SkipLinks from 'components/SkipLinks'
@@ -18,7 +19,7 @@ export interface AppLayoutProps {
   children?: React.ReactNode
   pageName?: string
   className?: string
-  layout?: 'basic' | 'funnel' | 'without-nav'
+  layout?: 'basic' | 'funnel' | 'without-nav' | 'sticky-actions'
 }
 
 export const AppLayout = ({
@@ -37,10 +38,10 @@ export const AppLayout = ({
   return (
     <>
       <SkipLinks />
-      {layout == 'basic' && (
+      {(layout === 'basic' || layout === 'sticky-actions') && (
         <Header
           lateralPanelOpen={lateralPanelOpen}
-          isTopMenuVisible={layout === 'basic'}
+          isTopMenuVisible={layout === 'basic' || layout === 'sticky-actions'}
           setLateralPanelOpen={setLateralPanelOpen}
           focusCloseButton={() => {
             setTimeout(() => {
@@ -54,6 +55,7 @@ export const AppLayout = ({
         className={classnames({
           [styles['page-layout']]: true,
           [styles['page-layout-full']]: layout === 'without-nav',
+          [styles[`content-layout-${layout}`]]: isNewSideBarNavigation,
         })}
         onKeyDown={(e) => {
           if (e.key === 'Escape' && lateralPanelOpen) {
@@ -106,37 +108,41 @@ export const AppLayout = ({
             </div>
           </nav>
         )}
-
-        <main
-          id="content"
-          className={classnames(
-            {
-              page: true,
-              [`${pageName}-page`]: true,
-              [styles['container-full']]:
-                isNewSideBarNavigation && layout === 'basic',
-              [styles.container]: layout === 'basic',
-              [styles['container-without-nav']]: layout === 'without-nav',
-            },
-            className
-          )}
-        >
-          {layout === 'funnel' || layout === 'without-nav' ? (
-            children
-          ) : (
-            <div
-              className={classnames({
-                [styles['page-content']]: true,
-                [styles['page-content-old']]: !isNewSideBarNavigation,
-              })}
-            >
-              <div className={styles['after-notification-content']}>
-                <DomainNameBanner />
-                {children}
+        <div className={styles['main-wrapper']}>
+          <main
+            id="content"
+            className={classnames(
+              {
+                page: true,
+                [`${pageName}-page`]: true,
+                [styles['container-full']]:
+                  isNewSideBarNavigation && layout === 'basic',
+                [styles.container]:
+                  layout === 'basic' || layout === 'sticky-actions',
+                [styles['container-without-nav']]: layout === 'without-nav',
+                [styles[`content-layout-${layout}`]]: isNewSideBarNavigation,
+              },
+              className
+            )}
+          >
+            {layout === 'funnel' || layout === 'without-nav' ? (
+              children
+            ) : (
+              <div
+                className={classnames({
+                  [styles['page-content']]: true,
+                  [styles['page-content-old']]: !isNewSideBarNavigation,
+                })}
+              >
+                <div className={styles['after-notification-content']}>
+                  <DomainNameBanner />
+                  {children}
+                </div>
               </div>
-            </div>
-          )}
-        </main>
+            )}
+          </main>
+          <Footer layout={layout} />
+        </div>
       </div>
     </>
   )
