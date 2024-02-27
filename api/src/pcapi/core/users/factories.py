@@ -1018,6 +1018,10 @@ class EmailConfirmationEntryFactory(UserEmailHistoryFactory):
     eventType = models.EmailHistoryEventTypeEnum.CONFIRMATION.value
 
 
+class NewEmailSelectionEntryFactory(UserEmailHistoryFactory):
+    eventType = models.EmailHistoryEventTypeEnum.NEW_EMAIL_SELECTION.value
+
+
 class EmailValidationEntryFactory(UserEmailHistoryFactory):
     eventType = models.EmailHistoryEventTypeEnum.VALIDATION.value
 

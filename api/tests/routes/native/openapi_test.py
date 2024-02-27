@@ -630,6 +630,7 @@ def test_public_api(client):
                         "UPDATE_REQUEST",
                         "CONFIRMATION",
                         "CANCELLATION",
+                        "NEW_EMAIL_SELECTION",
                         "VALIDATION",
                         "ADMIN_VALIDATION",
                         "ADMIN_UPDATE_REQUEST",
@@ -961,6 +962,15 @@ def test_public_api(client):
                     },
                     "required": ["name"],
                     "title": "NativeCategoryResponseModelv2",
+                    "type": "object",
+                },
+                "NewEmailSelectionRequest": {
+                    "properties": {
+                        "newEmail": {"format": "email", "title": "Newemail", "type": "string"},
+                        "token": {"title": "Token", "type": "string"},
+                    },
+                    "required": ["token", "newEmail"],
+                    "title": "NewEmailSelectionRequest",
                     "type": "object",
                 },
                 "NextSubscriptionStepResponse": {
@@ -3749,6 +3759,31 @@ def test_public_api(client):
                         },
                     },
                     "summary": "confirm_email_update <POST>",
+                    "tags": [],
+                }
+            },
+            "/native/v2/profile/email_update/new_email": {
+                "post": {
+                    "description": "",
+                    "operationId": "post__native_v2_profile_email_update_new_email",
+                    "parameters": [],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {"schema": {"$ref": "#/components/schemas/NewEmailSelectionRequest"}}
+                        }
+                    },
+                    "responses": {
+                        "204": {"description": "No Content"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "select_new_email <POST>",
                     "tags": [],
                 }
             },

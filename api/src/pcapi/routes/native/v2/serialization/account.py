@@ -1,3 +1,5 @@
+from pydantic import v1 as pydantic_v1
+
 from pcapi.core.users import models as users_models
 from pcapi.routes.serialization import ConfiguredBaseModel
 
@@ -13,3 +15,8 @@ class EmailChangeConfirmationResponse(ConfiguredBaseModel):
     access_token: str
     refresh_token: str
     new_email_selection_token: str
+
+
+class NewEmailSelectionRequest(ConfiguredBaseModel):
+    token: str
+    new_email: pydantic_v1.EmailStr
