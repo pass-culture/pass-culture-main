@@ -1,15 +1,6 @@
 ########## BUILDER ##########
 
-FROM python:3.11-slim AS builder
-
-RUN apt-get update \
-    && apt-get -y install \
-    gcc \
-    g++ \
-    libgdal-dev \
-    libpq-dev  && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists*
+FROM python:3.11 AS builder
 
 RUN useradd -rm -d /home/pcapi -u 1000 pcapi
 
@@ -43,7 +34,7 @@ RUN poetry install --only dev
 
 ########## SOURCES ##########
 
-FROM python:3.11-slim AS sources
+FROM alpine AS sources
 
 RUN mkdir -p /tmp/src
 
@@ -98,7 +89,7 @@ FROM lib-dev AS api-flask
 
 USER root
 
-RUN apt-get --no-install-recommends -y install curl postgresql-client libgdal-dev
+RUN apt-get --no-install-recommends -y install postgresql-client libgdal-dev
 
 USER pcapi
 
@@ -126,7 +117,6 @@ RUN apt-get install --no-install-recommends -y curl less gnupg2 && \
     curl -s https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/pgsql.gpg && \
     echo "deb [signed-by=/etc/apt/trusted.gpg.d/pgsql.gpg] http://apt.postgresql.org/pub/repos/apt/ `. /etc/os-release && \
     echo $VERSION_CODENAME`-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
-    apt-get update && \
     apt-get --no-install-recommends -y install postgresql-client-12 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists*
@@ -139,7 +129,7 @@ FROM api-flask AS pcapi-tests
 
 USER root
 
-RUN apt-get install -y git npm --no-install-recommends && \
+RUN apt-get install -y npm --no-install-recommends && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists*
 
