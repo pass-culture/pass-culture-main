@@ -73,7 +73,6 @@ class CollectiveOfferTemplateTest:
             "isExpired": False,
             "isSoldOut": False,
             "name": "offer name",
-            "subcategoryLabel": offer.subcategory.app_label,
             "venue": {
                 "adageId": None,
                 "address": "1 boulevard Poissonnière",
