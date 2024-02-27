@@ -843,6 +843,124 @@ class NewBankAccountJourneyTest:
 
         assert len(mails_testing.outbox) == 0
 
+    @pytest.mark.parametrize("ff_activated", [True, False])
+    def test_v4_stop_using_bank_informations_and_bank_account_if_rejected(
+        self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client, ff_activated
+    ):
+        siret = "85331845900049"
+        siren = siret[:9]
+        venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v4_as_batch(
+            state=GraphQLApplicationStates.accepted.value, dms_token=venue.dmsToken
+        )
+        with override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=ff_activated):
+            update_ds_applications_for_procedure(settings.DMS_VENUE_PROCEDURE_ID_V4, since=None)
+
+        # Old journey
+        bank_information = finance_models.BankInformation.query.one()
+        assert bank_information.venue == venue
+        assert bank_information.status == finance_models.BankInformationStatus.ACCEPTED
+        link = offerers_models.VenueReimbursementPointLink.query.one()
+        assert link.venue == venue
+        assert link.reimbursementPoint == venue
+        assert link.timespan.upper is None
+
+        if ff_activated:
+            # New journey
+            bank_account = finance_models.BankAccount.query.one()
+            assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
+            bank_account_link = offerers_models.VenueBankAccountLink.query.one()
+            assert bank_account_link.venue == venue
+            assert bank_account_link.bankAccount == bank_account
+            assert bank_account_link.timespan.upper is None
+
+        ### For compliance reasons, the DS application might be set to rejected, even if accepted before. ###
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v4_as_batch(
+            state=GraphQLApplicationStates.refused.value, dms_token=venue.dmsToken
+        )
+        with override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=ff_activated):
+            update_ds_applications_for_procedure(settings.DMS_VENUE_PROCEDURE_ID_V4, since=None)
+
+        # Old journey
+        bank_information = finance_models.BankInformation.query.one()
+        assert bank_information.status == finance_models.BankInformationStatus.REJECTED
+        link = offerers_models.VenueReimbursementPointLink.query.one()
+        assert link.venue == venue
+        assert link.reimbursementPoint == venue
+        assert link.timespan.upper is not None
+
+        if ff_activated:
+            # New journey
+            bank_account = finance_models.BankAccount.query.one()
+            assert bank_account.status == finance_models.BankAccountApplicationStatus.REFUSED
+            bank_account_link = offerers_models.VenueBankAccountLink.query.one()
+            assert bank_account_link.venue == venue
+            assert bank_account_link.bankAccount == bank_account
+            assert bank_account_link.timespan.upper is not None
+
+    @pytest.mark.parametrize("ff_activated", [True, False])
+    def test_v5_stop_using_bank_informations_and_bank_account_if_rejected(
+        self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client, ff_activated
+    ):
+        siret = "85331845900049"
+        siren = siret[:9]
+        venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
+            state=GraphQLApplicationStates.accepted.value,
+        )
+        with override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=ff_activated):
+            update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
+
+        # Old journey
+        bank_information = finance_models.BankInformation.query.one()
+        assert bank_information.venue == venue
+        assert bank_information.status == finance_models.BankInformationStatus.ACCEPTED
+
+        link = offerers_models.VenueReimbursementPointLink.query.one()
+        assert link.venue == venue
+        assert link.reimbursementPoint == venue
+        assert link.timespan.upper is None
+
+        if ff_activated:
+            # New journey
+            bank_account = finance_models.BankAccount.query.one()
+            assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
+
+            bank_account_link = offerers_models.VenueBankAccountLink.query.one()
+            assert bank_account_link.venue == venue
+            assert bank_account_link.bankAccount == bank_account
+            assert bank_account_link.timespan.upper is None
+
+        ### For compliance reasons, the DS application might be set to rejected, even if accepted before. ###
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
+            state=GraphQLApplicationStates.refused.value,
+        )
+        with override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=ff_activated):
+            update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
+
+        # Old journey
+        bank_information = finance_models.BankInformation.query.one()
+        assert bank_information.status == finance_models.BankInformationStatus.REJECTED
+
+        link = offerers_models.VenueReimbursementPointLink.query.one()
+        assert link.venue == venue
+        assert link.reimbursementPoint == venue
+        assert link.timespan.upper is not None
+
+        if ff_activated:
+            # New journey
+            bank_account = finance_models.BankAccount.query.one()
+            assert bank_account.status == finance_models.BankAccountApplicationStatus.REFUSED
+
+            bank_account_link = offerers_models.VenueBankAccountLink.query.one()
+            assert bank_account_link.venue == venue
+            assert bank_account_link.bankAccount == bank_account
+            assert bank_account_link.timespan.upper is not None
+
     @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
     def test_DSv4_link_is_created_if_several_venues_exists(
         self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client
