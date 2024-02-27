@@ -5,10 +5,8 @@ import { ButtonAppPreview } from './ButtonAppPreview'
 import { ButtonImageDelete } from './ButtonImageDelete'
 import { ButtonImageEdit, UploadImageValues } from './ButtonImageEdit'
 import { OnImageUploadArgs } from './ButtonImageEdit/ModalImageEdit/ModalImageEdit'
-import { ImagePreview } from './ImagePreview'
 import styles from './ImageUploader.module.scss'
 import { UploaderModeEnum } from './types'
-
 export interface ImageUploaderProps {
   className?: string
   onImageUpload: (values: OnImageUploadArgs) => void
@@ -34,10 +32,15 @@ const ImageUploader = ({
     <div className={cn(styles['image-uploader-image-container'], className)}>
       {imageUrl && originalImageUrl ? (
         <>
-          <ImagePreview
-            mode={mode}
-            imageUrl={imageUrl}
-            alt="Prévisualisation de l’image"
+          <img
+            alt={'Prévisualisation de l’image'}
+            className={cn(styles['image-preview'], {
+              [styles['preview-venue']]: mode === UploaderModeEnum.VENUE,
+              [styles['preview-offer']]:
+                mode === UploaderModeEnum.OFFER ||
+                mode === UploaderModeEnum.OFFER_COLLECTIVE,
+            })}
+            src={imageUrl}
           />
           {!hideActionButtons && (
             <div className={styles['image-uploader-actions-container']}>
