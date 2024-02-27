@@ -1887,6 +1887,27 @@ export class DefaultService {
     });
   }
   /**
+   * connect_as <GET>
+   * @param token
+   * @returns any OK
+   * @throws ApiError
+   */
+  public connectAs(
+    token: string,
+  ): CancelablePromise<any> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/users/connect-as/{token}',
+      path: {
+        'token': token,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
    * cookies_consent <POST>
    * @param requestBody
    * @returns void
