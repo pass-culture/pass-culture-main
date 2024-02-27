@@ -18,9 +18,9 @@
   cursor: pointer;
 
   &.add-image-venue {
-    $height: rem.torem(180px);
+    $height: rem.torem(176px);
 
-    width: rem.torem(292px);
+    width: math.div($height * 3, 2);
     height: $height;
   }
 
