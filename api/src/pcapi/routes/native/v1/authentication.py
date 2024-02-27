@@ -31,8 +31,6 @@ from pcapi.routes.native.v1.serialization.authentication import ValidateEmailReq
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailResponse
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.feature import feature_required
-from pcapi.utils.rate_limiting import email_rate_limiter
-from pcapi.utils.rate_limiting import ip_rate_limiter
 
 from .. import blueprint
 from .serialization import authentication
@@ -48,8 +46,6 @@ logger = logging.getLogger(__name__)
     on_error_statuses=[400, 401],
     api=blueprint.api,
 )
-@email_rate_limiter()
-@ip_rate_limiter()
 def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
     if FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active():
         try:
@@ -189,7 +185,6 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
 
 @blueprint.native_route("/oauth/state", methods=["GET"])
 @spectree_serialize(response_model=authentication.OauthStateResponse, on_success_status=200, api=blueprint.api)
-@ip_rate_limiter()
 @feature_required(FeatureToggle.WIP_ENABLE_GOOGLE_SSO)
 def google_oauth_state() -> authentication.OauthStateResponse:
     encoded_oauth_state_token = users_api.create_oauth_state_token()
@@ -203,7 +198,6 @@ def google_oauth_state() -> authentication.OauthStateResponse:
     on_error_statuses=[400, 401],
     api=blueprint.api,
 )
-@ip_rate_limiter()
 @feature_required(FeatureToggle.WIP_ENABLE_GOOGLE_SSO)
 def google_auth(body: authentication.GoogleSigninRequest) -> authentication.SigninResponse:
     try:

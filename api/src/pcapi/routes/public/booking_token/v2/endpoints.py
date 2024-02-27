@@ -10,8 +10,6 @@ from pcapi.models.api_errors import ForbiddenError
 from pcapi.routes.public import blueprints
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
-from pcapi.utils.rate_limiting import basic_auth_rate_limiter
-from pcapi.utils.rate_limiting import ip_rate_limiter
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.validation.routes.users_authentifications import current_api_key
 from pcapi.validation.routes.users_authentifications import login_or_api_key_required
@@ -44,8 +42,6 @@ def _get_booking_by_token_or_404(token: str) -> bookings_models.Booking:
 
 
 @blueprints.v2_prefixed_public_api.route("/bookings/token/<token>", methods=["GET"])
-@ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
-@basic_auth_rate_limiter()
 @spectree_serialize(
     api=blueprints.v2_prefixed_public_api_schema,
     tags=["[Dépréciée] API Contremarque"],
@@ -81,8 +77,6 @@ def get_booking_by_token_v2(token: str) -> serialization.GetBookingResponse:
 
 
 @blueprints.v2_prefixed_public_api.route("/bookings/use/token/<token>", methods=["PATCH"])
-@ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
-@basic_auth_rate_limiter()
 @spectree_serialize(
     api=blueprints.v2_prefixed_public_api_schema,
     tags=["[Dépréciée] API Contremarque"],
@@ -117,8 +111,6 @@ def patch_booking_use_by_token(token: str) -> None:
 
 
 @blueprints.v2_prefixed_public_api.route("/bookings/cancel/token/<token>", methods=["PATCH"])
-@ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
-@basic_auth_rate_limiter()
 @spectree_serialize(
     api=blueprints.v2_prefixed_public_api_schema,
     tags=["[Dépréciée] API Contremarque"],
@@ -166,8 +158,6 @@ def patch_cancel_booking_by_token(token: str) -> None:
 
 
 @blueprints.v2_prefixed_public_api.route("/bookings/keep/token/<token>", methods=["PATCH"])
-@ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
-@basic_auth_rate_limiter()
 @spectree_serialize(
     api=blueprints.v2_prefixed_public_api_schema,
     tags=["[Dépréciée] API Contremarque"],

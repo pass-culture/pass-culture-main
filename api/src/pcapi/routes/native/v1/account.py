@@ -29,7 +29,6 @@ from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.security import authenticated_maybe_inactive_user_required
 from pcapi.routes.native.v1.api_errors import account as account_errors
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.rate_limiting import basic_auth_rate_limiter
 
 from .. import blueprint
 from .serialization import account as serializers
@@ -75,7 +74,6 @@ def reset_recredit_amount_to_show(user: users_models.User) -> serializers.UserPr
 
 
 @blueprint.native_route("/profile/update_email", methods=["POST"])
-@basic_auth_rate_limiter()
 @spectree_serialize(
     on_success_status=204,
     api=blueprint.api,

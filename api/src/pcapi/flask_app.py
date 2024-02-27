@@ -32,7 +32,6 @@ from pcapi.models import db
 from pcapi.models import install_models
 from pcapi.scripts.install import install_commands
 from pcapi.utils.json_encoder import EnumJSONEncoder
-from pcapi.utils.rate_limiting import rate_limiter
 from pcapi.utils.sentry import init_sentry_sdk
 
 
@@ -197,8 +196,6 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = settings.SQLALCHEMY_ECHO
 app.config["GOOGLE_CLIENT_ID"] = settings.GOOGLE_CLIENT_ID  # for authlib
 app.config["GOOGLE_CLIENT_SECRET"] = settings.GOOGLE_CLIENT_SECRET  # for authlib
-
-rate_limiter.init_app(app)
 
 install_models()
 db.init_app(app)
