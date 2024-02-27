@@ -47,10 +47,10 @@ def get_email_update_status(user: users_models.User) -> serializers.EmailUpdateS
 def update_user_email(user: users_models.User) -> None:
     try:
         email_api.request_email_update(user)
-    except exceptions.EmailUpdateTokenExists:
-        raise account_errors.EmailUpdatePendingError()
-    except exceptions.EmailUpdateLimitReached:
-        raise account_errors.EmailUpdateLimitError()
+    except exceptions.EmailUpdateTokenExists as e:
+        raise account_errors.EmailUpdatePendingError() from e
+    except exceptions.EmailUpdateLimitReached as e:
+        raise account_errors.EmailUpdateLimitError() from e
 
 
 @blueprint.native_route("/profile/email_update/confirm", version="v2", methods=["POST"])
@@ -63,13 +63,13 @@ def confirm_email_update(
 ) -> serializers.EmailChangeConfirmationResponse:
     try:
         user = email_api.confirm_email_update_request(body.token)
-    except exceptions.InvalidToken:
+    except exceptions.InvalidToken as e:
         raise api_errors.ApiErrors(
             {"code": "INVALID_TOKEN", "message": "Aucune demande de changement d'email en cours"},
             status_code=401,
-        )
+        ) from e
 
-    new_mail_selection_token = token_utils.Token.create(
+    new_email_selection_token = token_utils.Token.create(
         token_utils.TokenType.EMAIL_CHANGE_NEW_EMAIL_SELECTION,
         constants.EMAIL_CHANGE_TOKEN_LIFE_TIME,
         user_id=user.id,
@@ -77,5 +77,19 @@ def confirm_email_update(
     return serializers.EmailChangeConfirmationResponse(
         access_token=api.create_user_access_token(user),
         refresh_token=api.create_user_refresh_token(user, body.device_info),
-        new_email_selection_token=new_mail_selection_token,
+        new_email_selection_token=new_email_selection_token,
     )
+
+
+@blueprint.native_route("/profile/email_update/new_email", version="v2", methods=["POST"])
+@spectree_serialize(on_success_status=204, api=blueprint.api)
+@authenticated_and_active_user_required
+@atomic()
+def select_new_email(user: users_models.User, body: serializers.NewEmailSelectionRequest) -> None:
+    try:
+        email_api.confirm_new_email_selection_and_send_mail(user, body.token, body.new_email)
+    except exceptions.InvalidToken as e:
+        raise api_errors.ApiErrors(
+            {"code": "INVALID_TOKEN", "message": "Aucune demande de changement d'email en cours"},
+            status_code=401,
+        ) from e
