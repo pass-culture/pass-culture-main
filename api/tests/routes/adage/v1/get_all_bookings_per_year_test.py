@@ -8,6 +8,8 @@ from pcapi.utils.date import format_into_utc_date
 
 
 def expected_serialized_booking(booking) -> dict:
+    formats = booking.collectiveStock.collectiveOffer.formats
+    formats = formats if formats else None
     return {
         "id": booking.id,
         "UAICode": booking.educationalInstitution.institutionId,
@@ -23,6 +25,7 @@ def expected_serialized_booking(booking) -> dict:
         "venueId": booking.collectiveStock.collectiveOffer.venueId,
         "venueName": booking.collectiveStock.collectiveOffer.venue.name,
         "offererName": booking.collectiveStock.collectiveOffer.venue.managingOfferer.name,
+        "formats": formats,
     }
 
 
