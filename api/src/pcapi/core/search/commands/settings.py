@@ -26,7 +26,7 @@ class AlgoliaIndexError(Exception):
 
 class IndexTypes(enum.Enum):
     offers = settings.ALGOLIA_OFFERS_INDEX_NAME
-    collective_offers = settings.ALGOLIA_COLLECTIVE_OFFERS_INDEX_NAME
+    collective_offers = settings.ALGOLIA_COLLECTIVE_OFFER_TEMPLATES_INDEX_NAME
     venues = settings.ALGOLIA_VENUES_INDEX_NAME
 
 
