@@ -11,6 +11,7 @@ from pcapi.connectors.dms.serializer import ApplicationDetailNewJourney
 from pcapi.connectors.dms.serializer import ApplicationDetailOldJourney
 from pcapi.core.educational import models as educational_models
 from pcapi.core.external.attributes.api import update_external_pro
+from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.models import BankAccountApplicationStatus
 from pcapi.core.history import models as history_models
@@ -80,6 +81,30 @@ class SaveVenueBankInformationsMixin(AbstractSaveBankInformations):
         bank_information = self.bank_informations_repository.get_by_application(application_details.application_id)
         if not bank_information:
             bank_information = BankInformations()
+        elif (
+            bank_information.status == finance_models.BankInformationStatus.ACCEPTED
+            and application_details.status != finance_models.BankInformationStatus.ACCEPTED
+        ):
+            # The status of the DS application has been "rollbacked"
+            # And, in the meantime a user could have linked venues to this bank information
+            # We don't want that as we could have cashflows being generated against bank information
+            # that hasn't been validated by the compliance.
+
+            # Again, because of the DDD implementation, we can't pass the upper `bank_information`
+            # as argument to the high level method below.
+            # It expect an instance model and not a "domain object"
+            # (Because this high level method is used elsewhere, where we use MVC pattern instead)
+            # But we don't care as all of this DDD code will soon be gone forever.
+            bank_information_and_rp = (
+                finance_models.BankInformation.query.filter_by(applicationId=application_details.application_id)
+                .join(finance_models.BankInformation.venue)
+                .options(
+                    sqla.orm.contains_eager(finance_models.BankInformation.venue).load_only(offerers_models.Venue.id)
+                )
+                .one_or_none()
+            )
+            if bank_information_and_rp:
+                finance_api.unlink_reimbursement_point(bank_information_and_rp)
 
         bank_information.application_id = application_details.application_id
         bank_information.venue_id = venue_id
@@ -398,11 +423,12 @@ class ImportBankAccountMixin:
         self,
         offerer: offerers_models.Offerer,
         venue: "Venue | None" = None,
-    ) -> finance_models.BankAccount:
+    ) -> tuple[finance_models.BankAccount, bool]:
         """
         Retrieve a bankAccount if already existing and update the status
         or create it and fill it with DS metadata.
         """
+        created = False
         bank_account = (
             finance_models.BankAccount.query.filter_by(dsApplicationId=self.application_details.application_id)
             .options(sqla_orm.load_only(finance_models.BankAccount.id))
@@ -440,9 +466,11 @@ class ImportBankAccountMixin:
                 offerer=offerer,
                 dsApplicationId=self.application_details.application_id,
             )
+            created = True
         bank_account.status = self.application_details.status
         db.session.add(bank_account)
-        return bank_account
+        db.session.flush()
+        return bank_account, created
 
     def link_venue_to_bank_account(
         self, bank_account: finance_models.BankAccount, venue: "Venue"
@@ -592,6 +620,17 @@ class ImportBankAccountMixin:
             if not venue.current_bank_account_link and venue.bookingEmail:
                 transactional_mails.send_bank_account_validated_email(venue.bookingEmail)
 
+    def deprecate_venue_bank_account_links(self, bank_account: finance_models.BankAccount) -> None:
+        """Most of the time, the below operation will be useless, because when a DS application
+        hasn't been accepted by the compliance, the pro users don't have the possibility to link a venue to it.
+        However, the DS interface allow to accept an application, set it back to `on_going` and finally
+        reject it. During the time it was accepted, it is possible for a pro user to link a venue
+        to this bank account. And we can have a situation where we generate cashflows for a bank account
+        that have been rejected.
+        Hence that operation.
+        """
+        finance_api.deprecate_venue_bank_account_links(bank_account)
+
 
 class ImportBankAccountV4(AbstractImportBankAccount, ImportBankAccountMixin):
     def execute(self) -> None:
@@ -600,9 +639,12 @@ class ImportBankAccountV4(AbstractImportBankAccount, ImportBankAccountMixin):
         if not venue:
             return
 
-        bank_account = self.get_or_create_bank_account(venue.managingOfferer, venue)
+        bank_account, created = self.get_or_create_bank_account(venue.managingOfferer, venue)
+        if not created and not self.application_details.is_accepted:
+            self.deprecate_venue_bank_account_links(bank_account)
         self.keep_track_of_bank_account_status_changes(bank_account)
-        self.link_venue_to_bank_account(bank_account, venue)
+        if self.application_details.is_accepted:
+            self.link_venue_to_bank_account(bank_account, venue)
         self.validated_bank_account_email_notification(bank_account, venue)
         self.archive_dossier()
 
@@ -659,9 +701,11 @@ class ImportBankAccountV5(AbstractImportBankAccount, ImportBankAccountMixin):
         else:
             offerer = venue.managingOfferer
 
-        bank_account = self.get_or_create_bank_account(offerer, venue)
+        bank_account, created = self.get_or_create_bank_account(offerer, venue)
+        if not created and not self.application_details.is_accepted:
+            self.deprecate_venue_bank_account_links(bank_account)
         self.keep_track_of_bank_account_status_changes(bank_account)
-        if venue:
+        if self.application_details.is_accepted and venue:
             self.link_venue_to_bank_account(bank_account, venue)
         self.validated_bank_account_email_notification(bank_account, venue)
         self.archive_dossier()

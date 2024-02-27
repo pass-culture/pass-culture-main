@@ -227,6 +227,14 @@ class ApplicationDetailOldJourney(ApplicationDetail):
         )
         return to_representation
 
+    @property
+    def is_accepted(self) -> bool:
+        return self.status == finance_models.BankInformationStatus.ACCEPTED
+
+    @property
+    def is_refused(self) -> bool:
+        return self.status == finance_models.BankInformationStatus.REJECTED
+
 
 class ApplicationDetailNewJourney(ApplicationDetail):
     status: finance_models.BankAccountApplicationStatus
@@ -240,6 +248,14 @@ class ApplicationDetailNewJourney(ApplicationDetail):
             to_representation["siren"] = to_representation["siret"][:9]
             to_representation["label"] = obj["label"]
         return to_representation
+
+    @property
+    def is_accepted(self) -> bool:
+        return self.status == finance_models.BankAccountApplicationStatus.ACCEPTED
+
+    @property
+    def is_refused(self) -> bool:
+        return self.status == finance_models.BankAccountApplicationStatus.REFUSED
 
 
 class Annotation(BaseModel):
