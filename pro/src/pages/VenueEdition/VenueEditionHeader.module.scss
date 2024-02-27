@@ -18,6 +18,10 @@
 .image-uploader {
   align-self: center;
 
+  @media (min-width: size.$tablet) {
+    align-self: flex-start;
+  }
+
   > button,
   > img {
     width: rem.torem(376px) !important;
@@ -52,6 +56,7 @@
 
 .venue-button {
   width: 100%;
+  margin-top: rem.torem(16px);
 
   @media (min-width: size.$tablet) {
     width: auto;

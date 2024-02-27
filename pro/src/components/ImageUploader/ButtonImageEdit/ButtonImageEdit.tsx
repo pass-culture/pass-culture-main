@@ -16,6 +16,7 @@ export interface ButtonImageEditProps {
   initialValues?: UploadImageValues
   mode: UploaderModeEnum
   onClickButtonImage?: () => void
+  children?: React.ReactNode
 }
 
 const ButtonImageEdit = ({
@@ -23,6 +24,7 @@ const ButtonImageEdit = ({
   initialValues = {},
   onImageUpload,
   onClickButtonImage,
+  children,
 }: ButtonImageEditProps): JSX.Element => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { imageUrl, originalImageUrl } = initialValues
@@ -41,7 +43,7 @@ const ButtonImageEdit = ({
           alt="Modifier l’image"
           icon={fullEditIcon}
         >
-          Modifier
+          {children ?? 'Modifier'}
         </Button>
       ) : (
         <ButtonImageAdd mode={mode} onClick={onClickButtonImageAdd} />
