@@ -8,9 +8,9 @@ import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGua
 import {
   CollectiveOffer,
   DEFAULT_VISIBILITY_FORM_VALUES,
-  Mode,
   isCollectiveOffer,
   isCollectiveOfferTemplate,
+  Mode,
 } from 'core/OfferEducational'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
@@ -74,7 +74,7 @@ export const CollectiveOfferVisibility = ({
     : DEFAULT_VISIBILITY_FORM_VALUES
 
   return (
-    <AppLayout>
+    <AppLayout layout={'sticky-actions'}>
       <CollectiveOfferLayout
         subTitle={offer?.name}
         isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}

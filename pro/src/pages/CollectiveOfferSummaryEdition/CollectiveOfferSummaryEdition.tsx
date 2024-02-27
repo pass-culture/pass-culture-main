@@ -3,8 +3,8 @@ import React, { useEffect, useState } from 'react'
 import { AppLayout } from 'app/AppLayout'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import {
-  getEducationalCategoriesAdapter,
   EducationalCategories,
+  getEducationalCategoriesAdapter,
   Mode,
 } from 'core/OfferEducational'
 import useNotification from 'hooks/useNotification'
@@ -44,7 +44,7 @@ const CollectiveOfferSummaryEdition = ({
   const isReady = offer !== null && categories !== null
 
   return (
-    <AppLayout>
+    <AppLayout layout={'sticky-actions'}>
       {!isReady ? (
         <Spinner />
       ) : (

@@ -4,6 +4,13 @@
 $header-height: rem.torem(30px) + rem.torem(42px);
 
 .signup-offerer-layout-wrapper {
+  &-with-footer {
+    min-height: calc(100vh - (size.$action-bar-sticky-height + size.$footer-height + size.$action-bar-sticky-height));
+    margin: 0 auto;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
   display: flex;
   flex-direction: column;
   min-height: calc(100vh - #{size.$action-bar-sticky-height});

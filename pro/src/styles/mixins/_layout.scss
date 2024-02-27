@@ -12,7 +12,7 @@
 
   @media (min-width: size.$tablet) {
     min-width: rem.torem(202px);
-    width: 35%;
+    width: size.$side-logo-width;
     background-size: cover;
     min-height: 100vh;
     background-image: url("./linear-gradient.jpg");

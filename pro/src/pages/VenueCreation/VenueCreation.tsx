@@ -44,7 +44,7 @@ export const VenueCreation = (): JSX.Element | null => {
   }
 
   return (
-    <AppLayout>
+    <AppLayout layout={'sticky-actions'}>
       {isLoadingOfferer || isLoadingVenueTypes || isLoadingVenueLabels ? (
         <Spinner />
       ) : (

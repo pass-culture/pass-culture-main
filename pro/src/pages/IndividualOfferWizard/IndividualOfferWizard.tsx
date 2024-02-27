@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { useLocation, useParams, Outlet, RouteObject } from 'react-router-dom'
+import { Outlet, RouteObject, useLocation, useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
@@ -14,7 +14,7 @@ const IndividualOfferWizard = () => {
   const { search } = useLocation()
   const { structure: offererId } = parse(search)
   return (
-    <AppLayout>
+    <AppLayout layout={'sticky-actions'}>
       <IndividualOfferContextProvider
         isUserAdmin={currentUser.isAdmin}
         offerId={offerId === 'creation' ? undefined : offerId}

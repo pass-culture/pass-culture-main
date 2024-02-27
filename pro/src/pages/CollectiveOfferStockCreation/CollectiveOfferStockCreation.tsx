@@ -154,7 +154,7 @@ export const CollectiveOfferStockCreation = ({
   }
 
   return (
-    <AppLayout>
+    <AppLayout layout={'sticky-actions'}>
       <CollectiveOfferLayout
         subTitle={offer?.name}
         isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
