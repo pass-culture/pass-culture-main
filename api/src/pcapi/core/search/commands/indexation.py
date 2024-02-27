@@ -152,7 +152,7 @@ def partially_index_collective_offer_templates(
     first and last pages of the batches (starting from page 1).
     """
     if clear:
-        search.unindex_all_collective_offers(only_template=True)
+        search.unindex_all_collective_offer_templates()
     _partially_index(
         what="collective offer templates",
         getter=collective_offers_repository.get_paginated_active_collective_offer_template_ids,

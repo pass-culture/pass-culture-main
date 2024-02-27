@@ -66,7 +66,7 @@ class SearchBackend:
     def unindex_venue_ids(self, venue_ids: Iterable[int]) -> None:
         raise NotImplementedError()
 
-    def unindex_all_collective_offers(self, *, only_template: bool = False, only_non_template: bool = False) -> None:
+    def unindex_all_collective_offer_templates(self) -> None:
         raise NotImplementedError()
 
     def unindex_collective_offer_template_ids(self, collective_offer_template_ids: Iterable[int]) -> None:
