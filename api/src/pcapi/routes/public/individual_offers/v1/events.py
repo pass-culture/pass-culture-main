@@ -637,6 +637,7 @@ def get_event_categories() -> serialization.GetEventCategoriesResponse:
     """
     Get all the event categories, their conditional fields, and whether they are required for event creation.
     """
+    # Dummy changes
     # Individual offers API only relies on subcategories, not categories.
     # To make it simpler for the provider using this API, we only expose subcategories and call them categories.
     event_categories_response = [
