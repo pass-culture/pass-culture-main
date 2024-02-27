@@ -26,7 +26,6 @@ from pcapi.routes.public.serialization import venues as venues_serialization
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils import image_conversion
-from pcapi.utils import rate_limiting
 from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
 from pcapi.workers import worker
@@ -56,7 +55,6 @@ logger = logging.getLogger(__name__)
     ),
 )
 @api_key_required
-@rate_limiting.api_key_high_rate_limiter()
 def get_offerer_venues(
     query: venues_serialization.GetOfferersVenuesQuery,
 ) -> venues_serialization.GetOfferersVenuesResponse:
@@ -82,7 +80,6 @@ def get_offerer_venues(
     ),
 )
 @api_key_required
-@rate_limiting.api_key_high_rate_limiter()
 def get_show_types() -> serialization.GetShowTypesResponse:
     """
     Get all the show types.
@@ -112,7 +109,6 @@ def get_show_types() -> serialization.GetShowTypesResponse:
     ),
 )
 @api_key_required
-@rate_limiting.api_key_high_rate_limiter()
 def get_music_types() -> serialization.GetMusicTypesResponse:
     """
     Get all the music types.
@@ -168,7 +164,6 @@ def _get_music_type_gtl_id(music_type_slug: str) -> str | None:
     ),
 )
 @api_key_required
-@rate_limiting.api_key_high_rate_limiter()
 def post_product_offer(body: serialization.ProductOfferCreation) -> serialization.ProductOfferResponse:
     """
     Create product in authorized categories
@@ -236,7 +231,6 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
     ),
 )
 @api_key_required
-@rate_limiting.api_key_low_rate_limiter()
 def post_product_offer_by_ean(body: serialization.ProductsOfferByEanCreation) -> None:
     """
     Create products offer using their European Article Number (EAN-13).
@@ -452,7 +446,6 @@ def _create_offer_from_product(
     ),
 )
 @api_key_required
-@rate_limiting.api_key_high_rate_limiter()
 def get_product(product_id: int) -> serialization.ProductOfferResponse:
     """
     Get a product offer.
@@ -483,7 +476,6 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
     ),
 )
 @api_key_required
-@rate_limiting.api_key_high_rate_limiter()
 def get_product_by_ean(
     query: serialization.GetProductsListByEansQuery,
 ) -> serialization.ProductOffersByEanResponse:
@@ -532,7 +524,6 @@ def _retrieve_offer_by_eans_query(eans: list[str], venueId: int) -> sqla.orm.Que
     ),
 )
 @api_key_required
-@rate_limiting.api_key_high_rate_limiter()
 def get_products(
     query: serialization.GetOffersQueryParams,
 ) -> serialization.ProductOffersResponse:
@@ -583,7 +574,6 @@ def _check_offer_can_be_edited(offer: offers_models.Offer) -> None:
     ),
 )
 @api_key_required
-@rate_limiting.api_key_high_rate_limiter()
 def edit_product(body: serialization.ProductOfferEdition) -> serialization.ProductOfferResponse:
     """
     Edit a product in authorized categories
@@ -678,7 +668,6 @@ def _upsert_product_stock(
     ),
 )
 @api_key_required
-@rate_limiting.api_key_high_rate_limiter()
 def get_product_categories() -> serialization.GetProductCategoriesResponse:
     """
     Get all the product categories, their conditional fields, and whether they are required for product creation.
@@ -707,7 +696,6 @@ def get_product_categories() -> serialization.GetProductCategoriesResponse:
     ),
 )
 @api_key_required
-@rate_limiting.api_key_high_rate_limiter()
 def upload_image(offer_id: int, form: serialization.ImageUploadFile) -> None:
     offer = utils.retrieve_offer_relations_query(utils.retrieve_offer_query(offer_id)).one_or_none()
     if not offer:

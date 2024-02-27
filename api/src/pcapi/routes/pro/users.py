@@ -32,8 +32,6 @@ from pcapi.routes.shared.cookies_consent import CookieConsentRequest
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.login_manager import discard_session
 from pcapi.utils.login_manager import stamp_session
-from pcapi.utils.rate_limiting import email_rate_limiter
-from pcapi.utils.rate_limiting import ip_rate_limiter
 
 from . import blueprint
 
@@ -121,7 +119,6 @@ def patch_validate_email(body: users_serializers.ChangeProEmailBody) -> None:
 
 @blueprint.pro_private_api.route("/users/email", methods=["POST"])
 @login_required
-@ip_rate_limiter()
 @spectree_serialize(api=blueprint.pro_private_schema, on_success_status=204)
 def post_user_email(body: users_serializers.UserResetEmailBodyModel) -> None:
     errors = ApiErrors()
@@ -192,8 +189,6 @@ def post_change_password(body: users_serializers.ChangePasswordBodyModel) -> Non
 
 @blueprint.pro_private_api.route("/users/signin", methods=["POST"])
 @spectree_serialize(response_model=users_serializers.SharedLoginUserResponseModel, api=blueprint.pro_private_schema)
-@ip_rate_limiter()
-@email_rate_limiter()
 def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.SharedLoginUserResponseModel:
     # Fixme : (mageoffray, 2023-12-14)
     # Remove this condition - https://passculture.atlassian.net/browse/PC-26462

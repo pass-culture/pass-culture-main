@@ -7,13 +7,11 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import users as users_serialize
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.rate_limiting import ip_rate_limiter
 
 from . import blueprint
 
 
 @private_api.route("/v2/users/signup/pro", methods=["POST"])
-@ip_rate_limiter()
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def signup_pro_V2(body: users_serialize.ProUserCreationBodyV2Model) -> None:
     try:
