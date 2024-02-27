@@ -12,7 +12,7 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.users.factories as users_factories
 
 
-ActionOccured = namedtuple("ActionOccured", ["type", "authorUserId", "venueId", "offererId", "bankAccountId"])
+ActionOccurred = namedtuple("ActionOccurred", ["type", "authorUserId", "venueId", "offererId", "bankAccountId"])
 
 
 class OffererPatchBankAccountsTest:
@@ -36,7 +36,7 @@ class OffererPatchBankAccountsTest:
         assert response.status_code == 204
 
         actions_occured.append(
-            ActionOccured(
+            ActionOccurred(
                 type=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
                 authorUserId=pro_user.id,
                 venueId=venue.id,
@@ -65,11 +65,11 @@ class OffererPatchBankAccountsTest:
 
         assert len(actions_logged) == len(actions_occured)
 
-        for action_logged, action_occured in zip(actions_logged, sorted(actions_occured, key=lambda a: a.venueId)):
-            assert action_logged.actionType == action_occured.type
-            assert action_logged.authorUserId == action_occured.authorUserId
-            assert action_logged.venueId == action_occured.venueId
-            assert action_logged.bankAccountId == action_occured.bankAccountId
+        for action_logged, action_occurred in zip(actions_logged, sorted(actions_occured, key=lambda a: a.venueId)):
+            assert action_logged.actionType == action_occurred.type
+            assert action_logged.authorUserId == action_occurred.authorUserId
+            assert action_logged.venueId == action_occurred.venueId
+            assert action_logged.bankAccountId == action_occurred.bankAccountId
 
     def test_user_cannot_link_venue_to_a_bank_account_that_doesnt_depend_on_its_offerer(self, db_session, client):
         actions_occured = []
@@ -186,21 +186,21 @@ class OffererPatchBankAccountsTest:
 
         actions_occured.extend(
             [
-                ActionOccured(
+                ActionOccurred(
                     type=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
                     authorUserId=pro_user.id,
                     venueId=first_venue.id,
                     offererId=offerer.id,
                     bankAccountId=bank_account.id,
                 ),
-                ActionOccured(
+                ActionOccurred(
                     type=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
                     authorUserId=pro_user.id,
                     venueId=second_venue.id,
                     offererId=offerer.id,
                     bankAccountId=bank_account.id,
                 ),
-                ActionOccured(
+                ActionOccurred(
                     type=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
                     authorUserId=pro_user.id,
                     venueId=third_venue.id,
@@ -238,11 +238,11 @@ class OffererPatchBankAccountsTest:
 
         assert len(actions_logged) == len(actions_occured)
 
-        for action_logged, action_occured in zip(actions_logged, sorted(actions_occured, key=lambda a: a.venueId)):
-            assert action_logged.actionType == action_occured.type
-            assert action_logged.authorUserId == action_occured.authorUserId
-            assert action_logged.venueId == action_occured.venueId
-            assert action_logged.bankAccountId == action_occured.bankAccountId
+        for action_logged, action_occurred in zip(actions_logged, sorted(actions_occured, key=lambda a: a.venueId)):
+            assert action_logged.actionType == action_occurred.type
+            assert action_logged.authorUserId == action_occurred.authorUserId
+            assert action_logged.venueId == action_occurred.venueId
+            assert action_logged.bankAccountId == action_occurred.bankAccountId
 
         expected_data = [
             {
@@ -315,14 +315,14 @@ class OffererPatchBankAccountsTest:
 
         actions_occured.extend(
             [
-                ActionOccured(
+                ActionOccurred(
                     type=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
                     authorUserId=pro_user.id,
                     venueId=third_venue.id,
                     offererId=offerer.id,
                     bankAccountId=bank_account.id,
                 ),
-                ActionOccured(
+                ActionOccurred(
                     type=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
                     authorUserId=pro_user.id,
                     venueId=fourth_venue.id,
@@ -371,11 +371,11 @@ class OffererPatchBankAccountsTest:
 
         assert len(actions_logged) == len(actions_occured)
 
-        for action_logged, action_occured in zip(actions_logged, sorted(actions_occured, key=lambda a: a.venueId)):
-            assert action_logged.actionType == action_occured.type
-            assert action_logged.authorUserId == action_occured.authorUserId
-            assert action_logged.venueId == action_occured.venueId
-            assert action_logged.bankAccountId == action_occured.bankAccountId
+        for action_logged, action_occurred in zip(actions_logged, sorted(actions_occured, key=lambda a: a.venueId)):
+            assert action_logged.actionType == action_occurred.type
+            assert action_logged.authorUserId == action_occurred.authorUserId
+            assert action_logged.venueId == action_occurred.venueId
+            assert action_logged.bankAccountId == action_occurred.bankAccountId
 
     @pytest.mark.usefixtures("db_session")
     def test_user_should_be_able_to_add_venues_to_bank_account_without_altering_current_links(self, client):
@@ -423,14 +423,14 @@ class OffererPatchBankAccountsTest:
 
         actions_occured.extend(
             [
-                ActionOccured(
+                ActionOccurred(
                     type=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
                     authorUserId=pro_user.id,
                     venueId=third_venue.id,
                     offererId=offerer.id,
                     bankAccountId=bank_account.id,
                 ),
-                ActionOccured(
+                ActionOccurred(
                     type=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
                     authorUserId=pro_user.id,
                     venueId=fourth_venue.id,
@@ -478,11 +478,11 @@ class OffererPatchBankAccountsTest:
 
         assert len(actions_logged) == len(actions_occured)
 
-        for action_logged, action_occured in zip(actions_logged, sorted(actions_occured, key=lambda a: a.venueId)):
-            assert action_logged.actionType == action_occured.type
-            assert action_logged.authorUserId == action_occured.authorUserId
-            assert action_logged.venueId == action_occured.venueId
-            assert action_logged.bankAccountId == action_occured.bankAccountId
+        for action_logged, action_occurred in zip(actions_logged, sorted(actions_occured, key=lambda a: a.venueId)):
+            assert action_logged.actionType == action_occurred.type
+            assert action_logged.authorUserId == action_occurred.authorUserId
+            assert action_logged.venueId == action_occurred.venueId
+            assert action_logged.bankAccountId == action_occurred.bankAccountId
 
     def test_user_linking_venue_to_bank_account_doesnt_alter_foreign_offerers(self, db_session, client):
         actions_occured = []
@@ -511,7 +511,7 @@ class OffererPatchBankAccountsTest:
         assert response.status_code == 204
 
         actions_occured.append(
-            ActionOccured(
+            ActionOccurred(
                 type=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
                 authorUserId=pro_user.id,
                 venueId=venue.id,
@@ -545,11 +545,11 @@ class OffererPatchBankAccountsTest:
 
         assert len(actions_logged) == len(actions_occured)
 
-        for action_logged, action_occured in zip(actions_logged, sorted(actions_occured, key=lambda a: a.venueId)):
-            assert action_logged.actionType == action_occured.type
-            assert action_logged.authorUserId == action_occured.authorUserId
-            assert action_logged.venueId == action_occured.venueId
-            assert action_logged.bankAccountId == action_occured.bankAccountId
+        for action_logged, action_occurred in zip(actions_logged, sorted(actions_occured, key=lambda a: a.venueId)):
+            assert action_logged.actionType == action_occurred.type
+            assert action_logged.authorUserId == action_occurred.authorUserId
+            assert action_logged.venueId == action_occurred.venueId
+            assert action_logged.bankAccountId == action_occurred.bankAccountId
 
     def test_user_cannot_link_venue_to_bank_account_if_no_pricing_point(self, db_session, client):
         offerer = offerers_factories.OffererFactory()
