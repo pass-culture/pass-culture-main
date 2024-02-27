@@ -49,10 +49,7 @@ describe('Create a venue', () => {
     cy.get(
       'a[aria-label="Gérer la page de ' + venueNameWithoutSiret + '"]'
     ).click()
-
-    // FIX ME: broken for now, remove Accueil click
-    // cy.contains('Enregistrer et quitter').click()
-    cy.contains('Accueil').click()
+    cy.contains('Enregistrer et quitter').click()
 
     // Create a venue with SIRET
     cy.contains('Ajouter un lieu').click()
