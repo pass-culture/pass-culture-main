@@ -5,7 +5,7 @@ remove_feature_flag_enable_format
 # pre/post deployment: post
 # revision identifiers, used by Alembic.
 revision = "6f80f864d7ed"
-down_revision = "1e3979b7adb0"
+down_revision = "48b6b7074b64"
 branch_labels = None
 depends_on = None
 

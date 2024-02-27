@@ -164,7 +164,6 @@ class EducationalRedactorResponseModel(BaseModel):
 
 class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplianceMixin):
     id: int
-    subcategoryLabel: str
     description: str | None
     isExpired: bool
     isSoldOut: bool
@@ -198,7 +197,6 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
     ) -> "CollectiveOfferResponseModel":
         return cls(
             id=offer.id,
-            subcategoryLabel=offer.subcategory.app_label if offer.subcategory else "",
             description=offer.description,
             isExpired=offer.hasBookingLimitDatetimesPassed,
             isSoldOut=offer.collectiveStock.isSoldOut,
@@ -257,7 +255,6 @@ class TemplateDatesModel(BaseModel):
 
 class CollectiveOfferTemplateResponseModel(BaseModel, common_models.AccessibilityComplianceMixin):
     id: int
-    subcategoryLabel: str
     description: str | None
     isExpired: bool
     isSoldOut: bool
@@ -296,7 +293,6 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
 
         return cls(
             id=offer.id,
-            subcategoryLabel=offer.subcategory.app_label if offer.subcategory else "",
             description=offer.description,
             isExpired=offer.hasBookingLimitDatetimesPassed,
             isSoldOut=False,

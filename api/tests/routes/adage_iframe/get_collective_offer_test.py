@@ -82,7 +82,6 @@ class CollectiveOfferTest:
                 "educationalPriceDetail": stock.priceDetail,
                 "numberOfTickets": stock.numberOfTickets,
             },
-            "subcategoryLabel": offer.subcategory.app_label,
             "venue": {
                 "adageId": None,
                 "address": "1 boulevard Poissonnière",
