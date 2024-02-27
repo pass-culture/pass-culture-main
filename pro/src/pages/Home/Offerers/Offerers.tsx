@@ -43,7 +43,7 @@ const Offerers = ({
 
   useEffect(() => {
     location.search === '?success' && setOpenSuccessDialog(true)
-  }, [])
+  }, [location.search])
 
   if (isLoading) {
     return (
