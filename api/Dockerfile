@@ -2,15 +2,6 @@
 
 FROM python:3.11-slim AS builder
 
-RUN apt-get update \
-    && apt-get -y install \
-    gcc \
-    g++ \
-    libgdal-dev \
-    libpq-dev  && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists*
-
 RUN useradd -rm -d /home/pcapi -u 1000 pcapi
 
 USER pcapi
@@ -65,9 +56,6 @@ ENV FLASK_PROMETHEUS_EXPORTER_PORT 5002
 
 RUN apt-get update \
     && apt-get --no-install-recommends -y install \
-    libglib2.0-0 \
-    libpango-1.0-0 \
-    libpangoft2-1.0-0 \
     libpq5 \
     libxmlsec1-openssl \
     xmlsec1
@@ -98,7 +86,7 @@ FROM lib-dev AS api-flask
 
 USER root
 
-RUN apt-get --no-install-recommends -y install curl postgresql-client libgdal-dev
+RUN apt-get --no-install-recommends -y install postgresql-client libgdal-dev
 
 USER pcapi
 
@@ -122,11 +110,10 @@ FROM pcapi AS pcapi-console
 
 USER root
 
-RUN apt-get install --no-install-recommends -y curl less gnupg2 && \
+RUN apt-get install --no-install-recommends -y less && \
     curl -s https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/pgsql.gpg && \
     echo "deb [signed-by=/etc/apt/trusted.gpg.d/pgsql.gpg] http://apt.postgresql.org/pub/repos/apt/ `. /etc/os-release && \
     echo $VERSION_CODENAME`-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
-    apt-get update && \
     apt-get --no-install-recommends -y install postgresql-client-12 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists*
@@ -139,7 +126,7 @@ FROM api-flask AS pcapi-tests
 
 USER root
 
-RUN apt-get install -y git npm --no-install-recommends && \
+RUN apt-get install -y npm --no-install-recommends && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists*
 
