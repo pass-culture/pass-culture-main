@@ -111,9 +111,12 @@ export const PartnerPage = ({
           <div className={styles['venue-name']}>
             {venue.publicName || venue.name}
           </div>
-          <address className={styles['venue-address']}>
-            {venue.address}, {venue.postalCode} {venue.city}
-          </address>
+
+          {venue.address && (
+            <address className={styles['venue-address']}>
+              {venue.address}, {venue.postalCode} {venue.city}
+            </address>
+          )}
 
           <ButtonLink
             variant={ButtonVariant.SECONDARY}

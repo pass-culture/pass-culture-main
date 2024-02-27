@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
 import { ImageUploader, UploadImageValues } from 'components/ImageUploader'
+import { ButtonImageEdit } from 'components/ImageUploader/ButtonImageEdit'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { buildInitialValues } from 'components/VenueForm/ImageUploaderVenue/ImageUploaderVenue'
@@ -95,11 +96,12 @@ export const VenueEditionHeader = ({
             ? `${offerer.name} (Offre numérique)`
             : venue.publicName || venue.name}
         </h1>
-        <address className={styles['venue-address']}>
-          {venue.address}, {venue.postalCode} {venue.city}
-        </address>
 
-        <hr className={styles['separator']} />
+        {venue.address && (
+          <address className={styles['venue-address']}>
+            {venue.address}, {venue.postalCode} {venue.city}
+          </address>
+        )}
 
         {!isNewBankDetailsEnabled && (
           <div style={{ marginBottom: '16px' }}>
@@ -112,6 +114,21 @@ export const VenueEditionHeader = ({
             <span aria-hidden={true}>
               Identifiant du lieu : {venue.dmsToken}
             </span>
+          </div>
+        )}
+
+        <hr className={styles['separator']} />
+
+        {imageValues.imageUrl && (
+          <div>
+            <ButtonImageEdit
+              mode={UploaderModeEnum.VENUE}
+              initialValues={imageValues}
+              onImageUpload={handleOnImageUpload}
+              onClickButtonImage={logButtonAddClick}
+            >
+              Modifier l’image
+            </ButtonImageEdit>
           </div>
         )}
 
