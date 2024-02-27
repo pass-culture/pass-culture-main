@@ -6,7 +6,6 @@
 
 .page-layout {
   display: flex;
-  height: calc(100vh - size.$top-menu-height);
 
   &-full {
     height: 100%;
@@ -132,5 +131,24 @@
     &-nav {
       display: none;
     }
+
   }
+}
+
+.content-layout {
+  &-basic {
+    min-height: calc(100vh - (size.$footer-height + size.$nav-height));
+  }
+
+  &-funnel {
+    min-height: calc(100vh - (size.$footer-height + size.$nav-height + size.$action-bar-sticky-height));
+  }
+
+  &-sticky-actions {
+    min-height: calc(100vh - (size.$footer-height + size.$nav-height + size.$action-bar-sticky-height));
+  }
+}
+
+.main-wrapper {
+  width: 100%;
 }

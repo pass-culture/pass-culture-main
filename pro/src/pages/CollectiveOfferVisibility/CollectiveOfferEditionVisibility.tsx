@@ -4,9 +4,9 @@ import { useNavigate } from 'react-router-dom'
 import { AppLayout } from 'app/AppLayout'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import {
-  Mode,
   CollectiveOffer,
   isCollectiveOfferTemplate,
+  Mode,
 } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
@@ -68,7 +68,7 @@ const CollectiveOfferVisibility = ({
   }
 
   return (
-    <AppLayout>
+    <AppLayout layout={'sticky-actions'}>
       <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
         <CollectiveOfferVisibilityScreen
           mode={offer.isVisibilityEditable ? Mode.EDITION : Mode.READ_ONLY}

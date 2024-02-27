@@ -5,7 +5,7 @@ import OfferTypeScreen from 'screens/OfferType'
 
 const OfferType = (): JSX.Element => {
   return (
-    <AppLayout>
+    <AppLayout layout={'sticky-actions'}>
       <OfferTypeScreen />
     </AppLayout>
   )

@@ -103,7 +103,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   }
 
   return (
-    <AppLayout>
+    <AppLayout layout={'sticky-actions'}>
       <div className="container">
         <Titles title="Créer une offre réservable" />
         <Title as="h3" className="sub-title" level={4}>

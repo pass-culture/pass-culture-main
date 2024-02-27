@@ -149,7 +149,7 @@ export const VenueEdition = (): JSX.Element | null => {
     : 'individual'
 
   return (
-    <AppLayout>
+    <AppLayout layout={'sticky-actions'}>
       <div>
         <VenueEditionHeader
           venue={venue}

@@ -36,7 +36,7 @@ export const CollectiveOfferSummaryCreation = ({
   }
 
   return (
-    <AppLayout>
+    <AppLayout layout={'sticky-actions'}>
       {isLoading ? (
         <Spinner />
       ) : (

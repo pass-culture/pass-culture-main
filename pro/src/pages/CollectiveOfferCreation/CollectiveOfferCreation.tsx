@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom'
 import { AppLayout } from 'app/AppLayout'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
-import { Mode, isCollectiveOffer } from 'core/OfferEducational'
+import { isCollectiveOffer, Mode } from 'core/OfferEducational'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import {
@@ -28,7 +28,7 @@ export const CollectiveOfferCreation = ({
   )
 
   return (
-    <AppLayout>
+    <AppLayout layout={'sticky-actions'}>
       {!isReady ? (
         <Spinner />
       ) : (
