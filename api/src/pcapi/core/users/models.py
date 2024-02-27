@@ -687,6 +687,7 @@ class EmailHistoryEventTypeEnum(enum.Enum):
     UPDATE_REQUEST = "UPDATE_REQUEST"
     CONFIRMATION = "CONFIRMATION"
     CANCELLATION = "CANCELLATION"
+    NEW_EMAIL_SELECTION = "NEW_EMAIL_SELECTION"
     VALIDATION = "VALIDATION"
     ADMIN_VALIDATION = "ADMIN_VALIDATION"
     ADMIN_UPDATE_REQUEST = "ADMIN_UPDATE_REQUEST"
@@ -744,6 +745,10 @@ class UserEmailHistory(PcObject, Base, Model):
     @classmethod
     def build_cancellation(cls, user: User, new_email: str) -> "UserEmailHistory":
         return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.CANCELLATION)
+
+    @classmethod
+    def build_new_email_selection(cls, user: User, new_email: str) -> "UserEmailHistory":
+        return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.NEW_EMAIL_SELECTION)
 
     @classmethod
     def build_validation(cls, user: User, new_email: str, by_admin: bool) -> "UserEmailHistory":
