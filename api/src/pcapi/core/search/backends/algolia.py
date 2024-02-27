@@ -145,7 +145,7 @@ class AlgoliaBackend(base.SearchBackend):
         client = create_algolia_client()
         self.algolia_offers_client = client.init_index(settings.ALGOLIA_OFFERS_INDEX_NAME)
         self.algolia_collective_offers_templates_client = client.init_index(
-            settings.ALGOLIA_COLLECTIVE_OFFERS_INDEX_NAME
+            settings.ALGOLIA_COLLECTIVE_OFFER_TEMPLATES_INDEX_NAME
         )
         self.algolia_venues_client = client.init_index(settings.ALGOLIA_VENUES_INDEX_NAME)
         self.redis_client = current_app.redis_client
