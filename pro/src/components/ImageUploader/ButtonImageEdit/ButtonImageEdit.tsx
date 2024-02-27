@@ -1,17 +1,20 @@
-import React, { useState } from 'react'
+import cn from 'classnames'
+import { useState } from 'react'
 
 import fullEditIcon from 'icons/full-edit.svg'
+import strokeMoreIcon from 'icons/stroke-more.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { UploaderModeEnum } from '../types'
 
-import { ButtonImageAdd } from './ButtonImageAdd'
+import style from './ButtonImageEdit.module.scss'
 import { ModalImageEdit } from './ModalImageEdit'
 import { OnImageUploadArgs } from './ModalImageEdit/ModalImageEdit'
 import { UploadImageValues } from './types'
 
-export interface ButtonImageEditProps {
+export type ButtonImageEditProps = {
   onImageUpload: (values: OnImageUploadArgs) => void
   initialValues?: UploadImageValues
   mode: UploaderModeEnum
@@ -44,7 +47,19 @@ const ButtonImageEdit = ({
           Modifier
         </Button>
       ) : (
-        <ButtonImageAdd mode={mode} onClick={onClickButtonImageAdd} />
+        <button
+          className={cn(style['button-image-add'], {
+            [style['add-image-venue']]: mode === UploaderModeEnum.VENUE,
+            [style['add-image-offer']]:
+              mode === UploaderModeEnum.OFFER ||
+              mode === UploaderModeEnum.OFFER_COLLECTIVE,
+          })}
+          onClick={onClickButtonImageAdd}
+          type="button"
+        >
+          <SvgIcon src={strokeMoreIcon} alt="" className={style['icon']} />
+          <span className={style['label']}>Ajouter une image</span>
+        </button>
       )}
 
       {isModalOpen && (
