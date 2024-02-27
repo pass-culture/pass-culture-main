@@ -1,5 +1,4 @@
 import cn from 'classnames'
-import React from 'react'
 
 import { ButtonAppPreview } from './ButtonAppPreview'
 import { ButtonImageDelete } from './ButtonImageDelete'
