@@ -59,4 +59,5 @@ def expected_serialized_prebooking(booking: models.CollectiveBooking) -> dict:
         "imageCredit": offer.imageCredit,
         "venueId": venue.id,
         "offererName": venue.managingOfferer.name,
+        "formats": sorted([offer.formats]) if offer.formats else None,
     }

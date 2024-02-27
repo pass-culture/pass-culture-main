@@ -1,9 +1,11 @@
 from datetime import datetime
+import typing
 from typing import Iterable
 
 from pydantic.v1 import PositiveInt
 from pydantic.v1.fields import Field
 
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
@@ -45,7 +47,7 @@ class Contact(AdageBaseResponseModel):
     phone: str | None
 
 
-class EducationalBookingResponse(AdageBaseResponseModel):
+class EducationalBookingBaseResponse(AdageBaseResponseModel):
     accessibility: str = Field(description="Accessibility of the offer")
     address: str = Field(description="Adresse of event")
     beginningDatetime: datetime = Field(description="Beginnning date of event")
@@ -93,6 +95,10 @@ class EducationalBookingResponse(AdageBaseResponseModel):
         allow_population_by_field_name = True
 
 
+class EducationalBookingResponse(EducationalBookingBaseResponse):
+    formats: list[subcategories.EacFormat] | None
+
+
 class EducationalBookingsResponse(AdageBaseResponseModel):
     prebookings: list[EducationalBookingResponse]
 
@@ -115,6 +121,10 @@ class EducationalBookingPerYearResponse(AdageBaseResponseModel):
     venueId: int | None
     venueName: str | None
     offererName: str | None
+    formats: typing.Sequence[subcategories.EacFormat] | None
+
+    class Config:
+        use_enum_values = True
 
 
 def get_collective_bookings_per_year_response(
@@ -136,6 +146,7 @@ def get_collective_bookings_per_year_response(
             venueId=booking.collectiveStock.collectiveOffer.venueId,
             venueName=booking.collectiveStock.collectiveOffer.venue.name,
             offererName=booking.collectiveStock.collectiveOffer.venue.managingOfferer.name,
+            formats=booking.collectiveStock.collectiveOffer.formats,
         )
         for booking in bookings
     ]
@@ -217,6 +228,7 @@ def serialize_collective_booking(collective_booking: CollectiveBooking) -> Educa
         imageUrl=offer.imageUrl,
         venueId=venue.id,
         offererName=venue.managingOfferer.name,
+        formats=offer.formats,
     )
 
 
@@ -279,7 +291,7 @@ def _get_educational_offer_accessibility(offer: educational_models.CollectiveOff
     return ", ".join(disability_compliance) or "Non accessible"
 
 
-class AdageReibursementNotification(EducationalBookingResponse):
+class AdageReibursementNotification(EducationalBookingBaseResponse):
     reimbursementReason: str
     reimbursedValue: float
     reimbursementDetails: str

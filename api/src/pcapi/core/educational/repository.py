@@ -225,6 +225,7 @@ def _get_bookings_for_adage_base_query() -> BaseQuery:
             educational_models.CollectiveOffer.imageCredit,
             educational_models.CollectiveOffer.imageId,
             educational_models.CollectiveOffer.bookingEmails,
+            educational_models.CollectiveOffer.formats,
         )
         .options(
             sa.orm.joinedload(educational_models.CollectiveOffer.domains).load_only(
@@ -359,6 +360,7 @@ def get_paginated_collective_bookings_for_educational_year(
         .load_only(
             educational_models.CollectiveOffer.name,
             educational_models.CollectiveOffer.venueId,
+            educational_models.CollectiveOffer.formats,
         )
         .options(
             # ... to fetch its venue...
