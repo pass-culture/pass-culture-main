@@ -121,6 +121,9 @@ class FeatureToggle(enum.Enum):
         "Activer les nouvelles règles de création et d'édition d'offres collecrives pour l'API publique (collective)"
     )
     WIP_ENABLE_COLLECTIVE_CUSTOM_CONTACT = "Activer le contact personnalisé pour les offres collectives"
+    WIP_ENABLE_ADAGE_PREVIEW_OFFER_IN_PRO = (
+        "Activer la prévisualisation d'une offre adage lors de la création/édition sur le portail pro"
+    )
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -188,6 +191,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_CONNECT_AS,
     FeatureToggle.WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN,
     FeatureToggle.WIP_ENABLE_COLLECTIVE_CUSTOM_CONTACT,
+    FeatureToggle.WIP_ENABLE_ADAGE_PREVIEW_OFFER_IN_PRO,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
