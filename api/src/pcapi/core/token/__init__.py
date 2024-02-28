@@ -274,8 +274,14 @@ class SecureToken:
         """
         if token:
             self.token = token
-            raw_data = app.redis_client.getdel(self.key)
-            if raw_data is None:
+            # # TODO replace get+delete by getdel once we have access to a redis 6.2+
+            # raw_data = app.redis_client.getdel(self.key)
+            with app.redis_client.pipeline(transaction=True) as pipeline:
+                pipeline.get(self.key)
+                pipeline.delete(self.key)
+                results = pipeline.execute()
+            raw_data = results[0]
+            if not raw_data:
                 # add robustness against timing attacks
                 time.sleep(random.random())
                 raise users_exceptions.InvalidToken()
