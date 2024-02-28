@@ -116,6 +116,11 @@ class CannotDeleteBookingWithReimbursementException(ClientError):
         )
 
 
+class OneSideCancellationForbidden(Exception):
+    def __init__(self) -> None:
+        super().__init__("Annulation unilatérale impossible")
+
+
 class ConfirmationLimitDateHasPassed(Exception):
     pass
 

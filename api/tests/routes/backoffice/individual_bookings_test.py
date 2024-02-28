@@ -1,5 +1,7 @@
+import dataclasses
 import datetime
 from io import BytesIO
+import re
 
 import factory
 from flask import url_for
@@ -10,16 +12,26 @@ from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2
+from pcapi.core.external_bookings import factories as external_bookings_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.providers import factories as providers_factories
+from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
+from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.routes.backoffice.bookings import forms
+
+from tests.connectors.cgr import soap_definitions
+from tests.local_providers.cinema_providers.cgr import fixtures as cgr_fixtures
 
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
@@ -646,6 +658,131 @@ class CancelBookingTest(PostEndpointHelper):
         assert (
             "Les données envoyées comportent des erreurs. Raison : Information obligatoire"
             in html_parser.extract_alert(redirected_response.data)
+        )
+
+    @override_features(ENABLE_EMS_INTEGRATION=True)
+    @override_settings(EMS_SUPPORT_EMAIL_ADDRESS="ems.support@example.com")
+    def test_ems_cancel_external_booking_from_backoffice(self, authenticated_client, requests_mock):
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        ems_provider = get_provider_by_local_class("EMSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider)
+        providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+        offer = offers_factories.EventOfferFactory(
+            name="Film",
+            venue=venue_provider.venue,
+            subcategoryId=subcategories_v2.SEANCE_CINE.id,
+            lastProviderId=ems_provider.id,
+        )
+        stock = offers_factories.EventStockFactory(
+            offer=offer,
+            idAtProviders="1111%2222%EMS#3333",
+            beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+        )
+        booking = bookings_factories.BookingFactory(stock=stock, user=beneficiary)
+        external_bookings_factories.ExternalBookingFactory(
+            booking=booking,
+            barcode="123456789",
+            additional_information={
+                "num_cine": "9997",
+                "num_caisse": "255",
+                "num_trans": 1257,
+                "num_ope": 147149,
+            },
+        )
+        requests_mock.post(
+            url=re.compile(r"https://fake_url.com/ANNULATION/*"),
+            json={"code_erreur": 5, "message_erreur": "Erreur lors de l'appel au cinéma", "statut": 0},
+        )
+
+        assert booking.status is bookings_models.BookingStatus.CONFIRMED
+        assert len(booking.externalBookings) == 1
+        assert booking.externalBookings[0].barcode
+        assert booking.externalBookings[0].seat
+        assert booking.externalBookings[0].additional_information == {
+            "num_cine": "9997",
+            "num_caisse": "255",
+            "num_trans": 1257,
+            "num_ope": 147149,
+        }
+
+        old_quantity = stock.dnBookedQuantity
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            booking_id=booking.id,
+            form={"reason": bookings_models.BookingCancellationReasons.BACKOFFICE.value},
+        )
+
+        assert response.status_code == 303
+        redirected_response = authenticated_client.get(response.headers["location"])
+        assert html_parser.extract_alert(redirected_response.data) == f"La réservation {booking.token} a été annulée"
+
+        db.session.refresh(booking)
+        assert booking.status == bookings_models.BookingStatus.CANCELLED
+        assert stock.dnBookedQuantity == old_quantity - 1
+        assert booking.cancellationReason == bookings_models.BookingCancellationReasons.BACKOFFICE
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == "ems.support@example.com"
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
+            TransactionalEmail.EXTERNAL_BOOKING_SUPPORT_CANCELLATION.value
+        )
+        assert mails_testing.outbox[0]["params"] == {
+            "EXTERNAL_BOOKING_INFORMATION": "barcode: 123456789, additional_information: {'num_ope': 147149, 'num_cine': '9997', 'num_trans': 1257, 'num_caisse': '255'}"
+        }
+
+    def test_cancel_cgr_external_booking_unilaterally(self, authenticated_client, requests_mock):
+        requests_mock.get(
+            "https://cgr-cinema-0.example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION
+        )
+        requests_mock.post(
+            "https://cgr-cinema-0.example.com/web_service",
+            text=cgr_fixtures.cgr_annulation_response_template(
+                success=False,
+                message_error="L'annulation n'a pas pu être prise en compte : Code barre non reconnu / annulation impossible",
+            ),
+        )
+        cgr_provider = get_provider_by_local_class("CGRStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider)
+        cinema_provider_pivot = providers_factories.CGRCinemaProviderPivotFactory(
+            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        providers_factories.CGRCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
+        )
+
+        offer = offers_factories.OfferFactory(
+            lastProvider=cgr_provider,
+            idAtProvider="123%12354114%CGR",
+            subcategoryId=subcategories_v2.SEANCE_CINE.id,
+            venue=venue_provider.venue,
+        )
+        stock = offers_factories.StockFactory(
+            lastProvider=cgr_provider,
+            idAtProviders="123%12354114%CGR#111",
+            beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+            offer=offer,
+        )
+        booking_to_cancel = bookings_factories.BookingFactory(stock=stock)
+        external_bookings_factories.ExternalBookingFactory(booking=booking_to_cancel)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            booking_id=booking_to_cancel.id,
+            form={"reason": bookings_models.BookingCancellationReasons.BACKOFFICE.value},
+        )
+
+        assert response.status_code == 303
+
+        db.session.refresh(booking_to_cancel)
+        assert booking_to_cancel.status == bookings_models.BookingStatus.CANCELLED
+        assert booking_to_cancel.cancellationReason == bookings_models.BookingCancellationReasons.BACKOFFICE
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == f"La réservation {booking_to_cancel.token} a été annulée"
         )
 
 

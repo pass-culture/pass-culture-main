@@ -1,5 +1,6 @@
 import datetime
 from io import BytesIO
+import logging
 import re
 import typing
 
@@ -16,10 +17,13 @@ from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import NotFound
 
 from pcapi import settings
+from pcapi.connectors import ems
+from pcapi.connectors.cgr import exceptions as cgr_exceptions
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as booking_repository
+from pcapi.core.external_bookings.cds import exceptions as cds_exceptions
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
@@ -33,6 +37,8 @@ from pcapi.routes.backoffice.bookings import helpers as booking_helpers
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.serialization.bookings_recap_serialize import OfferType
 
+
+logger = logging.getLogger(__name__)
 
 individual_bookings_blueprint = utils.child_backoffice_blueprint(
     "individual_bookings",
@@ -252,6 +258,23 @@ def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
         flash("Cette réservation est en train d’être remboursée, il est impossible de l’invalider", "warning")
     except bookings_exceptions.BookingIsAlreadyUsed:
         flash("Impossible d'annuler une réservation déjà utilisée", "warning")
+    except (
+        cgr_exceptions.CGRAPIException,
+        cds_exceptions.CineDigitalServiceAPIException,
+        ems.EMSAPIException,
+    ) as exc:
+        logger.info(
+            "API error for cancelling external booking, the booking will be cancelled unilaterally",
+            extra={"booking_id": booking.id, "exc": str(exc)},
+        )
+        try:
+            bookings_api.mark_as_cancelled(
+                booking, bookings_models.BookingCancellationReasons(form.reason.data), one_side_cancellation=True
+            )
+        except Exception as exception:  # pylint: disable=broad-except
+            flash(Markup("Une erreur s'est produite : {message}").format(message=str(exception)), "warning")
+        else:
+            flash(Markup("La réservation <b>{token}</b> a été annulée").format(token=booking.token), "success")
     except Exception as exc:  # pylint: disable=broad-except
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:
