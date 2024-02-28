@@ -8,6 +8,7 @@ import sqlalchemy as sqla
 from pcapi import repository
 from pcapi.core import search
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories.categories import TITELIVE_MUSIC_TYPES
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
@@ -16,7 +17,7 @@ from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import validation as offers_validation
 from pcapi.core.providers import models as providers_models
-from pcapi.core.providers.constants import MUSIC_SLUG_BY_GTL_ID
+from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.domain import music_types
 from pcapi.domain import show_types
 from pcapi.models import api_errors
@@ -116,32 +117,71 @@ def get_music_types() -> serialization.GetMusicTypesResponse:
     # Individual offers API only relies on music subtypes, not music types.
     # To make it simpler for the provider using this API, we only expose music subtypes and call them music types.
 
-    # FIXME (ghaliela, 2023-01-23): uncomment this code when all music genres are linked to a GTL ID
-    # return serialization.GetMusicTypesResponse(
-    #     __root__=[
-    #         serialization.MusicTypeResponse(
-    #             id=music_type_slug, label=music_types.MUSIC_SUB_TYPES_BY_SLUG[music_type_slug].label, gtl_id=gtl_id
-    #         )
-    #         for gtl_id, music_type_slug, in MUSIC_SLUG_BY_GTL_ID.items()
-    #     ]
-    # )
-
     return serialization.GetMusicTypesResponse(
         __root__=[
-            serialization.MusicTypeResponse(
-                id=music_type_slug, label=music_type.label, gtl_id=_get_music_type_gtl_id(music_type_slug)
-            )
+            serialization.MusicTypeResponse(id=music_type_slug, label=music_type.label)
             for music_type_slug, music_type in music_types.MUSIC_SUB_TYPES_BY_SLUG.items()
         ]
     )
 
 
-# FIXME (ghaliela, 2023-01-23): delete this function when all music genres are linked to a GTL ID
-def _get_music_type_gtl_id(music_type_slug: str) -> str | None:
-    for gtl_id, slug in MUSIC_SLUG_BY_GTL_ID.items():
-        if slug == music_type_slug:
-            return gtl_id
-    return None
+@blueprint.v1_blueprint.route("/music_types/all", methods=["GET"])
+@spectree_serialize(
+    api=blueprint.v1_event_schema,
+    tags=[constants.OFFER_ATTRIBUTES],
+    response_model=serialization.GetMusicTypesResponse,
+    resp=SpectreeResponse(
+        **(
+            constants.BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_200": (serialization.GetMusicTypesResponse, "The music types have been returned"),
+            }
+        )
+    ),
+)
+@api_key_required
+def get_all_titelive_music_types() -> serialization.GetMusicTypesResponse:
+    """
+    Get all titelive music types.
+    """
+    return serialization.GetMusicTypesResponse(
+        __root__=[
+            serialization.TiteliveMusicTypeResponse(
+                id=TITELIVE_MUSIC_GENRES_BY_GTL_ID[music_type.gtl_id], label=music_type.label
+            )
+            for music_type in TITELIVE_MUSIC_TYPES
+        ]
+    )
+
+
+@blueprint.v1_blueprint.route("/music_types/event", methods=["GET"])
+@spectree_serialize(
+    api=blueprint.v1_event_schema,
+    tags=[constants.OFFER_ATTRIBUTES],
+    response_model=serialization.GetMusicTypesResponse,
+    resp=SpectreeResponse(
+        **(
+            constants.BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_200": (serialization.GetMusicTypesResponse, "The music types have been returned"),
+            }
+        )
+    ),
+)
+@api_key_required
+def get_event_titelive_music_types() -> serialization.GetMusicTypesResponse:
+    """
+    Get the music types eligible for events.
+    """
+    return serialization.GetMusicTypesResponse(
+        __root__=[
+            serialization.TiteliveMusicTypeResponse(
+                id=TITELIVE_MUSIC_GENRES_BY_GTL_ID[music_type.gtl_id], label=music_type.label
+            )
+            for music_type in TITELIVE_MUSIC_TYPES
+            if music_type.can_be_event
+        ]
+    )
 
 
 @blueprint.v1_blueprint.route("/products", methods=["POST"])
