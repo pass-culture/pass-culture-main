@@ -3,6 +3,7 @@ import { screen } from '@testing-library/react'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
+import { UserRole } from 'apiClient/v1'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { App } from '../App'
@@ -22,6 +23,10 @@ const renderApp = (storeOverrides: any, url = '/') =>
           <Route path="/" element={<p>Sub component</p>} />
           <Route path="/offres" element={<p>Offres</p>} />
           <Route path="/connexion" element={<p>Login page</p>} />
+          <Route
+            path="/parcours-inscription"
+            element={<p>Onboarding page</p>}
+          />
         </Route>
       </Routes>
     </>,
@@ -45,6 +50,7 @@ describe('App', () => {
         currentUser: {
           id: 12,
           isAdmin: false,
+          roles: [UserRole.PRO],
         },
       },
     }
@@ -76,5 +82,20 @@ describe('App', () => {
     renderApp(loggedOutStore, '/offres')
 
     expect(await screen.findByText('Login page')).toBeInTheDocument()
+  })
+
+  it('should redirect non rattached user to onboarding', async () => {
+    const nonRattachedStore = {
+      user: {
+        currentUser: {
+          id: 12,
+          isAdmin: false,
+          roles: [UserRole.NON_ATTACHED_PRO],
+        },
+      },
+    }
+    renderApp(nonRattachedStore, '/')
+
+    expect(await screen.findByText('Onboarding page')).toBeInTheDocument()
   })
 })
