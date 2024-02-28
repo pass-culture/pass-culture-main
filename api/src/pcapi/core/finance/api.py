@@ -96,6 +96,7 @@ CASHFLOW_BATCH_LABEL_PREFIX = "VIR"
 def get_pricing_ordering_date(
     booking: bookings_models.Booking | educational_models.CollectiveBooking,
 ) -> datetime.datetime:
+    # FIXME: DEBUG ONLY: trigger Python tests.
     stock: offers_models.Stock | educational_models.CollectiveStock = (
         booking.stock if isinstance(booking, bookings_models.Booking) else booking.collectiveStock
     )
