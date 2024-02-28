@@ -178,11 +178,7 @@ export const VenueEditionFormScreen = ({
 
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit} className={styles['venue-form']}>
-          <VenueEditionForm
-            venueLabels={venueLabels}
-            venue={venue}
-            offerer={offerer}
-          />
+          <VenueEditionForm venueLabels={venueLabels} venue={venue} />
         </form>
 
         {isWithdrawalDialogOpen && (

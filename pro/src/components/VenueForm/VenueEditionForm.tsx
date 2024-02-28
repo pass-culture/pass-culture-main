@@ -1,34 +1,20 @@
-import { useLocation } from 'react-router-dom'
-
-import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
+import { GetVenueResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
-import useActiveFeature from 'hooks/useActiveFeature'
-import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
 import { Select, TextArea, TextInput } from 'ui-kit'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 
 import { Accessibility } from './Accessibility'
-import BankAccountInfos from './BankAccountInfos/BankAccountInfos'
 import { VenueFormActionBar } from './VenueFormActionBar'
 
 interface VenueFormProps {
-  offerer: GetOffererResponseModel
   venueLabels: SelectOption[]
   venue: GetVenueResponseModel
 }
 
-export const VenueEditionForm = ({
-  offerer,
-  venueLabels,
-  venue,
-}: VenueFormProps) => {
-  const isNewBankDetailsJourneyEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
-  )
+export const VenueEditionForm = ({ venueLabels, venue }: VenueFormProps) => {
   useScrollToFirstErrorAfterSubmit()
-  const location = useLocation()
 
   return (
     <div>
@@ -107,20 +93,8 @@ export const VenueEditionForm = ({
             </FormLayout.Row>
           </FormLayout.Section>
         )}
-
-        {(!isNewBankDetailsJourneyEnabled ||
-          (isNewBankDetailsJourneyEnabled && !venue?.siret)) && (
-          <ReimbursementFields
-            offerer={offerer}
-            scrollToSection={Boolean(location.state) || Boolean(location.hash)}
-            venue={venue}
-          />
-        )}
-
-        {isNewBankDetailsJourneyEnabled && (
-          <BankAccountInfos venueBankAccount={venue.bankAccount} />
-        )}
       </FormLayout>
+
       <VenueFormActionBar isCreatingVenue={false} />
     </div>
   )
