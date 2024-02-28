@@ -15,14 +15,18 @@ export const validationSchema = (
         'Le SIRET doit comporter 14 caractères',
         (siret) => !!siret && valideSiretLength(siret)
       )
-      .test('apiSiretVisible', 'Le SIRET n’est pas visible', async (siret) => {
-        const response = await siretApiValidate(siret || '')
-        const isInvisible =
-          response ===
-          'Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles.'
-        displayInvisibleSirenBanner(isInvisible)
-        return !isInvisible
-      })
+      .test(
+        'apiSiretVisible',
+        "Le propriétaire de ce SIRET s'oppose à la diffusion de ses données au public",
+        async (siret) => {
+          const response = await siretApiValidate(siret || '')
+          const isInvisible =
+            response ===
+            'Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles.'
+          displayInvisibleSirenBanner(isInvisible)
+          return !isInvisible
+        }
+      )
       .test('apiSiretValid', 'Le SIRET n’existe pas', async (siret) => {
         const response = await siretApiValidate(siret || '')
         return !response
