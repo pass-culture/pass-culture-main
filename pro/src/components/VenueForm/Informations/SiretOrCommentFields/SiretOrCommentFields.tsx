@@ -17,7 +17,7 @@ export type SiretOrCommentInterface = {
   initialSiret?: string
   isToggleDisabled?: boolean
   readOnly: boolean
-  setIsFieldNameFrozen: (isNameFrozen: boolean) => void
+  setIsFieldNameFrozen?: (isNameFrozen: boolean) => void
   // TODO Albéric: not sure why there are two states, could be refactored
   updateIsSiretValued: (isSiretValued: boolean) => void
   setIsSiretValued?: (isSiretValued: boolean) => void
@@ -41,7 +41,7 @@ const SiretOrCommentFields = ({
 
   /* istanbul ignore next: DEBT, TO FIX */
   const handleToggleClick = () => {
-    if (isSiretSelected) {
+    if (isSiretSelected && setIsFieldNameFrozen) {
       setIsFieldNameFrozen(false)
     }
     if (setIsSiretValued) {
@@ -67,7 +67,7 @@ const SiretOrCommentFields = ({
       !isSiretSelected ||
       readOnly
     ) {
-      setIsFieldNameFrozen(false)
+      setIsFieldNameFrozen && setIsFieldNameFrozen(false)
       return
     }
 
@@ -78,11 +78,12 @@ const SiretOrCommentFields = ({
       return
     }
     const address = `${response.payload.values?.address} ${response.payload.values?.postalCode} ${response.payload.values?.city}`
-    setIsFieldNameFrozen(
-      response != null &&
-        response.payload.values != null &&
-        response.payload.values.siret.length > 0
-    )
+    setIsFieldNameFrozen &&
+      setIsFieldNameFrozen(
+        response != null &&
+          response.payload.values != null &&
+          response.payload.values.siret.length > 0
+      )
     await setFieldValue('name', response.payload.values?.name)
     // getSuggestions pour récupérer les adresses
     const responseAdressDataAdapter = await getAdressDataAdapter({
