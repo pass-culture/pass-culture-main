@@ -70,7 +70,9 @@ jobs:
   run-mypy-cop:
     name: "MyPy cop"
     needs: check-api
-    if: github.ref != 'refs/heads/master' && needs.check-api.outputs.folder_changed == 'true'
+    if: |
+      github.event_name == 'pull_request' &&
+      needs.check-api.outputs.folder_changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_mypy_cop.yml
 
   update-api-client-template:
