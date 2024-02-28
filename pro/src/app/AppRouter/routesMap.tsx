@@ -106,6 +106,11 @@ const routes: RouteConfig[] = [
     title: 'Modifier un lieu',
   },
   {
+    lazy: () => import('pages/VenueSettings/VenueSettings'),
+    path: '/structures/:offererId/lieux/:venueId/parametres',
+    title: 'Paramétrer un lieu',
+  },
+  {
     lazy: () => import('pages/OfferType/OfferType'),
     path: '/offre/creation',
     title: 'Choix de la nature de l’offre - Créer une offre',
