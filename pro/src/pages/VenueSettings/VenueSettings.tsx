@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes, useParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 
 import { OfferStatus } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
@@ -10,7 +10,6 @@ import { useGetVenueLabels } from 'core/Venue/adapters/getVenueLabelsAdapter'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import { useAdapter } from 'hooks'
 import useNotification from 'hooks/useNotification'
-import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
 import {
   getFilteredOffersAdapter,
   Payload,
@@ -118,26 +117,16 @@ const VenueSettings = (): JSX.Element | null => {
 
   return (
     <AppLayout>
-      <div>
-        <Routes>
-          <Route
-            path=""
-            element={
-              <VenueSettingsFormScreen
-                initialValues={setInitialFormValues(venue)}
-                offerer={offerer}
-                venueTypes={venueTypes}
-                venueLabels={venueLabels}
-                providers={providers}
-                venue={venue}
-                venueProviders={venueProviders}
-                hasBookingQuantity={venue?.id ? hasBookingQuantity : false}
-              />
-            }
-          />
-          <Route path="eac" element={<CollectiveDataEdition venue={venue} />} />
-        </Routes>
-      </div>
+      <VenueSettingsFormScreen
+        initialValues={setInitialFormValues(venue)}
+        offerer={offerer}
+        venueTypes={venueTypes}
+        venueLabels={venueLabels}
+        providers={providers}
+        venue={venue}
+        venueProviders={venueProviders}
+        hasBookingQuantity={venue?.id ? hasBookingQuantity : false}
+      />
     </AppLayout>
   )
 }
