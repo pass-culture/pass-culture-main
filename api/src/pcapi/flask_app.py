@@ -2,7 +2,6 @@ import logging
 import os
 import sys
 import time
-import typing
 
 from authlib.integrations.flask_client import OAuth
 from flask import Flask
@@ -21,7 +20,7 @@ import sentry_sdk
 from sqlalchemy import orm
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from werkzeug.middleware.profiler import ProfilerMiddleware
-import werkzeug.middleware.proxy_fix
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from pcapi import settings
 from pcapi.core import monkeypatches
@@ -33,11 +32,6 @@ from pcapi.models import install_models
 from pcapi.scripts.install import install_commands
 from pcapi.utils.json_encoder import EnumJSONEncoder
 from pcapi.utils.sentry import init_sentry_sdk
-
-
-if typing.TYPE_CHECKING:
-    from _typeshed.wsgi import StartResponse
-    from _typeshed.wsgi import WSGIEnvironment
 
 
 monkeypatches.install_monkey_patches()
@@ -147,43 +141,9 @@ if int(os.environ.get("ENABLE_RQ_PROMETHEUS_EXPORTER", "0")):
     )
 
 
-class ProxyFix(werkzeug.middleware.proxy_fix.ProxyFix):
-    """A wrapper around Werkzeug's ProxyFix that configures it with a
-    different `x_for` value depending on a feature flag.
-
-    The feature flag will be activated when we configure the HTTP
-    traffic to go through our L7 load balancer.
-    """
-
-    def __call__(
-        self,
-        environ: "WSGIEnvironment",
-        start_response: "StartResponse",
-    ) -> typing.Iterable[bytes]:
-        import sqlalchemy
-
-        from pcapi.models.feature import FeatureToggle
-
-        # Some tests check the number of SQL requests. We don't want
-        # to update these tests, since this block is temporary.
-        if not settings.IS_RUNNING_TESTS:
-            with app.app_context():
-                try:
-                    behind_l7 = FeatureToggle.WIP_BEHIND_L7_LOAD_BALANCER.is_active()
-                except sqlalchemy.orm.exc.NoResultFound:
-                    logger.info("Could not find 'WIP_BEHIND_L7_LOAD_BALANCER' feature flag")
-                    behind_l7 = False
-                if behind_l7:
-                    # Our L7 load balancer adds 2 IPs to the `X-Forwarded-For` HTTP header.
-                    # And there is another proxy in front of our app. Hence the 3.
-                    self.x_for = 3
-                else:
-                    self.x_for = 1
-
-        return super().__call__(environ, start_response)
-
-
-app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1)  # type: ignore [method-assign]
+# Our L7 load balancer adds 2 IPs to the `X-Forwarded-For` HTTP header.
+# And there is another proxy in front of our app. Hence `x_for=3`.
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=3)  # type: ignore [method-assign]
 
 if not settings.JWT_SECRET_KEY:
     raise ValueError("JWT_SECRET_KEY not found in env")

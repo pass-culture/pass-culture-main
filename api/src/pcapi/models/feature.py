@@ -94,7 +94,6 @@ class FeatureToggle(enum.Enum):
     LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC = "Stocker dans Google Drive les cinémas EMS activables"
     ENABLE_CGR_TIMEOUT = "Envoyer la valeur de notre timeout lors d'une réservation CGR"
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
-    WIP_BEHIND_L7_LOAD_BALANCER = "À activer/désactiver en même temps que le load balancer L7"
     WIP_ENABLE_OFFER_CREATION_API_V1 = "Active la création d'offres via l'API v1"
     WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY = "Changer le template d'email de confirmation de réservation"
     WIP_ENABLE_TRUSTED_DEVICE = "Active la fonctionnalité d'appareil de confiance"
@@ -180,7 +179,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_SUSPICIOUS_EMAIL_SEND,
     FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE,
     FeatureToggle.WIP_ENABLE_BOOST_SHOWTIMES_FILTER,
-    FeatureToggle.WIP_BEHIND_L7_LOAD_BALANCER,
     FeatureToggle.WIP_ENABLE_GOOGLE_SSO,
     FeatureToggle.WIP_ENABLE_MARSEILLE,
     FeatureToggle.WIP_GOOGLE_MAPS_VENUE_IMAGES,  # FIXME Abdelmoujib: remove when feature is ready https://passculture.atlassian.net/browse/PC-26459

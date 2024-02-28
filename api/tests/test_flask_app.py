@@ -18,7 +18,7 @@ def test_log_request_details(client, caplog):
             headers={
                 "device-id": "B35033A8-F7D9-4417-8A99-AC43F1ACC552",
                 "request-id": "abcd",
-                "X-Forwarded-For": "82.65.58.211",
+                "X-Forwarded-For": "82.65.58.211, front1, front2",
                 "app-version": "1.230.0",
                 "code-push-id": "1234",
                 "commit-hash": "abcefgh",
