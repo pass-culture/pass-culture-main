@@ -14,13 +14,13 @@ import styles from './PartnerPage.module.scss'
 export type PartnerPageIndividualSectionProps = {
   venueId: number
   isVisibleInApp: boolean
-  displayTitle?: boolean
+  isDisplayedInHomepage?: boolean
 }
 
 export function PartnerPageIndividualSection({
   venueId,
   isVisibleInApp,
-  displayTitle = false,
+  isDisplayedInHomepage = false,
 }: PartnerPageIndividualSectionProps) {
   const notify = useNotification()
   const { logEvent } = useAnalytics()
@@ -43,7 +43,7 @@ export function PartnerPageIndividualSection({
   return (
     <section className={styles['details']}>
       <div>
-        {displayTitle ? (
+        {isDisplayedInHomepage ? (
           <h4 className={styles['details-title']}>Grand public</h4>
         ) : (
           <span className={styles['details-normal']}>
@@ -56,13 +56,13 @@ export function PartnerPageIndividualSection({
           <Tag variant={TagVariant.LIGHT_BLUE}>Non visible</Tag>
         )}
       </div>
-
-      <p className={styles['details-description']}>
-        {isVisibleInApp
-          ? 'Votre page partenaire est visible sur l’application pass Culture.'
-          : 'Votre page n’est pas visible par les utilisateurs de l’application pass Culture. Vos offres publiées restent cependant visibles et réservables par les bénéficiaires.'}
-      </p>
-
+      {isDisplayedInHomepage && (
+        <p className={styles['details-description']}>
+          {isVisibleInApp
+            ? 'Votre page partenaire est visible sur l’application pass Culture.'
+            : 'Votre page n’est pas visible par les utilisateurs de l’application pass Culture. Vos offres publiées restent cependant visibles et réservables par les bénéficiaires.'}
+        </p>
+      )}
       {isVisibleInApp && (
         <>
           <ButtonLink
