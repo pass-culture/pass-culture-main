@@ -32,7 +32,6 @@ interface VenueSettingsFormScreenProps {
   initialValues: VenueFormValues
   offerer: GetOffererResponseModel
   venueTypes: SelectOption[]
-  venueLabels: SelectOption[]
   providers?: Providers[]
   venueProviders?: VenueProviderResponse[]
   venue: GetVenueResponseModel
@@ -43,7 +42,6 @@ export const VenueSettingsFormScreen = ({
   initialValues,
   offerer,
   venueTypes,
-  venueLabels,
   venueProviders,
   venue,
   providers,
@@ -195,7 +193,6 @@ export const VenueSettingsFormScreen = ({
           <VenueSettingsForm
             updateIsSiretValued={setIsSiretValued}
             venueTypes={venueTypes}
-            venueLabels={venueLabels}
             venueProvider={venueProviders}
             provider={providers}
             venue={venue}

@@ -9,7 +9,6 @@ import {
 import { AddressSelect } from 'components/Address'
 import FormLayout from 'components/FormLayout'
 import { VenueFormValues } from 'components/VenueForm'
-import { Activity } from 'components/VenueForm//Activity'
 import BankAccountInfos from 'components/VenueForm//BankAccountInfos/BankAccountInfos'
 import { Contact } from 'components/VenueForm//Contact'
 import { OffersSynchronization } from 'components/VenueForm//OffersSynchronization'
@@ -21,13 +20,12 @@ import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
-import { TextInput, InfoBox } from 'ui-kit'
+import { TextInput, InfoBox, Select } from 'ui-kit'
 
 interface VenueFormProps {
   offerer: GetOffererResponseModel
   updateIsSiretValued: (isSiretValued: boolean) => void
   venueTypes: SelectOption[]
-  venueLabels: SelectOption[]
   provider?: Providers[]
   venueProvider?: VenueProviderResponse[]
   venue: GetVenueResponseModel
@@ -37,7 +35,6 @@ export const VenueSettingsForm = ({
   offerer,
   updateIsSiretValued,
   venueTypes,
-  venueLabels,
   provider,
   venueProvider,
   venue,
@@ -103,12 +100,29 @@ export const VenueSettingsForm = ({
           </FormLayout.Section>
         )}
 
-        <Activity
-          venueTypes={venueTypes}
-          venueLabels={venueLabels}
-          isVenueVirtual={venue.isVirtual}
-          isCreatingVenue={false}
-        />
+        <FormLayout.Section
+          title="Activité principale"
+          description={
+            venue.isVirtual
+              ? undefined
+              : 'Ces informations seront affichées dans votre page lieu sur l’application pass Culture (sauf pour les lieux administratifs). Elles permettront aux jeunes d’en savoir plus sur votre lieu.'
+          }
+        >
+          <FormLayout.Row>
+            <Select
+              options={[
+                {
+                  value: '',
+                  label: 'Sélectionnez celui qui correspond à votre lieu',
+                },
+                ...venueTypes,
+              ]}
+              name="venueType"
+              label="Activité principale"
+              disabled={venue.isVirtual}
+            />
+          </FormLayout.Row>
+        </FormLayout.Section>
 
         {!venue.isVirtual && <WithdrawalDetails />}
 
