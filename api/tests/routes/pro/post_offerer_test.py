@@ -64,6 +64,33 @@ def test_returned_data(client):
     }
 
 
+def test_user_cant_create_same_offerer_twice(client):
+    pro = users_factories.ProFactory()
+
+    body = {
+        "name": "MINISTERE DE LA CULTURE",
+        "siren": "418166096",
+        "address": "123 rue de Paris",
+        "postalCode": "93100",
+        "city": "Montreuil",
+    }
+
+    client = client.with_session_auth(pro.email)
+    first_response = client.post("/offerers", json=body)
+
+    created_offerer = offerers_models.Offerer.query.one()
+    assert first_response.json == {
+        "id": created_offerer.id,
+        "siren": "418166096",
+        "name": "MINISTERE DE LA CULTURE",
+    }
+
+    second_response = client.post("/offerers", json=body)
+
+    assert second_response.status_code == 400
+    assert "This user already belongs to this offerer" in str(second_response.data)
+
+
 def test_when_no_address_is_provided(client):
     # given
     pro = users_factories.ProFactory()

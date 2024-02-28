@@ -100,7 +100,7 @@ describe('src | components | OffererCreation', () => {
     expect(screen.getByText('I’m on homepage')).toBeInTheDocument()
   })
 
-  it('should display error on submit fail response', async () => {
+  it('should display error if user already belonging to the offerer', async () => {
     vi.spyOn(api, 'getSirenInfo').mockResolvedValue({
       name: 'Ma Petite structure',
       siren: '881457238',
@@ -116,8 +116,8 @@ describe('src | components | OffererCreation', () => {
       new ApiError(
         {} as ApiRequestOptions,
         {
-          status: 500,
-          body: [{ error: ['ERROR'] }],
+          status: 400,
+          body: { user_offerer: ['This user already belongs to this offerer'] },
         } as ApiResult,
         ''
       )
@@ -228,4 +228,39 @@ describe('src | components | OffererCreation', () => {
       expect(creationButton).toBeEnabled()
     })
   })
+})
+
+it('should display error on submit fail response', async () => {
+  vi.spyOn(api, 'getSirenInfo').mockResolvedValue({
+    name: 'Ma Petite structure',
+    siren: '881457238',
+    address: {
+      street: '4 rue du test',
+      city: 'Plessix-Balisson',
+      postalCode: '22350',
+    },
+    ape_code: '',
+  })
+
+  vi.spyOn(api, 'createOfferer').mockRejectedValue(
+    new ApiError(
+      {} as ApiRequestOptions,
+      {
+        status: 500,
+        body: { error: ['ERROR'] },
+      } as ApiResult,
+      ''
+    )
+  )
+
+  renderOffererCreation({})
+
+  await userEvent.type(screen.getByLabelText('SIREN *'), '881457238')
+  await userEvent.tab()
+
+  await userEvent.click(screen.getByText('Créer'))
+
+  expect(
+    screen.getByText('Une erreur est survenue. Merci de réessayer plus tard.')
+  ).toBeInTheDocument()
 })

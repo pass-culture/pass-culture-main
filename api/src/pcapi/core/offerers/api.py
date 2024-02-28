@@ -834,6 +834,14 @@ def grant_user_offerer_access(offerer: models.Offerer, user: users_models.User) 
     return user_offerer
 
 
+def is_user_offerer_already_exist(user: users_models.User, siren: str) -> bool:
+    return db.session.query(
+        models.UserOfferer.query.join(models.UserOfferer.offerer)
+        .filter(models.UserOfferer.user == user, models.Offerer.siren == siren)
+        .exists()
+    ).scalar()
+
+
 def _format_tags(tags: typing.Iterable[models.OffererTag]) -> str:
     return ", ".join(sorted(tag.label for tag in tags))
 
