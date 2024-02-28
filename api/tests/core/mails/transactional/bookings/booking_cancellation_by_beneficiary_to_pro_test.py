@@ -4,6 +4,8 @@ from datetime import datetime
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.categories import subcategories_v2 as subcategories
+import pcapi.core.external_bookings.factories as external_bookings_factories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary_to_pro import (
     get_booking_cancellation_by_beneficiary_to_pro_email_data,
@@ -14,6 +16,7 @@ from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.providers.repository import get_provider_by_local_class
 
 
 class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
@@ -38,6 +41,57 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
         )
         assert mails_testing.outbox[0]["reply_to"] == {"email": "user@example.com", "name": "Guy G."}
 
+    @pytest.mark.usefixtures("db_session")
+    def test_should_send_one_side_booking_cancellation_email(self):
+        ems_provider = get_provider_by_local_class("EMSStocks")
+        stock = offers_factories.EventStockFactory(
+            price=10,
+            beginningDatetime=datetime(2019, 10, 9, 10, 20, 00),
+            offer__bookingEmail="booking@example.com",
+            offer__lastProvider=ems_provider,
+            offer__subcategoryId=subcategories.SEANCE_CINE.id,
+        )
+        booking = bookings_factories.BookingFactory(
+            user__email="user@example.com",
+            user__firstName="Guy",
+            user__lastName="G.",
+            stock=stock,
+        )
+        external_bookings_factories.ExternalBookingFactory(
+            booking=booking,
+            barcode="123456789",
+            additional_information={
+                "num_cine": "9997",
+                "num_caisse": "255",
+                "num_trans": 1257,
+                "num_ope": 147149,
+            },
+        )
+
+        send_booking_cancellation_by_beneficiary_to_pro_email(booking, one_side_cancellation=True)
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == "booking@example.com"
+        assert mails_testing.outbox[0]["template"] == asdict(
+            TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO.value
+        )
+        assert mails_testing.outbox[0]["params"] == {
+            "DEPARTMENT_CODE": booking.venue.departementCode,
+            "EVENT_DATE": "09-Oct-2019",
+            "EVENT_HOUR": "12h20",
+            "EXTERNAL_BOOKING_INFORMATION": "barcode: 123456789, additional_information: {'num_ope': 147149, "
+            "'num_cine': '9997', 'num_trans': 1257, 'num_caisse': '255'}",
+            "IS_EVENT": True,
+            "IS_EXTERNAL": True,
+            "OFFER_NAME": booking.stock.offer.name,
+            "PRICE": booking.stock.price,
+            "PROVIDER_NAME": "EMS",
+            "QUANTITY": booking.quantity,
+            "USER_EMAIL": booking.email,
+            "USER_NAME": booking.userName,
+            "VENUE_NAME": booking.venue.name,
+        }
+
 
 class MakeOffererBookingRecapEmailAfterUserCancellationTest:
     @pytest.mark.usefixtures("db_session")
@@ -56,10 +110,12 @@ class MakeOffererBookingRecapEmailAfterUserCancellationTest:
             "DEPARTMENT_CODE": venue.departementCode,
             "EVENT_DATE": "09-Oct-2019",
             "EVENT_HOUR": "12h20",
+            "EXTERNAL_BOOKING_INFORMATION": None,
             "IS_EVENT": True,
             "IS_EXTERNAL": False,
             "OFFER_NAME": stock.offer.name,
             "PRICE": stock.price,
+            "PROVIDER_NAME": None,
             "QUANTITY": booking.quantity,
             "USER_EMAIL": booking.email,
             "USER_NAME": booking.userName,
@@ -82,10 +138,12 @@ class MakeOffererBookingRecapEmailAfterUserCancellationTest:
             "DEPARTMENT_CODE": venue.departementCode,
             "EVENT_DATE": "09-Oct-2019",
             "EVENT_HOUR": "12h20",
+            "EXTERNAL_BOOKING_INFORMATION": None,
             "IS_EVENT": True,
             "IS_EXTERNAL": False,
             "OFFER_NAME": stock.offer.name,
             "PRICE": "Gratuit",
+            "PROVIDER_NAME": None,
             "QUANTITY": booking1.quantity,
             "USER_EMAIL": booking1.email,
             "USER_NAME": booking1.userName,
@@ -108,10 +166,12 @@ class MakeOffererBookingRecapEmailAfterUserCancellationTest:
             "DEPARTMENT_CODE": "numérique",
             "EVENT_DATE": "",
             "EVENT_HOUR": "",
+            "EXTERNAL_BOOKING_INFORMATION": None,
             "IS_EVENT": False,
             "IS_EXTERNAL": False,
             "OFFER_NAME": stock.offer.name,
             "PRICE": stock.price,
+            "PROVIDER_NAME": None,
             "QUANTITY": booking1.quantity,
             "USER_EMAIL": booking1.email,
             "USER_NAME": booking1.userName,
