@@ -919,13 +919,17 @@ class GetShowTypesResponse(serialization.ConfiguredBaseModel):
 
 
 class MusicTypeResponse(serialization.ConfiguredBaseModel):
-    gtl_id: str | None
     id: MusicTypeEnum  # type: ignore [valid-type]
     label: str
 
 
+class TiteliveMusicTypeResponse(serialization.ConfiguredBaseModel):
+    id: TiteliveMusicTypeEnum  # type: ignore [valid-type]
+    label: str
+
+
 class GetMusicTypesResponse(serialization.ConfiguredBaseModel):
-    __root__: list[MusicTypeResponse]
+    __root__: list[MusicTypeResponse | TiteliveMusicTypeResponse]
 
 
 class ImageUploadFile(BaseModel):
