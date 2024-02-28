@@ -1,13 +1,7 @@
 import { useLocation } from 'react-router-dom'
 
-import {
-  GetOffererResponseModel,
-  VenueProviderResponse,
-  GetVenueResponseModel,
-} from 'apiClient/v1'
-import { AddressSelect } from 'components/Address'
+import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
-import { Providers } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -17,28 +11,19 @@ import { Accessibility } from './Accessibility'
 import { Activity } from './Activity'
 import BankAccountInfos from './BankAccountInfos/BankAccountInfos'
 import { Contact } from './Contact'
-import { Informations } from './Informations'
-import { OffersSynchronization } from './OffersSynchronization'
 import { VenueFormActionBar } from './VenueFormActionBar'
-import { WithdrawalDetails } from './WithdrawalDetails'
 
 interface VenueFormProps {
   offerer: GetOffererResponseModel
-  updateIsSiretValued: (isSiretValued: boolean) => void
   venueTypes: SelectOption[]
   venueLabels: SelectOption[]
-  provider?: Providers[]
-  venueProvider?: VenueProviderResponse[]
   venue: GetVenueResponseModel
 }
 
 export const VenueEditionForm = ({
   offerer,
-  updateIsSiretValued,
   venueTypes,
   venueLabels,
-  provider,
-  venueProvider,
   venue,
 }: VenueFormProps) => {
   const isNewBankDetailsJourneyEnabled = useActiveFeature(
@@ -52,33 +37,6 @@ export const VenueEditionForm = ({
       <FormLayout fullWidthActions>
         <FormLayout.MandatoryInfo />
 
-        {!venue.isVirtual && provider && venueProvider && (
-          <OffersSynchronization
-            provider={provider}
-            venueProvider={venueProvider}
-            venue={venue}
-          />
-        )}
-
-        <Informations
-          isCreatedEntity={false}
-          readOnly={true}
-          updateIsSiretValued={updateIsSiretValued}
-          isVenueVirtual={venue.isVirtual}
-          siren={offerer.siren}
-        />
-
-        {!venue.isVirtual && (
-          <FormLayout.Section
-            title="Adresse du lieu"
-            description="Cette adresse sera utilisée pour permettre aux jeunes de géolocaliser votre lieu."
-          >
-            <FormLayout.Row>
-              <AddressSelect />
-            </FormLayout.Row>
-          </FormLayout.Section>
-        )}
-
         <Activity
           venueTypes={venueTypes}
           venueLabels={venueLabels}
@@ -86,12 +44,7 @@ export const VenueEditionForm = ({
           isCreatingVenue={false}
         />
 
-        {!venue.isVirtual && (
-          <>
-            <Accessibility isCreatingVenue={false} />
-            <WithdrawalDetails />
-          </>
-        )}
+        {!venue.isVirtual && <Accessibility isCreatingVenue={false} />}
 
         <Contact isVenueVirtual={venue.isVirtual} isCreatingVenue={false} />
 
