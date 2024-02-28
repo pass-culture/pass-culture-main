@@ -8,6 +8,7 @@ import sqlalchemy as sqla
 from pcapi import repository
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories.categories import TITELIVE_MUSIC_TYPES
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
@@ -16,7 +17,6 @@ from pcapi.core.offers import models
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
-from pcapi.domain.music_types import TITELIVE_MUSIC_TYPES
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.repository import transaction
