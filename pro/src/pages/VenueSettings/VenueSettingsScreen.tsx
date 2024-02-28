@@ -19,7 +19,10 @@ import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
+import fullBackIcon from 'icons/full-back.svg'
 import strokeMailIcon from 'icons/stroke-mail.svg'
+import { ButtonLink } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { serializeEditVenueBodyModel } from './serializers'
 import { VenueSettingsForm } from './VenueSettingsForm'
@@ -174,30 +177,44 @@ export const VenueSettingsFormScreen = ({
   })
 
   return (
-    <FormikProvider value={formik}>
-      <form onSubmit={formik.handleSubmit} className={styles['venue-form']}>
-        <VenueSettingsForm
-          updateIsSiretValued={setIsSiretValued}
-          venueTypes={venueTypes}
-          venueLabels={venueLabels}
-          venueProvider={venueProviders}
-          provider={providers}
-          venue={venue}
-          offerer={offerer}
-        />
-      </form>
+    <>
+      <ButtonLink
+        variant={ButtonVariant.TERNARYPINK}
+        icon={fullBackIcon}
+        link={{
+          to: `/structures/${offerer.id}/lieux/${venue.id}`,
+        }}
+      >
+        Retour vers la page partenaire
+      </ButtonLink>
 
-      {isWithdrawalDialogOpen && (
-        <ConfirmDialog
-          cancelText="Ne pas envoyer"
-          confirmText="Envoyer un email"
-          leftButtonAction={handleCancelWithdrawalDialog}
-          onCancel={() => setIsWithdrawalDialogOpen(false)}
-          onConfirm={handleConfirmWithdrawalDialog}
-          icon={strokeMailIcon}
-          title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
-        />
-      )}
-    </FormikProvider>
+      <h1 className={styles['title']}>Paramètres de l’activité</h1>
+
+      <FormikProvider value={formik}>
+        <form onSubmit={formik.handleSubmit}>
+          <VenueSettingsForm
+            updateIsSiretValued={setIsSiretValued}
+            venueTypes={venueTypes}
+            venueLabels={venueLabels}
+            venueProvider={venueProviders}
+            provider={providers}
+            venue={venue}
+            offerer={offerer}
+          />
+        </form>
+
+        {isWithdrawalDialogOpen && (
+          <ConfirmDialog
+            cancelText="Ne pas envoyer"
+            confirmText="Envoyer un email"
+            leftButtonAction={handleCancelWithdrawalDialog}
+            onCancel={() => setIsWithdrawalDialogOpen(false)}
+            onConfirm={handleConfirmWithdrawalDialog}
+            icon={strokeMailIcon}
+            title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
+          />
+        )}
+      </FormikProvider>
+    </>
   )
 }
