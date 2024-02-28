@@ -51,7 +51,7 @@ requests = "2.31.0"
 rq = "1.16.0"
 schwifty = "2024.1.1.post0"
 semver = "3.0.2"
-sentry-sdk = { version = "1.40.5", extras = ["flask"] }
+sentry-sdk = { version = "1.40.6", extras = ["flask"] }
 sib-api-v3-sdk = "^7.6.0"
 spectree = "1.2.1"
 # FIXME (dbaty, 2023-01-04): do not use 1.4.46 that has a new
