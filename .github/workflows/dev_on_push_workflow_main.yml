@@ -55,10 +55,10 @@ jobs:
     with:
       ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       tag: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-      # Needed to run end-to-end tests, i.e. when either "pro" or
-      # "api" source code changes, which is the condition under which
-      # this step is run. In other words: always.
-      pcapi: true
+      # Needed to run end-to-end tests, i.e. when "api" source code changes.
+      # If no changes are made in "pro" source code.
+      # we can pull the image from testing env (tag=latest)
+      pcapi: ${{ needs.check-api.outputs.folder_changed == 'true' || github.ref == 'refs/heads/master' || startsWith(github.ref,'refs/heads/maint/v') }}
       # Extra when tests are run on master before deployment on testing.
       console: ${{ github.ref == 'refs/heads/master' }}
       # Needed to run backend tests.
@@ -152,7 +152,7 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
     with:
-      TAG: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      TAG: ${{ needs.check-api.outputs.folder_changed == 'true' && (github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha) || 'latest' }}
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
   deploy-storybook:
