@@ -123,6 +123,9 @@ class FeatureToggle(enum.Enum):
         "Activer la prévisualisation d'une offre adage lors de la création/édition sur le portail pro"
     )
     WIP_ENABLE_NEW_NAV_AB_TEST = "Activer l'A/B test de la nouvelle navigation du portail pro."
+    WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS = (
+        "Synchroniser les offres et stocks de cinéma avec les produits allociné"
+    )
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -190,6 +193,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_COLLECTIVE_CUSTOM_CONTACT,
     FeatureToggle.WIP_ENABLE_ADAGE_PREVIEW_OFFER_IN_PRO,
     FeatureToggle.WIP_ENABLE_NEW_NAV_AB_TEST,
+    FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
@@ -203,6 +207,7 @@ if settings.IS_TESTING:
         FeatureToggle.ENABLE_CHARLIE_BOOKINGS_API,
         FeatureToggle.WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API,
         FeatureToggle.WIP_ENABLE_OFFER_CREATION_API_V1,
+        FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS,
     }
 
     FEATURES_DISABLED_BY_DEFAULT = tuple(testing_features_disabled_by_default - features_to_enable)
