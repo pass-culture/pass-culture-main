@@ -139,13 +139,13 @@ export const PartnerPage = ({
       <PartnerPageIndividualSection
         venueId={venue.id}
         isVisibleInApp={Boolean(venue.isVisibleInApp)}
-        displayTitle
+        isDisplayedInHomepage
       />
       <PartnerPageCollectiveSection
         collectiveDmsApplications={venue.collectiveDmsApplications}
         venueId={venue.id}
         hasAdageId={venue.hasAdageId}
-        displayTitle
+        isDisplayedInHomepage
       />
     </Card>
   )

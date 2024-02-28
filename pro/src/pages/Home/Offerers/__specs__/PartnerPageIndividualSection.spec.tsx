@@ -18,7 +18,7 @@ describe('PartnerPageIndividualSection', () => {
     const props = {
       venueId: 7,
       isVisibleInApp: true,
-      displayTitle: true,
+      isDisplayedInHomepage: true,
     }
 
     renderPartnerPageIndividualSection(props)
@@ -33,11 +33,32 @@ describe('PartnerPageIndividualSection', () => {
     expect(screen.getByText('Copier le lien de la page')).toBeInTheDocument()
   })
 
-  it('should display right info when not title', () => {
+  it('should display right info when is visible and in homepage', () => {
+    const props: PartnerPageIndividualSectionProps = {
+      venueId: 7,
+      isVisibleInApp: true,
+      isDisplayedInHomepage: true,
+    }
+
+    renderPartnerPageIndividualSection(props)
+
+    expect(screen.getByText('Grand public')).toBeInTheDocument()
+    expect(
+      screen.queryByText('État de votre page partenaire sur l’application :')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'Votre page partenaire est visible sur l’application pass Culture.'
+      )
+    ).toBeInTheDocument()
+    expect(screen.getByText('Copier le lien de la page')).toBeInTheDocument()
+  })
+
+  it('should display right info when is visible and in venue form', () => {
     const props = {
       venueId: 7,
       isVisibleInApp: true,
-      displayTitle: false,
+      isDisplayedInHomepage: false,
     }
 
     renderPartnerPageIndividualSection(props)
@@ -47,18 +68,18 @@ describe('PartnerPageIndividualSection', () => {
       screen.getByText('État de votre page partenaire sur l’application :')
     ).toBeInTheDocument()
     expect(
-      screen.getByText(
+      screen.queryByText(
         'Votre page partenaire est visible sur l’application pass Culture.'
       )
-    ).toBeInTheDocument()
+    ).not.toBeInTheDocument()
     expect(screen.getByText('Copier le lien de la page')).toBeInTheDocument()
   })
 
-  it('should display right info when not visible and not title', () => {
+  it('should display right info when not visible and not title and in venue form', () => {
     const props = {
       venueId: 7,
       isVisibleInApp: false,
-      displayTitle: false,
+      isDisplayedInHomepage: false,
     }
 
     renderPartnerPageIndividualSection(props)
@@ -67,10 +88,10 @@ describe('PartnerPageIndividualSection', () => {
       screen.getByText('État de votre page partenaire sur l’application :')
     ).toBeInTheDocument()
     expect(
-      screen.getByText(
+      screen.queryByText(
         'Votre page n’est pas visible par les utilisateurs de l’application pass Culture. Vos offres publiées restent cependant visibles et réservables par les bénéficiaires.'
       )
-    ).toBeInTheDocument()
+    ).not.toBeInTheDocument()
     expect(
       screen.queryByText('Copier le lien de la page')
     ).not.toBeInTheDocument()
