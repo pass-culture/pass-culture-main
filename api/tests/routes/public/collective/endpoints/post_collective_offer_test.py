@@ -214,12 +214,18 @@ class CollectiveOffersPublicPostOfferTest:
 
         assert response.status_code == 404
 
-    def test_bad_venue_id(self, public_client, payload, venue_provider, api_key):
-        payload["venueId"] = -1
+    def test_unlinked_venue(self, public_client, payload, api_key):
+        payload["venueId"] = offerers_factories.VenueFactory().id
 
         with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
+        assert response.status_code == 404
+
+    def test_venue_id_not_found(self, public_client, payload, api_key):
+        payload["venueId"] = 0
+
+        response = public_client.post("/v2/collective/offers/", json=payload)
         assert response.status_code == 404
 
     def test_invalid_image_size(self, public_client, payload, api_key):
