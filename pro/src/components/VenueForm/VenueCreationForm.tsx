@@ -142,7 +142,7 @@ export const VenueCreationForm = ({
         }
         {!initialIsVirtual && (
           <FormLayout.Section
-            title="Adresse du lieu"
+            title="Adresse de l’activité"
             description="Cette adresse sera utilisée pour permettre aux jeunes de géolocaliser votre lieu."
           >
             <FormLayout.Row>
