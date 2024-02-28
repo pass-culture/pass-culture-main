@@ -21,7 +21,7 @@ const Accessibility = ({ isCreatingVenue }: AccessiblityProps) => {
   )
 
   return (
-    <FormLayout.Section title="Accessibilité du lieu">
+    <FormLayout.Section title="Critères d’accessibilité">
       <FormLayout.Row
         sideComponent={
           <InfoBox

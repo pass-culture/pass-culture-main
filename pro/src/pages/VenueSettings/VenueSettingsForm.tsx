@@ -10,7 +10,6 @@ import { AddressSelect } from 'components/Address'
 import FormLayout from 'components/FormLayout'
 import { VenueFormValues } from 'components/VenueForm'
 import BankAccountInfos from 'components/VenueForm//BankAccountInfos/BankAccountInfos'
-import { Contact } from 'components/VenueForm//Contact'
 import { OffersSynchronization } from 'components/VenueForm//OffersSynchronization'
 import { VenueFormActionBar } from 'components/VenueForm//VenueFormActionBar'
 import { WithdrawalDetails } from 'components/VenueForm//WithdrawalDetails'
@@ -126,7 +125,27 @@ export const VenueSettingsForm = ({
 
         {!venue.isVirtual && <WithdrawalDetails />}
 
-        <Contact isVenueVirtual={venue.isVirtual} isCreatingVenue={false} />
+        <FormLayout.Section title="Notifications de réservations">
+          <FormLayout.Row
+            sideComponent={
+              venue.isVirtual ? null : (
+                <InfoBox>
+                  Cette adresse s’appliquera par défaut à toutes vos offres,
+                  vous pourrez la modifier à l’échelle de chaque offre.
+                </InfoBox>
+              )
+            }
+          >
+            <TextInput
+              name="bookingEmail"
+              label="Adresse email"
+              type="email"
+              placeholder="email@exemple.com"
+              isOptional={venue.isVirtual}
+              disabled={venue.isVirtual}
+            />
+          </FormLayout.Row>
+        </FormLayout.Section>
 
         {(!isNewBankDetailsJourneyEnabled ||
           (isNewBankDetailsJourneyEnabled && !venue?.siret)) && (
