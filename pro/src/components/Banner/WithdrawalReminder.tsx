@@ -1,11 +1,11 @@
 import React from 'react'
 
-import { Banner } from 'ui-kit'
+import Callout from 'components/Callout/Callout'
 import { CGU_URL } from 'utils/config'
 
 const WithdrawalReminder = () => {
   return (
-    <Banner
+    <Callout
       links={[
         {
           href: CGU_URL,
@@ -13,11 +13,10 @@ const WithdrawalReminder = () => {
           isExternal: true,
         },
       ]}
-      type="notification-info"
     >
       La livraison d’article est interdite. Pour plus d’informations, veuillez
       consulter nos CGU.
-    </Banner>
+    </Callout>
   )
 }
 
