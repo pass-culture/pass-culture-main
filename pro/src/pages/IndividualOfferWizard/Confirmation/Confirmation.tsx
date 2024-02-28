@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { useOfferWizardMode } from 'hooks'
 import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
