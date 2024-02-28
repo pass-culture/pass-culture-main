@@ -261,13 +261,29 @@ class UpdateUserEmailIntegrationTest:
 
         assert user.email == new_email
 
+    def test_user_email_update_cancellation(self, client):
+        user = users_factories.BeneficiaryGrant18Factory()
+        current_email = user.email
 
-def _get_last_sent_email_url_params():
+        email_update_start_response = client.with_token(user.email).post("/native/v2/profile/update_email")
+        assert email_update_start_response == 204, email_update_start_response.json
+
+        [email_update_cancellation_token] = _get_last_sent_email_url_params("CANCELLATION_LINK")["token"]
+        email_update_cancellation_response = client.post(
+            "/native/v1/profile/email_update/cancel", json={"token": email_update_cancellation_token}
+        )
+        assert email_update_cancellation_response == 204
+
+        assert user.email == current_email
+        assert not user.isActive
+
+
+def _get_last_sent_email_url_params(link_param: str = "CONFIRMATION_LINK"):
     # extract new email from activation link, which is a firebase
     # dynamic link meaning that the real url needs to be extracted
     # from it.
     activation_email = mails_testing.outbox[-1]
-    confirmation_link = urlparse(activation_email["params"]["CONFIRMATION_LINK"])
+    confirmation_link = urlparse(activation_email["params"][link_param])
     base_url = parse_qs(confirmation_link.query)["link"][0]
     base_url_params = parse_qs(urlparse(base_url).query)
     return base_url_params
