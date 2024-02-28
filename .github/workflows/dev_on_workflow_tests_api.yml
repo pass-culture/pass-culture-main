@@ -293,7 +293,14 @@ jobs:
           run: |
             alembic downgrade pre@head:${{ steps.base_heads.outputs.pre }} --sql | sed '/squawk:ignore-next-statement/,/;$/d' > downgrade_pre.sql
             alembic downgrade post@head:${{ steps.base_heads.outputs.post }} --sql | sed '/squawk:ignore-next-statement/,/;$/d' > downgrade_post.sql
-      - uses: actions/checkout@v1
+            ls -l
+            pwd
+      - name: "debug"
+        run: |
+          ls -l
+          pwd
+          echo "migration_upgrades"
+          cat upgrade_pre.sql
       - uses: sbdchd/squawk-action@v1
         with:
           pattern: "./*.sql"

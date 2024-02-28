@@ -472,6 +472,7 @@ def get_all_music_types() -> offers_serialize.GetMusicTypesResponse:
     api=blueprint.pro_private_schema,
 )
 def get_event_music_types() -> offers_serialize.GetMusicTypesResponse:
+    # Trigger ci
     return offers_serialize.GetMusicTypesResponse(
         __root__=[
             offers_serialize.MusicTypeResponse(gtl_id=music_type.gtl_id, label=music_type.label)
