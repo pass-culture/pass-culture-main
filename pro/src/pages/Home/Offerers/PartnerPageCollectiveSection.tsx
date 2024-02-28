@@ -14,14 +14,14 @@ export type PartnerPageCollectiveSectionProps = {
   collectiveDmsApplications: DMSApplicationForEAC[]
   venueId: number
   hasAdageId: boolean
-  displayTitle?: boolean
+  isDisplayedInHomepage?: boolean
 }
 
 export function PartnerPageCollectiveSection({
   collectiveDmsApplications,
   venueId,
   hasAdageId,
-  displayTitle = false,
+  isDisplayedInHomepage = false,
 }: PartnerPageCollectiveSectionProps) {
   const { logEvent } = useAnalytics()
 
@@ -41,7 +41,7 @@ export function PartnerPageCollectiveSection({
     })
   }
 
-  const header = displayTitle ? (
+  const header = isDisplayedInHomepage ? (
     <h4 className={styles['details-title']}>Enseignants</h4>
   ) : (
     <span className={styles['details-normal']}>
@@ -56,12 +56,13 @@ export function PartnerPageCollectiveSection({
           {header}
           <Tag variant={TagVariant.LIGHT_GREEN}>Référencé sur ADAGE</Tag>
         </div>
-
-        <p className={styles['details-description']}>
-          Les enseignants voient les offres vitrines et celles que vous adressez
-          à leur établissement sur ADAGE. Complétez vos informations à
-          destination des enseignants pour qu’ils vous contactent !
-        </p>
+        {isDisplayedInHomepage && (
+          <p className={styles['details-description']}>
+            Les enseignants voient les offres vitrines et celles que vous
+            adressez à leur établissement sur ADAGE. Complétez vos informations
+            à destination des enseignants pour qu’ils vous contactent !
+          </p>
+        )}
       </section>
     )
   } else if (lastDmsApplication === null) {

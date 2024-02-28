@@ -104,12 +104,29 @@ describe('PartnerPages', () => {
     expect(screen.getByText('Référencement en cours')).toBeInTheDocument()
   })
 
-  it('should display the EAC section when it has an adageId', () => {
+  it('should display the EAC section when it has an adageId in homepage', () => {
     renderPartnerPageCollectiveSection({
       collectiveDmsApplications: [],
       hasAdageId: true,
+      isDisplayedInHomepage: true,
     })
 
     expect(screen.getByText('Référencé sur ADAGE')).toBeInTheDocument()
+    expect(
+      screen.getByText(/Les enseignants voient les offres vitrines/)
+    ).toBeInTheDocument()
+  })
+
+  it('should display the EAC section when it has an adageId in venue form', () => {
+    renderPartnerPageCollectiveSection({
+      collectiveDmsApplications: [],
+      hasAdageId: true,
+      isDisplayedInHomepage: false,
+    })
+
+    expect(screen.getByText('Référencé sur ADAGE')).toBeInTheDocument()
+    expect(
+      screen.queryByText(/es enseignants voient les offres vitrines/)
+    ).not.toBeInTheDocument()
   })
 })
