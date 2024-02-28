@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import {
@@ -93,6 +91,7 @@ const IndividualOfferConfirmationScreen = ({
             to: '/offre/creation' + queryString,
             isExternal: true,
           }}
+          className={styles['confirmation-action']}
           variant={ButtonVariant.SECONDARY}
         >
           Créer une nouvelle offre
@@ -102,6 +101,7 @@ const IndividualOfferConfirmationScreen = ({
             to: `/offres`,
             isExternal: false,
           }}
+          className={styles['confirmation-action']}
           variant={ButtonVariant.PRIMARY}
         >
           Voir la liste des offres
