@@ -26,9 +26,6 @@ import { VenueEditionFormScreen } from 'screens/VenueForm/VenueEditionFormScreen
 import Spinner from 'ui-kit/Spinner/Spinner'
 import Tabs, { Tab } from 'ui-kit/Tabs/Tabs'
 
-import useGetProviders from '../../core/Venue/adapters/getProviderAdapter/useGetProvider'
-import useGetVenueProviders from '../../core/Venue/adapters/getVenueProviderAdapter/useGetVenueProvider'
-
 import { offerHasBookingQuantity } from './utils'
 import { VenueEditionHeader } from './VenueEditionHeader'
 
@@ -62,16 +59,6 @@ export const VenueEdition = (): JSX.Element | null => {
     error: errorOfferer,
     data: offerer,
   } = useGetOfferer(offererId)
-  const {
-    isLoading: isLoadingProviders,
-    error: errorProviders,
-    data: providers,
-  } = useGetProviders(Number(venueId))
-  const {
-    isLoading: isLoadingVenueProviders,
-    error: errorVenueProviders,
-    data: venueProviders,
-  } = useGetVenueProviders(Number(venueId))
 
   const apiFilters = {
     ...DEFAULT_SEARCH_FILTERS,
@@ -86,14 +73,7 @@ export const VenueEdition = (): JSX.Element | null => {
 
   const hasBookingQuantity = offerHasBookingQuantity(venueOffers?.offers)
 
-  if (
-    errorOfferer ||
-    errorVenue ||
-    errorVenueTypes ||
-    errorVenueLabels ||
-    errorVenueProviders ||
-    errorProviders
-  ) {
+  if (errorOfferer || errorVenue || errorVenueTypes || errorVenueLabels) {
     const loadingError = [
       errorOfferer,
       errorVenue,
@@ -112,8 +92,6 @@ export const VenueEdition = (): JSX.Element | null => {
     isLoadingVenue ||
     isLoadingVenueTypes ||
     isLoadingVenueLabels ||
-    isLoadingProviders ||
-    isLoadingVenueProviders ||
     isLoadingOfferer ||
     isLoadingVenueOffers ||
     !offerer ||
@@ -168,9 +146,7 @@ export const VenueEdition = (): JSX.Element | null => {
                 offerer={offerer}
                 venueTypes={venueTypes}
                 venueLabels={venueLabels}
-                providers={providers}
                 venue={venue}
-                venueProviders={venueProviders}
                 hasBookingQuantity={venue?.id ? hasBookingQuantity : false}
               />
             }

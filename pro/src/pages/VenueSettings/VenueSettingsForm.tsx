@@ -14,7 +14,6 @@ import { Informations } from 'components/VenueForm//Informations'
 import { OffersSynchronization } from 'components/VenueForm//OffersSynchronization'
 import { VenueFormActionBar } from 'components/VenueForm//VenueFormActionBar'
 import { WithdrawalDetails } from 'components/VenueForm//WithdrawalDetails'
-import { Accessibility } from 'components/VenueForm/Accessibility'
 import { Providers } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
@@ -49,8 +48,6 @@ export const VenueSettingsForm = ({
   return (
     <div>
       <FormLayout fullWidthActions>
-        <FormLayout.MandatoryInfo />
-
         {!venue.isVirtual && provider && venueProvider && (
           <OffersSynchronization
             provider={provider}
@@ -85,12 +82,7 @@ export const VenueSettingsForm = ({
           isCreatingVenue={false}
         />
 
-        {!venue.isVirtual && (
-          <>
-            <Accessibility isCreatingVenue={false} />
-            <WithdrawalDetails />
-          </>
-        )}
+        {!venue.isVirtual && <WithdrawalDetails />}
 
         <Contact isVenueVirtual={venue.isVirtual} isCreatingVenue={false} />
 
