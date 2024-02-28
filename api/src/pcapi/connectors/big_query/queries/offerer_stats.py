@@ -113,6 +113,7 @@ class OffererDailyViewsLast180Days(BaseQuery):
         FROM `{settings.BIG_QUERY_TABLE_BASENAME}.{DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE}`
         WHERE
             DATE(event_date) >= DATE_SUB(CURRENT_DATE(), INTERVAL 180 DAY)
+            AND offerer_id IS NOT NULL
         GROUP BY offerer_id
         ORDER BY offererId
         """
@@ -143,6 +144,7 @@ class OffererTopOffersAndTotalViewsLast30Days(BaseQuery):
         FROM
             `{settings.BIG_QUERY_TABLE_BASENAME}.{TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE}`
         WHERE
+            offerer_id IS NOT NULL AND
             DATE(execution_date) = (
                 SELECT
                     MAX(DATE(execution_date))
@@ -157,6 +159,7 @@ class OffererTopOffersAndTotalViewsLast30Days(BaseQuery):
         FROM
             `{settings.BIG_QUERY_TABLE_BASENAME}.{DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE}`
         WHERE
+            offerer_id IS NOT NULL AND
             day_seniority <= 30 group by offerer_id
         )
 
@@ -170,6 +173,7 @@ class OffererTopOffersAndTotalViewsLast30Days(BaseQuery):
         LEFT JOIN
             total_views ta
         ON f.offerer_id = ta.offerer_id
+        WHERE f.offerer_id IS NOT NULL
         GROUP BY f.offerer_id, ta.totalViews
         ORDER BY offererId
         """
