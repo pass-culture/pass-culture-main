@@ -16,15 +16,15 @@ import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import { venueSubmitRedirectUrl } from 'screens/VenueForm/utils/venueSubmitRedirectUrl'
-import { TextInput, InfoBox, Select } from 'ui-kit'
+import { TextInput, InfoBox, Select, Banner } from 'ui-kit'
 
 import useCurrentUser from '../../hooks/useCurrentUser'
 import RouteLeavingGuard, { BlockerFunction } from '../RouteLeavingGuard'
 
 import { Accessibility } from './Accessibility'
-import { EACInformation } from './EACInformation/EACInformation'
 import { ImageUploaderVenue } from './ImageUploaderVenue'
 import SiretOrCommentFields from './Informations/SiretOrCommentFields'
+import styles from './VenueCreationForm.module.scss'
 import { VenueFormActionBar } from './VenueFormActionBar'
 
 import { VenueFormValues } from '.'
@@ -209,7 +209,17 @@ export const VenueCreationForm = ({
                 : 'Pour publier des offres à destination des scolaires, votre lieu doit être référencé sur ADAGE, la plateforme dédiée aux enseignants et aux chefs d’établissements.'
             }
           >
-            <EACInformation />
+            <p className={styles['eac-description-info']}>
+              Il s’agit d’un formulaire vous permettant de renseigner vos
+              informations EAC. Les informations renseignées seront visibles par
+              les enseignants et chefs d’établissement sur Adage (Application
+              dédiée à la généralisation....)
+            </p>
+
+            <Banner type="notification-info">
+              Une fois votre lieu créé, vous pourrez renseigner des informations
+              pour les enseignants en revenant sur cette page.
+            </Banner>
           </FormLayout.Section>
         )}
 
