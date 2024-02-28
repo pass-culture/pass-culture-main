@@ -16,6 +16,7 @@ import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import { venueSubmitRedirectUrl } from 'screens/VenueForm/utils/venueSubmitRedirectUrl'
+import { TextInput, InfoBox } from 'ui-kit'
 
 import useCurrentUser from '../../hooks/useCurrentUser'
 import RouteLeavingGuard, { BlockerFunction } from '../RouteLeavingGuard'
@@ -25,7 +26,7 @@ import { Activity } from './Activity'
 import { Contact } from './Contact'
 import { EACInformation } from './EACInformation/EACInformation'
 import { ImageUploaderVenue } from './ImageUploaderVenue'
-import { Informations } from './Informations'
+import SiretOrCommentFields from './Informations/SiretOrCommentFields'
 import { VenueFormActionBar } from './VenueFormActionBar'
 
 import { VenueFormValues } from '.'
@@ -66,6 +67,7 @@ export const VenueCreationForm = ({
   initialIsVirtual = false,
 }: VenueFormProps) => {
   const {
+    initialValues,
     values: { isPermanent },
   } = useFormikContext<VenueFormValues>()
   const shouldDisplayImageVenueUploaderSection = isPermanent
@@ -74,6 +76,7 @@ export const VenueCreationForm = ({
 
   const [canOffererCreateCollectiveOffer, setCanOffererCreateCollectiveOffer] =
     useState(false)
+  const [isFieldNameFrozen, setIsFieldNameFrozen] = useState(false)
   const [isSiretValued, setIsSiretValued] = useState(true)
   const notify = useNotification()
   useEffect(() => {
@@ -97,14 +100,44 @@ export const VenueCreationForm = ({
       <FormLayout fullWidthActions>
         <FormLayout.MandatoryInfo />
 
-        <Informations
-          isCreatedEntity={true}
-          readOnly={false}
-          updateIsSiretValued={updateIsSiretValued}
-          isVenueVirtual={initialIsVirtual}
-          setIsSiretValued={setIsSiretValued}
-          siren={offerer.siren}
-        />
+        <FormLayout.Section title="Informations du lieu">
+          {!initialIsVirtual && (
+            <FormLayout.Row>
+              <SiretOrCommentFields
+                initialSiret={initialValues.siret}
+                readOnly={Boolean(initialValues.siret)}
+                isToggleDisabled={false}
+                isCreatedEntity
+                setIsFieldNameFrozen={setIsFieldNameFrozen}
+                setIsSiretValued={setIsSiretValued}
+                updateIsSiretValued={updateIsSiretValued}
+                siren={offerer.siren}
+              />
+            </FormLayout.Row>
+          )}
+
+          <FormLayout.Row>
+            <TextInput
+              name="name"
+              label="Raison sociale"
+              disabled={isFieldNameFrozen || initialIsVirtual}
+            />
+          </FormLayout.Row>
+
+          {!initialIsVirtual && (
+            <FormLayout.Row
+              sideComponent={
+                <InfoBox>
+                  À remplir si différent de la raison sociale. En le
+                  remplissant, c’est ce dernier qui sera visible du public.
+                </InfoBox>
+              }
+            >
+              <TextInput name="publicName" label="Nom public" isOptional />
+            </FormLayout.Row>
+          )}
+        </FormLayout.Section>
+
         {
           /* istanbul ignore next: DEBT, TO FIX */
           !!shouldDisplayImageVenueUploaderSection && (
