@@ -1,7 +1,3 @@
-import typing
-
-import sqlalchemy as sa
-
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.models import db
@@ -81,10 +77,3 @@ def link_domain_to_national_program(
     db.session.add(link)
     if commit:
         db.session.commit()
-
-
-def get_national_programs_from_domains(domain_ids: typing.Sequence[int]) -> typing.Sequence[models.NationalProgram]:
-    query = models.EducationalDomain.query.filter(models.EducationalDomain.id.in_(domain_ids)).options(
-        sa.orm.load_only(models.EducationalDomain.id).joinedload(models.EducationalDomain.nationalPrograms)
-    )
-    return [program for domain in query for program in domain.nationalPrograms]

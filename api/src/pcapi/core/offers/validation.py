@@ -589,14 +589,16 @@ class MissingDomains(OfferValidationError):
     msg = "Domains can't be null if national program is set"
 
 
-def validate_national_program(nationalProgramId: int | None, domains: typing.Sequence[int] | None) -> None:
+def validate_national_program(
+    nationalProgramId: int | None, domains: typing.Sequence[educational_models.EducationalDomain] | None
+) -> None:
     if not domains and not nationalProgramId:
         return
 
     if not domains:
         raise MissingDomains()
 
-    nps = {np.id for np in np_api.get_national_programs_from_domains(domains)}
+    nps = {np.id for domain in domains for np in domain.nationalPrograms}
     if nationalProgramId not in nps:
         if not np_api.get_national_program(nationalProgramId):
             raise UnknownNationalProgram()
