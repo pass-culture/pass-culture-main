@@ -14,7 +14,7 @@ type VenueBodyModel = Omit<
   'managingOffererId' | 'venueLabelId'
 >
 
-export interface EditVirtualVenueBodyModel {
+interface EditVirtualVenueBodyModel {
   reimbursementPointId?: number | null
 }
 
@@ -56,20 +56,6 @@ const serializeCommunData = (
   }
 
   return model
-}
-
-export const serializePostVenueBodyModel = (
-  formValues: VenueFormValues,
-  { hideSiret, offererId }: VenueBodyModelParams
-): PostVenueBodyModel => {
-  const model = serializeCommunData(formValues, {
-    hideSiret,
-  })
-  return {
-    ...model,
-    venueLabelId: Number(formValues.venueLabel) || null,
-    managingOffererId: offererId,
-  }
 }
 
 export const serializeEditVenueBodyModel = (

@@ -4,11 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
-import {
-  VenueProviderResponse,
-  GetOffererResponseModel,
-  GetVenueResponseModel,
-} from 'apiClient/v1'
+import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { validationSchema, VenueFormValues } from 'components/VenueForm'
@@ -16,7 +12,6 @@ import { generateSiretValidationSchema } from 'components/VenueForm/Informations
 import { VenueEditionForm } from 'components/VenueForm/VenueEditionForm'
 import { Events } from 'core/FirebaseEvents/constants'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
-import { Providers } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
@@ -32,8 +27,6 @@ interface VenueEditionProps {
   offerer: GetOffererResponseModel
   venueTypes: SelectOption[]
   venueLabels: SelectOption[]
-  providers?: Providers[]
-  venueProviders?: VenueProviderResponse[]
   venue: GetVenueResponseModel
   hasBookingQuantity?: boolean
 }
@@ -43,15 +36,12 @@ export const VenueEditionFormScreen = ({
   offerer,
   venueTypes,
   venueLabels,
-  venueProviders,
   venue,
-  providers,
   hasBookingQuantity,
 }: VenueEditionProps): JSX.Element => {
   const navigate = useNavigate()
   const location = useLocation()
   const notify = useNotification()
-  const [isSiretValued, setIsSiretValued] = useState(Boolean(venue.siret))
   const { logEvent } = useAnalytics()
 
   const { currentUser } = useCurrentUser()
@@ -160,6 +150,7 @@ export const VenueEditionFormScreen = ({
     }
   }
 
+  const isSiretValued = Boolean(venue.siret)
   const generateSiretOrCommentValidationSchema: any = useMemo(
     () => generateSiretValidationSchema(isSiretValued, offerer.siren),
     [offerer.siren, isSiretValued]
@@ -190,11 +181,8 @@ export const VenueEditionFormScreen = ({
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit} className={styles['venue-form']}>
           <VenueEditionForm
-            updateIsSiretValued={setIsSiretValued}
             venueTypes={venueTypes}
             venueLabels={venueLabels}
-            venueProvider={venueProviders}
-            provider={providers}
             venue={venue}
             offerer={offerer}
           />

@@ -1,11 +1,4 @@
-import {
-  generatePath,
-  Navigate,
-  Route,
-  Routes,
-  useLocation,
-  useParams,
-} from 'react-router-dom'
+import { Navigate, Route, Routes, useParams } from 'react-router-dom'
 
 import { OfferStatus } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
@@ -23,7 +16,6 @@ import {
   Payload,
 } from 'pages/Offers/adapters/getFilteredOffersAdapter'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import Tabs, { Tab } from 'ui-kit/Tabs/Tabs'
 
 import useGetProviders from '../../core/Venue/adapters/getProviderAdapter/useGetProvider'
 import useGetVenueProviders from '../../core/Venue/adapters/getVenueProviderAdapter/useGetVenueProvider'
@@ -31,14 +23,13 @@ import { offerHasBookingQuantity } from '../VenueEdition/utils'
 
 import { VenueSettingsFormScreen } from './VenueSettingsScreen'
 
-export const VenueSettings = (): JSX.Element | null => {
+const VenueSettings = (): JSX.Element | null => {
   const homePath = '/accueil'
   const { offererId, venueId } = useParams<{
     offererId: string
     venueId: string
   }>()
   const notify = useNotification()
-  const location = useLocation()
 
   // TODO: refactor with the new loading pattern once we know which one to use
   const {
@@ -125,33 +116,9 @@ export const VenueSettings = (): JSX.Element | null => {
     )
   }
 
-  const tabs: Tab[] = [
-    {
-      key: 'individual',
-      label: 'Pour le grand public',
-      url: generatePath('/structures/:offererId/lieux/:venueId', {
-        offererId: String(offerer.id),
-        venueId: String(venue.id),
-      }),
-    },
-    {
-      key: 'collective',
-      label: 'Pour les enseignants',
-      url: generatePath('/structures/:offererId/lieux/:venueId/eac', {
-        offererId: String(offerer.id),
-        venueId: String(venue.id),
-      }),
-    },
-  ]
-  const activeStep = location.pathname.includes('eac')
-    ? 'collective'
-    : 'individual'
-
   return (
     <AppLayout>
       <div>
-        <Tabs tabs={tabs} selectedKey={activeStep} />
-
         <Routes>
           <Route
             path=""
