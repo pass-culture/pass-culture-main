@@ -242,7 +242,9 @@ describe('screens:SignupJourney::OffererForm', () => {
     )
     await userEvent.click(screen.getByText('Submit'))
     expect(
-      await screen.findByText('Le SIRET n’est pas visible')
+      await screen.findByText(
+        "Le propriétaire de ce SIRET s'oppose à la diffusion de ses données au public"
+      )
     ).toBeInTheDocument()
   })
 })
