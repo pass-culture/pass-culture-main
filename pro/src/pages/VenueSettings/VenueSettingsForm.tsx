@@ -1,3 +1,4 @@
+import { useFormikContext } from 'formik'
 import { useLocation } from 'react-router-dom'
 
 import {
@@ -7,18 +8,20 @@ import {
 } from 'apiClient/v1'
 import { AddressSelect } from 'components/Address'
 import FormLayout from 'components/FormLayout'
+import { VenueFormValues } from 'components/VenueForm'
 import { Activity } from 'components/VenueForm//Activity'
 import BankAccountInfos from 'components/VenueForm//BankAccountInfos/BankAccountInfos'
 import { Contact } from 'components/VenueForm//Contact'
-import { Informations } from 'components/VenueForm//Informations'
 import { OffersSynchronization } from 'components/VenueForm//OffersSynchronization'
 import { VenueFormActionBar } from 'components/VenueForm//VenueFormActionBar'
 import { WithdrawalDetails } from 'components/VenueForm//WithdrawalDetails'
+import SiretOrCommentFields from 'components/VenueForm/Informations/SiretOrCommentFields'
 import { Providers } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
+import { TextInput, InfoBox } from 'ui-kit'
 
 interface VenueFormProps {
   offerer: GetOffererResponseModel
@@ -39,6 +42,7 @@ export const VenueSettingsForm = ({
   venueProvider,
   venue,
 }: VenueFormProps) => {
+  const { initialValues } = useFormikContext<VenueFormValues>()
   const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
@@ -56,13 +60,37 @@ export const VenueSettingsForm = ({
           />
         )}
 
-        <Informations
-          isCreatedEntity={false}
-          readOnly={true}
-          updateIsSiretValued={updateIsSiretValued}
-          isVenueVirtual={venue.isVirtual}
-          siren={offerer.siren}
-        />
+        <FormLayout.Section title="Informations administratives">
+          {!venue.isVirtual && (
+            <FormLayout.Row>
+              <SiretOrCommentFields
+                initialSiret={initialValues.siret}
+                readOnly
+                isToggleDisabled
+                isCreatedEntity={false}
+                updateIsSiretValued={updateIsSiretValued}
+                siren={offerer.siren}
+              />
+            </FormLayout.Row>
+          )}
+
+          <FormLayout.Row>
+            <TextInput name="name" label="Raison sociale" disabled />
+          </FormLayout.Row>
+
+          {!venue.isVirtual && (
+            <FormLayout.Row
+              sideComponent={
+                <InfoBox>
+                  À remplir si différent de la raison sociale. En le
+                  remplissant, c’est ce dernier qui sera visible du public.
+                </InfoBox>
+              }
+            >
+              <TextInput name="publicName" label="Nom public" isOptional />
+            </FormLayout.Row>
+          )}
+        </FormLayout.Section>
 
         {!venue.isVirtual && (
           <FormLayout.Section
