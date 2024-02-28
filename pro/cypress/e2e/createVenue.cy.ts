@@ -1,11 +1,17 @@
 describe('Create a venue', () => {
   // siret of Bar des amis
-  const siret = '222222233' + Math.random().toString().substring(2, 7)
-  const randomSeed = new Date().getTime()
-  const venueNameWithSiret = 'Lieu avec Siret ' + randomSeed
-  const venueNameWithoutSiret = 'Lieu sans Siret ' + randomSeed // just to distinguish them
+  let siret: string
+  let randomSeed: number
+  let venueNameWithSiret: string
+  let venueNameWithoutSiret: string
 
   beforeEach(() => {
+    // siret of Bar des amis
+    siret = '222222233' + Math.random().toString().substring(2, 7)
+    randomSeed = new Date().getTime()
+    venueNameWithSiret = 'Lieu avec Siret ' + randomSeed
+    venueNameWithoutSiret = 'Lieu sans Siret ' + randomSeed // just to distinguish them
+
     cy.intercept('GET', `http://localhost:5001/sirene/siret/${siret}`, (req) =>
       req.reply({
         statusCode: 200,
@@ -45,13 +51,12 @@ describe('Create a venue', () => {
       .type('{downarrow}{enter}')
     cy.get('#venueType').select('Centre culturel')
     cy.contains('Visuel').click()
-    cy.get('#bookingEmail').type('email@axample.com')
+    cy.get('#bookingEmail').type('email@example.com')
     cy.contains('Enregistrer et créer le lieu').click()
     cy.contains('Plus tard').click()
-    // first should not be necessary, but it is in ci...
-    cy.get('a[aria-label="Gérer la page de ' + venueNameWithoutSiret + '"]')
-      .first()
-      .click()
+    cy.get(
+      'a[aria-label="Gérer la page de ' + venueNameWithoutSiret + '"]'
+    ).click()
     cy.contains('Enregistrer et quitter').click()
 
     // Create a venue with SIRET
@@ -62,13 +67,12 @@ describe('Create a venue', () => {
     cy.get('#venueType').select('Festival')
     cy.contains('Moteur').click()
     cy.contains('Auditif').click()
-    cy.get('#bookingEmail').type('email@axample.com')
+    cy.get('#bookingEmail').type('email@example.com')
     cy.contains('Enregistrer et créer le lieu').click()
     cy.contains('Plus tard').click()
-    // first should not be necessary, but it is in ci...
-    cy.get('a[aria-label="Gérer la page de ' + venueNameWithSiret + '"]')
-      .first()
-      .click()
+    cy.get(
+      'a[aria-label="Gérer la page de ' + venueNameWithSiret + '"]'
+    ).click()
     cy.contains('Enregistrer et quitter').click()
     cy.contains('Bienvenue dans l’espace acteurs culturels').should(
       'be.visible'
