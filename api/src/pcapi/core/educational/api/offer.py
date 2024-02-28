@@ -25,11 +25,9 @@ from pcapi.core.educational.utils import get_image_from_url
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.object_storage import store_public_object
 from pcapi.core.offerers import api as offerers_api
-from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offer_validation
-from pcapi.core.providers import models as providers_models
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models import feature
@@ -433,16 +431,8 @@ def create_collective_offer_public(
 ) -> educational_models.CollectiveOffer:
     from pcapi.core.offers.api import update_offer_fraud_information
 
-    offerers_api.can_venue_create_educational_offer(body.venue_id)
-
-    venue_query = offerers_models.Venue.query.filter(offerers_models.Venue.id == body.venue_id)
-    venue_query = venue_query.join(providers_models.VenueProvider, offerers_models.Venue.venueProviders)
-    venue_query = venue_query.filter(providers_models.VenueProvider.providerId == requested_id)
-
-    venue = venue_query.one_or_none()
-    if not venue:
-        raise offerers_exceptions.VenueNotFoundException()
-    typing.cast(offerers_models.Venue, venue)
+    venue = educational_repository.fetch_venue_for_new_offer(body.venue_id, requested_id)
+    offerers_api.can_venue_create_educational_offer(venue.managingOfferer)
 
     if body.beginning_datetime < datetime.datetime(2023, 9, 1, tzinfo=body.beginning_datetime.tzinfo):
         # FIXME: remove after 2023-09-01
@@ -463,11 +453,12 @@ def create_collective_offer_public(
     validation.validate_offer_venue(body.offer_venue)
 
     educational_domains = educational_repository.get_educational_domains_from_ids(body.domains)
-    if not len(educational_domains) == len(body.domains):
-        raise exceptions.EducationalDomainsNotFound()
 
     if feature.FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API.is_active():
-        offer_validation.validate_national_program(body.nationalProgramId, body.domains)
+        offer_validation.validate_national_program(body.nationalProgramId, educational_domains)
+
+    if not len(educational_domains) == len(body.domains):
+        raise exceptions.EducationalDomainsNotFound()
 
     institution = educational_repository.get_educational_institution_public(
         institution_id=body.educational_institution_id,
@@ -505,9 +496,9 @@ def create_collective_offer_public(
         providerId=requested_id,
         nationalProgramId=body.nationalProgramId,
         formats=body.formats,
+        bookingEmails=body.booking_emails,
     )
 
-    collective_offer.bookingEmails = body.booking_emails
     collective_stock = educational_models.CollectiveStock(
         collectiveOffer=collective_offer,
         beginningDatetime=body.beginning_datetime,
@@ -584,7 +575,7 @@ def edit_collective_offer_public(
                 raise exceptions.EducationalDomainsNotFound()
 
             if feature.FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API.is_active():
-                offer_validation.validate_national_program(new_values.get("nationalProgramId"), value)
+                offer_validation.validate_national_program(new_values.get("nationalProgramId"), domains)
             offer.domains = domains
         elif key in ("educationalInstitutionId", "educationalInstitution"):
             if value is not None:

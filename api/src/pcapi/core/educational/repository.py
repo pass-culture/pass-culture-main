@@ -3,7 +3,7 @@ from datetime import datetime
 from datetime import time
 from datetime import timedelta
 from decimal import Decimal
-from typing import Iterable
+import typing
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
@@ -15,9 +15,10 @@ import pcapi.core.categories.subcategories_v2 as subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
+from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import repository as offers_repository
-from pcapi.core.providers import models as provider_models
+from pcapi.core.providers import models as providers_models
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models import offer_mixin
@@ -591,7 +592,7 @@ def _get_filtered_collective_bookings_query(
     status_filter: educational_models.CollectiveBookingStatusFilter | None = None,
     event_date: date | None = None,
     venue_id: int | None = None,
-    extra_joins: Iterable[sa.Column] | None = None,
+    extra_joins: typing.Iterable[sa.Column] | None = None,
 ) -> sa.orm.Query:
     extra_joins = extra_joins or tuple()
 
@@ -652,7 +653,7 @@ def list_public_collective_offers(
 ) -> list[educational_models.CollectiveOffer]:
     query = educational_models.CollectiveOffer.query
 
-    query = query.join(provider_models.Provider, educational_models.CollectiveOffer.provider)
+    query = query.join(providers_models.Provider, educational_models.CollectiveOffer.provider)
     query = query.join(educational_models.CollectiveStock, educational_models.CollectiveOffer.collectiveStock)
     filters = [
         educational_models.CollectiveOffer.providerId == required_id,
@@ -1044,7 +1045,7 @@ def get_collective_offer_template_by_id_for_adage(offer_id: int) -> educational_
     )
 
 
-def get_query_for_collective_offers_by_ids_for_user(user: User, ids: Iterable[int]) -> BaseQuery:
+def get_query_for_collective_offers_by_ids_for_user(user: User, ids: typing.Iterable[int]) -> BaseQuery:
     query = educational_models.CollectiveOffer.query
     if not user.has_admin_role:
         query = query.join(offerers_models.Venue, educational_models.CollectiveOffer.venue)
@@ -1055,7 +1056,7 @@ def get_query_for_collective_offers_by_ids_for_user(user: User, ids: Iterable[in
     return query
 
 
-def get_query_for_collective_offers_template_by_ids_for_user(user: User, ids: Iterable[int]) -> BaseQuery:
+def get_query_for_collective_offers_template_by_ids_for_user(user: User, ids: typing.Iterable[int]) -> BaseQuery:
     query = educational_models.CollectiveOfferTemplate.query
     if not user.has_admin_role:
         query = query.join(offerers_models.Venue, educational_models.CollectiveOfferTemplate.venue)
@@ -1066,7 +1067,7 @@ def get_query_for_collective_offers_template_by_ids_for_user(user: User, ids: It
     return query
 
 
-def get_educational_domains_from_ids(ids: Iterable[int]) -> list[educational_models.EducationalDomain]:
+def get_educational_domains_from_ids(ids: typing.Iterable[int]) -> list[educational_models.EducationalDomain]:
     return (
         educational_models.EducationalDomain.query.filter(educational_models.EducationalDomain.id.in_(ids))
         .options(sa.orm.joinedload(educational_models.EducationalDomain.nationalPrograms))
@@ -1352,3 +1353,17 @@ def get_venue_base_query() -> BaseQuery:
     return offerers_models.Venue.query.filter(
         offerers_models.Venue.adageId.is_not(None),
     ).options(sa.orm.joinedload(offerers_models.Venue.adage_addresses))
+
+
+def fetch_venue_for_new_offer(venue_id: int, requested_provider_id: int) -> offerers_models.Venue:
+    query = (
+        offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
+        .join(providers_models.VenueProvider, offerers_models.Venue.venueProviders)
+        .filter(providers_models.VenueProvider.providerId == requested_provider_id)
+        .options(sa_orm.joinedload(offerers_models.Venue.managingOfferer))
+    )
+
+    venue = query.one_or_none()
+    if not venue:
+        raise offerers_exceptions.VenueNotFoundException()
+    return typing.cast(offerers_models.Venue, venue)
