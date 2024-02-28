@@ -11,7 +11,7 @@ interface AccessiblityProps {
   isCreatingVenue: boolean
 }
 
-const Accessibility = ({ isCreatingVenue }: AccessiblityProps) => {
+export const Accessibility = ({ isCreatingVenue }: AccessiblityProps) => {
   const { values, setFieldValue, initialValues } =
     useFormikContext<VenueFormValues>()
 
@@ -57,5 +57,3 @@ const Accessibility = ({ isCreatingVenue }: AccessiblityProps) => {
     </FormLayout.Section>
   )
 }
-
-export default Accessibility

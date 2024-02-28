@@ -21,7 +21,7 @@ import { TextInput, InfoBox, Select, Banner } from 'ui-kit'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import RouteLeavingGuard, { BlockerFunction } from '../RouteLeavingGuard'
 
-import { Accessibility } from './Accessibility'
+import { Accessibility } from './Accessibility/Accessibility'
 import { ImageUploaderVenue } from './ImageUploaderVenue'
 import SiretOrCommentFields from './Informations/SiretOrCommentFields'
 import styles from './VenueCreationForm.module.scss'
