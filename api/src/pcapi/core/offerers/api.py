@@ -767,9 +767,9 @@ def create_offerer(
         )
         if user_offerer:
             user_offerer.validationStatus = ValidationStatus.VALIDATED
+            db.session.add(user_offerer)
         else:
             user_offerer = grant_user_offerer_access(offerer, user)
-        db.session.add(user_offerer)
 
         if offerer.isRejected:
             # When offerer was rejected, it is considered as a new offerer in validation process;
@@ -828,7 +828,10 @@ def create_offerer(
 
 
 def grant_user_offerer_access(offerer: models.Offerer, user: users_models.User) -> models.UserOfferer:
-    return models.UserOfferer(offerer=offerer, user=user, validationStatus=ValidationStatus.VALIDATED)
+    user_offerer = models.UserOfferer(offerer=offerer, user=user, validationStatus=ValidationStatus.VALIDATED)
+    db.session.add(user_offerer)
+    db.session.flush()
+    return user_offerer
 
 
 def _format_tags(tags: typing.Iterable[models.OffererTag]) -> str:
