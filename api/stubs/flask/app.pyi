@@ -1,13 +1,7 @@
 # isort: off
 # This file was automatically generated with `stubgen .../flask/app.py`
-# from Flask 2.0.3, and the following changes have been made:
-#   - a `redis_client` attribute has been added. Since we set this
-#     attribute when building the `app` object, accessing it from
-#     many parts of our code causes mypy warnings.
-#   - ditto for `generate_error_response`.
-#   - cached properties had to be typed somewhat incorrectly to please
-#     mypy: `name`, `logger` and `jinja_env`.
-# All changes appear between `<change>` and `</change>` tags.
+# from Flask 2.0.3 and then adapted to our needs. All changes appear
+# between `<change>` and `</change>` tags.
 
 import logging
 import os
@@ -96,6 +90,9 @@ class Flask(Scaffold):
     url_map: Incomplete
     subdomain_matching: Incomplete
     # <change>
+    # Since we set these attributes when building the `app` object,
+    # accessing it from many parts of our code causes mypy warnings.
+    # So we define them here.
     redis_client: redis.Redis
     generate_error_response: GenerateErrorResponse
     # </change>
@@ -218,5 +215,10 @@ class Flask(Scaffold):
     def app_context(self) -> AppContext: ...
     def request_context(self, environ: dict) -> RequestContext: ...
     def test_request_context(self, *args: t.Any, **kwargs: t.Any) -> RequestContext: ...
-    def wsgi_app(self, environ: dict, start_response: t.Callable) -> t.Any: ...
+    # <change>
+    # The `wsgi_app` method has been turned into an attribute so that
+    # mypy does not complain when we set it (which is what Flask
+    # documentation recommends to set middlewares).
+    wsgi_app: t.Callable[[dict, t.Callable], t.Any]
+    # </change>
     def __call__(self, environ: dict, start_response: t.Callable) -> t.Any: ...
