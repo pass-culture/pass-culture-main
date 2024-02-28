@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { UserRole } from 'apiClient/v1'
 import { findCurrentRoute } from 'app/AppRouter/findCurrentRoute'
 import Notification from 'components/Notification/Notification'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -111,6 +112,15 @@ const App = (): JSX.Element | null => {
       : `/connexion?de=${fromUrl}`
 
     return <Navigate to={loginUrl} replace />
+  }
+
+  if (
+    !currentRoute?.meta?.public &&
+    !currentRoute?.path.includes('/parcours-inscription') &&
+    currentUser !== null &&
+    currentUser.roles.includes(UserRole.NON_ATTACHED_PRO)
+  ) {
+    return <Navigate to="/parcours-inscription" replace />
   }
 
   return (
