@@ -1,23 +1,37 @@
-import { DEFAULT_ADDRESS_FORM_VALUES } from 'components/Address'
+import { DEFAULT_ADDRESS_FORM_VALUES } from 'components/Address/constants'
+import { AccessiblityEnum } from 'core/shared'
 
-import { DEFAULT_PRICING_POINT_FORM_VALUES } from '../../pages/Offerers/Offerer/VenueV1/fields/PricingPoint/constant'
+import { VenueFormValues } from './types'
 
-import { DEFAULT_ACCESSIBILITY_FORM_VALUES } from './Accessibility'
-import { DEFAULT_ACTIVITY_FORM_VALUES } from './Activity'
-import { DEFAULT_CONTACT_FORM_VALUES } from './Contact'
-import { DEFAULT_IMAGE_UPLOADER_FORM_VALUES } from './ImageUploaderVenue/'
-import { DEFAULT_INFORMATIONS_FORM_VALUES } from './Informations'
-import { DEFAULT_REIMBURSEMENT_POINT_FORM_VALUES } from './ReimbursementPoint'
-import { DEFAULT_WITHDRAWAL_FORM_VALUES } from './WithdrawalDetails/constants'
-
-export const DEFAULT_FORM_VALUES = {
-  ...DEFAULT_INFORMATIONS_FORM_VALUES,
+export const DEFAULT_FORM_VALUES: VenueFormValues = {
   ...DEFAULT_ADDRESS_FORM_VALUES,
-  ...DEFAULT_ACTIVITY_FORM_VALUES,
-  ...DEFAULT_ACCESSIBILITY_FORM_VALUES,
-  ...DEFAULT_CONTACT_FORM_VALUES,
-  ...DEFAULT_IMAGE_UPLOADER_FORM_VALUES,
-  ...DEFAULT_WITHDRAWAL_FORM_VALUES,
-  ...DEFAULT_REIMBURSEMENT_POINT_FORM_VALUES,
-  ...DEFAULT_PRICING_POINT_FORM_VALUES,
+  accessibility: {
+    [AccessiblityEnum.VISUAL]: false,
+    [AccessiblityEnum.MENTAL]: false,
+    [AccessiblityEnum.AUDIO]: false,
+    [AccessiblityEnum.MOTOR]: false,
+    [AccessiblityEnum.NONE]: false,
+  },
+  bannerMeta: undefined,
+  bannerUrl: '',
+  bookingEmail: '',
+  comment: '',
+  departmentCode: '',
+  description: '',
+  email: '',
+  id: undefined,
+  isAccessibilityAppliedOnAllOffers: false,
+  isPermanent: false,
+  isVenueVirtual: false,
+  isWithdrawalAppliedOnAllOffers: false,
+  name: '',
+  phoneNumber: '',
+  publicName: '',
+  reimbursementPointId: null,
+  siret: '',
+  venueLabel: '',
+  venueSiret: null,
+  venueType: '',
+  webSite: '',
+  withdrawalDetails: '',
 }
