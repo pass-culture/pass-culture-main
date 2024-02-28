@@ -57,13 +57,14 @@ class BoostStocks(LocalProvider):
         showtime = next(self.showtimes)
         self.product = self.get_movie_product(showtime.film)
         if not self.product:
-            logger.warning(
-                "Product not found for movie %s",
+            logger.info(
+                "Product not found for allocine Id %s",
                 showtime.film.idFilmAllocine,
-                extra={"allocineId": showtime.film.idFilmAllocine},
+                extra={"allocineId": showtime.film.idFilmAllocine, "venueId": self.venue.id},
                 technical_message_id="allocineId.not_found",
             )
-            return []
+            if FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS.is_active():
+                return []
 
         if self.showtimes_filter_ff_is_active:
             self.showtime_details = showtime
@@ -208,14 +209,22 @@ class BoostStocks(LocalProvider):
         return price_category_label
 
     def update_from_movie_information(self, offer: offers_models.Offer, movie_information: Movie) -> None:
-        assert self.product and self.product.extraData
-        offer.name = self.product.name
-        offer.description = self.product.description
-        offer.durationMinutes = self.product.durationMinutes
-        offer.extraData = offers_models.OfferExtraData()
-        offer.extraData.update(self.product.extraData)
-        offer.extraData["visa"] = self.product.extraData.get("visa") or movie_information.visa
-        offer.product = self.product
+        if FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS.is_active():
+            assert self.product and self.product.extraData
+            offer.name = self.product.name
+            offer.description = self.product.description
+            offer.durationMinutes = self.product.durationMinutes
+            offer.extraData = offers_models.OfferExtraData()
+            offer.extraData.update(self.product.extraData)
+            offer.extraData["visa"] = self.product.extraData.get("visa") or movie_information.visa
+            offer.product = self.product
+        else:
+            offer.name = self.showtime_details.film.titleCnc
+            if movie_information.description:
+                offer.description = movie_information.description
+            if movie_information.duration:
+                offer.durationMinutes = movie_information.duration
+            offer.extraData = {"visa": movie_information.visa}
 
     def get_object_thumb(self) -> bytes:
         image_url = self.showtime_details.film.posterUrl
