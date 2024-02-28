@@ -3,6 +3,8 @@ import decimal
 import logging
 from typing import Iterator
 
+import sqlalchemy as sa
+
 from pcapi.connectors.cgr.cgr import get_movie_poster_from_api
 import pcapi.connectors.cgr.exceptions as cgr_connector_exceptions
 from pcapi.connectors.serialization import cgr_serializers
@@ -17,6 +19,7 @@ from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository.providable_queries import get_last_update_for_provider
 from pcapi.utils import date as utils_date
 
@@ -46,6 +49,16 @@ class CGRStocks(LocalProvider):
 
     def __next__(self) -> list[ProvidableInfo]:
         self.film_infos = next(self.films)
+        self.product = self.get_movie_product(self.film_infos)
+        if not self.product:
+            logger.info(
+                "Product not found for allocine Id %s",
+                self.film_infos.IDFilmAlloCine,
+                extra={"allocineId": self.film_infos.IDFilmAlloCine, "venueId": self.venue.id},
+                technical_message_id="allocineId.not_found",
+            )
+            if FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS.is_active():
+                return []
 
         providable_information_list = []
         provider_offer_unique_id = _build_movie_uuid_for_offer(self.film_infos.IDFilmAlloCine, self.venue)
@@ -77,30 +90,39 @@ class CGRStocks(LocalProvider):
         if isinstance(pc_object, offers_models.Stock):
             self.fill_stock_attributes(pc_object)
 
-    def fill_offer_attributes(self, offer: offers_models.Offer) -> None:
-        offer.venueId = self.venue.id
+    def update_from_movie_information(self, offer: offers_models.Offer) -> None:
         offer.name = self.film_infos.Titre
         offer.description = self.film_infos.Synopsis
+        offer.durationMinutes = self.film_infos.Duree
+        if offer.extraData is None:
+            offer.extraData = offers_models.OfferExtraData()
+        if self.film_infos.NumVisa:
+            offer.extraData["visa"] = str(self.film_infos.NumVisa)
+
+        if FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS.is_active():
+            assert self.product and self.product.extraData
+            offer.name = self.product.name
+            offer.description = self.product.description
+            offer.durationMinutes = self.product.durationMinutes
+            offer.extraData = offers_models.OfferExtraData()
+            offer.extraData.update(self.product.extraData)
+            offer.product = self.product
+
+    def fill_offer_attributes(self, offer: offers_models.Offer) -> None:
+        self.update_from_movie_information(offer)
+
+        offer.subcategoryId = subcategories.SEANCE_CINE.id
+        offer.venueId = self.venue.id
         offer.bookingEmail = self.venue.bookingEmail
         offer.withdrawalDetails = self.venue.withdrawalDetails
-        offer.durationMinutes = self.film_infos.Duree
-        offer.subcategoryId = subcategories.SEANCE_CINE.id
-        if offer.extraData is None:
-            offer.extraData = {}
-        if self.film_infos.NumVisa:
-            offer.extraData["visa"] = str(self.film_infos.NumVisa)  # type: ignore [index]
 
         is_new_offer_to_insert = offer.id is None
-
         if is_new_offer_to_insert:
             offer.isDuo = self.isDuo
             offer.id = offers_repository.get_next_offer_id_from_database()
 
         last_update_for_current_provider = get_last_update_for_provider(self.provider.id, offer)
-        if (
-            not last_update_for_current_provider
-            or last_update_for_current_provider.date() != datetime.datetime.today().date()
-        ):
+        if not last_update_for_current_provider or last_update_for_current_provider.date() != datetime.date.today():
             if self.film_infos.Affiche:
                 image_url = self.film_infos.Affiche
                 try:
@@ -207,6 +229,12 @@ class CGRStocks(LocalProvider):
             self.price_category_labels.append(price_category_label)
 
         return price_category_label
+
+    def get_movie_product(self, film: cgr_serializers.Film) -> offers_models.Product | None:
+        product = offers_models.Product.query.filter(
+            offers_models.Product.extraData["allocineId"].cast(sa.Integer) == film.IDFilmAlloCine
+        ).one_or_none()
+        return product
 
     def get_object_thumb(self) -> bytes:
         if self.film_infos.Affiche:
