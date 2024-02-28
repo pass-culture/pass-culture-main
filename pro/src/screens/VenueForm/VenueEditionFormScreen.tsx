@@ -25,7 +25,6 @@ import styles from './VenueEditionFormScreen.module.scss'
 interface VenueEditionProps {
   initialValues: VenueFormValues
   offerer: GetOffererResponseModel
-  venueTypes: SelectOption[]
   venueLabels: SelectOption[]
   venue: GetVenueResponseModel
   hasBookingQuantity?: boolean
@@ -34,7 +33,6 @@ interface VenueEditionProps {
 export const VenueEditionFormScreen = ({
   initialValues,
   offerer,
-  venueTypes,
   venueLabels,
   venue,
   hasBookingQuantity,
@@ -181,7 +179,6 @@ export const VenueEditionFormScreen = ({
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit} className={styles['venue-form']}>
           <VenueEditionForm
-            venueTypes={venueTypes}
             venueLabels={venueLabels}
             venue={venue}
             offerer={offerer}

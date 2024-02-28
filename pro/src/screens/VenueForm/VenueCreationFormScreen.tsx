@@ -25,7 +25,6 @@ interface VenueEditionProps {
   initialValues: VenueFormValues
   offerer: GetOffererResponseModel
   venueTypes: SelectOption[]
-  venueLabels: SelectOption[]
   providers?: Providers[]
   venueProviders?: VenueProviderResponse[]
 }
@@ -34,7 +33,6 @@ export const VenueCreationFormScreen = ({
   initialValues,
   offerer,
   venueTypes,
-  venueLabels,
   venueProviders,
   providers,
 }: VenueEditionProps): JSX.Element => {
@@ -132,7 +130,6 @@ export const VenueCreationFormScreen = ({
           <VenueCreationForm
             updateIsSiretValued={setIsSiretValued}
             venueTypes={venueTypes}
-            venueLabels={venueLabels}
             venueProvider={venueProviders}
             provider={providers}
             offerer={offerer}
