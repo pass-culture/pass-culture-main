@@ -2,10 +2,12 @@ import React, { useState } from 'react'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import useActiveFeature from 'hooks/useActiveFeature'
 import { logClickOnOffer } from 'pages/AdageIframe/libs/initAlgoliaAnalytics'
 import { Button } from 'ui-kit'
 
 import RequestFormDialog from './RequestFormDialog'
+import NewRequestFormDialog from './RequestFormDialog/NewRequestFormDialog'
 
 export interface ContactButtonProps {
   className?: string
@@ -34,6 +36,10 @@ const ContactButton = ({
 }: ContactButtonProps): JSX.Element => {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
+  const isCustomContactActive = useActiveFeature(
+    'WIP_ENABLE_COLLECTIVE_CUSTOM_CONTACT'
+  )
+
   const handleButtonClick = () => {
     setIsModalOpen(true)
 
@@ -59,16 +65,34 @@ const ContactButton = ({
           {children ?? 'Contacter'}
         </Button>
       </div>
-      {isModalOpen && (
-        <RequestFormDialog
-          closeModal={closeModal}
-          contactEmail={contactEmail}
-          contactPhone={contactPhone}
-          offerId={offerId}
-          userEmail={userEmail}
-          userRole={userRole}
-        />
-      )}
+      {isModalOpen &&
+        (isCustomContactActive ? (
+          <NewRequestFormDialog
+            closeModal={closeModal}
+            contactEmail={contactEmail}
+            contactPhone={contactPhone}
+            offerId={offerId}
+            userEmail={userEmail}
+            userRole={userRole}
+            mockResponseContactValue={{
+              mail: true,
+              phone: true,
+              form: {
+                custom: 'http://example.com',
+                default: false,
+              },
+            }}
+          />
+        ) : (
+          <RequestFormDialog
+            closeModal={closeModal}
+            contactEmail={contactEmail}
+            contactPhone={contactPhone}
+            offerId={offerId}
+            userEmail={userEmail}
+            userRole={userRole}
+          />
+        ))}
     </>
   )
 }
