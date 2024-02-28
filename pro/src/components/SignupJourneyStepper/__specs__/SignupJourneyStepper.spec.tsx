@@ -4,7 +4,7 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { Target } from 'apiClient/v1'
-import { DEFAULT_ADDRESS_FORM_VALUES } from 'components/Address'
+import { DEFAULT_ADDRESS_FORM_VALUES } from 'components/Address/constants'
 import {
   DEFAULT_ACTIVITY_VALUES,
   SignupJourneyContext,
