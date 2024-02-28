@@ -4,7 +4,6 @@ import { Navigate, useParams } from 'react-router-dom'
 import { AppLayout } from 'app/AppLayout'
 import { setDefaultInitialFormValues } from 'components/VenueForm'
 import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
-import { useGetVenueLabels } from 'core/Venue/adapters/getVenueLabelsAdapter'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import useNotification from 'hooks/useNotification'
 import { VenueCreationFormScreen } from 'screens/VenueForm/VenueCreationFormScreen'
@@ -27,14 +26,9 @@ export const VenueCreation = (): JSX.Element | null => {
     error: errorVenueTypes,
     data: venueTypes,
   } = useGetVenueTypes()
-  const {
-    isLoading: isLoadingVenueLabels,
-    error: errorVenueLabels,
-    data: venueLabels,
-  } = useGetVenueLabels()
 
-  if (errorOfferer || errorVenueTypes || errorVenueLabels) {
-    const loadingError = [errorOfferer, errorVenueTypes, errorVenueLabels].find(
+  if (errorOfferer || errorVenueTypes) {
+    const loadingError = [errorOfferer, errorVenueTypes].find(
       (error) => error !== undefined
     )
     if (loadingError !== undefined) {
@@ -45,14 +39,13 @@ export const VenueCreation = (): JSX.Element | null => {
 
   return (
     <AppLayout layout={'sticky-actions'}>
-      {isLoadingOfferer || isLoadingVenueTypes || isLoadingVenueLabels ? (
+      {isLoadingOfferer || isLoadingVenueTypes ? (
         <Spinner />
       ) : (
         <VenueCreationFormScreen
           initialValues={initialValues}
           offerer={offerer}
           venueTypes={venueTypes}
-          venueLabels={venueLabels}
         />
       )}
     </AppLayout>

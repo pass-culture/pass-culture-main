@@ -16,13 +16,12 @@ import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import { venueSubmitRedirectUrl } from 'screens/VenueForm/utils/venueSubmitRedirectUrl'
-import { TextInput, InfoBox } from 'ui-kit'
+import { TextInput, InfoBox, Select } from 'ui-kit'
 
 import useCurrentUser from '../../hooks/useCurrentUser'
 import RouteLeavingGuard, { BlockerFunction } from '../RouteLeavingGuard'
 
 import { Accessibility } from './Accessibility'
-import { Activity } from './Activity'
 import { Contact } from './Contact'
 import { EACInformation } from './EACInformation/EACInformation'
 import { ImageUploaderVenue } from './ImageUploaderVenue'
@@ -35,7 +34,6 @@ type VenueFormProps = {
   offerer: GetOffererResponseModel
   updateIsSiretValued: (isSiretValued: boolean) => void
   venueTypes: SelectOption[]
-  venueLabels: SelectOption[]
   provider?: Providers[]
   venueProvider?: VenueProviderResponse[]
   initialIsVirtual?: boolean
@@ -63,7 +61,6 @@ export const VenueCreationForm = ({
   offerer,
   updateIsSiretValued,
   venueTypes,
-  venueLabels,
   initialIsVirtual = false,
 }: VenueFormProps) => {
   const {
@@ -155,12 +152,29 @@ export const VenueCreationForm = ({
           </FormLayout.Section>
         )}
 
-        <Activity
-          venueTypes={venueTypes}
-          venueLabels={venueLabels}
-          isVenueVirtual={initialIsVirtual}
-          isCreatingVenue={true}
-        />
+        <FormLayout.Section
+          title="Activité"
+          description={
+            initialIsVirtual
+              ? undefined
+              : 'Ces informations seront affichées dans votre page lieu sur l’application pass Culture (sauf pour les lieux administratifs). Elles permettront aux jeunes d’en savoir plus sur votre lieu.'
+          }
+        >
+          <FormLayout.Row>
+            <Select
+              options={[
+                {
+                  value: '',
+                  label: 'Sélectionnez celui qui correspond à votre lieu',
+                },
+                ...venueTypes,
+              ]}
+              name="venueType"
+              label="Activité principale"
+              disabled={initialIsVirtual}
+            />
+          </FormLayout.Row>
+        </FormLayout.Section>
 
         {!initialIsVirtual && <Accessibility isCreatingVenue={true} />}
 
