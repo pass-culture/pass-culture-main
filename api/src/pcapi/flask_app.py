@@ -130,20 +130,21 @@ login_manager = LoginManager()
 if settings.PROFILE_REQUESTS:
     profiling_restrictions = [settings.PROFILE_REQUESTS_LINES_LIMIT]
     app.config["PROFILE"] = True
-    app.wsgi_app = ProfilerMiddleware(  # type: ignore [method-assign]
+    app.wsgi_app = ProfilerMiddleware(
         app.wsgi_app,
         restrictions=profiling_restrictions,
     )
 
 if int(os.environ.get("ENABLE_RQ_PROMETHEUS_EXPORTER", "0")):
-    app.wsgi_app = DispatcherMiddleware(  # type: ignore [method-assign]
-        app.wsgi_app, {"/rq_metrics": rq_exporter.create_app()}
+    app.wsgi_app = DispatcherMiddleware(
+        app.wsgi_app,
+        {"/rq_metrics": rq_exporter.create_app()},
     )
 
 
 # Our L7 load balancer adds 2 IPs to the `X-Forwarded-For` HTTP header.
 # And there is another proxy in front of our app. Hence `x_for=3`.
-app.wsgi_app = ProxyFix(app.wsgi_app, x_for=3)  # type: ignore [method-assign]
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=3)
 
 if not settings.JWT_SECRET_KEY:
     raise ValueError("JWT_SECRET_KEY not found in env")
