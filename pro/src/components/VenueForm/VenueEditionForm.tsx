@@ -6,11 +6,11 @@ import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
-import { Select, TextArea } from 'ui-kit'
+import { Select, TextArea, TextInput } from 'ui-kit'
+import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 
 import { Accessibility } from './Accessibility'
 import BankAccountInfos from './BankAccountInfos/BankAccountInfos'
-import { Contact } from './Contact'
 import { VenueFormActionBar } from './VenueFormActionBar'
 
 interface VenueFormProps {
@@ -74,7 +74,39 @@ export const VenueEditionForm = ({
 
         {!venue.isVirtual && <Accessibility isCreatingVenue={false} />}
 
-        <Contact isVenueVirtual={venue.isVirtual} isCreatingVenue={false} />
+        {!venue.isVirtual && (
+          <FormLayout.Section
+            title="Contact"
+            description={
+              'Ces informations seront affichées dans votre page lieu, sur l’application pass Culture. ' +
+              'Elles permettront aux bénéficiaires de vous contacter en cas de besoin.'
+            }
+          >
+            <FormLayout.Row>
+              <PhoneNumberInput
+                name="phoneNumber"
+                label="Téléphone"
+                isOptional
+              />
+            </FormLayout.Row>
+            <FormLayout.Row>
+              <TextInput
+                name="email"
+                label="Adresse email"
+                placeholder="email@exemple.com"
+                isOptional
+              />
+            </FormLayout.Row>
+            <FormLayout.Row>
+              <TextInput
+                name="webSite"
+                label="URL de votre site web"
+                placeholder="https://exemple.com"
+                isOptional
+              />
+            </FormLayout.Row>
+          </FormLayout.Section>
+        )}
 
         {(!isNewBankDetailsJourneyEnabled ||
           (isNewBankDetailsJourneyEnabled && !venue?.siret)) && (

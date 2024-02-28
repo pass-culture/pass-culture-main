@@ -22,7 +22,6 @@ import useCurrentUser from '../../hooks/useCurrentUser'
 import RouteLeavingGuard, { BlockerFunction } from '../RouteLeavingGuard'
 
 import { Accessibility } from './Accessibility'
-import { Contact } from './Contact'
 import { EACInformation } from './EACInformation/EACInformation'
 import { ImageUploaderVenue } from './ImageUploaderVenue'
 import SiretOrCommentFields from './Informations/SiretOrCommentFields'
@@ -178,7 +177,27 @@ export const VenueCreationForm = ({
 
         {!initialIsVirtual && <Accessibility isCreatingVenue={true} />}
 
-        <Contact isVenueVirtual={initialIsVirtual} isCreatingVenue={true} />
+        <FormLayout.Section title="Notifications de réservations">
+          <FormLayout.Row
+            sideComponent={
+              initialIsVirtual ? null : (
+                <InfoBox>
+                  Cette adresse s’appliquera par défaut à toutes vos offres,
+                  vous pourrez la modifier à l’échelle de chaque offre.
+                </InfoBox>
+              )
+            }
+          >
+            <TextInput
+              name="bookingEmail"
+              label="Adresse email"
+              type="email"
+              placeholder="email@exemple.com"
+              isOptional={initialIsVirtual}
+              disabled={initialIsVirtual}
+            />
+          </FormLayout.Row>
+        </FormLayout.Section>
 
         {canOffererCreateCollectiveOffer && isSiretValued && (
           <FormLayout.Section
