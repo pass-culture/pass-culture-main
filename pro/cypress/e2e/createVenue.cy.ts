@@ -1,7 +1,9 @@
 describe('Create a venue', () => {
+  // siret of Bar des amis
   const siret = '222222233' + Math.random().toString().substring(2, 7)
-  const venueNameWithSiret = 'Lieu avec Siret ' + siret
-  const venueNameWithoutSiret = 'Lieu sans Siret ' + siret // just to distinguish them
+  const randomSeed = new Date().getTime()
+  const venueNameWithSiret = 'Lieu avec Siret ' + randomSeed
+  const venueNameWithoutSiret = 'Lieu sans Siret ' + randomSeed // just to distinguish them
 
   beforeEach(() => {
     cy.intercept('GET', `http://localhost:5001/sirene/siret/${siret}`, (req) =>
@@ -46,9 +48,10 @@ describe('Create a venue', () => {
     cy.get('#bookingEmail').type('email@axample.com')
     cy.contains('Enregistrer et créer le lieu').click()
     cy.contains('Plus tard').click()
-    cy.get(
-      'a[aria-label="Gérer la page de ' + venueNameWithoutSiret + '"]'
-    ).click()
+    // first should not be necessary, but it is in ci...
+    cy.get('a[aria-label="Gérer la page de ' + venueNameWithoutSiret + '"]')
+      .first()
+      .click()
     cy.contains('Enregistrer et quitter').click()
 
     // Create a venue with SIRET
@@ -62,9 +65,10 @@ describe('Create a venue', () => {
     cy.get('#bookingEmail').type('email@axample.com')
     cy.contains('Enregistrer et créer le lieu').click()
     cy.contains('Plus tard').click()
-    cy.get(
-      'a[aria-label="Gérer la page de ' + venueNameWithSiret + '"]'
-    ).click()
+    // first should not be necessary, but it is in ci...
+    cy.get('a[aria-label="Gérer la page de ' + venueNameWithSiret + '"]')
+      .first()
+      .click()
     cy.contains('Enregistrer et quitter').click()
     cy.contains('Bienvenue dans l’espace acteurs culturels').should(
       'be.visible'
