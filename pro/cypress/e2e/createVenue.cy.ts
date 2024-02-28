@@ -29,7 +29,7 @@ describe('Create a venue', () => {
         },
       })
     ).as('getSiret')
-
+    cy.intercept({ method: 'GET', url: '/offerers/*' }).as('getOfferer')
     cy.visit('/connexion')
   })
 
@@ -53,6 +53,7 @@ describe('Create a venue', () => {
     cy.contains('Visuel').click()
     cy.get('#bookingEmail').type('email@example.com')
     cy.contains('Enregistrer et créer le lieu').click()
+    cy.wait('@getOfferer')
     cy.contains('Plus tard').click()
     cy.get(
       'a[aria-label="Gérer la page de ' + venueNameWithoutSiret + '"]'
@@ -69,6 +70,7 @@ describe('Create a venue', () => {
     cy.contains('Auditif').click()
     cy.get('#bookingEmail').type('email@example.com')
     cy.contains('Enregistrer et créer le lieu').click()
+    cy.wait('@getOfferer')
     cy.contains('Plus tard').click()
     cy.get(
       'a[aria-label="Gérer la page de ' + venueNameWithSiret + '"]'
