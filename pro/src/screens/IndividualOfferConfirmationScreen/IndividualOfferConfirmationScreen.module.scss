@@ -33,17 +33,29 @@
 }
 
 .confirmation-actions {
-  >:first-child {
+  display: flex;
+  flex-direction: column-reverse;
+
+  >:last-child {
     margin-bottom: rem.torem(16px);
   }
 }
 
+.confirmation-action {
+  width: 100%;
+}
+
 @media (min-width: size.$tablet) {
   .confirmation-actions {
+    display: inline;
     padding-bottom: rem.torem(24px);
 
     >:first-child {
       margin-right: rem.torem(24px);
     }
+  }
+
+  .confirmation-action {
+    width: fit-content;
   }
 }
