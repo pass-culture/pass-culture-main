@@ -5,7 +5,7 @@ import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import { Select, TextArea, TextInput } from 'ui-kit'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 
-import { Accessibility } from './Accessibility'
+import { Accessibility } from './Accessibility/Accessibility'
 import { VenueFormActionBar } from './VenueFormActionBar'
 
 interface VenueFormProps {
