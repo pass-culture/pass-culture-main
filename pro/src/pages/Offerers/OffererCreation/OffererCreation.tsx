@@ -47,10 +47,16 @@ export const OffererCreation = (): JSX.Element => {
         navigate(`/accueil?structure=${createdOfferer.id}`, { replace: true })
       }
     } catch (error) {
-      if (isErrorAPIError(error) && error.status == 400 && error.body.siren) {
-        notification.error('Le code SIREN saisi n’est pas valide.')
+      if (isErrorAPIError(error) && error.status == 400) {
+        if (error.body.siren) {
+          notification.error('Le code SIREN saisi n’est pas valide.')
+        } else if (error.body.user_offerer) {
+          notification.error('Vous êtes déjà rattaché à cette structure.')
+        }
       } else {
-        notification.error('Vous êtes déjà rattaché à cette structure.')
+        notification.error(
+          'Une erreur est survenue. Merci de réessayer plus tard.'
+        )
       }
       setIsSubmitting(false)
     }

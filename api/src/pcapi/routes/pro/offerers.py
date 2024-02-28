@@ -155,6 +155,11 @@ def create_offerer(body: offerers_serialize.CreateOffererQueryModel) -> offerers
     if not siren_info.active:
         raise ApiErrors(errors={"siren": ["SIREN is no longer active"]})
     body.name = siren_info.name
+    if api.is_user_offerer_already_exist(current_user, body.siren):
+        # As this endpoint does not only allow to create an offerer, but also handles
+        # a large part of `user_offerer` buisness logic (see `api.create_offerer` below)
+        # That check is needed here. Otherwise, we might try to create an already existing user_offerer
+        raise ApiErrors(errors={"user_offerer": ["This user already belongs to this offerer"]})
     user_offerer = api.create_offerer(current_user, body)
 
     return offerers_serialize.PostOffererResponseModel.from_orm(user_offerer.offerer)
