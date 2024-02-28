@@ -147,6 +147,3 @@ COPY --chown=pcapi:pcapi tests/ tests
 COPY --chown=pcapi:pcapi pyproject.toml .
 
 USER pcapi
-
-RUN npm config set prefix "$HOME/.local/"
-RUN npm install --global squawk-cli

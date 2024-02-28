@@ -273,35 +273,30 @@ jobs:
             alembic downgrade pre@f460dc2c9f93
             alembic upgrade pre@head
             alembic upgrade post@head
-      - name: Create migrations directory
-        run: |
-          mkdir migrations
-      - name: "Lint migration upgrades"
+      - name: "Migration upgrades"
+        id: "migration_upgrades"
         uses: addnab/docker-run-action@v3
         with:
           image: ${{ env.tests_docker_image }}
           shell: bash
           options: -e RUN_ENV -e DATABASE_URL_TEST
           run: |
-            alembic upgrade ${{ steps.base_heads.outputs.pre }}:pre@head --sql |
-              sed '/squawk:ignore-next-statement/,/;$/d' > migrations/upgrade-pre.sql
-            alembic upgrade ${{ steps.base_heads.outputs.post }}:post@head --sql |
-              sed '/squawk:ignore-next-statement/,/;$/d' > migrations/upgrade-post.sql
-      - name: "Lint migration downgrades"
+            alembic upgrade ${{ steps.base_heads.outputs.pre }}:pre@head --sql | sed '/squawk:ignore-next-statement/,/;$/d' > upgrade_pre.sql
+            alembic upgrade ${{ steps.base_heads.outputs.post }}:post@head --sql | sed '/squawk:ignore-next-statement/,/;$/d' > upgrade_post.sql
+      - name: "Migration downgrades"
+        id: "migration_downgrades"
         uses: addnab/docker-run-action@v3
         with:
           image: ${{ env.tests_docker_image }}
           shell: bash
           options: -e RUN_ENV -e DATABASE_URL_TEST
           run: |
-            alembic downgrade pre@head:${{ steps.base_heads.outputs.pre }} --sql |
-              sed '/squawk:ignore-next-statement/,/;$/d' > migrations/downgrade-pre.sql
-            alembic downgrade post@head:${{ steps.base_heads.outputs.post }} --sql |
-              sed '/squawk:ignore-next-statement/,/;$/d' > migrations/downgrade-post.sql
+            alembic downgrade pre@head:${{ steps.base_heads.outputs.pre }} --sql | sed '/squawk:ignore-next-statement/,/;$/d' > downgrade_pre.sql
+            alembic downgrade post@head:${{ steps.base_heads.outputs.post }} --sql | sed '/squawk:ignore-next-statement/,/;$/d' > downgrade_post.sql
       - uses: actions/checkout@v1
       - uses: sbdchd/squawk-action@v1
         with:
-          pattern: "migrations/*.sql"
+          pattern: "./*.sql"
           version: "latest"
       - name: "Slack Notification"
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
