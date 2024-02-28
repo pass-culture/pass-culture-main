@@ -209,7 +209,7 @@ def cancel_email_update_request(encoded_token: str) -> None:
     user = models.User.query.get(token.user_id)
     if not user:
         raise exceptions.InvalidToken()
-    new_email = token.data["new_email"]
+    new_email = token.data.get("new_email")
     api.suspend_account(
         user, constants.SuspensionReason.FRAUD_SUSPICION, user, "Suspension suite à un changement d'email annulé"
     )
