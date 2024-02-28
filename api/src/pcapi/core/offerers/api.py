@@ -37,6 +37,7 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.history.api as history_api
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
+from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
@@ -1281,8 +1282,11 @@ def can_venue_create_educational_offer(venue_id: int) -> None:
     offerer = (
         offerers_models.Offerer.query.join(offerers_models.Venue, offerers_models.Offerer.managedVenues)
         .filter(offerers_models.Venue.id == venue_id)
-        .one()
+        .one_or_none()
     )
+
+    if not offerer:
+        raise offerers_exceptions.VenueNotFoundException()
 
     if offerers_repository.offerer_has_venue_with_adage_id(offerer.id):
         return
