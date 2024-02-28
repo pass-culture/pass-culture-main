@@ -980,6 +980,8 @@ class Offerer(
         "IndividualOffererSubscription", back_populates="offerer", uselist=False
     )
 
+    allowedOnAdage: bool = Column(Boolean, nullable=False, default=False, server_default=sa.sql.expression.false())
+
     @property
     def bic(self) -> str | None:
         return self.bankInformation.bic if self.bankInformation else None

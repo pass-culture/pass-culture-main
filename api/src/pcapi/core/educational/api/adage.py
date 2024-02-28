@@ -89,6 +89,26 @@ def get_venue_by_id_for_adage_iframe(
     return venue, relative
 
 
+def synchronize_adage_ids_on_offerers(partners_from_adage: list[venues_serialize.AdageCulturalPartner]) -> None:
+    adage_sirens: set[str] = {p.siret[:9] for p in partners_from_adage if (p.actif == 1 and p.siret)}
+    existing_sirens: dict[str, bool] = dict(
+        offerers_models.Offerer.query.filter(offerers_models.Offerer.siren != None).with_entities(
+            offerers_models.Offerer.siren, offerers_models.Offerer.allowedOnAdage
+        )
+    )
+    existing_adage_sirens = {k for k, v in existing_sirens.items() if v}
+
+    sirens_to_add = adage_sirens - existing_adage_sirens
+    sirens_to_delete = existing_adage_sirens - adage_sirens
+
+    offerers_models.Offerer.query.filter(offerers_models.Offerer.siren.in_(list(sirens_to_add))).update(
+        {offerers_models.Offerer.allowedOnAdage: True}, synchronize_session=False
+    )
+    offerers_models.Offerer.query.filter(offerers_models.Offerer.siren.in_(list(sirens_to_delete))).update(
+        {offerers_models.Offerer.allowedOnAdage: False}, synchronize_session=False
+    )
+
+
 def synchronize_adage_ids_on_venues() -> None:
     from pcapi.core.external.attributes.api import update_external_pro
 
