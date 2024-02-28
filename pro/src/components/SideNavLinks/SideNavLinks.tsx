@@ -29,25 +29,53 @@ const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
     >
       <div className={styles['nav-links-first-group']}>
         <li>
-          <NavLink to={'/accueil'} className={styles['nav-links-item']}>
+          <NavLink
+            to={'/accueil'}
+            className={({ isActive }) =>
+              classnames(styles['nav-links-item'], {
+                [styles['nav-links-item-active']]: isActive,
+              })
+            }
+          >
             <SvgIcon src={strokeHomeIcon} alt="" width={NAV_ITEM_ICON_SIZE} />
             <span className={styles['nav-links-item-title']}>Accueil</span>
           </NavLink>
         </li>
         <li>
-          <NavLink to="/guichet" className={styles['nav-links-item']}>
+          <NavLink
+            to="/guichet"
+            className={({ isActive }) =>
+              classnames(styles['nav-links-item'], {
+                [styles['nav-links-item-active']]: isActive,
+              })
+            }
+          >
             <SvgIcon src={deskIcon} alt="" width={NAV_ITEM_ICON_SIZE} />
             Guichet
           </NavLink>
         </li>
         <li>
-          <NavLink to="/offres" className={styles['nav-links-item']}>
+          <NavLink
+            to="/offres"
+            className={({ isActive }) =>
+              classnames(styles['nav-links-item'], {
+                [styles['nav-links-item-active']]: isActive,
+              })
+            }
+          >
             <SvgIcon src={strokeOffersIcon} alt="" width={NAV_ITEM_ICON_SIZE} />
             Offres
           </NavLink>
         </li>
         <li>
-          <NavLink to="/reservations" className={styles['nav-links-item']}>
+          <NavLink
+            to="/reservations"
+            className={({ isActive }) =>
+              classnames(styles['nav-links-item'], {
+                [styles['nav-links-item-active']]: isActive,
+              })
+            }
+          >
             <SvgIcon
               alt=""
               src={strokeCalendarIcon}
@@ -59,7 +87,14 @@ const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
 
         {isOffererStatsActive && (
           <li>
-            <NavLink to="/statistiques" className={styles['nav-links-item']}>
+            <NavLink
+              to="/statistiques"
+              className={({ isActive }) =>
+                classnames(styles['nav-links-item'], {
+                  [styles['nav-links-item-active']]: isActive,
+                })
+              }
+            >
               <SvgIcon src={strokePieIcon} alt="" width={NAV_ITEM_ICON_SIZE} />
               Statistiques
             </NavLink>
@@ -70,8 +105,12 @@ const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
         <div className={styles['nav-links-last-group-separator']} />
         <li>
           <NavLink
-            to="/remboursements/justificatifs"
-            className={styles['nav-links-item']}
+            to="/remboursements"
+            className={({ isActive }) =>
+              classnames(styles['nav-links-item'], {
+                [styles['nav-links-item-active']]: isActive,
+              })
+            }
           >
             <SvgIcon src={strokeEuroIcon} alt="" width={NAV_ITEM_ICON_SIZE} />
             Gestion financière

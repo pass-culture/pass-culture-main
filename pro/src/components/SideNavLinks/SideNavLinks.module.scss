@@ -41,5 +41,11 @@
     &:hover {
       background-color: colors.$grey-light;
     }
+
+    &-active {
+      border-right: rem.torem(4px) solid colors.$primary;
+      border-radius: rem.torem(2px) 0 0 rem.torem(2px);
+      background-color: colors.$background-error;
+    }
   }
 }
