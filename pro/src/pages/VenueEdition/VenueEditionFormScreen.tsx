@@ -1,19 +1,17 @@
 import { FormikProvider, useFormik } from 'formik'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
-import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { Events } from 'core/FirebaseEvents/constants'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
-import strokeMailIcon from 'icons/stroke-mail.svg'
 import { PartnerPageIndividualSection } from 'pages/Home/Offerers/PartnerPageIndividualSection'
 import { generateSiretValidationSchema } from 'pages/VenueCreation/SiretOrCommentFields/validationSchema'
 
@@ -28,7 +26,6 @@ interface VenueEditionProps {
   offerer: GetOffererResponseModel
   venueLabels: SelectOption[]
   venue: GetVenueResponseModel
-  hasBookingQuantity?: boolean
 }
 
 export const VenueEditionFormScreen = ({
@@ -36,7 +33,6 @@ export const VenueEditionFormScreen = ({
   offerer,
   venueLabels,
   venue,
-  hasBookingQuantity,
 }: VenueEditionProps): JSX.Element => {
   const navigate = useNavigate()
   const location = useLocation()
@@ -45,60 +41,11 @@ export const VenueEditionFormScreen = ({
 
   const { currentUser } = useCurrentUser()
 
-  const [shouldSendMail, setShouldSendMail] = useState<boolean>(false)
-
-  const [isWithdrawalDialogOpen, setIsWithdrawalDialogOpen] =
-    useState<boolean>(false)
-
-  const handleCancelWithdrawalDialog = () => {
-    setShouldSendMail(false)
-    formik.handleSubmit()
-  }
-
-  const handleConfirmWithdrawalDialog = () => {
-    setShouldSendMail(true)
-    formik.handleSubmit()
-  }
-
-  const handleWithdrawalDialog = () => {
-    const valueMeta = formik.getFieldMeta('withdrawalDetails')
-    if (
-      valueMeta &&
-      valueMeta.touched &&
-      valueMeta.value != valueMeta.initialValue
-    ) {
-      if (isWithdrawalDialogOpen) {
-        setIsWithdrawalDialogOpen(false)
-      } else {
-        setIsWithdrawalDialogOpen(true)
-        return false
-      }
-    }
-    return true
-  }
-
   const onSubmit = async (value: VenueEditionFormValues) => {
-    if (
-      value.isWithdrawalAppliedOnAllOffers &&
-      hasBookingQuantity &&
-      !handleWithdrawalDialog()
-    ) {
-      return
-    }
-
     try {
       await api.editVenue(
-        /* istanbul ignore next: there will always be a venue id on update screen */
-        venue?.id || 0,
-        serializeEditVenueBodyModel(
-          value,
-          {
-            // siret is not filled in initial values it could be empty
-            // for venues without siret
-            hideSiret: value.siret.length === 0,
-          },
-          shouldSendMail
-        )
+        venue.id,
+        serializeEditVenueBodyModel(value, !venue.siret)
       )
 
       navigate('/accueil')
@@ -118,13 +65,10 @@ export const VenueEditionFormScreen = ({
         formErrors = error.body
       }
       const apiFieldsMap: Record<string, string> = {
-        venue: 'venueId',
-        venueTypeCode: 'venueType',
         venueLabelId: 'venueLabel',
         'contact.email': 'email',
         'contact.phoneNumber': 'phoneNumber',
         'contact.website': 'webSite',
-        address: 'search-addressAutocomplete',
         visualDisabilityCompliant: 'accessibility.visual',
         mentalDisabilityCompliant: 'accessibility.mental',
         motorDisabilityCompliant: 'accessibility.motor',
@@ -181,18 +125,6 @@ export const VenueEditionFormScreen = ({
         <form onSubmit={formik.handleSubmit} className={styles['venue-form']}>
           <VenueEditionForm venueLabels={venueLabels} venue={venue} />
         </form>
-
-        {isWithdrawalDialogOpen && (
-          <ConfirmDialog
-            cancelText="Ne pas envoyer"
-            confirmText="Envoyer un email"
-            leftButtonAction={handleCancelWithdrawalDialog}
-            onCancel={() => setIsWithdrawalDialogOpen(false)}
-            onConfirm={handleConfirmWithdrawalDialog}
-            icon={strokeMailIcon}
-            title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
-          />
-        )}
       </FormikProvider>
     </>
   )

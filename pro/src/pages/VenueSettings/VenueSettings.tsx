@@ -16,8 +16,8 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 
 import useGetProviders from '../../core/Venue/adapters/getProviderAdapter/useGetProvider'
 import useGetVenueProviders from '../../core/Venue/adapters/getVenueProviderAdapter/useGetVenueProvider'
-import { offerHasBookingQuantity } from '../VenueEdition/utils'
 
+import { offerHasBookingQuantity } from './offerHasBookingQuantity'
 import { setInitialFormValues } from './setInitialFormValues'
 import { VenueSettingsFormScreen } from './VenueSettingsScreen'
 
