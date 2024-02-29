@@ -26,7 +26,10 @@ class EditVirtualVenueForm(utils.PCForm):
 class EditVenueForm(EditVirtualVenueForm):
     name = fields.PCStringField(
         "Nom juridique",
-        validators=(wtforms.validators.Length(max=140, message="doit contenir moins de %(max)d caractères"),),
+        validators=[
+            validators.InputRequired("Information obligatoire"),
+            validators.Length(min=1, max=140, message="doit contenir entre %(min)d et %(max)d caractères"),
+        ],
     )
     public_name = fields.PCOptStringField(
         "Nom d'usage",
