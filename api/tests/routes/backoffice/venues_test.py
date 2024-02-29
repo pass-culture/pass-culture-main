@@ -1137,6 +1137,18 @@ class UpdateVenueTest(PostEndpointHelper):
         db.session.refresh(venue)
         assert venue.contact.phone_number is None
 
+    def test_update_venue_empty_name(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+
+        data = self._get_current_data(venue)
+        data["name"] = ""
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 400
+        db.session.refresh(venue)
+        assert venue.name
+
     def test_update_venue_with_same_data(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
 
