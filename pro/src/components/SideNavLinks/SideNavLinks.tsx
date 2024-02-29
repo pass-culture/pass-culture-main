@@ -3,6 +3,7 @@ import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { NavLink, useLocation } from 'react-router-dom'
 
+import { SAVED_OFFERER_ID_KEY } from 'core/shared'
 import useActiveFeature from 'hooks/useActiveFeature'
 import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'
@@ -20,9 +21,13 @@ import {
   selectIsCollectiveSectionOpen,
   selectIsIndividualSectionOpen,
 } from 'store/nav/selector'
+import { ButtonLink } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { localStorageAvailable } from 'utils/localStorageAvailable'
 
 import styles from './SideNavLinks.module.scss'
+
 const NAV_ITEM_ICON_SIZE = '20'
 
 interface SideNavLinksProps {
@@ -47,6 +52,12 @@ const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
     }
   }, [dispatch, location.pathname])
 
+  const offererId = localStorageAvailable()
+    ? localStorage.getItem(SAVED_OFFERER_ID_KEY)
+    : null
+  const createOfferPageUrl =
+    '/offre/creation' + (offererId ? `?structure=${offererId}` : '')
+
   return (
     <ul
       className={classnames({
@@ -55,6 +66,14 @@ const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
       })}
     >
       <div className={styles['nav-links-first-group']}>
+        <li className={styles['nav-links-create-offer-wrapper']}>
+          <ButtonLink
+            variant={ButtonVariant.PRIMARY}
+            link={{ isExternal: false, to: createOfferPageUrl }}
+          >
+            Créer une offre
+          </ButtonLink>
+        </li>
         <li>
           <NavLink
             to={'/accueil'}
