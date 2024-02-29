@@ -30,6 +30,7 @@ const FieldSetLayout = ({
     <fieldset
       className={cn(styles['fieldset-layout'], className)}
       data-testid={dataTestId}
+      aria-required={!isOptional}
     >
       {legend && (
         <legend className={styles['fieldset-layout-legend']}>
