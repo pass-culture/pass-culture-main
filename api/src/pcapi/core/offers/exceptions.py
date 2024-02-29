@@ -314,8 +314,3 @@ class AllNullContactRequestDataError(CollectiveOfferContactRequestError):
 class UrlandFormBothSetError(CollectiveOfferContactRequestError):
     msg = "Url and form can not both be used"
     fields = "url,form"
-
-
-class UrlSetError(CollectiveOfferContactRequestError):
-    msg = "Url set and other fields are too"
-    fields = "all"

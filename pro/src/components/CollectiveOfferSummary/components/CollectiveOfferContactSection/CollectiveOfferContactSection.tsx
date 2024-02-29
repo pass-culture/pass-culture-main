@@ -5,7 +5,7 @@ import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 
 interface CollectiveOfferContactSectionProps {
   phone?: string | null
-  email: string
+  email?: string | null
 }
 
 const CollectiveOfferContactSection = ({
