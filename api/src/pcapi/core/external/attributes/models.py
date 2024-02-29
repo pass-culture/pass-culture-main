@@ -87,6 +87,9 @@ class ProAttributes:
     has_collective_offers: bool | None = False  # At least one collective offer or collective offer template active
     has_individual_offers: bool | None = None  # At least one venue has at least one active offer
     has_offers: bool | None = None  # has_collective_offers or has_individual_offers
+    has_banner_url: bool | None = (
+        None  # Set to False when at least one permanent venue doesn't have a banner URL, True otherwise
+    )
 
 
 @dataclass
