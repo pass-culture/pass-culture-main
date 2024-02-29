@@ -50,7 +50,7 @@ class BaseUserFactory(BaseFactory):
     class Params:
         age = 40
 
-    dateOfBirth = LazyAttribute(lambda o: datetime.utcnow().date() - relativedelta(years=o.age))
+    dateOfBirth = LazyAttribute(lambda o: date.today() - relativedelta(years=o.age))
     isEmailValidated = False
 
     @classmethod
