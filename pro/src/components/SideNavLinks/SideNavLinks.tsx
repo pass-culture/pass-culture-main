@@ -1,14 +1,25 @@
 import classnames from 'classnames'
-import React from 'react'
-import { NavLink } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { NavLink, useLocation } from 'react-router-dom'
 
 import useActiveFeature from 'hooks/useActiveFeature'
+import fullDownIcon from 'icons/full-down.svg'
+import fullUpIcon from 'icons/full-up.svg'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
-import deskIcon from 'icons/stroke-desk.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
 import strokeHomeIcon from 'icons/stroke-home.svg'
-import strokeOffersIcon from 'icons/stroke-offers.svg'
+import strokePhoneIcon from 'icons/stroke-phone.svg'
 import strokePieIcon from 'icons/stroke-pie.svg'
+import strokeTeacherIcon from 'icons/stroke-teacher.svg'
+import {
+  setIsCollectiveSectionOpen,
+  setIsIndividualSectionOpen,
+} from 'store/nav/reducer'
+import {
+  selectIsCollectiveSectionOpen,
+  selectIsIndividualSectionOpen,
+} from 'store/nav/selector'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './SideNavLinks.module.scss'
@@ -18,8 +29,24 @@ interface SideNavLinksProps {
   isLateralPanelOpen: boolean
 }
 
+const INDIVIDUAL_LINKS = ['/offres', '/guichet']
+const COLLECTIVE_LINKS = ['/offres/collectives']
+
 const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
+  const location = useLocation()
+  const dispatch = useDispatch()
+  const isIndividualSectionOpen = useSelector(selectIsIndividualSectionOpen)
+  const isCollectiveSectionOpen = useSelector(selectIsCollectiveSectionOpen)
+
+  useEffect(() => {
+    if (INDIVIDUAL_LINKS.includes(location.pathname)) {
+      dispatch(setIsIndividualSectionOpen(true))
+    } else if (COLLECTIVE_LINKS.includes(location.pathname)) {
+      dispatch(setIsCollectiveSectionOpen(true))
+    }
+  }, [dispatch, location.pathname])
+
   return (
     <ul
       className={classnames({
@@ -42,30 +69,85 @@ const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
           </NavLink>
         </li>
         <li>
-          <NavLink
-            to="/guichet"
-            className={({ isActive }) =>
-              classnames(styles['nav-links-item'], {
-                [styles['nav-links-item-active']]: isActive,
-              })
+          <button
+            onClick={() =>
+              dispatch(setIsIndividualSectionOpen(!isIndividualSectionOpen))
             }
+            className={(styles['nav-links-item'], styles['nav-section-button'])}
           >
-            <SvgIcon src={deskIcon} alt="" width={NAV_ITEM_ICON_SIZE} />
-            Guichet
-          </NavLink>
+            <SvgIcon src={strokePhoneIcon} alt="" width={NAV_ITEM_ICON_SIZE} />
+            <span className={styles['nav-section-title']}>Individuel</span>
+            <SvgIcon
+              src={isIndividualSectionOpen ? fullUpIcon : fullDownIcon}
+              alt=""
+              width="18"
+              className={styles['nav-section-icon']}
+            />
+          </button>
+          {isIndividualSectionOpen && (
+            <>
+              <NavLink
+                to="/offres"
+                className={({ isActive }) =>
+                  classnames(styles['nav-links-item'], {
+                    [styles['nav-links-item-active']]: isActive,
+                  })
+                }
+                end
+              >
+                <span className={styles['nav-links-item-without-icon']}>
+                  Offres
+                </span>
+              </NavLink>
+              <NavLink
+                to="/guichet"
+                className={({ isActive }) =>
+                  classnames(styles['nav-links-item'], {
+                    [styles['nav-links-item-active']]: isActive,
+                  })
+                }
+              >
+                <span className={styles['nav-links-item-without-icon']}>
+                  Guichet
+                </span>
+              </NavLink>
+            </>
+          )}
         </li>
         <li>
-          <NavLink
-            to="/offres"
-            className={({ isActive }) =>
-              classnames(styles['nav-links-item'], {
-                [styles['nav-links-item-active']]: isActive,
-              })
+          <button
+            onClick={() =>
+              dispatch(setIsCollectiveSectionOpen(!isCollectiveSectionOpen))
             }
+            className={(styles['nav-links-item'], styles['nav-section-button'])}
           >
-            <SvgIcon src={strokeOffersIcon} alt="" width={NAV_ITEM_ICON_SIZE} />
-            Offres
-          </NavLink>
+            <SvgIcon
+              src={strokeTeacherIcon}
+              alt=""
+              width={NAV_ITEM_ICON_SIZE}
+            />
+            <span className={styles['nav-section-title']}>Collectif</span>
+            <SvgIcon
+              src={isCollectiveSectionOpen ? fullUpIcon : fullDownIcon}
+              alt=""
+              width="18"
+              className={styles['nav-section-icon']}
+            />
+          </button>
+          {isCollectiveSectionOpen && (
+            <NavLink
+              to="/offres/collectives"
+              className={({ isActive }) =>
+                classnames(styles['nav-links-item'], {
+                  [styles['nav-links-item-active']]: isActive,
+                })
+              }
+            >
+              <span className={styles['nav-links-item-without-icon']}>
+                Offres
+              </span>
+            </NavLink>
+          )}
         </li>
         <li>
           <NavLink

@@ -244,32 +244,34 @@ const Offers = ({
   return (
     <div className="offers-page">
       <Titles action={actionLink} title="Offres" />
-      <Tabs
-        nav="Offres individuelles et collectives"
-        selectedKey={audience}
-        tabs={[
-          {
-            label: 'Offres individuelles',
-            url: computeOffersUrl({
-              ...searchFilters,
-              status: DEFAULT_SEARCH_FILTERS.status,
-              page: currentPageNumber,
-            }),
-            key: 'individual',
-            icon: strokeUserIcon,
-          },
-          {
-            label: 'Offres collectives',
-            url: computeCollectiveOffersUrl({
-              ...searchFilters,
-              status: DEFAULT_SEARCH_FILTERS.status,
-              page: currentPageNumber,
-            }),
-            key: 'collective',
-            icon: strokeLibraryIcon,
-          },
-        ]}
-      />
+      {!isNewSideBarNavigation && (
+        <Tabs
+          nav="Offres individuelles et collectives"
+          selectedKey={audience}
+          tabs={[
+            {
+              label: 'Offres individuelles',
+              url: computeOffersUrl({
+                ...searchFilters,
+                status: DEFAULT_SEARCH_FILTERS.status,
+                page: currentPageNumber,
+              }),
+              key: 'individual',
+              icon: strokeUserIcon,
+            },
+            {
+              label: 'Offres collectives',
+              url: computeCollectiveOffersUrl({
+                ...searchFilters,
+                status: DEFAULT_SEARCH_FILTERS.status,
+                page: currentPageNumber,
+              }),
+              key: 'collective',
+              icon: strokeLibraryIcon,
+            },
+          ]}
+        />
+      )}
 
       <SearchFilters
         applyFilters={applyFilters}
