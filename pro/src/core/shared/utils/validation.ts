@@ -4,6 +4,9 @@ import { SelectOption } from 'custom_types/form'
 
 import { parseAndValidateFrenchPhoneNumber } from './parseAndValidateFrenchPhoneNumber'
 
+export const isOneTrue = (values: Record<string, boolean>): boolean =>
+  Object.values(values).includes(true)
+
 export const isPhoneValid = (phone: string | undefined): boolean => {
   if (!phone) {
     return false

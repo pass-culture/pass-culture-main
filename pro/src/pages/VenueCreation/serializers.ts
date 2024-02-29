@@ -1,36 +1,19 @@
-import { EditVenueBodyModel } from 'apiClient/v1'
 import { PostVenueBodyModel } from 'apiClient/v1/models/PostVenueBodyModel'
 import { unhumanizeSiret } from 'core/Venue/utils'
 import { VenueCreationFormValues } from 'pages/VenueCreation/types'
-import { VenueEditionFormValues } from 'pages/VenueEdition/types'
 
-interface VenueBodyModelParams {
-  hideSiret: boolean
-  offererId: number
-}
-
-type HideSiretParam = Pick<VenueBodyModelParams, 'hideSiret'>
-type VenueBodyModel = Omit<
-  PostVenueBodyModel,
-  'managingOffererId' | 'venueLabelId'
->
-
-export interface EditVirtualVenueBodyModel {
-  reimbursementPointId?: number | null
-}
-
-const serializeCommunData = (
+export const serializePostVenueBodyModel = (
   formValues: VenueCreationFormValues,
-  { hideSiret }: HideSiretParam
-): VenueBodyModel => {
-  const model: VenueBodyModel = {
+  offererId: number,
+  hideSiret: boolean
+): PostVenueBodyModel => {
+  const payload: PostVenueBodyModel = {
     address: formValues.address,
     audioDisabilityCompliant: formValues.accessibility.audio,
     banId: formValues.banId,
     bookingEmail: formValues.bookingEmail,
     city: formValues.city,
     comment: formValues.comment,
-    description: formValues.description,
     latitude: formValues.latitude,
     longitude: formValues.longitude,
     mentalDisabilityCompliant: formValues.accessibility.mental,
@@ -41,65 +24,21 @@ const serializeCommunData = (
     siret: unhumanizeSiret(formValues.siret),
     venueTypeCode: formValues.venueType,
     visualDisabilityCompliant: formValues.accessibility.visual,
-    withdrawalDetails: formValues.withdrawalDetails,
     contact: {
-      email: !formValues.email ? null : formValues.email,
-      phoneNumber: !formValues.phoneNumber ? null : formValues.phoneNumber,
-      website: !formValues.webSite ? null : formValues.webSite,
+      email: null,
+      phoneNumber: null,
+      website: null,
       socialMedias: null,
     },
+    venueLabelId: null,
+    managingOffererId: offererId,
   }
 
   if (hideSiret) {
-    delete model.siret
+    delete payload.siret
   } else {
-    model.comment = ''
+    payload.comment = ''
   }
 
-  return model
-}
-
-export const serializePostVenueBodyModel = (
-  formValues: VenueCreationFormValues,
-  { hideSiret, offererId }: VenueBodyModelParams
-): PostVenueBodyModel => {
-  const model = serializeCommunData(formValues, {
-    hideSiret,
-  })
-  return {
-    ...model,
-    venueLabelId: Number(formValues.venueLabel) || null,
-    managingOffererId: offererId,
-  }
-}
-
-export const serializeEditVenueBodyModel = (
-  formValues: VenueEditionFormValues,
-  { hideSiret }: HideSiretParam,
-  shouldSendMail?: boolean
-): EditVenueBodyModel | EditVirtualVenueBodyModel => {
-  const reimbursementPointId =
-    !formValues.reimbursementPointId || formValues.reimbursementPointId === ''
-      ? null
-      : Number(formValues.reimbursementPointId)
-  if (formValues.isVenueVirtual) {
-    return {
-      reimbursementPointId: reimbursementPointId,
-    }
-  } else {
-    const model = serializeCommunData(formValues, {
-      hideSiret,
-    })
-    return {
-      ...model,
-      // @ts-expect-error string is not assignable to type number
-      venueLabelId: !formValues.venueLabel ? null : formValues.venueLabel,
-      isEmailAppliedOnAllOffers: true,
-      isWithdrawalAppliedOnAllOffers: formValues.isWithdrawalAppliedOnAllOffers,
-      reimbursementPointId: reimbursementPointId,
-      shouldSendMail: shouldSendMail,
-      isAccessibilityAppliedOnAllOffers:
-        formValues.isAccessibilityAppliedOnAllOffers,
-    }
-  }
+  return payload
 }

@@ -4,21 +4,20 @@ import { useLocation, useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
-import { GetOffererResponseModel, VenueProviderResponse } from 'apiClient/v1'
+import { GetOffererResponseModel } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
-import { Providers } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
-import { generateSiretValidationSchema } from 'pages/VenueCreation/Informations/SiretOrCommentFields'
 import { VenueCreationFormValues } from 'pages/VenueCreation/types'
 import { validationSchema } from 'pages/VenueCreation/validationSchema'
 import { VenueCreationForm } from 'pages/VenueCreation/VenueCreationForm'
 import { Title } from 'ui-kit'
 
 import { serializePostVenueBodyModel } from './serializers'
+import { generateSiretValidationSchema } from './SiretOrCommentFields/validationSchema'
 import style from './VenueCreationFormScreen.module.scss'
 import { venueSubmitRedirectUrl } from './venueSubmitRedirectUrl'
 
@@ -26,16 +25,12 @@ interface VenueEditionProps {
   initialValues: VenueCreationFormValues
   offerer: GetOffererResponseModel
   venueTypes: SelectOption[]
-  providers?: Providers[]
-  venueProviders?: VenueProviderResponse[]
 }
 
 export const VenueCreationFormScreen = ({
   initialValues,
   offerer,
   venueTypes,
-  venueProviders,
-  providers,
 }: VenueEditionProps): JSX.Element => {
   const navigate = useNavigate()
   const location = useLocation()
@@ -49,10 +44,7 @@ export const VenueCreationFormScreen = ({
   const onSubmit = async (value: VenueCreationFormValues) => {
     try {
       await api.postCreateVenue(
-        serializePostVenueBodyModel(value, {
-          hideSiret: !isSiretValued,
-          offererId: offerer.id,
-        })
+        serializePostVenueBodyModel(value, offerer.id, !isSiretValued)
       )
 
       navigate(venueSubmitRedirectUrl(offerer.id, currentUser))
@@ -72,12 +64,7 @@ export const VenueCreationFormScreen = ({
         formErrors = error.body
       }
       const apiFieldsMap: Record<string, string> = {
-        venue: 'venueId',
         venueTypeCode: 'venueType',
-        venueLabelId: 'venueLabel',
-        'contact.email': 'email',
-        'contact.phoneNumber': 'phoneNumber',
-        'contact.website': 'webSite',
         address: 'search-addressAutocomplete',
         visualDisabilityCompliant: 'accessibility.visual',
         mentalDisabilityCompliant: 'accessibility.mental',
@@ -131,8 +118,6 @@ export const VenueCreationFormScreen = ({
           <VenueCreationForm
             updateIsSiretValued={setIsSiretValued}
             venueTypes={venueTypes}
-            venueProvider={venueProviders}
-            provider={providers}
             offerer={offerer}
           />
         </form>

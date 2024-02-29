@@ -5,14 +5,14 @@ import { Route, Routes } from 'react-router-dom'
 import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from 'apiClient/api'
-import { VenueFormValues } from 'components/VenueCreationForm'
 import { Events } from 'core/FirebaseEvents/constants'
 import { SelectOption } from 'custom_types/form'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { defaultGetOffererResponseModel } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { VenueCreationFormScreen } from '../VenueCreationFormScreen'
+import { VenueCreationFormValues } from './types'
+import { VenueCreationFormScreen } from './VenueCreationFormScreen'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
@@ -22,26 +22,14 @@ const venueTypes: SelectOption[] = [
   { value: 'SCIENTIFIC_CULTURE', label: 'Culture scientifique' },
 ]
 
-const venueLabels: SelectOption[] = [
-  { value: 'AE', label: 'Architecture contemporaine remarquable' },
-  {
-    value: 'A9',
-    label: "CAC - Centre d'art contemporain d’int\u00e9r\u00eat national",
-  },
-]
-
-const formValues: VenueFormValues = {
+const formValues: VenueCreationFormValues = {
   bannerMeta: undefined,
   comment: '',
-  description: '',
-  isVenueVirtual: false,
   bookingEmail: 'em@ail.fr',
   name: 'MINISTERE DE LA CULTURE',
   publicName: 'Melodie Sims',
   siret: '88145723823022',
   venueType: 'GAMES',
-  venueLabel: 'BM',
-  departmentCode: '',
   address: 'PARIS',
   banId: '35288_7283_00001',
   addressAutocomplete: 'Allee Rene Omnes 35400 Saint-Malo',
@@ -58,16 +46,7 @@ const formValues: VenueFormValues = {
     none: false,
   },
   isAccessibilityAppliedOnAllOffers: false,
-  phoneNumber: '0604855967',
-  email: 'em@ail.com',
-  webSite: 'https://www.site.web',
-  isPermanent: false,
-  id: undefined,
   bannerUrl: '',
-  withdrawalDetails: 'Oui',
-  venueSiret: null,
-  isWithdrawalAppliedOnAllOffers: false,
-  reimbursementPointId: 91,
 }
 
 const renderForm = () => {
@@ -93,9 +72,6 @@ const renderForm = () => {
               siren: '881457238',
             }}
             venueTypes={venueTypes}
-            venueLabels={venueLabels}
-            providers={[]}
-            venueProviders={[]}
           />
         }
       />

@@ -4,10 +4,10 @@ import React from 'react'
 import * as yup from 'yup'
 
 import { Contact } from '..'
-import { SubmitButton } from '../../../../ui-kit'
+import { SubmitButton } from '../../../ui-kit'
 import { DEFAULT_ACTIVITY_FORM_VALUES } from '../../Activity'
 import informationsValidationSchema from '../../Activity/validationSchema'
-import { VenueCreationFormValues } from '../../types'
+import { VenueCreationFormValues } from '../../VenueCreation/types'
 import { ContactProps } from '../Contact'
 
 const renderContact = ({
