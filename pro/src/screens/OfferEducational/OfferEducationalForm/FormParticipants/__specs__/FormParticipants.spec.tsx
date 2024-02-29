@@ -15,10 +15,9 @@ import { ALL_STUDENTS_LABEL } from '../useParticipantsOptions'
 
 const filteredParticipants = Object.values(StudentLevels).filter(
   (studentLevel) =>
-    studentLevel !==
-      StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE &&
-    studentLevel !==
-      StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_L_MENTAIRE
+    studentLevel !== StudentLevels._COLES_MARSEILLE_MATERNELLE &&
+    studentLevel !== StudentLevels._COLES_MARSEILLE_CP_CE1_CE2 &&
+    studentLevel !== StudentLevels._COLES_MARSEILLE_CM1_CM2
 )
 
 const renderFormParticipants = (
@@ -194,12 +193,17 @@ describe('FormParticipants', () => {
 
     expect(
       screen.getByRole('checkbox', {
-        name: StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE,
+        name: StudentLevels._COLES_MARSEILLE_MATERNELLE,
       })
     ).toBeInTheDocument()
     expect(
       screen.getByRole('checkbox', {
-        name: StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_L_MENTAIRE,
+        name: StudentLevels._COLES_MARSEILLE_CP_CE1_CE2,
+      })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('checkbox', {
+        name: StudentLevels._COLES_MARSEILLE_CM1_CM2,
       })
     ).toBeInTheDocument()
   })
@@ -209,12 +213,17 @@ describe('FormParticipants', () => {
 
     expect(
       screen.queryByRole('checkbox', {
-        name: StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE,
+        name: StudentLevels._COLES_MARSEILLE_MATERNELLE,
       })
     ).not.toBeInTheDocument()
     expect(
       screen.queryByRole('checkbox', {
-        name: StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_L_MENTAIRE,
+        name: StudentLevels._COLES_MARSEILLE_CP_CE1_CE2,
+      })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('checkbox', {
+        name: StudentLevels._COLES_MARSEILLE_CM1_CM2,
       })
     ).not.toBeInTheDocument()
   })

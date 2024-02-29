@@ -1,11 +1,15 @@
 export const studentsOptions = [
   {
-    label: 'Écoles innovantes Marseille en Grand : maternelle',
-    value: 'Écoles innovantes Marseille en Grand : maternelle',
+    label: 'Écoles Marseille - Maternelle',
+    value: 'Écoles Marseille - Maternelle',
   },
   {
-    label: 'Écoles innovantes Marseille en Grand : élémentaire',
-    value: 'Écoles innovantes Marseille en Grand : élémentaire',
+    label: 'Écoles Marseille - CP, CE1, CE2',
+    value: 'Écoles Marseille - CP, CE1, CE2',
+  },
+  {
+    label: 'Écoles Marseille - CM1, CM2',
+    value: 'Écoles Marseille - CM1, CM2',
   },
   { label: 'Collège - 6e', value: 'Collège - 6e' },
   { label: 'Collège - 5e', value: 'Collège - 5e' },
@@ -20,12 +24,16 @@ export const studentsOptions = [
 
 export const studentsForData = [
   {
-    label: 'Écoles innovantes Marseille en Grand : maternelle',
-    value: 'Écoles innovantes Marseille en Grand : maternelle',
+    label: 'Écoles Marseille - Maternelle',
+    value: 'Écoles Marseille - Maternelle',
   },
   {
-    label: 'Écoles innovantes Marseille en Grand : élémentaire',
-    value: 'Écoles innovantes Marseille en Grand : élémentaire',
+    label: 'Écoles Marseille - CP, CE1, CE2',
+    value: 'Écoles Marseille - CP, CE1, CE2',
+  },
+  {
+    label: 'Écoles Marseille - CM1, CM2',
+    value: 'Écoles Marseille - CM1, CM2',
   },
   { label: 'Collège - 6e', valueForData: 'Collège sixième' },
   { label: 'Collège - 5e', valueForData: 'Collège cinquième' },

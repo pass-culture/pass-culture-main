@@ -6,8 +6,9 @@
  * An enumeration.
  */
 export enum StudentLevels {
-  _COLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE = 'Écoles innovantes Marseille en Grand : maternelle',
-  _COLES_INNOVANTES_MARSEILLE_EN_GRAND_L_MENTAIRE = 'Écoles innovantes Marseille en Grand : élémentaire',
+  _COLES_MARSEILLE_MATERNELLE = 'Écoles Marseille - Maternelle',
+  _COLES_MARSEILLE_CP_CE1_CE2 = 'Écoles Marseille - CP, CE1, CE2',
+  _COLES_MARSEILLE_CM1_CM2 = 'Écoles Marseille - CM1, CM2',
   COLL_GE_6E = 'Collège - 6e',
   COLL_GE_5E = 'Collège - 5e',
   COLL_GE_4E = 'Collège - 4e',

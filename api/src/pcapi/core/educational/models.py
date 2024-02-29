@@ -54,8 +54,9 @@ if typing.TYPE_CHECKING:
 
 
 class StudentLevels(enum.Enum):
-    ECOLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE = "Écoles innovantes Marseille en Grand : maternelle"
-    ECOLES_INNOVANTES_MARSEILLE_EN_GRAND_ELEMENTAIRE = "Écoles innovantes Marseille en Grand : élémentaire"
+    ECOLES_MARSEILLE_MATERNELLE = "Écoles Marseille - Maternelle"
+    ECOLES_MARSEILLE_CP_CE1_CE2 = "Écoles Marseille - CP, CE1, CE2"
+    ECOLES_MARSEILLE_CM1_CM2 = "Écoles Marseille - CM1, CM2"
     COLLEGE6 = "Collège - 6e"
     COLLEGE5 = "Collège - 5e"
     COLLEGE4 = "Collège - 4e"
@@ -69,8 +70,9 @@ class StudentLevels(enum.Enum):
     @classmethod
     def primary_levels(cls) -> set:
         return {
-            cls.ECOLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE,
-            cls.ECOLES_INNOVANTES_MARSEILLE_EN_GRAND_ELEMENTAIRE,
+            cls.ECOLES_MARSEILLE_MATERNELLE,
+            cls.ECOLES_MARSEILLE_CP_CE1_CE2,
+            cls.ECOLES_MARSEILLE_CM1_CM2,
         }
 
 
