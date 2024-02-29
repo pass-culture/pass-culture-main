@@ -36,16 +36,25 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding-top: rem.torem(16px);
+  padding-top: rem.torem(24px);
   height: 100%;
 
   &-open {
-    height: calc(100% - size.$top-menu-height);
+    height: calc(100% - #{size.$top-menu-height});
   }
 
   &-first-group {
     display: flex;
     flex-direction: column;
+  }
+
+  &-create-offer-wrapper {
+    display: flex;
+
+    a {
+      flex-grow: 1;
+      margin: 0 size.$header-nav-item-padding size.$header-nav-item-padding;
+    }
   }
 
   &-last-group {
