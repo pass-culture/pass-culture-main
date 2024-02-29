@@ -137,7 +137,11 @@ const ActionBar = ({
   return (
     <ActionsBarSticky>
       <ActionsBarSticky.Left>{Left()}</ActionsBarSticky.Left>
-      <ActionsBarSticky.Right>{Right()}</ActionsBarSticky.Right>
+      <ActionsBarSticky.Right
+        inverseWhenSmallerThanTablet={step === OFFER_WIZARD_STEP_IDS.SUMMARY}
+      >
+        {Right()}
+      </ActionsBarSticky.Right>
     </ActionsBarSticky>
   )
 }
