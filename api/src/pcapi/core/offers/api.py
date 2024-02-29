@@ -49,6 +49,7 @@ from pcapi.domain import music_types
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.models import db
 from pcapi.models import feature
+from pcapi.models import offer_mixin
 from pcapi.models import pc_object
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
@@ -593,7 +594,10 @@ def create_stock(
                 stock=created_stock,
             )
         )
-    repository.add_to_session(created_stock, *created_activation_codes)
+    if offer.lastValidationPrice is None and offer.validation == offer_mixin.OfferValidationStatus.APPROVED:
+        offer.lastValidationPrice = price
+    repository.add_to_session(created_stock, *created_activation_codes, offer)
+    db.session.flush()
     search.async_index_offer_ids(
         [offer.id],
         reason=search.IndexationReason.STOCK_CREATION,
@@ -732,6 +736,10 @@ def update_offer_fraud_information(offer: AnyOffer, user: users_models.User | No
         offer.isActive = False
     else:
         offer.isActive = True
+        if (
+            isinstance(offer, models.Offer) and offer.isThing and offer.activeStocks
+        ):  # public API may create offers without stocks
+            offer.lastValidationPrice = offer.max_price
 
     if (
         offer.validation == models.OfferValidationStatus.APPROVED

@@ -1179,8 +1179,10 @@ class ValidateOfferTest(PostEndpointHelper):
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
-    def test_validate_offer(self, legit_user, authenticated_client):
+    def test_validate_offer_with_stocks(self, legit_user, authenticated_client):
         offer_to_validate = offers_factories.OfferFactory(validation=offers_models.OfferValidationStatus.REJECTED)
+        offers_factories.StockFactory(offer=offer_to_validate, price=10.1)
+        offers_factories.StockFactory(offer=offer_to_validate, price=1.01)
 
         response = self.post_to_endpoint(authenticated_client, offer_id=offer_to_validate.id)
         assert response.status_code == 303
@@ -1199,6 +1201,18 @@ class ValidateOfferTest(PostEndpointHelper):
 
         assert offer_to_validate.isActive is True
         assert offer_to_validate.lastValidationType == OfferValidationType.MANUAL
+        assert offer_to_validate.lastValidationPrice == decimal.Decimal("10.1")
+
+    def test_validate_offer_without_stocks(self, legit_user, authenticated_client):
+        offer_to_validate = offers_factories.OfferFactory(validation=offers_models.OfferValidationStatus.REJECTED)
+
+        response = self.post_to_endpoint(authenticated_client, offer_id=offer_to_validate.id)
+        assert response.status_code == 303
+
+        assert offer_to_validate.isActive is True
+        assert offer_to_validate.lastValidationType == OfferValidationType.MANUAL
+        assert offer_to_validate.lastValidationPrice is None
+        assert offer_to_validate.validation == offers_models.OfferValidationStatus.APPROVED
 
 
 class GetValidateOfferFormTest(GetEndpointHelper):
@@ -1264,6 +1278,8 @@ class BatchOfferValidateTest(PostEndpointHelper):
 
     def test_batch_validate_offers(self, legit_user, authenticated_client):
         offers = offers_factories.OfferFactory.create_batch(3, validation=offers_models.OfferValidationStatus.DRAFT)
+        for offer in offers:
+            offers_factories.StockFactory(offer=offer, price=10.1)
         parameter_ids = ",".join(str(offer.id) for offer in offers)
 
         # user_session, user, select offer (3 in 1 query), update offer (3 in 1 query)
@@ -1279,6 +1295,7 @@ class BatchOfferValidateTest(PostEndpointHelper):
             assert offer.lastValidationType is OfferValidationType.MANUAL
             assert offer.validation is offers_models.OfferValidationStatus.APPROVED
             assert offer.lastValidationAuthor == legit_user
+            assert offer.lastValidationPrice == decimal.Decimal("10.1")
 
 
 class BatchOfferRejectTest(PostEndpointHelper):

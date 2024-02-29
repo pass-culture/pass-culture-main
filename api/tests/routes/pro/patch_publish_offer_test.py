@@ -48,6 +48,7 @@ class Returns200Test:
         content = response.json
         offer = offers_models.Offer.query.get(stock.offer.id)
         assert offer.validation == OfferValidationStatus.APPROVED
+        assert offer.lastValidationPrice == stock.price
         assert content["isActive"] is True
         assert content["isNonFreeOffer"] is True
         mock_async_index_offer_ids.assert_called_once()

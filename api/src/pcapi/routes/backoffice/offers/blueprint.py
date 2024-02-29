@@ -699,17 +699,31 @@ def reject_offer(offer_id: int) -> utils.BackofficeResponse:
 
 def _batch_validate_offers(offer_ids: list[int]) -> None:
     new_validation = offers_models.OfferValidationStatus.APPROVED
+
+    max_price_subquery = (
+        sa.select(sa.func.max(offers_models.Stock.price))
+        .select_from(offers_models.Stock)
+        .filter(
+            offers_models.Stock.offerId == offers_models.Offer.id,
+            sa.not_(offers_models.Stock.isSoftDeleted),
+        )
+        .correlate(offers_models.Offer)
+        .scalar_subquery()
+    )
     offers = (
-        offers_models.Offer.query.filter(offers_models.Offer.id.in_(offer_ids))
+        db.session.query(
+            offers_models.Offer,
+            max_price_subquery.label("max_price"),
+        )
+        .filter(offers_models.Offer.id.in_(offer_ids))
         .options(
             sa.orm.joinedload(offers_models.Offer.venue).load_only(
                 offerers_models.Venue.bookingEmail, offerers_models.Venue.name, offerers_models.Venue.publicName
-            )
+            ),
         )
-        .all()
-    )
+    ).all()
 
-    for offer in offers:
+    for offer, max_price in offers:
         if offer.validation != new_validation:
             old_validation = offer.validation
             offer.validation = new_validation
@@ -717,6 +731,8 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
             offer.lastValidationType = OfferValidationType.MANUAL
             offer.lastValidationAuthorUserId = current_user.id
             offer.isActive = True
+            if offer.isThing:
+                offer.lastValidationPrice = max_price
 
             db.session.add(offer)
 
