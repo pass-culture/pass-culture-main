@@ -47,7 +47,7 @@ const Venue = ({
     buildOffererOptions(offererNames)
 
   const { isDisabled: isVenueDisabled, venueOptions } = buildVenueOptions(
-    values.offererId,
+    values.offererId ?? '',
     venueList
   )
 

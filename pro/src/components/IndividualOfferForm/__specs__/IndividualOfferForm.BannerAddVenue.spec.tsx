@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
-import React from 'react'
 
 import {
   CategoryResponseModel,
@@ -126,7 +125,29 @@ describe('IndividualOfferForm', () => {
       const subcategorySelect = await screen.findByLabelText('Sous-catégorie *')
       await userEvent.selectOptions(subcategorySelect, 'physical')
 
-      expect(screen.queryByText('+ Ajouter un lieu')).toBeInTheDocument()
+      expect(screen.getByText('+ Ajouter un lieu')).toBeInTheDocument()
+    })
+
+    it('should not display venue banner when offererId is not set', async () => {
+      const onlyVirtualVenueList = [
+        individualOfferVenueItemFactory({
+          isVirtual: true,
+        }),
+      ]
+      props = { ...props, venueList: onlyVirtualVenueList }
+
+      renderIndividualOfferForm({
+        initialValues: { ...initialValues, offererId: undefined },
+        onSubmit,
+        props,
+      })
+
+      const categorySelect = await screen.findByLabelText('Catégorie *')
+      await userEvent.selectOptions(categorySelect, 'physical')
+      const subcategorySelect = await screen.findByLabelText('Sous-catégorie *')
+      await userEvent.selectOptions(subcategorySelect, 'physical')
+
+      expect(screen.queryByText('+ Ajouter un lieu')).not.toBeInTheDocument()
     })
 
     it('should not display venue banner when subcategory is virtual', async () => {

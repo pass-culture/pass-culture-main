@@ -95,6 +95,7 @@ describe('IndividualOffer section: Categories', () => {
       offerSubtype: INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT,
       venueList: [],
       isEvent: true,
+      showAddVenueBanner: true,
     }
   })
 

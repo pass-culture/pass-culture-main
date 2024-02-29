@@ -83,10 +83,12 @@ const IndividualOfferForm = ({
     .filter(matchOffererId)
     .every((v) => v.isVirtual)
 
+  // we show the add venue banner only if we have offererId so the link is not broken
   const showAddVenueBanner =
     offerSubCategory &&
     offerSubCategory.onlineOfflinePlatform === CATEGORY_STATUS.OFFLINE &&
-    areAllVenuesVirtual
+    areAllVenuesVirtual &&
+    offererId
 
   return (
     <>
@@ -96,7 +98,7 @@ const IndividualOfferForm = ({
         categories={categories}
         subCategories={subCategories}
         readOnlyFields={readOnlyFields}
-        showAddVenueBanner={showAddVenueBanner}
+        showAddVenueBanner={Boolean(showAddVenueBanner)}
         offerSubtype={offerSubtype}
         // subcategory change will recompute the venue list
         // so we need to pass the full venue list here
