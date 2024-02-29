@@ -1,3 +1,4 @@
+from collections import defaultdict
 import enum
 from functools import wraps
 import logging
@@ -24,6 +25,7 @@ from werkzeug.wrappers import Response as WerkzeugResponse
 from pcapi import settings
 from pcapi.core.history import models as history_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils import string as string_utils
@@ -234,7 +236,9 @@ def generate_search_query(
     search_parameters: typing.Iterable[dict[str, typing.Any]],
     fields_definition: dict[str, dict[str, typing.Any]],
     joins_definition: dict[str, list[dict[str, typing.Any]]],
+    subqueries_definition: dict[str, dict[str, typing.Any]],
     operators_definition: dict[str, dict[str, typing.Any]] | None = None,
+    _ignore_subquery_joins: bool = False,
 ) -> tuple[BaseQuery, set[str], set[str], set[str]]:
     """
     Generate a search query from a list of dict (from a ListField of FormFields).
@@ -245,9 +249,12 @@ def generate_search_query(
         - search_field: a key for fields_definition
     fields_definition: a dict defining the fields, inner_joins and special operations
     joins_definition: a dict defining how to do each join
+    subqueries_definition: a dict defining how to do each subquery (hack to avoid a slower distinct)
     operators_definition: a dict mapping str to actual operations
+    _ignore_subquery_joins: internal signaling to manage subqueries
     """
     operators_definition = operators_definition or OPERATOR_DICT
+    subquery_joins: dict = defaultdict(list)
     inner_joins: set[tuple] = set()
     outer_joins: set[tuple] = set()
     filters: list = []
@@ -264,6 +271,10 @@ def generate_search_query(
         meta_field = fields_definition.get(search_field)
         if not meta_field:
             warnings.add(f"La règle de recherche '{search_field}' n'est pas supportée, merci de prévenir les devs")
+            continue
+
+        if "subquery_join" in meta_field and not _ignore_subquery_joins:
+            subquery_joins[meta_field["subquery_join"]].append(search_data)
             continue
 
         field_value = meta_field.get("special", lambda x: x)(search_data.get(meta_field["field"]))
@@ -294,6 +305,14 @@ def generate_search_query(
     query, outer_join_log = _manage_joins(
         query=query, joins=outer_joins, joins_definition=joins_definition, join_type="outer_join"
     )
+    filters.extend(
+        _manage_subquery_joins(
+            joins=subquery_joins,
+            fields_definition=fields_definition,
+            subqueries_definition=subqueries_definition,
+            operators_definition=operators_definition,
+        )
+    )
     if filters:
         query = query.filter(*filters)
     return query, inner_join_log, outer_join_log, warnings
@@ -318,6 +337,29 @@ def _manage_joins(
                     raise ValueError(f"Unsupported join_type {join_type}. Supported : 'inner_join' or 'outer_join'.")
                 join_log.add(join_dict["name"])
     return query, join_log
+
+
+def _manage_subquery_joins(
+    joins: dict,
+    fields_definition: dict[str, dict[str, typing.Any]],
+    subqueries_definition: dict[str, dict[str, typing.Any]],
+    operators_definition: dict[str, dict[str, typing.Any]] | None = None,
+) -> list:
+    filters = []
+    for join_name, subquery_filters in joins.items():
+        subquery = db.session.query(subqueries_definition[join_name]["table"])
+        subquery, *_ = generate_search_query(
+            query=subquery,
+            search_parameters=subquery_filters,
+            fields_definition=fields_definition,
+            joins_definition={},
+            subqueries_definition={},
+            operators_definition=operators_definition,
+            _ignore_subquery_joins=True,
+        )
+        subquery = subquery.filter(subqueries_definition[join_name]["constraint"])
+        filters.append(subquery.limit(1).exists())
+    return filters
 
 
 def get_advanced_search_args(
