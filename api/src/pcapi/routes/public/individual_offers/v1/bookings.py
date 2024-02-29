@@ -94,7 +94,7 @@ def get_bookings_by_offer(
     )
 
     if offer is None:
-        raise api_errors.ApiErrors(errors={"offer": "we could not find this offer id"}, status_code=404)
+        raise api_errors.ResourceNotFoundError({"offer": "we could not find this offer id"})
 
     bookings = _get_paginated_and_filtered_bookings(
         query.offer_id,
@@ -139,18 +139,18 @@ def get_booking_by_token(token: str) -> serialization.GetBookingResponse:
     """
     booking = _get_booking_by_token(token)
     if booking is None:
-        raise api_errors.ApiErrors(errors={"global": "This countermark cannot be found"}, status_code=404)
+        raise api_errors.ResourceNotFoundError({"global": "This countermark cannot be found"})
 
     try:
         bookings_validation.check_is_usable(booking)
     except exceptions.BookingIsAlreadyRefunded:
-        raise api_errors.ApiErrors(errors={"payment": "This booking has already been reimbursed"}, status_code=403)
+        raise api_errors.ForbiddenError({"payment": "This booking has already been reimbursed"})
     except exceptions.BookingIsAlreadyUsed:
-        raise api_errors.ApiErrors(errors={"booking": "This booking has already been validated"}, status_code=410)
+        raise api_errors.ResourceGoneError({"booking": "This booking has already been validated"})
     except exceptions.BookingIsAlreadyCancelled:
-        raise api_errors.ApiErrors(errors={"booking": "This booking has been canceled"}, status_code=410)
+        raise api_errors.ResourceGoneError({"booking": "This booking has been cancelled"})
     except exceptions.BookingIsNotConfirmed as exc:
-        raise api_errors.ApiErrors(errors={"booking": str(exc)}, status_code=403)
+        raise api_errors.ForbiddenError(errors={"booking": str(exc)})
 
     return serialization.GetBookingResponse.build_booking(booking)
 
@@ -178,18 +178,18 @@ def validate_booking_by_token(token: str) -> None:
     """
     booking = _get_booking_by_token(token)
     if booking is None:
-        raise api_errors.ApiErrors(errors={"global": "This countermark cannot be found"}, status_code=404)
+        raise api_errors.ResourceNotFoundError({"global": "This countermark cannot be found"})
 
     try:
         bookings_validation.check_is_usable(booking)
     except exceptions.BookingIsAlreadyRefunded:
-        raise api_errors.ApiErrors(errors={"payment": "This booking has already been reimbursed"}, status_code=403)
+        raise api_errors.ForbiddenError({"payment": "This booking has already been reimbursed"})
     except exceptions.BookingIsAlreadyUsed:
-        raise api_errors.ApiErrors(errors={"booking": "This booking has already been validated"}, status_code=410)
+        raise api_errors.ResourceGoneError({"booking": "This booking has already been validated"})
     except exceptions.BookingIsAlreadyCancelled:
-        raise api_errors.ApiErrors(errors={"booking": "This booking has been canceled"}, status_code=410)
+        raise api_errors.ResourceGoneError({"booking": "This booking has been cancelled"})
     except exceptions.BookingIsNotConfirmed as exc:
-        raise api_errors.ApiErrors(errors={"booking": str(exc)}, status_code=403)
+        raise api_errors.ForbiddenError({"booking": str(exc)})
 
     bookings_api.mark_as_used(booking)
 
@@ -222,7 +222,7 @@ def cancel_booking_validation_by_token(token: str) -> None:
     """
     booking = _get_booking_by_token(token)
     if booking is None:
-        raise api_errors.ApiErrors(errors={"global": "This countermark cannot be found"}, status_code=404)
+        raise api_errors.ResourceNotFoundError({"global": "This countermark cannot be found"})
 
     try:
         bookings_api.mark_as_unused(booking)
@@ -247,12 +247,12 @@ def cancel_booking_validation_by_token(token: str) -> None:
         **(
             BOOKINGS_API_BASE_CODE_DESCRIPTIONS
             | {
-                "HTTP_204": (None, "The booking has been canceled successfully"),
+                "HTTP_204": (None, "The booking has been cancelled successfully"),
                 "HTTP_403": (
                     None,
                     "This booking cannot be cancelled because you do not have the proper right or because the token has already been validated",
                 ),
-                "HTTP_410": (None, "This booking has already been canceled"),
+                "HTTP_410": (None, "This booking has already been cancelled"),
             }
         )
     ),
@@ -263,25 +263,25 @@ def cancel_booking_by_token(token: str) -> None:
     Cancel a booking.
 
     To cancel a booking that has not been refunded.
-    For events, the booking can be canceled until 48 hours before the event.
+    For events, the booking can be cancelled until 48 hours before the event.
     """
     booking = _get_booking_by_token(token)
     if booking is None:
-        raise api_errors.ApiErrors(errors={"global": "This countermark cannot be found"}, status_code=404)
+        raise api_errors.ResourceNotFoundError({"global": "This countermark cannot be found"})
 
     try:
         bookings_validation.check_booking_can_be_cancelled(booking)
         if booking.stock.offer.isEvent:
             bookings_validation.check_booking_cancellation_limit_date(booking)
     except exceptions.BookingIsAlreadyRefunded:
-        raise api_errors.ApiErrors(errors={"payment": "This booking has been reimbursed"}, status_code=403)
+        raise api_errors.ForbiddenError({"payment": "This booking has been reimbursed"})
     except exceptions.BookingIsAlreadyUsed:
-        raise api_errors.ApiErrors(errors={"booking": "This booking has been validated"}, status_code=410)
+        raise api_errors.ResourceGoneError({"booking": "This booking has been validated"})
     except exceptions.BookingIsAlreadyCancelled:
-        raise api_errors.ApiErrors(errors={"booking": "This booking has already been canceled"}, status_code=410)
+        raise api_errors.ResourceGoneError({"booking": "This booking has already been cancelled"})
     except exceptions.BookingIsNotConfirmed as exc:
-        raise api_errors.ApiErrors(errors={"booking": str(exc)}, status_code=403)
+        raise api_errors.ForbiddenError({"booking": str(exc)})
     except exceptions.CannotCancelConfirmedBooking:
-        raise api_errors.ApiErrors(errors={"booking": "This booking cannot be canceled anymore"}, status_code=403)
+        raise api_errors.ForbiddenError({"booking": "This booking cannot be cancelled anymore"})
 
     bookings_api.cancel_booking_by_offerer(booking)
