@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react'
 
 import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
-import ReimbursementPoint from 'components/VenueForm/ReimbursementPoint/ReimbursementPoint'
+import ReimbursementPoint from 'components/VenueCreationForm/ReimbursementPoint/ReimbursementPoint'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { Banner } from 'ui-kit'
 

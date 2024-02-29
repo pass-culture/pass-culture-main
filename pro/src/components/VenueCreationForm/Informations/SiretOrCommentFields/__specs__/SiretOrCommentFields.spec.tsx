@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
 
-import { VenueFormValues } from 'components/VenueForm'
+import { VenueFormValues } from 'components/VenueCreationForm'
 import * as siretApiValidate from 'core/Venue/siretApiValidate'
 import { SubmitButton } from 'ui-kit'
 

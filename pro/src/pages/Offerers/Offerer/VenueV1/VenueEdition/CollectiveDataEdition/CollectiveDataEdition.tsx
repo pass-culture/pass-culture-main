@@ -9,7 +9,7 @@ import {
 } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
 import MandatoryInfo from 'components/FormLayout/FormLayoutMandatoryInfo'
-import { CollectiveDmsTimeline } from 'components/VenueForm/CollectiveDmsTimeline/CollectiveDmsTimeline'
+import { CollectiveDmsTimeline } from 'components/VenueCreationForm/CollectiveDmsTimeline/CollectiveDmsTimeline'
 import { getEducationalDomainsAdapter } from 'core/OfferEducational'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'

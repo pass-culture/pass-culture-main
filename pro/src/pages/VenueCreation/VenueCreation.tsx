@@ -2,7 +2,7 @@ import React from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 
 import { AppLayout } from 'app/AppLayout'
-import { setDefaultInitialFormValues } from 'components/VenueForm'
+import { setDefaultInitialFormValues } from 'components/VenueCreationForm'
 import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import useNotification from 'hooks/useNotification'
