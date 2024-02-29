@@ -55,7 +55,7 @@ export const VenueCreationFormScreen = ({
         })
       )
 
-      navigate(venueSubmitRedirectUrl(true, offerer.id, currentUser))
+      navigate(venueSubmitRedirectUrl(offerer.id, currentUser))
 
       if (currentUser.isAdmin) {
         notify.success(PATCH_SUCCESS_MESSAGE)
