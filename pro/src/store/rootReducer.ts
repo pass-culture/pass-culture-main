@@ -5,11 +5,14 @@ import { notificationsReducer } from 'store/notifications/reducer'
 import { offersReducer } from 'store/offers/reducer'
 import { userReducer } from 'store/user/reducer'
 
+import { navReducer } from './nav/reducer'
+
 const rootReducer = combineReducers({
   features: featuresReducer,
   offers: offersReducer,
   notification: notificationsReducer,
   user: userReducer,
+  nav: navReducer,
 })
 
 export default rootReducer

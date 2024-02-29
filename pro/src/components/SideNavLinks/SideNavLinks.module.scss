@@ -3,6 +3,35 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/variables/_size.scss" as size;
 
+.nav-section {
+  &-button {
+    @include fonts.button;
+
+    padding: rem.torem(12px) rem.torem(16px);
+    display: flex;
+    gap: rem.torem(8px);
+    align-items: center;
+    width: 100%;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+
+    &:hover {
+      background-color: colors.$grey-light;
+    }
+  }
+
+  &-title {
+    flex: 1;
+    text-align: left;
+  }
+
+  &-icon {
+    height: rem.torem(18px);
+    width: rem.torem(18px);
+  }
+}
+
 .nav-links {
   display: flex;
   flex-direction: column;
@@ -46,6 +75,12 @@
       border-right: rem.torem(4px) solid colors.$primary;
       border-radius: rem.torem(2px) 0 0 rem.torem(2px);
       background-color: colors.$background-error;
+    }
+
+    &-without-icon {
+      @include fonts.body;
+
+      padding-left: rem.torem(28px);
     }
   }
 }
