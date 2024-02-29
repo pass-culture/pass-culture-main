@@ -145,36 +145,38 @@ def synchronize_venues_banners_with_google_places(
     images_ignored_due_to_ratio = []
     banner_synchronized_venue_ids = set()
     for venue in venues_without_photos:
-        if venue.googlePlacesInfo:
-            if (datetime.datetime.utcnow() - venue.googlePlacesInfo.updateDate).days > 62:
-                continue
-        else:
-            place_id = get_place_id(venue.name, venue.address, venue.city, venue.postalCode)
-            if not place_id:
-                continue
-            venue.googlePlacesInfo = offerers_models.GooglePlacesInfo(placeId=place_id)
-
-        nb_places_found += 1
-        place_details = get_place_photos_and_owner(venue.googlePlacesInfo.placeId)
-        if not (place_details and place_details.photos):
-            continue
-        nb_places_with_photo += 1
-
-        owner_photo = get_owner_photo(place_details.photos, place_details.name)
-        if owner_photo:
-            photo = owner_photo
-            photo_prefix = "owner"
-            nb_places_with_owner_photo += 1
-        else:
-            photo = place_details.photos[0]
-            photo_prefix = ""
         try:
+            if venue.googlePlacesInfo:
+                if (datetime.datetime.utcnow() - venue.googlePlacesInfo.updateDate).days > 62:
+                    continue
+            else:
+                place_id = get_place_id(venue.name, venue.address, venue.city, venue.postalCode)
+                if not place_id:
+                    continue
+                venue.googlePlacesInfo = offerers_models.GooglePlacesInfo(placeId=place_id)
+
+            nb_places_found += 1
+            place_details = get_place_photos_and_owner(venue.googlePlacesInfo.placeId)
+            if not (place_details and place_details.photos):
+                continue
+            nb_places_with_photo += 1
+
+            owner_photo = get_owner_photo(place_details.photos, place_details.name)
+            if owner_photo:
+                photo = owner_photo
+                photo_prefix = "owner"
+                nb_places_with_owner_photo += 1
+            else:
+                photo = place_details.photos[0]
+                photo_prefix = ""
             venue.googlePlacesInfo.bannerUrl = save_photo_to_gcp(venue.id, photo, photo_prefix)
             venue.googlePlacesInfo.bannerMeta = photo.model_dump()
             banner_synchronized_venue_ids.add(venue.id)
+            db.session.commit()
         except image_conversion.ImageRatioError:
             nb_images_ignored_due_to_ratio_venue_id += 1
             images_ignored_due_to_ratio.append(venue.id)
+            db.session.rollback()
             continue
         except Exception as e:  # pylint: disable=broad-except
             logger.exception(
@@ -183,8 +185,8 @@ def synchronize_venues_banners_with_google_places(
                 e,
                 extra={"venue_id": venue.id, "error": e},
             )
+            db.session.rollback()
             continue
-    db.session.commit()
     async_index_venue_ids(banner_synchronized_venue_ids, IndexationReason.GOOGLE_PLACES_BANNER_SYNCHRONIZATION)
     logger.info(
         "[gmaps_banner_synchro]Synchronized venues with Google Places",
