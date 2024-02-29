@@ -182,4 +182,4 @@ class PatchBookingByTokenReturns410Test:
         )
 
         assert response.status_code == 410
-        assert response.json == {"booking": "This booking has been canceled"}
+        assert response.json == {"booking": "This booking has been cancelled"}
