@@ -4,12 +4,18 @@ import React from 'react'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import ContactButton, { ContactButtonProps } from '../ContactButton'
 
-const renderContactButton = (props: ContactButtonProps) => {
-  return renderWithProviders(<ContactButton {...props} />)
+const renderContactButton = (
+  props: ContactButtonProps,
+  options?: RenderWithProvidersOptions
+) => {
+  return renderWithProviders(<ContactButton {...props} />, options)
 }
 vi.mock('apiClient/api', () => ({
   apiAdage: {
@@ -51,6 +57,19 @@ describe('ContactButton', () => {
 
     expect(
       screen.getByText('Contacter le partenaire culturel')
+    ).toBeInTheDocument()
+  })
+
+  it('should render new request form modal when ff is active', async () => {
+    renderContactButton(defaultProps, {
+      features: ['WIP_ENABLE_COLLECTIVE_CUSTOM_CONTACT'],
+    })
+
+    const contactButton = screen.getByRole('button', { name: 'Contacter' })
+    await userEvent.click(contactButton)
+
+    expect(
+      screen.getByText('Vous souhaitez contacter ce partenaire ?')
     ).toBeInTheDocument()
   })
 })

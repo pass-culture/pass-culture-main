@@ -13,6 +13,8 @@ export interface ContactButtonProps {
   className?: string
   contactEmail?: string | null
   contactPhone?: string | null
+  contactForm?: string | null
+  contactUrl?: string | null
   offerId: number
   position: number
   queryId: string
@@ -26,6 +28,8 @@ const ContactButton = ({
   className,
   contactEmail,
   contactPhone,
+  contactForm,
+  contactUrl,
   offerId,
   position,
   queryId,
@@ -69,19 +73,13 @@ const ContactButton = ({
         (isCustomContactActive ? (
           <NewRequestFormDialog
             closeModal={closeModal}
-            contactEmail={contactEmail}
-            contactPhone={contactPhone}
             offerId={offerId}
             userEmail={userEmail}
             userRole={userRole}
-            mockResponseContactValue={{
-              mail: true,
-              phone: true,
-              form: {
-                custom: 'http://example.com',
-                default: false,
-              },
-            }}
+            contactEmail={contactEmail ?? ''}
+            contactPhone={contactPhone ?? ''}
+            contactUrl={contactUrl ?? ''}
+            contactForm={contactForm ?? ''}
           />
         ) : (
           <RequestFormDialog
