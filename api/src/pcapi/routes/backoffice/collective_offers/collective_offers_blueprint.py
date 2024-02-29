@@ -149,6 +149,7 @@ def _get_collective_offer_ids_query(form: forms.InternalSearchForm) -> BaseQuery
             search_parameters=form.search.data,
             fields_definition=SEARCH_FIELD_TO_PYTHON,
             joins_definition=JOIN_DICT,
+            subqueries_definition={},
             operators_definition=OPERATOR_DICT,
         )
         for warning in warnings:
