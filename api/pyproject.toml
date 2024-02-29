@@ -65,10 +65,7 @@ sentry-sdk = { version = "2.5.0", extras = ["flask"] }
 sib-api-v3-sdk = "^7.6.0"
 slack-sdk = "3.27.2"
 spectree = "1.2.1"
-# FIXME (dbaty, 2023-01-04): do not use 1.4.46 that has a new
-# deprecation warning for which we're not ready
-# (https://docs.sqlalchemy.org/en/20/changelog/changelog_14.html#change-e67bfa1efbe52ae40aa842124bc40c51).
-sqlalchemy = { version = "1.4.45", extras = ["mypy"] }
+sqlalchemy = { version = "1.4.46", extras = ["mypy"] }
 time-machine = "^2.14.1"
 weasyprint = "62.1"
 werkzeug = "2.0.3"
