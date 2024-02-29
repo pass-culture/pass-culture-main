@@ -51,7 +51,7 @@ type ShouldBlockVenueNavigation = (
 export const shouldBlockVenueNavigation: ShouldBlockVenueNavigation =
   ({ offererId, user }: ShouldBlockVenueNavigationProps): BlockerFunction =>
   ({ nextLocation }) => {
-    const url = venueSubmitRedirectUrl(true, offererId, user)
+    const url = venueSubmitRedirectUrl(offererId, user)
     const nextUrl = nextLocation.pathname + nextLocation.search
 
     return !nextUrl.startsWith(url)
