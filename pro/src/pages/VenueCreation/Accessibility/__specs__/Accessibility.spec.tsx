@@ -2,29 +2,24 @@ import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
 import React from 'react'
-import * as yup from 'yup'
 
-import { VenueFormValues } from 'components/VenueCreationForm'
 import { AccessiblityEnum } from 'core/shared'
+import { VenueCreationFormValues } from 'pages/VenueCreation/types'
 import { SubmitButton } from 'ui-kit'
 
-import { Accessibility, validationSchema } from '..'
+import { Accessibility } from '../Accessibility'
 
 const renderAccessibility = ({
   initialValues,
   isCreatingVenue,
   onSubmit = vi.fn(),
 }: {
-  initialValues: Partial<VenueFormValues>
+  initialValues: Partial<VenueCreationFormValues>
   isCreatingVenue: boolean
   onSubmit: () => void
 }) => {
   return render(
-    <Formik
-      initialValues={initialValues}
-      onSubmit={onSubmit}
-      validationSchema={yup.object().shape(validationSchema)}
-    >
+    <Formik initialValues={initialValues} onSubmit={onSubmit}>
       <Form>
         <Accessibility isCreatingVenue={isCreatingVenue} />
         <SubmitButton isLoading={false}>Submit</SubmitButton>
@@ -34,13 +29,12 @@ const renderAccessibility = ({
 }
 
 describe('Accessibility', () => {
-  let initialValues: Partial<VenueFormValues>
+  let initialValues: Partial<VenueCreationFormValues>
   let isCreatingVenue: boolean
   const onSubmit = vi.fn()
 
   beforeEach(() => {
     initialValues = {
-      isVenueVirtual: false,
       accessibility: {
         [AccessiblityEnum.VISUAL]: false,
         [AccessiblityEnum.MENTAL]: false,
@@ -56,7 +50,7 @@ describe('Accessibility', () => {
     renderAccessibility({ initialValues, isCreatingVenue, onSubmit })
 
     expect(
-      await screen.findByRole('heading', { name: 'Accessibilité du lieu' })
+      await screen.findByRole('heading', { name: 'Critères d’accessibilité' })
     ).toBeInTheDocument()
     expect(
       screen.getByText(
@@ -84,7 +78,6 @@ describe('Accessibility', () => {
 
     expect(onSubmit).toHaveBeenCalledWith(
       {
-        isVenueVirtual: false,
         accessibility: {
           audio: false,
           mental: false,
@@ -136,37 +129,6 @@ describe('Accessibility', () => {
     await userEvent.click(checkboxAuditif)
     expect(checkboxAuditif).toBeChecked()
     expect(checkboxNone).not.toBeChecked()
-  })
-
-  it('should display an error on submit if accessibility is empty for non virtual venues', async () => {
-    renderAccessibility({ initialValues, isCreatingVenue, onSubmit })
-
-    // tab to focus the first accessibility checkbox
-    // then the form is touched and errors will be displayed.
-    await userEvent.tab()
-    await userEvent.click(await screen.findByRole('button', { name: 'Submit' }))
-
-    expect(
-      await screen.findByText(
-        'Veuillez sélectionner au moins un critère d’accessibilité'
-      )
-    ).toBeInTheDocument()
-  })
-
-  it('should not display an error on submit if accessibility is empty for virtual venues', async () => {
-    initialValues.isVenueVirtual = true
-    renderAccessibility({ initialValues, isCreatingVenue, onSubmit })
-
-    // tab to focus the first accessibility checkbox
-    // then the form is touched and errors will be displayed.
-    await userEvent.tab()
-    await userEvent.click(await screen.findByRole('button', { name: 'Submit' }))
-
-    expect(
-      screen.queryByText(
-        'Veuillez sélectionner au moins un critère d’accessibilité'
-      )
-    ).not.toBeInTheDocument()
   })
 
   it('should display apply accessibility to all offer when its venue edition and accessibility has changed', async () => {

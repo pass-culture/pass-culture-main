@@ -14,7 +14,7 @@ export const isSiretStartingWithSiren = (
   siren !== undefined &&
   unhumanizeSiret(siret).startsWith(siren)
 
-const generateSiretValidationSchema = (
+export const generateSiretValidationSchema = (
   isSiretValued: boolean,
   siren?: string | null
 ) => {
@@ -57,5 +57,3 @@ const generateSiretValidationSchema = (
     .object()
     .shape(isSiretValued ? siretValidationSchema : commentValidationSchema)
 }
-
-export default generateSiretValidationSchema

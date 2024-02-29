@@ -3,14 +3,15 @@ import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
 
-import { VenueFormValues } from 'components/VenueCreationForm'
 import * as siretApiValidate from 'core/Venue/siretApiValidate'
+import { VenueEditionFormValues } from 'pages/VenueEdition/types'
 import { SubmitButton } from 'ui-kit'
 
-import SiretOrCommentFields, {
+import {
+  SiretOrCommentFields,
   SiretOrCommentInterface,
 } from '../SiretOrCommentFields'
-import generateSiretValidationSchema from '../validationSchema'
+import { generateSiretValidationSchema } from '../validationSchema'
 
 vi.mock('core/Venue/siretApiValidate')
 
@@ -27,7 +28,7 @@ const renderSiretOrComment = async ({
   props,
   validationSchema,
 }: {
-  initialValues: Partial<VenueFormValues>
+  initialValues: Partial<VenueEditionFormValues>
   onSubmit: () => void
   props: SiretOrCommentInterface
   validationSchema: any
@@ -59,7 +60,7 @@ const renderSiretOrComment = async ({
 
 describe('components | SiretOrCommentFields', () => {
   let props: SiretOrCommentInterface
-  let initialValues: Partial<VenueFormValues>
+  let initialValues: Partial<VenueEditionFormValues>
   let validationSchema: any
   const onSubmit = vi.fn()
 

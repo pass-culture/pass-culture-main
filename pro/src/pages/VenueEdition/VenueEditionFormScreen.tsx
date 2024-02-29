@@ -15,7 +15,7 @@ import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import strokeMailIcon from 'icons/stroke-mail.svg'
 import { PartnerPageIndividualSection } from 'pages/Home/Offerers/PartnerPageIndividualSection'
-import { generateSiretValidationSchema } from 'pages/VenueCreation/Informations/SiretOrCommentFields'
+import { generateSiretValidationSchema } from 'pages/VenueCreation/SiretOrCommentFields/validationSchema'
 
 import { serializeEditVenueBodyModel } from './serializers'
 import { VenueEditionFormValues } from './types'

@@ -11,9 +11,8 @@ import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { Events, VenueEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
+import { VenueEditionFormValues } from 'pages/VenueEdition/types'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
-
-import { VenueCreationFormValues } from '../types'
 
 /* istanbul ignore next: DEBT, TO FIX */
 export const buildInitialValues = (
@@ -48,7 +47,7 @@ const ImageUploaderVenue = ({ isCreatingVenue }: ImageUploaderProps) => {
   const {
     setFieldValue,
     values: { id: venueId, bannerUrl, bannerMeta },
-  } = useFormikContext<VenueCreationFormValues>()
+  } = useFormikContext<VenueEditionFormValues>()
   const { logEvent } = useAnalytics()
 
   const handleOnImageUpload = async ({
