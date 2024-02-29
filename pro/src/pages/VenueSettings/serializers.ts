@@ -1,6 +1,6 @@
 import { EditVenueBodyModel } from 'apiClient/v1'
 import { PostVenueBodyModel } from 'apiClient/v1/models/PostVenueBodyModel'
-import { VenueFormValues } from 'components/VenueForm'
+import { VenueFormValues } from 'components/VenueCreationForm'
 import { unhumanizeSiret } from 'core/Venue/utils'
 
 interface VenueBodyModelParams {

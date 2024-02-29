@@ -1,5 +1,5 @@
 import { EditVenueBodyModel } from 'apiClient/v1'
-import { VenueFormValues } from 'components/VenueForm'
+import { VenueFormValues } from 'components/VenueCreationForm'
 
 import {
   EditVirtualVenueBodyModel,
