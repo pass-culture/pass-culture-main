@@ -367,8 +367,71 @@ def test_update_external_pro_booking_email_attributes():
     assert attributes.dms_application_approved is False
     assert attributes.isVirtual is False
     assert attributes.isPermanent is True
+    assert attributes.has_banner_url is False
     assert attributes.has_offers is False
     assert attributes.has_bookings is False
+
+
+def test_update_external_pro_booking_email_attributes_for_permanent_venue_with_banner():
+    email = "musee@example.net"
+    offerer = offerers_factories.OffererFactory(siren="123456789", name="Musée")
+    offerers_factories.VenueFactory(
+        managingOfferer=offerer,
+        name="Musée de la châtaigne",
+        departementCode="06",
+        postalCode="06420",
+        bookingEmail=email,
+        siret="12345678900001",
+        isPermanent=True,
+        venueTypeCode=VenueTypeCode.MUSEUM,
+        _bannerUrl="https://example.net/banner.jpg",
+    )
+
+    with assert_num_queries(4):
+        attributes = get_pro_attributes(email)
+    assert attributes.isPermanent is True
+    assert attributes.has_banner_url is True
+
+
+def test_update_external_pro_booking_email_attributes_for_non_permanent_venue_with_banner():
+    email = "musee@example.net"
+    offerer = offerers_factories.OffererFactory(siren="123456789", name="Musée")
+    offerers_factories.VenueFactory(
+        managingOfferer=offerer,
+        name="Musée de la châtaigne",
+        departementCode="06",
+        postalCode="06420",
+        bookingEmail=email,
+        siret="12345678900001",
+        isPermanent=False,
+        venueTypeCode=VenueTypeCode.MUSEUM,
+        _bannerUrl="https://example.net/banner.jpg",
+    )
+
+    with assert_num_queries(4):
+        attributes = get_pro_attributes(email)
+    assert attributes.isPermanent is False
+    assert attributes.has_banner_url is True
+
+
+def test_update_external_pro_booking_email_attributes_for_non_permanent_venue_without_banner():
+    email = "musee@example.net"
+    offerer = offerers_factories.OffererFactory(siren="123456789", name="Musée")
+    offerers_factories.VenueFactory(
+        managingOfferer=offerer,
+        name="Musée de la châtaigne",
+        departementCode="06",
+        postalCode="06420",
+        bookingEmail=email,
+        siret="12345678900001",
+        isPermanent=False,
+        venueTypeCode=VenueTypeCode.MUSEUM,
+    )
+
+    with assert_num_queries(4):
+        attributes = get_pro_attributes(email)
+    assert attributes.isPermanent is False
+    assert attributes.has_banner_url is True
 
 
 def test_update_external_pro_removed_email_attributes():

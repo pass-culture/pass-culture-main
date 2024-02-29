@@ -48,6 +48,7 @@ class SendinblueAttributes(Enum):
     DMS_APPLICATION_SUBMITTED = "DMS_APPLICATION_SUBMITTED"
     ELIGIBILITY = "ELIGIBILITY"
     FIRSTNAME = "FIRSTNAME"
+    HAS_BANNER_URL = "HAS_BANNER_URL"
     HAS_BOOKINGS = "HAS_BOOKINGS"
     HAS_COLLECTIVE_OFFERS = "HAS_COLLECTIVE_OFFERS"
     HAS_COMPLETED_ID_CHECK = "HAS_COMPLETED_ID_CHECK"
@@ -190,6 +191,7 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
         SendinblueAttributes.DMS_APPLICATION_SUBMITTED.value: _get_attr(attributes, "dms_application_submitted"),
         SendinblueAttributes.ELIGIBILITY.value: _get_attr(attributes, "eligibility"),
         SendinblueAttributes.FIRSTNAME.value: _get_attr(attributes, "first_name"),
+        SendinblueAttributes.HAS_BANNER_URL.value: _get_attr(attributes, "has_banner_url"),
         SendinblueAttributes.HAS_BOOKINGS.value: _get_attr(attributes, "has_bookings"),
         SendinblueAttributes.HAS_COLLECTIVE_OFFERS.value: _get_attr(attributes, "has_collective_offers"),
         SendinblueAttributes.HAS_COMPLETED_ID_CHECK.value: _get_attr(attributes, "has_completed_id_check"),
