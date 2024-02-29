@@ -24,7 +24,7 @@ export type SiretOrCommentInterface = {
   siren?: string | null
 }
 
-const SiretOrCommentFields = ({
+export const SiretOrCommentFields = ({
   initialSiret = '',
   isCreatedEntity,
   isToggleDisabled = false,
@@ -147,5 +147,3 @@ const SiretOrCommentFields = ({
     </>
   )
 }
-
-export default SiretOrCommentFields

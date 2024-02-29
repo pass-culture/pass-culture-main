@@ -6,12 +6,10 @@ import { api } from 'apiClient/api'
 import {
   GetOffererResponseModel,
   SharedCurrentUserResponseModel,
-  VenueProviderResponse,
 } from 'apiClient/v1'
 import { AddressSelect } from 'components/Address'
 import FormLayout from 'components/FormLayout'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { Providers } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useNotification from 'hooks/useNotification'
@@ -23,8 +21,7 @@ import RouteLeavingGuard, {
 import useCurrentUser from '../../hooks/useCurrentUser'
 
 import { Accessibility } from './Accessibility/Accessibility'
-import { ImageUploaderVenue } from './ImageUploaderVenue'
-import SiretOrCommentFields from './Informations/SiretOrCommentFields'
+import { SiretOrCommentFields } from './SiretOrCommentFields/SiretOrCommentFields'
 import { VenueCreationFormValues } from './types'
 import styles from './VenueCreationForm.module.scss'
 import { VenueFormActionBar } from './VenueFormActionBar'
@@ -34,9 +31,6 @@ type VenueFormProps = {
   offerer: GetOffererResponseModel
   updateIsSiretValued: (isSiretValued: boolean) => void
   venueTypes: SelectOption[]
-  provider?: Providers[]
-  venueProvider?: VenueProviderResponse[]
-  initialIsVirtual?: boolean
 }
 
 type ShouldBlockVenueNavigationProps = {
@@ -61,13 +55,8 @@ export const VenueCreationForm = ({
   offerer,
   updateIsSiretValued,
   venueTypes,
-  initialIsVirtual = false,
 }: VenueFormProps) => {
-  const {
-    initialValues,
-    values: { isPermanent },
-  } = useFormikContext<VenueCreationFormValues>()
-  const shouldDisplayImageVenueUploaderSection = isPermanent
+  const { initialValues } = useFormikContext<VenueCreationFormValues>()
   useScrollToFirstErrorAfterSubmit()
   const user = useCurrentUser()
 
@@ -98,67 +87,51 @@ export const VenueCreationForm = ({
         <FormLayout.MandatoryInfo />
 
         <FormLayout.Section title="Informations du lieu">
-          {!initialIsVirtual && (
-            <FormLayout.Row>
-              <SiretOrCommentFields
-                initialSiret={initialValues.siret}
-                readOnly={Boolean(initialValues.siret)}
-                isToggleDisabled={false}
-                isCreatedEntity
-                setIsFieldNameFrozen={setIsFieldNameFrozen}
-                setIsSiretValued={setIsSiretValued}
-                updateIsSiretValued={updateIsSiretValued}
-                siren={offerer.siren}
-              />
-            </FormLayout.Row>
-          )}
+          <FormLayout.Row>
+            <SiretOrCommentFields
+              initialSiret={initialValues.siret}
+              readOnly={Boolean(initialValues.siret)}
+              isToggleDisabled={false}
+              isCreatedEntity
+              setIsFieldNameFrozen={setIsFieldNameFrozen}
+              setIsSiretValued={setIsSiretValued}
+              updateIsSiretValued={updateIsSiretValued}
+              siren={offerer.siren}
+            />
+          </FormLayout.Row>
 
           <FormLayout.Row>
             <TextInput
               name="name"
               label="Raison sociale"
-              disabled={isFieldNameFrozen || initialIsVirtual}
+              disabled={isFieldNameFrozen}
             />
           </FormLayout.Row>
 
-          {!initialIsVirtual && (
-            <FormLayout.Row
-              sideComponent={
-                <InfoBox>
-                  À remplir si différent de la raison sociale. En le
-                  remplissant, c’est ce dernier qui sera visible du public.
-                </InfoBox>
-              }
-            >
-              <TextInput name="publicName" label="Nom public" isOptional />
-            </FormLayout.Row>
-          )}
+          <FormLayout.Row
+            sideComponent={
+              <InfoBox>
+                À remplir si différent de la raison sociale. En le remplissant,
+                c’est ce dernier qui sera visible du public.
+              </InfoBox>
+            }
+          >
+            <TextInput name="publicName" label="Nom public" isOptional />
+          </FormLayout.Row>
         </FormLayout.Section>
 
-        {
-          /* istanbul ignore next: DEBT, TO FIX */
-          !!shouldDisplayImageVenueUploaderSection && (
-            <ImageUploaderVenue isCreatingVenue={true} />
-          )
-        }
-        {!initialIsVirtual && (
-          <FormLayout.Section
-            title="Adresse de l’activité"
-            description="Cette adresse sera utilisée pour permettre aux jeunes de géolocaliser votre lieu."
-          >
-            <FormLayout.Row>
-              <AddressSelect />
-            </FormLayout.Row>
-          </FormLayout.Section>
-        )}
+        <FormLayout.Section
+          title="Adresse de l’activité"
+          description="Cette adresse sera utilisée pour permettre aux jeunes de géolocaliser votre lieu."
+        >
+          <FormLayout.Row>
+            <AddressSelect />
+          </FormLayout.Row>
+        </FormLayout.Section>
 
         <FormLayout.Section
           title="Activité"
-          description={
-            initialIsVirtual
-              ? undefined
-              : 'Ces informations seront affichées dans votre page lieu sur l’application pass Culture (sauf pour les lieux administratifs). Elles permettront aux jeunes d’en savoir plus sur votre lieu.'
-          }
+          description="Ces informations seront affichées dans votre page lieu sur l’application pass Culture (sauf pour les lieux administratifs). Elles permettront aux jeunes d’en savoir plus sur votre lieu."
         >
           <FormLayout.Row>
             <Select
@@ -171,22 +144,19 @@ export const VenueCreationForm = ({
               ]}
               name="venueType"
               label="Activité principale"
-              disabled={initialIsVirtual}
             />
           </FormLayout.Row>
         </FormLayout.Section>
 
-        {!initialIsVirtual && <Accessibility isCreatingVenue={true} />}
+        <Accessibility isCreatingVenue />
 
         <FormLayout.Section title="Notifications de réservations">
           <FormLayout.Row
             sideComponent={
-              initialIsVirtual ? null : (
-                <InfoBox>
-                  Cette adresse s’appliquera par défaut à toutes vos offres,
-                  vous pourrez la modifier à l’échelle de chaque offre.
-                </InfoBox>
-              )
+              <InfoBox>
+                Cette adresse s’appliquera par défaut à toutes vos offres, vous
+                pourrez la modifier à l’échelle de chaque offre.
+              </InfoBox>
             }
           >
             <TextInput
@@ -194,8 +164,6 @@ export const VenueCreationForm = ({
               label="Adresse email"
               type="email"
               placeholder="email@exemple.com"
-              isOptional={initialIsVirtual}
-              disabled={initialIsVirtual}
             />
           </FormLayout.Row>
         </FormLayout.Section>

@@ -10,7 +10,6 @@ import {
   GetVenueResponseModel,
 } from 'apiClient/v1'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
-import { generateSiretValidationSchema } from 'pages/VenueCreation/Informations/SiretOrCommentFields'
 import { Events } from 'core/FirebaseEvents/constants'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import { Providers } from 'core/Venue/types'
@@ -20,6 +19,7 @@ import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import fullBackIcon from 'icons/full-back.svg'
 import strokeMailIcon from 'icons/stroke-mail.svg'
+import { generateSiretValidationSchema } from 'pages/VenueCreation/SiretOrCommentFields/validationSchema'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
