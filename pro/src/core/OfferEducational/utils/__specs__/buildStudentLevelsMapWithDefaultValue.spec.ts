@@ -28,15 +28,13 @@ describe('buildStudentLevelsMapWithDefaultValue', () => {
 
   it('should return the students levels without marseille levels', () => {
     const studentsMap = buildStudentLevelsMapWithDefaultValue(true)
-    expect(
-      studentsMap[StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_L_MENTAIRE]
-    ).toBeFalsy()
+    expect(studentsMap[StudentLevels._COLES_MARSEILLE_CP_CE1_CE2]).toBeFalsy()
+    expect(studentsMap[StudentLevels._COLES_MARSEILLE_CM1_CM2]).toBeFalsy()
   })
 
   it('should return the students levels with marseille levels', () => {
     const studentsMap = buildStudentLevelsMapWithDefaultValue(true, true)
-    expect(
-      studentsMap[StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_L_MENTAIRE]
-    ).toBeTruthy()
+    expect(studentsMap[StudentLevels._COLES_MARSEILLE_CP_CE1_CE2]).toBeTruthy()
+    expect(studentsMap[StudentLevels._COLES_MARSEILLE_CM1_CM2]).toBeTruthy()
   })
 })

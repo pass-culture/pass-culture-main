@@ -438,8 +438,9 @@ describe('offersSearch component', () => {
         ...props,
         initialFilters: {
           students: [
-            StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_L_MENTAIRE,
-            StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE,
+            StudentLevels._COLES_MARSEILLE_CP_CE1_CE2,
+            StudentLevels._COLES_MARSEILLE_CM1_CM2,
+            StudentLevels._COLES_MARSEILLE_MATERNELLE,
           ],
         },
       },
@@ -450,13 +451,19 @@ describe('offersSearch component', () => {
 
     expect(
       await screen.findByRole('button', {
-        name: /Écoles innovantes Marseille en Grand : maternelle/,
+        name: /Écoles Marseille - Maternelle/,
       })
     ).toBeInTheDocument()
 
     expect(
       await screen.findByRole('button', {
-        name: /Écoles innovantes Marseille en Grand : élémentaire/,
+        name: /Écoles Marseille - CP, CE1, CE2/,
+      })
+    ).toBeInTheDocument()
+
+    expect(
+      await screen.findByRole('button', {
+        name: /Écoles Marseille - CM1, CM2/,
       })
     ).toBeInTheDocument()
   })
