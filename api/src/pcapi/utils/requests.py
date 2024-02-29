@@ -47,18 +47,20 @@ def _wrapper(
     request_func: Callable,
     method: str | bytes,
     url: str | bytes,
-    log_at_warning_level: bool = True,
     **kwargs: Any,
 ) -> Response:
     timeout = kwargs.pop("timeout", REQUEST_TIMEOUT_IN_SECOND)
     try:
         response = request_func(method=method, url=url, timeout=timeout, **kwargs)
     except Exception as exc:
-        if log_at_warning_level:
-            logger_method = logger.warning
-        else:
-            logger_method = logger.info
-        logger_method("Call to external service failed with %s", exc, extra={"method": method, "url": _redact_url(url)})
+        logger.warning(
+            "Call to external service failed with %s",
+            exc,
+            extra={
+                "method": method,
+                "url": _redact_url(url),
+            },
+        )
         raise exc
 
     logger.info(
