@@ -251,6 +251,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
                 offerers_models.Venue.venueLabelId,
                 offerers_models.Venue.isVirtual,
                 offerers_models.Venue.isPermanent,
+                offerers_models.Venue._bannerUrl,
             ),
             contains_eager(offerers_models.Venue.managingOfferer)
             .load_only(offerers_models.Offerer.name)
@@ -277,6 +278,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
                 "has_offers": has_individual_offers or has_collective_offers,
                 "has_individual_offers": has_individual_offers,
                 "has_bookings": bookings_repository.venues_have_bookings(*venues),
+                "has_banner_url": all(venue._bannerUrl for venue in venues if venue.isPermanent),
             }
         )
 
