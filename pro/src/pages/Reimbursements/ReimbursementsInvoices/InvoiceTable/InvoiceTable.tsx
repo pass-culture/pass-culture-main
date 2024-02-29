@@ -105,12 +105,12 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
       <caption className="visually-hidden">
         Justificatif de remboursement ou de trop perçu
       </caption>
-      <thead>
-        <tr role="row" className={styles['row']}>
+      <thead className={styles['header']}>
+        <tr role="row">
           <th
             role="columnheader"
             scope="col"
-            className={cn(styles['header'], styles['date-column'])}
+            className={cn(styles['header-cell'], styles['date-column'])}
           >
             Date du justificatif
             <SortArrow
@@ -135,7 +135,10 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
           <th
             role="columnheader"
             scope="col"
-            className={cn(styles['header'], styles['document-type-column'])}
+            className={cn(
+              styles['header-cell'],
+              styles['document-type-column']
+            )}
           >
             Type de document
             <SortArrow
@@ -159,7 +162,7 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
           <th
             role="columnheader"
             scope="col"
-            className={cn(styles['header'], styles['bank-account-column'])}
+            className={cn(styles['header-cell'], styles['bank-account-column'])}
           >
             {isNewBankDetailsJourneyEnabled
               ? 'Compte bancaire'
@@ -190,7 +193,7 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
           <th
             role="columnheader"
             scope="col"
-            className={cn(styles['header'], styles['label-column'])}
+            className={cn(styles['header-cell'], styles['label-column'])}
           >
             N° de virement
             <SortArrow
@@ -214,7 +217,7 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
           <th
             role="columnheader"
             scope="col"
-            className={cn(styles['header'], styles['amount-column'])}
+            className={cn(styles['header-cell'], styles['amount-column'])}
           >
             Montant remboursé
           </th>
@@ -291,7 +294,11 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
               </td>
               <td
                 role="cell"
-                className={cn(styles['data'], styles['invoice-data'])}
+                className={cn(
+                  styles['data'],
+                  styles['invoice-column'],
+                  styles['invoice-data']
+                )}
                 data-label="Téléchargement"
               >
                 <ButtonLink
