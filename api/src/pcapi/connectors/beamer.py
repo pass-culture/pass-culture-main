@@ -71,6 +71,7 @@ def format_pro_attributes(pro_attributes: attributes_models.ProAttributes) -> di
         "userId": pro_attributes.user_id,
         "DMS_APPLICATION_APPROVED": pro_attributes.dms_application_approved,
         "DMS_APPLICATION_SUBMITTED": pro_attributes.dms_application_submitted,
+        "HAS_BANNER_URL": pro_attributes.has_banner_url,
         "HAS_BOOKINGS": pro_attributes.has_bookings,
         "HAS_OFFERS": pro_attributes.has_offers,
         "HAS_INDIVIDUAL_OFFERS": pro_attributes.has_individual_offers,
