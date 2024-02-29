@@ -56,8 +56,6 @@ list_offers_blueprint = utils.child_backoffice_blueprint(
 
 logger = logging.getLogger(__name__)
 
-aliased_stock = sa.orm.aliased(offers_models.Stock)
-
 SEARCH_FIELD_TO_PYTHON = {
     "CATEGORY": {
         "field": "category",
@@ -89,15 +87,15 @@ SEARCH_FIELD_TO_PYTHON = {
     },
     "EVENT_DATE": {
         "field": "date",
-        "column": aliased_stock.beginningDatetime,
+        "column": offers_models.Stock.beginningDatetime,
         "special": partial(date_utils.date_to_localized_datetime, time_=datetime.datetime.min.time()),
-        "inner_join": "stock",
+        "subquery_join": "stock",
     },
     "BOOKING_LIMIT_DATE": {
         "field": "date",
-        "column": aliased_stock.bookingLimitDatetime,
+        "column": offers_models.Stock.bookingLimitDatetime,
         "special": partial(date_utils.date_to_localized_datetime, time_=datetime.datetime.min.time()),
-        "inner_join": "stock",
+        "subquery_join": "stock",
     },
     "ID": {
         "field": "integer",
@@ -167,10 +165,10 @@ SEARCH_FIELD_TO_PYTHON = {
     },
     "PRICE": {
         "field": "price",
-        "column": aliased_stock.price,
-        "inner_join": "stock",
-        "custom_filter_all_operators": sa.and_(
-            aliased_stock._bookable,
+        "column": offers_models.Stock.price,
+        "subquery_join": "stock",
+        "custom_filter_all_operators": sa.and_(  # type: ignore [type-var]
+            offers_models.Stock._bookable,
             offers_models.Offer._released,
         ),
     },
@@ -189,24 +187,23 @@ JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
             "args": (criteria_models.OfferCriterion, offers_models.Offer.id == criteria_models.OfferCriterion.offerId),
         }
     ],
-    "stock": [
-        {
-            "name": "stock",
-            "args": (
-                aliased_stock,
-                sa.and_(
-                    aliased_stock.offerId == offers_models.Offer.id,
-                    aliased_stock.isSoftDeleted.is_(False),
-                ),
-            ),
-        }
-    ],
     "venue": [
         {
             "name": "venue",
             "args": (offerers_models.Venue, offers_models.Offer.venue),
         }
     ],
+}
+
+SUBQUERY_DICT: dict[str, dict[str, typing.Any]] = {
+    "stock": {
+        "name": "stock",
+        "table": offers_models.Stock,
+        "constraint": sa.and_(
+            offers_models.Stock.offerId == offers_models.Offer.id,
+            offers_models.Stock.isSoftDeleted.is_(False),
+        ),
+    },
 }
 
 OPERATOR_DICT: dict[str, dict[str, typing.Any]] = {
@@ -218,13 +215,13 @@ OPERATOR_DICT: dict[str, dict[str, typing.Any]] = {
 
 def _get_offer_ids_query(form: forms.InternalSearchForm) -> BaseQuery:
     query = offers_models.Offer.query
-
     if not forms.GetOfferAdvancedSearchForm.is_search_empty(form.search.data):
         query, inner_joins, _, warnings = utils.generate_search_query(
             query=query,
             search_parameters=form.search.data,
             fields_definition=SEARCH_FIELD_TO_PYTHON,
             joins_definition=JOIN_DICT,
+            subqueries_definition=SUBQUERY_DICT,
             operators_definition=OPERATOR_DICT,
         )
         for warning in warnings:
