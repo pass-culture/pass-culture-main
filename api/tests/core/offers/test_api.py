@@ -1412,7 +1412,7 @@ class RejectInappropriateProductTest:
         assert bookings_models.Booking.query.count() == len(offers)
 
         # When
-        api.reject_inappropriate_product("ean-de-test", user, send_booking_cancellation_emails=True)
+        api.reject_inappropriate_product("ean-de-test", user)
 
         # Then
         mocked_send_booking_cancellation_emails_to_user_and_offerer.assert_called()

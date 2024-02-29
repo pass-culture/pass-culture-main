@@ -10,6 +10,7 @@ from pcapi.utils.mailing import get_event_datetime
 
 def get_booking_cancellation_by_pro_to_beneficiary_email_data(
     booking: Booking,
+    is_gcu_incompatible: bool,
 ) -> models.TransactionalEmailData:
     stock = booking.stock
     offer = stock.offer
@@ -39,10 +40,11 @@ def get_booking_cancellation_by_pro_to_beneficiary_email_data(
             "USER_FIRST_NAME": booking.firstName,
             "USER_LAST_NAME": booking.lastName,
             "VENUE_NAME": venue_name,
+            "REJECTED": is_gcu_incompatible,
         },
     )
 
 
-def send_booking_cancellation_by_pro_to_beneficiary_email(booking: Booking) -> None:
-    data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking)
+def send_booking_cancellation_by_pro_to_beneficiary_email(booking: Booking, is_gcu_incompatible: bool = False) -> None:
+    data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking, is_gcu_incompatible)
     mails.send(recipients=[booking.email], data=data)
