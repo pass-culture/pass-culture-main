@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
+from freezegun import freeze_time
 import pytest
 
 from pcapi import settings
@@ -61,6 +62,7 @@ class CheckUserAndCredentialsTest:
 
 
 class GetNewlyEligibleUsersTest:
+    @freeze_time("2024-02-01")
     def test_eligible_user(self):
         today = datetime.today()
         already_18_birthday = today - relativedelta(years=18, days=1)
@@ -107,6 +109,7 @@ class GetNewlyEligibleUsersTest:
         users = repository.get_newly_eligible_age_18_users(since=date_to_check)
         assert set(users) == set()
 
+    @freeze_time("2024-02-01")
     def test_eligible_user_with_discordant_dates_on_validated_one(self):
         date_to_check = datetime.utcnow() - relativedelta(days=1)
         user_just_18_discordant_dates = users_factories.BaseUserFactory(
@@ -115,6 +118,7 @@ class GetNewlyEligibleUsersTest:
             dateCreated=datetime.utcnow() - relativedelta(months=2),
             roles=[UserRole.UNDERAGE_BENEFICIARY],
         )
+
         users = repository.get_newly_eligible_age_18_users(since=date_to_check)
         assert set(users) == {user_just_18_discordant_dates}
 
