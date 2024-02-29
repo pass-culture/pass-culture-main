@@ -21,22 +21,34 @@
     margin: 0 auto;
     align-items: center;
     display: flex;
-    flex-wrap: wrap;
     justify-content: center;
+    flex-direction: column-reverse;
+    margin-top: rem.torem(16px);
 
     .left {
       display: flex;
       align-items: center;
       margin: 1rem;
       gap: rem.torem(16px);
+      width: 100%;
+      flex-direction: column-reverse;
+
+      > * {
+        width: 100%;
+      }
     }
 
     .right {
       display: flex;
       align-items: center;
-      flex-wrap: wrap;
+      flex-flow: column wrap;
       justify-content: center;
       gap: rem.torem(16px);
+      width: 100%;
+
+      > * {
+        width: 100%;
+      }
     }
   }
 }
@@ -49,13 +61,28 @@
 
     .actions-bar-content {
       justify-content: space-between;
+      flex-flow: row wrap;
+      margin-top: unset;
+
 
       .left {
         margin: 0;
+        width: unset;
+        flex-direction: row;
+
+        > * {
+          width: unset;
+        }
       }
 
       .right {
         margin-left: auto;
+        width: unset;
+        flex-direction: row;
+
+        > * {
+          width: unset;
+        }
       }
     }
   }

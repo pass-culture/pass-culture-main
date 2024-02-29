@@ -2,7 +2,6 @@ import { useFormikContext } from 'formik'
 import React from 'react'
 
 import ActionsBarSticky from 'components/ActionsBarSticky'
-import FormLayout from 'components/FormLayout'
 import { ButtonLink, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -16,27 +15,25 @@ const VenueFormActionBar = ({ isCreatingVenue }: VenueFormActionBarProps) => {
   const { isSubmitting } = useFormikContext<VenueFormValues>()
 
   return (
-    <FormLayout.Actions>
-      <ActionsBarSticky>
-        <ActionsBarSticky.Left>
-          <ButtonLink
-            variant={ButtonVariant.SECONDARY}
-            link={{
-              to: '/accueil',
-              isExternal: false,
-            }}
-          >
-            Annuler et quitter
-          </ButtonLink>
-        </ActionsBarSticky.Left>
-        <ActionsBarSticky.Right>
-          <SubmitButton isLoading={isSubmitting}>
-            Enregistrer et
-            {isCreatingVenue ? ' créer le lieu' : ' quitter'}
-          </SubmitButton>
-        </ActionsBarSticky.Right>
-      </ActionsBarSticky>
-    </FormLayout.Actions>
+    <ActionsBarSticky>
+      <ActionsBarSticky.Left>
+        <ButtonLink
+          variant={ButtonVariant.SECONDARY}
+          link={{
+            to: '/accueil',
+            isExternal: false,
+          }}
+        >
+          Annuler et quitter
+        </ButtonLink>
+      </ActionsBarSticky.Left>
+      <ActionsBarSticky.Right>
+        <SubmitButton isLoading={isSubmitting}>
+          Enregistrer et
+          {isCreatingVenue ? ' créer le lieu' : ' quitter'}
+        </SubmitButton>
+      </ActionsBarSticky.Right>
+    </ActionsBarSticky>
   )
 }
 

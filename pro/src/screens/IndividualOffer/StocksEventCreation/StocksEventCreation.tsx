@@ -54,19 +54,20 @@ export const StocksEventCreation = ({
   }
 
   return (
-    <div className={styles['container']}>
-      {hasStocks === false && (
-        <HelpSection className={styles['help-section']} />
-      )}
+    <>
+      <div className={styles['container']}>
+        {hasStocks === false && (
+          <HelpSection className={styles['help-section']} />
+        )}
 
-      <StocksEventList
-        priceCategories={offer.priceCategories ?? []}
-        departmentCode={offer.venue.departementCode}
-        offer={offer}
-        onStocksLoad={setHasStocks}
-        canAddStocks
-      />
-
+        <StocksEventList
+          priceCategories={offer.priceCategories ?? []}
+          departmentCode={offer.venue.departementCode}
+          offer={offer}
+          onStocksLoad={setHasStocks}
+          canAddStocks
+        />
+      </div>
       <ActionBar
         isDisabled={false}
         onClickPrevious={handlePreviousStep}
@@ -75,6 +76,6 @@ export const StocksEventCreation = ({
         // now we submit in RecurrenceForm, StocksEventCreation could not be dirty
         dirtyForm={false}
       />
-    </div>
+    </>
   )
 }
