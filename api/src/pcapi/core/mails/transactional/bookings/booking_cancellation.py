@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 def send_booking_cancellation_emails_to_user_and_offerer(
     booking: Booking,
     reason: BookingCancellationReasons | None,
+    is_gcu_incompatible: bool = False,
 ) -> None:
     if reason is None:
         logger.error(
@@ -34,7 +35,8 @@ def send_booking_cancellation_emails_to_user_and_offerer(
         send_booking_cancellation_by_pro_to_beneficiary_email(booking)
         send_booking_cancellation_confirmation_by_pro_to_pro_email(booking)
     elif reason == BookingCancellationReasons.FRAUD:
-        # TODO(PC-23550): SPIKE en cours avec marketing pour communication jeune via https://passculture.atlassian.net/browse/PC-23550
+        if is_gcu_incompatible:
+            send_booking_cancellation_by_pro_to_beneficiary_email(booking, is_gcu_incompatible)
         send_booking_cancellation_by_beneficiary_to_pro_email(booking)
 
 

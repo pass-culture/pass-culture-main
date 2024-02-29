@@ -1,11 +1,15 @@
+import dataclasses
 import datetime
 
 from flask import url_for
 import pytest
 
+from pcapi.core.bookings import factories as booking_factory
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.criteria import models as criteria_models
+from pcapi.core.mails import testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
@@ -334,3 +338,31 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
             else:
                 assert offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
                 assert datetime.datetime.utcnow() - offer.lastValidationDate < datetime.timedelta(seconds=5)
+
+    def test_send_mail_when_edit_product_gcu_compatibility(self, authenticated_client):
+
+        provider = providers_factories.APIProviderFactory()
+        product_1 = offers_factories.ThingProductFactory(
+            description="premier produit inapproprié",
+            extraData={"ean": "9781234567890"},
+            isGcuCompatible=True,
+            lastProvider=provider,
+        )
+        venue = offerers_factories.VenueFactory()
+        offer1 = offers_factories.OfferFactory(
+            product=product_1, venue=venue, validation=OfferValidationStatus.APPROVED
+        )
+        offers_factories.OfferFactory(product=product_1, venue=venue)
+
+        stock = offers_factories.StockFactory(offer=offer1, bookings=[booking_factory.BookingFactory()])
+
+        response = self.post_to_endpoint(authenticated_client, form={"ean": "9781234567890"})
+
+        assert response.status_code == 303
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == stock.bookings[0].email
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
+            TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY.value
+        )
+        assert mails_testing.outbox[0]["params"]["REJECTED"] == True

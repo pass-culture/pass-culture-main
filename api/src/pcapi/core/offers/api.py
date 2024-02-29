@@ -937,7 +937,10 @@ def add_criteria_to_offers(
 
 
 def reject_inappropriate_product(
-    ean: str, author: users_models.User | None, send_booking_cancellation_emails: bool = True
+    ean: str,
+    author: users_models.User | None,
+    is_gcu_incompatible: bool = False,
+    send_booking_cancellation_emails: bool = True,
 ) -> bool:
     product = models.Product.query.filter(
         models.Product.extraData["ean"].astext == ean, models.Product.idAtProviders.is_not(None)
@@ -979,10 +982,11 @@ def reject_inappropriate_product(
     for offer in offers:
         offer_ids.append(offer.id)
         bookings = bookings_api.cancel_bookings_from_rejected_offer(offer)
+
         if send_booking_cancellation_emails:
             for booking in bookings:
                 transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(
-                    booking, reason=BookingCancellationReasons.FRAUD
+                    booking, reason=BookingCancellationReasons.FRAUD, is_gcu_incompatible=is_gcu_incompatible
                 )
 
     logger.info(
