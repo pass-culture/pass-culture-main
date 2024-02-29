@@ -107,9 +107,8 @@ export const VenueEditionForm = ({
         {isNewBankDetailsJourneyEnabled && (
           <BankAccountInfos venueBankAccount={venue.bankAccount} />
         )}
-
-        <VenueFormActionBar isCreatingVenue={false} />
       </FormLayout>
+      <VenueFormActionBar isCreatingVenue={false} />
     </div>
   )
 }
