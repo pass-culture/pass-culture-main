@@ -78,8 +78,18 @@ def find_pro_or_non_attached_pro_user_by_email_query(email: str) -> BaseQuery:
 
 
 def get_newly_eligible_age_18_users(since: date) -> list[models.User]:
-    """get users that are eligible between `since` (excluded) and now (included) and that have
-    created their account before `since`"""
+    """
+    Get users that are eligible between `since` (excluded) and now (included) and that have
+    created their account before `since`
+    If `since` is "yesterday", on 29th of February:
+        `today - relativedelta(years=constants.ELIGIBILITY_AGE_18) = YYYY-02-28`
+        `since - relativedelta(years=constants.ELIGIBILITY_AGE_18) = YYYY-02-28`
+        So the function will return an empty list.
+        And the day after:
+        `today - relativedelta(years=constants.ELIGIBILITY_AGE_18) = YYYY-03-01`
+        `since - relativedelta(years=constants.ELIGIBILITY_AGE_18) = YYYY-02-28`
+        So users born on the 29th of February will be notified.
+    """
     today = datetime.combine(datetime.today(), datetime.min.time())
     since = datetime.combine(since, datetime.min.time())
     eligible_users = (
