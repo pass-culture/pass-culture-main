@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import { valideSiretLength } from 'components/VenueCreationForm/Informations/SiretOrCommentFields/validationSchema'
+import { valideSiretLength } from 'pages/VenueCreation/Informations/SiretOrCommentFields/validationSchema'
 import siretApiValidate from 'core/Venue/siretApiValidate'
 
 export const validationSchema = (

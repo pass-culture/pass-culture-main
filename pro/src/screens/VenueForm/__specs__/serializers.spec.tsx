@@ -5,7 +5,7 @@ import {
   EditVirtualVenueBodyModel,
   serializeEditVenueBodyModel,
   serializePostVenueBodyModel,
-} from '../serializers'
+} from '../../../pages/VenueEdition/serializers'
 
 const formValues: VenueFormValues = {
   bannerMeta: undefined,

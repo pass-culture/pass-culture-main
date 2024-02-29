@@ -9,7 +9,6 @@ import {
 
 import { OfferStatus } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
-import { setInitialFormValues } from 'components/VenueEditionForm/setInitialFormValues'
 import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useGetVenue } from 'core/Venue/adapters/getVenueAdapter'
@@ -22,11 +21,12 @@ import {
   getFilteredOffersAdapter,
   Payload,
 } from 'pages/Offers/adapters/getFilteredOffersAdapter'
-import { VenueEditionFormScreen } from 'screens/VenueForm/VenueEditionFormScreen'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import Tabs, { Tab } from 'ui-kit/Tabs/Tabs'
 
+import { setInitialFormValues } from './setInitialFormValues'
 import { offerHasBookingQuantity } from './utils'
+import { VenueEditionFormScreen } from './VenueEditionFormScreen'
 import { VenueEditionHeader } from './VenueEditionHeader'
 
 export const VenueEdition = (): JSX.Element | null => {

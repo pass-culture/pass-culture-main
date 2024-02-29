@@ -2,12 +2,13 @@ import React from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 
 import { AppLayout } from 'app/AppLayout'
-import { DEFAULT_FORM_VALUES } from 'components/VenueCreationForm/constants'
 import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import useNotification from 'hooks/useNotification'
-import { VenueCreationFormScreen } from 'screens/VenueForm/VenueCreationFormScreen'
+import { DEFAULT_FORM_VALUES } from 'pages/VenueCreation/constants'
 import Spinner from 'ui-kit/Spinner/Spinner'
+
+import { VenueCreationFormScreen } from './VenueCreationFormScreen'
 
 export const VenueCreation = (): JSX.Element | null => {
   const homePath = '/accueil'

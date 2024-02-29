@@ -3,8 +3,8 @@ import isEqual from 'lodash.isequal'
 import React, { useMemo } from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { VenueEditionFormValues } from 'components/VenueEditionForm/types'
 import { useAccessibilityOptions } from 'hooks'
+import { VenueEditionFormValues } from 'pages/VenueEdition/types'
 import { Checkbox, CheckboxGroup, InfoBox } from 'ui-kit'
 
 import { VenueCreationFormValues } from '../types'

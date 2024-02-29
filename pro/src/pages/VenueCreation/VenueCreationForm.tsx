@@ -15,11 +15,12 @@ import { Providers } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useNotification from 'hooks/useNotification'
-import { venueSubmitRedirectUrl } from 'screens/VenueForm/utils/venueSubmitRedirectUrl'
 import { TextInput, InfoBox, Select, Banner } from 'ui-kit'
 
+import RouteLeavingGuard, {
+  BlockerFunction,
+} from '../../components/RouteLeavingGuard'
 import useCurrentUser from '../../hooks/useCurrentUser'
-import RouteLeavingGuard, { BlockerFunction } from '../RouteLeavingGuard'
 
 import { Accessibility } from './Accessibility/Accessibility'
 import { ImageUploaderVenue } from './ImageUploaderVenue'
@@ -27,6 +28,7 @@ import SiretOrCommentFields from './Informations/SiretOrCommentFields'
 import { VenueCreationFormValues } from './types'
 import styles from './VenueCreationForm.module.scss'
 import { VenueFormActionBar } from './VenueFormActionBar'
+import { venueSubmitRedirectUrl } from './venueSubmitRedirectUrl'
 
 type VenueFormProps = {
   offerer: GetOffererResponseModel

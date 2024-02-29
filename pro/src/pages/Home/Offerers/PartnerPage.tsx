@@ -8,7 +8,7 @@ import {
 import { ImageUploader, UploadImageValues } from 'components/ImageUploader'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
-import { buildInitialValues } from 'components/VenueCreationForm/ImageUploaderVenue/ImageUploaderVenue'
+import { buildInitialValues } from 'pages/VenueCreation/ImageUploaderVenue/ImageUploaderVenue'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'

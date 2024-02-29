@@ -1,8 +1,9 @@
 import { EditVenueBodyModel } from 'apiClient/v1'
 import { PostVenueBodyModel } from 'apiClient/v1/models/PostVenueBodyModel'
 import { unhumanizeSiret } from 'core/Venue/utils'
+import { VenueCreationFormValues } from 'pages/VenueCreation/types'
 
-import { VenueSettingsFormValues } from './types'
+import { VenueEditionFormValues } from './types'
 
 interface VenueBodyModelParams {
   hideSiret: boolean
@@ -15,12 +16,12 @@ type VenueBodyModel = Omit<
   'managingOffererId' | 'venueLabelId'
 >
 
-interface EditVirtualVenueBodyModel {
+export interface EditVirtualVenueBodyModel {
   reimbursementPointId?: number | null
 }
 
 const serializeCommunData = (
-  formValues: VenueSettingsFormValues,
+  formValues: VenueCreationFormValues,
   { hideSiret }: HideSiretParam
 ): VenueBodyModel => {
   const model: VenueBodyModel = {
@@ -59,8 +60,22 @@ const serializeCommunData = (
   return model
 }
 
+export const serializePostVenueBodyModel = (
+  formValues: VenueCreationFormValues,
+  { hideSiret, offererId }: VenueBodyModelParams
+): PostVenueBodyModel => {
+  const model = serializeCommunData(formValues, {
+    hideSiret,
+  })
+  return {
+    ...model,
+    venueLabelId: Number(formValues.venueLabel) || null,
+    managingOffererId: offererId,
+  }
+}
+
 export const serializeEditVenueBodyModel = (
-  formValues: VenueSettingsFormValues,
+  formValues: VenueEditionFormValues,
   { hideSiret }: HideSiretParam,
   shouldSendMail?: boolean
 ): EditVenueBodyModel | EditVirtualVenueBodyModel => {
