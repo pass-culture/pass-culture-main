@@ -29,7 +29,7 @@ export interface CategoriesProps {
   categories: CategoryResponseModel[]
   subCategories: SubcategoryResponseModel[]
   readOnlyFields?: string[]
-  showAddVenueBanner?: boolean
+  showAddVenueBanner: boolean
   offerSubtype: INDIVIDUAL_OFFER_SUBTYPE | null
   venueList: IndividualOfferVenueItem[]
   isEvent: boolean | null
@@ -60,7 +60,7 @@ const Categories = ({
   categories,
   subCategories,
   readOnlyFields = [],
-  showAddVenueBanner = false,
+  showAddVenueBanner,
   offerSubtype,
   venueList,
   isEvent,
