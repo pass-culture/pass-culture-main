@@ -22,33 +22,25 @@ def filter_known_venues(venues: typing.Collection[Venue]) -> VenueGenerator:
     return (venue for venue in venues if venue.id not in known_ids)
 
 
+def build_ava_data_from_venue(venue: Venue) -> dict:
+    return {
+        "id": venue.id,
+        "venueId": venue.id,
+        "adageId": venue.adageId,
+        "adageInscriptionDate": venue.adageInscriptionDate
+    }
+
+
 def fill_adage_venue_addresses() -> None:
     count = 0
 
+    connection = db.engine.connect()
+
     for idx, chunk in enumerate(get_chunks(fetch_venues(), chunk_size=5_000), start=1):
         print(f"Round {idx}...")
-        for venue in filter_known_venues(chunk):
-            try:
-                db.session.add(
-                    AdageVenueAddress(
-                        id=venue.id,
-                        venueId=venue.id,
-                        adageId=venue.adageId,
-                        adageInscriptionDate=venue.adageInscriptionDate,
-                    )
-                )
-            except Exception:
-                db.session.rollback()
-                print(f"Failed to add new AdageVenueAddress, round {idx}. Roll back...")
-                raise
 
-            count += 1
+        addresses = [build_ava_data_from_venue(venue) for venue in filter_known_venues(chunk)]
+        with db.engine.begin():
+            db.engine.execute(AdageVenueAddress.__table__.insert(), addresses)
 
-        try:
-            db.session.commit()
-        except Exception:
-            db.session.rollback()
-            print(f"Failed to save changes to db, round {idx}. Roll back...")
-            raise
-
-        print(f"{count} new AdageVenueAddress created so far...")
+        print(f"{len(addresses)} new AdageVenueAddress created so far...")
