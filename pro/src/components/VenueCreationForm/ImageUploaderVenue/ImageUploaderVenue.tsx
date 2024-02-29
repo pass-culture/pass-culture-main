@@ -13,7 +13,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
 
-import { VenueFormValues } from '../types'
+import { VenueCreationFormValues } from '../types'
 
 /* istanbul ignore next: DEBT, TO FIX */
 export const buildInitialValues = (
@@ -48,7 +48,7 @@ const ImageUploaderVenue = ({ isCreatingVenue }: ImageUploaderProps) => {
   const {
     setFieldValue,
     values: { id: venueId, bannerUrl, bannerMeta },
-  } = useFormikContext<VenueFormValues>()
+  } = useFormikContext<VenueCreationFormValues>()
   const { logEvent } = useAnalytics()
 
   const handleOnImageUpload = async ({

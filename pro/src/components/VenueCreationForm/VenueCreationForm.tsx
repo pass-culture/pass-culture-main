@@ -24,10 +24,9 @@ import RouteLeavingGuard, { BlockerFunction } from '../RouteLeavingGuard'
 import { Accessibility } from './Accessibility/Accessibility'
 import { ImageUploaderVenue } from './ImageUploaderVenue'
 import SiretOrCommentFields from './Informations/SiretOrCommentFields'
+import { VenueCreationFormValues } from './types'
 import styles from './VenueCreationForm.module.scss'
 import { VenueFormActionBar } from './VenueFormActionBar'
-
-import { VenueFormValues } from '.'
 
 type VenueFormProps = {
   offerer: GetOffererResponseModel
@@ -65,7 +64,7 @@ export const VenueCreationForm = ({
   const {
     initialValues,
     values: { isPermanent },
-  } = useFormikContext<VenueFormValues>()
+  } = useFormikContext<VenueCreationFormValues>()
   const shouldDisplayImageVenueUploaderSection = isPermanent
   useScrollToFirstErrorAfterSubmit()
   const user = useCurrentUser()

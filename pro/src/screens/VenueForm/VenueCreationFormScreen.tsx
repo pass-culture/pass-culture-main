@@ -5,8 +5,8 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { GetOffererResponseModel, VenueProviderResponse } from 'apiClient/v1'
-import { VenueFormValues } from 'components/VenueCreationForm'
 import { generateSiretValidationSchema } from 'components/VenueCreationForm/Informations/SiretOrCommentFields'
+import { VenueCreationFormValues } from 'components/VenueCreationForm/types'
 import { validationSchema } from 'components/VenueCreationForm/validationSchema'
 import { VenueCreationForm } from 'components/VenueCreationForm/VenueCreationForm'
 import { Events } from 'core/FirebaseEvents/constants'
@@ -23,7 +23,7 @@ import { venueSubmitRedirectUrl } from './utils/venueSubmitRedirectUrl'
 import style from './VenueCreationFormScreen.module.scss'
 
 interface VenueEditionProps {
-  initialValues: VenueFormValues
+  initialValues: VenueCreationFormValues
   offerer: GetOffererResponseModel
   venueTypes: SelectOption[]
   providers?: Providers[]
@@ -46,7 +46,7 @@ export const VenueCreationFormScreen = ({
 
   const { currentUser } = useCurrentUser()
 
-  const onSubmit = async (value: VenueFormValues) => {
+  const onSubmit = async (value: VenueCreationFormValues) => {
     try {
       await api.postCreateVenue(
         serializePostVenueBodyModel(value, {
