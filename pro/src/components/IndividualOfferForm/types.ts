@@ -8,7 +8,7 @@ export interface IndividualOfferFormValues {
   subCategoryFields: string[]
   name: string
   description: string
-  offererId: string
+  offererId?: string
   venueId: string
   isNational: boolean
   categoryId: string
