@@ -1,43 +1,45 @@
-import { FormikProvider, useFormik } from 'formik'
-import React from 'react'
+import { useFormik } from 'formik'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import Dialog from 'components/Dialog/Dialog'
-import FormLayout from 'components/FormLayout'
 import MandatoryInfo from 'components/FormLayout/FormLayoutMandatoryInfo'
 import useNotification from 'hooks/useNotification'
-import fullMailIcon from 'icons/full-mail.svg'
-import { Button, DatePicker, SubmitButton, TextArea, TextInput } from 'ui-kit'
-import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
-import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
+import fullLinkIcon from 'icons/full-link.svg'
+import { ButtonLink } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { isDateValid } from 'utils/date'
 
 import { createCollectiveRequestAdapter } from './adapter/createCollectiveRequestAdapter'
-import styles from './RequestFormDialog.module.scss'
+import DefaultFormContact from './DefaultFormContact'
+import styles from './NewRequestFormDialog.module.scss'
 import { RequestFormValues } from './type'
 import { validationSchema } from './validationSchema'
 
-export interface RequestFormDialogProps {
+export interface NewRequestFormDialogProps {
   closeModal: () => void
-  contactEmail?: string
-  contactPhone?: string | null
   offerId: number
   userEmail?: string | null
   userRole: AdageFrontRoles
-  mockResponseContactValue: any
+  contactEmail: string
+  contactPhone: string
+  contactForm: string
+  contactUrl: string
 }
 
 const NewRequestFormDialog = ({
   closeModal,
-  contactEmail,
-  contactPhone,
   offerId,
   userEmail,
   userRole,
-  mockResponseContactValue,
-}: RequestFormDialogProps): JSX.Element => {
+  contactEmail,
+  contactPhone,
+  contactForm,
+  contactUrl,
+}: NewRequestFormDialogProps): JSX.Element => {
   const notify = useNotification()
+
   const initialValues = {
     teacherEmail: userEmail ?? '',
     description: '',
@@ -56,6 +58,7 @@ const NewRequestFormDialog = ({
     notify.success('Votre demande a bien été envoyée')
     closeModal()
   }
+
   const closeRequestFormDialog = async () => {
     await apiAdage.logRequestFormPopinDismiss({
       iframeFrom: location.pathname,
@@ -76,96 +79,160 @@ const NewRequestFormDialog = ({
     initialValues: initialValues,
     validationSchema: validationSchema,
   })
+
+  const getDescriptionElement = () => {
+    if (contactEmail && !contactPhone && !contactUrl && !contactForm) {
+      return renderContactElement('par mail', contactEmail)
+    }
+    if (!contactEmail && contactPhone && !contactUrl && !contactForm) {
+      return renderContactElement('par téléphone', contactPhone)
+    }
+    if (!contactEmail && !contactPhone && contactUrl && !contactForm) {
+      return renderCustomFormElement()
+    }
+    if (!contactEmail && !contactPhone && !contactUrl && contactForm) {
+      return renderDefaultFormElement()
+    }
+    return renderMultiContactElement(
+      {
+        contactEmail,
+        contactPhone,
+      },
+      contactForm === 'form',
+      contactUrl.length > 0
+    )
+  }
+
+  const renderContactElement = (
+    description: string,
+    value: string | null | undefined
+  ) => (
+    <div>
+      <span className={styles['form-description']}>
+        Il vous propose de le faire {description} :
+      </span>
+      <span className={styles['form-description-text-contact']}>{value}</span>
+    </div>
+  )
+
+  const renderMultiContactElement = (
+    {
+      contactEmail,
+      contactPhone,
+    }: { contactEmail: string; contactPhone: string },
+    isDefaultForm: boolean,
+    isCustomForm: boolean
+  ) => (
+    <div className={styles['form-description']}>
+      <span>Il vous propose de le faire :</span>
+      <ul className={styles['form-description-list']}>
+        {contactEmail && (
+          <li>
+            par mail :{' '}
+            <span className={styles['form-description-text-value']}>
+              {contactEmail}
+            </span>
+          </li>
+        )}
+        {contactPhone && (
+          <li>
+            par téléphone :{' '}
+            <span className={styles['form-description-text-value']}>
+              {contactPhone}
+            </span>
+          </li>
+        )}
+        {isCustomForm && (
+          <li>
+            <div className={styles['form-description-link']}>
+              <i>via</i> son site :
+              <ButtonLink
+                variant={ButtonVariant.TERNARYPINK}
+                className={styles['form-description-link-text']}
+                link={{
+                  to: contactUrl,
+                  isExternal: true,
+                  target: '_blank',
+                }}
+              >
+                <SvgIcon
+                  className={styles['form-icon']}
+                  width="20"
+                  alt="Nouvelle fenêtre"
+                  src={fullLinkIcon}
+                />
+                Aller sur le site
+              </ButtonLink>
+            </div>
+          </li>
+        )}
+
+        {isDefaultForm && (
+          <li>
+            en renseignant{' '}
+            <span className={styles['form-description-text-value']}>
+              le formulaire ci-dessous
+            </span>
+          </li>
+        )}
+      </ul>
+      {isDefaultForm && (
+        <>
+          <hr />
+          <MandatoryInfo className={styles['form-mandatory']} />
+          <DefaultFormContact
+            closeRequestFormDialog={closeRequestFormDialog}
+            formik={formik}
+          />
+        </>
+      )}
+    </div>
+  )
+
+  const renderCustomFormElement = () => (
+    <div>
+      <div className={styles['form-description-link-site']}>
+        Il vous propose de le faire <i>via</i> son site :
+      </div>
+      <ButtonLink
+        variant={ButtonVariant.TERNARYPINK}
+        className={styles['form-description-link-text']}
+        link={{
+          to: contactUrl,
+          isExternal: true,
+          target: '_blank',
+        }}
+      >
+        <SvgIcon width="20" alt="Nouvelle fenêtre" src={fullLinkIcon} />
+        Aller sur le site
+      </ButtonLink>
+    </div>
+  )
+
+  const renderDefaultFormElement = () => (
+    <div>
+      <span className={styles['form-description']}>
+        Vous pouvez le contacter en renseignant les informations ci-dessous.
+      </span>
+      <MandatoryInfo className={styles['form-mandatory']} />
+      <DefaultFormContact
+        closeRequestFormDialog={closeRequestFormDialog}
+        formik={formik}
+      />
+    </div>
+  )
+
   return (
     <Dialog
       extraClassNames={styles['dialog-container']}
       onCancel={closeRequestFormDialog}
-      title="Contacter le partenaire culturel"
+      title=""
       hideIcon
     >
-      <div className={styles['contact-info-container']}>
-        <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
-        {contactPhone}
-      </div>
-      {userRole === AdageFrontRoles.REDACTOR && (
-        <>
-          <div className={styles['form-description']}>
-            <div className={styles['form-description-text']}>
-              Si vous le souhaitez, vous pouvez contacter ce partenaire culturel
-              en renseignant les informations ci-dessous.
-            </div>
-            <MandatoryInfo />
-          </div>
-          <FormikProvider value={formik}>
-            <form
-              onSubmit={formik.handleSubmit}
-              className={styles['form-container']}
-            >
-              <FormLayout>
-                <FormLayout.Row>
-                  <TextInput label="Email" name="teacherEmail" disabled />
-                </FormLayout.Row>
-                <div className={styles['form-row']}>
-                  <FormLayout.Row>
-                    <PhoneNumberInput
-                      label="Téléphone"
-                      name="teacherPhone"
-                      isOptional
-                    />
-                  </FormLayout.Row>
-                  <FormLayout.Row>
-                    <DatePicker
-                      label="Date souhaitée"
-                      minDate={new Date()}
-                      name="offerDate"
-                      isOptional
-                    />
-                  </FormLayout.Row>
-                  <FormLayout.Row>
-                    <TextInput
-                      label="Nombre d'élèves"
-                      name="nbStudents"
-                      type="number"
-                      isOptional
-                    />
-                  </FormLayout.Row>
-                  <FormLayout.Row>
-                    <TextInput
-                      label="Nombre d'accompagnateurs"
-                      name="nbTeachers"
-                      type="number"
-                      isOptional
-                    />
-                  </FormLayout.Row>
-                </div>
-                <FormLayout.Row>
-                  <TextArea
-                    countCharacters
-                    label="Que souhaitez vous organiser ?"
-                    maxLength={1000}
-                    name="description"
-                    placeholder="Décrivez le projet que vous souhaiteriez co-construire avec l’acteur culturel (Ex : Je souhaite organiser une visite que vous proposez dans votre théâtre pour un projet pédagogique autour du théâtre et de l’expression corporelle avec ma classe de 30 élèves entre janvier et mars. Je suis joignable par téléphone ou par mail.)"
-                  />
-                </FormLayout.Row>
-                <div className={styles['buttons-container']}>
-                  <Button
-                    onClick={closeRequestFormDialog}
-                    variant={ButtonVariant.SECONDARY}
-                  >
-                    Annuler
-                  </Button>
-                  <SubmitButton
-                    iconPosition={IconPositionEnum.LEFT}
-                    icon={fullMailIcon}
-                  >
-                    Envoyer ma demande
-                  </SubmitButton>
-                </div>
-              </FormLayout>
-            </form>
-          </FormikProvider>
-        </>
-      )}
+      <span className={styles['form-title']}>
+        Vous souhaitez contacter ce partenaire ?
+      </span>
+      {userRole === AdageFrontRoles.REDACTOR && <>{getDescriptionElement()}</>}
     </Dialog>
   )
 }
