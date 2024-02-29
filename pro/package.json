@@ -35,7 +35,7 @@
     "@algolia/autocomplete-plugin-query-suggestions": "^1.17.0",
     "@algolia/autocomplete-plugin-recent-searches": "^1.17.0",
     "@firebase/analytics": "^0.10.1",
-    "@firebase/app": "^0.9.27",
+    "@firebase/app": "^0.9.28",
     "@firebase/remote-config": "0.4.5",
     "@reach/dialog": "^0.18.0",
     "@reach/menu-button": "^0.18.0",
