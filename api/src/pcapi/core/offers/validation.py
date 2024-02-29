@@ -300,7 +300,7 @@ def check_contact_request(offer: AnyCollectiveOffer, in_data: dict) -> None:
     if not any((set_email, set_phone, set_url, set_form)):
         raise exceptions.AllNullContactRequestDataError()
 
-    if not set_url and not set_form:
+    if set_url and set_form:
         raise exceptions.UrlandFormBothSetError()
 
 

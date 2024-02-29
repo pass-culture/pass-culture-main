@@ -9,7 +9,7 @@ import RequestFormDialog from './RequestFormDialog'
 
 export interface ContactButtonProps {
   className?: string
-  contactEmail?: string
+  contactEmail?: string | null
   contactPhone?: string | null
   offerId: number
   position: number

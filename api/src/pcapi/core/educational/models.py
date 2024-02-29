@@ -703,7 +703,7 @@ class CollectiveOfferTemplate(
         "CollectivePlaylist", back_populates="collective_offer_template"
     )
 
-    contactEmail: str = sa.Column(sa.String(120), nullable=False)
+    contactEmail: str | None = sa.Column(sa.String(120), nullable=True)
     contactPhone: str | None = sa.Column(sa.Text, nullable=True)
     contactUrl: str | None = sa.Column(sa.Text, nullable=True)
     contactForm: OfferContactFormEnum | None = sa.Column(
@@ -733,9 +733,12 @@ class CollectiveOfferTemplate(
                 name="template_dates_non_empty_daterange",
             ),
             sa.CheckConstraint(
-                '("contactUrl" is null and "contactForm" is not null) '
-                'or ("contactUrl" is not null and "contactForm" is null)',
-                name="collective_offer_tmpl_contact_request_form_switch_constraint",
+                '("contactEmail" is not null) or ("contactPhone" is not null) or ("contactUrl" is not null) or ("contactForm" is not null)',
+                name="collective_offer_tmpl_contact_request_form_data_constraint",
+            ),
+            sa.CheckConstraint(
+                '("contactUrl" IS NULL OR "contactForm" IS NULL)',
+                name="collective_offer_tmpl_contact_form_switch_constraint",
             ),
         ]
 

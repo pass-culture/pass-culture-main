@@ -12,7 +12,7 @@ import type { StudentLevels } from './StudentLevels';
 import type { TemplateDatesModel } from './TemplateDatesModel';
 export type CollectiveOfferTemplateResponseModel = {
   audioDisabilityCompliant?: boolean | null;
-  contactEmail: string;
+  contactEmail?: string | null;
   contactForm?: OfferContactFormEnum | null;
   contactPhone?: string | null;
   contactUrl?: string | null;

@@ -20,7 +20,7 @@ import { validationSchema } from './validationSchema'
 
 export interface RequestFormDialogProps {
   closeModal: () => void
-  contactEmail?: string
+  contactEmail?: string | null
   contactPhone?: string | null
   offerId: number
   userEmail?: string | null
