@@ -1612,6 +1612,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
 
         assert not subscription_api.requires_manual_review_before_activation(user, dms_fraud_check)
 
+    @freeze_time("2024-02-01")
     def test_manual_review_is_not_required_for_pre_19yo_dms(self):
         user = users_factories.ProfileCompletedUserFactory(age=19)
 
