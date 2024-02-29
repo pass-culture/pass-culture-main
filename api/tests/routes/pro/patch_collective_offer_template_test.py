@@ -185,6 +185,56 @@ class Returns200Test:
         updated_offer = CollectiveOfferTemplate.query.filter(CollectiveOfferTemplate.id == offer.id).one()
         assert updated_offer.dateRange is None
 
+    def test_with_almost_empty_data_updates_offer(self, client):
+        offer_ctx = build_offer_context()
+
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer = offer_ctx.offer
+
+        assert offer.dateRange.lower
+        assert offer.dateRange.upper
+
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            endpoint = url_for("Private API.edit_collective_offer_template", offer_id=offer.id)
+            response = pro_client.patch(endpoint, json={"contactPhone": None, "dates": None})
+            assert response.status_code == 200
+
+        updated_offer = CollectiveOfferTemplate.query.filter(CollectiveOfferTemplate.id == offer.id).one()
+        assert updated_offer.dateRange is None
+
+    def test_with_null_phone_data(self, client):
+        offer_ctx = build_offer_context()
+        pro_client = build_pro_client(client, offer_ctx.user)
+        endpoint = url_for("Private API.edit_collective_offer_template", offer_id=offer_ctx.offer.id)
+
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(endpoint, json={"contactPhone": None})
+            assert response.status_code == 200
+
+    def test_with_email_phone_and_url_contact(self, client):
+        offer_ctx = build_offer_context()
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer = offer_ctx.offer
+        endpoint = url_for("Private API.edit_collective_offer_template", offer_id=offer.id)
+
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(
+                endpoint,
+                json={
+                    "contactEmail": "a@b.com",
+                    "contactPhone": "0101",
+                    "contactUrl": "http://localhost/",
+                    "contactForm": None,
+                },
+            )
+            assert response.status_code == 200
+
+        updated_offer = CollectiveOfferTemplate.query.filter(CollectiveOfferTemplate.id == offer.id).one()
+        assert updated_offer.contactEmail == "a@b.com"
+        assert updated_offer.contactPhone == "0101"
+        assert updated_offer.contactUrl == "http://localhost/"
+        assert updated_offer.contactForm is None
+
 
 class Returns400Test:
     def test_non_approved_offer_fails(self, client):

@@ -292,18 +292,16 @@ def check_contact_request(offer: AnyCollectiveOffer, in_data: dict) -> None:
         # collective offers are not concerned, for now.
         return
 
+    set_email = in_data["contactEmail"] if "contactEmail" in in_data else offer.contactEmail
     set_phone = in_data["contactPhone"] if "contactPhone" in in_data else offer.contactPhone
     set_url = in_data["contactUrl"] if "contactUrl" in in_data else offer.contactUrl
     set_form = in_data["contactForm"] if "contactForm" in in_data else offer.contactForm
 
-    if not any((set_phone, set_url)):
+    if not any((set_email, set_phone, set_url, set_form)):
         raise exceptions.AllNullContactRequestDataError()
 
     if not set_url and not set_form:
         raise exceptions.UrlandFormBothSetError()
-
-    if set_url and any((set_phone, set_form)):
-        raise exceptions.UrlSetError()
 
 
 def check_offer_is_digital(offer: models.Offer) -> None:
