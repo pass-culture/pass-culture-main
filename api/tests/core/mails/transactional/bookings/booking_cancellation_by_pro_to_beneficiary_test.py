@@ -49,6 +49,7 @@ class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
             "USER_FIRST_NAME": "Jeanne",
             "USER_LAST_NAME": "Doux",
             "VENUE_NAME": booking.venue.name,
+            "REJECTED": False,
         }
 
 
@@ -66,7 +67,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
         )
 
         # When
-        email_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking)
+        email_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking, is_gcu_incompatible=False)
 
         # Then
         assert email_data.params == {
@@ -83,6 +84,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
             "USER_FIRST_NAME": "Georges",
             "USER_LAST_NAME": "Moustiquos",
             "VENUE_NAME": booking.venue.name,
+            "REJECTED": False,
         }
 
     def test_should_return_thing_data_when_booking_is_on_a_thing(self):
@@ -95,7 +97,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
         )
 
         # When
-        email_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking)
+        email_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking, is_gcu_incompatible=False)
 
         # Then
         assert email_data.template == models.Template(
@@ -115,6 +117,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
             "USER_FIRST_NAME": "Georges",
             "USER_LAST_NAME": "Doux",
             "VENUE_NAME": booking.venue.name,
+            "REJECTED": False,
         }
 
     def test_should_return_thing_data_when_booking_is_on_an_online_offer(self):
@@ -127,7 +130,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
         )
 
         # When
-        email_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking)
+        email_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking, is_gcu_incompatible=False)
 
         # Then
         assert email_data.params == {
@@ -144,6 +147,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
             "USER_FIRST_NAME": "Georges",
             "USER_LAST_NAME": "Georges",
             "VENUE_NAME": booking.venue.name,
+            "REJECTED": False,
         }
 
     def test_should_not_display_the_price_when_booking_is_on_a_free_offer(self):
@@ -154,7 +158,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
         )
 
         # When
-        sendiblue_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking)
+        sendiblue_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking, is_gcu_incompatible=False)
 
         # Then
         assert sendiblue_data.params["IS_FREE_OFFER"] is True
@@ -169,7 +173,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
         )
 
         # When
-        sendiblue_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking)
+        sendiblue_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking, is_gcu_incompatible=False)
 
         # Then
         assert sendiblue_data.params["IS_FREE_OFFER"] is False
