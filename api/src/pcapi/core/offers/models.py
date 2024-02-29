@@ -444,6 +444,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     )
     isDuo: bool = sa.Column(sa.Boolean, server_default=sa.false(), default=False, nullable=False)
     isNational: bool = sa.Column(sa.Boolean, default=False, nullable=False)
+    lastValidationPrice: decimal.Decimal = sa.Column(sa.Numeric(10, 2), nullable=True)
     name: str = sa.Column(sa.String(140), nullable=False)
     priceCategories: sa_orm.Mapped[list["PriceCategory"]] = sa.orm.relationship("PriceCategory", back_populates="offer")
     product: Product = sa.orm.relationship(Product, backref="offers")
