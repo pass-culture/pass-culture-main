@@ -139,7 +139,7 @@ def delete_user() -> utils.BackofficeResponse:
         return render_template("admin/users_deletion.html", form=form), 400
 
     try:
-        db.session.delete(user)
+        users_models.User.query.filter_by(id=user.id).delete()
         db.session.flush()
     except IntegrityError as e:
         logger.info(e)

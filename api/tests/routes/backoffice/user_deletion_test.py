@@ -20,6 +20,7 @@ class UserDeletionPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermissi
     def test_sso_user_deletion(self, authenticated_client):
         user = users_factories.UserFactory()
         users_factories.SingleSignOnFactory(user=user)
+        users_factories.TrustedDeviceFactory(user=user)
 
         response = self.post_to_endpoint(authenticated_client, form={"email": user.email})
 
