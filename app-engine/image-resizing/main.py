@@ -1,12 +1,14 @@
 import logging
 import os
-from time import sleep
-from flask import Flask, request, send_file, abort, make_response
-from flask_cors import CORS
-from google.appengine.api import wrap_wsgi_app, images
-from io import BytesIO
-from urllib.request import urlopen
+import random
 import urllib
+from io import BytesIO
+from time import sleep
+from urllib.request import urlopen
+
+from flask import Flask, abort, make_response, request, send_file
+from flask_cors import CORS
+from google.appengine.api import images, wrap_wsgi_app
 
 # Uncomment if you need to debug
 # try:
@@ -50,14 +52,22 @@ def root():
         abort(404)
 
     blobstore_filename = "/gs/{}".format(filename)
+    if random.randint(1, 1000) == 1:
+        logging.info("Trying to serve url on filename %s", blobstore_filename)
     serving_url = ""
     for cpt in range(1, 4):
         try:
             serving_url = images.get_serving_url(
                 blob_key=None, filename=blobstore_filename
             )
-        except (images.Error, urllib.error.URLError):
-            logging.error("Unable to get %s retry %s", blobstore_filename, cpt)
+        except (images.Error, urllib.error.URLError) as exc:
+            logging.error(
+                "Unable to get %s retry %s, because of %s: %s",
+                blobstore_filename,
+                cpt,
+                exc.__class__.__name__,
+                exc,
+            )
             sleep(1)
         else:
             break
