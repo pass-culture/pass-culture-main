@@ -5,7 +5,7 @@ import { Route, Routes } from 'react-router-dom'
 import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from 'apiClient/api'
-import { VenueFormValues } from 'components/VenueForm'
+import { VenueFormValues } from 'components/VenueCreationForm'
 import { Events } from 'core/FirebaseEvents/constants'
 import { SelectOption } from 'custom_types/form'
 import * as useAnalytics from 'hooks/useAnalytics'

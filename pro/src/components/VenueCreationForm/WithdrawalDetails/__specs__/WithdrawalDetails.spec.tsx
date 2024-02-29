@@ -3,12 +3,12 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { VenueFormValues } from 'components/VenueForm/index'
+import { VenueFormValues } from 'components/VenueCreationForm/index'
 
 import {
   validationSchema as withdrawalDetailsValidationSchema,
   WithdrawalDetails,
-} from '../../WithdrawalDetails'
+} from '..'
 
 const renderWithdrawalDetails = ({
   initialValues,

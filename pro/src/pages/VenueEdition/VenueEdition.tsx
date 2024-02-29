@@ -9,7 +9,7 @@ import {
 
 import { OfferStatus } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
-import { setInitialFormValues } from 'components/VenueForm'
+import { setInitialFormValues } from 'components/VenueCreationForm'
 import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useGetVenue } from 'core/Venue/adapters/getVenueAdapter'

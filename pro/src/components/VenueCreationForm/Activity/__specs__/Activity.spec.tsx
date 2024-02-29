@@ -4,7 +4,7 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { VenueFormValues } from 'components/VenueForm'
+import { VenueFormValues } from 'components/VenueCreationForm'
 import { SubmitButton } from 'ui-kit'
 
 import Activity, { ActivityProps } from '../Activity'

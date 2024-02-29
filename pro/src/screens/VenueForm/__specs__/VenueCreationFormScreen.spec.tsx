@@ -14,7 +14,7 @@ import {
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
-import { VenueFormValues } from 'components/VenueForm'
+import { VenueFormValues } from 'components/VenueCreationForm'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 import { defaultGetOffererResponseModel } from 'utils/apiFactories'

@@ -7,7 +7,7 @@ import { SubmitButton } from '../../../../ui-kit'
 import { DEFAULT_ACTIVITY_FORM_VALUES } from '../../Activity'
 import informationsValidationSchema from '../../Activity/validationSchema'
 import { Contact } from '../../Contact'
-import { ContactProps } from '../../Contact/Contact'
+import { ContactProps } from '../Contact'
 import { VenueFormValues } from '../../types'
 
 const renderContact = ({

@@ -6,7 +6,7 @@ import * as yup from 'yup'
 
 import { apiAdresse } from 'apiClient/adresse'
 import { api } from 'apiClient/api'
-import { VenueFormValues } from 'components/VenueForm'
+import { VenueFormValues } from 'components/VenueCreationForm'
 import { SubmitButton } from 'ui-kit'
 
 import { DEFAULT_INFORMATIONS_FORM_VALUES } from '../constants'
