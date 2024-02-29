@@ -89,7 +89,7 @@ class PatchBookingByTokenReturns403Test:
             f"/public/bookings/v1/cancel/token/{booking.token}",
         )
 
-        assert response.json == {"booking": "This booking cannot be canceled anymore"}
+        assert response.json == {"booking": "This booking cannot be cancelled anymore"}
         assert response.status_code == 403
 
     def test_when_cancelling_after_48_hours_following_booking_date(self, client):
@@ -105,7 +105,7 @@ class PatchBookingByTokenReturns403Test:
             f"/public/bookings/v1/cancel/token/{booking.token}",
         )
 
-        assert response.json == {"booking": "This booking cannot be canceled anymore"}
+        assert response.json == {"booking": "This booking cannot be cancelled anymore"}
         assert response.status_code == 403
 
     def test_when_cancelling_less_than_48_hours_before_beginning_date(self, client):
@@ -121,7 +121,7 @@ class PatchBookingByTokenReturns403Test:
             f"/public/bookings/v1/cancel/token/{booking.token}",
         )
 
-        assert response.json == {"booking": "This booking cannot be canceled anymore"}
+        assert response.json == {"booking": "This booking cannot be cancelled anymore"}
         assert response.status_code == 403
 
     def test_when_booking_is_refunded(self, client):
@@ -181,7 +181,7 @@ class PatchBookingByTokenReturns404Test:
 
 
 class PatchBookingByTokenReturns410Test:
-    def test_when_booking_is_already_canceled(self, client):
+    def test_when_booking_is_already_cancelled(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(venue=venue)
         product_stock = offers_factories.StockFactory(offer=product_offer)
@@ -192,7 +192,7 @@ class PatchBookingByTokenReturns410Test:
         )
 
         assert response.status_code == 410
-        assert response.json == {"booking": "This booking has already been canceled"}
+        assert response.json == {"booking": "This booking has already been cancelled"}
 
     def test_when_booking_is_used(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
