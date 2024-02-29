@@ -33,9 +33,11 @@ const FormParticipants = ({
     : defaultPartipantsOptions.filter(
         (option) =>
           option.name !==
-            `participants.${StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE}` &&
+            `participants.${StudentLevels._COLES_MARSEILLE_MATERNELLE}` &&
           option.name !==
-            `participants.${StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_L_MENTAIRE}`
+            `participants.${StudentLevels._COLES_MARSEILLE_CP_CE1_CE2}` &&
+          option.name !==
+            `participants.${StudentLevels._COLES_MARSEILLE_CM1_CM2}`
       )
 
   return (

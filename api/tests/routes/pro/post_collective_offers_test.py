@@ -177,14 +177,14 @@ class Returns200Test:
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
-        data = {**base_offer_payload(venue=venue), "students": ["Écoles innovantes Marseille en Grand : maternelle"]}
+        data = {**base_offer_payload(venue=venue), "students": ["Écoles Marseille - Maternelle"]}
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 201
 
         offer = CollectiveOffer.query.get(response.json["id"])
-        assert offer.students == [models.StudentLevels.ECOLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE]
+        assert offer.students == [models.StudentLevels.ECOLES_MARSEILLE_MATERNELLE]
 
     @override_features(WIP_ENABLE_MARSEILLE=False)
     def test_create_collective_offer_primary_level_FF_disabled(self, client):
@@ -192,7 +192,7 @@ class Returns200Test:
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
-        data = {**base_offer_payload(venue=venue), "students": ["Écoles innovantes Marseille en Grand : maternelle"]}
+        data = {**base_offer_payload(venue=venue), "students": ["Écoles Marseille - Maternelle"]}
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 

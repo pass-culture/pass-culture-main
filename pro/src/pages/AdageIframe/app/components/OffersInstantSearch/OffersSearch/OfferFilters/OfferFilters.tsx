@@ -151,8 +151,9 @@ export const OfferFilters = ({
     ? studentsOptions
     : studentsOptions.filter(
         ({ value }) =>
-          value !== 'Écoles innovantes Marseille en Grand : maternelle' &&
-          value !== 'Écoles innovantes Marseille en Grand : élémentaire'
+          value !== 'Écoles Marseille - Maternelle' &&
+          value !== 'Écoles Marseille - CP, CE1, CE2' &&
+          value !== 'Écoles Marseille - CM1, CM2'
       )
 
   return (

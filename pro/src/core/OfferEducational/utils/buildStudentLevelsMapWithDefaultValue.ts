@@ -10,8 +10,9 @@ export const buildStudentLevelsMapWithDefaultValue = (
     if (
       !isMarseilleEnabled &&
       [
-        StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_L_MENTAIRE,
-        StudentLevels._COLES_INNOVANTES_MARSEILLE_EN_GRAND_MATERNELLE,
+        StudentLevels._COLES_MARSEILLE_MATERNELLE,
+        StudentLevels._COLES_MARSEILLE_CP_CE1_CE2,
+        StudentLevels._COLES_MARSEILLE_CM1_CM2,
       ].includes(level)
     ) {
       continue
