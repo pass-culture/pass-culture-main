@@ -87,5 +87,17 @@ def build_backoffice_public_account_link_in_comment(comment: str) -> str:
     return re.sub(r"(\d+)$", lambda m: substitute_id_by_url_public_account(m.group(1)), comment)
 
 
+def build_backoffice_pro_user_link(user_id: int) -> str:
+    return f"{settings.BACKOFFICE_URL}/pro/user/{user_id}"
+
+
+def build_backoffice_offerer_link(offerer_id: int) -> str:
+    return f"{settings.BACKOFFICE_URL}/pro/offerer/{offerer_id}"
+
+
+def build_backoffice_venue_link(venue_id: int) -> str:
+    return f"{settings.BACKOFFICE_URL}/pro/venue/{venue_id}"
+
+
 def build_backoffice_feature_flipping_link() -> str:
-    return f"{settings.BACKOFFICE_URL}admin/feature-flipping"
+    return f"{settings.BACKOFFICE_URL}/admin/feature-flipping"

@@ -12,6 +12,7 @@ from pcapi.core.external.zendesk_sell_backends.base import ContactNotFoundError
 from pcapi.core.external.zendesk_sell_backends.base import ZendeskCustomFieldsNames
 from pcapi.core.external.zendesk_sell_backends.base import ZendeskCustomFieldsShort
 from pcapi.core.offerers import models as offerers_models
+from pcapi.utils import urls
 from pcapi.utils.regions import get_region_name_from_department
 
 
@@ -20,7 +21,6 @@ logger = logging.getLogger(__name__)
 
 ZENDESK_SELL_API_KEY = settings.ZENDESK_SELL_API_KEY
 ZENDESK_SELL_API_URL = settings.ZENDESK_SELL_API_URL
-BACKOFFICE_URL = settings.BACKOFFICE_URL
 
 
 class ZendeskSellReadOnlyBackend(BaseBackend):
@@ -346,7 +346,7 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
                         venue.departementCode
                     ).upper(),
                     ZendeskCustomFieldsNames.TYPAGE.value: ["Lieu"],
-                    ZendeskCustomFieldsNames.BACKOFFICE_LINK.value: self._build_backoffice_venue_link(venue),
+                    ZendeskCustomFieldsNames.BACKOFFICE_LINK.value: urls.build_backoffice_venue_link(venue.id),
                     ZendeskCustomFieldsNames.UPDATED_IN_PRODUCT.value: datetime.datetime.utcnow().isoformat(),
                 },
             }
@@ -383,7 +383,7 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
                     ).upper(),
                     ZendeskCustomFieldsNames.SIREN.value: offerer.siren,
                     ZendeskCustomFieldsNames.TYPAGE.value: ["Structure"],
-                    ZendeskCustomFieldsNames.BACKOFFICE_LINK.value: self._build_backoffice_offerer_link(offerer),
+                    ZendeskCustomFieldsNames.BACKOFFICE_LINK.value: urls.build_backoffice_offerer_link(offerer.id),
                     ZendeskCustomFieldsNames.UPDATED_IN_PRODUCT.value: datetime.datetime.utcnow().isoformat(),
                 },
             }
@@ -393,9 +393,3 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
             params["data"]["custom_fields"][ZendeskCustomFieldsNames.CREATED_FROM_PRODUCT.value] = True
 
         return params
-
-    def _build_backoffice_offerer_link(self, offerer: offerers_models.Offerer) -> str:
-        return urllib.parse.urljoin(BACKOFFICE_URL, f"pro/offerer/{offerer.id}")
-
-    def _build_backoffice_venue_link(self, venue: offerers_models.Venue) -> str:
-        return urllib.parse.urljoin(BACKOFFICE_URL, f"pro/venue/{venue.id}")
