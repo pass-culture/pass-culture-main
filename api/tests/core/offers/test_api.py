@@ -73,6 +73,23 @@ class CreateStockTest:
         assert created_stock.price == 10
         assert created_stock.quantity == 7
 
+    def test_create_first_stock_of_offer(self):
+        # Given
+        offer = factories.ThingOfferFactory()
+        assert offer.stocks == []
+
+        # When
+        api.create_stock(offer=offer, price=10, quantity=7)
+
+        # Then
+        assert offer.lastValidationPrice == 10
+
+        # Create a second stock
+        api.create_stock(offer=offer, price=20, quantity=7)
+
+        # Then
+        assert offer.lastValidationPrice == 10
+
     def test_does_not_allow_invalid_quantity(self):
         # Given
         offer = factories.ThingOfferFactory()

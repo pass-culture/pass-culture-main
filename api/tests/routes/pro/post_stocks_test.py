@@ -346,7 +346,7 @@ class Returns201Test:
 
     def test_create_one_stock_with_activation_codes(self, client):
         # Given
-        offer = offers_factories.ThingOfferFactory(url="https://chartreu.se")
+        offer = offers_factories.DigitalOfferFactory(url="https://chartreu.se")
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
@@ -862,7 +862,7 @@ class Returns400Test:
 
     def test_invalid_activation_codes_expiration_datetime(self, client):
         # Given
-        offer = offers_factories.ThingOfferFactory(url="https://chartreu.se")
+        offer = offers_factories.DigitalOfferFactory(url="https://chartreu.se")
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
@@ -894,7 +894,7 @@ class Returns400Test:
 
     def test_invalid_booking_limit_datetime(self, client):
         # Given
-        offer = offers_factories.ThingOfferFactory(url="https://chartreu.se")
+        offer = offers_factories.DigitalOfferFactory(url="https://chartreu.se")
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
