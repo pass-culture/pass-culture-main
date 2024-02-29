@@ -140,27 +140,27 @@
   .loading-spinner {
     margin-top: rem.torem(70px);
   }
-}
-
-thead {
-  display: none;
-}
-
-table,
-tbody {
-  display: block;
-}
-
-@media (min-width: size.$tablet) {
-  table {
-    display: table;
-  }
-
-  tbody {
-    display: table-row-group;
-  }
 
   thead {
-    display: table-header-group;
+    display: none;
+  }
+
+  table,
+  tbody {
+    display: block;
+  }
+
+  @media (min-width: size.$tablet) {
+    table {
+      display: table;
+    }
+
+    tbody {
+      display: table-row-group;
+    }
+
+    thead {
+      display: table-header-group;
+    }
   }
 }

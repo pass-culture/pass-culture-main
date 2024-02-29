@@ -5,6 +5,11 @@
 
 .invoices-table {
   margin-top: rem.torem(32px);
+  width: 100%;
+}
+
+.header {
+  display: none;
 }
 
 .row {
@@ -60,27 +65,32 @@
 @media (min-width: size.$tablet) {
   .invoices-table {
     margin-top: 0;
-    table-layout: fixed;
-    width: 100%;
   }
 
   .row {
     display: flex;
-    align-items: center;
+    padding: rem.torem(16px);
   }
 
   .header {
     @include fonts.caption;
 
     cursor: pointer;
-    display: flex;
+    display: inline-flex;
+    padding: rem.torem(16px);
+  }
+
+  .header-cell {
+    display: inline-flex;
     align-items: center;
     justify-content: flex-start;
-    padding: rem.torem(20px) rem.torem(8px) rem.torem(20px) 0;
+    gap: rem.torem(8px);
+    margin-right: rem.torem(8px);
   }
 
   .data {
     padding: rem.torem(20px) 0;
+    margin-right: rem.torem(8px);
   }
 
   .data::before {
@@ -89,11 +99,11 @@
   }
 
   .date-column {
-    width: rem.torem(120px);
+    width: rem.torem(90px);
   }
 
   .document-type-column {
-    width: rem.torem(200px);
+    width: rem.torem(165px);
   }
 
   .document-type-content {
@@ -106,7 +116,7 @@
   }
 
   .label-column {
-    width: rem.torem(120px);
+    width: rem.torem(80px);
     justify-content: center;
     text-align: right;
   }
@@ -114,12 +124,15 @@
   .amount-column {
     cursor: default;
     text-align: right;
-    width: rem.torem(140px);
-    justify-content: flex-start;
+    width: rem.torem(100px);
+  }
+
+  .invoice-column {
+    width: rem.torem(100px);
   }
 
   .invoice-data {
-    justify-content: flex-end;
     margin-right: rem.torem(8px);
+    justify-content: right;
   }
 }
