@@ -7,9 +7,9 @@ import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
-import { VenueFormValues } from 'components/VenueCreationForm'
 import { generateSiretValidationSchema } from 'components/VenueCreationForm/Informations/SiretOrCommentFields'
-import { validationSchema } from 'components/VenueCreationForm/validationSchema'
+import { VenueEditionFormValues } from 'components/VenueEditionForm/types'
+import { validationSchema } from 'components/VenueEditionForm/validationSchema'
 import { VenueEditionForm } from 'components/VenueEditionForm/VenueEditionForm'
 import { Events } from 'core/FirebaseEvents/constants'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
@@ -24,7 +24,7 @@ import { serializeEditVenueBodyModel } from './serializers'
 import styles from './VenueEditionFormScreen.module.scss'
 
 interface VenueEditionProps {
-  initialValues: VenueFormValues
+  initialValues: VenueEditionFormValues
   offerer: GetOffererResponseModel
   venueLabels: SelectOption[]
   venue: GetVenueResponseModel
@@ -77,7 +77,7 @@ export const VenueEditionFormScreen = ({
     return true
   }
 
-  const onSubmit = async (value: VenueFormValues) => {
+  const onSubmit = async (value: VenueEditionFormValues) => {
     if (
       value.isWithdrawalAppliedOnAllOffers &&
       hasBookingQuantity &&

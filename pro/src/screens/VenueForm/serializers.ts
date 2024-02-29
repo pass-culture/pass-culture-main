@@ -1,6 +1,7 @@
 import { EditVenueBodyModel } from 'apiClient/v1'
 import { PostVenueBodyModel } from 'apiClient/v1/models/PostVenueBodyModel'
-import { VenueFormValues } from 'components/VenueCreationForm'
+import { VenueCreationFormValues } from 'components/VenueCreationForm/types'
+import { VenueEditionFormValues } from 'components/VenueEditionForm/types'
 import { unhumanizeSiret } from 'core/Venue/utils'
 
 interface VenueBodyModelParams {
@@ -19,7 +20,7 @@ export interface EditVirtualVenueBodyModel {
 }
 
 const serializeCommunData = (
-  formValues: VenueFormValues,
+  formValues: VenueCreationFormValues,
   { hideSiret }: HideSiretParam
 ): VenueBodyModel => {
   const model: VenueBodyModel = {
@@ -59,7 +60,7 @@ const serializeCommunData = (
 }
 
 export const serializePostVenueBodyModel = (
-  formValues: VenueFormValues,
+  formValues: VenueCreationFormValues,
   { hideSiret, offererId }: VenueBodyModelParams
 ): PostVenueBodyModel => {
   const model = serializeCommunData(formValues, {
@@ -73,7 +74,7 @@ export const serializePostVenueBodyModel = (
 }
 
 export const serializeEditVenueBodyModel = (
-  formValues: VenueFormValues,
+  formValues: VenueEditionFormValues,
   { hideSiret }: HideSiretParam,
   shouldSendMail?: boolean
 ): EditVenueBodyModel | EditVirtualVenueBodyModel => {

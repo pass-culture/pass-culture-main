@@ -10,9 +10,7 @@ import {
   GetVenueResponseModel,
 } from 'apiClient/v1'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
-import { VenueFormValues } from 'components/VenueCreationForm'
 import { generateSiretValidationSchema } from 'components/VenueCreationForm/Informations/SiretOrCommentFields'
-import { validationSchema } from 'components/VenueCreationForm/validationSchema'
 import { Events } from 'core/FirebaseEvents/constants'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import { Providers } from 'core/Venue/types'
@@ -26,11 +24,13 @@ import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { serializeEditVenueBodyModel } from './serializers'
+import { VenueSettingsFormValues } from './types'
+import { validationSchema } from './validationSchema'
 import { VenueSettingsForm } from './VenueSettingsForm'
 import styles from './VenueSettingsScreen.module.scss'
 
 interface VenueSettingsFormScreenProps {
-  initialValues: VenueFormValues
+  initialValues: VenueSettingsFormValues
   offerer: GetOffererResponseModel
   venueTypes: SelectOption[]
   providers?: Providers[]
@@ -88,7 +88,7 @@ export const VenueSettingsFormScreen = ({
     return true
   }
 
-  const onSubmit = async (value: VenueFormValues) => {
+  const onSubmit = async (value: VenueSettingsFormValues) => {
     if (
       value.isWithdrawalAppliedOnAllOffers &&
       hasBookingQuantity &&

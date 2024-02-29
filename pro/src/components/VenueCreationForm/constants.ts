@@ -1,9 +1,9 @@
 import { DEFAULT_ADDRESS_FORM_VALUES } from 'components/Address/constants'
 import { AccessiblityEnum } from 'core/shared'
 
-import { VenueFormValues } from './types'
+import { VenueCreationFormValues } from './types'
 
-export const DEFAULT_FORM_VALUES: VenueFormValues = {
+export const DEFAULT_FORM_VALUES: VenueCreationFormValues = {
   ...DEFAULT_ADDRESS_FORM_VALUES,
   accessibility: {
     [AccessiblityEnum.VISUAL]: false,

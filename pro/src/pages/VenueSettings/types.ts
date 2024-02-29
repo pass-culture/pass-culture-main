@@ -1,7 +1,7 @@
 import { BannerMetaModel } from 'apiClient/v1'
 import { AccessibiltyFormValues } from 'core/shared'
 
-export interface VenueCreationFormValues {
+export interface VenueSettingsFormValues {
   reimbursementPointId: number | string | null
   accessibility: AccessibiltyFormValues
   address: string

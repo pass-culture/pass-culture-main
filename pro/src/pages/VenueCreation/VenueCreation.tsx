@@ -2,7 +2,7 @@ import React from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 
 import { AppLayout } from 'app/AppLayout'
-import { setDefaultInitialFormValues } from 'components/VenueCreationForm'
+import { DEFAULT_FORM_VALUES } from 'components/VenueCreationForm/constants'
 import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import useNotification from 'hooks/useNotification'
@@ -14,7 +14,7 @@ export const VenueCreation = (): JSX.Element | null => {
   const { offererId } = useParams<{ offererId: string }>()
   const notify = useNotification()
 
-  const initialValues = setDefaultInitialFormValues()
+  const initialValues = { ...DEFAULT_FORM_VALUES }
 
   const {
     isLoading: isLoadingOfferer,

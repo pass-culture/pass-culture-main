@@ -8,7 +8,6 @@ import {
 } from 'apiClient/v1'
 import { AddressSelect } from 'components/Address'
 import FormLayout from 'components/FormLayout'
-import { VenueFormValues } from 'components/VenueCreationForm'
 import BankAccountInfos from 'components/VenueCreationForm/BankAccountInfos/BankAccountInfos'
 import SiretOrCommentFields from 'components/VenueCreationForm/Informations/SiretOrCommentFields'
 import { OffersSynchronization } from 'components/VenueCreationForm/OffersSynchronization'
@@ -20,6 +19,8 @@ import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
 import { TextInput, InfoBox, Select } from 'ui-kit'
+
+import { VenueSettingsFormValues } from './types'
 
 interface VenueFormProps {
   offerer: GetOffererResponseModel
@@ -38,7 +39,7 @@ export const VenueSettingsForm = ({
   venueProvider,
   venue,
 }: VenueFormProps) => {
-  const { initialValues } = useFormikContext<VenueFormValues>()
+  const { initialValues } = useFormikContext<VenueSettingsFormValues>()
   const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
