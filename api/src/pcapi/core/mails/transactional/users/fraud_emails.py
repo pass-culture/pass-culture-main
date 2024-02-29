@@ -2,10 +2,12 @@ from pcapi import settings
 from pcapi.core import mails
 from pcapi.core.mails import models as mails_models
 from pcapi.core.users import models as users_models
+from pcapi.utils.urls import build_backoffice_public_account_link
 
 
 def _get_backoffice_user_link(user_id: int) -> str:
-    return f'<a href="{settings.BACKOFFICE_URL}/public-accounts/{user_id}">{user_id}</a>'
+    url = build_backoffice_public_account_link(user_id)
+    return f'<a href="{url}">{user_id}</a>'
 
 
 def _send_fraud_mail(subject: str, header: str, body: str) -> None:

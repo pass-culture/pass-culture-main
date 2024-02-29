@@ -24,6 +24,7 @@ from pcapi.core.users import testing
 from pcapi.core.users import utils as users_utils
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils import requests
+from pcapi.utils import urls
 
 
 logger = logging.getLogger(__name__)
@@ -35,16 +36,8 @@ ZENDESK_TAG_ID_CHECK_COMPLETED = "id_check_terminé"
 ZENDESK_TAG_SUSPENDED = "suspendu"
 
 
-def _get_backoffice_support_beneficiary_user_links(user_id: int) -> str:
-    return f"{settings.BACKOFFICE_URL}/public-accounts/{user_id}"
-
-
-def _get_backoffice_pro_user_link(user_id: int) -> str:
-    return f"{settings.BACKOFFICE_URL}/pro/user/{user_id}"
-
-
 def _get_backoffice_venues_links(venues_ids: Iterable[int]) -> list[str]:
-    return [f"{settings.BACKOFFICE_URL}/pro/venue/{venue_id}" for venue_id in venues_ids]
+    return [urls.build_backoffice_venue_link(venue_id) for venue_id in venues_ids]
 
 
 def _format_list(raw_list: Iterable[str] | None) -> str | None:
@@ -113,7 +106,7 @@ def _format_user_attributes(email: str, attributes: attributes_models.UserAttrib
         "tags": tags,
         # https://developer.zendesk.com/api-reference/ticketing/users/users/#user-fields
         "user_fields": {
-            "backoffice_url": _get_backoffice_support_beneficiary_user_links(attributes.user_id),
+            "backoffice_url": urls.build_backoffice_public_account_link(attributes.user_id),
             "user_id": attributes.user_id,
             "first_name": attributes.first_name,
             "last_name": attributes.last_name,
@@ -138,7 +131,7 @@ def _format_pro_attributes(email: str, attributes: attributes_models.ProAttribut
         # https://developer.zendesk.com/api-reference/ticketing/users/users/#user-fields
         "user_fields": {
             "backoffice_url": (
-                _get_backoffice_pro_user_link(attributes.user_id)
+                urls.build_backoffice_pro_user_link(attributes.user_id)
                 if attributes.user_id
                 else ", ".join(_get_backoffice_venues_links(attributes.venues_ids))
             ),
@@ -198,7 +191,7 @@ def _add_internal_note(
     if isinstance(attributes, attributes_models.ProAttributes):
         if attributes.user_id:
             html_body += Markup("Utilisateur pro identifié : <b>{}</b><br/>, {}").format(name, email)
-            bo_link = _get_backoffice_pro_user_link(attributes.user_id)
+            bo_link = urls.build_backoffice_pro_user_link(attributes.user_id)
             html_body += Markup('<br/><a href="{}" target="_blank">{}</a><br/>').format(bo_link, bo_link)
         if attributes.venues_ids:
             venue_count = len(set(attributes.venues_ids))
@@ -214,7 +207,7 @@ def _add_internal_note(
                 remaining=float(attributes.domains_credit.all.remaining) if attributes.domains_credit else 0,
                 initial=float(attributes.domains_credit.all.initial) if attributes.domains_credit else 0,
             )
-        bo_link = _get_backoffice_support_beneficiary_user_links(attributes.user_id)
+        bo_link = urls.build_backoffice_public_account_link(attributes.user_id)
         html_body += Markup('<br/><a href="{}" target="_blank">{}</a>').format(bo_link, bo_link)
 
     data = {
