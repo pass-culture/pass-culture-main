@@ -50,6 +50,10 @@
         width: 100%;
       }
     }
+
+    .right-inverse {
+      flex-direction: column-reverse;
+    }
   }
 }
 
