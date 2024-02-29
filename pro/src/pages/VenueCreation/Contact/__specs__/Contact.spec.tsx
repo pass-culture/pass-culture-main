@@ -3,12 +3,12 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
+import { Contact } from '..'
 import { SubmitButton } from '../../../../ui-kit'
 import { DEFAULT_ACTIVITY_FORM_VALUES } from '../../Activity'
 import informationsValidationSchema from '../../Activity/validationSchema'
-import { Contact } from '../../Contact'
-import { ContactProps } from '../Contact'
 import { VenueCreationFormValues } from '../../types'
+import { ContactProps } from '../Contact'
 
 const renderContact = ({
   initialValues,
