@@ -24,29 +24,10 @@ export const validationSchema = yup.object().shape({
           none: yup.boolean(),
         }),
   }),
-  addressAutocomplete: yup.string().when('isVenueVirtual', {
-    is: false,
-    then: (schema) =>
-      schema.required(
-        'Veuillez sélectionner une adresse parmi les suggestions'
-      ),
-  }),
-  bookingEmail: yup
-    .string()
-    .email('Veuillez renseigner un email valide, exemple : mail@exemple.com')
-    .when('isVenueVirtual', {
-      is: false,
-      then: (schema) =>
-        schema.required('Veuillez renseigner une adresse email'),
-    }),
   email: yup
     .string()
     .nullable()
     .email('Veuillez renseigner un email valide, exemple : mail@exemple.com'),
-  isVenueVirtual: yup.boolean(),
-  name: yup
-    .string()
-    .required(`Veuillez renseigner la raison sociale de votre lieu`),
   phoneNumber: yup
     .string()
     .nullable()
@@ -59,10 +40,6 @@ export const validationSchema = yup.object().shape({
         return phone ? isPhoneValid(phone) : true
       },
     }),
-  venueType: yup
-    .string()
-    .required('Veuillez sélectionner une activité principale'),
-
   webSite: yup
     .string()
     .nullable()

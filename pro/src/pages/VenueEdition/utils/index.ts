@@ -1,1 +1,0 @@
-export { offerHasBookingQuantity } from './offerHasBookingQuantity'

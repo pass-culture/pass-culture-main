@@ -7,25 +7,17 @@ import {
   useParams,
 } from 'react-router-dom'
 
-import { OfferStatus } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
-import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useGetVenue } from 'core/Venue/adapters/getVenueAdapter'
 import { useGetVenueLabels } from 'core/Venue/adapters/getVenueLabelsAdapter'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
-import { useAdapter } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
-import {
-  getFilteredOffersAdapter,
-  Payload,
-} from 'pages/Offers/adapters/getFilteredOffersAdapter'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import Tabs, { Tab } from 'ui-kit/Tabs/Tabs'
 
 import { setInitialFormValues } from './setInitialFormValues'
-import { offerHasBookingQuantity } from './utils'
 import { VenueEditionFormScreen } from './VenueEditionFormScreen'
 import { VenueEditionHeader } from './VenueEditionHeader'
 
@@ -60,19 +52,6 @@ export const VenueEdition = (): JSX.Element | null => {
     data: offerer,
   } = useGetOfferer(offererId)
 
-  const apiFilters = {
-    ...DEFAULT_SEARCH_FILTERS,
-    status: OfferStatus.ACTIVE,
-    venueId: venue?.id.toString() ?? '',
-  }
-
-  const { isLoading: isLoadingVenueOffers, data: venueOffers } = useAdapter<
-    Payload,
-    Payload
-  >(() => getFilteredOffersAdapter(apiFilters))
-
-  const hasBookingQuantity = offerHasBookingQuantity(venueOffers?.offers)
-
   if (errorOfferer || errorVenue || errorVenueTypes || errorVenueLabels) {
     const loadingError = [
       errorOfferer,
@@ -93,7 +72,6 @@ export const VenueEdition = (): JSX.Element | null => {
     isLoadingVenueTypes ||
     isLoadingVenueLabels ||
     isLoadingOfferer ||
-    isLoadingVenueOffers ||
     !offerer ||
     !venue
   ) {
@@ -146,7 +124,6 @@ export const VenueEdition = (): JSX.Element | null => {
                 offerer={offerer}
                 venueLabels={venueLabels}
                 venue={venue}
-                hasBookingQuantity={venue?.id ? hasBookingQuantity : false}
               />
             }
           />

@@ -47,6 +47,7 @@ export const Accessibility = ({ isCreatingVenue }: AccessiblityProps) => {
           legend="Ce lieu est accessible au public en situation de handicap :"
         />
       </FormLayout.Row>
+
       {hasChangedSinceLastSubmit && !isCreatingVenue && (
         <>
           <FormLayout.Row>

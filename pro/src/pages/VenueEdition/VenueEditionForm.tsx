@@ -40,6 +40,7 @@ export const VenueEditionForm = ({ venueLabels, venue }: VenueFormProps) => {
                 isOptional
               />
             </FormLayout.Row>
+
             <FormLayout.Row>
               <Select
                 options={[
@@ -75,6 +76,7 @@ export const VenueEditionForm = ({ venueLabels, venue }: VenueFormProps) => {
                 isOptional
               />
             </FormLayout.Row>
+
             <FormLayout.Row>
               <TextInput
                 name="email"
@@ -83,6 +85,7 @@ export const VenueEditionForm = ({ venueLabels, venue }: VenueFormProps) => {
                 isOptional
               />
             </FormLayout.Row>
+
             <FormLayout.Row>
               <TextInput
                 name="webSite"
