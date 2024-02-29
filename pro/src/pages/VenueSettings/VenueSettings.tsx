@@ -2,7 +2,6 @@ import { Navigate, useParams } from 'react-router-dom'
 
 import { OfferStatus } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
-import { setInitialFormValues } from 'components/VenueCreationForm'
 import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useGetVenue } from 'core/Venue/adapters/getVenueAdapter'
@@ -19,6 +18,7 @@ import useGetProviders from '../../core/Venue/adapters/getProviderAdapter/useGet
 import useGetVenueProviders from '../../core/Venue/adapters/getVenueProviderAdapter/useGetVenueProvider'
 import { offerHasBookingQuantity } from '../VenueEdition/utils'
 
+import { setInitialFormValues } from './setInitialFormValues'
 import { VenueSettingsFormScreen } from './VenueSettingsScreen'
 
 const VenueSettings = (): JSX.Element | null => {

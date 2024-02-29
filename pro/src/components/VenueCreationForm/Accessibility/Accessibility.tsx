@@ -3,17 +3,20 @@ import isEqual from 'lodash.isequal'
 import React, { useMemo } from 'react'
 
 import FormLayout from 'components/FormLayout'
+import { VenueEditionFormValues } from 'components/VenueEditionForm/types'
 import { useAccessibilityOptions } from 'hooks'
 import { Checkbox, CheckboxGroup, InfoBox } from 'ui-kit'
 
-import { VenueFormValues } from '..'
+import { VenueCreationFormValues } from '../types'
+
 interface AccessiblityProps {
   isCreatingVenue: boolean
 }
 
 export const Accessibility = ({ isCreatingVenue }: AccessiblityProps) => {
-  const { values, setFieldValue, initialValues } =
-    useFormikContext<VenueFormValues>()
+  const { values, setFieldValue, initialValues } = useFormikContext<
+    VenueCreationFormValues | VenueEditionFormValues
+  >()
 
   const hasChangedSinceLastSubmit = useMemo(
     () => !isEqual(values.accessibility, initialValues.accessibility),

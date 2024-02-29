@@ -8,14 +8,14 @@ import { DEFAULT_ACTIVITY_FORM_VALUES } from '../../Activity'
 import informationsValidationSchema from '../../Activity/validationSchema'
 import { Contact } from '../../Contact'
 import { ContactProps } from '../Contact'
-import { VenueFormValues } from '../../types'
+import { VenueCreationFormValues } from '../../types'
 
 const renderContact = ({
   initialValues,
   onSubmit = vi.fn(),
   props,
 }: {
-  initialValues: Partial<VenueFormValues>
+  initialValues: Partial<VenueCreationFormValues>
   onSubmit: () => void
   props: ContactProps
 }) => {
@@ -36,7 +36,7 @@ const renderContact = ({
 }
 describe('Contacts', () => {
   let props: ContactProps
-  let initialValues: Partial<VenueFormValues>
+  let initialValues: Partial<VenueCreationFormValues>
   const onSubmit = vi.fn()
 
   beforeEach(() => {

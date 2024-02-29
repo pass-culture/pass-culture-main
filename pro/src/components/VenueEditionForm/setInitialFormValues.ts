@@ -2,11 +2,11 @@ import { GetVenueResponseModel } from 'apiClient/v1'
 import { AccessiblityEnum } from 'core/shared'
 import { humanizeSiret } from 'core/Venue/utils'
 
-import { VenueFormValues } from '../types'
+import { VenueEditionFormValues } from './types'
 
-const setInitialFormValues = (
+export const setInitialFormValues = (
   venue: GetVenueResponseModel
-): VenueFormValues => {
+): VenueEditionFormValues => {
   const venueAccessibility = {
     [AccessiblityEnum.VISUAL]: venue.visualDisabilityCompliant || false,
     [AccessiblityEnum.MENTAL]: venue.mentalDisabilityCompliant || false,
@@ -54,5 +54,3 @@ const setInitialFormValues = (
     isWithdrawalAppliedOnAllOffers: false,
   }
 }
-
-export default setInitialFormValues

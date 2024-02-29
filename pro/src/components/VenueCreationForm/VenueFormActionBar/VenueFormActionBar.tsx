@@ -5,14 +5,14 @@ import ActionsBarSticky from 'components/ActionsBarSticky'
 import { ButtonLink, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import { VenueFormValues } from '../types'
+import { VenueCreationFormValues } from '../types'
 
 interface VenueFormActionBarProps {
   isCreatingVenue: boolean
 }
 
 const VenueFormActionBar = ({ isCreatingVenue }: VenueFormActionBarProps) => {
-  const { isSubmitting } = useFormikContext<VenueFormValues>()
+  const { isSubmitting } = useFormikContext<VenueCreationFormValues>()
 
   return (
     <ActionsBarSticky>
