@@ -36,12 +36,12 @@ class OfferContext:
         return self.user_offerer.user
 
 
-def build_offer_context(offer=None):
+def build_offer_context(offer=None, offer_kwargs=None):
     user_offerer = offerers_factories.UserOffererFactory()
     venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
     if not offer:
-        offer = CollectiveOfferTemplateFactory(venue=venue)
+        offer = CollectiveOfferTemplateFactory(**({"venue": venue} | (offer_kwargs or {})))
 
     return OfferContext(user_offerer=user_offerer, venue=venue, offer=offer)
 
@@ -235,6 +235,26 @@ class Returns200Test:
         assert updated_offer.contactUrl == "http://localhost/"
         assert updated_offer.contactForm is None
 
+    def test_contact_form_both_null_form_and_url(self, client):
+        offer_ctx = build_offer_context()
+        payload_ctx = build_payload_context()
+
+        pro_client = build_pro_client(client, offer_ctx.user)
+        offer_id = offer_ctx.offer.id
+        payload = payload_ctx.payload
+
+        payload["contactUrl"] = None
+        payload["contactForm"] = None
+
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
+
+        db.session.flush()  # otherwise "Failed to add object to the flush context!" in teardown
+
+        assert response.status_code == 200
+        assert response.json["contactForm"] is None
+        assert response.json["contactUrl"] is None
+
 
 class Returns400Test:
     def test_non_approved_offer_fails(self, client):
@@ -342,25 +362,6 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert "contact[all]" in response.json
-
-    def test_contact_form_both_form_and_url_null(self, client):
-        offer_ctx = build_offer_context()
-        payload_ctx = build_payload_context()
-
-        pro_client = build_pro_client(client, offer_ctx.user)
-        offer_id = offer_ctx.offer.id
-        payload = payload_ctx.payload
-
-        payload["contactUrl"] = None
-        payload["contactForm"] = None
-
-        with patch(PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
-
-        db.session.flush()  # otherwise "Failed to add object to the flush context!" in teardown
-
-        assert response.status_code == 400
-        assert "contact[url,form]" in response.json
 
     def test_contact_form_both_form_and_url_set(self, client):
         offer_ctx = build_offer_context()

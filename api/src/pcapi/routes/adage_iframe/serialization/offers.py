@@ -274,7 +274,7 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
     dates: TemplateDatesModel | None
     formats: typing.Sequence[EacFormat] | None
     isTemplate: bool = True
-    contactEmail: str
+    contactEmail: str | None
     contactPhone: str | None
     contactUrl: str | None
     contactForm: educational_models.OfferContactFormEnum | None

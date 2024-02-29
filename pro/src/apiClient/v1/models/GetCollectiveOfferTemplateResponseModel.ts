@@ -15,7 +15,7 @@ import type { TemplateDatesModel } from './TemplateDatesModel';
 export type GetCollectiveOfferTemplateResponseModel = {
   audioDisabilityCompliant?: boolean | null;
   bookingEmails: Array<string>;
-  contactEmail: string;
+  contactEmail?: string | null;
   contactForm?: OfferContactFormEnum | null;
   contactPhone?: string | null;
   contactUrl?: string | null;

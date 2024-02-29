@@ -125,7 +125,7 @@ class AdageCollectiveRequest(AdageBaseResponseModel):
     requestedDate: date | None
     totalStudents: int | None
     totalTeachers: int | None
-    offerContactEmail: str
+    offerContactEmail: str | None
     offerContactPhoneNumber: str | None
     offererName: str
     venueName: str

@@ -317,7 +317,7 @@ class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseMode
     priceDetail: PriceDetail | None = Field(alias="educationalPriceDetail")
     dates: TemplateDatesModel | None
     isTemplate: bool = True
-    contactEmail: str
+    contactEmail: str | None  # type: ignore [assignment]
     contactPhone: str | None
     contactUrl: str | None
     contactForm: OfferContactFormEnum | None
