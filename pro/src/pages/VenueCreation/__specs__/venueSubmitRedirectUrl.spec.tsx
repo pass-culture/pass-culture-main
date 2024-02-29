@@ -1,7 +1,7 @@
 import { SharedCurrentUserResponseModel } from 'apiClient/v1'
 import { defaultGetOffererResponseModel } from 'utils/apiFactories'
 
-import { venueSubmitRedirectUrl } from '../utils/venueSubmitRedirectUrl'
+import { venueSubmitRedirectUrl } from '../venueSubmitRedirectUrl'
 
 const offerer = { ...defaultGetOffererResponseModel }
 

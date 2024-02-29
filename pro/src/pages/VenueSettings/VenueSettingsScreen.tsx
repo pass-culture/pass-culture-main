@@ -10,7 +10,7 @@ import {
   GetVenueResponseModel,
 } from 'apiClient/v1'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
-import { generateSiretValidationSchema } from 'components/VenueCreationForm/Informations/SiretOrCommentFields'
+import { generateSiretValidationSchema } from 'pages/VenueCreation/Informations/SiretOrCommentFields'
 import { Events } from 'core/FirebaseEvents/constants'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import { Providers } from 'core/Venue/types'

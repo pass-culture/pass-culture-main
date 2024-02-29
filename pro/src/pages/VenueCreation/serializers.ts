@@ -1,8 +1,8 @@
 import { EditVenueBodyModel } from 'apiClient/v1'
 import { PostVenueBodyModel } from 'apiClient/v1/models/PostVenueBodyModel'
-import { VenueCreationFormValues } from 'components/VenueCreationForm/types'
-import { VenueEditionFormValues } from 'components/VenueEditionForm/types'
 import { unhumanizeSiret } from 'core/Venue/utils'
+import { VenueCreationFormValues } from 'pages/VenueCreation/types'
+import { VenueEditionFormValues } from 'pages/VenueEdition/types'
 
 interface VenueBodyModelParams {
   hideSiret: boolean
