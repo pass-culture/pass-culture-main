@@ -1,0 +1,112 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
+
+.dialog-container {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.contact-info-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: rem.torem(32px);
+  border: rem.torem(2px) dashed colors.$grey-medium;
+  border-radius: rem.torem(3px);
+  width: 100%;
+  padding: rem.torem(32px) 0;
+  gap: rem.torem(8px);
+
+  @include fonts.body-important;
+}
+
+.form {
+  &-container {
+    width: 100%;
+  }
+
+  &-title {
+    @include fonts.title3;
+  }
+
+  &-description {
+    @include fonts.body;
+
+    display: flex;
+    flex-direction: column;
+    margin-top: rem.torem(32px);
+    width: 100%;
+
+    &-link {
+        display: flex;
+        align-items: center;
+        white-space: break-spaces;
+
+        &-text {
+            gap: rem.torem(8px);
+            align-items: center;
+        }
+
+        &-site {
+          display: block;
+          margin-top: rem.torem(32px);
+          margin-bottom: rem.torem(16px);
+        }
+    }
+
+
+    &-list {
+        display: flex;
+        flex-direction: column;
+        list-style: disc;
+        margin-left: rem.torem(16px);
+        margin-top: rem.torem(16px);
+
+        li {
+            padding: 0 0 rem.torem(8px) rem.torem(8px);
+        }
+
+        li::marker {
+            font-size: rem.torem(8px);
+        }
+    }
+
+    &-text {
+        &-value {
+            @include fonts.body-important;
+            
+            color: colors.$primary;
+        }
+
+        &-contact {     
+          @include fonts.body-important;
+                 
+          display: block;
+          margin-top: rem.torem(16px);
+          color: colors.$primary;
+        }
+    }
+  }
+
+  &-icon {
+    margin-left: rem.torem(8px);
+  }
+
+  &-mandatory {
+    margin-top: rem.torem(32px);
+    margin-bottom: rem.torem(16px);
+  }
+}
+
+.buttons-container {
+    display: flex;
+    margin-top: rem.torem(32px);
+    gap: rem.torem(24px);
+    justify-content: space-between;
+}
+
+hr {
+  margin: rem.torem(16px) 0 0 0;
+  background-image: none;
+  background-color: colors.$grey-light;
+}

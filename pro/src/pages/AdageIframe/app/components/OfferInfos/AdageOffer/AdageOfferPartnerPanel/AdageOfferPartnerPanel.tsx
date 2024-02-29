@@ -105,6 +105,8 @@ export default function AdageOfferPartnerPanel({
         <ContactButton
           contactEmail={offer.contactEmail}
           contactPhone={offer.contactPhone}
+          contactForm={offer.contactForm}
+          contactUrl={offer.contactUrl}
           offerId={offer.id}
           position={0}
           queryId={''}
