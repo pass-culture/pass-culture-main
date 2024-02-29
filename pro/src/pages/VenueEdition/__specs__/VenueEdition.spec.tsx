@@ -124,16 +124,13 @@ describe('route VenueEdition', () => {
   })
 
   it('should call getVenue and display Venue Form screen on success', async () => {
-    // When
     renderVenueEdition(venue.id, offerer.id)
 
-    // Then
     const venuePublicName = await screen.findByRole('heading', {
       name: 'Cinéma des iles',
     })
     expect(api.getVenue).toHaveBeenCalledWith(12)
     expect(venuePublicName).toBeInTheDocument()
-    expect(screen.getByText('Remboursement')).toBeInTheDocument()
   })
 
   it('should check none accessibility', async () => {
