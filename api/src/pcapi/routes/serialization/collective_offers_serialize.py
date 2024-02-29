@@ -659,12 +659,10 @@ class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):
 
     @root_validator
     def validate_contact_fields(cls, values: dict) -> dict:
-        email = values.get("contactEmail")
-        phone = values.get("contactPhone")
         url = values.get("contactUrl")
         form = values.get("contactForm")
 
-        if url and any([email, phone, form]):
+        if url and form:
             raise ValueError("error: url and form are both not null")
 
         return values
