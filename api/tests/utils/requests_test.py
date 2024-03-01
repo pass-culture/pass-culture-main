@@ -1,6 +1,7 @@
 import logging
 
 import pytest
+import requests.models as real_requests_models
 
 from pcapi.utils import requests
 
@@ -29,7 +30,7 @@ def test_wrapper_logs_warning_on_failure(requests_mock, caplog):
 
     log = caplog.records[0]
     assert log.message == "Call to external service failed with "
-    assert log.url == "https://example.com"
+    assert log.url == "https://example.com/"
     assert log.method == "GET"
 
 
@@ -79,12 +80,27 @@ def test_wrapper_is_used_when_calling_verbs(requests_mock, caplog, verb):
 
 
 @pytest.mark.parametrize("verb", ["get", "post", "put", "delete"])
-def test_wrapper_is_used_when_using_session(requests_mock, caplog, verb):
+def test_wrapper_is_used_when_using_session_verbs(requests_mock, caplog, verb):
     getattr(requests_mock, verb)("https://example.com", text="response")
 
     session = requests.Session()
     with caplog.at_level(logging.INFO):
         response = getattr(session, verb)("https://example.com")
+        assert response.text == "response"
+
+    log = caplog.records[0]
+    assert log.message == "External service called"
+
+
+def test_wrapper_is_used_when_using_session_send(requests_mock, caplog):
+    requests_mock.get("https://example.com", text="response")
+
+    session = requests.Session()
+    request = real_requests_models.Request(method="GET", url="https://example.com")
+    request = session.prepare_request(request)
+
+    with caplog.at_level(logging.INFO):
+        response = session.send(request)
         assert response.text == "response"
 
     log = caplog.records[0]
