@@ -202,6 +202,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     )
     sa.Index("ix_user_validatedBirthDate", validatedBirthDate)
     pro_flags: UserProFlags = orm.relationship("UserProFlags", back_populates="user", uselist=False)
+    pro_new_nav_state: UserProNewNavState = orm.relationship("UserProNewNavState", back_populates="user", uselist=False)
 
     # unaccent is not immutable, so it can't be used for an index.
     # Searching by sa.func.unaccent(something) does not use the index and causes a sequential scan.
@@ -870,3 +871,18 @@ class SingleSignOn(PcObject, Base, Model):
             name="unique_sso_user_per_sso_provider",
         ),
     )
+
+
+class UserProNewNavState(PcObject, Base, Model):
+    __tablename__ = "user_pro_new_nav_state"
+
+    userId: int = sa.Column(
+        sa.BigInteger,
+        sa.ForeignKey("user.id", ondelete="CASCADE"),
+        unique=True,
+        nullable=False,
+    )
+    user: User = orm.relationship(User, foreign_keys=[userId], back_populates="pro_new_nav_state", uselist=False)
+
+    eligibilityDate: datetime = sa.Column(sa.DateTime, nullable=True)
+    newNavDate: datetime = sa.Column(sa.DateTime, nullable=True)
