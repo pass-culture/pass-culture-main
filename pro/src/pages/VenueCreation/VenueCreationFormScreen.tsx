@@ -41,10 +41,10 @@ export const VenueCreationFormScreen = ({
 
   const { currentUser } = useCurrentUser()
 
-  const onSubmit = async (value: VenueCreationFormValues) => {
+  const onSubmit = async (values: VenueCreationFormValues) => {
     try {
       await api.postCreateVenue(
-        serializePostVenueBodyModel(value, offerer.id, !isSiretValued)
+        serializePostVenueBodyModel(values, offerer.id, !isSiretValued)
       )
 
       navigate(venueSubmitRedirectUrl(offerer.id, currentUser))

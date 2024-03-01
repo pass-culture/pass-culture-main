@@ -41,11 +41,11 @@ export const VenueEditionFormScreen = ({
 
   const { currentUser } = useCurrentUser()
 
-  const onSubmit = async (value: VenueEditionFormValues) => {
+  const onSubmit = async (values: VenueEditionFormValues) => {
     try {
       await api.editVenue(
         venue.id,
-        serializeEditVenueBodyModel(value, !venue.siret)
+        serializeEditVenueBodyModel(values, !venue.siret)
       )
 
       navigate('/accueil')
