@@ -1,0 +1,15 @@
+@use "styles/mixins/_rem.scss" as rem;
+
+.contact-checkbox {
+  &:not(:last-child) {
+    margin-bottom: rem.torem(16px);
+  }
+
+  &-inner-control {
+    margin: 0 0 0 rem.torem(32px);
+  }
+}
+
+.phone-number-row {
+  max-width: rem.torem(328px);
+}

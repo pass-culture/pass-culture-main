@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import React, { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import {
@@ -18,6 +18,7 @@ import {
 import { computeOffersUrl } from 'core/Offers/utils'
 import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import { ButtonLink, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -26,7 +27,8 @@ import { sortByLabel } from 'utils/strings'
 import { OfferEducationalProps } from '../OfferEducational'
 
 import FormAccessibility from './FormAccessibility'
-import FormContact from './FormContact'
+import FormContact from './FormContact/FormContact'
+import FormContactTemplate from './FormContactTemplate/FormContactTemplate'
 import FormDates from './FormDates/FormDates'
 import FormImageUploader from './FormImageUploader'
 import { ImageUploaderOfferProps } from './FormImageUploader/FormImageUploader'
@@ -80,6 +82,10 @@ const OfferEducationalForm = ({
 
   const { values, setFieldValue, initialValues } =
     useFormikContext<OfferEducationalFormValues>()
+
+  const isCustomContactFormEnabled = useActiveFeature(
+    'WIP_ENABLE_COLLECTIVE_CUSTOM_CONTACT'
+  )
 
   useScrollToFirstErrorAfterSubmit()
 
@@ -192,7 +198,11 @@ const OfferEducationalForm = ({
               isTemplate={isTemplate}
             />
             <FormAccessibility disableForm={mode === Mode.READ_ONLY} />
-            <FormContact disableForm={mode === Mode.READ_ONLY} />
+            {isCustomContactFormEnabled && isTemplate ? (
+              <FormContactTemplate disableForm={mode === Mode.READ_ONLY} />
+            ) : (
+              <FormContact disableForm={mode === Mode.READ_ONLY} />
+            )}
             <FormNotifications disableForm={mode === Mode.READ_ONLY} />
           </>
         ) : null}
