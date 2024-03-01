@@ -4,6 +4,7 @@ import { Formik } from 'formik'
 import React from 'react'
 
 import * as siretApiValidate from 'core/Venue/siretApiValidate'
+import { VenueCreationFormValues } from 'pages/VenueCreation/types'
 import { VenueEditionFormValues } from 'pages/VenueEdition/types'
 import { SubmitButton } from 'ui-kit'
 
@@ -60,7 +61,7 @@ const renderSiretOrComment = async ({
 
 describe('components | SiretOrCommentFields', () => {
   let props: SiretOrCommentInterface
-  let initialValues: Partial<VenueEditionFormValues>
+  let initialValues: Partial<VenueCreationFormValues>
   let validationSchema: any
   const onSubmit = vi.fn()
 
@@ -68,8 +69,8 @@ describe('components | SiretOrCommentFields', () => {
     const setIsFieldNameFrozen = vi.fn()
     const updateIsSiretValued = vi.fn()
     const setIsSiretValued = vi.fn()
-    validationSchema = generateSiretValidationSchema(true, '012345678')
-    initialValues = { comment: '', siret: '', isVenueVirtual: false }
+    validationSchema = generateSiretValidationSchema(false, true, '012345678')
+    initialValues = { comment: '', siret: '' }
     props = {
       isCreatedEntity: true,
       setIsFieldNameFrozen: setIsFieldNameFrozen,
@@ -167,7 +168,6 @@ describe('components | SiretOrCommentFields', () => {
     })
 
     it('should not display required message if siret is empty for virtual venue', async () => {
-      initialValues.isVenueVirtual = false
       const { buttonSubmit } = await renderSiretOrComment({
         initialValues,
         onSubmit,
@@ -291,7 +291,7 @@ describe('components | SiretOrCommentFields', () => {
         initialValues,
         onSubmit,
         props,
-        validationSchema: generateSiretValidationSchema(false, null),
+        validationSchema: generateSiretValidationSchema(false, false, null),
       })
 
       const toggle = screen.getByRole('button', {

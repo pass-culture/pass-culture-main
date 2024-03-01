@@ -3,7 +3,7 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { VenueFormValues } from 'components/VenueCreationForm/index'
+import { VenueSettingsFormValues } from 'pages/VenueSettings/types'
 
 import {
   validationSchema as withdrawalDetailsValidationSchema,
@@ -15,7 +15,7 @@ const renderWithdrawalDetails = ({
   onSubmit = vi.fn(),
 }: {
   isCreatedEntity: boolean
-  initialValues: Partial<VenueFormValues>
+  initialValues: Partial<VenueSettingsFormValues>
   onSubmit: () => void
 }) => {
   const validationSchema = yup.object().shape(withdrawalDetailsValidationSchema)
@@ -35,7 +35,7 @@ const renderWithdrawalDetails = ({
 }
 
 describe('components | WithdrawalDetails', () => {
-  let initialValues: Partial<VenueFormValues>
+  let initialValues: Partial<VenueSettingsFormValues>
   const onSubmit = vi.fn()
 
   it('should display checkbox', async () => {

@@ -11,7 +11,6 @@ import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
 import { SelectOption } from 'custom_types/form'
-import { defaultGetOffererResponseModel } from 'utils/apiFactories'
 import { defaultGetVenue } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -55,11 +54,6 @@ const renderForm = (
             <>
               <VenueEditionFormScreen
                 initialValues={initialValues}
-                offerer={{
-                  ...defaultGetOffererResponseModel,
-                  id: 12,
-                  siren: '881457238',
-                }}
                 venueLabels={venueLabels}
                 venue={venue}
               />
@@ -353,7 +347,6 @@ describe('VenueFormScreen', () => {
   })
 
   it('should let update the virtual venue with limited fields', async () => {
-    formValues.isVenueVirtual = true
     renderForm(formValues, venue)
 
     const editVenue = vi

@@ -45,7 +45,6 @@ const formValues: VenueCreationFormValues = {
     motor: true,
     none: false,
   },
-  isAccessibilityAppliedOnAllOffers: false,
   bannerUrl: '',
 }
 

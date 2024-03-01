@@ -5,7 +5,7 @@ import React from 'react'
 import * as yup from 'yup'
 
 import { apiAdresse } from 'apiClient/adresse'
-import { VenueFormValues } from 'components/VenueCreationForm'
+import { VenueCreationFormValues } from 'pages/VenueCreation/types'
 import { SubmitButton } from 'ui-kit'
 
 import { AddressSelect, validationSchema as addressValidationSchema } from '../'
@@ -44,7 +44,7 @@ const renderAddress = ({
   initialValues,
   onSubmit = vi.fn(),
 }: {
-  initialValues: Partial<VenueFormValues>
+  initialValues: Partial<VenueCreationFormValues>
   onSubmit: () => void
 }) => {
   const validationSchema = yup.object().shape(addressValidationSchema)
@@ -72,7 +72,7 @@ const renderAddress = ({
 }
 
 describe('AddressSelect', () => {
-  let initialValues: Partial<VenueFormValues>
+  let initialValues: Partial<VenueCreationFormValues>
   const onSubmit = vi.fn()
 
   beforeEach(() => {
