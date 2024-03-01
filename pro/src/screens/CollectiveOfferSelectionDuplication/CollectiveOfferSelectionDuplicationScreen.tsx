@@ -8,7 +8,6 @@ import { AppLayout } from 'app/AppLayout'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import { createOfferFromTemplate } from 'core/OfferEducational'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
-import { computeOffersUrl } from 'core/Offers/utils'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import strokeSearchIcon from 'icons/stroke-search.svg'
@@ -179,7 +178,10 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                 <ActionsBarSticky.Left>
                   <ButtonLink
                     variant={ButtonVariant.SECONDARY}
-                    link={{ isExternal: false, to: computeOffersUrl({}) }}
+                    link={{
+                      isExternal: false,
+                      to: '/offres/collectives',
+                    }}
                   >
                     Annuler et quitter
                   </ButtonLink>

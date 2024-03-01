@@ -1,16 +1,11 @@
-import React from 'react'
-import { useSelector } from 'react-redux'
-
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { computeOffersUrl } from 'core/Offers/utils'
 import { useOfferWizardMode } from 'hooks'
 import useNotification from 'hooks/useNotification'
 import fullLeftIcon from 'icons/full-left.svg'
 import fullRightIcon from 'icons/full-right.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
-import { RootState } from 'store/rootReducer'
 import { Button, ButtonLink, SubmitButton } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -32,17 +27,7 @@ const ActionBar = ({
   step,
   dirtyForm,
 }: ActionBarProps) => {
-  const offersSearchFilters = useSelector(
-    (state: RootState) => state.offers.searchFilters
-  )
-  const offersPageNumber = useSelector(
-    (state: RootState) => state.offers.pageNumber
-  )
   const mode = useOfferWizardMode()
-  const backOfferUrl = computeOffersUrl({
-    ...offersSearchFilters,
-    page: offersPageNumber,
-  })
   const notify = useNotification()
 
   const Left = (): JSX.Element => {
@@ -62,7 +47,7 @@ const ActionBar = ({
     // mode === OFFER_WIZARD_MODE.EDITION
     return step === OFFER_WIZARD_STEP_IDS.SUMMARY ? (
       <ButtonLink
-        link={{ to: backOfferUrl, isExternal: false }}
+        link={{ to: '/offres', isExternal: false }}
         variant={ButtonVariant.PRIMARY}
       >
         Retour à la liste des offres

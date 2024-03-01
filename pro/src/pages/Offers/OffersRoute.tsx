@@ -1,6 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { RouteObject, useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
@@ -9,7 +8,7 @@ import { getOffererAdapter } from 'core/Offers/adapters'
 import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { Offerer, SearchFiltersParams } from 'core/Offers/types'
-import { hasSearchFilters, computeOffersUrl } from 'core/Offers/utils'
+import { hasSearchFilters, computeIndividualOffersUrl } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
 import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
 import { SelectOption } from 'custom_types/form'
@@ -17,9 +16,9 @@ import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import { formatAndOrderVenues } from 'repository/venuesService'
 import OffersScreen from 'screens/Offers'
-import { savePageNumber, saveSearchFilters } from 'store/offers/reducer'
-import Spinner from 'ui-kit/Spinner/Spinner'
+import { parse } from 'utils/query-string'
 import { sortByLabel } from 'utils/strings'
+import { translateQueryParamsToApiParams } from 'utils/translate'
 
 import { getFilteredOffersAdapter } from './adapters/getFilteredOffersAdapter'
 
@@ -29,11 +28,8 @@ export const OffersRoute = (): JSX.Element => {
   const notify = useNotification()
   const navigate = useNavigate()
   const { currentUser } = useCurrentUser()
-  const dispatch = useDispatch()
 
   const [offerer, setOfferer] = useState<Offerer | null>(null)
-  const [offers, setOffers] = useState<ListOffersOfferResponseModel[]>([])
-  const [isLoading, setIsLoading] = useState(true)
   const [initialSearchFilters, setInitialSearchFilters] =
     useState<SearchFiltersParams | null>(null)
   const [venues, setVenues] = useState<SelectOption[]>([])
@@ -60,26 +56,6 @@ export const OffersRoute = (): JSX.Element => {
     loadOfferer()
   }, [urlSearchFilters.offererId, notify])
 
-  const loadAndUpdateOffers = useCallback(
-    async (filters: SearchFiltersParams) => {
-      const apiFilters = {
-        ...DEFAULT_SEARCH_FILTERS,
-        ...filters,
-      }
-      const { isOk, message, payload } =
-        await getFilteredOffersAdapter(apiFilters)
-
-      if (!isOk) {
-        setIsLoading(false)
-        return notify.error(message)
-      }
-
-      setIsLoading(false)
-      setOffers(payload.offers)
-    },
-    [notify]
-  )
-
   useEffect(() => {
     const loadCategories = () =>
       api.getCategories().then((categoriesAndSubcategories) => {
@@ -100,7 +76,7 @@ export const OffersRoute = (): JSX.Element => {
   const redirectWithUrlFilters = (
     filters: SearchFiltersParams & { audience?: Audience }
   ) => {
-    navigate(computeOffersUrl(filters))
+    navigate(computeIndividualOffersUrl(filters))
   }
 
   useEffect(() => {
@@ -119,33 +95,6 @@ export const OffersRoute = (): JSX.Element => {
   }, [setInitialSearchFilters, urlSearchFilters, currentUser.isAdmin])
 
   useEffect(() => {
-    dispatch(
-      saveSearchFilters({
-        nameOrIsbn:
-          urlSearchFilters.nameOrIsbn || DEFAULT_SEARCH_FILTERS.nameOrIsbn,
-        offererId:
-          urlSearchFilters.offererId || DEFAULT_SEARCH_FILTERS.offererId,
-        venueId: urlSearchFilters.venueId || DEFAULT_SEARCH_FILTERS.venueId,
-        categoryId:
-          urlSearchFilters.categoryId || DEFAULT_SEARCH_FILTERS.categoryId,
-        status: urlSearchFilters.status
-          ? urlSearchFilters.status
-          : DEFAULT_SEARCH_FILTERS.status,
-        creationMode: urlSearchFilters.creationMode
-          ? urlSearchFilters.creationMode
-          : DEFAULT_SEARCH_FILTERS.creationMode,
-        periodBeginningDate:
-          urlSearchFilters.periodBeginningDate ||
-          DEFAULT_SEARCH_FILTERS.periodBeginningDate,
-        periodEndingDate:
-          urlSearchFilters.periodEndingDate ||
-          DEFAULT_SEARCH_FILTERS.periodEndingDate,
-      })
-    )
-    dispatch(savePageNumber(currentPageNumber))
-  }, [dispatch, currentPageNumber, urlSearchFilters])
-
-  useEffect(() => {
     const loadAllVenuesByProUser = async () => {
       const venuesResponse = await getVenuesForOffererAdapter({
         offererId: offerer?.id.toString(),
@@ -158,29 +107,22 @@ export const OffersRoute = (): JSX.Element => {
     }
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadAllVenuesByProUser()
-  }, [offerer?.id])
+  }, [offerer?.id, notify])
 
   return (
     <AppLayout>
-      {!initialSearchFilters ? (
-        <Spinner />
-      ) : (
-        <OffersScreen
-          audience={Audience.INDIVIDUAL}
-          categories={categories}
-          currentPageNumber={currentPageNumber}
-          currentUser={currentUser}
-          initialSearchFilters={initialSearchFilters}
-          isLoading={isLoading}
-          loadAndUpdateOffers={loadAndUpdateOffers}
-          offerer={offerer}
-          offers={offers}
-          redirectWithUrlFilters={redirectWithUrlFilters}
-          setOfferer={setOfferer}
-          urlSearchFilters={urlSearchFilters}
-          venues={venues}
-        />
-      )}
+      <OffersScreen
+        audience={Audience.INDIVIDUAL}
+        categories={categories}
+        currentPageNumber={currentPageNumber}
+        currentUser={currentUser}
+        initialSearchFilters={initialSearchFilters ?? DEFAULT_SEARCH_FILTERS}
+        offerer={offerer}
+        redirectWithUrlFilters={redirectWithUrlFilters}
+        setOfferer={setOfferer}
+        urlSearchFilters={urlSearchFilters}
+        venues={venues}
+      />
     </AppLayout>
   )
 }
@@ -188,3 +130,57 @@ export const OffersRoute = (): JSX.Element => {
 // Lazy-loaded by react-router-dom
 // ts-unused-exports:disable-next-line
 export const Component = OffersRoute
+
+// ts-unused-exports:disable-next-line
+export const loader: RouteObject['loader'] = async ({
+  request,
+}): Promise<{
+  offers: ListOffersOfferResponseModel[]
+}> => {
+  console.log('loader')
+  const { url } = request
+  const urlSearchFilters = translateQueryParamsToApiParams(
+    parse(url.split('?')[1])
+  )
+
+  const apiFilters = {
+    ...DEFAULT_SEARCH_FILTERS,
+    ...urlSearchFilters,
+  }
+
+  const { payload } = await getFilteredOffersAdapter(apiFilters)
+  return payload
+}
+
+// Used to manually retrigger loader (call it with fetcher.submit)
+// ts-unused-exports:disable-next-line
+export const action: RouteObject['action'] = () => null
+
+// since it's not real pagination (front pagination only here)
+// we don't need to revalidate on page change
+// ts-unused-exports:disable-next-line
+export const shouldRevalidate: RouteObject['shouldRevalidate'] = ({
+  currentUrl,
+  nextUrl,
+  formAction,
+}) => {
+  // Allow revalidation by using actions
+  if (formAction) {
+    return true
+  }
+
+  const keysToIgnore = ['page']
+  const currentSearchParams = new URLSearchParams(currentUrl.search)
+  const nextSearchParams = new URLSearchParams(nextUrl.search)
+  const currentSearchEntries = Array.from(currentSearchParams.entries()).filter(
+    ([key]) => !keysToIgnore.includes(key)
+  )
+  const nextSearchEntries = Array.from(nextSearchParams.entries()).filter(
+    ([key]) => !keysToIgnore.includes(key)
+  )
+  // Only reload offers when search filters change, not when page changes
+  const shouldRevalidate =
+    JSON.stringify(currentSearchEntries) !== JSON.stringify(nextSearchEntries)
+
+  return shouldRevalidate
+}

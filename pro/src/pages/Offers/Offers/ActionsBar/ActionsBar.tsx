@@ -1,17 +1,20 @@
-import React, { useCallback, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useCallback, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 
 import ActionsBarSticky from 'components/ActionsBarSticky'
-import { SearchFiltersParams } from 'core/Offers/types'
+import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
+import { Offer, SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import useNotification from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
-import { searchFiltersSelector } from 'store/offers/selectors'
+import { canDeleteOffers } from 'pages/Offers/Offers/ActionsBar/canDeleteOffers'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { parse } from 'utils/query-string'
+import { translateQueryParamsToApiParams } from 'utils/translate'
 
 import { deleteDraftOffersAdapter } from '../adapters/deleteDraftOffers'
 
@@ -31,7 +34,7 @@ export interface ActionBarProps {
   toggleSelectAllCheckboxes: () => void
   audience: Audience
   getUpdateOffersStatusMessage: (selectedOfferIds: string[]) => string
-  canDeleteOffers: (selectedOfferIds: string[]) => boolean
+  currentPageOffersSubset: Offer[]
 }
 
 const getUpdateActiveStatusAdapter = (
@@ -79,10 +82,10 @@ const ActionsBar = ({
   nbSelectedOffers,
   audience,
   getUpdateOffersStatusMessage,
-  canDeleteOffers,
+  currentPageOffersSubset,
 }: ActionBarProps): JSX.Element => {
-  const searchFilters = useSelector(searchFiltersSelector)
   const notify = useNotification()
+  const { search } = useLocation()
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
@@ -92,6 +95,13 @@ const ActionsBar = ({
   }, [clearSelectedOfferIds, areAllOffersSelected, toggleSelectAllCheckboxes])
 
   const handleUpdateOffersStatus = async (isActivating: boolean) => {
+    const urlSearchFilters = translateQueryParamsToApiParams(parse(search))
+
+    const searchFilters = {
+      ...DEFAULT_SEARCH_FILTERS,
+      ...urlSearchFilters,
+    }
+
     const adapter = getUpdateActiveStatusAdapter(
       areAllOffersSelected,
       searchFilters,
@@ -135,8 +145,8 @@ const ActionsBar = ({
     return `${nbSelectedOffers} offre sélectionnée`
   }
 
-  const handleDelete = useCallback(async () => {
-    if (!canDeleteOffers(selectedOfferIds)) {
+  const handleDelete = async () => {
+    if (!canDeleteOffers(currentPageOffersSubset, selectedOfferIds)) {
       notify.error('Seuls les  brouillons peuvent être supprimés')
       return
     }
@@ -152,10 +162,10 @@ const ActionsBar = ({
       clearSelectedOfferIds()
     }
     setIsDeleteDialogOpen(false)
-  }, [selectedOfferIds, nbSelectedOffers])
+  }
 
   const handleOpenDeleteDialog = () => {
-    if (!canDeleteOffers(selectedOfferIds)) {
+    if (!canDeleteOffers(currentPageOffersSubset, selectedOfferIds)) {
       notify.error('Seuls les brouillons peuvent être supprimés')
       return
     }

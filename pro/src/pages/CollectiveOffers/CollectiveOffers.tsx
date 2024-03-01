@@ -1,6 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { RouteObject, useNavigate } from 'react-router-dom'
 
 import { CollectiveOfferResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
@@ -16,8 +15,9 @@ import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import { formatAndOrderVenues } from 'repository/venuesService'
 import OffersScreen from 'screens/Offers'
-import { savePageNumber, saveSearchFilters } from 'store/offers/reducer'
 import Spinner from 'ui-kit/Spinner/Spinner'
+import { parse } from 'utils/query-string'
+import { translateQueryParamsToApiParams } from 'utils/translate'
 
 import { getFilteredCollectiveOffersAdapter } from './adapters'
 
@@ -27,11 +27,8 @@ export const CollectiveOffers = (): JSX.Element => {
   const notify = useNotification()
   const navigate = useNavigate()
   const { currentUser } = useCurrentUser()
-  const dispatch = useDispatch()
 
   const [offerer, setOfferer] = useState<Offerer | null>(null)
-  const [offers, setOffers] = useState<CollectiveOfferResponseModel[]>([])
-  const [isLoading, setIsLoading] = useState(true)
   const [initialSearchFilters, setInitialSearchFilters] =
     useState<SearchFiltersParams | null>(null)
   const [venues, setVenues] = useState<SelectOption[]>([])
@@ -70,27 +67,6 @@ export const CollectiveOffers = (): JSX.Element => {
     loadAllVenuesByProUser()
   }, [offerer?.id])
 
-  const loadAndUpdateOffers = useCallback(
-    async (filters: SearchFiltersParams) => {
-      setIsLoading(true)
-      const apiFilters = {
-        ...DEFAULT_SEARCH_FILTERS,
-        ...filters,
-      }
-      const { isOk, message, payload } =
-        await getFilteredCollectiveOffersAdapter(apiFilters)
-
-      if (!isOk) {
-        setIsLoading(false)
-        return notify.error(message)
-      }
-
-      setIsLoading(false)
-      setOffers(payload.offers)
-    },
-    [notify]
-  )
-
   const redirectWithUrlFilters = (
     filters: SearchFiltersParams & { audience?: Audience }
   ) => {
@@ -112,31 +88,6 @@ export const CollectiveOffers = (): JSX.Element => {
     setInitialSearchFilters(filters)
   }, [setInitialSearchFilters, urlSearchFilters, currentUser.isAdmin])
 
-  useEffect(() => {
-    dispatch(
-      saveSearchFilters({
-        nameOrIsbn:
-          urlSearchFilters.nameOrIsbn || DEFAULT_SEARCH_FILTERS.nameOrIsbn,
-        offererId:
-          urlSearchFilters.offererId || DEFAULT_SEARCH_FILTERS.offererId,
-        venueId: urlSearchFilters.venueId || DEFAULT_SEARCH_FILTERS.venueId,
-        categoryId:
-          urlSearchFilters.categoryId || DEFAULT_SEARCH_FILTERS.categoryId,
-        format: urlSearchFilters.format || DEFAULT_SEARCH_FILTERS.format,
-        status: urlSearchFilters.status
-          ? urlSearchFilters.status
-          : DEFAULT_SEARCH_FILTERS.status,
-        periodBeginningDate:
-          urlSearchFilters.periodBeginningDate ||
-          DEFAULT_SEARCH_FILTERS.periodBeginningDate,
-        periodEndingDate:
-          urlSearchFilters.periodEndingDate ||
-          DEFAULT_SEARCH_FILTERS.periodEndingDate,
-      })
-    )
-    dispatch(savePageNumber(currentPageNumber))
-  }, [dispatch, currentPageNumber, urlSearchFilters])
-
   return (
     <AppLayout>
       {!initialSearchFilters ? (
@@ -147,10 +98,7 @@ export const CollectiveOffers = (): JSX.Element => {
           currentPageNumber={currentPageNumber}
           currentUser={currentUser}
           initialSearchFilters={initialSearchFilters}
-          isLoading={isLoading}
-          loadAndUpdateOffers={loadAndUpdateOffers}
           offerer={offerer}
-          offers={offers}
           redirectWithUrlFilters={redirectWithUrlFilters}
           setOfferer={setOfferer}
           urlSearchFilters={urlSearchFilters}
@@ -164,3 +112,52 @@ export const CollectiveOffers = (): JSX.Element => {
 // Lazy-loaded by react-router-dom
 // ts-unused-exports:disable-next-line
 export const Component = CollectiveOffers
+
+// ts-unused-exports:disable-next-line
+export const loader: RouteObject['loader'] = async ({
+  request,
+}): Promise<{
+  offers: CollectiveOfferResponseModel[]
+}> => {
+  const { url } = request
+  const urlSearchFilters = translateQueryParamsToApiParams(
+    parse(url.split('?')[1])
+  )
+
+  const apiFilters = {
+    ...DEFAULT_SEARCH_FILTERS,
+    ...urlSearchFilters,
+  }
+
+  const { payload } = await getFilteredCollectiveOffersAdapter(apiFilters)
+  return payload
+}
+
+// Used to manually retrigger loader (call it with fetcher.submit)
+// ts-unused-exports:disable-next-line
+export const action: RouteObject['action'] = () => null
+
+// since it's not real pagination (front pagination only here)
+// we don't need to revalidate on page change
+// ts-unused-exports:disable-next-line
+export const shouldRevalidate: RouteObject['shouldRevalidate'] = ({
+  currentUrl,
+  nextUrl,
+  formAction,
+}) => {
+  // Allow revalidation by using actions
+  if (formAction) {
+    return true
+  }
+
+  // Only reload offers when search filters change, not when page changes
+  const shouldRevalidate =
+    currentUrl.search === nextUrl.search
+      ? false
+      : new URLSearchParams(currentUrl.search).get('page') !==
+          new URLSearchParams(nextUrl.search).get('page')
+        ? false
+        : true
+
+  return shouldRevalidate
+}

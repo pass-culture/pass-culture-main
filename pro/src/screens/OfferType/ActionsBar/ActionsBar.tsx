@@ -1,8 +1,5 @@
-import React from 'react'
-
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import { Events } from 'core/FirebaseEvents/constants'
-import { computeOffersUrl } from 'core/Offers/utils'
 import useAnalytics from 'hooks/useAnalytics'
 import fullRightIcon from 'icons/full-right.svg'
 import { ButtonLink, SubmitButton } from 'ui-kit'
@@ -21,7 +18,7 @@ const ActionsBar = ({
     <ActionsBarSticky>
       <ActionsBarSticky.Left>
         <ButtonLink
-          link={{ to: computeOffersUrl({}), isExternal: false }}
+          link={{ to: '/offres', isExternal: false }}
           variant={ButtonVariant.SECONDARY}
           onClick={() => logEvent?.(Events.CLICKED_CANCEL_OFFER_CREATION)}
         >

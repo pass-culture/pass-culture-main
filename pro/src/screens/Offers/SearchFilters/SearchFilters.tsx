@@ -1,4 +1,5 @@
-import React, { FormEvent } from 'react'
+import { FormEvent } from 'react'
+import { Form } from 'react-router-dom'
 
 import { EacFormat } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout/FormLayout'
@@ -25,7 +26,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './SearchFilters.module.scss'
 
-interface SearchFiltersProps {
+type SearchFiltersProps = {
   applyFilters: () => void
   offerer: Offerer | null
   removeOfferer: () => void
@@ -147,7 +148,7 @@ const SearchFilters = ({
         </span>
       )}
 
-      <form onSubmit={requestFilteredOffers}>
+      <Form method="get" action="/offres" onSubmit={requestFilteredOffers}>
         <FieldLayout label={searchByOfferNameLabel} name="offre" isOptional>
           <BaseInput
             type="text"
@@ -256,7 +257,7 @@ const SearchFilters = ({
           <SubmitButton disabled={disableAllFilters}>Rechercher</SubmitButton>
           <div className={styles['separator']} />
         </div>
-      </form>
+      </Form>
     </>
   )
 }

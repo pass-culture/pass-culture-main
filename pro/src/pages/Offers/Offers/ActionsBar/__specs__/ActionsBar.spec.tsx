@@ -1,33 +1,24 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
 import { api } from 'apiClient/api'
+import { OfferStatus } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
 import { Events } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared'
 import * as useAnalytics from 'hooks/useAnalytics'
+import { individualOfferForOffersListFactory } from 'screens/Offers/utils/individualOffersFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ActionsBar, { ActionBarProps } from '../ActionsBar'
 
-const renderActionsBar = (props: ActionBarProps) => {
-  const storeOverrides = {
-    offers: {
-      searchFilters: {
-        nameOrIsbn: 'keyword',
-        venueId: 'E3',
-        offererId: 'A4',
-      },
-    },
-  }
-
+const renderActionsBar = (props: ActionBarProps, searchParams = '') => {
   renderWithProviders(
     <>
       <ActionsBar {...props} />
       <Notification />
     </>,
-    { storeOverrides, initialRouterEntries: ['/offres'] }
+    { initialRouterEntries: ['/offres' + searchParams] }
   )
 }
 
@@ -50,7 +41,6 @@ describe('ActionsBar', () => {
   beforeEach(() => {
     props = {
       getUpdateOffersStatusMessage: mockGetUpdateOffersStatusMessage,
-      canDeleteOffers: mockCanDeleteOffers,
       refreshOffers: vi.fn(),
       selectedOfferIds: offerIds,
       clearSelectedOfferIds: vi.fn(),
@@ -58,6 +48,7 @@ describe('ActionsBar', () => {
       nbSelectedOffers: 2,
       areAllOffersSelected: false,
       audience: Audience.INDIVIDUAL,
+      currentPageOffersSubset: [],
     }
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
@@ -164,7 +155,19 @@ describe('ActionsBar', () => {
   it('should not delete offers when a non draft is selected upon deletion', async () => {
     mockCanDeleteOffers.mockReturnValueOnce(false)
 
-    renderActionsBar(props)
+    renderActionsBar({
+      ...props,
+      currentPageOffersSubset: [
+        individualOfferForOffersListFactory({
+          id: 1,
+          status: OfferStatus.DRAFT,
+        }),
+        individualOfferForOffersListFactory({
+          id: 2,
+          status: OfferStatus.ACTIVE,
+        }),
+      ],
+    })
 
     await userEvent.click(screen.getByText('Supprimer'))
 
@@ -216,7 +219,7 @@ describe('ActionsBar', () => {
   it('should activate all offers on click on "Publier" button when all offers are selected', async () => {
     props.areAllOffersSelected = true
 
-    renderActionsBar(props)
+    renderActionsBar(props, '?nom-ou-isbn=keyword&offererId=A4&venueId=E3')
     const activateButton = screen.getByText('Publier')
     const expectedBody = {
       isActive: true,
@@ -236,7 +239,7 @@ describe('ActionsBar', () => {
 
   it('should deactivate all offers on click on "Désactiver" button when all offers are selected', async () => {
     props.areAllOffersSelected = true
-    renderActionsBar(props)
+    renderActionsBar(props, '?nom-ou-isbn=keyword&offererId=A4&venueId=E3')
     const deactivateButton = screen.getByText('Désactiver')
     const expectedBody = {
       isActive: false,
