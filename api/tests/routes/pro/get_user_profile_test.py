@@ -43,6 +43,7 @@ class Returns200Test:
             "firstName": "Jean",
             "hasSeenProTutorials": True,
             "hasSeenProRgs": False,
+            "hasUserOfferer": False,
             "id": user.id,
             "idPieceNumber": None,
             "isAdmin": False,
