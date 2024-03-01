@@ -1007,6 +1007,7 @@ def test_public_api(client):
                 },
                 "OfferExtraData": {
                     "properties": {
+                        "allocineId": {"nullable": True, "title": "Allocineid", "type": "integer"},
                         "author": {"nullable": True, "title": "Author", "type": "string"},
                         "cast": {"items": {"type": "string"}, "nullable": True, "title": "Cast", "type": "array"},
                         "durationMinutes": {"nullable": True, "title": "Durationminutes", "type": "integer"},
