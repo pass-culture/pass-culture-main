@@ -393,6 +393,25 @@ class LogsTest:
             "isFromNoResult": None,
         }
 
+    def test_log_tracking_filter_spam(self, client, caplog):
+        test_client = client.with_adage_token(email="test@mail.com", uai="EAU123")
+
+        url = url_for("adage_iframe.log_tracking_filter")
+        data = {
+            "queryId": "1",
+            "resultNumber": 36,
+            "filterValues": {"key1": "value1", "key2": "value2"},
+            "iframeFrom": "for_my_institution",
+        }
+
+        with caplog.at_level(logging.INFO):
+            for _ in range(3):
+                response = test_client.post(url, json=data)
+                assert response.status_code == 204
+
+        tracking_records = [record for record in caplog.records if record.message == "TrackingFilter"]
+        assert len(tracking_records) == 1
+
     def test_log_closer_sastifaction_survey(self, client, caplog):
         # given
         adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="test@mail.com")
