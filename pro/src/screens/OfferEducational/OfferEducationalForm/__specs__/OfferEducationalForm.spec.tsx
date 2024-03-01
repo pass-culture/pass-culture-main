@@ -93,4 +93,51 @@ describe('OfferEducationalForm', () => {
       screen.queryByRole('heading', { name: 'Date et heure' })
     ).not.toBeInTheDocument()
   })
+
+  it('should show the custom form section if the FF is enabled', async () => {
+    renderOfferEducationalForm(
+      {
+        ...defaultProps,
+        isTemplate: true,
+      },
+      {
+        features: ['WIP_ENABLE_COLLECTIVE_CUSTOM_CONTACT'],
+      }
+    )
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(/Pour proposer des offres à destination/)
+      ).not.toBeInTheDocument()
+    })
+
+    expect(screen.getByRole('checkbox', { name: 'Par email' }))
+    expect(screen.getByRole('checkbox', { name: 'Par téléphone' }))
+    expect(screen.getByRole('checkbox', { name: 'Via un formulaire' }))
+  })
+
+  it('should have no custom contact checked initially', async () => {
+    renderOfferEducationalForm(
+      { ...defaultProps, isTemplate: true },
+      {
+        features: ['WIP_ENABLE_COLLECTIVE_CUSTOM_CONTACT'],
+      }
+    )
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(/Pour proposer des offres à destination/)
+      ).not.toBeInTheDocument()
+    })
+
+    expect(
+      screen.getByRole('checkbox', { name: 'Par email' })
+    ).not.toBeChecked()
+    expect(
+      screen.getByRole('checkbox', { name: 'Par téléphone' })
+    ).not.toBeChecked()
+    expect(
+      screen.getByRole('checkbox', { name: 'Via un formulaire' })
+    ).not.toBeChecked()
+  })
 })
