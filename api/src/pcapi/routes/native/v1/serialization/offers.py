@@ -145,6 +145,7 @@ class GtlLabels(BaseModel):
 
 
 class OfferExtraData(BaseModel):
+    allocineId: int | None
     author: str | None
     durationMinutes: int | None
     ean: str | None
