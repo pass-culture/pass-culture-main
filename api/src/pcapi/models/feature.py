@@ -43,6 +43,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_BEAMER = "Active Beamer, le système de notifs du portail pro"
     ENABLE_CDS_IMPLEMENTATION = "Permet la réservation de place de cinéma avec l'API CDS"
     ENABLE_CHARLIE_BOOKINGS_API = "Active la réservation via l'API Charlie"
+    ENABLE_CODIR_OFFERERS_REPORT = "Active le rapport sur les structures actives pour le CODIR (tourne la nuit)"
     ENABLE_CRON_TO_UPDATE_OFFERER_STATS = "Active la mise à jour des statistiques des offrers avec un cron"
     ENABLE_CULTURAL_SURVEY = "Activer l'affichage du questionnaire des pratiques initiales pour les bénéficiaires"
     ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18 = (
@@ -157,6 +158,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.DISABLE_ENTERPRISE_API,
     FeatureToggle.ENABLE_AUTO_VALIDATION_FOR_EXTERNAL_BOOKING,
     FeatureToggle.ENABLE_BEAMER,
+    FeatureToggle.ENABLE_CODIR_OFFERERS_REPORT,
     FeatureToggle.ENABLE_CHARLIE_BOOKINGS_API,
     FeatureToggle.ENABLE_CULTURAL_SURVEY,
     FeatureToggle.ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE,
