@@ -18,7 +18,7 @@ from sqlalchemy.dialects.postgresql import INTERVAL
 import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
-from pcapi.connectors.acceslibre import find_venue_at_accessibility_provider
+import pcapi.connectors.acceslibre as accessibility_provider
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.connectors.entreprise import models as sirene_models
 from pcapi.connectors.entreprise import sirene
@@ -2172,7 +2172,7 @@ def get_venue_opening_hours_by_weekday(venue: models.Venue, weekday: models.Week
 def set_accessibility_provider_id(venue: models.Venue) -> None:
     if not venue.accessibilityProvider:
         venue.accessibilityProvider = models.AccessibilityProvider(
-            externalAccessibilityId=find_venue_at_accessibility_provider(
+            externalAccessibilityId=accessibility_provider.find_venue_at_accessibility_provider(
                 name=venue.name,
                 public_name=venue.publicName,
                 siret=venue.siret,
@@ -2182,3 +2182,10 @@ def set_accessibility_provider_id(venue: models.Venue) -> None:
             )
         )
         db.session.add(venue.accessibilityProvider)
+
+
+def set_accessibility_last_update_at_provider(venue: models.Venue) -> None:
+    if venue.accessibilityProvider:
+        venue.accessibilityProvider.lastUpdateAtProvider = accessibility_provider.get_last_update_at_provider(
+            slug=venue.accessibilityProvider.externalAccessibilityId
+        )
