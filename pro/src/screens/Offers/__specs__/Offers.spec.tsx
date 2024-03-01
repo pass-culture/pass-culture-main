@@ -430,9 +430,6 @@ describe('screen Offers', () => {
             initialized: true,
             currentUser,
           },
-          offers: {
-            searchFilters: DEFAULT_SEARCH_FILTERS,
-          },
         }
         renderOffers(props, { storeOverrides })
 
@@ -441,68 +438,29 @@ describe('screen Offers', () => {
         expect(selectAllOffersCheckbox).toBeDisabled()
       })
 
-      it('should not disable select all checkbox when no venue filter is selected but one is currently applied', async () => {
+      it('should disable select all checkbox when venue filter is not set', async () => {
         const storeOverrides = {
           user: {
             initialized: true,
             currentUser,
-          },
-          offers: {
-            searchFilters: { ...DEFAULT_SEARCH_FILTERS, venueId: 'JI' },
-          },
-        }
-
-        renderOffers(
-          {
-            ...props,
-            initialSearchFilters: {
-              ...DEFAULT_SEARCH_FILTERS,
-              venueId: 'JI',
-            },
-          },
-          { storeOverrides }
-        )
-
-        await userEvent.selectOptions(
-          screen.getByDisplayValue('Ma venue'),
-          'all'
-        )
-
-        const selectAllOffersCheckbox =
-          screen.getByLabelText('Tout sélectionner')
-        expect(selectAllOffersCheckbox).not.toBeDisabled()
-      })
-
-      it('should disable select all checkbox when venue filter is selected but not applied', async () => {
-        const storeOverrides = {
-          user: {
-            initialized: true,
-            currentUser,
-          },
-          offers: {
-            searchFilters: DEFAULT_SEARCH_FILTERS,
           },
         }
         renderOffers(props, { storeOverrides })
 
-        await userEvent.selectOptions(
-          screen.getByDisplayValue('Tous les lieux'),
-          'JI'
-        )
+        await userEvent.selectOptions(screen.getByLabelText('Lieu'), 'all')
+
+        await userEvent.click(screen.getByText('Rechercher'))
 
         const selectAllOffersCheckbox =
           screen.getByLabelText('Tout sélectionner')
         expect(selectAllOffersCheckbox).toBeDisabled()
       })
 
-      it('should enable select all checkbox when venue filter is applied', () => {
+      it('should enable select all checkbox when venue filter is applied', async () => {
         const storeOverrides = {
           user: {
             initialized: true,
             currentUser,
-          },
-          offers: {
-            searchFilters: { ...DEFAULT_SEARCH_FILTERS, venueId: 'IJ' },
           },
         }
 
@@ -517,8 +475,12 @@ describe('screen Offers', () => {
           { storeOverrides }
         )
 
+        await userEvent.selectOptions(screen.getByLabelText('Lieu'), 'JI')
+
+        await userEvent.click(screen.getByText('Rechercher'))
+
         const selectAllOffersCheckbox =
-          screen.getByLabelText('Tout sélectionner')
+          await screen.findByLabelText('Tout sélectionner')
         expect(selectAllOffersCheckbox).not.toBeDisabled()
       })
 
@@ -527,9 +489,6 @@ describe('screen Offers', () => {
           user: {
             initialized: true,
             currentUser,
-          },
-          offers: {
-            searchFilters: { ...DEFAULT_SEARCH_FILTERS, offererId: 'A4' },
           },
         }
         renderOffers(
@@ -637,9 +596,6 @@ describe('screen Offers', () => {
       user: {
         initialized: true,
         currentUser,
-      },
-      offers: {
-        searchFilters: DEFAULT_SEARCH_FILTERS,
       },
     }
     renderWithProviders(<Offers {...props} />, { storeOverrides })

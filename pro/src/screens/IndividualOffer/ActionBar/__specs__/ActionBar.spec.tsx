@@ -14,18 +14,8 @@ const renderActionBar = ({
   props: ActionBarProps
   url?: string
 }) => {
-  const storeOverrides = {
-    offers: {
-      searchFilters: {
-        filter: 'my_filter',
-        other_filter: 'my_other_filter',
-      },
-      pageNumber: 3,
-    },
-  }
-
   return renderWithProviders(<ActionBar {...props} />, {
-    storeOverrides,
+    storeOverrides: {},
     initialRouterEntries: [url],
   })
 }
@@ -138,10 +128,7 @@ describe('IndividualOffer::ActionBar', () => {
       renderActionBar({ props, url: '/edition/url' })
 
       const buttonBack = screen.getByText('Retour à la liste des offres')
-      expect(buttonBack).toHaveAttribute(
-        'href',
-        '/offres?page=3&filter=my_filter&other_filter=my_other_filter'
-      )
+      expect(buttonBack).toHaveAttribute('href', '/offres')
     })
   })
 })

@@ -314,6 +314,7 @@ const Offers = ({
       )}
       {nbSelectedOffers > 0 && (
         <ActionsBar
+          urlSearchFilters={urlSearchFilters}
           areAllOffersSelected={areAllOffersSelected}
           clearSelectedOfferIds={clearSelectedOfferIds}
           nbSelectedOffers={nbSelectedOffers}

@@ -92,9 +92,6 @@ describe('route CollectiveOffers', () => {
         initialized: true,
         currentUser,
       },
-      offers: {
-        searchFilters: DEFAULT_SEARCH_FILTERS,
-      },
     }
     offersRecap = [collectiveOfferFactory()]
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
