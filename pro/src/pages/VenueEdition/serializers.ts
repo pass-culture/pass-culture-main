@@ -2,10 +2,6 @@ import { EditVenueBodyModel } from 'apiClient/v1'
 
 import { VenueEditionFormValues } from './types'
 
-export interface EditVirtualVenueBodyModel {
-  reimbursementPointId?: number | null
-}
-
 export const serializeEditVenueBodyModel = (
   formValues: VenueEditionFormValues,
   hideSiret: boolean

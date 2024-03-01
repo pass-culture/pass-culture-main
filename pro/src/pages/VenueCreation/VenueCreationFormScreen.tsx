@@ -91,7 +91,7 @@ export const VenueCreationFormScreen = ({
   }
 
   const generateSiretOrCommentValidationSchema: any = useMemo(
-    () => generateSiretValidationSchema(isSiretValued, offerer.siren),
+    () => generateSiretValidationSchema(false, isSiretValued, offerer.siren),
     [offerer.siren, isSiretValued]
   )
 
