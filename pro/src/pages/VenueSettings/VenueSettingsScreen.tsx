@@ -25,7 +25,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { serializeEditVenueBodyModel } from './serializers'
 import { VenueSettingsFormValues } from './types'
-import { validationSchema } from './validationSchema'
+import { getValidationSchema } from './validationSchema'
 import { VenueSettingsForm } from './VenueSettingsForm'
 import styles from './VenueSettingsScreen.module.scss'
 
@@ -88,9 +88,9 @@ export const VenueSettingsFormScreen = ({
     return true
   }
 
-  const onSubmit = async (value: VenueSettingsFormValues) => {
+  const onSubmit = async (values: VenueSettingsFormValues) => {
     if (
-      value.isWithdrawalAppliedOnAllOffers &&
+      values.isWithdrawalAppliedOnAllOffers &&
       hasBookingQuantity &&
       !handleWithdrawalDialog()
     ) {
@@ -99,15 +99,11 @@ export const VenueSettingsFormScreen = ({
 
     try {
       await api.editVenue(
-        /* istanbul ignore next: there will always be a venue id on update screen */
-        venue?.id || 0,
+        venue.id,
         serializeEditVenueBodyModel(
-          value,
-          {
-            // siret is not filled in initial values it could be empty
-            // for venues without siret
-            hideSiret: value.siret.length === 0,
-          },
+          values,
+          !venue.siret,
+          venue.isVirtual,
           shouldSendMail
         )
       )
@@ -165,7 +161,7 @@ export const VenueSettingsFormScreen = ({
     [offerer.siren, isSiretValued]
   )
 
-  const formValidationSchema = validationSchema.concat(
+  const formValidationSchema = getValidationSchema(venue.isVirtual).concat(
     generateSiretOrCommentValidationSchema
   )
 
