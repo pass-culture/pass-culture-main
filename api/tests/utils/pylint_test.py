@@ -33,3 +33,10 @@ class DatetimeNowCheckerTest(CheckerTestCaseBase):
     message_id = pcapi_pylint.MSG_USE_OF_DATETIME_NOW
     test_filename = "pylint_datetime.py"
     expected_error_lines = {11, 14, 15, 16, 17, 23, 26, 27, 28, 29}
+
+
+class RequestsImportCheckerTest(CheckerTestCaseBase):
+    CHECKER_CLASS = pcapi_pylint.RequestsImportChecker
+    message_id = pcapi_pylint.MSG_REQUESTS_IMPORT
+    test_filename = "pylint_requests.py"
+    expected_error_lines = {7, 8, 9, 10}
