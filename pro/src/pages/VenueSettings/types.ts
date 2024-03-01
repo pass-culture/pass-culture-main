@@ -1,36 +1,20 @@
-import { BannerMetaModel } from 'apiClient/v1'
-import { AccessibiltyFormValues } from 'core/shared'
-
 export interface VenueSettingsFormValues {
-  reimbursementPointId: number | string | null
-  accessibility: AccessibiltyFormValues
   address: string
   addressAutocomplete: string
   banId: string
-  bannerMeta?: BannerMetaModel | null
-  bannerUrl: string | undefined
+  bookingEmail: string
   city: string
   comment: string
-  description: string
-  departmentCode: string
-  email: string | null
-  id: number | undefined
-  isAccessibilityAppliedOnAllOffers: boolean
-  isPermanent: boolean
-  isVenueVirtual: boolean
+  isWithdrawalAppliedOnAllOffers: boolean
   latitude: number
   longitude: number
-  bookingEmail: string
   name: string
-  phoneNumber: string | null
-  venueSiret: number | null
   postalCode: string
   publicName: string
-  siret: string
+  reimbursementPointId: number | string | null
   'search-addressAutocomplete': string
-  venueLabel: string | null
+  siret: string
+  venueSiret: number | null
   venueType: string
-  webSite: string | null
   withdrawalDetails: string
-  isWithdrawalAppliedOnAllOffers: boolean
 }

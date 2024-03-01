@@ -22,6 +22,7 @@ const BankAccountInfos = ({ venueBankAccount }: BankAccountInfosProps) => {
           isOptional
         />
       )}
+
       <Callout
         variant={CalloutVariant.INFO}
         links={[
