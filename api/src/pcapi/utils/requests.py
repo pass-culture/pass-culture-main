@@ -1,3 +1,17 @@
+"""This module is a drop-in replacement for the `requests` package.
+
+Wherever you import the `requests` package, you should instead import
+this `pcapi.utils.requests` package. It logs HTTP requests and sets a
+default timeout if one is not given.
+
+Usage:
+
+    # import requests  # don't do that, just import this package instead
+    from pcapi.utils import requests
+
+    response = requests.get("https://example.com")
+"""
+
 import logging
 import re
 from typing import Any
@@ -34,9 +48,9 @@ class ExternalAPIException(Exception):
         super().__init__(*args)
 
 
-def _redact_url(url: str | bytes) -> str:
-    if isinstance(url, bytes):
-        return str(url)
+def _redact_url(url: str | None) -> str | None:
+    if not url:
+        return url
     # Allociné and Cine Digital Service (CDS) want authentication token to appear in GET
     # requests. We don't want to log them.
     # For Allociné, the query param name is 'token'. For CDS, the name is 'api_token'
@@ -44,21 +58,21 @@ def _redact_url(url: str | bytes) -> str:
 
 
 def _wrapper(
-    request_func: Callable,
-    method: str | bytes,
-    url: str | bytes,
+    request_send_func: Callable,
+    request: requests.PreparedRequest,
     **kwargs: Any,
 ) -> Response:
-    timeout = kwargs.pop("timeout", REQUEST_TIMEOUT_IN_SECOND)
+    if not kwargs.get("timeout"):
+        kwargs["timeout"] = REQUEST_TIMEOUT_IN_SECOND
     try:
-        response = request_func(method=method, url=url, timeout=timeout, **kwargs)
+        response = request_send_func(request, **kwargs)
     except Exception as exc:
         logger.warning(
             "Call to external service failed with %s",
             exc,
             extra={
-                "method": method,
-                "url": _redact_url(url),
+                "method": request.method,
+                "url": _redact_url(request.url),
             },
         )
         raise exc
@@ -108,8 +122,8 @@ class Session(requests.Session):
         self.mount("https://", adapter)
         self.mount("http://", adapter)
 
-    def request(self, method: str | bytes, url: str | bytes, *args: Any, **kwargs: Any) -> Response:
-        return _wrapper(super().request, method, url, *args, **kwargs)
+    def send(self, request: requests.PreparedRequest, **kwargs: Any) -> requests.Response:
+        return _wrapper(super().send, request, **kwargs)
 
 
 class CustomZeepTransport(zeep.Transport):
