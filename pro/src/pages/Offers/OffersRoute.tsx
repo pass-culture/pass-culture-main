@@ -1,5 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -17,7 +16,6 @@ import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import { formatAndOrderVenues } from 'repository/venuesService'
 import OffersScreen from 'screens/Offers'
-import { savePageNumber, saveSearchFilters } from 'store/offers/reducer'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { sortByLabel } from 'utils/strings'
 
@@ -29,7 +27,6 @@ export const OffersRoute = (): JSX.Element => {
   const notify = useNotification()
   const navigate = useNavigate()
   const { currentUser } = useCurrentUser()
-  const dispatch = useDispatch()
 
   const [offerer, setOfferer] = useState<Offerer | null>(null)
   const [offers, setOffers] = useState<ListOffersOfferResponseModel[]>([])
@@ -117,33 +114,6 @@ export const OffersRoute = (): JSX.Element => {
     }
     setInitialSearchFilters(filters)
   }, [setInitialSearchFilters, urlSearchFilters, currentUser.isAdmin])
-
-  useEffect(() => {
-    dispatch(
-      saveSearchFilters({
-        nameOrIsbn:
-          urlSearchFilters.nameOrIsbn || DEFAULT_SEARCH_FILTERS.nameOrIsbn,
-        offererId:
-          urlSearchFilters.offererId || DEFAULT_SEARCH_FILTERS.offererId,
-        venueId: urlSearchFilters.venueId || DEFAULT_SEARCH_FILTERS.venueId,
-        categoryId:
-          urlSearchFilters.categoryId || DEFAULT_SEARCH_FILTERS.categoryId,
-        status: urlSearchFilters.status
-          ? urlSearchFilters.status
-          : DEFAULT_SEARCH_FILTERS.status,
-        creationMode: urlSearchFilters.creationMode
-          ? urlSearchFilters.creationMode
-          : DEFAULT_SEARCH_FILTERS.creationMode,
-        periodBeginningDate:
-          urlSearchFilters.periodBeginningDate ||
-          DEFAULT_SEARCH_FILTERS.periodBeginningDate,
-        periodEndingDate:
-          urlSearchFilters.periodEndingDate ||
-          DEFAULT_SEARCH_FILTERS.periodEndingDate,
-      })
-    )
-    dispatch(savePageNumber(currentPageNumber))
-  }, [dispatch, currentPageNumber, urlSearchFilters])
 
   useEffect(() => {
     const loadAllVenuesByProUser = async () => {

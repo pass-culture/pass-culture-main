@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react'
-import { useSelector } from 'react-redux'
 
 import {
   CollectiveOfferResponseModel,
@@ -12,7 +11,6 @@ import { hasSearchFilters, isOfferDisabled } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
 import NoResults from 'screens/Offers/NoResults'
-import { searchFiltersSelector } from 'store/offers/selectors'
 import { Banner } from 'ui-kit'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { Pagination } from 'ui-kit/Pagination'
@@ -72,15 +70,12 @@ const Offers = ({
   refreshOffers,
   isAtLeastOneOfferChecked,
 }: OffersProps) => {
-  const isAdminForbidden = useCallback(
-    (searchFilters: Partial<SearchFiltersParams>) => {
-      return (
-        currentUser.isAdmin &&
-        !hasSearchFilters(searchFilters, ['venueId', 'offererId'])
-      )
-    },
-    [currentUser.isAdmin]
-  )
+  const isAdminForbidden = (searchFilters: Partial<SearchFiltersParams>) => {
+    return (
+      currentUser.isAdmin &&
+      !hasSearchFilters(searchFilters, ['venueId', 'offererId'])
+    )
+  }
 
   const updateStatusFilter = (
     selectedStatus: SearchFiltersParams['status']
@@ -132,8 +127,6 @@ const Offers = ({
     toggleSelectAllCheckboxes()
   }
 
-  const savedSearchFilters = useSelector(searchFiltersSelector)
-
   return (
     <div aria-busy={isLoading} aria-live="polite" className="section">
       {isLoading ? (
@@ -161,7 +154,7 @@ const Offers = ({
                   partialCheck={
                     !areAllOffersSelected && isAtLeastOneOfferChecked
                   }
-                  disabled={isAdminForbidden(savedSearchFilters) || !hasOffers}
+                  disabled={isAdminForbidden(searchFilters)}
                   onChange={selectAllOffers}
                   label={
                     areAllOffersSelected

@@ -1,5 +1,4 @@
 import React, { useCallback, useState } from 'react'
-import { useSelector } from 'react-redux'
 
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import { SearchFiltersParams } from 'core/Offers/types'
@@ -9,7 +8,6 @@ import fullHideIcon from 'icons/full-hide.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
-import { searchFiltersSelector } from 'store/offers/selectors'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -23,6 +21,7 @@ import DeactivationConfirmDialog from './ConfirmDialog/DeactivationConfirmDialog
 import DeleteConfirmDialog from './ConfirmDialog/DeleteConfirmDialog'
 
 export interface ActionBarProps {
+  urlSearchFilters: Partial<SearchFiltersParams>
   areAllOffersSelected: boolean
   clearSelectedOfferIds: () => void
   nbSelectedOffers: number
@@ -71,6 +70,7 @@ const getUpdateActiveStatusAdapter = (
 }
 
 const ActionsBar = ({
+  urlSearchFilters,
   refreshOffers,
   selectedOfferIds,
   clearSelectedOfferIds,
@@ -81,7 +81,6 @@ const ActionsBar = ({
   getUpdateOffersStatusMessage,
   canDeleteOffers,
 }: ActionBarProps): JSX.Element => {
-  const searchFilters = useSelector(searchFiltersSelector)
   const notify = useNotification()
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
@@ -94,7 +93,7 @@ const ActionsBar = ({
   const handleUpdateOffersStatus = async (isActivating: boolean) => {
     const adapter = getUpdateActiveStatusAdapter(
       areAllOffersSelected,
-      searchFilters,
+      urlSearchFilters,
       isActivating,
       nbSelectedOffers,
       selectedOfferIds,

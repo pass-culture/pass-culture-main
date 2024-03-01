@@ -105,9 +105,6 @@ describe('route Offers', () => {
         initialized: true,
         currentUser,
       },
-      offers: {
-        searchFilters: DEFAULT_SEARCH_FILTERS,
-      },
     }
     offersRecap = [
       listOffersOfferResponseModelFactory({ customVenue: proVenues[0] }),
@@ -224,9 +221,6 @@ describe('route Offers', () => {
             user: {
               initialized: true,
               currentUser: { ...currentUser, isAdmin: true },
-            },
-            offers: {
-              searchFilters: DEFAULT_SEARCH_FILTERS,
             },
           }
         })
