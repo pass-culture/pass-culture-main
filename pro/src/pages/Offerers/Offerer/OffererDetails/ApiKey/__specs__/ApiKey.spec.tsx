@@ -52,9 +52,7 @@ describe('ApiKey', () => {
       reloadOfferer: defaultProps.reloadOfferer,
     })
 
-    expect(
-      screen.getByText('Générer une clé API', { selector: 'button' })
-    ).toBeDisabled()
+    expect(screen.getByText('Générer une clé API')).toBeDisabled()
   })
 
   it('should generate a new key', async () => {
@@ -63,9 +61,7 @@ describe('ApiKey', () => {
       apiKey: 'new-key',
     })
 
-    await userEvent.click(
-      screen.getByText('Générer une clé API', { selector: 'button' })
-    )
+    await userEvent.click(screen.getByText('Générer une clé API'))
 
     expect(screen.getByText('new-key')).toBeInTheDocument()
   })
@@ -76,12 +72,10 @@ describe('ApiKey', () => {
     vi.spyOn(api, 'generateApiKeyRoute').mockResolvedValue({
       apiKey: 'new-key',
     })
-    await userEvent.click(
-      screen.getByText('Générer une clé API', { selector: 'button' })
-    )
-    screen.getByText('Copier', { selector: 'button' })
+    await userEvent.click(screen.getByText('Générer une clé API'))
+    screen.getByText('Copier')
 
-    await userEvent.click(screen.getByText('Copier', { selector: 'button' }))
+    await userEvent.click(screen.getByText('Copier'))
 
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith('new-key')
   })
@@ -95,9 +89,7 @@ describe('ApiKey', () => {
     )
     vi.spyOn(api, 'generateApiKeyRoute').mockRejectedValue(null)
 
-    await userEvent.click(
-      screen.getByText('Générer une clé API', { selector: 'button' })
-    )
+    await userEvent.click(screen.getByText('Générer une clé API'))
 
     expect(showNotificationSpy).toHaveBeenCalledWith({
       type: 'error',
@@ -111,7 +103,7 @@ describe('ApiKey', () => {
     const deleteSpy = vi.spyOn(api, 'deleteApiKey').mockResolvedValue()
     await userEvent.click(screen.getByText('supprimer'))
 
-    await userEvent.click(screen.getByText('Annuler', { selector: 'button' }))
+    await userEvent.click(screen.getByText('Annuler'))
 
     expect(deleteSpy).not.toHaveBeenCalled()
     expect(defaultProps.reloadOfferer).not.toHaveBeenCalledWith()
@@ -122,11 +114,31 @@ describe('ApiKey', () => {
     const deleteSpy = vi.spyOn(api, 'deleteApiKey').mockResolvedValue()
     await userEvent.click(screen.getByText('supprimer'))
 
-    await userEvent.click(
-      screen.getByText('Confirmer la suppression', { selector: 'button' })
-    )
+    await userEvent.click(screen.getByText('Confirmer la suppression'))
 
     expect(deleteSpy).toHaveBeenCalledWith('key-prefix1')
     expect(defaultProps.reloadOfferer).toHaveBeenCalledWith(offererId)
+  })
+
+  it('should not replace savedApiKeys by new one when creating and directly deleting previous one', async () => {
+    renderApiKey({
+      maxAllowedApiKeys: 5,
+      savedApiKeys: ['old-key'],
+      reloadOfferer: defaultProps.reloadOfferer,
+    })
+    vi.spyOn(api, 'generateApiKeyRoute').mockResolvedValueOnce({
+      apiKey: 'new-key',
+    })
+    vi.spyOn(api, 'deleteApiKey').mockResolvedValueOnce()
+
+    expect(screen.getByText('old-key********')).toBeInTheDocument()
+
+    await userEvent.click(screen.getByText('Générer une clé API'))
+
+    await userEvent.click(screen.getByText('supprimer'))
+    await userEvent.click(screen.getByText('Confirmer la suppression'))
+
+    expect(screen.queryByText('new-key********')).not.toBeInTheDocument()
+    expect(screen.getByText('new-key')).toBeInTheDocument()
   })
 })
