@@ -1,38 +1,91 @@
-from unittest.mock import Mock
+import logging
 
 import pytest
-from requests import RequestException
 
-from pcapi.utils.requests import _wrapper
+from pcapi.utils import requests
 
 
-class RequestWrapperTest:
-    def test_call_given_request_function_with_params(self):
-        # given
-        mocked_request_function = Mock()
-        mocked_request_function.return_value.url = "https://example.net"
+def test_wrapper_logs_info_on_success(requests_mock, caplog):
+    requests_mock.get("https://example.com", text="response")
 
-        # when
-        _wrapper(mocked_request_function, "GET", "https://example.net")
+    with caplog.at_level(logging.INFO):
+        response = requests.get("https://example.com")
+        assert response.text == "response"
 
-        # then
-        mocked_request_function.assert_called_once_with(method="GET", url="https://example.net", timeout=10)
+    log = caplog.records[0]
+    assert log.message == "External service called"
+    assert log.url == "https://example.com/"
+    assert log.statusCode == 200
+    assert log.duration is not None
 
-    def test_call_given_request_function_with_custom_timeout_params(self):
-        # given
-        mocked_request_function = Mock()
-        mocked_request_function.return_value.url = "https://example.net"
 
-        # when
-        _wrapper(mocked_request_function, "GET", "https://example.net", **dict(timeout=40))
+def test_wrapper_logs_warning_on_failure(requests_mock, caplog):
+    exception = requests.exceptions.ConnectTimeout
+    requests_mock.get("https://example.com", exc=exception)
 
-        # then
-        mocked_request_function.assert_called_once_with(method="GET", url="https://example.net", timeout=40)
+    with pytest.raises(exception):
+        with caplog.at_level(logging.WARNING):
+            requests.get("https://example.com")
 
-    def test_should_propagate_any_exception(self):
-        # given
-        mocked_request_function = Mock(side_effect=RequestException())
+    log = caplog.records[0]
+    assert log.message == "Call to external service failed with "
+    assert log.url == "https://example.com"
+    assert log.method == "GET"
 
-        # when
-        with pytest.raises(RequestException):
-            _wrapper(mocked_request_function, "GET", "https://example.net")
+
+def test_wrapper_redacts_url(requests_mock, caplog):
+    requests_mock.get("https://example.com/success")
+    exception = requests.exceptions.ConnectTimeout
+    requests_mock.get("https://example.com/failure", exc=exception)
+
+    with caplog.at_level(logging.INFO):
+        requests.get("https://example.com/success?token=secret")
+    log = caplog.records[0]
+    assert log.url == "https://example.com/success?token=[REDACTED]"
+
+    with pytest.raises(exception):
+        with caplog.at_level(logging.WARNING):
+            requests.get("https://example.com/failure?token=secret")
+    log = caplog.records[-1]
+    assert log.url == "https://example.com/failure?token=[REDACTED]"
+
+
+def test_wrapper_sets_default_timeout(requests_mock):
+    requests_mock.get("https://example.com")
+
+    requests.get("https://example.com")
+
+    assert requests_mock.last_request.timeout == 10
+
+
+def test_wrapper_keeps_timeout_if_given(requests_mock):
+    requests_mock.get("https://example.com")
+
+    requests.get("https://example.com", timeout=2)
+
+    assert requests_mock.last_request.timeout == 2
+
+
+@pytest.mark.parametrize("verb", ["get", "post", "put", "delete"])
+def test_wrapper_is_used_when_calling_verbs(requests_mock, caplog, verb):
+    getattr(requests_mock, verb)("https://example.com", text="response")
+
+    with caplog.at_level(logging.INFO):
+        response = getattr(requests, verb)("https://example.com")
+        assert response.text == "response"
+
+    log = caplog.records[0]
+    assert log.message == "External service called"
+
+
+@pytest.mark.parametrize("verb", ["get", "post", "put", "delete"])
+def test_wrapper_is_used_when_using_session(requests_mock, caplog, verb):
+    getattr(requests_mock, verb)("https://example.com", text="response")
+
+    session = requests.Session()
+    with caplog.at_level(logging.INFO):
+        response = getattr(session, verb)("https://example.com")
+        assert response.text == "response"
+
+    log = caplog.records[0]
+    assert log.message == "External service called"
