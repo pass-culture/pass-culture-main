@@ -1,5 +1,3 @@
-import { useSelector } from 'react-redux'
-
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
@@ -9,7 +7,6 @@ import useNotification from 'hooks/useNotification'
 import fullLeftIcon from 'icons/full-left.svg'
 import fullRightIcon from 'icons/full-right.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
-import { RootState } from 'store/rootReducer'
 import { Button, ButtonLink, SubmitButton } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -31,17 +28,8 @@ const ActionBar = ({
   step,
   dirtyForm,
 }: ActionBarProps) => {
-  const offersSearchFilters = useSelector(
-    (state: RootState) => state.offers.searchFilters
-  )
-  const offersPageNumber = useSelector(
-    (state: RootState) => state.offers.pageNumber
-  )
   const mode = useOfferWizardMode()
-  const backOfferUrl = computeOffersUrl({
-    ...offersSearchFilters,
-    page: offersPageNumber,
-  })
+  const backOfferUrl = computeOffersUrl({})
   const notify = useNotification()
 
   const Left = (): JSX.Element => {

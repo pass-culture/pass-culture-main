@@ -1,7 +1,6 @@
 import { Store } from '@reduxjs/toolkit'
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
 import { api } from 'apiClient/api'
 import { CollectiveOfferResponseModel, OfferStatus } from 'apiClient/v1'
@@ -83,9 +82,6 @@ describe('route CollectiveOffers', () => {
         initialized: true,
         currentUser,
       },
-      offers: {
-        searchFilters: DEFAULT_SEARCH_FILTERS,
-      },
     }
     offersRecap = [collectiveOfferFactory()]
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
@@ -159,9 +155,6 @@ describe('route CollectiveOffers', () => {
             user: {
               initialized: true,
               currentUser: { ...currentUser, isAdmin: true },
-            },
-            offers: {
-              searchFilters: DEFAULT_SEARCH_FILTERS,
             },
           }
         })

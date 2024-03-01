@@ -103,9 +103,6 @@ describe('route Offers', () => {
         initialized: true,
         currentUser,
       },
-      offers: {
-        searchFilters: DEFAULT_SEARCH_FILTERS,
-      },
     }
     offersRecap = [listOffersOfferFactory({ venue: proVenues[0] })]
     vi.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
@@ -220,9 +217,6 @@ describe('route Offers', () => {
             user: {
               initialized: true,
               currentUser: { ...currentUser, isAdmin: true },
-            },
-            offers: {
-              searchFilters: DEFAULT_SEARCH_FILTERS,
             },
           }
         })

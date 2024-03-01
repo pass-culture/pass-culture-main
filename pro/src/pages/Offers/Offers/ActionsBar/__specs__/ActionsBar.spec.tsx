@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
 import { api } from 'apiClient/api'
 import Notification from 'components/Notification/Notification'
@@ -12,22 +11,12 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import ActionsBar, { ActionBarProps } from '../ActionsBar'
 
 const renderActionsBar = (props: ActionBarProps) => {
-  const storeOverrides = {
-    offers: {
-      searchFilters: {
-        nameOrIsbn: 'keyword',
-        venueId: 'E3',
-        offererId: 'A4',
-      },
-    },
-  }
-
   renderWithProviders(
     <>
       <ActionsBar {...props} />
       <Notification />
     </>,
-    { storeOverrides, initialRouterEntries: ['/offres'] }
+    { storeOverrides: {}, initialRouterEntries: ['/offres'] }
   )
 }
 
@@ -58,6 +47,7 @@ describe('ActionsBar', () => {
       nbSelectedOffers: 2,
       areAllOffersSelected: false,
       audience: Audience.INDIVIDUAL,
+      urlSearchFilters: {},
     }
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
@@ -215,9 +205,13 @@ describe('ActionsBar', () => {
 
   it('should activate all offers on click on "Publier" button when all offers are selected', async () => {
     props.areAllOffersSelected = true
-
+    props.urlSearchFilters = {
+      nameOrIsbn: 'keyword',
+      venueId: 'E3',
+      offererId: 'A4',
+    }
     renderActionsBar(props)
-    const activateButton = screen.getByText('Publier')
+
     const expectedBody = {
       isActive: true,
       nameOrIsbn: 'keyword',
@@ -225,6 +219,7 @@ describe('ActionsBar', () => {
       venueId: 'E3',
     }
 
+    const activateButton = screen.getByText('Publier')
     await userEvent.click(activateButton)
 
     expect(api.patchAllOffersActiveStatus).toHaveBeenLastCalledWith(
@@ -236,8 +231,12 @@ describe('ActionsBar', () => {
 
   it('should deactivate all offers on click on "Désactiver" button when all offers are selected', async () => {
     props.areAllOffersSelected = true
+    props.urlSearchFilters = {
+      nameOrIsbn: 'keyword',
+      venueId: 'E3',
+      offererId: 'A4',
+    }
     renderActionsBar(props)
-    const deactivateButton = screen.getByText('Désactiver')
     const expectedBody = {
       isActive: false,
       nameOrIsbn: 'keyword',
@@ -245,6 +244,7 @@ describe('ActionsBar', () => {
       venueId: 'E3',
     }
 
+    const deactivateButton = screen.getByText('Désactiver')
     await userEvent.click(deactivateButton)
     const confirmDeactivateButton = screen.getAllByText('Désactiver')[1]
     await userEvent.click(confirmDeactivateButton)
