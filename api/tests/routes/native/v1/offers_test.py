@@ -35,6 +35,7 @@ class OffersTest:
     @freeze_time("2020-01-01")
     def test_get_event_offer(self, client):
         extra_data = {
+            "allocineId": 12345,
             "author": "mandibule",
             "ean": "3838",
             "musicSubType": "502",
@@ -189,6 +190,7 @@ class OffersTest:
         assert response.json["externalTicketOfficeUrl"] == "https://url.com"
         assert response.json["expenseDomains"] == ["all"]
         assert response.json["extraData"] == {
+            "allocineId": 12345,
             "author": "mandibule",
             "ean": "3838",
             "durationMinutes": 33,
