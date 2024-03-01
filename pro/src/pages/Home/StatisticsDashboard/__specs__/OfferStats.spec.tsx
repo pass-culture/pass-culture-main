@@ -89,7 +89,7 @@ describe('OfferStats', () => {
 
   it('should render when the count is too high', async () => {
     vi.spyOn(api, 'getOffererV2Stats').mockResolvedValueOnce({
-      publishedPublicOffers: 10000,
+      publishedPublicOffers: 500,
       publishedEducationalOffers: 0,
       pendingPublicOffers: 0,
       pendingEducationalOffers: 0,
