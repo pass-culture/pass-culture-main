@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -13,10 +14,12 @@ import {
 import { Events } from 'core/FirebaseEvents/constants'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import useAnalytics from 'hooks/useAnalytics'
+import useCurrentUser from 'hooks/useCurrentUser'
 import useInitReCaptcha from 'hooks/useInitReCaptcha'
 import useNotification from 'hooks/useNotification'
 import fullEditIcon from 'icons/full-edit.svg'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
+import { updateUser } from 'store/user/reducer'
 import { Banner, ButtonLink } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -37,6 +40,9 @@ const Validation = (): JSX.Element => {
     data: venueTypes,
   } = useGetVenueTypes()
   useInitReCaptcha()
+
+  const dispatch = useDispatch()
+  const { currentUser } = useCurrentUser()
 
   const targetCustomerLabel = {
     [Target.INDIVIDUAL]: 'Au grand public',
@@ -94,6 +100,7 @@ const Validation = (): JSX.Element => {
 
     try {
       await api.saveNewOnboardingData(data)
+      dispatch(updateUser({ ...currentUser, hasUserOfferer: true }))
       notify.success('Votre structure a bien été créée')
       navigate('/accueil')
     } catch (error) {
