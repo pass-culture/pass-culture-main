@@ -1,11 +1,14 @@
 import { useState } from 'react'
 
-import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
+import {
+  BannerMetaModel,
+  GetOffererResponseModel,
+  GetVenueResponseModel,
+} from 'apiClient/v1'
 import { ImageUploader, UploadImageValues } from 'components/ImageUploader'
 import { ButtonImageEdit } from 'components/ImageUploader/ButtonImageEdit'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
-import { buildInitialValues } from 'pages/VenueCreation/ImageUploaderVenue/ImageUploaderVenue'
 import { Events } from 'core/FirebaseEvents/constants'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -22,6 +25,28 @@ export interface VenueEditionHeaderProps {
   venue: GetVenueResponseModel
   offerer: GetOffererResponseModel
   venueTypes: SelectOption[]
+}
+
+export const buildInitialValues = (
+  bannerUrl?: string | null,
+  bannerMeta?: BannerMetaModel | null
+): UploadImageValues => {
+  let cropParams
+  if (bannerMeta !== undefined) {
+    cropParams = {
+      xCropPercent: bannerMeta?.crop_params?.x_crop_percent || 0,
+      yCropPercent: bannerMeta?.crop_params?.y_crop_percent || 0,
+      heightCropPercent: bannerMeta?.crop_params?.height_crop_percent || 0,
+      widthCropPercent: bannerMeta?.crop_params?.width_crop_percent || 0,
+    }
+  }
+
+  return {
+    imageUrl: bannerUrl || undefined,
+    originalImageUrl: bannerMeta?.original_image_url || undefined,
+    cropParams,
+    credit: bannerMeta?.image_credit || '',
+  }
 }
 
 export const VenueEditionHeader = ({

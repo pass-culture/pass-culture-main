@@ -15,14 +15,15 @@ export const isSiretStartingWithSiren = (
   unhumanizeSiret(siret).startsWith(siren)
 
 export const generateSiretValidationSchema = (
+  isVenueVirtual: boolean,
   isSiretValued: boolean,
   siren?: string | null
 ) => {
   const siretValidationSchema = {
-    siret: yup.string().when('isVenueVirtual', {
-      is: false,
-      then: (schema) =>
-        schema
+    siret: isVenueVirtual
+      ? yup.string()
+      : yup
+          .string()
           .required('Veuillez renseigner un SIRET')
           .test(
             'len',
@@ -42,14 +43,12 @@ export const generateSiretValidationSchema = (
               return !response
             }
           ),
-    }),
   }
 
   const commentValidationSchema = {
-    comment: yup.string().when('isVenueVirtual', {
-      is: false,
-      then: (schema) => schema.required('Veuillez renseigner un commentaire'),
-    }),
+    comment: isVenueVirtual
+      ? yup.string()
+      : yup.string().required('Veuillez renseigner un commentaire'),
   }
 
   /* istanbul ignore next */

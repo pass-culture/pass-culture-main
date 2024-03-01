@@ -1,5 +1,5 @@
 import { FormikProvider, useFormik } from 'formik'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -156,13 +156,8 @@ export const VenueSettingsFormScreen = ({
     }
   }
 
-  const generateSiretOrCommentValidationSchema: any = useMemo(
-    () => generateSiretValidationSchema(isSiretValued, offerer.siren),
-    [offerer.siren, isSiretValued]
-  )
-
   const formValidationSchema = getValidationSchema(venue.isVirtual).concat(
-    generateSiretOrCommentValidationSchema
+    generateSiretValidationSchema(venue.isVirtual, isSiretValued, offerer.siren)
   )
 
   const formik = useFormik({

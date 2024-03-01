@@ -1,10 +1,9 @@
 import { FormikProvider, useFormik } from 'formik'
-import { useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
-import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
+import { GetVenueResponseModel } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
 import { Events } from 'core/FirebaseEvents/constants'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
@@ -13,7 +12,6 @@ import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import { PartnerPageIndividualSection } from 'pages/Home/Offerers/PartnerPageIndividualSection'
-import { generateSiretValidationSchema } from 'pages/VenueCreation/SiretOrCommentFields/validationSchema'
 
 import { serializeEditVenueBodyModel } from './serializers'
 import { VenueEditionFormValues } from './types'
@@ -23,14 +21,12 @@ import styles from './VenueEditionFormScreen.module.scss'
 
 interface VenueEditionProps {
   initialValues: VenueEditionFormValues
-  offerer: GetOffererResponseModel
   venueLabels: SelectOption[]
   venue: GetVenueResponseModel
 }
 
 export const VenueEditionFormScreen = ({
   initialValues,
-  offerer,
   venueLabels,
   venue,
 }: VenueEditionProps): JSX.Element => {
@@ -93,20 +89,10 @@ export const VenueEditionFormScreen = ({
     }
   }
 
-  const isSiretValued = Boolean(venue.siret)
-  const generateSiretOrCommentValidationSchema: any = useMemo(
-    () => generateSiretValidationSchema(isSiretValued, offerer.siren),
-    [offerer.siren, isSiretValued]
-  )
-
-  const formValidationSchema = validationSchema.concat(
-    generateSiretOrCommentValidationSchema
-  )
-
   const formik = useFormik({
     initialValues,
     onSubmit: onSubmit,
-    validationSchema: formValidationSchema,
+    validationSchema,
   })
 
   return (

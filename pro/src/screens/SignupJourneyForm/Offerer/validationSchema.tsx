@@ -1,7 +1,7 @@
 import * as yup from 'yup'
 
-import { valideSiretLength } from 'pages/VenueCreation/SiretOrCommentFields/validationSchema'
 import siretApiValidate from 'core/Venue/siretApiValidate'
+import { valideSiretLength } from 'pages/VenueCreation/SiretOrCommentFields/validationSchema'
 
 export const validationSchema = (
   displayInvisibleSirenBanner: (showBanner: boolean) => void
