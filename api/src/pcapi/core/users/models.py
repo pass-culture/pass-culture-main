@@ -519,6 +519,10 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
             and self.wallet_balance > 0
         )
 
+    @property
+    def has_user_offerer(self) -> bool:
+        return bool(len(self.UserOfferers) > 0)
+
     @hybrid_property
     def phoneNumber(self) -> str | None:
         return self._phoneNumber

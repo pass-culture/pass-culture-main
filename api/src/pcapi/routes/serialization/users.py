@@ -145,6 +145,7 @@ class SharedLoginUserResponseModel(BaseModel):
     # FIXME (mageoffray, 2022-04-04): Optional can be removed after
     # post-deploy migrations have been done
     hasSeenProRgs: bool | None
+    hasUserOfferer: bool | None
     id: int
     isAdmin: bool
     isEmailValidated: bool
@@ -166,6 +167,7 @@ class SharedLoginUserResponseModel(BaseModel):
     @classmethod
     def from_orm(cls, user: users_models.User) -> "SharedLoginUserResponseModel":
         user.isAdmin = user.has_admin_role
+        user.hasUserOfferer = user.has_user_offerer
         result = super().from_orm(user)
         return result
 
@@ -183,6 +185,7 @@ class SharedCurrentUserResponseModel(BaseModel):
     firstName: str | None
     hasSeenProTutorials: bool | None
     hasSeenProRgs: bool | None
+    hasUserOfferer: bool | None
     id: int
     idPieceNumber: str | None
     isAdmin: bool
@@ -204,6 +207,7 @@ class SharedCurrentUserResponseModel(BaseModel):
     @classmethod
     def from_orm(cls, user: users_models.User) -> "SharedCurrentUserResponseModel":
         user.isAdmin = user.has_admin_role
+        user.hasUserOfferer = user.has_user_offerer
         result = super().from_orm(user)
         return result
 

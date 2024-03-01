@@ -3,6 +3,8 @@ import logging
 
 import pytest
 
+from pcapi.core.offerers import factories as offerer_factories
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -48,6 +50,7 @@ class Returns200Test:
             "firstName": "Jean",
             "hasSeenProTutorials": True,
             "hasSeenProRgs": False,
+            "hasUserOfferer": False,
             "id": user.id,
             "isAdmin": False,
             "isEmailValidated": True,
@@ -114,6 +117,51 @@ class Returns200Test:
         # Then
         assert response.status_code == 400
         assert response.json == {"captchaToken": "Ce champ est obligatoire"}
+
+    @pytest.mark.usefixtures("db_session")
+    def test_whith_user_offerer(self, client):
+        # Given
+        user_offerer = offerer_factories.UserOffererFactory()
+        data = {
+            "identifier": user_offerer.user.email,
+            "password": user_offerer.user.clearTextPassword,
+            "captchaToken": "token",
+        }
+
+        # When
+        # 1. fetch user
+        # 2. stamp session
+        # 3. savepoint
+        # 4. fetch user for serialization
+        # 5. fetch user offerer
+        with assert_num_queries(5):
+            response = client.post("/users/signin", json=data)
+
+        # Then
+        assert response.status_code == 200
+        assert response.json == {
+            "activity": None,
+            "address": user_offerer.user.address,
+            "city": "Toulouse",
+            "civility": None,
+            "dateCreated": format_into_utc_date(user_offerer.user.dateCreated),
+            "dateOfBirth": None,
+            "departementCode": "31",
+            "email": user_offerer.user.email,
+            "firstName": "René",
+            "hasSeenProTutorials": True,
+            "hasSeenProRgs": False,
+            "hasUserOfferer": True,
+            "id": user_offerer.user.id,
+            "isAdmin": False,
+            "isEmailValidated": True,
+            "lastConnectionDate": None,
+            "lastName": "Coty",
+            "needsToFillCulturalSurvey": True,
+            "phoneNumber": None,
+            "postalCode": None,
+            "roles": ["PRO"],
+        }
 
 
 class Returns401Test:

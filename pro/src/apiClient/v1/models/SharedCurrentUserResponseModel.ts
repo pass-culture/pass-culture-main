@@ -18,6 +18,7 @@ export type SharedCurrentUserResponseModel = {
   firstName?: string | null;
   hasSeenProRgs?: boolean | null;
   hasSeenProTutorials?: boolean | null;
+  hasUserOfferer?: boolean | null;
   id: number;
   idPieceNumber?: string | null;
   isAdmin: boolean;
