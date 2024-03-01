@@ -15,7 +15,7 @@ import { PartnerPageIndividualSection } from 'pages/Home/Offerers/PartnerPageInd
 
 import { serializeEditVenueBodyModel } from './serializers'
 import { VenueEditionFormValues } from './types'
-import { validationSchema } from './validationSchema'
+import { getValidationSchema } from './validationSchema'
 import { VenueEditionForm } from './VenueEditionForm'
 import styles from './VenueEditionFormScreen.module.scss'
 
@@ -92,7 +92,7 @@ export const VenueEditionFormScreen = ({
   const formik = useFormik({
     initialValues,
     onSubmit: onSubmit,
-    validationSchema,
+    validationSchema: getValidationSchema(venue.isVirtual),
   })
 
   return (
