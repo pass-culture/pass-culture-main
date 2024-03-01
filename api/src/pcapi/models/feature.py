@@ -122,6 +122,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_ADAGE_PREVIEW_OFFER_IN_PRO = (
         "Activer la prévisualisation d'une offre adage lors de la création/édition sur le portail pro"
     )
+    WIP_ENABLE_NEW_NAV_AB_TEST = "Activer l'A/B test de la nouvelle navigation du portail pro."
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -188,6 +189,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN,
     FeatureToggle.WIP_ENABLE_COLLECTIVE_CUSTOM_CONTACT,
     FeatureToggle.WIP_ENABLE_ADAGE_PREVIEW_OFFER_IN_PRO,
+    FeatureToggle.WIP_ENABLE_NEW_NAV_AB_TEST,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
