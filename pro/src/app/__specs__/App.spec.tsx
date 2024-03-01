@@ -22,6 +22,10 @@ const renderApp = (storeOverrides: any, url = '/') =>
           <Route path="/" element={<p>Sub component</p>} />
           <Route path="/offres" element={<p>Offres</p>} />
           <Route path="/connexion" element={<p>Login page</p>} />
+          <Route
+            path="/parcours-inscription"
+            element={<p>Onboarding page</p>}
+          />
         </Route>
       </Routes>
     </>,
@@ -45,6 +49,7 @@ describe('App', () => {
         currentUser: {
           id: 12,
           isAdmin: false,
+          hasUserOfferer: true,
         },
       },
     }
@@ -76,5 +81,20 @@ describe('App', () => {
     renderApp(loggedOutStore, '/offres')
 
     expect(await screen.findByText('Login page')).toBeInTheDocument()
+  })
+
+  it('should redirect to onboarding if has no user_offerer on private page', async () => {
+    const noUserOffererStore = {
+      user: {
+        currentUser: {
+          id: 12,
+          isAdmin: false,
+          hasUserOfferer: false,
+        },
+      },
+    }
+    renderApp(noUserOffererStore, '/offres')
+
+    expect(await screen.findByText('Onboarding page')).toBeInTheDocument()
   })
 })
