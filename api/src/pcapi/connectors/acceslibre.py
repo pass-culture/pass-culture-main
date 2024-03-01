@@ -4,9 +4,11 @@ Documentation of the API: https://acceslibre.beta.gouv.fr/api/docs/
 Further explanations at: https://schema.data.gouv.fr/MTES-MCT/acceslibre-schema/0.0.14/documentation.html
 """
 
+from datetime import datetime
 import json
 import logging
 
+from dateutil import parser
 from rapidfuzz import fuzz
 
 from pcapi import settings
@@ -47,6 +49,10 @@ def find_venue_at_accessibility_provider(
     )
 
 
+def get_last_update_at_provider(slug: str) -> datetime:
+    return _get_backend().get_last_update_at_provider(slug)
+
+
 def match_by_name(results_at_provider: list[dict[str, str]], name: str, public_name: str | None) -> str | None:
     name = name.lower()
     public_name = public_name.lower() if public_name else "PUBLIC_NAME_MISSING"
@@ -83,6 +89,9 @@ class BaseBackend:
     ) -> str | None:
         raise NotImplementedError()
 
+    def get_last_update_at_provider(self, slug: str) -> datetime:
+        raise NotImplementedError()
+
 
 class TestingBackend(BaseBackend):
     def find_venue_at_accessibility_provider(
@@ -95,6 +104,9 @@ class TestingBackend(BaseBackend):
         postal_code: str | None = None,
     ) -> str | None:
         return "mon-lieu-chez-acceslibre"
+
+    def get_last_update_at_provider(self, slug: str) -> datetime:
+        return datetime(2024, 3, 1, 0, 0)
 
 
 class AcceslibreBackend(BaseBackend):
@@ -111,6 +123,31 @@ class AcceslibreBackend(BaseBackend):
             raise AccesLibreApiException(
                 f"Error connecting AccesLibre API for {url} and query parameters: {query_params}"
             )
+        try:
+            return response.json()
+        except json.JSONDecodeError:
+            logger.error(
+                "Got non-JSON or malformed JSON response from AccesLibre",
+                extra={"url": response.url, "response": response.content},
+            )
+            raise AccesLibreApiException(f"Non-JSON response from AccesLibre API for {response.url}")
+
+    def _send_request_with_slug(
+        self,
+        slug: str,
+    ) -> dict:
+        """
+        Acceslibre has a specific GET route /api/erps/{slug} that
+        we can requested when a venue slug is known. This slug is saved in the
+        Venue.accessibilityProvider.externalAccessibilityId field on our side.
+        """
+        api_key = settings.ACCESLIBRE_API_KEY
+        url = settings.ACCESLIBRE_API_URL + slug
+        headers = {"Authorization": f"Api-Key {api_key}"}
+        try:
+            response = requests.get(url, headers=headers, timeout=ACCESLIBRE_REQUEST_TIMEOUT)
+        except requests.exceptions.RequestException:
+            raise AccesLibreApiException(f"Error connecting AccesLibre API for {url}")
         try:
             return response.json()
         except json.JSONDecodeError:
@@ -154,3 +191,11 @@ class AcceslibreBackend(BaseBackend):
                 ):
                     return slug
         return None
+
+    def get_last_update_at_provider(self, slug: str) -> datetime:
+        response = self._send_request_with_slug(slug=slug)
+        created_at = parser.isoparse(response["created_at"])
+        updated_at = parser.isoparse(response["updated_at"])
+        if updated_at > created_at:
+            return updated_at
+        return created_at

@@ -412,3 +412,4 @@ class AccessibilityProviderFactory(BaseFactory):
 
     venue = factory.SubFactory(VenueFactory)
     externalAccessibilityId = factory.Sequence("le-petit-rintintin-{}".format)
+    lastUpdateAtProvider = datetime.datetime(2024, 3, 1, 0, 0)
