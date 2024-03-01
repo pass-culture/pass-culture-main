@@ -29,6 +29,13 @@
   }
 }
 
+.venue-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: rem.torem(16px);
+}
+
 .venue-type {
   @include fonts.body-important;
 
@@ -38,25 +45,19 @@
 
 .venue-name {
   @include fonts.title3;
-
-  margin-top: rem.torem(16px);
-  margin-bottom: rem.torem(16px);
-}
-
-.venue-address {
-  margin-bottom: rem.torem(16px);
 }
 
 .separator {
+  width: 100%;
   border-top: 2px solid colors.$grey-medium;
-  margin-top: rem.torem(16px);
-  margin-bottom: rem.torem(16px);
-  background: none; // override default style
+
+  // override default style
+  margin: 0;
+  background: none;
 }
 
 .venue-button {
   width: 100%;
-  margin-top: rem.torem(16px);
 
   @media (min-width: size.$tablet) {
     width: auto;
