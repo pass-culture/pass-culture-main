@@ -1,5 +1,6 @@
 import dataclasses
 from datetime import datetime
+import decimal
 import enum
 import itertools
 import logging
@@ -13,6 +14,7 @@ import jwt
 from psycopg2.extras import NumericRange
 import schwifty
 import sqlalchemy as sa
+from sqlalchemy.dialects.postgresql import INTERVAL
 import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
@@ -1500,7 +1502,7 @@ def search_bank_account(search_query: str, *_: typing.Any) -> BaseQuery:
     return bank_accounts_query.filter(sa.or_(*filters) if len(filters) > 0 else filters[0])
 
 
-def get_offerer_total_revenue(offerer_id: int) -> float:
+def get_offerer_total_revenue(offerer_id: int, only_current_year: bool = False) -> decimal.Decimal | float:
     individual_revenue_query = sa.select(
         sa.func.coalesce(
             sa.func.sum(bookings_models.Booking.amount * bookings_models.Booking.quantity),
@@ -1529,6 +1531,23 @@ def get_offerer_total_revenue(offerer_id: int) -> float:
             educational_models.CollectiveBooking.status != bookings_models.BookingStatus.CANCELLED.value,
         )
     )
+
+    if only_current_year:
+        # Bookings used this year or still with status CONFIRMED
+        time_delta = sa.func.cast(sa.func.concat(1, " HOUR"), INTERVAL)  # UTC -> CET conversion on January 1st
+        current_year = sa.func.date_part("YEAR", sa.func.now() + time_delta)
+        individual_revenue_query = individual_revenue_query.filter(
+            sa.or_(
+                bookings_models.Booking.dateUsed.is_(None),
+                sa.func.date_part("YEAR", bookings_models.Booking.dateUsed + time_delta) == current_year,
+            )
+        )
+        collective_revenue_query = collective_revenue_query.filter(
+            sa.or_(
+                educational_models.CollectiveBooking.dateUsed.is_(None),
+                sa.func.date_part("YEAR", educational_models.CollectiveBooking.dateUsed + time_delta) == current_year,
+            )
+        )
 
     total_revenue_query = sa.select(
         individual_revenue_query.scalar_subquery() + collective_revenue_query.scalar_subquery()

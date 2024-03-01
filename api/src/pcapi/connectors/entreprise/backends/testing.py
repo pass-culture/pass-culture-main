@@ -48,6 +48,21 @@ class TestingBackend(BaseBackend):
         return siren_ape[siren_or_siret[:9]]
 
     @classmethod
+    def _legal_category_code(cls, siren_or_siret: str) -> str:
+        # allows to get an offerer with a different legal category depending on siren
+        match siren_or_siret[3]:
+            case "5":
+                return "5499"  # Société à responsabilité limitée (sans autre indication)
+            case "6":
+                return "5710"  # SAS, société par actions simplifiée
+            case "7":
+                return "7210"  # Commune et commune nouvelle
+            case "8":
+                return "7389"  # Établissement public national à caractère administratif
+            case _:
+                return "1000"  # Entreprise individuelle
+
+    @classmethod
     def _is_active(cls, siren_or_siret: str) -> bool:
         # allows to get a closed offerer in dev/testing environments:
         # any SIREN which ends with "99" or SIRET in which SIREN part ends with "99"
@@ -85,7 +100,7 @@ class TestingBackend(BaseBackend):
                 head_office_siret=siren + "00001",
                 ape_code="90.01Z",
                 ape_label="Arts du spectacle vivant",
-                legal_category_code="1000",
+                legal_category_code=self._legal_category_code(siren),
                 address=self.nd_address if with_address else None,
                 active=self._is_active(siren),
                 diffusible=False,
@@ -99,7 +114,7 @@ class TestingBackend(BaseBackend):
             head_office_siret=siren + "00001",
             ape_code=ape_code,
             ape_label=ape_label,
-            legal_category_code="1000",
+            legal_category_code=self._legal_category_code(siren),
             address=self.address if with_address else None,
             active=self._is_active(siren),
             diffusible=True,
@@ -124,7 +139,7 @@ class TestingBackend(BaseBackend):
                 address=self.nd_address,
                 ape_code=ape_code,
                 ape_label=ape_label,
-                legal_category_code="1000",
+                legal_category_code=self._legal_category_code(siret),
             )
 
         return models.SiretInfo(
@@ -135,7 +150,7 @@ class TestingBackend(BaseBackend):
             address=self.address,
             ape_code=ape_code,
             ape_label=ape_label,
-            legal_category_code="1000",
+            legal_category_code=self._legal_category_code(siret),
         )
 
     def get_rcs(self, siren: str) -> models.RCSInfo:

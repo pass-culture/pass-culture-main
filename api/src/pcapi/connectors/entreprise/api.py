@@ -44,3 +44,13 @@ def get_dgfip(siren: str) -> models.DgfipInfo:
     This is always confidential information, with restricted access.
     """
     return get_backend(settings.ENTREPRISE_BACKEND).get_dgfip(siren)
+
+
+EI_CATEGORY_CODE = 1000
+PUBLIC_CATEGORIES_MIN_CODE = 7000
+
+
+def siren_is_individual_or_public(siren_info: models.SirenInfo) -> bool:
+    # This implementation is very basic and may be updated later depending on errors when calling get_dgfip()
+    legal_category_code = int(siren_info.legal_category_code)
+    return (legal_category_code == EI_CATEGORY_CODE) or (legal_category_code > PUBLIC_CATEGORIES_MIN_CODE)

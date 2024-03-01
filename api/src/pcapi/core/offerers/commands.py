@@ -8,6 +8,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import synchronize_venues_banners_with_google_places as banner_url_synchronizations
 from pcapi.core.offerers import tasks as offerers_tasks
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils.blueprint import Blueprint
 
 
@@ -17,9 +18,14 @@ logger = logging.getLogger(__name__)
 
 @blueprint.cli.command("check_active_offerers")
 @click.option("--dry-run", type=bool, default=False)
-def check_active_offerers(dry_run: bool = False) -> None:
+@click.option("--day", type=int, required=False, default=None)
+def check_active_offerers(dry_run: bool = False, day: int | None = None) -> None:
     # This command is called from a cron running every day, so that any active offerer is checked every month.
     # Split into 28 blocks to avoid spamming Sirene API for all offerers the same day. Nothing done on 29, 30, 31.
+    # Use --day to replay or troubleshooting.
+
+    if day is None:
+        day = datetime.date.today().day
 
     siren_caduc_tag_id_subquery = (
         db.session.query(offerers_models.OffererTag.id)
@@ -28,23 +34,23 @@ def check_active_offerers(dry_run: bool = False) -> None:
         .scalar_subquery()
     )
 
-    offerers = (
-        offerers_models.Offerer.query.outerjoin(
+    offerers_query = offerers_models.Offerer.query.filter(
+        offerers_models.Offerer.id % 28 == day - 1,
+        offerers_models.Offerer.isActive,
+        offerers_models.Offerer.siren.is_not(None),
+    ).options(sa.orm.load_only(offerers_models.Offerer.siren))
+
+    if not FeatureToggle.ENABLE_CODIR_OFFERERS_REPORT.is_active():
+        # When FF is disabled, we only have to check if siren-caduc tag has to be applied, skip already tagged
+        offerers_query = offerers_query.outerjoin(
             offerers_models.OffererTagMapping,
             sa.and_(
                 offerers_models.OffererTagMapping.offererId == offerers_models.Offerer.id,
                 offerers_models.OffererTagMapping.tagId == siren_caduc_tag_id_subquery,
             ),
-        )
-        .filter(
-            offerers_models.Offerer.id % 28 == datetime.date.today().day - 1,
-            offerers_models.Offerer.isActive,
-            offerers_models.Offerer.siren.is_not(None),
-            offerers_models.OffererTagMapping.id.is_(None),
-        )
-        .options(sa.orm.load_only(offerers_models.Offerer.siren))
-        .all()
-    )
+        ).filter(offerers_models.OffererTagMapping.id.is_(None))
+
+    offerers = offerers_query.all()
 
     logger.info("check_offerers_alive will check %s offerers in cloud tasks today", len(offerers))
 

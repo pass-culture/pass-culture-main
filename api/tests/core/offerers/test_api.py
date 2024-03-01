@@ -2190,6 +2190,48 @@ def test_get_offerer_stats_dashboard_url():
     }
 
 
+class GetOffererTotalRevenueTest:
+    def _create_data(self):
+        offerer = offerers_factories.OffererFactory()
+        bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer, stock__price=10)
+        bookings_factories.UsedBookingFactory(
+            stock__offer__venue__managingOfferer=offerer,
+            stock__price=11.5,
+            dateUsed=datetime.datetime.utcnow() - datetime.timedelta(days=400),
+        )
+        bookings_factories.ReimbursedBookingFactory(
+            stock__offer__venue__managingOfferer=offerer, stock__price=12, quantity=2
+        )
+        bookings_factories.CancelledBookingFactory(stock__offer__venue__managingOfferer=offerer, stock__price=120)
+        educational_factories.PendingCollectiveBookingFactory(
+            collectiveStock__collectiveOffer__venue__managingOfferer=offerer, collectiveStock__price=1333
+        )
+        educational_factories.UsedCollectiveBookingFactory(
+            collectiveStock__collectiveOffer__venue__managingOfferer=offerer, collectiveStock__price=1444
+        )
+        educational_factories.ReimbursedCollectiveBookingFactory(
+            collectiveStock__collectiveOffer__venue__managingOfferer=offerer,
+            collectiveStock__price=1555,
+            dateUsed=datetime.datetime.utcnow() - datetime.timedelta(days=500),
+        )
+        educational_factories.CancelledCollectiveBookingFactory(
+            collectiveStock__collectiveOffer__venue__managingOfferer=offerer, collectiveStock__price=6000
+        )
+        bookings_factories.UsedBookingFactory(stock__price=180)  # ignored
+        educational_factories.UsedCollectiveBookingFactory(collectiveStock__price=7000)  # ignored
+        return offerer
+
+    def test_revenue_all_years(self):
+        offerer = self._create_data()
+        total_revenue = offerers_api.get_offerer_total_revenue(offerer.id)
+        assert float(total_revenue) == 10.0 + 11.50 + 12 * 2 + 1333 + 1444 + 1555
+
+    def test_revenue_only_current_year(self):
+        offerer = self._create_data()
+        total_revenue = offerers_api.get_offerer_total_revenue(offerer.id, only_current_year=True)
+        assert float(total_revenue) == 10.0 + 12 * 2 + 1333 + 1444
+
+
 class CountOfferersByValidationStatusTest:
     def test_get_offerer_stats(self, client):
         # given
