@@ -10,7 +10,7 @@ import styles from './Checkbox.module.scss'
 interface CheckboxProps {
   name: string
   value?: string
-  label: string
+  label: string | React.ReactNode
   description?: string
   className?: string
   hideFooter?: boolean
