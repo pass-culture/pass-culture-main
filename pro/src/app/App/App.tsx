@@ -113,6 +113,16 @@ const App = (): JSX.Element | null => {
     return <Navigate to={loginUrl} replace />
   }
 
+  if (
+    !currentRoute?.meta?.public &&
+    !currentRoute?.path.includes('/parcours-inscription') &&
+    currentUser !== null &&
+    !currentUser.isAdmin &&
+    !currentUser.hasUserOfferer
+  ) {
+    return <Navigate to="/parcours-inscription" replace />
+  }
+
   return (
     <>
       <Outlet />
