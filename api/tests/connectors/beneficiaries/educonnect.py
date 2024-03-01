@@ -1,11 +1,11 @@
 import shutil
 
 import pytest
-import requests
 
 from pcapi import settings
 from pcapi.connectors.beneficiaries.educonnect import educonnect_connector
 from pcapi.core.testing import override_settings
+from pcapi.utils import requests
 
 
 CERTIFICATE_CONTENT = ""

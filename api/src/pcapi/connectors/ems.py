@@ -6,8 +6,7 @@ import hmac
 import json
 
 import pydantic.v1 as pydantic_v1
-from requests import Response
-from requests.auth import HTTPBasicAuth
+from requests.auth import HTTPBasicAuth  # pylint: disable=wrong-requests-import
 import sentry_sdk
 
 from pcapi import settings
@@ -95,7 +94,7 @@ class EMSBookingConnector:
     shows_availability_endpoint = "SEANCE"
     cancelation_endpoint = "ANNULATION"
 
-    def do_request(self, endpoint: str, payload: dict) -> Response:
+    def do_request(self, endpoint: str, payload: dict) -> requests.Response:
         """
         Perform the actual request, using mandatory headers
         and hashed payload.
@@ -106,7 +105,7 @@ class EMSBookingConnector:
         url = self._build_url(endpoint, payload)
         return requests.post(url, headers=headers, json=payload)
 
-    def raise_for_status(self, response: Response) -> None:
+    def raise_for_status(self, response: requests.Response) -> None:
         response.raise_for_status()
         content = response.json()
 

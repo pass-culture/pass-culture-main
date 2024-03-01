@@ -1,7 +1,5 @@
 import logging
 
-from requests.exceptions import RequestException
-
 from pcapi.core.providers.exceptions import ConnexionToProviderApiFailed
 from pcapi.utils import requests
 
@@ -124,7 +122,7 @@ class ProviderAPI:
 
         try:
             response = requests.get(url=api_url, headers=headers, timeout=REQUEST_TIMEOUT_FOR_PROVIDERS_IN_SECOND)
-        except RequestException as error:
+        except requests.exceptions.RequestException as error:
             extra_infos = {"siret": siret, "api_url": self.api_url, "error": str(error)}
             logger.exception("[PROVIDER] request failed", extra=extra_infos)
             raise ConnexionToProviderApiFailed

@@ -19,18 +19,18 @@ from typing import Callable
 
 import gql.transport.exceptions
 import gql.transport.requests
-import requests
-from requests import Response
-from requests.adapters import HTTPAdapter
+import requests  # pylint: disable=wrong-requests-import
+from requests.adapters import HTTPAdapter  # pylint: disable=wrong-requests-import
 from urllib3.util.retry import Retry
 import zeep
 
 
 # fmt: off
 # isort: off
-# Allow our code to access `requests` exceptions directly from this
-# wrapper module.
-from requests import exceptions  # pylint: disable=unused-import
+# Allow our code to access `requests` exceptions and models directly
+# from this wrapper module.
+from requests import Response  # pylint: disable=unused-import, wrong-requests-import
+from requests import exceptions  # pylint: disable=unused-import, wrong-requests-import
 # isort: on
 # fmt: on
 
@@ -61,7 +61,7 @@ def _wrapper(
     request_send_func: Callable,
     request: requests.PreparedRequest,
     **kwargs: Any,
-) -> Response:
+) -> requests.Response:
     if not kwargs.get("timeout"):
         kwargs["timeout"] = REQUEST_TIMEOUT_IN_SECOND
     try:
@@ -88,24 +88,26 @@ def _wrapper(
     return response
 
 
-def get(url: str, disable_synchronous_retry: bool = False, **kwargs: Any) -> Response:
+def get(url: str, disable_synchronous_retry: bool = False, **kwargs: Any) -> requests.Response:
     with Session(disable_synchronous_retry=disable_synchronous_retry) as session:
         return session.request(method="GET", url=url, **kwargs)
 
 
-def post(url: str, hmac: str | None = None, disable_synchronous_retry: bool = False, **kwargs: Any) -> Response:
+def post(
+    url: str, hmac: str | None = None, disable_synchronous_retry: bool = False, **kwargs: Any
+) -> requests.Response:
     with Session(disable_synchronous_retry=disable_synchronous_retry) as session:
         if hmac:
             kwargs.setdefault("headers", {}).update({"PassCulture-Signature": hmac})
         return session.request(method="POST", url=url, **kwargs)
 
 
-def put(url: str, disable_synchronous_retry: bool = False, **kwargs: Any) -> Response:
+def put(url: str, disable_synchronous_retry: bool = False, **kwargs: Any) -> requests.Response:
     with Session(disable_synchronous_retry=disable_synchronous_retry) as session:
         return session.request(method="PUT", url=url, **kwargs)
 
 
-def delete(url: str, disable_synchronous_retry: bool = False, **kwargs: Any) -> Response:
+def delete(url: str, disable_synchronous_retry: bool = False, **kwargs: Any) -> requests.Response:
     with Session(disable_synchronous_retry=disable_synchronous_retry) as session:
         return session.request(method="DELETE", url=url, **kwargs)
 

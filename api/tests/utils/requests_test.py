@@ -1,7 +1,7 @@
 import logging
 
 import pytest
-import requests.models as real_requests_models
+import requests.models as real_requests_models  # pylint: disable=wrong-requests-import
 
 from pcapi.utils import requests
 

@@ -2,13 +2,13 @@ from unittest import mock
 
 from flask import url_for
 import pytest
-import requests
 
 from pcapi.core.external.zendesk_sell_backends import base as zendesk_sell
 from pcapi.core.external.zendesk_sell_backends import testing as zendesk_testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import testing
+from pcapi.utils import requests
 
 from .helpers import html_parser
 from .helpers.post import PostEndpointHelper
