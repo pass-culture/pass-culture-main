@@ -1,3 +1,7 @@
+import hashlib
+
+from flask import current_app as app
+
 from pcapi.core.educational.repository import find_educational_institution_by_uai_code
 import pcapi.core.educational.utils as educational_utils
 from pcapi.routes.adage_iframe import blueprint
@@ -247,8 +251,23 @@ def log_tracking_filter(
     authenticated_information: AuthenticatedInformation,
     body: serialization.TrackingFilterBody,
 ) -> None:
-    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
     extra_data = body.dict()
+
+    # It seems that this route is spammed sometimes by the front end
+    # client (dozens of requests within a couple of seconds for the
+    # same user). Therefore, we will compute a payload's hash and
+    # store it 5s inside redis (if the key is already known, request
+    # has already been logged).
+    hashed_data = hashlib.new("md5", data=str(extra_data).encode("utf-8")).hexdigest()
+    key = f"adage_iframe_tracking_filter_{hashed_data}"
+    if app.redis_client.incr(key) == 1:
+        # the key did not exist and has been created -> expire in 5s
+        # incr is only used to perform exists & set.
+        app.redis_client.expire(key, 5)
+    else:
+        return
+
+    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
     extra_data["from"] = extra_data.pop("iframeFrom")
     educational_utils.log_information_for_data_purpose(
         event_name="TrackingFilter",
