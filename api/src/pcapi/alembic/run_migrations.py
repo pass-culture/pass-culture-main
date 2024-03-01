@@ -110,7 +110,7 @@ def run_online_migrations() -> None:
         )
 
 
-def run_offline_migrations():
+def run_offline_migrations() -> None:
     """Run migrations *without* a SQL connection."""
-    context.configure(url=settings.DATABASE_URL, literal_binds=True)
+    context.configure(url=settings.DATABASE_URL, literal_binds=True, transaction_per_migration=True)
     context.run_migrations()
