@@ -144,8 +144,8 @@ if [[ "$ALEMBIC_STAGED_FILES" != "" ]]; then
 
     base_commit=$(git merge-base HEAD origin/master)
     base_alembic_versions=$(git --no-pager show "$base_commit":api/alembic_version_conflict_detection.txt)
-    base_pre=$(echo "$base_alembic_versions" | head --lines 1 | cut --fields 1 --delimiter " ")
-    base_post=$(echo "$base_alembic_versions" | tail --lines 1 | cut --fields 1 --delimiter " ")
+    base_pre=$(echo "$base_alembic_versions" | head --lines 1 | cut -f 1 -d " ")
+    base_post=$(echo "$base_alembic_versions" | tail --lines 1 | cut -f 1 -d " ")
     lint_alembic upgrade "$base_pre":pre@head
     lint_alembic upgrade "$base_post":post@head
     lint_alembic downgrade post@head:"$base_post"
