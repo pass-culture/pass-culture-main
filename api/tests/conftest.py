@@ -16,9 +16,7 @@ from flask import g
 from flask.testing import FlaskClient
 from flask_jwt_extended.utils import create_access_token
 import pytest
-from requests import Response
-from requests.auth import _basic_auth_str
-from requests.exceptions import ConnectionError as RequestConnectionError
+from requests.auth import _basic_auth_str  # pylint: disable=wrong-requests-import
 import requests_mock
 
 from pcapi import repository
@@ -39,6 +37,7 @@ from pcapi.notifications.push import testing as push_notifications_testing
 from pcapi.notifications.sms import testing as sms_notifications_testing
 from pcapi.repository.clean_database import clean_all_database
 from pcapi.routes.backoffice import install_routes
+from pcapi.utils import requests
 from pcapi.utils.module_loading import import_string
 
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
@@ -262,7 +261,9 @@ def ubble_mock_connection_error(requests_mock):  # pylint: disable=redefined-out
         UBBLE_CLIENT_SECRET="client_secret",
     ):
         request_matcher = requests_mock.register_uri(
-            "POST", "https://api.example.com/identifications/", exc=RequestConnectionError
+            "POST",
+            "https://api.example.com/identifications/",
+            exc=requests.exceptions.ConnectionError,
         )
         yield request_matcher
 
@@ -548,7 +549,7 @@ class TestClient:
         self._print_spec("PUT", route, json, result)
         return result
 
-    def _print_spec(self, verb: str, route: str, request_body: dict, result: Response):
+    def _print_spec(self, verb: str, route: str, request_body: dict, result: requests.Response):
         if not TestClient.WITH_DOC:
             return
 

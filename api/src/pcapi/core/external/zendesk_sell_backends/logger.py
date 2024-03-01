@@ -1,8 +1,7 @@
 import logging
 
-import requests
-
 from pcapi.core.offerers import models as offerers_models
+from pcapi.utils import requests
 
 from .base import BaseBackend
 

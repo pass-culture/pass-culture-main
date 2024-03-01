@@ -3,13 +3,12 @@ import logging
 from unittest import mock
 
 import pytest
-import requests
 
 from pcapi.connectors.beneficiaries import ubble
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.testing import override_settings
 from pcapi.core.users.models import GenderEnum
-from pcapi.utils import requests as requests_utils
+from pcapi.utils import requests
 
 from tests.core.subscription.test_factories import UbbleIdentificationResponseFactory
 from tests.test_utils import json_default
@@ -46,7 +45,7 @@ class StartIdentificationTest:
         assert record.message == "Valid response from Ubble"
 
     def test_start_identification_connection_error(self, ubble_mock_connection_error, caplog):
-        with pytest.raises(requests_utils.ExternalAPIException):
+        with pytest.raises(requests.ExternalAPIException):
             with caplog.at_level(logging.ERROR):
                 ubble.start_identification(
                     user_id=123,
@@ -64,7 +63,7 @@ class StartIdentificationTest:
         assert record.message == "Ubble start-identification: Network error"
 
     def test_start_identification_http_error_status(self, ubble_mock_http_error_status, caplog):
-        with pytest.raises(requests_utils.ExternalAPIException):
+        with pytest.raises(requests.ExternalAPIException):
             ubble.start_identification(
                 user_id=123,
                 first_name="prenom",
@@ -160,7 +159,7 @@ class GetContentTest:
         requests_mock.register_uri("GET", f"/identifications/{identification_id}/", status_code=401)
 
         with caplog.at_level(logging.ERROR):
-            with pytest.raises(requests_utils.ExternalAPIException) as exc_info:
+            with pytest.raises(requests.ExternalAPIException) as exc_info:
                 ubble.get_content(identification_id)
 
         assert len(caplog.records) == 1
@@ -177,7 +176,7 @@ class GetContentTest:
         requests_mock.register_uri("GET", f"/identifications/{identification_id}/", status_code=503)
 
         with caplog.at_level(logging.ERROR):
-            with pytest.raises(requests_utils.ExternalAPIException) as exc_info:
+            with pytest.raises(requests.ExternalAPIException) as exc_info:
                 ubble.get_content(identification_id)
 
         assert len(caplog.records) == 1

@@ -1,7 +1,6 @@
 from flask import flash
 from flask import url_for
 from markupsafe import Markup
-import requests
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 from werkzeug.utils import redirect
@@ -12,6 +11,7 @@ from pcapi.core.external.zendesk_sell_backends import BaseBackend
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.routes.backoffice import utils
+from pcapi.utils import requests
 from pcapi.utils.module_loading import import_string
 
 

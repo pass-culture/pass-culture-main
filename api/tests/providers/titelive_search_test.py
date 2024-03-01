@@ -4,7 +4,6 @@ import pathlib
 import re
 
 import pytest
-import requests
 import time_machine
 
 from pcapi.connectors import titelive
@@ -18,7 +17,7 @@ import pcapi.core.providers.repository as providers_repository
 from pcapi.core.providers.titelive_music_search import TiteliveMusicSearch
 from pcapi.core.testing import override_settings
 from pcapi.domain import music_types
-from pcapi.utils.requests import ExternalAPIException
+from pcapi.utils import requests
 
 import tests
 from tests.connectors.titelive import fixtures
@@ -172,7 +171,7 @@ class TiteliveSearchTest:
             payload=titelive.TiteliveBase.MUSIC.value,
         )
 
-        with pytest.raises(ExternalAPIException):
+        with pytest.raises(requests.ExternalAPIException):
             TiteliveMusicSearch().synchronize_products()
 
         start_sync_events_query = providers_models.LocalProviderEvent.query.filter(

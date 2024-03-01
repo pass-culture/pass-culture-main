@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 import logging
 
-from requests.exceptions import RequestException
-
 from pcapi import settings
 from pcapi.core.users.models import User
 from pcapi.utils import requests
@@ -64,7 +62,7 @@ def log_user_becomes_beneficiary_event_job(user_id: int) -> None:
 
     try:
         response = requests.post(url, headers=headers, json=data)
-    except (ConnectionError, RequestException) as error:
+    except (ConnectionError, requests.exceptions.RequestException) as error:
         extra_infos = {"user": user.id, "user.apps_flyer_id": context.apps_flyer_user_id, "error": str(error)}
         logger.error("[APPS FLYER][BECOMES BENEFICIARY] request failed", extra=extra_infos)
         return
