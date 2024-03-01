@@ -15,6 +15,7 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullPlusIcon from 'icons/full-more.svg'
+import fullParametersIcon from 'icons/full-parameters.svg'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -114,7 +115,7 @@ export const VenueEditionHeader = ({
         onClickButtonImageAdd={logButtonAddClick}
       />
 
-      <div>
+      <div className={styles['venue-details']}>
         <div className={styles['venue-type']}>{venueType?.label}</div>
         <h1 className={styles['venue-name']}>
           {venue.isVirtual
@@ -144,17 +145,25 @@ export const VenueEditionHeader = ({
 
         <hr className={styles['separator']} />
 
+        <ButtonLink
+          variant={ButtonVariant.TERNARY}
+          icon={fullParametersIcon}
+          link={{
+            to: `/structures/${offerer.id}/lieux/${venue.id}/parametres`,
+          }}
+        >
+          Paramètres de l’activité
+        </ButtonLink>
+
         {imageValues.imageUrl && (
-          <div>
-            <ButtonImageEdit
-              mode={UploaderModeEnum.VENUE}
-              initialValues={imageValues}
-              onImageUpload={handleOnImageUpload}
-              onClickButtonImage={logButtonAddClick}
-            >
-              Modifier l’image
-            </ButtonImageEdit>
-          </div>
+          <ButtonImageEdit
+            mode={UploaderModeEnum.VENUE}
+            initialValues={imageValues}
+            onImageUpload={handleOnImageUpload}
+            onClickButtonImage={logButtonAddClick}
+          >
+            Modifier l’image
+          </ButtonImageEdit>
         )}
 
         <ButtonLink
