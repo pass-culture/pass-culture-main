@@ -81,14 +81,6 @@ jobs:
         uses: docker/setup-buildx-action@v3
         with:
           driver: docker
-      - name: "Build and push pcapi image"
-        uses: docker/build-push-action@v5
-        if: inputs.pcapi == true && github.ref != 'refs/heads/master'
-        with:
-          context: api
-          push: true
-          target: pcapi
-          tags: ${{ env.DOCKER_REGISTRY }}/pcapi:${{ inputs.tag }}
       - name: "Build and push pcapi image and set latest"
         uses: docker/build-push-action@v5
         if: inputs.pcapi == true && github.ref == 'refs/heads/master'
