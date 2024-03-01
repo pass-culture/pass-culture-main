@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React, { useCallback, useState } from 'react'
+import { useState } from 'react'
 
 import { api } from 'apiClient/api'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
@@ -14,7 +14,7 @@ import styles from './ApiKey.module.scss'
 interface ApiKeyProps {
   maxAllowedApiKeys: number
   offererId: number
-  reloadOfferer: (offererId: number) => void
+  reloadOfferer: (offererId: number) => Promise<void>
   savedApiKeys: string[]
 }
 
@@ -31,7 +31,7 @@ const ApiKey = ({
 
   const notification = useNotification()
 
-  const generateApiKey = useCallback(async () => {
+  const generateApiKey = async () => {
     try {
       setIsGeneratingKey(true)
       const generatedApiKey = (await api.generateApiKeyRoute(offererId)).apiKey
@@ -47,22 +47,22 @@ const ApiKey = ({
       notification.error('Une erreur s’est produite, veuillez réessayer')
       setIsGeneratingKey(false)
     }
-  }, [offererId, notification])
+  }
 
-  const confirmApiKeyDeletion = useCallback(async () => {
+  const confirmApiKeyDeletion = async () => {
     if (!apiKeyToDelete) {
       return
     }
 
     try {
       await api.deleteApiKey(apiKeyToDelete)
-      reloadOfferer(offererId)
+      await reloadOfferer(offererId)
     } catch (e) {
       notification.error('Une erreur s’est produite, veuillez réessayer')
     }
 
     setApiKeyToDelete(null)
-  }, [apiKeyToDelete, notification, offererId, reloadOfferer])
+  }
 
   const copyKey = (apiKeyToCopy: string) => async () => {
     try {
@@ -73,7 +73,12 @@ const ApiKey = ({
     }
   }
 
-  const generatedKeysCount = savedApiKeys.length + newlyGeneratedKeys.length
+  const deduplicateSavedKeyFromNewOnes = savedApiKeys.filter(
+    (savedKey) =>
+      !newlyGeneratedKeys.some((newKey) => newKey.startsWith(savedKey))
+  )
+  const generatedKeysCount =
+    deduplicateSavedKeyFromNewOnes.length + newlyGeneratedKeys.length
   const isMaxAllowedReached = generatedKeysCount >= maxAllowedApiKeys
 
   return (
@@ -110,7 +115,7 @@ const ApiKey = ({
 
       {(savedApiKeys.length > 0 || newlyGeneratedKeys.length > 0) && (
         <div className={styles['list']}>
-          {savedApiKeys.map((savedApiKey) => {
+          {deduplicateSavedKeyFromNewOnes.map((savedApiKey) => {
             return (
               <div className={styles['item']} key={savedApiKey}>
                 <span className={styles['text']}>
