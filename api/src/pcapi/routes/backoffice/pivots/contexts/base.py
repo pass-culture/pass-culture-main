@@ -45,7 +45,9 @@ class PivotContext:
             else:
                 query = query.join(providers_models.CinemaProviderPivot.venue).filter(
                     sa.or_(
-                        sa.func.unaccent(offerers_models.Venue.name).ilike(f"%{clean_accents(query_string)}%"),
+                        sa.func.immutable_unaccent(offerers_models.Venue.name).ilike(
+                            f"%{clean_accents(query_string)}%"
+                        ),
                         providers_models.CinemaProviderPivot.idAtProvider == query_string,
                     )
                 )
