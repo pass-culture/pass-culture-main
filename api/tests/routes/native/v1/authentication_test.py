@@ -1119,6 +1119,20 @@ class RequestResetPasswordTest:
         db.session.refresh(user)
         assert user.password == crypto.hash_password(settings.TEST_DEFAULT_PASSWORD)
 
+    def test_change_password_failure_when_user_has_no_password(self, client):
+        user = users_factories.UserFactory(password=None)
+
+        access_token = create_access_token(identity=user.email)
+        client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = client.post(
+            "/native/v1/change_password",
+            json={"currentPassword": "", "newPassword": "New_password1998!"},
+        )
+
+        assert response.status_code == 400
+        assert response.json["code"] == "NO_CURRENT_PASSWORD"
+
 
 class InactiveAccountRequestResetPasswordTest:
     def test_suspended_upon_user_request(self, client):

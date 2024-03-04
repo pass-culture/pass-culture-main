@@ -137,6 +137,9 @@ def reset_password(body: ResetPasswordRequest) -> ResetPasswordResponse:
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
 @authenticated_and_active_user_required
 def change_password(user: User, body: ChangePasswordRequest) -> None:
+    if user.password is None:
+        raise ApiErrors({"code": "NO_CURRENT_PASSWORD"})
+
     try:
         users_repo.check_user_and_credentials(user, body.current_password)
     except users_exceptions.InvalidIdentifier:
