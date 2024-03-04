@@ -1,5 +1,4 @@
 import { api } from 'apiClient/api'
-import { VenueListItemResponseModel } from 'apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 
@@ -18,19 +17,10 @@ const getIndividualOfferVenuesAdapter: GetIndividualOfferVenuesAdapter =
     try {
       const response = await api.getVenues(null, true, offererId)
 
-      const serializeVenue = (
-        venue: VenueListItemResponseModel
-      ): IndividualOfferVenueItem => {
-        return {
-          ...venue,
-          name: venue.publicName || venue.name,
-        }
-      }
-
       return {
         isOk: true,
         message: null,
-        payload: response.venues.map(serializeVenue),
+        payload: response.venues,
       }
     } catch (e) {
       return FAILING_RESPONSE
