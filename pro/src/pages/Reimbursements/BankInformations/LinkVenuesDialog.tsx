@@ -128,9 +128,9 @@ const LinkVenuesDialog = ({
         hasCloseButton={true}
         onDismiss={onCancel}
       >
-        <h3 className={styles['dialog-title']}>
+        <h1 className={styles['dialog-title']}>
           Compte bancaire : {selectedBankAccount.label}
-        </h3>
+        </h1>
         {hasVenuesWithoutPricingPoint && (
           <Callout
             title="Certains de vos lieux n’ont pas de SIRET"

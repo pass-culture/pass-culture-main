@@ -130,7 +130,7 @@ export const RecurrenceForm = ({
   return (
     <FormikProvider value={formik}>
       <form onSubmit={formik.handleSubmit}>
-        <Title as="h2" level={3} className={styles['title']}>
+        <Title as="h1" level={3} className={styles['title']}>
           Ajouter une ou plusieurs dates
         </Title>
 

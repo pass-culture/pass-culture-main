@@ -33,9 +33,9 @@ const AllocineProviderFormDialog = ({
       labelledBy="allocine-provider-form-dialog"
       onDismiss={onCancel}
     >
-      <div className={styles['title']}>
+      <h1 className={styles['title']}>
         <strong>Modifier les paramètres de mes offres</strong>
-      </div>
+      </h1>
       <div className={styles['explanation']}>
         Les modifications s’appliqueront uniquement aux nouvelles offres créées.
         La modification doit être faite manuellement pour les offres existantes.

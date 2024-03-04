@@ -43,10 +43,10 @@ const Dialog = ({
           className={styles['dialog-icon']}
         />
       )}
-      <div className={styles['dialog-title']} id={titleId}>
+      <h1 className={styles['dialog-title']} id={titleId}>
         {title}
         <span>{secondTitle}</span>
-      </div>
+      </h1>
       {explanation && (
         <div className={styles['dialog-explanation']}>{explanation}</div>
       )}

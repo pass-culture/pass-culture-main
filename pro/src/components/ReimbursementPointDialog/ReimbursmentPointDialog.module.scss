@@ -17,6 +17,8 @@
   }
 
   .subtitle {
+    @include fonts.title4;
+
     margin-bottom: rem.torem(8px);
   }
 
