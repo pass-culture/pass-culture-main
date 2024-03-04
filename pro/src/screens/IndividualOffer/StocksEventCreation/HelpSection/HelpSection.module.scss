@@ -28,6 +28,7 @@
   display: flex;
   list-style: none;
   justify-content: space-evenly;
+  flex-wrap: wrap;
 }
 
 .step {
@@ -36,6 +37,7 @@
   align-items: center;
   width: rem.torem(220px);
   text-align: center;
+  margin-bottom: rem.torem(24px);
 }
 
 .step-hero {
@@ -53,4 +55,10 @@
 
 .step-image {
   width: rem.torem(90px);
+}
+
+@media screen and (min-width: size.$tablet) {
+  .step {
+    margin-bottom: unset;
+  }
 }
