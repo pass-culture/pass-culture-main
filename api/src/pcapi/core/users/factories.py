@@ -398,7 +398,7 @@ class UserFactory(BaseFactory):
         **kwargs: typing.Any,
     ) -> models.User:
         password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
-        kwargs["password"] = crypto.hash_password(password)
+        kwargs["password"] = crypto.hash_password(password) if password else None
         instance = super()._create(model_class, *args, **kwargs)
         instance.clearTextPassword = settings.TEST_DEFAULT_PASSWORD
         return instance
