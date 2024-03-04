@@ -93,8 +93,8 @@ def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
             name_query = f"%{clean_accents(search_query)}%"
             base_query = base_query.filter(
                 sa.or_(
-                    sa.func.unaccent(offerers_models.Venue.name).ilike(name_query),
-                    sa.func.unaccent(offerers_models.Venue.publicName).ilike(name_query),
+                    sa.func.immutable_unaccent(offerers_models.Venue.name).ilike(name_query),
+                    sa.func.immutable_unaccent(offerers_models.Venue.publicName).ilike(name_query),
                 )
             )
 
