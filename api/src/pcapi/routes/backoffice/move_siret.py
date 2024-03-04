@@ -131,7 +131,6 @@ def apply_move_siret() -> utils.BackofficeResponse:
             target_venue,
             form.siret.data,
             form.comment.data,
-            apply_changes=True,
             override_revenue_check=bool(form.override_revenue_check.data),
             author_user_id=current_user.id,
         )

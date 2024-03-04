@@ -61,7 +61,6 @@ def move_siret(
     target_venue: offerers_models.Venue,
     siret: str,
     comment: str,
-    apply_changes: bool = False,
     override_revenue_check: bool = False,
     author_user_id: int | None = None,
 ) -> None:
@@ -160,10 +159,7 @@ def move_siret(
         db.session.rollback()
         raise
 
-    if apply_changes:
-        db.session.commit()
-    else:
-        db.session.rollback()
+    db.session.commit()
 
 
 def has_pending_pricings(pricing_point: offerers_models.Venue) -> bool:
