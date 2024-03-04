@@ -7,8 +7,8 @@ import { CancelablePromise, GetOffererResponseModel } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as useNotification from 'hooks/useNotification'
+import { collectiveOfferFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
 import {
-  collectiveOfferFactory,
   defaultGetOffererVenueResponseModel,
   defaultGetOffererResponseModel,
 } from 'utils/apiFactories'
@@ -261,9 +261,7 @@ describe('OfferType', () => {
 
   it('should select duplicate template offer', async () => {
     const offersRecap = [collectiveOfferFactory()]
-    vi.spyOn(api, 'getCollectiveOffers')
-      // @ts-expect-error FIX ME
-      .mockResolvedValueOnce(offersRecap)
+    vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
 
     renderOfferTypes()
 

@@ -37,47 +37,6 @@ let offererId = 1
 let stockId = 1
 let bookingId = 1
 
-// TODO factories: type this
-export const collectiveOfferFactory = (
-  customCollectiveOffer = {},
-  customStock = collectiveStockFactory() || null,
-  customVenue = getOfferVenueFactory()
-) => {
-  const stocks = customStock === null ? [] : [customStock]
-  const currentOfferId = offerId++
-
-  return {
-    name: `Le nom de l’offre ${currentOfferId}`,
-    isActive: true,
-    isEditable: true,
-    isEvent: true,
-    isFullyBooked: false,
-    isThing: false,
-    id: currentOfferId,
-    status: OfferStatus.ACTIVE,
-    stocks,
-    venue: customVenue,
-    hasBookingLimitDatetimesPassed: false,
-    isEducational: true,
-    ...customCollectiveOffer,
-  }
-}
-
-// TODO factories: type this
-const collectiveStockFactory = (customStock = {}) => {
-  return {
-    bookingsQuantity: 0,
-    id: `STOCK${stockId++}`,
-    offerId: `OFFER${offerId}`,
-    price: 100,
-    quantity: 1,
-    remainingQuantity: 1,
-    beginningDatetime: new Date('2021-10-15T12:00:00Z'),
-    bookingLimitdatetime: new Date('2021-09-15T12:00:00Z'),
-    ...customStock,
-  }
-}
-
 export const getIndividualOfferFactory = (
   customGetIndividualOffer: Partial<GetIndividualOfferResponseModel> = {}
 ): GetIndividualOfferResponseModel => {
