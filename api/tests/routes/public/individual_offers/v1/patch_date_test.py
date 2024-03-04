@@ -1,5 +1,6 @@
 import dataclasses
 import datetime
+from unittest import mock
 
 import pytest
 
@@ -15,7 +16,8 @@ from . import utils
 
 @pytest.mark.usefixtures("db_session")
 class PatchDateTest:
-    def test_update_all_fields_on_date_with_price(self, client):
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_update_all_fields_on_date_with_price(self, mocked_async_index_offer_ids, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
@@ -52,6 +54,7 @@ class PatchDateTest:
         assert event_stock.price == price_category.price
         assert event_stock.priceCategory == price_category
         assert event_stock.quantity == 24
+        mocked_async_index_offer_ids.assert_called_once()
 
     def test_sends_email_if_beginning_date_changes_on_edition(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue(venue_params={"bookingEmail": "venue@email.com"})
@@ -251,6 +254,30 @@ class PatchDateTest:
         assert event_stock.price == price_category.price
         assert event_stock.quantity == 1
         assert event_stock.priceCategory == price_category
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_no_update(self, mocked_async_index_offer_ids, client):
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+        event_offer = offers_factories.EventOfferFactory(
+            venue=venue,
+            lastProvider=api_key.provider,
+        )
+        price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
+        stock = offers_factories.EventStockFactory(
+            offer=event_offer,
+            quantity=20,
+            priceCategory=price_category,
+        )
+
+        client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+        response = client.patch(
+            f"/public/offers/v1/events/{stock.offerId}/dates/{stock.id}",
+            json={"quantity": stock.quantity},  # unchanged
+        )
+
+        assert response.status_code == 200
+        assert stock.quantity == 20
+        mocked_async_index_offer_ids.assert_not_called()
 
 
 @pytest.mark.usefixtures("db_session")

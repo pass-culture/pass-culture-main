@@ -166,8 +166,9 @@ def upsert_stocks(
                     ),
                     price_category=price_categories.get(stock_to_edit.price_category_id, None),
                 )
-                upserted_stocks.append(edited_stock)
-                edited_stocks_with_update_info.append((edited_stock, is_beginning_updated))
+                if edited_stock:
+                    upserted_stocks.append(edited_stock)
+                    edited_stocks_with_update_info.append((edited_stock, is_beginning_updated))
 
             for stock_to_create in stocks_to_create:
                 offers_validation.check_stock_has_price_or_price_category(offer, stock_to_create, price_categories)

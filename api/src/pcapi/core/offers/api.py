@@ -610,7 +610,10 @@ def edit_stock(
     booking_limit_datetime: datetime.datetime | None | T_UNCHANGED = UNCHANGED,
     editing_provider: providers_models.Provider | None = None,
     price_category: models.PriceCategory | None | T_UNCHANGED = UNCHANGED,
-) -> tuple[models.Stock, bool]:
+) -> tuple[models.Stock | None, bool]:
+    """If anything has changed, return the stock and whether the
+    "beginning datetime" has changed. Otherwise, return `(None, False)`.
+    """
     validation.check_stock_is_updatable(stock, editing_provider)
 
     old_price = stock.price
@@ -647,6 +650,13 @@ def edit_stock(
 
     if beginning_datetime not in (UNCHANGED, stock.beginningDatetime):
         modifications["beginningDatetime"] = beginning_datetime
+
+    if not modifications:
+        logger.info(
+            "Empty update of stock",
+            extra={"offer_id": stock.offerId, "stock_id": stock.id},
+        )
+        return None, False  # False is for `"beginningDatetime" in modifications`
 
     if stock.offer.isFromAllocine:
         updated_fields = set(modifications)
