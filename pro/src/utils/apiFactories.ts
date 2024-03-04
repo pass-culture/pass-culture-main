@@ -16,7 +16,6 @@ import {
   OfferAddressType,
   OfferStatus,
   SubcategoryIdEnum,
-  VenueListItemResponseModel,
   VenueTypeCode,
   type CollectiveOfferOfferVenueResponseModel,
   type GetCollectiveOfferManagingOffererResponseModel,
@@ -78,26 +77,6 @@ export const getIndividualOfferFactory = (
       visa: 'USA',
     },
     ...customGetIndividualOffer,
-  }
-}
-
-// TODO factories: should remove customOfferer as an argument
-export const getVenueListItemFactory = (
-  customVenue = {},
-  customOfferer = getOfferManagingOffererFactory()
-): VenueListItemResponseModel => {
-  const currentVenueId = venueId++
-  return {
-    id: currentVenueId,
-    isVirtual: false,
-    name: `Le nom du lieu ${currentVenueId}`,
-    managingOffererId: customOfferer.id,
-    publicName: 'Mon Lieu',
-    hasCreatedOffer: true,
-    hasMissingReimbursementPoint: true,
-    offererName: 'offerer',
-    venueTypeCode: VenueTypeCode.AUTRE,
-    ...customVenue,
   }
 }
 
