@@ -1,8 +1,8 @@
 from datetime import datetime
 from datetime import timedelta
 
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 from pcapi.core import testing
 import pcapi.core.bookings.factories as bookings_factories
@@ -104,7 +104,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert f"/thumbs/mediations/{humanize(mediation.id)}" in response.json["activeMediation"]["thumbUrl"]
 
-    @freeze_time("2020-10-15 00:00:00")
+    @time_machine.travel("2020-10-15 00:00:00")
     def test_returns_an_event_stock(self, client):
         # Given
         now = datetime.utcnow()
@@ -209,7 +209,7 @@ class Returns200Test:
             "withdrawalDelay": 60 * 30,
         }
 
-    @freeze_time("2019-10-15 00:00:00")
+    @time_machine.travel("2019-10-15 00:00:00")
     def test_returns_a_thing_stock(self, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
@@ -226,7 +226,7 @@ class Returns200Test:
         data = response.json
         assert data["subcategoryId"] == "LIVRE_PAPIER"
 
-    @freeze_time("2019-10-15 00:00:00")
+    @time_machine.travel("2019-10-15 00:00:00")
     def test_returns_a_thing_with_activation_code_stock(self, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
@@ -246,7 +246,7 @@ class Returns200Test:
         assert data["subcategoryId"] == "ABO_PLATEFORME_MUSIQUE"
         assert data["hasStocks"] == True
 
-    @freeze_time("2020-10-15 00:00:00")
+    @time_machine.travel("2020-10-15 00:00:00")
     def test_should_not_return_soft_deleted_stock(self, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()

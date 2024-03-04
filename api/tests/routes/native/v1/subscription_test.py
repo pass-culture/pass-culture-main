@@ -1,8 +1,8 @@
 import datetime
 
 from dateutil.relativedelta import relativedelta
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 from pcapi import settings
 from pcapi.core.fraud import factories as fraud_factories
@@ -64,7 +64,7 @@ class NextStepTest:
         ENABLE_UBBLE=False,
         ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE=True,
     )
-    @freeze_time("2022-09-08 11:54:22")
+    @time_machine.travel("2022-09-08 11:54:22")
     def test_next_subscription_maintenance_page(self, client):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
@@ -162,7 +162,7 @@ class NextStepTest:
         ],
     )
     @override_features(ENABLE_UBBLE=True)
-    @freeze_time("2022-09-08 12:01:12.343025")
+    @time_machine.travel("2022-09-08 12:01:12")
     def test_next_subscription_test_ubble(
         self, client, fraud_check_status, reason_code, ubble_status, next_step, pending_idcheck, subscription_message
     ):
@@ -231,10 +231,10 @@ class NextStepTest:
         ENABLE_EDUCONNECT_AUTHENTICATION=False,
         ENABLE_UBBLE=True,
     )
-    @freeze_time("2022-09-08 12:39:04.289878")
+    @time_machine.travel("2022-09-08 12:39:04")
     def test_underage_not_ok_turned_18(self, client):
         # User has already performed id check with Ubble for underage credit (successfully or not), 2 years ago
-        with freeze_time(datetime.datetime.utcnow() - relativedelta(years=2)):
+        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=2)):
             user = users_factories.UserFactory(
                 dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
                 - relativedelta(years=16, days=5),
@@ -372,7 +372,7 @@ class NextStepTest:
     )
     def test_underage_ubble_ok_turned_18(self, client):
         # User has already performed id check with Ubble for underage credit, 2 years ago
-        with freeze_time(datetime.datetime.utcnow() - relativedelta(years=2)):
+        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=2)):
             user = users_factories.UserFactory(
                 dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
                 - relativedelta(years=16, days=5),
@@ -422,7 +422,7 @@ class NextStepTest:
         ENABLE_EDUCONNECT_AUTHENTICATION=False,
     )
     @pytest.mark.parametrize("age", [15, 16, 17, 18])
-    @freeze_time("2022-09-08T12:45:13.534068")
+    @time_machine.travel("2022-09-08 12:45:13")
     def test_ubble_subscription_limited(self, client, age):
         birth_date = datetime.datetime.utcnow() - relativedelta(years=age + 1)
         birth_date += relativedelta(days=settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS - 1)
@@ -745,7 +745,7 @@ class StepperTest:
     def should_have_subtitle_for_profile_when_autocompleted(self, client):
         # A user was activated at 17 yo and is now 18 yo
         a_year_ago = datetime.datetime.utcnow() - relativedelta(years=1, months=1)
-        with freeze_time(a_year_ago):
+        with time_machine.travel(a_year_ago):
             user = users_factories.BeneficiaryFactory(age=17)
 
         assert user.age == 18
@@ -771,7 +771,7 @@ class StepperTest:
     def should_not_have_subtitle_for_profile_when_done(self, client):
         # A user was activated at 17 yo and is now 18 yo
         a_year_ago = datetime.datetime.utcnow() - relativedelta(years=1, months=1)
-        with freeze_time(a_year_ago):
+        with time_machine.travel(a_year_ago):
             user = users_factories.BeneficiaryFactory(age=17)
 
         # The user has completed the phone validation step
@@ -847,7 +847,7 @@ class GetProfileTest:
             "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
         }
 
-        with freeze_time(datetime.datetime.utcnow() - datetime.timedelta(days=365)):
+        with time_machine.travel(datetime.datetime.utcnow() - datetime.timedelta(days=365)):
             client.with_token(user.email)
             client.post("/native/v1/subscription/profile", profile_data)
 

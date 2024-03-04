@@ -1,8 +1,8 @@
 from datetime import datetime
 from datetime import timedelta
 
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
@@ -48,7 +48,7 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
 
-    @freeze_time("2020-10-15 00:00:00")
+    @time_machine.travel("2020-10-15 00:00:00")
     def test_returns_an_event_stock(self, client):
         # Given
         now = datetime.utcnow()
@@ -88,7 +88,7 @@ class Returns200Test:
             ],
         }
 
-    @freeze_time("2020-10-15 00:00:00")
+    @time_machine.travel("2020-10-15 00:00:00")
     def test_returns_a_thing_stock(self, client):
         # Given
         now = datetime.utcnow()
@@ -181,7 +181,7 @@ class Returns200Test:
         assert len(response.json["stocks"]) == 0
         assert response.json["hasStocks"] == True
 
-    @freeze_time("2020-10-15 00:00:00")
+    @time_machine.travel("2020-10-15 00:00:00")
     def test_should_return_total_stock_count_when_unfiltered(self, client):
         # Given
         date_1 = datetime.utcnow()
@@ -197,7 +197,7 @@ class Returns200Test:
         assert response.json["stockCount"] == 5
         assert len(response.json["stocks"]) == 5
 
-    @freeze_time("2020-10-15 00:00:00")
+    @time_machine.travel("2020-10-15 00:00:00")
     def test_should_return_filtered_stock_count(self, client):
         # Given
         now = datetime.utcnow()
@@ -237,7 +237,7 @@ class Returns200Test:
             ],
         }
 
-    @freeze_time("2020-10-15 00:00:00")
+    @time_machine.travel("2020-10-15 00:00:00")
     def test_should_return_filtered_stock_count_and_filtered_stock_list(self, client):
         # Given
         date_1 = datetime.utcnow()
@@ -260,7 +260,7 @@ class Returns200Test:
         assert response.json["stockCount"] == 3
         assert len(response.json["stocks"]) == 2
 
-    @freeze_time("2020-10-15 00:00:00")
+    @time_machine.travel("2020-10-15 00:00:00")
     def test_should_return_filtered_stock_count_and_filtered_stock_list_with_stocks_inferior_to_limit_per_page(
         self, client
     ):
@@ -285,7 +285,7 @@ class Returns200Test:
         assert response.json["stockCount"] == 3
         assert len(response.json["stocks"]) == 3
 
-    @freeze_time("2020-10-15 22:37:00")
+    @time_machine.travel("2020-10-15 22:37:00")
     def test_performance(self, client):
         # Given
         date_1 = datetime.utcnow()

@@ -1,5 +1,5 @@
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
 from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
@@ -12,7 +12,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class OffererStatsTest:
-    @freeze_time("2021-01-01")
+    @time_machine.travel("2021-01-01")
     def test_get_offerer_stats(self, client):
         offerer = offerers_factories.OffererFactory()
         pro_user = users_factories.ProFactory()
@@ -84,7 +84,7 @@ class OffererStatsTest:
             "syncDate": "2021-01-01T00:00:00",
         }
 
-    @freeze_time("2021-01-01")
+    @time_machine.travel("2021-01-01")
     def test_get_offerer_stats_if_no_top_offers(self, client):
         offerer = offerers_factories.OffererFactory()
         pro_user = users_factories.ProFactory()

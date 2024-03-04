@@ -2,8 +2,8 @@ import datetime
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
-import freezegun
 import pytest
+import time_machine
 
 from pcapi.core.cultural_survey.models import CulturalSurveyAnswerEnum
 from pcapi.core.cultural_survey.models import CulturalSurveyQuestionEnum
@@ -264,7 +264,7 @@ class CulturalSurveyQuestionsTest:
             ]
         }
 
-    @freezegun.freeze_time("2020-01-01")
+    @time_machine.travel("2020-01-01", tick=False)
     @patch("pcapi.core.object_storage.backends.gcp.GCPBackend.store_public_object")
     def test_post_cultural_survey_answers(self, store_public_object, client):
         user: users_models.User = users_factories.UserFactory()

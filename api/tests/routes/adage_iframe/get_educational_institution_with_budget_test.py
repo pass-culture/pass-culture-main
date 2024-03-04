@@ -2,8 +2,8 @@ from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
 from flask import url_for
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 from pcapi.core.educational import factories as educational_factories
 
@@ -11,10 +11,10 @@ from pcapi.core.educational import factories as educational_factories
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-@freeze_time("2023-12-15 16:00:00")
 class EducationalInstitutionTest:
     endpoint = "adage_iframe.get_educational_institution_with_budget"
 
+    @time_machine.travel("2023-12-15 16:00:00")
     def test_get_institution(self, client):
         year = _build_educational_year()
         deposit = educational_factories.EducationalDepositFactory(educationalYear=year)
@@ -34,6 +34,7 @@ class EducationalInstitutionTest:
         assert response.json["phoneNumber"] == "0600000000"
         assert response.json["budget"] == deposit.amount
 
+    @time_machine.travel("2023-12-15 16:00:00")
     def test_current_deposit_is_used(self, client):
         year1 = _build_educational_year(relativedelta(years=2))
         year2 = _build_educational_year(relativedelta(years=1))
@@ -53,6 +54,7 @@ class EducationalInstitutionTest:
         assert response.status_code == 200
         assert response.json["budget"] == 3000
 
+    @time_machine.travel("2023-12-15 16:00:00")
     def test_remaining_budget(self, client):
         year = _build_educational_year()
         deposit = educational_factories.EducationalDepositFactory(educationalYear=year, amount=1000)

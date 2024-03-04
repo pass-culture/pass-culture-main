@@ -1,5 +1,5 @@
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.users import factories as users_factories
@@ -10,7 +10,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class Returns200Test:
-    @freeze_time("2020-11-17 15:00:00", tz_offset=-2)
+    @time_machine.travel("2020-11-17 15:00:00")
     def when_current_user_changes_password(self, client):
         # given
         user = users_factories.ProFactory(email="user@example.com")
@@ -34,7 +34,7 @@ class Returns200Test:
         expected_params = {"EVENT_DATE": "17 novembre 2020", "EVENT_HOUR": "16h00"}
         assert mails_testing.outbox[0]["params"] == expected_params
 
-    @freeze_time("2020-11-17 15:00:00")
+    @time_machine.travel("2020-11-17 15:00:00")
     def when_current_user_who_lives_at_wallis_changes_password(self, client):
         # given
         user = users_factories.ProFactory(email="user@example.com", departementCode="986")

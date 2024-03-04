@@ -1,8 +1,8 @@
 from datetime import datetime
 import logging
 
-from freezegun.api import freeze_time
 import pytest
+import time_machine
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.models import CollectiveBooking
@@ -20,8 +20,8 @@ stock_date = datetime(2021, 5, 15)
 educational_year_dates = {"start": datetime(2020, 9, 1), "end": datetime(2021, 8, 31)}
 
 
-@freeze_time("2020-11-17 15:00:00")
 class CollectiveBookingTest:
+    @time_machine.travel("2020-11-17 15:00:00")
     def test_post_educational_booking(self, client, caplog):
         # Given
         stock = educational_factories.CollectiveStockFactory(beginningDatetime=stock_date)
@@ -60,6 +60,7 @@ class CollectiveBookingTest:
 
         assert len(adage_api_testing.adage_requests) == 1
 
+    @time_machine.travel("2020-11-17 15:00:00")
     def test_post_educational_booking_with_less_redactor_information(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(beginningDatetime=stock_date)
@@ -173,6 +174,7 @@ class CollectiveBookingTest:
         }
         assert len(adage_api_testing.adage_requests) == 0
 
+    @time_machine.travel("2020-11-17 15:00:00")
     def test_should_not_allow_prebooking_when_uai_code_does_not_match_offer_institution_id(self, client) -> None:
         # Given
         educational_institution = educational_factories.EducationalInstitutionFactory()

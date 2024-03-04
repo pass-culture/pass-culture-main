@@ -1,11 +1,11 @@
 import re
 
-from freezegun import freeze_time
+import time_machine
 
 from pcapi.domain.titelive import put_today_file_at_end_of_list
 
 
-@freeze_time("2019-01-03 12:00:00")
+@time_machine.travel("2019-01-03 12:00:00")
 def test_put_today_file_at_end_of_list_order_file_as_expected(app):
     # given
     files_list = list(

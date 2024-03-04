@@ -2,8 +2,8 @@ import io
 import pathlib
 from unittest.mock import patch
 
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 from pcapi.core import testing
 from pcapi.core.offerers import factories as offerers_factories
@@ -17,7 +17,7 @@ IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 
 
 class Returns201Test:
-    @freeze_time("2020-10-15 00:00:00")
+    @time_machine.travel("2020-10-15 00:00:00")
     @patch("pcapi.core.search.async_index_venue_ids")
     def test_upload_image(self, mock_search_async_index_venue_ids, client, tmpdir):
         """

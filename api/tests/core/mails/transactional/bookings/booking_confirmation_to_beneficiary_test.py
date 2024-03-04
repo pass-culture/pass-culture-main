@@ -2,8 +2,8 @@ import dataclasses
 from datetime import datetime
 from datetime import timezone
 
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import UsedBookingFactory
@@ -26,7 +26,7 @@ from pcapi.utils.human_ids import humanize
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-@freeze_time("2032-10-15 12:48:00")
+@time_machine.travel("2032-10-15 12:48:00")
 def test_sendinblue_send_email():
     booking = BookingFactory(stock=offers_factories.EventStockFactory(price=1.99), dateCreated=datetime.utcnow())
     send_individual_booking_confirmation_email_to_beneficiary(booking)
@@ -82,7 +82,7 @@ def get_expected_base_sendinblue_email_data(booking, mediation, **overrides):
     return email_data
 
 
-@freeze_time("2032-10-15 12:48:00")
+@time_machine.travel("2032-10-15 12:48:00")
 def test_should_return_event_specific_data_for_email_when_offer_is_an_event_sendinblue():
     booking = BookingFactory(stock=offers_factories.EventStockFactory(price=23.99), dateCreated=datetime.utcnow())
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
@@ -92,7 +92,7 @@ def test_should_return_event_specific_data_for_email_when_offer_is_an_event_send
     assert email_data == expected
 
 
-@freeze_time("2032-10-15 12:48:00")
+@time_machine.travel("2032-10-15 12:48:00")
 def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event_sendinblue():
     booking = BookingFactory(
         stock=offers_factories.EventStockFactory(price=23.99), dateCreated=datetime.utcnow(), quantity=2
@@ -111,7 +111,7 @@ def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event_s
     assert email_data == expected
 
 
-@freeze_time("2032-10-15 12:48:00")
+@time_machine.travel("2032-10-15 12:48:00")
 def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing_sendinblue():
     stock = offers_factories.ThingStockFactory(
         price=23.99,
@@ -139,7 +139,7 @@ def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing_sendi
     assert email_data == expected
 
 
-@freeze_time("2032-10-15 12:48:00")
+@time_machine.travel("2032-10-15 12:48:00")
 def test_should_use_public_name_when_available_sendinblue():
     booking = BookingFactory(
         stock__offer__venue__name="LIBRAIRIE GENERALE UNIVERSITAIRE COLBERT",
@@ -159,7 +159,7 @@ def test_should_use_public_name_when_available_sendinblue():
     assert email_data == expected
 
 
-@freeze_time("2032-10-15 12:48:00")
+@time_machine.travel("2032-10-15 12:48:00")
 def test_should_return_withdrawal_details_when_available_sendinblue():
     withdrawal_details = "Conditions de retrait spécifiques."
     booking = BookingFactory(
@@ -179,7 +179,7 @@ def test_should_return_withdrawal_details_when_available_sendinblue():
     assert email_data == expected
 
 
-@freeze_time("2032-10-15 12:48:00")
+@time_machine.travel("2032-10-15 12:48:00")
 def test_should_return_offer_tags():
     booking = BookingFactory(
         dateCreated=datetime.utcnow(),
@@ -200,7 +200,7 @@ def test_should_return_offer_tags():
     assert email_data == expected
 
 
-@freeze_time("2032-10-15 12:48:00")
+@time_machine.travel("2032-10-15 12:48:00")
 def test_should_return_offer_features():
     stock = offers_factories.ThingStockFactory(
         features=["VO", "IMAX"],
@@ -230,8 +230,8 @@ def test_should_return_offer_features():
     assert email_data == expected
 
 
-@freeze_time("2032-10-15 12:48:00")
 class DigitalOffersSendinblueTest:
+    @time_machine.travel("2032-10-15 12:48:00")
     def test_should_return_digital_thing_specific_data_for_email_when_offer_is_a_digital_thing_sendinblue(self):
         booking = BookingFactory(
             quantity=10,
@@ -263,6 +263,7 @@ class DigitalOffersSendinblueTest:
         )
         assert email_data == expected
 
+    @time_machine.travel("2032-10-15 12:48:00")
     def test_hide_cancellation_policy_on_bookings_with_activation_code_sendinblue(self):
         offer = offers_factories.OfferFactory(
             venue__name="Lieu de l'offreur",
@@ -308,6 +309,7 @@ class DigitalOffersSendinblueTest:
 
         assert email_data == expected
 
+    @time_machine.travel("2032-10-15 12:48:00")
     def test_use_activation_code_instead_of_token_if_possible_sendinblue(self):
         booking = BookingFactory(
             user__email="used-email@example.com",
@@ -344,6 +346,7 @@ class DigitalOffersSendinblueTest:
         )
         assert email_data == expected
 
+    @time_machine.travel("2032-10-15 12:48:00")
     def test_add_expiration_date_from_activation_code_sendinblue(self):
         booking = BookingFactory(
             quantity=10,
@@ -406,8 +409,8 @@ def test_digital_offer_without_departement_code_information_sendinblue():
     assert email_data.params["BOOKING_HOUR"] == "12h00"
 
 
-@freeze_time("2032-10-15 12:48:00")
 class BooksBookingExpirationDateTestSendinblue:
+    @time_machine.travel("2032-10-15 12:48:00")
     def test_should_return_new_expiration_delay_data_for_email_when_offer_is_a_book_sendinblue(self):
         booking = BookingFactory(
             stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,

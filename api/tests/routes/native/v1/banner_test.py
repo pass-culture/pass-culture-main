@@ -1,8 +1,8 @@
 import datetime
 
 from dateutil.relativedelta import relativedelta
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
@@ -190,7 +190,7 @@ class BannerTest:
 
     def should_get_17_18_transition_id_check_done_banner(self, client):
         a_year_ago = datetime.datetime.utcnow() - relativedelta(years=1, months=1)
-        with freeze_time(a_year_ago):
+        with time_machine.travel(a_year_ago):
             user = users_factories.BeneficiaryFactory(age=17)
 
         assert user.age == 18

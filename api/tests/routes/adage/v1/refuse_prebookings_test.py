@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import Any
 
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.factories import CollectiveStockFactory
@@ -18,7 +18,6 @@ from pcapi.core.testing import assert_num_queries
 
 
 @pytest.mark.usefixtures("db_session")
-@freeze_time("2022-11-17 15:00:00")
 class Returns200Test:
     def test_refuse_collective_booking(
         self,
@@ -103,6 +102,7 @@ class Returns200Test:
         )
         assert len(mails_testing.outbox) == 1
 
+    @time_machine.travel("2022-11-17 15:00:00")
     def test_refuse_collective_booking_when_confirmed(self, client: Any) -> None:
         collective_booking = CollectiveBookingFactory(
             status=CollectiveBookingStatus.CONFIRMED,
@@ -124,7 +124,7 @@ class Returns200Test:
         )
         assert len(mails_testing.outbox) == 1
 
-    @freeze_time("2022-05-05 10:00:00")
+    @time_machine.travel("2022-05-05 10:00:00")
     def test_returns_no_error_when_already_cancelled(self, client: Any) -> None:
         booking = CollectiveBookingFactory(
             status=CollectiveBookingStatus.CANCELLED, cancellationLimitDate=datetime(2022, 10, 10)

@@ -8,9 +8,9 @@ from unittest import mock
 import zipfile
 
 from dateutil.relativedelta import relativedelta
-import freezegun
 import pytest
 import pytz
+import time_machine
 
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.factories as bookings_factories
@@ -143,7 +143,7 @@ class PriceEventTest:
                 stock_kwargs["offer__venue"] = venue
             booking_kwargs["stock"] = individual_stock_factory(**stock_kwargs)
         booking = bookings_factories.BookingFactory(**booking_kwargs)
-        with freezegun.freeze_time(used_date or datetime.datetime.utcnow()):
+        with time_machine.travel(used_date or datetime.datetime.utcnow()):
             bookings_api.mark_as_used(booking)
         return models.FinanceEvent.query.filter_by(booking=booking).one()
 
@@ -637,7 +637,7 @@ class CancelLatestEventTest:
 
 
 class UpdateFinanceEventPricingDateTest:
-    @freezegun.freeze_time("2023-10-20 17:00:00")
+    @time_machine.travel("2023-10-20 17:00:00", tick=False)
     def test_editing_beginning_datetime_edits_finance_event(self):
         # Given
         new_beginning_datetime = datetime.datetime.utcnow() + datetime.timedelta(days=4)
@@ -1465,7 +1465,7 @@ class GenerateCashflowsTest:
 
 
 @clean_temporary_files
-@freezegun.freeze_time(datetime.datetime(2023, 2, 1, 12, 34, 56))
+@time_machine.travel(datetime.datetime(2023, 2, 1, 12, 34, 56))
 @mock.patch("pcapi.connectors.googledrive.TestingBackend.create_file")
 @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
 def test_generate_payment_files_with_legacy_generate_cashflows(mocked_gdrive_create_file):
@@ -1499,7 +1499,7 @@ def test_generate_payment_files_with_legacy_generate_cashflows(mocked_gdrive_cre
 
 
 @clean_temporary_files
-@freezegun.freeze_time(datetime.datetime(2023, 2, 1, 12, 34, 56))
+@time_machine.travel(datetime.datetime(2023, 2, 1, 12, 34, 56))
 @mock.patch("pcapi.connectors.googledrive.TestingBackend.create_file")
 @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
 def test_generate_payment_files(mocked_gdrive_create_file):
@@ -2128,7 +2128,7 @@ def test_generate_invoice_file_legacy_journey():
     )
 
     # Freeze time so that we can guess the timestamp of the CSV file.
-    with freezegun.freeze_time(datetime.datetime(2023, 2, 1, 12, 34, 56)):
+    with time_machine.travel(datetime.datetime(2023, 2, 1, 12, 34, 56)):
         path = api.generate_invoice_file_legacy(cashflow1.batch)
     with zipfile.ZipFile(path) as zfile:
         with zfile.open("invoices_20230201_133456.csv") as csv_bytefile:
@@ -2315,7 +2315,7 @@ def test_generate_invoice_file_new_journey():
     )
 
     # Freeze time so that we can guess the timestamp of the CSV file.
-    with freezegun.freeze_time(datetime.datetime(2023, 2, 1, 12, 34, 56)):
+    with time_machine.travel(datetime.datetime(2023, 2, 1, 12, 34, 56)):
         path = api.generate_invoice_file(cashflow1.batch)
     with zipfile.ZipFile(path) as zfile:
         with zfile.open("invoices_20230201_133456.csv") as csv_bytefile:
@@ -2620,7 +2620,7 @@ class GenerateInvoiceTest:
     )
 
     @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
-    @freezegun.freeze_time(datetime.datetime(2022, 1, 15))
+    @time_machine.travel(datetime.datetime(2022, 1, 15))
     def test_reference_scheme_increments(self):
         venue = offerers_factories.VenueFactory()
         bank_account = factories.BankAccountFactory(offerer=venue.managingOfferer)
@@ -2982,7 +2982,7 @@ class GenerateInvoiceLegacyTest:
         + 1  # commit
     )
 
-    @freezegun.freeze_time(datetime.datetime(2022, 1, 15))
+    @time_machine.travel(datetime.datetime(2022, 1, 15))
     @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_reference_scheme_increments(self):
         reimbursement_point = offerers_factories.VenueFactory()
@@ -4411,16 +4411,16 @@ class EditReimbursementRuleTest:
             api.edit_reimbursement_rule(rule, end_date=end)
 
 
-@freezegun.freeze_time("2021-02-05 09:00:00")
 class CreateDepositTest:
+    @time_machine.travel("2021-02-05 09:00:00")
     @pytest.mark.parametrize("age,expected_amount", [(15, Decimal(20)), (16, Decimal(30)), (17, Decimal(30))])
     def test_create_underage_deposit(self, age, expected_amount):
-        with freezegun.freeze_time(
+        with time_machine.travel(
             datetime.datetime.combine(datetime.datetime.utcnow(), datetime.time(0, 0))
             - relativedelta(years=age, months=2)
         ):
             beneficiary = users_factories.UserFactory(validatedBirthDate=datetime.datetime.utcnow())
-        with freezegun.freeze_time(datetime.datetime.utcnow() - relativedelta(month=1)):
+        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(month=1)):
             fraud_factories.BeneficiaryFraudCheckFactory(
                 user=beneficiary,
                 status=fraud_models.FraudCheckStatus.OK,
@@ -4439,15 +4439,16 @@ class CreateDepositTest:
         assert deposit.user.id == beneficiary.id
         assert deposit.expirationDate == datetime.datetime(2021 - (age + 1) + 18, 12, 5, 0, 0, 0)
 
+    @time_machine.travel("2021-02-05 09:00:00")
     @pytest.mark.parametrize("age, expected_amount", [(15, Decimal(50)), (16, Decimal(60)), (17, Decimal(300))])
     def test_create_underage_deposit_and_recredit_after_validation(self, age, expected_amount):
-        with freezegun.freeze_time(
+        with time_machine.travel(
             datetime.datetime.combine(datetime.datetime.utcnow(), datetime.time(0, 0))
             - relativedelta(years=age + 1, months=1)  # 16 (or 17) years and 1 month ago, user was born
         ):
             beneficiary = users_factories.UserFactory(validatedBirthDate=datetime.datetime.utcnow())
 
-        with freezegun.freeze_time(datetime.datetime.utcnow() - relativedelta(months=2)):
+        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(months=2)):
             # User starts registration at 15 (or 16) years and 11 months old
             fraud_factories.BeneficiaryFraudCheckFactory(
                 user=beneficiary,
@@ -4477,15 +4478,16 @@ class CreateDepositTest:
         assert deposit.amount == expected_amount
         assert deposit.user.id == beneficiary.id
 
+    @time_machine.travel("2021-02-05 09:00:00")
     @pytest.mark.parametrize("age, expected_amount", [(15, Decimal(80))])
     def test_create_underage_deposit_and_recredit_sum_of_15_17(self, age, expected_amount):
-        with freezegun.freeze_time(
+        with time_machine.travel(
             datetime.datetime.combine(datetime.datetime.utcnow(), datetime.time(0, 0))
             - relativedelta(years=age + 2, months=1)  # 17 years and 1 month ago, user was born
         ):
             beneficiary = users_factories.UserFactory(validatedBirthDate=datetime.datetime.utcnow())
 
-        with freezegun.freeze_time(datetime.datetime.utcnow() - relativedelta(years=1, months=2)):
+        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=1, months=2)):
             # User starts registration at 15 years and 11 months old
             fraud_factories.BeneficiaryFraudCheckFactory(
                 user=beneficiary,
@@ -4515,7 +4517,7 @@ class CreateDepositTest:
         assert deposit.amount == expected_amount
         assert deposit.user.id == beneficiary.id
 
-    @freezegun.freeze_time("2022-09-05 09:00:00")
+    @time_machine.travel("2022-09-05 09:00:00")
     def test_create_18_years_old_deposit(self):
         beneficiary = users_factories.UserFactory()
 
@@ -4525,34 +4527,34 @@ class CreateDepositTest:
         assert deposit.version == 2
         assert deposit.amount == Decimal(300)
         assert deposit.user.id == beneficiary.id
-        # We use freeze time to ensure this test is not flaky. Otherwise, the expiration date would be dependant on the daylight saving time.
+        # We use time_machine to ensure this test is not flaky. Otherwise, the expiration date would be dependant on the daylight saving time.
         assert deposit.expirationDate == datetime.datetime(2024, 9, 5, 23, 59, 59, 999999)
 
     def test_tahiti_grant_18_expiration_is_2_years_after_at_EOD(self):
         tahiti_tz = datetime.timezone(datetime.timedelta(hours=-10))
         tahiti_datetime = datetime.datetime(2023, 5, 29, tzinfo=tahiti_tz)
-        with freezegun.freeze_time(tahiti_datetime.replace(hour=0, minute=0, second=0)):
+        with time_machine.travel(tahiti_datetime.replace(hour=0, minute=0, second=0)):
             beneficiary = users_factories.UserFactory()
             deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
         assert deposit.type == models.DepositType.GRANT_18
         assert deposit.expirationDate == datetime.datetime(2025, 5, 29, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
             tzinfo=None
         )
-        with freezegun.freeze_time(tahiti_datetime.replace(hour=23, minute=59, second=59)):
+        with time_machine.travel(tahiti_datetime.replace(hour=23, minute=59, second=59)):
             beneficiary = users_factories.UserFactory()
             deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
         assert deposit.type == models.DepositType.GRANT_18
         assert deposit.expirationDate == datetime.datetime(2025, 5, 30, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
             tzinfo=None
         )
-        with freezegun.freeze_time(tahiti_datetime.replace(hour=13, minute=59, second=59)):
+        with time_machine.travel(tahiti_datetime.replace(hour=13, minute=59, second=59)):
             beneficiary = users_factories.UserFactory()
             deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
         assert deposit.type == models.DepositType.GRANT_18
         assert deposit.expirationDate == datetime.datetime(2025, 5, 29, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
             tzinfo=None
         )
-        with freezegun.freeze_time(tahiti_datetime.replace(hour=14, minute=0, second=0)):
+        with time_machine.travel(tahiti_datetime.replace(hour=14, minute=0, second=0)):
             beneficiary = users_factories.UserFactory()
             deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
         assert deposit.type == models.DepositType.GRANT_18
@@ -4563,28 +4565,28 @@ class CreateDepositTest:
     def test_wallis_grant_18_expiration_is_2_years_after_at_EOD(self):
         wallis_tz = datetime.timezone(datetime.timedelta(hours=12))
         wallis_datetime = datetime.datetime(2023, 5, 29, tzinfo=wallis_tz)
-        with freezegun.freeze_time(wallis_datetime.replace(hour=0, minute=0, second=0)):
+        with time_machine.travel(wallis_datetime.replace(hour=0, minute=0, second=0)):
             beneficiary = users_factories.UserFactory()
             deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
         assert deposit.type == models.DepositType.GRANT_18
         assert deposit.expirationDate == datetime.datetime(2025, 5, 28, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
             tzinfo=None
         )
-        with freezegun.freeze_time(wallis_datetime.replace(hour=23, minute=59, second=59)):
+        with time_machine.travel(wallis_datetime.replace(hour=23, minute=59, second=59)):
             beneficiary = users_factories.UserFactory()
             deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
         assert deposit.type == models.DepositType.GRANT_18
         assert deposit.expirationDate == datetime.datetime(2025, 5, 29, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
             tzinfo=None
         )
-        with freezegun.freeze_time(wallis_datetime.replace(hour=11, minute=59, second=59)):
+        with time_machine.travel(wallis_datetime.replace(hour=11, minute=59, second=59)):
             beneficiary = users_factories.UserFactory()
             deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
         assert deposit.type == models.DepositType.GRANT_18
         assert deposit.expirationDate == datetime.datetime(2025, 5, 28, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
             tzinfo=None
         )
-        with freezegun.freeze_time(wallis_datetime.replace(hour=12, minute=00, second=00)):
+        with time_machine.travel(wallis_datetime.replace(hour=12, minute=00, second=00)):
             beneficiary = users_factories.UserFactory()
             deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
         assert deposit.type == models.DepositType.GRANT_18
@@ -4595,28 +4597,28 @@ class CreateDepositTest:
     def test_metropole_grant_18_expiration_is_2_years_after_at_EOD(self):
         metropole_tz = datetime.timezone(datetime.timedelta(hours=1))
         metropole_datetime = datetime.datetime(2023, 5, 29, tzinfo=metropole_tz)
-        with freezegun.freeze_time(metropole_datetime.replace(hour=0, minute=0, second=0)):
+        with time_machine.travel(metropole_datetime.replace(hour=0, minute=0, second=0)):
             beneficiary = users_factories.UserFactory()
             deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
         assert deposit.type == models.DepositType.GRANT_18
         assert deposit.expirationDate == datetime.datetime(2025, 5, 28, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
             tzinfo=None
         )
-        with freezegun.freeze_time(metropole_datetime.replace(hour=23, minute=59, second=59)):
+        with time_machine.travel(metropole_datetime.replace(hour=23, minute=59, second=59)):
             beneficiary = users_factories.UserFactory()
             deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
         assert deposit.type == models.DepositType.GRANT_18
         assert deposit.expirationDate == datetime.datetime(2025, 5, 29, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
             tzinfo=None
         )
-        with freezegun.freeze_time(metropole_datetime.replace(hour=0, minute=59, second=59)):
+        with time_machine.travel(metropole_datetime.replace(hour=0, minute=59, second=59)):
             beneficiary = users_factories.UserFactory()
             deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
         assert deposit.type == models.DepositType.GRANT_18
         assert deposit.expirationDate == datetime.datetime(2025, 5, 28, 23, 59, 59, 999999, tzinfo=pytz.utc).replace(
             tzinfo=None
         )
-        with freezegun.freeze_time(metropole_datetime.replace(hour=1, minute=0, second=0)):
+        with time_machine.travel(metropole_datetime.replace(hour=1, minute=0, second=0)):
             beneficiary = users_factories.UserFactory()
             deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
         assert deposit.type == models.DepositType.GRANT_18
@@ -4625,7 +4627,7 @@ class CreateDepositTest:
         )
 
     def test_deposit_created_when_another_type_already_exist_for_user(self):
-        with freezegun.freeze_time(datetime.datetime.utcnow() - relativedelta(years=3)):
+        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=3)):
             beneficiary = users_factories.UnderageBeneficiaryFactory()
 
         api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
@@ -4650,7 +4652,7 @@ class CreateDepositTest:
 
 
 class UserRecreditTest:
-    @freezegun.freeze_time("2021-07-01")
+    @time_machine.travel("2021-07-01")
     @pytest.mark.parametrize(
         "birth_date,registration_datetime,expected_result",
         [
@@ -4676,7 +4678,7 @@ class UserRecreditTest:
         assert api._has_celebrated_birthday_since_credit_or_registration(user) == expected_result
 
     def test_can_be_recredited(self):
-        with freezegun.freeze_time("2020-05-02"):
+        with time_machine.travel("2020-05-02"):
             user = users_factories.UnderageBeneficiaryFactory(
                 subscription_age=15, dateOfBirth=datetime.date(2005, 5, 1)
             )
@@ -4696,7 +4698,7 @@ class UserRecreditTest:
             assert user.deposit.recredits == []
             assert api._can_be_recredited(user) is False
 
-        with freezegun.freeze_time("2021-05-02"):
+        with time_machine.travel("2021-05-02"):
             # User turned 16. They can be recredited
             assert api._can_be_recredited(user) is True
 
@@ -4706,7 +4708,7 @@ class UserRecreditTest:
             assert user.recreditAmountToShow == 30
             assert api._can_be_recredited(user) is False
 
-        with freezegun.freeze_time("2022-05-02"):
+        with time_machine.travel("2022-05-02"):
             # User turned 17. They can be recredited
             assert api._can_be_recredited(user) is True
 
@@ -4717,7 +4719,7 @@ class UserRecreditTest:
             assert api._can_be_recredited(user) is False
 
     def test_can_be_recredited_no_registration_datetime(self):
-        with freezegun.freeze_time("2020-05-02"):
+        with time_machine.travel("2020-05-02"):
             user = users_factories.UnderageBeneficiaryFactory(
                 subscription_age=15, dateOfBirth=datetime.date(2005, 5, 1)
             )
@@ -4740,12 +4742,12 @@ class UserRecreditTest:
                 eligibilityType=users_models.EligibilityType.UNDERAGE,
             )
             fraud_check.resultContent = content
-        with freezegun.freeze_time("2022-05-02"):
+        with time_machine.travel("2022-05-02"):
             assert api._can_be_recredited(user) is True
 
     def test_can_be_recredited_no_identity_fraud_check(self):
         user = users_factories.UserFactory(dateOfBirth=datetime.date(2005, 5, 1))
-        with freezegun.freeze_time("2020-05-02"):
+        with time_machine.travel("2020-05-02"):
             assert api._can_be_recredited(user) is False
 
     @mock.patch("pcapi.core.finance.api._has_been_recredited")
@@ -4817,7 +4819,7 @@ class UserRecreditTest:
         # Each user that is credited is supposed to have the corresponding fraud_checks.
         # - We create the fraud_checks manually to override the registration_datetime
 
-        with freezegun.freeze_time("2020-01-01"):
+        with time_machine.travel("2020-01-01"):
             # Create users, with their fraud checks
 
             # Already beneficiary users
@@ -4962,7 +4964,7 @@ class UserRecreditTest:
         assert user_17_already_recredited_twice.recreditAmountToShow is None
 
         # Run the task
-        with freezegun.freeze_time("2020, 5, 2"):
+        with time_machine.travel("2020, 5, 2"):
             api.recredit_underage_users()
 
         # Check the results:
@@ -4991,7 +4993,7 @@ class UserRecreditTest:
         assert user_17_already_recredited_twice.recreditAmountToShow is None
 
     def test_recredit_around_the_year(self):
-        with freezegun.freeze_time("2015-05-01"):
+        with time_machine.travel("2015-05-01"):
             user_activated_at_15 = users_factories.UnderageBeneficiaryFactory(subscription_age=15)
             user_activated_at_16 = users_factories.UnderageBeneficiaryFactory(subscription_age=16)
             user_activated_at_17 = users_factories.UnderageBeneficiaryFactory(subscription_age=17)
@@ -5004,7 +5006,7 @@ class UserRecreditTest:
         assert user_activated_at_17.recreditAmountToShow is None
 
         # recredit the following year
-        with freezegun.freeze_time("2016-05-01"):
+        with time_machine.travel("2016-05-01"):
             api.recredit_underage_users()
 
         assert user_activated_at_15.deposit.amount == 50
@@ -5015,7 +5017,7 @@ class UserRecreditTest:
         assert user_activated_at_17.recreditAmountToShow is None
 
         # recrediting the day after does not affect the amount
-        with freezegun.freeze_time("2016-05-02"):
+        with time_machine.travel("2016-05-02"):
             api.recredit_underage_users()
 
         assert user_activated_at_15.deposit.amount == 50
@@ -5026,7 +5028,7 @@ class UserRecreditTest:
         assert user_activated_at_17.recreditAmountToShow is None
 
         # recredit the following year
-        with freezegun.freeze_time("2017-05-01"):
+        with time_machine.travel("2017-05-01"):
             api.recredit_underage_users()
 
         assert user_activated_at_15.deposit.amount == 80
@@ -5037,7 +5039,7 @@ class UserRecreditTest:
         assert user_activated_at_17.recreditAmountToShow is None
 
     def test_recredit_when_account_activated_on_the_birthday(self):
-        with freezegun.freeze_time("2020-05-01"):
+        with time_machine.travel("2020-05-01"):
             user = users_factories.UnderageBeneficiaryFactory(
                 subscription_age=16, dateOfBirth=datetime.date(2004, 5, 1)
             )

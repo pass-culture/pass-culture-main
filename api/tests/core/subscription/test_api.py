@@ -6,9 +6,9 @@ from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
 from flask_jwt_extended.utils import create_access_token
-from freezegun import freeze_time
 import pytest
 from sqlalchemy.orm import joinedload
+import time_machine
 
 from pcapi import settings
 from pcapi.core.fraud import factories as fraud_factories
@@ -84,7 +84,7 @@ class RequiresIdCheckTest:
 
 @pytest.mark.usefixtures("db_session")
 class EduconnectFlowTest:
-    @freeze_time("2021-10-10")
+    @time_machine.travel("2021-10-10")
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_saml_client")
     @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=True)
     def test_educonnect_subscription(self, mock_get_educonnect_saml_client, client, app):
@@ -468,10 +468,10 @@ class NextSubscriptionStepTest:
         with override_features(**feature_flags):
             assert subscription_api.get_maintenance_page_type(user) == expected_result
 
-    @freeze_time("2019-01-01")
+    @time_machine.travel("2019-01-01")
     def test_next_step_phone_validation_after_dms_succeded_at_19(self):
         user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1))
-        with freeze_time("2018-01-01"):
+        with time_machine.travel("2018-01-01"):
             fraud_factories.BeneficiaryFraudCheckFactory(
                 user=user, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.KO
             )
@@ -657,7 +657,7 @@ class UpdateBirthDateTest:
         assert user.validatedBirthDate == new_birth_date.date()
 
     def test_update_birth_date_when_eligible_to_upgrade_age18_based_on_user_birth_date(self):
-        with freeze_time(datetime.utcnow() - relativedelta(years=1)):
+        with time_machine.travel(datetime.utcnow() - relativedelta(years=1)):
             user = users_factories.BeneficiaryFactory(age=17)
 
         assert user.validatedBirthDate == user.dateOfBirth.date()
@@ -668,7 +668,7 @@ class UpdateBirthDateTest:
         assert user.validatedBirthDate == new_birth_date.date()
 
     def test_does_not_update_birth_date_when_eligible_to_upgrade_age18_based_on_identity_check_birth_date(self):
-        with freeze_time(datetime.utcnow() - relativedelta(months=11)):
+        with time_machine.travel(datetime.utcnow() - relativedelta(months=11)):
             user = users_factories.BeneficiaryFactory(age=17)
 
         assert user.validatedBirthDate == user.dateOfBirth.date()
@@ -1578,7 +1578,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         )
 
     def test_manual_review_is_required_for_post_19yo_dms(self):
-        with freeze_time(datetime.utcnow() - relativedelta(days=1)):
+        with time_machine.travel(datetime.utcnow() - relativedelta(days=1)):
             user = users_factories.ProfileCompletedUserFactory(age=19)
 
         dms_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
@@ -1612,11 +1612,11 @@ class ActivateBeneficiaryIfNoMissingStepTest:
 
         assert not subscription_api.requires_manual_review_before_activation(user, dms_fraud_check)
 
-    @freeze_time("2024-02-01")
+    @time_machine.travel("2024-02-01")
     def test_manual_review_is_not_required_for_pre_19yo_dms(self):
         user = users_factories.ProfileCompletedUserFactory(age=19)
 
-        with freeze_time(datetime.utcnow() - relativedelta(days=1)):
+        with time_machine.travel(datetime.utcnow() - relativedelta(days=1)):
             dms_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
                 user=user,
                 type=fraud_models.FraudCheckType.DMS,

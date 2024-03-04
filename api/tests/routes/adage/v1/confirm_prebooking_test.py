@@ -2,8 +2,8 @@ from datetime import datetime
 from decimal import Decimal
 import logging
 
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 from pcapi.core.bookings.models import Booking
 from pcapi.core.educational.factories import CollectiveBookingFactory
@@ -23,8 +23,8 @@ from tests.routes.adage.v1.conftest import expected_serialized_prebooking
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-@freeze_time("2021-10-15 09:00:00")
 class Returns200Test:
+    @time_machine.travel("2021-10-15 09:00:00", tick=False)
     def test_confirm_collective_prebooking(self, client, caplog) -> None:
         redactor = EducationalRedactorFactory()
         educational_institution = EducationalInstitutionFactory()
@@ -69,6 +69,7 @@ class Returns200Test:
             == CollectiveBookingStatus.CONFIRMED
         )
 
+    @time_machine.travel("2021-10-15 09:00:00")
     @override_features(ENABLE_EAC_FINANCIAL_PROTECTION=True)
     def test_insufficient_ministry_fund_other_ministry(self, client) -> None:
         educational_institution = EducationalInstitutionFactory()
@@ -114,6 +115,7 @@ class Returns200Test:
         response = client.post(f"/adage/v1/prebookings/{booking.id}/confirm")
         assert response.status_code == 200
 
+    @time_machine.travel("2021-10-15 09:00:00")
     def test_sufficient_ministry_fund(self, client) -> None:
         educational_institution = EducationalInstitutionFactory()
         educational_institution2 = EducationalInstitutionFactory()
@@ -167,6 +169,7 @@ class Returns200Test:
         response = client.post(f"/adage/v1/prebookings/{booking.id}/confirm")
         assert response.status_code == 200
 
+    @time_machine.travel("2021-10-15 09:00:00")
     def test_out_of_minitry_check_dates(self, client) -> None:
         educational_institution = EducationalInstitutionFactory()
         educational_institution2 = EducationalInstitutionFactory()
@@ -206,7 +209,6 @@ class Returns200Test:
         assert response.status_code == 200
 
 
-@freeze_time("2021-10-15 09:00:00")
 class ReturnsErrorTest:
     def test_no_educational_booking(self, client) -> None:
         client = client.with_eac_token()
@@ -222,6 +224,7 @@ class ReturnsErrorTest:
         assert response.status_code == 404
         assert response.json == {"code": constants.EDUCATIONAL_BOOKING_NOT_FOUND}
 
+    @time_machine.travel("2021-10-15 09:00:00")
     def test_no_deposit_for_collective_bookings(self, client) -> None:
         booking = CollectiveBookingFactory(
             collectiveStock__price=Decimal(20.00),
@@ -235,6 +238,7 @@ class ReturnsErrorTest:
         assert response.status_code == 404
         assert response.json == {"code": "DEPOSIT_NOT_FOUND"}
 
+    @time_machine.travel("2021-10-15 09:00:00")
     def test_insufficient_fund_for_collective_bookings(self, client) -> None:
         educational_institution = EducationalInstitutionFactory()
         educational_year = EducationalYearFactory(adageId="1")
@@ -258,6 +262,7 @@ class ReturnsErrorTest:
         assert response.status_code == 422
         assert response.json == {"code": "INSUFFICIENT_FUND"}
 
+    @time_machine.travel("2021-10-15 09:00:00")
     @override_features(ENABLE_EAC_FINANCIAL_PROTECTION=True)
     def test_insufficient_ministry_fund_for_collective_bookings(self, client) -> None:
         educational_institution = EducationalInstitutionFactory()
@@ -296,6 +301,7 @@ class ReturnsErrorTest:
         assert response.status_code == 422
         assert response.json == {"code": "INSUFFICIENT_MINISTRY_FUND"}
 
+    @time_machine.travel("2021-10-15 09:00:00")
     def test_insufficient_temporary_fund_for_collective_bookings(self, client) -> None:
         educational_institution = EducationalInstitutionFactory()
         educational_year = EducationalYearFactory(adageId="1")
@@ -330,7 +336,7 @@ class ReturnsErrorTest:
         assert response.status_code == 422
         assert response.json == {"code": "EDUCATIONAL_BOOKING_IS_CANCELLED"}
 
-    @freeze_time("2021-08-05 15:00:00")
+    @time_machine.travel("2021-08-05 15:00:00")
     def test_confirmation_limit_date_has_passed_for_collective_bookings(self, client) -> None:
         booking: Booking = CollectiveBookingFactory(
             confirmationLimitDate=datetime(2021, 8, 5, 14),

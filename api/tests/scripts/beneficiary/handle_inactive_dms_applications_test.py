@@ -1,8 +1,8 @@
 import datetime
 from unittest.mock import patch
 
-import freezegun
 import pytest
+import time_machine
 
 from pcapi.connectors.dms import api as api_dms
 from pcapi.core.fraud import factories as fraud_factories
@@ -63,7 +63,7 @@ class HandleInactiveApplicationTest:
     @patch.object(api_dms.DMSGraphQLClient, "mark_without_continuation")
     @patch.object(api_dms.DMSGraphQLClient, "make_on_going")
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
-    @freezegun.freeze_time("2022-04-27")
+    @time_machine.travel("2022-04-27")
     def test_mark_without_continuation_skip_never_eligible(
         self, dms_applications_mock, make_on_going_mock, mark_without_continuation_mock
     ):
@@ -93,7 +93,7 @@ class HandleInactiveApplicationTest:
     @patch.object(api_dms.DMSGraphQLClient, "mark_without_continuation")
     @patch.object(api_dms.DMSGraphQLClient, "make_on_going")
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
-    @freezegun.freeze_time("2022-04-27")
+    @time_machine.travel("2022-04-27")
     @override_settings(DMS_ENROLLMENT_INSTRUCTOR="SomeInstructorId")
     def test_duplicated_application_can_be_cancelled(
         self, dms_applications_mock, make_on_going_mock, mark_without_continuation_mock
@@ -140,7 +140,7 @@ class HandleInactiveApplicationTest:
 
 @pytest.mark.usefixtures("db_session")
 class IsNeverEligibleTest:
-    @freezegun.freeze_time("2022-04-27")
+    @time_machine.travel("2022-04-27")
     def test_19_yo_at_generalisation_from_not_test_department(self):
         inactive_application = make_parsed_graphql_application(
             application_number=1,
@@ -150,7 +150,7 @@ class IsNeverEligibleTest:
         )
         assert _is_never_eligible_applicant(inactive_application)
 
-    @freezegun.freeze_time("2022-04-27")
+    @time_machine.travel("2022-04-27")
     def test_19_yo_at_generalisation_from_test_department(self):
         inactive_application = make_parsed_graphql_application(
             application_number=1,
@@ -160,7 +160,7 @@ class IsNeverEligibleTest:
         )
         assert not _is_never_eligible_applicant(inactive_application)
 
-    @freezegun.freeze_time("2022-04-27")
+    @time_machine.travel("2022-04-27")
     def test_still_18_yo_after_generalisation(self):
         inactive_application = make_parsed_graphql_application(
             application_number=1,
@@ -182,7 +182,7 @@ class HasInactivityDelayExpiredTest:
 
         assert _has_inactivity_delay_expired(no_message_application)
 
-    @freezegun.freeze_time("2022-04-27")
+    @time_machine.travel("2022-04-27")
     def test_has_inactivity_delay_expired_with_recent_message(self):
         no_message_application = make_parsed_graphql_application(
             application_number=1,
@@ -196,7 +196,7 @@ class HasInactivityDelayExpiredTest:
 
         assert not _has_inactivity_delay_expired(no_message_application)
 
-    @freezegun.freeze_time("2022-04-27")
+    @time_machine.travel("2022-04-27")
     def test_has_inactivity_delay_expired_with_old_message(self):
         no_message_application = make_parsed_graphql_application(
             application_number=1,
@@ -210,7 +210,7 @@ class HasInactivityDelayExpiredTest:
 
         assert _has_inactivity_delay_expired(no_message_application)
 
-    @freezegun.freeze_time("2022-04-27")
+    @time_machine.travel("2022-04-27")
     def test_has_inactivity_delay_expired_with_old_message_sent_by_user(self):
         applicant_email = "applikant@example.com"
 
