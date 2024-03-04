@@ -3157,13 +3157,13 @@ tests = ["pytest"]
 
 [[package]]
 name = "py7zr"
-version = "0.20.8"
+version = "0.21.0"
 description = "Pure python 7-zip library"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "py7zr-0.20.8-py3-none-any.whl", hash = "sha256:c74d957a0d32a2368854d1721b4ca20e614ea116d733352a115ca1c789b2c42e"},
-    {file = "py7zr-0.20.8.tar.gz", hash = "sha256:2a6b0db0441e63a2dd74cbd18f5d9ae7e08dc0e54685aa486361d0db6a0b4f78"},
+    {file = "py7zr-0.21.0-py3-none-any.whl", hash = "sha256:ea6ded2e5c6d8539e3406cb3b0317192b32af59cff13eaf87702acc36a274da6"},
+    {file = "py7zr-0.21.0.tar.gz", hash = "sha256:213a9cc46940fb8f63b4163643a8f5b36bbc798134746c3992d3bc6b14edab87"},
 ]
 
 [package.dependencies]
@@ -3179,7 +3179,7 @@ pyzstd = ">=0.15.9"
 texttable = "*"
 
 [package.extras]
-check = ["black (>=23.1.0)", "check-manifest", "flake8 (<7)", "flake8-black (>=0.3.6)", "flake8-deprecated", "flake8-isort", "isort (>=5.0.3)", "lxml", "mypy (>=0.940)", "mypy-extensions (>=0.4.1)", "pygments", "readme-renderer", "twine", "types-psutil"]
+check = ["black (>=23.1.0)", "check-manifest", "flake8 (<8)", "flake8-black (>=0.3.6)", "flake8-deprecated", "flake8-isort", "isort (>=5.0.3)", "lxml", "mypy (>=0.940)", "mypy-extensions (>=0.4.1)", "pygments", "readme-renderer", "twine", "types-psutil"]
 debug = ["pytest", "pytest-leaks", "pytest-profiling"]
 docs = ["docutils", "sphinx (>=5.0)", "sphinx-a4doc", "sphinx-py3doc-enhanced-theme"]
 test = ["coverage[toml] (>=5.2)", "coveralls (>=2.1.1)", "py-cpuinfo", "pyannotate", "pytest", "pytest-benchmark", "pytest-cov", "pytest-remotedata", "pytest-timeout"]
@@ -5579,4 +5579,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "41a48decd0479d46e55c35b27138e6321efe887307dd363f8097ae812fe5ee3e"
+content-hash = "b0b22c80a0d1ff9b78db64c2f4666e63dc7e1970c1611ec09a724c6204e8ffa7"
