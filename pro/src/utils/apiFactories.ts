@@ -3,20 +3,15 @@ import {
   BankAccountApplicationStatus,
   BankAccountResponseModel,
   BookingRecapResponseModel,
-  GetCollectiveOfferResponseModel,
   GetIndividualOfferResponseModel,
   GetOfferManagingOffererResponseModel,
   GetOfferVenueResponseModel,
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
   ManagedVenues,
-  OfferAddressType,
   OfferStatus,
   SubcategoryIdEnum,
   VenueTypeCode,
-  type CollectiveOfferOfferVenueResponseModel,
-  type GetCollectiveOfferManagingOffererResponseModel,
-  type GetCollectiveOfferVenueResponseModel,
 } from 'apiClient/v1'
 import { BookingRecapStatus } from 'apiClient/v1/models/BookingRecapStatus'
 import {
@@ -234,44 +229,4 @@ export const defaultManagedVenues: ManagedVenues = {
   id: 1,
   siret: '123456789',
   hasPricingPoint: true,
-}
-
-const defaultCollectiveOfferOfferVenue: CollectiveOfferOfferVenueResponseModel =
-  {
-    addressType: OfferAddressType.OFFERER_VENUE,
-    otherAddress: 'other',
-  }
-
-const defaultGetCollectiveOfferManagingOfferer: GetCollectiveOfferManagingOffererResponseModel =
-  {
-    id: 1,
-    name: 'nom',
-  }
-
-const defaultGetCollectiveOfferVenue: GetCollectiveOfferVenueResponseModel = {
-  id: 1,
-  managingOfferer: defaultGetCollectiveOfferManagingOfferer,
-  name: 'nom',
-}
-
-export const defaultGetCollectiveOffer: GetCollectiveOfferResponseModel = {
-  bookingEmails: [],
-  contactEmail: 'contact@contact.contact',
-  dateCreated: '10/18/2000',
-  description: 'description',
-  domains: [],
-  hasBookingLimitDatetimesPassed: false,
-  id: 1,
-  interventionArea: [],
-  isActive: false,
-  isBookable: false,
-  isCancellable: false,
-  isEditable: false,
-  isPublicApi: false,
-  isVisibilityEditable: false,
-  name: 'offre',
-  offerVenue: defaultCollectiveOfferOfferVenue,
-  status: OfferStatus.ACTIVE,
-  students: [],
-  venue: defaultGetCollectiveOfferVenue,
 }
