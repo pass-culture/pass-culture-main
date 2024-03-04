@@ -1,5 +1,5 @@
-import freezegun
 import pytest
+import time_machine
 
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
 from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
@@ -15,7 +15,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class OffererStatsTest:
-    @freezegun.freeze_time("2023-10-25")
+    @time_machine.travel("2023-10-25")
     def test_update_offerer_stats_data(self):
         offerer = OffererFactory()
         venue = VenueFactory(managingOfferer=offerer)
@@ -54,7 +54,7 @@ class OffererStatsTest:
         assert daily_views in result
         assert top_offers in result
 
-    @freezegun.freeze_time("2023-10-25")
+    @time_machine.travel("2023-10-25")
     def test_create_offerer_stats_data(self):
         offerer = OffererFactory()
 

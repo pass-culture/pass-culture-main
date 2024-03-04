@@ -1,8 +1,8 @@
 from typing import Any
 from unittest.mock import patch
 
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 from pcapi import settings
 from pcapi.core.educational import factories as educational_factories
@@ -15,7 +15,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class SendEacNewBookingEmailToProTest:
-    @freeze_time("2019-11-26 18:29:20.891028")
+    @time_machine.travel("2019-11-26")
     @patch("pcapi.core.mails.transactional.educational.eac_new_request_made_by_redactor_to_pro.mails")
     def test_new_request_made_by_redactor_for_pro(self, mails: Any) -> None:
         # given

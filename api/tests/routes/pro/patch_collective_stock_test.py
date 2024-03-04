@@ -1,8 +1,8 @@
 from datetime import datetime
 from datetime import timedelta
 
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveBooking
@@ -20,8 +20,8 @@ from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-@freeze_time("2020-11-17 15:00:00")
 class Return200Test:
+    @time_machine.travel("2020-11-17 15:00:00")
     def test_edit_collective_stock(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(
@@ -67,6 +67,7 @@ class Return200Test:
             "educationalPriceDetail": "Nouvelle description du prix",
         }
 
+    @time_machine.travel("2020-11-17 15:00:00")
     def test_edit_collective_stock_begining_datedame_same_day(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(
@@ -105,6 +106,7 @@ class Return200Test:
             "educationalPriceDetail": "Détail du prix",
         }
 
+    @time_machine.travel("2020-11-17 15:00:00")
     def test_edit_collective_stock_partially(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(
@@ -140,6 +142,7 @@ class Return200Test:
 
         assert len(adage_api_testing.adage_requests) == 0
 
+    @time_machine.travel("2020-11-17 15:00:00")
     @override_settings(ADAGE_API_URL="https://adage_base_url")
     def test_edit_collective_stock_with_pending_booking(self, client):
         # Given
@@ -185,6 +188,7 @@ class Return200Test:
         assert adage_api_testing.adage_requests[0]["sent_data"] == expected_payload
         assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation-edit"
 
+    @time_machine.travel("2020-11-17 15:00:00")
     @override_settings(ADAGE_API_URL="https://adage_base_url")
     def test_edit_collective_stock_does_not_send_notification_when_no_modification(self, client):
         # Given
@@ -210,6 +214,7 @@ class Return200Test:
         # Then
         assert len(adage_api_testing.adage_requests) == 0
 
+    @time_machine.travel("2020-11-17 15:00:00")
     @override_settings(ADAGE_API_URL="https://adage_base_url")
     def test_edit_collective_stock_update_booking_educational_year(self, client):
         # Given
@@ -248,8 +253,8 @@ class Return200Test:
         assert edited_collective_booking.educationalYearId == educational_year_2022_2023.adageId
 
 
-@freeze_time("2020-11-17 15:00:00")
 class Return403Test:
+    @time_machine.travel("2020-11-17 15:00:00")
     def test_edit_collective_stocks_should_not_be_possible_when_user_not_linked_to_offerer(self, client):
         stock = educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime(2021, 12, 18),
@@ -295,8 +300,8 @@ class Return403Test:
         assert response.json == {"global": ["Les stocks créés par l'api publique ne sont pas editables."]}
 
 
-@freeze_time("2020-11-17 15:00:00")
 class Return400Test:
+    @time_machine.travel("2020-11-17 15:00:00")
     def should_not_allow_number_of_tickets_to_be_negative_on_edition(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(
@@ -324,6 +329,7 @@ class Return400Test:
         edited_stock = CollectiveStock.query.get(stock.id)
         assert edited_stock.numberOfTickets == 32
 
+    @time_machine.travel("2020-11-17 15:00:00")
     def should_not_allow_price_to_be_negative_on_creation(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(
@@ -351,6 +357,7 @@ class Return400Test:
         edited_stock = CollectiveStock.query.get(stock.id)
         assert edited_stock.price == 1200
 
+    @time_machine.travel("2020-11-17 15:00:00")
     def should_not_accept_payload_with_bookingLimitDatetime_after_beginningDatetime(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(
@@ -378,6 +385,7 @@ class Return400Test:
         edited_stock = CollectiveStock.query.get(stock.id)
         assert edited_stock.bookingLimitDatetime == stock.bookingLimitDatetime
 
+    @time_machine.travel("2020-11-17 15:00:00")
     def should_edit_stock_when_event_expired(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(
@@ -399,6 +407,7 @@ class Return400Test:
         # Then
         assert response.status_code == 200
 
+    @time_machine.travel("2020-11-17 15:00:00")
     def should_not_allow_stock_edition_when_numberOfTickets_has_been_set_to_none(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory()
@@ -419,6 +428,7 @@ class Return400Test:
         assert response.status_code == 400
         assert response.json == {"numberOfTickets": ["Le nombre de places ne peut pas être nul."]}
 
+    @time_machine.travel("2020-11-17 15:00:00")
     def should_not_allow_stock_edition_when_totalPrice_has_been_set_to_none(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory()
@@ -439,6 +449,7 @@ class Return400Test:
         assert response.status_code == 400
         assert response.json == {"totalPrice": ["Le prix ne peut pas être nul."]}
 
+    @time_machine.travel("2020-11-17 15:00:00")
     def should_not_allow_stock_edition_when_beginnningDatetime_has_been_set_to_none(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory()
@@ -459,6 +470,7 @@ class Return400Test:
         assert response.status_code == 400
         assert response.json == {"beginningDatetime": ["La date de début de l'évènement ne peut pas être nulle."]}
 
+    @time_machine.travel("2020-11-17 15:00:00")
     def should_raise_error_when_educational_price_detail_length_is_greater_than_1000(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(
@@ -485,6 +497,7 @@ class Return400Test:
         assert response.status_code == 400
         assert response.json == {"educationalPriceDetail": ["Le détail du prix ne doit pas excéder 1000 caractères."]}
 
+    @time_machine.travel("2020-11-17 15:00:00")
     def test_create_valid_stock_for_collective_offer(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(
@@ -512,6 +525,7 @@ class Return400Test:
         assert response.status_code == 400
         assert response.json == {"beginningDatetime": ["L'évènement ne peut commencer dans le passé."]}
 
+    @time_machine.travel("2020-11-17 15:00:00")
     def test_doesnot_edit_offer_if_rejected(self, client):
         offer = educational_factories.CollectiveOfferFactory(validation=offer_mixin.OfferValidationStatus.REJECTED)
         stock = educational_factories.CollectiveStockFactory(price=1200, collectiveOffer=offer)

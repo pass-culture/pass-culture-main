@@ -1,7 +1,7 @@
 import datetime
 
-import freezegun
 import pytest
+import time_machine
 
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.factories as bookings_factories
@@ -27,15 +27,15 @@ def test_integration_full_workflow_legacy_journey(css_font_http_request_mock):
     factories.BankInformationFactory(venue=venue)
     booking = bookings_factories.BookingFactory(stock__offer__venue=venue)
 
-    with freezegun.freeze_time(initial_dt) as frozen_time:
+    with time_machine.travel(initial_dt, tick=False):
         bookings_api.mark_as_used(booking)
         assert booking.status == bookings_models.BookingStatus.USED
         event = models.FinanceEvent.query.one()
         assert event.booking == booking
         assert event.status == models.FinanceEventStatus.READY
 
-        # `price_events()` ignores recently created events (< 1 minute).
-        frozen_time.move_to(initial_dt + datetime.timedelta(minutes=1))
+    # `price_events()` ignores recently created events (< 1 minute).
+    with time_machine.travel(initial_dt + datetime.timedelta(minutes=1), tick=False):
         api.price_events()
         assert event.status == models.FinanceEventStatus.PRICED
         pricing = models.Pricing.query.one()
@@ -72,7 +72,7 @@ def test_integration_full_workflow_new_journey(css_font_http_request_mock):
     )
     booking = bookings_factories.BookingFactory(stock__offer__venue=venue)
 
-    with freezegun.freeze_time(initial_dt) as frozen_time:
+    with time_machine.travel(initial_dt, tick=False) as frozen_time:
         bookings_api.mark_as_used(booking)
         assert booking.status == bookings_models.BookingStatus.USED
         event = models.FinanceEvent.query.one()
@@ -118,7 +118,7 @@ def test_integration_partial_auto_mark_as_used():
         ),
     )
 
-    with freezegun.freeze_time(now) as frozen_time:
+    with time_machine.travel(now) as frozen_time:
         # `auto_mark_as_used_after_event()` ignores recently used
         # bookings (< 48 hours).
         now += datetime.timedelta(hours=48, seconds=1)
@@ -147,22 +147,20 @@ def test_integration_partial_used_then_cancelled():
     factories.BankInformationFactory(venue=venue)
     booking = bookings_factories.BookingFactory(stock__offer__venue=venue)
 
-    with freezegun.freeze_time(initial_dt) as frozen_time:
+    with time_machine.travel(initial_dt, tick=False):
         # Mark as used and price.
-        now = initial_dt
         bookings_api.mark_as_used(booking)
         assert booking.status == bookings_models.BookingStatus.USED
-        # `price_events()` ignores recently created events (< 1 minute).
-        now += datetime.timedelta(minutes=1)
-        frozen_time.move_to(now)
+
+    # `price_events()` ignores recently created events (< 1 minute).
+    with time_machine.travel(initial_dt + datetime.timedelta(minutes=1), tick=False):
         api.price_events()
         assert models.Pricing.query.count() == 1
 
         # Now cancel the booking. We should not get a new pricing.
         bookings_api.mark_as_cancelled(booking, bookings_models.BookingCancellationReasons.BENEFICIARY)
 
-        # `price_events()` ignores recently created events (< 1 minute).
-        now += datetime.timedelta(minutes=1)
-        frozen_time.move_to(now)
+    # `price_events()` ignores recently created events (< 1 minute).
+    with time_machine.travel(initial_dt + datetime.timedelta(minutes=2), tick=False):
         api.price_events()
         assert models.Pricing.query.count() == 1  # still only one pricing

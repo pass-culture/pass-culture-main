@@ -1,9 +1,9 @@
 import dataclasses
 import datetime
 
-import freezegun
 import pytest
 import requests_mock
+import time_machine
 
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
@@ -262,7 +262,7 @@ class ProcessingQueueTest:
         # processing queue has been deleted, too.
         assert redis.keys() == []
 
-    @freezegun.freeze_time()
+    @time_machine.travel(datetime.datetime.utcnow(), tick=False)
     def test_processing_queue_is_kept_upon_error(self):
         backend = get_backend()
         redis = backend.redis_client

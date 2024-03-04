@@ -3,8 +3,8 @@ from unittest import mock
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
-import freezegun
 import pytest
+import time_machine
 
 from pcapi.analytics.amplitude import testing as amplitude_testing
 from pcapi.analytics.amplitude.backends import amplitude_connector
@@ -31,7 +31,6 @@ AGE18_ELIGIBLE_BIRTH_DATE = datetime.date.today() - relativedelta(years=ELIGIBIL
 
 
 @pytest.mark.usefixtures("db_session")
-@freezegun.freeze_time("2022-11-02")
 class DMSOrphanSubsriptionTest:
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_dms_orphan_corresponding_user(self, execute_query):
@@ -98,7 +97,7 @@ class HandleDmsApplicationTest:
         "L’équipe du pass Culture"
     )
 
-    @freezegun.freeze_time("2016-11-02")
+    @time_machine.travel("2016-11-02")
     def test_handle_dms_application_sends_user_identity_check_started_event(self):
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime(2000, 1, 1))
         dms_response = make_parsed_graphql_application(
@@ -140,7 +139,7 @@ class HandleDmsApplicationTest:
         assert fraud_models.BeneficiaryFraudCheck.query.first().status == fraud_models.FraudCheckStatus.OK
 
     @patch("pcapi.core.subscription.dms.api._process_in_progress_application")
-    @freezegun.freeze_time("2016-11-02")
+    @time_machine.travel("2016-11-02")
     def test_multiple_call_for_same_application(self, mock_process_in_progress, db_session):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime(2000, 1, 1), roles=[users_models.UserRole.UNDERAGE_BENEFICIARY]
@@ -405,7 +404,7 @@ class HandleDmsApplicationTest:
         assert orphan.latest_modification_datetime == datetime.datetime(2020, 5, 13, 7, 9, 46)
 
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
-    @freezegun.freeze_time("2022-05-13")
+    @time_machine.travel("2022-05-13")
     def test_correcting_application_resets_errors(self, mock_send_user_message, db_session):
         user = users_factories.UserFactory(email="john.stiles@example.com")
         dms_response = make_parsed_graphql_application(

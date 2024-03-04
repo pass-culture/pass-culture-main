@@ -8,9 +8,9 @@ from unittest import mock
 from dateutil.relativedelta import relativedelta
 import fakeredis
 from flask_jwt_extended.utils import decode_token
-from freezegun import freeze_time
 import pytest
 import requests_mock
+import time_machine
 
 from pcapi import settings
 from pcapi.core import token as token_utils
@@ -416,11 +416,11 @@ class ChangeUserEmailTest:
         user = users_factories.UserFactory(email=self.old_email, firstName="UniqueNameForEmailChangeTest")
         users_factories.UserSessionFactory(user=user)
         with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
-            with freeze_time("2021-01-01"):
+            with time_machine.travel("2021-01-01"):
                 token = self._init_token(user)
 
             # When
-            with freeze_time("2021-01-03"):
+            with time_machine.travel("2021-01-03"):
                 with pytest.raises(users_exceptions.InvalidToken):
                     email_update.validate_email_update_request(token)
 
@@ -730,7 +730,7 @@ class DomainsCreditTest:
             stock__offer__subcategoryId=subcategories_v2.JEU_SUPPORT_PHYSIQUE.id,
         )
 
-        with freeze_time(
+        with time_machine.travel(
             datetime.datetime.utcnow() + relativedelta(years=finance_conf.GRANT_18_VALIDITY_IN_YEARS, days=2)
         ):
             assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
@@ -952,7 +952,7 @@ class BeneficiaryInformationUpdateTest:
 
 
 class UpdateUserLastConnectionDateTest:
-    @freeze_time("2021-9-20 11:11:11")
+    @time_machine.travel("2021-9-20 11:11:11", tick=False)
     def test_first_update(self):
         user = users_factories.UserFactory()
 
@@ -963,7 +963,7 @@ class UpdateUserLastConnectionDateTest:
         assert user.lastConnectionDate == datetime.datetime(2021, 9, 20, 11, 11, 11)
         assert len(sendinblue_testing.sendinblue_requests) == 1
 
-    @freeze_time("2021-9-20 01:11:11")
+    @time_machine.travel("2021-9-20 01:11:11", tick=False)
     def test_update_day_after(self):
         user = users_factories.UserFactory(lastConnectionDate=datetime.datetime(2021, 9, 19, 23, 00, 11))
 
@@ -974,7 +974,7 @@ class UpdateUserLastConnectionDateTest:
         assert user.lastConnectionDate == datetime.datetime(2021, 9, 20, 1, 11, 11)
         assert len(sendinblue_testing.sendinblue_requests) == 1
 
-    @freeze_time("2021-9-20 11:11:11")
+    @time_machine.travel("2021-9-20 11:11:11", tick=False)
     def test_update_same_day(self):
         user = users_factories.UserFactory(lastConnectionDate=datetime.datetime(2021, 9, 20, 9, 0))
 
@@ -985,7 +985,7 @@ class UpdateUserLastConnectionDateTest:
         assert user.lastConnectionDate == datetime.datetime(2021, 9, 20, 11, 11, 11)
         assert len(sendinblue_testing.sendinblue_requests) == 0
 
-    @freeze_time("2021-9-20 11:11:11")
+    @time_machine.travel("2021-9-20 11:11:11", tick=False)
     def test_no_update(self):
         user = users_factories.UserFactory(lastConnectionDate=datetime.datetime(2021, 9, 20, 11, 00, 11))
 
@@ -1408,7 +1408,7 @@ class RecentSuspiciousLoginsTest:
 
 
 class CreateSuspiciousLoginEmailTokenTest:
-    @freeze_time("2023-06-19 10:30:00")
+    @time_machine.travel("2023-06-19 10:30:00", tick=False)
     def should_encode_login_info_in_token(self):
         with mock.patch("flask.current_app.redis_client", fakeredis.FakeStrictRedis()):
             user = users_factories.UserFactory()
@@ -1432,7 +1432,7 @@ class CreateSuspiciousLoginEmailTokenTest:
 
             assert token.user_id == user.id
 
-    @freeze_time("2023-06-02 16:10:00")
+    @time_machine.travel("2023-06-02 16:10:00", tick=False)
     def should_encode_date_and_user_id_in_token_when_no_login_info(self):
         user = users_factories.UserFactory()
 

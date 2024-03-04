@@ -1,8 +1,8 @@
 from datetime import datetime
 from datetime import timedelta
 
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 from pcapi.core.bookings import constants
 from pcapi.core.bookings import factories as bookings_factories
@@ -18,7 +18,7 @@ from pcapi.notifications.push import testing
 @pytest.mark.usefixtures("db_session")
 # Set time to evening so that `send_today_events_notifications_metropolitan_france()`
 # finds test stock in its `13:00 - 24:00` window.
-@freeze_time("20:00:00")
+@time_machine.travel("20:00:00")
 def test_send_today_events_notifications_only_to_individual_bookings_users():
     """
     Test that each stock that is linked to an offer that occurs today and

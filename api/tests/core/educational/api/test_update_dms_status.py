@@ -2,7 +2,6 @@ import datetime
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
-from freezegun.api import freeze_time
 import pytest
 
 from pcapi.connectors.dms import factories as dms_factories
@@ -45,7 +44,6 @@ DEFAULT_API_RESULT = [
 
 
 @pytest.mark.usefixtures("db_session")
-@freeze_time("2023-11-26 18:29:20.891028")
 class UpdateDmsStatusTest:
     def test_import_empty_db(self):
         venue1 = offerers_factories.VenueFactory(siret=DEFAULT_API_RESULT[0]["demandeur"]["siret"])

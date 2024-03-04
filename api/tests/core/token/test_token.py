@@ -3,8 +3,8 @@ from datetime import timedelta
 from unittest import mock
 
 import fakeredis
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 from pcapi.core import token as token_tools
 from pcapi.core.users.exceptions import InvalidToken
@@ -66,9 +66,9 @@ class TokenTest:
     def test_get_expiration_date_expired_token(self):
         """if the token has been expired using expire_token, the expiration date should be None"""
         with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
-            with freeze_time("2021-01-01"):
+            with time_machine.travel("2021-01-01"):
                 token_tools.Token.create(self.token_type, self.ttl, self.user_id, self.data)
-            with freeze_time("2021-01-03"):
+            with time_machine.travel("2021-01-03"):
                 assert token_tools.Token.get_expiration_date(self.token_type, self.user_id) is None
 
     def test_check_token_exists(self):
@@ -108,9 +108,9 @@ class TokenTest:
     def test_check_token_is_expired(self, app):
         """if the token expiration date is in the past, an exception should be raised"""
         with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
-            with freeze_time("2021-01-01"):
+            with time_machine.travel("2021-01-01"):
                 token = token_tools.Token.create(self.token_type, self.ttl, self.user_id, self.data)
-            with freeze_time("2021-01-03"):
+            with time_machine.travel("2021-01-03"):
                 with pytest.raises(InvalidToken):
                     token.check(self.token_type, self.user_id)
 

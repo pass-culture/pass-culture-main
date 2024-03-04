@@ -4,8 +4,8 @@ import decimal
 from pathlib import Path
 from unittest.mock import patch
 
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 from pcapi.connectors.serialization import allocine_serializers
 from pcapi.core.categories import subcategories_v2 as subcategories
@@ -46,7 +46,7 @@ class AllocineStocksTest:
     class NextTest:
         @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
         @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
-        @freeze_time("2023-12-15T9:00:00")
+        @time_machine.travel("2023-12-15 09:00:00", tick=False)
         @pytest.mark.usefixtures("db_session")
         def test_should_return_providable_infos_for_each_movie(self, mock_call_allocine_api, app):
             # Given

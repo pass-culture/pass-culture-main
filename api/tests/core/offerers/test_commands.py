@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
-import freezegun
 import pytest
+import time_machine
 
 from pcapi.core.offerers import factories as offerers_factories
 
@@ -22,7 +22,7 @@ class CheckActiveOfferersTest:
         offerers_factories.OffererFactory(id=23 + 28 * 2, isActive=False)  # not checked because inactive
         offerers_factories.OffererFactory(id=23 + 28 * 3, tags=[tag])  # not checked because already tagged
 
-        with freezegun.freeze_time("2024-12-24 23:00:00"):
+        with time_machine.travel("2024-12-24 23:00:00"):
             run_command(app, "check_active_offerers")
 
         # Only check that the task is called; its behavior is tested in offerers/test_task.py

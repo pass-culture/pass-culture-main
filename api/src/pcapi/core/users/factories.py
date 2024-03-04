@@ -9,7 +9,7 @@ import uuid
 from dateutil.relativedelta import relativedelta
 import factory
 from factory import LazyAttribute
-from freezegun import freeze_time
+import time_machine
 
 from pcapi import settings
 from pcapi.connectors.beneficiaries.educonnect import models as educonnect_models
@@ -344,7 +344,7 @@ class Transition1718Factory(BeneficiaryFactory):
         if not create:
             return []
 
-        with freeze_time(datetime.today() - relativedelta(years=1)):
+        with time_machine.travel(datetime.today() - relativedelta(years=1)):
             fraud_checks = Transition1718Factory.beneficiary_fraud_checks(obj, **kwargs)
         return fraud_checks
 
@@ -358,7 +358,7 @@ class Transition1718Factory(BeneficiaryFactory):
         if not create:
             return None
 
-        with freeze_time(datetime.today() - relativedelta(years=1)):
+        with time_machine.travel(datetime.today() - relativedelta(years=1)):
             if "dateCreated" not in kwargs:
                 kwargs["dateCreated"] = obj.dateCreated
 

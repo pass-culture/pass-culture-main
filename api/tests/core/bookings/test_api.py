@@ -7,11 +7,11 @@ from unittest import mock
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
-from freezegun import freeze_time
 import pytest
 from sqlalchemy import create_engine
 import sqlalchemy.exc
 from sqlalchemy.sql import text
+import time_machine
 
 from pcapi.analytics.amplitude.backends.amplitude_connector import AmplitudeEventType
 import pcapi.analytics.amplitude.testing as amplitude_testing
@@ -211,7 +211,7 @@ class BookOfferTest:
         )  # to beneficiary
 
     def test_free_offer_booking_by_ex_beneficiary(self):
-        with freeze_time(datetime.utcnow() - relativedelta(years=2, months=5)):
+        with time_machine.travel(datetime.utcnow() - relativedelta(years=2, months=5)):
             ex_beneficiary = users_factories.BeneficiaryGrant18Factory()
         stock = offers_factories.StockFactory(price=0, dnBookedQuantity=5, offer__bookingEmail="offerer@example.com")
 
@@ -1718,7 +1718,7 @@ class PopBarcodesFromQueueAndCancelWastedExternalBookingTest:
 
         assert app.redis_client.llen("api:external_bookings:barcodes") == 1
 
-    @freeze_time("2032-11-17 15:00:00")
+    @time_machine.travel("2032-11-17 15:00:00")
     @patch("pcapi.core.bookings.api.external_bookings_api.cancel_booking")
     def test_should_pop_and_cancel_only_external_booking_reached_minimum_age(
         self, mocked_cancel_external_booking, app, requests_mock

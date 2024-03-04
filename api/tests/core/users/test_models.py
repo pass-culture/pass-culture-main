@@ -4,10 +4,10 @@ from datetime import timedelta
 import decimal
 
 from dateutil.relativedelta import relativedelta
-from freezegun import freeze_time
 import pytest
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
+import time_machine
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
@@ -45,7 +45,7 @@ class UserTest:
             assert user.deposit.type == finance_models.DepositType.GRANT_18
 
         def test_return_last_expired_deposit_if_only_expired_deposits_exists(self):
-            with freeze_time(datetime.utcnow() - relativedelta(years=3)):
+            with time_machine.travel(datetime.utcnow() - relativedelta(years=3)):
                 user = users_factories.UnderageBeneficiaryFactory()
 
             users_factories.DepositGrantFactory(user=user)
@@ -230,7 +230,7 @@ class UserTest:
             ],
         )
         def test_get_birthday_with_leap_year(self, birth_date, today, latest_birthday):
-            with freeze_time(today):
+            with time_machine.travel(today):
                 assert user_models._get_latest_birthday(birth_date) == latest_birthday
 
     class EligibilityTest:
@@ -365,7 +365,7 @@ class HasAccessTest:
 
 @pytest.mark.usefixtures("db_session")
 class CalculateAgeTest:
-    @freeze_time("2018-06-01")
+    @time_machine.travel("2018-06-01")
     def test_user_age(self):
         assert users_factories.UserFactory.build(dateOfBirth=None).age is None
         assert users_factories.UserFactory.build(dateOfBirth=datetime(2000, 6, 1, 5, 1)).age == 18  # happy birthday
@@ -425,7 +425,7 @@ class UserWalletBalanceTest:
 @pytest.mark.usefixtures("db_session")
 class SQLFunctionsTest:
     def test_wallet_balance(self):
-        with freeze_time(datetime.utcnow() - relativedelta(years=2, days=2)):
+        with time_machine.travel(datetime.utcnow() - relativedelta(years=2, days=2)):
             user = users_factories.UnderageBeneficiaryFactory(subscription_age=16)
             # disable trigger because deposit.expirationDate > now() is False in database time
             db.session.execute("ALTER TABLE booking DISABLE TRIGGER booking_update;")
@@ -457,7 +457,7 @@ class SQLFunctionsTest:
         assert "more than one row returned by a subquery" in str(exc.value)
 
     def test_wallet_balance_expired_deposit(self):
-        with freeze_time(datetime.utcnow() - relativedelta(years=2, days=2)):
+        with time_machine.travel(datetime.utcnow() - relativedelta(years=2, days=2)):
             user = users_factories.UnderageBeneficiaryFactory(subscription_age=16)
             # disable trigger because deposit.expirationDate > now() is False in database time
             db.session.execute("ALTER TABLE booking DISABLE TRIGGER booking_update;")

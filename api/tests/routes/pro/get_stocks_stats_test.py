@@ -1,8 +1,8 @@
 from datetime import datetime
 from datetime import timedelta
 
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
@@ -48,7 +48,7 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
 
-    @freeze_time("2020-10-15 00:00:00")
+    @time_machine.travel("2020-10-15 00:00:00")
     def test_returns_stats(self, client):
         # Given
         now = datetime.utcnow()

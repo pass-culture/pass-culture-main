@@ -1,8 +1,8 @@
 import datetime
 import logging
 
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 from pcapi import settings
 from pcapi.connectors import boost
@@ -24,8 +24,8 @@ class BoostBuildUrlTest:
         assert url == "https://cinema.example.com/example/1/5"
 
 
-@freeze_time("2022-10-12 17:09:25")
 class BoostLoginTest:
+    @time_machine.travel("2022-10-12 17:09:25", tick=False)
     def test_login(self, requests_mock):
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema.example.com/")
         response_json = {"message": "Login successful", "token": "new-token"}

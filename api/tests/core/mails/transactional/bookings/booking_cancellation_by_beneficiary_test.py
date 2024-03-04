@@ -1,8 +1,8 @@
 from datetime import datetime
 from datetime import timedelta
 
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 from pcapi.core.bookings import factories as booking_factories
 import pcapi.core.mails.testing as mails_testing
@@ -77,7 +77,7 @@ class MakeBeneficiaryBookingCancellationEmailSendinblueDataTest:
             "OFFER_LINK": "https://webapp-v2.example.com/offre/123456",
         }
 
-    @freeze_time("2019-11-26 18:29:20.891028")
+    @time_machine.travel("2019-11-26 18:29:20")
     def test_should_return_event_data_when_booking_is_an_event(self):
         # Given
         booking = booking_factories.CancelledBookingFactory(

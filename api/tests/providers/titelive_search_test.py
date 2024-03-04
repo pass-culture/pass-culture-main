@@ -3,9 +3,9 @@ import datetime
 import pathlib
 import re
 
-import freezegun
 import pytest
 import requests
+import time_machine
 
 from pcapi.connectors import titelive
 from pcapi.core.categories import subcategories_v2 as subcategories
@@ -133,7 +133,7 @@ class TiteliveSearchTest:
         assert vinyle_product.extraData["musicSubType"] == str(music_types.MUSIC_SUB_TYPES_BY_SLUG["POP-BRITPOP"].code)
         assert "prix_musique" not in vinyle_product.extraData
 
-    @freezegun.freeze_time("2023-01-01")
+    @time_machine.travel("2023-01-01", tick=False)
     def test_titelive_sync_event(self, requests_mock):
         self._configure_login_and_images(requests_mock)
         requests_mock.get("https://catsearch.epagine.fr/v1/search", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE)

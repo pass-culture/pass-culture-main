@@ -2,8 +2,8 @@ from typing import Any
 from unittest import mock
 
 import fakeredis
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 import pcapi.core.token as token_utils
 from pcapi.core.users import constants
@@ -37,7 +37,7 @@ class TokenPatchValidateEmailTest:
 
     def test_expired_token(self, client: Any) -> None:
         with mock.patch("flask.current_app.redis_client", fakeredis.FakeStrictRedis()):
-            with freeze_time("2023-10-10 12:00:00"):
+            with time_machine.travel("2023-10-10 12:00:00"):
                 pro = users_factories.ProFactory(email=self.current_email)
                 token = token_utils.Token.create(
                     token_utils.TokenType.EMAIL_CHANGE_VALIDATION,
@@ -45,7 +45,7 @@ class TokenPatchValidateEmailTest:
                     user_id=pro.id,
                     data=self.token_data,
                 )
-            with freeze_time("2023-10-16 13:00:00"):
+            with time_machine.travel("2023-10-16 13:00:00"):
                 response = client.patch("/users/validate_email", json={"token": token.encoded_token})
 
                 assert response.status_code == 400

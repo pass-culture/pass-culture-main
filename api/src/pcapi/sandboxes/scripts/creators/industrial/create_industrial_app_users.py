@@ -8,7 +8,7 @@ import re
 
 from dateutil.relativedelta import relativedelta
 from faker import Faker
-from freezegun import freeze_time
+import time_machine
 
 from pcapi.core.bookings import factories as bookings_factory
 import pcapi.core.finance.conf as finance_conf
@@ -262,7 +262,7 @@ def create_short_email_beneficiaries() -> dict[str, User]:
             needsToFillCulturalSurvey=False,
         )
     )
-    with freeze_time(datetime.utcnow() - relativedelta(years=3)):
+    with time_machine.travel(datetime.utcnow() - relativedelta(years=3)):
         users.append(
             users_factories.UnderageBeneficiaryFactory(
                 email="exunderage_18@example.com",
@@ -291,7 +291,9 @@ def create_short_email_beneficiaries() -> dict[str, User]:
     beneficiary_and_exunderage.add_beneficiary_role()
     users.append(beneficiary_and_exunderage)
 
-    with freeze_time(datetime.utcnow() - relativedelta(years=finance_conf.GRANT_18_VALIDITY_IN_YEARS, months=5)):
+    with time_machine.travel(
+        datetime.utcnow() - relativedelta(years=finance_conf.GRANT_18_VALIDITY_IN_YEARS, months=5)
+    ):
         users.append(
             users_factories.BeneficiaryGrant18Factory(
                 email="exbene_20@example.com",

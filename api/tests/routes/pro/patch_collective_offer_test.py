@@ -1,8 +1,8 @@
 from datetime import datetime
 from unittest.mock import patch
 
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.educational.factories as educational_factories
@@ -29,7 +29,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class Returns200Test:
-    @freeze_time("2019-01-01T12:00:00Z")
+    @time_machine.travel("2019-01-01 12:00:00")
     @override_settings(ADAGE_API_URL="https://adage_base_url")
     def test_patch_collective_offer(self, client):
         # Given
@@ -443,7 +443,7 @@ class Returns400Test:
         # Then
         assert response.status_code == 400
 
-    @freeze_time("2019-01-01T12:00:00Z")
+    @time_machine.travel("2019-01-01T12:00:00Z")
     @override_settings(ADAGE_API_URL="https://adage_base_url")
     def test_update_collective_offer_with_unknown_national_program(self, client):
         offer = CollectiveOfferFactory(

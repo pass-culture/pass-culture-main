@@ -2,8 +2,8 @@ import datetime
 import itertools
 
 from dateutil.relativedelta import relativedelta
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 from pcapi import settings
 import pcapi.core.fraud.api as fraud_api
@@ -294,7 +294,7 @@ class FindDuplicateUserTest:
 
     def test_send_email_to_fraud_if_duplicated_beneficiary(self):
         # 2 years ago
-        with freeze_time(datetime.datetime.utcnow() - relativedelta(years=2, days=2)):
+        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=2, days=2)):
             user1 = users_factories.BeneficiaryFactory(
                 age=17,
                 beneficiaryFraudChecks__type=fraud_models.FraudCheckType.EDUCONNECT,
@@ -302,7 +302,7 @@ class FindDuplicateUserTest:
 
         # A year ago
         # user 1 is now 18 yo
-        with freeze_time(datetime.datetime.utcnow() - relativedelta(years=1, days=1)):
+        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=1, days=1)):
             user2 = users_factories.BeneficiaryFactory(
                 age=17, beneficiaryFraudChecks__type=fraud_models.FraudCheckType.EDUCONNECT
             )
@@ -758,7 +758,7 @@ class DecideEligibilityTest:
         )
         assert result == users_models.EligibilityType.AGE18
 
-    @freeze_time("2022-03-01")
+    @time_machine.travel("2022-03-01")
     def test_decide_eligibility_for_underage_users(self):
         # All 15-17 users are eligible after 2022-01-01
         for age in range(15, 18):
@@ -771,7 +771,7 @@ class DecideEligibilityTest:
                 == users_models.EligibilityType.UNDERAGE
             )
 
-    @freeze_time("2022-01-01")
+    @time_machine.travel("2022-01-01")
     def test_decide_eligibility_for_18_yo_users_is_always_age_18(self):
         # 18 users are always eligible
         birth_date = datetime.datetime.utcnow() - relativedelta(years=18)
@@ -787,7 +787,7 @@ class DecideEligibilityTest:
             == users_models.EligibilityType.AGE18
         )
 
-    @freeze_time("2022-07-01")
+    @time_machine.travel("2022-07-01")
     @pytest.mark.parametrize(
         "first_registration_datetime,expected_eligibility",
         [

@@ -6,8 +6,8 @@ import json
 import re
 from unittest.mock import patch
 
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.bookings import models as bookings_models
@@ -164,7 +164,7 @@ class PostBookingTest:
         assert not booking.dateUsed
 
     @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
-    @freeze_time("2022-10-12 17:09:25")
+    @time_machine.travel("2022-10-12 17:09:25")
     @patch("pcapi.tasks.external_api_booking_notification_tasks.external_api_booking_notification_task.delay")
     def test_bookings_send_notification_to_external_api_with_external_event_booking(self, mocked_task, client):
         base_url = "https://book_my_offer.com"
@@ -222,7 +222,7 @@ class PostBookingTest:
         assert mocked_task.call_args.args[0].notificationUrl == external_notification_url
 
     @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
-    @freeze_time("2022-10-12 17:09:25")
+    @time_machine.travel("2022-10-12 17:09:25", tick=False)
     def test_bookings_with_external_event_booking_infos(self, client, requests_mock):
         external_booking_url = "https://book_my_offer.com/confirm"
         user = users_factories.BeneficiaryGrant18Factory(
@@ -294,7 +294,7 @@ class PostBookingTest:
         assert stock.dnBookedQuantity == 15
 
     @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
-    @freeze_time("2022-10-12 17:09:25")
+    @time_machine.travel("2022-10-12 17:09:25", tick=False)
     def test_bookings_with_external_event_booking_and_remaining_quantity_unlimited(self, client, requests_mock):
         external_booking_url = "https://book_my_offer.com/confirm"
         user = users_factories.BeneficiaryGrant18Factory(
@@ -362,7 +362,7 @@ class PostBookingTest:
         assert stock.dnBookedQuantity == 15
 
     @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
-    @freeze_time("2022-10-12 17:09:25")
+    @time_machine.travel("2022-10-12 17:09:25")
     def test_bookings_with_external_event_booking_sold_out(self, client, requests_mock):
         external_booking_url = "https://book_my_offer.com/confirm"
         users_factories.BeneficiaryGrant18Factory(
@@ -398,7 +398,7 @@ class PostBookingTest:
         assert len(bookings_models.Booking.query.all()) == 0
 
     @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
-    @freeze_time("2022-10-12 17:09:25")
+    @time_machine.travel("2022-10-12 17:09:25")
     def test_bookings_with_external_event_booking_not_enough_quantity(self, client, requests_mock):
         external_booking_url = "https://book_my_offer.com/confirm"
         users_factories.BeneficiaryGrant18Factory(
@@ -437,7 +437,7 @@ class PostBookingTest:
         assert len(bookings_models.Booking.query.all()) == 0
 
     @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
-    @freeze_time("2022-10-12 17:09:25")
+    @time_machine.travel("2022-10-12 17:09:25")
     def test_bookings_with_external_event_booking_when_response_fields_are_too_long(self, client, requests_mock):
         external_booking_url = "https://book_my_offer.com/confirm"
         users_factories.BeneficiaryGrant18Factory(email=self.identifier)
@@ -501,7 +501,7 @@ class PostBookingTest:
         assert response.json["code"] == "PROVIDER_STOCK_SOLD_OUT"
 
     @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
-    @freeze_time("2022-10-12 17:09:25")
+    @time_machine.travel("2022-10-12 17:09:25")
     def test_bookings_with_external_event_api_return_less_tickets_than_quantity(self, client, requests_mock):
         external_booking_url = "https://book_my_offer.com/confirm"
         cancel_booking_url = "https://book_my_offer.com/cancel"
@@ -553,7 +553,7 @@ class PostBookingTest:
         assert len(bookings_models.Booking.query.all()) == 0
 
     @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
-    @freeze_time("2022-10-12 17:09:25")
+    @time_machine.travel("2022-10-12 17:09:25")
     def test_bookings_with_external_event_api_return_nothing(self, client, requests_mock):
         external_booking_url = "https://book_my_offer.com/confirm"
         cancel_booking_url = "https://book_my_offer.com/cancel"
@@ -593,7 +593,7 @@ class PostBookingTest:
         assert len(bookings_models.Booking.query.all()) == 0
 
     @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
-    @freeze_time("2022-10-12 17:09:25")
+    @time_machine.travel("2022-10-12 17:09:25")
     def test_bookings_with_external_event_api_return_more_tickets_than_quantity(self, client, requests_mock):
         external_booking_url = "https://book_my_offer.com/confirm"
         cancel_booking_url = "https://book_my_offer.com/cancel"

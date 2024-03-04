@@ -3,9 +3,9 @@ from decimal import Decimal
 import itertools
 from unittest import mock
 
-from freezegun.api import freeze_time
 import pytest
 import requests_mock
+import time_machine
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories_v2 as subcategories
@@ -78,7 +78,7 @@ def create_stock(ean, siret, venue: Venue, product_price, **kwargs):
 
 class ProviderAPICronTest:
     @pytest.mark.usefixtures("db_session")
-    @freeze_time("2020-10-15 09:00:00")
+    @time_machine.travel("2020-10-15 09:00:00")
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_execution(self, mocked_async_index_offer_ids):
         # Given
