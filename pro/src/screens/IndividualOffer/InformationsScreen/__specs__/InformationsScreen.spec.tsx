@@ -14,7 +14,7 @@ import {
   categoryFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,
-  individualOfferVenueItemFactory,
+  venueListItemFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -146,8 +146,8 @@ describe('screens:IndividualOffer::Informations', () => {
 
   describe('when a subCategory is selected', () => {
     beforeEach(() => {
-      const venue1: IndividualOfferVenueItem = individualOfferVenueItemFactory()
-      const venue2: IndividualOfferVenueItem = individualOfferVenueItemFactory()
+      const venue1: IndividualOfferVenueItem = venueListItemFactory()
+      const venue2: IndividualOfferVenueItem = venueListItemFactory()
 
       props.venueId = venue1.id.toString()
       contextValue.venueList = [venue1, venue2]

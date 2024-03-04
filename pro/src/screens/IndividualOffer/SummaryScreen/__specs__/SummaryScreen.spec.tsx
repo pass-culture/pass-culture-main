@@ -33,7 +33,7 @@ import {
   categoryFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,
-  individualOfferVenueItemFactory,
+  venueListItemFactory,
 } from 'utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
@@ -402,7 +402,7 @@ describe('Summary', () => {
       const context = {
         offer: getIndividualOfferFactory(),
         offerOfferer: { name: 'offerOffererName', id: 1 },
-        venueList: [individualOfferVenueItemFactory()],
+        venueList: [venueListItemFactory()],
       }
 
       vi.spyOn(api, 'getOfferer').mockResolvedValue({
@@ -452,7 +452,7 @@ describe('Summary', () => {
       const context = {
         offer: getIndividualOfferFactory(),
         offerOfferer: { name: 'offerOffererName', id: 1 },
-        venueList: [individualOfferVenueItemFactory()],
+        venueList: [venueListItemFactory()],
       }
 
       vi.spyOn(api, 'getOfferer').mockResolvedValue({
@@ -494,7 +494,7 @@ describe('Summary', () => {
     it('should not display redirect modal if offer is free', async () => {
       const context = {
         offer: getIndividualOfferFactory(),
-        venueList: [individualOfferVenueItemFactory()],
+        venueList: [venueListItemFactory()],
       }
 
       renderSummary(
@@ -526,7 +526,7 @@ describe('Summary', () => {
     it('should not display redirect modal if venue hasNonFreeOffers', async () => {
       const context = {
         offer: getIndividualOfferFactory(),
-        venueList: [individualOfferVenueItemFactory()],
+        venueList: [venueListItemFactory()],
       }
 
       renderSummary(

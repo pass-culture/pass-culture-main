@@ -13,7 +13,6 @@ import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import { IndividualOfferContextValues } from 'context/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
-import { IndividualOfferVenueItem } from 'core/Venue/types'
 
 import { getIndividualOfferFactory } from './apiFactories'
 
@@ -23,15 +22,6 @@ let venueId = 1
 let priceCategoryId = 1
 let offerCategoryId = 1
 let offerSubCategoryId = 1
-
-export const individualOfferVenueItemFactory = (
-  customIndividualOfferVenueItem: Partial<IndividualOfferVenueItem> = {}
-): IndividualOfferVenueItem => {
-  return {
-    ...venueListItemFactory(),
-    ...customIndividualOfferVenueItem,
-  }
-}
 
 export const getVenueFactory = (
   customGetVenue: Partial<GetVenueResponseModel> = {}
