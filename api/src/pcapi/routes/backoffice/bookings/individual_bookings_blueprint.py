@@ -127,8 +127,8 @@ def _get_individual_bookings(
             users_models.User.id,
         ],
         name_filters=[
-            sa.func.concat(users_models.User.firstName, " ", users_models.User.lastName),
-            offers_models.Offer.name,
+            (sa.func.immutable_unaccent(users_models.User.firstName + " " + users_models.User.lastName), True),
+            (offers_models.Offer.name, False),
         ],
         or_filters=or_filters,
     )
