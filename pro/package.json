@@ -40,7 +40,7 @@
     "@reach/dialog": "^0.18.0",
     "@reach/menu-button": "^0.18.0",
     "@reduxjs/toolkit": "^2.2.1",
-    "@sentry/browser": "^7.100.1",
+    "@sentry/browser": "^7.105.0",
     "@sentry/react": "^7.103.0",
     "@sentry/tracing": "^7.103.0",
     "@zootools/email-spell-checker": "^1.12.0",
