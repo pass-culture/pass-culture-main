@@ -9,12 +9,12 @@ import {
 } from 'context/IndividualOfferContext'
 import { RootState } from 'store/rootReducer'
 import {
-  GetIndividualOfferFactory,
-  offerVenueFactory,
+  getIndividualOfferFactory,
+  getOfferVenueFactory,
 } from 'utils/apiFactories'
 import {
-  individualGetOfferStockResponseModelFactory,
-  individualOfferContextFactory,
+  getOfferStockFactory,
+  individualOfferContextValuesFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -24,7 +24,7 @@ const renderStocksScreen = (
   storeOverrides: Partial<RootState> = {},
   contextOverride: Partial<IndividualOfferContextValues>
 ) => {
-  const contextValue = individualOfferContextFactory(contextOverride)
+  const contextValue = individualOfferContextValuesFactory(contextOverride)
 
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
@@ -41,27 +41,27 @@ describe('screens:Stocks', () => {
   const offerId = 12
 
   beforeEach(() => {
-    offer = GetIndividualOfferFactory({
+    offer = getIndividualOfferFactory({
       id: offerId,
-      venue: offerVenueFactory({
+      venue: getOfferVenueFactory({
         departementCode: '75',
       }),
     })
     storeOverrides = {}
-    contextOverride = individualOfferContextFactory({
+    contextOverride = individualOfferContextValuesFactory({
       offerId,
       offer,
     })
 
     vi.spyOn(api, 'getStocks').mockResolvedValue({
-      stocks: [individualGetOfferStockResponseModelFactory()],
+      stocks: [getOfferStockFactory()],
       hasStocks: true,
       stockCount: 1,
     })
   })
 
   it('should render stock thing', async () => {
-    contextOverride.offer = GetIndividualOfferFactory({
+    contextOverride.offer = getIndividualOfferFactory({
       ...contextOverride.offer,
       isEvent: false,
       isDigital: false,
@@ -76,7 +76,7 @@ describe('screens:Stocks', () => {
   })
 
   it('should render stock event', async () => {
-    contextOverride.offer = GetIndividualOfferFactory({
+    contextOverride.offer = getIndividualOfferFactory({
       ...contextOverride.offer,
       isEvent: true,
     })
@@ -95,7 +95,7 @@ describe('screens:Stocks', () => {
   it.each(offerStatusWithoutBanner)(
     'should not render stock description banner',
     async (offerStatus) => {
-      contextOverride.offer = GetIndividualOfferFactory({
+      contextOverride.offer = getIndividualOfferFactory({
         ...contextOverride.offer,
         isEvent: true,
         status: offerStatus,
@@ -122,7 +122,7 @@ describe('screens:Stocks', () => {
   it.each(offerStatusWithBanner)(
     'should render stock description banner',
     async (offerStatus) => {
-      contextOverride.offer = GetIndividualOfferFactory({
+      contextOverride.offer = getIndividualOfferFactory({
         ...contextOverride.offer,
         isEvent: true,
         status: offerStatus,

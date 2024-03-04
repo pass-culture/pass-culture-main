@@ -6,11 +6,11 @@ import {
 } from 'apiClient/v1'
 import { AccessiblityEnum } from 'core/shared'
 import {
-  GetIndividualOfferFactory,
-  offerVenueFactory,
-  offererFactory,
+  getIndividualOfferFactory,
+  getOfferVenueFactory,
+  getOfferManagingOffererFactory,
 } from 'utils/apiFactories'
-import { individualOfferSubCategoryFactory } from 'utils/individualApiFactories'
+import { subcategoryFactory } from 'utils/individualApiFactories'
 
 import setInitialFormValues from '../setInitialFormValues'
 
@@ -21,7 +21,7 @@ describe('setFormReadOnlyFields', () => {
   const offererId = 12
 
   beforeEach(() => {
-    offer = GetIndividualOfferFactory({
+    offer = getIndividualOfferFactory({
       id: 12,
       extraData: {
         author: 'Offer author',
@@ -52,13 +52,13 @@ describe('setFormReadOnlyFields', () => {
       withdrawalDetails: 'Offer withdrawalDetails',
       withdrawalDelay: 140,
       withdrawalType: WithdrawalTypeEnum.ON_SITE,
-      venue: offerVenueFactory({
+      venue: getOfferVenueFactory({
         id: venueId,
-        managingOfferer: offererFactory({ id: offererId }),
+        managingOfferer: getOfferManagingOffererFactory({ id: offererId }),
       }),
     })
     subCategoryList = [
-      individualOfferSubCategoryFactory({
+      subcategoryFactory({
         id: SubcategoryIdEnum.CONCERT,
         categoryId: 'CID',
         isEvent: true,

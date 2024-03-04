@@ -19,11 +19,11 @@ import {
 } from 'core/Offers/constants'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { SubmitButton } from 'ui-kit'
-import { GetIndividualOfferFactory } from 'utils/apiFactories'
+import { getIndividualOfferFactory } from 'utils/apiFactories'
 import {
-  individualOfferCategoryFactory,
-  individualOfferContextFactory,
-  individualOfferSubCategoryFactory,
+  categoryFactory,
+  individualOfferContextValuesFactory,
+  subcategoryFactory,
   individualOfferVenueItemFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -51,7 +51,7 @@ const renderIndividualOfferForm = ({
   const storeOverrides = {
     user: { currentUser: { isAdmin: false } },
   }
-  const contextValues = individualOfferContextFactory(contextOverride)
+  const contextValues = individualOfferContextValuesFactory(contextOverride)
 
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValues}>
@@ -84,17 +84,17 @@ describe('IndividualOfferForm', () => {
 
   beforeEach(() => {
     categories = [
-      individualOfferCategoryFactory({ id: 'virtual' }),
-      individualOfferCategoryFactory({ id: 'physical' }),
+      categoryFactory({ id: 'virtual' }),
+      categoryFactory({ id: 'physical' }),
     ]
     subCategories = [
-      individualOfferSubCategoryFactory({
+      subcategoryFactory({
         id: 'physical',
         categoryId: 'physical',
         canBeDuo: true,
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
       }),
-      individualOfferSubCategoryFactory({
+      subcategoryFactory({
         id: 'virtual',
         categoryId: 'virtual',
         canBeDuo: false,
@@ -146,7 +146,7 @@ describe('IndividualOfferForm', () => {
   })
 
   const imageSectionDataset: (GetIndividualOfferResponseModel | undefined)[] = [
-    GetIndividualOfferFactory(),
+    getIndividualOfferFactory(),
     undefined,
   ]
   it.each(imageSectionDataset)(

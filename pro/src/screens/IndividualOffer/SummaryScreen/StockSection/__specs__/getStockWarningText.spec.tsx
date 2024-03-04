@@ -1,5 +1,5 @@
 import { OfferStatus } from 'apiClient/v1'
-import { GetIndividualOfferFactory } from 'utils/apiFactories'
+import { getIndividualOfferFactory } from 'utils/apiFactories'
 
 import { getStockWarningText } from '../StockSection'
 
@@ -40,7 +40,7 @@ describe('getStockWarningText', () => {
     'should render $expected',
     ({ offerStatus, hasStocks, expected }) => {
       const result = getStockWarningText(
-        GetIndividualOfferFactory({ status: offerStatus, hasStocks })
+        getIndividualOfferFactory({ status: offerStatus, hasStocks })
       )
 
       expect(result).toStrictEqual(expected)

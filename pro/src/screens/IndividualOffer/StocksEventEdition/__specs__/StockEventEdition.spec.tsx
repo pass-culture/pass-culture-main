@@ -31,9 +31,9 @@ import {
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import { Stocks } from 'pages/IndividualOfferWizard/Stocks/Stocks'
 import { ButtonLink } from 'ui-kit'
-import { GetIndividualOfferFactory } from 'utils/apiFactories'
+import { getIndividualOfferFactory } from 'utils/apiFactories'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
-import { individualGetOfferStockResponseModelFactory } from 'utils/individualApiFactories'
+import { getOfferStockFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 vi.mock('utils/date', async () => {
@@ -158,11 +158,11 @@ describe('screens:StocksEventEdition', () => {
 
   beforeEach(() => {
     apiStocks = [
-      individualGetOfferStockResponseModelFactory({
+      getOfferStockFactory({
         bookingsQuantity: 4,
       }),
     ]
-    apiOffer = GetIndividualOfferFactory({
+    apiOffer = getIndividualOfferFactory({
       bookingEmail: 'test@example.com',
       description: 'A passionate description of product 80',
       durationMinutes: null,
@@ -229,8 +229,8 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('should allow user to delete a stock', async () => {
-    const stock1 = individualGetOfferStockResponseModelFactory()
-    const stock2 = individualGetOfferStockResponseModelFactory()
+    const stock1 = getOfferStockFactory()
+    const stock2 = getOfferStockFactory()
 
     await renderStockEventScreen(apiOffer, [stock1, stock2])
     vi.clearAllMocks()
@@ -258,7 +258,7 @@ describe('screens:StocksEventEdition', () => {
   it('should reload the page if deleting last stock of the page', async () => {
     await renderStockEventScreen(
       apiOffer,
-      [individualGetOfferStockResponseModelFactory()],
+      [getOfferStockFactory()],
       STOCKS_PER_PAGE * 5 + 10,
       '?page=3'
     )
@@ -287,7 +287,7 @@ describe('screens:StocksEventEdition', () => {
   it('should go to previous page if deleting last stock of the last page', async () => {
     await renderStockEventScreen(
       apiOffer,
-      [individualGetOfferStockResponseModelFactory()],
+      [getOfferStockFactory()],
       STOCKS_PER_PAGE * 5 + 1,
       '?page=6'
     )
@@ -481,7 +481,7 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('should save the offer without warning on "Enregistrer les modifications" button click', async () => {
-    const testedStock = individualGetOfferStockResponseModelFactory({
+    const testedStock = getOfferStockFactory({
       bookingsQuantity: 0,
     })
 
@@ -602,7 +602,7 @@ describe('screens:StocksEventEdition', () => {
   it('should display blocker when form is dirty', async () => {
     await renderStockEventScreen(
       apiOffer,
-      [individualGetOfferStockResponseModelFactory()],
+      [getOfferStockFactory()],
       STOCKS_PER_PAGE * 5 + 10,
       '?page=3'
     )

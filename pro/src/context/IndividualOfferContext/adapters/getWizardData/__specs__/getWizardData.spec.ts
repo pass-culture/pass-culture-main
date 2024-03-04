@@ -1,14 +1,14 @@
 import { api } from 'apiClient/api'
 import { VenueListItemResponseModel } from 'apiClient/v1'
 import {
-  individualOfferCategoryFactory,
-  individualOfferGetVenuesFactory,
-  individualOfferSubCategoryResponseModelFactory,
+  categoryFactory,
+  subcategoryFactory,
+  venueListItemFactory,
 } from 'utils/individualApiFactories'
 
 import getWizardData from '../getWizardData'
 
-const venue1: VenueListItemResponseModel = individualOfferGetVenuesFactory({
+const venue1: VenueListItemResponseModel = venueListItemFactory({
   id: 2,
   isVirtual: false,
   managingOffererId: 3,
@@ -16,7 +16,7 @@ const venue1: VenueListItemResponseModel = individualOfferGetVenuesFactory({
   offererName: 'ma structure',
 })
 
-const venue2: VenueListItemResponseModel = individualOfferGetVenuesFactory({
+const venue2: VenueListItemResponseModel = venueListItemFactory({
   id: 3,
   isVirtual: false,
   managingOffererId: 4,
@@ -37,11 +37,9 @@ const offererName2 = {
 describe('getWizardData', () => {
   it('should return empty data when user is admin and offerer not specified', async () => {
     vi.spyOn(api, 'getCategories').mockResolvedValueOnce({
-      categories: [
-        individualOfferCategoryFactory({ id: 'A', proLabel: 'catégorie 1' }),
-      ],
+      categories: [categoryFactory({ id: 'A', proLabel: 'catégorie 1' })],
       subcategories: [
-        individualOfferSubCategoryResponseModelFactory({
+        subcategoryFactory({
           id: '1',
           proLabel: 'sous-catégorie 1',
         }),
@@ -136,13 +134,13 @@ describe('getWizardData', () => {
 
   it('should return all offerers and venue list when user is admin and offerer not given', async () => {
     vi.spyOn(api, 'getCategories').mockResolvedValueOnce({
-      categories: [
-        individualOfferCategoryFactory({ id: 'A', proLabel: 'catégorie 1' }),
-      ],
+      categories: [categoryFactory({ id: 'A', proLabel: 'catégorie 1' })],
       subcategories: [
-        individualOfferSubCategoryResponseModelFactory({
+        subcategoryFactory({
           id: '1',
           proLabel: 'sous-catégorie 1',
+          appLabel: 'app label',
+          isDigitalDeposit: true,
         }),
       ],
     })
@@ -171,7 +169,7 @@ describe('getWizardData', () => {
           ],
           subCategories: [
             {
-              appLabel: 'appLabel',
+              appLabel: 'app label',
               canExpire: true,
               canBeDuo: false,
               canBeEducational: false,

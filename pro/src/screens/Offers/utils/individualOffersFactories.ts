@@ -4,7 +4,7 @@ import {
   OfferStatus,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
-import { venueFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
+import { listOffersVenueFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
 
 let offerId = 1
 let stockId = 1
@@ -21,8 +21,8 @@ export const listOffersStockFactory = (
   }
 }
 
-export const individualOfferFactory = (
-  customOffer: Partial<ListOffersOfferResponseModel> = {}
+export const listOffersOfferFactory = (
+  customListOffersOffer: Partial<ListOffersOfferResponseModel> = {}
 ): ListOffersOfferResponseModel => {
   const currentOfferId = offerId++
 
@@ -36,9 +36,9 @@ export const individualOfferFactory = (
     name: `offer name ${offerId}`,
     isEvent: true,
     isThing: false,
-    venue: venueFactory(),
+    venue: listOffersVenueFactory(),
     stocks: [],
     isEditable: true,
-    ...customOffer,
+    ...customListOffersOffer,
   }
 }

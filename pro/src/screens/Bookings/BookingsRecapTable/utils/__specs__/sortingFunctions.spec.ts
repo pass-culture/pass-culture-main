@@ -1,7 +1,7 @@
 import { bookingRecapFactory } from 'utils/apiFactories'
 import {
   collectiveBookingCollectiveStockFactory,
-  collectiveBookingRecapFactory,
+  collectiveBookingFactory,
 } from 'utils/collectiveApiFactories'
 
 import {
@@ -12,12 +12,12 @@ import {
 
 describe('sortByOfferName', () => {
   it('should return 1 when first row offer name comes after second row offer name', () => {
-    const bookingA = collectiveBookingRecapFactory({
+    const bookingA = collectiveBookingFactory({
       stock: collectiveBookingCollectiveStockFactory({
         offerName: 'Zebre du Bengal',
       }),
     })
-    const bookingB = collectiveBookingRecapFactory({
+    const bookingB = collectiveBookingFactory({
       stock: collectiveBookingCollectiveStockFactory({
         offerName: 'Babar, mon ami éléphant',
       }),
@@ -29,12 +29,12 @@ describe('sortByOfferName', () => {
   })
 
   it('should return -1 when first row offer name comes before second row offer name', () => {
-    const bookingA = collectiveBookingRecapFactory({
+    const bookingA = collectiveBookingFactory({
       stock: collectiveBookingCollectiveStockFactory({
         offerName: 'Babar, mon ami éléphant',
       }),
     })
-    const bookingB = collectiveBookingRecapFactory({
+    const bookingB = collectiveBookingFactory({
       stock: collectiveBookingCollectiveStockFactory({
         offerName: 'Zebre du Bengal',
       }),
@@ -46,12 +46,12 @@ describe('sortByOfferName', () => {
   })
 
   it('should return 0 when first row offer name is the same as second row offer name', () => {
-    const bookingA = collectiveBookingRecapFactory({
+    const bookingA = collectiveBookingFactory({
       stock: collectiveBookingCollectiveStockFactory({
         offerName: 'Babar, mon ami éléphant',
       }),
     })
-    const bookingB = collectiveBookingRecapFactory({
+    const bookingB = collectiveBookingFactory({
       stock: collectiveBookingCollectiveStockFactory({
         offerName: 'Babar, mon ami éléphant',
       }),
@@ -65,10 +65,10 @@ describe('sortByOfferName', () => {
 
 describe('sortByBookingDate', () => {
   it('should return -1 when first row bookingDate comes before second row bookingDate', () => {
-    const bookingA = collectiveBookingRecapFactory({
+    const bookingA = collectiveBookingFactory({
       bookingDate: '2020-04-22T11:17:12+02:00',
     })
-    const bookingB = collectiveBookingRecapFactory({
+    const bookingB = collectiveBookingFactory({
       bookingDate: '2020-04-23T13:17:12+02:00',
     })
 
@@ -78,10 +78,10 @@ describe('sortByBookingDate', () => {
   })
 
   it('should return 1 when first row bookingDate comes after second row bookingDate', () => {
-    const bookingA = collectiveBookingRecapFactory({
+    const bookingA = collectiveBookingFactory({
       bookingDate: '2020-04-22T11:17:12+02:00',
     })
-    const bookingB = collectiveBookingRecapFactory({
+    const bookingB = collectiveBookingFactory({
       bookingDate: '2020-04-22T12:16:12+03:00',
     })
 
@@ -91,10 +91,10 @@ describe('sortByBookingDate', () => {
   })
 
   it('should return 0 when first row bookingDate is the same as second row bookingDate', () => {
-    const bookingA = collectiveBookingRecapFactory({
+    const bookingA = collectiveBookingFactory({
       bookingDate: '2020-04-22T11:17:12+02:00',
     })
-    const bookingB = collectiveBookingRecapFactory({
+    const bookingB = collectiveBookingFactory({
       bookingDate: '2020-04-22T11:17:12+02:00',
     })
 

@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
 
-import { collectiveBookingRecapFactory } from 'utils/collectiveApiFactories'
+import { collectiveBookingFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
@@ -16,7 +16,7 @@ const renderCollectiveBookingStatusCell = (
 describe('CollectiveBookingStatusCell', () => {
   it('should display the status label', () => {
     renderCollectiveBookingStatusCell({
-      booking: collectiveBookingRecapFactory(),
+      booking: collectiveBookingFactory(),
     })
 
     expect(screen.getByText('préréservée')).toBeInTheDocument()

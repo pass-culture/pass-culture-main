@@ -1,4 +1,4 @@
-import { GetIndividualOfferFactory } from 'utils/apiFactories'
+import { getIndividualOfferFactory } from 'utils/apiFactories'
 
 import { computeInitialValues } from '../computeInitialValues'
 
@@ -6,7 +6,7 @@ describe('computeInitialValues', () => {
   it('should sort prices', () => {
     expect(
       computeInitialValues(
-        GetIndividualOfferFactory({
+        getIndividualOfferFactory({
           priceCategories: [
             { id: 1, price: 10, label: 'Cat 1' },
             { id: 2, price: 20, label: 'Cat 2' },

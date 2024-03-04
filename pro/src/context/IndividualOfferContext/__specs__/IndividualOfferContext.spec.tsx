@@ -13,7 +13,10 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { ApiError } from 'apiClient/v2'
 import Notification from 'components/Notification/Notification'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
-import { GetIndividualOfferFactory, offererFactory } from 'utils/apiFactories'
+import {
+  getIndividualOfferFactory,
+  getOfferManagingOffererFactory,
+} from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
@@ -21,8 +24,8 @@ import {
   IndividualOfferContextProviderProps,
 } from '../IndividualOfferContext'
 
-const offerer = offererFactory()
-const apiOffer: GetIndividualOfferResponseModel = GetIndividualOfferFactory()
+const offerer = getOfferManagingOffererFactory()
+const apiOffer: GetIndividualOfferResponseModel = getIndividualOfferFactory()
 
 vi.mock('react-router-dom', async () => ({
   ...((await vi.importActual('react-router-dom')) ?? {}),

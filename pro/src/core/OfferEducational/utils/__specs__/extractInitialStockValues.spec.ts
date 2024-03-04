@@ -4,7 +4,7 @@ import {
   CollectiveOffer,
   CollectiveOfferTemplate,
 } from 'core/OfferEducational/types'
-import { defaultRequestResponseModel } from 'utils/collectiveApiFactories'
+import { defaultGetCollectiveOfferRequest } from 'utils/collectiveApiFactories'
 
 import { extractInitialStockValues } from '../extractInitialStockValues'
 
@@ -67,7 +67,7 @@ describe('extractInitialVisibilityValues', () => {
           educationalPriceDetail: 'initialStockValues',
         } as CollectiveOfferTemplate,
         {
-          ...defaultRequestResponseModel,
+          ...defaultGetCollectiveOfferRequest,
           requestedDate: '2030-07-30',
           totalStudents: 10,
           totalTeachers: 10,
@@ -94,7 +94,7 @@ describe('extractInitialVisibilityValues', () => {
           educationalPriceDetail: 'initialStockValues',
         } as CollectiveOfferTemplate,
         {
-          ...defaultRequestResponseModel,
+          ...defaultGetCollectiveOfferRequest,
           requestedDate: null,
           totalStudents: null,
           totalTeachers: null,
@@ -121,7 +121,7 @@ describe('extractInitialVisibilityValues', () => {
           educationalPriceDetail: 'initialStockValues',
         } as CollectiveOfferTemplate,
         {
-          ...defaultRequestResponseModel,
+          ...defaultGetCollectiveOfferRequest,
           totalStudents: 8,
         }
       )
@@ -146,7 +146,7 @@ describe('extractInitialVisibilityValues', () => {
           educationalPriceDetail: 'initialStockValues',
         } as CollectiveOfferTemplate,
         {
-          ...defaultRequestResponseModel,
+          ...defaultGetCollectiveOfferRequest,
           totalTeachers: 6,
         }
       )

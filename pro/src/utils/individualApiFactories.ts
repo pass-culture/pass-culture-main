@@ -15,7 +15,7 @@ import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 
-import { GetIndividualOfferFactory } from './apiFactories'
+import { getIndividualOfferFactory } from './apiFactories'
 
 let stockId = 1
 let stockResponseId = 1
@@ -25,7 +25,7 @@ let offerCategoryId = 1
 let offerSubCategoryId = 1
 
 export const individualOfferVenueItemFactory = (
-  customVenue: Partial<IndividualOfferVenueItem> = {}
+  customIndividualOfferVenueItem: Partial<IndividualOfferVenueItem> = {}
 ): IndividualOfferVenueItem => {
   const currentVenueId = venueId++
 
@@ -45,12 +45,12 @@ export const individualOfferVenueItemFactory = (
     hasMissingReimbursementPoint: false,
     withdrawalDetails: null,
     venueType: VenueTypeCode.AUTRE,
-    ...customVenue,
+    ...customIndividualOfferVenueItem,
   }
 }
 
-export const individualOfferVenueResponseModelFactory = (
-  customVenue: Partial<GetVenueResponseModel> = {}
+export const getVenueFactory = (
+  customGetVenue: Partial<GetVenueResponseModel> = {}
 ): GetVenueResponseModel => {
   const currentVenueId = venueId++
 
@@ -78,12 +78,12 @@ export const individualOfferVenueResponseModelFactory = (
     dmsToken: 'token',
     hasAdageId: false,
     venueTypeCode: VenueTypeCode.AUTRE,
-    ...customVenue,
+    ...customGetVenue,
   }
 }
 
-export const individualOfferGetVenuesFactory = (
-  customVenue: Partial<VenueListItemResponseModel> = {}
+export const venueListItemFactory = (
+  customVenueListItem: Partial<VenueListItemResponseModel> = {}
 ): VenueListItemResponseModel => {
   const currentVenueId = venueId++
 
@@ -97,30 +97,30 @@ export const individualOfferGetVenuesFactory = (
     hasMissingReimbursementPoint: false,
     managingOffererId: 1,
     offererName: 'la structure de Michel',
-    ...customVenue,
+    ...customVenueListItem,
   }
 }
 
 export const priceCategoryFactory = (
-  customPriceCategories: Partial<PriceCategoryResponseModel> = {}
+  customPriceCategory: Partial<PriceCategoryResponseModel> = {}
 ): PriceCategoryResponseModel => ({
   id: priceCategoryId++,
   label: 'mon label',
   price: 66.6,
-  ...customPriceCategories,
+  ...customPriceCategory,
 })
 
-export const individualOfferCategoryFactory = (
-  customOfferCategory: Partial<CategoryResponseModel> = {}
+export const categoryFactory = (
+  customCategory: Partial<CategoryResponseModel> = {}
 ): CategoryResponseModel => ({
   id: String(offerCategoryId++),
   proLabel: `catégorie ${offerCategoryId}`,
   isSelectable: true,
-  ...customOfferCategory,
+  ...customCategory,
 })
 
-export const individualOfferSubCategoryFactory = (
-  customOfferSubCategory: Partial<SubcategoryResponseModel> = {}
+export const subcategoryFactory = (
+  customSubcategory: Partial<SubcategoryResponseModel> = {}
 ): SubcategoryResponseModel => ({
   id: String(offerSubCategoryId++),
   categoryId: 'A',
@@ -137,32 +137,11 @@ export const individualOfferSubCategoryFactory = (
   canExpire: true,
   isDigitalDeposit: false,
   isPhysicalDeposit: true,
-  ...customOfferSubCategory,
+  ...customSubcategory,
 })
 
-export const individualOfferSubCategoryResponseModelFactory = (
-  customOfferSubCategory: Partial<SubcategoryResponseModel> = {}
-): SubcategoryResponseModel => ({
-  id: String(offerSubCategoryId++),
-  categoryId: 'A',
-  proLabel: `sous catégorie ${offerSubCategoryId}`,
-  isEvent: false,
-  conditionalFields: [],
-  canBeDuo: false,
-  canBeEducational: false,
-  canBeWithdrawable: false,
-  onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
-  reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-  isSelectable: true,
-  appLabel: 'appLabel',
-  canExpire: true,
-  isDigitalDeposit: true,
-  isPhysicalDeposit: true,
-  ...customOfferSubCategory,
-})
-
-export const individualStockEventFactory = (
-  customStock: Partial<StocksEvent> = {}
+export const StocksEventFactory = (
+  customStocksEvent: Partial<StocksEvent> = {}
 ): StocksEvent => {
   return {
     id: stockId++,
@@ -172,12 +151,12 @@ export const individualStockEventFactory = (
     quantity: 18,
     bookingsQuantity: 0,
     isEventDeletable: true,
-    ...customStock,
+    ...customStocksEvent,
   }
 }
 
-export const individualGetOfferStockResponseModelFactory = (
-  customStock: Partial<GetOfferStockResponseModel> = {}
+export const getOfferStockFactory = (
+  customGetOfferStock: Partial<GetOfferStockResponseModel> = {}
 ): GetOfferStockResponseModel => {
   return {
     id: stockResponseId++,
@@ -190,14 +169,14 @@ export const individualGetOfferStockResponseModelFactory = (
     quantity: 18,
     bookingsQuantity: 0,
     isEventDeletable: true,
-    ...customStock,
+    ...customGetOfferStock,
   }
 }
 
-export const individualOfferContextFactory = (
-  customContext: Partial<IndividualOfferContextValues> = {}
+export const individualOfferContextValuesFactory = (
+  customIndividualOfferContextValues: Partial<IndividualOfferContextValues> = {}
 ): IndividualOfferContextValues => {
-  const offer = GetIndividualOfferFactory()
+  const offer = getIndividualOfferFactory()
 
   return {
     offerId: offer.id,
@@ -208,6 +187,6 @@ export const individualOfferContextFactory = (
     subCategories: [],
     setSubcategory: () => {},
     showVenuePopin: {},
-    ...customContext,
+    ...customIndividualOfferContextValues,
   }
 }

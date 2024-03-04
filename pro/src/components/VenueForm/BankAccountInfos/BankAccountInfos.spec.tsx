@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { Formik } from 'formik'
 
 import { BankAccountResponseModel } from 'apiClient/v1'
-import { defaultBankAccountResponseModel } from 'utils/apiFactories'
+import { defaultBankAccount } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import BankAccountInfos from './BankAccountInfos'
@@ -23,7 +23,7 @@ const renderBankAccountInfos = (
 describe('BankAccountInfos', () => {
   it('should display bankAccount infos if venue has one', () => {
     const bankAccount = {
-      ...defaultBankAccountResponseModel,
+      ...defaultBankAccount,
       label: 'CB #1',
       obfuscatedIban: '123456',
     }
@@ -35,7 +35,7 @@ describe('BankAccountInfos', () => {
   })
 
   it('should display modification banner if venue has a bank account', () => {
-    renderBankAccountInfos(defaultBankAccountResponseModel)
+    renderBankAccountInfos(defaultBankAccount)
 
     expect(
       screen.getByText(

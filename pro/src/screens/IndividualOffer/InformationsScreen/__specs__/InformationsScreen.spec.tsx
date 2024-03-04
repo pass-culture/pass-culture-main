@@ -11,9 +11,9 @@ import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import * as filterCategories from 'screens/IndividualOffer/InformationsScreen/utils/filterCategories/filterCategories'
 import {
-  individualOfferCategoryFactory,
-  individualOfferContextFactory,
-  individualOfferSubCategoryFactory,
+  categoryFactory,
+  individualOfferContextValuesFactory,
+  subcategoryFactory,
   individualOfferVenueItemFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -72,14 +72,14 @@ describe('screens:IndividualOffer::Informations', () => {
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
     const categories = [
-      individualOfferCategoryFactory({
+      categoryFactory({
         id: 'A',
         proLabel: 'Catégorie A',
         isSelectable: true,
       }),
     ]
     const subCategories = [
-      individualOfferSubCategoryFactory({
+      subcategoryFactory({
         id: 'virtual',
         categoryId: 'A',
         proLabel: 'Sous catégorie online de A',
@@ -92,7 +92,7 @@ describe('screens:IndividualOffer::Informations', () => {
         reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
         isSelectable: true,
       }),
-      individualOfferSubCategoryFactory({
+      subcategoryFactory({
         id: 'physical',
         categoryId: 'A',
         proLabel: 'Sous catégorie offline de A',
@@ -112,7 +112,7 @@ describe('screens:IndividualOffer::Informations', () => {
       offererId: '',
     }
 
-    contextValue = individualOfferContextFactory({
+    contextValue = individualOfferContextValuesFactory({
       categories,
       subCategories,
       offer: null,

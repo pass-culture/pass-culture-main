@@ -1,4 +1,4 @@
-import { GetIndividualOfferFactory } from 'utils/apiFactories'
+import { getIndividualOfferFactory } from 'utils/apiFactories'
 
 import { getIndividualOfferImage } from '../getIndividualOfferImage'
 
@@ -40,7 +40,7 @@ describe('getIndividualOfferImage', () => {
   it.each(serializeOfferApiImageDataSet)(
     'using image from mediation',
     ({ activeMediation, expectedImage }) => {
-      const offerApi = GetIndividualOfferFactory({
+      const offerApi = getIndividualOfferFactory({
         activeMediation,
       })
 
@@ -49,7 +49,7 @@ describe('getIndividualOfferImage', () => {
   )
 
   it('using image from thumbUrl', () => {
-    const offer = GetIndividualOfferFactory({
+    const offer = getIndividualOfferFactory({
       thumbUrl: 'https://image.url',
       activeMediation: undefined,
     })

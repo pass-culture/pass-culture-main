@@ -10,7 +10,7 @@ import { api } from 'apiClient/api'
 import type { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
 import {
-  defaultGetCollectiveOfferResponseModel,
+  defaultGetCollectiveOffer,
   defaultGetOffererResponseModel,
 } from 'utils/apiFactories'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
@@ -92,7 +92,7 @@ describe('CollectiveOfferSummaryCreation', () => {
 
   it('Should show the redirect modal', async () => {
     vi.spyOn(api, 'patchCollectiveOfferPublication').mockResolvedValue({
-      ...defaultGetCollectiveOfferResponseModel,
+      ...defaultGetCollectiveOffer,
       isNonFreeOffer: true,
     } as GetCollectiveOfferResponseModel)
     await renderCollectiveOfferSummaryCreation(

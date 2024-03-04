@@ -3,7 +3,7 @@ import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { GetIndividualOfferFactory } from 'utils/apiFactories'
+import { getIndividualOfferFactory } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import IndivualOfferLayout, {
@@ -13,7 +13,7 @@ import IndivualOfferLayout, {
 const renderIndivualOfferLayout = ({
   title = 'layout title',
   withStepper = true,
-  offer = GetIndividualOfferFactory(),
+  offer = getIndividualOfferFactory(),
   mode = OFFER_WIZARD_MODE.EDITION,
   children = <div>Template child</div>,
 }: Partial<IndivualOfferLayoutProps>) => {
@@ -39,7 +39,7 @@ describe('IndivualOfferLayout', () => {
   })
 
   it('should render when offer is given', () => {
-    const offer = GetIndividualOfferFactory({
+    const offer = getIndividualOfferFactory({
       name: 'offer name',
     })
 
@@ -60,7 +60,7 @@ describe('IndivualOfferLayout', () => {
   })
 
   it('should not display stepper nor status when no stepper', () => {
-    const offer = GetIndividualOfferFactory({
+    const offer = getIndividualOfferFactory({
       isActive: true,
       status: OfferStatus.ACTIVE,
     })
@@ -76,7 +76,7 @@ describe('IndivualOfferLayout', () => {
   })
 
   it('should display status and button in edition', () => {
-    const offer = GetIndividualOfferFactory({
+    const offer = getIndividualOfferFactory({
       isActive: true,
       status: OfferStatus.ACTIVE,
     })
@@ -93,7 +93,7 @@ describe('IndivualOfferLayout', () => {
   })
 
   it('should display status but not let activate offer when offer is not activable', () => {
-    const offer = GetIndividualOfferFactory({
+    const offer = getIndividualOfferFactory({
       isActivable: false,
     })
 
@@ -108,7 +108,7 @@ describe('IndivualOfferLayout', () => {
   })
 
   it('should not display status in creation', () => {
-    const offer = GetIndividualOfferFactory({
+    const offer = getIndividualOfferFactory({
       isActive: false,
       status: OfferStatus.DRAFT,
     })
@@ -125,7 +125,7 @@ describe('IndivualOfferLayout', () => {
   })
 
   it('should display provider banner', () => {
-    const offer = GetIndividualOfferFactory({
+    const offer = getIndividualOfferFactory({
       lastProvider: { name: 'boost' },
     })
 
@@ -139,7 +139,7 @@ describe('IndivualOfferLayout', () => {
   })
 
   it('should not display provider banner when no provider is provided', () => {
-    const offer = GetIndividualOfferFactory({
+    const offer = getIndividualOfferFactory({
       lastProvider: { name: '' },
     })
 

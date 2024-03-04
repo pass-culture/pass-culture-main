@@ -1,7 +1,7 @@
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getYupValidationSchemaErrors } from 'utils/yupValidationTestHelpers'
 
-import { stockThingFactory } from '../stockThingFactory'
+import { stockThingFormValuesFactory } from '../stockThingFormValuesFactory'
 import { StockThingFormValues } from '../types'
 import { getValidationSchema } from '../validationSchema'
 
@@ -14,7 +14,7 @@ describe('validationSchema', () => {
   }[] = [
     {
       description: 'valid form',
-      formValues: stockThingFactory(),
+      formValues: stockThingFormValuesFactory(),
       expectedErrors: [],
       minQuantity: null,
     },

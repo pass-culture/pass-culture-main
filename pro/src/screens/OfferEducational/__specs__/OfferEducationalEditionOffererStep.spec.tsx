@@ -5,8 +5,8 @@ import { CollectiveBookingStatus } from 'apiClient/v1'
 import { Mode } from 'core/OfferEducational'
 import {
   collectiveOfferFactory,
-  collectiveOfferOffererFactory,
-  collectiveOfferVenueFactory,
+  getCollectiveOfferManagingOffererFactory,
+  getCollectiveOfferVenueFactory,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -53,9 +53,9 @@ describe('screens | OfferEducational : edition offerer step', () => {
         {
           id: thirdVenueId,
           venue: {
-            ...collectiveOfferVenueFactory({
+            ...getCollectiveOfferVenueFactory({
               id: thirdVenueId,
-              managingOfferer: collectiveOfferOffererFactory({
+              managingOfferer: getCollectiveOfferManagingOffererFactory({
                 id: secondOffererId,
               }),
             }),
@@ -63,7 +63,7 @@ describe('screens | OfferEducational : edition offerer step', () => {
           },
         },
         undefined,
-        collectiveOfferVenueFactory({ id: secondOffererId })
+        getCollectiveOfferVenueFactory({ id: secondOffererId })
       ),
     }
 
@@ -110,8 +110,8 @@ describe('screens | OfferEducational : edition offerer step', () => {
         {
           id: thirdVenueId,
           venue: {
-            ...collectiveOfferVenueFactory({
-              managingOfferer: collectiveOfferOffererFactory({
+            ...getCollectiveOfferVenueFactory({
+              managingOfferer: getCollectiveOfferManagingOffererFactory({
                 id: secondOffererId,
               }),
             }),
@@ -120,7 +120,7 @@ describe('screens | OfferEducational : edition offerer step', () => {
           lastBookingStatus: CollectiveBookingStatus.USED,
         },
         undefined,
-        collectiveOfferVenueFactory({})
+        getCollectiveOfferVenueFactory({})
       ),
     }
     renderWithProviders(<OfferEducational {...props} />)

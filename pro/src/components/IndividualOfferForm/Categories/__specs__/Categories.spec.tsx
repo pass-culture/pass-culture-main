@@ -9,8 +9,8 @@ import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
 import { SubmitButton } from 'ui-kit'
 import {
-  individualOfferCategoryFactory,
-  individualOfferSubCategoryFactory,
+  categoryFactory,
+  subcategoryFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -69,21 +69,21 @@ describe('IndividualOffer section: Categories', () => {
   beforeEach(() => {
     initialValues = { ...CATEGORIES_DEFAULT_VALUES }
     categories = [
-      individualOfferCategoryFactory({ id: 'A' }),
-      individualOfferCategoryFactory({ id: 'B' }),
-      individualOfferCategoryFactory({ id: 'C' }),
+      categoryFactory({ id: 'A' }),
+      categoryFactory({ id: 'B' }),
+      categoryFactory({ id: 'C' }),
     ]
     subCategories = [
-      individualOfferSubCategoryFactory({
+      subcategoryFactory({
         id: 'A-A',
         categoryId: 'A',
       }),
-      individualOfferSubCategoryFactory({
+      subcategoryFactory({
         id: 'B-A',
         categoryId: 'B',
         conditionalFields: ['gtl_id'],
       }),
-      individualOfferSubCategoryFactory({
+      subcategoryFactory({
         id: 'C-A',
         categoryId: 'C',
         conditionalFields: ['showType', 'showSubType'],

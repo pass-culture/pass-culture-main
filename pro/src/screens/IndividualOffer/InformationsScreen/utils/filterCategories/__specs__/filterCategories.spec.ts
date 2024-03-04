@@ -4,8 +4,8 @@ import {
   INDIVIDUAL_OFFER_SUBTYPE,
 } from 'core/Offers/constants'
 import {
-  individualOfferCategoryFactory,
-  individualOfferSubCategoryFactory,
+  categoryFactory,
+  subcategoryFactory,
 } from 'utils/individualApiFactories'
 
 import {
@@ -78,47 +78,47 @@ describe('filterCategories', () => {
 
   beforeEach(() => {
     categories = [
-      individualOfferCategoryFactory({ id: 'A' }),
-      individualOfferCategoryFactory({ id: 'B' }),
-      individualOfferCategoryFactory({ id: 'C' }),
-      individualOfferCategoryFactory({ id: 'D' }),
+      categoryFactory({ id: 'A' }),
+      categoryFactory({ id: 'B' }),
+      categoryFactory({ id: 'C' }),
+      categoryFactory({ id: 'D' }),
     ]
     subCategories = [
-      individualOfferSubCategoryFactory({
+      subcategoryFactory({
         id: 'A-A',
         categoryId: 'A',
         isEvent: true,
       }),
-      individualOfferSubCategoryFactory({
+      subcategoryFactory({
         id: 'A-B',
         categoryId: 'A',
         isEvent: false,
         isSelectable: false,
       }),
-      individualOfferSubCategoryFactory({
+      subcategoryFactory({
         id: 'B-A',
         categoryId: 'B',
         isEvent: false,
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
       }),
-      individualOfferSubCategoryFactory({
+      subcategoryFactory({
         id: 'C-A',
         categoryId: 'C',
         isEvent: true,
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE_OR_OFFLINE,
       }),
-      individualOfferSubCategoryFactory({
+      subcategoryFactory({
         id: 'C-B',
         categoryId: 'C',
         isEvent: true,
       }),
-      individualOfferSubCategoryFactory({
+      subcategoryFactory({
         id: 'C-C',
         categoryId: 'C',
         isEvent: true,
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
       }),
-      individualOfferSubCategoryFactory({
+      subcategoryFactory({
         id: 'C-D',
         categoryId: 'C',
         isEvent: true,

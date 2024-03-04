@@ -1,6 +1,6 @@
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
 import {
-  individualOfferFactory,
+  listOffersOfferFactory,
   listOffersStockFactory,
 } from 'screens/Offers/utils/individualOffersFactories'
 
@@ -10,7 +10,7 @@ describe('offerHasBookingQuantity', () => {
   let offers: ListOffersOfferResponseModel[] = []
 
   beforeEach(() => {
-    const offer = individualOfferFactory()
+    const offer = listOffersOfferFactory()
     offers = [
       { ...offer, stocks: [listOffersStockFactory({ remainingQuantity: 0 })] },
       { ...offer, stocks: [listOffersStockFactory({ remainingQuantity: 0 })] },

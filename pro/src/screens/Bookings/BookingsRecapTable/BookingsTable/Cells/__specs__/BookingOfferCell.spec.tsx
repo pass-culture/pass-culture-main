@@ -3,7 +3,7 @@ import { add } from 'date-fns'
 import React from 'react'
 
 import { bookingRecapFactory } from 'utils/apiFactories'
-import { collectiveBookingRecapFactory } from 'utils/collectiveApiFactories'
+import { collectiveBookingFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { BookingOfferCell, BookingOfferCellProps } from '../BookingOfferCell'
@@ -15,7 +15,7 @@ describe('bookings offer cell', () => {
   const offerId = 1
   it('offer name and ean with a link to the offer when stock is a book', () => {
     const props: BookingOfferCellProps = {
-      booking: collectiveBookingRecapFactory({
+      booking: collectiveBookingFactory({
         stock: {
           offerId: offerId,
           offerIsbn: '97834567654',
@@ -38,7 +38,7 @@ describe('bookings offer cell', () => {
 
   it('offer name with a link to the offer when stock is a thing', () => {
     const props: BookingOfferCellProps = {
-      booking: collectiveBookingRecapFactory({
+      booking: collectiveBookingFactory({
         stock: {
           offerId: offerId,
           offerName: 'Guitare acoustique',
@@ -58,7 +58,7 @@ describe('bookings offer cell', () => {
 
   it('offer name and event beginning datetime in venue timezone when stock is an event', () => {
     const props: BookingOfferCellProps = {
-      booking: collectiveBookingRecapFactory({
+      booking: collectiveBookingFactory({
         stock: {
           eventBeginningDatetime: '2020-05-12T11:03:28.564687+04:00',
           offerId: offerId,
@@ -82,7 +82,7 @@ describe('bookings offer cell', () => {
       days: 1,
     })
 
-    const booking = collectiveBookingRecapFactory({
+    const booking = collectiveBookingFactory({
       stock: {
         bookingLimitDatetime: tomorrowFns.toISOString(),
         eventBeginningDatetime: new Date().toISOString(),
@@ -106,7 +106,7 @@ describe('bookings offer cell', () => {
       days: 8,
     })
 
-    const booking = collectiveBookingRecapFactory({
+    const booking = collectiveBookingFactory({
       stock: {
         bookingLimitDatetime: eightDaysFns.toISOString(),
         eventBeginningDatetime: new Date().toISOString(),

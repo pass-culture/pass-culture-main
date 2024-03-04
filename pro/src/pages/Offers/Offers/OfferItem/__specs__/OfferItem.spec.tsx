@@ -18,10 +18,10 @@ import { Audience } from 'core/shared'
 import * as useAnalytics from 'hooks/useAnalytics'
 import {
   collectiveOfferFactory,
-  venueFactory,
+  listOffersVenueFactory,
 } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
 import {
-  individualOfferFactory,
+  listOffersOfferFactory,
   listOffersStockFactory,
 } from 'screens/Offers/utils/individualOffersFactories'
 import { getToday } from 'utils/date'
@@ -55,7 +55,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
   const offerId = 12
 
   beforeEach(() => {
-    offer = individualOfferFactory({
+    offer = listOffersOfferFactory({
       id: offerId,
       hasBookingLimitDatetimesPassed: false,
       name: 'My little offer',
@@ -83,7 +83,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       })
 
       it('should render an image with an empty url when offer does not have a thumb url', () => {
-        props.offer = individualOfferFactory({ thumbUrl: null })
+        props.offer = listOffersOfferFactory({ thumbUrl: null })
 
         renderOfferItem(props)
 
@@ -204,7 +204,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     })
 
     it('should display the venue name when venue public name is not given', () => {
-      props.offer.venue = venueFactory({
+      props.offer.venue = listOffersVenueFactory({
         name: 'Paris',
         isVirtual: false,
         offererName: 'Offerer name',
@@ -216,7 +216,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     })
 
     it('should display the venue public name when is given', () => {
-      props.offer.venue = venueFactory({
+      props.offer.venue = listOffersVenueFactory({
         name: 'Paris',
         publicName: 'lieu de ouf',
         isVirtual: false,
@@ -229,7 +229,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     })
 
     it('should display the offerer name with "- Offre numérique" when venue is virtual', () => {
-      props.offer.venue = venueFactory({
+      props.offer.venue = listOffersVenueFactory({
         isVirtual: true,
         name: 'Gaumont Montparnasse',
         offererName: 'Gaumont',
@@ -244,7 +244,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     })
 
     it('should display the ean when given', () => {
-      props.offer = individualOfferFactory({ productIsbn: '123456789' })
+      props.offer = listOffersOfferFactory({ productIsbn: '123456789' })
 
       renderOfferItem(props)
 
@@ -333,7 +333,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
     describe('when offer is an event product', () => {
       it('should display the correct text "2 dates"', () => {
-        props.offer.venue = venueFactory({ departementCode: '973' })
+        props.offer.venue = listOffersVenueFactory({ departementCode: '973' })
         props.offer.stocks = [
           listOffersStockFactory({
             beginningDatetime: '01-01-2001',
@@ -351,7 +351,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       })
 
       it('should display the beginning date time when only one date', () => {
-        props.offer.venue = venueFactory({ departementCode: '973' })
+        props.offer.venue = listOffersVenueFactory({ departementCode: '973' })
         props.offer.stocks = [
           listOffersStockFactory({
             beginningDatetime: '2021-05-27T20:00:00Z',

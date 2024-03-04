@@ -7,7 +7,7 @@ import {
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
 } from 'apiClient/v1'
-import { defaultVenueResponseModel } from 'utils/collectiveApiFactories'
+import { defaultGetVenue } from 'utils/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -46,7 +46,7 @@ vi.mock('apiClient/api', () => ({
 
 describe('ReimbursementFields', () => {
   const venue = {
-    ...defaultVenueResponseModel,
+    ...defaultGetVenue,
     id: 1,
     name: 'fake venue name',
   }

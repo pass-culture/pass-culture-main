@@ -19,7 +19,7 @@ import { VenueFormValues } from 'components/VenueForm'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 import { defaultGetOffererResponseModel } from 'utils/apiFactories'
-import { defaultVenueResponseModel } from 'utils/collectiveApiFactories'
+import { defaultGetVenue } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { VenueEditionFormScreen } from '../VenueEditionFormScreen'
@@ -299,7 +299,7 @@ describe('VenueFormScreen', () => {
     }
 
     venue = {
-      ...defaultVenueResponseModel,
+      ...defaultGetVenue,
       hasPendingBankInformationApplication: false,
       demarchesSimplifieesApplicationId: '',
       collectiveDomains: [],
@@ -549,7 +549,7 @@ describe('VenueFormScreen', () => {
 
       const editVenue = vi
         .spyOn(api, 'editVenue')
-        .mockResolvedValue({ ...defaultVenueResponseModel, id: 1 })
+        .mockResolvedValue({ ...defaultGetVenue, id: 1 })
 
       await waitFor(() => {
         expect(
@@ -607,7 +607,7 @@ describe('VenueFormScreen', () => {
 
       const editVenue = vi
         .spyOn(api, 'editVenue')
-        .mockResolvedValue({ ...defaultVenueResponseModel, id: 1 })
+        .mockResolvedValue({ ...defaultGetVenue, id: 1 })
 
       await waitFor(() => {
         expect(
@@ -665,7 +665,7 @@ describe('VenueFormScreen', () => {
 
       const editVenue = vi
         .spyOn(api, 'editVenue')
-        .mockResolvedValue({ ...defaultVenueResponseModel, id: 1 })
+        .mockResolvedValue({ ...defaultGetVenue, id: 1 })
 
       await waitFor(() => {
         expect(
@@ -697,7 +697,7 @@ describe('VenueFormScreen', () => {
 
       const editVenue = vi
         .spyOn(api, 'editVenue')
-        .mockResolvedValue({ ...defaultVenueResponseModel, id: 1 })
+        .mockResolvedValue({ ...defaultGetVenue, id: 1 })
 
       await waitFor(() => {
         expect(

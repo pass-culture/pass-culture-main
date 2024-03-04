@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import React from 'react'
 
 import { TOTAL_PRICE_LABEL } from 'screens/OfferEducationalStock/constants/labels'
-import { collectiveStockFactory } from 'utils/collectiveApiFactories'
+import { getCollectiveOfferCollectiveStockFactory } from 'utils/collectiveApiFactories'
 
 import CollectiveOfferStockSection, {
   CollectiveOfferStockSectionProps,
@@ -17,7 +17,7 @@ const renderCollectiveOfferStockSection = (
 describe('CollectiveOfferStockSection', () => {
   it('render component', () => {
     const props = {
-      stock: collectiveStockFactory(),
+      stock: getCollectiveOfferCollectiveStockFactory(),
     }
     renderCollectiveOfferStockSection(props)
 

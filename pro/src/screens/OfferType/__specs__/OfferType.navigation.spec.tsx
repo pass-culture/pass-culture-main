@@ -5,9 +5,9 @@ import * as router from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { SubcategoryIdEnum, VenueTypeCode } from 'apiClient/v1'
 import {
-  individualOfferCategoryFactory,
-  individualOfferSubCategoryResponseModelFactory,
-  individualOfferVenueResponseModelFactory,
+  categoryFactory,
+  getVenueFactory,
+  subcategoryFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -51,9 +51,9 @@ describe('screens:IndividualOffer::OfferType', () => {
 
   beforeEach(() => {
     vi.spyOn(api, 'getCategories').mockResolvedValue({
-      categories: [individualOfferCategoryFactory()],
+      categories: [categoryFactory()],
       subcategories: [
-        individualOfferSubCategoryResponseModelFactory({
+        subcategoryFactory({
           // id should match venueType in venueTypeSubcategoriesMapping
           id: SubcategoryIdEnum.SPECTACLE_REPRESENTATION,
           proLabel: 'Ma sous-catégorie préférée',
@@ -61,7 +61,7 @@ describe('screens:IndividualOffer::OfferType', () => {
       ],
     })
     vi.spyOn(api, 'getVenue').mockResolvedValue({
-      ...individualOfferVenueResponseModelFactory({
+      ...getVenueFactory({
         venueTypeCode: 'OTHER' as VenueTypeCode, // cast is needed because VenueTypeCode in apiClient is defined in french, but sent by api in english
       }),
     })

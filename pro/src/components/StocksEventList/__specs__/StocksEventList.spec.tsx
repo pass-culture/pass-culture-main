@@ -5,9 +5,9 @@ import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetOfferStockResponseModel, StocksOrderedBy } from 'apiClient/v1'
-import { GetIndividualOfferFactory } from 'utils/apiFactories'
+import { getIndividualOfferFactory } from 'utils/apiFactories'
 import {
-  individualGetOfferStockResponseModelFactory,
+  getOfferStockFactory,
   priceCategoryFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -34,15 +34,15 @@ vi.mock('react-router-dom', async () => ({
 
 const offerId = 1
 const filteredPriceCategoryId = 3
-const stock1 = individualGetOfferStockResponseModelFactory({
+const stock1 = getOfferStockFactory({
   beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
   priceCategoryId: 1,
 })
-const stock2 = individualGetOfferStockResponseModelFactory({
+const stock2 = getOfferStockFactory({
   beginningDatetime: new Date('2021-10-14T13:00:00Z').toISOString(),
   priceCategoryId: 2,
 })
-const stock3 = individualGetOfferStockResponseModelFactory({
+const stock3 = getOfferStockFactory({
   beginningDatetime: new Date('2021-10-14T12:00:00Z').toISOString(),
   priceCategoryId: filteredPriceCategoryId,
 })
@@ -64,7 +64,7 @@ const renderStocksEventList = async (
         priceCategoryFactory({ label: 'Label', price: 30.5, id: 3 }),
       ]}
       departmentCode={props.departmentCode ?? '78'}
-      offer={GetIndividualOfferFactory({ id: offerId })}
+      offer={getIndividualOfferFactory({ id: offerId })}
       {...props}
     />
   )
@@ -91,7 +91,7 @@ describe('StocksEventList', () => {
 
   it('should render Illimité', async () => {
     await renderStocksEventList([
-      individualGetOfferStockResponseModelFactory({
+      getOfferStockFactory({
         priceCategoryId: 1,
         quantity: null,
       }),
@@ -319,15 +319,15 @@ describe('StocksEventList', () => {
   })
 
   it('should bulk delete lines with filters and use UTC for hour filter when clicking on button on action bar', async () => {
-    const stockTime1 = individualGetOfferStockResponseModelFactory({
+    const stockTime1 = getOfferStockFactory({
       priceCategoryId: 1,
       beginningDatetime: '2021-09-15T10:00:00.000Z',
     })
-    const stockTime2 = individualGetOfferStockResponseModelFactory({
+    const stockTime2 = getOfferStockFactory({
       priceCategoryId: 1,
       beginningDatetime: '2021-10-15T10:00:00.000Z',
     })
-    const stockTime3 = individualGetOfferStockResponseModelFactory({
+    const stockTime3 = getOfferStockFactory({
       priceCategoryId: 1,
       beginningDatetime: '2021-10-15T11:00:00.000Z',
     })

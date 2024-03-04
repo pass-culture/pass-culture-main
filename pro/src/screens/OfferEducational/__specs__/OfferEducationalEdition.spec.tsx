@@ -4,7 +4,7 @@ import React from 'react'
 import { Mode } from 'core/OfferEducational'
 import {
   collectiveOfferFactory,
-  collectiveOfferVenueFactory,
+  getCollectiveOfferVenueFactory,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -48,7 +48,7 @@ describe('screens | OfferEducational', () => {
       offer: collectiveOfferFactory(
         undefined,
         undefined,
-        collectiveOfferVenueFactory({})
+        getCollectiveOfferVenueFactory({})
       ),
       mode: Mode.READ_ONLY,
     }

@@ -13,7 +13,7 @@ import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import BankInformations from 'pages/Reimbursements/BankInformations/BankInformations'
 import {
-  defaultBankAccountResponseModel,
+  defaultBankAccount,
   defaultGetOffererResponseModel,
   defaultManagedVenues,
 } from 'utils/apiFactories'
@@ -253,7 +253,7 @@ describe('BankInformations page', () => {
   it('should update displayed link venue after closing link venue dialog', async () => {
     vi.spyOn(api, 'getOffererBankAccountsAndAttachedVenues').mockResolvedValue({
       id: 1,
-      bankAccounts: [{ ...defaultBankAccountResponseModel }],
+      bankAccounts: [{ ...defaultBankAccount }],
       managedVenues: [{ ...defaultManagedVenues }],
     })
 
