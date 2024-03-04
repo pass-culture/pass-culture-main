@@ -6,7 +6,7 @@ import { OfferAddressType } from 'apiClient/v1'
 import * as getInterventionAreaLabels from 'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea/OfferInterventionArea'
 import {
   collectiveOfferTemplateFactory,
-  defaultVenueResponseModel,
+  defaultGetVenue,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -22,7 +22,7 @@ vi.mock('apiClient/api', () => ({
 describe('CollectiveOfferLocationSection', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getVenue').mockResolvedValue({
-      ...defaultVenueResponseModel,
+      ...defaultGetVenue,
     })
   })
 

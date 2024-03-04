@@ -12,7 +12,7 @@ import {
   defaultGetOffererVenueResponseModel,
   defaultGetOffererResponseModel,
 } from 'utils/apiFactories'
-import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
+import { defaultDMSApplicationForEAC } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferType from '../OfferType'
@@ -183,7 +183,7 @@ describe('OfferType', () => {
           ...defaultGetOffererVenueResponseModel,
           collectiveDmsApplications: [
             {
-              ...defaultCollectiveDmsApplication,
+              ...defaultDMSApplicationForEAC,
               application: 1,
               lastChangeDate: '2021-01-01T00:00:00Z',
             },

@@ -1,6 +1,6 @@
 import { GetIndividualOfferResponseModel, OfferStatus } from 'apiClient/v1'
-import { GetIndividualOfferFactory } from 'utils/apiFactories'
-import { individualGetOfferStockResponseModelFactory } from 'utils/individualApiFactories'
+import { getIndividualOfferFactory } from 'utils/apiFactories'
+import { getOfferStockFactory } from 'utils/individualApiFactories'
 
 import { StockThingFormValues } from '../../types'
 import setFormReadOnlyFields from '../setFormReadOnlyFields'
@@ -9,7 +9,7 @@ describe('StockThingForm::utils::setFormReadOnlyFields', () => {
   let offer: GetIndividualOfferResponseModel
   let currentStock: StockThingFormValues
   beforeEach(() => {
-    offer = GetIndividualOfferFactory()
+    offer = getIndividualOfferFactory()
     currentStock = {} as StockThingFormValues
   })
   const disabledStatus = [OfferStatus.REJECTED, OfferStatus.PENDING]
@@ -19,7 +19,7 @@ describe('StockThingForm::utils::setFormReadOnlyFields', () => {
       offer.status = status
       const readOnlyFields = setFormReadOnlyFields(
         offer,
-        [individualGetOfferStockResponseModelFactory()],
+        [getOfferStockFactory()],
         currentStock
       )
       expect(readOnlyFields).toEqual([
@@ -42,7 +42,7 @@ describe('StockThingForm::utils::setFormReadOnlyFields', () => {
     }
     const readOnlyFields = setFormReadOnlyFields(
       offer,
-      [individualGetOfferStockResponseModelFactory()],
+      [getOfferStockFactory()],
       currentStock
     )
     expect(readOnlyFields).toEqual([
@@ -65,7 +65,7 @@ describe('StockThingForm::utils::setFormReadOnlyFields', () => {
     } as StockThingFormValues
     const readOnlyFields = setFormReadOnlyFields(
       offer,
-      [individualGetOfferStockResponseModelFactory()],
+      [getOfferStockFactory()],
       currentStock
     )
     expect(readOnlyFields).toEqual([])

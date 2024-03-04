@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
-import { GetIndividualOfferFactory } from 'utils/apiFactories'
+import { getIndividualOfferFactory } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
@@ -15,14 +15,14 @@ const renderPriceCategories = (props: PriceCategoriesScreenProps) =>
 
 describe('PriceCategories', () => {
   it('should render without error', () => {
-    renderPriceCategories({ offer: GetIndividualOfferFactory() })
+    renderPriceCategories({ offer: getIndividualOfferFactory() })
 
     expect(screen.getByText('Tarifs')).toBeInTheDocument()
   })
 
   it('should not disabled field for allociné', () => {
     renderPriceCategories({
-      offer: GetIndividualOfferFactory({ lastProvider: { name: 'allociné' } }),
+      offer: getIndividualOfferFactory({ lastProvider: { name: 'allociné' } }),
     })
 
     expect(screen.getByLabelText('Prix par personne *')).not.toBeDisabled()
@@ -30,7 +30,7 @@ describe('PriceCategories', () => {
 
   it('should disabled field for provider', () => {
     renderPriceCategories({
-      offer: GetIndividualOfferFactory({
+      offer: getIndividualOfferFactory({
         lastProvider: { name: 'provider' },
       }),
     })
@@ -40,7 +40,7 @@ describe('PriceCategories', () => {
 
   it('should disabled field for pending offer', () => {
     renderPriceCategories({
-      offer: GetIndividualOfferFactory({ status: OfferStatus.PENDING }),
+      offer: getIndividualOfferFactory({ status: OfferStatus.PENDING }),
     })
 
     expect(screen.getByLabelText('Prix par personne *')).toBeDisabled()
@@ -48,7 +48,7 @@ describe('PriceCategories', () => {
 
   it('should disabled field for rejected offer', () => {
     renderPriceCategories({
-      offer: GetIndividualOfferFactory({ status: OfferStatus.REJECTED }),
+      offer: getIndividualOfferFactory({ status: OfferStatus.REJECTED }),
     })
 
     expect(screen.getByLabelText('Prix par personne *')).toBeDisabled()

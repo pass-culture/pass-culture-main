@@ -23,13 +23,13 @@ import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import * as pcapi from 'repository/pcapi/pcapi'
 import {
-  GetIndividualOfferFactory,
-  offerVenueFactory,
+  getIndividualOfferFactory,
+  getOfferVenueFactory,
 } from 'utils/apiFactories'
 import {
-  individualOfferCategoryFactory,
-  individualOfferContextFactory,
-  individualOfferSubCategoryFactory,
+  categoryFactory,
+  individualOfferContextValuesFactory,
+  subcategoryFactory,
   individualOfferVenueItemFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -65,7 +65,7 @@ const renderInformationsScreen = (
       },
     },
   }
-  const contextValue = individualOfferContextFactory(contextOverride)
+  const contextValue = individualOfferContextValuesFactory(contextOverride)
 
   return renderWithProviders(
     <>
@@ -117,14 +117,14 @@ describe('screens:IndividualOffer::Informations:edition', () => {
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
-    const categories = [individualOfferCategoryFactory({ id: 'CID' })]
+    const categories = [categoryFactory({ id: 'CID' })]
     subCategories = [
-      individualOfferSubCategoryFactory({
+      subcategoryFactory({
         id: SubcategoryIdEnum.ABO_JEU_VIDEO,
         categoryId: 'CID',
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
       }),
-      individualOfferSubCategoryFactory({
+      subcategoryFactory({
         id: SubcategoryIdEnum.CONCERT,
         categoryId: 'CID',
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
@@ -136,7 +136,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       isVirtual: true,
     })
 
-    offer = GetIndividualOfferFactory({
+    offer = getIndividualOfferFactory({
       id: offerId,
       extraData: {
         author: 'Offer author',
@@ -168,7 +168,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       status: OfferStatus.ACTIVE,
     })
 
-    contextOverride = individualOfferContextFactory({
+    contextOverride = individualOfferContextValuesFactory({
       offerId: offer.id,
       offer: offer,
       venueList: [venue1, venue2],
@@ -246,7 +246,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
   it('should submit minimal virtual offer and redirect to summary', async () => {
     contextOverride.offer = {
       ...offer,
-      venue: offerVenueFactory({ id: virtualVenueId }),
+      venue: getOfferVenueFactory({ id: virtualVenueId }),
       subcategoryId: SubcategoryIdEnum.ABO_JEU_VIDEO,
       isEvent: false,
       withdrawalDelay: undefined,
@@ -420,7 +420,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
     it('should submit when user click onCancel button, but should not send mail', async () => {
       contextOverride.offer = {
         ...offer,
-        venue: offerVenueFactory({ id: virtualVenueId }),
+        venue: getOfferVenueFactory({ id: virtualVenueId }),
         subcategoryId: SubcategoryIdEnum.ABO_JEU_VIDEO,
         isEvent: false,
         bookingsCount: 1,
@@ -488,7 +488,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
     it('should not submit when user click on close withdrawal dialog button', async () => {
       contextOverride.offer = {
         ...offer,
-        venue: offerVenueFactory({ id: virtualVenueId }),
+        venue: getOfferVenueFactory({ id: virtualVenueId }),
         subcategoryId: SubcategoryIdEnum.ABO_JEU_VIDEO,
         isEvent: false,
         bookingsCount: 1,
@@ -571,7 +571,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       async (condition) => {
         contextOverride.offer = {
           ...offer,
-          venue: offerVenueFactory({ id: virtualVenueId }),
+          venue: getOfferVenueFactory({ id: virtualVenueId }),
           subcategoryId: SubcategoryIdEnum.ABO_JEU_VIDEO,
           isEvent: true,
           withdrawalDelay: undefined,
@@ -627,7 +627,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
     it('should not open widthdrawal dialog if offer is not active', async () => {
       contextOverride.offer = {
         ...offer,
-        venue: offerVenueFactory({ id: virtualVenueId }),
+        venue: getOfferVenueFactory({ id: virtualVenueId }),
         subcategoryId: SubcategoryIdEnum.ABO_JEU_VIDEO,
         isEvent: true,
         withdrawalDelay: undefined,
@@ -703,7 +703,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       async (withdrawalInformations) => {
         contextOverride.offer = {
           ...offer,
-          venue: offerVenueFactory({ id: virtualVenueId }),
+          venue: getOfferVenueFactory({ id: virtualVenueId }),
           subcategoryId: SubcategoryIdEnum.ABO_JEU_VIDEO,
           isEvent: false,
           withdrawalType: WithdrawalTypeEnum.ON_SITE,

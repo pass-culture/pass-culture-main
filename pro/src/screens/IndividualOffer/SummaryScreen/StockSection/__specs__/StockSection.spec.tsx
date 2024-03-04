@@ -12,8 +12,8 @@ import { OfferStatus } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import { GetIndividualOfferFactory } from 'utils/apiFactories'
-import { individualGetOfferStockResponseModelFactory } from 'utils/individualApiFactories'
+import { getIndividualOfferFactory } from 'utils/apiFactories'
+import { getOfferStockFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StockSection, { StockSectionProps } from '../StockSection'
@@ -66,7 +66,7 @@ describe('Summary stock section', () => {
         hasStocks: true,
         stockCount: 1,
         stocks: [
-          individualGetOfferStockResponseModelFactory({
+          getOfferStockFactory({
             quantity: 0,
             price: 20,
             bookingLimitDatetime: null,
@@ -75,7 +75,7 @@ describe('Summary stock section', () => {
       })
 
       const props = {
-        offer: GetIndividualOfferFactory({
+        offer: getIndividualOfferFactory({
           isEvent: false,
           status: OfferStatus.SOLD_OUT,
         }),
@@ -105,11 +105,11 @@ describe('Summary stock section', () => {
       vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
         hasStocks: true,
         stockCount: 1,
-        stocks: [individualGetOfferStockResponseModelFactory()],
+        stocks: [getOfferStockFactory()],
       })
 
       const props = {
-        offer: GetIndividualOfferFactory({
+        offer: getIndividualOfferFactory({
           status: OfferStatus.EXPIRED,
           isEvent: false,
         }),
@@ -142,7 +142,7 @@ describe('Summary stock section', () => {
       })
 
       const props = {
-        offer: GetIndividualOfferFactory({
+        offer: getIndividualOfferFactory({
           status: OfferStatus.SOLD_OUT,
           isEvent: false,
           hasStocks: false,
@@ -177,7 +177,7 @@ describe('Summary stock section', () => {
         hasStocks: true,
         stockCount: 1,
         stocks: [
-          individualGetOfferStockResponseModelFactory({
+          getOfferStockFactory({
             quantity: 10,
             price: 20,
             bookingLimitDatetime: null,
@@ -186,7 +186,7 @@ describe('Summary stock section', () => {
       })
 
       const props = {
-        offer: GetIndividualOfferFactory({
+        offer: getIndividualOfferFactory({
           status: OfferStatus.ACTIVE,
           isEvent: false,
         }),
@@ -223,7 +223,7 @@ describe('Summary stock section', () => {
         hasStocks: true,
         stockCount: 1,
         stocks: [
-          individualGetOfferStockResponseModelFactory({
+          getOfferStockFactory({
             quantity: 10,
             price: 20,
             bookingLimitDatetime: null,
@@ -232,7 +232,7 @@ describe('Summary stock section', () => {
       })
 
       const props = {
-        offer: GetIndividualOfferFactory({
+        offer: getIndividualOfferFactory({
           status: OfferStatus.ACTIVE,
           isEvent: false,
         }),
@@ -258,7 +258,7 @@ describe('Summary stock section', () => {
         hasStocks: true,
         stockCount: 1,
         stocks: [
-          individualGetOfferStockResponseModelFactory({
+          getOfferStockFactory({
             quantity: 10,
             price: 20,
             bookingLimitDatetime: '2001-06-12',
@@ -267,7 +267,7 @@ describe('Summary stock section', () => {
       })
 
       const props = {
-        offer: GetIndividualOfferFactory({
+        offer: getIndividualOfferFactory({
           status: OfferStatus.EXPIRED,
           isEvent: false,
         }),
@@ -284,13 +284,11 @@ describe('Summary stock section', () => {
       vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
         hasStocks: true,
         stockCount: 1,
-        stocks: [
-          individualGetOfferStockResponseModelFactory({ quantity: null }),
-        ],
+        stocks: [getOfferStockFactory({ quantity: null })],
       })
 
       const props = {
-        offer: GetIndividualOfferFactory({
+        offer: getIndividualOfferFactory({
           status: OfferStatus.ACTIVE,
           isEvent: false,
         }),
@@ -309,7 +307,7 @@ describe('Summary stock section', () => {
       vi.spyOn(api, 'getStocksStats').mockResolvedValueOnce({})
 
       const props = {
-        offer: GetIndividualOfferFactory({
+        offer: getIndividualOfferFactory({
           status: OfferStatus.ACTIVE,
           isEvent: true,
           hasStocks: false,
@@ -351,7 +349,7 @@ describe('Summary stock section', () => {
       vi.spyOn(api, 'getStocksStats').mockResolvedValueOnce({})
 
       const props = {
-        offer: GetIndividualOfferFactory({
+        offer: getIndividualOfferFactory({
           status: OfferStatus.ACTIVE,
           isEvent: true,
         }),

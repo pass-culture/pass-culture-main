@@ -13,7 +13,7 @@ import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { Providers } from 'core/Venue/types'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { defaultVenueResponseModel } from 'utils/collectiveApiFactories'
+import { defaultGetVenue } from 'utils/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -73,7 +73,7 @@ describe('route VenueEdition', () => {
 
   beforeEach(() => {
     venue = {
-      ...defaultVenueResponseModel,
+      ...defaultGetVenue,
       id: 12,
       publicName: 'Cinéma des iles',
       dmsToken: 'dms-token-12345',

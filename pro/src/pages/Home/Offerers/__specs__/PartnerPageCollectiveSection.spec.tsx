@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import * as router from 'react-router-dom'
 
 import { DMSApplicationstatus, VenueTypeCode } from 'apiClient/v1'
-import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
+import { defaultDMSApplicationForEAC } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
@@ -15,7 +15,7 @@ const renderPartnerPageCollectiveSection = (
 ) => {
   renderWithProviders(
     <PartnerPageCollectiveSection
-      collectiveDmsApplications={[defaultCollectiveDmsApplication]}
+      collectiveDmsApplications={[defaultDMSApplicationForEAC]}
       venueId={7}
       hasAdageId={false}
       {...props}
@@ -50,7 +50,7 @@ describe('PartnerPages', () => {
     renderPartnerPageCollectiveSection({
       collectiveDmsApplications: [
         {
-          ...defaultCollectiveDmsApplication,
+          ...defaultDMSApplicationForEAC,
           state: DMSApplicationstatus.REFUSE,
         },
       ],
@@ -66,7 +66,7 @@ describe('PartnerPages', () => {
     renderPartnerPageCollectiveSection({
       collectiveDmsApplications: [
         {
-          ...defaultCollectiveDmsApplication,
+          ...defaultDMSApplicationForEAC,
           state: DMSApplicationstatus.SANS_SUITE,
         },
       ],
@@ -82,7 +82,7 @@ describe('PartnerPages', () => {
     renderPartnerPageCollectiveSection({
       collectiveDmsApplications: [
         {
-          ...defaultCollectiveDmsApplication,
+          ...defaultDMSApplicationForEAC,
           state: DMSApplicationstatus.EN_INSTRUCTION,
         },
       ],
@@ -95,7 +95,7 @@ describe('PartnerPages', () => {
     renderPartnerPageCollectiveSection({
       collectiveDmsApplications: [
         {
-          ...defaultCollectiveDmsApplication,
+          ...defaultDMSApplicationForEAC,
           state: DMSApplicationstatus.ACCEPTE,
         },
       ],

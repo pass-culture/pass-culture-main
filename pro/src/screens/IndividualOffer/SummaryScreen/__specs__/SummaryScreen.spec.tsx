@@ -25,14 +25,14 @@ import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
 import {
   defaultGetOffererResponseModel,
-  GetIndividualOfferFactory,
-  offererFactory,
-  offerVenueFactory,
+  getIndividualOfferFactory,
+  getOfferManagingOffererFactory,
+  getOfferVenueFactory,
 } from 'utils/apiFactories'
 import {
-  individualOfferCategoryFactory,
-  individualOfferContextFactory,
-  individualOfferSubCategoryFactory,
+  categoryFactory,
+  individualOfferContextValuesFactory,
+  subcategoryFactory,
   individualOfferVenueItemFactory,
 } from 'utils/individualApiFactories'
 import {
@@ -52,7 +52,7 @@ const renderSummary = (
   }),
   options?: RenderWithProvidersOptions
 ) => {
-  const contextValues = individualOfferContextFactory(customContext)
+  const contextValues = individualOfferContextValuesFactory(customContext)
 
   return renderWithProviders(
     <>
@@ -87,14 +87,14 @@ const renderSummary = (
   )
 }
 
-const categories = [individualOfferCategoryFactory({ id: 'A' })]
+const categories = [categoryFactory({ id: 'A' })]
 
 const subCategories = [
-  individualOfferSubCategoryFactory({
+  subcategoryFactory({
     id: String(SubcategoryIdEnum.CONCERT),
     categoryId: 'A',
   }),
-  individualOfferSubCategoryFactory({ categoryId: 'A' }),
+  subcategoryFactory({ categoryId: 'A' }),
 ]
 
 describe('Summary', () => {
@@ -127,7 +127,7 @@ describe('Summary', () => {
       },
     ]
     customContext = {
-      offer: GetIndividualOfferFactory({
+      offer: getIndividualOfferFactory({
         isEvent: false,
         name: 'mon offre',
         lastProvider: {
@@ -143,11 +143,13 @@ describe('Summary', () => {
         withdrawalDetails: 'détails de retrait',
         externalTicketOfficeUrl: 'https://grand-public-url.example.com',
         bookingEmail: 'booking@example.com',
-        venue: offerVenueFactory({
+        venue: getOfferVenueFactory({
           name: 'ma venue',
           publicName: 'ma venue (nom public)',
           isVirtual: true,
-          managingOfferer: offererFactory({ name: 'mon offerer' }),
+          managingOfferer: getOfferManagingOffererFactory({
+            name: 'mon offerer',
+          }),
         }),
       }),
       subCategories,
@@ -158,7 +160,7 @@ describe('Summary', () => {
       logEvent: mockLogEvent,
     }))
     vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
-      GetIndividualOfferFactory()
+      getIndividualOfferFactory()
     )
     vi.spyOn(api, 'getEventMusicTypes').mockResolvedValue(eventMusicTypes)
     vi.spyOn(api, 'getAllMusicTypes').mockResolvedValue(allMusicTypes)
@@ -309,7 +311,7 @@ describe('Summary', () => {
       const mockResponse =
         new CancelablePromise<GetIndividualOfferResponseModel>((resolve) =>
           setTimeout(() => {
-            resolve(GetIndividualOfferFactory())
+            resolve(getIndividualOfferFactory())
           }, 200)
         )
       vi.spyOn(api, 'patchPublishOffer').mockImplementationOnce(
@@ -361,8 +363,8 @@ describe('Summary', () => {
     it('should display redirect modal if first offer', async () => {
       const venueId = 1
       const context = {
-        offer: GetIndividualOfferFactory({
-          venue: offerVenueFactory({ id: venueId }),
+        offer: getIndividualOfferFactory({
+          venue: getOfferVenueFactory({ id: venueId }),
         }),
         offerOfferer: { name: 'offerOffererName', id: 1 },
         showVenuePopin: {
@@ -398,7 +400,7 @@ describe('Summary', () => {
 
     it('should display redirect modal if first non free offer', async () => {
       const context = {
-        offer: GetIndividualOfferFactory(),
+        offer: getIndividualOfferFactory(),
         offerOfferer: { name: 'offerOffererName', id: 1 },
         venueList: [individualOfferVenueItemFactory()],
       }
@@ -411,7 +413,7 @@ describe('Summary', () => {
       })
 
       vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
-        GetIndividualOfferFactory({ isNonFreeOffer: true })
+        getIndividualOfferFactory({ isNonFreeOffer: true })
       )
 
       renderSummary(
@@ -448,7 +450,7 @@ describe('Summary', () => {
 
     it('should not display redirect modal if hasPendingBankAccount is true', async () => {
       const context = {
-        offer: GetIndividualOfferFactory(),
+        offer: getIndividualOfferFactory(),
         offerOfferer: { name: 'offerOffererName', id: 1 },
         venueList: [individualOfferVenueItemFactory()],
       }
@@ -460,7 +462,7 @@ describe('Summary', () => {
       })
 
       vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
-        GetIndividualOfferFactory({ isNonFreeOffer: false })
+        getIndividualOfferFactory({ isNonFreeOffer: false })
       )
 
       renderSummary(
@@ -491,7 +493,7 @@ describe('Summary', () => {
 
     it('should not display redirect modal if offer is free', async () => {
       const context = {
-        offer: GetIndividualOfferFactory(),
+        offer: getIndividualOfferFactory(),
         venueList: [individualOfferVenueItemFactory()],
       }
 
@@ -523,7 +525,7 @@ describe('Summary', () => {
 
     it('should not display redirect modal if venue hasNonFreeOffers', async () => {
       const context = {
-        offer: GetIndividualOfferFactory(),
+        offer: getIndividualOfferFactory(),
         venueList: [individualOfferVenueItemFactory()],
       }
 

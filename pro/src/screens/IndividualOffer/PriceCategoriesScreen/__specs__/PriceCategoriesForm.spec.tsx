@@ -6,7 +6,7 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { GetIndividualOfferFactory } from 'utils/apiFactories'
+import { getIndividualOfferFactory } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
@@ -37,7 +37,7 @@ const renderPriceCategoriesForm = (
   return renderWithProviders(
     <Formik initialValues={values} onSubmit={vi.fn()}>
       <PriceCategoriesForm
-        offer={GetIndividualOfferFactory({
+        offer={getIndividualOfferFactory({
           id: 42,
           hasStocks: false,
           priceCategories: [],
@@ -55,7 +55,7 @@ describe('PriceCategories', () => {
     vi.spyOn(api, 'postPriceCategories').mockResolvedValue(
       {} as GetIndividualOfferResponseModel
     )
-    vi.spyOn(api, 'getOffer').mockResolvedValue(GetIndividualOfferFactory())
+    vi.spyOn(api, 'getOffer').mockResolvedValue(getIndividualOfferFactory())
   })
 
   it('should render without error', () => {
@@ -186,7 +186,7 @@ describe('PriceCategories', () => {
     }
 
     renderPriceCategoriesForm(values, {
-      offer: GetIndividualOfferFactory({ id: 42, hasStocks: true }),
+      offer: getIndividualOfferFactory({ id: 42, hasStocks: true }),
     })
 
     // I can cancel

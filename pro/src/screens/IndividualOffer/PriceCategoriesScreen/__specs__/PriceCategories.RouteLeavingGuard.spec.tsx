@@ -9,7 +9,7 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/cons
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { ButtonLink } from 'ui-kit'
-import { GetIndividualOfferFactory } from 'utils/apiFactories'
+import { getIndividualOfferFactory } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
@@ -103,7 +103,7 @@ describe('PriceCategories', () => {
   })
 
   it('should let going to information when clicking on previous step in creation', async () => {
-    renderPriceCategories({ offer: GetIndividualOfferFactory() })
+    renderPriceCategories({ offer: getIndividualOfferFactory() })
 
     await userEvent.click(screen.getByText('Retour'))
 
@@ -113,7 +113,7 @@ describe('PriceCategories', () => {
   })
 
   it('should let going to stock when form has been filled in creation', async () => {
-    renderPriceCategories({ offer: GetIndividualOfferFactory() })
+    renderPriceCategories({ offer: getIndividualOfferFactory() })
     await userEvent.type(
       screen.getByLabelText('Intitulé du tarif *'),
       'Mon tarif'
@@ -128,7 +128,7 @@ describe('PriceCategories', () => {
 
   it('should let going to recap when form has been filled in edition', async () => {
     renderPriceCategories(
-      { offer: GetIndividualOfferFactory() },
+      { offer: getIndividualOfferFactory() },
       generatePath(
         getIndividualOfferPath({
           step: OFFER_WIZARD_STEP_IDS.TARIFS,
@@ -151,7 +151,7 @@ describe('PriceCategories', () => {
 
   it('should go back to summary when clicking on "Annuler et quitter" in Edition', async () => {
     renderPriceCategories(
-      { offer: GetIndividualOfferFactory() },
+      { offer: getIndividualOfferFactory() },
       generatePath(
         getIndividualOfferPath({
           step: OFFER_WIZARD_STEP_IDS.TARIFS,

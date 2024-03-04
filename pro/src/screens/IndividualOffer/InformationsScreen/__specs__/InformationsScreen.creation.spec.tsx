@@ -21,9 +21,9 @@ import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import * as pcapi from 'repository/pcapi/pcapi'
 import {
-  individualOfferCategoryFactory,
-  individualOfferContextFactory,
-  individualOfferSubCategoryFactory,
+  categoryFactory,
+  individualOfferContextValuesFactory,
+  subcategoryFactory,
   individualOfferVenueItemFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -60,7 +60,7 @@ const renderInformationsScreen = (
       },
     },
   }
-  const contextValue = individualOfferContextFactory(contextOverride)
+  const contextValue = individualOfferContextValuesFactory(contextOverride)
 
   return renderWithProviders(
     <>
@@ -108,16 +108,16 @@ describe('screens:IndividualOffer::Informations::creation', () => {
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
-    const categories = [individualOfferCategoryFactory({ id: 'A' })]
+    const categories = [categoryFactory({ id: 'A' })]
     const subCategories: SubcategoryResponseModel[] = [
-      individualOfferSubCategoryFactory({
+      subcategoryFactory({
         id: 'virtual',
         categoryId: 'A',
         isEvent: false,
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
         isSelectable: true,
       }),
-      individualOfferSubCategoryFactory({
+      subcategoryFactory({
         id: 'physical',
         categoryId: 'A',
         isEvent: false,
@@ -134,7 +134,7 @@ describe('screens:IndividualOffer::Informations::creation', () => {
       isVirtual: true,
     })
 
-    contextOverride = individualOfferContextFactory({
+    contextOverride = individualOfferContextValuesFactory({
       venueList: [venue1, venue2],
       offererNames: [{ id: offererId, name: 'mon offerer A' }],
       categories,
@@ -274,16 +274,16 @@ describe('screens:IndividualOffer::Informations::creation', () => {
   })
 
   it('should submit offer when several offerer and offer type set', async () => {
-    const categories = [individualOfferCategoryFactory({ id: 'A' })]
+    const categories = [categoryFactory({ id: 'A' })]
     const subCategories: SubcategoryResponseModel[] = [
-      individualOfferSubCategoryFactory({
+      subcategoryFactory({
         id: 'virtual',
         categoryId: 'A',
         isEvent: false,
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
         isSelectable: true,
       }),
-      individualOfferSubCategoryFactory({
+      subcategoryFactory({
         id: 'physical',
         categoryId: 'A',
         isEvent: false,
@@ -316,7 +316,7 @@ describe('screens:IndividualOffer::Informations::creation', () => {
         managingOffererId: offererId2,
       })
 
-    const contextOverride = individualOfferContextFactory({
+    const contextOverride = individualOfferContextValuesFactory({
       venueList: [
         venue1Offerer1,
         venue2Offerer1,

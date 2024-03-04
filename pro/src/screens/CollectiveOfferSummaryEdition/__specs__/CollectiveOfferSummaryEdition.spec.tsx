@@ -20,7 +20,7 @@ import * as useAnalytics from 'hooks/useAnalytics'
 import * as useNotification from 'hooks/useNotification'
 import {
   collectiveOfferTemplateFactory,
-  defaultVenueResponseModel,
+  defaultGetVenue,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -77,7 +77,7 @@ describe('CollectiveOfferSummary', () => {
       logEvent: mockLogEvent,
     }))
 
-    vi.spyOn(api, 'getVenue').mockResolvedValue(defaultVenueResponseModel)
+    vi.spyOn(api, 'getVenue').mockResolvedValue(defaultGetVenue)
 
     vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(offer)
 

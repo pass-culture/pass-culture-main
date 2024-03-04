@@ -5,16 +5,16 @@ import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { IndividualOfferContext } from 'context/IndividualOfferContext'
 import {
-  GetIndividualOfferFactory,
+  getIndividualOfferFactory,
   bookingRecapFactory,
 } from 'utils/apiFactories'
-import { individualOfferContextFactory } from 'utils/individualApiFactories'
+import { individualOfferContextValuesFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { BookingsSummaryScreen } from '../BookingsSummary'
 
 const render = (offer: GetIndividualOfferResponseModel) => {
-  const contextValue = individualOfferContextFactory({ offer })
+  const contextValue = individualOfferContextValuesFactory({ offer })
 
   renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
@@ -25,7 +25,7 @@ const render = (offer: GetIndividualOfferResponseModel) => {
 
 describe('BookingsSummary', () => {
   it('should render a list of bookings', async () => {
-    const offer = GetIndividualOfferFactory({ name: 'Offre de test' })
+    const offer = getIndividualOfferFactory({ name: 'Offre de test' })
 
     vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
       bookingsRecap: [
@@ -49,7 +49,7 @@ describe('BookingsSummary', () => {
   })
 
   it('should render a message when no bookings', async () => {
-    const offer = GetIndividualOfferFactory({ name: 'Offre de test' })
+    const offer = getIndividualOfferFactory({ name: 'Offre de test' })
 
     vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
       bookingsRecap: [],

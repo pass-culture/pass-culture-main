@@ -12,10 +12,10 @@ import {
 } from 'context/IndividualOfferContext'
 import { RootState } from 'store/rootReducer'
 import {
-  GetIndividualOfferFactory,
-  offerVenueFactory,
+  getIndividualOfferFactory,
+  getOfferVenueFactory,
 } from 'utils/apiFactories'
-import { individualOfferContextFactory } from 'utils/individualApiFactories'
+import { individualOfferContextValuesFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { Confirmation } from '../Confirmation'
@@ -33,7 +33,7 @@ const renderOffer = (
   contextOverride: Partial<IndividualOfferContextValues>,
   storeOverride?: Partial<RootState>
 ) => {
-  const contextValue = individualOfferContextFactory(contextOverride)
+  const contextValue = individualOfferContextValuesFactory(contextOverride)
 
   const storeOverrides = {
     user: {
@@ -81,8 +81,8 @@ describe('Confirmation', () => {
         },
       },
     }
-    offer = GetIndividualOfferFactory({
-      venue: offerVenueFactory({
+    offer = getIndividualOfferFactory({
+      venue: getOfferVenueFactory({
         id: venueId,
         managingOfferer: {
           id: offererId,

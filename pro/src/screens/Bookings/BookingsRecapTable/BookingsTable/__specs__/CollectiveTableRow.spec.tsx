@@ -9,8 +9,8 @@ import {
 } from 'apiClient/v1'
 import {
   collectiveBookingCollectiveStockFactory,
-  collectiveBookingDetailsFactory,
-  collectiveBookingRecapFactory,
+  collectiveBookingByIdFactory,
+  collectiveBookingFactory,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -50,13 +50,13 @@ describe('CollectiveTableRow', () => {
     } as MediaQueryList)
 
     vi.spyOn(api, 'getCollectiveBookingById').mockResolvedValue(
-      collectiveBookingDetailsFactory()
+      collectiveBookingByIdFactory()
     )
   })
 
   it('should not render booking details if row is not expanded', () => {
     const props: CollectiveTableRowProps = {
-      booking: collectiveBookingRecapFactory({
+      booking: collectiveBookingFactory({
         stock: collectiveBookingCollectiveStockFactory(),
         bookingStatus: 'booked',
       }),
@@ -73,7 +73,7 @@ describe('CollectiveTableRow', () => {
 
   it('should render loader while fetching data', async () => {
     const props: CollectiveTableRowProps = {
-      booking: collectiveBookingRecapFactory({
+      booking: collectiveBookingFactory({
         stock: collectiveBookingCollectiveStockFactory(),
         bookingStatus: 'booked',
       }),
@@ -84,7 +84,7 @@ describe('CollectiveTableRow', () => {
     vi.spyOn(api, 'getCollectiveBookingById').mockImplementationOnce(() => {
       return new CancelablePromise<CollectiveBookingByIdResponseModel>(
         (resolve) =>
-          setTimeout(() => resolve(collectiveBookingDetailsFactory()), 500)
+          setTimeout(() => resolve(collectiveBookingByIdFactory()), 500)
       )
     })
 
@@ -98,7 +98,7 @@ describe('CollectiveTableRow', () => {
   it('should display booking details if row is expanded', async () => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
     const props: CollectiveTableRowProps = {
-      booking: collectiveBookingRecapFactory({ bookingId: '123' }),
+      booking: collectiveBookingFactory({ bookingId: '123' }),
       reloadBookings: vi.fn(),
       defaultOpenedBookingId: '123',
     }

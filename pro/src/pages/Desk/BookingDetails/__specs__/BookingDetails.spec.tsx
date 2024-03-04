@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import { defaultBookingResponse } from 'utils/apiFactories'
+import { defaultGetBookingResponse } from 'utils/apiFactories'
 
 import BookingDetails from '../BookingDetails'
 
@@ -9,7 +9,7 @@ describe('BookingDetails', () => {
     render(
       <BookingDetails
         {...{
-          booking: { ...defaultBookingResponse, quantity: 2 },
+          booking: { ...defaultGetBookingResponse, quantity: 2 },
         }}
       />
     )
@@ -22,7 +22,7 @@ describe('BookingDetails', () => {
       <BookingDetails
         {...{
           booking: {
-            ...defaultBookingResponse,
+            ...defaultGetBookingResponse,
             datetime: '2001-02-01T20:00:00Z',
           },
         }}
@@ -36,7 +36,7 @@ describe('BookingDetails', () => {
     render(
       <BookingDetails
         {...{
-          booking: { ...defaultBookingResponse, datetime: '' },
+          booking: { ...defaultGetBookingResponse, datetime: '' },
         }}
       />
     )
@@ -49,7 +49,7 @@ describe('BookingDetails', () => {
       <BookingDetails
         {...{
           booking: {
-            ...defaultBookingResponse,
+            ...defaultGetBookingResponse,
             venueDepartmentCode: undefined,
           },
         }}

@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
-import { defaultBookingResponse } from 'utils/apiFactories'
+import { defaultGetBookingResponse } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import * as getBookingAdapter from '../adapters/getBooking'
@@ -63,7 +63,7 @@ describe('src | components | Desk', () => {
 
     it('should check that token is valid and display booking details', async () => {
       vi.spyOn(getBookingAdapter, 'getBooking').mockResolvedValue({
-        booking: defaultBookingResponse,
+        booking: defaultGetBookingResponse,
       })
       renderDesk()
       const contremarque = screen.getByLabelText('Contremarque *')
@@ -75,7 +75,7 @@ describe('src | components | Desk', () => {
         )
       ).toBeInTheDocument()
       expect(
-        await screen.findByText(defaultBookingResponse.offerName)
+        await screen.findByText(defaultGetBookingResponse.offerName)
       ).toBeInTheDocument()
     })
 
@@ -97,7 +97,7 @@ describe('src | components | Desk', () => {
   describe('Should validate contremarque when the user submits the form', () => {
     beforeEach(() => {
       vi.spyOn(getBookingAdapter, 'getBooking').mockResolvedValueOnce({
-        booking: defaultBookingResponse,
+        booking: defaultGetBookingResponse,
       })
     })
     it('should display confirmation message and empty field when contremarque is validated', async () => {

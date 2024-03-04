@@ -1,9 +1,9 @@
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import {
-  GetIndividualOfferFactory,
-  offerVenueFactory,
+  getIndividualOfferFactory,
+  getOfferVenueFactory,
 } from 'utils/apiFactories'
-import { individualGetOfferStockResponseModelFactory } from 'utils/individualApiFactories'
+import { getOfferStockFactory } from 'utils/individualApiFactories'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../../constants'
 import buildInitialValues from '../buildInitialValues'
@@ -11,8 +11,8 @@ import buildInitialValues from '../buildInitialValues'
 describe('StockThingForm::utils::buildInitialValues', () => {
   let offer: GetIndividualOfferResponseModel
   beforeEach(() => {
-    offer = GetIndividualOfferFactory({
-      venue: offerVenueFactory({ departementCode: '93' }),
+    offer = getIndividualOfferFactory({
+      venue: getOfferVenueFactory({ departementCode: '93' }),
     })
   })
 
@@ -23,7 +23,7 @@ describe('StockThingForm::utils::buildInitialValues', () => {
 
   it('should build form initial values from offer', () => {
     const initialValues = buildInitialValues(offer, [
-      individualGetOfferStockResponseModelFactory({
+      getOfferStockFactory({
         id: 1,
         remainingQuantity: 10,
         bookingsQuantity: 20,
@@ -47,7 +47,7 @@ describe('StockThingForm::utils::buildInitialValues', () => {
 
   it('should normalize null values', () => {
     const initialValues = buildInitialValues(offer, [
-      individualGetOfferStockResponseModelFactory({
+      getOfferStockFactory({
         id: 1,
         bookingsQuantity: 20,
         remainingQuantity: undefined,

@@ -1,6 +1,6 @@
 import { OfferAddressType } from 'apiClient/v1'
 import { EVENT_ADDRESS_SCHOOL_LABEL } from 'screens/OfferEducational/constants/labels'
-import { defaultVenueResponseModel } from 'utils/collectiveApiFactories'
+import { defaultGetVenue } from 'utils/collectiveApiFactories'
 
 import { formatOfferEventAddress } from '../formatOfferEventAddress'
 
@@ -14,7 +14,7 @@ describe('formatOfferEventAddress', () => {
           venueId: 12,
         },
         {
-          ...defaultVenueResponseModel,
+          ...defaultGetVenue,
           name: 'Offerer venue',
           publicName: '',
           postalCode: '75000',
@@ -34,7 +34,7 @@ describe('formatOfferEventAddress', () => {
           venueId: null,
         },
         {
-          ...defaultVenueResponseModel,
+          ...defaultGetVenue,
           name: 'Offerer venue',
           publicName: '',
           postalCode: '75000',
@@ -54,7 +54,7 @@ describe('formatOfferEventAddress', () => {
           venueId: 12,
         },
         {
-          ...defaultVenueResponseModel,
+          ...defaultGetVenue,
           name: 'Offerer venue',
           publicName: '',
           postalCode: '75000',

@@ -6,7 +6,7 @@ import {
   IndividualOfferContextValues,
   IndividualOfferContext,
 } from 'context/IndividualOfferContext'
-import { individualOfferContextFactory } from 'utils/individualApiFactories'
+import { individualOfferContextValuesFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { PriceCategories } from '../PriceCategories'
@@ -15,7 +15,7 @@ const renderOffer = (
   contextOverride?: Partial<IndividualOfferContextValues>
 ) => {
   const contextValue: IndividualOfferContextValues =
-    individualOfferContextFactory(contextOverride)
+    individualOfferContextValuesFactory(contextOverride)
 
   return renderWithProviders(
     <Routes>

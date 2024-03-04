@@ -8,7 +8,7 @@ import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
 } from 'utils/apiFactories'
-import { defaultVenueResponseModel } from 'utils/collectiveApiFactories'
+import { defaultGetVenue } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import PricingPoint, { PricingPointProps } from '../PricingPoint'
@@ -27,7 +27,7 @@ describe('PricingPoint', () => {
         { ...defaultGetOffererVenueResponseModel, siret: '12345678900001' },
       ],
     },
-    venue: { ...defaultVenueResponseModel, pricingPoint: null },
+    venue: { ...defaultGetVenue, pricingPoint: null },
     setVenueHasPricingPoint: vi.fn(),
   }
 

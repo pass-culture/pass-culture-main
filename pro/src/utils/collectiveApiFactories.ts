@@ -66,11 +66,12 @@ const sharedCollectiveOfferData = {
   formats: [EacFormat.ATELIER_DE_PRATIQUE],
 }
 
+// TODO factories: remove customStock & customVenue as an argument
 export const collectiveOfferFactory = (
   customCollectiveOffer: Partial<CollectiveOffer> = {},
-  customStock: GetCollectiveOfferCollectiveStockResponseModel = collectiveStockFactory() ||
+  customStock: GetCollectiveOfferCollectiveStockResponseModel = getCollectiveOfferCollectiveStockFactory() ||
     null,
-  customVenue: GetCollectiveOfferVenueResponseModel = collectiveOfferVenueFactory()
+  customVenue: GetCollectiveOfferVenueResponseModel = getCollectiveOfferVenueFactory()
 ): CollectiveOffer => {
   const stock = customStock === null ? null : customStock
   const currentOfferId = offerId++
@@ -86,8 +87,8 @@ export const collectiveOfferFactory = (
   }
 }
 
-export const collectiveStockFactory = (
-  customStock: Partial<GetCollectiveOfferCollectiveStockResponseModel> = {}
+export const getCollectiveOfferCollectiveStockFactory = (
+  customGetCollectiveOfferCollectiveStock: Partial<GetCollectiveOfferCollectiveStockResponseModel> = {}
 ): GetCollectiveOfferCollectiveStockResponseModel => {
   const currentStockId = stockId++
   return {
@@ -98,13 +99,14 @@ export const collectiveStockFactory = (
     isBooked: false,
     isCancellable: false,
     isEducationalStockEditable: true,
-    ...customStock,
+    ...customGetCollectiveOfferCollectiveStock,
   }
 }
 
+// TODO factories: remove customVenue as an argument
 export const collectiveOfferTemplateFactory = (
   customCollectiveOfferTemplate: Partial<CollectiveOfferTemplate> = {},
-  customVenue: GetCollectiveOfferVenueResponseModel = collectiveOfferVenueFactory()
+  customVenue: GetCollectiveOfferVenueResponseModel = getCollectiveOfferVenueFactory()
 ): CollectiveOfferTemplate => ({
   ...sharedCollectiveOfferData,
   id: offerId++,
@@ -117,9 +119,10 @@ export const collectiveOfferTemplateFactory = (
   ...customCollectiveOfferTemplate,
 })
 
-export const collectiveOfferVenueFactory = (
-  customVenue: Partial<GetCollectiveOfferVenueResponseModel> = {},
-  customOfferer: GetCollectiveOfferManagingOffererResponseModel = collectiveOfferOffererFactory()
+// TODO factories: remove customOfferer as an argument
+export const getCollectiveOfferVenueFactory = (
+  customGetCollectiveOfferVenue: Partial<GetCollectiveOfferVenueResponseModel> = {},
+  customOfferer: GetCollectiveOfferManagingOffererResponseModel = getCollectiveOfferManagingOffererFactory()
 ): GetCollectiveOfferVenueResponseModel => {
   const currentVenueId = venueId++
   return {
@@ -128,23 +131,23 @@ export const collectiveOfferVenueFactory = (
     publicName: 'Mon Lieu',
     id: currentVenueId,
     departementCode: '973',
-    ...customVenue,
+    ...customGetCollectiveOfferVenue,
   }
 }
 
-export const collectiveOfferOffererFactory = (
-  customOfferer: Partial<GetCollectiveOfferManagingOffererResponseModel> = {}
+export const getCollectiveOfferManagingOffererFactory = (
+  customGetCollectiveOfferManagingOfferer: Partial<GetCollectiveOfferManagingOffererResponseModel> = {}
 ): GetCollectiveOfferManagingOffererResponseModel => {
   const currentOffererId = offererId++
   return {
     id: currentOffererId,
     name: `La nom de la structure ${currentOffererId}`,
-    ...customOfferer,
+    ...customGetCollectiveOfferManagingOfferer,
   }
 }
 
 export const collectiveBookingCollectiveStockFactory = (
-  customStock: Partial<CollectiveBookingCollectiveStockResponseModel> = {}
+  customCollectiveBookingCollectiveStock: Partial<CollectiveBookingCollectiveStockResponseModel> = {}
 ): CollectiveBookingCollectiveStockResponseModel => ({
   bookingLimitDatetime: new Date().toISOString(),
   eventBeginningDatetime: new Date().toISOString(),
@@ -153,11 +156,11 @@ export const collectiveBookingCollectiveStockFactory = (
   offerIsEducational: true,
   offerIsbn: null,
   offerName: 'ma super offre collective',
-  ...customStock,
+  ...customCollectiveBookingCollectiveStock,
 })
 
-export const collectiveBookingRecapFactory = (
-  customBookingRecap: Partial<CollectiveBookingResponseModel> = {}
+export const collectiveBookingFactory = (
+  customCollectiveBooking: Partial<CollectiveBookingResponseModel> = {}
 ): CollectiveBookingResponseModel => {
   const currentBookingId = bookingId++
   return {
@@ -183,9 +186,11 @@ export const collectiveBookingRecapFactory = (
       phoneNumber: '0601020304',
     },
     stock: collectiveBookingCollectiveStockFactory(),
-    ...customBookingRecap,
+    ...customCollectiveBooking,
   }
 }
+
+// TODO factories: type this
 export const defaultCollectiveBookingStock = {
   bookingLimitDatetime: new Date().toISOString(),
   eventBeginningDatetime: new Date().toISOString(),
@@ -197,8 +202,8 @@ export const defaultCollectiveBookingStock = {
   offerName: 'ma super offre collective',
 }
 
-export const collectiveBookingDetailsFactory = (
-  customBookingDetails?: Partial<CollectiveBookingByIdResponseModel>
+export const collectiveBookingByIdFactory = (
+  customCollectiveBookingById?: Partial<CollectiveBookingByIdResponseModel>
 ): CollectiveBookingByIdResponseModel => {
   const currentBookingDetailsId = bookingDetailsId++
   return {
@@ -235,12 +240,12 @@ export const collectiveBookingDetailsFactory = (
     venueDMSApplicationId: 1,
     venueId: 1,
     venuePostalCode: '75000',
-    ...customBookingDetails,
+    ...customCollectiveBookingById,
   }
 }
 
-export const venueCollectiveDataFactory = (
-  customCollectiveData: Partial<GetCollectiveVenueResponseModel> = {}
+export const getCollectiveVenueFactory = (
+  customGetCollectiveVenue: Partial<GetCollectiveVenueResponseModel> = {}
 ): GetCollectiveVenueResponseModel => {
   return {
     collectiveDomains: [],
@@ -253,7 +258,7 @@ export const venueCollectiveDataFactory = (
     collectiveStudents: [],
     collectiveWebsite: '',
     siret: '1234567890',
-    ...customCollectiveData,
+    ...customGetCollectiveVenue,
   }
 }
 
@@ -275,7 +280,7 @@ export const defaultEducationalRedactor: EducationalRedactorResponseModel = {
   lastName: 'Dupont',
 }
 
-export const defaultCollectiveDmsApplication: DMSApplicationForEAC = {
+export const defaultDMSApplicationForEAC: DMSApplicationForEAC = {
   application: 123,
   depositDate: new Date().toISOString(),
   lastChangeDate: new Date().toISOString(),
@@ -284,7 +289,7 @@ export const defaultCollectiveDmsApplication: DMSApplicationForEAC = {
   venueId: 1,
 }
 
-export const defaultVenueResponseModel: GetVenueResponseModel = {
+export const defaultGetVenue: GetVenueResponseModel = {
   dateCreated: new Date().toISOString(),
   dmsToken: 'fakeDmsToken',
   hasAdageId: true,
@@ -308,7 +313,7 @@ export const defaultVenueResponseModel: GetVenueResponseModel = {
   timezone: 'Europe/Paris',
 }
 
-export const defaultRequestResponseModel: GetCollectiveOfferRequestResponseModel =
+export const defaultGetCollectiveOfferRequest: GetCollectiveOfferRequestResponseModel =
   {
     comment: 'comment',
     institution: {
@@ -325,6 +330,7 @@ export const defaultRequestResponseModel: GetCollectiveOfferRequestResponseModel
     },
   }
 
+// TODO factories: type this
 export const defaultCollectifOfferResponseModel = {
   isActive: true,
   offerId: 1,

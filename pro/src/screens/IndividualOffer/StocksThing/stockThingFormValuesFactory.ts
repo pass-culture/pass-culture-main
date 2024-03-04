@@ -1,7 +1,7 @@
 /* istanbul ignore file: Those are test helpers, their coverage is not relevant */
 import { StockThingFormValues } from './types'
 
-export const stockThingFactory = (
+export const stockThingFormValuesFactory = (
   customStockThing: Partial<StockThingFormValues> = {}
 ): StockThingFormValues => ({
   stockId: 1,

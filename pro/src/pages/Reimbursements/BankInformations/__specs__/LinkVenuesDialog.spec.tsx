@@ -4,10 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import { api } from 'apiClient/api'
 import { BankAccountResponseModel, ManagedVenues } from 'apiClient/v1'
 import * as useNotification from 'hooks/useNotification'
-import {
-  defaultBankAccountResponseModel,
-  defaultManagedVenues,
-} from 'utils/apiFactories'
+import { defaultBankAccount, defaultManagedVenues } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import LinkVenuesDialog from '../LinkVenuesDialog'
@@ -40,7 +37,7 @@ describe('LinkVenueDialog', () => {
       { ...defaultManagedVenues, id: 2, commonName: 'Lieu 2' },
     ]
 
-    renderLinkVenuesDialog(1, defaultBankAccountResponseModel, managedVenues)
+    renderLinkVenuesDialog(1, defaultBankAccount, managedVenues)
 
     await userEvent.click(
       screen.getByRole('checkbox', { name: 'Tout sélectionner' })
@@ -55,7 +52,7 @@ describe('LinkVenueDialog', () => {
       { ...defaultManagedVenues, id: 2, hasPricingPoint: false },
     ]
 
-    renderLinkVenuesDialog(1, defaultBankAccountResponseModel, managedVenues)
+    renderLinkVenuesDialog(1, defaultBankAccount, managedVenues)
 
     expect(
       screen.getAllByRole('button', { name: 'Sélectionner un SIRET' }).length
@@ -67,7 +64,7 @@ describe('LinkVenueDialog', () => {
       { ...defaultManagedVenues, id: 1, hasPricingPoint: false },
     ]
 
-    renderLinkVenuesDialog(1, defaultBankAccountResponseModel, managedVenues)
+    renderLinkVenuesDialog(1, defaultBankAccount, managedVenues)
 
     const selectSiretButton = screen.getByRole('button', {
       name: 'Sélectionner un SIRET',
@@ -94,7 +91,7 @@ describe('LinkVenueDialog', () => {
       },
     ]
 
-    renderLinkVenuesDialog(1, defaultBankAccountResponseModel, managedVenues)
+    renderLinkVenuesDialog(1, defaultBankAccount, managedVenues)
 
     const venueWithoutSiretCheckBox = screen.getByRole('checkbox', {
       name: 'Lieu sans siret',
@@ -140,7 +137,7 @@ describe('LinkVenueDialog', () => {
       },
     ]
 
-    renderLinkVenuesDialog(1, defaultBankAccountResponseModel, managedVenues)
+    renderLinkVenuesDialog(1, defaultBankAccount, managedVenues)
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -167,7 +164,7 @@ describe('LinkVenueDialog', () => {
       { ...defaultManagedVenues, id: 2, hasPricingPoint: false },
     ]
 
-    renderLinkVenuesDialog(1, defaultBankAccountResponseModel, managedVenues)
+    renderLinkVenuesDialog(1, defaultBankAccount, managedVenues)
 
     expect(
       screen.getByText('Certains de vos lieux n’ont pas de SIRET')

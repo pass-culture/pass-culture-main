@@ -14,8 +14,8 @@ import { BOOKING_STATUS } from 'core/Bookings/constants'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import {
-  collectiveBookingDetailsFactory,
-  collectiveBookingRecapFactory,
+  collectiveBookingByIdFactory,
+  collectiveBookingFactory,
   defaultCollectiveBookingStock,
 } from 'utils/collectiveApiFactories'
 import {
@@ -39,9 +39,9 @@ const renderCollectiveTimeLine = (
   )
 
 describe('collective timeline', () => {
-  let bookingDetails = collectiveBookingDetailsFactory()
+  let bookingDetails = collectiveBookingByIdFactory()
   it('should render steps for pending booking', () => {
-    const bookingRecap = collectiveBookingRecapFactory({
+    const bookingRecap = collectiveBookingFactory({
       bookingStatus: BOOKING_STATUS.PENDING,
     })
     renderCollectiveTimeLine(bookingRecap, bookingDetails)
@@ -50,7 +50,7 @@ describe('collective timeline', () => {
     ).toBeInTheDocument()
   })
   it('should render steps for booked booking', () => {
-    const bookingRecap = collectiveBookingRecapFactory({
+    const bookingRecap = collectiveBookingFactory({
       bookingStatus: BOOKING_STATUS.BOOKED,
     })
     renderCollectiveTimeLine(bookingRecap, bookingDetails)
@@ -59,7 +59,7 @@ describe('collective timeline', () => {
     ).toBeInTheDocument()
   })
   it('should render steps for confirmed booking', () => {
-    const bookingRecap = collectiveBookingRecapFactory({
+    const bookingRecap = collectiveBookingFactory({
       bookingStatus: BOOKING_STATUS.CONFIRMED,
     })
     renderCollectiveTimeLine(bookingRecap, bookingDetails)
@@ -67,7 +67,7 @@ describe('collective timeline', () => {
   })
 
   it('should render steps for reimbursed booking', () => {
-    const bookingRecap = collectiveBookingRecapFactory({
+    const bookingRecap = collectiveBookingFactory({
       bookingStatus: BOOKING_STATUS.REIMBURSED,
       bookingStatusHistory: [
         { date: new Date().toISOString(), status: BOOKING_STATUS.PENDING },
@@ -80,7 +80,7 @@ describe('collective timeline', () => {
     expect(screen.getByText('25 mars 2023')).toBeInTheDocument()
   })
   it('should render steps for cancelled booking', () => {
-    const bookingRecap = collectiveBookingRecapFactory({
+    const bookingRecap = collectiveBookingFactory({
       bookingStatus: BOOKING_STATUS.CANCELLED,
       bookingConfirmationDate: null,
       bookingCancellationReason: CollectiveBookingCancellationReasons.OFFERER,
@@ -95,7 +95,7 @@ describe('collective timeline', () => {
     ).toBeInTheDocument()
   })
   it('should render steps for cancelled booking by fraud', () => {
-    const bookingRecap = collectiveBookingRecapFactory({
+    const bookingRecap = collectiveBookingFactory({
       bookingStatus: BOOKING_STATUS.CANCELLED,
       bookingConfirmationDate: null,
       bookingCancellationReason: CollectiveBookingCancellationReasons.FRAUD,
@@ -110,7 +110,7 @@ describe('collective timeline', () => {
     ).toBeInTheDocument()
   })
   it('should render steps for cancelled booking expired', () => {
-    const bookingRecap = collectiveBookingRecapFactory({
+    const bookingRecap = collectiveBookingFactory({
       bookingStatus: BOOKING_STATUS.CANCELLED,
       bookingConfirmationDate: null,
       bookingConfirmationLimitDate: '01/01/2023',
@@ -134,7 +134,7 @@ describe('collective timeline', () => {
       ...vi.importActual('hooks/useAnalytics'),
       logEvent: mockLogEvent,
     }))
-    const bookingRecap = collectiveBookingRecapFactory({
+    const bookingRecap = collectiveBookingFactory({
       bookingStatus: BOOKING_STATUS.PENDING,
     })
     renderCollectiveTimeLine(bookingRecap, bookingDetails)
@@ -154,7 +154,7 @@ describe('collective timeline', () => {
   })
   describe('validated booking', () => {
     it('should render steps for validated booking and accepted bankInformation', () => {
-      const bookingRecap = collectiveBookingRecapFactory({
+      const bookingRecap = collectiveBookingFactory({
         bookingStatus: BOOKING_STATUS.VALIDATED,
       })
       renderCollectiveTimeLine(bookingRecap, bookingDetails)
@@ -174,10 +174,10 @@ describe('collective timeline', () => {
     })
 
     it('should render steps for validated booking and pending bankInformation', () => {
-      const bookingRecap = collectiveBookingRecapFactory({
+      const bookingRecap = collectiveBookingFactory({
         bookingStatus: BOOKING_STATUS.VALIDATED,
       })
-      bookingDetails = collectiveBookingDetailsFactory({
+      bookingDetails = collectiveBookingByIdFactory({
         bankInformationStatus: CollectiveBookingBankInformationStatus.DRAFT,
       })
       renderCollectiveTimeLine(bookingRecap, bookingDetails)
@@ -195,10 +195,10 @@ describe('collective timeline', () => {
     })
 
     it('should render steps for validated booking and missing bankInformation', () => {
-      const bookingRecap = collectiveBookingRecapFactory({
+      const bookingRecap = collectiveBookingFactory({
         bookingStatus: BOOKING_STATUS.VALIDATED,
       })
-      bookingDetails = collectiveBookingDetailsFactory({
+      bookingDetails = collectiveBookingByIdFactory({
         bankInformationStatus: CollectiveBookingBankInformationStatus.MISSING,
       })
       renderCollectiveTimeLine(bookingRecap, bookingDetails)
@@ -215,10 +215,10 @@ describe('collective timeline', () => {
     })
 
     it('should render steps for validated booking and missing bankInformation when FF bank details enable', () => {
-      const bookingRecap = collectiveBookingRecapFactory({
+      const bookingRecap = collectiveBookingFactory({
         bookingStatus: BOOKING_STATUS.VALIDATED,
       })
-      bookingDetails = collectiveBookingDetailsFactory({
+      bookingDetails = collectiveBookingByIdFactory({
         bankInformationStatus: null,
         bankAccountStatus: CollectiveBookingBankAccountStatus.MISSING,
       })
@@ -244,7 +244,7 @@ describe('collective timeline', () => {
 
   describe('confirmed booking', () => {
     it('should render steps for confirmed booking when event is not passed yet', () => {
-      const bookingRecap = collectiveBookingRecapFactory({
+      const bookingRecap = collectiveBookingFactory({
         bookingStatus: BOOKING_STATUS.CONFIRMED,
         stock: {
           ...defaultCollectiveBookingStock,
@@ -264,7 +264,7 @@ describe('collective timeline', () => {
       ).toBeInTheDocument()
     })
     it('should render steps for confirmed booking when event is passed', () => {
-      const bookingRecap = collectiveBookingRecapFactory({
+      const bookingRecap = collectiveBookingFactory({
         bookingStatus: BOOKING_STATUS.CONFIRMED,
         stock: {
           ...defaultCollectiveBookingStock,

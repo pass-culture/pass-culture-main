@@ -15,9 +15,9 @@ import {
   getIndividualOfferUrl,
 } from 'core/Offers/utils/getIndividualOfferUrl'
 import { ButtonLink } from 'ui-kit'
-import { GetIndividualOfferFactory } from 'utils/apiFactories'
+import { getIndividualOfferFactory } from 'utils/apiFactories'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
-import { individualGetOfferStockResponseModelFactory } from 'utils/individualApiFactories'
+import { getOfferStockFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
@@ -102,7 +102,7 @@ describe('StocksEventCreation', () => {
 
   it('should notify when clicking on Enregistrer et continuer without stock', async () => {
     await renderStockEventCreation([], {
-      offer: GetIndividualOfferFactory(),
+      offer: getIndividualOfferFactory(),
     })
     expect(screen.getByText('Comment faire ?')).toBeInTheDocument()
 
@@ -115,8 +115,8 @@ describe('StocksEventCreation', () => {
 
   it('should not show help section if there are stocks already and show table', async () => {
     await renderStockEventCreation(
-      [individualGetOfferStockResponseModelFactory({ priceCategoryId: 1 })],
-      { offer: GetIndividualOfferFactory() }
+      [getOfferStockFactory({ priceCategoryId: 1 })],
+      { offer: getIndividualOfferFactory() }
     )
 
     expect(screen.queryByText('Comment faire ?')).not.toBeInTheDocument()
@@ -124,7 +124,7 @@ describe('StocksEventCreation', () => {
   })
 
   it('should display new stocks banner for several stocks', async () => {
-    await renderStockEventCreation([], { offer: GetIndividualOfferFactory() })
+    await renderStockEventCreation([], { offer: getIndividualOfferFactory() })
 
     await userEvent.click(screen.getByText('Ajouter une ou plusieurs dates'))
 
@@ -139,10 +139,7 @@ describe('StocksEventCreation', () => {
 
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks_count: 2 })
     vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
-      stocks: [
-        individualGetOfferStockResponseModelFactory(),
-        individualGetOfferStockResponseModelFactory(),
-      ],
+      stocks: [getOfferStockFactory(), getOfferStockFactory()],
       stockCount: 2,
       hasStocks: true,
     })
@@ -157,7 +154,7 @@ describe('StocksEventCreation', () => {
   })
 
   it('should redirect to previous page on click to Retour', async () => {
-    await renderStockEventCreation([], { offer: GetIndividualOfferFactory() })
+    await renderStockEventCreation([], { offer: getIndividualOfferFactory() })
 
     await userEvent.click(screen.getByText('Retour'))
 
@@ -165,12 +162,9 @@ describe('StocksEventCreation', () => {
   })
 
   it('should submit and redirect to next page on Enregistrer et continuer click', async () => {
-    await renderStockEventCreation(
-      [individualGetOfferStockResponseModelFactory()],
-      {
-        offer: GetIndividualOfferFactory(),
-      }
-    )
+    await renderStockEventCreation([getOfferStockFactory()], {
+      offer: getIndividualOfferFactory(),
+    })
 
     await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
@@ -180,7 +174,7 @@ describe('StocksEventCreation', () => {
   it('should notify when there is not yet stocks', async () => {
     vi.spyOn(api, 'upsertStocks').mockRejectedValueOnce({})
 
-    await renderStockEventCreation([], { offer: GetIndividualOfferFactory() })
+    await renderStockEventCreation([], { offer: getIndividualOfferFactory() })
 
     await userEvent.click(screen.getByText('Enregistrer et continuer'))
 

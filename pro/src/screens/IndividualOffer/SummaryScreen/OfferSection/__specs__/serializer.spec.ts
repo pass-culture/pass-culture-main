@@ -7,8 +7,8 @@ import {
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
-import { GetIndividualOfferFactory } from 'utils/apiFactories'
-import { individualOfferSubCategoryFactory } from 'utils/individualApiFactories'
+import { getIndividualOfferFactory } from 'utils/apiFactories'
+import { subcategoryFactory } from 'utils/individualApiFactories'
 
 import { serializeOfferSectionData } from '../serializer'
 
@@ -18,7 +18,7 @@ describe('routes::Summary::serializers', () => {
   let subCategoryList: SubcategoryResponseModel[]
 
   beforeEach(() => {
-    offer = GetIndividualOfferFactory({
+    offer = getIndividualOfferFactory({
       id: 12,
       extraData: {
         author: 'Offer author',
@@ -52,7 +52,7 @@ describe('routes::Summary::serializers', () => {
       },
     ]
     subCategoryList = [
-      individualOfferSubCategoryFactory({
+      subcategoryFactory({
         id: SubcategoryIdEnum.CONCERT,
         categoryId: 'CID',
         proLabel: 'sub-category proLabel',
