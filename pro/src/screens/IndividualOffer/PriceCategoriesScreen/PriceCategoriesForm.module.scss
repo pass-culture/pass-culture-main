@@ -4,7 +4,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .label-input {
-  width: rem.torem(424px);
+  width: auto;
 }
 
 .price-input {
@@ -39,5 +39,11 @@
   svg {
     width: rem.torem(24px);
     height: rem.torem(24px);
+  }
+}
+
+@media (min-width: size.$tablet) {
+  .label-input {
+    width: rem.torem(424px);
   }
 }
