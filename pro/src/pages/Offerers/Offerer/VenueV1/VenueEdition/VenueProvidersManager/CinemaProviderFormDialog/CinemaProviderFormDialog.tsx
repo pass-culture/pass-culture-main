@@ -29,9 +29,9 @@ export const CinemaProviderFormDialog = ({
       labelledBy="cinema-provider-form-dialog"
       onDismiss={onCancel}
     >
-      <div className="title">
+      <h1 className="title">
         <strong>Modifier les paramètres de mes offres</strong>
-      </div>
+      </h1>
       <div className="explanation">
         Les modifications s’appliqueront uniquement aux nouvelles offres créées.
         La modification doit être faite manuellement pour les offres existantes.

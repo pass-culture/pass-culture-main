@@ -64,9 +64,9 @@ const PricingPointDialog = ({
       hasCloseButton
       onDismiss={closeDialog}
     >
-      <h3 className={styles['callout-title']}>
+      <h1 className={styles['callout-title']}>
         Sélectionnez un SIRET pour le lieu “{selectedVenue.commonName}”{' '}
-      </h3>
+      </h1>
       <Callout
         className={styles['callout']}
         links={[

@@ -29,11 +29,11 @@ const ReimbursmentPointDialog = ({
       extraClassNames={styles['dialog-box']}
     >
       <div>
-        <h3 className={styles['title']}>
+        <h1 className={styles['title']}>
           Avant d’ajouter des nouvelles coordonnées bancaires via la plateforme
           Démarches Simplifiées :
-        </h3>
-        <h4 className={styles['subtitle']}>Étape 1 : </h4>
+        </h1>
+        <h2 className={styles['subtitle']}>Étape 1 : </h2>
         <p className={styles['description']}>
           Copiez l’identifiant ci-dessous qui vous permettra d’identifier votre
           lieu sur Démarches Simplifiées.
@@ -42,7 +42,7 @@ const ReimbursmentPointDialog = ({
       </div>
       <hr className={styles['separator']} />
       <div>
-        <h4 className={styles['subtitle']}>Étape 2 : </h4>
+        <h2 className={styles['subtitle']}>Étape 2 : </h2>
         <p className={styles['description']}>
           Cliquez sur le bouton “Continuer sur Démarches Simplifiées”. <br />
           Vous allez être redirigé sur la plateforme Démarches Simplifiées.
