@@ -5,7 +5,6 @@ from datetime import time
 from datetime import timedelta
 from io import BytesIO
 from io import StringIO
-import math
 from operator import and_
 import typing
 from typing import Iterable
@@ -34,7 +33,6 @@ from pcapi.core.bookings.models import BookingExportType
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import BookingStatusFilter
 from pcapi.core.bookings.models import ExternalBooking
-from pcapi.core.bookings.utils import _apply_departement_timezone
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import models as educational_models
@@ -47,8 +45,6 @@ from pcapi.core.offers.serialize import serialize_offer_type_educational_or_indi
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import User
 from pcapi.domain.booking_recap import utils as booking_recap_utils
-from pcapi.domain.booking_recap.booking_recap import BookingRecap
-from pcapi.domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
 from pcapi.models import db
 from pcapi.routes.serialization.bookings_recap_serialize import OfferType
 from pcapi.utils.token import random_token
@@ -102,7 +98,7 @@ def find_by_pro_user(
     offer_type: OfferType | None = None,
     page: int = 1,
     per_page_limit: int = 1000,
-) -> BookingsRecapPaginated:
+) -> tuple[BaseQuery, int]:
     total_bookings_recap = _get_filtered_bookings_count(
         user,
         booking_period,
@@ -123,16 +119,11 @@ def find_by_pro_user(
         offer_id=offer_id,
     )
     bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
-    bookings_page = (
-        bookings_query.order_by(text('"bookedAt" DESC')).offset((page - 1) * per_page_limit).limit(per_page_limit).all()
+    bookings_query = (
+        bookings_query.order_by(text('"bookedAt" DESC')).offset((page - 1) * per_page_limit).limit(per_page_limit)
     )
 
-    return _paginated_bookings_sql_entities_to_bookings_recap(
-        paginated_bookings=bookings_page,
-        page=page,
-        per_page_limit=per_page_limit,
-        total_bookings_recap=total_bookings_recap,
-    )
+    return bookings_query, total_bookings_recap
 
 
 def find_ongoing_bookings_by_stock(stock_id: int) -> list[Booking]:
@@ -434,6 +425,7 @@ def _get_filtered_bookings_query(
         Booking.query.join(Booking.offerer)
         .join(Offerer.UserOfferers)
         .join(Booking.stock)
+        .join(Booking.externalBookings, isouter=True)
         .join(Booking.venue, isouter=True)
     )
     for join_key in extra_joins:
@@ -598,63 +590,6 @@ def _get_filtered_booking_pro(
 
 def _duplicate_booking_when_quantity_is_two(bookings_recap_query: BaseQuery) -> BaseQuery:
     return bookings_recap_query.union_all(bookings_recap_query.filter(Booking.quantity == 2))
-
-
-def _serialize_booking_recap(booking: Booking) -> BookingRecap:
-    return BookingRecap(
-        offer_identifier=booking.offerId,
-        offer_name=booking.offerName,
-        beneficiary_email=booking.beneficiaryEmail,
-        beneficiary_phonenumber=booking.beneficiaryPhoneNumber,
-        beneficiary_firstname=booking.beneficiaryFirstname,
-        beneficiary_lastname=booking.beneficiaryLastname,
-        booking_amount=booking.bookingAmount,
-        booking_price_category_label=booking.priceCategoryLabel,
-        booking_token=booking.bookingToken,
-        booking_date=typing.cast(datetime, convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)),
-        booking_is_used=booking.status in (BookingStatus.USED, BookingStatus.REIMBURSED),
-        booking_is_cancelled=booking.status == BookingStatus.CANCELLED,
-        booking_is_reimbursed=booking.status == BookingStatus.REIMBURSED,
-        booking_is_confirmed=bool(booking.isConfirmed),
-        booking_is_duo=booking.quantity == DUO_QUANTITY,
-        booking_is_external=bool(booking.isExternal),
-        booking_raw_status=booking.status,
-        booking_confirmation_date=None,
-        redactor_email=None,
-        redactor_firstname=None,
-        redactor_lastname=None,
-        date_used=typing.cast(datetime, convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)),
-        payment_date=typing.cast(datetime, convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)),
-        cancellation_date=typing.cast(
-            datetime, convert_booking_dates_utc_to_venue_timezone(booking.cancelledAt, booking=booking)
-        ),
-        cancellation_limit_date=(
-            typing.cast(datetime, convert_booking_dates_utc_to_venue_timezone(booking.cancellationLimitDate, booking))
-            if booking.cancellationLimitDate
-            else None
-        ),
-        event_beginning_datetime=(
-            _apply_departement_timezone(booking.stockBeginningDatetime, booking.venueDepartmentCode)
-            if booking.stockBeginningDatetime
-            else None
-        ),
-        offer_ean=booking.offerEan,
-        stock_identifier=booking.stockId,
-    )
-
-
-def _paginated_bookings_sql_entities_to_bookings_recap(
-    paginated_bookings: list[Booking],
-    page: int,
-    per_page_limit: int,
-    total_bookings_recap: int,
-) -> BookingsRecapPaginated:
-    return BookingsRecapPaginated(
-        bookings_recap=[_serialize_booking_recap(booking) for booking in paginated_bookings],
-        page=page,
-        pages=int(math.ceil(total_bookings_recap / per_page_limit)),
-        total=total_bookings_recap,
-    )
 
 
 def _get_booking_status(status: BookingStatus, is_confirmed: bool) -> str:

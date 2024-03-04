@@ -1,3 +1,4 @@
+import math
 from typing import cast
 
 from flask_login import current_user
@@ -12,7 +13,7 @@ from pcapi.routes.serialization.bookings_recap_serialize import BookingsExportSt
 from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsQueryModel
 from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsResponseModel
 from pcapi.routes.serialization.bookings_recap_serialize import UserHasBookingResponse
-from pcapi.routes.serialization.bookings_recap_serialize import serialize_booking_recap
+from pcapi.routes.serialization.bookings_recap_serialize import serialize_bookings
 from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint
@@ -23,6 +24,7 @@ from . import blueprint
 @spectree_serialize(response_model=ListBookingsResponseModel, api=blueprint.pro_private_schema)
 def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel:
     page = query.page
+    per_page_limit = 1000
     venue_id = query.venue_id
     offer_id = query.offer_id
     event_date = query.event_date
@@ -35,11 +37,7 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
         )
     offer_type = query.offer_type
 
-    # FIXME: rewrite this route. The repository function should return
-    # a bare SQLAlchemy query, and the route should handle the
-    # serialization so that we can get rid of BookingsRecapPaginated
-    # that is only used here.
-    bookings_recap_paginated = booking_repository.find_by_pro_user(
+    bookings_query, total = booking_repository.find_by_pro_user(
         user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
         booking_period=booking_period,
         status_filter=booking_status,
@@ -48,15 +46,14 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
         offer_id=offer_id,
         offer_type=offer_type,
         page=int(page),
+        per_page_limit=per_page_limit,
     )
 
     return ListBookingsResponseModel(
-        bookingsRecap=[
-            serialize_booking_recap(booking_recap) for booking_recap in bookings_recap_paginated.bookings_recap
-        ],
-        page=bookings_recap_paginated.page,
-        pages=bookings_recap_paginated.pages,
-        total=bookings_recap_paginated.total,
+        bookingsRecap=[serialize_bookings(booking) for booking in bookings_query],
+        page=page,
+        pages=int(math.ceil(total / per_page_limit)),
+        total=total,
     )
 
 
