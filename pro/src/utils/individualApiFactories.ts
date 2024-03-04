@@ -27,13 +27,8 @@ let offerSubCategoryId = 1
 export const individualOfferVenueItemFactory = (
   customIndividualOfferVenueItem: Partial<IndividualOfferVenueItem> = {}
 ): IndividualOfferVenueItem => {
-  const currentVenueId = venueId++
-
   return {
     ...venueListItemFactory(),
-    id: currentVenueId,
-    withdrawalDetails: null,
-    venueType: VenueTypeCode.AUTRE,
     ...customIndividualOfferVenueItem,
   }
 }
