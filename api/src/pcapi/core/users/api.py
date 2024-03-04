@@ -1062,7 +1062,7 @@ def _filter_user_accounts(accounts: BaseQuery, search_term: str) -> BaseQuery:
         name_term = search_term
         for name in name_term.split():
             term_filters.append(
-                sa.func.unaccent(sa.func.concat(models.User.firstName, " ", models.User.lastName)).ilike(
+                sa.func.immutable_unaccent(models.User.firstName + " " + models.User.lastName).ilike(
                     f"%{clean_accents(name)}%"
                 )
             )
@@ -1077,9 +1077,7 @@ def _filter_user_accounts(accounts: BaseQuery, search_term: str) -> BaseQuery:
     if name_term:
         name_term = name_term.lower()
         accounts = accounts.order_by(
-            sa.func.levenshtein(
-                sa.func.lower(sa.func.concat(models.User.firstName, " ", models.User.lastName)), name_term
-            )
+            sa.func.levenshtein(sa.func.lower(models.User.firstName + " " + models.User.lastName), name_term)
         )
 
     accounts = accounts.order_by(models.User.id)
