@@ -10,14 +10,12 @@ import {
 import Notification from 'components/Notification/Notification'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import * as pcapi from 'repository/pcapi/pcapi'
-import {
-  bookingRecapFactory,
-  getVenueListItemFactory,
-} from 'utils/apiFactories'
+import { bookingRecapFactory } from 'utils/apiFactories'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
 } from 'utils/date'
+import { venueListItemFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { Bookings } from '../Bookings'
@@ -116,7 +114,7 @@ describe('components | BookingsRecap | Pro user', () => {
       },
     }
     vi.spyOn(api, 'getProfile').mockResolvedValue(user)
-    venue = getVenueListItemFactory({})
+    venue = venueListItemFactory()
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [venue] })
     vi.spyOn(api, 'getUserHasBookings').mockResolvedValue({ hasBookings: true })
   })
@@ -560,7 +558,7 @@ describe('components | BookingsRecap | Pro user', () => {
     // Given
     const booking = bookingRecapFactory()
     const otherVenueBooking = bookingRecapFactory()
-    const otherVenue = getVenueListItemFactory()
+    const otherVenue = venueListItemFactory()
     vi.spyOn(api, 'getVenues').mockResolvedValue({
       venues: [venue, otherVenue],
     })
