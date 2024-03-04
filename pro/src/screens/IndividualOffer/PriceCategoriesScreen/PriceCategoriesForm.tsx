@@ -133,7 +133,12 @@ export const PriceCategoriesForm = ({
                 />
               )}
               {values.priceCategories.map((priceCategory, index) => (
-                <FormLayout.Row key={index} inline smSpaceAfter>
+                <FormLayout.Row
+                  key={index}
+                  inline
+                  smSpaceAfter
+                  className={styles['form-layout-row-price-category']}
+                >
                   <TextInput
                     smallLabel
                     name={`priceCategories[${index}].label`}
@@ -143,7 +148,6 @@ export const PriceCategoriesForm = ({
                     countCharacters
                     className={styles['label-input']}
                     disabled={values.priceCategories.length <= 1 || isDisabled}
-                    isLabelHidden={index !== 0}
                   />
 
                   <TextInput
@@ -155,15 +159,10 @@ export const PriceCategoriesForm = ({
                     max={PRICE_CATEGORY_PRICE_MAX}
                     rightIcon={strokeEuroIcon}
                     className={styles['price-input']}
-                    isLabelHidden={index !== 0}
                     disabled={isDisabled}
                   />
 
-                  <div
-                    className={cn(styles['form-row-actions'], {
-                      [styles['first-row']]: index === 0,
-                    })}
-                  >
+                  <div className={cn(styles['form-row-actions'])}>
                     <BaseCheckbox
                       className={styles['free-checkbox']}
                       label="Gratuit"

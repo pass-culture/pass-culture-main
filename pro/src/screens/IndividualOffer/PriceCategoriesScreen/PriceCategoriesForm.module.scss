@@ -2,13 +2,14 @@
 @use "styles/variables/_forms.scss" as forms;
 @use "styles/variables/_size.scss" as size;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_colors.scss" as colors;
 
 .label-input {
-  width: auto;
+  width: 100%;
 }
 
 .price-input {
-  width: rem.torem(146px);
+  width: 100%;
 }
 
 .duo-section {
@@ -20,15 +21,7 @@
   height: size.$input-min-height;
   display: flex;
   align-items: center;
-}
-
-.first-row {
-  // "Center" with input
-  // We are using margin-top and not flex center because when there is an error the
-  // input field grows at the bottom and we don't want the icon to move
-  margin-top: calc(
-    #{forms.$label-small-space-before-input} + #{fonts.$caption-line-height}
-  );
+  margin-top: 0;
 }
 
 .free-checkbox {
@@ -42,8 +35,36 @@
   }
 }
 
+.form-layout-row-price-category {
+  padding: rem.torem(8px);
+  border-radius: rem.torem(4px);
+  padding-bottom: rem.torem(24px);
+}
+
+.form-layout-row-price-category:nth-child(odd) {
+  background-color: colors.$grey-light;
+}
+
 @media (min-width: size.$tablet) {
   .label-input {
     width: rem.torem(424px);
+  }
+
+  .form-layout-row-price-category:nth-child(odd) {
+    background-color: unset;
+  }
+
+  .price-input {
+    width: rem.torem(146px);
+  }
+
+  .form-row-actions {
+    margin-top: calc(
+      #{forms.$label-small-space-before-input} + #{fonts.$caption-line-height}
+    );
+  }
+
+  .form-layout-row-price-category {
+    padding-bottom: 0;
   }
 }
