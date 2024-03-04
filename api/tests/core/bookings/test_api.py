@@ -6,12 +6,10 @@ import re
 from unittest import mock
 from unittest.mock import patch
 
-from dateutil.relativedelta import relativedelta
 import pytest
 from sqlalchemy import create_engine
 import sqlalchemy.exc
 from sqlalchemy.sql import text
-import time_machine
 
 from pcapi.analytics.amplitude.backends.amplitude_connector import AmplitudeEventType
 import pcapi.analytics.amplitude.testing as amplitude_testing
@@ -211,8 +209,9 @@ class BookOfferTest:
         )  # to beneficiary
 
     def test_free_offer_booking_by_ex_beneficiary(self):
-        with time_machine.travel(datetime.utcnow() - relativedelta(years=2, months=5)):
-            ex_beneficiary = users_factories.BeneficiaryGrant18Factory()
+        ex_beneficiary = users_factories.BeneficiaryGrant18Factory(
+            deposit__expirationDate=datetime.utcnow() - timedelta(days=1000)  # ~ 2 years and a half
+        )
         stock = offers_factories.StockFactory(price=0, dnBookedQuantity=5, offer__bookingEmail="offerer@example.com")
 
         booking = api.book_offer(beneficiary=ex_beneficiary, stock_id=stock.id, quantity=1)
@@ -1717,11 +1716,11 @@ class PopBarcodesFromQueueAndCancelWastedExternalBookingTest:
 
         assert app.redis_client.llen("api:external_bookings:barcodes") == 1
 
-    @time_machine.travel("2032-11-17 15:00:00")
     @patch("pcapi.core.bookings.api.external_bookings_api.cancel_booking")
     def test_should_pop_and_cancel_only_external_booking_reached_minimum_age(
         self, mocked_cancel_external_booking, app, requests_mock
     ):
+        now = datetime.utcnow()
         provider = providers_factories.ProviderFactory(
             bookingExternalUrl="http://example.com/book", cancelExternalUrl="http://example.com/cancel"
         )
@@ -1733,7 +1732,7 @@ class PopBarcodesFromQueueAndCancelWastedExternalBookingTest:
             {
                 "barcode": "DDD-123456789",
                 "venue_id": 15,
-                "timestamp": datetime.utcnow().timestamp() - 100,
+                "timestamp": now.timestamp() - 100,
                 "booking_type": RedisExternalBookingType.EVENT,
                 "cancel_event_info": {
                     "stock_id": stock.id,
@@ -1746,7 +1745,7 @@ class PopBarcodesFromQueueAndCancelWastedExternalBookingTest:
             {
                 "barcode": "BBB-123456789",
                 "venue_id": 13,
-                "timestamp": datetime.utcnow().timestamp() - 90,
+                "timestamp": now.timestamp() - 90,
                 "booking_type": RedisExternalBookingType.CINEMA,
             },
         )
@@ -1755,7 +1754,7 @@ class PopBarcodesFromQueueAndCancelWastedExternalBookingTest:
             {
                 "barcode": "CCC-123456789",
                 "venue_id": 14,
-                "timestamp": datetime.utcnow().timestamp() - 65,
+                "timestamp": now.timestamp() - 65,
                 "booking_type": RedisExternalBookingType.CINEMA,
             },
         )
@@ -1764,13 +1763,13 @@ class PopBarcodesFromQueueAndCancelWastedExternalBookingTest:
             {
                 "barcode": "AAA-123456789",
                 "venue_id": 12,
-                "timestamp": datetime.utcnow().timestamp(),
+                "timestamp": now.timestamp(),
                 "booking_type": RedisExternalBookingType.CINEMA,
             },
         )
         queue.add_to_queue(
             "api:external_bookings:barcodes",
-            {"barcode": "AAA-123456789", "venue_id": 12, "timestamp": datetime.utcnow().timestamp() + 10},
+            {"barcode": "AAA-123456789", "venue_id": 12, "timestamp": now.timestamp() + 10},
         )
         ExternalBookingFactory(barcode="BBB-123456789")
 
