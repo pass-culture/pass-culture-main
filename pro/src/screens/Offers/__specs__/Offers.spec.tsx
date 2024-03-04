@@ -25,7 +25,10 @@ import {
 import { Audience } from 'core/shared'
 import * as useNotification from 'hooks/useNotification'
 import { collectiveOfferFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
-import { offererFactory } from 'utils/apiFactories'
+import {
+  defaultGetOffererResponseModel,
+  offererFactory,
+} from 'utils/apiFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
@@ -111,7 +114,7 @@ describe('screen Offers', () => {
       currentUser,
       isLoading: false,
       loadAndUpdateOffers: vi.fn().mockResolvedValue(offersRecap),
-      offerer: offererFactory(),
+      offerer: { ...defaultGetOffererResponseModel },
       offers: offersRecap,
       setIsLoading: vi.fn(),
       setOfferer: vi.fn(),

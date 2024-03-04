@@ -1,8 +1,8 @@
 import { api } from 'apiClient/api'
-import { Offerer } from 'core/Offers/types'
+import { GetOffererResponseModel } from 'apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 
-type Payload = Offerer
+type Payload = GetOffererResponseModel
 
 type GetOffererAdapter = Adapter<string, Payload, null>
 
@@ -19,10 +19,7 @@ const getOffererAdapter: GetOffererAdapter = async (offererId: string) => {
     return {
       isOk: true,
       message: null,
-      payload: {
-        id: offerer.id,
-        name: offerer.name,
-      },
+      payload: offerer,
     }
   } catch (e) {
     return FAILING_RESPONSE

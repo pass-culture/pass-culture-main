@@ -1,6 +1,6 @@
 import React, { FormEvent } from 'react'
 
-import { EacFormat } from 'apiClient/v1'
+import { EacFormat, GetOffererResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout/FormLayout'
 import {
   ALL_CATEGORIES_OPTION,
@@ -10,7 +10,7 @@ import {
   CREATION_MODES_OPTIONS,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
-import { Offerer, SearchFiltersParams } from 'core/Offers/types'
+import { SearchFiltersParams } from 'core/Offers/types'
 import { hasSearchFilters } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
@@ -27,7 +27,7 @@ import styles from './SearchFilters.module.scss'
 
 interface SearchFiltersProps {
   applyFilters: () => void
-  offerer: Offerer | null
+  offerer: GetOffererResponseModel | null
   removeOfferer: () => void
   selectedFilters: SearchFiltersParams
   setSearchFilters: (
