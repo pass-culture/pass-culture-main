@@ -24,9 +24,6 @@ const getIndividualOfferVenuesAdapter: GetIndividualOfferVenuesAdapter =
         return {
           ...venue,
           name: venue.publicName || venue.name,
-          withdrawalDetails: venue.withdrawalDetails || null,
-          bookingEmail: venue.bookingEmail || null,
-          venueType: venue.venueTypeCode,
         }
       }
 
