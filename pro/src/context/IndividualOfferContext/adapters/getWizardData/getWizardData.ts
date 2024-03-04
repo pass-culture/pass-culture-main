@@ -5,7 +5,6 @@ import {
   SubcategoryResponseModel,
 } from 'apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { getIndividualOfferVenuesAdapter } from 'core/Venue/adapters/getIndividualOfferVenuesAdapter'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
@@ -74,13 +73,14 @@ export const getWizardData: GetIndividualOfferAdapter = async ({
   const offererId = isAdmin && offerer ? offerer.id : queryOffererId
 
   // when calling with undefined offererId, we get all venues
-  const venuesResponse = await getIndividualOfferVenuesAdapter({
-    offererId: isAdmin && offererId ? Number(offererId) : undefined,
-  })
-
-  if (venuesResponse.isOk) {
-    successPayload.venueList = venuesResponse.payload
-  } else {
+  try {
+    const venuesResponse = await api.getVenues(
+      null,
+      true,
+      isAdmin && offererId ? Number(offererId) : undefined
+    )
+    successPayload.venueList = venuesResponse.venues
+  } catch {
     return Promise.resolve(FAILING_RESPONSE)
   }
 
