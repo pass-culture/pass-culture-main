@@ -3,7 +3,7 @@ import { PatchOfferBodyModel } from 'apiClient/v1'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
 import { OfferExtraData } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
-import { GetIndividualOfferFactory } from 'utils/apiFactories'
+import { getIndividualOfferFactory } from 'utils/apiFactories'
 
 import {
   serializeDurationMinutes,
@@ -112,7 +112,7 @@ describe('test updateIndividualOffer::serializers', () => {
 
     it('should serialize patchBody', () => {
       expect(
-        serializePatchOffer({ offer: GetIndividualOfferFactory(), formValues })
+        serializePatchOffer({ offer: getIndividualOfferFactory(), formValues })
       ).toEqual(patchBody)
     })
     it('should serialize patchBody with default', () => {
@@ -131,7 +131,7 @@ describe('test updateIndividualOffer::serializers', () => {
         url: undefined,
       }
       expect(
-        serializePatchOffer({ offer: GetIndividualOfferFactory(), formValues })
+        serializePatchOffer({ offer: getIndividualOfferFactory(), formValues })
       ).toEqual(patchBody)
     })
   })

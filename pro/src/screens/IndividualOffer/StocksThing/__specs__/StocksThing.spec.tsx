@@ -26,14 +26,14 @@ import {
 } from 'core/Offers/utils/getIndividualOfferUrl'
 import { ButtonLink } from 'ui-kit'
 import {
-  GetIndividualOfferFactory,
-  offerVenueFactory,
+  getIndividualOfferFactory,
+  getOfferVenueFactory,
 } from 'utils/apiFactories'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import {
-  individualGetOfferStockResponseModelFactory,
-  individualOfferContextFactory,
-  individualOfferSubCategoryFactory,
+  getOfferStockFactory,
+  individualOfferContextValuesFactory,
+  subcategoryFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -112,9 +112,9 @@ describe('screens:StocksThing', () => {
   const offerId = 1
 
   beforeEach(() => {
-    offer = GetIndividualOfferFactory({
+    offer = getIndividualOfferFactory({
       id: offerId,
-      venue: offerVenueFactory({
+      venue: getOfferVenueFactory({
         departementCode: '75',
       }),
       subcategoryId: SubcategoryIdEnum.CINE_PLEIN_AIR,
@@ -122,11 +122,11 @@ describe('screens:StocksThing', () => {
     props = {
       offer,
     }
-    contextValue = individualOfferContextFactory({
+    contextValue = individualOfferContextValuesFactory({
       offerId: offerId,
       offer,
       subCategories: [
-        individualOfferSubCategoryFactory({
+        subcategoryFactory({
           id: SubcategoryIdEnum.CINE_PLEIN_AIR,
           canBeDuo: true,
         }),
@@ -412,7 +412,7 @@ describe('screens:StocksThing', () => {
       }
       await renderStockThingScreen(
         [
-          individualGetOfferStockResponseModelFactory({
+          getOfferStockFactory({
             bookingsQuantity: 1,
             price: 12,
             hasActivationCode: true,

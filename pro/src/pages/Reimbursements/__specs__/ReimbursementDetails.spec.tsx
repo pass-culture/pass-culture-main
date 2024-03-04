@@ -4,7 +4,7 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { InvoiceResponseModel, VenueListItemResponseModel } from 'apiClient/v1'
-import { individualOfferGetVenuesFactory } from 'utils/individualApiFactories'
+import { venueListItemFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ReimbursementsDetails from '../ReimbursementsDetails/ReimbursementsDetails'
@@ -16,12 +16,12 @@ vi.mock('utils/date', async () => ({
 
 const venueId = 12
 const BASE_VENUES: VenueListItemResponseModel[] = [
-  individualOfferGetVenuesFactory({
+  venueListItemFactory({
     isVirtual: true,
     offererName: 'Offerer name venue 2',
     id: 2,
   }),
-  individualOfferGetVenuesFactory({
+  venueListItemFactory({
     isVirtual: false,
     publicName: 'Public Name venue 1',
     id: venueId,

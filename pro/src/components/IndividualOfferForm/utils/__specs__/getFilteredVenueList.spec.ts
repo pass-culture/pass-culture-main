@@ -1,7 +1,7 @@
 import { SubcategoryResponseModel } from 'apiClient/v1'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import {
-  individualOfferSubCategoryFactory,
+  subcategoryFactory,
   individualOfferVenueItemFactory,
 } from 'utils/individualApiFactories'
 
@@ -16,15 +16,15 @@ describe('getFilteredVenueList', () => {
   const thirdVenueId = 3
 
   const subCategories: SubcategoryResponseModel[] = [
-    individualOfferSubCategoryFactory({
+    subcategoryFactory({
       id: 'ONLINE_ONLY',
       onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
     }),
-    individualOfferSubCategoryFactory({
+    subcategoryFactory({
       id: 'OFFLINE_ONLY',
       onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
     }),
-    individualOfferSubCategoryFactory({
+    subcategoryFactory({
       id: 'ONLINE_OR_OFFLINE',
       onlineOfflinePlatform: CATEGORY_STATUS.ONLINE_OR_OFFLINE,
     }),

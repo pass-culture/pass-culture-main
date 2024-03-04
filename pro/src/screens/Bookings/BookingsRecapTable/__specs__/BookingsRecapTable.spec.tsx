@@ -9,8 +9,8 @@ import * as bookingDetailsAdapter from 'screens/Bookings/BookingsRecapTable/Book
 import * as filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
 import { bookingRecapFactory } from 'utils/apiFactories'
 import {
-  collectiveBookingDetailsFactory,
-  collectiveBookingRecapFactory,
+  collectiveBookingByIdFactory,
+  collectiveBookingFactory,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -131,13 +131,13 @@ describe('components | BookingsRecapTable', () => {
     vi.spyOn(bookingDetailsAdapter, 'default').mockResolvedValue({
       isOk: true,
       message: '',
-      payload: collectiveBookingDetailsFactory(),
+      payload: collectiveBookingByIdFactory(),
     })
     // Given
     const props: Props = {
       ...defaultProps,
       audience: Audience.COLLECTIVE,
-      bookingsRecap: [collectiveBookingRecapFactory({ bookingId: '123' })],
+      bookingsRecap: [collectiveBookingFactory({ bookingId: '123' })],
       locationState: {
         statuses: ['booked', 'cancelled'],
       },
@@ -187,7 +187,7 @@ describe('components | BookingsRecapTable', () => {
 
   it('should render the expected table for collective audience', () => {
     // Given
-    const bookingRecap = collectiveBookingRecapFactory(bookingInstitutionCustom)
+    const bookingRecap = collectiveBookingFactory(bookingInstitutionCustom)
     vi.spyOn(filterBookingsRecap, 'default').mockReturnValue([bookingRecap])
     const props: Props = {
       ...defaultProps,
@@ -264,13 +264,13 @@ describe('components | BookingsRecapTable', () => {
   it('should log event when cliking collective row', async () => {
     // Given
     const bookingsRecap = [
-      collectiveBookingRecapFactory({ bookingId: 'mon booking id' }),
+      collectiveBookingFactory({ bookingId: 'mon booking id' }),
     ]
     vi.spyOn(filterBookingsRecap, 'default').mockReturnValue(bookingsRecap)
     vi.spyOn(bookingDetailsAdapter, 'default').mockResolvedValue({
       isOk: true,
       message: '',
-      payload: collectiveBookingDetailsFactory(),
+      payload: collectiveBookingByIdFactory(),
     })
 
     const mockLogEvent = vi.fn()
@@ -304,7 +304,7 @@ describe('components | BookingsRecapTable', () => {
   it('should update currentPage when clicking on next page button', async () => {
     const bookingsRecap = []
     for (let i = 0; i < 40; i++) {
-      bookingsRecap.push(collectiveBookingRecapFactory())
+      bookingsRecap.push(collectiveBookingFactory())
     }
 
     const props: Props = {

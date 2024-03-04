@@ -24,7 +24,7 @@ import {
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import { Stocks } from 'pages/IndividualOfferWizard/Stocks/Stocks'
 import { RootState } from 'store/rootReducer'
-import { individualGetOfferStockResponseModelFactory } from 'utils/individualApiFactories'
+import { getOfferStockFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 vi.mock('screens/IndividualOffer/Informations/utils', () => {
@@ -94,7 +94,7 @@ const renderStockThingScreen = (storeOverrides: Partial<RootState> = {}) =>
 describe('screens:StocksThing', () => {
   let storeOverride: Partial<RootState>
   let apiOffer: GetIndividualOfferResponseModel
-  const stockToDelete = individualGetOfferStockResponseModelFactory({
+  const stockToDelete = getOfferStockFactory({
     beginningDatetime: '2022-05-23T08:25:31.009799Z',
     bookingLimitDatetime: '2022-05-23T07:25:31.009799Z',
     bookingsQuantity: 4,

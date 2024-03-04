@@ -3,7 +3,7 @@ import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { MESSAGE_VARIANT } from 'pages/Desk/types'
-import { defaultBookingResponse } from 'utils/apiFactories'
+import { defaultGetBookingResponse } from 'utils/apiFactories'
 
 import { getBooking } from '..'
 
@@ -11,12 +11,12 @@ describe('getBooking', () => {
   describe('success', () => {
     it('should return serialized booking', async () => {
       vi.spyOn(apiContremarque, 'getBookingByTokenV2').mockResolvedValue(
-        defaultBookingResponse
+        defaultGetBookingResponse
       )
 
       const serializedBooking = await getBooking('test_booking_id')
       expect(serializedBooking).toStrictEqual({
-        booking: defaultBookingResponse,
+        booking: defaultGetBookingResponse,
       })
     })
   })

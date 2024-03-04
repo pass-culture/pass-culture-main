@@ -7,7 +7,7 @@ import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { defaultGetOffererResponseModel } from 'utils/apiFactories'
-import { defaultVenueResponseModel } from 'utils/collectiveApiFactories'
+import { defaultGetVenue } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
@@ -21,7 +21,7 @@ const renderPartnerPages = (props: Partial<VenueEditionHeaderProps>) => {
   renderWithProviders(
     <VenueEditionHeader
       offerer={{ ...defaultGetOffererResponseModel }}
-      venue={{ ...defaultVenueResponseModel }}
+      venue={{ ...defaultGetVenue }}
       venueTypes={[{ value: VenueTypeCode.FESTIVAL, label: 'Festival' }]}
       {...props}
     />
@@ -47,7 +47,7 @@ describe('PartnerPages', () => {
 
     renderPartnerPages({
       venue: {
-        ...defaultVenueResponseModel,
+        ...defaultGetVenue,
         venueTypeCode: VenueTypeCode.FESTIVAL,
       },
     })
@@ -56,7 +56,7 @@ describe('PartnerPages', () => {
     await userEvent.click(screen.getByText(/Ajouter une image/))
 
     expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_ADD_IMAGE, {
-      venueId: defaultVenueResponseModel.id,
+      venueId: defaultGetVenue.id,
       imageType: UploaderModeEnum.VENUE,
       isEdition: true,
     })
@@ -65,7 +65,7 @@ describe('PartnerPages', () => {
   it('should display the image if its present', () => {
     renderPartnerPages({
       venue: {
-        ...defaultVenueResponseModel,
+        ...defaultGetVenue,
         venueTypeCode: VenueTypeCode.FESTIVAL,
         bannerUrl: 'https://www.example.com/image.png',
         bannerMeta: {

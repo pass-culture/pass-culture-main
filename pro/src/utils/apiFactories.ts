@@ -37,10 +37,11 @@ let offererId = 1
 let stockId = 1
 let bookingId = 1
 
+// TODO factories: type this
 export const collectiveOfferFactory = (
   customCollectiveOffer = {},
   customStock = collectiveStockFactory() || null,
-  customVenue = offerVenueFactory()
+  customVenue = getOfferVenueFactory()
 ) => {
   const stocks = customStock === null ? [] : [customStock]
   const currentOfferId = offerId++
@@ -62,6 +63,7 @@ export const collectiveOfferFactory = (
   }
 }
 
+// TODO factories: type this
 const collectiveStockFactory = (customStock = {}) => {
   return {
     bookingsQuantity: 0,
@@ -76,8 +78,8 @@ const collectiveStockFactory = (customStock = {}) => {
   }
 }
 
-export const GetIndividualOfferFactory = (
-  customOffer: Partial<GetIndividualOfferResponseModel> = {}
+export const getIndividualOfferFactory = (
+  customGetIndividualOffer: Partial<GetIndividualOfferResponseModel> = {}
 ): GetIndividualOfferResponseModel => {
   const currentOfferId = offerId++
 
@@ -90,7 +92,7 @@ export const GetIndividualOfferFactory = (
     isThing: true,
     id: currentOfferId,
     status: OfferStatus.ACTIVE,
-    venue: offerVenueFactory(),
+    venue: getOfferVenueFactory(),
     hasBookingLimitDatetimesPassed: false,
     hasStocks: true,
     dateCreated: '2020-04-12T19:31:12Z',
@@ -116,13 +118,14 @@ export const GetIndividualOfferFactory = (
       speaker: "Chuck Norris n'a pas besoin de doubleur",
       visa: 'USA',
     },
-    ...customOffer,
+    ...customGetIndividualOffer,
   }
 }
 
+// TODO factories: should remove customOfferer as an argument
 export const getVenueListItemFactory = (
   customVenue = {},
-  customOfferer = offererFactory()
+  customOfferer = getOfferManagingOffererFactory()
 ): VenueListItemResponseModel => {
   const currentVenueId = venueId++
   return {
@@ -139,20 +142,20 @@ export const getVenueListItemFactory = (
   }
 }
 
-export const offererFactory = (
-  customOfferer = {}
+export const getOfferManagingOffererFactory = (
+  customGetOfferManagingOfferer: Partial<GetOfferManagingOffererResponseModel> = {}
 ): GetOfferManagingOffererResponseModel => {
   const currentOffererId = offererId++
 
   return {
     id: 3,
     name: `Le nom de la structure ${currentOffererId}`,
-    ...customOfferer,
+    ...customGetOfferManagingOfferer,
   }
 }
 
-export const offerVenueFactory = (
-  customVenue: Partial<GetOfferVenueResponseModel> = {}
+export const getOfferVenueFactory = (
+  customGetOfferVenue: Partial<GetOfferVenueResponseModel> = {}
 ): GetOfferVenueResponseModel => {
   const currentVenueId = venueId++
 
@@ -169,16 +172,17 @@ export const offerVenueFactory = (
     mentalDisabilityCompliant: true,
     motorDisabilityCompliant: true,
     audioDisabilityCompliant: true,
-    managingOfferer: offererFactory(),
-    ...customVenue,
+    managingOfferer: getOfferManagingOffererFactory(),
+    ...customGetOfferVenue,
   }
 }
 
+// TODO factories: should remove customOffer as an argument
 export const bookingRecapFactory = (
   customBookingRecap = {},
   customOffer = {}
 ): BookingRecapResponseModel => {
-  const offer = GetIndividualOfferFactory(customOffer)
+  const offer = getIndividualOfferFactory(customOffer)
 
   return {
     beneficiary: {
@@ -249,7 +253,7 @@ export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =
     bannerMeta: null,
   }
 
-export const defaultBookingResponse: GetBookingResponse = {
+export const defaultGetBookingResponse: GetBookingResponse = {
   bookingId: 'test_booking_id',
   dateOfBirth: '1980-02-01T20:00:00Z',
   email: 'test@email.com',
@@ -280,7 +284,8 @@ type ListOffersOfferResponseModelFactory = {
   customVenue?: Partial<ListOffersVenueResponseModel>
 }
 
-export const listOffersOfferResponseModelFactory = ({
+// TODO factories: should remove customSotcksList and customVenue as arguments
+export const listOffersOfferFactory = ({
   customOffer,
   customStocksList,
   customVenue,
@@ -296,14 +301,14 @@ export const listOffersOfferResponseModelFactory = ({
   name: `mon offre ${offerId}`,
   productIsbn: null,
   status: OfferStatus.ACTIVE,
-  stocks: customStocksList ?? [listOffersStockResponseModelFactory()],
+  stocks: customStocksList ?? [listOffersStockFactory()],
   subcategoryId: SubcategoryIdEnum.CINE_PLEIN_AIR,
   thumbUrl: 'https://www.example.com',
-  venue: listOffersVenueResponseModelFactory(customVenue),
+  venue: listOffersVenueFactory(customVenue),
   ...customOffer,
 })
 
-const listOffersStockResponseModelFactory = (
+const listOffersStockFactory = (
   customStock?: Partial<ListOffersStockResponseModel>
 ): ListOffersStockResponseModel => ({
   id: stockId++,
@@ -312,7 +317,7 @@ const listOffersStockResponseModelFactory = (
   ...customStock,
 })
 
-const listOffersVenueResponseModelFactory = (
+const listOffersVenueFactory = (
   customVenue?: Partial<ListOffersVenueResponseModel>
 ): ListOffersVenueResponseModel => ({
   id: venueId++,
@@ -323,7 +328,7 @@ const listOffersVenueResponseModelFactory = (
   ...customVenue,
 })
 
-export const defaultBankAccountResponseModel: BankAccountResponseModel = {
+export const defaultBankAccount: BankAccountResponseModel = {
   bic: 'CCOPFRPP',
   dateCreated: '2020-05-07',
   dsApplicationId: 1,
@@ -347,44 +352,42 @@ export const defaultManagedVenues: ManagedVenues = {
   hasPricingPoint: true,
 }
 
-const defaultCollectiveOfferOfferVenueResponseModel: CollectiveOfferOfferVenueResponseModel =
+const defaultCollectiveOfferOfferVenue: CollectiveOfferOfferVenueResponseModel =
   {
     addressType: OfferAddressType.OFFERER_VENUE,
     otherAddress: 'other',
   }
 
-const defaultGetCollectiveOfferManagingOffererResponseModel: GetCollectiveOfferManagingOffererResponseModel =
+const defaultGetCollectiveOfferManagingOfferer: GetCollectiveOfferManagingOffererResponseModel =
   {
     id: 1,
     name: 'nom',
   }
 
-const defaultGetCollectiveOfferVenueResponseModel: GetCollectiveOfferVenueResponseModel =
-  {
-    id: 1,
-    managingOfferer: defaultGetCollectiveOfferManagingOffererResponseModel,
-    name: 'nom',
-  }
+const defaultGetCollectiveOfferVenue: GetCollectiveOfferVenueResponseModel = {
+  id: 1,
+  managingOfferer: defaultGetCollectiveOfferManagingOfferer,
+  name: 'nom',
+}
 
-export const defaultGetCollectiveOfferResponseModel: GetCollectiveOfferResponseModel =
-  {
-    bookingEmails: [],
-    contactEmail: 'contact@contact.contact',
-    dateCreated: '10/18/2000',
-    description: 'description',
-    domains: [],
-    hasBookingLimitDatetimesPassed: false,
-    id: 1,
-    interventionArea: [],
-    isActive: false,
-    isBookable: false,
-    isCancellable: false,
-    isEditable: false,
-    isPublicApi: false,
-    isVisibilityEditable: false,
-    name: 'offre',
-    offerVenue: defaultCollectiveOfferOfferVenueResponseModel,
-    status: OfferStatus.ACTIVE,
-    students: [],
-    venue: defaultGetCollectiveOfferVenueResponseModel,
-  }
+export const defaultGetCollectiveOffer: GetCollectiveOfferResponseModel = {
+  bookingEmails: [],
+  contactEmail: 'contact@contact.contact',
+  dateCreated: '10/18/2000',
+  description: 'description',
+  domains: [],
+  hasBookingLimitDatetimesPassed: false,
+  id: 1,
+  interventionArea: [],
+  isActive: false,
+  isBookable: false,
+  isCancellable: false,
+  isEditable: false,
+  isPublicApi: false,
+  isVisibilityEditable: false,
+  name: 'offre',
+  offerVenue: defaultCollectiveOfferOfferVenue,
+  status: OfferStatus.ACTIVE,
+  students: [],
+  venue: defaultGetCollectiveOfferVenue,
+}

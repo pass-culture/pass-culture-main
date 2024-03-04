@@ -19,7 +19,7 @@ import { Audience } from 'core/shared'
 import {
   defaultGetOffererResponseModel,
   getVenueListItemFactory,
-  listOffersOfferResponseModelFactory,
+  listOffersOfferFactory,
 } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -109,9 +109,7 @@ describe('route Offers', () => {
         searchFilters: DEFAULT_SEARCH_FILTERS,
       },
     }
-    offersRecap = [
-      listOffersOfferResponseModelFactory({ customVenue: proVenues[0] }),
-    ]
+    offersRecap = [listOffersOfferFactory({ customVenue: proVenues[0] })]
     vi.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
     vi.spyOn(api, 'getCategories').mockResolvedValueOnce(
       categoriesAndSubcategories
@@ -532,7 +530,7 @@ describe('route Offers', () => {
   describe('url query params', () => {
     it('should have page value when page value is not first page', async () => {
       const offersRecap = Array.from({ length: 11 }, () =>
-        listOffersOfferResponseModelFactory()
+        listOffersOfferFactory()
       )
       vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
       await renderOffers(store)
@@ -641,7 +639,7 @@ describe('route Offers', () => {
 
     it('should have status value when user filters by status', async () => {
       vi.spyOn(api, 'listOffers').mockResolvedValueOnce([
-        listOffersOfferResponseModelFactory({
+        listOffersOfferFactory({
           customOffer: {
             status: OfferStatus.ACTIVE,
           },
@@ -672,7 +670,7 @@ describe('route Offers', () => {
 
     it('should have status value be removed when user ask for all status', async () => {
       vi.spyOn(api, 'listOffers').mockResolvedValueOnce([
-        listOffersOfferResponseModelFactory({
+        listOffersOfferFactory({
           customOffer: {
             status: OfferStatus.ACTIVE,
           },
@@ -789,9 +787,7 @@ describe('route Offers', () => {
     })
 
     it('should display next page when clicking on right arrow', async () => {
-      const offers = Array.from({ length: 11 }, () =>
-        listOffersOfferResponseModelFactory()
-      )
+      const offers = Array.from({ length: 11 }, () => listOffersOfferFactory())
       vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offers)
       await renderOffers(store)
       const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
@@ -803,9 +799,7 @@ describe('route Offers', () => {
     })
 
     it('should display previous page when clicking on left arrow', async () => {
-      const offers = Array.from({ length: 11 }, () =>
-        listOffersOfferResponseModelFactory()
-      )
+      const offers = Array.from({ length: 11 }, () => listOffersOfferFactory())
 
       vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offers)
       await renderOffers(store)
@@ -824,7 +818,7 @@ describe('route Offers', () => {
     describe('when 501 offers are fetched', () => {
       beforeEach(() => {
         offersRecap = Array.from({ length: 501 }, () =>
-          listOffersOfferResponseModelFactory({ customStocksList: [] })
+          listOffersOfferFactory({ customStocksList: [] })
         )
       })
 

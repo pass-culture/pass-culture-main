@@ -15,7 +15,7 @@ import * as useNotification from 'hooks/useNotification'
 import * as pcapi from 'repository/pcapi/pcapi'
 import {
   collectiveOfferFactory,
-  defaultVenueResponseModel,
+  defaultGetVenue,
 } from 'utils/collectiveApiFactories'
 import * as localStorageAvailable from 'utils/localStorageAvailable'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -187,7 +187,7 @@ describe('DuplicateOfferCell', () => {
       vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
 
       vi.spyOn(api, 'getVenue').mockResolvedValue({
-        ...defaultVenueResponseModel,
+        ...defaultGetVenue,
       })
 
       vi.spyOn(api, 'getNationalPrograms').mockResolvedValue([])

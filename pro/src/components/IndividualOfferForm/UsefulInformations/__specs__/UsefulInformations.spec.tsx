@@ -14,7 +14,7 @@ import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { SubmitButton } from 'ui-kit'
 import {
-  individualOfferSubCategoryFactory,
+  subcategoryFactory,
   individualOfferVenueItemFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -103,7 +103,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
   it('should submit valid form', async () => {
     initialValues.subcategoryId = 'CONCERT'
     initialValues.subCategoryFields = ['withdrawalType', 'bookingContact']
-    props.offerSubCategory = individualOfferSubCategoryFactory({
+    props.offerSubCategory = subcategoryFactory({
       id: 'CONCERT',
       canBeWithdrawable: true,
     })
@@ -245,7 +245,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
   describe('When venue is virtual', () => {
     beforeEach(() => {
       props.isVenueVirtual = true
-      props.offerSubCategory = individualOfferSubCategoryFactory({
+      props.offerSubCategory = subcategoryFactory({
         id: 'VIRTUAL_SUB_CATEGORY',
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
       })
@@ -342,7 +342,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
   describe('banners', () => {
     it('should display not reimbursment banner when subcategory is not reimbursed', () => {
       initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
-      props.offerSubCategory = individualOfferSubCategoryFactory({
+      props.offerSubCategory = subcategoryFactory({
         reimbursementRule: REIMBURSEMENT_RULES.NOT_REIMBURSED,
       })
       renderUsefulInformations({
@@ -366,7 +366,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
 
     it('should not display not reimbursment banner when subcategory is reimbursed', () => {
       initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
-      props.offerSubCategory = individualOfferSubCategoryFactory({
+      props.offerSubCategory = subcategoryFactory({
         reimbursementRule: REIMBURSEMENT_RULES.BOOK,
       })
       renderUsefulInformations({
@@ -384,7 +384,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
 
     it('should display withdrawal banner when subcategory is on physical thing (not event, not virtual)', () => {
       initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
-      props.offerSubCategory = individualOfferSubCategoryFactory({
+      props.offerSubCategory = subcategoryFactory({
         isEvent: false,
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE_OR_OFFLINE,
       })
@@ -407,7 +407,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
 
     it('should not display withdrawal banner when subcategory is an event', () => {
       initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
-      props.offerSubCategory = individualOfferSubCategoryFactory({
+      props.offerSubCategory = subcategoryFactory({
         isEvent: true,
       })
       props.isVenueVirtual = false

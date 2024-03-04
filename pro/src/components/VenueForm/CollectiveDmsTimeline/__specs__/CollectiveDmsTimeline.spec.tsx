@@ -5,7 +5,7 @@ import React from 'react'
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
+import { defaultDMSApplicationForEAC } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { CollectiveDmsTimeline } from '../CollectiveDmsTimeline'
@@ -45,21 +45,21 @@ describe('CollectiveDmsTimeline', () => {
   const testCases: TestCaseProps[] = [
     {
       collectiveDmsApplication: {
-        ...defaultCollectiveDmsApplication,
+        ...defaultDMSApplicationForEAC,
         state: DMSApplicationstatus.EN_CONSTRUCTION,
       },
       expectedLabel: 'Votre dossier a été déposé',
     },
     {
       collectiveDmsApplication: {
-        ...defaultCollectiveDmsApplication,
+        ...defaultDMSApplicationForEAC,
         state: DMSApplicationstatus.EN_INSTRUCTION,
       },
       expectedLabel: 'Votre dossier est en cours d’instruction',
     },
     {
       collectiveDmsApplication: {
-        ...defaultCollectiveDmsApplication,
+        ...defaultDMSApplicationForEAC,
         state: DMSApplicationstatus.ACCEPTE,
       },
       expectedLabel: 'Votre demande de référencement a été acceptée',
@@ -67,7 +67,7 @@ describe('CollectiveDmsTimeline', () => {
 
     {
       collectiveDmsApplication: {
-        ...defaultCollectiveDmsApplication,
+        ...defaultDMSApplicationForEAC,
         state: DMSApplicationstatus.ACCEPTE,
       },
       hasAdageId: true,
@@ -76,14 +76,14 @@ describe('CollectiveDmsTimeline', () => {
     },
     {
       collectiveDmsApplication: {
-        ...defaultCollectiveDmsApplication,
+        ...defaultDMSApplicationForEAC,
         state: DMSApplicationstatus.REFUSE,
       },
       expectedLabel: 'Votre demande de référencement a été refusée',
     },
     {
       collectiveDmsApplication: {
-        ...defaultCollectiveDmsApplication,
+        ...defaultDMSApplicationForEAC,
         state: DMSApplicationstatus.ACCEPTE,
       },
       hasAdageId: true,
@@ -92,7 +92,7 @@ describe('CollectiveDmsTimeline', () => {
     },
     {
       collectiveDmsApplication: {
-        ...defaultCollectiveDmsApplication,
+        ...defaultDMSApplicationForEAC,
         state: DMSApplicationstatus.EN_CONSTRUCTION,
       },
       hasAdageId: true,
@@ -100,7 +100,7 @@ describe('CollectiveDmsTimeline', () => {
     },
     {
       collectiveDmsApplication: {
-        ...defaultCollectiveDmsApplication,
+        ...defaultDMSApplicationForEAC,
         state: DMSApplicationstatus.SANS_SUITE,
       },
       expectedLabel: 'Votre demande de référencement a été classée sans suite',
@@ -141,7 +141,7 @@ describe('CollectiveDmsTimeline', () => {
     async (dmsState: DMSApplicationstatus) => {
       renderCollectiveDmsTimeline({
         collectiveDmsApplication: {
-          ...defaultCollectiveDmsApplication,
+          ...defaultDMSApplicationForEAC,
           state: dmsState,
         },
       })

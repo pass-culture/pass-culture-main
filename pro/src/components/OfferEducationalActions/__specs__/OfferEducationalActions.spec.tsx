@@ -11,7 +11,7 @@ import * as useNotification from 'hooks/useNotification'
 import {
   collectiveOfferFactory,
   collectiveOfferTemplateFactory,
-  collectiveStockFactory,
+  getCollectiveOfferCollectiveStockFactory,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -191,7 +191,7 @@ describe('OfferEducationalActions', () => {
       ...defaultValues,
       offer: collectiveOfferFactory({
         isActive: false,
-        collectiveStock: collectiveStockFactory({
+        collectiveStock: getCollectiveOfferCollectiveStockFactory({
           bookingLimitDatetime: '1900-10-15T00:00:00Z',
         }),
       }),
@@ -224,7 +224,7 @@ describe('OfferEducationalActions', () => {
       offer: collectiveOfferFactory({
         id: offerId,
         isActive: false,
-        collectiveStock: collectiveStockFactory({
+        collectiveStock: getCollectiveOfferCollectiveStockFactory({
           bookingLimitDatetime: bookingLimitDateTomorrow.toDateString(),
         }),
       }),

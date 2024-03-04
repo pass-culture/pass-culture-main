@@ -18,9 +18,9 @@ import {
 } from 'core/shared/interventionOptions'
 import * as useNotification from 'hooks/useNotification'
 import {
-  defaultCollectiveDmsApplication,
-  defaultVenueResponseModel,
-  venueCollectiveDataFactory,
+  defaultDMSApplicationForEAC,
+  defaultGetVenue,
+  getCollectiveVenueFactory,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -84,7 +84,7 @@ const renderCollectiveDataEdition = (
 ) =>
   renderWithProviders(
     <CollectiveDataEdition
-      venue={{ ...defaultVenueResponseModel, hasAdageId: true }}
+      venue={{ ...defaultGetVenue, hasAdageId: true }}
       {...props}
     />
   )
@@ -112,7 +112,7 @@ describe('CollectiveDataEdition', () => {
     ])
     vi.spyOn(api, 'getEducationalPartners').mockResolvedValue({ partners: [] })
     vi.spyOn(api, 'editVenueCollectiveData').mockResolvedValue({
-      ...defaultVenueResponseModel,
+      ...defaultGetVenue,
     })
 
     vi.spyOn(useNotification, 'default').mockImplementation(() => ({
@@ -124,7 +124,7 @@ describe('CollectiveDataEdition', () => {
     }))
 
     vi.spyOn(api, 'getVenueCollectiveData').mockResolvedValue(
-      venueCollectiveDataFactory()
+      getCollectiveVenueFactory()
     )
 
     vi.spyOn(api, 'getEducationalPartner').mockRejectedValue({})
@@ -170,10 +170,10 @@ describe('CollectiveDataEdition', () => {
     it('should display dms timeline if venue has dms application and ff active', async () => {
       renderCollectiveDataEdition({
         venue: {
-          ...defaultVenueResponseModel,
+          ...defaultGetVenue,
           id: 1,
           hasAdageId: false,
-          collectiveDmsApplications: [{ ...defaultCollectiveDmsApplication }],
+          collectiveDmsApplications: [{ ...defaultDMSApplicationForEAC }],
         },
       })
 
@@ -489,7 +489,7 @@ describe('CollectiveDataEdition', () => {
         domaineIds: [1, 2],
       })
       vi.spyOn(api, 'getVenueCollectiveData').mockResolvedValue(
-        venueCollectiveDataFactory()
+        getCollectiveVenueFactory()
       )
 
       renderCollectiveDataEdition()
@@ -522,7 +522,7 @@ describe('CollectiveDataEdition', () => {
 
     it('should not call educational partner if venue has no siret and no collective data', async () => {
       vi.spyOn(api, 'getVenueCollectiveData').mockResolvedValue(
-        venueCollectiveDataFactory({
+        getCollectiveVenueFactory({
           siret: undefined,
         })
       )

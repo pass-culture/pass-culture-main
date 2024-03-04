@@ -3,7 +3,7 @@ import {
   defaultGetOffererVenueResponseModel,
   defaultGetOffererResponseModel,
 } from 'utils/apiFactories'
-import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
+import { defaultDMSApplicationForEAC } from 'utils/collectiveApiFactories'
 import {
   getLastCollectiveDmsApplication,
   getLastDmsApplicationForOfferer,
@@ -12,15 +12,15 @@ import {
 describe('getLastCollectiveDmsApplication', () => {
   it('should return collective dms application with most recent last change date', () => {
     const firstDmsApplication = {
-      ...defaultCollectiveDmsApplication,
+      ...defaultDMSApplicationForEAC,
       lastChangeDate: '2021-02-01T00:00:00Z',
     }
     const lastDmsApplication = {
-      ...defaultCollectiveDmsApplication,
+      ...defaultDMSApplicationForEAC,
       lastChangeDate: '2023-12-25T00:00:00Z',
     }
     const otherDmsApplication = {
-      ...defaultCollectiveDmsApplication,
+      ...defaultDMSApplicationForEAC,
       lastChangeDate: '2022-12-25T00:00:00Z',
     }
     expect(
@@ -43,7 +43,7 @@ describe('getLastCollectiveDmsApplication', () => {
             id: venueId,
             collectiveDmsApplications: [
               {
-                ...defaultCollectiveDmsApplication,
+                ...defaultDMSApplicationForEAC,
                 venueId: venueId,
                 application: 1,
                 lastChangeDate: '2021-01-01T00:00:00Z',
@@ -55,7 +55,7 @@ describe('getLastCollectiveDmsApplication', () => {
             id: venueId + 1, // not the same venue
             collectiveDmsApplications: [
               {
-                ...defaultCollectiveDmsApplication,
+                ...defaultDMSApplicationForEAC,
                 venueId: venueId + 1, // not the same venue
                 application: 2,
                 lastChangeDate: '2023-01-01T00:00:00Z',
@@ -80,7 +80,7 @@ describe('getLastCollectiveDmsApplication', () => {
             ...defaultGetOffererVenueResponseModel,
             collectiveDmsApplications: [
               {
-                ...defaultCollectiveDmsApplication,
+                ...defaultDMSApplicationForEAC,
                 application: 1,
                 lastChangeDate: '2021-01-01T00:00:00Z',
               },
@@ -90,7 +90,7 @@ describe('getLastCollectiveDmsApplication', () => {
             ...defaultGetOffererVenueResponseModel,
             collectiveDmsApplications: [
               {
-                ...defaultCollectiveDmsApplication,
+                ...defaultDMSApplicationForEAC,
                 application: 2,
                 lastChangeDate: '2020-01-01T00:00:00Z',
               },

@@ -1,7 +1,7 @@
 import { Story } from '@storybook/react'
 import React from 'react'
 
-import { GetIndividualOfferFactory } from 'utils/apiFactories'
+import { getIndividualOfferFactory } from 'utils/apiFactories'
 
 import testImg from './__specs__/offer_storie_image.jpg'
 import { OfferAppPreviewProps } from './OfferAppPreview'
@@ -28,22 +28,22 @@ const Template: Story<OfferAppPreviewProps> = (args) => (
 export const Default = Template.bind({})
 
 Default.args = {
-  offer: GetIndividualOfferFactory(baseOfferData),
+  offer: getIndividualOfferFactory(baseOfferData),
 }
 
 export const NoImage = Template.bind({})
 NoImage.args = {
-  offer: GetIndividualOfferFactory({ ...baseOfferData }),
+  offer: getIndividualOfferFactory({ ...baseOfferData }),
 }
 
 export const NotDuo = Template.bind({})
 NotDuo.args = {
-  offer: GetIndividualOfferFactory({ ...baseOfferData, isDuo: false }),
+  offer: getIndividualOfferFactory({ ...baseOfferData, isDuo: false }),
 }
 
 export const TextTooLong = Template.bind({})
 TextTooLong.args = {
-  offer: GetIndividualOfferFactory({
+  offer: getIndividualOfferFactory({
     ...baseOfferData,
     name: `Les douze moutons, aux nombre de pattes variable voulant participer aux jeux olympique. Instant préérique ou la compétition bàààààhéé sont plein.
     Ce titre semble bien trop long pour apparaitre en entier sur cette prévisualisation, mais etonnament, c'est le comportement que nous avons actuelement. Voulons nous le changer ? Cela peut il faire débat, durant combient de temps ?

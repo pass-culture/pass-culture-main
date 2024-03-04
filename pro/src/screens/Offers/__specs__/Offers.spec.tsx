@@ -27,7 +27,7 @@ import * as useNotification from 'hooks/useNotification'
 import { collectiveOfferFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
 import {
   defaultGetOffererResponseModel,
-  offererFactory,
+  getOfferManagingOffererFactory,
 } from 'utils/apiFactories'
 import {
   renderWithProviders,
@@ -35,7 +35,7 @@ import {
 } from 'utils/renderWithProviders'
 
 import Offers, { OffersProps } from '../Offers'
-import { individualOfferFactory } from '../utils/individualOffersFactories'
+import { listOffersOfferFactory } from '../utils/individualOffersFactories'
 
 const renderOffers = (
   props: OffersProps,
@@ -107,7 +107,7 @@ describe('screen Offers', () => {
       name: 'Current User',
       roles: [UserRole.PRO],
     }
-    offersRecap = [individualOfferFactory()]
+    offersRecap = [listOffersOfferFactory()]
 
     props = {
       currentPageNumber: 1,
@@ -165,8 +165,8 @@ describe('screen Offers', () => {
   })
 
   it('should render as much offers as returned by the api', () => {
-    const firstOffer = individualOfferFactory()
-    const secondOffer = individualOfferFactory()
+    const firstOffer = listOffersOfferFactory()
+    const secondOffer = listOffersOfferFactory()
 
     renderOffers({
       ...props,
@@ -178,8 +178,8 @@ describe('screen Offers', () => {
   })
 
   it('should display an unchecked by default checkbox to select all offers when user is not admin', () => {
-    const firstOffer = individualOfferFactory()
-    const secondOffer = individualOfferFactory()
+    const firstOffer = listOffersOfferFactory()
+    const secondOffer = listOffersOfferFactory()
 
     renderOffers({
       ...props,
@@ -196,7 +196,7 @@ describe('screen Offers', () => {
   it('should display total number of offers in plural if multiple offers', () => {
     renderOffers({
       ...props,
-      offers: [...offersRecap, individualOfferFactory()],
+      offers: [...offersRecap, listOffersOfferFactory()],
     })
 
     screen.getByLabelText(offersRecap[0].name)
@@ -211,7 +211,7 @@ describe('screen Offers', () => {
   })
 
   it('should display 500+ for total number of offers if more than 500 offers are fetched', async () => {
-    offersRecap = Array.from({ length: 501 }, () => individualOfferFactory())
+    offersRecap = Array.from({ length: 501 }, () => listOffersOfferFactory())
 
     renderOffers({ ...props, offers: offersRecap })
 
@@ -553,15 +553,15 @@ describe('screen Offers', () => {
   it('should disabled checkbox when offer is rejected or pending for validation', () => {
     props.currentUser.isAdmin = false
     const offers = [
-      individualOfferFactory({
+      listOffersOfferFactory({
         isActive: false,
         status: OfferStatus.REJECTED,
       }),
-      individualOfferFactory({
+      listOffersOfferFactory({
         isActive: true,
         status: OfferStatus.PENDING,
       }),
-      individualOfferFactory({
+      listOffersOfferFactory({
         isActive: true,
         status: OfferStatus.ACTIVE,
       }),
@@ -603,7 +603,7 @@ describe('screen Offers', () => {
   })
 
   it('should display the button to create an offer when user is not an admin', async () => {
-    const individualOffererNames = offererFactory()
+    const individualOffererNames = getOfferManagingOffererFactory()
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [individualOffererNames],
     })
@@ -658,7 +658,7 @@ describe('screen Offers', () => {
   describe('on click on select all offers checkbox', () => {
     it('should display display error message when trying to activate draft offers', async () => {
       const offers = [
-        individualOfferFactory({
+        listOffersOfferFactory({
           isActive: false,
           status: OfferStatus.DRAFT,
         }),
@@ -694,7 +694,7 @@ describe('screen Offers', () => {
 
     it('should display success message activate inactive collective offer', async () => {
       const offers = [
-        individualOfferFactory({
+        listOffersOfferFactory({
           isActive: false,
           hasBookingLimitDatetimesPassed: false,
         }),
@@ -711,13 +711,13 @@ describe('screen Offers', () => {
     it('should check all validated offers checkboxes', async () => {
       // Given
       const offers = [
-        individualOfferFactory(),
-        individualOfferFactory(),
-        individualOfferFactory({
+        listOffersOfferFactory(),
+        listOffersOfferFactory(),
+        listOffersOfferFactory({
           isActive: false,
           status: OfferStatus.REJECTED,
         }),
-        individualOfferFactory({
+        listOffersOfferFactory({
           status: OfferStatus.PENDING,
         }),
       ]

@@ -7,7 +7,7 @@ import {
 let offerId = 1
 
 export const collectiveOfferFactory = (
-  customOffer: Partial<CollectiveOfferResponseModel> = {}
+  customCollectiveOffer: Partial<CollectiveOfferResponseModel> = {}
 ): CollectiveOfferResponseModel => {
   const currentId = offerId++
 
@@ -18,22 +18,22 @@ export const collectiveOfferFactory = (
     hasBookingLimitDatetimesPassed: true,
     isEducational: true,
     name: `offer name ${offerId}`,
-    venue: venueFactory(),
+    venue: listOffersVenueFactory(),
     stocks: [],
     isEditable: true,
     isPublicApi: false,
     interventionArea: [],
     isShowcase: false,
-    ...customOffer,
+    ...customCollectiveOffer,
   }
 }
 
-export const venueFactory = (
-  customVenue: Partial<ListOffersVenueResponseModel> = {}
+export const listOffersVenueFactory = (
+  customListOffersVenue: Partial<ListOffersVenueResponseModel> = {}
 ): ListOffersVenueResponseModel => ({
   id: 1,
   name: 'venue name',
   offererName: 'offerer name',
   isVirtual: false,
-  ...customVenue,
+  ...customListOffersVenue,
 })

@@ -16,11 +16,11 @@ import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { ButtonLink } from 'ui-kit'
-import { GetIndividualOfferFactory } from 'utils/apiFactories'
+import { getIndividualOfferFactory } from 'utils/apiFactories'
 import {
-  individualOfferCategoryFactory,
-  individualOfferContextFactory,
-  individualOfferSubCategoryFactory,
+  categoryFactory,
+  individualOfferContextValuesFactory,
+  subcategoryFactory,
   individualOfferVenueItemFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -61,7 +61,7 @@ const renderInformationsScreen = (
       },
     },
   }
-  const contextValue = individualOfferContextFactory(contextOverride)
+  const contextValue = individualOfferContextValuesFactory(contextOverride)
 
   return renderWithProviders(
     <>
@@ -114,25 +114,25 @@ describe('screens:IndividualOffer::Informations::creation', () => {
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
-    offer = GetIndividualOfferFactory()
+    offer = getIndividualOfferFactory()
 
     const categories = [
-      individualOfferCategoryFactory({ id: 'A' }),
+      categoryFactory({ id: 'A' }),
       // we need two categories otherwise the first one is preselected and the form is dirty
-      individualOfferCategoryFactory({ id: 'B' }),
+      categoryFactory({ id: 'B' }),
     ]
     const subCategories = [
-      individualOfferSubCategoryFactory({
+      subcategoryFactory({
         id: 'virtual',
         categoryId: 'A',
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
       }),
-      individualOfferSubCategoryFactory({
+      subcategoryFactory({
         id: 'physical',
         categoryId: 'A',
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
       }),
-      individualOfferSubCategoryFactory({
+      subcategoryFactory({
         id: 'physicalB',
         categoryId: 'B',
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
@@ -144,7 +144,7 @@ describe('screens:IndividualOffer::Informations::creation', () => {
       isVirtual: true,
     })
 
-    contextOverride = individualOfferContextFactory({
+    contextOverride = individualOfferContextValuesFactory({
       venueList: [venue1, venue2],
       offererNames: [{ id: 1, name: 'mon offerer A' }],
       categories,

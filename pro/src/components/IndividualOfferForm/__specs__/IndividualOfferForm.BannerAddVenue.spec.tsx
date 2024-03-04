@@ -10,8 +10,8 @@ import {
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import {
-  individualOfferCategoryFactory,
-  individualOfferSubCategoryFactory,
+  categoryFactory,
+  subcategoryFactory,
   individualOfferVenueItemFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -60,16 +60,16 @@ describe('IndividualOfferForm', () => {
 
   beforeEach(() => {
     categories = [
-      individualOfferCategoryFactory({ id: 'virtual' }),
-      individualOfferCategoryFactory({ id: 'physical' }),
+      categoryFactory({ id: 'virtual' }),
+      categoryFactory({ id: 'physical' }),
     ]
     subCategories = [
-      individualOfferSubCategoryFactory({
+      subcategoryFactory({
         id: 'physical',
         categoryId: 'physical',
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
       }),
-      individualOfferSubCategoryFactory({
+      subcategoryFactory({
         id: 'virtual',
         categoryId: 'virtual',
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,

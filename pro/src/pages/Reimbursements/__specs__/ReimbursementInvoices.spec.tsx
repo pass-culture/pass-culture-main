@@ -5,7 +5,7 @@ import { api } from 'apiClient/api'
 import { BankAccountResponseModel } from 'apiClient/v1'
 import { ReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
 import {
-  defaultBankAccountResponseModel,
+  defaultBankAccount,
   defaultGetOffererResponseModel,
 } from 'utils/apiFactories'
 import {
@@ -92,12 +92,12 @@ const BASE_REIMBURSEMENT_POINTS = [
 
 const BASE_BANK_ACCOUNTS: Array<BankAccountResponseModel> = [
   {
-    ...defaultBankAccountResponseModel,
+    ...defaultBankAccount,
     id: 1,
     label: 'My first bank account',
   },
   {
-    ...defaultBankAccountResponseModel,
+    ...defaultBankAccount,
     id: 2,
     label: 'My second bank account',
   },
