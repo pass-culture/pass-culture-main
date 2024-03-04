@@ -14,7 +14,7 @@ import useNotification from 'hooks/useNotification'
 import { IndividualOfferWizardLoaderData } from 'pages/IndividualOfferWizard/IndividualOfferWizard'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
-import { getWizardData } from './adapters'
+import { getWizardData } from './adapters/getWizardData/getWizardData'
 
 export interface IndividualOfferContextValues {
   offerId: number | null
