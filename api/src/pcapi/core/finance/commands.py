@@ -34,14 +34,17 @@ def price_finance_events() -> None:
 
 @blueprint.cli.command("generate_cashflows_and_payment_files")
 @click.option("--override-feature-flag", help="Override feature flag", is_flag=True, default=False)
+@click.option("--cutoff", help="Datetime cutoff to put in UTC timezone", type=datetime.datetime, required=False)
 @cron_decorators.log_cron_with_transaction
-def generate_cashflows_and_payment_files(override_feature_flag: bool) -> None:
+def generate_cashflows_and_payment_files(override_feature_flag: bool, cutoff: datetime.datetime) -> None:
     flag = FeatureToggle.GENERATE_CASHFLOWS_BY_CRON
     if not override_feature_flag and not flag.is_active():
         logger.info("%s is not active, cronjob will not run.", flag.name)
         return
-    last_day = datetime.date.today() - datetime.timedelta(days=1)
-    cutoff = finance_utils.get_cutoff_as_datetime(last_day)
+    if not cutoff:
+        last_day = datetime.date.today() - datetime.timedelta(hours=1)
+        cutoff = finance_utils.get_cutoff_as_datetime(last_day)
+
     finance_api.generate_cashflows_and_payment_files(cutoff)
 
 
