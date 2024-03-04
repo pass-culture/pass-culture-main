@@ -18,11 +18,6 @@ export type SearchFiltersParams = {
   page?: number
 }
 
-export type Offerer = {
-  id: number
-  name: string
-}
-
 export interface CategorySubtypeItem {
   code: number
   label: string
