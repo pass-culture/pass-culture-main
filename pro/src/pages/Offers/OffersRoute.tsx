@@ -3,12 +3,15 @@ import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { ListOffersOfferResponseModel } from 'apiClient/v1'
+import {
+  GetOffererResponseModel,
+  ListOffersOfferResponseModel,
+} from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import { getOffererAdapter } from 'core/Offers/adapters'
 import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
-import { Offerer, SearchFiltersParams } from 'core/Offers/types'
+import { SearchFiltersParams } from 'core/Offers/types'
 import { hasSearchFilters, computeOffersUrl } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
 import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
@@ -31,7 +34,7 @@ export const OffersRoute = (): JSX.Element => {
   const { currentUser } = useCurrentUser()
   const dispatch = useDispatch()
 
-  const [offerer, setOfferer] = useState<Offerer | null>(null)
+  const [offerer, setOfferer] = useState<GetOffererResponseModel | null>(null)
   const [offers, setOffers] = useState<ListOffersOfferResponseModel[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [initialSearchFilters, setInitialSearchFilters] =

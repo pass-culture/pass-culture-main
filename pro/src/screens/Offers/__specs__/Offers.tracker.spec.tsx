@@ -6,7 +6,10 @@ import { api } from 'apiClient/api'
 import { UserRole } from 'apiClient/v1'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { Audience } from 'core/shared'
-import { offererFactory } from 'utils/apiFactories'
+import {
+  defaultGetOffererResponseModel,
+  offererFactory,
+} from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Offers, { OffersProps } from '../Offers'
@@ -31,7 +34,7 @@ describe('tracker screen Offers', () => {
         roles: [UserRole.PRO],
       },
       loadAndUpdateOffers: vi.fn(),
-      offerer: offererFactory(),
+      offerer: { ...defaultGetOffererResponseModel },
       offers: [],
       setIsLoading: vi.fn(),
       setOfferer: vi.fn(),
