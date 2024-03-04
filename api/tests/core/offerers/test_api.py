@@ -180,6 +180,44 @@ class DeleteVenueTest:
         assert offerers_models.Venue.query.count() == 2
         assert offerers_models.VenuePricingPointLink.query.count() == 2
 
+    def test_delete_cascade_venue_remove_former_pricing_point_for_another_venue(self):
+        venue_to_delete = offerers_factories.VenueFactory(pricing_point="self")
+        offerers_factories.VenuePricingPointLinkFactory.create_batch(
+            2,  # other venues
+            pricingPoint=venue_to_delete,
+            timespan=[
+                datetime.datetime.utcnow() - datetime.timedelta(days=10),
+                datetime.datetime.utcnow() - datetime.timedelta(days=5),
+            ],
+        )
+
+        offerers_api.delete_venue(venue_to_delete.id)
+
+        assert offerers_models.Venue.query.count() == 2
+        assert offerers_models.VenuePricingPointLink.query.count() == 0
+
+    def test_delete_cascade_venue_should_abort_when_pricing_exists_on_former_pricing_point_link(self):
+        venue_to_delete = offerers_factories.VenueFactory(pricing_point="self")
+        links = offerers_factories.VenuePricingPointLinkFactory.create_batch(
+            2,
+            pricingPoint=venue_to_delete,
+            timespan=[
+                datetime.datetime.utcnow() - datetime.timedelta(days=10),
+                datetime.datetime.utcnow() - datetime.timedelta(days=5),
+            ],
+        )
+        finance_event = finance_factories.FinanceEventFactory(
+            venue=links[1].venue,
+            pricingPoint=venue_to_delete,
+            pricingOrderingDate=datetime.datetime.utcnow() - datetime.timedelta(days=7),
+        )
+        finance_factories.PricingFactory(
+            booking=finance_event.booking, pricingPoint=venue_to_delete, event=finance_event
+        )
+
+        with pytest.raises(offerers_exceptions.CannotDeleteVenueUsedAsPricingPointException):
+            offerers_api.delete_venue(venue_to_delete.id)
+
     def test_delete_cascade_venue_should_abort_when_reimbursement_point_for_another_venue(self):
         # Given
         venue_to_delete = offerers_factories.VenueFactory(reimbursement_point="self")
