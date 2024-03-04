@@ -324,7 +324,30 @@ def delete_venue(venue_id: int) -> None:
     ).scalar()
 
     if venue_used_as_pricing_point:
-        raise exceptions.CannotDeleteVenueUsedAsPricingPointException()
+        # Additional checks to allow removing a venue which is only a former pricing point for other venues but has
+        # never been used for pricing, so that support team can handle misconfiguration by an offerer.
+        venue_used_as_current_pricing_point = db.session.query(
+            offerers_models.VenuePricingPointLink.query.filter(
+                offerers_models.VenuePricingPointLink.venueId != venue_id,
+                offerers_models.VenuePricingPointLink.pricingPointId == venue_id,
+                offerers_models.VenuePricingPointLink.timespan.contains(datetime.utcnow()),
+            ).exists()
+        ).scalar()
+
+        if venue_used_as_current_pricing_point:
+            raise exceptions.CannotDeleteVenueUsedAsPricingPointException()
+
+        pricing_point_has_pricings = db.session.query(
+            finance_models.Pricing.query.filter(finance_models.Pricing.pricingPointId == venue_id).exists()
+        ).scalar()
+
+        if pricing_point_has_pricings:
+            raise exceptions.CannotDeleteVenueUsedAsPricingPointException()
+
+        offerers_models.VenuePricingPointLink.query.filter(
+            offerers_models.VenuePricingPointLink.venueId != venue_id,
+            offerers_models.VenuePricingPointLink.pricingPointId == venue_id,
+        ).delete(synchronize_session=False)
 
     venue_used_as_reimbursement_point = db.session.query(
         offerers_models.VenueReimbursementPointLink.query.filter(
