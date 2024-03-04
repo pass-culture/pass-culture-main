@@ -1002,16 +1002,15 @@ def get_invoices_query(
             offerers_models.UserOfferer,
             offerers_models.UserOfferer.offererId == models.BankAccount.offererId,
         ).filter(offerers_models.UserOfferer.user == user, offerers_models.UserOfferer.isValidated)
+    elif user.has_admin_role and not offerer_id and not bank_account_id:
+        # The following intentionally returns nothing for admin users,
+        # so that we do NOT return all invoices of all bank accounts
+        # for them. Admin users must select a bank account, or at least an offererId must be provided.
+        bank_account_subquery = bank_account_subquery.filter(False)
 
     if bank_account_id:
         bank_account_subquery = bank_account_subquery.filter(models.BankAccount.id == bank_account_id)
-    elif user.has_admin_role:
-        # The following intentionally returns nothing for admin users,
-        # so that we do NOT return all invoices of all bank accounts
-        # for them. Admin users must select a bank account.
-        bank_account_subquery = bank_account_subquery.filter(False)
-
-    if offerer_id:
+    elif offerer_id:
         bank_account_subquery = bank_account_subquery.filter(models.BankAccount.offererId == offerer_id)
 
     invoices = models.Invoice.query.filter(
