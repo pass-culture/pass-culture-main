@@ -44,7 +44,7 @@ export const buildVenueOptions = (
   let venueOptions = offererVenues
     .map((venue) => ({
       value: venue.id.toString(),
-      label: venue.name,
+      label: venue.publicName || venue.name,
     }))
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
   if (venueOptions.length !== 1) {
