@@ -593,7 +593,7 @@ def patch_event_date(
                 )
 
             quantity = serialization.deserialize_quantity(update_body.get("quantity", offers_api.UNCHANGED))
-            edited_date, is_beginning_updated = offers_api.edit_stock(
+            edited_stock, is_beginning_updated = offers_api.edit_stock(
                 stock_to_edit,
                 quantity=quantity + stock_to_edit.dnBookedQuantity if isinstance(quantity, int) else quantity,
                 price_category=price_category,
@@ -612,7 +612,8 @@ def patch_event_date(
         raise api_errors.ForbiddenError({"booking": ["Cette réservation ne peut pas être marquée comme inutilisée"]})
     except booking_exceptions.BookingIsNotUsed:
         raise api_errors.ResourceGoneError({"booking": ["Cette contremarque n'a pas encore été validée"]})
-    return serialization.DateResponse.build_date(edited_date)
+    # `edited_stock` could be None if nothing was changed.
+    return serialization.DateResponse.build_date(edited_stock or stock_to_edit)
 
 
 @blueprint.v1_blueprint.route("/events/categories", methods=["GET"])
