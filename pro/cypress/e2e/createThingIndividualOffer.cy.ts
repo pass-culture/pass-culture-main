@@ -1,7 +1,4 @@
 describe('Create an individual offer (thing)', () => {
-  before(async () => {
-    await fetch('http://localhost:5001/e2e/pro/create-event-individual-offer').then(res => res.stat)
-  })
   it('should create an individual offer', () => {
     cy.setFeatureFlags([{ name: 'WIP_ENABLE_PRO_SIDE_NAV', isActive: false }])
 

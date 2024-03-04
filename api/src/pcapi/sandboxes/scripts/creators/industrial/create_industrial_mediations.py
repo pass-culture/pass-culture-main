@@ -6,7 +6,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.repository import repository
-import pcapi.sandboxes.scripts.creators.end_to_end
+import pcapi.sandboxes
 from pcapi.sandboxes.scripts.utils.select import remove_every
 from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
 
@@ -23,7 +23,7 @@ from itertools import islice
 def prepare_mediations_folders() -> None:
     logger.info("prepare_mediations_folders")
 
-    thumbs_folder_path = Path(pcapi.sandboxes.scripts.creators.end_to_end.__path__[0]) / "thumbs"
+    thumbs_folder_path = Path(pcapi.sandboxes.__path__[0]) / "thumbs"
     Path(thumbs_folder_path / "mediations").mkdir(parents=True, exist_ok=True)
     size = len(subcategories.ALL_SUBCATEGORIES)
     picture_filenames = [
