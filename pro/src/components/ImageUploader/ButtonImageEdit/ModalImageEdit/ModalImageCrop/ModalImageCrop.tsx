@@ -72,7 +72,7 @@ const ModalImageCrop = ({
   const imageEditorConfig: ImageEditorConfig = {
     [UploaderModeEnum.OFFER]: {
       canvasHeight,
-      canvasWidth: (canvasHeight * 6) / 9,
+      canvasWidth: (canvasHeight * 2) / 3,
       cropBorderColor: '#FFF',
       cropBorderHeight: 50,
       cropBorderWidth: 105,
@@ -80,7 +80,7 @@ const ModalImageCrop = ({
     },
     [UploaderModeEnum.OFFER_COLLECTIVE]: {
       canvasHeight,
-      canvasWidth: (canvasHeight * 6) / 9,
+      canvasWidth: (canvasHeight * 2) / 3,
       cropBorderColor: '#FFF',
       cropBorderHeight: 50,
       cropBorderWidth: 105,
