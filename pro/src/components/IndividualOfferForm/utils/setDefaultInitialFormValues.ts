@@ -3,6 +3,7 @@ import {
   FORM_DEFAULT_VALUES,
   IndividualOfferFormValues,
 } from 'components/IndividualOfferForm'
+import { buildAccessibilityFormValues } from 'components/VenueForm/utils/setInitialFormValues'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 
 import buildSubcategoryFields from './buildSubCategoryFields'
@@ -35,7 +36,7 @@ const setDefaultInitialFormValues = (
       : venueList.find((venue) => venue.id.toString() === venueId)
 
   if (venue) {
-    initialAccessibility = venue.accessibility
+    initialAccessibility = buildAccessibilityFormValues(venue)
 
     if (venue.withdrawalDetails) {
       initialWithdrawalDetails = venue.withdrawalDetails

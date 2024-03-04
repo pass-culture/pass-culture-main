@@ -1,5 +1,4 @@
 import { GetVenueResponseModel, VenueListItemResponseModel } from 'apiClient/v1'
-import { AccessibiltyFormValues } from 'core/shared'
 
 export type IndividualOfferVenueItem = VenueListItemResponseModel & {
   id: number
@@ -7,7 +6,6 @@ export type IndividualOfferVenueItem = VenueListItemResponseModel & {
   name: string
   isVirtual: boolean
   withdrawalDetails: string | null
-  accessibility: AccessibiltyFormValues
   bookingEmail?: string | null
   hasMissingReimbursementPoint: boolean
   hasCreatedOffer: boolean

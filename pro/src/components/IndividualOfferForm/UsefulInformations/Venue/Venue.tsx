@@ -5,6 +5,7 @@ import { GetOffererNameResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
 import { IndividualOfferForm } from 'components/IndividualOfferForm/types'
+import { buildAccessibilityFormValues } from 'components/VenueForm/utils/setInitialFormValues'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { Select } from 'ui-kit'
 
@@ -28,12 +29,7 @@ export const onVenueChange = async (
   }
   await setFieldValue('isVenueVirtual', newVenue.isVirtual)
   await setFieldValue('withdrawalDetails', newVenue?.withdrawalDetails || '')
-
-  // update offer accessibility from venue when venue accessibility is defined.
-  // set accessibility value after isVenueVirtual and withdrawalDetails otherwise the error message doesn't hide
-  if (Object.values(newVenue.accessibility).includes(true)) {
-    await setFieldValue('accessibility', newVenue.accessibility)
-  }
+  await setFieldValue('accessibility', buildAccessibilityFormValues(newVenue))
 }
 
 const Venue = ({

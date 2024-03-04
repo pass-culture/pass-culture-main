@@ -32,18 +32,6 @@ export const individualOfferVenueItemFactory = (
   return {
     ...venueListItemFactory(),
     id: currentVenueId,
-    isVirtual: false,
-    name: `Le nom du lieu ${currentVenueId}`,
-    accessibility: {
-      visual: true,
-      mental: true,
-      motor: true,
-      audio: true,
-      none: false,
-    },
-    managingOffererId: 1,
-    hasCreatedOffer: true,
-    hasMissingReimbursementPoint: false,
     withdrawalDetails: null,
     venueType: VenueTypeCode.AUTRE,
     ...customIndividualOfferVenueItem,
@@ -98,6 +86,10 @@ export const venueListItemFactory = (
     hasMissingReimbursementPoint: false,
     managingOffererId: 1,
     offererName: 'la structure de Michel',
+    visualDisabilityCompliant: true,
+    mentalDisabilityCompliant: true,
+    motorDisabilityCompliant: true,
+    audioDisabilityCompliant: true,
     ...customVenueListItem,
   }
 }
