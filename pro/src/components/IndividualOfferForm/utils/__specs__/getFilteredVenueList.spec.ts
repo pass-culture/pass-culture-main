@@ -2,7 +2,7 @@ import { SubcategoryResponseModel } from 'apiClient/v1'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import {
   subcategoryFactory,
-  individualOfferVenueItemFactory,
+  venueListItemFactory,
 } from 'utils/individualApiFactories'
 
 import {
@@ -30,17 +30,17 @@ describe('getFilteredVenueList', () => {
     }),
   ]
 
-  const virtualVenue = individualOfferVenueItemFactory({
+  const virtualVenue = venueListItemFactory({
     id: virtualVenueId,
     isVirtual: true,
   })
 
   const venueList = [
-    individualOfferVenueItemFactory({
+    venueListItemFactory({
       id: secondVenueId,
       isVirtual: false,
     }),
-    individualOfferVenueItemFactory({
+    venueListItemFactory({
       id: thirdVenueId,
       isVirtual: false,
     }),

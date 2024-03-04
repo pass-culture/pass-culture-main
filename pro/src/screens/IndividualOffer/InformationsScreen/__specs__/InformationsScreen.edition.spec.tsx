@@ -30,7 +30,7 @@ import {
   categoryFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,
-  individualOfferVenueItemFactory,
+  venueListItemFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -131,8 +131,8 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       }),
     ]
 
-    const venue1: IndividualOfferVenueItem = individualOfferVenueItemFactory()
-    const venue2: IndividualOfferVenueItem = individualOfferVenueItemFactory({
+    const venue1: IndividualOfferVenueItem = venueListItemFactory()
+    const venue2: IndividualOfferVenueItem = venueListItemFactory({
       isVirtual: true,
     })
 

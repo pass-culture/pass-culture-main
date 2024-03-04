@@ -10,7 +10,7 @@ import {
   setDefaultInitialFormValues,
 } from 'components/IndividualOfferForm'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
-import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
+import { venueListItemFactory } from 'utils/individualApiFactories'
 
 import { validationSchema, Venue, VENUE_DEFAULT_VALUES } from '..'
 import { VenueProps } from '../Venue'
@@ -61,16 +61,16 @@ describe('IndividualOffer section: venue', () => {
     ]
 
     venueList = [
-      individualOfferVenueItemFactory({
+      venueListItemFactory({
         managingOffererId: firstOfferer.id,
       }),
-      individualOfferVenueItemFactory({
+      venueListItemFactory({
         managingOffererId: secondOfferer.id,
       }),
-      individualOfferVenueItemFactory({
+      venueListItemFactory({
         managingOffererId: thirdOfferer.id,
       }),
-      individualOfferVenueItemFactory({
+      venueListItemFactory({
         name: 'Venue CCBB',
         managingOffererId: thirdOfferer.id,
       }),

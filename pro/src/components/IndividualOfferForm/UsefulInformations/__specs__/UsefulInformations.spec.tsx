@@ -15,7 +15,7 @@ import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { SubmitButton } from 'ui-kit'
 import {
   subcategoryFactory,
-  individualOfferVenueItemFactory,
+  venueListItemFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -64,10 +64,10 @@ describe('IndividualOffer section: UsefulInformations', () => {
     ]
 
     venueList = [
-      individualOfferVenueItemFactory({
+      venueListItemFactory({
         isVirtual: false,
       }),
-      individualOfferVenueItemFactory({
+      venueListItemFactory({
         isVirtual: true,
       }),
     ]

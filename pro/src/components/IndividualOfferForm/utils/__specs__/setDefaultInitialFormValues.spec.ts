@@ -4,7 +4,7 @@ import {
   IndividualOfferFormValues,
 } from 'components/IndividualOfferForm'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
-import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
+import { venueListItemFactory } from 'utils/individualApiFactories'
 
 import setDefaultInitialFormValues from '../setDefaultInitialFormValues'
 
@@ -39,13 +39,13 @@ describe('setDefaultInitialFormValues', () => {
     offererId = '1'
     venueId = '1'
     venueList = [
-      individualOfferVenueItemFactory({
+      venueListItemFactory({
         id: 1,
         isVirtual: true,
         name: 'Venue Name',
         withdrawalDetails: 'détails de retrait',
       }),
-      individualOfferVenueItemFactory({
+      venueListItemFactory({
         id: 2,
         name: 'Venue Name 2',
         isVirtual: false,

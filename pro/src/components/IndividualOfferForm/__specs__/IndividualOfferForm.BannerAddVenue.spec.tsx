@@ -12,7 +12,7 @@ import { IndividualOfferVenueItem } from 'core/Venue/types'
 import {
   categoryFactory,
   subcategoryFactory,
-  individualOfferVenueItemFactory,
+  venueListItemFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -82,8 +82,8 @@ describe('IndividualOfferForm', () => {
       },
     ]
     venueList = [
-      individualOfferVenueItemFactory({ isVirtual: true }),
-      individualOfferVenueItemFactory({ isVirtual: false }),
+      venueListItemFactory({ isVirtual: true }),
+      venueListItemFactory({ isVirtual: false }),
     ]
     props = {
       categories,
@@ -108,7 +108,7 @@ describe('IndividualOfferForm', () => {
   describe('venue banner', () => {
     it('should display venue banner when subcategory is not virtual and venue is only virtual', async () => {
       const onlyVirtualVenueList = [
-        individualOfferVenueItemFactory({
+        venueListItemFactory({
           isVirtual: true,
         }),
       ]
@@ -130,7 +130,7 @@ describe('IndividualOfferForm', () => {
 
     it('should not display venue banner when offererId is not set', async () => {
       const onlyVirtualVenueList = [
-        individualOfferVenueItemFactory({
+        venueListItemFactory({
           isVirtual: true,
         }),
       ]
@@ -152,7 +152,7 @@ describe('IndividualOfferForm', () => {
 
     it('should not display venue banner when subcategory is virtual', async () => {
       const onlyVirtualVenueList = [
-        individualOfferVenueItemFactory({
+        venueListItemFactory({
           isVirtual: true,
         }),
       ]
