@@ -14,6 +14,8 @@ $banner-height: rem.torem(124px);
   }
 
   &-title {
+    @include fonts.title4;
+
     margin-bottom: rem.torem(16px);
     padding-right: rem.torem(32px);
   }
