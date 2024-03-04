@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import React, { forwardRef, useCallback, useState } from 'react'
+import { forwardRef, useCallback, useEffect, useState } from 'react'
 import AvatarEditor, { Position } from 'react-avatar-editor'
 
 import { ImageEditorFormValues } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageCrop/ModalImageCrop'
@@ -7,6 +7,24 @@ import Slider from 'ui-kit/form/Slider/Slider'
 
 import CanvasTools from './canvas'
 import style from './ImageEditor.module.scss'
+
+const CANVAS_MOBILE_BREAKPOINT = 744
+
+function clamp(input: number, min: number, max: number): number {
+  return input < min ? min : input > max ? max : input
+}
+
+function map(
+  current: number,
+  in_min: number,
+  in_max: number,
+  out_min: number,
+  out_max: number
+): number {
+  const mapped: number =
+    ((current - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min
+  return clamp(mapped, out_min, out_max)
+}
 
 export interface ImageEditorConfig {
   canvasHeight: number
@@ -39,14 +57,51 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
   ) => {
     const [position, setPosition] = useState<Position>(initialPosition)
     const formik = useFormikContext<ImageEditorFormValues>()
-    /* The modal is too big for mobile phone.
-      The size divided by 3 works for landscape and portrait pictures */
-    const responsiveCanvasHeight =
-      window.innerWidth > 380 ? canvasHeight : canvasHeight / 3
-    const responsiveCanvasWidth =
-      window.innerWidth > 380 ? canvasWidth : canvasWidth / 3
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth)
 
-    const drawCropBorder = useCallback(() => {
+    useEffect(() => {
+      const handleResize = () => {
+        setWindowWidth(window.innerWidth)
+      }
+
+      window.addEventListener('resize', handleResize)
+
+      return () => {
+        window.removeEventListener('resize', handleResize)
+      }
+    }, [])
+
+    // The modal is too big for mobile phone.
+    const responsiveCanvasHeight = map(
+      windowWidth,
+      0,
+      CANVAS_MOBILE_BREAKPOINT,
+      100,
+      canvasHeight
+    )
+    const responsiveCanvasWidth = map(
+      windowWidth,
+      0,
+      CANVAS_MOBILE_BREAKPOINT,
+      100,
+      canvasWidth
+    )
+    const responsiveCropBorderWidth = map(
+      windowWidth,
+      0,
+      CANVAS_MOBILE_BREAKPOINT,
+      0,
+      cropBorderWidth
+    )
+    const responsiveCropBorderHeight = map(
+      windowWidth,
+      0,
+      CANVAS_MOBILE_BREAKPOINT,
+      0,
+      cropBorderHeight
+    )
+
+    const drawCropBorder = () => {
       const canvas = document.querySelector('canvas')
       const ctx = canvas?.getContext('2d')
 
@@ -58,19 +113,13 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
         width: 0,
         color: cropBorderColor,
         coordinates: [
-          cropBorderWidth,
-          cropBorderHeight,
-          canvasWidth,
-          canvasHeight,
+          responsiveCropBorderWidth,
+          responsiveCropBorderHeight,
+          responsiveCanvasWidth,
+          responsiveCanvasHeight,
         ],
       })
-    }, [
-      cropBorderColor,
-      cropBorderWidth,
-      cropBorderHeight,
-      canvasWidth,
-      canvasHeight,
-    ])
+    }
 
     /* istanbul ignore next: DEBT, TO FIX */
     const onPositionChange = useCallback((position: Position) => {
@@ -80,7 +129,7 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
     return (
       <div className={style['image-editor']}>
         <AvatarEditor
-          border={[cropBorderWidth, cropBorderHeight]}
+          border={[responsiveCropBorderWidth, responsiveCropBorderHeight]}
           color={[0, 0, 0, 0.4]}
           crossOrigin="anonymous"
           height={responsiveCanvasHeight}
