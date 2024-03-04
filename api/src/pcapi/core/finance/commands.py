@@ -7,11 +7,9 @@ import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
 from pcapi.core.finance import ds
-from pcapi.core.finance import siret_api
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.utils as finance_utils
-import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi.models.feature import FeatureToggle
 from pcapi.notifications.internal import send_internal_message
@@ -150,43 +148,6 @@ def add_custom_offer_reimbursement_rule(
         end_date=valid_until_dt,
     )
     print(f"Created new rule: {rule.id}")
-
-
-@blueprint.cli.command("move_siret")
-@click.option("--src-venue-id", type=int, required=True)
-@click.option("--dst-venue-id", type=int, required=True)
-@click.option("--siret", required=True)
-@click.option("--comment", required=True)
-@click.option("--apply-changes", is_flag=True, default=False, required=False)
-@click.option("--override-revenue-check", is_flag=True, default=False, required=False)
-def move_siret(
-    src_venue_id: int,
-    dst_venue_id: int,
-    siret: str,
-    comment: str,
-    apply_changes: bool = False,
-    override_revenue_check: bool = False,
-) -> None:
-    source = offerers_models.Venue.query.get(src_venue_id)
-    target = offerers_models.Venue.query.get(dst_venue_id)
-
-    try:
-        siret_api.move_siret(
-            source,
-            target,
-            siret,
-            comment,
-            apply_changes=apply_changes,
-            override_revenue_check=override_revenue_check,
-        )
-    except siret_api.CheckError as exc:
-        print(str(exc))
-        return
-
-    if apply_changes:
-        print("Siret has been moved.")
-    else:
-        print("DRY RUN: NO CHANGES HAVE BEEN MADE")
 
 
 @blueprint.cli.command("recredit_underage_users")

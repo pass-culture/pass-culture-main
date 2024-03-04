@@ -3,7 +3,6 @@ from unittest.mock import patch
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
@@ -80,37 +79,6 @@ class AddCustomOfferReimbursementRuleTest:
         rule = finance_models.CustomReimbursementRule.query.one()
         assert rule.offer.id == offer_id
         assert rule.amount == 1234
-
-
-@clean_database
-def test_move_siret(app):
-    offerer = offerers_factories.OffererFactory()
-    siret = offerer.siren + "00001"
-
-    src_venue_id = offerers_factories.VenueFactory(siret=siret, managingOfferer=offerer).id
-    dst_venue_id = offerers_factories.VenueWithoutSiretFactory(managingOfferer=offerer).id
-
-    result = run_command(
-        app,
-        "move_siret",
-        "--src-venue-id",
-        src_venue_id,
-        "--dst-venue-id",
-        dst_venue_id,
-        "--siret",
-        siret,
-        "--comment",
-        "test move siret",
-        "--apply-changes",
-    )
-
-    src_venue = offerers_models.Venue.query.get(src_venue_id)
-    dst_venue = offerers_models.Venue.query.get(dst_venue_id)
-
-    assert "Siret has been moved." in result.stdout
-
-    assert not src_venue.siret
-    assert dst_venue.siret == siret
 
 
 @override_settings(SLACK_GENERATE_INVOICES_FINISHED_CHANNEL="channel")
