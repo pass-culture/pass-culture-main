@@ -44,6 +44,7 @@ from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro import forms as pro_forms
+from pcapi.routes.backoffice.views import DetailView
 from pcapi.routes.serialization import base as serialize_base
 from pcapi.routes.serialization import reimbursement_csv_serialize
 from pcapi.utils import regions as regions_utils
@@ -271,24 +272,138 @@ def list_venues() -> utils.BackofficeResponse:
     return render_template("venue/list.html", rows=venues, form=form, date_created_sort_url=date_created_sort_url)
 
 
-@venue_blueprint.route("/<int:venue_id>", methods=["GET"])
-def get(venue_id: int) -> utils.BackofficeResponse:
-    venue = get_venue(venue_id)
+class GetVenueView(DetailView):
+    model = offerers_models.Venue
+    template = "venue/get.html"
 
-    if request.args.get("q") and request.args.get("search_rank"):
-        utils.log_backoffice_tracking_data(
-            event_name="ConsultCard",
-            extra_data={
-                "searchType": "ProSearch",
-                "searchProType": pro_forms.TypeOptions.VENUE.name,
-                "searchQuery": request.args.get("q"),
-                "searchDepartments": ",".join(request.args.get("departments", [])),
-                "searchRank": request.args.get("search_rank"),
-                "searchNbResults": request.args.get("total_items"),
-            },
+    def init_response(self) -> None:
+        if request.args.get("q") and request.args.get("search_rank"):
+            utils.log_backoffice_tracking_data(
+                event_name="ConsultCard",
+                extra_data={
+                    "searchType": "ProSearch",
+                    "searchProType": pro_forms.TypeOptions.VENUE.name,
+                    "searchQuery": request.args.get("q"),
+                    "searchDepartments": ",".join(request.args.get("departments", [])),
+                    "searchRank": request.args.get("search_rank"),
+                    "searchNbResults": request.args.get("total_items"),
+                },
+            )
+
+    def _get_item(self, item_id: int) -> offerers_models.Venue:
+        return (
+            offerers_models.Venue.query.filter(offerers_models.Venue.id == item_id)
+            .options(
+                sa.orm.joinedload(offerers_models.Venue.managingOfferer),
+                sa.orm.joinedload(offerers_models.Venue.contact),
+                sa.orm.joinedload(offerers_models.Venue.bankInformation),
+                sa.orm.joinedload(offerers_models.Venue.reimbursement_point_links)
+                .joinedload(offerers_models.VenueReimbursementPointLink.reimbursementPoint)
+                .load_only(offerers_models.Venue.id),
+                sa.orm.joinedload(offerers_models.Venue.venueLabel),
+                sa.orm.joinedload(offerers_models.Venue.criteria).load_only(criteria_models.Criterion.name),
+                sa.orm.joinedload(offerers_models.Venue.collectiveDmsApplications).load_only(
+                    educational_models.CollectiveDmsApplication.state,
+                    educational_models.CollectiveDmsApplication.depositDate,
+                    educational_models.CollectiveDmsApplication.lastChangeDate,
+                ),
+                sa.orm.joinedload(offerers_models.Venue.venueProviders)
+                .load_only(
+                    providers_models.VenueProvider.id,
+                    providers_models.VenueProvider.lastSyncDate,
+                    providers_models.VenueProvider.isActive,
+                )
+                .joinedload(providers_models.VenueProvider.provider)
+                .load_only(
+                    providers_models.Provider.id,
+                    providers_models.Provider.name,
+                    providers_models.Provider.localClass,
+                    providers_models.Provider.apiUrl,
+                    providers_models.Provider.isActive,
+                ),
+            )
+            .one_or_none()
         )
 
-    return render_venue_details(venue)
+    def get_context(self) -> dict:
+        venue = self.item
+
+        dms_application_id = venue.bankInformation.applicationId if venue.bankInformation else None
+        dms_stats = dms_api.get_dms_stats(dms_application_id, api_v4=True)
+        region = regions_utils.get_region_name_from_postal_code(venue.postalCode) if venue.postalCode else ""
+
+        if venue.isVirtual:
+            edit_venue_form = forms.EditVirtualVenueForm(
+                booking_email=venue.bookingEmail,
+                phone_number=venue.contact.phone_number if venue.contact else None,
+            )
+        else:
+            edit_venue_form = forms.EditVenueForm(
+                venue=venue,
+                name=venue.name,
+                public_name=venue.publicName,
+                siret=venue.siret,
+                city=venue.city,
+                postal_address_autocomplete=(
+                    f"{venue.address}, {venue.postalCode} {venue.city}"
+                    if venue.address is not None and venue.city is not None and venue.postalCode is not None
+                    else None
+                ),
+                postal_code=venue.postalCode,
+                address=venue.address,
+                ban_id=venue.banId,
+                booking_email=venue.bookingEmail,
+                phone_number=venue.contact.phone_number if venue.contact else None,
+                is_permanent=venue.isPermanent,
+                latitude=venue.latitude,
+                longitude=venue.longitude,
+                venue_type_code=venue.venueTypeCode.name,
+            )
+            edit_venue_form.siret.flags.disabled = not _can_edit_siret()
+        edit_venue_form.tags.choices = [(criterion.id, criterion.name) for criterion in venue.criteria]
+
+        delete_form = empty_forms.EmptyForm()
+        fully_sync_venue_form = empty_forms.EmptyForm()
+
+        search_form = pro_forms.CompactProSearchForm(
+            q=request.args.get("q"),
+            pro_type=pro_forms.TypeOptions.VENUE.name,
+            departments=(
+                request.args.getlist("departments")
+                if request.args.get("q") or request.args.getlist("departments")
+                else current_user.backoffice_profile.preferences.get("departments", [])
+            ),
+        )
+        return {
+            "search_form": search_form,
+            "search_dst": url_for("backoffice_web.pro.search_pro"),
+            "venue": venue,
+            "edit_venue_form": edit_venue_form,
+            "region": region,
+            "has_reimbursement_point": bool(venue.current_reimbursement_point),
+            "has_active_provider": any(
+                (venue_provider.isActive and venue_provider.provider.allow_bo_sync)
+                for venue_provider in venue.venueProviders
+            ),
+            "dms_stats": dms_stats,
+            "delete_form": delete_form,
+            "fully_sync_venue_form": fully_sync_venue_form,
+            "active_tab": request.args.get("active_tab", "history"),
+            "zendesk_sell_synchronisation_form": (
+                empty_forms.EmptyForm()
+                if venue.isPermanent
+                and not venue.isVirtual
+                and utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
+                else None
+            ),
+        }
+
+
+venue_blueprint.add_url_rule(
+    "/<int:item_id>",
+    view_func=GetVenueView.as_view("get_venue"),
+    methods=["GET"],
+)
 
 
 # mypy doesn't like nested dict
