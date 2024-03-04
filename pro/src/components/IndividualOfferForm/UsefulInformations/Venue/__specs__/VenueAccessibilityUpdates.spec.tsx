@@ -79,22 +79,16 @@ describe('IndividualOffer section: venue', () => {
     ]
 
     venueAccessible = individualOfferVenueItemFactory({
-      accessibility: {
-        visual: false,
-        mental: true,
-        audio: true,
-        motor: false,
-        none: false,
-      },
+      visualDisabilityCompliant: false,
+      mentalDisabilityCompliant: true,
+      audioDisabilityCompliant: true,
+      motorDisabilityCompliant: false,
     })
     venueNotAccessible = individualOfferVenueItemFactory({
-      accessibility: {
-        visual: false,
-        mental: false,
-        audio: false,
-        motor: false,
-        none: true,
-      },
+      visualDisabilityCompliant: false,
+      mentalDisabilityCompliant: false,
+      audioDisabilityCompliant: false,
+      motorDisabilityCompliant: false,
     })
     const venueList: IndividualOfferVenueItem[] = [
       venueAccessible,

@@ -108,13 +108,6 @@ describe('getWizardData', () => {
         ],
         venueList: [
           expect.objectContaining({
-            accessibility: {
-              audio: false,
-              mental: false,
-              motor: false,
-              none: true,
-              visual: false,
-            },
             bookingEmail: null,
             hasCreatedOffer: true,
             hasMissingReimbursementPoint: false,
@@ -195,13 +188,6 @@ describe('getWizardData', () => {
         ],
         venueList: [
           expect.objectContaining({
-            accessibility: {
-              audio: false,
-              mental: false,
-              motor: false,
-              none: true,
-              visual: false,
-            },
             bookingEmail: null,
             hasCreatedOffer: true,
             hasMissingReimbursementPoint: false,
@@ -253,13 +239,6 @@ describe('getWizardData', () => {
         ],
         venueList: [
           expect.objectContaining({
-            accessibility: {
-              audio: false,
-              mental: false,
-              motor: false,
-              none: true,
-              visual: false,
-            },
             bookingEmail: null,
             hasCreatedOffer: true,
             hasMissingReimbursementPoint: false,
@@ -314,13 +293,6 @@ describe('getWizardData', () => {
         ],
         venueList: [
           expect.objectContaining({
-            accessibility: {
-              audio: false,
-              mental: false,
-              motor: false,
-              none: true,
-              visual: false,
-            },
             bookingEmail: null,
             hasCreatedOffer: true,
             hasMissingReimbursementPoint: false,
@@ -332,13 +304,6 @@ describe('getWizardData', () => {
             venueType: 'Autre',
           }),
           expect.objectContaining({
-            accessibility: {
-              audio: false,
-              mental: false,
-              motor: false,
-              none: true,
-              visual: false,
-            },
             bookingEmail: null,
             hasCreatedOffer: true,
             hasMissingReimbursementPoint: false,
