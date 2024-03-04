@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import { Form, FormikProvider, useFormik } from 'formik'
-import React, { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { CollectiveOfferResponseModel } from 'apiClient/v1'
@@ -13,14 +13,7 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import { getFilteredCollectiveOffersAdapter } from 'pages/CollectiveOffers/adapters'
-import {
-  ButtonLink,
-  RadioButton,
-  SubmitButton,
-  TextInput,
-  Thumb,
-  Title,
-} from 'ui-kit'
+import { ButtonLink, RadioButton, SubmitButton, TextInput, Thumb } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import Titles from 'ui-kit/Titles/Titles'
@@ -104,9 +97,9 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
     <AppLayout layout={'sticky-actions'}>
       <div className="container">
         <Titles title="Créer une offre réservable" />
-        <Title as="h3" className="sub-title" level={4}>
-          Séléctionner l’offre vitrine à dupliquer
-        </Title>
+        <h2 className={styles['sub-title']} id="search-filter">
+          Rechercher l’offre vitrine à dupliquer
+        </h2>
 
         <div className={styles['search-container']}>
           <FormikProvider value={formikSearch}>
@@ -117,6 +110,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                 name="searchFilter"
                 placeholder="Rechercher une offre vitrine"
                 className={styles['search-input']}
+                aria-labelledby="search-filter"
               />
               <SubmitButton
                 className={styles['search-button']}
@@ -130,38 +124,43 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
           </FormikProvider>
           <FormikProvider value={formikSelection}>
             <Form>
-              <p className={styles['offer-info']}>
-                {showAll
-                  ? 'Les dernières offres vitrines créées'
-                  : `${pluralize(offers.length, 'offre')} vitrine`}
-              </p>
-              {offers?.slice(0, 5).map((offer) => (
-                <div
-                  key={offer.id}
-                  className={cn(styles['offer-selection'], {
-                    [styles['offer-selected']]:
-                      formikSelection.values.templateOfferId ===
-                      offer.id.toString(),
-                  })}
-                >
-                  <RadioButton
-                    name="templateOfferId"
-                    value={offer.id.toString()}
-                    label={
-                      <div className={styles['offer-selection-label']}>
-                        <Thumb
-                          url={offer.imageUrl}
-                          className={styles['img-offer']}
-                        />
-                        <p className={styles['offer-title']}>
-                          <strong>{offer.name}</strong>
-                          {offer.venue.name}
-                        </p>
-                      </div>
-                    }
-                  />
-                </div>
-              ))}
+              <fieldset>
+                <legend>
+                  <p className={styles['offer-info']}>
+                    {showAll
+                      ? 'Les dernières offres vitrines créées'
+                      : `${pluralize(offers.length, 'offre')} vitrine`}
+                  </p>
+                </legend>
+
+                {offers?.slice(0, 5).map((offer) => (
+                  <div
+                    key={offer.id}
+                    className={cn(styles['offer-selection'], {
+                      [styles['offer-selected']]:
+                        formikSelection.values.templateOfferId ===
+                        offer.id.toString(),
+                    })}
+                  >
+                    <RadioButton
+                      name="templateOfferId"
+                      value={offer.id.toString()}
+                      label={
+                        <div className={styles['offer-selection-label']}>
+                          <Thumb
+                            url={offer.imageUrl}
+                            className={styles['img-offer']}
+                          />
+                          <p className={styles['offer-title']}>
+                            <strong>{offer.name}</strong>
+                            {offer.venue.name}
+                          </p>
+                        </div>
+                      }
+                    />
+                  </div>
+                ))}
+              </fieldset>
               {offers?.length < 1 && (
                 <div className={styles['search-no-results']}>
                   <SvgIcon

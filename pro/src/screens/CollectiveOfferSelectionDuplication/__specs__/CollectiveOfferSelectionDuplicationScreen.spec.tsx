@@ -71,7 +71,7 @@ describe('CollectiveOfferConfirmation', () => {
     })
 
     expect(
-      screen.getByText('Séléctionner l’offre vitrine à dupliquer')
+      screen.getByText('Rechercher l’offre vitrine à dupliquer')
     ).toBeInTheDocument()
     expect(
       screen.getByText('Les dernières offres vitrines créées')
