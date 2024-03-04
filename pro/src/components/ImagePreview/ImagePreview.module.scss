@@ -8,6 +8,7 @@
   display: flex;
   justify-content: center;
   padding: rem.torem(16px) 0;
+  flex-wrap: wrap;
 
   &-shell {
     height: rem.torem(600px);
@@ -24,7 +25,7 @@
 .image-preview-previews-wrapper {
   display: flex;
   flex-direction: column;
-  margin: 0 rem.torem(60px);
+  margin: 0;
   position: relative;
   align-items: center;
 
@@ -39,12 +40,8 @@
   top: rem.torem(34px);
 }
 
-@media (max-width: size.$mobile) {
+@media (min-width: size.$tablet) {
   .image-preview-previews-wrapper {
-    margin: 0;
-  }
-
-  .image-preview-previews {
-    flex-direction: column;
+    margin: 0 rem.torem(60px);
   }
 }
