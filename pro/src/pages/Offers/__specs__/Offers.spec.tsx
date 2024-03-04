@@ -18,9 +18,9 @@ import { computeOffersUrl } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
 import {
   defaultGetOffererResponseModel,
-  getVenueListItemFactory,
   listOffersOfferFactory,
 } from 'utils/apiFactories'
+import { venueListItemFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OffersRoute } from '../../../pages/Offers/OffersRoute'
@@ -35,14 +35,14 @@ const categoriesAndSubcategories = {
 }
 
 const proVenues = [
-  getVenueListItemFactory({
+  venueListItemFactory({
     id: 1,
     name: 'Ma venue',
     offererName: 'Mon offerer',
     publicName: undefined,
     isVirtual: false,
   }),
-  getVenueListItemFactory({
+  venueListItemFactory({
     id: 2,
     name: 'Ma venue virtuelle',
     offererName: 'Mon offerer',
