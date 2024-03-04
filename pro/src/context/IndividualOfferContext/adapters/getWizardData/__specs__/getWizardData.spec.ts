@@ -107,7 +107,7 @@ describe('getWizardData', () => {
           },
         ],
         venueList: [
-          {
+          expect.objectContaining({
             accessibility: {
               audio: false,
               mental: false,
@@ -124,7 +124,7 @@ describe('getWizardData', () => {
             name: 'mon lieu',
             withdrawalDetails: null,
             venueType: 'Autre',
-          },
+          }),
         ],
       },
     })
@@ -194,7 +194,7 @@ describe('getWizardData', () => {
           },
         ],
         venueList: [
-          {
+          expect.objectContaining({
             accessibility: {
               audio: false,
               mental: false,
@@ -211,7 +211,7 @@ describe('getWizardData', () => {
             name: 'mon lieu',
             withdrawalDetails: null,
             venueType: 'Autre',
-          },
+          }),
         ],
       },
     })
@@ -252,7 +252,7 @@ describe('getWizardData', () => {
           },
         ],
         venueList: [
-          {
+          expect.objectContaining({
             accessibility: {
               audio: false,
               mental: false,
@@ -269,7 +269,7 @@ describe('getWizardData', () => {
             name: 'mon lieu',
             withdrawalDetails: null,
             venueType: 'Autre',
-          },
+          }),
         ],
       },
     })
@@ -313,7 +313,7 @@ describe('getWizardData', () => {
           },
         ],
         venueList: [
-          {
+          expect.objectContaining({
             accessibility: {
               audio: false,
               mental: false,
@@ -330,8 +330,8 @@ describe('getWizardData', () => {
             name: 'mon lieu',
             withdrawalDetails: null,
             venueType: 'Autre',
-          },
-          {
+          }),
+          expect.objectContaining({
             accessibility: {
               audio: false,
               mental: false,
@@ -348,7 +348,7 @@ describe('getWizardData', () => {
             name: 'mon lieu 3',
             withdrawalDetails: null,
             venueType: 'Autre',
-          },
+          }),
         ],
       },
     })

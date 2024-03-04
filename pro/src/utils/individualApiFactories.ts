@@ -30,6 +30,7 @@ export const individualOfferVenueItemFactory = (
   const currentVenueId = venueId++
 
   return {
+    ...venueListItemFactory(),
     id: currentVenueId,
     isVirtual: false,
     name: `Le nom du lieu ${currentVenueId}`,

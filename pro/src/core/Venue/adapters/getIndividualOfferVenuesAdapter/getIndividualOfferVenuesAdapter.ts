@@ -29,10 +29,8 @@ const getIndividualOfferVenuesAdapter: GetIndividualOfferVenuesAdapter =
           [AccessiblityEnum.MOTOR]: venue.motorDisabilityCompliant || false,
         }
         return {
-          id: venue.id,
-          managingOffererId: venue.managingOffererId,
+          ...venue,
           name: venue.publicName || venue.name,
-          isVirtual: venue.isVirtual,
           withdrawalDetails: venue.withdrawalDetails || null,
           accessibility: {
             ...baseAccessibility,
@@ -40,8 +38,6 @@ const getIndividualOfferVenuesAdapter: GetIndividualOfferVenuesAdapter =
               !Object.values(baseAccessibility).includes(true),
           },
           bookingEmail: venue.bookingEmail || null,
-          hasMissingReimbursementPoint: venue.hasMissingReimbursementPoint,
-          hasCreatedOffer: venue.hasCreatedOffer,
           venueType: venue.venueTypeCode,
         }
       }

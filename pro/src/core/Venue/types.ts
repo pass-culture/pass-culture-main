@@ -1,7 +1,7 @@
-import { GetVenueResponseModel } from 'apiClient/v1'
+import { GetVenueResponseModel, VenueListItemResponseModel } from 'apiClient/v1'
 import { AccessibiltyFormValues } from 'core/shared'
 
-export type IndividualOfferVenueItem = {
+export type IndividualOfferVenueItem = VenueListItemResponseModel & {
   id: number
   managingOffererId: number
   name: string
