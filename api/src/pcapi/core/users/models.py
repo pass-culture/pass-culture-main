@@ -203,6 +203,19 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     sa.Index("ix_user_validatedBirthDate", validatedBirthDate)
     pro_flags: UserProFlags = orm.relationship("UserProFlags", back_populates="user", uselist=False)
 
+    # unaccent is not immutable, so it can't be used for an index.
+    # Searching by sa.func.unaccent(something) does not use the index and causes a sequential scan.
+    # immutable_unaccent is a wrapper so that index uses an immutable function.
+    # Note that unaccented indexes should be re-generated if we change internal dictionary used by Postgresql for
+    # accents, which will probably never happen.
+    __table_args__ = (
+        sa.Index(
+            "ix_user_trgm_unaccent_full_name",
+            sa.func.immutable_unaccent(firstName + " " + lastName),
+            postgresql_using="gin",
+        ),
+    )
+
     def __init__(self, **kwargs: typing.Any) -> None:
         kwargs.setdefault("roles", [])
         super().__init__(**kwargs)
