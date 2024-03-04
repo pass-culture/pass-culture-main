@@ -79,8 +79,8 @@ def get_venues_by_name(name: str) -> list[offerers_models.Venue]:
     venues = (
         offerers_models.Venue.query.filter(
             or_(
-                sa.func.unaccent(offerers_models.Venue.name).ilike(f"%{name}%"),
-                sa.func.unaccent(offerers_models.Venue.publicName).ilike(f"%{name}%"),
+                sa.func.immutable_unaccent(offerers_models.Venue.name).ilike(f"%{name}%"),
+                sa.func.immutable_unaccent(offerers_models.Venue.publicName).ilike(f"%{name}%"),
             ),
             sa.not_(offerers_models.Venue.isVirtual),
         )
@@ -107,8 +107,8 @@ def get_relative_venues_by_name(name: str) -> list[offerers_models.Venue]:
         # constraint on searched venue
         sa.not_(aliased_venue.isVirtual),
         or_(
-            sa.func.unaccent(aliased_venue.name).ilike(f"%{name}%"),
-            sa.func.unaccent(aliased_venue.publicName).ilike(f"%{name}%"),
+            sa.func.immutable_unaccent(aliased_venue.name).ilike(f"%{name}%"),
+            sa.func.immutable_unaccent(aliased_venue.publicName).ilike(f"%{name}%"),
         ),
     )
     query = query.options(sa.orm.joinedload(offerers_models.Venue.contact))

@@ -257,7 +257,9 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     __tablename__ = "venue"
 
     name: str = Column(String(140), nullable=False)
+    # Keep both indexes until we are sure that first one is no longer used (pg_stat_user_indexes shows few uses)
     sa.Index("idx_venue_trgm_name", name, postgresql_using="gin")
+    sa.Index("ix_venue_trgm_unaccent_name", sa.func.immutable_unaccent("name"), postgresql_using="gin")
 
     siret = Column(String(14), nullable=True, unique=True)
 
@@ -292,7 +294,9 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     timezone = Column(String(50), nullable=False, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE)
 
     publicName = Column(String(255), nullable=True)
+    # Keep both indexes until we are sure that first one is no longer used (pg_stat_user_indexes shows few uses)
     sa.Index("idx_venue_trgm_public_name", publicName, postgresql_using="gin")
+    sa.Index("ix_venue_trgm_unaccent_public_name", sa.func.immutable_unaccent("name"), postgresql_using="gin")
 
     isVisibleInApp = Column(Boolean, nullable=False, default=True, server_default=sa.sql.expression.true())
 
