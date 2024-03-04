@@ -4,7 +4,6 @@ import {
   GetOffererNameResponseModel,
   SubcategoryResponseModel,
 } from 'apiClient/v1'
-import { getOffererNamesAdapter } from 'core/Offerers/adapters'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { getIndividualOfferVenuesAdapter } from 'core/Venue/adapters/getIndividualOfferVenuesAdapter'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
@@ -93,12 +92,14 @@ export const getWizardData: GetIndividualOfferAdapter = async ({
       },
     ]
   } else {
-    const offererResponse = await getOffererNamesAdapter({
-      offererId: isAdmin ? Number(offererId) : undefined,
-    })
-    if (offererResponse.isOk) {
-      successPayload.offererNames = offererResponse.payload
-    } else {
+    try {
+      const offererResponse = await api.listOfferersNames(
+        null, // validated
+        null, // validatedForUser
+        isAdmin ? Number(offererId) : undefined
+      )
+      successPayload.offererNames = offererResponse.offerersNames
+    } catch {
       return Promise.resolve(FAILING_RESPONSE)
     }
   }
