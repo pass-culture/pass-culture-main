@@ -150,3 +150,57 @@ class GetInvoicesTest:
         assert response.status_code == 200
         invoices = response.json
         assert invoices == []
+
+    def test_admin_user_should_access_invoices_if_offerer_id_given(self, client):
+        offerer = offerers_factories.OffererFactory()
+        pro = users_factories.AdminFactory()
+
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        bank_account1 = finance_factories.BankAccountFactory(offerer=offerer)
+        finance_factories.InvoiceFactory(bankAccount=bank_account1, amount=-1000)
+        bank_account2 = finance_factories.BankAccountFactory(offerer=offerer)
+        finance_factories.InvoiceFactory(bankAccount=bank_account2, amount=-1500)
+
+        client = client.with_session_auth(pro.email)
+        params = {"offererId": offerer.id}
+        response = client.get("/v2/finance/invoices", params=params)
+
+        assert response.status_code == 200
+        invoices = response.json
+        assert len(invoices) == 2
+
+    def test_filter_both_on_bank_account_and_offerer_should_consider_bank_account(self, client):
+        offerer = offerers_factories.OffererFactory()
+        pro = users_factories.ProFactory()
+
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        bank_account1 = finance_factories.BankAccountFactory(offerer=offerer)
+        invoice1 = finance_factories.InvoiceFactory(bankAccount=bank_account1, amount=-1000)
+        bank_account2 = finance_factories.BankAccountFactory(offerer=offerer)
+        finance_factories.InvoiceFactory(bankAccount=bank_account2, amount=-1500)
+
+        client = client.with_session_auth(pro.email)
+        params = {"offererId": offerer.id, "bankAccountId": bank_account1.id}
+        response = client.get("/v2/finance/invoices", params=params)
+
+        assert response.status_code == 200
+        invoices = response.json
+        assert len(invoices) == 1
+        assert invoices[0]["reference"] == invoice1.reference
+
+    def test_do_not_return_invoices_for_admin_user_if_no_filter_on_offerer_or_bank_account(self, client):
+        offerer = offerers_factories.OffererFactory()
+        pro = users_factories.AdminFactory()
+
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        bank_account1 = finance_factories.BankAccountFactory(offerer=offerer)
+        finance_factories.InvoiceFactory(bankAccount=bank_account1, amount=-1000)
+        bank_account2 = finance_factories.BankAccountFactory(offerer=offerer)
+        finance_factories.InvoiceFactory(bankAccount=bank_account2, amount=-1500)
+
+        client = client.with_session_auth(pro.email)
+        response = client.get("/v2/finance/invoices")
+
+        assert response.status_code == 200
+        invoices = response.json
+        assert len(invoices) == 0
