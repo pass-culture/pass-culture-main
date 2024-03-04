@@ -7,12 +7,8 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import type { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
-import {
-  defaultGetCollectiveOffer,
-  defaultGetOffererResponseModel,
-} from 'utils/apiFactories'
+import { defaultGetOffererResponseModel } from 'utils/apiFactories'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
@@ -92,9 +88,9 @@ describe('CollectiveOfferSummaryCreation', () => {
 
   it('Should show the redirect modal', async () => {
     vi.spyOn(api, 'patchCollectiveOfferPublication').mockResolvedValue({
-      ...defaultGetCollectiveOffer,
+      ...collectiveOfferFactory(),
       isNonFreeOffer: true,
-    } as GetCollectiveOfferResponseModel)
+    })
     await renderCollectiveOfferSummaryCreation(
       '/offre/A1/collectif/creation/recapitulatif',
       {
