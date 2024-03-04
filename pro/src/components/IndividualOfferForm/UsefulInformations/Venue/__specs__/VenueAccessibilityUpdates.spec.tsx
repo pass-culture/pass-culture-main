@@ -8,7 +8,7 @@ import { GetOffererNameResponseModel } from 'apiClient/v1'
 import { Accessibility } from 'components/IndividualOfferForm/Accessibility'
 import { AccessiblityEnum, AccessibiltyFormValues } from 'core/shared'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
-import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
+import { venueListItemFactory } from 'utils/individualApiFactories'
 
 import { Venue } from '..'
 import { VenueProps } from '../Venue'
@@ -78,13 +78,13 @@ describe('IndividualOffer section: venue', () => {
       },
     ]
 
-    venueAccessible = individualOfferVenueItemFactory({
+    venueAccessible = venueListItemFactory({
       visualDisabilityCompliant: false,
       mentalDisabilityCompliant: true,
       audioDisabilityCompliant: true,
       motorDisabilityCompliant: false,
     })
-    venueNotAccessible = individualOfferVenueItemFactory({
+    venueNotAccessible = venueListItemFactory({
       visualDisabilityCompliant: false,
       mentalDisabilityCompliant: false,
       audioDisabilityCompliant: false,

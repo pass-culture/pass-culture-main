@@ -24,7 +24,7 @@ import {
   categoryFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,
-  individualOfferVenueItemFactory,
+  venueListItemFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -126,10 +126,10 @@ describe('screens:IndividualOffer::Informations::creation', () => {
       }),
     ]
 
-    const venue1: IndividualOfferVenueItem = individualOfferVenueItemFactory({
+    const venue1: IndividualOfferVenueItem = venueListItemFactory({
       id: 1,
     })
-    const venue2: IndividualOfferVenueItem = individualOfferVenueItemFactory({
+    const venue2: IndividualOfferVenueItem = venueListItemFactory({
       id: 2,
       isVirtual: true,
     })
@@ -293,28 +293,24 @@ describe('screens:IndividualOffer::Informations::creation', () => {
     ]
     const offererId1 = 1
     const offererId2 = 2
-    const venue1Offerer1: IndividualOfferVenueItem =
-      individualOfferVenueItemFactory({
-        id: 1,
-        managingOffererId: offererId1,
-      })
-    const venue2Offerer1: IndividualOfferVenueItem =
-      individualOfferVenueItemFactory({
-        id: 2,
-        isVirtual: true,
-        managingOffererId: offererId1,
-      })
-    const venue1Offerer2: IndividualOfferVenueItem =
-      individualOfferVenueItemFactory({
-        id: 3,
-        managingOffererId: offererId2,
-      })
-    const venue2Offerer2: IndividualOfferVenueItem =
-      individualOfferVenueItemFactory({
-        id: 4,
-        isVirtual: true,
-        managingOffererId: offererId2,
-      })
+    const venue1Offerer1: IndividualOfferVenueItem = venueListItemFactory({
+      id: 1,
+      managingOffererId: offererId1,
+    })
+    const venue2Offerer1: IndividualOfferVenueItem = venueListItemFactory({
+      id: 2,
+      isVirtual: true,
+      managingOffererId: offererId1,
+    })
+    const venue1Offerer2: IndividualOfferVenueItem = venueListItemFactory({
+      id: 3,
+      managingOffererId: offererId2,
+    })
+    const venue2Offerer2: IndividualOfferVenueItem = venueListItemFactory({
+      id: 4,
+      isVirtual: true,
+      managingOffererId: offererId2,
+    })
 
     const contextOverride = individualOfferContextValuesFactory({
       venueList: [

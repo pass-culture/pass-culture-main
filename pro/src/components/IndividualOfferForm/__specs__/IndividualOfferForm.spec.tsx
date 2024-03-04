@@ -24,7 +24,7 @@ import {
   categoryFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,
-  individualOfferVenueItemFactory,
+  venueListItemFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -108,11 +108,11 @@ describe('IndividualOfferForm', () => {
       },
     ]
     venueList = [
-      individualOfferVenueItemFactory({
+      venueListItemFactory({
         id: physicalVenueId,
         isVirtual: false,
       }),
-      individualOfferVenueItemFactory({
+      venueListItemFactory({
         id: virtualVenueId,
         isVirtual: true,
       }),
