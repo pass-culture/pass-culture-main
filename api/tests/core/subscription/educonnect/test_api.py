@@ -1,7 +1,7 @@
 import datetime
 
-import freezegun
 import pytest
+import time_machine
 
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
@@ -17,7 +17,7 @@ class SubscriptionMessageTest:
         )
         assert educonnect_subscription_api.get_educonnect_subscription_message(fraud_check) is None
 
-    @freezegun.freeze_time("2022-09-05")
+    @time_machine.travel("2022-09-05")
     def test_not_eligible(self):
         birth_date = datetime.date(1991, 4, 6)
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
@@ -38,7 +38,7 @@ class SubscriptionMessageTest:
             updated_at=fraud_check.updatedAt,
         )
 
-    @freezegun.freeze_time("2022-09-05")
+    @time_machine.travel("2022-09-05")
     def test_ko_other_reason(self):
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.EDUCONNECT,

@@ -2,8 +2,8 @@ from datetime import datetime
 from decimal import Decimal
 
 from dateutil.relativedelta import relativedelta
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import CancelledBookingFactory
@@ -200,7 +200,7 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
 
 
 def test_get_user_attributes_ex_beneficiary_because_of_expiration():
-    with freeze_time(datetime.utcnow() - relativedelta(years=2, days=2)):
+    with time_machine.travel(datetime.utcnow() - relativedelta(years=2, days=2)):
         user = BeneficiaryGrant18Factory(
             departementCode="75",
             phoneNumber="+33605040302",
@@ -326,7 +326,7 @@ def test_get_user_attributes_beneficiary_because_of_credit():
 @pytest.mark.parametrize("credit_spent", [False, True])
 def test_get_user_attributes_underage_beneficiary_before_18(credit_spent: bool):
     # At 17 years old
-    with freeze_time(datetime.utcnow() - relativedelta(months=6)):
+    with time_machine.travel(datetime.utcnow() - relativedelta(months=6)):
         user = UnderageBeneficiaryFactory(subscription_age=17)
 
     if credit_spent:
@@ -346,7 +346,7 @@ def test_get_user_attributes_underage_beneficiary_before_18(credit_spent: bool):
 
 def test_get_user_attributes_ex_underage_beneficiary_who_did_not_claim_credit_18_yet():
     # At 17 years old
-    with freeze_time(datetime.utcnow() - relativedelta(years=1)):
+    with time_machine.travel(datetime.utcnow() - relativedelta(years=1)):
         user = UnderageBeneficiaryFactory(subscription_age=17)
 
     # At 18 years old
@@ -362,7 +362,7 @@ def test_get_user_attributes_ex_underage_beneficiary_who_did_not_claim_credit_18
 
 def test_get_user_attributes_ex_underage_beneficiary_who_did_not_claim_credit_18_on_time():
     # At 17 years old
-    with freeze_time(datetime.utcnow() - relativedelta(years=2)):
+    with time_machine.travel(datetime.utcnow() - relativedelta(years=2)):
         user = UnderageBeneficiaryFactory(subscription_age=17)
 
     # At 19 years old
@@ -378,7 +378,7 @@ def test_get_user_attributes_ex_underage_beneficiary_who_did_not_claim_credit_18
 
 def test_get_user_attributes_double_beneficiary():
     # At 17 years old
-    with freeze_time(datetime.utcnow() - relativedelta(years=1)):
+    with time_machine.travel(datetime.utcnow() - relativedelta(years=1)):
         user = UnderageBeneficiaryFactory(subscription_age=17)
 
     # At 18 years old

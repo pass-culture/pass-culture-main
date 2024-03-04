@@ -1,7 +1,7 @@
 import datetime
 
-from freezegun.api import freeze_time
 import pytest
+import time_machine
 
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import factories as educational_factories
@@ -175,7 +175,7 @@ class EditCollectiveOfferStocksTest:
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).first()
         assert stock.price == 1500
 
-    @freeze_time("2020-11-17 15:00:00")
+    @time_machine.travel("2020-11-17 15:00:00")
     def should_update_bookings_cancellation_limit_date_if_event_postponed(self) -> None:
         # Given
         educational_year = educational_factories.EducationalYearFactory(
@@ -201,7 +201,7 @@ class EditCollectiveOfferStocksTest:
         booking_updated = CollectiveBooking.query.filter_by(id=booking.id).one()
         assert booking_updated.cancellationLimitDate == datetime.datetime(2021, 11, 12, 20)
 
-    @freeze_time("2020-11-17 15:00:00")
+    @time_machine.travel("2020-11-17 15:00:00", tick=False)
     def should_update_bookings_cancellation_limit_date_if_beginningDatetime_earlier(self) -> None:
         # Given
         educational_year = educational_factories.EducationalYearFactory(
@@ -236,7 +236,7 @@ class EditCollectiveOfferStocksTest:
         booking_updated = CollectiveBooking.query.filter_by(id=booking.id).one()
         assert booking_updated.cancellationLimitDate == datetime.datetime.utcnow()
 
-    @freeze_time("2020-11-17 15:00:00")
+    @time_machine.travel("2020-11-17 15:00:00")
     def test_should_allow_stock_edition_and_not_modify_cancellation_limit_date_when_booking_cancelled(self) -> None:
         # Given
         initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=20)
@@ -297,7 +297,7 @@ class returnErrorTest:
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
         assert stock.numberOfTickets == 30
 
-    @freeze_time("2020-11-17 15:00:00")
+    @time_machine.travel("2020-11-17 15:00:00")
     def test_should_not_allow_stock_edition_when_beginningDatetime_not_provided_and_bookingLimitDatetime_set_after_existing_event_datetime(
         self,
     ) -> None:
@@ -319,7 +319,7 @@ class returnErrorTest:
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
         assert stock.bookingLimitDatetime == datetime.datetime(2021, 12, 5)
 
-    @freeze_time("2020-11-17 15:00:00")
+    @time_machine.travel("2020-11-17 15:00:00")
     def test_should_not_allow_stock_edition_when_bookingLimitDatetime_not_provided_and_beginningDatetime_set_before_existing_event_datetime(
         self,
     ) -> None:
@@ -341,7 +341,7 @@ class returnErrorTest:
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
         assert stock.beginningDatetime == datetime.datetime(2021, 12, 10)
 
-    @freeze_time("2020-11-17 15:00:00")
+    @time_machine.travel("2020-11-17 15:00:00")
     def test_should_allow_stock_edition_and_not_modify_cancellation_limit_date_when_booking_cancelled(self) -> None:
         # Given
         initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=20)
@@ -411,7 +411,7 @@ class returnErrorTest:
         assert stock.price == 1500
         assert stock.numberOfTickets == 35
 
-    @freeze_time("2020-01-05 10:00:00")
+    @time_machine.travel("2020-01-05 10:00:00")
     def test_edit_offer_of_other_status_booking(self) -> None:
         # Given
         offer = educational_factories.CollectiveOfferFactory()

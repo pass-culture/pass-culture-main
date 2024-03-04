@@ -10,9 +10,9 @@ from urllib.parse import urlparse
 
 from dateutil.relativedelta import relativedelta
 import fakeredis
-from freezegun.api import freeze_time
 import jwt
 import pytest
+import time_machine
 
 from pcapi import settings
 from pcapi.connectors.google_oauth import GoogleUser
@@ -82,7 +82,7 @@ class AccountTest:
         assert response.status_code == 403
         assert response.json["email"] == ["Utilisateur introuvable"]
 
-    @freeze_time("2018-06-01")
+    @time_machine.travel("2018-06-01", tick=False)
     @override_features(ENABLE_NATIVE_CULTURAL_SURVEY=True)
     def test_get_user_profile(self, client, app):
         USER_DATA = {
@@ -97,7 +97,7 @@ class AccountTest:
             # The expiration date is taken in account in
             # `get_wallet_balance` and compared against the SQL
             # `now()` function, which is NOT overridden by
-            # `freeze_time()`.
+            # `time_machine.travel()`.
             deposit__expirationDate=datetime(2040, 1, 1),
             notificationSubscriptions={"marketing_push": True},
             validatedBirthDate=datetime(2000, 1, 11),
@@ -179,10 +179,10 @@ class AccountTest:
         assert response.json["roles"] == []
 
     def test_get_user_profile_recredit_amount_to_show(self, client, app):
-        with freeze_time("2020-01-01"):
+        with time_machine.travel("2020-01-01"):
             users_factories.UnderageBeneficiaryFactory(email=self.identifier)
 
-        with freeze_time("2021-01-02"):
+        with time_machine.travel("2021-01-02"):
             finance_api.recredit_underage_users()
 
         client.with_token(email=self.identifier)
@@ -720,7 +720,7 @@ class AccountCreationWithSSOTest:
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     def test_account_creation_token_past_expiration_date(self, mocked_check_recaptcha_token_is_valid, client):
-        with freeze_time("2022-01-01"):
+        with time_machine.travel("2022-01-01"):
             account_creation_token = token_utils.UUIDToken.create(
                 token_utils.TokenType.ACCOUNT_CREATION,
                 users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME,
@@ -892,9 +892,9 @@ class ConfirmUpdateUserEmailTest:
         user = users_factories.BeneficiaryGrant18Factory()
         email_update_request = users_factories.EmailUpdateEntryFactory(user=user)
         with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
-            with freeze_time("2021-01-01"):
+            with time_machine.travel("2021-01-01"):
                 token = self._initialize_token(user, app, email_update_request.newEmail)
-            with freeze_time("2021-01-02"):
+            with time_machine.travel("2021-01-02"):
                 client.with_token(user.email)
                 response = client.post("/native/v1/profile/email_update/confirm", json={"token": token})
                 assert response.status_code == 401
@@ -1381,9 +1381,9 @@ class ValidateEmailTest:
         user = users_factories.UserFactory(email=self.old_email)
         users_factories.UserFactory(email=self.new_email, isEmailValidated=True)
         with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
-            with freeze_time("2021-01-01 00:00:00"):
+            with time_machine.travel("2021-01-01 00:00:00"):
                 token = self._initialize_token(user, app, self.new_email)
-            with freeze_time("2021-01-03 00:00:00"):
+            with time_machine.travel("2021-01-03 00:00:00"):
                 response = client.put("/native/v1/profile/email_update/validate", json={"token": token})
                 assert response.status_code == 400
                 assert response.json["code"] == "INVALID_TOKEN"
@@ -1416,10 +1416,10 @@ class CancelEmailChangeTest:
 
     def test_cancel_email_change_expired_token(self, app, client):
         with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
-            with freeze_time("2021-01-01"):
+            with time_machine.travel("2021-01-01"):
                 user = users_factories.UserFactory()
                 token = self._initialize_token(user)
-            with freeze_time("2021-01-02"):
+            with time_machine.travel("2021-01-02"):
                 response = client.post("/native/v1/profile/email_update/cancel", json={"token": token})
                 assert response.status_code == 401
 
@@ -1427,7 +1427,7 @@ class CancelEmailChangeTest:
 class GetTokenExpirationTest:
     email = "some@email.com"
 
-    @freeze_time("2021-01-01")
+    @time_machine.travel("2021-01-01", tick=False)
     def test_token_expiration(self, app, client):
         """
         Setup the active token key with a TTL. Then test that the route
@@ -1539,7 +1539,7 @@ class EmailValidationRemainingResendsTest:
         assert response.status_code == 200
         assert response.json["remainingResends"] == 2
 
-    @freeze_time("2023-09-15 10:00")
+    @time_machine.travel("2023-09-15 10:00", tick=False)
     def test_email_validation_counter_reset(
         self,
         client,
@@ -1918,7 +1918,7 @@ class ValidatePhoneNumberTest:
             assert content["phone_number"] == "+33607080900"
 
     @override_settings(MAX_SMS_SENT_FOR_PHONE_VALIDATION=1)
-    @freeze_time("2022-05-17 15:00")
+    @time_machine.travel("2022-05-17 15:00")
     def test_phone_validation_remaining_attempts(self, client):
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5))
         client.with_token(email=user.email)
@@ -1973,7 +1973,7 @@ class ValidatePhoneNumberTest:
             user = users_factories.UserFactory(phoneNumber="+33607080900")
             token = create_phone_validation_token(user, "+33607080900")
 
-            with freeze_time(datetime.utcnow() + timedelta(hours=15)):
+            with time_machine.travel(datetime.utcnow() + timedelta(hours=15)):
                 client.with_token(email=user.email)
                 response = client.post("/native/v1/validate_phone_number", {"code": token.encoded_token})
 
@@ -2326,7 +2326,7 @@ class AccountSecurityTest:
 
 
 class GetAccountSuspendedDateTest:
-    @freeze_time("2020-10-15 00:00:00")
+    @time_machine.travel("2020-10-15 00:00:00", tick=False)
     def test_suspended_account(self, client):
         """
         Test that a call for a suspended account returns its suspension
@@ -2513,14 +2513,14 @@ class SuspendAccountForSuspiciousLoginTest:
             passed_expiration_date = (
                 current_time - users_constants.SUSPICIOUS_LOGIN_EMAIL_TOKEN_LIFE_TIME - timedelta(days=1)
             )
-            with freeze_time(passed_expiration_date):
+            with time_machine.travel(passed_expiration_date):
                 user = users_factories.BaseUserFactory()
                 token = token_utils.Token.create(
                     token_utils.TokenType.SUSPENSION_SUSPICIOUS_LOGIN,
                     ttl=users_constants.SUSPICIOUS_LOGIN_EMAIL_TOKEN_LIFE_TIME,
                     user_id=user.id,
                 )
-            with freeze_time(current_time):
+            with time_machine.travel(current_time):
                 response = client.post(
                     "/native/v1/account/suspend_for_suspicious_login", {"token": token.encoded_token}
                 )

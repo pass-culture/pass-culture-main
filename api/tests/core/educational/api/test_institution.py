@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 import pcapi.core.educational.api.institution as api
 import pcapi.core.educational.factories as educational_factories
@@ -12,7 +12,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 @pytest.fixture(name="freeze")
 def freeze_fixture():
-    with freeze_time("2023-12-15 16:00:00"):
+    with time_machine.travel("2023-12-15 16:00:00"):
         yield
 
 

@@ -1,7 +1,7 @@
 import datetime
 from unittest.mock import patch
 
-import freezegun
+import time_machine
 
 from pcapi.connectors.dms import api as api_dms
 from pcapi.connectors.dms import models as dms_models
@@ -67,7 +67,7 @@ class GraphqlResponseTest:
 
         assert client.execute_query.call_count == 1
 
-    @freezegun.freeze_time("2020-01-01")
+    @time_machine.travel("2020-01-01")
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_get_deleted_applications(self, execute_query):
         procedure_number = 1

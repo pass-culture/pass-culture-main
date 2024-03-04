@@ -5,8 +5,8 @@ import pathlib
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
-import freezegun
 import pytest
+import time_machine
 
 from pcapi.analytics.amplitude import testing as amplitude_testing
 from pcapi.analytics.amplitude.backends import amplitude_connector
@@ -195,7 +195,7 @@ class UbbleWorkflowTest:
             assert message.call_to_action.icon == subscription_models.CallToActionIcon.EMAIL
             assert message.call_to_action.title == "Contacter le support"
 
-    @freezegun.freeze_time("2020-05-05")
+    @time_machine.travel("2020-05-05")
     def test_ubble_workflow_with_eligibility_change_17_18(self, ubble_mocker):
         signup_birth_date = datetime.datetime(year=2002, month=5, day=6)
         user = users_factories.UserFactory(dateOfBirth=signup_birth_date)
@@ -242,7 +242,7 @@ class UbbleWorkflowTest:
         assert user.dateOfBirth == signup_birth_date
         assert user.validatedBirthDate == document_birth_date.date()
 
-    @freezegun.freeze_time("2020-05-05")
+    @time_machine.travel("2020-05-05")
     def test_ubble_workflow_with_eligibility_change_18_19(self, ubble_mocker):
         signup_birth_date = datetime.datetime(year=2003, month=5, day=4)
         user = users_factories.UserFactory(dateOfBirth=signup_birth_date)
@@ -315,7 +315,7 @@ class UbbleWorkflowTest:
         assert user.validatedBirthDate == document_birth_date.date()
 
     def test_ubble_workflow_updates_user_birth_date_when_already_beneficiary(self, ubble_mocker):
-        with freezegun.freeze_time(datetime.datetime.utcnow() - relativedelta(years=1)):
+        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=1)):
             user = users_factories.BeneficiaryFactory(
                 age=17,
                 beneficiaryFraudChecks__type=fraud_models.FraudCheckType.EDUCONNECT,
@@ -374,7 +374,7 @@ class UbbleWorkflowTest:
         db.session.refresh(user)
         assert user.dateOfBirth == datetime.datetime(year=2002, month=5, day=6)
 
-    @freezegun.freeze_time("2019-05-05")
+    @time_machine.travel("2019-05-05")
     def test_ubble_workflow_started_at_19_with_previous_attempt_at_18(self, ubble_mocker, db_session):
         # Given
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime(year=2000, month=5, day=1))
@@ -419,7 +419,7 @@ class UbbleWorkflowTest:
         assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
         assert fraud_check.thirdPartyId == fraud_check.thirdPartyId
 
-    @freezegun.freeze_time("2020-05-05")
+    @time_machine.travel("2020-05-05")
     def test_ubble_workflow_started_at_20_with_previous_attempt_at_18(self, ubble_mocker, db_session):
         # Given
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime(year=2000, month=5, day=1))

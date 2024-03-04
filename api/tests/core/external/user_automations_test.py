@@ -3,9 +3,9 @@ from datetime import datetime
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
-from freezegun import freeze_time
 import pytest
 from sib_api_v3_sdk import RequestContactImport
+import time_machine
 
 from pcapi import settings
 import pcapi.core.bookings.factories as bookings_factories
@@ -41,7 +41,7 @@ class UserAutomationsTest:
             dateOfBirth=today - relativedelta(days=user_automations.DAYS_IN_18_YEARS - 30),
         )
 
-    @freeze_time("2033-08-01 10:00:00")
+    @time_machine.travel("2033-08-01 10:00:00")
     def test_get_emails_who_will_turn_eighteen_in_one_month(self):
         self._create_users_around_18()
 
@@ -77,7 +77,7 @@ class UserAutomationsTest:
         assert result is True
 
     def _create_users_with_deposits(self):
-        with freeze_time("2032-11-15 15:00:00"):
+        with time_machine.travel("2032-11-15 15:00:00"):
             user0 = users_factories.UserFactory(
                 email="beneficiary0+test@example.net",
                 dateOfBirth=datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=17, days=5),
@@ -85,14 +85,14 @@ class UserAutomationsTest:
             )
             assert user0.deposit is None
 
-        with freeze_time("2032-10-31 15:00:00"):
+        with time_machine.travel("2032-10-31 15:00:00"):
             user1 = users_factories.BeneficiaryGrant18Factory(
                 email="beneficiary1+test@example.net",
                 dateOfBirth=datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=18, months=1),
             )
             assert user1.deposit.expirationDate == datetime(2034, 10, 31, 23, 59, 59, 999999)
 
-        with freeze_time("2032-11-01 15:00:00"):
+        with time_machine.travel("2032-11-01 15:00:00"):
             user2 = users_factories.BeneficiaryGrant18Factory(
                 email="beneficiary2+test@example.net",
                 dateOfBirth=datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=18, months=2),
@@ -100,35 +100,35 @@ class UserAutomationsTest:
             assert user2.deposit.expirationDate == datetime(2034, 11, 1, 23, 59, 59, 999999)
             bookings_factories.UsedBookingFactory(user=user2, quantity=1, amount=10)
 
-        with freeze_time("2032-12-01 15:00:00"):
+        with time_machine.travel("2032-12-01 15:00:00"):
             user3 = users_factories.BeneficiaryGrant18Factory(
                 email="beneficiary3+test@example.net",
                 dateOfBirth=datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=18, months=3),
             )
             assert user3.deposit.expirationDate == datetime(2034, 12, 1, 23, 59, 59, 999999)
 
-        with freeze_time("2033-01-30 15:00:00"):
+        with time_machine.travel("2033-01-30 15:00:00"):
             user4 = users_factories.BeneficiaryGrant18Factory(
                 email="beneficiary4+test@example.net",
                 dateOfBirth=datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=18, months=4),
             )
             assert user4.deposit.expirationDate == datetime(2035, 1, 30, 23, 59, 59, 999999)
 
-        with freeze_time("2033-01-31 15:00:00"):
+        with time_machine.travel("2033-01-31 15:00:00"):
             user5 = users_factories.BeneficiaryGrant18Factory(
                 email="beneficiary5+test@example.net",
                 dateOfBirth=datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=18, months=5),
             )
             assert user5.deposit.expirationDate == datetime(2035, 1, 31, 23, 59, 59, 999999)
 
-        with freeze_time("2033-03-10 15:00:00"):
+        with time_machine.travel("2033-03-10 15:00:00"):
             user6 = users_factories.BeneficiaryGrant18Factory(
                 email="beneficiary6+test@example.net",
                 dateOfBirth=datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=18, months=5),
             )
             assert user6.deposit.expirationDate == datetime(2035, 3, 10, 23, 59, 59, 999999)
 
-        with freeze_time("2033-05-01 17:00:00"):
+        with time_machine.travel("2033-05-01 17:00:00"):
             # user6 becomes ex-beneficiary
             bookings_factories.UsedBookingFactory(user=user6, quantity=1, amount=300)
 
@@ -137,19 +137,19 @@ class UserAutomationsTest:
     def test_get_users_beneficiary_three_months_before_credit_expiration(self):
         users = self._create_users_with_deposits()
 
-        with freeze_time("2034-10-31 16:00:00"):
+        with time_machine.travel("2034-10-31 16:00:00"):
             results = user_automations.get_users_beneficiary_credit_expiration_within_next_3_months()
             assert sorted([user.email for user in results]) == [user.email for user in users[1:4]]
 
-        with freeze_time("2034-11-01 14:00:00"):
+        with time_machine.travel("2034-11-01 14:00:00"):
             results = user_automations.get_users_beneficiary_credit_expiration_within_next_3_months()
             assert sorted([user.email for user in results]) == [user.email for user in users[2:5]]
 
-        with freeze_time("2034-11-02 12:00:00"):
+        with time_machine.travel("2034-11-02 12:00:00"):
             results = user_automations.get_users_beneficiary_credit_expiration_within_next_3_months()
             assert sorted([user.email for user in results]) == [user.email for user in users[3:6]]
 
-        with freeze_time("2035-01-15 08:00:00"):
+        with time_machine.travel("2035-01-15 08:00:00"):
             results = user_automations.get_users_beneficiary_credit_expiration_within_next_3_months()
             assert sorted([user.email for user in results]) == [user.email for user in users[4:7]]
 
@@ -157,7 +157,7 @@ class UserAutomationsTest:
     def test_users_beneficiary_credit_expiration_within_next_3_months_automation(self, mock_import_contacts):
         users = self._create_users_with_deposits()
 
-        with freeze_time("2034-11-01 16:00:00"):
+        with time_machine.travel("2034-11-01 16:00:00"):
             result = user_automations.users_beneficiary_credit_expiration_within_next_3_months_automation()
 
         mock_import_contacts.assert_called_once()
@@ -186,11 +186,11 @@ class UserAutomationsTest:
     def test_get_users_ex_beneficiary(self):
         users = self._create_users_with_deposits()
 
-        with freeze_time("2034-12-01 16:00:00"):
+        with time_machine.travel("2034-12-01 16:00:00"):
             results = user_automations.get_users_ex_beneficiary()
             assert sorted([user.email for user in results]) == [user.email for user in users[1:3] + [users[6]]]
 
-        with freeze_time("2034-12-02 16:00:00"):
+        with time_machine.travel("2034-12-02 16:00:00"):
             results = user_automations.get_users_ex_beneficiary()
             assert sorted([user.email for user in results]) == [user.email for user in users[1:4] + [users[6]]]
 
@@ -198,7 +198,7 @@ class UserAutomationsTest:
     def test_user_ex_beneficiary_automation(self, mock_import_contacts):
         users = self._create_users_with_deposits()
 
-        with freeze_time("2034-12-01 16:00:00"):
+        with time_machine.travel("2034-12-01 16:00:00"):
             result = user_automations.users_ex_beneficiary_automation()
 
         mock_import_contacts.assert_called_once()
@@ -224,7 +224,7 @@ class UserAutomationsTest:
         assert result is True
 
     def test_get_email_for_inactive_user_since_thirty_days(self):
-        with freeze_time("2033-08-01 15:00:00") as frozen_time:
+        with time_machine.travel("2033-08-01 15:00:00") as frozen_time:
             beneficiary = users_factories.BeneficiaryGrant18Factory(
                 email="fabien+test@example.net", lastConnectionDate=datetime(2033, 8, 1)
             )
@@ -242,7 +242,7 @@ class UserAutomationsTest:
 
     @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
     def test_users_inactive_since_30_days_automation(self, mock_import_contacts):
-        with freeze_time("2033-08-01 15:00:00") as frozen_time:
+        with time_machine.travel("2033-08-01 15:00:00") as frozen_time:
             users_factories.BeneficiaryGrant18Factory(
                 email="fabien+test@example.net", lastConnectionDate=datetime(2033, 8, 1)
             )
@@ -273,7 +273,7 @@ class UserAutomationsTest:
 
     @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
     def test_users_inactive_since_30_days_automation_no_result(self, mock_import_contacts):
-        with freeze_time("2033-08-01 15:00:00") as frozen_time:
+        with time_machine.travel("2033-08-01 15:00:00") as frozen_time:
             users_factories.BeneficiaryGrant18Factory(
                 email="fabien+test@example.net", lastConnectionDate=datetime(2033, 8, 1)
             )
@@ -307,7 +307,7 @@ class UserAutomationsTest:
         users_factories.UserFactory(email="gerard+test@example.net", dateCreated=datetime(2033, 9, 21))
 
         # matching: from 2033-08-01 to 2033-08-31
-        with freeze_time("2034-08-10 15:00:00"):
+        with time_machine.travel("2034-08-10 15:00:00"):
             results = user_automations.get_email_for_users_created_one_year_ago_per_month()
             assert sorted(results) == sorted([user.email for user in matching_users])
 
@@ -319,7 +319,7 @@ class UserAutomationsTest:
         users_factories.UserFactory(email="gerard+test@example.net", dateCreated=datetime(2033, 10, 31))
 
         # matching: from 2033-09-01 to 2033-09-31
-        with freeze_time("2034-09-10 15:00:00"):
+        with time_machine.travel("2034-09-10 15:00:00"):
             result = user_automations.users_one_year_with_pass_automation()
 
         mock_import_contacts.assert_called_once_with(
@@ -341,11 +341,11 @@ class UserAutomationsTest:
     def test_get_users_whose_credit_expired_today(self):
         users = self._create_users_with_deposits()
 
-        with freeze_time("2034-11-01 05:00:00"):
+        with time_machine.travel("2034-11-01 05:00:00"):
             results = list(user_automations.get_users_whose_credit_expired_today())
             assert results == [users[1]]
 
-        with freeze_time("2034-11-02 05:00:00"):
+        with time_machine.travel("2034-11-02 05:00:00"):
             results = list(user_automations.get_users_whose_credit_expired_today())
             assert results == [users[2]]
 
@@ -354,7 +354,7 @@ class UserAutomationsTest:
     def test_users_whose_credit_expired_today_automation(self, mock_update_sendinblue, mock_update_batch):
         users = self._create_users_with_deposits()
 
-        with freeze_time("2034-11-02 05:00:00"):
+        with time_machine.travel("2034-11-02 05:00:00"):
             user_automations.users_whose_credit_expired_today_automation()
 
         mock_update_sendinblue.assert_called_once()
@@ -367,39 +367,39 @@ class UserAutomationsTest:
         assert mock_update_batch.call_args.args[1].is_former_beneficiary is True
 
     def test_get_ex_underage_beneficiaries_who_can_no_longer_recredit(self):
-        with freeze_time("2033-09-10 15:00:00"):
+        with time_machine.travel("2033-09-10 15:00:00"):
             user = users_factories.UnderageBeneficiaryFactory(
                 email="underage+test@example.net",
                 dateOfBirth=datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=17, months=1),
             )
             assert user.deposit.expirationDate == datetime(2034, 8, 10)  # at birthday
 
-        with freeze_time("2034-08-10 05:00:00"):
+        with time_machine.travel("2034-08-10 05:00:00"):
             results = list(user_automations.get_ex_underage_beneficiaries_who_can_no_longer_recredit())
             assert not results
 
-        with freeze_time("2035-08-10 05:00:00"):
+        with time_machine.travel("2035-08-10 05:00:00"):
             results = list(user_automations.get_ex_underage_beneficiaries_who_can_no_longer_recredit())
             assert not results
 
-        with freeze_time("2035-08-11 05:00:00"):
+        with time_machine.travel("2035-08-11 05:00:00"):
             results = list(user_automations.get_ex_underage_beneficiaries_who_can_no_longer_recredit())
             assert results == [user]
 
-        with freeze_time("2035-08-12 05:00:00"):
+        with time_machine.travel("2035-08-12 05:00:00"):
             results = list(user_automations.get_ex_underage_beneficiaries_who_can_no_longer_recredit())
             assert not results
 
     @patch("pcapi.core.external.attributes.api.update_batch_user")
     @patch("pcapi.core.external.attributes.api.update_sendinblue_user")
     def test_users_whose_credit_expired_today_automation_underage(self, mock_update_sendinblue, mock_update_batch):
-        with freeze_time("2033-09-10 15:00:00"):
+        with time_machine.travel("2033-09-10 15:00:00"):
             user = users_factories.UnderageBeneficiaryFactory(
                 email="underage+test@example.net",
                 dateOfBirth=datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=17, months=1),
             )
 
-        with freeze_time("2035-08-11 05:00:00"):
+        with time_machine.travel("2035-08-11 05:00:00"):
             user_automations.users_whose_credit_expired_today_automation()
 
         mock_update_sendinblue.assert_called_once()

@@ -3,8 +3,8 @@ from datetime import timedelta
 from unittest import mock
 from unittest.mock import patch
 
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 from pcapi import settings
 from pcapi.core.bookings.factories import BookingFactory
@@ -32,7 +32,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class OffersTest:
-    @freeze_time("2020-01-01")
+    @time_machine.travel("2020-01-01", tick=False)
     def test_get_event_offer(self, client):
         extra_data = {
             "allocineId": 12345,
@@ -317,7 +317,7 @@ class OffersTest:
         assert response.status_code == 200
         assert response.json["stocks"][0]["activationCode"] is None
 
-    @freeze_time("2020-01-01")
+    @time_machine.travel("2020-01-01")
     def test_get_expired_offer(self, client):
         stock = offers_factories.EventStockFactory(beginningDatetime=datetime.utcnow() - timedelta(days=1))
 
@@ -375,7 +375,7 @@ class OffersTest:
         assert stock.remainingQuantity == 0
         assert response.json["stocks"][0]["isSoldOut"]
 
-    @freeze_time("2023-01-01")
+    @time_machine.travel("2023-01-01")
     @override_features(ENABLE_BOOST_API_INTEGRATION=True)
     @patch("pcapi.connectors.boost.requests.get")
     def test_get_boost_sync_offer_updates_stock(self, request_get, client):

@@ -5,10 +5,10 @@ import pathlib
 import time
 from unittest.mock import patch
 
-from freezegun import freeze_time
 import jwt
 import pytest
 import sqlalchemy as sa
+import time_machine
 
 from pcapi.connectors.entreprise import models as sirene_models
 from pcapi.core import search
@@ -1846,7 +1846,7 @@ def test_grant_user_offerer_access():
 class VenueBannerTest:
     IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 
-    @freeze_time("2020-10-15 00:00:00")
+    @time_machine.travel("2020-10-15 00:00:00", tick=False)
     @patch("pcapi.core.search.async_index_venue_ids")
     def test_save_venue_banner_when_no_default_available(self, mock_search_async_index_venue_ids, tmpdir):
         user = users_factories.UserFactory()
@@ -1875,7 +1875,7 @@ class VenueBannerTest:
                 reason=search.IndexationReason.VENUE_BANNER_UPDATE,
             )
 
-    @freeze_time("2020-10-15 00:00:00")
+    @time_machine.travel("2020-10-15 00:00:00", tick=False)
     @patch("pcapi.core.search.async_index_venue_ids")
     def test_save_venue_banner_when_default_available(self, mock_search_async_index_venue_ids, tmpdir):
         user = users_factories.UserFactory()
@@ -1913,10 +1913,10 @@ class VenueBannerTest:
         directory = pathlib.Path(tmpdir.dirname) / "thumbs" / "venues"
 
         with override_settings(OBJECT_STORAGE_URL=tmpdir.dirname, LOCAL_STORAGE_DIR=pathlib.Path(tmpdir.dirname)):
-            with freeze_time("2020-10-15 00:00:00"):
+            with time_machine.travel("2020-10-15 00:00:00"):
                 offerers_api.save_venue_banner(user, venue, first_image_content, image_credit="first_image")
 
-            with freeze_time("2020-10-15 00:00:05"):
+            with time_machine.travel("2020-10-15 00:00:05"):
                 offerers_api.save_venue_banner(user, venue, second_image_content, image_credit="second_image")
 
             files = set(os.listdir(directory))
@@ -1938,10 +1938,10 @@ class VenueBannerTest:
         directory = pathlib.Path(tmpdir.dirname) / "thumbs" / "venues"
 
         with override_settings(OBJECT_STORAGE_URL=tmpdir.dirname, LOCAL_STORAGE_DIR=pathlib.Path(tmpdir.dirname)):
-            with freeze_time("2020-10-15 00:00:00"):
+            with time_machine.travel("2020-10-15 00:00:00"):
                 offerers_api.save_venue_banner(user, venue, first_image_content, image_credit="first_image")
                 move_venue_banner_to_legacy_location(venue, directory, "1602720000")
-            with freeze_time("2020-10-15 00:00:01"):
+            with time_machine.travel("2020-10-15 00:00:01"):
                 offerers_api.save_venue_banner(user, venue, second_image_content, image_credit="second_image")
 
             files = set(os.listdir(directory))
@@ -2053,7 +2053,7 @@ class LinkVenueToReimbursementPointTest:
         assert new_link.reimbursementPoint == reimbursement_point
         assert new_link.timespan.upper is None
 
-    @freeze_time()
+    @time_machine.travel(datetime.datetime.utcnow(), tick=False)
     def test_end_pre_existing_link(self):
         now = datetime.datetime.utcnow()
         venue = offerers_factories.VenueFactory(reimbursement_point="self", pricing_point="self")

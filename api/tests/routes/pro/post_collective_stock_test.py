@@ -1,5 +1,5 @@
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 from pcapi import settings
 import pcapi.core.educational.factories as educational_factories
@@ -13,8 +13,8 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-@freeze_time("2020-11-17 15:00:00")
 class Return200Test:
+    @time_machine.travel("2020-11-17 15:00:00")
     def test_create_valid_stock_for_collective_offer(self, client):
         # Given
         offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.DRAFT)
@@ -46,6 +46,7 @@ class Return200Test:
         assert created_stock.priceDetail == "Détail du prix"
         assert offer.validation == OfferValidationStatus.DRAFT
 
+    @time_machine.travel("2020-11-17 15:00:00")
     def test_create_collective_stock_for_offer_with_6_5_too_early(self, client):
         # Given
         offer = educational_factories.CollectiveOfferFactory(
@@ -78,8 +79,8 @@ class Return200Test:
         assert offer.students == [StudentLevels.COLLEGE4]
 
 
-@freeze_time("2020-11-17 15:00:00")
 class Return400Test:
+    @time_machine.travel("2020-11-17 15:00:00")
     def test_create_collective_stocks_should_not_be_available_if_user_not_linked_to_offerer(self, client):
         # Given
         offer = educational_factories.CollectiveOfferFactory()
@@ -105,6 +106,7 @@ class Return400Test:
             "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
         }
 
+    @time_machine.travel("2020-11-17 15:00:00")
     def should_not_allow_number_of_tickets_to_be_negative_on_creation(self, client):
         # Given
         offer = educational_factories.CollectiveOfferFactory()
@@ -129,6 +131,7 @@ class Return400Test:
         assert response.status_code == 400
         assert response.json == {"numberOfTickets": ["Le nombre de places ne peut pas être négatif."]}
 
+    @time_machine.travel("2020-11-17 15:00:00")
     def should_not_allow_price_to_be_negative_on_creation(self, client):
         # Given
         offer = educational_factories.CollectiveOfferFactory()
@@ -153,6 +156,7 @@ class Return400Test:
         assert response.status_code == 400
         assert response.json == {"totalPrice": ["Le prix ne peut pas être négatif."]}
 
+    @time_machine.travel("2020-11-17 15:00:00")
     def should_not_allow_price_to_be_too_high(self, client):
         # Given
         offer = educational_factories.CollectiveOfferFactory()
@@ -177,6 +181,7 @@ class Return400Test:
         assert response.status_code == 400
         assert response.json == {"totalPrice": ["Le prix est trop élevé."]}
 
+    @time_machine.travel("2020-11-17 15:00:00")
     def should_not_allow_too_many_tickets(self, client):
         # Given
         offer = educational_factories.CollectiveOfferFactory()
@@ -201,6 +206,7 @@ class Return400Test:
         assert response.status_code == 400
         assert response.json == {"numberOfTickets": ["Le nombre de places est trop élevé."]}
 
+    @time_machine.travel("2020-11-17 15:00:00")
     def should_not_accept_payload_with_bookingLimitDatetime_after_beginningDatetime(self, client):
         # Given
         offer = educational_factories.CollectiveOfferFactory()
@@ -229,6 +235,7 @@ class Return400Test:
             ]
         }
 
+    @time_machine.travel("2020-11-17 15:00:00")
     def should_not_accept_payload_with_price_details_with_more_than_1000_caracters(self, client):
         # Given
         offer = educational_factories.CollectiveOfferFactory()
@@ -254,6 +261,7 @@ class Return400Test:
         assert response.status_code == 400
         assert response.json == {"educationalPriceDetail": ["Le détail du prix ne doit pas excéder 1000 caractères."]}
 
+    @time_machine.travel("2020-11-17 15:00:00")
     def should_not_allow_multiple_stocks(self, client):
         # Given
         offer = educational_factories.CollectiveStockFactory().collectiveOffer
@@ -305,8 +313,8 @@ class Return400Test:
         assert response.json == {"beginningDatetime": ["L'évènement ne peut commencer dans le passé."]}
 
 
-@freeze_time("2020-11-17 15:00:00")
 class Return403Test:
+    @time_machine.travel("2020-11-17 15:00:00")
     def test_create_collective_stock_for_offer_with_6_5_only_too_early(self, client):
         # Given
         offer = educational_factories.CollectiveOfferFactory(

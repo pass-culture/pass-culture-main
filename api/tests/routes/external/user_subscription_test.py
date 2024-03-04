@@ -7,8 +7,8 @@ from unittest.mock import patch
 import uuid
 
 from dateutil import relativedelta
-import freezegun
 import pytest
+import time_machine
 
 from pcapi import settings
 from pcapi.connectors.dms import api as api_dms
@@ -146,7 +146,7 @@ class DmsWebhookApplicationTest:
 
         assert not fraud_api.has_user_performed_identity_check(user)
 
-    @freezegun.freeze_time("2022-03-17 09:00:00")
+    @time_machine.travel("2022-03-17 09:00:00")
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_dms_pc_14151(self, execute_query, client):
         """
@@ -330,7 +330,7 @@ class DmsWebhookApplicationTest:
         assert domains_credit.all.initial == 300
         assert domains_credit.all.remaining == 300
 
-    @freezegun.freeze_time("2021-10-30 09:00:00")
+    @time_machine.travel("2021-10-30 09:00:00")
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_dms_request_draft_application(self, execute_query, client):
         user = users_factories.UserFactory()
@@ -363,7 +363,7 @@ class DmsWebhookApplicationTest:
             == f"Nous avons bien reçu ton dossier le {fraud_check.dateCreated.strftime('%d/%m/%Y')}. Rends-toi sur la messagerie du site Démarches-Simplifiées pour être informé en temps réel."
         )
 
-    @freezegun.freeze_time("2021-10-30 09:00:00")
+    @time_machine.travel("2021-10-30 09:00:00")
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_dms_request_on_going_application(self, execute_query, client):
         user = users_factories.UserFactory()
@@ -780,7 +780,7 @@ class DmsWebhookApplicationTest:
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
-    @freezegun.freeze_time("2021-12-20 09:00:00")
+    @time_machine.travel("2021-12-20 09:00:00")
     @pytest.mark.parametrize("birthday_date", [datetime.date(2012, 5, 12), datetime.date(1999, 6, 12)])
     def test_dms_birth_date_error(self, send_user_message, execute_query, client, birthday_date):
         user = users_factories.UserFactory()
@@ -827,7 +827,7 @@ class DmsWebhookApplicationTest:
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
-    @freezegun.freeze_time("2021-12-20 09:00:00")
+    @time_machine.travel("2021-12-20 09:00:00")
     @testing.override_settings(ENABLE_PERMISSIVE_NAME_VALIDATION=False)
     def test_on_going_birth_date_and_first_name_error(self, send_user_message, execute_query, client):
         user = users_factories.UserFactory()

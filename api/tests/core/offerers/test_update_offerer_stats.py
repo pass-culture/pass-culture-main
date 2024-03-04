@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
-import freezegun
 import pytest
+import time_machine
 
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
 from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
@@ -74,7 +74,7 @@ class UpdateOffererStatsTest:
             {"eventDate": "2023-10-13", "numberOfViews": 15},
         ]
 
-    @freezegun.freeze_time("2023-10-25")
+    @time_machine.travel("2023-10-25")
     @patch("pcapi.connectors.big_query.TestingBackend.run_query")
     def test_update_offerer_top_offers_stats(self, mock_run_query_with_params):
         offerer = OffererFactory()

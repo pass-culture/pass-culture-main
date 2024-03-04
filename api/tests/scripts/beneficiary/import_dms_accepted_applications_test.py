@@ -5,8 +5,8 @@ from datetime import timedelta
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
-import freezegun
 import pytest
+import time_machine
 
 from pcapi.connectors.dms import api as dms_connector_api
 import pcapi.core.finance.models as finance_models
@@ -186,7 +186,7 @@ class RunIntegrationTest:
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_ex_underage_beneficiary(self, get_applications_with_details):
-        with freezegun.freeze_time(datetime.utcnow() - relativedelta(years=2, month=1)):
+        with time_machine.travel(datetime.utcnow() - relativedelta(years=2, month=1)):
             user = users_factories.UnderageBeneficiaryFactory(
                 email="john.doe@example.com",
                 firstName="john",
@@ -381,7 +381,7 @@ class RunIntegrationTest:
 
         assert user.roles == [users_models.UserRole.BENEFICIARY]
 
-    @freezegun.freeze_time("2021-10-30 09:00:00")
+    @time_machine.travel("2021-10-30 09:00:00")
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_duplicated_user(self, get_applications_with_details):
         existing_user = users_factories.BeneficiaryGrant18Factory(

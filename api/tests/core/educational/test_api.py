@@ -4,8 +4,8 @@ from unittest import mock
 
 import dateutil
 from flask import current_app
-from freezegun.api import freeze_time
 import pytest
+import time_machine
 
 from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import booking as educational_api_booking
@@ -22,9 +22,9 @@ from pcapi.routes.serialization import collective_stock_serialize
 from pcapi.utils import db as db_utils
 
 
-@freeze_time("2020-11-17 15:00:00")
 @pytest.mark.usefixtures("db_session")
 class CreateCollectiveOfferStocksTest:
+    @time_machine.travel("2020-11-17 15:00:00")
     def should_create_one_stock_on_collective_offer_stock_creation(self) -> None:
         # Given
         user_pro = users_factories.ProFactory()
@@ -48,6 +48,7 @@ class CreateCollectiveOfferStocksTest:
         assert stock.numberOfTickets == 35
         assert stock.stockId is None
 
+    @time_machine.travel("2020-11-17 15:00:00")
     def should_set_booking_limit_datetime_to_beginning_datetime_when_not_provided(self) -> None:
         # Given
         user_pro = users_factories.ProFactory()
@@ -66,6 +67,7 @@ class CreateCollectiveOfferStocksTest:
         stock = educational_models.CollectiveStock.query.filter_by(id=stock_created.id).one()
         assert stock.bookingLimitDatetime == dateutil.parser.parse("2021-12-15T20:00:00")
 
+    @time_machine.travel("2020-11-17 15:00:00")
     def test_create_stock_for_non_approved_offer_fails(self) -> None:
         # Given
         user = users_factories.ProFactory()
@@ -89,9 +91,9 @@ class CreateCollectiveOfferStocksTest:
         assert educational_models.CollectiveStock.query.count() == 0
 
 
-@freeze_time("2020-01-05 10:00:00")
 @pytest.mark.usefixtures("db_session")
 class UnindexExpiredOffersTest:
+    @time_machine.travel("2020-01-05 10:00:00")
     @override_settings(ALGOLIA_DELETING_COLLECTIVE_OFFERS_CHUNK_SIZE=2)
     @mock.patch("pcapi.core.search.unindex_collective_offer_template_ids")
     def test_default_run_template(self, mock_unindex_collective_offer_template_ids) -> None:
@@ -383,16 +385,16 @@ class GetCulturalPartnersTest:
         }
 
 
-@freeze_time("2022-11-26 18:29:20.891028")
 @pytest.mark.usefixtures("db_session")
 class EACPendingBookingWithConfirmationLimitDate3DaysTest:
+    @time_machine.travel("2022-11-26 18:29")
     @mock.patch(
         "pcapi.core.mails.transactional.educational.eac_pending_booking_confirmation_limit_date_in_3_days.mails.send"
     )
     def test_with_pending_booking_limit_date_in_3_days(self, mock_mail_sender) -> None:
         # given
         booking = educational_factories.PendingCollectiveBookingFactory(
-            confirmationLimitDate="2022-11-29 18:29:20.891028",
+            confirmationLimitDate="2022-11-29 18:29",
             collectiveStock__collectiveOffer__bookingEmails=["pouet@example.com", "plouf@example.com"],
         )
 
@@ -418,12 +420,12 @@ class EACPendingBookingWithConfirmationLimitDate3DaysTest:
     def test_with_pending_booking_limit_date_in_less_or_more_than_3_days(self, mock_mail_sender) -> None:
         # given
         educational_factories.PendingCollectiveBookingFactory(
-            confirmationLimitDate="2022-11-28 18:29:20.891028",
+            confirmationLimitDate="2022-11-28 18:29",
             collectiveStock__collectiveOffer__bookingEmails=["pouet@example.com", "plouf@example.com"],
         )
 
         educational_factories.PendingCollectiveBookingFactory(
-            confirmationLimitDate="2022-12-01 18:29:20.891028",
+            confirmationLimitDate="2022-12-01 18:29",
             collectiveStock__collectiveOffer__bookingEmails=["pouet@example.com", "plouf@example.com"],
         )
 
@@ -439,7 +441,7 @@ class EACPendingBookingWithConfirmationLimitDate3DaysTest:
     def test_with_confirmed_booking_confirmation_limit_date_in_3_days(self, mock_mail_sender) -> None:
         # given
         educational_factories.CollectiveBookingFactory(
-            confirmationLimitDate="2022-11-29 18:29:20.891028",
+            confirmationLimitDate="2022-11-29 18:29",
             collectiveStock__collectiveOffer__bookingEmails=["pouet@example.com", "plouf@example.com"],
         )
 
@@ -450,9 +452,9 @@ class EACPendingBookingWithConfirmationLimitDate3DaysTest:
         mock_mail_sender.assert_not_called()
 
 
-@freeze_time("2020-01-05 10:00:00")
 @pytest.mark.usefixtures("db_session")
 class NotifyProUserOneDayTest:
+    @time_machine.travel("2020-01-05 10:00:00")
     @mock.patch("pcapi.core.mails.transactional.educational.eac_one_day_before_event.mails.send")
     def test_notify_pro_users_one_day(self, mock_mail_sender) -> None:
         # sould send email

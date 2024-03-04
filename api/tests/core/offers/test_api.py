@@ -10,8 +10,8 @@ import re
 from unittest import mock
 from unittest.mock import patch
 
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 from pcapi.core import search
 import pcapi.core.bookings.factories as bookings_factories
@@ -524,7 +524,7 @@ class EditStockTest:
 
         assert not mocked_send_first_venue_approved_offer_email_to_pro.called
 
-    @freeze_time("2023-10-20 17:00:00")
+    @time_machine.travel("2023-10-20 17:00:00", tick=False)
     def test_editing_beginning_datetime_edits_finance_event(self):
         # Given
         new_beginning_datetime = datetime.utcnow() + timedelta(days=4)
@@ -1885,9 +1885,9 @@ class ResolveOfferValidationRuleTest:
         assert api.set_offer_status_based_on_fraud_criteria(collective_offer) == expected_status
 
 
-@freeze_time("2020-01-05 10:00:00")
 @pytest.mark.usefixtures("db_session")
 class UnindexExpiredOffersTest:
+    @time_machine.travel("2020-01-05 10:00:00")
     @override_settings(ALGOLIA_DELETING_OFFERS_CHUNK_SIZE=2)
     @mock.patch("pcapi.core.search.unindex_offer_ids")
     def test_default_run(self, mock_unindex_offer_ids):
@@ -1907,6 +1907,7 @@ class UnindexExpiredOffersTest:
             mock.call([stock3.offerId]),
         ]
 
+    @time_machine.travel("2020-01-05 10:00:00")
     @mock.patch("pcapi.core.search.unindex_offer_ids")
     def test_run_unlimited(self, mock_unindex_offer_ids):
         # more than 2 days ago, must be processed
@@ -2032,7 +2033,7 @@ class DeleteStocksTest:
         api.batch_delete_stocks(stocks)
         assert all(stock.isSoftDeleted for stock in stocks)
 
-    @freeze_time("2020-10-15 00:00:00")
+    @time_machine.travel("2020-10-15 00:00:00")
     def test_delete_batch_stocks_filtered_by_date(self):
         # Given
         beginning_datetime = datetime.utcnow()
@@ -2052,7 +2053,7 @@ class DeleteStocksTest:
         assert stock_1.isSoftDeleted
         assert not stock_2.isSoftDeleted
 
-    @freeze_time("2020-10-15 00:00:00")
+    @time_machine.travel("2020-10-15 00:00:00")
     def test_delete_batch_stocks_filtered_by_time(self):
         # Given
         beginning_datetime = datetime.utcnow()

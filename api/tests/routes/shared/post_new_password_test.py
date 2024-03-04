@@ -1,8 +1,8 @@
 from unittest import mock
 
 import fakeredis
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 from pcapi.core import token as token_utils
 from pcapi.core.users import constants as user_constants
@@ -54,13 +54,13 @@ def test_change_password_validates_email(client):
 @pytest.mark.usefixtures("db_session")
 def test_fail_if_token_has_expired(client):
     with mock.patch("flask.current_app.redis_client", fakeredis.FakeStrictRedis()):
-        with freeze_time("2021-10-15 12:48:00"):
+        with time_machine.travel("2021-10-15 12:48:00"):
             user = users_factories.UserFactory(password="Old_P4ssword")
             token = token_utils.Token.create(
                 token_utils.TokenType.RESET_PASSWORD, user_constants.RESET_PASSWORD_TOKEN_LIFE_TIME, user.id
             )
             data = {"token": token.encoded_token, "newPassword": "N3W_p4ssw0rd"}
-        with freeze_time("2021-10-25 12:48:00"):
+        with time_machine.travel("2021-10-25 12:48:00"):
             response = client.post("/users/new-password", json=data)
 
             assert response.status_code == 400

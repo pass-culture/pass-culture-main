@@ -5,8 +5,8 @@ from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
 from flask_jwt_extended.utils import create_access_token
-import freezegun
 import pytest
+import time_machine
 
 from pcapi.analytics.amplitude.backends.amplitude_connector import AmplitudeEventType
 import pcapi.analytics.amplitude.testing as amplitude_testing
@@ -118,7 +118,7 @@ class EduconnectTest:
         mock_saml_response.in_response_to = self.request_id
 
         with caplog.at_level(logging.INFO):
-            with freezegun.freeze_time("2021-10-10"):
+            with time_machine.travel("2021-10-10", tick=False):
                 response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
 
         assert response.status_code == 302
@@ -389,7 +389,7 @@ class EduconnectTest:
         )
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
-    @freezegun.freeze_time("2021-12-21")
+    @time_machine.travel("2021-12-21")
     def test_educonnect_redirects_to_error_page_too_young(self, mock_get_educonnect_user, client, app):
         user, request_id = self.connect_to_educonnect(client, app)
         age = 14
@@ -412,7 +412,7 @@ class EduconnectTest:
         )
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
-    @freezegun.freeze_time("2021-12-21")
+    @time_machine.travel("2021-12-21")
     def test_educonnect_redirects_to_error_page_18_years_old(self, mock_get_educonnect_user, client, app):
         user, request_id = self.connect_to_educonnect(client, app)
         age = 18
@@ -435,7 +435,7 @@ class EduconnectTest:
         )
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
-    @freezegun.freeze_time("2021-12-21")
+    @time_machine.travel("2021-12-21")
     def test_educonnect_redirects_to_error_page_too_old(self, mock_get_educonnect_user, client, app):
         user, request_id = self.connect_to_educonnect(client, app)
         age = 20

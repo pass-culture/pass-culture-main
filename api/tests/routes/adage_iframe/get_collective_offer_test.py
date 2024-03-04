@@ -1,8 +1,8 @@
 from datetime import datetime
 
 from flask import url_for
-from freezegun.api import freeze_time
 import pytest
+import time_machine
 
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import factories as educational_factories
@@ -31,8 +31,8 @@ def redactor_fixture():
     return educational_factories.EducationalRedactorFactory(email=EMAIL)
 
 
-@freeze_time("2020-11-17 15:00:00")
 class CollectiveOfferTest:
+    @time_machine.travel("2020-11-17 15:00:00")
     def test_get_collective_offer(self, eac_client, redactor):
         venue = offerers_factories.VenueFactory()
         institution = educational_factories.EducationalInstitutionFactory(institutionId="12890AI")

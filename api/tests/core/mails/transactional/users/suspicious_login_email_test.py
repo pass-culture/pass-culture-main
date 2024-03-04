@@ -3,8 +3,8 @@ from unittest import mock
 from urllib.parse import urlencode
 
 import fakeredis
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 from pcapi.core import token as token_utils
 import pcapi.core.mails.testing as mails_testing
@@ -33,7 +33,7 @@ class SendinblueSuspiciousLoginEmailTest:
         with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
             self.user = users_factories.UserFactory()
             current_time = datetime.utcnow()
-            with freeze_time(current_time):
+            with time_machine.travel(current_time):
                 self.account_suspension_token = token_utils.Token.create(
                     token_utils.TokenType.SUSPENSION_SUSPICIOUS_LOGIN,
                     constants.SUSPICIOUS_LOGIN_EMAIL_TOKEN_LIFE_TIME,
@@ -100,7 +100,7 @@ class SendinblueSuspiciousLoginEmailTest:
         send_suspicious_login_email(self.user, self.login_info, self.account_suspension_token, reset_password_token)
         assert mails_testing.outbox[0]["params"]["ACCOUNT_SECURING_LINK"] == ACCOUNT_SECURING_LINK
 
-    @freeze_time("2023-06-08 14:10:00")
+    @time_machine.travel("2023-06-08 14:10:00")
     def should_send_suspicious_login_email_with_date_when_no_login_info(self):
         with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
             send_suspicious_login_email(
@@ -130,7 +130,7 @@ class SendinblueSuspiciousLoginEmailTest:
             assert mails_testing.outbox[0]["params"]["LOGIN_DATE"] == "29/05/2023"
             assert mails_testing.outbox[0]["params"]["LOGIN_TIME"] == "07h05"
 
-    @freeze_time("2023-06-08 3:15:00")
+    @time_machine.travel("2023-06-08 3:15:00")
     def should_send_suspicious_login_email_for_user_living_in_domtom_with_date_when_no_login_info(self):
         with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
             self.user.departementCode = "972"

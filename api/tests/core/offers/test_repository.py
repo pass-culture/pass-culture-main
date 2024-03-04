@@ -1,7 +1,7 @@
 import datetime
 
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import categories
@@ -1173,7 +1173,7 @@ class IncomingEventStocksTest:
         query = repository.find_event_stocks_happening_in_x_days(number_of_days=7)
         assert {stock.id for stock in query} == {self.stock_next_week.id}
 
-    @freeze_time("2022-10-15 15:00:00")
+    @time_machine.travel("2022-10-15 15:00:00")
     def test_find_today_event_stock_ids_metropolitan_france(self):
         self.setup_stocks()
 
@@ -1184,7 +1184,7 @@ class IncomingEventStocksTest:
 
         assert set(stock_ids) == {self.stock_today.id}
 
-    @freeze_time("2022-10-15 15:00:00")
+    @time_machine.travel("2022-10-15 15:00:00")
     def test_find_today_event_stock_ids_by_departments(self):
         self.setup_stocks()
 
@@ -1610,7 +1610,7 @@ class GetStocksListFiltersTest:
         # Then
         assert stocks.count() == 2
 
-    @freeze_time("2020-02-20 01:00:00")
+    @time_machine.travel("2020-02-20 01:00:00")
     def test_filtered_stock_by_time_find_summer_and_winter_time_when_launch_in_winter(self):
         # Given
         beginning_datetime_1 = datetime.datetime(2021, 3, 27, 2, 0, 0)
@@ -1640,7 +1640,7 @@ class GetStocksListFiltersTest:
         # Then
         assert stocks.count() == 3
 
-    @freeze_time("2020-06-20 01:00:00")
+    @time_machine.travel("2020-06-20 01:00:00")
     def test_filtered_stock_by_time_find_summer_and_winter_time_when_launch_in_summer(self):
         # Given
         beginning_datetime_1 = datetime.datetime(2021, 3, 13, 11, 0, 0)

@@ -5,9 +5,9 @@ import re
 import time
 
 import flask
-import freezegun
 import pytest
 import requests_mock
+import time_machine
 
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
@@ -35,7 +35,7 @@ class UbbleEndToEndTest:
         token = ubble_routes.compute_signature(timestamp.encode("utf-8"), payload.encode("utf-8"))
         return f"ts={timestamp},v1={token}"
 
-    @freezegun.freeze_time("2018-01-01")
+    @time_machine.travel("2018-01-01")
     def test_beneficiary_activation(self, client, app):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime(2000, 1, 1),

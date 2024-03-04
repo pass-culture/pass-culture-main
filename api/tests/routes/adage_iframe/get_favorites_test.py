@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from freezegun.api import freeze_time
 import pytest
+import time_machine
 
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import factories as educational_factories
@@ -12,8 +12,8 @@ from pcapi.core.testing import assert_num_queries
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-@freeze_time("2020-11-17 15:00:00")
 class GetFavoriteOfferTest:
+    @time_machine.travel("2020-11-17 15:00:00")
     def test_get_favorite_test(self, client):
         educational_institution = educational_factories.EducationalInstitutionFactory()
         national_program = educational_factories.NationalProgramFactory()

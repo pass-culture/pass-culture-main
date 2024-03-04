@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
@@ -11,7 +11,7 @@ import pcapi.core.users.factories as users_factories
 
 @pytest.mark.usefixtures("db_session")
 class Returns204Test:
-    @freeze_time("2020-10-15 00:00:00")
+    @time_machine.travel("2020-10-15 00:00:00")
     def test_delete_filtered_stocks(self, client):
         # Given
         offer = offers_factories.OfferFactory()

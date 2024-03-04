@@ -2,8 +2,8 @@ from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
 
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
@@ -21,7 +21,7 @@ BOOKING_PERIOD = (datetime(2022, 3, 10, tzinfo=timezone.utc).date(), datetime(20
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    @freeze_time("2022-05-01 15:00:00")
+    @time_machine.travel("2022-05-01 15:00:00")
     def test_when_user_is_admin(self, client):
         admin = users_factories.AdminFactory()
         user_offerer = offerers_factories.UserOffererFactory()
@@ -36,7 +36,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert len(response.json["bookingsRecap"]) == 1
 
-    @freeze_time("2022-05-01 15:00:00")
+    @time_machine.travel("2022-05-01 15:00:00", tick=False)
     def test_when_regular_pro_user_and_booking_confirmed_by_ce(self, client):
         # Given
         booking_date = datetime(2022, 3, 11, 10, 15, 0)
@@ -114,7 +114,7 @@ class Returns200Test:
         assert response.json["total"] == 1
         assert response.json["bookingsRecap"] == expected_bookings_recap
 
-    @freeze_time("2022-05-01 15:00:00")
+    @time_machine.travel("2022-05-01 15:00:00")
     def test_when_no_results(self, client):
         # Given
         booking_date = datetime(2022, 3, 15, 10, 15, 0)
@@ -144,7 +144,7 @@ class Returns200Test:
         assert response.json["total"] == 0
         assert response.json["bookingsRecap"] == []
 
-    @freeze_time("2022-05-01 15:00:00")
+    @time_machine.travel("2022-05-01 15:00:00")
     def test_when_collective_booking_pending_should_show_prereserve_in_history(self, client):
         # Given
         booking_date = datetime(2022, 3, 11, 10, 15, 0)
@@ -178,7 +178,7 @@ class Returns200Test:
             },
         ]
 
-    @freeze_time("2022-05-01 15:00:00")
+    @time_machine.travel("2022-05-01 15:00:00")
     def test_when_collective_booking_cancelled_after_confirmed_should_show_annule_and_previous_in_history_but_not_prereserve(
         self, client
     ):
@@ -231,7 +231,7 @@ class Returns200Test:
             },
         ]
 
-    @freeze_time("2022-05-01 15:00:00")
+    @time_machine.travel("2022-05-01 15:00:00")
     def test_when_collective_booking_cancelled_while_pending_should_show_annule_and_reserve_in_history_but_not_prereserve(
         self, client
     ):
@@ -277,7 +277,7 @@ class Returns200Test:
             },
         ]
 
-    @freeze_time("2022-06-30 15:00:00")
+    @time_machine.travel("2022-06-30 15:00:00")
     def test_when_collective_booking_reimbursed_should_show_rembourse_and_previous_in_history_but_not_prereserve(
         self, client
     ):
@@ -335,7 +335,7 @@ class Returns200Test:
             },
         ]
 
-    @freeze_time("2022-05-10 15:00:00")
+    @time_machine.travel("2022-05-10 15:00:00")
     def test_when_collective_booking_pending_and_cancellationLimitDate_has_passed_should_show_prereserve_only(
         self, client
     ):
@@ -374,7 +374,7 @@ class Returns200Test:
             },
         ]
 
-    @freeze_time("2022-05-01 15:00:00")
+    @time_machine.travel("2022-05-01 15:00:00", tick=False)
     def test_when_filter_venue_id(self, client):
         # Given
         booking_date = datetime(2022, 3, 11, 10, 15, 0)
@@ -463,7 +463,7 @@ class Returns200Test:
         assert response.json["total"] == 1
         assert response.json["bookingsRecap"] == expected_bookings_recap
 
-    @freeze_time("2022-05-01 15:00:00")
+    @time_machine.travel("2022-05-01 15:00:00", tick=False)
     def test_when_filter_event_date(self, client):
         # Given
         booking_date = datetime(2022, 3, 11, 10, 15, 0)
@@ -551,7 +551,7 @@ class Returns200Test:
         assert response.json["total"] == 1
         assert response.json["bookingsRecap"] == expected_bookings_recap
 
-    @freeze_time("2022-05-20 15:00:00")
+    @time_machine.travel("2022-05-20 15:00:00", tick=False)
     def test_when_filter_booking_status(self, client):
         # Given
         booking_date = datetime(2022, 2, 11, 10, 15, 0)
@@ -672,7 +672,7 @@ class Returns400Test:
             "Ce champ est obligatoire si la date d'évènement n'est renseignée"
         ]
 
-    @freeze_time("2022-05-01 15:00:00")
+    @time_machine.travel("2022-05-01 15:00:00")
     def test_when_cancellation_reason_is_not_none(self, client):
         # Given
         booking_date = datetime(2022, 3, 11, 10, 15, 0)

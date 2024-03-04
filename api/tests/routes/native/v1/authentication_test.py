@@ -7,8 +7,8 @@ import uuid
 from flask_jwt_extended import decode_token
 from flask_jwt_extended.utils import create_access_token
 from flask_jwt_extended.utils import create_refresh_token
-from freezegun import freeze_time
 import pytest
+import time_machine
 
 from pcapi import settings
 from pcapi.connectors import google_oauth
@@ -229,7 +229,7 @@ class SigninTest:
         mocked_check_recaptcha_token_is_valid.assert_called()
         assert response.status_code == 200
 
-    @freeze_time("2020-03-15")
+    @time_machine.travel("2020-03-15", tick=False)
     def test_refresh_token_route_updates_user_last_connection_date(self, client):
         data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
         user = users_factories.UserFactory(
@@ -446,7 +446,7 @@ class SSOSigninTest:
 
     @override_features(WIP_ENABLE_GOOGLE_SSO=True)
     def test_oauth_state_token_past_expiration_date(self, client):
-        with freeze_time("2022-01-01"):
+        with time_machine.travel("2022-01-01"):
             oauth_state_token = token_utils.UUIDToken.create(
                 token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
             )
@@ -1176,7 +1176,7 @@ class EmailValidationTest:
 
         assert response.status_code == 400
 
-    @freeze_time("2018-06-01")
+    @time_machine.travel("2018-06-01")
     def test_validate_email_when_eligible(self, client):
         user = users_factories.UserFactory(
             isEmailValidated=False,
@@ -1222,7 +1222,7 @@ class EmailValidationTest:
         assert response.status_code == 400
         assert response.json["token"] == ["Le token de validation d'email est invalide."]
 
-    @freeze_time("2018-06-01")
+    @time_machine.travel("2018-06-01")
     def test_validate_email_when_not_eligible(self, client):
         user = users_factories.UserFactory(isEmailValidated=False, dateOfBirth=datetime(2000, 7, 1))
         token = self.initialize_token(user)
