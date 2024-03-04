@@ -9,9 +9,6 @@ import {
   GetOfferVenueResponseModel,
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
-  ListOffersOfferResponseModel,
-  ListOffersStockResponseModel,
-  ListOffersVenueResponseModel,
   ManagedVenues,
   OfferAddressType,
   OfferStatus,
@@ -33,7 +30,6 @@ import { priceCategoryFactory } from './individualApiFactories'
 let offerId = 1
 let venueId = 1
 let offererId = 1
-let stockId = 1
 let bookingId = 1
 
 export const getIndividualOfferFactory = (
@@ -215,56 +211,6 @@ export const defaultGetBookingResponse: GetBookingResponse = {
   venueDepartmentCode: '75',
   priceCategoryLabel: 'price label',
 }
-
-type ListOffersOfferResponseModelFactory = {
-  customOffer?: Partial<ListOffersOfferResponseModel>
-  customStocksList?: ListOffersStockResponseModel[]
-  customVenue?: Partial<ListOffersVenueResponseModel>
-}
-
-// TODO factories: should remove customSotcksList and customVenue as arguments
-export const listOffersOfferFactory = ({
-  customOffer,
-  customStocksList,
-  customVenue,
-}: ListOffersOfferResponseModelFactory = {}): ListOffersOfferResponseModel => ({
-  hasBookingLimitDatetimesPassed: true,
-  id: offerId++,
-  isActive: true,
-  isEditable: true,
-  isEducational: false,
-  isEvent: true,
-  isShowcase: false,
-  isThing: false,
-  name: `mon offre ${offerId}`,
-  productIsbn: null,
-  status: OfferStatus.ACTIVE,
-  stocks: customStocksList ?? [listOffersStockFactory()],
-  subcategoryId: SubcategoryIdEnum.CINE_PLEIN_AIR,
-  thumbUrl: 'https://www.example.com',
-  venue: listOffersVenueFactory(customVenue),
-  ...customOffer,
-})
-
-const listOffersStockFactory = (
-  customStock?: Partial<ListOffersStockResponseModel>
-): ListOffersStockResponseModel => ({
-  id: stockId++,
-  hasBookingLimitDatetimePassed: false,
-  remainingQuantity: 10,
-  ...customStock,
-})
-
-const listOffersVenueFactory = (
-  customVenue?: Partial<ListOffersVenueResponseModel>
-): ListOffersVenueResponseModel => ({
-  id: venueId++,
-  name: 'mon lieu azmefhzihfmiùazer',
-  isVirtual: false,
-  offererName: 'mon offerer',
-  departementCode: '75',
-  ...customVenue,
-})
 
 export const defaultBankAccount: BankAccountResponseModel = {
   bic: 'CCOPFRPP',

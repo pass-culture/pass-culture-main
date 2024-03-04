@@ -16,10 +16,8 @@ import {
 import { SearchFiltersParams } from 'core/Offers/types'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
-import {
-  defaultGetOffererResponseModel,
-  listOffersOfferFactory,
-} from 'utils/apiFactories'
+import { listOffersOfferFactory } from 'screens/Offers/utils/individualOffersFactories'
+import { defaultGetOffererResponseModel } from 'utils/apiFactories'
 import { venueListItemFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -109,7 +107,7 @@ describe('route Offers', () => {
         searchFilters: DEFAULT_SEARCH_FILTERS,
       },
     }
-    offersRecap = [listOffersOfferFactory({ customVenue: proVenues[0] })]
+    offersRecap = [listOffersOfferFactory({ venue: proVenues[0] })]
     vi.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
     vi.spyOn(api, 'getCategories').mockResolvedValueOnce(
       categoriesAndSubcategories
@@ -640,10 +638,8 @@ describe('route Offers', () => {
     it('should have status value when user filters by status', async () => {
       vi.spyOn(api, 'listOffers').mockResolvedValueOnce([
         listOffersOfferFactory({
-          customOffer: {
-            status: OfferStatus.ACTIVE,
-          },
-          customStocksList: [],
+          status: OfferStatus.ACTIVE,
+          stocks: [],
         }),
       ])
 
@@ -671,10 +667,8 @@ describe('route Offers', () => {
     it('should have status value be removed when user ask for all status', async () => {
       vi.spyOn(api, 'listOffers').mockResolvedValueOnce([
         listOffersOfferFactory({
-          customOffer: {
-            status: OfferStatus.ACTIVE,
-          },
-          customStocksList: [],
+          status: OfferStatus.ACTIVE,
+          stocks: [],
         }),
       ])
       await renderOffers(store)
@@ -818,7 +812,7 @@ describe('route Offers', () => {
     describe('when 501 offers are fetched', () => {
       beforeEach(() => {
         offersRecap = Array.from({ length: 501 }, () =>
-          listOffersOfferFactory({ customStocksList: [] })
+          listOffersOfferFactory({ stocks: [] })
         )
       })
 
