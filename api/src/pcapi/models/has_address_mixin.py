@@ -11,4 +11,4 @@ class HasAddressMixin:
 
     postalCode: str = Column(String(6), nullable=False, index=True)
 
-    city: str = Column(String(50), nullable=False, index=True)
+    city: str = Column(String(50), nullable=False)

@@ -953,7 +953,11 @@ class Offerer(
     dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
 
     name: str = Column(String(140), nullable=False)
+    # Keep both because pg_stat_user_indexes reports idx_offerer_trgm_name has been used (but still used?)
     sa.Index("idx_offerer_trgm_name", name, postgresql_using="gin")
+    sa.Index("ix_offerer_trgm_unaccent_name", sa.func.immutable_unaccent("name"), postgresql_using="gin")
+
+    sa.Index("ix_offerer_trgm_unaccent_city", sa.func.immutable_unaccent("city"), postgresql_using="gin")
 
     UserOfferers: list["UserOfferer"] = sa.orm.relationship(
         "UserOfferer", order_by="UserOfferer.id", back_populates="offerer"

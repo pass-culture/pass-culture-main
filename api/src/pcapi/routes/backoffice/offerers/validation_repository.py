@@ -75,8 +75,8 @@ def _apply_query_filters(
             name_query = "%{}%".format(clean_accents(q))
             query = query.filter(
                 sa.or_(
-                    sa.func.unaccent(offerers_models.Offerer.name).ilike(name_query),
-                    sa.func.unaccent(offerers_models.Offerer.city).ilike(name_query),
+                    sa.func.immutable_unaccent(offerers_models.Offerer.name).ilike(name_query),
+                    sa.func.immutable_unaccent(offerers_models.Offerer.city).ilike(name_query),
                     sa.func.immutable_unaccent(users_models.User.firstName + " " + users_models.User.lastName).ilike(
                         name_query
                     ),
