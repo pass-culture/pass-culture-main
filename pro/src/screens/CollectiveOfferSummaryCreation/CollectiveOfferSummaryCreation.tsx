@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import {
   GetOffererResponseModel,
   GetCollectiveOfferResponseModel,
@@ -15,8 +16,6 @@ import { RedirectToBankAccountDialog } from 'screens/Offers/RedirectToBankAccoun
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import publishCollectiveOfferAdapter from './adapters/publishCollectiveOfferAdapter'
-import publishCollectiveOfferTemplateAdapter from './adapters/publishCollectiveOfferTemplateAdapter'
 import styles from './CollectiveOfferSummaryCreation.module.scss'
 
 interface CollectiveOfferSummaryCreationProps {
@@ -56,31 +55,39 @@ const CollectiveOfferSummaryCreation = ({
 
   const publishOffer = async () => {
     if (offer.isTemplate) {
-      const response = await publishCollectiveOfferTemplateAdapter(offer.id)
-      if (!response.isOk) {
-        return notify.error(response.message)
+      try {
+        const resultOffer = await api.patchCollectiveOfferTemplatePublication(
+          offer.id
+        )
+        setOffer({ ...resultOffer, isTemplate: true })
+        return navigate(confirmationUrl)
+      } catch (error) {
+        return notify.error(
+          'Une erreur est survenue lors de la publication de votre offre.'
+        )
       }
-      setOffer(response.payload)
-      return navigate(confirmationUrl)
     }
 
-    const response = await publishCollectiveOfferAdapter(offer.id)
-    if (!response.isOk) {
-      return notify.error(response.message)
-    }
-    setOffer(response.payload)
-    const shouldDisplayRedirectDialog =
-      isNewBankDetailsJourneyEnabled &&
-      response.payload.isNonFreeOffer &&
-      offerer &&
-      !offerer.hasNonFreeOffer &&
-      !offerer.hasValidBankAccount &&
-      !offerer.hasPendingBankAccount
+    try {
+      const resultOffer = await api.patchCollectiveOfferPublication(offer.id)
+      setOffer({ ...resultOffer, isTemplate: false })
+      const shouldDisplayRedirectDialog =
+        isNewBankDetailsJourneyEnabled &&
+        resultOffer.isNonFreeOffer &&
+        offerer &&
+        !offerer.hasNonFreeOffer &&
+        !offerer.hasValidBankAccount &&
+        !offerer.hasPendingBankAccount
 
-    if (shouldDisplayRedirectDialog) {
-      setDisplayRedirectDialog(true)
-    } else {
-      navigate(confirmationUrl)
+      if (shouldDisplayRedirectDialog) {
+        setDisplayRedirectDialog(true)
+      } else {
+        navigate(confirmationUrl)
+      }
+    } catch (error) {
+      return notify.error(
+        'Une erreur est survenue lors de la publication de votre offre.'
+      )
     }
   }
   const backRedirectionUrl = offer.isTemplate

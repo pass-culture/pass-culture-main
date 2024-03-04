@@ -1,6 +1,7 @@
 import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useMemo, useState } from 'react'
 
+import { api } from 'apiClient/api'
 import {
   EducationalInstitutionResponseModel,
   EducationalRedactor,
@@ -35,7 +36,6 @@ import {
   SelectOptionNormalized,
 } from 'utils/searchPatternInOptions'
 
-import getEducationalRedactorsAdapter from './adapters/getEducationalRedactorAdapter'
 import styles from './CollectiveOfferVisibility.module.scss'
 import validationSchema from './validationSchema'
 
@@ -205,13 +205,15 @@ const CollectiveOfferVisibility = ({
       setTeachersOptions([])
       return
     }
-    const { payload } = await getEducationalRedactorsAdapter({
-      uai: selectedInstitution?.institutionId,
-      candidate: searchTeacherValue,
-    })
-    payload &&
+
+    const result = await api.getAutocompleteEducationalRedactorsForUai(
+      selectedInstitution?.institutionId,
+      searchTeacherValue
+    )
+
+    result &&
       setTeachersOptions(
-        payload.map(
+        result.map(
           ({
             name,
             surname,

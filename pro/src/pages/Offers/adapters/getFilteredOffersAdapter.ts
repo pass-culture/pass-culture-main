@@ -4,7 +4,7 @@ import { SearchFiltersParams } from 'core/Offers/types'
 import { serializeApiFilters } from 'core/Offers/utils'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 
-export type Payload = {
+type Payload = {
   offers: ListOffersOfferResponseModel[]
 }
 

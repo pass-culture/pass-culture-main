@@ -3,10 +3,8 @@ import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { updateIndividualOffer } from 'core/Offers/adapters'
 import { serializePatchOffer } from 'core/Offers/adapters/updateIndividualOffer/serializers'
 
-import postPriceCategoriesAdapter from '../adapters/postPriceCategoriesAdapter'
-import { serializePriceCategories } from '../adapters/serializePriceCategories'
-
 import { computeInitialValues } from './computeInitialValues'
+import { serializePriceCategories } from './serializePriceCategories'
 import { PriceCategoriesFormValues, PriceCategoryFormik } from './types'
 
 export const submitToApi = async (
@@ -27,13 +25,17 @@ export const submitToApi = async (
     throw new Error(offerMessage)
   }
 
-  const { isOk: isPriceCategoriesOk, message: priceCategoriesMessage } =
-    await postPriceCategoriesAdapter({
-      offerId: offer.id,
-      requestBody: serializePriceCategories(values),
-    })
-  if (!isPriceCategoriesOk) {
-    throw new Error(priceCategoriesMessage)
+  try {
+    await api.postPriceCategories(offer.id, serializePriceCategories(values))
+    return {
+      isOk: true,
+      message: 'Vos modifications ont bien été prises en compte',
+      payload: {},
+    }
+  } catch (error) {
+    throw new Error(
+      'Une erreur est survenue lors de la mise à jour de votre tarif'
+    )
   }
 
   const updatedOffer = await api.getOffer(offer.id)

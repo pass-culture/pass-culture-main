@@ -16,8 +16,6 @@ import { Button, Checkbox, InfoBox, TextInput } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 
-import deletePriceCategoryAdapter from './adapters/deletePriceCategoryAdapter'
-import postPriceCategoriesAdapter from './adapters/postPriceCategoriesAdapter'
 import { computeInitialValues } from './form/computeInitialValues'
 import {
   INITIAL_PRICE_CATEGORY,
@@ -66,15 +64,15 @@ export const PriceCategoriesForm = ({
       } else {
         setCurrentDeletionIndex(null)
       }
-      const { isOk, message } = await deletePriceCategoryAdapter({
-        offerId: offer.id,
-        priceCategoryId: priceCategoryId,
-      })
-      if (isOk) {
+
+      try {
+        await api.deletePriceCategory(offer.id, priceCategoryId)
         arrayHelpers.remove(index)
-        notify.success(message)
-      } else {
-        notify.error(message)
+        notify.success('Le tarif a été supprimé.')
+      } catch (error) {
+        notify.error(
+          'Une erreur est survenue lors de la suppression de votre tarif'
+        )
       }
     } else {
       arrayHelpers.remove(index)
@@ -95,10 +93,7 @@ export const PriceCategoriesForm = ({
             },
           ],
         }
-        await postPriceCategoriesAdapter({
-          offerId: offer.id,
-          requestBody: requestBody,
-        })
+        await api.postPriceCategories(offer.id, requestBody)
       }
       const updatedOffer = await api.getOffer(offer.id)
       await setValues({

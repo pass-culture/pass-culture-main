@@ -1,8 +1,8 @@
 import { StockCreationBodyModel, StockEditionBodyModel } from 'apiClient/v1'
 
-import { STOCK_THING_FORM_DEFAULT_VALUES } from '../../constants'
-import { StockThingFormValues } from '../../types'
+import { STOCK_THING_FORM_DEFAULT_VALUES } from '../constants'
 import { serializeStockThingList } from '../serializers'
+import { StockThingFormValues } from '../types'
 
 describe('serializeStockThingList', () => {
   let formValues: StockThingFormValues
