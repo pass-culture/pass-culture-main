@@ -61,7 +61,7 @@ def autocomplete_offerers() -> AutocompleteResponse:
     if is_numeric_query and len(query_string) == 1:
         filters = offerers_models.Offerer.id == int(query_string)
     else:
-        filters = sa.func.unaccent(offerers_models.Offerer.name).ilike(f"%{clean_accents(query_string)}%")
+        filters = sa.func.immutable_unaccent(offerers_models.Offerer.name).ilike(f"%{clean_accents(query_string)}%")
 
         if is_numeric_query and len(query_string) <= 9:
             filters = sa.or_(
