@@ -1893,11 +1893,12 @@ def generate_debit_notes(batch: models.CashflowBatch) -> None:
             with transaction():
                 extra = {"bank_account_id": row.bank_account_id}
                 with log_elapsed(logger, "Generated and sent debit note", extra):
-                    generate_and_store_invoice(
-                        bank_account_id=row.bank_account_id,
-                        cashflow_ids=row.cashflow_ids,
-                        is_debit_note=True,
-                    )
+                    if not FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
+                        generate_and_store_invoice(
+                            bank_account_id=row.bank_account_id,
+                            cashflow_ids=row.cashflow_ids,
+                            is_debit_note=True,
+                        )
         except Exception as exc:  # pylint: disable=broad-except
             if settings.IS_RUNNING_TESTS:
                 raise
