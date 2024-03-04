@@ -26,6 +26,7 @@ class GetAllBookingsTest:
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.core.bookings.repository.find_by_pro_user")
     def test_call_repository_with_user_and_page(self, find_by_pro_user, client: Any):
+        find_by_pro_user.return_value = ([], 0)
         pro = users_factories.ProFactory()
         response = client.with_session_auth(pro.email).get(
             f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&page=3"
@@ -41,6 +42,7 @@ class GetAllBookingsTest:
             offer_id=None,
             offer_type=None,
             page=3,
+            per_page_limit=1000,
         )
 
     @pytest.mark.usefixtures("db_session")
@@ -57,6 +59,7 @@ class GetAllBookingsTest:
             offer_id=None,
             offer_type=None,
             page=1,
+            per_page_limit=1000,
         )
 
     @pytest.mark.usefixtures("db_session")
@@ -81,6 +84,7 @@ class GetAllBookingsTest:
             offer_id=None,
             offer_type=None,
             page=1,
+            per_page_limit=1000,
         )
 
     @pytest.mark.usefixtures("db_session")
@@ -105,6 +109,7 @@ class GetAllBookingsTest:
             offer_id=offer.id,
             offer_type=None,
             page=1,
+            per_page_limit=1000,
         )
 
 

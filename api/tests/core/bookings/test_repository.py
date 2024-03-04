@@ -28,10 +28,8 @@ from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
-from pcapi.domain.booking_recap import booking_recap_history
 from pcapi.domain.booking_recap import utils as booking_recap_utils
 from pcapi.routes.serialization.bookings_recap_serialize import OfferType
-from pcapi.utils.date import utc_datetime_to_department_timezone
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -104,28 +102,27 @@ class FindByProUserTest:
         )
 
         # When
-        bookings_recap_paginated = booking_repository.find_by_pro_user(
+        bookings_query, total = booking_repository.find_by_pro_user(
             user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
         )
 
+        bookings = bookings_query.all()
         # Then
-        assert len(bookings_recap_paginated.bookings_recap) == 1
-        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
-        assert expected_booking_recap.offer_identifier == stock.offer.id
-        assert expected_booking_recap.offer_name == offer.name
-        assert expected_booking_recap.beneficiary_firstname == "Ron"
-        assert expected_booking_recap.beneficiary_lastname == "Weasley"
-        assert expected_booking_recap.beneficiary_email == "beneficiary@example.com"
-        assert expected_booking_recap.booking_date == booking_date.astimezone(tz.gettz("Europe/Paris"))
-        assert expected_booking_recap.booking_token == "ABCDEF"
-        assert expected_booking_recap.booking_is_used is True
-        assert expected_booking_recap.booking_is_cancelled is False
-        assert expected_booking_recap.booking_is_reimbursed is False
-        assert expected_booking_recap.booking_is_duo is False
-        assert expected_booking_recap.booking_amount == 12
-        assert expected_booking_recap.booking_status_history.booking_date == booking_date.astimezone(
-            tz.gettz("Europe/Paris")
-        )
+        assert total == 1
+        assert len(bookings) == 1
+        expected_booking = bookings[0]
+        assert expected_booking.offerId == stock.offer.id
+        assert expected_booking.offerName == offer.name
+        assert expected_booking.beneficiaryFirstname == "Ron"
+        assert expected_booking.beneficiaryLastname == "Weasley"
+        assert expected_booking.beneficiaryEmail == "beneficiary@example.com"
+        assert expected_booking.bookedAt == booking_date  # .astimezone(tz.gettz("Europe/Paris"))
+        assert expected_booking.bookingToken == "ABCDEF"
+        assert expected_booking.usedAt
+        assert not expected_booking.cancelledAt
+        assert not expected_booking.reimbursedAt
+        assert expected_booking.quantity == 1
+        assert expected_booking.bookingAmount == 12
 
     def test_should_return_only_validated_bookings_for_requested_period(self, app: fixture):
         pro = users_factories.ProFactory()
@@ -147,14 +144,16 @@ class FindByProUserTest:
             stock=stock, quantity=1, dateCreated=booking_date, dateUsed=(booking_date + timedelta(days=8))
         )
 
-        bookings_recap_paginated = booking_repository.find_by_pro_user(
+        bookings_query, total = booking_repository.find_by_pro_user(
             user=pro,
             booking_period=((booking_date + timedelta(2)), (booking_date + timedelta(5))),
             status_filter=BookingStatusFilter.VALIDATED,
         )
+        bookings = bookings_query.all()
 
-        assert len(bookings_recap_paginated.bookings_recap) == 1
-        assert bookings_recap_paginated.bookings_recap[0]._booking_token == used_booking_2.token
+        assert total == 1
+        assert len(bookings) == 1
+        assert bookings[0].bookingToken == used_booking_2.token
 
     def test_should_return_only_reimbursed_bookings_for_requested_period(self, app: fixture):
         pro = users_factories.ProFactory()
@@ -175,14 +174,15 @@ class FindByProUserTest:
             stock=stock, quantity=1, dateCreated=booking_date, reimbursementDate=(booking_date + timedelta(days=4))
         )
 
-        bookings_recap_paginated = booking_repository.find_by_pro_user(
+        bookings_query, _ = booking_repository.find_by_pro_user(
             user=pro,
             booking_period=((booking_date + timedelta(1)), (booking_date + timedelta(3))),
             status_filter=BookingStatusFilter.REIMBURSED,
         )
+        bookings = bookings_query.all()
 
-        assert len(bookings_recap_paginated.bookings_recap) == 1
-        assert bookings_recap_paginated.bookings_recap[0]._booking_token == reimbursed_booking_1.token
+        assert len(bookings) == 1
+        assert bookings[0].bookingToken == reimbursed_booking_1.token
 
     def test_should_return_booking_as_duo_when_quantity_is_two(self, app: fixture):
         # Given
@@ -200,14 +200,14 @@ class FindByProUserTest:
         bookings_factories.BookingFactory(user=beneficiary, stock=stock, quantity=2)
 
         # When
-        bookings_recap_paginated = booking_repository.find_by_pro_user(
+        bookings_query, _ = booking_repository.find_by_pro_user(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
+        bookings = bookings_query.all()
 
         # Then
-        assert len(bookings_recap_paginated.bookings_recap) == 2
-        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
-        assert expected_booking_recap.booking_is_duo is True
+        assert len(bookings) == 2
+        assert bookings[0].quantity == 2
 
     def test_should_not_duplicate_bookings_when_user_is_admin_and_bookings_offerer_has_multiple_user(
         self, app: fixture
@@ -222,14 +222,14 @@ class FindByProUserTest:
         bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer, quantity=2)
 
         # When
-        bookings_recap_paginated = booking_repository.find_by_pro_user(
+        bookings_recap_paginated_query, _ = booking_repository.find_by_pro_user(
             user=admin, booking_period=(one_year_before_booking, one_year_after_booking)
         )
+        bookings = bookings_recap_paginated_query.all()
 
         # Then
-        assert len(bookings_recap_paginated.bookings_recap) == 2
-        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
-        assert expected_booking_recap.booking_is_duo is True
+        assert len(bookings) == 2
+        assert bookings[0].quantity == 2
 
     def test_should_return_event_booking_when_booking_is_on_an_event(self, app: fixture):
         # Given
@@ -255,28 +255,26 @@ class FindByProUserTest:
         )
 
         # When
-        bookings_recap_paginated = booking_repository.find_by_pro_user(
+        bookings_query, _ = booking_repository.find_by_pro_user(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
+        bookings = bookings_query.all()
 
         # Then
-        assert len(bookings_recap_paginated.bookings_recap) == 1
-        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
-        assert expected_booking_recap.offer_identifier == stock.offer.id
-        assert expected_booking_recap.offer_name == stock.offer.name
-        assert expected_booking_recap.beneficiary_firstname == "Ron"
-        assert expected_booking_recap.beneficiary_lastname == "Weasley"
-        assert expected_booking_recap.beneficiary_email == "beneficiary@example.com"
-        assert expected_booking_recap.booking_date == yesterday.astimezone(tz.gettz("Europe/Paris"))
-        assert expected_booking_recap.booking_token == "ABCDEF"
-        assert expected_booking_recap.booking_is_used is False
-        assert expected_booking_recap.booking_is_cancelled is False
-        assert expected_booking_recap.booking_is_reimbursed is False
-        assert expected_booking_recap.booking_is_confirmed is False
-        assert expected_booking_recap.event_beginning_datetime == stock.beginningDatetime.astimezone(
-            tz.gettz("Europe/Paris")
-        )
-        assert isinstance(expected_booking_recap.booking_status_history, booking_recap_history.BookingRecapHistory)
+        assert len(bookings) == 1
+        expected_booking = bookings[0]
+        assert expected_booking.offerId == stock.offer.id
+        assert expected_booking.offerName == stock.offer.name
+        assert expected_booking.beneficiaryFirstname == "Ron"
+        assert expected_booking.beneficiaryLastname == "Weasley"
+        assert expected_booking.beneficiaryEmail == "beneficiary@example.com"
+        assert expected_booking.bookedAt == yesterday
+        assert expected_booking.bookingToken == "ABCDEF"
+        assert not expected_booking.usedAt
+        assert not expected_booking.cancelledAt
+        assert not expected_booking.reimbursedAt
+        assert not expected_booking.isConfirmed
+        assert expected_booking.stockBeginningDatetime == stock.beginningDatetime
 
     def test_should_return_event_confirmed_booking_when_booking_is_on_an_event_in_confirmation_period(
         self, app: fixture
@@ -301,14 +299,13 @@ class FindByProUserTest:
         )
 
         # When
-        bookings_recap_paginated = booking_repository.find_by_pro_user(
+        bookings_query, _ = booking_repository.find_by_pro_user(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
+        bookings = bookings_query.all()
 
         # Then
-        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
-        assert expected_booking_recap.booking_is_confirmed is True
-        assert isinstance(expected_booking_recap.booking_status_history, booking_recap_history.BookingRecapHistory)
+        assert bookings[0].isConfirmed
 
     def test_should_return_cancellation_date_when_booking_has_been_cancelled(self, app: fixture):
         # Given
@@ -333,15 +330,14 @@ class FindByProUserTest:
         )
 
         # When
-        bookings_recap_paginated = booking_repository.find_by_pro_user(
+        bookings_query, _ = booking_repository.find_by_pro_user(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
+        bookings = bookings_query.all()
 
         # Then
-        assert len(bookings_recap_paginated.bookings_recap) == 1
-        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
-        assert expected_booking_recap.booking_is_cancelled is True
-        assert expected_booking_recap.booking_status_history.cancellation_date is not None
+        assert len(bookings) == 1
+        assert bookings[0].cancelledAt
 
     def test_should_return_validation_date_when_booking_has_been_used_and_not_cancelled_not_reimbursed(
         self, app: fixture
@@ -366,18 +362,17 @@ class FindByProUserTest:
         )
 
         # When
-        bookings_recap_paginated = booking_repository.find_by_pro_user(
+        bookings_query, _ = booking_repository.find_by_pro_user(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
+        bookings = bookings_query.all()
 
         # Then
-        assert len(bookings_recap_paginated.bookings_recap) == 1
-        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
-        assert expected_booking_recap.booking_is_used is True
-        assert expected_booking_recap.booking_is_cancelled is False
-        assert expected_booking_recap.booking_is_reimbursed is False
-        assert expected_booking_recap.booking_status_history.date_confirmed is not None
-        assert expected_booking_recap.booking_status_history.date_used is not None
+        assert len(bookings) == 1
+        expected_booking = bookings[0]
+        assert expected_booking.usedAt
+        assert not expected_booking.cancelledAt
+        assert not expected_booking.reimbursedAt
 
     def test_should_return_correct_number_of_matching_offerers_bookings_linked_to_user(self, app: fixture):
         # Given
@@ -404,12 +399,13 @@ class FindByProUserTest:
         bookings_factories.BookingFactory(user=beneficiary, stock=stock2, dateCreated=today, token="FGHI")
 
         # When
-        bookings_recap_paginated = booking_repository.find_by_pro_user(
+        bookings_query, _ = booking_repository.find_by_pro_user(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
+        bookings = bookings_query.all()
 
         # Then
-        assert len(bookings_recap_paginated.bookings_recap) == 2
+        assert len(bookings) == 2
 
     def test_should_return_bookings_from_first_page(self, app: fixture):
         # Given
@@ -427,16 +423,15 @@ class FindByProUserTest:
         booking2 = bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="FGHI")
 
         # When
-        bookings_recap_paginated = booking_repository.find_by_pro_user(
+        bookings_query, total = booking_repository.find_by_pro_user(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking), page=1, per_page_limit=1
         )
+        bookings = bookings_query.all()
 
         # Then
-        assert len(bookings_recap_paginated.bookings_recap) == 1
-        assert bookings_recap_paginated.bookings_recap[0].booking_token == booking2.token
-        assert bookings_recap_paginated.page == 1
-        assert bookings_recap_paginated.pages == 2
-        assert bookings_recap_paginated.total == 2
+        assert len(bookings) == 1
+        assert bookings[0].bookingToken == booking2.token
+        assert total == 2
 
     def test_should_not_return_bookings_when_offerer_link_is_not_validated(self, app: fixture):
         # Given
@@ -452,12 +447,13 @@ class FindByProUserTest:
         bookings_factories.BookingFactory(user=beneficiary, stock=stock)
 
         # When
-        bookings_recap_paginated = booking_repository.find_by_pro_user(
+        bookings_query, _ = booking_repository.find_by_pro_user(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
+        bookings = bookings_query.all()
 
         # Then
-        assert bookings_recap_paginated.bookings_recap == []
+        assert bookings == []
 
     def test_should_return_one_booking_recap_item_when_quantity_booked_is_one(self, app: fixture):
         # Given
@@ -473,16 +469,15 @@ class FindByProUserTest:
         booking = bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="FGHI")
 
         # When
-        bookings_recap_paginated = booking_repository.find_by_pro_user(
+        bookings_query, total = booking_repository.find_by_pro_user(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking), page=1, per_page_limit=4
         )
+        bookings = bookings_query.all()
 
         # Then
-        assert len(bookings_recap_paginated.bookings_recap) == 1
-        assert bookings_recap_paginated.bookings_recap[0].booking_token == booking.token
-        assert bookings_recap_paginated.page == 1
-        assert bookings_recap_paginated.pages == 1
-        assert bookings_recap_paginated.total == 1
+        assert len(bookings) == 1
+        assert bookings[0].bookingToken == booking.token
+        assert total == 1
 
     def test_should_return_two_booking_recap_items_when_quantity_booked_is_two(self, app: fixture):
         # Given
@@ -500,17 +495,16 @@ class FindByProUserTest:
         )
 
         # When
-        bookings_recap_paginated = booking_repository.find_by_pro_user(
+        bookings_query, total = booking_repository.find_by_pro_user(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking), page=1, per_page_limit=4
         )
+        bookings = bookings_query.all()
 
         # Then
-        assert len(bookings_recap_paginated.bookings_recap) == 2
-        assert bookings_recap_paginated.bookings_recap[0].booking_token == booking.token
-        assert bookings_recap_paginated.bookings_recap[1].booking_token == booking.token
-        assert bookings_recap_paginated.page == 1
-        assert bookings_recap_paginated.pages == 1
-        assert bookings_recap_paginated.total == 2
+        assert len(bookings) == 2
+        assert bookings[0].bookingToken == booking.token
+        assert bookings[1].bookingToken == booking.token
+        assert total == 2
 
     def test_should_return_booking_date_with_offerer_timezone_when_venue_is_digital(self, app: fixture):
         # Given
@@ -532,14 +526,14 @@ class FindByProUserTest:
         )
 
         # When
-        bookings_recap_paginated = booking_repository.find_by_pro_user(
+        bookings_query, _ = booking_repository.find_by_pro_user(
             user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
         )
+        bookings = bookings_query.all()
 
         # Then
-        assert len(bookings_recap_paginated.bookings_recap) == 1
-        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
-        assert expected_booking_recap.booking_date == booking_date.astimezone(tz.gettz("America/Cayenne"))
+        assert len(bookings) == 1
+        assert bookings[0].bookedAt == booking_date
 
     def test_should_return_booking_ean_when_information_is_available(self, app: fixture):
         # Given
@@ -561,13 +555,13 @@ class FindByProUserTest:
         )
 
         # When
-        bookings_recap_paginated = booking_repository.find_by_pro_user(
+        bookings_query, _ = booking_repository.find_by_pro_user(
             user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
         )
+        bookings = bookings_query.all()
 
         # Then
-        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
-        assert expected_booking_recap.offer_ean == "9876543234"
+        assert bookings[0].offerEan == "9876543234"
 
     def test_should_return_only_booking_for_requested_venue(self, app: fixture):
         # Given
@@ -578,18 +572,19 @@ class FindByProUserTest:
         booking_two = bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
 
         # When
-        bookings_recap_paginated = booking_repository.find_by_pro_user(
+        bookings_query, _ = booking_repository.find_by_pro_user(
             user=pro_user,
             booking_period=(one_year_before_booking, one_year_after_booking),
             venue_id=booking_two.venue.id,
         )
+        bookings = bookings_query.all()
 
         # Then
-        assert len(bookings_recap_paginated.bookings_recap) == 1
-        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
-        assert expected_booking_recap.offer_identifier == booking_two.stock.offer.id
-        assert expected_booking_recap.offer_name == booking_two.stock.offer.name
-        assert expected_booking_recap.booking_amount == booking_two.amount
+        assert len(bookings) == 1
+        expected_booking = bookings[0]
+        assert expected_booking.offerId == booking_two.stock.offer.id
+        assert expected_booking.offerName == booking_two.stock.offer.name
+        assert expected_booking.bookingAmount == booking_two.amount
 
     def test_should_return_only_booking_for_requested_event_date(self, app: fixture):
         # Given
@@ -608,16 +603,16 @@ class FindByProUserTest:
         )
 
         # When
-        bookings_recap_paginated = booking_repository.find_by_pro_user(
+        bookings_query, _ = booking_repository.find_by_pro_user(
             user=user_offerer.user,
             booking_period=(one_year_before_booking, one_year_after_booking),
             event_date=event_date.date(),
         )
+        bookings = bookings_query.all()
 
         # Then
-        assert len(bookings_recap_paginated.bookings_recap) == 1
-        resulting_booking_recap = bookings_recap_paginated.bookings_recap[0]
-        assert resulting_booking_recap.booking_token == expected_booking.token
+        assert len(bookings) == 1
+        assert bookings[0].bookingToken == expected_booking.token
 
     def should_consider_venue_locale_datetime_when_filtering_by_event_date(self, app: fixture):
         # Given
@@ -643,15 +638,16 @@ class FindByProUserTest:
         mayotte_booking = bookings_factories.BookingFactory(stock=stock_in_mayotte)
 
         # When
-        bookings_recap_paginated = booking_repository.find_by_pro_user(
+        bookings_query, _ = booking_repository.find_by_pro_user(
             user=user_offerer.user,
             booking_period=(one_year_before_booking, one_year_after_booking),
             event_date=event_datetime.date(),
         )
+        bookings = bookings_query.all()
 
         # Then
-        assert len(bookings_recap_paginated.bookings_recap) == 2
-        bookings_tokens = [booking_recap.booking_token for booking_recap in bookings_recap_paginated.bookings_recap]
+        assert len(bookings) == 2
+        bookings_tokens = [booking_recap.bookingToken for booking_recap in bookings]
         assert cayenne_booking.token in bookings_tokens
         assert mayotte_booking.token in bookings_tokens
 
@@ -675,18 +671,16 @@ class FindByProUserTest:
         )
 
         # When
-        bookings_recap_paginated = booking_repository.find_by_pro_user(
+        bookings_query, _ = booking_repository.find_by_pro_user(
             user=user_offerer.user,
             booking_period=(booking_beginning_period, booking_ending_period),
             status_filter=booking_status_filter,
         )
+        bookings = bookings_query.all()
 
         # Then
-        assert len(bookings_recap_paginated.bookings_recap) == 1
-        resulting_booking_recap = bookings_recap_paginated.bookings_recap[0]
-        assert resulting_booking_recap.booking_date == utc_datetime_to_department_timezone(
-            expected_booking.dateCreated, expected_booking.venue.departementCode
-        )
+        assert len(bookings) == 1
+        assert bookings[0].bookedAt == expected_booking.dateCreated
 
     def should_consider_venue_locale_datetime_when_filtering_by_booking_period(self, app: fixture):
         # Given
@@ -717,14 +711,15 @@ class FindByProUserTest:
         )
 
         # When
-        bookings_recap_paginated = booking_repository.find_by_pro_user(
+        bookings_query, _ = booking_repository.find_by_pro_user(
             user=user_offerer.user,
             booking_period=(requested_booking_period_beginning, requested_booking_period_ending),
         )
+        bookings = bookings_query.all()
 
         # Then
-        assert len(bookings_recap_paginated.bookings_recap) == 2
-        bookings_tokens = [booking_recap.booking_token for booking_recap in bookings_recap_paginated.bookings_recap]
+        assert len(bookings) == 2
+        bookings_tokens = [booking_recap.bookingToken for booking_recap in bookings]
         assert cayenne_booking.token in bookings_tokens
         assert mayotte_booking.token in bookings_tokens
 
@@ -737,19 +732,21 @@ class FindByProUserTest:
         )
 
         # When
-        individual_bookings_recap_paginated = booking_repository.find_by_pro_user(
+        individual_bookings_recap_paginated_query, _ = booking_repository.find_by_pro_user(
             user=user_offerer.user,
             booking_period=(one_year_before_booking, one_year_after_booking),
             offer_type=OfferType.INDIVIDUAL_OR_DUO,
         )
-        all_bookings_recap_paginated = booking_repository.find_by_pro_user(
+        individual_bookings_recap_paginated = individual_bookings_recap_paginated_query.all()
+        all_bookings_recap_paginated_query, _ = booking_repository.find_by_pro_user(
             user=user_offerer.user,
             booking_period=(one_year_before_booking, one_year_after_booking),
         )
+        all_bookings_recap_paginated = all_bookings_recap_paginated_query.all()
 
         # Then
-        assert len(individual_bookings_recap_paginated.bookings_recap) == 1
-        assert len(all_bookings_recap_paginated.bookings_recap) == 1
+        assert len(individual_bookings_recap_paginated) == 1
+        assert len(all_bookings_recap_paginated) == 1
 
 
 class GetOfferBookingsByStatusCSVTest:

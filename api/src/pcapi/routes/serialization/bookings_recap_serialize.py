@@ -1,19 +1,17 @@
 from datetime import date
 from datetime import datetime
 from enum import Enum
+import typing
 
 from pydantic.v1 import root_validator
 
+from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingExportType
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import BookingStatusFilter
-from pcapi.domain.booking_recap.booking_recap import BookingRecap
-from pcapi.domain.booking_recap.booking_recap import BookingRecapStatus
-from pcapi.domain.booking_recap.booking_recap_history import BookingRecapCancelledHistory
-from pcapi.domain.booking_recap.booking_recap_history import BookingRecapConfirmedHistory
-from pcapi.domain.booking_recap.booking_recap_history import BookingRecapHistory
-from pcapi.domain.booking_recap.booking_recap_history import BookingRecapPendingHistory
-from pcapi.domain.booking_recap.booking_recap_history import BookingRecapReimbursedHistory
-from pcapi.domain.booking_recap.booking_recap_history import BookingRecapValidatedHistory
+from pcapi.core.bookings.utils import _apply_departement_timezone
+from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
+from pcapi.domain.booking_recap.utils import get_booking_token
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
@@ -46,6 +44,15 @@ class BookingRecapResponseStockModel(BaseModel):
 
     class Config:
         alias_generator = to_camel
+
+
+class BookingRecapStatus(Enum):
+    booked = "booked"
+    validated = "validated"
+    cancelled = "cancelled"
+    reimbursed = "reimbursed"
+    confirmed = "confirmed"
+    pending = "pending"
 
 
 class BookingRecapResponseBookingStatusHistoryModel(BaseModel):
@@ -90,69 +97,75 @@ def _serialize_booking_status_info(
     )
 
 
-def _serialize_booking_status_history(
-    booking_status_history: BookingRecapHistory,
+def serialize_booking_status_history(
+    booking: Booking,
 ) -> list[BookingRecapResponseBookingStatusHistoryModel]:
-    if isinstance(booking_status_history, BookingRecapPendingHistory):
-        serialized_booking_status_history = [
-            _serialize_booking_status_info(BookingRecapStatus.pending, booking_status_history.booking_date)
-        ]
-        return serialized_booking_status_history
 
     serialized_booking_status_history = [
         _serialize_booking_status_info(
             BookingRecapStatus.booked,
-            booking_status_history.confirmation_date or booking_status_history.booking_date,
+            typing.cast(datetime, convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)),
         )
     ]
-    if (
-        isinstance(booking_status_history, BookingRecapConfirmedHistory)
-        and booking_status_history.date_confirmed is not None
-    ):
+
+    if booking.usedAt:
         serialized_booking_status_history.append(
-            _serialize_booking_status_info(BookingRecapStatus.confirmed, booking_status_history.date_confirmed)
-        )
-    if isinstance(booking_status_history, BookingRecapValidatedHistory):
-        serialized_booking_status_history.append(
-            _serialize_booking_status_info(BookingRecapStatus.validated, booking_status_history.date_used)
+            _serialize_booking_status_info(
+                BookingRecapStatus.validated,
+                typing.cast(datetime, convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)),
+            )
         )
 
-    if isinstance(booking_status_history, BookingRecapCancelledHistory):
+    if booking.cancelledAt:
         serialized_booking_status_history.append(
-            _serialize_booking_status_info(BookingRecapStatus.cancelled, booking_status_history.cancellation_date)
+            _serialize_booking_status_info(
+                BookingRecapStatus.cancelled,
+                typing.cast(
+                    datetime, convert_booking_dates_utc_to_venue_timezone(booking.cancelledAt, booking=booking)
+                ),
+            )
         )
-    if isinstance(booking_status_history, BookingRecapReimbursedHistory):
+    if booking.reimbursedAt:
         serialized_booking_status_history.append(
-            _serialize_booking_status_info(BookingRecapStatus.reimbursed, booking_status_history.payment_date)
+            _serialize_booking_status_info(
+                BookingRecapStatus.reimbursed,
+                typing.cast(datetime, convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)),
+            )
         )
     return serialized_booking_status_history
 
 
-def serialize_booking_recap(booking_recap: BookingRecap) -> BookingRecapResponseModel:
+def serialize_bookings(booking: Booking) -> BookingRecapResponseModel:
+    stock_beginning_datetime = _apply_departement_timezone(booking.stockBeginningDatetime, booking.venueDepartmentCode)
     serialized_booking_recap = BookingRecapResponseModel(  # type: ignore [call-arg]
         stock={  # type: ignore [arg-type]
-            "stockIdentifier": booking_recap.stock_identifier,
-            "offerName": booking_recap.offer_name,
-            "offerId": booking_recap.offer_identifier,
-            "eventBeginningDatetime": (
-                isoformat(booking_recap.event_beginning_datetime) if booking_recap.event_beginning_datetime else None
-            ),
-            "offerIsbn": booking_recap.offer_ean,
+            "stockIdentifier": booking.stockId,
+            "offerName": booking.offerName,
+            "offerId": booking.offerId,
+            "eventBeginningDatetime": isoformat(stock_beginning_datetime) if stock_beginning_datetime else None,
+            "offerIsbn": booking.offerEan,
             "offerIsEducational": False,
         },
         beneficiary={  # type: ignore [arg-type]
-            "lastname": booking_recap.beneficiary_lastname or booking_recap.redactor_lastname,
-            "firstname": booking_recap.beneficiary_firstname or booking_recap.redactor_firstname,
-            "email": booking_recap.beneficiary_email or booking_recap.redactor_email,
-            "phonenumber": booking_recap.beneficiary_phonenumber,
+            "lastname": booking.beneficiaryLastname,
+            "firstname": booking.beneficiaryFirstname,
+            "email": booking.beneficiaryEmail,
+            "phonenumber": booking.beneficiaryPhoneNumber,
         },
-        bookingToken=booking_recap.booking_token,
-        bookingDate=isoformat(booking_recap.booking_date),
-        bookingStatus=booking_recap.booking_status.value,
-        bookingIsDuo=booking_recap.booking_is_duo,
-        bookingAmount=booking_recap.booking_amount,
-        bookingPriceCategoryLabel=booking_recap.booking_price_category_label,
-        bookingStatusHistory=_serialize_booking_status_history(booking_recap.booking_status_history),
+        bookingToken=get_booking_token(
+            booking.bookingToken,
+            booking.status,
+            bool(booking.isExternal),
+            _apply_departement_timezone(booking.stockBeginningDatetime, booking.venueDepartmentCode),
+        ),
+        bookingDate=isoformat(
+            typing.cast(datetime, convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking))
+        ),
+        bookingStatus=build_booking_status(booking.status),
+        bookingIsDuo=booking.quantity == 2,
+        bookingAmount=booking.bookingAmount,
+        bookingPriceCategoryLabel=booking.priceCategoryLabel,
+        bookingStatusHistory=serialize_booking_status_history(booking),
     )
 
     return serialized_booking_recap
@@ -201,3 +214,15 @@ class ListBookingsQueryModel(BaseModel):
                 }
             )
         return values
+
+
+def build_booking_status(booking_status: BookingStatus) -> BookingRecapStatus:
+    if booking_status == BookingStatus.REIMBURSED:
+        return BookingRecapStatus.reimbursed
+    if booking_status == BookingStatus.CANCELLED:
+        return BookingRecapStatus.cancelled
+    if booking_status == BookingStatus.USED:
+        return BookingRecapStatus.validated
+    if booking_status == BookingStatus.CONFIRMED:
+        return BookingRecapStatus.confirmed
+    return BookingRecapStatus.booked
