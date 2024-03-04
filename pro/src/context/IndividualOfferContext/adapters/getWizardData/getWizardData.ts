@@ -39,7 +39,7 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
   payload: null,
 }
 
-const getWizardData: GetIndividualOfferAdapter = async ({
+export const getWizardData: GetIndividualOfferAdapter = async ({
   offerer,
   queryOffererId,
   isAdmin,
@@ -109,5 +109,3 @@ const getWizardData: GetIndividualOfferAdapter = async ({
     payload: successPayload,
   })
 }
-
-export default getWizardData

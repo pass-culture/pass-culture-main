@@ -6,7 +6,7 @@ import {
   venueListItemFactory,
 } from 'utils/individualApiFactories'
 
-import getWizardData from '../getWizardData'
+import { getWizardData } from '../getWizardData'
 
 const venue1: VenueListItemResponseModel = venueListItemFactory({
   id: 2,
