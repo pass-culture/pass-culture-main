@@ -4,6 +4,7 @@
 /* eslint-disable */
 export type GetVenueManagingOffererResponseModel = {
   address?: string | null;
+  allowedOnAdage: boolean;
   city: string;
   dateCreated: string;
   demarchesSimplifieesApplicationId?: string | null;

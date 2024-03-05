@@ -116,6 +116,7 @@ export const Homepage = (): JSX.Element => {
             name: '',
             id: Number(offererId) ?? 0,
             postalCode: '',
+            allowedOnAdage: false,
           })
           setIsUserOffererValidated(false)
         }

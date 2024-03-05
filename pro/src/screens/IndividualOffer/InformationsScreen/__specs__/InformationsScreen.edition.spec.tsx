@@ -170,7 +170,9 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       offerId: offer.id,
       offer: offer,
       venueList: [venue1, venue2],
-      offererNames: [{ id: offererId, name: 'Offerer name' }],
+      offererNames: [
+        { id: offererId, name: 'Offerer name', allowedOnAdage: true },
+      ],
       categories,
       subCategories,
     })

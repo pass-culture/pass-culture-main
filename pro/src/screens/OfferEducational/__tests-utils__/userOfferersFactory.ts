@@ -39,6 +39,7 @@ export const userOffererFactory = (
   return {
     id: currentOffererId,
     name: 'offerer name',
+    allowedOnAdage: true,
     managedVenues: [managedVenueFactory({})],
     ...userOffererExtends,
   }

@@ -34,6 +34,7 @@ class GetEducationalOfferersTest:
                 {
                     "id": offerer_1.id,
                     "name": offerer_1.name,
+                    "allowedOnAdage": offerer_1.allowedOnAdage,
                     "managedVenues": [
                         {
                             "address": venue_offerer_1.address,
@@ -57,6 +58,7 @@ class GetEducationalOfferersTest:
                 {
                     "id": offerer_2.id,
                     "name": offerer_2.name,
+                    "allowedOnAdage": offerer_2.allowedOnAdage,
                     "managedVenues": [
                         {
                             "address": venue_offerer_2.address,
@@ -116,6 +118,7 @@ class GetEducationalOfferersTest:
                 {
                     "id": offerer_2.id,
                     "name": offerer_2.name,
+                    "allowedOnAdage": offerer_2.allowedOnAdage,
                     "managedVenues": [
                         {
                             "address": venue_offerer_2.address,

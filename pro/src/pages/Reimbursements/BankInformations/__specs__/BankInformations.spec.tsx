@@ -183,10 +183,12 @@ describe('BankInformations page', () => {
         {
           id: 1,
           name: 'first offerer',
+          allowedOnAdage: true,
         },
         {
           id: 2,
           name: 'second offerer',
+          allowedOnAdage: true,
         },
       ],
     })

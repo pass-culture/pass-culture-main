@@ -6,6 +6,7 @@ import type { GetOffererVenueResponseModel } from './GetOffererVenueResponseMode
 import type { OffererApiKey } from './OffererApiKey';
 export type GetOffererResponseModel = {
   address?: string | null;
+  allowedOnAdage: boolean;
   apiKey: OffererApiKey;
   city: string;
   dateCreated: string;

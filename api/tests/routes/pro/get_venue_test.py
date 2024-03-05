@@ -96,6 +96,7 @@ class Returns200Test:
                 "name": venue.managingOfferer.name,
                 "postalCode": venue.managingOfferer.postalCode,
                 "siren": venue.managingOfferer.siren,
+                "allowedOnAdage": venue.managingOfferer.allowedOnAdage,
             },
             "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,
             "motorDisabilityCompliant": venue.motorDisabilityCompliant,

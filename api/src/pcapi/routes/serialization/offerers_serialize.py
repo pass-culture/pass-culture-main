@@ -112,6 +112,7 @@ class GetOffererResponseModel(BaseModel):
     hasNonFreeOffer: bool
     venuesWithNonFreeOffersWithoutBankAccounts: list[int]
     hasActiveOffer: bool
+    allowedOnAdage: bool
 
     @classmethod
     def from_orm(cls, row: Row) -> "GetOffererResponseModel":
@@ -164,6 +165,7 @@ class GetOffererResponseModel(BaseModel):
 class GetOffererNameResponseModel(BaseModel):
     id: int
     name: str
+    allowedOnAdage: bool
 
     class Config:
         orm_mode = True
@@ -221,6 +223,7 @@ class GetEducationalOffererResponseModel(BaseModel):
     id: int
     name: str
     managedVenues: list[GetEducationalOffererVenueResponseModel]
+    allowedOnAdage: bool
 
     class Config:
         orm_mode = True

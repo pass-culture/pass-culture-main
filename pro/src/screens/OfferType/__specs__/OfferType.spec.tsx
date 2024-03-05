@@ -80,7 +80,9 @@ const renderOfferTypes = (structureId?: string, venueId?: string) => {
 describe('OfferType', () => {
   beforeEach(() => {
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [{ id: 1, name: 'Ma super structure' }],
+      offerersNames: [
+        { id: 1, name: 'Ma super structure', allowedOnAdage: true },
+      ],
     })
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue([])
     vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue({

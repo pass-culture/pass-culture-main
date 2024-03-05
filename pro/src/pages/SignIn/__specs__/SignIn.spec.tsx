@@ -86,10 +86,12 @@ describe('SignIn', () => {
         {
           id: 1,
           name: 'Mon super cinéma',
+          allowedOnAdage: true,
         },
         {
           id: 1,
           name: 'Ma super librairie',
+          allowedOnAdage: true,
         },
       ],
     })
@@ -216,10 +218,12 @@ describe('SignIn', () => {
           {
             id: 1,
             name: 'Mon super cinéma',
+            allowedOnAdage: true,
           },
           {
             id: 1,
             name: 'Ma super librairie',
+            allowedOnAdage: true,
           },
         ],
       })
@@ -323,10 +327,12 @@ describe('SignIn', () => {
             {
               id: 1,
               name: 'Mon super cinéma',
+              allowedOnAdage: true,
             },
             {
               id: 1,
               name: 'Ma super librairie',
+              allowedOnAdage: true,
             },
           ],
         })
@@ -376,10 +382,12 @@ describe('SignIn', () => {
           {
             id: 1,
             name: 'Mon super cinéma',
+            allowedOnAdage: true,
           },
           {
             id: 1,
             name: 'Ma super librairie',
+            allowedOnAdage: true,
           },
         ],
       })
