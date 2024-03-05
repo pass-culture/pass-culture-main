@@ -35,7 +35,7 @@ const postCollectiveOfferAdapter: PostOfferAdapter = async ({
   offerTemplateId,
 }) => {
   try {
-    const payload = createCollectiveOfferPayload(offer, false, offerTemplateId)
+    const payload = createCollectiveOfferPayload(offer, offerTemplateId)
 
     const response = await api.createCollectiveOffer(payload)
 
