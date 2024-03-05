@@ -1,6 +1,8 @@
 import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
+import Callout from 'components/Callout/Callout'
+import { CalloutVariant } from 'components/Callout/types'
 import { Banner } from 'ui-kit'
 import { CGU_URL } from 'utils/config'
 
@@ -28,7 +30,7 @@ const OfferStatusBanner = ({ status }: OfferStatusBannerProps): JSX.Element => {
     )
   } else if (status === OfferStatus.PENDING) {
     return (
-      <Banner type="notification-info">
+      <Callout variant={CalloutVariant.INFO}>
         Votre offre est en cours de validation par l’équipe du pass Culture.
         <b>
           {' '}
@@ -37,7 +39,7 @@ const OfferStatusBanner = ({ status }: OfferStatusBannerProps): JSX.Element => {
         </b>
         Une fois validée, vous recevrez un email de confirmation et votre offre
         sera automatiquement mise en ligne.
-      </Banner>
+      </Callout>
     )
   }
   return <></>
