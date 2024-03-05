@@ -1,6 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 import { generatePath, Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -364,7 +363,7 @@ describe('Summary', () => {
         offer: getIndividualOfferFactory({
           venue: getOfferVenueFactory({ id: venueId }),
         }),
-        offerOfferer: { name: 'offerOffererName', id: 1 },
+        offerOfferer: { name: 'offerOffererName', id: 1, allowedOnAdage: true },
         showVenuePopin: {
           [venueId]: true,
         },
@@ -399,7 +398,7 @@ describe('Summary', () => {
     it('should display redirect modal if first non free offer', async () => {
       const context = {
         offer: getIndividualOfferFactory(),
-        offerOfferer: { name: 'offerOffererName', id: 1 },
+        offerOfferer: { name: 'offerOffererName', id: 1, allowedOnAdage: true },
         venueList: [venueListItemFactory()],
       }
 
@@ -449,7 +448,7 @@ describe('Summary', () => {
     it('should not display redirect modal if hasPendingBankAccount is true', async () => {
       const context = {
         offer: getIndividualOfferFactory(),
-        offerOfferer: { name: 'offerOffererName', id: 1 },
+        offerOfferer: { name: 'offerOffererName', id: 1, allowedOnAdage: true },
         venueList: [venueListItemFactory()],
       }
 

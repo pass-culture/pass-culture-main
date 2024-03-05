@@ -49,7 +49,11 @@ def list_offerers_names(
         offerers = offerers.order_by(offerers_models.Offerer.name, offerers_models.Offerer.id)
         offerers = offerers.distinct(offerers_models.Offerer.name, offerers_models.Offerer.id)
 
-    offerers = offerers.options(sqla_orm.load_only(offerers_models.Offerer.id, offerers_models.Offerer.name))
+    offerers = offerers.options(
+        sqla_orm.load_only(
+            offerers_models.Offerer.id, offerers_models.Offerer.name, offerers_models.Offerer.allowedOnAdage
+        )
+    )
 
     return offerers_serialize.GetOfferersNamesResponseModel(
         offerersNames=[offerers_serialize.GetOffererNameResponseModel.from_orm(offerer) for offerer in offerers]

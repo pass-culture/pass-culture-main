@@ -167,6 +167,7 @@ export const getCollectiveOfferManagingOffererFactory = (
   return {
     id: currentOffererId,
     name: `La nom de la structure ${currentOffererId}`,
+    allowedOnAdage: true,
     ...customGetCollectiveOfferManagingOfferer,
   }
 }
@@ -317,6 +318,7 @@ export const defaultGetVenue: GetVenueResponseModel = {
     id: 1,
     postalCode: '75000',
     siren: '',
+    allowedOnAdage: true,
   },
   mentalDisabilityCompliant: null,
   motorDisabilityCompliant: null,

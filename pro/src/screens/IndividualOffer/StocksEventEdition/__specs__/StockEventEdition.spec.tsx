@@ -195,6 +195,7 @@ describe('screens:StocksEventEdition', () => {
         managingOfferer: {
           id: 1,
           name: 'Le Petit Rintintin Management 6',
+          allowedOnAdage: true,
         },
         name: 'Cinéma synchro avec booking provider',
         postalCode: '75000',

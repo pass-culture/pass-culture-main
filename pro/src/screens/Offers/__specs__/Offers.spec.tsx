@@ -734,6 +734,7 @@ describe('screen Offers', () => {
         {
           id: 1,
           name: 'Mon super cinéma',
+          allowedOnAdage: true,
         },
       ],
     })
@@ -751,6 +752,7 @@ describe('screen Offers', () => {
         {
           id: 1,
           name: 'Mon super cinéma',
+          allowedOnAdage: true,
         },
       ],
     })

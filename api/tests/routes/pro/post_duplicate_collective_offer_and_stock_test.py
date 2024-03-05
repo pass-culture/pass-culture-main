@@ -113,6 +113,7 @@ class Returns200Test:
                 "managingOfferer": {
                     "id": offerer.id,
                     "name": venue.managingOfferer.name,
+                    "allowedOnAdage": venue.managingOfferer.allowedOnAdage,
                     "siren": venue.managingOfferer.siren,
                 },
                 "id": venue.id,

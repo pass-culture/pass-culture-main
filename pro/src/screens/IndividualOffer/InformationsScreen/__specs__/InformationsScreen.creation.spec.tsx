@@ -136,7 +136,9 @@ describe('screens:IndividualOffer::Informations::creation', () => {
 
     contextOverride = individualOfferContextValuesFactory({
       venueList: [venue1, venue2],
-      offererNames: [{ id: offererId, name: 'mon offerer A' }],
+      offererNames: [
+        { id: offererId, name: 'mon offerer A', allowedOnAdage: true },
+      ],
       categories,
       subCategories,
       offer: null,
@@ -320,8 +322,8 @@ describe('screens:IndividualOffer::Informations::creation', () => {
         venue2Offerer2,
       ],
       offererNames: [
-        { id: offererId1, name: 'mon offerer A' },
-        { id: offererId2, name: 'mon offerer B' },
+        { id: offererId1, name: 'mon offerer A', allowedOnAdage: true },
+        { id: offererId2, name: 'mon offerer B', allowedOnAdage: true },
       ],
       categories,
       subCategories,

@@ -12,6 +12,7 @@ describe('useOffererNames', () => {
       {
         name: 'Structure AA',
         id: 123,
+        allowedOnAdage: true,
       },
     ]
 

@@ -60,10 +60,12 @@ describe('OffererStatsScreen', () => {
         {
           id: 1,
           name: 'Mon super cinéma',
+          allowedOnAdage: true,
         },
         {
           id: 2,
           name: 'Ma super librairie',
+          allowedOnAdage: true,
         },
       ],
     })

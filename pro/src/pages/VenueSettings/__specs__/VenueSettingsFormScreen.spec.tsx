@@ -249,6 +249,7 @@ const venueResponse: GetVenueResponseModel = {
     name: 'name',
     postalCode: 'string',
     siren: null,
+    allowedOnAdage: true,
   },
 }
 
@@ -331,6 +332,7 @@ describe('VenueFormScreen', () => {
         name: 'name',
         postalCode: 'string',
         siren: null,
+        allowedOnAdage: true,
       },
       hasAdageId: false,
       adageInscriptionDate: null,
