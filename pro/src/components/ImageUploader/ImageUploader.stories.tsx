@@ -1,7 +1,4 @@
-import type { Story } from '@storybook/react'
-import React from 'react'
-
-import StoreProvider from 'store/StoreProvider/StoreProvider'
+import type { StoryObj } from '@storybook/react'
 
 import ImageUploader, { ImageUploaderProps } from './ImageUploader'
 import sampleImageLandscape from './sample-image-landscape.jpg'
@@ -12,12 +9,6 @@ export default {
   title: 'components/ImageUploader',
   component: ImageUploader,
 }
-
-const Template: Story<ImageUploaderProps> = (props) => (
-  <StoreProvider>
-    <ImageUploader {...props} />
-  </StoreProvider>
-)
 
 const props: ImageUploaderProps = {
   initialValues: {
@@ -40,22 +31,25 @@ const props: ImageUploaderProps = {
   },
 }
 
-export const WithImageOffer = Template.bind({})
-WithImageOffer.args = {
-  ...props,
-}
-
-export const WithImageVenue = Template.bind({})
-WithImageVenue.args = {
-  ...props,
-  initialValues: {
-    imageUrl: sampleImageLandscape,
-    originalImageUrl: sampleImageLandscape,
+export const WithImageOffer: StoryObj<typeof ImageUploader> = {
+  args: {
+    ...props,
   },
-  mode: UploaderModeEnum.VENUE,
 }
 
-export const WithoutImage = Template.bind({})
-WithoutImage.args = {
-  mode: UploaderModeEnum.OFFER,
+export const WithImageVenue: StoryObj<typeof ImageUploader> = {
+  args: {
+    ...props,
+    initialValues: {
+      imageUrl: sampleImageLandscape,
+      originalImageUrl: sampleImageLandscape,
+    },
+    mode: UploaderModeEnum.VENUE,
+  },
+}
+
+export const WithoutImage: StoryObj<typeof ImageUploader> = {
+  args: {
+    mode: UploaderModeEnum.OFFER,
+  },
 }
