@@ -14,7 +14,7 @@ const OfferRefundWarning = () => {
             'Quelles sont les offres numériques éligibles au remboursement ?',
         },
       ]}
-      variant={CalloutVariant.DEFAULT}
+      variant={CalloutVariant.WARNING}
     >
       Cette offre numérique ne sera pas remboursée.
     </Callout>
