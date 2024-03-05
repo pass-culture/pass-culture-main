@@ -7,7 +7,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './BoxRounded.module.scss'
 
-export interface BoxRoundedProps {
+interface BoxRoundedProps {
   children: JSX.Element
   onClickModify: () => void
   showButtonModify?: boolean
