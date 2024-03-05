@@ -20,7 +20,7 @@ import { Mode } from 'core/OfferEducational'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as useNotification from 'hooks/useNotification'
 import {
-  collectiveOfferTemplateFactory,
+  getCollectiveOfferTemplateFactory,
   defaultGetVenue,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -68,7 +68,7 @@ describe('CollectiveOfferSummary', () => {
   const notifyError = vi.fn()
 
   beforeEach(async () => {
-    offer = collectiveOfferTemplateFactory({ isTemplate: true })
+    offer = getCollectiveOfferTemplateFactory({ isTemplate: true })
 
     const notifsImport = (await vi.importActual(
       'hooks/useNotification'
@@ -100,7 +100,10 @@ describe('CollectiveOfferSummary', () => {
   })
 
   it('should display desactive offer option when offer is active and not booked', async () => {
-    offer = collectiveOfferTemplateFactory({ isTemplate: true, isActive: true })
+    offer = getCollectiveOfferTemplateFactory({
+      isTemplate: true,
+      isActive: true,
+    })
 
     renderCollectiveOfferSummaryEdition(offer)
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
@@ -112,7 +115,10 @@ describe('CollectiveOfferSummary', () => {
   })
 
   it('should log event when clicking duplicate offer button', async () => {
-    offer = collectiveOfferTemplateFactory({ isTemplate: true, isActive: true })
+    offer = getCollectiveOfferTemplateFactory({
+      isTemplate: true,
+      isActive: true,
+    })
     renderCollectiveOfferSummaryEdition(offer)
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -149,7 +155,7 @@ describe('CollectiveOfferSummary', () => {
 
   it('should return an error when the duplication failed', async () => {
     vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce(
-      collectiveOfferTemplateFactory({ isTemplate: true, isActive: true })
+      getCollectiveOfferTemplateFactory({ isTemplate: true, isActive: true })
     )
     vi.spyOn(api, 'createCollectiveOffer').mockRejectedValueOnce(
       new ApiError({} as ApiRequestOptions, { status: 400 } as ApiResult, '')

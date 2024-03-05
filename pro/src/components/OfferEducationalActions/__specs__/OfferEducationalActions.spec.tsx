@@ -9,8 +9,8 @@ import { Mode } from 'core/OfferEducational/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as useNotification from 'hooks/useNotification'
 import {
-  collectiveOfferFactory,
-  collectiveOfferTemplateFactory,
+  getCollectiveOfferFactory,
+  getCollectiveOfferTemplateFactory,
   getCollectiveOfferCollectiveStockFactory,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -34,7 +34,7 @@ describe('OfferEducationalActions', () => {
   const defaultValues = {
     className: 'string',
     isBooked: false,
-    offer: collectiveOfferFactory(),
+    offer: getCollectiveOfferFactory(),
     reloadCollectiveOffer: vi.fn(),
     mode: Mode.EDITION,
   }
@@ -42,7 +42,7 @@ describe('OfferEducationalActions', () => {
   it('should update active status value for template offer', async () => {
     renderOfferEducationalActions({
       ...defaultValues,
-      offer: collectiveOfferTemplateFactory({
+      offer: getCollectiveOfferTemplateFactory({
         isActive: false,
         isTemplate: true,
       }),
@@ -73,7 +73,7 @@ describe('OfferEducationalActions', () => {
 
     renderOfferEducationalActions({
       ...defaultValues,
-      offer: collectiveOfferTemplateFactory({
+      offer: getCollectiveOfferTemplateFactory({
         isActive: false,
         isTemplate: true,
       }),
@@ -101,7 +101,7 @@ describe('OfferEducationalActions', () => {
   it('should display booking link for booked offer', () => {
     renderOfferEducationalActions({
       ...defaultValues,
-      offer: collectiveOfferFactory({
+      offer: getCollectiveOfferFactory({
         status: OfferStatus.SOLD_OUT,
         lastBookingId: 1,
         lastBookingStatus: CollectiveBookingStatus.CONFIRMED,
@@ -119,7 +119,7 @@ describe('OfferEducationalActions', () => {
   it('should display booking link for used booking', () => {
     renderOfferEducationalActions({
       ...defaultValues,
-      offer: collectiveOfferFactory({
+      offer: getCollectiveOfferFactory({
         status: OfferStatus.EXPIRED,
         lastBookingId: 1,
         lastBookingStatus: CollectiveBookingStatus.USED,
@@ -137,7 +137,7 @@ describe('OfferEducationalActions', () => {
   it('should not display booking link for cancelled booking', () => {
     renderOfferEducationalActions({
       ...defaultValues,
-      offer: collectiveOfferFactory({
+      offer: getCollectiveOfferFactory({
         status: OfferStatus.ACTIVE,
         lastBookingId: 1,
         lastBookingStatus: CollectiveBookingStatus.CANCELLED,
@@ -158,7 +158,7 @@ describe('OfferEducationalActions', () => {
     }))
     renderOfferEducationalActions({
       ...defaultValues,
-      offer: collectiveOfferFactory({
+      offer: getCollectiveOfferFactory({
         status: OfferStatus.ACTIVE,
         lastBookingId: 1,
         lastBookingStatus: CollectiveBookingStatus.CONFIRMED,
@@ -189,7 +189,7 @@ describe('OfferEducationalActions', () => {
     }))
     renderOfferEducationalActions({
       ...defaultValues,
-      offer: collectiveOfferFactory({
+      offer: getCollectiveOfferFactory({
         isActive: false,
         collectiveStock: getCollectiveOfferCollectiveStockFactory({
           bookingLimitDatetime: '1900-10-15T00:00:00Z',
@@ -221,7 +221,7 @@ describe('OfferEducationalActions', () => {
     bookingLimitDateTomorrow.setDate(bookingLimitDateTomorrow.getDate() + 1)
     renderOfferEducationalActions({
       ...defaultValues,
-      offer: collectiveOfferFactory({
+      offer: getCollectiveOfferFactory({
         id: offerId,
         isActive: false,
         collectiveStock: getCollectiveOfferCollectiveStockFactory({
@@ -241,7 +241,7 @@ describe('OfferEducationalActions', () => {
   it('should not display adage publish button when offer is pending', () => {
     renderOfferEducationalActions({
       ...defaultValues,
-      offer: collectiveOfferFactory({
+      offer: getCollectiveOfferFactory({
         status: OfferStatus.PENDING,
       }),
     })

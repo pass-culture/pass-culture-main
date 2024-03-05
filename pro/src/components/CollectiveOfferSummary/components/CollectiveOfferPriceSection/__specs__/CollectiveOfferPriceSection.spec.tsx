@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-import { collectiveOfferTemplateFactory } from 'utils/collectiveApiFactories'
+import { getCollectiveOfferTemplateFactory } from 'utils/collectiveApiFactories'
 
 import CollectiveOfferPriceSection from '../CollectiveOfferPriceSection'
 
@@ -10,7 +10,7 @@ describe('CollectiveOfferPriceSection', () => {
     render(
       <CollectiveOfferPriceSection
         offer={{
-          ...collectiveOfferTemplateFactory(),
+          ...getCollectiveOfferTemplateFactory(),
           educationalPriceDetail: 'Le détail du prix',
         }}
       />

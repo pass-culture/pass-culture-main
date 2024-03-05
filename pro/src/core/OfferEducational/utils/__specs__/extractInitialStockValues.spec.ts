@@ -1,8 +1,8 @@
 import { GetCollectiveOfferCollectiveStockResponseModel } from 'apiClient/v1'
 import { DEFAULT_EAC_STOCK_FORM_VALUES } from 'core/OfferEducational/constants'
 import {
-  collectiveOfferFactory,
-  collectiveOfferTemplateFactory,
+  getCollectiveOfferFactory,
+  getCollectiveOfferTemplateFactory,
   defaultGetCollectiveOfferRequest,
   getCollectiveOfferVenueFactory,
 } from 'utils/collectiveApiFactories'
@@ -13,7 +13,7 @@ describe('extractInitialVisibilityValues', () => {
   it('should return default values when collectiveStock is not defined', () => {
     expect(
       extractInitialStockValues(
-        collectiveOfferFactory({
+        getCollectiveOfferFactory({
           collectiveStock: null,
         })
       )
@@ -34,7 +34,7 @@ describe('extractInitialVisibilityValues', () => {
     }
     expect(
       extractInitialStockValues(
-        collectiveOfferFactory({
+        getCollectiveOfferFactory({
           venue: getCollectiveOfferVenueFactory({ departementCode: '75' }),
           collectiveStock: stockValues,
         })
@@ -53,8 +53,8 @@ describe('extractInitialVisibilityValues', () => {
   it('should return default values with educationPriceDetail when educationalPriceDetail is defined', () => {
     expect(
       extractInitialStockValues(
-        collectiveOfferFactory({ collectiveStock: null }),
-        collectiveOfferTemplateFactory({
+        getCollectiveOfferFactory({ collectiveStock: null }),
+        getCollectiveOfferTemplateFactory({
           educationalPriceDetail: 'initialStockValues',
         })
       )
@@ -67,10 +67,10 @@ describe('extractInitialVisibilityValues', () => {
   it('should return stock details from requested offer when requestedDate, totalStudents and totalTeachers are defined', () => {
     expect(
       extractInitialStockValues(
-        collectiveOfferFactory({
+        getCollectiveOfferFactory({
           venue: getCollectiveOfferVenueFactory({ departementCode: '75' }),
         }),
-        collectiveOfferTemplateFactory({
+        getCollectiveOfferTemplateFactory({
           educationalPriceDetail: 'initialStockValues',
         }),
         {
@@ -94,10 +94,10 @@ describe('extractInitialVisibilityValues', () => {
   it('should return stock details from requested offer when requestedDate, totalStudents and totalTeachers are not defined', () => {
     expect(
       extractInitialStockValues(
-        collectiveOfferFactory({
+        getCollectiveOfferFactory({
           venue: getCollectiveOfferVenueFactory({ departementCode: '75' }),
         }),
-        collectiveOfferTemplateFactory({
+        getCollectiveOfferTemplateFactory({
           educationalPriceDetail: 'initialStockValues',
         }),
         {
@@ -121,10 +121,10 @@ describe('extractInitialVisibilityValues', () => {
   it('should return stock details from requested offer when only totalStudents is defined', () => {
     expect(
       extractInitialStockValues(
-        collectiveOfferFactory({
+        getCollectiveOfferFactory({
           venue: getCollectiveOfferVenueFactory({ departementCode: '75' }),
         }),
-        collectiveOfferTemplateFactory({
+        getCollectiveOfferTemplateFactory({
           educationalPriceDetail: 'initialStockValues',
         }),
         {
@@ -146,10 +146,10 @@ describe('extractInitialVisibilityValues', () => {
   it('should return stock details from requested offer when only totalTeachers is defined', () => {
     expect(
       extractInitialStockValues(
-        collectiveOfferFactory({
+        getCollectiveOfferFactory({
           venue: getCollectiveOfferVenueFactory({ departementCode: '75' }),
         }),
-        collectiveOfferTemplateFactory({
+        getCollectiveOfferTemplateFactory({
           educationalPriceDetail: 'initialStockValues',
         }),
         {

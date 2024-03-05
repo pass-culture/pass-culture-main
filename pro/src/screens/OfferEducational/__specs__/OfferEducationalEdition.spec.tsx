@@ -3,7 +3,7 @@ import React from 'react'
 
 import { Mode } from 'core/OfferEducational'
 import {
-  collectiveOfferFactory,
+  getCollectiveOfferFactory,
   getCollectiveOfferVenueFactory,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -45,7 +45,7 @@ describe('screens | OfferEducational', () => {
     ]
     props = {
       ...props,
-      offer: collectiveOfferFactory(
+      offer: getCollectiveOfferFactory(
         undefined,
         undefined,
         getCollectiveOfferVenueFactory({})

@@ -1,5 +1,5 @@
 import { Mode } from 'core/OfferEducational'
-import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
+import { getCollectiveOfferFactory } from 'utils/collectiveApiFactories'
 
 import { OfferEducationalProps } from '../OfferEducational'
 
@@ -17,7 +17,7 @@ export const defaultCreationProps: OfferEducationalProps = {
 }
 
 export const defaultEditionProps: OfferEducationalProps = {
-  offer: collectiveOfferFactory(),
+  offer: getCollectiveOfferFactory(),
   userOfferers: mockUserOfferers,
   mode: Mode.EDITION,
   domainsOptions: [{ value: 1, label: 'domain1' }],

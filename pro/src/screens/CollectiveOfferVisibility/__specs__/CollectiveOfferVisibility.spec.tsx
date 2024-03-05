@@ -11,7 +11,7 @@ import {
 import { DEFAULT_VISIBILITY_FORM_VALUES, Mode } from 'core/OfferEducational'
 import * as useNotification from 'hooks/useNotification'
 import getOfferRequestInformationsAdapter from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
-import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
+import { getCollectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveOfferVisibility, {
@@ -77,12 +77,12 @@ describe('CollectiveOfferVisibility', () => {
       onSuccess: vi.fn(),
       institutions,
       isLoadingInstitutions: false,
-      offer: collectiveOfferFactory({ id: offerId }),
+      offer: getCollectiveOfferFactory({ id: offerId }),
     }
   })
 
   it('should show banner if generate from publicApi', () => {
-    const offer = collectiveOfferFactory({ isPublicApi: true })
+    const offer = getCollectiveOfferFactory({ isPublicApi: true })
 
     renderVisibilityStep({
       ...props,
@@ -95,7 +95,7 @@ describe('CollectiveOfferVisibility', () => {
   })
 
   it('should display booking link for sold out offer with pending booking', () => {
-    const offer = collectiveOfferFactory({
+    const offer = getCollectiveOfferFactory({
       status: OfferStatus.SOLD_OUT,
       lastBookingStatus: CollectiveBookingStatus.PENDING,
       lastBookingId: 76,
