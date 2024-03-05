@@ -249,7 +249,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
 
   if (offer.isDigital) {
     description += `
-    Pour ajouter des codes d’activation, veuillez passer par le menu ··· et choisir l’option correspondante.`
+    Pour ajouter des codes d’activation, veuillez passer par le menu et choisir l’option correspondante.`
 
     links = [
       {
