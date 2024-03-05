@@ -2,6 +2,7 @@ import {
   DateRangeOnCreateModel,
   OfferAddressType,
   PostCollectiveOfferTemplateBodyModel,
+  PostCollectiveOfferBodyModel,
 } from 'apiClient/v1'
 import { buildDateTime } from 'screens/IndividualOffer/StocksEventEdition/adapters/serializers'
 import {
@@ -50,11 +51,9 @@ export const serializeDates = (
   }
 }
 
-export const createCollectiveOfferPayload = (
-  offer: OfferEducationalFormValues,
-  isTemplate: boolean,
-  offerTemplateId?: number
-): PostCollectiveOfferTemplateBodyModel => {
+function getCommonOfferPayload(
+  offer: OfferEducationalFormValues
+): PostCollectiveOfferBodyModel & PostCollectiveOfferTemplateBodyModel {
   return {
     venueId: Number(offer.venueId),
     subcategoryId: null,
@@ -75,16 +74,34 @@ export const createCollectiveOfferPayload = (
       offer.eventAddress.addressType === OfferAddressType.OFFERER_VENUE
         ? []
         : offer.interventionArea,
-    templateId: offerTemplateId,
-    priceDetail: isTemplate ? offer.priceDetail : undefined,
     nationalProgramId: Number(offer.nationalProgramId),
+    formats: offer.formats,
+  }
+}
+
+export const createCollectiveOfferTemplatePayload = (
+  offer: OfferEducationalFormValues,
+  offerTemplateId?: number
+): PostCollectiveOfferTemplateBodyModel => {
+  return {
+    ...getCommonOfferPayload(offer),
+    templateId: offerTemplateId,
     dates:
-      isTemplate &&
       offer.datesType === 'specific_dates' &&
       offer.beginningDate &&
       offer.endingDate
         ? serializeDates(offer.beginningDate, offer.endingDate, offer.hour)
         : undefined,
-    formats: offer.formats,
+    priceDetail: offer.priceDetail,
+  }
+}
+
+export const createCollectiveOfferPayload = (
+  offer: OfferEducationalFormValues,
+  offerTemplateId?: number
+): PostCollectiveOfferBodyModel => {
+  return {
+    ...getCommonOfferPayload(offer),
+    templateId: offerTemplateId,
   }
 }
