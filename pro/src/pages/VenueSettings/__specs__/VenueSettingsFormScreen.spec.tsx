@@ -1,6 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 import createFetchMock from 'vitest-fetch-mock'
 
@@ -121,10 +120,6 @@ vi.spyOn(api, 'getSiretInfo').mockResolvedValue({
   siret: '88145723823022',
   ape_code: '95.07A',
   legal_category_code: '1000',
-})
-
-vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue({
-  canCreate: true,
 })
 
 vi.mock('apiClient/adresse', async () => {

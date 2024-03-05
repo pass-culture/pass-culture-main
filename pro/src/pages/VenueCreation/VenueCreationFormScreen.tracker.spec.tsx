@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 import createFetchMock from 'vitest-fetch-mock'
 
@@ -87,7 +86,6 @@ vi.mock('apiClient/api', () => ({
   api: {
     postCreateVenue: vi.fn(),
     getSiretInfo: vi.fn(),
-    canOffererCreateEducationalOffer: vi.fn(),
   },
 }))
 
@@ -137,9 +135,6 @@ describe('venue form trackers', () => {
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue({
-      canCreate: true,
-    })
   })
 
   it('should track success of form submit', async () => {

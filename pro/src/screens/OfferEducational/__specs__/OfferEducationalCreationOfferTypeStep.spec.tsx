@@ -1,8 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
-import { api } from 'apiClient/api'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferEducational from '../'
@@ -15,9 +13,6 @@ describe('screens | OfferEducational : creation offer type step', () => {
 
   beforeEach(() => {
     props = defaultCreationProps
-    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue({
-      canCreate: true,
-    })
   })
 
   it('should display the right fields and titles', async () => {
