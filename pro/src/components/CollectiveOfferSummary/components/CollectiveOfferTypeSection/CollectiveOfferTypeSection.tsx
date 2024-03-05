@@ -1,15 +1,20 @@
 import {
+  GetCollectiveOfferTemplateResponseModel,
+  GetCollectiveOfferResponseModel,
+} from 'apiClient/v1'
+import {
   Description,
   SummaryDescriptionList,
 } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
-import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
 
 import { DEFAULT_RECAP_VALUE } from '../constants'
 import { formatDuration } from '../utils/formatDuration'
 
 interface CollectiveOfferSummaryProps {
-  offer: CollectiveOfferTemplate | CollectiveOffer
+  offer:
+    | GetCollectiveOfferTemplateResponseModel
+    | GetCollectiveOfferResponseModel
 }
 
 export default function CollectiveOfferTypeSection({

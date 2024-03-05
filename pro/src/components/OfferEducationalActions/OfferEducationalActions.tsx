@@ -1,11 +1,14 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { CollectiveBookingStatus, OfferStatus } from 'apiClient/v1'
+import {
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
+  CollectiveBookingStatus,
+  OfferStatus,
+} from 'apiClient/v1'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import {
-  CollectiveOffer,
-  CollectiveOfferTemplate,
   isCollectiveOffer,
   isCollectiveOfferTemplate,
   Mode,
@@ -31,7 +34,9 @@ import style from './OfferEducationalActions.module.scss'
 export interface OfferEducationalActionsProps {
   className?: string
   isBooked: boolean
-  offer: CollectiveOffer | CollectiveOfferTemplate
+  offer:
+    | GetCollectiveOfferResponseModel
+    | GetCollectiveOfferTemplateResponseModel
   mode?: Mode
   reloadCollectiveOffer?: () => void
 }

@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { GetCollectiveOfferRequestResponseModel } from 'apiClient/v1'
+import {
+  GetCollectiveOfferRequestResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
+} from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { Events } from 'core/FirebaseEvents/constants'
-import {
-  CollectiveOfferTemplate,
-  createOfferFromTemplate,
-} from 'core/OfferEducational'
+import { createOfferFromTemplate } from 'core/OfferEducational'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
@@ -29,7 +29,8 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
 
   const [informations, setInformations] =
     useState<GetCollectiveOfferRequestResponseModel | null>(null)
-  const [offerTemplate, setOfferTemplate] = useState<CollectiveOfferTemplate>()
+  const [offerTemplate, setOfferTemplate] =
+    useState<GetCollectiveOfferTemplateResponseModel>()
   const [isLoading, setIsLoading] = useState(true)
 
   const isMarseilleActive = useActiveFeature('WIP_ENABLE_MARSEILLE')

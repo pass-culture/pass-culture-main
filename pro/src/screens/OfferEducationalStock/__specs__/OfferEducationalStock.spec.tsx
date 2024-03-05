@@ -6,12 +6,14 @@ import * as router from 'react-router-dom'
 
 import { CollectiveBookingStatus } from 'apiClient/v1'
 import {
-  CollectiveOffer,
   DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
   Mode,
 } from 'core/OfferEducational'
-import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
+import {
+  collectiveOfferFactory,
+  getCollectiveOfferCollectiveStockFactory,
+} from 'utils/collectiveApiFactories'
 import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -88,9 +90,9 @@ describe('OfferEducationalStock', () => {
     }),
     collectiveOfferFactory({
       lastBookingStatus: CollectiveBookingStatus.USED,
-      collectiveStock: {
+      collectiveStock: getCollectiveOfferCollectiveStockFactory({
         beginningDatetime: subDays(new Date(), 1).toDateString(),
-      } as CollectiveOffer['collectiveStock'],
+      }),
     }),
   ])(
     'should not disable description, price and places when offer is confirmed or used since less than 2 days',
@@ -120,9 +122,9 @@ describe('OfferEducationalStock', () => {
     }),
     collectiveOfferFactory({
       lastBookingStatus: CollectiveBookingStatus.USED,
-      collectiveStock: {
+      collectiveStock: getCollectiveOfferCollectiveStockFactory({
         beginningDatetime: subDays(new Date(), 3).toDateString(),
-      } as CollectiveOffer['collectiveStock'],
+      }),
     }),
   ])(
     'should disable description, price and places when offer is reimbursed or is used since more than 2 days',

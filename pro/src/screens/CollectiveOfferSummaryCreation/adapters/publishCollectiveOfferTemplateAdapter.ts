@@ -1,9 +1,9 @@
 import { api } from 'apiClient/api'
-import { CollectiveOfferTemplate } from 'core/OfferEducational'
+import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
 
 type PublishCollectiveOfferTemplateAdapter = Adapter<
   number,
-  CollectiveOfferTemplate,
+  GetCollectiveOfferTemplateResponseModel,
   null
 >
 

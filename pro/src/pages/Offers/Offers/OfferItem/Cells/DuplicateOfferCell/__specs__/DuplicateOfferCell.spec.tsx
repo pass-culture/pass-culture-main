@@ -6,10 +6,13 @@ import * as router from 'react-router-dom'
 import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from 'apiClient/api'
-import { ApiError, AttachImageResponseModel } from 'apiClient/v1'
+import {
+  ApiError,
+  AttachImageResponseModel,
+  GetCollectiveOfferResponseModel,
+} from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { CollectiveOffer } from 'core/OfferEducational'
 import * as createFromTemplateUtils from 'core/OfferEducational/utils/createOfferFromTemplate'
 import * as useNotification from 'hooks/useNotification'
 import * as pcapi from 'repository/pcapi/pcapi'
@@ -167,8 +170,8 @@ describe('DuplicateOfferCell', () => {
   })
 
   describe('DuplicateOfferCell bookable offer', () => {
-    let offer: CollectiveOffer
-    let offerDuplicate: CollectiveOffer
+    let offer: GetCollectiveOfferResponseModel
+    let offerDuplicate: GetCollectiveOfferResponseModel
     const mockNavigate = vi.fn()
     const notifyError = vi.fn()
 

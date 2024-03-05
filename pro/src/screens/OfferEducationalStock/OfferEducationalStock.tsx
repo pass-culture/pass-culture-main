@@ -5,14 +5,16 @@ import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
 import * as yup from 'yup'
 
-import { CollectiveBookingStatus } from 'apiClient/v1'
+import {
+  CollectiveBookingStatus,
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
+} from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import BannerPublicApi from 'components/Banner/BannerPublicApi'
 import FormLayout from 'components/FormLayout'
 import OfferEducationalActions from 'components/OfferEducationalActions'
 import {
-  CollectiveOffer,
-  CollectiveOfferTemplate,
   EducationalOfferType,
   isCollectiveOffer,
   isCollectiveOfferTemplate,
@@ -35,7 +37,7 @@ import {
 } from './validationSchema'
 
 export interface OfferEducationalStockProps<
-  T = CollectiveOffer | CollectiveOfferTemplate,
+  T = GetCollectiveOfferResponseModel | GetCollectiveOfferTemplateResponseModel,
 > {
   initialValues: OfferEducationalStockFormValues
   offer: T
@@ -46,7 +48,9 @@ export interface OfferEducationalStockProps<
 }
 
 const OfferEducationalStock = <
-  T extends CollectiveOffer | CollectiveOfferTemplate,
+  T extends
+    | GetCollectiveOfferResponseModel
+    | GetCollectiveOfferTemplateResponseModel,
 >({
   initialValues,
   offer,

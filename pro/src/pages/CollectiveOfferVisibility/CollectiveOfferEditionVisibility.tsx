@@ -1,13 +1,10 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
-import {
-  CollectiveOffer,
-  isCollectiveOfferTemplate,
-  Mode,
-} from 'core/OfferEducational'
+import { isCollectiveOfferTemplate, Mode } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
 import { useAdapter } from 'hooks'
@@ -46,7 +43,7 @@ const CollectiveOfferVisibility = ({
     payload,
   }: {
     message: string
-    payload: CollectiveOffer
+    payload: GetCollectiveOfferResponseModel
   }) => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     reloadCollectiveOffer()

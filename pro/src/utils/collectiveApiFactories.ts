@@ -21,9 +21,10 @@ import {
   OfferStatus,
   StudentLevels,
   VenueTypeCode,
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
 import { BOOKING_STATUS } from 'core/Bookings/constants'
-import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
 
 let offerId = 1
 let stockId = 1
@@ -68,11 +69,11 @@ const sharedCollectiveOfferData = {
 
 // TODO factories: remove customStock & customVenue as an argument
 export const collectiveOfferFactory = (
-  customCollectiveOffer: Partial<CollectiveOffer> = {},
+  customCollectiveOffer: Partial<GetCollectiveOfferResponseModel> = {},
   customStock: GetCollectiveOfferCollectiveStockResponseModel = getCollectiveOfferCollectiveStockFactory() ||
     null,
   customVenue: GetCollectiveOfferVenueResponseModel = getCollectiveOfferVenueFactory()
-): CollectiveOffer => {
+): GetCollectiveOfferResponseModel => {
   const stock = customStock === null ? null : customStock
   const currentOfferId = offerId++
   return {
@@ -105,9 +106,9 @@ export const getCollectiveOfferCollectiveStockFactory = (
 
 // TODO factories: remove customVenue as an argument
 export const collectiveOfferTemplateFactory = (
-  customCollectiveOfferTemplate: Partial<CollectiveOfferTemplate> = {},
+  customCollectiveOfferTemplate: Partial<GetCollectiveOfferTemplateResponseModel> = {},
   customVenue: GetCollectiveOfferVenueResponseModel = getCollectiveOfferVenueFactory()
-): CollectiveOfferTemplate => ({
+): GetCollectiveOfferTemplateResponseModel => ({
   ...sharedCollectiveOfferData,
   id: offerId++,
   venue: customVenue,

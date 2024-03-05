@@ -1,8 +1,6 @@
 import { api } from 'apiClient/api'
-import {
-  CollectiveOfferTemplate,
-  OfferEducationalFormValues,
-} from 'core/OfferEducational'
+import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
+import { OfferEducationalFormValues } from 'core/OfferEducational'
 
 import { createPatchOfferTemplatePayload } from '../utils/createPatchOfferPayload'
 
@@ -14,7 +12,7 @@ export type Params = {
 
 type patchCollectiveOfferTemplateAdapter = Adapter<
   Params,
-  CollectiveOfferTemplate,
+  GetCollectiveOfferTemplateResponseModel,
   null
 >
 

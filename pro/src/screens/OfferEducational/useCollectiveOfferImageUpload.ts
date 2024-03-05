@@ -1,7 +1,10 @@
 import { useCallback, useState } from 'react'
 
+import {
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
+} from 'apiClient/v1'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
-import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
 import deleteCollectiveOfferImageAdapter from 'core/OfferEducational/adapters/deleteCollectiveOfferImageAdapter'
 import deleteCollectiveOfferTemplateImageAdapter from 'core/OfferEducational/adapters/deleteCollectiveOfferTemplateImageAdapter'
 import postCollectiveOfferImageAdapter from 'core/OfferEducational/adapters/postCollectiveOfferImageAdapter'
@@ -10,7 +13,9 @@ import { OfferCollectiveImage } from 'core/Offers/types'
 import useNotification from 'hooks/useNotification'
 
 export const useCollectiveOfferImageUpload = (
-  offer?: CollectiveOffer | CollectiveOfferTemplate,
+  offer?:
+    | GetCollectiveOfferResponseModel
+    | GetCollectiveOfferTemplateResponseModel,
   isTemplate?: boolean
 ) => {
   const notify = useNotification()

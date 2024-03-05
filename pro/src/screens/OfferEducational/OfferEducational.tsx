@@ -2,15 +2,17 @@ import { FormikProvider, useFormik } from 'formik'
 import React from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import { GetEducationalOffererResponseModel } from 'apiClient/v1'
+import {
+  GetEducationalOffererResponseModel,
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
+} from 'apiClient/v1'
 import OfferEducationalActions from 'components/OfferEducationalActions'
 import {
   OfferEducationalFormValues,
   Mode,
   isCollectiveOffer,
   isCollectiveOfferTemplate,
-  CollectiveOffer,
-  CollectiveOfferTemplate,
   applyVenueDefaultsToFormValues,
 } from 'core/OfferEducational'
 import patchCollectiveOfferAdapter from 'core/OfferEducational/adapters/patchCollectiveOfferAdapter'
@@ -30,8 +32,14 @@ import { useCollectiveOfferImageUpload } from './useCollectiveOfferImageUpload'
 import { getOfferEducationalValidationSchema } from './validationSchema'
 
 export interface OfferEducationalProps {
-  offer?: CollectiveOffer | CollectiveOfferTemplate
-  setOffer: (offer: CollectiveOffer | CollectiveOfferTemplate) => void
+  offer?:
+    | GetCollectiveOfferResponseModel
+    | GetCollectiveOfferTemplateResponseModel
+  setOffer: (
+    offer:
+      | GetCollectiveOfferResponseModel
+      | GetCollectiveOfferTemplateResponseModel
+  ) => void
   userOfferers: GetEducationalOffererResponseModel[]
   mode: Mode
   isOfferBooked?: boolean

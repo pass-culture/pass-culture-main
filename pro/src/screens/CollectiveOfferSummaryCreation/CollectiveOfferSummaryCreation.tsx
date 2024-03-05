@@ -1,10 +1,13 @@
 import React, { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { GetOffererResponseModel } from 'apiClient/v1'
+import {
+  GetOffererResponseModel,
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
+} from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import CollectiveOfferSummary from 'components/CollectiveOfferSummary'
-import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
@@ -17,8 +20,14 @@ import publishCollectiveOfferTemplateAdapter from './adapters/publishCollectiveO
 import styles from './CollectiveOfferSummaryCreation.module.scss'
 
 interface CollectiveOfferSummaryCreationProps {
-  offer: CollectiveOfferTemplate | CollectiveOffer
-  setOffer: (offer: CollectiveOffer | CollectiveOfferTemplate) => void
+  offer:
+    | GetCollectiveOfferTemplateResponseModel
+    | GetCollectiveOfferResponseModel
+  setOffer: (
+    offer:
+      | GetCollectiveOfferResponseModel
+      | GetCollectiveOfferTemplateResponseModel
+  ) => void
   offerer: GetOffererResponseModel | undefined
 }
 

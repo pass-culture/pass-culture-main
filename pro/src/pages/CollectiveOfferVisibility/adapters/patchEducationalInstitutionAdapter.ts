@@ -1,5 +1,5 @@
 import { api } from 'apiClient/api'
-import { CollectiveOffer } from 'core/OfferEducational'
+import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 
 export type PatchEducationalInstitutionAdapter = Adapter<
   {
@@ -7,7 +7,7 @@ export type PatchEducationalInstitutionAdapter = Adapter<
     institutionId: string | null
     teacherEmail: string | null
   },
-  CollectiveOffer,
+  GetCollectiveOfferResponseModel,
   null
 >
 

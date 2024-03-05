@@ -4,18 +4,19 @@ import React from 'react'
 import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from 'apiClient/api'
-import { ApiError, CollectiveOfferResponseIdModel } from 'apiClient/v1'
+import {
+  ApiError,
+  CollectiveOfferResponseIdModel,
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
+} from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import {
   Events,
   OFFER_FROM_TEMPLATE_ENTRIES,
 } from 'core/FirebaseEvents/constants'
-import {
-  CollectiveOffer,
-  CollectiveOfferTemplate,
-  Mode,
-} from 'core/OfferEducational'
+import { Mode } from 'core/OfferEducational'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as useNotification from 'hooks/useNotification'
 import {
@@ -30,7 +31,9 @@ const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 
 const renderCollectiveOfferSummaryEdition = (
-  offer: CollectiveOfferTemplate | CollectiveOffer
+  offer:
+    | GetCollectiveOfferTemplateResponseModel
+    | GetCollectiveOfferResponseModel
 ) => {
   const storeOverrides = {
     user: {
@@ -58,7 +61,9 @@ const renderCollectiveOfferSummaryEdition = (
 }
 
 describe('CollectiveOfferSummary', () => {
-  let offer: CollectiveOfferTemplate | CollectiveOffer
+  let offer:
+    | GetCollectiveOfferTemplateResponseModel
+    | GetCollectiveOfferResponseModel
   const mockLogEvent = vi.fn()
   const notifyError = vi.fn()
 
