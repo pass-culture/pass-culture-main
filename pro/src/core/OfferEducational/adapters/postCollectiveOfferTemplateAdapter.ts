@@ -2,7 +2,7 @@ import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { OfferEducationalFormValues } from 'core/OfferEducational'
 
-import { createCollectiveOfferPayload } from '../utils/createOfferPayload'
+import { createCollectiveOfferTemplatePayload } from '../utils/createOfferPayload'
 
 type Params = {
   offer: OfferEducationalFormValues
@@ -33,7 +33,7 @@ const postCollectiveOfferTemplateAdapter: PostOfferAdapter = async ({
   offer,
 }) => {
   try {
-    const payload = createCollectiveOfferPayload(offer, true)
+    const payload = createCollectiveOfferTemplatePayload(offer)
 
     const response = await api.createCollectiveOfferTemplate(payload)
 
