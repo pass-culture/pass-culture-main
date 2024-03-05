@@ -496,7 +496,7 @@ class GetOffererStatsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         cards_text = html_parser.extract_cards_text(response.data)
-        assert f"{str(booking.amount).replace('.', ',')} € de CA" in cards_text
+        assert f"{str(booking.amount).replace('.', ',')} € de CA" in cards_text[0]
         assert "3 offres actives ( 1 IND / 2 EAC ) 0 offres inactives ( 0 IND / 0 EAC )" in cards_text
 
 

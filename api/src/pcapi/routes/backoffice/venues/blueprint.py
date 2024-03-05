@@ -418,6 +418,15 @@ def get_stats(venue_id: int) -> utils.BackofficeResponse:
     )
 
 
+@venue_blueprint.route("/<int:venue_id>/revenue-details", methods=["GET"])
+def get_revenue_details(venue_id: int) -> utils.BackofficeResponse:
+    details = offerers_repository.get_revenues_per_year(venueId=venue_id)
+    return render_template(
+        "components/revenue_details.html",
+        details=details,
+    )
+
+
 @venue_blueprint.route("/<int:venue_id>/provider/<int:provider_id>/delete", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def delete_venue_provider(venue_id: int, provider_id: int) -> utils.BackofficeResponse:
