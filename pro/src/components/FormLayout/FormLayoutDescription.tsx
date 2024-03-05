@@ -1,6 +1,7 @@
 import React from 'react'
 
-import { Banner } from 'ui-kit'
+import Callout from 'components/Callout/Callout'
+import { CalloutVariant } from 'components/Callout/types'
 import { Link } from 'ui-kit/Banners/LinkNodes/LinkNodes'
 
 import style from './FormLayout.module.scss'
@@ -23,13 +24,13 @@ const Description = ({
     )}
     {description && isBanner && (
       <div className={style['form-layout-section-description-container']}>
-        <Banner
-          type="notification-info"
+        <Callout
+          variant={CalloutVariant.DEFAULT}
           className={style['form-layout-section-description-content']}
           links={links}
         >
           {description}
-        </Banner>
+        </Callout>
       </div>
     )}
   </>

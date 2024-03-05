@@ -169,7 +169,7 @@ describe('screens:StocksThing', () => {
     await renderStockThingScreen([], props, contextValue)
     expect(
       screen.getByText(
-        /Les bénéficiaires ont 30 jours pour annuler leurs réservations d’offres numériques. Dans le cas d’offres avec codes d’activation, les bénéficiaires ne peuvent pas annuler leurs réservations. Toute réservation est définitive et sera immédiatement validée. Pour ajouter des codes d’activation, veuillez passer par le menu ··· et choisir l’option correspondante./
+        /Les bénéficiaires ont 30 jours pour annuler leurs réservations d’offres numériques. Dans le cas d’offres avec codes d’activation, les bénéficiaires ne peuvent pas annuler leurs réservations. Toute réservation est définitive et sera immédiatement validée. Pour ajouter des codes d’activation, veuillez passer par le menu et choisir l’option correspondante./
       )
     ).toBeInTheDocument()
     expect(
