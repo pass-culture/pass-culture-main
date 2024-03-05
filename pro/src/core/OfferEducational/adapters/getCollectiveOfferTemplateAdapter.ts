@@ -1,11 +1,10 @@
 import { api } from 'apiClient/api'
-
-import { CollectiveOfferTemplate } from '../types'
+import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
 
 type PayloadFailure = null
 type GetCollectiveOfferTemplateAdapter = Adapter<
   number,
-  CollectiveOfferTemplate,
+  GetCollectiveOfferTemplateResponseModel,
   PayloadFailure
 >
 

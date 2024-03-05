@@ -1,6 +1,10 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import {
+  GetCollectiveOfferTemplateResponseModel,
+  GetCollectiveOfferResponseModel,
+} from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import CollectiveOfferSummary from 'components/CollectiveOfferSummary'
 import OfferEducationalActions from 'components/OfferEducationalActions'
@@ -9,8 +13,6 @@ import {
   OFFER_FROM_TEMPLATE_ENTRIES,
 } from 'core/FirebaseEvents/constants'
 import {
-  CollectiveOffer,
-  CollectiveOfferTemplate,
   createOfferFromTemplate,
   isCollectiveOfferTemplate,
   Mode,
@@ -26,7 +28,9 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import styles from './CollectiveOfferSummaryEdition.module.scss'
 
 interface CollectiveOfferSummaryEditionProps {
-  offer: CollectiveOfferTemplate | CollectiveOffer
+  offer:
+    | GetCollectiveOfferTemplateResponseModel
+    | GetCollectiveOfferResponseModel
   reloadCollectiveOffer: () => void
   mode: Mode
 }

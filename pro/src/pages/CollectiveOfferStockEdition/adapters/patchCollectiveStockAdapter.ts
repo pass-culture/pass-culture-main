@@ -1,14 +1,16 @@
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
-import { CollectiveStockResponseModel } from 'apiClient/v1'
+import {
+  CollectiveStockResponseModel,
+  GetCollectiveOfferResponseModel,
+} from 'apiClient/v1'
 import {
   OfferEducationalStockFormValues,
   createPatchStockDataPayload,
-  CollectiveOffer,
 } from 'core/OfferEducational'
 
 type Params = {
-  offer: CollectiveOffer
+  offer: GetCollectiveOfferResponseModel
   stockId: number
   values: OfferEducationalStockFormValues
   initialValues: OfferEducationalStockFormValues

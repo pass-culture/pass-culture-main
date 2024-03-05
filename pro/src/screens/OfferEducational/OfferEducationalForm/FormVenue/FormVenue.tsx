@@ -4,12 +4,12 @@ import React from 'react'
 import {
   CollectiveBookingStatus,
   GetEducationalOffererResponseModel,
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import {
   applyVenueDefaultsToFormValues,
-  CollectiveOffer,
-  CollectiveOfferTemplate,
   OfferEducationalFormValues,
   isCollectiveOffer,
   Mode,
@@ -25,7 +25,9 @@ interface FormVenueProps {
   isEligible: boolean | undefined
   mode: Mode
   isOfferCreated: boolean
-  offer?: CollectiveOffer | CollectiveOfferTemplate
+  offer?:
+    | GetCollectiveOfferResponseModel
+    | GetCollectiveOfferTemplateResponseModel
 
   onChangeOfferer: (event: string) => void
 }

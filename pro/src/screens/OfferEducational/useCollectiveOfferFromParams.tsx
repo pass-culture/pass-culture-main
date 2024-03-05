@@ -2,20 +2,26 @@ import { ComponentType, useCallback, useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { GetOffererResponseModel } from 'apiClient/v1'
 import {
-  CollectiveOffer,
-  CollectiveOfferTemplate,
-  extractOfferIdAndOfferTypeFromRouteParams,
-} from 'core/OfferEducational'
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
+  GetOffererResponseModel,
+} from 'apiClient/v1'
+import { extractOfferIdAndOfferTypeFromRouteParams } from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import useActiveFeature from 'hooks/useActiveFeature'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 export type MandatoryCollectiveOfferFromParamsProps = {
-  offer: CollectiveOffer | CollectiveOfferTemplate
-  setOffer: (offer: CollectiveOffer | CollectiveOfferTemplate) => void
+  offer:
+    | GetCollectiveOfferResponseModel
+    | GetCollectiveOfferTemplateResponseModel
+  setOffer: (
+    offer:
+      | GetCollectiveOfferResponseModel
+      | GetCollectiveOfferTemplateResponseModel
+  ) => void
   reloadCollectiveOffer: () => Promise<void>
   isTemplate: boolean
   offerer: GetOffererResponseModel | undefined
@@ -39,7 +45,7 @@ const useCollectiveOfferFromParams = (
   const pathNameIncludesTemplate = location.pathname.includes('vitrine')
 
   const [offer, setOffer] = useState<
-    CollectiveOffer | CollectiveOfferTemplate
+    GetCollectiveOfferResponseModel | GetCollectiveOfferTemplateResponseModel
   >()
 
   const [offerer, setOfferer] = useState<GetOffererResponseModel>()

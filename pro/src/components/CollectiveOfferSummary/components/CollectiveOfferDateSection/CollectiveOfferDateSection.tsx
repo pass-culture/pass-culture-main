@@ -1,12 +1,12 @@
 import React from 'react'
 
+import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
-import { CollectiveOfferTemplate } from 'core/OfferEducational'
 import { getRangeToFrenchText, toDateStrippedOfTimezone } from 'utils/date'
 
 export type CollectiveOfferDateSectionProps = {
-  offer: CollectiveOfferTemplate
+  offer: GetCollectiveOfferTemplateResponseModel
 }
 
 export default function CollectiveOfferDateSection({

@@ -1,9 +1,7 @@
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
-import {
-  CollectiveOffer,
-  OfferEducationalFormValues,
-} from 'core/OfferEducational'
+import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
+import { OfferEducationalFormValues } from 'core/OfferEducational'
 
 import { createPatchOfferPayload } from '../../../pages/CollectiveOfferEdition/utils/createPatchOfferPayload'
 
@@ -13,7 +11,11 @@ type Params = {
   initialValues: OfferEducationalFormValues
 }
 
-type PatchCollectiveOfferAdapter = Adapter<Params, CollectiveOffer, null>
+type PatchCollectiveOfferAdapter = Adapter<
+  Params,
+  GetCollectiveOfferResponseModel,
+  null
+>
 
 const BAD_REQUEST_FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,

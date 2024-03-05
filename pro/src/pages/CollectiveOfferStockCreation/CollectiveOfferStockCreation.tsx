@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import { GetCollectiveOfferRequestResponseModel } from 'apiClient/v1/models/GetCollectiveOfferRequestResponseModel'
+import {
+  GetCollectiveOfferRequestResponseModel,
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
+} from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import {
-  CollectiveOffer,
-  CollectiveOfferTemplate,
   EducationalOfferType,
   extractInitialStockValues,
   isCollectiveOffer,
@@ -41,7 +43,8 @@ export const CollectiveOfferStockCreation = ({
   const isCreation = !location.pathname.includes('edition')
   const { requete: requestId } = queryParamsFromOfferer(location)
 
-  const [offerTemplate, setOfferTemplate] = useState<CollectiveOfferTemplate>()
+  const [offerTemplate, setOfferTemplate] =
+    useState<GetCollectiveOfferTemplateResponseModel>()
   const [requestInformations, setRequestInformations] =
     useState<GetCollectiveOfferRequestResponseModel | null>(null)
 
@@ -90,7 +93,7 @@ export const CollectiveOfferStockCreation = ({
 
   /* istanbul ignore next: DEBT, TO FIX unit test submit mock */
   const handleSubmitStock = async (
-    offer: CollectiveOffer,
+    offer: GetCollectiveOfferResponseModel,
     values: OfferEducationalStockFormValues
   ) => {
     let isOk: boolean

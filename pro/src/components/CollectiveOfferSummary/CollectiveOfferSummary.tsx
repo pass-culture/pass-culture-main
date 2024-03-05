@@ -1,12 +1,14 @@
 import React from 'react'
 
+import {
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
+} from 'apiClient/v1'
 import BannerPublicApi from 'components/Banner/BannerPublicApi'
 import { SummaryContent } from 'components/SummaryLayout/SummaryContent'
 import { SummaryLayout } from 'components/SummaryLayout/SummaryLayout'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import {
-  CollectiveOffer,
-  CollectiveOfferTemplate,
   isCollectiveOffer,
   isCollectiveOfferTemplate,
 } from 'core/OfferEducational'
@@ -26,7 +28,9 @@ import CollectiveOfferVenueSection from './components/CollectiveOfferVenueSectio
 import CollectiveOfferVisibilitySection from './components/CollectiveOfferVisibilitySection'
 
 export interface CollectiveOfferSummaryProps {
-  offer: CollectiveOfferTemplate | CollectiveOffer
+  offer:
+    | GetCollectiveOfferTemplateResponseModel
+    | GetCollectiveOfferResponseModel
   offerEditLink?: string
   stockEditLink?: string
   visibilityEditLink?: string

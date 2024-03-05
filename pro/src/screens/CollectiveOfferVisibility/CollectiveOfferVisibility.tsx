@@ -5,13 +5,13 @@ import {
   EducationalInstitutionResponseModel,
   EducationalRedactor,
   GetCollectiveOfferRequestResponseModel,
+  GetCollectiveOfferResponseModel,
 } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import BannerPublicApi from 'components/Banner/BannerPublicApi'
 import FormLayout from 'components/FormLayout'
 import OfferEducationalActions from 'components/OfferEducationalActions'
 import {
-  CollectiveOffer,
   isCollectiveOffer,
   Mode,
   VisibilityFormValues,
@@ -50,11 +50,11 @@ export interface CollectiveOfferVisibilityProps {
   }: {
     offerId: string
     message: string
-    payload: CollectiveOffer
+    payload: GetCollectiveOfferResponseModel
   }) => void
   institutions: EducationalInstitutionResponseModel[]
   isLoadingInstitutions: boolean
-  offer: CollectiveOffer
+  offer: GetCollectiveOfferResponseModel
   reloadCollectiveOffer?: () => void
   requestId?: string | null
 }

@@ -1,5 +1,5 @@
 import { api } from 'apiClient/api'
-import { CollectiveOffer } from 'core/OfferEducational'
+import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 
 import { patchEducationalInstitutionAdapter } from '../patchEducationalInstitutionAdapter'
 
@@ -24,7 +24,7 @@ describe('patchEducationalInstitutionAdapter', () => {
     vi.spyOn(
       api,
       'patchCollectiveOffersEducationalInstitution'
-    ).mockResolvedValueOnce({} as CollectiveOffer) // we do not test the content
+    ).mockResolvedValueOnce({} as GetCollectiveOfferResponseModel) // we do not test the content
     const response = await patchEducationalInstitutionAdapter({
       offerId: 12,
       institutionId: '24',

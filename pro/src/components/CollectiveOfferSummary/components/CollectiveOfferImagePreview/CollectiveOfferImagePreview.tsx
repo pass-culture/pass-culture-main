@@ -1,15 +1,20 @@
 import cn from 'classnames'
 import React from 'react'
 
+import {
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
+} from 'apiClient/v1'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
-import { CollectiveOfferTemplate, CollectiveOffer } from 'core/OfferEducational'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './CollectiveOfferImagePreview.module.scss'
 
 interface CollectiveOfferImagePreviewProps {
-  offer: CollectiveOfferTemplate | CollectiveOffer
+  offer:
+    | GetCollectiveOfferTemplateResponseModel
+    | GetCollectiveOfferResponseModel
 }
 
 const CollectiveOfferImagePreview = ({

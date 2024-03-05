@@ -2,13 +2,15 @@ import { useFormikContext } from 'formik'
 import React, { useCallback, useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
-import { GetEducationalOffererResponseModel } from 'apiClient/v1'
+import {
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
+  GetEducationalOffererResponseModel,
+} from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import BannerPublicApi from 'components/Banner/BannerPublicApi'
 import FormLayout from 'components/FormLayout'
 import {
-  CollectiveOffer,
-  CollectiveOfferTemplate,
   OfferEducationalFormValues,
   isCollectiveOffer,
   Mode,
@@ -51,7 +53,9 @@ export type OfferEducationalFormProps = Omit<
   onImageUpload: ImageUploaderOfferProps['onImageUpload']
   onImageDelete: ImageUploaderOfferProps['onImageDelete']
   isOfferCreated?: boolean
-  offer?: CollectiveOffer | CollectiveOfferTemplate
+  offer?:
+    | GetCollectiveOfferResponseModel
+    | GetCollectiveOfferTemplateResponseModel
 }
 
 const OfferEducationalForm = ({

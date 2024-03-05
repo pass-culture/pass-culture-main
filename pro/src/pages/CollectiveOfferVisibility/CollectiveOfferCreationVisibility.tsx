@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import { EducationalInstitutionResponseModel } from 'apiClient/v1'
+import {
+  EducationalInstitutionResponseModel,
+  GetCollectiveOfferResponseModel,
+} from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import {
-  CollectiveOffer,
   DEFAULT_VISIBILITY_FORM_VALUES,
   isCollectiveOffer,
   isCollectiveOfferTemplate,
@@ -42,7 +44,7 @@ export const CollectiveOfferVisibility = ({
     payload,
   }: {
     offerId: string
-    payload: CollectiveOffer
+    payload: GetCollectiveOfferResponseModel
   }) => {
     setOffer(payload)
     navigate(`/offre/${offerId}/collectif/creation/recapitulatif`)

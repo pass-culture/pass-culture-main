@@ -1,6 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import {
@@ -8,7 +9,6 @@ import {
   OfferEducationalStockFormValues,
   extractInitialStockValues,
   getStockCollectiveOfferAdapter,
-  CollectiveOffer,
   isCollectiveOfferTemplate,
 } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
@@ -36,7 +36,7 @@ const CollectiveOfferStockEdition = ({
   const initialValues = extractInitialStockValues(offer)
 
   const handleSubmitStock = async (
-    offer: CollectiveOffer,
+    offer: GetCollectiveOfferResponseModel,
     values: OfferEducationalStockFormValues
   ) => {
     if (!offer.collectiveStock) {
