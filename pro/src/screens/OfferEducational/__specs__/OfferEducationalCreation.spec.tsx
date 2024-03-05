@@ -7,7 +7,7 @@ import { api } from 'apiClient/api'
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import * as patchCollectiveOfferAdapter from 'core/OfferEducational/adapters/patchCollectiveOfferAdapter'
 import { RootState } from 'store/rootReducer'
-import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
+import { getCollectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferEducational from '../'
@@ -43,7 +43,7 @@ describe('screens | OfferEducational : event address step', () => {
   const mockNavigate = vi.fn()
 
   beforeEach(() => {
-    offer = collectiveOfferFactory()
+    offer = getCollectiveOfferFactory()
 
     offer.venue.managingOfferer.id = 1
 

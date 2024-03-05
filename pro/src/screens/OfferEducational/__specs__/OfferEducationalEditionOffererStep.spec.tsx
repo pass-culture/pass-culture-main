@@ -4,7 +4,7 @@ import React from 'react'
 import { CollectiveBookingStatus } from 'apiClient/v1'
 import { Mode } from 'core/OfferEducational'
 import {
-  collectiveOfferFactory,
+  getCollectiveOfferFactory,
   getCollectiveOfferManagingOffererFactory,
   getCollectiveOfferVenueFactory,
 } from 'utils/collectiveApiFactories'
@@ -49,7 +49,7 @@ describe('screens | OfferEducational : edition offerer step', () => {
           ]),
         },
       ]),
-      offer: collectiveOfferFactory(
+      offer: getCollectiveOfferFactory(
         {
           id: thirdVenueId,
           venue: {
@@ -106,7 +106,7 @@ describe('screens | OfferEducational : edition offerer step', () => {
           ]),
         },
       ]),
-      offer: collectiveOfferFactory(
+      offer: getCollectiveOfferFactory(
         {
           id: thirdVenueId,
           venue: {
@@ -133,7 +133,7 @@ describe('screens | OfferEducational : edition offerer step', () => {
   })
 
   it('should show banner if generate from publicApi', () => {
-    const offer = collectiveOfferFactory({ isPublicApi: true })
+    const offer = getCollectiveOfferFactory({ isPublicApi: true })
 
     renderWithProviders(
       <OfferEducational {...props} mode={Mode.EDITION} offer={offer} />

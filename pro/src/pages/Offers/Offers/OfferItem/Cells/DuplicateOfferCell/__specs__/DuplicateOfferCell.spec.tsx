@@ -17,7 +17,7 @@ import * as createFromTemplateUtils from 'core/OfferEducational/utils/createOffe
 import * as useNotification from 'hooks/useNotification'
 import * as pcapi from 'repository/pcapi/pcapi'
 import {
-  collectiveOfferFactory,
+  getCollectiveOfferFactory,
   defaultGetVenue,
 } from 'utils/collectiveApiFactories'
 import * as localStorageAvailable from 'utils/localStorageAvailable'
@@ -176,8 +176,8 @@ describe('DuplicateOfferCell', () => {
     const notifyError = vi.fn()
 
     beforeEach(async () => {
-      offer = collectiveOfferFactory()
-      offerDuplicate = collectiveOfferFactory()
+      offer = getCollectiveOfferFactory()
+      offerDuplicate = getCollectiveOfferFactory()
 
       const notifsImport = (await vi.importActual(
         'hooks/useNotification'

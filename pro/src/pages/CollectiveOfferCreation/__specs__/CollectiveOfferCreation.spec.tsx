@@ -11,7 +11,7 @@ import {
   userOffererFactory,
 } from 'screens/OfferEducational/__tests-utils__/userOfferersFactory'
 import { OptionalCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
-import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
+import { getCollectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { CollectiveOfferCreation } from '../CollectiveOfferCreation'
@@ -45,7 +45,7 @@ describe('CollectiveOfferCreation', () => {
     managedVenues: [venue],
   })
   const defaultProps = {
-    offer: collectiveOfferFactory({
+    offer: getCollectiveOfferFactory({
       venue: { ...venue, managingOfferer: offerer },
     }),
     setOffer: vi.fn(),

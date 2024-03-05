@@ -5,7 +5,7 @@ import { api } from 'apiClient/api'
 import { OfferAddressType } from 'apiClient/v1'
 import * as getInterventionAreaLabels from 'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea/OfferInterventionArea'
 import {
-  collectiveOfferTemplateFactory,
+  getCollectiveOfferTemplateFactory,
   defaultGetVenue,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -27,7 +27,7 @@ describe('CollectiveOfferLocationSection', () => {
   })
 
   it('should display the location details for an event at the school', async () => {
-    const offer = collectiveOfferTemplateFactory()
+    const offer = getCollectiveOfferTemplateFactory()
 
     renderWithProviders(
       <CollectiveOfferLocationSection
@@ -52,7 +52,7 @@ describe('CollectiveOfferLocationSection', () => {
   })
 
   it('should display the location details for an event in a specific location', async () => {
-    const offer = collectiveOfferTemplateFactory()
+    const offer = getCollectiveOfferTemplateFactory()
 
     renderWithProviders(
       <CollectiveOfferLocationSection
@@ -74,7 +74,7 @@ describe('CollectiveOfferLocationSection', () => {
   })
 
   it('should display the location details for an event at the offerer venue', async () => {
-    const offer = collectiveOfferTemplateFactory()
+    const offer = getCollectiveOfferTemplateFactory()
 
     renderWithProviders(
       <CollectiveOfferLocationSection
@@ -103,7 +103,7 @@ describe('CollectiveOfferLocationSection', () => {
   })
 
   it('should display the mobility zone for an event', async () => {
-    const offer = collectiveOfferTemplateFactory()
+    const offer = getCollectiveOfferTemplateFactory()
 
     renderWithProviders(
       <CollectiveOfferLocationSection

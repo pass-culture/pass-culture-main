@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
 
-import { collectiveOfferTemplateFactory } from 'utils/collectiveApiFactories'
+import { getCollectiveOfferTemplateFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveOfferDateSection, {
@@ -17,7 +17,7 @@ const renderCollectiveOfferDateSection = (
 describe('CollectiveOfferDateSection', () => {
   let props: CollectiveOfferDateSectionProps
   it('should show the dates section if there are dates in the offer', () => {
-    const offer = collectiveOfferTemplateFactory({
+    const offer = getCollectiveOfferTemplateFactory({
       dates: { start: '2023-10-24T09:14:00', end: '2023-10-24T09:16:00' },
     })
 
@@ -29,7 +29,7 @@ describe('CollectiveOfferDateSection', () => {
   })
 
   it('should not show the dates section if there are no dates in the offer', () => {
-    const offer = collectiveOfferTemplateFactory({
+    const offer = getCollectiveOfferTemplateFactory({
       dates: undefined,
     })
 

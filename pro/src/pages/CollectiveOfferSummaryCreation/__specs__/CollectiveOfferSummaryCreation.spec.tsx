@@ -9,7 +9,7 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
 import { defaultGetOffererResponseModel } from 'utils/apiFactories'
-import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
+import { getCollectiveOfferFactory } from 'utils/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -40,7 +40,7 @@ const renderCollectiveOfferSummaryCreation = async (
 }
 
 const defaultProps = {
-  offer: collectiveOfferFactory(),
+  offer: getCollectiveOfferFactory(),
   setOffer: vi.fn(),
   reloadCollectiveOffer: vi.fn(),
   isTemplate: false,
@@ -88,7 +88,7 @@ describe('CollectiveOfferSummaryCreation', () => {
 
   it('Should show the redirect modal', async () => {
     vi.spyOn(api, 'patchCollectiveOfferPublication').mockResolvedValue({
-      ...collectiveOfferFactory(),
+      ...getCollectiveOfferFactory(),
       isNonFreeOffer: true,
     })
     await renderCollectiveOfferSummaryCreation(

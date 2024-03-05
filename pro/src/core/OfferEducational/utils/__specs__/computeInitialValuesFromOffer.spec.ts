@@ -1,7 +1,7 @@
 import { DEFAULT_EAC_FORM_VALUES } from 'core/OfferEducational/constants'
 import {
-  collectiveOfferFactory,
-  collectiveOfferTemplateFactory,
+  getCollectiveOfferFactory,
+  getCollectiveOfferTemplateFactory,
 } from 'utils/collectiveApiFactories'
 import { formatShortDateForInput } from 'utils/date'
 
@@ -19,7 +19,7 @@ describe('computeInitialValuesFromOffer', () => {
       computeInitialValuesFromOffer(
         [],
         false,
-        collectiveOfferFactory({
+        getCollectiveOfferFactory({
           contactEmail: 'someemail@example.com',
           bookingEmails: undefined,
         })
@@ -38,7 +38,7 @@ describe('computeInitialValuesFromOffer', () => {
       computeInitialValuesFromOffer(
         [],
         true,
-        collectiveOfferTemplateFactory({
+        getCollectiveOfferTemplateFactory({
           dates: {
             end: '2024-01-29T23:00:28.040559Z',
             start: '2024-01-23T23:00:28.040547Z',

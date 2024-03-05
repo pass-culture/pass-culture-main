@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import React from 'react'
 
 import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
-import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
+import { getCollectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { CollectiveOfferVisibility } from '../CollectiveOfferCreationVisibility'
@@ -27,7 +27,7 @@ const renderCollectiveOfferCreationVisibility = (
 }
 
 const defaultProps = {
-  offer: collectiveOfferFactory(),
+  offer: getCollectiveOfferFactory(),
   setOffer: vi.fn(),
   reloadCollectiveOffer: vi.fn(),
   isTemplate: false,

@@ -11,7 +11,7 @@ import {
   Mode,
 } from 'core/OfferEducational'
 import {
-  collectiveOfferFactory,
+  getCollectiveOfferFactory,
   getCollectiveOfferCollectiveStockFactory,
 } from 'utils/collectiveApiFactories'
 import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from 'utils/date'
@@ -23,7 +23,7 @@ import OfferEducationalStock, {
 
 const defaultProps: OfferEducationalStockProps = {
   initialValues: DEFAULT_EAC_STOCK_FORM_VALUES,
-  offer: collectiveOfferFactory({}),
+  offer: getCollectiveOfferFactory({}),
   onSubmit: vi.fn(),
   mode: Mode.CREATION,
 }
@@ -50,7 +50,7 @@ describe('OfferEducationalStock', () => {
     vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
   })
   it('should render for offer with a stock', () => {
-    const offer = collectiveOfferFactory()
+    const offer = getCollectiveOfferFactory()
     const testProps: OfferEducationalStockProps = {
       ...defaultProps,
       offer,
@@ -71,7 +71,7 @@ describe('OfferEducationalStock', () => {
   })
 
   it('should render for offer with a stock', () => {
-    const offer = collectiveOfferFactory({ isPublicApi: true })
+    const offer = getCollectiveOfferFactory({ isPublicApi: true })
     const testProps: OfferEducationalStockProps = {
       ...defaultProps,
       offer,
@@ -85,10 +85,10 @@ describe('OfferEducationalStock', () => {
   })
 
   it.each([
-    collectiveOfferFactory({
+    getCollectiveOfferFactory({
       lastBookingStatus: CollectiveBookingStatus.CONFIRMED,
     }),
-    collectiveOfferFactory({
+    getCollectiveOfferFactory({
       lastBookingStatus: CollectiveBookingStatus.USED,
       collectiveStock: getCollectiveOfferCollectiveStockFactory({
         beginningDatetime: subDays(new Date(), 1).toDateString(),
@@ -117,10 +117,10 @@ describe('OfferEducationalStock', () => {
   )
 
   it.each([
-    collectiveOfferFactory({
+    getCollectiveOfferFactory({
       lastBookingStatus: CollectiveBookingStatus.REIMBURSED,
     }),
-    collectiveOfferFactory({
+    getCollectiveOfferFactory({
       lastBookingStatus: CollectiveBookingStatus.USED,
       collectiveStock: getCollectiveOfferCollectiveStockFactory({
         beginningDatetime: subDays(new Date(), 3).toDateString(),
@@ -149,7 +149,7 @@ describe('OfferEducationalStock', () => {
   )
 
   it('should call submit callback when clicking next step with valid form data', async () => {
-    const offer = collectiveOfferFactory({ isPublicApi: false })
+    const offer = getCollectiveOfferFactory({ isPublicApi: false })
     const testProps: OfferEducationalStockProps = {
       ...defaultProps,
       offer,
@@ -164,7 +164,7 @@ describe('OfferEducationalStock', () => {
   })
 
   it('should display error message when price and participants are too high', async () => {
-    const offer = collectiveOfferFactory({ isPublicApi: false })
+    const offer = getCollectiveOfferFactory({ isPublicApi: false })
     const testProps: OfferEducationalStockProps = {
       ...defaultProps,
       offer,
@@ -189,7 +189,7 @@ describe('OfferEducationalStock', () => {
   })
 
   it('should display error message when price and participants are too high', async () => {
-    const offer = collectiveOfferFactory({ isPublicApi: false })
+    const offer = getCollectiveOfferFactory({ isPublicApi: false })
     const testProps: OfferEducationalStockProps = {
       ...defaultProps,
       offer,
