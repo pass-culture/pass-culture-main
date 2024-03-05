@@ -224,12 +224,13 @@ class AllocineStocks(LocalProvider):
                 product = create_product(movie)
                 db.session.add(product)
 
-        logger.info(
-            "Product created for allocine Id %d",
-            movie.internalId,
-            extra={"allocineId": movie.internalId, "theaterId": self.theater_id},
-            technical_message_id="allocineId.not_found",
-        )
+            logger.info(
+                "Product created for allocine Id %d",
+                movie.internalId,
+                extra={"allocineId": movie.internalId, "theaterId": self.theater_id},
+                technical_message_id="allocineId.not_found",
+            )
+
         return product
 
     def apply_allocine_price_rule(self, allocine_stock: offers_models.Stock) -> decimal.Decimal:
