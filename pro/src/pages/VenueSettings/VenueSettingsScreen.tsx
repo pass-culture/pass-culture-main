@@ -32,6 +32,7 @@ import styles from './VenueSettingsScreen.module.scss'
 interface VenueSettingsFormScreenProps {
   initialValues: VenueSettingsFormValues
   offerer: GetOffererResponseModel
+  venueLabels: SelectOption[]
   venueTypes: SelectOption[]
   providers?: Providers[]
   venueProviders?: VenueProviderResponse[]
@@ -42,6 +43,7 @@ interface VenueSettingsFormScreenProps {
 export const VenueSettingsFormScreen = ({
   initialValues,
   offerer,
+  venueLabels,
   venueTypes,
   venueProviders,
   venue,
@@ -184,6 +186,7 @@ export const VenueSettingsFormScreen = ({
         <form onSubmit={formik.handleSubmit}>
           <VenueSettingsForm
             updateIsSiretValued={setIsSiretValued}
+            venueLabels={venueLabels}
             venueTypes={venueTypes}
             venueProvider={venueProviders}
             provider={providers}

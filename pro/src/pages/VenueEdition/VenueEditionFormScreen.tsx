@@ -7,7 +7,6 @@ import { GetVenueResponseModel } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
 import { Events } from 'core/FirebaseEvents/constants'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
-import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
@@ -21,13 +20,11 @@ import styles from './VenueEditionFormScreen.module.scss'
 
 interface VenueEditionProps {
   initialValues: VenueEditionFormValues
-  venueLabels: SelectOption[]
   venue: GetVenueResponseModel
 }
 
 export const VenueEditionFormScreen = ({
   initialValues,
-  venueLabels,
   venue,
 }: VenueEditionProps): JSX.Element => {
   const navigate = useNavigate()
@@ -109,7 +106,7 @@ export const VenueEditionFormScreen = ({
 
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit} className={styles['venue-form']}>
-          <VenueEditionForm venueLabels={venueLabels} venue={venue} />
+          <VenueEditionForm venue={venue} />
         </form>
       </FormikProvider>
     </>

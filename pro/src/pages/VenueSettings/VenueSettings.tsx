@@ -5,6 +5,7 @@ import { AppLayout } from 'app/AppLayout'
 import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useGetVenue } from 'core/Venue/adapters/getVenueAdapter'
+import { useGetVenueLabels } from 'core/Venue/adapters/getVenueLabelsAdapter'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import { useAdapter } from 'hooks'
 import useNotification from 'hooks/useNotification'
@@ -35,6 +36,11 @@ const VenueSettings = (): JSX.Element | null => {
     error: errorVenue,
     data: venue,
   } = useGetVenue(Number(venueId))
+  const {
+    isLoading: isLoadingVenueLabels,
+    error: errorVenueLabels,
+    data: venueLabels,
+  } = useGetVenueLabels()
   const {
     isLoading: isLoadingVenueTypes,
     error: errorVenueTypes,
@@ -72,13 +78,17 @@ const VenueSettings = (): JSX.Element | null => {
   if (
     errorOfferer ||
     errorVenue ||
+    errorVenueLabels ||
     errorVenueTypes ||
     errorVenueProviders ||
     errorProviders
   ) {
-    const loadingError = [errorOfferer, errorVenue, errorVenueTypes].find(
-      (error) => error !== undefined
-    )
+    const loadingError = [
+      errorOfferer,
+      errorVenue,
+      errorVenueLabels,
+      errorVenueTypes,
+    ].find((error) => error !== undefined)
     if (loadingError !== undefined) {
       notify.error(loadingError.message)
       return <Navigate to={homePath} />
@@ -89,6 +99,7 @@ const VenueSettings = (): JSX.Element | null => {
 
   if (
     isLoadingVenue ||
+    isLoadingVenueLabels ||
     isLoadingVenueTypes ||
     isLoadingProviders ||
     isLoadingVenueProviders ||
@@ -109,6 +120,7 @@ const VenueSettings = (): JSX.Element | null => {
       <VenueSettingsFormScreen
         initialValues={setInitialFormValues(venue)}
         offerer={offerer}
+        venueLabels={venueLabels}
         venueTypes={venueTypes}
         providers={providers}
         venue={venue}
