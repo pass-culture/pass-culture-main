@@ -80,16 +80,11 @@ const CollectiveOfferType = ({
       }
 
       if (offererId) {
-        try {
-          const { canCreate } = await api.canOffererCreateEducationalOffer(
-            Number(offererId)
-          )
-          setIsEligible(canCreate)
-        } catch (error) {
-          notify.error(
-            'Une erreur technique est survenue lors de la vérification de votre éligibilité.'
-          )
-        }
+        const canCreate = offererNames.offerersNames.find(
+          (offerer) => offerer.id === Number(offererId)
+        )?.allowedOnAdage
+
+        setIsEligible(Boolean(canCreate))
       }
     }
 
