@@ -7,6 +7,7 @@ import {
   ApiError,
   GetIndividualOfferResponseModel,
   SubcategoryResponseModel,
+  VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
@@ -18,7 +19,6 @@ import {
 } from 'context/IndividualOfferContext'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import { IndividualOfferVenueItem } from 'core/Venue/types'
 import * as pcapi from 'repository/pcapi/pcapi'
 import {
   categoryFactory,
@@ -126,10 +126,10 @@ describe('screens:IndividualOffer::Informations::creation', () => {
       }),
     ]
 
-    const venue1: IndividualOfferVenueItem = venueListItemFactory({
+    const venue1: VenueListItemResponseModel = venueListItemFactory({
       id: 1,
     })
-    const venue2: IndividualOfferVenueItem = venueListItemFactory({
+    const venue2: VenueListItemResponseModel = venueListItemFactory({
       id: 2,
       isVirtual: true,
     })
@@ -293,20 +293,20 @@ describe('screens:IndividualOffer::Informations::creation', () => {
     ]
     const offererId1 = 1
     const offererId2 = 2
-    const venue1Offerer1: IndividualOfferVenueItem = venueListItemFactory({
+    const venue1Offerer1: VenueListItemResponseModel = venueListItemFactory({
       id: 1,
       managingOffererId: offererId1,
     })
-    const venue2Offerer1: IndividualOfferVenueItem = venueListItemFactory({
+    const venue2Offerer1: VenueListItemResponseModel = venueListItemFactory({
       id: 2,
       isVirtual: true,
       managingOffererId: offererId1,
     })
-    const venue1Offerer2: IndividualOfferVenueItem = venueListItemFactory({
+    const venue1Offerer2: VenueListItemResponseModel = venueListItemFactory({
       id: 3,
       managingOffererId: offererId2,
     })
-    const venue2Offerer2: IndividualOfferVenueItem = venueListItemFactory({
+    const venue2Offerer2: VenueListItemResponseModel = venueListItemFactory({
       id: 4,
       isVirtual: true,
       managingOffererId: offererId2,

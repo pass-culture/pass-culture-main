@@ -6,9 +6,9 @@ import {
   CategoryResponseModel,
   GetOffererNameResponseModel,
   SubcategoryResponseModel,
+  VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
-import { IndividualOfferVenueItem } from 'core/Venue/types'
 import {
   categoryFactory,
   subcategoryFactory,
@@ -56,7 +56,7 @@ describe('IndividualOfferForm', () => {
   let categories: CategoryResponseModel[] = []
   let subCategories: SubcategoryResponseModel[] = []
   let offererNames: GetOffererNameResponseModel[]
-  let venueList: IndividualOfferVenueItem[]
+  let venueList: VenueListItemResponseModel[]
 
   beforeEach(() => {
     categories = [

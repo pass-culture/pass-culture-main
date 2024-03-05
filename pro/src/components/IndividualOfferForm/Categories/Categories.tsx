@@ -2,7 +2,11 @@ import cn from 'classnames'
 import { useFormikContext } from 'formik'
 import React from 'react'
 
-import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
+import {
+  CategoryResponseModel,
+  SubcategoryResponseModel,
+  VenueListItemResponseModel,
+} from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import FormLayout from 'components/FormLayout'
@@ -12,7 +16,6 @@ import {
 } from 'components/IndividualOfferForm'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
-import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { InfoBox, Select } from 'ui-kit'
@@ -33,7 +36,7 @@ export interface CategoriesProps {
   readOnlyFields?: string[]
   showAddVenueBanner: boolean
   offerSubtype: INDIVIDUAL_OFFER_SUBTYPE | null
-  venueList: IndividualOfferVenueItem[]
+  venueList: VenueListItemResponseModel[]
   isEvent: boolean | null
 }
 

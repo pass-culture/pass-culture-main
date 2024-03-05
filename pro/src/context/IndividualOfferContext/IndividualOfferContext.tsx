@@ -6,9 +6,9 @@ import {
   GetIndividualOfferResponseModel,
   GetOffererNameResponseModel,
   SubcategoryResponseModel,
+  VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { IndividualOfferVenueItem } from 'core/Venue/types'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import { IndividualOfferWizardLoaderData } from 'pages/IndividualOfferWizard/IndividualOfferWizard'
@@ -24,7 +24,7 @@ export interface IndividualOfferContextValues {
   subcategory?: SubcategoryResponseModel
   setSubcategory: (p?: SubcategoryResponseModel) => void
   offererNames: GetOffererNameResponseModel[]
-  venueList: IndividualOfferVenueItem[]
+  venueList: VenueListItemResponseModel[]
   offerOfferer?: GetOffererNameResponseModel | null
   showVenuePopin: Record<string, boolean>
 }
@@ -73,7 +73,7 @@ export function IndividualOfferContextProvider({
   const [offererNames, setOffererNames] = useState<
     GetOffererNameResponseModel[]
   >([])
-  const [venueList, setVenueList] = useState<IndividualOfferVenueItem[]>([])
+  const [venueList, setVenueList] = useState<VenueListItemResponseModel[]>([])
   const [showVenuePopin, setShowVenuePopin] = useState<Record<string, boolean>>(
     {}
   )

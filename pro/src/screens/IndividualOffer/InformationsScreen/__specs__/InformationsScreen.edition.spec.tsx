@@ -11,6 +11,7 @@ import {
   SubcategoryIdEnum,
   SubcategoryResponseModel,
   WithdrawalTypeEnum,
+  VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import Notification from 'components/Notification/Notification'
@@ -20,7 +21,6 @@ import {
 } from 'context/IndividualOfferContext'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import { IndividualOfferVenueItem } from 'core/Venue/types'
 import * as pcapi from 'repository/pcapi/pcapi'
 import {
   getIndividualOfferFactory,
@@ -131,8 +131,8 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       }),
     ]
 
-    const venue1: IndividualOfferVenueItem = venueListItemFactory()
-    const venue2: IndividualOfferVenueItem = venueListItemFactory({
+    const venue1: VenueListItemResponseModel = venueListItemFactory()
+    const venue2: VenueListItemResponseModel = venueListItemFactory({
       isVirtual: true,
     })
 

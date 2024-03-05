@@ -2,13 +2,13 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
+import { VenueListItemResponseModel } from 'apiClient/v1'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
 } from 'context/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
-import { IndividualOfferVenueItem } from 'core/Venue/types'
 import * as filterCategories from 'screens/IndividualOffer/InformationsScreen/utils/filterCategories/filterCategories'
 import {
   categoryFactory,
@@ -146,8 +146,8 @@ describe('screens:IndividualOffer::Informations', () => {
 
   describe('when a subCategory is selected', () => {
     beforeEach(() => {
-      const venue1: IndividualOfferVenueItem = venueListItemFactory()
-      const venue2: IndividualOfferVenueItem = venueListItemFactory()
+      const venue1: VenueListItemResponseModel = venueListItemFactory()
+      const venue2: VenueListItemResponseModel = venueListItemFactory()
 
       props.venueId = venue1.id.toString()
       contextValue.venueList = [venue1, venue2]
