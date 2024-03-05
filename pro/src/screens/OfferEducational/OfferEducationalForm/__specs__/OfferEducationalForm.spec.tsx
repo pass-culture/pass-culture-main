@@ -1,11 +1,10 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { Formik } from 'formik'
 
-import { api } from 'apiClient/api'
 import {
+  OfferEducationalFormValues,
   DEFAULT_EAC_FORM_VALUES,
   Mode,
-  OfferEducationalFormValues,
 } from 'core/OfferEducational'
 import { userOffererFactory } from 'screens/OfferEducational/__tests-utils__/userOfferersFactory'
 import {
@@ -49,12 +48,6 @@ const defaultProps: OfferEducationalFormProps = {
 }
 
 describe('OfferEducationalForm', () => {
-  beforeEach(() => {
-    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue({
-      canCreate: true,
-    })
-  })
-
   it('should render price details if offer is template', async () => {
     renderOfferEducationalForm({ ...defaultProps, isTemplate: true })
 

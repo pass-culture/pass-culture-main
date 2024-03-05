@@ -1,10 +1,6 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 
 import { api } from 'apiClient/api'
-import { ApiError } from 'apiClient/v1'
-import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import * as useNotification from 'hooks/useNotification'
 import {
   managedVenueFactory,
   userOffererFactory,
@@ -20,7 +16,6 @@ vi.mock('apiClient/api', () => ({
     getCategories: vi.fn(),
     listEducationalDomains: vi.fn(),
     listEducationalOfferers: vi.fn(),
-    canOffererCreateEducationalOffer: vi.fn(),
     getCollectiveOffer: vi.fn(),
     getCollectiveOfferTemplate: vi.fn(),
     getNationalPrograms: vi.fn(),
@@ -61,9 +56,6 @@ describe('CollectiveOfferCreation', () => {
     })
     vi.spyOn(api, 'listEducationalDomains').mockResolvedValue([])
     vi.spyOn(api, 'getNationalPrograms').mockResolvedValue([])
-    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue({
-      canCreate: true,
-    })
   })
   it('should render collective offer creation form', async () => {
     renderCollectiveOfferCreation('/offre/creation/collectif', {
@@ -92,29 +84,5 @@ describe('CollectiveOfferCreation', () => {
       })
     ).toBeInTheDocument()
     expect(screen.getByText('Offre vitrine')).toBeInTheDocument()
-  })
-
-  it('should display error message when offerer eligibility check fails', async () => {
-    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValue(
-      new ApiError({} as ApiRequestOptions, { status: 500 } as ApiResult, '')
-    )
-
-    const notifyError = vi.fn()
-
-    const notifsImport = (await vi.importActual(
-      'hooks/useNotification'
-    )) as ReturnType<typeof useNotification.default>
-    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
-      ...notifsImport,
-      error: notifyError,
-    }))
-    renderCollectiveOfferCreation('/offre/creation/collectif', {
-      ...defaultProps,
-    })
-    await waitFor(() => {
-      expect(notifyError).toHaveBeenCalledWith(
-        'Une erreur technique est survenue lors de la vérification de votre éligibilité.'
-      )
-    })
   })
 })
