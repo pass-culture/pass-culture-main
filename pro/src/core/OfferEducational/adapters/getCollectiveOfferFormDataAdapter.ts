@@ -1,8 +1,11 @@
-import { GetEducationalOffererResponseModel } from 'apiClient/v1'
+import {
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
+  GetEducationalOffererResponseModel,
+} from 'apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 
-import { CollectiveOffer, CollectiveOfferTemplate } from '../types'
 import { getUserOfferersFromOffer } from '../utils'
 
 import { getEducationalDomainsAdapter } from './getEducationalDomainsAdapter'
@@ -17,7 +20,9 @@ type Payload = {
 
 type Param = {
   offererId: number | null
-  offer?: CollectiveOffer | CollectiveOfferTemplate
+  offer?:
+    | GetCollectiveOfferResponseModel
+    | GetCollectiveOfferTemplateResponseModel
 }
 
 type GetCollectiveOfferFormDataApdater = Adapter<Param, Payload, Payload>

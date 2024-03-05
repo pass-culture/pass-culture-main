@@ -4,7 +4,7 @@ import React from 'react'
 import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { CollectiveOffer } from 'core/OfferEducational'
+import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import * as patchCollectiveOfferAdapter from 'core/OfferEducational/adapters/patchCollectiveOfferAdapter'
 import { RootState } from 'store/rootReducer'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
@@ -39,7 +39,7 @@ vi.mock('utils/windowMatchMedia', () => ({
 describe('screens | OfferEducational : event address step', () => {
   let props: OfferEducationalProps
   let store: Partial<RootState>
-  let offer: CollectiveOffer
+  let offer: GetCollectiveOfferResponseModel
   const mockNavigate = vi.fn()
 
   beforeEach(() => {

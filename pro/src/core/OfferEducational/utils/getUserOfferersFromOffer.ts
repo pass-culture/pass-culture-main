@@ -1,10 +1,14 @@
-import { GetEducationalOffererResponseModel } from 'apiClient/v1'
-
-import { CollectiveOffer, CollectiveOfferTemplate } from '../types'
+import {
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
+  GetEducationalOffererResponseModel,
+} from 'apiClient/v1'
 
 export const getUserOfferersFromOffer = (
   offerers: GetEducationalOffererResponseModel[],
-  offer?: CollectiveOffer | CollectiveOfferTemplate
+  offer?:
+    | GetCollectiveOfferResponseModel
+    | GetCollectiveOfferTemplateResponseModel
 ): GetEducationalOffererResponseModel[] => {
   if (offer === undefined) {
     return offerers

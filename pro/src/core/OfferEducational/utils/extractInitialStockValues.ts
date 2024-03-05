@@ -1,19 +1,21 @@
 import { format } from 'date-fns'
 
-import { GetCollectiveOfferRequestResponseModel } from 'apiClient/v1/models/GetCollectiveOfferRequestResponseModel'
+import {
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
+  GetCollectiveOfferRequestResponseModel,
+} from 'apiClient/v1'
 import {
   DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
-  CollectiveOffer,
-  CollectiveOfferTemplate,
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
 import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 export const extractInitialStockValues = (
-  offer: CollectiveOffer,
-  offerTemplate?: CollectiveOfferTemplate,
+  offer: GetCollectiveOfferResponseModel,
+  offerTemplate?: GetCollectiveOfferTemplateResponseModel,
   requestInformations?: GetCollectiveOfferRequestResponseModel | null
 ): OfferEducationalStockFormValues => {
   const { collectiveStock } = offer

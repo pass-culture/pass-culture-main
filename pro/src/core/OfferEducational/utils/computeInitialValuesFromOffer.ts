@@ -1,4 +1,9 @@
-import { StudentLevels, GetEducationalOffererResponseModel } from 'apiClient/v1'
+import {
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
+  StudentLevels,
+  GetEducationalOffererResponseModel,
+} from 'apiClient/v1'
 import {
   formatShortDateForInput,
   formatTimeForInput,
@@ -7,12 +12,7 @@ import {
 } from 'utils/date'
 
 import { DEFAULT_EAC_FORM_VALUES } from '../constants'
-import {
-  CollectiveOffer,
-  CollectiveOfferTemplate,
-  OfferEducationalFormValues,
-  isCollectiveOfferTemplate,
-} from '../types'
+import { OfferEducationalFormValues, isCollectiveOfferTemplate } from '../types'
 
 import { buildStudentLevelsMapWithDefaultValue } from './buildStudentLevelsMapWithDefaultValue'
 
@@ -32,7 +32,9 @@ const computeDurationString = (
 
 const getInitialOffererId = (
   offerers: GetEducationalOffererResponseModel[],
-  offer?: CollectiveOffer | CollectiveOfferTemplate,
+  offer?:
+    | GetCollectiveOfferResponseModel
+    | GetCollectiveOfferTemplateResponseModel,
   offererIdQueryParam?: string | null
 ): string => {
   if (offer !== undefined) {
@@ -53,7 +55,9 @@ const getInitialOffererId = (
 const getInitialVenueId = (
   offerers: GetEducationalOffererResponseModel[],
   offererId: string,
-  offer?: CollectiveOffer | CollectiveOfferTemplate,
+  offer?:
+    | GetCollectiveOfferResponseModel
+    | GetCollectiveOfferTemplateResponseModel,
   venueIdQueryParam?: string | null
 ): string => {
   if (offer !== undefined) {
@@ -80,7 +84,9 @@ const getInitialVenueId = (
 export const computeInitialValuesFromOffer = (
   offerers: GetEducationalOffererResponseModel[],
   isTemplate: boolean,
-  offer?: CollectiveOffer | CollectiveOfferTemplate,
+  offer?:
+    | GetCollectiveOfferResponseModel
+    | GetCollectiveOfferTemplateResponseModel,
   offererIdQueryParam?: string | null,
   venueIdQueryParam?: string | null,
   isMarseilleEnabled?: boolean

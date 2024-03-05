@@ -1,11 +1,14 @@
 import React from 'react'
 
 import {
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
+} from 'apiClient/v1'
+import {
   Description,
   SummaryDescriptionList,
 } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
-import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
 import { useGetVenue } from 'core/Venue/adapters/getVenueAdapter'
 import useNotification from 'hooks/useNotification'
 import { getInterventionAreaLabels } from 'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea/OfferInterventionArea'
@@ -14,7 +17,9 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 import { formatOfferEventAddress } from '../utils/formatOfferEventAddress'
 
 interface CollectiveOfferLocationSectionProps {
-  offer: CollectiveOfferTemplate | CollectiveOffer
+  offer:
+    | GetCollectiveOfferTemplateResponseModel
+    | GetCollectiveOfferResponseModel
 }
 
 export default function CollectiveOfferLocationSection({

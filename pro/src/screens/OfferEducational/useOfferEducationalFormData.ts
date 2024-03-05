@@ -1,7 +1,10 @@
 import { useState, useCallback, useEffect } from 'react'
 
-import { GetEducationalOffererResponseModel } from 'apiClient/v1'
-import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
+import {
+  GetEducationalOffererResponseModel,
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
+} from 'apiClient/v1'
 import getCollectiveOfferFormDataApdater from 'core/OfferEducational/adapters/getCollectiveOfferFormDataAdapter'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
@@ -14,7 +17,9 @@ type OfferEducationalFormData = {
 
 const useOfferEducationalFormData = (
   offererId: number | null,
-  offer?: CollectiveOffer | CollectiveOfferTemplate
+  offer?:
+    | GetCollectiveOfferResponseModel
+    | GetCollectiveOfferTemplateResponseModel
 ): OfferEducationalFormData & {
   isReady: boolean
 } => {
@@ -28,7 +33,11 @@ const useOfferEducationalFormData = (
   const notify = useNotification()
 
   const loadData = useCallback(
-    async (offerResponse?: CollectiveOffer | CollectiveOfferTemplate) => {
+    async (
+      offerResponse?:
+        | GetCollectiveOfferResponseModel
+        | GetCollectiveOfferTemplateResponseModel
+    ) => {
       const result = await getCollectiveOfferFormDataApdater({
         offererId,
         offer: offerResponse,

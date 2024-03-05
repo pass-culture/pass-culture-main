@@ -82,21 +82,19 @@ export enum EducationalOfferType {
   CLASSIC = 'CLASSIC',
 }
 
-//  TODO : remove these two types that create confusion in the app
-export type CollectiveOffer = GetCollectiveOfferResponseModel
-export type CollectiveOfferTemplate = GetCollectiveOfferTemplateResponseModel
-
 export const isOfferEducational = (
   offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
 ): offer is CollectiveOfferResponseModel => offer.isEducational
 
-export const isCollectiveOffer = (value: unknown): value is CollectiveOffer =>
+export const isCollectiveOffer = (
+  value: unknown
+): value is GetCollectiveOfferResponseModel =>
   // Could be enhanced to check that it is also a GetCollectiveOfferTemplateResponseModel
   hasProperty(value, 'isTemplate') && value.isTemplate === false
 
 export const isCollectiveOfferTemplate = (
   value: unknown
-): value is CollectiveOfferTemplate =>
+): value is GetCollectiveOfferTemplateResponseModel =>
   // Could be enhanced to check that it is also a GetCollectiveOfferTemplateResponseModel
   hasProperty(value, 'isTemplate') && value.isTemplate === true
 
