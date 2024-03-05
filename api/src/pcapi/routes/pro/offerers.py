@@ -10,7 +10,6 @@ from pcapi.connectors.api_recaptcha import check_web_recaptcha_token
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
 from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
 from pcapi.connectors.entreprise import sirene
-import pcapi.core.educational.exceptions as educational_exceptions
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.repository as finance_repository
@@ -167,24 +166,6 @@ def create_offerer(body: offerers_serialize.CreateOffererQueryModel) -> offerers
     user_offerer = api.create_offerer(current_user, body)
 
     return offerers_serialize.PostOffererResponseModel.from_orm(user_offerer.offerer)
-
-
-@private_api.route("/offerers/<int:offerer_id>/eac-eligibility", methods=["GET"])
-@login_required
-@spectree_serialize(
-    on_success_status=200,
-    response_model=offerers_serialize.CanOffererCreateCollectiveOfferResponseModel,
-    api=blueprint.pro_private_schema,
-)
-def can_offerer_create_educational_offer(
-    offerer_id: int,
-) -> offerers_serialize.CanOffererCreateCollectiveOfferResponseModel:
-    try:
-        can_create_educational_offer = api.can_offerer_create_educational_offer(offerer_id)
-        return offerers_serialize.CanOffererCreateCollectiveOfferResponseModel(canCreate=can_create_educational_offer)
-    except educational_exceptions.AdageException:
-        logger.info("Api call failed", extra={"offerer_id": offerer_id})
-        raise ApiErrors({"adage_api": "error"}, 500)
 
 
 @private_api.route("/offerers/<int:offerer_id>/reimbursement-points", methods=["GET"])

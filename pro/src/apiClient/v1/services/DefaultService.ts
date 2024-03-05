@@ -8,7 +8,6 @@ import type { AttachImageFormModel } from '../models/AttachImageFormModel';
 import type { AttachImageResponseModel } from '../models/AttachImageResponseModel';
 import type { BookingExportType } from '../models/BookingExportType';
 import type { BookingStatusFilter } from '../models/BookingStatusFilter';
-import type { CanOffererCreateCollectiveOfferResponseModel } from '../models/CanOffererCreateCollectiveOfferResponseModel';
 import type { CategoriesResponseModel } from '../models/CategoriesResponseModel';
 import type { ChangePasswordBodyModel } from '../models/ChangePasswordBodyModel';
 import type { ChangeProEmailBody } from '../models/ChangeProEmailBody';
@@ -1195,27 +1194,6 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offerers/{offerer_id}/dashboard',
-      path: {
-        'offerer_id': offererId,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * can_offerer_create_educational_offer <GET>
-   * @param offererId
-   * @returns CanOffererCreateCollectiveOfferResponseModel OK
-   * @throws ApiError
-   */
-  public canOffererCreateEducationalOffer(
-    offererId: number,
-  ): CancelablePromise<CanOffererCreateCollectiveOfferResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/offerers/{offerer_id}/eac-eligibility',
       path: {
         'offerer_id': offererId,
       },
