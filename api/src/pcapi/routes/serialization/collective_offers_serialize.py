@@ -4,6 +4,7 @@ import enum
 import typing
 
 import flask
+from pydantic.v1 import AnyHttpUrl
 from pydantic.v1 import ConstrainedStr
 from pydantic.v1 import EmailStr
 from pydantic.v1 import Field
@@ -540,6 +541,9 @@ class PostCollectiveOfferBodyModel(BaseModel):
 
 class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
     price_detail: PriceDetail | None
+    contact_email: EmailStr | None  # type: ignore [assignment]
+    contact_url: AnyHttpUrl | None
+    contact_form: OfferContactFormEnum | None
 
     # TODO(jeremieb) | None is temporary
     # when the frontend clients are up to date, dateRange should

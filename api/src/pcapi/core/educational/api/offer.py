@@ -27,6 +27,7 @@ from pcapi.core.object_storage import store_public_object
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offer_validation
 from pcapi.core.providers import models as providers_models
 from pcapi.core.users.models import User
@@ -211,6 +212,13 @@ def create_collective_offer_template(
 ) -> educational_models.CollectiveOfferTemplate:
     venue = get_venue_and_check_access_for_offer_creation(offer_data, user)
     educational_domains = get_educational_domains_from_ids(offer_data.domains)
+
+    # TODO: move this to validation and see if that can be merged with check_contact_request
+    if not any((offer_data.contact_email, offer_data.contact_phone, offer_data.contact_url, offer_data.contact_form)):
+        raise offers_exceptions.AllNullContactRequestDataError()
+    if offer_data.contact_url and offer_data.contact_form:
+        raise offers_exceptions.UrlandFormBothSetError()
+
     collective_offer_template = educational_models.CollectiveOfferTemplate(
         venueId=venue.id,
         name=offer_data.name,
@@ -222,6 +230,8 @@ def create_collective_offer_template(
         students=offer_data.students,
         contactEmail=offer_data.contact_email,
         contactPhone=offer_data.contact_phone,
+        contactUrl=offer_data.contact_url,
+        contactForm=offer_data.contact_form,
         offerVenue=offer_data.offer_venue.dict(),
         validation=offer_mixin.OfferValidationStatus.DRAFT,
         audioDisabilityCompliant=offer_data.audio_disability_compliant,
