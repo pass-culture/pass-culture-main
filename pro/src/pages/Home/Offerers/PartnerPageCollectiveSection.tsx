@@ -14,6 +14,7 @@ export type PartnerPageCollectiveSectionProps = {
   collectiveDmsApplications: DMSApplicationForEAC[]
   venueId: number
   hasAdageId: boolean
+  allowedOnAdage: boolean
   isDisplayedInHomepage?: boolean
 }
 
@@ -21,6 +22,7 @@ export function PartnerPageCollectiveSection({
   collectiveDmsApplications,
   venueId,
   hasAdageId,
+  allowedOnAdage,
   isDisplayedInHomepage = false,
 }: PartnerPageCollectiveSectionProps) {
   const { logEvent } = useAnalytics()
@@ -49,12 +51,12 @@ export function PartnerPageCollectiveSection({
     </span>
   )
 
-  if (hasAdageId) {
+  if (hasAdageId && allowedOnAdage) {
     return (
       <section className={styles['details']}>
         <div>
           {header}
-          <Tag variant={TagVariant.LIGHT_GREEN}>Référencé sur ADAGE</Tag>
+          <Tag variant={TagVariant.LIGHT_GREEN}>Référencé dans ADAGE</Tag>
         </div>
         {isDisplayedInHomepage && (
           <p className={styles['details-description']}>
@@ -65,17 +67,17 @@ export function PartnerPageCollectiveSection({
         )}
       </section>
     )
-  } else if (lastDmsApplication === null) {
+  } else if (lastDmsApplication === null || !allowedOnAdage) {
     return (
       <section className={styles['details']}>
         <div>
           {header}
-          <Tag variant={TagVariant.LIGHT_BLUE}>Non référencé sur ADAGE</Tag>
+          <Tag variant={TagVariant.LIGHT_BLUE}>Non référencé dans ADAGE</Tag>
         </div>
 
         <p className={styles['details-description']}>
           Pour pouvoir adresser des offres aux enseignants, vous devez être
-          référencé sur ADAGE, l’application du ministère de l’Education
+          référencé dans ADAGE, l’application du ministère de l’Education
           nationale et de la Jeunesse dédiée à l’EAC.
         </p>
 
@@ -118,12 +120,12 @@ export function PartnerPageCollectiveSection({
       <section className={styles['details']}>
         <div>
           {header}
-          <Tag variant={TagVariant.LIGHT_BLUE}>Non référencé sur ADAGE</Tag>
+          <Tag variant={TagVariant.LIGHT_BLUE}>Non référencé dans ADAGE</Tag>
         </div>
 
         <p className={styles['details-description']}>
           Pour pouvoir adresser des offres aux enseignants, vous devez être
-          référencé sur ADAGE, l’application du ministère de l’Education
+          référencé dans ADAGE, l’application du ministère de l’Education
           nationale et de la Jeunesse dédiée à l’EAC.
         </p>
       </section>

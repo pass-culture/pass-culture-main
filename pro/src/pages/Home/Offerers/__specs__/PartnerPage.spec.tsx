@@ -94,7 +94,7 @@ describe('PartnerPages', () => {
       },
     })
 
-    expect(screen.getByText('Non référencé sur ADAGE')).toBeInTheDocument()
+    expect(screen.getByText('Non référencé dans ADAGE')).toBeInTheDocument()
     expect(
       screen.getByText('Faire une demande de référencement ADAGE')
     ).toBeInTheDocument()
