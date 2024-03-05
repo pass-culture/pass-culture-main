@@ -8,7 +8,9 @@ from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sqla
 import sqlalchemy.orm as sqla_orm
 
+from pcapi.core.bookings import models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
+from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
@@ -774,3 +776,66 @@ def get_number_of_pending_collective_offers_for_offerer(offerer_id: int) -> int:
         .limit(MAX_OFFERS_PER_OFFERER_FOR_COUNT)
         .count()
     )
+
+
+def get_revenues_per_year(
+    **query_params: int,
+) -> dict[str, dict[str, float]]:
+    individual_totals_query = sqla.select(
+        sqla.func.jsonb_object_agg(sqla.text("year"), sqla.text("sum_amount"))
+    ).select_from(
+        sqla.select(
+            sqla.func.coalesce(
+                sqla.extract("year", bookings_models.Booking.dateUsed),
+                0,
+            ).label("year"),
+            sqla.func.sum(bookings_models.Booking.total_amount).label("sum_amount"),
+        )
+        .filter(
+            bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED.value,
+        )
+        .filter_by(**query_params)
+        .group_by("year")
+        .subquery()
+    )
+    individual_totals: dict[str, float] = db.session.execute(individual_totals_query).scalar() or {}
+
+    collective_booking_queries = []
+    for field_name, value in query_params.items():
+        collective_booking_queries.append(getattr(educational_models.CollectiveBooking, field_name) == value)
+
+    collective_totals_query = sqla.select(
+        sqla.func.jsonb_object_agg(sqla.text("year"), sqla.text("sum_amount"))
+    ).select_from(
+        sqla.select(
+            sqla.func.coalesce(
+                sqla.extract("year", educational_models.CollectiveBooking.dateUsed),
+                0,
+            ).label("year"),
+            sqla.func.sum(educational_models.CollectiveStock.price).label("sum_amount"),
+        )
+        .select_from(
+            educational_models.CollectiveBooking,
+        )
+        .join(
+            educational_models.CollectiveStock,
+            onclause=educational_models.CollectiveStock.id == educational_models.CollectiveBooking.collectiveStockId,
+        )
+        .filter(
+            educational_models.CollectiveBooking.status != bookings_models.BookingStatus.CANCELLED.value,
+            *collective_booking_queries,
+        )
+        .group_by("year")
+        .subquery()
+    )
+    collective_totals: dict[str, float] = db.session.execute(collective_totals_query).scalar() or {}
+
+    years = set(individual_totals) | set(collective_totals)
+
+    return {
+        ("En cours" if year == "0" else year): {
+            "individual": individual_totals.get(year, 0.0),
+            "collective": collective_totals.get(year, 0.0),
+        }
+        for year in years
+    }

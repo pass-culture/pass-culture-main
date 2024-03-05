@@ -260,6 +260,16 @@ def get_stats(offerer_id: int) -> utils.BackofficeResponse:
     return render_template(
         "offerer/get/stats.html",
         stats=data,
+        offerer_id=offerer_id,
+    )
+
+
+@offerer_blueprint.route("/revenue-details", methods=["GET"])
+def get_revenue_details(offerer_id: int) -> utils.BackofficeResponse:
+    details = offerers_repository.get_revenues_per_year(offererId=offerer_id)
+    return render_template(
+        "components/revenue_details.html",
+        details=details,
     )
 
 

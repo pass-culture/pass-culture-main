@@ -780,7 +780,7 @@ class GetVenueStatsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
             assert response.status_code == 200
 
-        assert "72,00 € de CA" in html_parser.extract_cards_text(response.data)
+        assert "72,00 € de CA" in html_parser.extract_cards_text(response.data)[0]
 
     def test_venue_total_revenue_individual_bookings_only(
         self,
@@ -793,7 +793,7 @@ class GetVenueStatsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
             assert response.status_code == 200
 
-        assert "30,00 € de CA" in html_parser.extract_cards_text(response.data)
+        assert "30,00 € de CA" in html_parser.extract_cards_text(response.data)[0]
 
     def test_venue_total_revenue_collective_bookings_only(
         self, authenticated_client, venue_with_accepted_bank_info, collective_venue_booking
@@ -803,7 +803,7 @@ class GetVenueStatsTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
             assert response.status_code == 200
 
-        assert "42,00 € de CA" in html_parser.extract_cards_text(response.data)
+        assert "42,00 € de CA" in html_parser.extract_cards_text(response.data)[0]
 
     def test_venue_total_revenue_no_booking(self, authenticated_client, venue_with_accepted_bank_info):
         venue_id = venue_with_accepted_bank_info.id
@@ -844,6 +844,46 @@ class GetVenueStatsTest(GetEndpointHelper):
     def test_get_venue_not_found(self, authenticated_client):
         response = authenticated_client.get(url_for(self.endpoint, venue_id=1))
         assert response.status_code == 404
+
+
+class GetVenueRevenueDetailsTest(GetEndpointHelper):
+    endpoint = "backoffice_web.venue.get_revenue_details"
+    endpoint_kwargs = {"venue_id": 1}
+    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
+
+    # session
+    # user
+    # bookings revenue stats
+    # collective bookings revenue stats
+    expected_num_queries = 4
+
+    def test_venue_revenue_details(
+        self,
+        db_session,
+        authenticated_client,
+        venue_with_accepted_bank_info,
+        individual_offerer_bookings,
+        collective_venue_booking,
+    ):
+        venue_id = venue_with_accepted_bank_info.id
+        current_year = datetime.utcnow().year
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
+        table_rows = html_parser.extract_table_rows(response.data)
+
+        assert len(table_rows) == 2
+        assert {row["Année"] for row in table_rows} == {str(current_year), "En cours"}
+
+        current_year_revenues = [row for row in table_rows if row["Année"] == str(current_year)][0]
+        assert current_year_revenues["CA offres IND"] == "10,00 €"
+        assert current_year_revenues["CA offres EAC"] == "42,00 €"
+
+        current_revenues = [row for row in table_rows if row["Année"] == "En cours"][0]
+        assert current_revenues["CA offres IND"] == "20,00 €"
+        assert current_revenues["CA offres EAC"] == "0,00 €"
 
 
 class HasReimbursementPointTest:
