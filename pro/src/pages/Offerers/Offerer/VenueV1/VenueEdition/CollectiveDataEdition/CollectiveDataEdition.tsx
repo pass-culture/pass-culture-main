@@ -166,6 +166,7 @@ export const CollectiveDataEdition = ({
         venueId={venue.id}
         hasAdageId={venue.hasAdageId}
         collectiveDmsApplications={venue.collectiveDmsApplications}
+        allowedOnAdage={venue.managingOfferer.allowedOnAdage}
       />
 
       {collectiveDmsApplication && (
