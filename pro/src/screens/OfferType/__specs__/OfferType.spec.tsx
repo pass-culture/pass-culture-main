@@ -85,9 +85,6 @@ describe('OfferType', () => {
       ],
     })
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue([])
-    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue({
-      canCreate: true,
-    })
 
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
@@ -164,13 +161,17 @@ describe('OfferType', () => {
   })
 
   it('should display non eligible banner if offerer can not create collective offer', async () => {
-    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValueOnce({})
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [
+        { id: 1, name: 'Ma super structure', allowedOnAdage: false },
+      ],
+    })
+
     renderOfferTypes()
 
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
     )
-    expect(api.canOffererCreateEducationalOffer).toHaveBeenCalledTimes(1)
 
     expect(
       await screen.findByText(
@@ -196,13 +197,11 @@ describe('OfferType', () => {
       ],
     }
     vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
-    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValueOnce({})
     renderOfferTypes('offererId')
 
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
     )
-    expect(api.canOffererCreateEducationalOffer).toHaveBeenCalledTimes(1)
 
     expect(
       await screen.findByText(
