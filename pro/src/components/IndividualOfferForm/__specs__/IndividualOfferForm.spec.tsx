@@ -8,6 +8,7 @@ import {
   GetIndividualOfferResponseModel,
   GetOffererNameResponseModel,
   SubcategoryResponseModel,
+  VenueListItemResponseModel,
 } from 'apiClient/v1'
 import {
   IndividualOfferContextValues,
@@ -17,7 +18,6 @@ import {
   CATEGORY_STATUS,
   INDIVIDUAL_OFFER_SUBTYPE,
 } from 'core/Offers/constants'
-import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { SubmitButton } from 'ui-kit'
 import { getIndividualOfferFactory } from 'utils/apiFactories'
 import {
@@ -77,7 +77,7 @@ describe('IndividualOfferForm', () => {
   let categories: CategoryResponseModel[] = []
   let subCategories: SubcategoryResponseModel[] = []
   let offererNames: GetOffererNameResponseModel[]
-  let venueList: IndividualOfferVenueItem[]
+  let venueList: VenueListItemResponseModel[]
   const offererId = 2
   const physicalVenueId = 1
   const virtualVenueId = 2

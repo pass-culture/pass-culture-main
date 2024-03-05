@@ -1,6 +1,4 @@
-import { GetVenueResponseModel, VenueListItemResponseModel } from 'apiClient/v1'
-
-export type IndividualOfferVenueItem = VenueListItemResponseModel
+import { GetVenueResponseModel } from 'apiClient/v1'
 
 export type VenueCollectiveInformation = Pick<
   GetVenueResponseModel,

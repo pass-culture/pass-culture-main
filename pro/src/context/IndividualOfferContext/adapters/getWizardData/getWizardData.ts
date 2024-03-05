@@ -3,9 +3,9 @@ import {
   CategoryResponseModel,
   GetOffererNameResponseModel,
   SubcategoryResponseModel,
+  VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
 interface GetWizardDataArgs {
@@ -18,7 +18,7 @@ interface GetWizardDataArgs {
 
 interface OfferWizardData {
   offererNames: GetOffererNameResponseModel[]
-  venueList: IndividualOfferVenueItem[]
+  venueList: VenueListItemResponseModel[]
   categoriesData: {
     categories: CategoryResponseModel[]
     subCategories: SubcategoryResponseModel[]

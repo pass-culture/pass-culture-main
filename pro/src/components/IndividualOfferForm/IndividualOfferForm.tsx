@@ -5,6 +5,7 @@ import {
   CategoryResponseModel,
   GetOffererNameResponseModel,
   SubcategoryResponseModel,
+  VenueListItemResponseModel,
 } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
@@ -14,7 +15,6 @@ import {
   INDIVIDUAL_OFFER_SUBTYPE,
 } from 'core/Offers/constants'
 import { IndividualOfferImage } from 'core/Offers/types'
-import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useCurrentUser from 'hooks/useCurrentUser'
 
@@ -29,7 +29,7 @@ import { getFilteredVenueListBySubcategory } from './utils/getFilteredVenueList'
 
 export interface IndividualOfferFormProps {
   offererNames: GetOffererNameResponseModel[]
-  venueList: IndividualOfferVenueItem[]
+  venueList: VenueListItemResponseModel[]
   categories: CategoryResponseModel[]
   subCategories: SubcategoryResponseModel[]
   onImageUpload: (values: OnImageUploadArgs) => Promise<void>
@@ -75,7 +75,7 @@ const IndividualOfferForm = ({
   // because of CATEGORY_STATUS.ONLINE_OR_OFFLINE who can be both virtual or not
   const isVenueVirtual = venue?.isVirtual || false
 
-  const matchOffererId = (venue: IndividualOfferVenueItem) => {
+  const matchOffererId = (venue: VenueListItemResponseModel) => {
     return venue.managingOffererId.toString() === offererId
   }
 

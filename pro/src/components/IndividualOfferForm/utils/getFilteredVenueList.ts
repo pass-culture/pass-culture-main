@@ -1,11 +1,13 @@
-import { SubcategoryResponseModel } from 'apiClient/v1'
+import {
+  SubcategoryResponseModel,
+  VenueListItemResponseModel,
+} from 'apiClient/v1'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
-import { IndividualOfferVenueItem } from 'core/Venue/types'
 
 export const getFilteredVenueListBySubcategory = (
-  venueList: IndividualOfferVenueItem[],
+  venueList: VenueListItemResponseModel[],
   subcategory?: SubcategoryResponseModel
-): IndividualOfferVenueItem[] => {
+): VenueListItemResponseModel[] => {
   if (!subcategory) {
     return venueList
   }
@@ -24,9 +26,9 @@ export const getFilteredVenueListBySubcategory = (
 }
 
 export const getFilteredVenueListByCategoryStatus = (
-  venueList: IndividualOfferVenueItem[],
+  venueList: VenueListItemResponseModel[],
   categoryStatus: CATEGORY_STATUS
-): IndividualOfferVenueItem[] => {
+): VenueListItemResponseModel[] => {
   if (categoryStatus === CATEGORY_STATUS.ONLINE_OR_OFFLINE) {
     return venueList
   }

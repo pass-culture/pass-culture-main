@@ -1,9 +1,11 @@
-import { GetOffererNameResponseModel } from 'apiClient/v1'
+import {
+  GetOffererNameResponseModel,
+  VenueListItemResponseModel,
+} from 'apiClient/v1'
 import {
   FORM_DEFAULT_VALUES,
   IndividualOfferFormValues,
 } from 'components/IndividualOfferForm'
-import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { venueListItemFactory } from 'utils/individualApiFactories'
 
 import setDefaultInitialFormValues from '../setDefaultInitialFormValues'
@@ -13,7 +15,7 @@ describe('setDefaultInitialFormValues', () => {
   let offererNames: GetOffererNameResponseModel[]
   let offererId: string | null
   let venueId: string | null
-  let venueList: IndividualOfferVenueItem[]
+  let venueList: VenueListItemResponseModel[]
   const isBookingContactEnabled = true
 
   beforeEach(() => {

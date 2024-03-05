@@ -4,10 +4,12 @@ import { Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { GetOffererNameResponseModel } from 'apiClient/v1'
+import {
+  GetOffererNameResponseModel,
+  VenueListItemResponseModel,
+} from 'apiClient/v1'
 import { Accessibility } from 'components/IndividualOfferForm/Accessibility'
 import { AccessiblityEnum, AccessibiltyFormValues } from 'core/shared'
-import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { venueListItemFactory } from 'utils/individualApiFactories'
 
 import { Venue } from '..'
@@ -66,8 +68,8 @@ const renderVenue = ({
 describe('IndividualOffer section: venue', () => {
   let initialValues: InitialValues
   let venueProps: VenueProps
-  let venueAccessible: IndividualOfferVenueItem
-  let venueNotAccessible: IndividualOfferVenueItem
+  let venueAccessible: VenueListItemResponseModel
+  let venueNotAccessible: VenueListItemResponseModel
   const onSubmit = vi.fn()
 
   beforeEach(() => {
@@ -90,7 +92,7 @@ describe('IndividualOffer section: venue', () => {
       audioDisabilityCompliant: false,
       motorDisabilityCompliant: false,
     })
-    const venueList: IndividualOfferVenueItem[] = [
+    const venueList: VenueListItemResponseModel[] = [
       venueAccessible,
       venueNotAccessible,
     ]
