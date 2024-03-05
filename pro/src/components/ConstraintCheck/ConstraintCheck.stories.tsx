@@ -1,7 +1,6 @@
-import type { Story } from '@storybook/react'
-import React from 'react'
+import type { StoryObj } from '@storybook/react'
 
-import { ConstraintCheck, ConstraintCheckProps } from './ConstraintCheck'
+import { ConstraintCheck } from './ConstraintCheck'
 import { imageConstraints } from './imageConstraints'
 
 export default {
@@ -9,26 +8,24 @@ export default {
   component: ConstraintCheck,
 }
 
-const Template: Story<ConstraintCheckProps> = (props) => (
-  <ConstraintCheck {...props} />
-)
-
-export const Default = Template.bind({})
-Default.args = {
-  constraints: [
-    imageConstraints.formats(['image/png', 'image/jpeg']),
-    imageConstraints.size(2_000_000),
-    imageConstraints.width(300),
-  ],
-  failingConstraints: [],
+export const Default: StoryObj<typeof ConstraintCheck> = {
+  args: {
+    constraints: [
+      imageConstraints.formats(['image/png', 'image/jpeg']),
+      imageConstraints.size(2_000_000),
+      imageConstraints.width(300),
+    ],
+    failingConstraints: [],
+  },
 }
 
-export const Failing = Template.bind({})
-Failing.args = {
-  constraints: [
-    imageConstraints.formats(['image/png', 'image/jpeg']),
-    imageConstraints.size(2_000_000),
-    imageConstraints.width(300),
-  ],
-  failingConstraints: ['size', 'width'],
+export const Failing: StoryObj<typeof ConstraintCheck> = {
+  args: {
+    constraints: [
+      imageConstraints.formats(['image/png', 'image/jpeg']),
+      imageConstraints.size(2_000_000),
+      imageConstraints.width(300),
+    ],
+    failingConstraints: ['size', 'width'],
+  },
 }
