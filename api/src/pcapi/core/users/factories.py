@@ -1036,3 +1036,12 @@ class UserProFlagsFactory(BaseFactory):
 
     user = factory.SubFactory(ProFactory)
     firebase = {"BETTER_OFFER_CREATION": "true"}
+
+
+class UserProNewNavStateFactory(BaseFactory):
+    class Meta:
+        model = models.UserProNewNavState
+
+    user = factory.SubFactory(ProFactory)
+    eligibilityDate = LazyAttribute(lambda _: datetime.utcnow())
+    newNavDate = LazyAttribute(lambda _: datetime.utcnow())

@@ -43,6 +43,7 @@ def create_specific_invoice() -> None:
     bank_info = finance_factories.BankInformationFactory()
     offerer = offerers_factories.OffererFactory(name="0 - Structure avec justificatif copieux")
     offerers_factories.UserOffererFactory(offerer=offerer, user__email="activation@example.com")
+    offerers_factories.UserOffererFactory(offerer=offerer, user__email="activation_new_nav@example.com")
     offerers_factories.OffererStatsFactory(
         offerer=offerer,
         table=TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
@@ -186,6 +187,7 @@ def create_specific_invoice_with_bank_account() -> None:
     offerer = offerers_factories.OffererFactory(name="0 - Structure avec justificatif et compte bancaire")
     bank_account = finance_factories.BankAccountFactory(offerer=offerer)
     offerers_factories.UserOffererFactory(offerer=offerer, user__email="activation@example.com")
+    offerers_factories.UserOffererFactory(offerer=offerer, user__email="activation_new_nav@example.com")
     venue = offerers_factories.VenueFactory(
         name="Lieu avec justificatif",
         managingOfferer=offerer,
@@ -312,6 +314,7 @@ def create_specific_cashflow_batch_without_invoice() -> None:
     bank_info = finance_factories.BankInformationFactory()
     offerer = offerers_factories.OffererFactory(name="0 - Structure avec justificatif copié")
     offerers_factories.UserOffererFactory(offerer=offerer, user__email="activation@example.com")
+    offerers_factories.UserOffererFactory(offerer=offerer, user__email="activation_new_nav@example.com")
     venue = offerers_factories.VenueFactory(
         name="Lieu avec justificatif copié",
         managingOfferer=offerer,

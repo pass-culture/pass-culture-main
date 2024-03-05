@@ -26,6 +26,9 @@ def create_offerer_without_bank_accounts() -> None:
         name="1 - [CB] Structure sans coordonnées bancaires"
     )
     offerers_factories.UserOffererFactory(offerer=offerer_without_bank_accounts, user__email="activation@example.com")
+    offerers_factories.UserOffererFactory(
+        offerer=offerer_without_bank_accounts, user__email="activation_new_nav@example.com"
+    )
     venue = offerers_factories.VenueFactory(managingOfferer=offerer_without_bank_accounts, pricing_point="self")
     offer = offers_factories.OfferFactory(venue=venue)
     offers_factories.StockFactory(offer=offer)
@@ -38,6 +41,9 @@ def create_offerer_with_various_bank_accounts_state() -> None:
     )
     offerers_factories.UserOffererFactory(
         offerer=offerer_with_various_bank_accounts_status, user__email="activation@example.com"
+    )
+    offerers_factories.UserOffererFactory(
+        offerer=offerer_with_various_bank_accounts_status, user__email="activation_new_nav@example.com"
     )
     finance_factories.BankAccountFactory(
         status=finance_models.BankAccountApplicationStatus.ACCEPTED, offerer=offerer_with_various_bank_accounts_status
@@ -69,6 +75,9 @@ def create_offerer_with_all_his_venue_linked() -> None:
         name="1 - [CB] Structure avec tous ses lieux liés à des coordonnées bancaires"
     )
     offerers_factories.UserOffererFactory(offerer=offerer_with_all_venues_linked, user__email="activation@example.com")
+    offerers_factories.UserOffererFactory(
+        offerer=offerer_with_all_venues_linked, user__email="activation_new_nav@example.com"
+    )
     first_venue_with_non_free_offer = offerers_factories.VenueFactory(
         managingOfferer=offerer_with_all_venues_linked, pricing_point="self"
     )
@@ -89,6 +98,9 @@ def create_offerer_at_least_one_venue_linked() -> None:
         name="1 - [CB] Structure avec un de ses lieux non rattachés à des coordonnées bancaires"
     )
     offerers_factories.UserOffererFactory(offerer=offerer_with_one_venue_linked, user__email="activation@example.com")
+    offerers_factories.UserOffererFactory(
+        offerer=offerer_with_one_venue_linked, user__email="activation_new_nav@example.com"
+    )
     first_venue_with_non_free_offer = offerers_factories.VenueFactory(
         managingOfferer=offerer_with_one_venue_linked, pricing_point="self"
     )
@@ -108,6 +120,9 @@ def create_offerer_with_none_venue_linked() -> None:
         name="1 - [CB] Structure avec aucun de ses lieux liés à des coordonnées bancaires"
     )
     offerers_factories.UserOffererFactory(offerer=offerer_with_none_venue_linked, user__email="activation@example.com")
+    offerers_factories.UserOffererFactory(
+        offerer=offerer_with_none_venue_linked, user__email="activation_new_nav@example.com"
+    )
     first_venue_with_non_free_offer = offerers_factories.VenueFactory(
         managingOfferer=offerer_with_none_venue_linked, pricing_point="self"
     )
@@ -127,6 +142,9 @@ def create_offerer_with_all_his_venue_linked_to_one_bank_account() -> None:
         name="1 - [CB] Structure avec deux coordonnées bancaires dont tous les lieux sont liés à l’une d’entre elles."
     )
     offerers_factories.UserOffererFactory(offerer=offerer_with_all_venues_linked, user__email="activation@example.com")
+    offerers_factories.UserOffererFactory(
+        offerer=offerer_with_all_venues_linked, user__email="activation_new_nav@example.com"
+    )
     first_venue_with_non_free_offer = offerers_factories.VenueFactory(
         managingOfferer=offerer_with_all_venues_linked, pricing_point="self"
     )
@@ -149,6 +167,9 @@ def create_offerer_with_only_one_venue_linked() -> None:
     )
     offerers_factories.UserOffererFactory(
         offerer=offerer_with_only_one_venue_linked, user__email="activation@example.com"
+    )
+    offerers_factories.UserOffererFactory(
+        offerer=offerer_with_only_one_venue_linked, user__email="activation_new_nav@example.com"
     )
     first_venue_with_non_free_offer = offerers_factories.VenueFactory(
         managingOfferer=offerer_with_only_one_venue_linked, pricing_point="self"
