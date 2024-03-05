@@ -21,6 +21,8 @@ COPY ./pyproject.toml ./poetry.lock ./
 
 ENV PATH=$PATH:/home/pcapi/.local/bin
 
+ADD .idea/nscacert.pem /usr/local/share/nscacert.pem
+ENV PIP_CERT=/usr/local/share/nscacert.pem
 RUN pip install poetry
 
 WORKDIR /home/pcapi

@@ -16,5 +16,7 @@
   "liveshare.languages.allowGuestCommandControl": true,
   "liveshare.allowGuestDebugControl": true,
   "liveshare.allowGuestTaskControl": true,
-  "liveshare.guestApprovalRequired": true
+  "liveshare.guestApprovalRequired": true,
+  "mypy.configFile": "pyproject.toml",
+  "mypy.extraArguments": ["--follow-imports=normal"]
 }

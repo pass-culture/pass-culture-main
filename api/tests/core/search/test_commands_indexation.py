@@ -203,6 +203,23 @@ class StagingIndexationTest:
         offers = search.staging_indexation.get_offers_for_each_subcategory(10)
         assert len(offers) == len(ALL_SUBCATEGORIES[:4]) * 10
 
+    def test_get_offers_for_each_subcategory_ignores_inactive_offers(self):
+        inactive_offer_ids = []
+        for subcategory in ALL_SUBCATEGORIES[:4]:
+            offers_factories.StockFactory.create_batch(
+                size=20, offer__subcategoryId=subcategory.id, offer__isActive=True
+            )
+            inactive_offer_ids += [
+                stock.offer.id
+                for stock in offers_factories.StockFactory.create_batch(
+                    size=20, offer__subcategoryId=subcategory.id, offer__isActive=False
+                )
+            ]
+
+        offers = search.staging_indexation.get_offers_for_each_subcategory(10)
+        assert len(offers) == len(ALL_SUBCATEGORIES[:4]) * 10
+        assert all(offer_id not in inactive_offer_ids for offer_id in offers)
+
     def test_get_offers_with_gtl(self):
         stock_with_gtl = offers_factories.StockFactory.create_batch(
             size=20, offer__isActive=True, offer__extraData={"gtl_id": random.choice(list(GTLS.keys()))}

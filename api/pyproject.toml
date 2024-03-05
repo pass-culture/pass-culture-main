@@ -157,28 +157,18 @@ exclude = """
 # FIXME (dbaty, 2022-11-08): this is temporary until we find a
 # solution to type hybrid_property-decorated methods. Otherwise, mypy
 # reports a "truthy-function" error on code that uses these methods.
-disable_error_code = [
-    "truthy-function",
-]
+disable_error_code = ["truthy-function"]
 
 
 [tool.pylint.MASTER]
 # Include info messages into score so that pylint fails if we have
 # such messages (e.g. "useless-suppression").
 evaluation = "max(0, 0 if fatal else 10.0 - ((float(5 * error + warning + refactor + convention + info) / statement) * 10))"
-extension-pkg-whitelist = [
-    "pydantic",
-]
-load-plugins = [
-    "pcapi.utils.pylint",
-    "pylint_pydantic",
-]
+extension-pkg-whitelist = ["pydantic"]
+load-plugins = ["pcapi.utils.pylint", "pylint_pydantic"]
 
 [tool.pylint."MESSAGES CONTROL"]
-enable = [
-    "use-symbolic-message-instead",
-    "useless-suppression",
-]
+enable = ["use-symbolic-message-instead", "useless-suppression"]
 disable = [
     "arguments-differ",
     "arguments-renamed",
@@ -213,8 +203,8 @@ disable = [
     "unused-argument",
     "use-dict-literal",
     "useless-return",
-    "wrong-import-order", # we have a custom isort config, which pylint can't grok
-    "wrong-import-position", # same reason
+    "wrong-import-order",             # we have a custom isort config, which pylint can't grok
+    "wrong-import-position",          # same reason
 ]
 
 [tool.pylint.REPORTS]
@@ -231,7 +221,7 @@ addopts = [
     "--disable-socket",
     # FIXME (dbaty, 2022-12-01): use network range 172.16.0.0/12 once pytest-socket
     # supports it.
-    "--allow-hosts=127.0.0.1,::1,172.18.0.2,172.18.0.3,172.18.0.4,172.19.0.2,172.19.0.3,172.19.0.4,172.20.0.2,172.20.0.3,172.20.0.4,172.21.0.2,192.168.16.2", # allow connections to local Redis
+    "--allow-hosts=localhost,127.0.0.1,::1,172.18.0.2,172.18.0.3,172.18.0.4,172.19.0.2,172.19.0.3,172.19.0.4,172.20.0.2,172.20.0.3,172.20.0.4,172.21.0.2,192.168.16.2", # allow connections to local Redis
 ]
 filterwarnings = [
     # Mark warnings as errors
@@ -256,6 +246,4 @@ python_functions = ["test_*", "when_*", "expect_*", "should_*"]
 env_files = ["local_test_env_file"]
 mocked-sessions = ["pcapi.models.db.session"]
 junit_family = "xunit1"
-markers = [
-    "backoffice"
-]
+markers = ["backoffice"]
