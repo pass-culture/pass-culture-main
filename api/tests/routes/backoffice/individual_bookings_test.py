@@ -39,6 +39,7 @@ def bookings_fixture() -> tuple:
     user3 = users_factories.UnderageBeneficiaryFactory(firstName="Marie-Louise", lastName="d'Autriche")
     user4 = users_factories.UnderageBeneficiaryFactory(firstName="Marie-Louise", lastName="d'Autriche")
     used = bookings_factories.UsedBookingFactory(
+        id=1000001,  # Avoid flaky test because of same ids in bookings and offers
         user=user1,
         quantity=2,
         token="WTRL00",
@@ -51,6 +52,7 @@ def bookings_fixture() -> tuple:
     )
     offerers_factories.UserOffererFactory(offerer=used.offerer)
     cancelled = bookings_factories.CancelledBookingFactory(
+        id=1000002,
         user=user2,
         quantity=1,
         amount=12.5,
@@ -60,6 +62,7 @@ def bookings_fixture() -> tuple:
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3),
     )
     confirmed = bookings_factories.BookingFactory(
+        id=1000003,
         user=user1,
         quantity=1,
         token="ELBEIT",
@@ -71,6 +74,7 @@ def bookings_fixture() -> tuple:
         cancellation_limit_date=datetime.datetime.utcnow() - datetime.timedelta(days=1),
     )
     reimbursed = bookings_factories.ReimbursedBookingFactory(
+        id=1000004,
         user=user3,
         token="REIMB3",
         stock__offer__subcategoryId=subcategories_v2.SPECTACLE_REPRESENTATION.id,
@@ -78,6 +82,7 @@ def bookings_fixture() -> tuple:
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1),
     )
     booked = bookings_factories.BookingFactory(
+        id=1000005,
         user=user4,
         quantity=1,
         token="ADFTH9",
