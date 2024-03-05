@@ -37,6 +37,7 @@ export const serializeEditVenueBodyModel = (
     isWithdrawalAppliedOnAllOffers: formValues.isWithdrawalAppliedOnAllOffers,
     reimbursementPointId: reimbursementPointId,
     shouldSendMail: shouldSendMail,
+    venueLabelId: !formValues.venueLabel ? null : Number(formValues.venueLabel),
     venueTypeCode: formValues.venueType as VenueTypeCode,
   }
 

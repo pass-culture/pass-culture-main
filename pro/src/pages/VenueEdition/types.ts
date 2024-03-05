@@ -6,6 +6,5 @@ export interface VenueEditionFormValues {
   email: string | null
   isAccessibilityAppliedOnAllOffers: boolean
   phoneNumber: string | null
-  venueLabel: string | null
   webSite: string | null
 }

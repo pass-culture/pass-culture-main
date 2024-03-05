@@ -10,7 +10,6 @@ import {
 import { AppLayout } from 'app/AppLayout'
 import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
 import { useGetVenue } from 'core/Venue/adapters/getVenueAdapter'
-import { useGetVenueLabels } from 'core/Venue/adapters/getVenueLabelsAdapter'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import useNotification from 'hooks/useNotification'
 import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
@@ -41,24 +40,17 @@ export const VenueEdition = (): JSX.Element | null => {
     error: errorVenueTypes,
     data: venueTypes,
   } = useGetVenueTypes()
-  const {
-    isLoading: isLoadingVenueLabels,
-    error: errorVenueLabels,
-    data: venueLabels,
-  } = useGetVenueLabels()
+
   const {
     isLoading: isLoadingOfferer,
     error: errorOfferer,
     data: offerer,
   } = useGetOfferer(offererId)
 
-  if (errorOfferer || errorVenue || errorVenueTypes || errorVenueLabels) {
-    const loadingError = [
-      errorOfferer,
-      errorVenue,
-      errorVenueTypes,
-      errorVenueLabels,
-    ].find((error) => error !== undefined)
+  if (errorOfferer || errorVenue || errorVenueTypes) {
+    const loadingError = [errorOfferer, errorVenue, errorVenueTypes].find(
+      (error) => error !== undefined
+    )
     if (loadingError !== undefined) {
       notify.error(loadingError.message)
       return <Navigate to={homePath} />
@@ -70,7 +62,6 @@ export const VenueEdition = (): JSX.Element | null => {
   if (
     isLoadingVenue ||
     isLoadingVenueTypes ||
-    isLoadingVenueLabels ||
     isLoadingOfferer ||
     !offerer ||
     !venue
@@ -121,7 +112,6 @@ export const VenueEdition = (): JSX.Element | null => {
             element={
               <VenueEditionFormScreen
                 initialValues={setInitialFormValues(venue)}
-                venueLabels={venueLabels}
                 venue={venue}
               />
             }

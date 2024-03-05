@@ -10,7 +10,6 @@ import { ApiError, GetVenueResponseModel, VenueTypeCode } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
-import { SelectOption } from 'custom_types/form'
 import { defaultGetVenue } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -19,14 +18,6 @@ import { VenueEditionFormScreen } from '../VenueEditionFormScreen'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
-
-const venueLabels: SelectOption[] = [
-  { value: 'AE', label: 'Architecture contemporaine remarquable' },
-  {
-    value: 'A9',
-    label: "CAC - Centre d'art contemporain d’int\u00e9r\u00eat national",
-  },
-]
 
 const renderForm = (
   initialValues: VenueEditionFormValues,
@@ -54,7 +45,6 @@ const renderForm = (
             <>
               <VenueEditionFormScreen
                 initialValues={initialValues}
-                venueLabels={venueLabels}
                 venue={venue}
               />
             </>
@@ -238,7 +228,6 @@ describe('VenueFormScreen', () => {
   beforeEach(() => {
     formValues = {
       description: '',
-      venueLabel: 'EM',
       accessibility: {
         visual: false,
         mental: true,

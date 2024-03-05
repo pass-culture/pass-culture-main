@@ -18,7 +18,7 @@ import Notification from 'components/Notification/Notification'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 import { defaultGetOffererResponseModel } from 'utils/apiFactories'
-import { defaultVenueResponseModel } from 'utils/collectiveApiFactories'
+import { defaultGetVenue } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { VenueSettingsFormValues } from '../types'
@@ -26,6 +26,14 @@ import { VenueSettingsFormScreen } from '../VenueSettingsScreen'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
+
+const venueLabels: SelectOption[] = [
+  { value: '13', label: 'Architecture contemporaine remarquable' },
+  {
+    value: '14',
+    label: "CAC - Centre d'art contemporain d’int\u00e9r\u00eat national",
+  },
+]
 
 const venueTypes: SelectOption[] = [
   { value: 'ARTISTIC_COURSE', label: 'Cours et pratique artistiques' },
@@ -63,6 +71,7 @@ const renderForm = (
                   id: 12,
                   siren: '881457238',
                 }}
+                venueLabels={venueLabels}
                 venueTypes={venueTypes}
                 providers={[]}
                 venue={venue}
@@ -266,12 +275,13 @@ describe('VenueFormScreen', () => {
       postalCode: '35400',
       withdrawalDetails: 'withdrawal details field',
       venueSiret: null,
+      venueLabel: '13',
       isWithdrawalAppliedOnAllOffers: false,
       reimbursementPointId: 91,
     }
 
     venue = {
-      ...defaultVenueResponseModel,
+      ...defaultGetVenue,
       hasPendingBankInformationApplication: false,
       demarchesSimplifieesApplicationId: '',
       collectiveDomains: [],
@@ -485,6 +495,7 @@ describe('VenueFormScreen', () => {
         shouldSendMail: false,
         siret: '88145723823022',
         venueTypeCode: VenueTypeCode.JEUX_JEUX_VID_OS,
+        venueLabelId: 13,
         withdrawalDetails: 'Nouvelle information de retrait',
       }
     })
@@ -494,7 +505,7 @@ describe('VenueFormScreen', () => {
 
       const editVenue = vi
         .spyOn(api, 'editVenue')
-        .mockResolvedValue({ ...defaultVenueResponseModel, id: 1 })
+        .mockResolvedValue({ ...defaultGetVenue, id: 1 })
 
       await waitFor(() => {
         expect(
@@ -552,7 +563,7 @@ describe('VenueFormScreen', () => {
 
       const editVenue = vi
         .spyOn(api, 'editVenue')
-        .mockResolvedValue({ ...defaultVenueResponseModel, id: 1 })
+        .mockResolvedValue({ ...defaultGetVenue, id: 1 })
 
       await waitFor(() => {
         expect(
@@ -610,7 +621,7 @@ describe('VenueFormScreen', () => {
 
       const editVenue = vi
         .spyOn(api, 'editVenue')
-        .mockResolvedValue({ ...defaultVenueResponseModel, id: 1 })
+        .mockResolvedValue({ ...defaultGetVenue, id: 1 })
 
       await waitFor(() => {
         expect(
@@ -642,7 +653,7 @@ describe('VenueFormScreen', () => {
 
       const editVenue = vi
         .spyOn(api, 'editVenue')
-        .mockResolvedValue({ ...defaultVenueResponseModel, id: 1 })
+        .mockResolvedValue({ ...defaultGetVenue, id: 1 })
 
       await waitFor(() => {
         expect(

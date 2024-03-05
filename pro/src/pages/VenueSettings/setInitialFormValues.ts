@@ -22,6 +22,7 @@ export const setInitialFormValues = (
     venueSiret: venue.pricingPoint?.id || null,
     publicName: venue.publicName || '',
     siret: humanizeSiret(venue.siret || ''),
+    venueLabel: venue.venueLabelId?.toString() || '',
     venueType: venue.venueTypeCode,
     withdrawalDetails: venue.withdrawalDetails || '',
     isWithdrawalAppliedOnAllOffers: false,
