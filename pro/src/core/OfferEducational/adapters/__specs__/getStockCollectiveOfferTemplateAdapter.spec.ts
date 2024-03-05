@@ -67,6 +67,7 @@ describe('getStockCollectiveOfferTemplateAdapter', () => {
           managingOfferer: {
             id: 1,
             name: 'mon offerer',
+            allowedOnAdage: true,
           },
           name: 'mon lieu',
         },

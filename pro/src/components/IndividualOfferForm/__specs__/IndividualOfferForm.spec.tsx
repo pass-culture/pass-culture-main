@@ -105,6 +105,7 @@ describe('IndividualOfferForm', () => {
       {
         id: offererId,
         name: 'Offerer virtual and physical',
+        allowedOnAdage: true,
       },
     ]
     venueList = [

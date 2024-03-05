@@ -50,7 +50,9 @@ class Returns200ForProUserTest:
 
         # then
         assert response.status_code == 200
-        assert response.json == {"offerersNames": [{"name": offerer.name, "id": offerer.id}]}
+        assert response.json == {
+            "offerersNames": [{"name": offerer.name, "id": offerer.id, "allowedOnAdage": offerer.allowedOnAdage}]
+        }
 
     @pytest.mark.usefixtures("db_session")
     def test_get_offerers_names_for_id(self, client):

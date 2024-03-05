@@ -45,14 +45,17 @@ describe('IndividualOffer section: venue', () => {
   const firstOfferer = {
     id: 1,
     name: 'Offerer AE',
+    allowedOnAdage: true,
   }
   const secondOfferer = {
     id: 2,
     name: 'Offerer A9',
+    allowedOnAdage: true,
   }
   const thirdOfferer = {
     id: 3,
     name: 'Offerer AM',
+    allowedOnAdage: true,
   }
 
   beforeEach(() => {

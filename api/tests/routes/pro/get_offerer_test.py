@@ -128,6 +128,7 @@ class GetOffererTest:
             "id": offerer.id,
             "postalCode": offerer.postalCode,
             "siren": offerer.siren,
+            "allowedOnAdage": offerer.allowedOnAdage,
         }
         assert response.status_code == 200
         assert response.json == expected_serialized_offerer

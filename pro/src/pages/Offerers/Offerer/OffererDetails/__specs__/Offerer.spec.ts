@@ -24,6 +24,7 @@ describe('transformOffererResponseModelToOfferer', () => {
       venuesWithNonFreeOffersWithoutBankAccounts: [],
       isValidated: true,
       isActive: true,
+      allowedOnAdage: true,
     }
 
     expect(transformOffererResponseModelToOfferer(properties)).toMatchObject({

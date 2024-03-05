@@ -87,6 +87,7 @@ describe('Confirmation', () => {
         managingOfferer: {
           id: offererId,
           name: 'Offerer name',
+          allowedOnAdage: true,
         },
       }),
       status: OfferStatus.ACTIVE,

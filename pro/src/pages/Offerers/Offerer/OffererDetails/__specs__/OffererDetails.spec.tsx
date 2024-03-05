@@ -38,6 +38,7 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
       hasActiveOffer: true,
       isValidated: true,
       isActive: true,
+      allowedOnAdage: true,
       managedVenues: [
         {
           ...defaultGetOffererVenueResponseModel,

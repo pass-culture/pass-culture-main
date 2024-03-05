@@ -63,6 +63,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
       {
         id: offererId,
         name: 'Offerer AE',
+        allowedOnAdage: true,
       },
     ]
 

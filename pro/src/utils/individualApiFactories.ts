@@ -163,6 +163,7 @@ export const getOfferManagingOffererFactory = (
   return {
     id: 3,
     name: `Le nom de la structure ${currentOffererId}`,
+    allowedOnAdage: true,
     ...customGetOfferManagingOfferer,
   }
 }
@@ -332,6 +333,7 @@ export const defaultGetOffererResponseModel: GetOffererResponseModel = {
   name: 'Ma super structure',
   id: 1,
   postalCode: '00000',
+  allowedOnAdage: true,
 }
 
 export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =

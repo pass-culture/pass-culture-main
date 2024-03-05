@@ -89,6 +89,7 @@ export const getWizardData: GetIndividualOfferAdapter = async ({
       {
         id: offerer.id,
         name: offerer.name,
+        allowedOnAdage: true,
       },
     ]
   } else {

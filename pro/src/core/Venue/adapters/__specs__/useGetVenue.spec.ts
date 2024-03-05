@@ -41,6 +41,7 @@ describe('useGetVenue', () => {
         isValidated: true,
         name: 'Test structure name',
         postalCode: '75001',
+        allowedOnAdage: true,
       },
       name: 'Lieu name',
       id: 12,

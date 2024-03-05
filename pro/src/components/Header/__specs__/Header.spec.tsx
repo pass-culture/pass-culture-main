@@ -116,7 +116,7 @@ describe('navigation menu', () => {
 
     it('when clicking on Stats', async () => {
       vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNames: [{ id: 123, name: 'AE' }],
+        offerersNames: [{ id: 123, name: 'AE', allowedOnAdage: true }],
       })
 
       renderHeader({ features: ['ENABLE_OFFERER_STATS'] })
