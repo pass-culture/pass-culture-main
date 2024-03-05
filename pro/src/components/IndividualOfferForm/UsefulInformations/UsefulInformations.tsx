@@ -4,11 +4,11 @@ import React from 'react'
 import {
   GetOffererNameResponseModel,
   SubcategoryResponseModel,
+  VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { OfferRefundWarning, WithdrawalReminder } from 'components/Banner'
 import FormLayout from 'components/FormLayout'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
-import { IndividualOfferVenueItem } from 'core/Venue/types'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { Checkbox, InfoBox, TextArea, TextInput } from 'ui-kit'
 
@@ -20,7 +20,7 @@ import { Venue } from './Venue'
 
 export interface UsefulInformationsProps {
   offererNames: GetOffererNameResponseModel[]
-  venueList: IndividualOfferVenueItem[]
+  venueList: VenueListItemResponseModel[]
   isUserAdmin: boolean
   offerSubCategory?: SubcategoryResponseModel
   isVenueVirtual: boolean

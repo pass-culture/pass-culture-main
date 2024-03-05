@@ -4,7 +4,10 @@ import React from 'react'
 import { generatePath, Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { GetIndividualOfferResponseModel } from 'apiClient/v1'
+import {
+  GetIndividualOfferResponseModel,
+  VenueListItemResponseModel,
+} from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import Notification from 'components/Notification/Notification'
 import {
@@ -13,7 +16,6 @@ import {
 } from 'context/IndividualOfferContext'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import { IndividualOfferVenueItem } from 'core/Venue/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { ButtonLink } from 'ui-kit'
 import { getIndividualOfferFactory } from 'utils/apiFactories'
@@ -139,8 +141,8 @@ describe('screens:IndividualOffer::Informations::creation', () => {
       }),
     ]
 
-    const venue1: IndividualOfferVenueItem = venueListItemFactory()
-    const venue2: IndividualOfferVenueItem = venueListItemFactory({
+    const venue1: VenueListItemResponseModel = venueListItemFactory()
+    const venue2: VenueListItemResponseModel = venueListItemFactory({
       isVirtual: true,
     })
 

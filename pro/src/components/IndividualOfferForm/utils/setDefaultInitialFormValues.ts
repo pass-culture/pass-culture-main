@@ -1,10 +1,12 @@
-import { GetOffererNameResponseModel } from 'apiClient/v1'
+import {
+  GetOffererNameResponseModel,
+  VenueListItemResponseModel,
+} from 'apiClient/v1'
 import {
   FORM_DEFAULT_VALUES,
   IndividualOfferFormValues,
 } from 'components/IndividualOfferForm'
-import { buildAccessibilityFormValues } from 'components/VenueForm/utils/setInitialFormValues'
-import { IndividualOfferVenueItem } from 'core/Venue/types'
+import { buildAccessibilityFormValues } from 'pages/VenueEdition/setInitialFormValues'
 
 import buildSubcategoryFields from './buildSubCategoryFields'
 
@@ -12,7 +14,7 @@ const setDefaultInitialFormValues = (
   offererNames: GetOffererNameResponseModel[],
   offererId: string | null,
   venueId: string | null,
-  venueList: IndividualOfferVenueItem[],
+  venueList: VenueListItemResponseModel[],
   isBookingContactEnabled: boolean
 ): IndividualOfferFormValues => {
   let initialOffererId = FORM_DEFAULT_VALUES.offererId

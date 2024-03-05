@@ -4,12 +4,14 @@ import { Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { GetOffererNameResponseModel } from 'apiClient/v1'
+import {
+  GetOffererNameResponseModel,
+  VenueListItemResponseModel,
+} from 'apiClient/v1'
 import {
   IndividualOfferFormValues,
   setDefaultInitialFormValues,
 } from 'components/IndividualOfferForm'
-import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { venueListItemFactory } from 'utils/individualApiFactories'
 
 import { validationSchema, Venue, VENUE_DEFAULT_VALUES } from '..'
@@ -39,7 +41,7 @@ describe('IndividualOffer section: venue', () => {
   let initialValues: Partial<IndividualOfferFormValues>
   let props: VenueProps
   const onSubmit = vi.fn()
-  let venueList: IndividualOfferVenueItem[]
+  let venueList: VenueListItemResponseModel[]
   const firstOfferer = {
     id: 1,
     name: 'Offerer AE',

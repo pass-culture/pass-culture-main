@@ -1,12 +1,12 @@
-import { GetVenueResponseModel } from 'apiClient/v1'
+import { GetVenueResponseModel, VenueListItemResponseModel } from 'apiClient/v1'
 import { AccessiblityEnum } from 'core/shared'
 
 import { VenueEditionFormValues } from './types'
 
-export const setInitialFormValues = (
-  venue: GetVenueResponseModel
-): VenueEditionFormValues => {
-  const venueAccessibility = {
+export const buildAccessibilityFormValues = (
+  venue: GetVenueResponseModel | VenueListItemResponseModel
+) => {
+  return {
     [AccessiblityEnum.VISUAL]: venue.visualDisabilityCompliant || false,
     [AccessiblityEnum.MENTAL]: venue.mentalDisabilityCompliant || false,
     [AccessiblityEnum.AUDIO]: venue.audioDisabilityCompliant || false,
@@ -18,9 +18,13 @@ export const setInitialFormValues = (
       venue.motorDisabilityCompliant,
     ].every((accessibility) => accessibility === false),
   }
+}
 
+export const setInitialFormValues = (
+  venue: GetVenueResponseModel
+): VenueEditionFormValues => {
   return {
-    accessibility: venueAccessibility,
+    accessibility: buildAccessibilityFormValues(venue),
     description: venue.description || '',
     email: venue.contact?.email || '',
     isAccessibilityAppliedOnAllOffers: false,

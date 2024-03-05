@@ -1,5 +1,7 @@
-import { GetOffererNameResponseModel } from 'apiClient/v1'
-import { IndividualOfferVenueItem } from 'core/Venue/types'
+import {
+  GetOffererNameResponseModel,
+  VenueListItemResponseModel,
+} from 'apiClient/v1'
 import { SelectOption } from 'custom_types/form'
 
 export const buildOffererOptions = (
@@ -29,17 +31,19 @@ export const buildOffererOptions = (
 
 export const buildVenueOptions = (
   offererId: string,
-  venueList: IndividualOfferVenueItem[]
+  venueList: VenueListItemResponseModel[]
 ): {
   venueOptions: SelectOption[]
   isDisabled: boolean
 } => {
-  const offererVenues = venueList.filter((venue: IndividualOfferVenueItem) => {
-    if (!offererId) {
-      return false
+  const offererVenues = venueList.filter(
+    (venue: VenueListItemResponseModel) => {
+      if (!offererId) {
+        return false
+      }
+      return venue.managingOffererId.toString() === offererId
     }
-    return venue.managingOffererId.toString() === offererId
-  })
+  )
 
   let venueOptions = offererVenues
     .map((venue) => ({

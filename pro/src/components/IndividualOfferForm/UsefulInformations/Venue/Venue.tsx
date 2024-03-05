@@ -1,25 +1,27 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
-import { GetOffererNameResponseModel } from 'apiClient/v1'
+import {
+  GetOffererNameResponseModel,
+  VenueListItemResponseModel,
+} from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
 import { IndividualOfferForm } from 'components/IndividualOfferForm/types'
-import { buildAccessibilityFormValues } from 'components/VenueForm/utils/setInitialFormValues'
-import { IndividualOfferVenueItem } from 'core/Venue/types'
+import { buildAccessibilityFormValues } from 'pages/VenueEdition/setInitialFormValues'
 import { Select } from 'ui-kit'
 
 import { buildOffererOptions, buildVenueOptions } from './utils'
 
 export interface VenueProps {
   offererNames: GetOffererNameResponseModel[]
-  venueList: IndividualOfferVenueItem[]
+  venueList: VenueListItemResponseModel[]
   readOnlyFields?: string[]
 }
 
 export const onVenueChange = async (
   setFieldValue: IndividualOfferForm['setFieldValue'],
-  venueList: IndividualOfferVenueItem[],
+  venueList: VenueListItemResponseModel[],
   venueId: string
 ) => {
   const newVenue = venueList.find((v) => v.id.toString() === venueId)
