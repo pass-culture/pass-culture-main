@@ -1,5 +1,4 @@
-import type { ComponentStory } from '@storybook/react'
-import React from 'react'
+import type { StoryObj } from '@storybook/react'
 import { withRouter } from 'storybook-addon-react-router-v6'
 
 import { Step } from './Stepper'
@@ -42,15 +41,9 @@ const stepList: Step[] = [
   },
 ]
 
-const Template: ComponentStory<typeof Stepper> = (args) => (
-  <div style={{ width: 874 }}>
-    <Stepper {...args} />
-  </div>
-)
-
-export const Default = Template.bind({})
-
-Default.args = {
-  activeStep: '3',
-  steps: stepList,
+export const Default: StoryObj<typeof Stepper> = {
+  args: {
+    activeStep: '3',
+    steps: stepList,
+  },
 }
