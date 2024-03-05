@@ -41,11 +41,9 @@ def _get_collective_bookings(
     form: booking_forms.GetCollectiveBookingListForm,
 ) -> list[educational_models.CollectiveBooking]:
     base_query = (
-        educational_models.CollectiveBooking.query.outerjoin(educational_models.CollectiveStock)
-        .outerjoin(educational_models.CollectiveOffer)
-        .outerjoin(
-            educational_models.EducationalInstitution, educational_models.CollectiveBooking.educationalInstitution
-        )
+        educational_models.CollectiveBooking.query.join(educational_models.CollectiveStock)
+        .join(educational_models.CollectiveOffer)
+        .join(educational_models.EducationalInstitution, educational_models.CollectiveBooking.educationalInstitution)
         .options(
             sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock)
             .load_only(

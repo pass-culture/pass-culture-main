@@ -50,9 +50,9 @@ def _get_individual_bookings(
     form: booking_forms.GetIndividualBookingListForm,
 ) -> list[bookings_models.Booking]:
     base_query = (
-        bookings_models.Booking.query.outerjoin(offers_models.Stock)
-        .outerjoin(offers_models.Offer)
-        .outerjoin(users_models.User, bookings_models.Booking.user)
+        bookings_models.Booking.query.join(offers_models.Stock)
+        .join(offers_models.Offer)
+        .join(users_models.User, bookings_models.Booking.user)
         .options(
             sa.orm.joinedload(bookings_models.Booking.stock)
             .load_only(
