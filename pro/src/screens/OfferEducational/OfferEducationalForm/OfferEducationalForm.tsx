@@ -1,7 +1,6 @@
 import { useFormikContext } from 'formik'
 import { useCallback, useEffect, useState } from 'react'
 
-import { api } from 'apiClient/api'
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
@@ -11,9 +10,9 @@ import ActionsBarSticky from 'components/ActionsBarSticky'
 import BannerPublicApi from 'components/Banner/BannerPublicApi'
 import FormLayout from 'components/FormLayout'
 import {
+  Mode,
   OfferEducationalFormValues,
   isCollectiveOffer,
-  Mode,
 } from 'core/OfferEducational'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { SelectOption } from 'custom_types/form'
@@ -77,7 +76,6 @@ const OfferEducationalForm = ({
   const [venuesOptions, setVenuesOptions] = useState<SelectOption[]>([])
   const [currentOfferer, setCurrentOfferer] =
     useState<GetEducationalOffererResponseModel | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
   const [isEligible, setIsEligible] = useState<boolean>()
 
   const { values, setFieldValue, initialValues } =
@@ -96,30 +94,15 @@ const OfferEducationalForm = ({
       )
 
       if (selectedOfferer) {
-        const checkOffererEligibilityToEducationalOffer = async () => {
+        const checkOffererEligibilityToEducationalOffer = () => {
           if (mode === Mode.EDITION || mode === Mode.READ_ONLY) {
             setIsEligible(true)
             return
           }
-
-          setIsLoading(true)
-
-          try {
-            const { canCreate } = await api.canOffererCreateEducationalOffer(
-              selectedOfferer.id
-            )
-            setIsEligible(canCreate)
-          } catch (error) {
-            setIsEligible(false)
-            notify.error(
-              'Une erreur technique est survenue lors de la vérification de votre éligibilité.'
-            )
-          }
-
-          setIsLoading(false)
+          setIsEligible(selectedOfferer.allowedOnAdage)
         }
 
-        await checkOffererEligibilityToEducationalOffer()
+        checkOffererEligibilityToEducationalOffer()
 
         let venuesOptions = selectedOfferer.managedVenues.map((item) => ({
           value: item['id'].toString(),
@@ -215,10 +198,7 @@ const OfferEducationalForm = ({
           >
             Annuler et quitter
           </ButtonLink>
-          <SubmitButton
-            disabled={!isEligible || mode === Mode.READ_ONLY}
-            isLoading={isLoading}
-          >
+          <SubmitButton disabled={!isEligible || mode === Mode.READ_ONLY}>
             {mode === Mode.CREATION
               ? 'Étape suivante'
               : 'Enregistrer les modifications'}

@@ -19,27 +19,23 @@ describe('screens | OfferEducational : creation offerer step', () => {
     beforeEach(() => {
       props = {
         ...defaultCreationProps,
-        userOfferers: userOfferersFactory([{}]),
+        userOfferers: userOfferersFactory([{ allowedOnAdage: true }]),
       }
-
-      vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue({
-        canCreate: true,
-      })
     })
 
     it('should test eligibility and display venue input if offerer is eligible', async () => {
       renderWithProviders(<OfferEducational {...props} />)
 
-      expect(api.canOffererCreateEducationalOffer).toHaveBeenCalledTimes(1)
       expect(await screen.findByLabelText('Lieu *')).toBeInTheDocument()
     })
 
     it('should test eligibility and display an error message with a link if the offerer is not eligible', async () => {
-      vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValueOnce({
-        canCreate: false,
-      })
-
-      renderWithProviders(<OfferEducational {...props} />)
+      renderWithProviders(
+        <OfferEducational
+          {...props}
+          userOfferers={userOfferersFactory([{ allowedOnAdage: false }])}
+        />
+      )
 
       expect(
         await screen.findByText(
@@ -100,9 +96,6 @@ describe('screens | OfferEducational : creation offerer step', () => {
           },
         ]),
       }
-      vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue({
-        canCreate: true,
-      })
     })
 
     it('should select venue and display the next step', async () => {
@@ -133,14 +126,10 @@ describe('screens | OfferEducational : creation offerer step', () => {
       props = {
         ...defaultCreationProps,
         userOfferers: userOfferersFactory([
-          { id: firstOffererId },
-          { id: secondOffererId },
+          { id: firstOffererId, allowedOnAdage: true },
+          { id: secondOffererId, allowedOnAdage: true },
         ]),
       }
-
-      vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue({
-        canCreate: true,
-      })
     })
 
     it('should require an offerer selection from the user and trigger eligibility check at selection', async () => {
@@ -161,8 +150,6 @@ describe('screens | OfferEducational : creation offerer step', () => {
         await screen.findByText('Veuillez sélectionner une structure')
       ).toBeInTheDocument()
 
-      expect(api.canOffererCreateEducationalOffer).toHaveBeenCalledTimes(0)
-
       await userEvent.selectOptions(offererSelect, firstOffererId.toString())
 
       await userEvent.click(offererSelect)
@@ -171,33 +158,6 @@ describe('screens | OfferEducational : creation offerer step', () => {
       expect(
         screen.queryByText('Veuillez sélectionner une structure')
       ).not.toBeInTheDocument()
-
-      expect(api.canOffererCreateEducationalOffer).toHaveBeenCalledTimes(1)
-      expect(api.canOffererCreateEducationalOffer).toHaveBeenCalledWith(
-        firstOffererId
-      )
-    })
-
-    it('should check eligibility every time a diferent offerer is selected', async () => {
-      renderWithProviders(<OfferEducational {...props} />)
-
-      const offererSelect = await screen.findByLabelText('Structure *')
-
-      await userEvent.selectOptions(offererSelect, firstOffererId.toString())
-
-      await userEvent.selectOptions(offererSelect, secondOffererId.toString())
-
-      await waitFor(() =>
-        expect(api.canOffererCreateEducationalOffer).toHaveBeenCalledTimes(2)
-      )
-      expect(api.canOffererCreateEducationalOffer).toHaveBeenNthCalledWith(
-        1,
-        firstOffererId
-      )
-      expect(api.canOffererCreateEducationalOffer).toHaveBeenNthCalledWith(
-        2,
-        secondOffererId
-      )
     })
   })
 

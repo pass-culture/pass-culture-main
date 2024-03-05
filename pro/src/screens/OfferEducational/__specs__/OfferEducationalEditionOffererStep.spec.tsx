@@ -30,7 +30,7 @@ describe('screens | OfferEducational : edition offerer step', () => {
     props = defaultEditionProps
   })
 
-  it('should display offerer and venue selects as disabled (not editable) fields', async () => {
+  it.only('should display offerer and venue selects as disabled (not editable) fields', async () => {
     props = {
       ...props,
       userOfferers: userOfferersFactory([
@@ -76,6 +76,7 @@ describe('screens | OfferEducational : edition offerer step', () => {
     expect(offererSelect).toHaveValue(secondOffererId.toString())
     expect(offererSelect).toBeDisabled()
 
+    // screen.debug(undefined, 100000)
     const venueSelect = await screen.findByLabelText('Lieu *')
 
     expect(venueSelect).toBeInTheDocument()

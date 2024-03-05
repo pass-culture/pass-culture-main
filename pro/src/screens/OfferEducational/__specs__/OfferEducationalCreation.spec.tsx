@@ -1,9 +1,7 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 import * as router from 'react-router-dom'
 
-import { api } from 'apiClient/api'
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import * as patchCollectiveOfferAdapter from 'core/OfferEducational/adapters/patchCollectiveOfferAdapter'
 import { RootState } from 'store/rootReducer'
@@ -17,7 +15,6 @@ import { OfferEducationalProps } from '../OfferEducational'
 vi.mock('apiClient/api', () => ({
   api: {
     editCollectiveOffer: vi.fn(),
-    canOffererCreateEducationalOffer: vi.fn(),
   },
 }))
 
@@ -53,9 +50,6 @@ describe('screens | OfferEducational : event address step', () => {
     }
 
     vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
-    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue({
-      canCreate: true,
-    })
   })
 
   it('should redirect to stock on submit', async () => {
@@ -66,8 +60,6 @@ describe('screens | OfferEducational : event address step', () => {
     })
 
     renderWithProviders(<OfferEducational {...props} />)
-
-    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     const buttonNextStep = screen.getByText('Étape suivante')
 
@@ -89,8 +81,6 @@ describe('screens | OfferEducational : event address step', () => {
       storeOverrides: store,
       initialRouterEntries: ['/offre/collectif/3/creation?requete=1'],
     })
-
-    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     const buttonNextStep = screen.getByText('Étape suivante')
 
