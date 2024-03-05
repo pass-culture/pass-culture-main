@@ -27,7 +27,7 @@ flask-shell-ipython = "^0.5.1"
 flask-sqlalchemy = "==2.5.*"
 google-auth = "2.28.1"
 google-api-python-client = "2.120.0"
-google-cloud-storage = "2.14.0"
+google-cloud-storage = "2.15.0"
 google-cloud-tasks = "2.16.2"
 google-cloud-bigquery = "3.18.0"
 gql = { extras = ["requests"], version = "^3.5.0" }
