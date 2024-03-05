@@ -200,7 +200,7 @@ class Booking(PcObject, Base, Model):
             return self.dateCreated + BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY
         return self.dateCreated + BOOKINGS_AUTO_EXPIRY_DELAY
 
-    @property
+    @hybrid_property
     def total_amount(self) -> Decimal:
         return self.amount * self.quantity
 

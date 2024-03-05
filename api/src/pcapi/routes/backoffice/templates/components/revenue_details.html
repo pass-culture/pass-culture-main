@@ -1,0 +1,36 @@
+<turbo-frame id="turbo-display-revenue-details">
+<div class="modal-header">
+  <h5 class="modal-title">CA par année</h5>
+  <button type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Fermer"></button>
+</div>
+<div class="modal-body row">
+  <div class="d-flex flex-column">
+    <table>
+      <thead>
+        <tr>
+          <th>Année</th>
+          <th class="text-end">CA offres IND</th>
+          <th class="text-end">CA offres EAC</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for year, year_stats in details | dictsort(reverse=true) %}
+          <tr>
+            <td class="text-start">{{ year }}</td>
+            <td class="text-end">{{ year_stats.individual | format_amount | safe }}</td>
+            <td class="text-end">{{ year_stats.collective | format_amount | safe }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button"
+          class="btn btn-outline-primary"
+          data-bs-dismiss="modal">Fermer</button>
+</div>
+</turbo>

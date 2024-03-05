@@ -14,7 +14,18 @@
             {{ stats.total_revenue | format_amount | safe }}
           {% endif %}
         </h6>
-        <p class="card-text fw-light small">de CA</p>
+        <div class="d-flex flex-row">
+          <div class="card-text fw-light small align-self-center">de CA</div>
+          <div class="p-auto">
+            {% if stats.total_revenue != stats.placeholder and stats.total_revenue > 0 %}
+              <button class="btn link-primary"
+                      data-bs-toggle="modal"
+                      data-bs-target="#display-revenue-details"
+                      type="button">plus de détails…</button>
+              {{ build_lazy_modal(url_for("backoffice_web.venue.get_revenue_details", venue_id=venue.id) , "display-revenue-details") }}
+            {% endif %}
+          </div>
+        </div>
       </div>
     </div>
   </div>
