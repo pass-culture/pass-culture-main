@@ -146,6 +146,23 @@ class Returns200Test:
         assert offer.end == template_end
         assert offer.author == user
 
+    def test_empty_email(self, pro_client, payload, venue):
+        data = {
+            **payload,
+            "contactEmail": None,
+        }
+
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 201
+
+        offer_id = response.json["id"]
+        offer = CollectiveOfferTemplate.query.get(offer_id)
+
+        assert offer.contactEmail is None
+        assert offer.contactPhone == "01 99 00 25 68"
+
     def test_empty_intervention_area(self, pro_client, payload, venue):
         data = {
             **payload,
@@ -240,6 +257,36 @@ class Returns400Test:
         assert response.json == {"priceDetail": ["ensure this value has at most 1000 characters"]}
 
         assert CollectiveOfferTemplate.query.count() == 0
+
+    def test_empty_contact(self, pro_client, payload, venue):
+        data = {
+            **payload,
+            "contactEmail": None,
+            "contactPhone": None,
+            "contactUrl": None,
+            "contactForm": None,
+        }
+
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"code": "COLLECTIVE_OFFER_CONTACT_NOT_SET"}
+
+    def test_both_contact_form_and_url(self, pro_client, payload, venue):
+        data = {
+            **payload,
+            "contactEmail": None,
+            "contactPhone": None,
+            "contactUrl": "http://localhost/dir/something.html",
+            "contactForm": "form",
+        }
+
+        with patch(PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"code": "COLLECTIVE_OFFER_URL_AND_FORM_BOTH_SET"}
 
 
 class InvalidDatesTest:
