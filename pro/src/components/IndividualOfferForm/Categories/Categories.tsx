@@ -3,6 +3,8 @@ import { useFormikContext } from 'formik'
 import React from 'react'
 
 import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
+import Callout from 'components/Callout/Callout'
+import { CalloutVariant } from 'components/Callout/types'
 import FormLayout from 'components/FormLayout'
 import {
   FORM_DEFAULT_VALUES,
@@ -13,7 +15,7 @@ import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
-import { Banner, InfoBox, Select } from 'ui-kit'
+import { InfoBox, Select } from 'ui-kit'
 
 import styles from '../IndividualOfferForm.module.scss'
 import { onVenueChange } from '../UsefulInformations/Venue/Venue'
@@ -249,7 +251,7 @@ const Categories = ({
       )}
       {showAddVenueBanner && (
         <FormLayout.Row>
-          <Banner
+          <Callout
             links={[
               {
                 href: `/structures/${offererId}/lieux/creation`,
@@ -257,11 +259,11 @@ const Categories = ({
                 isExternal: false,
               },
             ]}
-            type="notification-info"
+            variant={CalloutVariant.ERROR}
           >
             Pour créer une offre de ce type, ajoutez d’abord un lieu à l’une de
             vos structures.
-          </Banner>
+          </Callout>
         </FormLayout.Row>
       )}
     </FormLayout.Section>
