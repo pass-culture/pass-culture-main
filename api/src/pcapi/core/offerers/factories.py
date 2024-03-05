@@ -32,6 +32,7 @@ class OffererFactory(BaseFactory):
     siren = factory.Sequence(lambda n: f"{n + 1:09}")
     isActive = True
     validationStatus = ValidationStatus.VALIDATED
+    allowedOnAdage = True
 
 
 class NotValidatedOffererFactory(OffererFactory):
