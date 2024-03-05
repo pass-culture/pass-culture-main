@@ -1,10 +1,11 @@
 import React from 'react'
 
-import { Banner } from 'ui-kit'
+import Callout from 'components/Callout/Callout'
+import { CalloutVariant } from 'components/Callout/types'
 
 const OfferRefundWarning = () => {
   return (
-    <Banner
+    <Callout
       links={[
         {
           href: 'https://aide.passculture.app/hc/fr/articles/6043184068252',
@@ -13,10 +14,10 @@ const OfferRefundWarning = () => {
             'Quelles sont les offres numériques éligibles au remboursement ?',
         },
       ]}
-      type="attention"
+      variant={CalloutVariant.DEFAULT}
     >
       Cette offre numérique ne sera pas remboursée.
-    </Banner>
+    </Callout>
   )
 }
 
