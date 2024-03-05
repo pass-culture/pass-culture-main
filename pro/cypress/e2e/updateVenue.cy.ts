@@ -18,22 +18,25 @@ describe('Update a venue', () => {
     cy.get('#venues').select('Cinéma de la fin Bis')
 
     cy.contains('Gérer ma page').click()
-    cy.contains('Informations du lieu').should('be.visible')
+    cy.contains('À propos de votre activité').should('be.visible')
     cy.contains('Cinéma de la fin Bis').should('be.visible')
-    cy.get('#publicName').clear().type(newName)
     cy.get('#description')
       .clear()
       .type('On peut ajouter des choses, vraiment fantastique !!!')
-    cy.get('#venueLabel').select('Musée de France')
     cy.contains('Non accessible').click()
     cy.contains('Psychique ou cognitif').click()
     cy.contains('Auditif').click()
+    cy.contains('Enregistrer et quitter').click()
+
+    cy.contains('Gérer ma page').click()
+    cy.contains('Paramètres de l’activité').click()
+    cy.get('#publicName').clear().type(newName)
+    cy.get('#venueLabel').select('Musée de France')
     cy.get('#withdrawalDetails')
       .clear()
       .type(
         'En main bien propres, avec un masque et un gel hydroalcoolique, didiou !'
       )
-
     cy.contains('Enregistrer et quitter').click()
     cy.contains(newName).should('be.visible')
   })
