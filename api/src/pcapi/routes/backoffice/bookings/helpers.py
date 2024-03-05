@@ -123,11 +123,7 @@ def get_bookings(
             for name_filter in name_filters:
                 or_filters.append(name_filter.ilike("%{}%".format(search_query)))
 
-        query = base_query.filter(or_filters[0])
-
-        if len(or_filters) > 1:
-            # Performance is really better than .filter(sa.or_(...)) when searching for an id in different tables
-            query = query.union(*(base_query.filter(f) for f in or_filters[1:]))
+        query = base_query.filter(sa.or_(*or_filters) if len(or_filters) > 1 else or_filters[0])
     else:
         query = base_query
 
