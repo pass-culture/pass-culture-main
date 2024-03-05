@@ -35,7 +35,7 @@ export interface ImageEditorConfig {
   maxScale: number
 }
 
-export interface ImageEditorProps extends ImageEditorConfig {
+interface ImageEditorProps extends ImageEditorConfig {
   image: File
   initialPosition?: Position
   children?: never
