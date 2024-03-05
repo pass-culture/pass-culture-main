@@ -18,6 +18,7 @@ const renderPartnerPageCollectiveSection = (
       collectiveDmsApplications={[defaultDMSApplicationForEAC]}
       venueId={7}
       hasAdageId={false}
+      allowedOnAdage={true}
       {...props}
     />
   )
@@ -38,9 +39,10 @@ describe('PartnerPages', () => {
   it('should display the EAC section when no adage', () => {
     renderPartnerPageCollectiveSection({
       collectiveDmsApplications: [],
+      allowedOnAdage: false,
     })
 
-    expect(screen.getByText('Non référencé sur ADAGE')).toBeInTheDocument()
+    expect(screen.getByText('Non référencé dans ADAGE')).toBeInTheDocument()
     expect(
       screen.getByText('Faire une demande de référencement ADAGE')
     ).toBeInTheDocument()
@@ -56,7 +58,7 @@ describe('PartnerPages', () => {
       ],
     })
 
-    expect(screen.getByText('Non référencé sur ADAGE')).toBeInTheDocument()
+    expect(screen.getByText('Non référencé dans ADAGE')).toBeInTheDocument()
     expect(
       screen.queryByText('Faire une demande de référencement ADAGE')
     ).not.toBeInTheDocument()
@@ -72,7 +74,7 @@ describe('PartnerPages', () => {
       ],
     })
 
-    expect(screen.getByText('Non référencé sur ADAGE')).toBeInTheDocument()
+    expect(screen.getByText('Non référencé dans ADAGE')).toBeInTheDocument()
     expect(
       screen.queryByText('Faire une demande de référencement ADAGE')
     ).not.toBeInTheDocument()
@@ -111,7 +113,7 @@ describe('PartnerPages', () => {
       isDisplayedInHomepage: true,
     })
 
-    expect(screen.getByText('Référencé sur ADAGE')).toBeInTheDocument()
+    expect(screen.getByText('Référencé dans ADAGE')).toBeInTheDocument()
     expect(
       screen.getByText(/Les enseignants voient les offres vitrines/)
     ).toBeInTheDocument()
@@ -124,7 +126,7 @@ describe('PartnerPages', () => {
       isDisplayedInHomepage: false,
     })
 
-    expect(screen.getByText('Référencé sur ADAGE')).toBeInTheDocument()
+    expect(screen.getByText('Référencé dans ADAGE')).toBeInTheDocument()
     expect(
       screen.queryByText(/es enseignants voient les offres vitrines/)
     ).not.toBeInTheDocument()

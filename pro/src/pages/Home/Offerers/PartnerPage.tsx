@@ -148,6 +148,7 @@ export const PartnerPage = ({
         collectiveDmsApplications={venue.collectiveDmsApplications}
         venueId={venue.id}
         hasAdageId={venue.hasAdageId}
+        allowedOnAdage={offerer.allowedOnAdage}
         isDisplayedInHomepage
       />
     </Card>
