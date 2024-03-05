@@ -81,9 +81,7 @@ export const CollectiveDataEdition = ({
     useState<GetCollectiveVenueResponseModel | null>(null)
   const [adageVenueCollectiveData, setAdageVenueCollectiveData] =
     useState<GetCollectiveVenueResponseModel | null>(null)
-  const [canCreateCollectiveOffer, setCanCreateCollectiveOffer] = useState<
-    boolean | null
-  >(null)
+  const canCreateCollectiveOffer = venue?.managingOfferer.allowedOnAdage
 
   useEffect(() => {
     const fetchData = async () => {
@@ -93,14 +91,6 @@ export const CollectiveDataEdition = ({
         getCulturalPartnersAdapter(),
         getVenueCollectiveDataAdapter(Number(venueId) ?? ''),
       ])
-
-      try {
-        const { canCreate: canOffererCreateCollectiveOffer } =
-          await api.canOffererCreateEducationalOffer(Number(offererId))
-        setCanCreateCollectiveOffer(canOffererCreateCollectiveOffer)
-      } catch {
-        notify.error(GET_DATA_ERROR_MESSAGE)
-      }
 
       if (allResponses.some((response) => !response.isOk)) {
         notify.error(GET_DATA_ERROR_MESSAGE)

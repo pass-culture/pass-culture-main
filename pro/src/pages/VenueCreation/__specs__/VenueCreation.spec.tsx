@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
@@ -8,7 +8,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { VenueCreation } from '../VenueCreation'
 
-const renderVenueCreation = async (offererId: string) => {
+const renderVenueCreation = (offererId: string) => {
   const storeOverrides = {
     user: {
       initialized: true,
@@ -27,9 +27,6 @@ const renderVenueCreation = async (offererId: string) => {
   renderWithProviders(<VenueCreation />, {
     storeOverrides,
     initialRouterEntries: [`/structures/${offererId}/lieux/creation`],
-  })
-  await waitFor(() => {
-    expect(api.canOffererCreateEducationalOffer).toHaveBeenCalled()
   })
 }
 
@@ -56,18 +53,17 @@ describe('route VenueCreation', () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
     vi.spyOn(api, 'getVenueTypes').mockResolvedValue([])
     vi.spyOn(api, 'fetchVenueLabels').mockResolvedValue([])
-    vi.spyOn(api, 'canOffererCreateEducationalOffer')
   })
 
   it('should display venue form screen with creation title', async () => {
-    await renderVenueCreation(offerer.id.toString())
+    renderVenueCreation(offerer.id.toString())
 
     const venueCreationTitle = await screen.findByText('Création d’un lieu')
     expect(venueCreationTitle).toBeInTheDocument()
   })
 
   it('should display modal when user try to quite venue creation', async () => {
-    await renderVenueCreation(offerer.id.toString())
+    renderVenueCreation(offerer.id.toString())
 
     const homeNavBarButton = await screen.findByText('Accueil')
     await userEvent.click(homeNavBarButton)
@@ -82,7 +78,7 @@ describe('route VenueCreation', () => {
   })
 
   it('should display modal when user cancel venue creation', async () => {
-    await renderVenueCreation(offerer.id.toString())
+    renderVenueCreation(offerer.id.toString())
 
     const cancelFormButton = await screen.findByText('Annuler et quitter')
     await userEvent.click(cancelFormButton)
@@ -97,7 +93,7 @@ describe('route VenueCreation', () => {
   })
 
   it('should not display modal when user submit venue creation', async () => {
-    await renderVenueCreation(offerer.id.toString())
+    renderVenueCreation(offerer.id.toString())
 
     const homeNavBarButton = await screen.findByText(
       'Enregistrer et créer le lieu'

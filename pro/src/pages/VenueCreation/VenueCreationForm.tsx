@@ -1,18 +1,14 @@
-import * as Sentry from '@sentry/react'
 import { useFormikContext } from 'formik'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
-import { api } from 'apiClient/api'
 import {
   GetOffererResponseModel,
   SharedCurrentUserResponseModel,
 } from 'apiClient/v1'
 import { AddressSelect } from 'components/Address'
 import FormLayout from 'components/FormLayout'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
-import useNotification from 'hooks/useNotification'
 import { TextInput, InfoBox, Select, Banner } from 'ui-kit'
 
 import RouteLeavingGuard, {
@@ -60,26 +56,10 @@ export const VenueCreationForm = ({
   useScrollToFirstErrorAfterSubmit()
   const user = useCurrentUser()
 
-  const [canOffererCreateCollectiveOffer, setCanOffererCreateCollectiveOffer] =
-    useState(false)
+  useState(false)
   const [isFieldNameFrozen, setIsFieldNameFrozen] = useState(false)
   const [isSiretValued, setIsSiretValued] = useState(true)
-  const notify = useNotification()
-  useEffect(() => {
-    const loadCanOffererCreateCollectiveOffer = async () => {
-      try {
-        const { canCreate } = await api.canOffererCreateEducationalOffer(
-          offerer.id
-        )
-        setCanOffererCreateCollectiveOffer(canCreate)
-      } catch (error) {
-        notify.error(GET_DATA_ERROR_MESSAGE)
-        Sentry.captureException(error)
-      }
-    }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadCanOffererCreateCollectiveOffer()
-  }, [offerer.id, notify])
+  const canOffererCreateCollectiveOffer = offerer.allowedOnAdage
 
   return (
     <div>
