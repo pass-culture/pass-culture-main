@@ -5,12 +5,15 @@
 import type { CollectiveOfferVenueBodyModel } from './CollectiveOfferVenueBodyModel';
 import type { DateRangeOnCreateModel } from './DateRangeOnCreateModel';
 import type { EacFormat } from './EacFormat';
+import type { OfferContactFormEnum } from './OfferContactFormEnum';
 import type { StudentLevels } from './StudentLevels';
 export type PostCollectiveOfferTemplateBodyModel = {
   audioDisabilityCompliant?: boolean;
   bookingEmails: Array<string>;
-  contactEmail: string;
+  contactEmail?: string | null;
+  contactForm?: OfferContactFormEnum | null;
   contactPhone?: string | null;
+  contactUrl?: string | null;
   dates?: DateRangeOnCreateModel | null;
   description: string;
   domains?: Array<number> | null;

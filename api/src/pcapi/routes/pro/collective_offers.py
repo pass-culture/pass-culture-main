@@ -621,6 +621,24 @@ def create_collective_offer_template(
             {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_NOT_FOUND"},
             status_code=400,
         )
+    except offers_exceptions.UrlandFormBothSetError:
+        logger.info(
+            "Could not set both contact url and contact form",
+            extra={"offer_name": body.name},
+        )
+        raise ApiErrors(
+            {"code": "COLLECTIVE_OFFER_URL_AND_FORM_BOTH_SET"},
+            status_code=400,
+        )
+    except offers_exceptions.AllNullContactRequestDataError:
+        logger.info(
+            "At least one contact method should be set",
+            extra={"offer_name": body.name},
+        )
+        raise ApiErrors(
+            {"code": "COLLECTIVE_OFFER_CONTACT_NOT_SET"},
+            status_code=400,
+        )
 
     return collective_offers_serialize.CollectiveOfferResponseIdModel.from_orm(offer)
 
