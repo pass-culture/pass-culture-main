@@ -4,7 +4,7 @@ import landscapePreferredOrientation from './landscape-preferred-orientation.svg
 import portraitPreferredOrientation from './portrait-preferred-orientation.svg'
 import style from './PreferredOrientation.module.scss'
 
-export type PreferredOrientationProps = {
+type PreferredOrientationProps = {
   orientation: 'portrait' | 'landscape'
   children?: never
 }
