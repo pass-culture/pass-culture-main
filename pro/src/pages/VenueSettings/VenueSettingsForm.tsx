@@ -25,6 +25,7 @@ import { VenueSettingsFormValues } from './types'
 interface VenueFormProps {
   offerer: GetOffererResponseModel
   updateIsSiretValued: (isSiretValued: boolean) => void
+  venueLabels: SelectOption[]
   venueTypes: SelectOption[]
   provider?: Providers[]
   venueProvider?: VenueProviderResponse[]
@@ -34,6 +35,7 @@ interface VenueFormProps {
 export const VenueSettingsForm = ({
   offerer,
   updateIsSiretValued,
+  venueLabels,
   venueTypes,
   provider,
   venueProvider,
@@ -122,6 +124,24 @@ export const VenueSettingsForm = ({
               disabled={venue.isVirtual}
             />
           </FormLayout.Row>
+
+          {!venue.isVirtual && (
+            <FormLayout.Row>
+              <Select
+                options={[
+                  {
+                    value: '',
+                    label:
+                      'Si votre lieu est labellisé précisez-le en le sélectionnant',
+                  },
+                  ...venueLabels,
+                ]}
+                name="venueLabel"
+                label="Label du ministère de la Culture ou du Centre national du cinéma et de l’image animée"
+                isOptional
+              />
+            </FormLayout.Row>
+          )}
         </FormLayout.Section>
 
         {!venue.isVirtual && <WithdrawalDetails />}

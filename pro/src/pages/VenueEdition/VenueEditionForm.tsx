@@ -1,19 +1,17 @@
 import { GetVenueResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
-import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
-import { Select, TextArea, TextInput } from 'ui-kit'
+import { TextArea, TextInput } from 'ui-kit'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 
 import { Accessibility } from '../VenueCreation/Accessibility/Accessibility'
 import { VenueFormActionBar } from '../VenueCreation/VenueFormActionBar'
 
 interface VenueFormProps {
-  venueLabels: SelectOption[]
   venue: GetVenueResponseModel
 }
 
-export const VenueEditionForm = ({ venueLabels, venue }: VenueFormProps) => {
+export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   useScrollToFirstErrorAfterSubmit()
 
   return (
@@ -37,22 +35,6 @@ export const VenueEditionForm = ({ venueLabels, venue }: VenueFormProps) => {
                 placeholder="Par exemple : mon établissement propose des spectacles, de l’improvisation..."
                 maxLength={1000}
                 countCharacters
-                isOptional
-              />
-            </FormLayout.Row>
-
-            <FormLayout.Row>
-              <Select
-                options={[
-                  {
-                    value: '',
-                    label:
-                      'Si votre lieu est labellisé précisez-le en le sélectionnant',
-                  },
-                  ...venueLabels,
-                ]}
-                name="venueLabel"
-                label="Label du ministère de la Culture ou du Centre national du cinéma et de l’image animée"
                 isOptional
               />
             </FormLayout.Row>

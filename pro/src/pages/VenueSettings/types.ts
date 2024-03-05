@@ -15,6 +15,7 @@ export interface VenueSettingsFormValues {
   'search-addressAutocomplete': string
   siret: string
   venueSiret: number | null
+  venueLabel: string | null
   venueType: string
   withdrawalDetails: string
 }
