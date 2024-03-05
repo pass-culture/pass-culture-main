@@ -68,7 +68,7 @@ const sharedCollectiveOfferData = {
 }
 
 // TODO factories: remove customStock & customVenue as an argument
-export const collectiveOfferFactory = (
+export const getCollectiveOfferFactory = (
   customCollectiveOffer: Partial<GetCollectiveOfferResponseModel> = {},
   customStock: GetCollectiveOfferCollectiveStockResponseModel = getCollectiveOfferCollectiveStockFactory() ||
     null,
@@ -105,7 +105,7 @@ export const getCollectiveOfferCollectiveStockFactory = (
 }
 
 // TODO factories: remove customVenue as an argument
-export const collectiveOfferTemplateFactory = (
+export const getCollectiveOfferTemplateFactory = (
   customCollectiveOfferTemplate: Partial<GetCollectiveOfferTemplateResponseModel> = {},
   customVenue: GetCollectiveOfferVenueResponseModel = getCollectiveOfferVenueFactory()
 ): GetCollectiveOfferTemplateResponseModel => ({

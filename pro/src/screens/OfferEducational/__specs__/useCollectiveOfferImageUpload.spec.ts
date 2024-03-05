@@ -8,8 +8,8 @@ import * as postCollectiveOfferImageAdapter from 'core/OfferEducational/adapters
 import * as postCollectiveOfferTemplateImageAdapter from 'core/OfferEducational/adapters/postCollectiveOfferTemplateImageAdapter'
 import * as useNotification from 'hooks/useNotification'
 import {
-  collectiveOfferFactory,
-  collectiveOfferTemplateFactory,
+  getCollectiveOfferFactory,
+  getCollectiveOfferTemplateFactory,
 } from 'utils/collectiveApiFactories'
 
 import { useCollectiveOfferImageUpload } from '../useCollectiveOfferImageUpload'
@@ -34,14 +34,14 @@ vi.spyOn(useNotification, 'default').mockImplementation(
 
 describe('useCollectiveOfferImageUpload', () => {
   it('should initialize with current image', () => {
-    const offer = collectiveOfferFactory()
+    const offer = getCollectiveOfferFactory()
 
     const { result } = renderHook(() => useCollectiveOfferImageUpload(offer))
     expect(result.current.imageOffer?.url).toBe(offer.imageUrl)
   })
 
   it('should submit uploaded image in case of normal offer', async () => {
-    const offer = collectiveOfferFactory()
+    const offer = getCollectiveOfferFactory()
     const image = imageUploadArgsFactory()
     const payload: AttachImageResponseModel = {
       imageUrl: 'https://example.com/image.jpg',
@@ -65,7 +65,7 @@ describe('useCollectiveOfferImageUpload', () => {
   })
 
   it('should submit uploaded image in case of template offer', async () => {
-    const offer = collectiveOfferTemplateFactory()
+    const offer = getCollectiveOfferTemplateFactory()
     const image = imageUploadArgsFactory()
     const payload: AttachImageResponseModel = {
       imageUrl: 'https://example.com/image.jpg',
@@ -94,7 +94,7 @@ describe('useCollectiveOfferImageUpload', () => {
   })
 
   it('should delete image in case of normal offer', async () => {
-    const offer = collectiveOfferTemplateFactory()
+    const offer = getCollectiveOfferTemplateFactory()
     vi.spyOn(deleteCollectiveOfferImageAdapter, 'default').mockResolvedValue({
       isOk: true,
       payload: null,
@@ -114,7 +114,7 @@ describe('useCollectiveOfferImageUpload', () => {
   })
 
   it('should delete image in case of template offer', async () => {
-    const offer = collectiveOfferTemplateFactory()
+    const offer = getCollectiveOfferTemplateFactory()
     vi.spyOn(
       deleteCollectiveOfferTemplateImageAdapter,
       'default'
@@ -139,7 +139,7 @@ describe('useCollectiveOfferImageUpload', () => {
   })
 
   it('should not delete image if offer initially had one and onImageDelete was not called', async () => {
-    const offer = collectiveOfferTemplateFactory()
+    const offer = getCollectiveOfferTemplateFactory()
     vi.spyOn(
       deleteCollectiveOfferTemplateImageAdapter,
       'default'

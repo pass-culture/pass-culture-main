@@ -2,8 +2,8 @@ import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 
 import { EacFormat } from 'apiClient/v1'
 import {
-  collectiveOfferFactory,
-  collectiveOfferTemplateFactory,
+  getCollectiveOfferFactory,
+  getCollectiveOfferTemplateFactory,
 } from 'utils/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
@@ -33,13 +33,13 @@ const renderCollectiveOfferSummary = (
 describe('CollectiveOfferSummary', () => {
   let props: CollectiveOfferSummaryProps
   beforeEach(() => {
-    const offer = collectiveOfferFactory()
+    const offer = getCollectiveOfferFactory()
     props = {
       offer,
     }
   })
   it('should show banner if generate from publicApi', async () => {
-    const offer = collectiveOfferFactory({ isPublicApi: true })
+    const offer = getCollectiveOfferFactory({ isPublicApi: true })
 
     renderCollectiveOfferSummary({
       ...props,
@@ -54,7 +54,7 @@ describe('CollectiveOfferSummary', () => {
   })
 
   it('should not see edit button if offer from publicApi', async () => {
-    const offer = collectiveOfferFactory({ isPublicApi: true })
+    const offer = getCollectiveOfferFactory({ isPublicApi: true })
 
     renderCollectiveOfferSummary({
       ...props,
@@ -103,7 +103,7 @@ describe('CollectiveOfferSummary', () => {
   })
 
   it('should display the date and time of the offer', async () => {
-    const offer = collectiveOfferTemplateFactory({
+    const offer = getCollectiveOfferTemplateFactory({
       dates: { start: '2023-10-24T09:14:00', end: '2023-10-24T09:16:00' },
     })
     renderCollectiveOfferSummary({ ...props, offer })

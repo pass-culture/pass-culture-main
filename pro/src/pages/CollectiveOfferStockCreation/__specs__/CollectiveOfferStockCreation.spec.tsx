@@ -7,8 +7,8 @@ import * as useNotification from 'hooks/useNotification'
 import getOfferRequestInformationsAdapter from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
 import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
 import {
-  collectiveOfferFactory,
-  collectiveOfferTemplateFactory,
+  getCollectiveOfferFactory,
+  getCollectiveOfferTemplateFactory,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -32,7 +32,7 @@ const renderCollectiveStockCreation = (
 }
 
 const defaultProps = {
-  offer: collectiveOfferFactory(),
+  offer: getCollectiveOfferFactory(),
   setOffer: vi.fn(),
   reloadCollectiveOffer: vi.fn(),
   isTemplate: false,
@@ -60,7 +60,7 @@ describe('CollectiveOfferStockCreation', () => {
       ...defaultProps,
       offer: { ...defaultProps.offer, templateId: 12 },
     }
-    const offerTemplate = collectiveOfferTemplateFactory({
+    const offerTemplate = getCollectiveOfferTemplateFactory({
       educationalPriceDetail: 'Details from template',
     })
     vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(offerTemplate)
@@ -107,7 +107,7 @@ describe('CollectiveOfferStockCreation', () => {
   })
 
   it('should render collective offer stock form from requested offer', async () => {
-    const offerTemplate = collectiveOfferTemplateFactory({
+    const offerTemplate = getCollectiveOfferTemplateFactory({
       educationalPriceDetail: 'Details from template',
     })
     vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(offerTemplate)
