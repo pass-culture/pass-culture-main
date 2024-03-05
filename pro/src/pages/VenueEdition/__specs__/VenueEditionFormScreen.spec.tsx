@@ -335,15 +335,17 @@ describe('VenueFormScreen', () => {
     })
   })
 
-  it('should let update the virtual venue with limited fields', async () => {
+  it('should display specific message when venue is virtual', () => {
+    venue.isVirtual = true
     renderForm(formValues, venue)
 
-    const editVenue = vi
-      .spyOn(api, 'editVenue')
-      .mockResolvedValue(venueResponse)
+    expect(
+      screen.getByText(
+        /Ce lieu vous permet uniquement de créer des offres numériques/
+      )
+    ).toBeInTheDocument()
 
-    await userEvent.click(screen.getByText(/Enregistrer/))
-    expect(editVenue).toHaveBeenCalledWith(15, { reimbursementPointId: 91 })
+    expect(screen.queryAllByRole('input')).toHaveLength(0)
   })
 
   it('should let update venue without siret', async () => {
