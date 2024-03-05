@@ -91,10 +91,6 @@ vi.spyOn(api, 'getSiretInfo').mockResolvedValue({
   legal_category_code: '1000',
 })
 
-vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue({
-  canCreate: true,
-})
-
 vi.mock('apiClient/adresse', async () => {
   return {
     ...((await vi.importActual('apiClient/adresse')) ?? {}),
@@ -217,6 +213,7 @@ const venueResponse: GetVenueResponseModel = {
     name: 'name',
     postalCode: 'string',
     siren: null,
+    allowedOnAdage: true,
   },
 }
 
@@ -291,6 +288,7 @@ describe('VenueFormScreen', () => {
         name: 'name',
         postalCode: 'string',
         siren: null,
+        allowedOnAdage: true,
       },
       hasAdageId: false,
       adageInscriptionDate: null,

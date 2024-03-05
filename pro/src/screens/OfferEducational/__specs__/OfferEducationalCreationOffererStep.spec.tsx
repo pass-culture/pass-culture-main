@@ -1,8 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
-import { api } from 'apiClient/api'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferEducational from '../'
@@ -61,9 +59,6 @@ describe('screens | OfferEducational : creation offerer step', () => {
           },
         ]),
       }
-      vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue({
-        canCreate: false,
-      })
     })
 
     it('should display specific banner instead of place and referencing banner', async () => {
@@ -178,9 +173,6 @@ describe('screens | OfferEducational : creation offerer step', () => {
           },
         ]),
       }
-      vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue({
-        canCreate: true,
-      })
     })
 
     it('should require a venue selection from the user', async () => {
