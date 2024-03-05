@@ -46,9 +46,7 @@ const FormParticipants = ({
         sideComponent={
           <InfoBox>
             {isMarseilleEnabled
-              ? `Dans le cadre du projet Marseille en Grand, les écoles primaires
-            innovantes du territoire marseillais bénéficient d’un budget pour
-            financer des projets d’EAC avec leurs élèves.`
+              ? `Dans le cadre du plan Marseille en Grand et du Conseil national de la refondation dans son volet éducation "Notre école, faisons-la ensemble", les écoles primaires innovantes du territoire marseillais bénéficient d’un budget pour financer des projets d’EAC avec leurs élèves.`
               : `Le pass Culture à destination du public scolaire s’adresse aux
             élèves de la sixième à la terminale des établissements publics et
             privés sous contrat.`}
