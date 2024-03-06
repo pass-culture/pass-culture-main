@@ -28,14 +28,14 @@ import { collectiveOfferFactory } from 'pages/CollectiveOffers/utils/collectiveO
 import {
   defaultGetOffererResponseModel,
   getOfferManagingOffererFactory,
-} from 'utils/apiFactories'
+  listOffersOfferFactory,
+} from 'utils/individualApiFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'utils/renderWithProviders'
 
 import Offers, { OffersProps } from '../Offers'
-import { listOffersOfferFactory } from '../utils/individualOffersFactories'
 
 const renderOffers = (
   props: OffersProps,

@@ -11,7 +11,7 @@ import {
 import {
   getOfferVenueFactory,
   getOfferManagingOffererFactory,
-} from 'utils/apiFactories'
+} from 'utils/individualApiFactories'
 
 import FormPracticalInformation, {
   FormPracticalInformationProps,

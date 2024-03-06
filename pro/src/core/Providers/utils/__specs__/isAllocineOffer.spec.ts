@@ -1,4 +1,4 @@
-import { getIndividualOfferFactory } from 'utils/apiFactories'
+import { getIndividualOfferFactory } from 'utils/individualApiFactories'
 
 import { isAllocineOffer } from '../localProvider'
 

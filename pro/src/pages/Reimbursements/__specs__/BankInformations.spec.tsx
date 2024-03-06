@@ -12,7 +12,7 @@ import {
 import { ReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
 import * as useAnalytics from 'hooks/useAnalytics'
 import BankInformations from 'pages/Reimbursements/BankInformations/BankInformations'
-import { defaultGetOffererResponseModel } from 'utils/apiFactories'
+import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 const defaultBankAccountResponseModel: BankAccountResponseModel = {

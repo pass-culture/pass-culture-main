@@ -8,11 +8,11 @@ import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as useNotification from 'hooks/useNotification'
 import { collectiveOfferFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
+import { defaultDMSApplicationForEAC } from 'utils/collectiveApiFactories'
 import {
   defaultGetOffererVenueResponseModel,
   defaultGetOffererResponseModel,
-} from 'utils/apiFactories'
-import { defaultDMSApplicationForEAC } from 'utils/collectiveApiFactories'
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferType from '../OfferType'

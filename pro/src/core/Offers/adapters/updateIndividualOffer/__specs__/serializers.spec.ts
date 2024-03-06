@@ -3,7 +3,7 @@ import { PatchOfferBodyModel } from 'apiClient/v1'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
 import { OfferExtraData } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
-import { getIndividualOfferFactory } from 'utils/apiFactories'
+import { getIndividualOfferFactory } from 'utils/individualApiFactories'
 
 import {
   serializeDurationMinutes,

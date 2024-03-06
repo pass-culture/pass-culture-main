@@ -7,8 +7,10 @@ import {
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
-import { getIndividualOfferFactory } from 'utils/apiFactories'
-import { subcategoryFactory } from 'utils/individualApiFactories'
+import {
+  getIndividualOfferFactory,
+  subcategoryFactory,
+} from 'utils/individualApiFactories'
 
 import { serializeOfferSectionData } from '../serializer'
 

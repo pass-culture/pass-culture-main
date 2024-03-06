@@ -14,9 +14,9 @@ import { ApiError } from 'apiClient/v2'
 import Notification from 'components/Notification/Notification'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import {
-  getIndividualOfferFactory,
   getOfferManagingOffererFactory,
-} from 'utils/apiFactories'
+  getIndividualOfferFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {

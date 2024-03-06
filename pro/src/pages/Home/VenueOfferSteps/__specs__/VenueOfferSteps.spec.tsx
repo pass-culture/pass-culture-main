@@ -7,9 +7,9 @@ import {
 } from 'pages/Home/VenueOfferSteps/VenueOfferSteps'
 import * as venueUtils from 'pages/Home/venueUtils'
 import {
-  defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
-} from 'utils/apiFactories'
+  defaultGetOffererResponseModel,
+} from 'utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,

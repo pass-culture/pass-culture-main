@@ -9,7 +9,7 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/cons
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { ButtonLink } from 'ui-kit'
-import { getIndividualOfferFactory } from 'utils/apiFactories'
+import { getIndividualOfferFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {

@@ -13,10 +13,10 @@ import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import BankInformations from 'pages/Reimbursements/BankInformations/BankInformations'
 import {
+  defaultManagedVenues,
   defaultBankAccount,
   defaultGetOffererResponseModel,
-  defaultManagedVenues,
-} from 'utils/apiFactories'
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 const renderBankInformations = (

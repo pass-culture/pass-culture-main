@@ -12,10 +12,10 @@ import {
 } from 'context/IndividualOfferContext'
 import { RootState } from 'store/rootReducer'
 import {
-  getIndividualOfferFactory,
   getOfferVenueFactory,
-} from 'utils/apiFactories'
-import { individualOfferContextValuesFactory } from 'utils/individualApiFactories'
+  getIndividualOfferFactory,
+  individualOfferContextValuesFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { Confirmation } from '../Confirmation'

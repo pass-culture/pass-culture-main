@@ -12,8 +12,10 @@ import { OfferStatus } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import { getIndividualOfferFactory } from 'utils/apiFactories'
-import { getOfferStockFactory } from 'utils/individualApiFactories'
+import {
+  getIndividualOfferFactory,
+  getOfferStockFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StockSection, { StockSectionProps } from '../StockSection'

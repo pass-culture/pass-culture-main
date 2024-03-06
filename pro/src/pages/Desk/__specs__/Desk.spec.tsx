@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
-import { defaultGetBookingResponse } from 'utils/apiFactories'
+import { defaultGetBookingResponse } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import * as getBookingAdapter from '../adapters/getBooking'

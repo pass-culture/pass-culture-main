@@ -8,7 +8,7 @@ import { api } from 'apiClient/api'
 import { Events } from 'core/FirebaseEvents/constants'
 import { SelectOption } from 'custom_types/form'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { defaultGetOffererResponseModel } from 'utils/apiFactories'
+import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { VenueCreationFormValues } from './types'

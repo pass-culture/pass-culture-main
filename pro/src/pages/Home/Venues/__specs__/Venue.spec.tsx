@@ -2,9 +2,9 @@ import { screen } from '@testing-library/react'
 import React from 'react'
 
 import {
-  defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
-} from 'utils/apiFactories'
+  defaultGetOffererResponseModel,
+} from 'utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,

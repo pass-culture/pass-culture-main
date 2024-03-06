@@ -4,9 +4,9 @@ import * as router from 'react-router-dom'
 
 import { VenueTypeCode } from 'apiClient/v1'
 import {
-  defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
-} from 'utils/apiFactories'
+  defaultGetOffererResponseModel,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {

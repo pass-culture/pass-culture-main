@@ -1,8 +1,8 @@
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
 import {
-  listOffersOfferFactory,
   listOffersStockFactory,
-} from 'screens/Offers/utils/individualOffersFactories'
+  listOffersOfferFactory,
+} from 'utils/individualApiFactories'
 
 import { offerHasBookingQuantity } from '../offerHasBookingQuantity'
 

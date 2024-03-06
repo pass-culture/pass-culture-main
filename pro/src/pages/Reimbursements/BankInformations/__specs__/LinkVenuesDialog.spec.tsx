@@ -4,7 +4,10 @@ import { userEvent } from '@testing-library/user-event'
 import { api } from 'apiClient/api'
 import { BankAccountResponseModel, ManagedVenues } from 'apiClient/v1'
 import * as useNotification from 'hooks/useNotification'
-import { defaultBankAccount, defaultManagedVenues } from 'utils/apiFactories'
+import {
+  defaultManagedVenues,
+  defaultBankAccount,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import LinkVenuesDialog from '../LinkVenuesDialog'
