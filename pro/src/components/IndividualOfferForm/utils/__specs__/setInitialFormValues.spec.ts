@@ -6,11 +6,11 @@ import {
 } from 'apiClient/v1'
 import { AccessiblityEnum } from 'core/shared'
 import {
-  getIndividualOfferFactory,
   getOfferVenueFactory,
   getOfferManagingOffererFactory,
-} from 'utils/apiFactories'
-import { subcategoryFactory } from 'utils/individualApiFactories'
+  getIndividualOfferFactory,
+  subcategoryFactory,
+} from 'utils/individualApiFactories'
 
 import setInitialFormValues from '../setInitialFormValues'
 

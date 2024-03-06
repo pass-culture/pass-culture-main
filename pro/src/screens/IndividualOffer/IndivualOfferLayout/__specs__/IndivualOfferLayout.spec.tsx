@@ -3,7 +3,7 @@ import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { getIndividualOfferFactory } from 'utils/apiFactories'
+import { getIndividualOfferFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import IndivualOfferLayout, {

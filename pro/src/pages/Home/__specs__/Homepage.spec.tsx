@@ -15,7 +15,7 @@ import * as useAnalytics from 'hooks/useAnalytics'
 import {
   defaultGetOffererVenueResponseModel,
   defaultGetOffererResponseModel,
-} from 'utils/apiFactories'
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { Homepage } from '../Homepage'

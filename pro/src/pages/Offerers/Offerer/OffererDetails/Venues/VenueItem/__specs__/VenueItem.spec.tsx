@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
 
-import { defaultGetOffererVenueResponseModel } from 'utils/apiFactories'
+import { defaultGetOffererVenueResponseModel } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import VenueItem, { VenueItemProps } from '../VenueItem'

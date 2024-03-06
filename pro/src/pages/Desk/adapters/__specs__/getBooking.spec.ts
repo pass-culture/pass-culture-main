@@ -3,7 +3,7 @@ import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { MESSAGE_VARIANT } from 'pages/Desk/types'
-import { defaultGetBookingResponse } from 'utils/apiFactories'
+import { defaultGetBookingResponse } from 'utils/individualApiFactories'
 
 import { getBooking } from '..'
 

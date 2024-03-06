@@ -20,11 +20,11 @@ import {
   collectiveOfferFactory,
   listOffersVenueFactory,
 } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
-import {
-  listOffersOfferFactory,
-  listOffersStockFactory,
-} from 'screens/Offers/utils/individualOffersFactories'
 import { getToday } from 'utils/date'
+import {
+  listOffersStockFactory,
+  listOffersOfferFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferItem, { OfferItemProps } from '../OfferItem'

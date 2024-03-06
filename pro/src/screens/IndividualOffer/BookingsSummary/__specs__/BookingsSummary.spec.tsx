@@ -5,11 +5,11 @@ import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { IndividualOfferContext } from 'context/IndividualOfferContext'
 import {
-  getIndividualOfferFactory,
   bookingRecapFactory,
+  getIndividualOfferFactory,
   bookingRecapStockFactory,
-} from 'utils/apiFactories'
-import { individualOfferContextValuesFactory } from 'utils/individualApiFactories'
+  individualOfferContextValuesFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { BookingsSummaryScreen } from '../BookingsSummary'

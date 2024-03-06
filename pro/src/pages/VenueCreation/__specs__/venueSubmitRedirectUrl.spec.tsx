@@ -1,5 +1,5 @@
 import { SharedCurrentUserResponseModel } from 'apiClient/v1'
-import { defaultGetOffererResponseModel } from 'utils/apiFactories'
+import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 
 import { venueSubmitRedirectUrl } from '../venueSubmitRedirectUrl'
 

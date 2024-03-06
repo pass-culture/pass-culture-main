@@ -2,7 +2,7 @@ import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 
 import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
-import { defaultGetOffererVenueResponseModel } from 'utils/apiFactories'
+import { defaultGetOffererVenueResponseModel } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OffererDetails } from '../OffererDetails'

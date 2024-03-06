@@ -8,8 +8,8 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
-import { defaultGetOffererResponseModel } from 'utils/apiFactories'
 import { getCollectiveOfferFactory } from 'utils/collectiveApiFactories'
+import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,

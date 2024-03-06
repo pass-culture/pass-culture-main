@@ -9,8 +9,10 @@ import {
 } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import { getIndividualOfferFactory } from 'utils/apiFactories'
-import { individualOfferContextValuesFactory } from 'utils/individualApiFactories'
+import {
+  getIndividualOfferFactory,
+  individualOfferContextValuesFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OFFER_WIZARD_STEP_IDS } from '../constants'

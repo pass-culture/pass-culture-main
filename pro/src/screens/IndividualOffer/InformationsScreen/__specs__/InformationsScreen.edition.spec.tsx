@@ -23,10 +23,8 @@ import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import * as pcapi from 'repository/pcapi/pcapi'
 import {
-  getIndividualOfferFactory,
   getOfferVenueFactory,
-} from 'utils/apiFactories'
-import {
+  getIndividualOfferFactory,
   categoryFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,

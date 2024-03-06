@@ -10,8 +10,10 @@ import Notification from 'components/Notification/Notification'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
-import { getIndividualOfferFactory } from 'utils/apiFactories'
-import { priceCategoryFactory } from 'utils/individualApiFactories'
+import {
+  getIndividualOfferFactory,
+  priceCategoryFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {

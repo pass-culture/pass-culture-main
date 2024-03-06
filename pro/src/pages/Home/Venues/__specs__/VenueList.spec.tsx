@@ -2,9 +2,9 @@ import { screen, within } from '@testing-library/react'
 import React from 'react'
 
 import {
-  defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
-} from 'utils/apiFactories'
+  defaultGetOffererResponseModel,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { VenueList, VenueListProps } from '../VenueList'

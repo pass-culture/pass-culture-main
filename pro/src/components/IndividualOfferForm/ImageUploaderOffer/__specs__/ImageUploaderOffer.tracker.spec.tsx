@@ -7,8 +7,10 @@ import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { IndividualOfferContext } from 'context/IndividualOfferContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { getIndividualOfferFactory } from 'utils/apiFactories'
-import { individualOfferContextValuesFactory } from 'utils/individualApiFactories'
+import {
+  getIndividualOfferFactory,
+  individualOfferContextValuesFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ImageUploaderOffer, {

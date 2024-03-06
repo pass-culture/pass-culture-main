@@ -25,12 +25,10 @@ import {
   getIndividualOfferUrl,
 } from 'core/Offers/utils/getIndividualOfferUrl'
 import { ButtonLink } from 'ui-kit'
-import {
-  getIndividualOfferFactory,
-  getOfferVenueFactory,
-} from 'utils/apiFactories'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import {
+  getOfferVenueFactory,
+  getIndividualOfferFactory,
   getOfferStockFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,

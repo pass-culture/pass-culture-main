@@ -7,11 +7,11 @@ import { Audience } from 'core/shared'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as bookingDetailsAdapter from 'screens/Bookings/BookingsRecapTable/BookingsTable/getCollectiveBookingAdapter'
 import * as filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
-import { bookingRecapFactory } from 'utils/apiFactories'
 import {
   collectiveBookingByIdFactory,
   collectiveBookingFactory,
 } from 'utils/collectiveApiFactories'
+import { bookingRecapFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import BookingsRecapTable from '../BookingsRecapTable'

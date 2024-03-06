@@ -5,8 +5,8 @@ import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetOfferStockResponseModel, StocksOrderedBy } from 'apiClient/v1'
-import { getIndividualOfferFactory } from 'utils/apiFactories'
 import {
+  getIndividualOfferFactory,
   getOfferStockFactory,
   priceCategoryFactory,
 } from 'utils/individualApiFactories'

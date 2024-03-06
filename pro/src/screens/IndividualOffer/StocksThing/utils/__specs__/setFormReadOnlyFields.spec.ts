@@ -1,6 +1,8 @@
 import { GetIndividualOfferResponseModel, OfferStatus } from 'apiClient/v1'
-import { getIndividualOfferFactory } from 'utils/apiFactories'
-import { getOfferStockFactory } from 'utils/individualApiFactories'
+import {
+  getIndividualOfferFactory,
+  getOfferStockFactory,
+} from 'utils/individualApiFactories'
 
 import { StockThingFormValues } from '../../types'
 import setFormReadOnlyFields from '../setFormReadOnlyFields'

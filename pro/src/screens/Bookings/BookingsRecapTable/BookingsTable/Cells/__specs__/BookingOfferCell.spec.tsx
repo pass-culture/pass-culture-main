@@ -2,8 +2,8 @@ import { screen } from '@testing-library/react'
 import { add } from 'date-fns'
 import React from 'react'
 
-import { bookingRecapFactory } from 'utils/apiFactories'
 import { collectiveBookingFactory } from 'utils/collectiveApiFactories'
+import { bookingRecapFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { BookingOfferCell, BookingOfferCellProps } from '../BookingOfferCell'

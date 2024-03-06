@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
-import { getOfferVenueFactory } from 'utils/apiFactories'
+import { getOfferVenueFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import PreFilters, { PreFiltersProps } from '../../PreFilters'
