@@ -1,66 +1,51 @@
-import { Navigate, useParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 
-import { OfferStatus } from 'apiClient/v1'
-import { AppLayout } from 'app/AppLayout'
-import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
-import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
-import { useGetVenue } from 'core/Venue/adapters/getVenueAdapter'
-import { useGetVenueLabels } from 'core/Venue/adapters/getVenueLabelsAdapter'
-import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
-import { useAdapter } from 'hooks'
-import useNotification from 'hooks/useNotification'
+import { api } from 'apiClient/api'
 import {
-  getFilteredOffersAdapter,
-  Payload,
-} from 'pages/Offers/adapters/getFilteredOffersAdapter'
+  GetOffererResponseModel,
+  GetVenueResponseModel,
+  ListOffersOfferResponseModel,
+  OfferStatus,
+  ProviderResponse,
+  VenueProviderResponse,
+  VenueTypeResponseModel,
+} from 'apiClient/v1'
+import { AppLayout } from 'app/AppLayout'
+import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
+import { serializeApiFilters } from 'core/Offers/utils'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { serializeProvidersApi } from 'core/Venue/adapters/getProviderAdapter/serializers'
+import { SelectOption } from 'custom_types/form'
+import useNotification from 'hooks/useNotification'
 import Spinner from 'ui-kit/Spinner/Spinner'
+import { sortByLabel } from 'utils/strings'
 
-import useGetProviders from '../../core/Venue/adapters/getProviderAdapter/useGetProvider'
-import useGetVenueProviders from '../../core/Venue/adapters/getVenueProviderAdapter/useGetVenueProvider'
+import * as pcapi from '../../repository/pcapi/pcapi'
 
 import { offerHasBookingQuantity } from './offerHasBookingQuantity'
 import { setInitialFormValues } from './setInitialFormValues'
 import { VenueSettingsFormScreen } from './VenueSettingsScreen'
 
 const VenueSettings = (): JSX.Element | null => {
-  const homePath = '/accueil'
+  const [isLoading, setIsLoading] = useState(false)
+  const [venue, setVenue] = useState<GetVenueResponseModel>()
+  const [venueTypes, setVenueTypes] = useState<SelectOption[]>()
+  const [venueLabels, setVenueLabels] = useState<SelectOption[]>()
+  const [offerer, setOfferer] = useState<GetOffererResponseModel>()
+  const [providers, setProviders] = useState<ProviderResponse[]>()
+  const [venueProviders, setVenueProviders] =
+    useState<VenueProviderResponse[]>()
+  const [venueOffers, setVenueOffers] = useState<{
+    offers: ListOffersOfferResponseModel[]
+  }>()
+
   const { offererId, venueId } = useParams<{
     offererId: string
     venueId: string
   }>()
   const notify = useNotification()
-
-  // TODO: refactor with the new loading pattern once we know which one to use
-  const {
-    isLoading: isLoadingVenue,
-    error: errorVenue,
-    data: venue,
-  } = useGetVenue(Number(venueId))
-  const {
-    isLoading: isLoadingVenueLabels,
-    error: errorVenueLabels,
-    data: venueLabels,
-  } = useGetVenueLabels()
-  const {
-    isLoading: isLoadingVenueTypes,
-    error: errorVenueTypes,
-    data: venueTypes,
-  } = useGetVenueTypes()
-  const {
-    isLoading: isLoadingOfferer,
-    error: errorOfferer,
-    data: offerer,
-  } = useGetOfferer(offererId)
-  const {
-    isLoading: isLoadingProviders,
-    error: errorProviders,
-    data: providers,
-  } = useGetProviders(Number(venueId))
-  const {
-    isLoading: isLoadingVenueProviders,
-    error: errorVenueProviders,
-    data: venueProviders,
-  } = useGetVenueProviders(Number(venueId))
+  const navigate = useNavigate()
 
   const apiFilters = {
     ...DEFAULT_SEARCH_FILTERS,
@@ -68,51 +53,111 @@ const VenueSettings = (): JSX.Element | null => {
     venueId: venue?.id.toString() ?? '',
   }
 
-  const { isLoading: isLoadingVenueOffers, data: venueOffers } = useAdapter<
-    Payload,
-    Payload
-  >(() => getFilteredOffersAdapter(apiFilters))
+  useEffect(() => {
+    setIsLoading(true)
+
+    async function getAllData() {
+      try {
+        const {
+          nameOrIsbn,
+          offererId,
+          venueId,
+          categoryId,
+          status,
+          creationMode,
+          periodBeginningDate,
+          periodEndingDate,
+        } = serializeApiFilters(apiFilters)
+
+        const [
+          getVenue,
+          getVenueTypes,
+          getVenueLabels,
+          getOfferer,
+          getProviders,
+          getListVenueProviders,
+          getListOffers,
+        ] = await Promise.all([
+          api.getVenue(Number(venueId)),
+          api.getVenueTypes(),
+          api.fetchVenueLabels(),
+          api.getOfferer(Number(offererId)),
+          pcapi.loadProviders(Number(venueId)),
+          api.listVenueProviders(Number(venueId)),
+          api.listOffers(
+            nameOrIsbn,
+            offererId,
+            status,
+            venueId,
+            categoryId,
+            creationMode,
+            periodBeginningDate,
+            periodEndingDate
+          ),
+        ])
+
+        setVenue(getVenue)
+
+        const wordToNotSort = getVenueTypes.filter(
+          (type) => type.label === 'Autre'
+        )
+        const sortedTypes = sortByLabel(
+          getVenueTypes.filter((type) => wordToNotSort.indexOf(type) === -1)
+        ).concat(wordToNotSort)
+        setVenueTypes(
+          sortedTypes.map((type: VenueTypeResponseModel) => ({
+            value: type.id,
+            label: type.label,
+          }))
+        )
+
+        setVenueLabels(
+          getVenueLabels.map((type) => ({
+            value: type.id.toString(),
+            label: type.label,
+          }))
+        )
+
+        setOfferer(getOfferer)
+
+        setProviders(serializeProvidersApi(getProviders))
+
+        setVenueProviders(getListVenueProviders.venue_providers)
+
+        setVenueOffers({ offers: getListOffers })
+      } catch (error) {
+        navigate('/accueil')
+        notify.error(GET_DATA_ERROR_MESSAGE)
+      }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    getAllData()
+    setIsLoading(false)
+  }, [
+    venueId,
+    offererId,
+    apiFilters.nameOrIsbn,
+    apiFilters.offererId,
+    apiFilters.venueId,
+    apiFilters.categoryId,
+    apiFilters.creationMode,
+    apiFilters.periodBeginningDate,
+    apiFilters.periodEndingDate,
+  ])
 
   const hasBookingQuantity = offerHasBookingQuantity(venueOffers?.offers)
 
-  if (
-    errorOfferer ||
-    errorVenue ||
-    errorVenueLabels ||
-    errorVenueTypes ||
-    errorVenueProviders ||
-    errorProviders
-  ) {
-    const loadingError = [
-      errorOfferer,
-      errorVenue,
-      errorVenueLabels,
-      errorVenueTypes,
-    ].find((error) => error !== undefined)
-    if (loadingError !== undefined) {
-      notify.error(loadingError.message)
-      return <Navigate to={homePath} />
-    }
-    /* istanbul ignore next: Never */
-    return null
-  }
-
-  if (
-    isLoadingVenue ||
-    isLoadingVenueLabels ||
-    isLoadingVenueTypes ||
-    isLoadingProviders ||
-    isLoadingVenueProviders ||
-    isLoadingOfferer ||
-    isLoadingVenueOffers ||
-    !offerer ||
-    !venue
-  ) {
+  if (isLoading) {
     return (
       <AppLayout>
         <Spinner />
       </AppLayout>
     )
+  }
+
+  if (!venue || !offerer || !venueLabels || !venueTypes) {
+    return null
   }
 
   return (

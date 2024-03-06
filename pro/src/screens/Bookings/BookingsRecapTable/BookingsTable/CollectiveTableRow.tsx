@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import { useEffect, useRef, useState } from 'react'
 
+import { api } from 'apiClient/api'
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/CollectiveBookingByIdResponseModel'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
@@ -18,7 +19,6 @@ import {
 } from './Cells'
 import { CollectiveBookingStatusCell } from './Cells/CollectiveBookingStatusCell'
 import CollectiveBookingDetails from './CollectiveBookingDetails'
-import getCollectiveBookingAdapter from './getCollectiveBookingAdapter'
 
 export interface CollectiveTableRowProps {
   booking: CollectiveBookingResponseModel
@@ -42,12 +42,12 @@ export const CollectiveTableRow = ({
   useEffect(() => {
     const fetchBookingDetails = async () => {
       setIsLoading(true)
-      const bookingResponse = await getCollectiveBookingAdapter(
+
+      const resultBooking = await api.getCollectiveBookingById(
         Number(booking.bookingId)
       )
-      if (bookingResponse.isOk) {
-        setBookingDetails(bookingResponse.payload)
-      }
+      setBookingDetails(resultBooking)
+
       setIsLoading(false)
     }
 

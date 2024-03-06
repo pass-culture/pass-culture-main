@@ -26,6 +26,8 @@ const CollectiveBookingDetails = ({
 }: CollectiveBookingDetailsProps) => {
   const { educationalInstitution, educationalRedactor } = bookingDetails
 
+  console.log('toto ', educationalInstitution)
+
   return (
     <>
       <div className={styles.container}>
