@@ -177,7 +177,7 @@ export const CollectiveDataEdition = ({
             statuses={statuses}
             domains={domains}
             culturalPartners={culturalPartners}
-            venueId={venueId}
+            venue={venue}
             venueCollectiveData={venueCollectiveData}
             adageVenueCollectiveData={adageVenueCollectiveData}
           />
