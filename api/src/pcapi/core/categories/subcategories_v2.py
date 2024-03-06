@@ -116,8 +116,8 @@ class GenreType(Enum):
 
 class NativeCategory(Enum):
     LIVRES_PAPIER = "Livres papier"
-    LIVRES_NUMERIQUE_ET_AUDIO = "Livres numérique & audio"
-    LIVRES_AUDIO_PHYSIQUES = "Livres audio physiques"
+    LIVRES_NUMERIQUE_ET_AUDIO = "E-books"
+    LIVRES_AUDIO_PHYSIQUES = "Livres audio"
     ACHAT_LOCATION_INSTRUMENT = "Achat & location d'instrument"
     PARTITIONS_DE_MUSIQUE = "Partitions de musique"
     VISITES_CULTURELLES_EN_LIGNE = "Visites culturelles en ligne"
@@ -157,7 +157,7 @@ class NativeCategory(Enum):
     CARTES_JEUNES = "Cartes jeunes"
     EVENEMENTS_CINEMA = "Evènements cinéma"
     ARTS_VISUELS = "Arts visuels"
-    FESTIVAL_DU_LIVRE = "Festivals du livre"
+    FESTIVAL_DU_LIVRE = "Évènements autour du livre"
     PRATIQUE_ARTISTIQUE_EN_LIGNE = "Pratique artistique en ligne"
     DEPRECIEE = "Dépréciée"
 
