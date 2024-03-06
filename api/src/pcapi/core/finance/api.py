@@ -3795,7 +3795,6 @@ def create_finance_incident(
 def _create_finance_events_from_incident(
     booking_finance_incident: models.BookingFinanceIncident,
     incident_validation_date: datetime.datetime | None = None,
-    commit: bool = True,
 ) -> list[models.FinanceEvent]:
     finance_events = []
     assert booking_finance_incident.incident
@@ -3828,8 +3827,7 @@ def _create_finance_events_from_incident(
                 )
             )
     db.session.add_all(finance_events)
-    if commit:
-        db.session.commit()
+    db.session.flush()
 
     return finance_events
 
@@ -3839,9 +3837,7 @@ def validate_finance_incident(finance_incident: models.FinanceIncident, force_de
     finance_events = []
     for booking_incident in finance_incident.booking_finance_incidents:
         finance_events.extend(
-            _create_finance_events_from_incident(
-                booking_incident, incident_validation_date=incident_validation_date, commit=False
-            )
+            _create_finance_events_from_incident(booking_incident, incident_validation_date=incident_validation_date)
         )
         if not booking_incident.is_partial:
             if booking_incident.booking:
