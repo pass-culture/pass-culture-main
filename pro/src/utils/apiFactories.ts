@@ -3,6 +3,7 @@ import {
   BankAccountApplicationStatus,
   BankAccountResponseModel,
   BookingRecapResponseModel,
+  BookingRecapResponseStockModel,
   GetIndividualOfferResponseModel,
   GetOfferManagingOffererResponseModel,
   GetOfferVenueResponseModel,
@@ -106,13 +107,24 @@ export const getOfferVenueFactory = (
   }
 }
 
-// TODO factories: should remove customOffer as an argument
-export const bookingRecapFactory = (
-  customBookingRecap = {},
-  customOffer = {}
-): BookingRecapResponseModel => {
-  const offer = getIndividualOfferFactory(customOffer)
+export const bookingRecapStockFactory = (
+  customBookingRecapStock: Partial<BookingRecapResponseStockModel> = {}
+): BookingRecapResponseStockModel => {
+  const offer = getIndividualOfferFactory()
 
+  return {
+    offerId: offer.id,
+    offerName: offer.name,
+    offerIsEducational: false,
+    stockIdentifier: 1234,
+    offerIsbn: '123456789',
+    ...customBookingRecapStock,
+  }
+}
+
+export const bookingRecapFactory = (
+  customBookingRecap: Partial<BookingRecapResponseModel> = {}
+): BookingRecapResponseModel => {
   return {
     beneficiary: {
       email: 'user@example.com',
@@ -131,13 +143,7 @@ export const bookingRecapFactory = (
       },
     ],
     bookingToken: `TOKEN${bookingId++}`,
-    stock: {
-      offerId: offer.id,
-      offerName: offer.name,
-      offerIsEducational: false,
-      stockIdentifier: 1234,
-      offerIsbn: '123456789',
-    },
+    stock: bookingRecapStockFactory(),
     ...customBookingRecap,
   }
 }
