@@ -54,8 +54,8 @@ class SaveVenueBankInformationsTest:
                 status=GraphQLApplicationStates.accepted.value,
                 application_id=1,
                 dossier_id="2",
-                iban="XXX",
-                bic="YYY",
+                iban="FR7630007000111234567890144",
+                bic="SOGEFRPP",
                 updated_at=datetime.utcnow().isoformat(),
                 dms_token=None,
                 error_annotation_id="Q2hhbXAtOTE1NDg5",
@@ -73,8 +73,8 @@ class SaveVenueBankInformationsTest:
                 status=GraphQLApplicationStates.accepted.value,
                 application_id=1,
                 dossier_id="2",
-                iban="XXX",
-                bic="YYY",
+                iban="FR7630007000111234567890144",
+                bic="SOGEFRPP",
                 updated_at=datetime.utcnow().isoformat(),
                 dms_token="1234567890abcdef",
                 error_annotation_id="Q2hhbXAtOTE1NDg5",
@@ -214,8 +214,8 @@ class SaveVenueBankInformationsTest:
             venue_with_accpeted_bank_info = offerers_factories.VenueFactory(pricing_point="self")
             bank_information = finance_factories.BankInformationFactory(
                 applicationId=8,
-                bic="SCROOGEBANK",
-                iban="FR8888888888888888888888888",
+                bic="BICAGRIFRPP",
+                iban="FR7630006000011234567890189",
                 venue=venue_with_accpeted_bank_info,
             )
             application_raw_data = dms_creators.get_bank_info_response_procedure_v4(
@@ -237,8 +237,8 @@ class SaveVenueBankInformationsTest:
         def test_update_bank_info_with_draft_application(self, mock_archive_dossier, mock_update_text_annotation, app):
             venue_with_accpeted_bank_info = offerers_factories.VenueFactory(pricing_point="self")
             finance_factories.BankInformationFactory(
-                bic="SCROOGEBANK",
-                iban="FR8888888888888888888888888",
+                bic="BICAGRIFRPP",
+                iban="FR7630006000011234567890189",
                 venue=venue_with_accpeted_bank_info,
                 status=finance_models.BankInformationStatus.DRAFT,
             )
@@ -805,6 +805,8 @@ class DSV5InOldBankInformationsJourneyTest:
 class NewBankAccountJourneyTest:
     dsv4_application_id = 9
     dsv5_application_id = 14742654
+    b64_encoded_application_id = "RG9zc2llci0xNDc0MjY1NA=="
+    error_annotation_id = "Q2hhbXAtMzYzMDA5NQ=="
 
     @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
     def test_DSv4_is_handled(self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client):
@@ -1687,3 +1689,39 @@ class NewBankAccountJourneyTest:
         assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
 
         assert len(mails_testing.outbox) == 0
+
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
+    @pytest.mark.parametrize(
+        "fake_iban,fake_bic",
+        [
+            ("XR7630006000011234567890189", None),
+            (None, "FAKEBICIFRPX"),
+        ],
+    )
+    def test_validation_on_iban_and_bic(
+        self, mock_archive_dossier, mock_update_text_annotation, mock_dms_graphql_client, fake_iban, fake_bic
+    ):
+        siret = "85331845900049"
+        siren = siret[:9]
+        venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
+        offerers_factories.VirtualVenueFactory(managingOfferer=venue.managingOfferer)
+
+        if fake_iban:
+            mock_dms_graphql_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
+                state=GraphQLApplicationStates.draft.value, iban=fake_iban
+            )
+        elif fake_bic:
+            mock_dms_graphql_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
+                state=GraphQLApplicationStates.draft.value, bic=fake_bic
+            )
+
+        update_ds_applications_for_procedure(procedure_number=settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
+
+        assert not finance_models.BankAccount.query.all()
+        if fake_iban:
+            message = "L'IBAN n'est pas valide"
+        elif fake_bic:
+            message = "Le BIC n'est pas valide"
+        mock_update_text_annotation.assert_any_call(
+            dossier_id=self.b64_encoded_application_id, annotation_id=self.error_annotation_id, message=message
+        )
