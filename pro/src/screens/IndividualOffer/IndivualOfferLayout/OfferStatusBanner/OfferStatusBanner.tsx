@@ -6,6 +6,7 @@ import { CalloutVariant } from 'components/Callout/types'
 import { Banner } from 'ui-kit'
 import { CGU_URL } from 'utils/config'
 
+import styles from './OfferStatusBanner.module.scss'
 interface OfferStatusBannerProps {
   status: OfferStatus
 }
@@ -30,7 +31,10 @@ const OfferStatusBanner = ({ status }: OfferStatusBannerProps): JSX.Element => {
     )
   } else if (status === OfferStatus.PENDING) {
     return (
-      <Callout variant={CalloutVariant.INFO}>
+      <Callout
+        className={styles['callout-email-adress']}
+        variant={CalloutVariant.INFO}
+      >
         Votre offre est en cours de validation par l’équipe du pass Culture.
         <b>
           {' '}
