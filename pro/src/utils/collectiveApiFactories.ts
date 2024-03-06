@@ -113,15 +113,13 @@ export const getCollectiveOfferTemplateFactory = (
   ...customCollectiveOfferTemplate,
 })
 
-// TODO factories: remove customOfferer as an argument
 export const getCollectiveOfferVenueFactory = (
-  customGetCollectiveOfferVenue: Partial<GetCollectiveOfferVenueResponseModel> = {},
-  customOfferer: GetCollectiveOfferManagingOffererResponseModel = getCollectiveOfferManagingOffererFactory()
+  customGetCollectiveOfferVenue: Partial<GetCollectiveOfferVenueResponseModel> = {}
 ): GetCollectiveOfferVenueResponseModel => {
   const currentVenueId = venueId++
   return {
     name: `Le nom du lieu ${currentVenueId}`,
-    managingOfferer: customOfferer,
+    managingOfferer: getCollectiveOfferManagingOffererFactory(),
     publicName: 'Mon Lieu',
     id: currentVenueId,
     departementCode: '973',
