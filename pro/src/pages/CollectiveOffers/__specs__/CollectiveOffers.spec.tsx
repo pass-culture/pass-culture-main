@@ -11,10 +11,10 @@ import {
 } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils'
+import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { CollectiveOffers } from '../CollectiveOffers'
-import { collectiveOfferFactory } from '../utils/collectiveOffersFactories'
 
 const proVenues = [
   {

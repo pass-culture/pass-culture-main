@@ -17,9 +17,9 @@ import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared'
 import * as useAnalytics from 'hooks/useAnalytics'
 import {
-  collectiveOfferFactory,
   listOffersVenueFactory,
-} from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
+  collectiveOfferFactory,
+} from 'utils/collectiveApiFactories'
 import { getToday } from 'utils/date'
 import {
   listOffersStockFactory,

@@ -24,7 +24,7 @@ import {
 } from 'core/Offers/constants'
 import { Audience } from 'core/shared'
 import * as useNotification from 'hooks/useNotification'
-import { collectiveOfferFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
+import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
   getOfferManagingOffererFactory,

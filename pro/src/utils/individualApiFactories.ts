@@ -33,7 +33,8 @@ import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import { IndividualOfferContextValues } from 'context/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
-import { listOffersVenueFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
+
+import { listOffersVenueFactory } from './collectiveApiFactories'
 
 let offerId = 1
 let stockId = 1
