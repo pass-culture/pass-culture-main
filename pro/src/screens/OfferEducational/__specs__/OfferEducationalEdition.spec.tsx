@@ -45,11 +45,9 @@ describe('screens | OfferEducational', () => {
     ]
     props = {
       ...props,
-      offer: getCollectiveOfferFactory(
-        undefined,
-        undefined,
-        getCollectiveOfferVenueFactory({})
-      ),
+      offer: getCollectiveOfferFactory({
+        venue: getCollectiveOfferVenueFactory(),
+      }),
       mode: Mode.READ_ONLY,
     }
     renderWithProviders(<OfferEducational {...props} />)

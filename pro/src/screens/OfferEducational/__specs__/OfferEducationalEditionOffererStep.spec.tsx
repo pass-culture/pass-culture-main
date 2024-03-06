@@ -49,22 +49,18 @@ describe('screens | OfferEducational : edition offerer step', () => {
           ]),
         },
       ]),
-      offer: getCollectiveOfferFactory(
-        {
-          id: thirdVenueId,
-          venue: {
-            ...getCollectiveOfferVenueFactory({
-              id: thirdVenueId,
-              managingOfferer: getCollectiveOfferManagingOffererFactory({
-                id: secondOffererId,
-              }),
-            }),
+      offer: getCollectiveOfferFactory({
+        id: thirdVenueId,
+        venue: {
+          ...getCollectiveOfferVenueFactory({
             id: thirdVenueId,
-          },
+            managingOfferer: getCollectiveOfferManagingOffererFactory({
+              id: secondOffererId,
+            }),
+          }),
+          id: thirdVenueId,
         },
-        undefined,
-        getCollectiveOfferVenueFactory({ id: secondOffererId })
-      ),
+      }),
     }
 
     renderWithProviders(<OfferEducational {...props} />)
@@ -106,22 +102,18 @@ describe('screens | OfferEducational : edition offerer step', () => {
           ]),
         },
       ]),
-      offer: getCollectiveOfferFactory(
-        {
-          id: thirdVenueId,
-          venue: {
-            ...getCollectiveOfferVenueFactory({
-              managingOfferer: getCollectiveOfferManagingOffererFactory({
-                id: secondOffererId,
-              }),
+      offer: getCollectiveOfferFactory({
+        id: thirdVenueId,
+        venue: {
+          ...getCollectiveOfferVenueFactory({
+            managingOfferer: getCollectiveOfferManagingOffererFactory({
+              id: secondOffererId,
             }),
-            id: thirdVenueId,
-          },
-          lastBookingStatus: CollectiveBookingStatus.USED,
+          }),
+          id: thirdVenueId,
         },
-        undefined,
-        getCollectiveOfferVenueFactory({})
-      ),
+        lastBookingStatus: CollectiveBookingStatus.USED,
+      }),
     }
     renderWithProviders(<OfferEducational {...props} />)
 
