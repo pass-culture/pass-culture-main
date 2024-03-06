@@ -46,7 +46,9 @@ const renderVenueEdition = (
     </Routes>,
     {
       storeOverrides,
-      initialRouterEntries: [`/structures/${offererId}/lieux/${venueId}`],
+      initialRouterEntries: [
+        `/structures/${offererId}/lieux/${venueId}/edition`,
+      ],
       ...options,
     }
   )

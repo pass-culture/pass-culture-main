@@ -147,7 +147,7 @@ export const VenueEditionHeader = ({
           variant={ButtonVariant.TERNARY}
           icon={fullParametersIcon}
           link={{
-            to: `/structures/${offerer.id}/lieux/${venue.id}/parametres`,
+            to: `/structures/${venue.managingOfferer.id}/lieux/${venue.id}/parametres`,
           }}
         >
           Paramètres de l’activité
