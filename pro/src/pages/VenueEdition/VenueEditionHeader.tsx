@@ -143,8 +143,6 @@ export const VenueEditionHeader = ({
           </div>
         )}
 
-        <hr className={styles['separator']} />
-
         <ButtonLink
           variant={ButtonVariant.TERNARY}
           icon={fullParametersIcon}
@@ -155,7 +153,7 @@ export const VenueEditionHeader = ({
           Paramètres de l’activité
         </ButtonLink>
 
-        {imageValues.imageUrl && (
+        {imageValues.originalImageUrl && (
           <ButtonImageEdit
             mode={UploaderModeEnum.VENUE}
             initialValues={imageValues}

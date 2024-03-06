@@ -93,8 +93,8 @@ export const VenueSettingsForm = ({
 
         {!venue.isVirtual && (
           <FormLayout.Section
-            title="Adresse du lieu"
-            description="Cette adresse sera utilisée pour permettre aux jeunes de géolocaliser votre lieu."
+            title="Adresse de l’activité"
+            description="Cette adresse sera utilisée pour permettre aux jeunes de géolocaliser votre activité. Elle ne sera affichée que si vous accueillez du public à cette adresse."
           >
             <FormLayout.Row>
               <AddressSelect />
@@ -102,14 +102,7 @@ export const VenueSettingsForm = ({
           </FormLayout.Section>
         )}
 
-        <FormLayout.Section
-          title="Activité principale"
-          description={
-            venue.isVirtual
-              ? undefined
-              : 'Ces informations seront affichées dans votre page lieu sur l’application pass Culture (sauf pour les lieux administratifs). Elles permettront aux jeunes d’en savoir plus sur votre lieu.'
-          }
-        >
+        <FormLayout.Section title="Activité principale">
           <FormLayout.Row>
             <Select
               options={[
