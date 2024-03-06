@@ -182,18 +182,6 @@ export const collectiveBookingFactory = (
   }
 }
 
-// TODO factories: type this
-export const defaultCollectiveBookingStock = {
-  bookingLimitDatetime: new Date().toISOString(),
-  eventBeginningDatetime: new Date().toISOString(),
-  numberOfTickets: 1,
-  offerIdentifier: '1',
-  offerId: 1,
-  offerIsEducational: true,
-  offerIsbn: null,
-  offerName: 'ma super offre collective',
-}
-
 export const collectiveBookingByIdFactory = (
   customCollectiveBookingById?: Partial<CollectiveBookingByIdResponseModel>
 ): CollectiveBookingByIdResponseModel => {

@@ -15,8 +15,8 @@ import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import {
   collectiveBookingByIdFactory,
+  collectiveBookingCollectiveStockFactory,
   collectiveBookingFactory,
-  defaultCollectiveBookingStock,
 } from 'utils/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
@@ -246,10 +246,9 @@ describe('collective timeline', () => {
     it('should render steps for confirmed booking when event is not passed yet', () => {
       const bookingRecap = collectiveBookingFactory({
         bookingStatus: BOOKING_STATUS.CONFIRMED,
-        stock: {
-          ...defaultCollectiveBookingStock,
+        stock: collectiveBookingCollectiveStockFactory({
           eventBeginningDatetime: addDays(new Date(), 1).toISOString(),
-        },
+        }),
       })
       renderCollectiveTimeLine(bookingRecap, bookingDetails)
       expect(
@@ -266,10 +265,9 @@ describe('collective timeline', () => {
     it('should render steps for confirmed booking when event is passed', () => {
       const bookingRecap = collectiveBookingFactory({
         bookingStatus: BOOKING_STATUS.CONFIRMED,
-        stock: {
-          ...defaultCollectiveBookingStock,
+        stock: collectiveBookingCollectiveStockFactory({
           eventBeginningDatetime: addDays(new Date(), -2).toISOString(),
-        },
+        }),
       })
       renderCollectiveTimeLine(bookingRecap, bookingDetails)
       expect(
