@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
 import {
   generatePath,
   Navigate,
@@ -9,10 +11,12 @@ import {
 
 import { AppLayout } from 'app/AppLayout'
 import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
+import { SAVED_OFFERER_ID_KEY } from 'core/shared'
 import { useGetVenue } from 'core/Venue/adapters/getVenueAdapter'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import useNotification from 'hooks/useNotification'
 import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
+import { updateSelectedOffererId } from 'store/user/reducer'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import Tabs, { Tab } from 'ui-kit/Tabs/Tabs'
 
@@ -28,6 +32,7 @@ export const VenueEdition = (): JSX.Element | null => {
   }>()
   const notify = useNotification()
   const location = useLocation()
+  const dispatch = useDispatch()
 
   // TODO: refactor with the new loading pattern once we know which one to use
   const {
@@ -46,6 +51,13 @@ export const VenueEdition = (): JSX.Element | null => {
     error: errorOfferer,
     data: offerer,
   } = useGetOfferer(offererId)
+
+  useEffect(() => {
+    if (offererId) {
+      localStorage.setItem(SAVED_OFFERER_ID_KEY, offererId)
+      dispatch(updateSelectedOffererId(Number(offererId)))
+    }
+  }, [offererId, dispatch])
 
   if (errorOfferer || errorVenue || errorVenueTypes) {
     const loadingError = [errorOfferer, errorVenue, errorVenueTypes].find(
