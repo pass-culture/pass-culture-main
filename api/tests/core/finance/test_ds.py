@@ -8,6 +8,8 @@ import pytest
 from pcapi import settings
 from pcapi.connectors.dms import factories as ds_factories
 from pcapi.connectors.dms import models as ds_models
+from pcapi.connectors.dms.models import GraphQLApplicationStates
+from pcapi.connectors.dms.models import LatestDmsImport
 from pcapi.core.finance.ds import MARK_WITHOUT_CONTINUATION_MOTIVATION
 from pcapi.core.finance.ds import import_ds_bank_information_applications
 from pcapi.core.finance.ds import mark_without_continuation_applications
@@ -19,12 +21,14 @@ from pcapi.core.finance.models import BankAccountApplicationStatus
 from pcapi.core.finance.models import BankInformation
 from pcapi.core.finance.models import BankInformationStatus
 from pcapi.core.history import models as history_models
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers.factories import OffererFactory
 from pcapi.core.offerers.factories import VenueBankAccountLinkFactory
 from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.offerers.factories import VenueReimbursementPointLinkFactory
 from pcapi.core.offerers.models import VenueReimbursementPointLink
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 
 from tests.connector_creators import demarches_simplifiees_creators as ds_creators
 
@@ -108,6 +112,48 @@ class ImportDSBankInformationApplicationsTest:
         import_ds_bank_information_applications(procedure_number=settings.DMS_VENUE_PROCEDURE_ID_V4)
 
         assert not latest_import.isProcessing
+
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.execute_query")
+    @patch("pcapi.use_cases.save_venue_bank_informations.update_demarches_simplifiees_text_annotations")
+    @patch("pcapi.use_cases.save_venue_bank_informations.archive_dossier")
+    def test_if_an_import_issue_an_error_it_doesnt_get_stuck_in_import_state(
+        self, mock_archive_dossier, mock_update_text_annotation, mock_graphql_client
+    ):
+        assert not LatestDmsImport.query.all()
+        siret = "85331845900049"
+        siren = siret[:9]
+        offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
+
+        mock_graphql_client.return_value = ds_creators.get_bank_info_response_procedure_v5(
+            state=GraphQLApplicationStates.draft.value, application_id=1
+        )
+        import_ds_bank_information_applications(procedure_number=settings.DS_BANK_ACCOUNT_PROCEDURE_ID)
+
+        first_import = LatestDmsImport.query.first()
+        assert first_import.isProcessing is False
+
+        # One hour later...
+
+        siret_2 = "96331845900050"
+        siren = siret_2[:9]
+        offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
+
+        # Mock a faulty application
+        mock_graphql_client.return_value = ds_creators.get_bank_info_response_procedure_v5(
+            state=GraphQLApplicationStates.draft.value,
+            bic="APOEBPOE:4AUIE APEAÉPSTEOBSTP4B34OBEPAÉDJT",
+            application_id=2,
+            siret=siret_2,
+        )
+        import_ds_bank_information_applications(procedure_number=settings.DS_BANK_ACCOUNT_PROCEDURE_ID)
+
+        latest_imports = LatestDmsImport.query.order_by(LatestDmsImport.id).all()
+
+        assert latest_imports[0].id == first_import.id
+        assert latest_imports[0].isProcessing == first_import.isProcessing == False
+
+        assert latest_imports[1].isProcessing is False
 
 
 @pytest.mark.usefixtures("db_session")
