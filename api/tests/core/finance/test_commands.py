@@ -187,7 +187,7 @@ def test_when_there_is_a_debit_note_to_generate_on_total_incident(app, css_font_
         newTotalAmount=-previous_incident_booking.booking.total_amount * 100,
     )
     incident_event = finance_api._create_finance_events_from_incident(
-        booking_total_incident, datetime.datetime.utcnow(), commit=True
+        booking_total_incident, datetime.datetime.utcnow()
     )
 
     finance_api.price_event(incident_event[0])
@@ -277,7 +277,7 @@ def test_when_there_is_a_debit_note_to_generate_on_partial_incident(app, css_fon
         newTotalAmount=((previous_incident_booking.booking.total_amount * 100) / 2),
     )
     incident_events = finance_api._create_finance_events_from_incident(
-        booking_partial_incident, datetime.datetime.utcnow(), commit=True
+        booking_partial_incident, datetime.datetime.utcnow()
     )
 
     for incident_event in incident_events:

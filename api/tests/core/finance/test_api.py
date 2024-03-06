@@ -1776,9 +1776,7 @@ def test_generate_payments_file_legacy_journey():
     booking_finance_incident = factories.IndividualBookingFinanceIncidentFactory(
         booking=incident_booking, newTotalAmount=1000
     )
-    incident_events = api._create_finance_events_from_incident(
-        booking_finance_incident, datetime.datetime.utcnow(), commit=True
-    )
+    incident_events = api._create_finance_events_from_incident(booking_finance_incident, datetime.datetime.utcnow())
 
     for event in incident_events:
         api.price_event(event)
@@ -1944,9 +1942,7 @@ def test_generate_payments_file_new_journey():
     booking_finance_incident = factories.IndividualBookingFinanceIncidentFactory(
         booking=incident_booking, newTotalAmount=1000
     )
-    incident_events = api._create_finance_events_from_incident(
-        booking_finance_incident, datetime.datetime.utcnow(), commit=True
-    )
+    incident_events = api._create_finance_events_from_incident(booking_finance_incident, datetime.datetime.utcnow())
 
     for event in incident_events:
         api.price_event(event)
@@ -2076,9 +2072,7 @@ def test_generate_invoice_file_legacy_journey():
     booking_finance_incident = factories.IndividualBookingFinanceIncidentFactory(
         booking=incident_booking, newTotalAmount=1600
     )
-    incident_events = api._create_finance_events_from_incident(
-        booking_finance_incident, datetime.datetime.utcnow(), commit=True
-    )
+    incident_events = api._create_finance_events_from_incident(booking_finance_incident, datetime.datetime.utcnow())
 
     incidents_pricings = []
     for event in incident_events:
@@ -2270,9 +2264,7 @@ def test_generate_invoice_file_new_journey():
     booking_finance_incident = factories.IndividualBookingFinanceIncidentFactory(
         booking=incident_booking, newTotalAmount=1600
     )
-    incident_events = api._create_finance_events_from_incident(
-        booking_finance_incident, datetime.datetime.utcnow(), commit=True
-    )
+    incident_events = api._create_finance_events_from_incident(booking_finance_incident, datetime.datetime.utcnow())
 
     incidents_pricings = []
     for event in incident_events:
@@ -2394,9 +2386,7 @@ class GenerateDebitNotesLegacyTest:
             booking=incident_booking1_event.booking,
             newTotalAmount=-incident_booking1_event.booking.total_amount * 100,
         )
-        incident_event = api._create_finance_events_from_incident(
-            booking_total_incident, datetime.datetime.utcnow(), commit=True
-        )
+        incident_event = api._create_finance_events_from_incident(booking_total_incident, datetime.datetime.utcnow())
 
         api.price_event(incident_event[0])
 
@@ -2440,9 +2430,7 @@ class GenerateDebitNotesTest:
             booking=incident_booking1_event.booking,
             newTotalAmount=-incident_booking1_event.booking.total_amount * 100,
         )
-        incident_event = api._create_finance_events_from_incident(
-            booking_total_incident, datetime.datetime.utcnow(), commit=True
-        )
+        incident_event = api._create_finance_events_from_incident(booking_total_incident, datetime.datetime.utcnow())
 
         api.price_event(incident_event[0])
 
@@ -3564,9 +3552,7 @@ class GenerateInvoiceHtmlLegacyTest:
             booking=incident_booking1_event.booking,
             newTotalAmount=0,
         )
-        incident_events += api._create_finance_events_from_incident(
-            booking_total_incident, datetime.datetime.utcnow(), commit=True
-        )
+        incident_events += api._create_finance_events_from_incident(booking_total_incident, datetime.datetime.utcnow())
 
         # create partial overpayment incident
         booking_partial_incident = factories.IndividualBookingFinanceIncidentFactory(
@@ -3575,7 +3561,7 @@ class GenerateInvoiceHtmlLegacyTest:
             newTotalAmount=2000,
         )
         incident_events += api._create_finance_events_from_incident(
-            booking_partial_incident, datetime.datetime.utcnow(), commit=True
+            booking_partial_incident, datetime.datetime.utcnow()
         )
 
         # create collective total overpayment incident (30 €)
@@ -3585,7 +3571,7 @@ class GenerateInvoiceHtmlLegacyTest:
             newTotalAmount=0,
         )
         incident_events += api._create_finance_events_from_incident(
-            collective_booking_total_incident, datetime.datetime.utcnow(), commit=True
+            collective_booking_total_incident, datetime.datetime.utcnow()
         )
 
         for event in incident_events:
@@ -3703,9 +3689,7 @@ class GenerateDebitNoteHtmlLegacyTest:
             booking=incident_booking1_event.booking,
             newTotalAmount=-incident_booking1_event.booking.total_amount * 100,
         )
-        incident_events += api._create_finance_events_from_incident(
-            booking_total_incident, datetime.datetime.utcnow(), commit=True
-        )
+        incident_events += api._create_finance_events_from_incident(booking_total_incident, datetime.datetime.utcnow())
 
         # create partial overpayment incident
         booking_partial_incident = factories.IndividualBookingFinanceIncidentFactory(
@@ -3716,7 +3700,7 @@ class GenerateDebitNoteHtmlLegacyTest:
             newTotalAmount=2000,
         )
         incident_events += api._create_finance_events_from_incident(
-            booking_partial_incident, datetime.datetime.utcnow(), commit=True
+            booking_partial_incident, datetime.datetime.utcnow()
         )
 
         for event in incident_events:
@@ -3795,9 +3779,7 @@ class GenerateDebitNoteHtmlTest:
             booking=incident_booking1_event.booking,
             newTotalAmount=-incident_booking1_event.booking.total_amount * 100,
         )
-        incident_events += api._create_finance_events_from_incident(
-            booking_total_incident, datetime.datetime.utcnow(), commit=True
-        )
+        incident_events += api._create_finance_events_from_incident(booking_total_incident, datetime.datetime.utcnow())
 
         # create partial overpayment incident
         booking_partial_incident = factories.IndividualBookingFinanceIncidentFactory(
@@ -3808,7 +3790,7 @@ class GenerateDebitNoteHtmlTest:
             newTotalAmount=2000,
         )
         incident_events += api._create_finance_events_from_incident(
-            booking_partial_incident, datetime.datetime.utcnow(), commit=True
+            booking_partial_incident, datetime.datetime.utcnow()
         )
 
         for event in incident_events:
@@ -3904,9 +3886,7 @@ class GenerateInvoiceHtmlTest:
             booking=incident_booking1_event.booking,
             newTotalAmount=0,
         )
-        incident_events += api._create_finance_events_from_incident(
-            booking_total_incident, datetime.datetime.utcnow(), commit=True
-        )
+        incident_events += api._create_finance_events_from_incident(booking_total_incident, datetime.datetime.utcnow())
 
         # create partial overpayment incident
         booking_partial_incident = factories.IndividualBookingFinanceIncidentFactory(
@@ -3915,7 +3895,7 @@ class GenerateInvoiceHtmlTest:
             newTotalAmount=2000,
         )
         incident_events += api._create_finance_events_from_incident(
-            booking_partial_incident, datetime.datetime.utcnow(), commit=True
+            booking_partial_incident, datetime.datetime.utcnow()
         )
 
         # create collective total overpayment incident (30 €)
@@ -3925,7 +3905,7 @@ class GenerateInvoiceHtmlTest:
             newTotalAmount=0,
         )
         incident_events += api._create_finance_events_from_incident(
-            collective_booking_total_incident, datetime.datetime.utcnow(), commit=True
+            collective_booking_total_incident, datetime.datetime.utcnow()
         )
 
         for event in incident_events:
