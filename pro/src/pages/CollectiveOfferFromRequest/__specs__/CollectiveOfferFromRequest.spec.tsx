@@ -5,11 +5,16 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as useNotification from 'hooks/useNotification'
-import { defaultCollectifOfferResponseModel } from 'utils/collectiveApiFactories'
+import {
+  getCollectiveOfferManagingOffererFactory,
+  getCollectiveOfferTemplateFactory,
+  getCollectiveOfferVenueFactory,
+} from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { CollectiveOfferFromRequest } from '../CollectiveOfferFromRequest'
 
+const offererId = 666
 const mockLogEvent = vi.fn()
 const mockNavigate = vi.fn()
 
@@ -56,10 +61,20 @@ describe('CollectiveOfferFromRequest', () => {
       error: mockNotifyError,
     }))
 
-    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue({
-      ...defaultCollectifOfferResponseModel,
-      dates: { end: new Date().toISOString(), start: new Date().toISOString() },
-    })
+    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(
+      getCollectiveOfferTemplateFactory({
+        name: 'mon offre',
+        venue: getCollectiveOfferVenueFactory({
+          managingOfferer: getCollectiveOfferManagingOffererFactory({
+            id: offererId,
+          }),
+        }),
+        dates: {
+          end: new Date().toISOString(),
+          start: new Date().toISOString(),
+        },
+      })
+    )
     vi.spyOn(api, 'getCategories').mockResolvedValue({
       categories: [],
       subcategories: [],
@@ -150,7 +165,7 @@ describe('CollectiveOfferFromRequest', () => {
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockNavigate).toHaveBeenCalledWith(
-      '/offre/collectif/1/creation?structure=1&requete=2'
+      `/offre/collectif/1/creation?structure=${offererId}&requete=2`
     )
   })
 })
