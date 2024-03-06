@@ -41,7 +41,7 @@ export const VenueEditionFormScreen = ({
         serializeEditVenueBodyModel(values, !venue.siret)
       )
 
-      navigate('/accueil')
+      navigate(`/structures/${venue.managingOfferer.id}/lieux/${venue.id}`)
 
       if (currentUser.isAdmin) {
         notify.success(PATCH_SUCCESS_MESSAGE)
