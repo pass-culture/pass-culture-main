@@ -34,8 +34,8 @@ def find_venue_at_accessibility_provider(
     city: str | None = None,
     postal_code: str | None = None,
 ) -> str | None:
-    """Try to find the entry at our accessibility provider that matches our venue
-    Returns uuid at provider
+    """Try to find the entry at acceslibre that matches our venue
+    Returns acceslibre slug (which is unique and safe according to them)
     """
     return _get_backend().find_venue_at_accessibility_provider(
         name=name,
@@ -58,12 +58,12 @@ def match_by_name(results_at_provider: list[dict[str, str]], name: str, public_n
             or public_name in name_at_provider
             or name_at_provider in public_name
         ):
-            return erp["uuid"]
+            return erp["slug"]
         if (
             fuzz.ratio(name_at_provider, name) > MATCHING_RATIO
             or fuzz.ratio(name_at_provider, public_name) > MATCHING_RATIO
         ):
-            return erp["uuid"]
+            return erp["slug"]
     return None
 
 
@@ -94,7 +94,7 @@ class TestingBackend(BaseBackend):
         city: str | None = None,
         postal_code: str | None = None,
     ) -> str | None:
-        return "11111111-2222-3333-4444-5555555555555"
+        return "mon-lieu-chez-acceslibre"
 
 
 class AcceslibreBackend(BaseBackend):
@@ -150,7 +150,7 @@ class AcceslibreBackend(BaseBackend):
             if all(v is not None for v in criterion.values()):
                 response = self._send_request(query_params=criterion)
                 if response["count"] and (
-                    uuid := match_by_name(results_at_provider=response["results"], name=name, public_name=public_name)
+                    slug := match_by_name(results_at_provider=response["results"], name=name, public_name=public_name)
                 ):
-                    return uuid
+                    return slug
         return None
