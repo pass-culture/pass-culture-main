@@ -3,6 +3,7 @@ from datetime import datetime
 import logging
 import typing
 
+import schwifty
 import sqlalchemy as sqla
 from sqlalchemy import orm as sqla_orm
 
@@ -419,6 +420,38 @@ class ImportBankAccountMixin:
     # Let mypy know this class is going to be mixed with a child of `AbstractImportBankAccount`
     application_details: ApplicationDetailNewJourney
 
+    def is_iban_valid(self) -> bool:
+        try:
+            schwifty.IBAN(self.application_details.iban)
+        except schwifty.exceptions.SchwiftyException:
+            return False
+        return True
+
+    def is_bic_valid(self) -> bool:
+        try:
+            schwifty.BIC(self.application_details.bic)
+        except schwifty.exceptions.SchwiftyException:
+            return False
+        return True
+
+    def validate_bic_and_iban(self) -> bool:
+        """
+        We can't do this checks inside a pydantic validator
+        because some buisness logic is tied to weither or not
+        the IBAN/BIC are valid.
+        If not, we need to annotate the application
+        for the compliance.
+        """
+        if not self.is_bic_valid():
+            self.annotate_application("Le BIC n'est pas valide")
+            return False
+
+        if not self.is_iban_valid():
+            self.annotate_application("L'IBAN n'est pas valide")
+            return False
+
+        return True
+
     def get_or_create_bank_account(
         self,
         offerer: offerers_models.Offerer,
@@ -631,12 +664,31 @@ class ImportBankAccountMixin:
         """
         finance_api.deprecate_venue_bank_account_links(bank_account)
 
+    def annotate_application(self, message: str) -> None:
+        """
+        Annotate the application with the rightfull message at the end of the automated process.
+        Prepend if private annotation already exists
+        """
+        if self.application_details.error_annotation_value:
+            if message in self.application_details.error_annotation_value:
+                return
+            message = f"{message}, {self.application_details.error_annotation_value}"
+
+        update_demarches_simplifiees_text_annotations(
+            dossier_id=self.application_details.dossier_id,
+            annotation_id=self.application_details.error_annotation_id,
+            message=message,
+        )
+
 
 class ImportBankAccountV4(AbstractImportBankAccount, ImportBankAccountMixin):
     def execute(self) -> None:
         venue = self.get_venue()
 
         if not venue:
+            return
+
+        if not self.validate_bic_and_iban():
             return
 
         bank_account, created = self.get_or_create_bank_account(venue.managingOfferer, venue)
@@ -700,6 +752,9 @@ class ImportBankAccountV5(AbstractImportBankAccount, ImportBankAccountMixin):
                 return
         else:
             offerer = venue.managingOfferer
+
+        if not self.validate_bic_and_iban():
+            return
 
         bank_account, created = self.get_or_create_bank_account(offerer, venue)
         if not created and not self.application_details.is_accepted:
