@@ -1,0 +1,10 @@
+import{j as t}from"./jsx-runtime-vNq4Oc-g.js";import{b as s}from"./formik.esm-ymFmkpzG.js";import{a}from"./Thumb-jCITdR5Z.js";import"./index-4g5l5LRQ.js";import"./_commonjsHelpers-4gQjN7DL.js";import"./full-next-6FYpialQ.js";import"./ButtonLink-xECFSwQN.js";import"./index-XNbs-YUW.js";import"./index-VkxvJQxW.js";import"./index-CQtvWCGL.js";import"./SvgIcon-QVOPtTle.js";import"./Button.module-fn58QZwY.js";import"./Button-xUjs86UK.js";import"./stroke-pass-84wyy11D.js";import"./Tooltip-kKBX527K.js";import"./useTooltipProps-5VZ0BXiJ.js";import"./stroke-offer-kjKFmafA.js";import"./BaseInput-AweWbigz.js";import"./BaseRadio-FPTZu85Z.js";import"./FieldError-Tc_LJzie.js";import"./stroke-error-U5wg3Vd5.js";import"./FieldSuccess-GGwnsLIr.js";import"./stroke-valid-qcZpl8lN.js";import"./full-clear-0L2gsxg_.js";import"./Divider-RocaqWVQ.js";import"./SubmitButton-YmK68x2_.js";import"./index-VFMbf6KQ.js";import"./SelectInput-6KaGHNHr.js";import"./stroke-down-4xbrRvHV.js";import"./BaseCheckbox-ktuHWrzJ.js";import"./typeof-Q9eVcF_1.js";import"./Banner-Yl7UTp3B.js";import"./shadow-tips-help-vs0tLBP5.js";import"./shadow-tips-warning-og_aO0Ug.js";import"./stroke-close-KQNU-49n.js";import"./LinkNodes-y8NBUVZS.js";import"./full-link-GGegv9yK.js";import"./InfoBox-LxVpcLCx.js";const P={title:"ui-kit/forms/CheckboxGroup",component:a,decorators:[o=>t.jsx(s,{initialValues:{accessibility:!1},onSubmit:()=>{},children:({getFieldProps:p})=>t.jsx(o,{...p("group")})})]},r={args:{group:["foo","bar","baz"].map(o=>({label:o,name:`checkBoxes.${o}`})),groupName:"checkBoxes",legend:"This is the legend"}};var i,m,e;r.parameters={...r.parameters,docs:{...(i=r.parameters)==null?void 0:i.docs,source:{originalSource:`{
+  args: {
+    group: ['foo', 'bar', 'baz'].map(item => ({
+      label: item,
+      name: \`checkBoxes.\${item}\`
+    })),
+    groupName: 'checkBoxes',
+    legend: 'This is the legend'
+  }
+}`,...(e=(m=r.parameters)==null?void 0:m.docs)==null?void 0:e.source}}};const Q=["Default"];export{r as Default,Q as __namedExportsOrder,P as default};
