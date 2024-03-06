@@ -7,6 +7,7 @@ import { IndividualOfferContext } from 'context/IndividualOfferContext'
 import {
   getIndividualOfferFactory,
   bookingRecapFactory,
+  bookingRecapStockFactory,
 } from 'utils/apiFactories'
 import { individualOfferContextValuesFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -29,9 +30,15 @@ describe('BookingsSummary', () => {
 
     vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
       bookingsRecap: [
-        bookingRecapFactory({}, offer),
-        bookingRecapFactory({}, offer),
-        bookingRecapFactory({}, offer),
+        bookingRecapFactory({
+          stock: bookingRecapStockFactory({ offerName: 'Offre de test' }),
+        }),
+        bookingRecapFactory({
+          stock: bookingRecapStockFactory({ offerName: 'Offre de test' }),
+        }),
+        bookingRecapFactory({
+          stock: bookingRecapStockFactory({ offerName: 'Offre de test' }),
+        }),
       ],
       page: 1,
       pages: 1,

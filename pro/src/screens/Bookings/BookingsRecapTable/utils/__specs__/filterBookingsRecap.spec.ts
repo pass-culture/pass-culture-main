@@ -125,9 +125,7 @@ describe('filterBookingsRecap', () => {
   })
 
   it('should return list containing only BookingRecap matching ISBN keywords', () => {
-    const bookingRecap1 = bookingRecapFactory({
-      stock_type: 'book',
-    })
+    const bookingRecap1 = bookingRecapFactory()
 
     const bookingsRecap = [bookingRecap1]
     const filters = filtersBuilder({ offerISBN: '123456789' })
@@ -138,7 +136,7 @@ describe('filterBookingsRecap', () => {
   })
 
   it('should return list containing only BookingRecap matching ISBN keywords with surrounding space', () => {
-    const bookingRecap1 = bookingRecapFactory({ stock_type: 'book' })
+    const bookingRecap1 = bookingRecapFactory()
     const bookingsRecap = [bookingRecap1]
     const filters = filtersBuilder({ offerISBN: '123456789  ' })
 
