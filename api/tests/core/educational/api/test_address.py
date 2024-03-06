@@ -3,6 +3,7 @@ import pytest
 from pcapi.core.educational import models
 from pcapi.core.educational.api import address as api
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.repository import atomic
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -12,7 +13,8 @@ class UnlinkUnknownVenueAddressesTest:
     def test_unlink_many(self):
         venues = offerers_factories.CollectiveVenueFactory.create_batch(2)
 
-        api.unlink_unknown_venue_addresses([], save=True)
+        with atomic():
+            api.unlink_unknown_venue_addresses([])
 
         venue_addresses = get_venue_addresses([venue.id for venue in venues])
         assert len(venue_addresses) == len(venues)
@@ -23,7 +25,8 @@ class UnlinkUnknownVenueAddressesTest:
         to_unlink = offerers_factories.CollectiveVenueFactory.create_batch(2)
         to_keep = offerers_factories.CollectiveVenueFactory.create_batch(2)
 
-        api.unlink_unknown_venue_addresses([venue.adageId for venue in to_keep], save=True)
+        with atomic():
+            api.unlink_unknown_venue_addresses([venue.adageId for venue in to_keep])
 
         venue_addresses = get_venue_addresses([venue.id for venue in to_unlink + to_keep])
         assert {ava.adageId for ava in venue_addresses} == {venue.adageId for venue in to_keep} | {None}
