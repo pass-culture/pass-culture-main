@@ -138,6 +138,47 @@ def test_synchronize_adage_ids_on_venues(db_session):
     ADAGE_API_KEY="adage-api-key",
     ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
 )
+def test_synchronize_adage_ids_on_venues_with_unknon_venue(db_session):
+    """Test the synchronization is not blocked (no error) if the adage
+    client returns an unknown venue id.
+    """
+    venue = offerers_factories.VenueFactory()
+
+    adage_id1 = 128028
+    adage_id2 = 128029
+    adage_id3 = 128030
+
+    unknown_venue_id = -1
+
+    venue_data = {**BASE_DATA, "id": adage_id1, "venueId": venue.id}
+    venue_extra_data = {**BASE_DATA, "id": adage_id3, "venueId": venue.id}
+    venue2_data = {**BASE_DATA, "id": adage_id2, "venueId": unknown_venue_id}
+
+    with requests_mock.Mocker() as request_mock:
+        request_mock.get(
+            "https://adage-api-url/v1/partenaire-culturel",
+            request_headers={
+                "X-omogen-api-key": "adage-api-key",
+            },
+            status_code=200,
+            json=[venue_data, venue_extra_data, venue2_data],
+        )
+        with patch("pcapi.core.educational.api.adage.send_eac_offerer_activation_email"):
+            educational_api_adage.synchronize_adage_ids_on_venues()
+
+    # venue had not adageId and obtained two after synchronization
+    # (venues merged)
+    # -> two new AdageVenueAddress must have been created
+    # -> the last adageId received is saved inside the Venue
+    assert venue.adageId == str(adage_id3)
+    assert {ava.adageId for ava in venue.adage_addresses} == {str(adage_id1), str(adage_id3)}
+
+
+@override_settings(
+    ADAGE_API_URL="https://adage-api-url",
+    ADAGE_API_KEY="adage-api-key",
+    ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
+)
 def test_synchronize_adage_ids_on_offerers(db_session):
     venue1 = offerers_factories.VenueFactory()
     venue2 = offerers_factories.VenueFactory()
