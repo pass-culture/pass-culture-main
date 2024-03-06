@@ -14,7 +14,7 @@ from pcapi.core.mails.transactional import send_eac_offerer_activation_email
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.repository import get_emails_by_venue
-from pcapi.models import db
+from pcapi.repository import atomic
 from pcapi.routes.serialization import venues_serialize
 from pcapi.utils.cache import get_from_cache
 from pcapi.utils.clean_accents import clean_accents
@@ -131,30 +131,37 @@ def synchronize_adage_ids_on_venues() -> None:
         .all()
     )
 
-    for venue in deactivated_venues:
-        _remove_venue_from_eac(venue)
+    with atomic():
+        for venue in deactivated_venues:
+            _remove_venue_from_eac(venue)
 
-    venues: list[offerers_models.Venue] = offerers_models.Venue.query.filter(
-        offerers_models.Venue.id.in_(filtered_cultural_partner_by_ids.keys())
-    ).all()
+        venues: list[offerers_models.Venue] = offerers_models.Venue.query.filter(
+            offerers_models.Venue.id.in_(filtered_cultural_partner_by_ids.keys())
+        ).all()
 
-    for venue in venues:
-        if not venue.adageId:
-            # Update the users in SiB in case of previous adageId being none
-            # This is because we track if the user has an adageId, not the value of the adageId
-            emails = get_emails_by_venue(venue)
-            for email in emails:
-                update_external_pro(email)
-            if venue.managingOfferer.isValidated:
-                send_eac_offerer_activation_email(venue, list(emails))
-            venue.adageInscriptionDate = datetime.utcnow()
+        for venue in venues:
+            if not venue.adageId:
+                # Update the users in SiB in case of previous adageId being none
+                # This is because we track if the user has an adageId, not the value of the adageId
+                emails = get_emails_by_venue(venue)
+                for email in emails:
+                    update_external_pro(email)
+                if venue.managingOfferer.isValidated:
+                    send_eac_offerer_activation_email(venue, list(emails))
+                venue.adageInscriptionDate = datetime.utcnow()
 
-        venue.adageId = str(filtered_cultural_partner_by_ids[venue.id].id)
+            venue.adageId = str(filtered_cultural_partner_by_ids[venue.id].id)
 
-    address_api.upsert_venues_addresses(adage_ids_venues)
-    address_api.unlink_unknown_venue_addresses(adage_ids_venues.keys())
+        # filter adage_ids_venues rows that are linked to an unexisting
+        # venue. This can happen since the base data comes from an
+        # external source (`adage_cultural_partners`).
+        venue_ids = {venue.id for venue in venues} | {venue.id for venue in deactivated_venues}
+        adage_ids_venues = {
+            adage_id: venue_id for adage_id, venue_id in adage_ids_venues.items() if venue_id in venue_ids
+        }
 
-    db.session.commit()
+        address_api.upsert_venues_addresses(adage_ids_venues)
+        address_api.unlink_unknown_venue_addresses(adage_ids_venues.keys())
 
 
 def _remove_venue_from_eac(venue: offerers_models.Venue) -> None:
