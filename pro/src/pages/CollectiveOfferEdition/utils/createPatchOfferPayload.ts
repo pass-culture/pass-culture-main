@@ -1,5 +1,6 @@
 import isEqual from 'lodash.isequal'
 
+import { OfferContactFormEnum } from 'apiClient/adage'
 import {
   PatchCollectiveOfferBodyModel,
   PatchCollectiveOfferTemplateBodyModel,
@@ -124,9 +125,10 @@ export const createPatchOfferPayload = (
 
 export const createPatchOfferTemplatePayload = (
   offer: OfferEducationalFormValues,
-  initialValues: OfferEducationalFormValues
+  initialValues: OfferEducationalFormValues,
+  isCustomContactFormActive: boolean
 ): PatchCollectiveOfferTemplateBodyModel => {
-  const keysToOmmit = [
+  const keysToOmmit: (keyof OfferEducationalFormValues)[] = [
     'imageUrl',
     'imageCredit',
     'beginningDate',
@@ -134,6 +136,8 @@ export const createPatchOfferTemplatePayload = (
     'datesType',
     'hour',
     'isTemplate',
+    'contactFormType',
+    'contactOptions',
   ]
   let changedValues: PatchCollectiveOfferTemplateBodyModel = {}
 
@@ -150,6 +154,20 @@ export const createPatchOfferTemplatePayload = (
   })
   // We use this to patch field when user want to make it empty
   changedValues.contactPhone = offer.phone || null
+
+  if (isCustomContactFormActive) {
+    changedValues.contactEmail =
+      (offer.contactOptions?.email && offer.email) || null
+    changedValues.contactForm =
+      offer.contactOptions?.form && offer.contactFormType === 'form'
+        ? OfferContactFormEnum.FORM
+        : null
+    changedValues.contactUrl =
+      offer.contactOptions?.form && offer.contactFormType === 'url'
+        ? offer.contactUrl
+        : null
+  }
+
   changedValues.nationalProgramId = Number(offer.nationalProgramId) || null
   changedValues.dates =
     offer.datesType === 'specific_dates' &&

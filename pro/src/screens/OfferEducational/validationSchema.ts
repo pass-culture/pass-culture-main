@@ -3,7 +3,11 @@ import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import * as yup from 'yup'
 
 import { OfferAddressType } from 'apiClient/v1'
-import { MAX_DETAILS_LENGTH, OfferDatesType } from 'core/OfferEducational'
+import {
+  MAX_DETAILS_LENGTH,
+  OfferDatesType,
+  OfferEducationalFormValues,
+} from 'core/OfferEducational'
 import { toDateStrippedOfTimezone } from 'utils/date'
 
 const threeYearsFromNow = addYears(new Date(), 3)
@@ -24,7 +28,9 @@ const isPhoneValid = (phone: string | undefined): boolean => {
 const isNotEmpty = (description: string | undefined): boolean =>
   description ? Boolean(description.trim().length > 0) : false
 
-export function getOfferEducationalValidationSchema() {
+export function getOfferEducationalValidationSchema(
+  isCustomContactActive: boolean
+) {
   return yup.object().shape({
     title: yup.string().max(110).required('Veuillez renseigner un titre'),
     description: yup
@@ -82,16 +88,59 @@ export function getOfferEducationalValidationSchema() {
         motor: yup.boolean(),
         none: yup.boolean(),
       }),
-    phone: yup.string().test({
-      name: 'is-phone-valid',
-      message:
-        'Veuillez entrer un numéro de téléphone valide, exemple : 612345678',
-      test: isPhoneValid,
-    }),
+    phone: yup
+      .string()
+      .when(['contactOptions', 'isTemplate'], {
+        is: (
+          contactOptions: OfferEducationalFormValues['contactOptions'],
+          isTemplate: boolean
+        ) => isCustomContactActive && isTemplate && contactOptions?.phone,
+        then: (schema) =>
+          schema.required('Veuillez renseigner un numéro de téléphone'),
+      })
+      .test({
+        name: 'is-phone-valid',
+        message:
+          'Veuillez entrer un numéro de téléphone valide, exemple : 612345678',
+        test: isPhoneValid,
+      }),
     email: yup
       .string()
-      .required('Veuillez renseigner une adresse email')
-      .email('Veuillez renseigner un email valide, exemple : mail@exemple.com'),
+      .when(['contactOptions', 'isTemplate'], {
+        is: (
+          contactOptions: OfferEducationalFormValues['contactOptions'],
+          isTemplate: boolean
+        ) => !isTemplate || !isCustomContactActive || contactOptions?.email,
+        then: (schema) =>
+          schema.required('Veuillez renseigner une adresse email'),
+      })
+      .email(
+        'Veuillez renseigner une adresse email valide, exemple : mail@exemple.com'
+      ),
+    contactUrl: yup.string().when(['contactOptions', 'contactFormType'], {
+      is: (
+        contactOptions: OfferEducationalFormValues['contactOptions'],
+        contactFormType: OfferEducationalFormValues['contactFormType']
+      ) =>
+        isCustomContactActive &&
+        contactOptions?.form &&
+        contactFormType === 'url',
+      then: (schema) =>
+        schema
+          .required('Veuillez renseigner une URL de contact')
+          .url(
+            'Veuillez renseigner une URL valide, exemple : https://mon-formulaire.fr'
+          ),
+    }),
+    contactOptions: yup.object().when('isTemplate', {
+      is: (isTemplate: boolean) => isTemplate && isCustomContactActive,
+      then: (schema) =>
+        schema.required().test({
+          name: 'is-one-true',
+          message: 'Veuillez sélectionner au moins un moyen de contact',
+          test: isOneTrue,
+        }),
+    }),
     notificationEmails: yup
       .array()
       .of(

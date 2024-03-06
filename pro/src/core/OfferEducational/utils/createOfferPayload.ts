@@ -3,6 +3,7 @@ import {
   OfferAddressType,
   PostCollectiveOfferTemplateBodyModel,
   PostCollectiveOfferBodyModel,
+  OfferContactFormEnum,
 } from 'apiClient/v1'
 import { buildDateTime } from 'screens/IndividualOffer/StocksEventEdition/adapters/serializers'
 import {
@@ -53,7 +54,7 @@ export const serializeDates = (
 
 function getCommonOfferPayload(
   offer: OfferEducationalFormValues
-): PostCollectiveOfferBodyModel & PostCollectiveOfferTemplateBodyModel {
+): PostCollectiveOfferBodyModel | PostCollectiveOfferTemplateBodyModel {
   return {
     venueId: Number(offer.venueId),
     subcategoryId: null,
@@ -67,8 +68,6 @@ function getCommonOfferPayload(
       ...offer.eventAddress,
       venueId: Number(offer.eventAddress.venueId),
     },
-    contactEmail: offer.email,
-    contactPhone: offer.phone,
     domains: offer.domains.map((domainIdString) => Number(domainIdString)),
     interventionArea:
       offer.eventAddress.addressType === OfferAddressType.OFFERER_VENUE
@@ -81,11 +80,10 @@ function getCommonOfferPayload(
 
 export const createCollectiveOfferTemplatePayload = (
   offer: OfferEducationalFormValues,
-  offerTemplateId?: number
+  isCustomContactActive: boolean
 ): PostCollectiveOfferTemplateBodyModel => {
   return {
     ...getCommonOfferPayload(offer),
-    templateId: offerTemplateId,
     dates:
       offer.datesType === 'specific_dates' &&
       offer.beginningDate &&
@@ -93,6 +91,26 @@ export const createCollectiveOfferTemplatePayload = (
         ? serializeDates(offer.beginningDate, offer.endingDate, offer.hour)
         : undefined,
     priceDetail: offer.priceDetail,
+    contactEmail:
+      !isCustomContactActive || offer.contactOptions?.email
+        ? offer.email
+        : undefined,
+    contactPhone:
+      !isCustomContactActive || offer.contactOptions?.phone
+        ? offer.phone
+        : undefined,
+    contactForm:
+      isCustomContactActive &&
+      offer.contactOptions?.form &&
+      offer.contactFormType === 'form'
+        ? OfferContactFormEnum.FORM
+        : undefined,
+    contactUrl:
+      isCustomContactActive &&
+      offer.contactOptions?.form &&
+      offer.contactFormType === 'url'
+        ? offer.contactUrl
+        : undefined,
   }
 }
 
@@ -103,5 +121,7 @@ export const createCollectiveOfferPayload = (
   return {
     ...getCommonOfferPayload(offer),
     templateId: offerTemplateId,
+    contactEmail: offer.email,
+    contactPhone: offer.phone,
   }
 }

@@ -1,5 +1,4 @@
 import { FormikProvider, useFormik } from 'formik'
-import React from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import {
@@ -69,6 +68,9 @@ const OfferEducational = ({
     useCollectiveOfferImageUpload(offer, isTemplate)
 
   const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
+  const isCustomContactActive = useActiveFeature(
+    'WIP_ENABLE_COLLECTIVE_CUSTOM_CONTACT'
+  )
 
   const {
     structure: offererId,
@@ -82,7 +84,8 @@ const OfferEducational = ({
     offer,
     offererId,
     venueId,
-    isMarseilleEnabled
+    isMarseilleEnabled,
+    isCustomContactActive
   )
   const isOfferCreated = offer !== undefined
   const initialValues =
@@ -100,12 +103,14 @@ const OfferEducational = ({
       if (offer === undefined) {
         response = await postCollectiveOfferTemplateAdapter({
           offer: offerValues,
+          isCustomContactActive,
         })
       } else {
         response = await patchCollectiveOfferTemplateAdapter({
           offer: offerValues,
           initialValues,
           offerId: offer.id,
+          isCustomContactActive,
         })
       }
     } else {
@@ -157,7 +162,9 @@ const OfferEducational = ({
   const { resetForm, ...formik } = useFormik({
     initialValues,
     onSubmit,
-    validationSchema: getOfferEducationalValidationSchema(),
+    validationSchema: getOfferEducationalValidationSchema(
+      isCustomContactActive
+    ),
   })
 
   return (
