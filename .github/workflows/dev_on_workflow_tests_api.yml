@@ -292,7 +292,7 @@ jobs:
               status_code=1
             YELLOW='\033[0;33m'
             RESET='\033[0m'
-            if status_code=1;then
+            if [ ${status_code} -ne 0 ];then
               echo -e "${YELLOW}Hint: An SQL statement can be ignored if preceded by \`-- squawk:ignore-next-statement\`.${RESET}" 
               echo -e "${YELLOW}See https://github.com/pass-culture/pass-culture-main/blob/master/api/src/pcapi/alembic/CONTRIBUTING.md#lint${RESET}";
             fi
