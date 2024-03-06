@@ -19,6 +19,11 @@
     &:hover {
       background-color: colors.$grey-light;
     }
+
+    &:focus {
+      outline-offset: rem.torem(-8px);
+      outline-color: colors.$black;
+    }
   }
 
   &-title {
@@ -71,10 +76,24 @@
       background-color: colors.$grey-light;
     }
 
+    &:focus {
+      outline-offset: rem.torem(-8px);
+      outline-color: colors.$black;
+    }
+
     &-active {
-      border-right: rem.torem(4px) solid colors.$primary;
-      border-radius: rem.torem(2px) 0 0 rem.torem(2px);
       background-color: colors.$background-error;
+      position: relative;
+
+      &::after {
+        content: "";
+        position: absolute;
+        width: rem.torem(4px);
+        height: 100%;
+        background-color: colors.$primary;
+        border-radius: rem.torem(2px) 0 0 rem.torem(2px);
+        right: 0;
+      }
     }
 
     &-without-icon {
