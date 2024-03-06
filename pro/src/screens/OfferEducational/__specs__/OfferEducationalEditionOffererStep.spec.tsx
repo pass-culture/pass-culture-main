@@ -30,7 +30,7 @@ describe('screens | OfferEducational : edition offerer step', () => {
     props = defaultEditionProps
   })
 
-  it.only('should display offerer and venue selects as disabled (not editable) fields', async () => {
+  it('should display offerer and venue selects as disabled (not editable) fields', async () => {
     props = {
       ...props,
       userOfferers: userOfferersFactory([
