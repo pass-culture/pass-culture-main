@@ -7,7 +7,7 @@ import { api } from 'apiClient/api'
 import { CollectiveOfferResponseModel } from 'apiClient/v1'
 import * as createFromTemplateUtils from 'core/OfferEducational/utils/createOfferFromTemplate'
 import * as useNotification from 'hooks/useNotification'
-import { collectiveOfferFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
+import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { CollectiveOfferSelectionDuplication } from '../CollectiveOfferSelectionDuplicationScreen'

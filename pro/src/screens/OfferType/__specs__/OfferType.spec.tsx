@@ -7,8 +7,10 @@ import { CancelablePromise, GetOffererResponseModel } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as useNotification from 'hooks/useNotification'
-import { collectiveOfferFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
-import { defaultDMSApplicationForEAC } from 'utils/collectiveApiFactories'
+import {
+  collectiveOfferFactory,
+  defaultDMSApplicationForEAC,
+} from 'utils/collectiveApiFactories'
 import {
   defaultGetOffererVenueResponseModel,
   defaultGetOffererResponseModel,
