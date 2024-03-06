@@ -1,6 +1,5 @@
 import datetime
 import typing
-import uuid
 
 import factory
 
@@ -412,4 +411,4 @@ class AccessibilityProviderFactory(BaseFactory):
         model = models.AccessibilityProvider
 
     venue = factory.SubFactory(VenueFactory)
-    externalAccessibilityId = factory.LazyFunction(lambda: str(uuid.uuid4()))
+    externalAccessibilityId = factory.Sequence("le-petit-rintintin-{}".format)
