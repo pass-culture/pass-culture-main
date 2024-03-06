@@ -73,8 +73,15 @@ def update_dms_applications_for_procedure(procedure_number: int, since: datetime
                     "procedure_number": procedure_number,
                 },
             )
+            # If we don't rollback here, we will persist in the faulty transaction
+            # and we won't be able to commit at the end of the process and to set the current import `isProcessing` attr to False
+            # Therefor, this import could be seen as on going for other next attempts, forever.
+            db.session.rollback()
         else:
             applications_number.append(node["number"])
+            # Comiting here ensure that we have a proper transaction for each application successfully imported
+            # And that for each faulty application, the failure only impact that particular one.
+            db.session.commit()
 
     current_import.processedApplications = applications_number
     current_import.isProcessing = False
