@@ -10,7 +10,7 @@ from pcapi.core import search
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import booking as educational_api_booking
-from pcapi.core.educational.api.adage import synchronize_adage_ids_on_venues
+import pcapi.core.educational.api.adage as adage_api
 from pcapi.core.educational.api.dms import import_dms_applications
 import pcapi.core.educational.api.institution as institution_api
 import pcapi.core.educational.api.playlists as playlists_api
@@ -118,7 +118,13 @@ def import_deposit_csv(path: str, year: int, ministry: str, conflict: str, final
 
 @blueprint.cli.command("synchronize_venues_from_adage_cultural_partners")
 def synchronize_venues_from_adage_cultural_partners() -> None:
-    synchronize_adage_ids_on_venues()
+    adage_api.synchronize_adage_ids_on_venues()
+
+
+@blueprint.cli.command("synchronize_offerers_from_adage_cultural_partners")
+def synchronize_offerers_from_adage_cultural_partners() -> None:
+    adage_cultural_partners = adage_api.get_cultural_partners()
+    adage_api.synchronize_adage_ids_on_offerers(adage_cultural_partners.partners)
 
 
 @blueprint.cli.command("eac_notify_pro_one_day")
