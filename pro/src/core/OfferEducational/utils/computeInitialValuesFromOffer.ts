@@ -89,7 +89,8 @@ export const computeInitialValuesFromOffer = (
     | GetCollectiveOfferTemplateResponseModel,
   offererIdQueryParam?: string | null,
   venueIdQueryParam?: string | null,
-  isMarseilleEnabled?: boolean
+  isMarseilleEnabled?: boolean,
+  isCustomContactEnabled?: boolean
 ): OfferEducationalFormValues => {
   const initialOffererId = getInitialOffererId(
     offerers,
@@ -114,6 +115,13 @@ export const computeInitialValuesFromOffer = (
         ? today
         : DEFAULT_EAC_FORM_VALUES['beginningDate'],
       endingDate: isTemplate ? today : DEFAULT_EAC_FORM_VALUES['endingDate'],
+      contactOptions: {
+        email: false,
+        form: false,
+        phone: false,
+      },
+      contactFormType: 'form',
+      contactUrl: isTemplate && isCustomContactEnabled ? '' : undefined, //  If the field is not given an intial value, a submit would not set it as touched and the error would not appear the first time
     }
   }
 
@@ -188,5 +196,25 @@ export const computeInitialValuesFromOffer = (
         ? formatTimeForInput(toDateStrippedOfTimezone(offer.dates.start))
         : DEFAULT_EAC_FORM_VALUES.hour,
     formats: offer.formats ?? DEFAULT_EAC_FORM_VALUES.formats,
+    contactOptions:
+      isCustomContactEnabled && isCollectiveOfferTemplate(offer)
+        ? {
+            email: Boolean(offer.contactEmail),
+            phone: Boolean(offer.contactPhone),
+            form: Boolean(offer.contactForm || offer.contactUrl),
+          }
+        : undefined,
+    contactFormType:
+      isCustomContactEnabled && isCollectiveOfferTemplate(offer)
+        ? offer.contactUrl
+          ? 'url'
+          : 'form'
+        : undefined,
+    contactUrl:
+      isCustomContactEnabled &&
+      isCollectiveOfferTemplate(offer) &&
+      offer.contactUrl
+        ? offer.contactUrl
+        : undefined,
   }
 }
