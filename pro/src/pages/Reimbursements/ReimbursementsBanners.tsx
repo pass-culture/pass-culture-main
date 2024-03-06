@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -7,9 +8,11 @@ import AddBankAccountCallout from 'components/Callout/AddBankAccountCallout'
 import LinkVenueCallout from 'components/Callout/LinkVenueCallout'
 import PendingBankAccountCallout from 'components/Callout/PendingBankAccountCallout'
 import { useReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
+import { SAVED_OFFERER_ID_KEY } from 'core/shared'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
+import { updateSelectedOffererId } from 'store/user/reducer'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import styles from './ReimbursementBanners.module.scss'
@@ -25,6 +28,7 @@ const ReimbursementsBanners = (): JSX.Element => {
   const [isOfferersLoading, setIsOfferersLoading] = useState<boolean>(false)
 
   const { setSelectedOfferer, selectedOfferer } = useReimbursementContext()
+  const dispatch = useDispatch()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,6 +41,9 @@ const ReimbursementsBanners = (): JSX.Element => {
             Number(paramOffererId) || selectedOffererId || offerersNames[0].id
           )
           setSelectedOfferer(offerer)
+
+          localStorage.setItem(SAVED_OFFERER_ID_KEY, offerer.id.toString())
+          dispatch(updateSelectedOffererId(offerer.id))
         }
         setIsOfferersLoading(false)
       } catch (error) {
