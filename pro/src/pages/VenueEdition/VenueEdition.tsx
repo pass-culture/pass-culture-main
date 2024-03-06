@@ -21,6 +21,7 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 import Tabs, { Tab } from 'ui-kit/Tabs/Tabs'
 
 import { setInitialFormValues } from './setInitialFormValues'
+import styles from './VenueEdition.module.scss'
 import { VenueEditionFormScreen } from './VenueEditionFormScreen'
 import { VenueEditionHeader } from './VenueEditionHeader'
 
@@ -116,7 +117,7 @@ export const VenueEdition = (): JSX.Element | null => {
           venueTypes={venueTypes}
         />
 
-        <Tabs tabs={tabs} selectedKey={activeStep} />
+        <Tabs tabs={tabs} selectedKey={activeStep} className={styles['tabs']} />
 
         <Routes>
           <Route
