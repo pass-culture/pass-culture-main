@@ -13,7 +13,6 @@ import {
   GetOfferVenueResponseModel,
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
-  GetVenueResponseModel,
   ListOffersOfferResponseModel,
   ListOffersStockResponseModel,
   ManagedVenues,
@@ -223,39 +222,6 @@ export const bookingRecapFactory = (
     bookingToken: `TOKEN${bookingId++}`,
     stock: bookingRecapStockFactory(),
     ...customBookingRecap,
-  }
-}
-
-export const getVenueFactory = (
-  customGetVenue: Partial<GetVenueResponseModel> = {}
-): GetVenueResponseModel => {
-  const currentVenueId = venueId++
-
-  return {
-    id: currentVenueId,
-    address: 'Ma Rue',
-    city: 'Ma Ville',
-    isVirtual: false,
-    name: `Le nom du lieu ${currentVenueId}`,
-    postalCode: '11100',
-    publicName: 'Mon Lieu',
-    departementCode: '78',
-    timezone: 'Europe/Paris',
-    managingOfferer: {
-      city: 'Paris',
-      dateCreated: '2021-10-15T12:00:00Z',
-      id: 1,
-      isValidated: true,
-      name: 'managingOffererName',
-      postalCode: '78140',
-    },
-    collectiveDmsApplications: [],
-    collectiveDomains: [],
-    dateCreated: '2021-10-15T12:00:00Z',
-    dmsToken: 'token',
-    hasAdageId: false,
-    venueTypeCode: VenueTypeCode.AUTRE,
-    ...customGetVenue,
   }
 }
 
