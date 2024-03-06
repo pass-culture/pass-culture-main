@@ -116,7 +116,8 @@ describe('createPatchOfferPayload', () => {
   it('should return the correct patch offer payload for a template offer', () => {
     const payload = createPatchOfferTemplatePayload(
       { ...offer, priceDetail: '123', isTemplate: true },
-      initialValues
+      initialValues,
+      false
     )
 
     expect(payload).toMatchObject({
@@ -133,7 +134,8 @@ describe('createPatchOfferPayload', () => {
         beginningDate: '',
         datesType: 'permanent',
       },
-      initialValues
+      initialValues,
+      false
     )
 
     expect(payload).toMatchObject({

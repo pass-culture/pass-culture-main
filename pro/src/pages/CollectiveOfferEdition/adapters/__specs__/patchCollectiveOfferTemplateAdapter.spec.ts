@@ -24,6 +24,7 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
   beforeEach(() => {
     props = {
       offerId: offerId,
+      isCustomContactActive: false,
       offer: {
         title: 'CollectiveOffer 0',
         description: 'A passionate description of collectiveoffer 0',

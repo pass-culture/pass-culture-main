@@ -8,6 +8,7 @@ export type Params = {
   offerId: number
   offer: OfferEducationalFormValues
   initialValues: OfferEducationalFormValues
+  isCustomContactActive: boolean
 }
 
 type patchCollectiveOfferTemplateAdapter = Adapter<
@@ -17,13 +18,17 @@ type patchCollectiveOfferTemplateAdapter = Adapter<
 >
 
 export const patchCollectiveOfferTemplateAdapter: patchCollectiveOfferTemplateAdapter =
-  async ({ offerId, offer, initialValues }) => {
+  async ({ offerId, offer, initialValues, isCustomContactActive }) => {
     try {
       // the api returns no understandable error when the id is not valid, so we deal before calling the api
       if (!offerId) {
         throw new Error('L’identifiant de l’offre n’est pas valide.')
       }
-      const payload = createPatchOfferTemplatePayload(offer, initialValues)
+      const payload = createPatchOfferTemplatePayload(
+        offer,
+        initialValues,
+        isCustomContactActive
+      )
 
       const updatedOffer = await api.editCollectiveOfferTemplate(
         offerId,

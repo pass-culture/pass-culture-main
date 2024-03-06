@@ -1,8 +1,12 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { Formik } from 'formik'
 
 import { api } from 'apiClient/api'
-import { DEFAULT_EAC_FORM_VALUES, Mode } from 'core/OfferEducational'
+import {
+  DEFAULT_EAC_FORM_VALUES,
+  Mode,
+  OfferEducationalFormValues,
+} from 'core/OfferEducational'
 import { userOffererFactory } from 'screens/OfferEducational/__tests-utils__/userOfferersFactory'
 import {
   RenderWithProvidersOptions,
@@ -14,7 +18,8 @@ import { OfferEducationalFormProps } from '../OfferEducationalForm'
 
 const renderOfferEducationalForm = (
   props: OfferEducationalFormProps,
-  options?: RenderWithProvidersOptions
+  options?: RenderWithProvidersOptions,
+  initialValues?: Partial<OfferEducationalFormValues>
 ) => {
   renderWithProviders(
     <Formik
@@ -22,6 +27,7 @@ const renderOfferEducationalForm = (
         ...DEFAULT_EAC_FORM_VALUES,
         venueId: '1',
         offererId: '1',
+        ...initialValues,
       }}
       onSubmit={() => {}}
     >
@@ -60,13 +66,8 @@ describe('OfferEducationalForm', () => {
   it('should not render price details if offer is not template', async () => {
     renderOfferEducationalForm({ ...defaultProps, isTemplate: false })
 
-    await waitFor(() => {
-      expect(
-        screen.queryByText(
-          /Pour proposer des offres à destination d’un groupe scolaire, vous devez renseigner un lieu pour pouvoir être remboursé./
-        )
-      ).not.toBeInTheDocument()
-    })
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
     expect(
       screen.queryByRole('heading', { name: 'Prix' })
     ).not.toBeInTheDocument()
@@ -81,13 +82,7 @@ describe('OfferEducationalForm', () => {
 
   it('should not show the dates section if the offer is not a template', async () => {
     renderOfferEducationalForm({ ...defaultProps, isTemplate: false })
-    await waitFor(() => {
-      expect(
-        screen.queryByText(
-          /Pour proposer des offres à destination d’un groupe scolaire, vous devez renseigner un lieu pour pouvoir être remboursé./
-        )
-      ).not.toBeInTheDocument()
-    })
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(
       screen.queryByRole('heading', { name: 'Date et heure' })
@@ -105,11 +100,7 @@ describe('OfferEducationalForm', () => {
       }
     )
 
-    await waitFor(() => {
-      expect(
-        screen.queryByText(/Pour proposer des offres à destination/)
-      ).not.toBeInTheDocument()
-    })
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(screen.getByRole('checkbox', { name: 'Par email' }))
     expect(screen.getByRole('checkbox', { name: 'Par téléphone' }))
@@ -124,11 +115,7 @@ describe('OfferEducationalForm', () => {
       }
     )
 
-    await waitFor(() => {
-      expect(
-        screen.queryByText(/Pour proposer des offres à destination/)
-      ).not.toBeInTheDocument()
-    })
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(
       screen.getByRole('checkbox', { name: 'Par email' })
