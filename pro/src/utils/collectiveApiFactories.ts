@@ -67,23 +67,18 @@ const sharedCollectiveOfferData = {
   formats: [EacFormat.ATELIER_DE_PRATIQUE],
 }
 
-// TODO factories: remove customStock & customVenue as an argument
 export const getCollectiveOfferFactory = (
-  customCollectiveOffer: Partial<GetCollectiveOfferResponseModel> = {},
-  customStock: GetCollectiveOfferCollectiveStockResponseModel = getCollectiveOfferCollectiveStockFactory() ||
-    null,
-  customVenue: GetCollectiveOfferVenueResponseModel = getCollectiveOfferVenueFactory()
+  customCollectiveOffer: Partial<GetCollectiveOfferResponseModel> = {}
 ): GetCollectiveOfferResponseModel => {
-  const stock = customStock === null ? null : customStock
   const currentOfferId = offerId++
   return {
     ...sharedCollectiveOfferData,
     id: currentOfferId,
-    venue: customVenue,
+    venue: getCollectiveOfferVenueFactory(),
     isBookable: true,
     isVisibilityEditable: true,
     isTemplate: false,
-    collectiveStock: stock,
+    collectiveStock: getCollectiveOfferCollectiveStockFactory(),
     ...customCollectiveOffer,
   }
 }
