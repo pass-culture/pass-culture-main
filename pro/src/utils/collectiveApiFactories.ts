@@ -99,14 +99,12 @@ export const getCollectiveOfferCollectiveStockFactory = (
   }
 }
 
-// TODO factories: remove customVenue as an argument
 export const getCollectiveOfferTemplateFactory = (
-  customCollectiveOfferTemplate: Partial<GetCollectiveOfferTemplateResponseModel> = {},
-  customVenue: GetCollectiveOfferVenueResponseModel = getCollectiveOfferVenueFactory()
+  customCollectiveOfferTemplate: Partial<GetCollectiveOfferTemplateResponseModel> = {}
 ): GetCollectiveOfferTemplateResponseModel => ({
   ...sharedCollectiveOfferData,
   id: offerId++,
-  venue: customVenue,
+  venue: getCollectiveOfferVenueFactory(),
   isTemplate: true,
   dates: {
     start: new Date().toISOString(),
