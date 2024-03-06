@@ -1,7 +1,11 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { bookingRecapFactory } from 'utils/apiFactories'
+import { BookingRecapStatus } from 'apiClient/v1'
+import {
+  bookingRecapFactory,
+  bookingRecapStockFactory,
+} from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
@@ -17,10 +21,10 @@ describe('IndividualBookingsStatusCell', () => {
   it('should display the status label', () => {
     const props = {
       booking: bookingRecapFactory({
-        stock: {
+        stock: bookingRecapStockFactory({
           eventBeginningDatetime: '2020-06-05T16:31:59.102163+02:00',
           offerName: 'Matrix',
-        },
+        }),
         bookingIsDuo: true,
         beneficiary: {
           email: 'loulou.duck@example.com',
@@ -29,10 +33,10 @@ describe('IndividualBookingsStatusCell', () => {
         },
         bookingDate: '2020-01-04T20:31:12+01:00',
         bookingToken: '5U7M6U',
-        bookingStatus: 'validated',
+        bookingStatus: BookingRecapStatus.VALIDATED,
         bookingStatusHistory: [
           {
-            status: 'booked',
+            status: BookingRecapStatus.BOOKED,
             date: '2020-01-04T20:31:12+01:00',
           },
         ],
@@ -49,10 +53,10 @@ describe('IndividualBookingsStatusCell', () => {
     const expectedHistoryTitle = 'Historique'
     const props = {
       booking: bookingRecapFactory({
-        stock: {
+        stock: bookingRecapStockFactory({
           eventBeginningDatetime: '2020-06-05T16:31:59.102163+02:00',
           offerName: 'Matrix',
-        },
+        }),
         bookingIsDuo: true,
         beneficiary: {
           email: 'loulou.duck@example.com',
@@ -61,11 +65,11 @@ describe('IndividualBookingsStatusCell', () => {
         },
         bookingDate: '2020-01-04T20:31:12+01:00',
         bookingToken: '5U7M6U',
-        bookingStatus: 'booked',
+        bookingStatus: BookingRecapStatus.BOOKED,
         bookingAmount: 10,
         bookingStatusHistory: [
           {
-            status: 'booked',
+            status: BookingRecapStatus.BOOKED,
             date: '2020-01-04T20:31:12+01:00',
           },
         ],
@@ -88,10 +92,10 @@ describe('IndividualBookingsStatusCell', () => {
   it('should display the booking amount when it is not free', async () => {
     const props = {
       booking: bookingRecapFactory({
-        stock: {
+        stock: bookingRecapStockFactory({
           eventBeginningDatetime: '2020-06-05T16:31:59.102163+02:00',
           offerName: 'Matrix',
-        },
+        }),
         bookingIsDuo: true,
         beneficiary: {
           email: 'loulou.duck@example.com',
@@ -100,11 +104,11 @@ describe('IndividualBookingsStatusCell', () => {
         },
         bookingDate: '2020-01-04T20:31:12+01:00',
         bookingToken: '5U7M6U',
-        bookingStatus: 'booked',
+        bookingStatus: BookingRecapStatus.BOOKED,
         bookingAmount: 10,
         bookingStatusHistory: [
           {
-            status: 'booked',
+            status: BookingRecapStatus.BOOKED,
             date: '2020-01-04T20:31:12+01:00',
           },
         ],
@@ -126,10 +130,10 @@ describe('IndividualBookingsStatusCell', () => {
     const props = {
       isCollectiveStatus: false,
       booking: bookingRecapFactory({
-        stock: {
+        stock: bookingRecapStockFactory({
           eventBeginningDatetime: '2020-06-05T16:31:59.102163+02:00',
           offerName: 'Matrix',
-        },
+        }),
         bookingIsDuo: true,
         beneficiary: {
           email: 'loulou.duck@example.com',
@@ -138,10 +142,10 @@ describe('IndividualBookingsStatusCell', () => {
         },
         bookingDate: '2020-01-04T20:31:12+01:00',
         bookingToken: '5U7M6U',
-        bookingStatus: 'booked',
+        bookingStatus: BookingRecapStatus.BOOKED,
         bookingStatusHistory: [
           {
-            status: 'booked',
+            status: BookingRecapStatus.BOOKED,
             date: '2020-01-04T20:31:12+01:00',
           },
         ],
@@ -164,10 +168,10 @@ describe('IndividualBookingsStatusCell', () => {
     const props = {
       isCollectiveStatus: false,
       booking: bookingRecapFactory({
-        stock: {
+        stock: bookingRecapStockFactory({
           eventBeginningDatetime: '2020-06-05T16:31:59.102163+02:00',
           offerName: 'Matrix',
-        },
+        }),
         bookingIsDuo: true,
         beneficiary: {
           email: 'loulou.duck@example.com',
@@ -176,18 +180,18 @@ describe('IndividualBookingsStatusCell', () => {
         },
         bookingDate: '2020-01-04T20:31:12+01:00',
         bookingToken: '5U7M6U',
-        bookingStatus: 'booked',
+        bookingStatus: BookingRecapStatus.BOOKED,
         bookingStatusHistory: [
           {
-            status: 'booked',
+            status: BookingRecapStatus.BOOKED,
             date: '2020-01-04T20:31:12+01:00',
           },
           {
-            status: 'validated',
+            status: BookingRecapStatus.VALIDATED,
             date: '2020-01-05T20:31:12+01:00',
           },
           {
-            status: 'reimbursed',
+            status: BookingRecapStatus.REIMBURSED,
             date: '2020-01-06T20:31:12+01:00',
           },
         ],

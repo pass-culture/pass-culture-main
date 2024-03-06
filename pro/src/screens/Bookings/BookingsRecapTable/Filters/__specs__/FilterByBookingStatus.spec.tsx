@@ -4,10 +4,14 @@ import React from 'react'
 
 import {
   BookingRecapResponseModel,
+  BookingRecapStatus,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
 import { Audience } from 'core/shared'
-import { bookingRecapFactory } from 'utils/apiFactories'
+import {
+  bookingRecapFactory,
+  bookingRecapStockFactory,
+} from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import FilterByBookingStatus from '../FilterByBookingStatus'
@@ -27,9 +31,9 @@ describe('components | FilterByBookingStatus', () => {
     props = {
       bookingsRecap: [
         bookingRecapFactory({
-          stock: {
+          stock: bookingRecapStockFactory({
             offerName: 'Avez-vous déjà vu',
-          },
+          }),
           beneficiary: {
             lastname: 'Klepi',
             firstname: 'Sonia',
@@ -37,20 +41,19 @@ describe('components | FilterByBookingStatus', () => {
           },
           bookingDate: '2020-04-03T12:00:00Z',
           bookingToken: 'ZEHBGD',
-          bookingStatus: 'booked',
+          bookingStatus: BookingRecapStatus.BOOKED,
           bookingIsDuo: false,
-          venueIdentifier: 'AE',
           bookingStatusHistory: [
             {
-              status: 'booked',
+              status: BookingRecapStatus.BOOKED,
               date: '2020-04-03T12:00:00Z',
             },
           ],
         }),
         bookingRecapFactory({
-          stock: {
+          stock: bookingRecapStockFactory({
             offerName: 'Avez-vous déjà vu',
-          },
+          }),
           beneficiary: {
             lastname: 'Klepi',
             firstname: 'Sonia',
@@ -58,12 +61,11 @@ describe('components | FilterByBookingStatus', () => {
           },
           bookingDate: '2020-04-03T12:00:00Z',
           bookingToken: 'ZEHBGD',
-          bookingStatus: 'validated',
+          bookingStatus: BookingRecapStatus.VALIDATED,
           bookingIsDuo: true,
-          venueIdentifier: 'AF',
           bookingStatusHistory: [
             {
-              status: 'booked',
+              status: BookingRecapStatus.BOOKED,
               date: '2020-04-03T12:00:00Z',
             },
           ],
