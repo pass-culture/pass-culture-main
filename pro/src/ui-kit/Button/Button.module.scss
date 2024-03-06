@@ -6,7 +6,7 @@
 .button {
   @include fonts.button;
 
-  margin: auto 0;
+  margin: 0;
   border: rem.torem(2px) solid;
   border-radius: rem.torem(24px);
   display: inline-flex;
