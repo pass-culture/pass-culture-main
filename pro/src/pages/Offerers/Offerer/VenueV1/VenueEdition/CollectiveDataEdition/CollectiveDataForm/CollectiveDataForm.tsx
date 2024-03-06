@@ -2,7 +2,11 @@ import { FormikProvider, useFormik } from 'formik'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { GetCollectiveVenueResponseModel, StudentLevels } from 'apiClient/v1'
+import {
+  GetCollectiveVenueResponseModel,
+  GetVenueResponseModel,
+  StudentLevels,
+} from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import FormLayout from 'components/FormLayout'
 import { handleAllFranceDepartmentOptions } from 'core/shared'
@@ -40,7 +44,7 @@ type CollectiveDataFormProps = {
   statuses: SelectOption[]
   domains: SelectOption[]
   culturalPartners: SelectOption[]
-  venueId: string
+  venue: GetVenueResponseModel
   venueCollectiveData: GetCollectiveVenueResponseModel | null
   adageVenueCollectiveData: GetCollectiveVenueResponseModel | null
 }
@@ -49,7 +53,7 @@ const CollectiveDataForm = ({
   statuses,
   domains,
   culturalPartners,
-  venueId,
+  venue,
   venueCollectiveData,
   adageVenueCollectiveData,
 }: CollectiveDataFormProps): JSX.Element | null => {
@@ -71,7 +75,7 @@ const CollectiveDataForm = ({
     setIsLoading(true)
     setIsClickingFromActionBar(true)
     const response = await editVenueCollectiveDataAdapter({
-      venueId: Number(venueId),
+      venueId: venue.id,
       values,
     })
 
@@ -85,7 +89,7 @@ const CollectiveDataForm = ({
       values: extractInitialValuesFromVenue(response.payload),
     })
 
-    navigate('/accueil')
+    navigate(`/structures/${venue.managingOfferer.id}/lieux/${venue.id}/eac`)
   }
 
   const formik = useFormik<CollectiveDataFormValues>({

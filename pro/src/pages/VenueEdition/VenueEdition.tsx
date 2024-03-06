@@ -16,6 +16,7 @@ import { useGetVenue } from 'core/Venue/adapters/getVenueAdapter'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import useNotification from 'hooks/useNotification'
 import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
+import { CollectiveDataEditionReadOnly } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEditionReadOnly'
 import { updateSelectedOffererId } from 'store/user/reducer'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import Tabs, { Tab } from 'ui-kit/Tabs/Tabs'
@@ -24,6 +25,7 @@ import { setInitialFormValues } from './setInitialFormValues'
 import styles from './VenueEdition.module.scss'
 import { VenueEditionFormScreen } from './VenueEditionFormScreen'
 import { VenueEditionHeader } from './VenueEditionHeader'
+import { VenueEditionReadOnly } from './VenueEditionReadOnly'
 
 export const VenueEdition = (): JSX.Element | null => {
   const homePath = '/accueil'
@@ -91,7 +93,7 @@ export const VenueEdition = (): JSX.Element | null => {
       key: 'individual',
       label: 'Pour le grand public',
       url: generatePath('/structures/:offererId/lieux/:venueId', {
-        offererId: String(offerer.id),
+        offererId: String(venue.managingOfferer.id),
         venueId: String(venue.id),
       }),
     },
@@ -99,7 +101,7 @@ export const VenueEdition = (): JSX.Element | null => {
       key: 'collective',
       label: 'Pour les enseignants',
       url: generatePath('/structures/:offererId/lieux/:venueId/eac', {
-        offererId: String(offerer.id),
+        offererId: String(venue.managingOfferer.id),
         venueId: String(venue.id),
       }),
     },
@@ -120,8 +122,9 @@ export const VenueEdition = (): JSX.Element | null => {
         <Tabs tabs={tabs} selectedKey={activeStep} className={styles['tabs']} />
 
         <Routes>
+          <Route path="" element={<VenueEditionReadOnly venue={venue} />} />
           <Route
-            path=""
+            path="/edition"
             element={
               <VenueEditionFormScreen
                 initialValues={setInitialFormValues(venue)}
@@ -129,7 +132,14 @@ export const VenueEdition = (): JSX.Element | null => {
               />
             }
           />
-          <Route path="eac" element={<CollectiveDataEdition venue={venue} />} />
+          <Route
+            path="eac"
+            element={<CollectiveDataEditionReadOnly venue={venue} />}
+          />
+          <Route
+            path="eac/edition"
+            element={<CollectiveDataEdition venue={venue} />}
+          />
         </Routes>
       </div>
     </AppLayout>
