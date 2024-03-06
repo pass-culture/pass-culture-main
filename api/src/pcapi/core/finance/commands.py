@@ -8,6 +8,7 @@ import sqlalchemy.orm as sqla_orm
 from pcapi import settings
 from pcapi.core.finance import ds
 import pcapi.core.finance.api as finance_api
+import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.utils as finance_utils
 import pcapi.core.offers.models as offers_models
@@ -58,8 +59,12 @@ def generate_invoices(batch_id: int) -> None:
         print(f"Could not generate invoices for this batch, as it doesn't exist :{batch_id}")
         return
 
-    finance_api.generate_debit_notes(batch)
-    finance_api.generate_invoices(batch)
+    try:
+        finance_api.generate_invoices(batch)
+    except finance_exceptions.NoInvoiceToGenerate:
+        logger.info("No invoice to generate")
+    finally:
+        finance_api.generate_debit_notes(batch)
 
     if settings.SLACK_GENERATE_INVOICES_FINISHED_CHANNEL:
         send_internal_message(
