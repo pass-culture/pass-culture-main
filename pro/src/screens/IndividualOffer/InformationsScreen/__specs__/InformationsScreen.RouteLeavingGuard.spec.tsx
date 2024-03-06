@@ -18,8 +18,8 @@ import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { ButtonLink } from 'ui-kit'
-import { getIndividualOfferFactory } from 'utils/apiFactories'
 import {
+  getIndividualOfferFactory,
   categoryFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,

@@ -6,7 +6,7 @@ import PendingBankAccountCallout, {
   PendingBankAccountCalloutProps,
 } from 'components/Callout/PendingBankAccountCallout'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { defaultGetOffererResponseModel } from 'utils/apiFactories'
+import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 describe('PendingBankAccountCallout', () => {

@@ -6,8 +6,8 @@ import { VenueTypeCode } from 'apiClient/v1'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { defaultGetOffererResponseModel } from 'utils/apiFactories'
 import { defaultGetVenue } from 'utils/collectiveApiFactories'
+import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {

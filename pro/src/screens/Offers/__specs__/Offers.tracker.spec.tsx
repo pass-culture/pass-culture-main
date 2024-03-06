@@ -9,7 +9,7 @@ import { Audience } from 'core/shared'
 import {
   defaultGetOffererResponseModel,
   getOfferManagingOffererFactory,
-} from 'utils/apiFactories'
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Offers, { OffersProps } from '../Offers'

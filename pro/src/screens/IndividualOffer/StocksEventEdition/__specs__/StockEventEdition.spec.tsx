@@ -31,9 +31,11 @@ import {
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import { Stocks } from 'pages/IndividualOfferWizard/Stocks/Stocks'
 import { ButtonLink } from 'ui-kit'
-import { getIndividualOfferFactory } from 'utils/apiFactories'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
-import { getOfferStockFactory } from 'utils/individualApiFactories'
+import {
+  getIndividualOfferFactory,
+  getOfferStockFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 vi.mock('utils/date', async () => {

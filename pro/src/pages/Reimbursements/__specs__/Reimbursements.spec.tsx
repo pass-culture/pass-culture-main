@@ -9,7 +9,7 @@ import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { routesReimbursements } from 'app/AppRouter/subroutesReimbursements'
 import { ReimbursementContextProvider } from 'context/ReimbursementContext/ReimbursementContext'
-import { defaultGetOffererResponseModel } from 'utils/apiFactories'
+import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,

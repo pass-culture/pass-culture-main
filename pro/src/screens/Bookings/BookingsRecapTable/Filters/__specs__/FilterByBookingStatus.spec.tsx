@@ -11,7 +11,7 @@ import { Audience } from 'core/shared'
 import {
   bookingRecapFactory,
   bookingRecapStockFactory,
-} from 'utils/apiFactories'
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import FilterByBookingStatus from '../FilterByBookingStatus'

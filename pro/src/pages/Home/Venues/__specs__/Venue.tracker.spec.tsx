@@ -5,9 +5,9 @@ import React from 'react'
 import { VenueEvents } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import {
-  defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
-} from 'utils/apiFactories'
+  defaultGetOffererResponseModel,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { Venue, VenueProps } from '../Venue'

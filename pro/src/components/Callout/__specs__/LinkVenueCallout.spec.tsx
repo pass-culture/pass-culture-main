@@ -7,7 +7,7 @@ import LinkVenueCallout, {
 } from 'components/Callout/LinkVenueCallout'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { defaultGetOffererResponseModel } from 'utils/apiFactories'
+import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 const mockLogEvent = vi.fn()

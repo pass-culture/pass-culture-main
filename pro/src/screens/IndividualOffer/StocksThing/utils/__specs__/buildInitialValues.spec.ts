@@ -1,9 +1,9 @@
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import {
-  getIndividualOfferFactory,
   getOfferVenueFactory,
-} from 'utils/apiFactories'
-import { getOfferStockFactory } from 'utils/individualApiFactories'
+  getIndividualOfferFactory,
+  getOfferStockFactory,
+} from 'utils/individualApiFactories'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../../constants'
 import buildInitialValues from '../buildInitialValues'

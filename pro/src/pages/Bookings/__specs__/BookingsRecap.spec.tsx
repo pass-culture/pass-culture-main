@@ -10,12 +10,14 @@ import {
 import Notification from 'components/Notification/Notification'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { bookingRecapFactory } from 'utils/apiFactories'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
 } from 'utils/date'
-import { venueListItemFactory } from 'utils/individualApiFactories'
+import {
+  bookingRecapFactory,
+  venueListItemFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { Bookings } from '../Bookings'

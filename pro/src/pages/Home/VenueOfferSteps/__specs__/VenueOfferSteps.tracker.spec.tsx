@@ -3,9 +3,9 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import {
-  defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
-} from 'utils/apiFactories'
+  defaultGetOffererResponseModel,
+} from 'utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,

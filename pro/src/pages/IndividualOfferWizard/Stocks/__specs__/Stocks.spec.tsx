@@ -9,10 +9,8 @@ import {
 } from 'context/IndividualOfferContext'
 import { RootState } from 'store/rootReducer'
 import {
-  getIndividualOfferFactory,
   getOfferVenueFactory,
-} from 'utils/apiFactories'
-import {
+  getIndividualOfferFactory,
   getOfferStockFactory,
   individualOfferContextValuesFactory,
 } from 'utils/individualApiFactories'

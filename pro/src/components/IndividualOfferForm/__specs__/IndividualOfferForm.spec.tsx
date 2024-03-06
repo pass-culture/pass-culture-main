@@ -19,8 +19,8 @@ import {
   INDIVIDUAL_OFFER_SUBTYPE,
 } from 'core/Offers/constants'
 import { SubmitButton } from 'ui-kit'
-import { getIndividualOfferFactory } from 'utils/apiFactories'
 import {
+  getIndividualOfferFactory,
   categoryFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,

@@ -1,13 +1,13 @@
 import { GetOffererResponseModel } from 'apiClient/v1'
-import {
-  defaultGetOffererVenueResponseModel,
-  defaultGetOffererResponseModel,
-} from 'utils/apiFactories'
 import { defaultDMSApplicationForEAC } from 'utils/collectiveApiFactories'
 import {
   getLastCollectiveDmsApplication,
   getLastDmsApplicationForOfferer,
 } from 'utils/getLastCollectiveDmsApplication'
+import {
+  defaultGetOffererVenueResponseModel,
+  defaultGetOffererResponseModel,
+} from 'utils/individualApiFactories'
 
 describe('getLastCollectiveDmsApplication', () => {
   it('should return collective dms application with most recent last change date', () => {

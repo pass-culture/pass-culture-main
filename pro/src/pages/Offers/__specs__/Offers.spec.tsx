@@ -16,9 +16,11 @@ import {
 import { SearchFiltersParams } from 'core/Offers/types'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
-import { listOffersOfferFactory } from 'screens/Offers/utils/individualOffersFactories'
-import { defaultGetOffererResponseModel } from 'utils/apiFactories'
-import { venueListItemFactory } from 'utils/individualApiFactories'
+import {
+  defaultGetOffererResponseModel,
+  listOffersOfferFactory,
+  venueListItemFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OffersRoute } from '../../../pages/Offers/OffersRoute'

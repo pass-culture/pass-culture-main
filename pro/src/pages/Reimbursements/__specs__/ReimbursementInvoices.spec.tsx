@@ -7,7 +7,7 @@ import { ReimbursementContext } from 'context/ReimbursementContext/Reimbursement
 import {
   defaultBankAccount,
   defaultGetOffererResponseModel,
-} from 'utils/apiFactories'
+} from 'utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
