@@ -20,14 +20,20 @@ interface FilterTabsProps {
   nav?: string
   tabs: Tab[]
   selectedKey?: string
+  className?: string
 }
 const NAV_ITEM_ICON_SIZE = '24'
 
-const Tabs = ({ nav, selectedKey, tabs }: FilterTabsProps): JSX.Element => {
+const Tabs = ({
+  nav,
+  selectedKey,
+  tabs,
+  className,
+}: FilterTabsProps): JSX.Element => {
   const location = useLocation()
   const content =
     tabs.length > 0 ? (
-      <ul className={styles['tabs']}>
+      <ul className={cn(styles['tabs'], className)}>
         {tabs.map(({ key, label, url, icon, onClick }) => {
           return (
             <li
