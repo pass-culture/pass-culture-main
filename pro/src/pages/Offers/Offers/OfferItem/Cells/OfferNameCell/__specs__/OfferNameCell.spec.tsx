@@ -4,7 +4,7 @@ import React from 'react'
 
 import { CollectiveBookingStatus } from 'apiClient/v1'
 import { Audience } from 'core/shared'
-import { collectiveOfferFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
+import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OfferNameCell, OfferNameCellProps } from '../OfferNameCell'

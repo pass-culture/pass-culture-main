@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import React from 'react'
 
 import { CollectiveOfferResponseModel, OfferStatus } from 'apiClient/v1'
-import { collectiveOfferFactory } from 'pages/CollectiveOffers/utils/collectiveOffersFactories'
+import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 
 import { CollectiveOfferStatusCell } from '../CollectiveOfferStatusCell'
 
