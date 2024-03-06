@@ -186,6 +186,7 @@ def get_bank_info_response_procedure_v5(
     bic: str = "BICAGRIFRPP",
     iban: str = "FR76 3000 6000 0112 3456 7890 189",
     last_modification_date: str = "2023-10-26T14:51:09+02:00",
+    siret: str = "85331845900049",
 ) -> dict:
     iban = "".join(iban.split())
 
@@ -203,7 +204,7 @@ def get_bank_info_response_procedure_v5(
                         "number": application_id,
                         "state": state,
                         "dateDerniereModification": last_modification_date,
-                        "demandeur": {"siret": "85331845900049"},
+                        "demandeur": {"siret": siret},
                         "champs": [
                             {
                                 "id": "Q2hhbXAtNzAwNTA5",
