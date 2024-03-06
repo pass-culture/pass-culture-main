@@ -4,8 +4,8 @@ import React from 'react'
 
 import { BOOKING_STATUS } from 'core/Bookings/constants'
 import {
+  collectiveBookingCollectiveStockFactory,
   collectiveBookingFactory,
-  defaultCollectiveBookingStock,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -36,10 +36,9 @@ describe('CollectiveActionButtons', () => {
   it('should not display modify offer button for validated booking for more than 2 days', () => {
     const bookingRecap = collectiveBookingFactory({
       bookingStatus: BOOKING_STATUS.VALIDATED,
-      stock: {
-        ...defaultCollectiveBookingStock,
+      stock: collectiveBookingCollectiveStockFactory({
         eventBeginningDatetime: addDays(new Date(), 3).toISOString(),
-      },
+      }),
     })
     renderCollectiveActionButtons({
       bookingRecap,
