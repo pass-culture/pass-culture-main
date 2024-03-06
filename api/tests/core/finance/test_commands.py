@@ -1,11 +1,16 @@
+import datetime
 from unittest.mock import patch
 
+import pcapi.core.categories.subcategories_v2 as subcategories
+import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
+import pcapi.core.users.factories as users_factories
+from pcapi.models import db
 
 from tests.conftest import clean_database
 from tests.test_utils import run_command
@@ -113,3 +118,183 @@ def test_generate_invoices_internal_notification(app, css_font_http_request_mock
 
     assert call_kwargs["channel"] == "channel"
     assert call_kwargs["icon_emoji"] == ":large_green_circle:"
+
+
+@override_features(WIP_ENABLE_FINANCE_INCIDENT=True, WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
+@clean_database
+def test_when_there_is_a_debit_note_to_generate_on_total_incident(app, css_font_http_request_mock):
+    sixteen_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=16)
+    fifteen_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=15)
+    fourteen_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=14)
+
+    user = users_factories.RichBeneficiaryFactory()
+    venue_kwargs = {
+        "pricing_point": "self",
+    }
+    offerer = offerers_factories.OffererFactory()
+    venue = offerers_factories.VenueFactory(managingOfferer=offerer, **venue_kwargs)
+    bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+    bank_account_id = bank_account.id
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue, bankAccount=bank_account, timespan=[sixteen_days_ago, None]
+    )
+
+    # Invoice Part
+    book_offer = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
+    finance_factories.CustomReimbursementRuleFactory(amount=2850, offer=book_offer)
+
+    incident_booking1_event = finance_factories.UsedBookingFinanceEventFactory(
+        booking__stock=offers_factories.StockFactory(offer=book_offer, price=30, quantity=1),
+        booking__user=user,
+        booking__amount=30,
+        booking__quantity=1,
+        booking__dateCreated=sixteen_days_ago,
+    )
+
+    finance_api.price_event(incident_booking1_event)
+    incident_booking1_event.booking.pricings[0].creationDate = fifteen_days_ago
+    incident_booking1_event.booking.pricings[0].valueDate = fifteen_days_ago
+
+    incident_booking1_event.booking.dateUsed = fifteen_days_ago
+    first_batch = finance_api.generate_cashflows_and_payment_files(fourteen_days_ago)
+    previous_incident_booking_id = incident_booking1_event.id
+
+    run_command(
+        app,
+        "generate_invoices",
+        "--batch-id",
+        str(first_batch.id),
+    )
+
+    db.session.flush()
+
+    invoices = finance_models.Invoice.query.order_by(finance_models.Invoice.date).all()
+    assert len(invoices) == 1
+    assert invoices[0].reference.startswith("F")
+    assert invoices[0].amount == -2850
+    assert invoices[0].bankAccountId == bank_account_id
+    assert len(invoices[0].lines) == 1
+
+    ## Two weeks later
+
+    previous_incident_booking = finance_models.FinanceEvent.query.filter_by(id=previous_incident_booking_id).one()
+    # Debit Note part
+    booking_total_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+        incident__status=finance_models.IncidentStatus.VALIDATED,
+        incident__forceDebitNote=True,
+        incident__venue=venue,
+        booking=previous_incident_booking.booking,
+        newTotalAmount=-previous_incident_booking.booking.total_amount * 100,
+    )
+    incident_event = finance_api._create_finance_events_from_incident(
+        booking_total_incident, datetime.datetime.utcnow(), commit=True
+    )
+
+    finance_api.price_event(incident_event[0])
+
+    second_batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+
+    run_command(
+        app,
+        "generate_invoices",
+        "--batch-id",
+        str(second_batch.id),
+    )
+
+    invoices = finance_models.Invoice.query.order_by(finance_models.Invoice.date).all()
+    assert len(invoices) == 2
+    assert invoices[1].reference.startswith("A")
+    assert invoices[1].amount == 2850
+    assert invoices[1].bankAccountId == bank_account_id
+    assert len(invoices[1].lines) == 1
+    assert invoices[1].amount == -invoices[0].amount
+
+
+@override_features(WIP_ENABLE_FINANCE_INCIDENT=True, WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
+@clean_database
+def test_when_there_is_a_debit_note_to_generate_on_partial_incident(app, css_font_http_request_mock):
+    sixteen_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=16)
+    fifteen_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=15)
+    fourteen_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=14)
+
+    user = users_factories.RichBeneficiaryFactory()
+    venue_kwargs = {
+        "pricing_point": "self",
+    }
+    offerer = offerers_factories.OffererFactory()
+    venue = offerers_factories.VenueFactory(managingOfferer=offerer, **venue_kwargs)
+    bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+    bank_account_id = bank_account.id
+
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue, bankAccount=bank_account, timespan=[sixteen_days_ago, None]
+    )
+
+    # Invoice Part
+    book_offer = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
+
+    incident_booking1_event = finance_factories.UsedBookingFinanceEventFactory(
+        booking__stock=offers_factories.StockFactory(offer=book_offer, price=30, quantity=1),
+        booking__user=user,
+        booking__amount=30,
+        booking__quantity=1,
+        booking__dateCreated=sixteen_days_ago,
+    )
+
+    finance_api.price_event(incident_booking1_event)
+    incident_booking1_event.booking.pricings[0].creationDate = fifteen_days_ago
+    incident_booking1_event.booking.pricings[0].valueDate = fifteen_days_ago
+
+    incident_booking1_event.booking.dateUsed = fifteen_days_ago
+    first_batch = finance_api.generate_cashflows_and_payment_files(fourteen_days_ago)
+    previous_incident_booking_id = incident_booking1_event.id
+
+    run_command(
+        app,
+        "generate_invoices",
+        "--batch-id",
+        str(first_batch.id),
+    )
+
+    db.session.flush()
+
+    invoices = finance_models.Invoice.query.all()
+    assert len(invoices) == 1
+    assert invoices[0].reference.startswith("F")
+    assert invoices[0].amount == -3000
+    assert invoices[0].bankAccountId == bank_account_id
+    assert len(invoices[0].lines) == 1
+
+    ## Two weeks later
+
+    previous_incident_booking = finance_models.FinanceEvent.query.filter_by(id=previous_incident_booking_id).one()
+    # Debit Note part
+    booking_partial_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+        incident__status=finance_models.IncidentStatus.VALIDATED,
+        incident__forceDebitNote=True,
+        incident__venue=venue,
+        booking=previous_incident_booking.booking,
+        newTotalAmount=((previous_incident_booking.booking.total_amount * 100) / 2),
+    )
+    incident_events = finance_api._create_finance_events_from_incident(
+        booking_partial_incident, datetime.datetime.utcnow(), commit=True
+    )
+
+    for incident_event in incident_events:
+        finance_api.price_event(incident_event)
+
+    second_batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    run_command(
+        app,
+        "generate_invoices",
+        "--batch-id",
+        str(second_batch.id),
+    )
+
+    invoices = finance_models.Invoice.query.all()
+    assert len(invoices) == 2
+    assert invoices[1].reference.startswith("A")
+    assert invoices[1].bankAccountId == bank_account_id
+    assert len(invoices[1].lines) == 1
+    assert invoices[1].amount == -invoices[0].amount / 2
+    assert invoices[1].amount == 1500
