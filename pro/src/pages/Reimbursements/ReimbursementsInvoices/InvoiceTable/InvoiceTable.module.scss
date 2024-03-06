@@ -78,19 +78,19 @@
     cursor: pointer;
     display: inline-flex;
     padding: rem.torem(16px);
+    text-align: left;
   }
 
   .header-cell {
     display: inline-flex;
     align-items: center;
-    justify-content: flex-start;
     gap: rem.torem(8px);
-    margin-right: rem.torem(8px);
+    margin-right: rem.torem(24px);
   }
 
   .data {
     padding: rem.torem(20px) 0;
-    margin-right: rem.torem(8px);
+    margin-right: rem.torem(24px);
   }
 
   .data::before {
@@ -117,22 +117,20 @@
 
   .label-column {
     width: rem.torem(80px);
-    justify-content: center;
-    text-align: right;
   }
 
   .amount-column {
     cursor: default;
+    justify-content: right;
     text-align: right;
     width: rem.torem(100px);
   }
 
   .invoice-column {
-    width: rem.torem(100px);
+    margin-right: 0;
   }
 
   .invoice-data {
-    margin-right: rem.torem(8px);
     justify-content: right;
   }
 }
