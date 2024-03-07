@@ -880,10 +880,8 @@ def _generate_cashflows_legacy(batch: models.CashflowBatch) -> None:
         ),
     )
 
-    def _mark_as_processed(pricings: sqla_orm.Query) -> None:
-        pricings_to_update = models.Pricing.query.filter(
-            models.Pricing.id.in_(pricings.with_entities(models.Pricing.id))
-        )
+    def _mark_as_processed(pricing_ids: sqla_orm.Query) -> None:
+        pricings_to_update = models.Pricing.query.filter(models.Pricing.id.in_(pricing_ids))
         pricings_to_update.update(
             {"status": models.PricingStatus.PROCESSED},
             synchronize_session=False,
@@ -978,7 +976,16 @@ def _generate_cashflows_legacy(batch: models.CashflowBatch) -> None:
                 if total >= 0:
                     if total == 0:
                         # TODO: Manage invoices for transaction with amount equal to zero
-                        _mark_as_processed(pricings)
+
+                        # We should not call `_mark_as_processed` with
+                        # `pricings` (see comment below about the next
+                        # call to `_mark_as_processed`), but we don't
+                        # really have a simpler way here. We can live
+                        # with that, because it is very unlikely that
+                        # a new pricing appeared since we calculated
+                        # the total, and it's even more unlikely that
+                        # the total is also zero.
+                        _mark_as_processed(pricings.with_entities(models.Pricing.id))
                         continue
 
                     all_current_incidents = (
@@ -1040,6 +1047,7 @@ def _generate_cashflows_legacy(batch: models.CashflowBatch) -> None:
                     amount=total,
                 )
                 db.session.add(cashflow)
+                db.session.flush()
                 links = [
                     models.CashflowPricing(
                         cashflowId=cashflow.id,
@@ -1047,11 +1055,44 @@ def _generate_cashflows_legacy(batch: models.CashflowBatch) -> None:
                     )
                     for pricing in pricings
                 ]
-                # Mark as `PROCESSED` now (and not before), otherwise the
-                # `pricings` query above will be empty since it
-                # filters on `VALIDATED` pricings.
-                _mark_as_processed(pricings)
                 db.session.bulk_save_objects(links)
+                # It's possible (but unlikely) that new pricings have
+                # been added (1) between the calculation of `total`
+                # and the creation of the `CashflowPricing`s; or (2)
+                # between the creation of `CashflowPricing` and now.
+                # If (1): the cashflow amount will be wrong, which is
+                # why we check it below.
+                # If (2): calling `mark_as_processed()` on `pricings`
+                # would be wrong because it would include pricings
+                # that are not linked to any `CashflowPricing`. These
+                # pricings would then stay "processed" and never move
+                # to "invoiced".
+                cashflowed_pricings = models.CashflowPricing.query.filter_by(cashflowId=cashflow.id)
+                _mark_as_processed(cashflowed_pricings.with_entities(models.CashflowPricing.pricingId))
+                total_from_pricings = (
+                    cashflowed_pricings.join(models.Pricing)
+                    .with_entities(sqla.func.sum(models.Pricing.amount))
+                    .scalar()
+                    or 0
+                )
+                if cashflow.amount != total_from_pricings:
+                    # We rollback (because we would not want such an
+                    # inconsistency in the database) so there is
+                    # nothing to fix... but the error is quite
+                    # unlikely to happen (see comment above), so it
+                    # warrants an analysis (hence the ERROR log level
+                    # and not INFO).
+                    logger.error(
+                        "Cashflow amount is different from the sum of its pricings, changes have been rolled back",
+                        extra={
+                            "cashflow_id": cashflow.id,
+                            "cashflow_amount": cashflow.amount,
+                            "total_from_pricings": total_from_pricings,
+                        }
+                        | log_extra,
+                    )
+                    db.session.rollback()
+                    continue
                 db.session.commit()
                 elapsed = time.perf_counter() - start
                 logger.info("Generated cashflow", extra=log_extra | {"elapsed": elapsed})
@@ -1104,10 +1145,8 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
         ),
     )
 
-    def _mark_as_processed(pricings: sqla_orm.Query) -> None:
-        pricings_to_update = models.Pricing.query.filter(
-            models.Pricing.id.in_(pricings.with_entities(models.Pricing.id))
-        )
+    def _mark_as_processed(pricing_ids: sqla_orm.Query) -> None:
+        pricings_to_update = models.Pricing.query.filter(models.Pricing.id.in_(pricing_ids))
         pricings_to_update.update(
             {"status": models.PricingStatus.PROCESSED},
             synchronize_session=False,
@@ -1196,7 +1235,16 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                 if total >= 0:
                     if total == 0:
                         # TODO: Manage invoices for transaction with amount equal to zero
-                        _mark_as_processed(pricings)
+
+                        # We should not call `_mark_as_processed` with
+                        # `pricings` (see comment below about the next
+                        # call to `_mark_as_processed`), but we don't
+                        # really have a simpler way here. We can live
+                        # with that, because it is very unlikely that
+                        # a new pricing appeared since we calculated
+                        # the total, and it's even more unlikely that
+                        # the total is also zero.
+                        _mark_as_processed(pricings.with_entities(models.Pricing.id))
                         continue
 
                     all_current_incidents = (
@@ -1258,6 +1306,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                     amount=total,
                 )
                 db.session.add(cashflow)
+                db.session.flush()
                 links = [
                     models.CashflowPricing(
                         cashflowId=cashflow.id,
@@ -1265,11 +1314,44 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                     )
                     for pricing in pricings
                 ]
-                # Mark as `PROCESSED` now (and not before), otherwise the
-                # `pricings` query above will be empty since it
-                # filters on `VALIDATED` pricings.
-                _mark_as_processed(pricings)
                 db.session.bulk_save_objects(links)
+                # It's possible (but unlikely) that new pricings have
+                # been added (1) between the calculation of `total`
+                # and the creation of the `CashflowPricing`s; or (2)
+                # between the creation of `CashflowPricing` and now.
+                # If (1): the cashflow amount will be wrong, which is
+                # why we check it below.
+                # If (2): calling `mark_as_processed()` on `pricings`
+                # would be wrong because it would include pricings
+                # that are not linked to any `CashflowPricing`. These
+                # pricings would then stay "processed" and never move
+                # to "invoiced".
+                cashflowed_pricings = models.CashflowPricing.query.filter_by(cashflowId=cashflow.id)
+                _mark_as_processed(cashflowed_pricings.with_entities(models.CashflowPricing.pricingId))
+                total_from_pricings = (
+                    cashflowed_pricings.join(models.Pricing)
+                    .with_entities(sqla.func.sum(models.Pricing.amount))
+                    .scalar()
+                    or 0
+                )
+                if cashflow.amount != total_from_pricings:
+                    # We rollback (because we would not want such an
+                    # inconsistency in the database) so there is
+                    # nothing to fix... but the error is quite
+                    # unlikely to happen (see comment above), so it
+                    # warrants an analysis (hence the ERROR log level
+                    # and not INFO).
+                    logger.error(
+                        "Cashflow amount is different from the sum of its pricings, changes have been rolled back",
+                        extra={
+                            "cashflow_id": cashflow.id,
+                            "cashflow_amount": cashflow.amount,
+                            "total_from_pricings": total_from_pricings,
+                        }
+                        | log_extra,
+                    )
+                    db.session.rollback()
+                    continue
                 db.session.commit()
                 elapsed = time.perf_counter() - start
                 logger.info("Generated cashflow", extra=log_extra | {"elapsed": elapsed})
