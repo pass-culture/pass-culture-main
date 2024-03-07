@@ -1,21 +1,17 @@
-import {
-  CollectiveOfferTemplateResponseModel,
-  CollectiveOfferResponseModel,
-  AdageFrontRoles,
-} from 'apiClient/adage'
+import { AdageFrontRoles } from 'apiClient/adage'
 import { OfferAddressType } from 'apiClient/v1'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
 import strokeLocationIcon from 'icons/stroke-location.svg'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
-import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { isCollectiveOfferBookable } from 'pages/AdageIframe/app/types/offers'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import OfferFavoriteButton from '../../../OffersInstantSearch/OffersSearch/Offers/OfferFavoriteButton/OfferFavoriteButton'
 import OfferShareLink from '../../../OffersInstantSearch/OffersSearch/Offers/OfferShareLink/OfferShareLink'
 import { getOfferVenueAndOffererName } from '../../../OffersInstantSearch/OffersSearch/Offers/utils/getOfferVenueAndOffererName'
+import { AdageOfferProps } from '../AdageOffer'
 import {
   getFormattedDatesForBookableOffer,
   getFormattedDatesForTemplateOffer,
@@ -25,12 +21,11 @@ import { getBookableOfferStockPrice } from '../utils/adageOfferStocks'
 
 import styles from './AdageOfferHeader.module.scss'
 
-export type AdageOfferProps = {
-  offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
-}
-
-export default function AdageOfferHeader({ offer }: AdageOfferProps) {
-  const { adageUser } = useAdageUser()
+export default function AdageOfferHeader({
+  offer,
+  adageUser,
+  isPreview,
+}: AdageOfferProps) {
   const isOfferBookable = isCollectiveOfferBookable(offer)
 
   const venueAndOffererName = getOfferVenueAndOffererName(offer.venue)
@@ -67,7 +62,7 @@ export default function AdageOfferHeader({ offer }: AdageOfferProps) {
         <div className={styles['offer-header-title-container']}>
           <h1 className={styles['offer-header-title']}>{offer.name}</h1>
 
-          {offer.isTemplate && (
+          {!isPreview && offer.isTemplate && (
             <div className={styles['offer-header-actions']}>
               {adageUser.role === AdageFrontRoles.REDACTOR && (
                 <OfferFavoriteButton

@@ -1,10 +1,12 @@
-import { CollectiveOfferTemplateResponseModel } from 'apiClient/adage'
+import {
+  AuthenticatedResponse,
+  CollectiveOfferTemplateResponseModel,
+} from 'apiClient/adage'
 import Callout from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullMailIcon from 'icons/full-mail.svg'
 import strokeInstitutionIcon from 'icons/stroke-institution.svg'
-import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -16,13 +18,16 @@ import styles from './AdageOfferPartnerPanel.module.scss'
 
 export type AdageOfferPartnerPanelProps = {
   offer: CollectiveOfferTemplateResponseModel
+  adageUser: AuthenticatedResponse
+  isPreview?: boolean
 }
 
 export default function AdageOfferPartnerPanel({
   offer,
+  adageUser,
+  isPreview = false,
 }: AdageOfferPartnerPanelProps) {
   const venue = offer.venue
-  const { adageUser } = useAdageUser()
 
   const distanceToSchool =
     venue.coordinates.latitude !== null &&
@@ -67,7 +72,7 @@ export default function AdageOfferPartnerPanel({
 
         <div>
           <p className={styles['partner-panel-info-name']}>{venue.name}</p>
-          {venue.adageId && (
+          {venue.adageId && !isPreview && (
             <ButtonLink
               link={{
                 isExternal: true,
@@ -112,6 +117,7 @@ export default function AdageOfferPartnerPanel({
           queryId={''}
           userEmail={adageUser.email}
           userRole={adageUser.role}
+          isPreview={isPreview}
         >
           <SvgIcon
             src={fullMailIcon}
