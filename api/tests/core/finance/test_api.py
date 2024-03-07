@@ -2044,6 +2044,24 @@ def test_generate_invoice_file_legacy_journey():
         category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
     )
 
+    # eac related to a program
+    educational_program = educational_factories.EducationalInstitutionProgramFactory(label="Marseille en grand")
+    educational_institution_with_program = EducationalInstitutionFactory(programs=[educational_program])
+    deposit_with_program = EducationalDepositFactory(
+        educationalInstitution=educational_institution_with_program,
+        educationalYear=year1,
+        ministry=Ministry.AGRICULTURE.name,
+    )
+    pricing4 = factories.CollectivePricingFactory(
+        amount=-2345,
+        collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
+        collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=8),
+        collectiveBooking__educationalInstitution=educational_institution_with_program,
+        collectiveBooking__educationalYear=deposit_with_program.educationalYear,
+        status=models.PricingStatus.VALIDATED,
+    )
+    pline4 = factories.PricingLineFactory(pricing=pricing4, amount=-2345)
+
     # Create booking for overpayment finance incident
     incident_booking = bookings_factories.ReimbursedBookingFactory(
         amount=18,
@@ -2081,7 +2099,7 @@ def test_generate_invoice_file_legacy_journey():
     cashflow1 = factories.CashflowFactory(
         bankInformation=bank_info1,
         reimbursementPoint=reimbursement_point1,
-        pricings=[pricing1, pricing_with_same_values_as_pricing_1, pricing2, pricing3, *incidents_pricings],
+        pricings=[pricing1, pricing_with_same_values_as_pricing_1, pricing2, pricing3, pricing4, *incidents_pricings],
         status=models.CashflowStatus.ACCEPTED,
     )
     invoice1 = factories.InvoiceFactory(
@@ -2101,12 +2119,12 @@ def test_generate_invoice_file_legacy_journey():
         pricing_point=pricing_point2,
         reimbursement_point=reimbursement_point2,
     )
-    pline4 = factories.PricingLineFactory()
-    pricing4 = pline4.pricing
+    pline5 = factories.PricingLineFactory()
+    pricing5 = pline5.pricing
     cashflow2 = factories.CashflowFactory(
         bankInformation=bank_info2,
         reimbursementPoint=reimbursement_point2,
-        pricings=[pricing4],
+        pricings=[pricing5],
         status=models.CashflowStatus.ACCEPTED,
     )
     factories.InvoiceFactory(
@@ -2125,7 +2143,7 @@ def test_generate_invoice_file_legacy_journey():
             reader = csv.DictReader(csv_textfile, quoting=csv.QUOTE_NONNUMERIC)
             rows = list(reader)
 
-    assert len(rows) == 4
+    assert len(rows) == 5
     assert rows[0] == {
         "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
@@ -2165,6 +2183,15 @@ def test_generate_invoice_file_legacy_journey():
         "Type de réservation": "EACC",
         "Ministère": "AGRICULTURE",
         "Somme des tickets de facturation": pline32.amount,
+    }
+    assert rows[4] == {
+        "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point1.id),
+        "Date du justificatif": datetime.date.today().isoformat(),
+        "Référence du justificatif": invoice1.reference,
+        "Type de ticket de facturation": pline4.category.value,
+        "Type de réservation": "EACC",
+        "Ministère": educational_program.label,
+        "Somme des tickets de facturation": pline4.amount,
     }
 
 
@@ -2236,6 +2263,24 @@ def test_generate_invoice_file_new_journey():
         category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
     )
 
+    # eac related to a program
+    educational_program = educational_factories.EducationalInstitutionProgramFactory(label="Marseille en grand")
+    educational_institution_with_program = EducationalInstitutionFactory(programs=[educational_program])
+    deposit_with_program = EducationalDepositFactory(
+        educationalInstitution=educational_institution_with_program,
+        educationalYear=year1,
+        ministry=Ministry.AGRICULTURE.name,
+    )
+    pricing4 = factories.CollectivePricingFactory(
+        amount=-2345,
+        collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
+        collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=8),
+        collectiveBooking__educationalInstitution=educational_institution_with_program,
+        collectiveBooking__educationalYear=deposit_with_program.educationalYear,
+        status=models.PricingStatus.VALIDATED,
+    )
+    pline4 = factories.PricingLineFactory(pricing=pricing4, amount=-2345)
+
     # Create booking for overpayment finance incident
     incident_booking = bookings_factories.ReimbursedBookingFactory(
         amount=18,
@@ -2272,7 +2317,7 @@ def test_generate_invoice_file_new_journey():
 
     cashflow1 = factories.CashflowFactory(
         bankAccount=bank_account_1,
-        pricings=[pricing1, pricing_with_same_values_as_pricing_1, pricing2, pricing3, *incidents_pricings],
+        pricings=[pricing1, pricing_with_same_values_as_pricing_1, pricing2, pricing3, pricing4, *incidents_pricings],
         status=models.CashflowStatus.ACCEPTED,
     )
     invoice1 = factories.InvoiceFactory(
@@ -2287,11 +2332,11 @@ def test_generate_invoice_file_new_journey():
     offerer2 = venue2.managingOfferer
     bank_account_2 = factories.BankAccountFactory(offerer=offerer2)
     offerers_factories.VenueBankAccountLinkFactory(venue=venue2, bankAccount=bank_account_2)
-    pline4 = factories.PricingLineFactory()
-    pricing4 = pline4.pricing
+    pline5 = factories.PricingLineFactory()
+    pricing5 = pline5.pricing
     cashflow2 = factories.CashflowFactory(
         bankAccount=bank_account_2,
-        pricings=[pricing4],
+        pricings=[pricing5],
         status=models.CashflowStatus.ACCEPTED,
     )
     factories.InvoiceFactory(
@@ -2310,7 +2355,7 @@ def test_generate_invoice_file_new_journey():
             reader = csv.DictReader(csv_textfile, quoting=csv.QUOTE_NONNUMERIC)
             rows = list(reader)
 
-    assert len(rows) == 4
+    assert len(rows) == 5
     assert rows[0] == {
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
@@ -2350,6 +2395,15 @@ def test_generate_invoice_file_new_journey():
         "Type de réservation": "EACC",
         "Ministère": "AGRICULTURE",
         "Somme des tickets de facturation": pline32.amount,
+    }
+    assert rows[4] == {
+        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
+        "Date du justificatif": datetime.date.today().isoformat(),
+        "Référence du justificatif": invoice1.reference,
+        "Type de ticket de facturation": pline4.category.value,
+        "Type de réservation": "EACC",
+        "Ministère": educational_program.label,
+        "Somme des tickets de facturation": pline4.amount,
     }
 
 
