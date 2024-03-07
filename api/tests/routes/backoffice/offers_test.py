@@ -508,17 +508,17 @@ class ListOffersTest(GetEndpointHelper):
 
     def test_list_offers_advanced_search_by_price_multiple_stock(self, authenticated_client):
 
-        offer_with_multiple_stock_valide_and_not_valide = offers_factories.OfferFactory()
+        offer_with_multiple_stocks_valid_and_not_valid = offers_factories.OfferFactory()
 
         offers_factories.StockFactory(
             price=15,
-            offer=offer_with_multiple_stock_valide_and_not_valide,
+            offer=offer_with_multiple_stocks_valid_and_not_valid,
             beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
         )
 
         offers_factories.StockFactory(
             price=16,
-            offer=offer_with_multiple_stock_valide_and_not_valide,
+            offer=offer_with_multiple_stocks_valid_and_not_valid,
             beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=2),
             bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=1),
         )
@@ -534,7 +534,7 @@ class ListOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
-        assert rows[0]["ID"] == str(offer_with_multiple_stock_valide_and_not_valide.id)
+        assert rows[0]["ID"] == str(offer_with_multiple_stocks_valid_and_not_valid.id)
 
     def test_list_offers_advanced_search_by_price_no_offer_valid(self, authenticated_client, offers):
 
