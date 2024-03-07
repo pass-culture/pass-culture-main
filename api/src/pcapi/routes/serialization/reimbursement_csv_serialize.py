@@ -171,10 +171,12 @@ class ReimbursementDetails:
         self.venue_siret = payment_info.venue_siret
 
         # Reimbursement point info + IBAN
-        if using_legacy_models:
+        if using_legacy_models and not self.is_new_journey_active:
             self.reimbursement_point_common_name = self.venue_common_name
             self.reimbursement_point_siret = self.venue_siret
             self.reimbursement_point_address = self.venue_address
+        elif using_legacy_models and self.is_new_journey_active:
+            self.bank_account_label = self.venue_common_name
         elif self.is_new_journey_active:
             self.bank_account_label = payment_info.bank_account_label
         else:
