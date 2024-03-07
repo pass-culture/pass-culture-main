@@ -4,7 +4,7 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
-import AccessibilitySummarySection from 'components/AccessibilitySummarySection'
+import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
 
 interface CollectiveOfferAccessibilitySectionProps {
   offer:
@@ -15,7 +15,7 @@ interface CollectiveOfferAccessibilitySectionProps {
 const CollectiveOfferAccessibilitySection = ({
   offer,
 }: CollectiveOfferAccessibilitySectionProps) => {
-  return <AccessibilitySummarySection offer={offer} />
+  return <AccessibilitySummarySection accessibleItem={offer} />
 }
 
 export default CollectiveOfferAccessibilitySection
