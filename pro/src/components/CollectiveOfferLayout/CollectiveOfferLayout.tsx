@@ -48,13 +48,11 @@ const CollectiveOfferLayout = ({
     }
   }
 
-  const navigationProps = isSummaryPage
-    ? undefined
-    : {
-        activeStep: getActiveStep(location.pathname),
-        offerId: Number(offerIdFromParams),
-        isCreatingOffer: isCreation,
-      }
+  const navigationProps = {
+    activeStep: getActiveStep(location.pathname),
+    offerId: Number(offerIdFromParams),
+    isCreatingOffer: isCreation,
+  }
   return (
     <div className={styles['eac-layout']}>
       <div className={styles['eac-layout-headings']}>
