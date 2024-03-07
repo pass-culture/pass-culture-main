@@ -2,6 +2,8 @@ import { useFormik } from 'formik'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import Callout from 'components/Callout/Callout'
+import { CalloutVariant } from 'components/Callout/types'
 import Dialog from 'components/Dialog/Dialog'
 import MandatoryInfo from 'components/FormLayout/FormLayoutMandatoryInfo'
 import useNotification from 'hooks/useNotification'
@@ -26,6 +28,7 @@ export interface NewRequestFormDialogProps {
   contactPhone: string
   contactForm: string
   contactUrl: string
+  isPreview: boolean
 }
 
 const NewRequestFormDialog = ({
@@ -37,6 +40,7 @@ const NewRequestFormDialog = ({
   contactPhone,
   contactForm,
   contactUrl,
+  isPreview,
 }: NewRequestFormDialogProps): JSX.Element => {
   const notify = useNotification()
 
@@ -60,17 +64,19 @@ const NewRequestFormDialog = ({
   }
 
   const closeRequestFormDialog = async () => {
-    await apiAdage.logRequestFormPopinDismiss({
-      iframeFrom: location.pathname,
-      collectiveOfferTemplateId: offerId,
-      comment: formik.values.description,
-      phoneNumber: formik.values.teacherPhone,
-      requestedDate: isDateValid(formik.values.offerDate)
-        ? new Date(formik.values.offerDate).toISOString()
-        : undefined,
-      totalStudents: formik.values.nbStudents,
-      totalTeachers: formik.values.nbTeachers,
-    })
+    if (!isPreview) {
+      await apiAdage.logRequestFormPopinDismiss({
+        iframeFrom: location.pathname,
+        collectiveOfferTemplateId: offerId,
+        comment: formik.values.description,
+        phoneNumber: formik.values.teacherPhone,
+        requestedDate: isDateValid(formik.values.offerDate)
+          ? new Date(formik.values.offerDate).toISOString()
+          : undefined,
+        totalStudents: formik.values.nbStudents,
+        totalTeachers: formik.values.nbTeachers,
+      })
+    }
     closeModal()
   }
 
@@ -176,7 +182,7 @@ const NewRequestFormDialog = ({
           </li>
         )}
 
-        {isDefaultForm && (
+        {isDefaultForm && userRole === AdageFrontRoles.REDACTOR && (
           <li>
             en renseignant{' '}
             <span className={styles['form-description-text-value']}>
@@ -185,13 +191,22 @@ const NewRequestFormDialog = ({
           </li>
         )}
       </ul>
-      {isDefaultForm && (
+      {isDefaultForm && userRole === AdageFrontRoles.REDACTOR && (
         <>
           <hr />
           <MandatoryInfo className={styles['form-mandatory']} />
+          <Callout
+            variant={CalloutVariant.DEFAULT}
+            className={styles['contact-callout']}
+          >
+            Vous ne pouvez pas envoyer de demande de contact car ceci est un
+            aperçu de test du formulaire que verront les enseignants une fois
+            l’offre publiée.
+          </Callout>
           <DefaultFormContact
             closeRequestFormDialog={closeRequestFormDialog}
             formik={formik}
+            isPreview={isPreview}
           />
         </>
       )}
@@ -221,14 +236,37 @@ const NewRequestFormDialog = ({
 
   const renderDefaultFormElement = () => (
     <div>
-      <span className={styles['form-description']}>
-        Vous pouvez le contacter en renseignant les informations ci-dessous.
-      </span>
-      <MandatoryInfo className={styles['form-mandatory']} />
-      <DefaultFormContact
-        closeRequestFormDialog={closeRequestFormDialog}
-        formik={formik}
-      />
+      {userRole === AdageFrontRoles.REDACTOR || isPreview ? (
+        <>
+          <span className={styles['form-description']}>
+            Vous pouvez le contacter en renseignant les informations ci-dessous.
+          </span>
+          <MandatoryInfo className={styles['form-mandatory']} />
+          {isPreview && (
+            <Callout
+              variant={CalloutVariant.DEFAULT}
+              className={styles['contact-callout']}
+            >
+              Vous ne pouvez pas envoyer de demande de contact car ceci est un
+              aperçu de test du formulaire que verront les enseignants une fois
+              l’offre publiée.
+            </Callout>
+          )}
+          <DefaultFormContact
+            closeRequestFormDialog={closeRequestFormDialog}
+            formik={formik}
+            isPreview={isPreview}
+          />
+        </>
+      ) : (
+        <Callout
+          variant={CalloutVariant.DEFAULT}
+          className={styles['contact-readonly']}
+        >
+          Vous ne pouvez voir les informations de contact du partenaire car vous
+          n’avez pas les droits ADAGE adaptés
+        </Callout>
+      )}
     </div>
   )
 
@@ -242,7 +280,7 @@ const NewRequestFormDialog = ({
       <span className={styles['form-title']}>
         Vous souhaitez contacter ce partenaire ?
       </span>
-      {userRole === AdageFrontRoles.REDACTOR && <>{getDescriptionElement()}</>}
+      {getDescriptionElement()}
     </Dialog>
   )
 }

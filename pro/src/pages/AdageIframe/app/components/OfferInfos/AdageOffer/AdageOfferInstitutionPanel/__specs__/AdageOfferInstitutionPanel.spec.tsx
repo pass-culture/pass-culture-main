@@ -11,11 +11,11 @@ import AdageOfferInstitutionPanel, {
 function renderAdageOfferInstitutionPanel(
   props: AdageOfferInstitutionPanelProps = {
     offer: defaultCollectiveOffer,
-  },
-  user = defaultAdageUser
+    adageUser: defaultAdageUser,
+  }
 ) {
   return renderWithProviders(
-    <AdageUserContextProvider adageUser={user}>
+    <AdageUserContextProvider adageUser={defaultAdageUser}>
       <AdageOfferInstitutionPanel {...props} />
     </AdageUserContextProvider>
   )
@@ -45,6 +45,7 @@ describe('AdageOfferPartnerPanel', () => {
           bookingLimitDatetime: undefined,
         },
       },
+      adageUser: defaultAdageUser,
     })
 
     expect(screen.queryByText('À préréserver')).not.toBeInTheDocument()

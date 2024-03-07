@@ -26,6 +26,7 @@ const renderNewRequestFormDialog = (
       contactForm="form"
       contactPhone=""
       contactUrl=""
+      isPreview={false}
       {...props}
     />
   )
