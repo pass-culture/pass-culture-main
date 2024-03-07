@@ -1164,9 +1164,10 @@ class GenerateCashflowsLegacyTest:
                 1,  # check integration of pricings
                 1,  # compute sum of pricings
                 1,  # insert Cashflow
-                1,  # select pricings to...
+                1,  # select pricings to be linked to CashflowPricing's
+                1,  # insert CashflowPricing's
                 1,  # update Pricing.status
-                1,  # ... insert CashflowPricing
+                1,  # check sum of pricings = cashflow.amount
             )
         )
 
@@ -1447,9 +1448,10 @@ class GenerateCashflowsTest:
                 1,  # check integration of pricings
                 1,  # compute sum of pricings
                 1,  # insert Cashflow
-                1,  # select pricings to...
+                1,  # select pricings to be linked to CashflowPricing's
+                1,  # insert CashflowPricing's
                 1,  # update Pricing.status
-                1,  # ... insert CashflowPricing
+                1,  # check sum of pricings = cashflow.amount
             )
         )
 
