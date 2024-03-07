@@ -58,7 +58,7 @@ def parse_beneficiary_information_graphql(
 ) -> fraud_models.DMSContent:
     application_number = application_detail.number
     civility = application_detail.applicant.civility
-    email = application_detail.profile.email
+    email = application_detail.applicant.email or application_detail.profile.email
     first_name = application_detail.applicant.first_name
     last_name = application_detail.applicant.last_name
     registration_datetime = application_detail.draft_date
