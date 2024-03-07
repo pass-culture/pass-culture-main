@@ -38,6 +38,8 @@ class IndividualOffersSearchAttributes(enum.Enum):
     ID = "ID de l'offre"
     VENUE = "Lieu"
     NAME = "Nom de l'offre"
+    SYNCHRONIZED = "Offre synchronisée"
+    PROVIDER = "Fournisseur"
     STATUS = "Statut"
     OFFERER = "Structure"
     TAG = "Tag"
@@ -98,6 +100,8 @@ form_field_configuration = {
             "LESS_THAN",
         ],
     },
+    "SYNCHRONIZED": {"field": "boolean", "operator": ["NULLABLE"]},
+    "PROVIDER": {"field": "provider", "operator": ["IN", "NOT_IN"]},
 }
 
 
@@ -153,6 +157,8 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
                 "show_type",
                 "show_sub_type",
                 "price",
+                "boolean",
+                "provider",
             ],
             "sub_rule_type_field_name": "search_field",
             "operator_field_name": "operator",
@@ -164,6 +170,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         autocomplete.prefill_criteria_choices(self.criteria)
         autocomplete.prefill_offerers_choices(self.offerer)
         autocomplete.prefill_venues_choices(self.venue)
+        autocomplete.prefill_providers_choices(self.provider)
 
     search_field = fields.PCSelectWithPlaceholderValueField(
         "Champ de recherche",
@@ -175,6 +182,13 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
     operator = fields.PCSelectWithPlaceholderValueField(
         "Opérateur",
         choices=forms_utils.choices_from_enum(utils.AdvancedSearchOperators),
+        validators=[
+            wtforms.validators.Optional(""),
+        ],
+    )
+    boolean = fields.PCSelectField(
+        choices=(("true", "Oui"), ("false", "Non")),
+        default="true",
         validators=[
             wtforms.validators.Optional(""),
         ],
@@ -249,6 +263,15 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         choices=[],
         validate_choice=False,
         endpoint="backoffice_web.autocomplete_venues",
+        search_inline=True,
+        field_list_compatibility=True,
+    )
+    provider = fields.PCTomSelectField(
+        "Providers",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_providers",
         search_inline=True,
         field_list_compatibility=True,
     )

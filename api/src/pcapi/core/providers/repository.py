@@ -226,7 +226,7 @@ def get_pivot_for_id_at_provider(id_at_provider: str, provider_id: int) -> model
 
 
 def is_cinema_external_ticket_applicable(offer: offers_models.Offer) -> bool:
-    return (
+    return bool(
         offer.subcategory.id == subcategories.SEANCE_CINE.id
         and offer.lastProviderId
         and db.session.query(get_cinema_venue_provider_query(offer.venueId).exists()).scalar()
@@ -235,7 +235,11 @@ def is_cinema_external_ticket_applicable(offer: offers_models.Offer) -> bool:
 
 def is_event_external_ticket_applicable(offer: offers_models.Offer) -> bool:
     if offer.isEvent and offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP:
-        if not (offer.lastProviderId and offer.lastProvider.isActive and offer.lastProvider.hasProviderEnableCharlie):
+        if not (
+            offer.lastProvider is not None
+            and offer.lastProvider.isActive
+            and offer.lastProvider.hasProviderEnableCharlie
+        ):
             raise external_bookings_exceptions.ExternalBookingException(
                 "Offer provider is inactive or not charlie enabled"
             )

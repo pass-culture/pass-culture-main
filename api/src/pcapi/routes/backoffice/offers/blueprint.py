@@ -137,6 +137,15 @@ SEARCH_FIELD_TO_PYTHON = {
         "field": "subcategory",
         "column": offers_models.Offer.subcategoryId,
     },
+    "SYNCHRONIZED": {
+        "field": "boolean",
+        "special": lambda x: x != "true",
+        "column": offers_models.Offer.idAtProvider,
+    },
+    "PROVIDER": {
+        "field": "provider",
+        "column": offers_models.Offer.lastProviderId,
+    },
     "VENUE": {
         "field": "venue",
         "column": offers_models.Offer.venueId,
