@@ -26,6 +26,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import factories as perm_factories
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
@@ -332,7 +333,7 @@ class ListOffersTest(GetEndpointHelper):
 
         expected_url = (
             "/pro/offer?sort=dateCreated&amp;order=desc&amp;search-0-search_field=NAME&amp;"
-            "search-0-operator=STR_EQUALS&amp;search-0-string=A+Very+Specific+Name"
+            "search-0-operator=STR_EQUALS&amp;search-0-boolean=true&amp;search-0-string=A+Very+Specific+Name"
         )
         assert expected_url in str(response.data)
 
@@ -846,6 +847,84 @@ class ListOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 0
+
+    def test_list_offers_advanced_search_has_provider(self, authenticated_client):
+        provider = providers_factories.ProviderFactory()
+        offers_factories.OfferFactory(name="good", idAtProvider="pouet", lastProvider=provider)
+        offers_factories.OfferFactory(name="bad")
+        query_args = {
+            "search-0-search_field": "SYNCHRONIZED",
+            "search-0-operator": "NULLABLE",
+            "search-0-boolean": "true",
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Nom de l'offre"] == "good"
+
+    def test_list_offers_advanced_search_has_no_provider(self, authenticated_client):
+        provider = providers_factories.ProviderFactory()
+        offers_factories.OfferFactory(name="bad", idAtProvider="pouet", lastProvider=provider)
+        offers_factories.OfferFactory(name="good")
+        query_args = {
+            "search-0-search_field": "SYNCHRONIZED",
+            "search-0-operator": "NULLABLE",
+            "search-0-boolean": "false",
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Nom de l'offre"] == "good"
+
+    def test_list_offers_advanced_search_by_provider(self, authenticated_client):
+        provider = providers_factories.ProviderFactory()
+        provider2 = providers_factories.ProviderFactory()
+        offers_factories.OfferFactory(name="good", idAtProvider="pouet", lastProvider=provider)
+        offers_factories.OfferFactory(
+            idAtProvider="pouet2",
+            lastProvider=provider2,
+        )
+        offers_factories.OfferFactory()
+        query_args = {
+            "search-0-search_field": "PROVIDER",
+            "search-0-operator": "IN",
+            "search-0-provider": str(provider.id),
+        }
+        with assert_num_queries(self.expected_num_queries + 1):  # +1 because of reloading selected providers
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Nom de l'offre"] == "good"
+
+    def test_list_offers_advanced_search_by_not_provider(self, authenticated_client):
+        provider = providers_factories.ProviderFactory()
+        provider2 = providers_factories.ProviderFactory()
+        offers_factories.OfferFactory(name="good", idAtProvider="pouet", lastProvider=provider)
+        offers_factories.OfferFactory(
+            idAtProvider="pouet2",
+            lastProvider=provider2,
+        )
+        offers_factories.OfferFactory()
+        query_args = {
+            "search-0-search_field": "PROVIDER",
+            "search-0-operator": "NOT_IN",
+            "search-0-provider": str(provider2.id),
+        }
+        with assert_num_queries(self.expected_num_queries + 1):  # +1 because of reloading selected providers
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Nom de l'offre"] == "good"
 
     # === Advanced search: error cases ===
 

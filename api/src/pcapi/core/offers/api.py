@@ -281,7 +281,7 @@ def update_offer(
                 offer.lastProvider,
             )
 
-    if offer.isFromProvider:
+    if offer.lastProvider is not None:
         validation.check_update_only_allowed_fields_for_offer_from_provider(set(modifications), offer.lastProvider)
 
     if offer.is_soft_deleted():

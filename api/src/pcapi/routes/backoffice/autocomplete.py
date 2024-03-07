@@ -5,6 +5,7 @@ from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.providers import models as providers_models
 from pcapi.core.users import models as users_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.decorator import spectree_serialize
@@ -155,6 +156,19 @@ def _get_venues_base_query() -> sa.orm.Query:
     )
 
 
+def prefill_providers_choices(autocomplete_field: fields.PCTomSelectField) -> None:
+    if autocomplete_field.data:
+        providers = (
+            providers_models.Provider.query.filter(
+                providers_models.Provider.id.in_(autocomplete_field.data),
+                providers_models.Provider.isActive,
+            )
+            .order_by(providers_models.Provider.name)
+            .options(sa.orm.load_only(providers_models.Provider.id, providers_models.Provider.name))
+        )
+        autocomplete_field.choices = [(provider.id, f"{provider.id} - {provider.name}") for provider in providers]
+
+
 def prefill_venues_choices(autocomplete_field: fields.PCTomSelectField, only_with_siret: bool = False) -> None:
     if autocomplete_field.data:
         venues = (
@@ -208,6 +222,27 @@ def autocomplete_venues() -> AutocompleteResponse:
 @spectree_serialize(response_model=AutocompleteResponse, api=blueprint.backoffice_web_schema)
 def autocomplete_pricing_points() -> AutocompleteResponse:
     return _autocomplete_venues(only_with_siret=True)
+
+
+@blueprint.backoffice_web.route("/autocomplete/providers", methods=["GET"])
+@spectree_serialize(response_model=AutocompleteResponse, api=blueprint.backoffice_web_schema)
+def autocomplete_providers() -> AutocompleteResponse:
+    query_string = request.args.get("q", "").strip()
+
+    query = providers_models.Provider.query.filter(providers_models.Provider.isActive).options(
+        sa.orm.load_only(providers_models.Provider.id, providers_models.Provider.name)
+    )
+    if query_string.isnumeric():
+        query = query.filter(providers_models.Provider.id == int(query_string))
+    elif query_string:
+        query = query.filter(sa.func.unaccent(providers_models.Provider.name).ilike(f"%{clean_accents(query_string)}%"))
+    else:
+        return AutocompleteResponse(items=[])
+
+    providers = query.limit(NUM_RESULTS)
+    return AutocompleteResponse(
+        items=[AutocompleteItem(id=provider.id, text=f"{provider.id} - {provider.name}") for provider in providers]
+    )
 
 
 def _get_criterion_choice_label(criterion: criteria_models.Criterion) -> str:

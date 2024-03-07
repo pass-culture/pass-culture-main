@@ -438,7 +438,9 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     flaggingValidationRules: list["OfferValidationRule"] = sa.orm.relationship(
         "OfferValidationRule", secondary="validation_rule_offer_link", back_populates="offers"
     )
-    # This field replaces the idAtProviders coming from ProvidableMixin
+
+    lastProviderId = sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
+    lastProvider: "Provider|None" = sa.orm.relationship("Provider", foreign_keys=[lastProviderId])
     idAtProvider = sa.Column(
         sa.Text,
         sa.CheckConstraint(
@@ -484,6 +486,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         postgresql_where=extraData["showSubType"] is not None,
     )
     sa.Index("offer_authorId_idx", authorId, postgresql_using="btree")
+    sa.Index("ix_offer_lastProviderId", lastProviderId, postgresql_where=lastProviderId.is_not(None))
 
     # FIXME: We shoud be able to remove the index on `venueId`, since this composite index
     #  can be used by PostgreSQL when filtering on the `venueId` column only.
@@ -495,14 +498,6 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     @property
     def isEducational(self) -> bool:
         return False
-
-    @sa.ext.declarative.declared_attr  # type: ignore[misc]
-    def lastProviderId(cls) -> sa.Column:  # pylint: disable=no-self-argument
-        return sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
-
-    @sa.ext.declarative.declared_attr  # type: ignore[misc]
-    def lastProvider(cls):  # pylint: disable=no-self-argument
-        return sa.orm.relationship("Provider", foreign_keys=[cls.lastProviderId])
 
     @hybrid_property
     def isSoldOut(self) -> bool:
@@ -593,11 +588,11 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     @property
     def isFromAllocine(self) -> bool:
-        return self.isFromProvider and self.lastProvider.isAllocine
+        return self.lastProvider is not None and self.lastProvider.isAllocine
 
     @property
     def isFromCinemaProvider(self) -> bool:
-        return self.isFromProvider and self.lastProvider.isCinemaProvider
+        return self.lastProvider is not None and self.lastProvider.isCinemaProvider
 
     @property
     def isBookable(self) -> bool:
