@@ -3,6 +3,7 @@ from decimal import Decimal
 from unittest import mock
 
 import pytest
+from sqlalchemy import exc as sa_exc
 
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import factories
@@ -517,10 +518,21 @@ class HasImageMixinTest:
         delete_public_object.assert_any_call(folder=image.FOLDER, object_id="image/123456_original.jpg")
 
 
-class CollectiveOffeTemplateIsEligibleForSearchTest:
+class CollectiveOfferTemplateIsEligibleForSearchTest:
     def test_is_eligible_for_search(self):
         searchable_offer = factories.CollectiveOfferTemplateFactory()
         virtual_venue = offerers_factories.VirtualVenueFactory()
         unsearchable_offer = factories.CollectiveOfferTemplateFactory(venue=virtual_venue)
         assert searchable_offer.is_eligible_for_search
         assert not unsearchable_offer.is_eligible_for_search
+
+
+class EducationalInstitutionProgramTest:
+    def test_unique_program_for_an_educational_institution(self):
+        program1 = factories.EducationalInstitutionProgramFactory()
+        program2 = factories.EducationalInstitutionProgramFactory()
+        institution = factories.EducationalInstitutionFactory(programs=[program1])
+
+        with pytest.raises(sa_exc.IntegrityError):
+            institution.programs = [program1, program2]
+            db.session.commit()
