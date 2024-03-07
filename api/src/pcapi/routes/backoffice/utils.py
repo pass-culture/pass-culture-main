@@ -42,6 +42,7 @@ BackofficeResponse = str | tuple[str, int] | WerkzeugResponse | Forbidden
 
 OPERATOR_DICT: dict[str, dict[str, typing.Any]] = {
     "EQUALS": {"function": op.eq},
+    "IS": {"function": op.eq},
     "NOT_EQUALS": {"function": op.ne},
     "STR_EQUALS": {"function": lambda x, y: func.lower(x) == y.lower()},
     "STR_NOT_EQUALS": {"function": lambda x, y: func.lower(x) != y.lower()},
@@ -50,6 +51,7 @@ OPERATOR_DICT: dict[str, dict[str, typing.Any]] = {
     "LESS_THAN": {"function": op.lt},
     "LESS_THAN_OR_EQUAL_TO": {"function": op.le},
     "IN": {"function": lambda x, y: x.in_(y)},
+    "NULLABLE": {"function": lambda x, y: x.is_(None) if y else x.is_not(None)},
     "NOT_IN": {"function": lambda x, y: x.not_in(y)},
     "CONTAINS": {"function": lambda x, y: x.ilike(f"%{y}%")},
     "NO_CONTAINS": {"function": lambda x, y: ~x.ilike(f"%{y}%")},
@@ -71,6 +73,7 @@ class AdvancedSearchOperators(enum.Enum):
     LESS_THAN = "inférieur strict"
     LESS_THAN_OR_EQUAL_TO = "inférieur ou égal"
     IN = "est parmi"
+    NULLABLE = "est"
     NOT_IN = "n'est pas parmi"
     CONTAINS = "contient"
     NO_CONTAINS = "ne contient pas"
