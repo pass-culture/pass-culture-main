@@ -20,6 +20,7 @@ import {
 import { Events } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared/types'
 import { SelectOption } from 'custom_types/form'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
@@ -76,6 +77,8 @@ const Bookings = <
   const [venues, setVenues] = useState<SelectOption[]>([])
   const [urlParams, setUrlParams] =
     useState<PreFiltersParams>(DEFAULT_PRE_FILTERS)
+
+  const isNewSideNavActive = useActiveFeature('WIP_ENABLE_PRO_SIDE_NAV')
 
   const resetPreFilters = useCallback(() => {
     setWereBookingsRequested(false)
@@ -231,24 +234,26 @@ const Bookings = <
   return (
     <div className="bookings-page">
       <Titles title="Réservations" />
-      <Tabs
-        nav="Réservations individuelles et collectives"
-        selectedKey={audience}
-        tabs={[
-          {
-            label: 'Réservations individuelles',
-            url: '/reservations',
-            key: 'individual',
-            icon: strokeUserIcon,
-          },
-          {
-            label: 'Réservations collectives',
-            url: '/reservations/collectives',
-            key: 'collective',
-            icon: strokeLibraryIcon,
-          },
-        ]}
-      />
+      {!isNewSideNavActive && (
+        <Tabs
+          nav="Réservations individuelles et collectives"
+          selectedKey={audience}
+          tabs={[
+            {
+              label: 'Réservations individuelles',
+              url: '/reservations',
+              key: 'individual',
+              icon: strokeUserIcon,
+            },
+            {
+              label: 'Réservations collectives',
+              url: '/reservations/collectives',
+              key: 'collective',
+              icon: strokeLibraryIcon,
+            },
+          ]}
+        />
+      )}
 
       <PreFilters
         appliedPreFilters={appliedPreFilters}
