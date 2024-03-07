@@ -3,7 +3,6 @@ import React from 'react'
 import { OfferStatus } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
-import { Banner } from 'ui-kit'
 import { CGU_URL } from 'utils/config'
 
 import styles from './OfferStatusBanner.module.scss'
@@ -14,7 +13,9 @@ interface OfferStatusBannerProps {
 const OfferStatusBanner = ({ status }: OfferStatusBannerProps): JSX.Element => {
   if (status === OfferStatus.REJECTED) {
     return (
-      <Banner
+      <Callout
+        variant={CalloutVariant.ERROR}
+        className={styles['callout-offre-refused']}
         links={[
           {
             href: CGU_URL,
@@ -27,13 +28,13 @@ const OfferStatusBanner = ({ status }: OfferStatusBannerProps): JSX.Element => {
         Générales d’Utilisation du pass. Un email contenant les conditions
         d’éligibilité d’une offre a été envoyé à l’adresse email attachée à
         votre compte.
-      </Banner>
+      </Callout>
     )
   } else if (status === OfferStatus.PENDING) {
     return (
       <Callout
-        className={styles['callout-email-adress']}
         variant={CalloutVariant.INFO}
+        className={styles['callout-offre-validation']}
       >
         Votre offre est en cours de validation par l’équipe du pass Culture.
         <b>
