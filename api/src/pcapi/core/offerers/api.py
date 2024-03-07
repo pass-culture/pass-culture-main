@@ -2189,3 +2189,10 @@ def set_accessibility_last_update_at_provider(venue: models.Venue) -> None:
         venue.accessibilityProvider.lastUpdateAtProvider = accessibility_provider.get_last_update_at_provider(
             slug=venue.accessibilityProvider.externalAccessibilityId
         )
+
+
+def set_accessibility_infos_from_provider_id(venue: models.Venue) -> None:
+    if venue.accessibilityProvider:
+        venue.accessibilityProvider.externalAccessibilityData = accessibility_provider.get_accessibility_infos(
+            slug=venue.accessibilityProvider.externalAccessibilityId
+        ).dict()

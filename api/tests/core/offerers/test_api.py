@@ -2774,3 +2774,13 @@ class AccessibilityProviderTest:
         offerers_factories.AccessibilityProviderFactory(venue=venue)
         offerers_api.set_accessibility_last_update_at_provider(venue)
         assert venue.accessibilityProvider.lastUpdateAtProvider == datetime.datetime(2024, 3, 1, 0, 0)
+
+    def test_set_accessibility_infos_from_provider_id(self):
+        venue = offerers_factories.VenueFactory(
+            name="Une librairie de test",
+            postalCode="75001",
+            city="Paris",
+        )
+        offerers_factories.AccessibilityProviderFactory(venue=venue)
+        offerers_api.set_accessibility_infos_from_provider_id(venue)
+        assert venue.accessibilityProvider.externalAccessibilityData["sound_beacon"] == ["Balise sonore"]
