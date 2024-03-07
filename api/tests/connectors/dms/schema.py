@@ -382,6 +382,7 @@ personne_physique_type = gql.GraphQLObjectType(
     fields={
         "civilite": gql.GraphQLField(gql.GraphQLNonNull(civilite_enum)),
         "dateDeNaissance": gql.GraphQLField(gql.GraphQLNonNull(gql.GraphQLString)),
+        "email": gql.GraphQLField(gql.GraphQLString),
         "id": gql.GraphQLField(gql.GraphQLNonNull(gql.GraphQLID)),
         "nom": gql.GraphQLField(gql.GraphQLNonNull(gql.GraphQLString)),
         "prenom": gql.GraphQLField(gql.GraphQLNonNull(gql.GraphQLString)),
