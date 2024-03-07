@@ -7,6 +7,8 @@ import pytest
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.providers import factories as providers_factories
+from pcapi.core.providers import models as providers_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 
@@ -17,9 +19,12 @@ pytestmark = [
 ]
 
 
-def _test_autocomplete(authenticated_client, endpoint: str, search_query: str, expected_texts: list[str]):
+def _test_autocomplete(
+    authenticated_client, endpoint: str, search_query: str, expected_texts: list[str], expected_num_queries: int = 0
+):
     # user + session + data requested
-    expected_num_queries = 3 if search_query.isnumeric() or len(search_query) >= 2 else 2
+    if not expected_num_queries:
+        expected_num_queries = 3 if search_query.isnumeric() or len(search_query) >= 2 else 2
 
     with assert_num_queries(expected_num_queries):
         response = authenticated_client.get(url_for(endpoint, q=search_query))
@@ -199,3 +204,42 @@ class AutocompleteBoUserTest:
         users_factories.ProFactory(firstName="Léa", lastName="Pro")
 
         _test_autocomplete(authenticated_client, "backoffice_web.autocomplete_bo_users", search_query, expected_texts)
+
+
+class AutocompleteProvidersTest:
+    @pytest.mark.parametrize(
+        "search_query, expected_texts, expected_queries",
+        [
+            ("", set(), 2),
+            (
+                "a",
+                {
+                    "A good id",
+                },
+                3,
+            ),
+            (
+                "bon",
+                {
+                    "Bon providér",
+                },
+                3,
+            ),
+            ("12", {"Bon providér"}, 3),
+            ("nothing", set(), 3),
+            ("912", {"A good id"}, 3),
+        ],
+    )
+    def test_autocomplete_providers(self, authenticated_client, search_query, expected_texts, expected_queries):
+        providers_models.Provider.query.delete()
+        providers_factories.ProviderFactory(id=12, name="Bon providér")
+        providers_factories.ProviderFactory(id=5, name="provider with number 12")
+        providers_factories.ProviderFactory(id=912, name="A good id")
+
+        _test_autocomplete(
+            authenticated_client,
+            "backoffice_web.autocomplete_providers",
+            search_query,
+            expected_texts,
+            expected_num_queries=expected_queries,
+        )

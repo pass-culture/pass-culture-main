@@ -908,7 +908,7 @@ def get_paginated_stocks(
 
 def get_synchronized_offers_with_provider_for_venue(venue_id: int, provider_id: int) -> flask_sqlalchemy.BaseQuery:
     return models.Offer.query.filter(models.Offer.venueId == venue_id).filter(
-        models.Offer.lastProviderId == provider_id  # pylint: disable=comparison-with-callable
+        models.Offer.lastProviderId == provider_id
     )
 
 
