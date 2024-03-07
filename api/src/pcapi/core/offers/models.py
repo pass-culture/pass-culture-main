@@ -972,6 +972,12 @@ class ValidationRuleOfferLink(PcObject, Base, Model):
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=False)
 
 
+class OfferPriceLimitationRule(PcObject, Base, Model):
+    __tablename__ = "offer_price_limitation_rule"
+    subcategoryId: str = sa.Column(sa.Text, nullable=False, unique=True)
+    rate: decimal.Decimal = sa.Column(sa.Numeric(5, 4), nullable=False)
+
+
 @dataclass
 class ReasonMeta:
     description: str
