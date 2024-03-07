@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import React, { useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -14,10 +15,12 @@ import { getVenuesOfOffererFromSiretAdapter } from 'core/Venue/adapters/getVenue
 import { useAdapter } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
+import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'
 import tempStrokeAddUserIcon from 'icons/temp-stroke-add-user.svg'
+import { updateUser } from 'store/user/reducer'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -30,6 +33,9 @@ const Offerers = (): JSX.Element => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const { currentUser } = useCurrentUser()
+
   const [isVenueListOpen, setIsVenueListOpen] = useState<boolean>(false)
   const [showLinkDialog, setShowLinkDialog] = useState<boolean>(false)
   const isNewOffererLinkEnabled = useActiveFeature(
@@ -98,6 +104,7 @@ const Offerers = (): JSX.Element => {
         siren: venuesOfOfferer?.offererSiren ?? '',
       }
       await api.createOfferer(request)
+      dispatch(updateUser({ ...currentUser, hasUserOfferer: true }))
       navigate('/parcours-inscription/structure/rattachement/confirmation')
     } catch (e) {
       notify.error('Impossible de lier votre compte à cette structure.')
