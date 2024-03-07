@@ -1643,7 +1643,16 @@ class EducationalInstitutionProgramAssociation(Base, Model):
     """
 
     institutionId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("educational_institution.id", ondelete="CASCADE"), index=True, primary_key=True
+        sa.BigInteger,
+        sa.ForeignKey("educational_institution.id", ondelete="CASCADE"),
+        index=True,
+        primary_key=True,
+        # Unique constraint has been added to ensure that an institution is not associated with more than one program.
+        # This is because of invoices generation in finance/api.py: there is no other way to guess that a collective
+        # booking relates to a program.
+        # If you wish to remove this constraint, please ensure that a relationship can be made between a collective
+        # booking and a program, then fix generate_invoice_file().
+        unique=True,
     )
     programId: int = sa.Column(
         sa.BigInteger,

@@ -2044,6 +2044,8 @@ def generate_invoice_file_legacy(batch: models.CashflowBatch) -> pathlib.Path:
                     == educational_models.EducationalInstitution.id,
                 ),
             )
+            # max 1 program because of unique constraint on EducationalInstitutionProgramAssociation.institutionId
+            .outerjoin(educational_models.EducationalInstitution.programs)
             .filter(models.Cashflow.batchId == batch.id)
             .group_by(
                 models.Invoice.id,
@@ -2052,6 +2054,7 @@ def generate_invoice_file_legacy(batch: models.CashflowBatch) -> pathlib.Path:
                 models.Invoice.reimbursementPointId,
                 models.PricingLine.category,
                 educational_models.EducationalDeposit.ministry,
+                educational_models.EducationalInstitutionProgram.id,
             )
             .with_entities(
                 models.Invoice.id,
@@ -2059,7 +2062,10 @@ def generate_invoice_file_legacy(batch: models.CashflowBatch) -> pathlib.Path:
                 models.Invoice.reference.label("invoice_reference"),
                 models.Invoice.reimbursementPointId.label("reimbursement_point_id"),
                 models.PricingLine.category.label("pricing_line_category"),
-                educational_models.EducationalDeposit.ministry.label("ministry"),
+                sqla.func.coalesce(
+                    educational_models.EducationalInstitutionProgram.label,
+                    educational_models.EducationalDeposit.ministry.cast(sqla.String),
+                ).label("ministry"),
                 sqla_func.sum(models.PricingLine.amount).label("pricing_line_amount"),
             )
         )
@@ -2192,6 +2198,8 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
                     == educational_models.EducationalInstitution.id,
                 ),
             )
+            # max 1 program because of unique constraint on EducationalInstitutionProgramAssociation.institutionId
+            .outerjoin(educational_models.EducationalInstitution.programs)
             .filter(models.Cashflow.batchId == batch.id)
             .group_by(
                 models.Invoice.id,
@@ -2200,6 +2208,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
                 models.Invoice.bankAccountId,
                 models.PricingLine.category,
                 educational_models.EducationalDeposit.ministry,
+                educational_models.EducationalInstitutionProgram.id,
             )
             .with_entities(
                 models.Invoice.id,
@@ -2207,7 +2216,10 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
                 models.Invoice.reference.label("invoice_reference"),
                 models.Invoice.bankAccountId.label("bank_account_id"),
                 models.PricingLine.category.label("pricing_line_category"),
-                educational_models.EducationalDeposit.ministry.label("ministry"),
+                sqla.func.coalesce(
+                    educational_models.EducationalInstitutionProgram.label,
+                    educational_models.EducationalDeposit.ministry.cast(sqla.String),
+                ).label("ministry"),
                 sqla_func.sum(models.PricingLine.amount).label("pricing_line_amount"),
             )
         )
