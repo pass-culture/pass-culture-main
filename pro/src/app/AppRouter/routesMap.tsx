@@ -178,6 +178,14 @@ const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
+        'pages/CollectiveOfferPreviewCreation/CollectiveOfferPreviewCreation'
+      ),
+    path: '/offre/:offerId/collectif/vitrine/creation/apercu',
+    title: 'Aperçu - Créer une offre vitrine',
+  },
+  {
+    lazy: () =>
+      import(
         'pages/CollectiveOfferSummaryCreation/CollectiveOfferSummaryCreation'
       ),
     path: '/offre/:offerId/collectif/vitrine/creation/recapitulatif',
