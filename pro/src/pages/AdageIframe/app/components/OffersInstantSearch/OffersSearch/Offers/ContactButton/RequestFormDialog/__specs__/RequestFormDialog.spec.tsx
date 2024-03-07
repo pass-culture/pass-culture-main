@@ -19,6 +19,7 @@ const renderRequestFormDialog = (props?: Partial<RequestFormDialogProps>) => {
       userEmail={'contact@example.com'}
       userRole={AdageFrontRoles.REDACTOR}
       {...props}
+      isPreview={false}
     />
   )
 }

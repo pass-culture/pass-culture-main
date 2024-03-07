@@ -14,11 +14,12 @@ import AdageOfferPartnerPanel, {
 function renderAdageOfferPartnerPanel(
   props: AdageOfferPartnerPanelProps = {
     offer: defaultCollectiveTemplateOffer,
-  },
-  user = defaultAdageUser
+    adageUser: defaultAdageUser,
+    isPreview: false,
+  }
 ) {
   return renderWithProviders(
-    <AdageUserContextProvider adageUser={user}>
+    <AdageUserContextProvider adageUser={defaultAdageUser}>
       <AdageOfferPartnerPanel {...props} />
     </AdageUserContextProvider>
   )
@@ -39,6 +40,7 @@ describe('AdageOfferPartnerPanel', () => {
         ...defaultCollectiveTemplateOffer,
         venue: { ...defaultCollectiveTemplateOffer.venue, adageId: '123' },
       },
+      adageUser: defaultAdageUser,
     })
 
     expect(
@@ -54,6 +56,7 @@ describe('AdageOfferPartnerPanel', () => {
         ...defaultCollectiveTemplateOffer,
         venue: { ...defaultCollectiveTemplateOffer.venue, adageId: undefined },
       },
+      adageUser: defaultAdageUser,
     })
 
     expect(
@@ -73,6 +76,7 @@ describe('AdageOfferPartnerPanel', () => {
           postalCode: '75000',
         },
       },
+      adageUser: defaultAdageUser,
     })
 
     expect(screen.getByText(/à Paris 75000/)).toBeInTheDocument()
@@ -88,6 +92,7 @@ describe('AdageOfferPartnerPanel', () => {
           postalCode: undefined,
         },
       },
+      adageUser: defaultAdageUser,
     })
 
     expect(screen.getByText(/à Paris/)).toBeInTheDocument()
@@ -103,26 +108,25 @@ describe('AdageOfferPartnerPanel', () => {
           postalCode: '75000',
         },
       },
+      adageUser: defaultAdageUser,
     })
 
     expect(screen.getByText(/75000/)).toBeInTheDocument()
   })
 
   it('should show the partner distance to school', () => {
-    renderAdageOfferPartnerPanel(
-      {
-        offer: {
-          ...defaultCollectiveTemplateOffer,
-          venue: {
-            ...defaultCollectiveTemplateOffer.venue,
-            coordinates: { latitude: 1, longitude: 1 },
-            city: undefined,
-            postalCode: undefined,
-          },
+    renderAdageOfferPartnerPanel({
+      offer: {
+        ...defaultCollectiveTemplateOffer,
+        venue: {
+          ...defaultCollectiveTemplateOffer.venue,
+          coordinates: { latitude: 1, longitude: 1 },
+          city: undefined,
+          postalCode: undefined,
         },
       },
-      { ...defaultAdageUser, lat: 2, lon: 2 }
-    )
+      adageUser: { ...defaultAdageUser, lat: 2, lon: 2 },
+    })
 
     expect(
       screen.getByText(/à 157 km de votre établissement scolaire/)

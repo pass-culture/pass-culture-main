@@ -1,7 +1,10 @@
-import { AdageFrontRoles, CollectiveOfferResponseModel } from 'apiClient/adage'
+import {
+  AdageFrontRoles,
+  AuthenticatedResponse,
+  CollectiveOfferResponseModel,
+} from 'apiClient/adage'
 import fullDeskIcon from 'icons/full-desk.svg'
 import strokeTeacherIcon from 'icons/stroke-teacher.svg'
-import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { getDateTimeToFrenchText, toDateStrippedOfTimezone } from 'utils/date'
 
@@ -12,12 +15,13 @@ import styles from './AdageOfferInstitutionPanel.module.scss'
 
 export type AdageOfferInstitutionPanelProps = {
   offer: CollectiveOfferResponseModel
+  adageUser: AuthenticatedResponse
 }
 
 export default function AdageOfferInstitutionPanel({
   offer,
+  adageUser,
 }: AdageOfferInstitutionPanelProps) {
-  const { adageUser } = useAdageUser()
   return (
     <div className={styles['institution-panel']}>
       <div className={styles['institution-panel-header']}>
