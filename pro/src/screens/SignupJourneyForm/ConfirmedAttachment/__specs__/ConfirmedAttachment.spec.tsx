@@ -24,7 +24,7 @@ const renderConfirmedAttachmentScreen = () => {
         path="/parcours-inscription/structure/rattachement/confirmation"
         element={<ConfirmedAttachment />}
       />
-      <Route path="/" element={<div>Home screen</div>} />
+      <Route path="/accueil" element={<div>Home screen</div>} />
     </Routes>,
     {
       storeOverrides,
