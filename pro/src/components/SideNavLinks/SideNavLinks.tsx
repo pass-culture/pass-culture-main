@@ -7,7 +7,6 @@ import { SAVED_OFFERER_ID_KEY } from 'core/shared'
 import useActiveFeature from 'hooks/useActiveFeature'
 import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'
-import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
 import strokeHomeIcon from 'icons/stroke-home.svg'
 import strokePhoneIcon from 'icons/stroke-phone.svg'
@@ -119,6 +118,19 @@ const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                 </span>
               </NavLink>
               <NavLink
+                to="/reservations"
+                end
+                className={({ isActive }) =>
+                  classnames(styles['nav-links-item'], {
+                    [styles['nav-links-item-active']]: isActive,
+                  })
+                }
+              >
+                <span className={styles['nav-links-item-without-icon']}>
+                  Réservations
+                </span>
+              </NavLink>
+              <NavLink
                 to="/guichet"
                 className={({ isActive }) =>
                   classnames(styles['nav-links-item'], {
@@ -154,38 +166,35 @@ const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
             />
           </button>
           {isCollectiveSectionOpen && (
-            <NavLink
-              to="/offres/collectives"
-              className={({ isActive }) =>
-                classnames(styles['nav-links-item'], {
-                  [styles['nav-links-item-active']]: isActive,
-                })
-              }
-            >
-              <span className={styles['nav-links-item-without-icon']}>
-                Offres
-              </span>
-            </NavLink>
+            <>
+              <NavLink
+                to="/offres/collectives"
+                className={({ isActive }) =>
+                  classnames(styles['nav-links-item'], {
+                    [styles['nav-links-item-active']]: isActive,
+                  })
+                }
+              >
+                <span className={styles['nav-links-item-without-icon']}>
+                  Offres
+                </span>
+              </NavLink>
+              <NavLink
+                to="/reservations/collectives"
+                end
+                className={({ isActive }) =>
+                  classnames(styles['nav-links-item'], {
+                    [styles['nav-links-item-active']]: isActive,
+                  })
+                }
+              >
+                <span className={styles['nav-links-item-without-icon']}>
+                  Réservations
+                </span>
+              </NavLink>
+            </>
           )}
         </li>
-        <li>
-          <NavLink
-            to="/reservations"
-            className={({ isActive }) =>
-              classnames(styles['nav-links-item'], {
-                [styles['nav-links-item-active']]: isActive,
-              })
-            }
-          >
-            <SvgIcon
-              alt=""
-              src={strokeCalendarIcon}
-              width={NAV_ITEM_ICON_SIZE}
-            />
-            Réservations
-          </NavLink>
-        </li>
-
         {isOffererStatsActive && (
           <li>
             <NavLink
