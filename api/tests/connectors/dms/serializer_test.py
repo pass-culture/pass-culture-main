@@ -84,6 +84,29 @@ class ParseBeneficiaryInformationTest:
         assert content.address == "32 rue des sapins gris 21350 l'îsle à dent"
         assert content.id_piece_number == "K682T8YLO"
 
+    def test_new_procedure_made_for_beneficiary_by_representative(self):
+        raw_data = fixture.make_new_stranger_application()
+        procedure_made_by_representative = {
+            **raw_data,
+            "demandeur": {**raw_data.get("demandeur"), "nom": "DOE", "prenom": "John", "email": "john.doe@example.com"},
+        }
+        content = dms_serializer.parse_beneficiary_information_graphql(
+            dms_models.DmsApplicationResponse(**procedure_made_by_representative)
+        )
+        assert content.last_name == "DOE"
+        assert content.first_name == "John"
+        assert content.civility == users_models.GenderEnum.M
+        assert content.email == "john.doe@example.com"
+        assert content.application_number == 5742994
+        assert content.procedure_number == settings.DMS_ENROLLMENT_PROCEDURE_ID_ET
+        assert content.department is None
+        assert content.birth_date == date(2006, 5, 12)
+        assert content.phone == "0601010101"
+        assert content.postal_code == "92700"
+        assert content.activity == "Employé"
+        assert content.address == "32 rue des sapins gris 21350 l'îsle à dent"
+        assert content.id_piece_number == "K682T8YLO"
+
     def test_processed_datetime_none(self):
         raw_data = fixture.make_graphql_application(1, "en_construction", processed_datetime=None)
         content = dms_serializer.parse_beneficiary_information_graphql(dms_models.DmsApplicationResponse(**raw_data))
