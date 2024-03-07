@@ -25,7 +25,6 @@ import { setInitialFormValues } from './setInitialFormValues'
 import styles from './VenueEdition.module.scss'
 import { VenueEditionFormScreen } from './VenueEditionFormScreen'
 import { VenueEditionHeader } from './VenueEditionHeader'
-import { VenueEditionReadOnly } from './VenueEditionReadOnly'
 
 export const VenueEdition = (): JSX.Element | null => {
   const homePath = '/accueil'
@@ -122,16 +121,6 @@ export const VenueEdition = (): JSX.Element | null => {
         <Tabs tabs={tabs} selectedKey={activeStep} className={styles['tabs']} />
 
         <Routes>
-          <Route path="" element={<VenueEditionReadOnly venue={venue} />} />
-          <Route
-            path="/edition"
-            element={
-              <VenueEditionFormScreen
-                initialValues={setInitialFormValues(venue)}
-                venue={venue}
-              />
-            }
-          />
           <Route
             path="eac"
             element={<CollectiveDataEditionReadOnly venue={venue} />}
@@ -139,6 +128,15 @@ export const VenueEdition = (): JSX.Element | null => {
           <Route
             path="eac/edition"
             element={<CollectiveDataEdition venue={venue} />}
+          />
+          <Route
+            path="*"
+            element={
+              <VenueEditionFormScreen
+                initialValues={setInitialFormValues(venue)}
+                venue={venue}
+              />
+            }
           />
         </Routes>
       </div>
