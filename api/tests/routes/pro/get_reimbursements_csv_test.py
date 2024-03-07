@@ -114,6 +114,62 @@ def test_with_reimbursement_period_filter(client):
 
 
 @pytest.mark.usefixtures("db_session")
+@override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
+def test_with_old_payments_data_in_the_new_journey(client):
+    period = datetime.date(2021, 1, 1), datetime.date(2021, 1, 15)
+    user_offerer = offerers_factories.UserOffererFactory()
+    offerer = user_offerer.offerer
+    pro = user_offerer.user
+    finance_factories.PaymentStatusFactory(
+        payment__booking__stock__offer__venue__managingOfferer=offerer,
+        payment__booking__stock__offer__venue__pricing_point="self",
+        status=finance_models.TransactionStatus.SENT,
+        payment__transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 01-21",
+        date=datetime.datetime(2021, 1, 1),  # in requested period
+    )
+    finance_factories.PaymentStatusFactory(
+        payment__booking__stock__offer__venue__managingOfferer=offerer,
+        payment__booking__stock__offer__venue__pricing_point="self",
+        status=finance_models.TransactionStatus.SENT,
+        payment__transactionLabel="xxx",
+        date=datetime.datetime(2020, 12, 1),  # before requested period
+    )
+    finance_factories.PaymentStatusFactory(
+        payment__booking__stock__offer__venue__managingOfferer=offerer,
+        payment__booking__stock__offer__venue__pricing_point="self",
+        status=finance_models.TransactionStatus.SENT,
+        payment__transactionLabel="pass Culture Pro - remboursement 2ème quinzaine 01-21",
+        date=datetime.datetime(2021, 1, 4),  # in requested period
+    )
+    finance_factories.PaymentStatusFactory(
+        payment__booking__stock__offer__venue__managingOfferer=offerer,
+        payment__booking__stock__offer__venue__pricing_point="self",
+        status=finance_models.TransactionStatus.SENT,
+        payment__transactionLabel="xxx",
+        date=datetime.datetime(2021, 2, 1),  # after requested period
+    )
+
+    # When
+    client = client.with_session_auth(pro.email)
+    response = client.get(
+        "/reimbursements/csv?"
+        + urllib.parse.urlencode(
+            {
+                "reimbursementPeriodBeginningDate": period[0].isoformat(),
+                "reimbursementPeriodEndingDate": period[1].isoformat(),
+            }
+        )
+    )
+
+    # Then
+    assert response.status_code == 200
+    assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
+    assert response.headers["Content-Disposition"] == "attachment; filename=remboursements_pass_culture.csv"
+    rows = response.data.decode("utf-8").splitlines()
+    assert len(rows) == 1 + 2  # header + payments
+
+
+@pytest.mark.usefixtures("db_session")
 def test_without_reimbursement_period(client):
     user_offerer = offerers_factories.UserOffererFactory()
     pro = user_offerer.user
