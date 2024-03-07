@@ -552,4 +552,35 @@ ACCESLIBRE_RESULTS_BY_SLUG = {
     "created_at": "2021-06-24T10:59:42.023966+02:00",
 }
 
+
+ACCESLIBRE_WIDGET_RESULT = {
+    "slug": "mon-super-slug",
+    "sections": [
+        {
+            "title": "stationnement",
+            "labels": ["Stationnement adapté dans l'établissement"],
+            "icon": "https://recette.acceslibre.info/static/img/car.png",
+        },
+        {
+            "title": "accès",
+            "labels": ["Chemin d'accès de plain pied", "Entrée de plain pied"],
+            "icon": "https://recette.acceslibre.info/static/img/path.png",
+        },
+        {
+            "title": "personnel",
+            "labels": ["Personnel sensibilisé / formé"],
+            "icon": "https://recette.acceslibre.info/static/img/people.png",
+        },
+        {
+            "title": "audiodescription",
+            "labels": ["avec équipement occasionnel selon la programmation"],
+            "icon": "https://recette.acceslibre.info/static/img/audiodescription.png",
+        },
+        {
+            "title": "sanitaire",
+            "labels": ["Sanitaire adapté"],
+            "icon": "https://recette.acceslibre.info/static/img/wc.png",
+        },
+    ],
+}
 ACCESLIBRE_RESULTS_EMPTY = {"count": 0, "page_size": 50, "next": None, "previous": None, "results": []}
