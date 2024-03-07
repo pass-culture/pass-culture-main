@@ -1,5 +1,5 @@
 import { FormikProvider, useFormik } from 'formik'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
@@ -17,6 +17,7 @@ import { VenueEditionFormValues } from './types'
 import { getValidationSchema } from './validationSchema'
 import { VenueEditionForm } from './VenueEditionForm'
 import styles from './VenueEditionFormScreen.module.scss'
+import { VenueEditionReadOnly } from './VenueEditionReadOnly'
 
 interface VenueEditionProps {
   initialValues: VenueEditionFormValues
@@ -105,20 +106,34 @@ export const VenueEditionFormScreen = ({
   return (
     <>
       {venue.isPermanent && (
-        <>
-          <Callout title="Les informations que vous renseignez ci-dessous sont affichées dans votre page partenaire, visible sur l’application pass Culture" />
+        <div className={styles['page-status']}>
+          <Callout title="À propos de votre page partenaire">
+            Les informations que vous renseignez ici seront affichées dans votre
+            page partenaire, visible sur l’application pass Culture.
+          </Callout>
           <PartnerPageIndividualSection
             venueId={venue.id}
             isVisibleInApp={Boolean(venue.isVisibleInApp)}
           />
-        </>
+        </div>
       )}
 
-      <FormikProvider value={formik}>
-        <form onSubmit={formik.handleSubmit} className={styles['venue-form']}>
-          <VenueEditionForm venue={venue} />
-        </form>
-      </FormikProvider>
+      <Routes>
+        <Route path="" element={<VenueEditionReadOnly venue={venue} />} />
+        <Route
+          path="/edition"
+          element={
+            <FormikProvider value={formik}>
+              <form
+                onSubmit={formik.handleSubmit}
+                className={styles['venue-form']}
+              >
+                <VenueEditionForm venue={venue} />
+              </form>
+            </FormikProvider>
+          }
+        />
+      </Routes>
     </>
   )
 }

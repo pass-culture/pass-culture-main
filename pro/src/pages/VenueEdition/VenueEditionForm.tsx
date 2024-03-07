@@ -17,8 +17,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   return (
     <div>
       <FormLayout fullWidthActions>
-        <FormLayout.MandatoryInfo />
-
         {!venue.isVirtual && (
           <FormLayout.Section
             title="À propos de votre activité"
