@@ -1,5 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
 
-.callout-email-adress {
-    margin-top: rem.torem(24px);
+.callout-offre-refused, .callout-offre-validation {
+     margin-top: rem.torem(16px); 
 }
