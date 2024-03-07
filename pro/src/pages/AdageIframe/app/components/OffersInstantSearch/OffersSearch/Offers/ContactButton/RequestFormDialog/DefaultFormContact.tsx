@@ -12,11 +12,13 @@ import { RequestFormValues } from './type'
 type DefaultFormContactProps = {
   closeRequestFormDialog: () => void
   formik: FormikContextType<RequestFormValues>
+  isPreview: boolean
 }
 
 const DefaultFormContact = ({
   closeRequestFormDialog,
   formik,
+  isPreview,
 }: DefaultFormContactProps) => {
   return (
     <FormikProvider value={formik}>
@@ -77,6 +79,7 @@ const DefaultFormContact = ({
             <SubmitButton
               iconPosition={IconPositionEnum.LEFT}
               icon={fullMailIcon}
+              disabled={isPreview}
             >
               Envoyer ma demande
             </SubmitButton>

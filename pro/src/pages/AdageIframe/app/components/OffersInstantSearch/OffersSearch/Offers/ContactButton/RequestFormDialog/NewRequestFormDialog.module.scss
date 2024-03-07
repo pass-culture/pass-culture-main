@@ -7,6 +7,17 @@
   text-align: left;
 }
 
+.contact-callout {
+  margin-bottom: rem.torem(16px);
+  max-width: rem.torem(460px);
+}
+
+.contact-readonly {
+  margin-top: rem.torem(16px);
+  max-width: rem.torem(460px);
+}
+
+
 .contact-info-container {
   display: flex;
   flex-direction: column;
