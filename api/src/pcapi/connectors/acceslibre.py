@@ -9,6 +9,7 @@ import json
 import logging
 
 from dateutil import parser
+import pydantic.v1 as pydantic_v1
 from rapidfuzz import fuzz
 
 from pcapi import settings
@@ -21,6 +22,31 @@ logger = logging.getLogger(__name__)
 ACCESLIBRE_REQUEST_TIMEOUT = 3
 REQUEST_PAGE_SIZE = 50
 MATCHING_RATIO = 50
+
+
+class AccesLibreApiException(Exception):
+    pass
+
+
+class AccessibilityParsingException(Exception):
+    pass
+
+
+class AccessibilityInfo(pydantic_v1.BaseModel):
+    access_modality: list[str] = pydantic_v1.Field(default_factory=list)
+    audio_description: list[str] = pydantic_v1.Field(default_factory=list)
+    deaf_and_hard_of_hearing_amenities: list[str] = pydantic_v1.Field(default_factory=list)
+    facilities: list[str] = pydantic_v1.Field(default_factory=list)
+    sound_beacon: list[str] = pydantic_v1.Field(default_factory=list)
+    trained_personnal: list[str] = pydantic_v1.Field(default_factory=list)
+    transport_modality: list[str] = pydantic_v1.Field(default_factory=list)
+
+    @pydantic_v1.root_validator(pre=True)
+    def set_default_to_empty_list(cls, values: dict) -> dict:
+        for field_name, field_value in values.items():
+            if field_value is None:
+                values[field_name] = []
+        return values
 
 
 def _get_backend() -> "BaseBackend":
@@ -53,6 +79,13 @@ def get_last_update_at_provider(slug: str) -> datetime:
     return _get_backend().get_last_update_at_provider(slug)
 
 
+def get_accessibility_infos(slug: str) -> AccessibilityInfo:
+    """Fetch accessibility data from acceslibre and save them in an AccessibilityInfo object
+    This object will then be saved in db in the AccessibilityProvider.externalAccessibilityData JSONB
+    """
+    return _get_backend().get_accessibility_infos(slug=slug)
+
+
 def match_by_name(results_at_provider: list[dict[str, str]], name: str, public_name: str | None) -> str | None:
     name = name.lower()
     public_name = public_name.lower() if public_name else "PUBLIC_NAME_MISSING"
@@ -73,8 +106,24 @@ def match_by_name(results_at_provider: list[dict[str, str]], name: str, public_n
     return None
 
 
-class AccesLibreApiException(Exception):
-    pass
+def acceslibre_to_accessibility_infos(response: dict) -> AccessibilityInfo:
+    accessibility_infos = AccessibilityInfo()
+    for section in response["sections"]:
+        if section["title"] == "accès":
+            accessibility_infos.access_modality = section["labels"]
+        elif section["title"] == "audiodescription":
+            accessibility_infos.audio_description = section["labels"]
+        elif section["title"] == "équipements sourd et malentendant":
+            accessibility_infos.deaf_and_hard_of_hearing_amenities = section["labels"]
+        elif section["title"] == "sanitaire":
+            accessibility_infos.facilities = section["labels"]
+        elif section["title"] == "balise sonore":
+            accessibility_infos.sound_beacon = section["labels"]
+        elif section["title"] == "personnel":
+            accessibility_infos.trained_personnal = section["labels"]
+        elif section["title"] == "stationnement":
+            accessibility_infos.transport_modality = section["labels"]
+    return accessibility_infos
 
 
 class BaseBackend:
@@ -92,6 +141,9 @@ class BaseBackend:
     def get_last_update_at_provider(self, slug: str) -> datetime:
         raise NotImplementedError()
 
+    def get_accessibility_infos(self, slug: str) -> AccessibilityInfo:
+        raise NotImplementedError()
+
 
 class TestingBackend(BaseBackend):
     def find_venue_at_accessibility_provider(
@@ -107,6 +159,9 @@ class TestingBackend(BaseBackend):
 
     def get_last_update_at_provider(self, slug: str) -> datetime:
         return datetime(2024, 3, 1, 0, 0)
+
+    def get_accessibility_infos(self, slug: str) -> AccessibilityInfo:
+        return AccessibilityInfo(sound_beacon=["Balise sonore"])
 
 
 class AcceslibreBackend(BaseBackend):
@@ -199,3 +254,7 @@ class AcceslibreBackend(BaseBackend):
         if updated_at > created_at:
             return updated_at
         return created_at
+
+    def get_accessibility_infos(self, slug: str) -> AccessibilityInfo:
+        accesslibre_data = self._send_request_with_slug(slug=slug)
+        return acceslibre_to_accessibility_infos(accesslibre_data)

@@ -70,3 +70,13 @@ class AcceslibreTest:
         )
         last_update = acceslibre.get_last_update_at_provider(slug=slug)
         assert last_update == parser.isoparse("2023-04-13T15:10:25.612731+02:00")
+
+    def test_get_accessibility_infos_from_widget(self, requests_mock):
+        slug = "mon-super-slug"
+        requests_mock.get(
+            f"https://acceslibre.beta.gouv.fr/api/erps/{slug}",
+            json=fixtures.ACCESLIBRE_WIDGET_RESULT,
+        )
+        accessibility_infos = acceslibre.get_accessibility_infos(slug)
+        assert accessibility_infos.trained_personnal == ["Personnel sensibilisé / formé"]
+        assert accessibility_infos.access_modality == ["Chemin d'accès de plain pied", "Entrée de plain pied"]
