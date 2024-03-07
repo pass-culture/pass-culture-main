@@ -23,6 +23,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices impo
     create_specific_invoice_with_bank_account,
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import create_specific_invoice
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_price_limitation_rules import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_validation_rules import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_with_custom_reimbursement_rule import (
     create_industrial_offerer_with_custom_reimbursement_rule,
@@ -44,6 +45,7 @@ def save_test_cases_sandbox() -> None:
     create_offers_for_each_subcategory()
     create_offers_with_same_author()
     create_roles_with_permissions()
+    create_industrial_offer_price_limitation_rules()
     create_industrial_offer_validation_rules()
     create_industrial_gdpr_users()
     create_industrial_offerer_with_custom_reimbursement_rule()
