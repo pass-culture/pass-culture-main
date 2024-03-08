@@ -18,7 +18,5 @@ export const SummarySubSection = ({
     <h3 className={style['summary-layout-sub-section-title']}>{title}</h3>
 
     {children}
-
-    <div className={style['summary-layout-sub-section-separator']}></div>
   </div>
 )
