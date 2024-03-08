@@ -1,35 +1,37 @@
 import { CONSTANTS } from '../../support/constants'
 
+const connexionLinkExpected = '/connexion'
+
 describe('page connexion', () => {
   it('verify connexion page conformity', () => {
-    cy.visit('/connexion')
+    cy.visit(CONSTANTS.connexionLink)
 
-    cy.url().should('include', '/connexion')
+    cy.url().should('include', connexionLinkExpected)
 
     cy.get(CONSTANTS.emailId).should('exist')
 
     cy.get(CONSTANTS.passwordId).should('exist')
 
-    cy.contains('Mot de passe oublié ?')
+    cy.contains(CONSTANTS.forgotPasswordText)
       .should('have.attr', 'href')
-      .and('include', CONSTANTS.request_password_link)
+      .and('include', CONSTANTS.requestPasswordLink)
 
-    cy.contains('Se connecter').should('be.disabled')
+    cy.contains(CONSTANTS.signInButton).should('be.disabled')
 
-    cy.contains('Créer un compte').should('not.be.disabled')
+    cy.contains(CONSTANTS.signUpButton).should('not.be.disabled')
 
-    cy.contains('Consulter nos recommandations de sécurité')
+    cy.contains(CONSTANTS.securityRecommendationsText)
       .should('have.attr', 'href')
-      .and('include', CONSTANTS.security_recommendations_link)
+      .and('include', CONSTANTS.securityRecommendationsLink)
 
-    cy.contains('CGU professionnels')
+    cy.contains(CONSTANTS.termsAndConditionsProfessionalsText)
       .should('have.attr', 'href')
-      .and('include', CONSTANTS.terms_and_conditions_professionals_link)
+      .and('include', CONSTANTS.termsAndConditionsProfessionalsLink)
 
-    cy.contains('Charte des Données Personnelles')
+    cy.contains(CONSTANTS.personalDataText)
       .should('have.attr', 'href')
-      .and('include', CONSTANTS.personal_data_link)
+      .and('include', CONSTANTS.personalDataLink)
 
-    cy.contains('Gestion des cookies').should('exist')
+    cy.contains(CONSTANTS.cookieManagementWindow).should('exist')
   })
 })
