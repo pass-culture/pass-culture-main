@@ -1,3 +1,6 @@
+from pcapi.sandboxes.scripts.creators.industrial.add_accessibility_compliance_to_venues import (
+    add_accessibility_compliance_to_venues,
+)
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_admin_users import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_app_users import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bank_accounts import create_industrial_bank_accounts
@@ -133,3 +136,5 @@ def save_industrial_sandbox() -> None:
     create_industrial_bank_accounts()
 
     create_industrial_venues_with_timezone()
+
+    add_accessibility_compliance_to_venues()
