@@ -6,10 +6,10 @@ import { RouteConfig } from 'app/AppRouter/routesMap'
 export const routesVenueEdition: RouteConfig[] = [
   {
     path: '/structures/:offererId/lieux/:venueId',
-    title: 'Modifier un lieu',
+    title: 'Modifier ma page partenaire',
   },
   {
     path: '/structures/:offererId/lieux/:venueId/eac',
-    title: 'Modifier les informations pour les enseignants d’un lieu',
+    title: 'Modifier ma page partenaire',
   },
 ]
