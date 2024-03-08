@@ -474,6 +474,13 @@ class AlgoliaBackend(base.SearchBackend):
         gtl_id = product_extra_data.get("gtl_id")
         gtl = titelive_gtl.get_gtl(gtl_id) if gtl_id else None
 
+        gtl_code_1 = gtl_code_2 = gtl_code_3 = gtl_code_4 = None
+        if gtl_id:
+            gtl_code_1 = gtl_id[:2] + "00" * 3
+            gtl_code_2 = gtl_id[:4] + "00" * 2
+            gtl_code_3 = gtl_id[:6] + "00" * 1
+            gtl_code_4 = gtl_id
+
         # If you update this dictionary, please check whether you need to
         # also update `core.offerers.api.VENUE_ALGOLIA_INDEXED_FIELDS`.
         object_to_index = {
@@ -491,10 +498,10 @@ class AlgoliaBackend(base.SearchBackend):
                 "gtl_level2": gtl.get("level_02_label") if gtl else None,
                 "gtl_level3": gtl.get("level_03_label") if gtl else None,
                 "gtl_level4": gtl.get("level_04_label") if gtl else None,
-                "gtlCodeLevel1": gtl.get("level_01_code") if gtl else None,
-                "gtlCodeLevel2": gtl.get("level_02_code") if gtl else None,
-                "gtlCodeLevel3": gtl.get("level_03_code") if gtl else None,
-                "gtlCodeLevel4": gtl.get("level_04_code") if gtl else None,
+                "gtlCodeLevel1": gtl_code_1,
+                "gtlCodeLevel2": gtl_code_2,
+                "gtlCodeLevel3": gtl_code_3,
+                "gtlCodeLevel4": gtl_code_4,
                 "isDigital": offer.isDigital,
                 "isDuo": offer.isDuo,
                 "isEducational": False,
