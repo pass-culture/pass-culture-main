@@ -49,12 +49,6 @@ class OfferStockResponse(BaseModel):
 
 
 class OfferVenueResponse(BaseModel):
-    @classmethod
-    def from_orm(cls, venue: offerers_models.Venue) -> "OfferVenueResponse":
-        venue.coordinates = {"latitude": venue.latitude, "longitude": venue.longitude}
-        result = super().from_orm(venue)
-        return result
-
     id: int
     address: str | None
     city: str | None
@@ -70,6 +64,12 @@ class OfferVenueResponse(BaseModel):
     class Config:
         orm_mode = True
         allow_population_by_field_name = True
+
+    @classmethod
+    def from_orm(cls, venue: offerers_models.Venue) -> "OfferVenueResponse":
+        venue.coordinates = {"latitude": venue.latitude, "longitude": venue.longitude}
+        result = super().from_orm(venue)
+        return result
 
 
 class CategoryResponseModel(BaseModel):
