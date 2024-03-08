@@ -32,7 +32,7 @@ class CheckOffererSirenRequest(BaseModel):
     tag_when_inactive: bool
 
 
-@task(settings.GCP_CHECK_OFFERER_SIREN_QUEUE_NAME, "/offerers/check_offerer_is_active", task_request_timeout=3 * 60)  # type: ignore [arg-type]
+@task(settings.GCP_CHECK_OFFERER_SIREN_QUEUE_NAME, "/offerers/check_offerer", task_request_timeout=3 * 60)  # type: ignore [arg-type]
 def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
     try:
         siren_info = sirene.get_siren(payload.siren, with_address=False, raise_if_non_public=False)
