@@ -56,7 +56,6 @@ export const VenueCreationForm = ({
   useScrollToFirstErrorAfterSubmit()
   const user = useCurrentUser()
 
-  useState(false)
   const [isFieldNameFrozen, setIsFieldNameFrozen] = useState(false)
   const [isSiretValued, setIsSiretValued] = useState(true)
   const canOffererCreateCollectiveOffer = offerer.allowedOnAdage

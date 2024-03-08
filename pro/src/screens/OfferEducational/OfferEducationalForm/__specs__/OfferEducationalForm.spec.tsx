@@ -1,4 +1,4 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { Formik } from 'formik'
 
 import {
@@ -56,10 +56,8 @@ describe('OfferEducationalForm', () => {
     ).toBeInTheDocument()
   })
 
-  it('should not render price details if offer is not template', async () => {
+  it('should not render price details if offer is not template', () => {
     renderOfferEducationalForm({ ...defaultProps, isTemplate: false })
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(
       screen.queryByRole('heading', { name: 'Prix' })
@@ -73,16 +71,15 @@ describe('OfferEducationalForm', () => {
     ).toBeInTheDocument()
   })
 
-  it('should not show the dates section if the offer is not a template', async () => {
+  it('should not show the dates section if the offer is not a template', () => {
     renderOfferEducationalForm({ ...defaultProps, isTemplate: false })
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(
       screen.queryByRole('heading', { name: 'Date et heure' })
     ).not.toBeInTheDocument()
   })
 
-  it('should show the custom form section if the FF is enabled', async () => {
+  it('should show the custom form section if the FF is enabled', () => {
     renderOfferEducationalForm(
       {
         ...defaultProps,
@@ -93,22 +90,18 @@ describe('OfferEducationalForm', () => {
       }
     )
 
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
     expect(screen.getByRole('checkbox', { name: 'Par email' }))
     expect(screen.getByRole('checkbox', { name: 'Par téléphone' }))
     expect(screen.getByRole('checkbox', { name: 'Via un formulaire' }))
   })
 
-  it('should have no custom contact checked initially', async () => {
+  it('should have no custom contact checked initially', () => {
     renderOfferEducationalForm(
       { ...defaultProps, isTemplate: true },
       {
         features: ['WIP_ENABLE_COLLECTIVE_CUSTOM_CONTACT'],
       }
     )
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(
       screen.getByRole('checkbox', { name: 'Par email' })

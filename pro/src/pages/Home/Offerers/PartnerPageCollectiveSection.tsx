@@ -13,7 +13,6 @@ import styles from './PartnerPage.module.scss'
 export type PartnerPageCollectiveSectionProps = {
   collectiveDmsApplications: DMSApplicationForEAC[]
   venueId: number
-  hasAdageId: boolean
   allowedOnAdage: boolean
   isDisplayedInHomepage?: boolean
 }
@@ -21,7 +20,6 @@ export type PartnerPageCollectiveSectionProps = {
 export function PartnerPageCollectiveSection({
   collectiveDmsApplications,
   venueId,
-  hasAdageId,
   allowedOnAdage,
   isDisplayedInHomepage = false,
 }: PartnerPageCollectiveSectionProps) {
@@ -51,7 +49,7 @@ export function PartnerPageCollectiveSection({
     </span>
   )
 
-  if (hasAdageId && allowedOnAdage) {
+  if (allowedOnAdage) {
     return (
       <section className={styles['details']}>
         <div>
@@ -67,7 +65,7 @@ export function PartnerPageCollectiveSection({
         )}
       </section>
     )
-  } else if (lastDmsApplication === null || !allowedOnAdage) {
+  } else if (lastDmsApplication === null) {
     return (
       <section className={styles['details']}>
         <div>

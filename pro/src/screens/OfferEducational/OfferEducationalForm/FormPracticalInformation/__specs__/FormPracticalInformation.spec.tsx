@@ -9,8 +9,8 @@ import {
   INTERVENTION_AREA_LABEL,
 } from 'screens/OfferEducational/constants/labels'
 import {
-  getOfferVenueFactory,
   getOfferManagingOffererFactory,
+  getOfferVenueFactory,
 } from 'utils/individualApiFactories'
 
 import FormPracticalInformation, {
