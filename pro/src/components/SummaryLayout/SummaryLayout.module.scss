@@ -28,22 +28,14 @@
     margin-bottom: rem.torem(40px);
 
     &-header {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: rem.torem(24px);
-
-      &-content {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-      }
 
       &-edit-link {
         height: unset;
-      }
-
-      &-separator {
-        border-bottom: rem.torem(2px) solid colors.$black;
-        margin-top: rem.torem(8px);
       }
     }
   }
@@ -54,21 +46,12 @@
     &-title {
       @include fonts.title4;
 
-      margin-bottom: rem.torem(8px);
-    }
-
-    &-separator {
-      border-bottom: rem.torem(1px) solid colors.$grey-medium;
-      margin-top: rem.torem(24px);
-    }
-
-    &:last-child &-separator {
-      border: none;
+      margin-bottom: rem.torem(24px);
     }
   }
 
   &-row {
-    margin-bottom: rem.torem(8px);
+    margin-bottom: rem.torem(16px);
     max-width: 100%;
 
     &-title {
