@@ -170,6 +170,29 @@ class CheckOffererIsActiveTest:
             ],
         )
 
+    @override_features(ENABLE_CODIR_OFFERERS_REPORT=True)
+    @patch("pcapi.connectors.googledrive.TestingBackend.append_to_spreadsheet", return_value=1)
+    @patch("pcapi.connectors.googledrive.TestingBackend.search_file", return_value="report-file-id")
+    def test_inactive_offerer_already_tagged(
+        self, mock_search_file, mock_append_to_spreadsheet, client, siren_caduc_tag
+    ):
+        # Using TestingBackend:
+        # SIREN makes offerer inactive (ends with 99), late for taxes (third digit is 9), SARL (fourth digit is 5)
+        offerer = offerers_factories.OffererFactory(siren="109500099", tags=[siren_caduc_tag])
+
+        response = client.post(
+            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer_is_active",
+            json={"siren": offerer.siren, "tag_when_inactive": True},
+            headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
+        )
+
+        assert response.status_code == 204
+        assert offerer.tags == [siren_caduc_tag]
+        assert history_models.ActionHistory.query.count() == 0  # tag already set, no change made
+
+        mock_search_file.assert_called_once()
+        mock_append_to_spreadsheet.assert_called_once()
+
     @override_features(ENABLE_CODIR_OFFERERS_REPORT=False)
     def test_reject_inactive_offerer_waiting_for_validation(self, client, siren_caduc_tag):
         # Using TestingBackend: SIREN makes offerer inactive (ends with 99), EI

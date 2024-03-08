@@ -1,6 +1,8 @@
 import datetime
 import logging
 
+import sqlalchemy as sa
+
 from pcapi import settings
 from pcapi.connectors import googledrive
 from pcapi.connectors.entreprise import api as entreprise_api
@@ -21,6 +23,8 @@ from pcapi.utils.urls import build_backoffice_offerer_link
 
 
 logger = logging.getLogger(__name__)
+
+CLOSED_OFFERER_TAG_NAME = "siren-caduc"
 
 
 class CheckOffererSirenRequest(BaseModel):
@@ -43,17 +47,23 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
         # Nothing to do
         return
 
-    offerer = offerers_repository.find_offerer_by_siren(payload.siren)
+    offerer = (
+        offerers_models.Offerer.query.filter_by(siren=payload.siren)
+        .options(sa.orm.joinedload(offerers_models.Offerer.tags).load_only(offerers_models.OffererTag.name))
+        .one_or_none()
+    )
     if not offerer:
         # This should not happen, unless offerer has been deleted between cron task and this task
         return
 
-    if not siren_info.active:
+    if not siren_info.active and not CLOSED_OFFERER_TAG_NAME in (tag.name for tag in offerer.tags):
         logger.info("SIREN is no longer active", extra={"offerer_id": offerer.id, "siren": offerer.siren})
 
         if payload.tag_when_inactive:
             # .one() raises an exception if the tag does not exist -- this will ensure that a potential issue is tracked
-            tag = offerers_models.OffererTag.query.filter(offerers_models.OffererTag.name == "siren-caduc").one()
+            tag = offerers_models.OffererTag.query.filter(
+                offerers_models.OffererTag.name == CLOSED_OFFERER_TAG_NAME
+            ).one()
 
             with transaction():
                 db.session.add(offerers_models.OffererTagMapping(offererId=offerer.id, tagId=tag.id))
