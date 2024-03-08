@@ -92,6 +92,10 @@ describe('PartnerPages', () => {
         ...defaultGetOffererVenueResponseModel,
         collectiveDmsApplications: [],
       },
+      offerer: {
+        ...defaultGetOffererResponseModel,
+        allowedOnAdage: false,
+      },
     })
 
     expect(screen.getByText('Non référencé dans ADAGE')).toBeInTheDocument()

@@ -147,7 +147,6 @@ export const PartnerPage = ({
       <PartnerPageCollectiveSection
         collectiveDmsApplications={venue.collectiveDmsApplications}
         venueId={venue.id}
-        hasAdageId={venue.hasAdageId}
         allowedOnAdage={offerer.allowedOnAdage}
         isDisplayedInHomepage
       />

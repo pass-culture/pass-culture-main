@@ -76,7 +76,6 @@ describe('screens | OfferEducational : edition offerer step', () => {
     expect(offererSelect).toHaveValue(secondOffererId.toString())
     expect(offererSelect).toBeDisabled()
 
-    // screen.debug(undefined, 100000)
     const venueSelect = await screen.findByLabelText('Lieu *')
 
     expect(venueSelect).toBeInTheDocument()

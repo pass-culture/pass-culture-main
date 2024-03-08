@@ -147,8 +147,8 @@ class GetVenueManagingOffererResponseModel(BaseModel):
     name: str
     postalCode: str
     # FIXME (dbaty, 2020-11-09): optional until we populate the database (PC-5693)
-    allowedOnAdage: bool
     siren: str | None
+    allowedOnAdage: bool
 
     class Config:
         orm_mode = True

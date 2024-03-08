@@ -17,8 +17,7 @@ const renderPartnerPageCollectiveSection = (
     <PartnerPageCollectiveSection
       collectiveDmsApplications={[defaultDMSApplicationForEAC]}
       venueId={7}
-      hasAdageId={false}
-      allowedOnAdage={true}
+      allowedOnAdage={false}
       {...props}
     />
   )
@@ -46,6 +45,15 @@ describe('PartnerPages', () => {
     expect(
       screen.getByText('Faire une demande de référencement ADAGE')
     ).toBeInTheDocument()
+  })
+
+  it('should display the EAC section when no adage but allowed on Adage', () => {
+    renderPartnerPageCollectiveSection({
+      collectiveDmsApplications: [],
+      allowedOnAdage: true,
+    })
+
+    expect(screen.getByText('Référencé dans ADAGE')).toBeInTheDocument()
   })
 
   it('should display the EAC section when adage refused', () => {
@@ -109,7 +117,7 @@ describe('PartnerPages', () => {
   it('should display the EAC section when it has an adageId in homepage', () => {
     renderPartnerPageCollectiveSection({
       collectiveDmsApplications: [],
-      hasAdageId: true,
+      allowedOnAdage: true,
       isDisplayedInHomepage: true,
     })
 
@@ -122,7 +130,7 @@ describe('PartnerPages', () => {
   it('should display the EAC section when it has an adageId in venue form', () => {
     renderPartnerPageCollectiveSection({
       collectiveDmsApplications: [],
-      hasAdageId: true,
+      allowedOnAdage: true,
       isDisplayedInHomepage: false,
     })
 
