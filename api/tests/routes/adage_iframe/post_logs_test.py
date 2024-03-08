@@ -576,3 +576,32 @@ class LogsTest:
             "userId": utils.get_hashed_user_id(EMAIL),
             "analyticsSource": "adage",
         }
+
+    def test_log_contact_url_button_click(self, client, caplog):
+        # given
+        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="test@mail.com")
+        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
+
+        # when
+        with caplog.at_level(logging.INFO):
+            response = client.post(
+                "/adage-iframe/logs/contact-url-click",
+                json={
+                    "offerId": 1,
+                    "iframeFrom": "contact_modal",
+                },
+            )
+
+        # then
+        assert response.status_code == 204
+        assert caplog.records[0].message == "ContactUrlClick"
+        assert caplog.records[0].extra == {
+            "analyticsSource": "adage",
+            "offerId": 1,
+            "queryId": None,
+            "from": "contact_modal",
+            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
+            "uai": "EAU123",
+            "user_role": AdageFrontRoles.READONLY,
+            "isFromNoResult": None,
+        }

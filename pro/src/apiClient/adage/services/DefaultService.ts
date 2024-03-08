@@ -388,6 +388,27 @@ export class DefaultService {
     });
   }
   /**
+   * log_contact_url_click <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public logContactUrlClick(
+    requestBody?: OfferIdBody,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/adage-iframe/logs/contact-url-click',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
    * log_fav_offer_button_click <POST>
    * @param requestBody
    * @returns void
