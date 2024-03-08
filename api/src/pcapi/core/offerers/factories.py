@@ -8,6 +8,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import crypto
 from pcapi.utils.date import timespan_str_to_numrange
+import pcapi.utils.postal_code as postal_code_utils
 
 from . import api
 from . import models
@@ -57,13 +58,13 @@ class VenueFactory(BaseFactory):
         model = models.Venue
 
     name = factory.Sequence("Le Petit Rintintin {}".format)
-    departementCode = factory.LazyAttribute(lambda o: None if o.isVirtual else "75")
     latitude: float | None = 48.87004
     longitude: float | None = 2.37850
     managingOfferer = factory.SubFactory(OffererFactory)
     address = factory.LazyAttribute(lambda o: None if o.isVirtual else "1 boulevard Poissonnière")
     banId = factory.LazyAttribute(lambda o: None if o.isVirtual else "75102_7560_00001")
     postalCode = factory.LazyAttribute(lambda o: None if o.isVirtual else "75000")
+    departementCode = factory.LazyAttribute(lambda o: None if o.isVirtual else _get_department_code(o.postalCode))
     city = factory.LazyAttribute(lambda o: None if o.isVirtual else "Paris")
     publicName = factory.SelfAttribute("name")
     siret = factory.LazyAttributeSequence(lambda o, n: f"{o.managingOfferer.siren}{n:05}")
@@ -159,6 +160,12 @@ class VenueFactory(BaseFactory):
         if not create or not venue.adageId:
             return []
         return [AdageVenueAddressFactory(venue=venue)]
+
+
+def _get_department_code(postal_code: str | None) -> str | None:
+    if not postal_code:
+        return None
+    return postal_code_utils.PostalCode(postal_code).get_departement_code()
 
 
 class CollectiveVenueFactory(VenueFactory):
