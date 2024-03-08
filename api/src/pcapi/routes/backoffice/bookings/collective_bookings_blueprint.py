@@ -103,8 +103,8 @@ def _get_collective_bookings(
             educational_models.EducationalInstitution.id,
         ],
         name_filters=[
-            (educational_models.EducationalInstitution.name, False),
-            (educational_models.CollectiveOffer.name, False),
+            educational_models.EducationalInstitution.name,
+            educational_models.CollectiveOffer.name,
         ],
     )
 
