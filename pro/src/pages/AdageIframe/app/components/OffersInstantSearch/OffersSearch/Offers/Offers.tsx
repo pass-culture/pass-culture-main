@@ -70,9 +70,7 @@ export const Offers = ({
 
   const [queriesAreLoading, setQueriesAreLoading] = useState(false)
   const [fetchedOffers, setFetchedOffers] = useState<OfferMap>(new Map())
-  const isSatisfactionSurveyActive = useActiveFeature(
-    'WIP_ENABLE_SATISFACTION_SURVEY'
-  )
+
   const isDiffuseHelpActive = useActiveFeature('WIP_ENABLE_DIFFUSE_HELP')
 
   const showDiffuseHelp = isDiffuseHelpActive && (submitCount ?? 0) > 0
@@ -80,7 +78,6 @@ export const Offers = ({
   const { adageUser } = useAdageUser()
 
   const showSurveySatisfaction =
-    isSatisfactionSurveyActive &&
     !adageUser.preferences?.feedback_form_closed &&
     adageUser.role !== AdageFrontRoles.READONLY
 
