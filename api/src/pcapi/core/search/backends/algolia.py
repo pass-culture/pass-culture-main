@@ -428,7 +428,6 @@ class AlgoliaBackend(base.SearchBackend):
                 date_utils.get_time_in_seconds_from_datetime(stock.beginningDatetime) for stock in offer.bookableStocks  # type: ignore[arg-type]
             }
         date_created = offer.dateCreated.timestamp()
-        stocks_date_created = [stock.dateCreated.timestamp() for stock in offer.bookableStocks]
         tags = [criterion.name for criterion in offer.criteria]
         extra_data = offer.extraData or {}
         artist = " ".join(str(extra_data.get(key, "")) for key in ("author", "performer", "speaker", "stageDirector"))
@@ -522,7 +521,6 @@ class AlgoliaBackend(base.SearchBackend):
                 "searchGroupName": offer.subcategory.search_group_name,
                 "searchGroupNamev2": offer.subcategory.search_group_name,
                 "showType": show_type_label,
-                "stocksDateCreated": sorted(stocks_date_created),
                 "students": extra_data.get("students") or [],
                 "subcategoryId": offer.subcategory.id,
                 "thumbUrl": url_path(offer.thumbUrl) if offer.thumbUrl else None,

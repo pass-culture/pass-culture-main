@@ -53,7 +53,7 @@ def test_serialize_offer():
         venue__publicName="La Moyenne Librairie",
         venue__managingOfferer__name="Les Librairies Associées",
     )
-    stock = offers_factories.StockFactory(offer=offer, price=10)
+    offers_factories.StockFactory(offer=offer, price=10)
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     assert serialized == {
         "distinct": "2221001648",
@@ -83,7 +83,6 @@ def test_serialize_offer():
             "searchGroupName": "LIVRES",
             "searchGroupNamev2": "LIVRES",
             "showType": None,
-            "stocksDateCreated": [stock.dateCreated.timestamp()],
             "students": [],
             "subcategoryId": offer.subcategory.id,
             "thumbUrl": None,

@@ -58,7 +58,6 @@
         "filterOnly(offer.searchGroupName)",
         "offer.searchGroupNamev2",
         "offer.showType",
-        "filterOnly(offer.stocksDateCreated)",
         "filterOnly(offer.students)",
         "offer.subcategoryId",
         "searchable(offer.tags)",
