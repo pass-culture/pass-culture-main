@@ -423,24 +423,6 @@ describe('offers', () => {
     expect(screen.getByText(offerInCayenne.name)).toBeInTheDocument()
   })
 
-  it('should not display survey satisfaction ff not active', async () => {
-    // Given
-    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(offerInParis)
-    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
-      offerInCayenne
-    )
-
-    // When
-    renderOffers(offersProps, adageUser, { features: [] })
-
-    const listItemsInOffer = await screen.findAllByTestId('offer-listitem')
-    expect(listItemsInOffer).toHaveLength(2)
-
-    // Then
-    const surveySatisfaction = screen.queryByText('Enquête de satisfaction')
-    expect(surveySatisfaction).not.toBeInTheDocument()
-  })
-
   it('should display survey satisfaction', async () => {
     // Given
     vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(offerInParis)
@@ -449,9 +431,7 @@ describe('offers', () => {
     )
 
     // When
-    renderOffers(offersProps, adageUser, {
-      features: ['WIP_ENABLE_SATISFACTION_SURVEY'],
-    })
+    renderOffers(offersProps, adageUser)
 
     const listItemsInOffer = await screen.findAllByTestId('offer-listitem')
     expect(listItemsInOffer).toHaveLength(2)
@@ -468,11 +448,7 @@ describe('offers', () => {
       offerInCayenne
     )
     // When
-    renderOffers(
-      offersProps,
-      { ...adageUser, role: AdageFrontRoles.READONLY },
-      { features: ['WIP_ENABLE_SATISFACTION_SURVEY'] }
-    )
+    renderOffers(offersProps, { ...adageUser, role: AdageFrontRoles.READONLY })
 
     const listItemsInOffer = await screen.findAllByTestId('offer-listitem')
     expect(listItemsInOffer).toHaveLength(2)
@@ -498,9 +474,7 @@ describe('offers', () => {
     }))
 
     // When
-    renderOffers(offersProps, adageUser, {
-      features: ['WIP_ENABLE_SATISFACTION_SURVEY'],
-    })
+    renderOffers(offersProps, adageUser)
 
     const listItemsInOffer = await screen.findAllByTestId('offer-listitem')
     expect(listItemsInOffer).toHaveLength(1)
@@ -518,14 +492,10 @@ describe('offers', () => {
     )
 
     // When
-    renderOffers(
-      offersProps,
-      {
-        ...adageUser,
-        preferences: { feedback_form_closed: true },
-      },
-      { features: ['WIP_ENABLE_SATISFACTION_SURVEY'] }
-    )
+    renderOffers(offersProps, {
+      ...adageUser,
+      preferences: { feedback_form_closed: true },
+    })
 
     // Then
     const surveySatisfaction = screen.queryByText('Enquête de satisfaction')
