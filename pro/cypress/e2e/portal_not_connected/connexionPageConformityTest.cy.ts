@@ -1,16 +1,18 @@
+import { CONSTANTS } from '../../support/constants'
+
 describe('page connexion', () => {
   it('verify connexion page conformity', () => {
     cy.visit('/connexion')
 
     cy.url().should('include', '/connexion')
 
-    cy.get('#email').should('exist')
+    cy.get(CONSTANTS.emailId).should('exist')
 
-    cy.get('#password').should('exist')
+    cy.get(CONSTANTS.passwordId).should('exist')
 
     cy.contains('Mot de passe oublié ?')
       .should('have.attr', 'href')
-      .and('include', '/demande-mot-de-passe')
+      .and('include', CONSTANTS.request_password_link)
 
     cy.contains('Se connecter').should('be.disabled')
 
@@ -18,18 +20,15 @@ describe('page connexion', () => {
 
     cy.contains('Consulter nos recommandations de sécurité')
       .should('have.attr', 'href')
-      .and(
-        'include',
-        'https://aide.passculture.app/hc/fr/articles/4458607720732--Acteurs-Culturels-Comment-assurer-la-s%C3%A9curit%C3%A9-de-votre-compte'
-      )
+      .and('include', CONSTANTS.security_recommendations_link)
 
     cy.contains('CGU professionnels')
       .should('have.attr', 'href')
-      .and('include', 'https://pass.culture.fr/cgu-professionnels/')
+      .and('include', CONSTANTS.terms_and_conditions_professionals_link)
 
     cy.contains('Charte des Données Personnelles')
       .should('have.attr', 'href')
-      .and('include', 'https://pass.culture.fr/donnees-personnelles/')
+      .and('include', CONSTANTS.personal_data_link)
 
     cy.contains('Gestion des cookies').should('exist')
   })
