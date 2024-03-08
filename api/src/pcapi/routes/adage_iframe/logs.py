@@ -401,3 +401,25 @@ def log_tracking_cta_share(
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
     )
+
+
+@blueprint.adage_iframe.route("/logs/contact-url-click", methods=["POST"])
+@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_jwt_required
+def log_contact_url_click(
+    authenticated_information: AuthenticatedInformation,
+    body: serialization.OfferIdBody,
+) -> None:
+    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
+    educational_utils.log_information_for_data_purpose(
+        event_name="ContactUrlClick",
+        extra_data={
+            "offerId": body.offerId,
+            "from": body.iframeFrom,
+            "queryId": body.queryId,
+            "isFromNoResult": body.isFromNoResult,
+        },
+        user_email=authenticated_information.email,
+        uai=authenticated_information.uai,
+        user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
+    )
