@@ -11,6 +11,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.factories import BaseFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.models as offers_models
+from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.core.providers.titelive_gtl import GTLS
 import pcapi.core.users.factories as users_factories
 from pcapi.domain import music_types
@@ -100,7 +101,7 @@ def build_extra_data_from_subcategory(
                     if build_for_product:
                         extradata[field] = random.choice(list(GTLS.keys()))
                 else:
-                    extradata[field] = fake.ean8()
+                    extradata[field] = random.choice(list(TITELIVE_MUSIC_GENRES_BY_GTL_ID.keys()))
             case subcategories.ExtraDataFieldEnum.VISA.value:
                 extradata[field] = fake.ean()
             case subcategories.ExtraDataFieldEnum.MUSIC_TYPE.value:

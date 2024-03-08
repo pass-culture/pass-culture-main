@@ -2119,6 +2119,7 @@ class FormatExtraDataTest:
         extra_data = {
             "musicType": "-1",  # applicable and filled
             "musicSubType": "100",  # applicable and filled
+            "gtl_id": "19000000",  # applicable and filled in deserializer
             "other": "value",  # not applicable field
             "performer": "",  # applicable but empty
         }

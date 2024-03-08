@@ -64,6 +64,8 @@ class FeatureToggle(enum.Enum):
     ENABLE_PRO_BOOKINGS_V2 = "Activer l'affichage de la page booking avec la nouvelle architecture."
     ENABLE_PRO_TITELIVE_MUSIC_GENRES = "Activer l'utilisation des genres musicaux Titelive pour les pros"
 
+    ENABLE_TITELIVE_MUSIC_TYPES_IN_API_OUTPUT = "Désactiver le renvoi des genres de titelive dans l'api publique"
+
     ENABLE_UBBLE = "Active la vérification d'identité par Ubble"
     ENABLE_UBBLE_SUBSCRIPTION_LIMITATION = "Active la limitation en fonction de l'âge lors de pic d'inscription"
     GENERATE_CASHFLOWS_BY_CRON = (
@@ -194,6 +196,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NEW_NAV_AB_TEST,
     FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS,
     FeatureToggle.WIP_OPENING_HOURS,
+    FeatureToggle.ENABLE_TITELIVE_MUSIC_TYPES_IN_API_OUTPUT,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
