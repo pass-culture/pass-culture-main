@@ -37,7 +37,7 @@ def test_category_serialization(client):
     concert_response = next(subcategory for subcategory in response.json if subcategory["id"] == "CONCERT")
     assert concert_response["conditionalFields"] == {
         "author": False,
-        "musicSubType": True,
+        "musicSubType": False,
         "musicType": True,
         "gtl_id": False,
         "performer": False,

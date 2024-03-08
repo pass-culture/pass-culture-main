@@ -1075,7 +1075,7 @@ CONCERT = Subcategory(
     conditional_fields={
         ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
         ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: FieldCondition(
-            is_required_in_external_form=True, is_required_in_internal_form=False
+            is_required_in_external_form=False, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=False
@@ -1107,7 +1107,7 @@ EVENEMENT_MUSIQUE = Subcategory(
     conditional_fields={
         ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
         ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: FieldCondition(
-            is_required_in_external_form=True, is_required_in_internal_form=False
+            is_required_in_external_form=False, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=False
@@ -1139,7 +1139,7 @@ LIVESTREAM_MUSIQUE = Subcategory(
     conditional_fields={
         ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
         ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: FieldCondition(
-            is_required_in_external_form=True, is_required_in_internal_form=False
+            is_required_in_external_form=False, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=False
@@ -1195,7 +1195,7 @@ FESTIVAL_MUSIQUE = Subcategory(
     conditional_fields={
         ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
         ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: FieldCondition(
-            is_required_in_external_form=True, is_required_in_internal_form=False
+            is_required_in_external_form=False, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=False
@@ -1229,7 +1229,7 @@ SUPPORT_PHYSIQUE_MUSIQUE_CD = Subcategory(
     conditional_fields={
         ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
         ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: FieldCondition(
-            is_required_in_external_form=True, is_required_in_internal_form=False
+            is_required_in_external_form=False, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=False
@@ -1260,7 +1260,7 @@ SUPPORT_PHYSIQUE_MUSIQUE_VINYLE = Subcategory(
     conditional_fields={
         ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
         ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: FieldCondition(
-            is_required_in_external_form=True, is_required_in_internal_form=False
+            is_required_in_external_form=False, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=False
@@ -1291,7 +1291,7 @@ TELECHARGEMENT_MUSIQUE = Subcategory(
     conditional_fields={
         ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
         ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: FieldCondition(
-            is_required_in_external_form=True, is_required_in_internal_form=False
+            is_required_in_external_form=False, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=False
@@ -1342,7 +1342,7 @@ CAPTATION_MUSIQUE = Subcategory(
     conditional_fields={
         ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
         ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: FieldCondition(
-            is_required_in_external_form=True, is_required_in_internal_form=False
+            is_required_in_external_form=False, is_required_in_internal_form=False
         ),
         ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=False

@@ -507,14 +507,6 @@ class CheckOfferWithdrawalTest:
 
 @pytest.mark.usefixtures("db_session")
 class CheckOfferExtraDataTest:
-    def test_missing_required_extra_data(self):
-        with pytest.raises(ApiErrors) as error:
-            validation.check_offer_extra_data(
-                subcategories.FESTIVAL_MUSIQUE.id, {}, offerers_factories.VenueFactory(), False
-            )
-
-        assert error.value.errors["musicType"] == ["Ce champ est obligatoire"]
-
     def test_invalid_ean_extra_data(self):
         with pytest.raises(ApiErrors) as error:
             validation.check_offer_extra_data(

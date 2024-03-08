@@ -241,7 +241,7 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
                 description=body.description,
                 duration_minutes=body.duration_minutes,
                 external_ticket_office_url=body.external_ticket_office_url,
-                extra_data=body.extra_data,
+                extra_data=offers_serialize.deserialize_extra_data(body.extra_data),
                 is_duo=body.is_duo,
                 is_national=body.is_national,
                 mental_disability_compliant=body.mental_disability_compliant,
@@ -363,7 +363,11 @@ def patch_offer(
                 description=update_body.get("description", offers_api.UNCHANGED),
                 durationMinutes=update_body.get("durationMinutes", offers_api.UNCHANGED),
                 externalTicketOfficeUrl=update_body.get("externalTicketOfficeUrl", offers_api.UNCHANGED),
-                extraData=update_body.get("extraData", offers_api.UNCHANGED),
+                extraData=(
+                    offers_serialize.deserialize_extra_data(update_body["extraData"])
+                    if update_body.get("extraData")
+                    else offers_api.UNCHANGED
+                ),
                 isActive=update_body.get("isActive", offers_api.UNCHANGED),
                 isDuo=update_body.get("isDuo", offers_api.UNCHANGED),
                 isNational=update_body.get("isNational", offers_api.UNCHANGED),
