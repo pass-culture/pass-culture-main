@@ -8,3 +8,12 @@
 .page-status {
   margin-bottom: rem.torem(32px);
 }
+
+.separator {
+  width: 100%;
+  height: 2px;
+  background: colors.$grey-medium;
+  border: none;
+  margin-top: rem.torem(32px);
+  margin-bottom: rem.torem(32px);
+}
