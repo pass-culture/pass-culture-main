@@ -279,8 +279,6 @@ def _get_offer_ids_query(form: forms.InternalSearchForm) -> BaseQuery:
             if or_filters:
                 main_query = query.filter(or_filters[0])
                 if len(or_filters) > 1:
-                    # TODO (prouzet, 2024-03-05): check this query with UNION vs OR
-                    # TODO (prouzet, 2024-03-05): query plan is now better with OR on bookings with new indexes
                     # Same as for bookings, where union has better performance than or_
                     query = main_query.union(*(query.filter(f) for f in or_filters[1:]))
                 else:
