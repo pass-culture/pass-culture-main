@@ -16,6 +16,7 @@ import typing_extensions
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offers import models as offers_models
+from pcapi.core.providers import constants
 from pcapi.domain import music_types
 from pcapi.domain import show_types
 from pcapi.models import offer_mixin
@@ -26,6 +27,7 @@ from pcapi.routes.public.serialization.utils import StrEnum
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization import utils as serialization_utils
 from pcapi.utils import date as date_utils
+from pcapi.utils.feature import FeatureToggle
 
 
 logger = logging.getLogger(__name__)
@@ -68,6 +70,9 @@ MusicTypeEnum = StrEnum(  # type: ignore [call-overload]
     {music_sub_type_slug: music_sub_type_slug for music_sub_type_slug in music_types.MUSIC_SUB_TYPES_BY_SLUG},
 )
 
+TiteliveMusicTypeEnum = StrEnum(  # type: ignore [call-overload]
+    "TiteliveMusicTypeEnum", {music_type: music_type for music_type in constants.GTL_ID_BY_TITELIVE_MUSIC_GENRE}
+)
 
 ShowTypeEnum = StrEnum(  # type: ignore [call-overload]
     "ShowTypeEnum",
@@ -127,7 +132,7 @@ EAN_FIELD = pydantic_v1.Field(example="1234567890123", description="European Art
 class ExtraDataModel(serialization.ConfiguredBaseModel):
     author: str | None = pydantic_v1.Field(example="Jane Doe")
     ean: str | None = EAN_FIELD
-    musicType: MusicTypeEnum | None  # type: ignore [valid-type]
+    musicType: TiteliveMusicTypeEnum | MusicTypeEnum | None  # type: ignore [valid-type]
     performer: str | None = pydantic_v1.Field(example="Jane Doe")
     stageDirector: str | None = pydantic_v1.Field(example="Jane Doe")
     showType: ShowTypeEnum | None  # type: ignore [valid-type]
@@ -273,6 +278,8 @@ def serialize_extra_data(offer: offers_models.Offer) -> CategoryRelatedFields:
     if music_type and not music_sub_type:
         music_sub_type = "-1"  # Use 'Other' when not filled
 
+    gtl_id = serialized_data.pop(subcategories.ExtraDataFieldEnum.GTL_ID.value, None)
+
     # FIXME (mageoffray, 2023-12-14): some historical offers have no showSubType and only showType.
     show_sub_type = serialized_data.pop(subcategories.ExtraDataFieldEnum.SHOW_SUB_TYPE.value, None)
     show_type = serialized_data.pop(subcategories.ExtraDataFieldEnum.SHOW_TYPE.value, None)
@@ -283,6 +290,9 @@ def serialize_extra_data(offer: offers_models.Offer) -> CategoryRelatedFields:
         serialized_data["musicType"] = MusicTypeEnum(music_types.MUSIC_SUB_TYPES_BY_CODE[int(music_sub_type)].slug)
     if show_sub_type:
         serialized_data["showType"] = ShowTypeEnum(show_types.SHOW_SUB_TYPES_BY_CODE[int(show_sub_type)].slug)
+
+    if gtl_id and music_type and FeatureToggle.ENABLE_TITELIVE_MUSIC_TYPES_IN_API_OUTPUT.is_active():
+        serialized_data["musicType"] = TiteliveMusicTypeEnum(constants.TITELIVE_MUSIC_GENRES_BY_GTL_ID[gtl_id])
 
     return category_fields_model(**serialized_data, subcategory_id=offer.subcategory.id)  # type: ignore [misc, call-arg]
 
@@ -296,8 +306,15 @@ def deserialize_extra_data(
             continue
         if field_name == subcategories.ExtraDataFieldEnum.MUSIC_TYPE.value:
             # Convert musicType slug to musicType and musicSubType codes
-            extra_data["musicSubType"] = str(music_types.MUSIC_SUB_TYPES_BY_SLUG[field_value].code)
-            extra_data["musicType"] = str(music_types.MUSIC_TYPES_BY_SLUG[field_value].code)
+            if field_value in TiteliveMusicTypeEnum.__members__:
+                extra_data["gtl_id"] = constants.GTL_ID_BY_TITELIVE_MUSIC_GENRE[field_value]
+                music_slug = constants.MUSIC_SLUG_BY_GTL_ID[extra_data["gtl_id"]]
+                extra_data["musicType"] = str(music_types.MUSIC_TYPES_BY_SLUG[music_slug].code)
+                extra_data["musicSubType"] = str(music_types.MUSIC_SUB_TYPES_BY_SLUG[music_slug].code)
+            else:
+                extra_data["musicSubType"] = str(music_types.MUSIC_SUB_TYPES_BY_SLUG[field_value].code)
+                extra_data["musicType"] = str(music_types.MUSIC_TYPES_BY_SLUG[field_value].code)
+                extra_data["gtl_id"] = constants.MUSIC_SLUG_TO_GTL_ID[field_value]
         elif field_name == subcategories.ExtraDataFieldEnum.SHOW_TYPE.value:
             # Convert showType slug to showType and showSubType codes
             extra_data["showSubType"] = str(show_types.SHOW_SUB_TYPES_BY_SLUG[field_value].code)
