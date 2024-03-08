@@ -69,10 +69,7 @@ const CollectiveOfferSummary = ({
             {offer.isTemplate && <CollectiveOfferPriceSection offer={offer} />}
             <CollectiveOfferParticipantSection students={offer.students} />
             <CollectiveOfferAccessibilitySection offer={offer} />
-            <CollectiveOfferContactSection
-              phone={offer.contactPhone}
-              email={offer.contactEmail}
-            />
+            <CollectiveOfferContactSection offer={offer} />
             {offer.bookingEmails.length > 0 && (
               <CollectiveOfferNotificationSection
                 bookingEmails={offer.bookingEmails}

@@ -1,6 +1,6 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 
-import { EacFormat } from 'apiClient/v1'
+import { EacFormat, OfferContactFormEnum } from 'apiClient/v1'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
@@ -115,5 +115,39 @@ describe('CollectiveOfferSummary', () => {
     })
 
     expect(title).toBeInTheDocument()
+  })
+
+  it('should display the custom contact details if the ff is enabled', async () => {
+    const offer = getCollectiveOfferTemplateFactory({
+      contactEmail: 'email@test.co',
+      contactPhone: '00000000',
+      contactForm: OfferContactFormEnum.FORM,
+    })
+    renderCollectiveOfferSummary(
+      { ...props, offer },
+      { features: ['WIP_ENABLE_COLLECTIVE_CUSTOM_CONTACT'] }
+    )
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(screen.getByText('email@test.co')).toBeInTheDocument()
+    expect(screen.getByText('00000000')).toBeInTheDocument()
+    expect(
+      screen.getByText('Le formulaure sandard Pass Culture')
+    ).toBeInTheDocument()
+  })
+
+  it('should display the custom contact custom url if the ff is enabled', async () => {
+    const offer = getCollectiveOfferTemplateFactory({
+      contactUrl: 'http://www.form.com',
+    })
+    renderCollectiveOfferSummary(
+      { ...props, offer },
+      { features: ['WIP_ENABLE_COLLECTIVE_CUSTOM_CONTACT'] }
+    )
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(screen.getByText('http://www.form.com')).toBeInTheDocument()
   })
 })
