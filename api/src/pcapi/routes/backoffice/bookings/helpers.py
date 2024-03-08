@@ -16,7 +16,6 @@ from pcapi.routes.backoffice.bookings.forms import BaseBookingListForm
 from pcapi.routes.backoffice.bookings.forms import BookingStatus
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
-from pcapi.utils.clean_accents import clean_accents
 
 
 def get_bookings(
@@ -27,7 +26,7 @@ def get_bookings(
     offer_class: type[educational_models.CollectiveOffer | offers_models.Offer],
     search_by_email: bool = False,
     id_filters: typing.Iterable[sa.sql.elements.ColumnElement] = (),
-    name_filters: typing.Iterable[tuple[sa.sql.elements.ColumnElement, bool]] = (),
+    name_filters: typing.Iterable[sa.sql.elements.ColumnElement] = (),
     or_filters: list | None = None,
 ) -> list[bookings_models.Booking] | list[educational_models.CollectiveBooking]:
     if or_filters is None:
@@ -122,10 +121,8 @@ def get_bookings(
                 or_filters.append(users_models.User.email == sanitized_email)
 
         if not or_filters and name_filters:
-            for name_filter, clean_name_accents in name_filters:
-                or_filters.append(
-                    name_filter.ilike(f"%{clean_accents(search_query) if clean_name_accents else search_query}%")
-                )
+            for name_filter in name_filters:
+                or_filters.append(name_filter.ilike(f"%{search_query}%"))
 
         query = base_query.filter(or_filters[0])
 
