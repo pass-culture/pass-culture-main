@@ -4,9 +4,8 @@ from flask import url_for
 import pytest
 
 from pcapi.core.educational import utils
+from pcapi.core.educational.utils import get_hashed_user_id
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFrontRoles
-
-from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
 
 
 EMAIL = "test@mail.com"
@@ -19,19 +18,13 @@ def test_client_fixture(client):
 
 
 class LogsTest:
-    def test_log_catalog_view(self, client, caplog):
-        # given
-        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="test@mail.com")
-        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
-
-        # when
+    def test_log_catalog_view(self, test_client, caplog):
         with caplog.at_level(logging.INFO):
-            response = client.post(
-                "/adage-iframe/logs/catalog-view",
+            response = test_client.post(
+                url_for("adage_iframe.log_catalog_view"),
                 json={"source": "partnersMap", "iframeFrom": "for_my_institution", "queryId": "1234a"},
             )
 
-        # then
         assert response.status_code == 204
         assert caplog.records[0].message == "CatalogView"
         assert caplog.records[0].extra == {
@@ -39,9 +32,9 @@ class LogsTest:
             "source": "partnersMap",
             "queryId": "1234a",
             "from": "for_my_institution",
-            "uai": "EAU123",
+            "uai": UAI,
             "user_role": AdageFrontRoles.READONLY,
-            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
+            "userId": get_hashed_user_id(EMAIL),
         }
 
     @pytest.mark.parametrize(
@@ -53,16 +46,11 @@ class LogsTest:
         ],
     )
     def test_log_consult_playlist_element(
-        self, client, caplog, playlist_type, element_id, index, offer_id, venue_id, domain_id
+        self, test_client, caplog, playlist_type, element_id, index, offer_id, venue_id, domain_id
     ):
-        # given
-        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="test@mail.com")
-        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
-
-        # when
         with caplog.at_level(logging.INFO):
-            response = client.post(
-                "/adage-iframe/logs/consult-playlist-element",
+            response = test_client.post(
+                url_for("adage_iframe.log_consult_playlist_element"),
                 json={
                     "source": "partnersMap",
                     "iframeFrom": "for_my_institution",
@@ -74,16 +62,15 @@ class LogsTest:
                 },
             )
 
-        # then
         assert response.status_code == 204
         assert caplog.records[0].message == "ConsultPlaylistElement"
         assert caplog.records[0].extra == {
             "analyticsSource": "adage",
             "queryId": "1234a",
             "from": "for_my_institution",
-            "uai": "EAU123",
+            "uai": UAI,
             "user_role": AdageFrontRoles.READONLY,
-            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
+            "userId": get_hashed_user_id(EMAIL),
             "playlistId": 99,
             "offerId": offer_id,
             "venueId": venue_id,
@@ -91,15 +78,10 @@ class LogsTest:
             "index": index,
         }
 
-    def test_log_has_seen_whole_playlist(self, client, caplog):
-        # given
-        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="test@mail.com")
-        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
-
-        # when
+    def test_log_has_seen_whole_playlist(self, test_client, caplog):
         with caplog.at_level(logging.INFO):
-            response = client.post(
-                "/adage-iframe/logs/has-seen-whole-playlist",
+            response = test_client.post(
+                url_for("adage_iframe.log_has_seen_whole_playlist"),
                 json={
                     "source": "partnersMap",
                     "iframeFrom": "for_my_institution",
@@ -109,28 +91,22 @@ class LogsTest:
                 },
             )
 
-        # then
         assert response.status_code == 204
         assert caplog.records[0].message == "HasSeenWholePlaylist"
         assert caplog.records[0].extra == {
             "analyticsSource": "adage",
             "queryId": "1234a",
             "from": "for_my_institution",
-            "uai": "EAU123",
+            "uai": UAI,
             "user_role": AdageFrontRoles.READONLY,
-            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
+            "userId": get_hashed_user_id(EMAIL),
             "playlistId": 99,
         }
 
-    def test_log_search_button(self, client, caplog):
-        # given
-        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="test@mail.com")
-        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
-
-        # when
+    def test_log_search_button(self, test_client, caplog):
         with caplog.at_level(logging.INFO):
-            response = client.post(
-                "/adage-iframe/logs/search-button",
+            response = test_client.post(
+                url_for("adage_iframe.log_search_button_click"),
                 json={
                     "filters": [
                         "departments",
@@ -142,7 +118,6 @@ class LogsTest:
                 },
             )
 
-        # then
         assert response.status_code == 204
         assert caplog.records[0].message == "SearchButtonClicked"
         assert caplog.records[0].extra == {
@@ -151,21 +126,16 @@ class LogsTest:
             "filters": ["departments", "institutionId"],
             "queryId": None,
             "resultsCount": 0,
-            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
-            "uai": "EAU123",
+            "userId": get_hashed_user_id(EMAIL),
+            "uai": UAI,
             "user_role": AdageFrontRoles.READONLY,
             "isFromNoResult": True,
         }
 
-    def test_log_offer_detail(self, client, caplog):
-        # given
-        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="test@mail.com")
-        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
-
-        # when
+    def test_log_offer_detail(self, test_client, caplog):
         with caplog.at_level(logging.INFO):
-            response = client.post(
-                "/adage-iframe/logs/offer-detail",
+            response = test_client.post(
+                url_for("adage_iframe.log_offer_details_button_click"),
                 json={
                     "stockId": 1,
                     "iframeFrom": "for_my_institution",
@@ -173,7 +143,6 @@ class LogsTest:
                 },
             )
 
-        # then
         assert response.status_code == 204
         assert caplog.records[0].message == "OfferDetailButtonClick"
         assert caplog.records[0].extra == {
@@ -181,24 +150,18 @@ class LogsTest:
             "stockId": 1,
             "queryId": "1234a",
             "from": "for_my_institution",
-            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
-            "uai": "EAU123",
+            "userId": get_hashed_user_id(EMAIL),
+            "uai": UAI,
             "user_role": AdageFrontRoles.READONLY,
         }
 
-    def test_log_offer_template_details_button_click(self, client, caplog):
-        # given
-        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="test@mail.com")
-        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
-
-        # when
+    def test_log_offer_template_details_button_click(self, test_client, caplog):
         with caplog.at_level(logging.INFO):
-            response = client.post(
-                "/adage-iframe/logs/offer-template-detail",
+            response = test_client.post(
+                url_for("adage_iframe.log_offer_template_details_button_click"),
                 json={"offerId": 1, "iframeFrom": "for_my_institution"},
             )
 
-        # then
         assert response.status_code == 204
         assert caplog.records[0].message == "TemplateOfferDetailButtonClick"
         assert caplog.records[0].extra == {
@@ -206,24 +169,18 @@ class LogsTest:
             "offerId": 1,
             "queryId": None,
             "from": "for_my_institution",
-            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
-            "uai": "EAU123",
+            "userId": get_hashed_user_id(EMAIL),
+            "uai": UAI,
             "user_role": AdageFrontRoles.READONLY,
         }
 
-    def test_log_booking_modal_button_click(self, client, caplog):
-        # given
-        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="test@mail.com")
-        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
-
-        # when
+    def test_log_booking_modal_button_click(self, test_client, caplog):
         with caplog.at_level(logging.INFO):
-            response = client.post(
-                "/adage-iframe/logs/booking-modal-button",
+            response = test_client.post(
+                url_for("adage_iframe.log_booking_modal_button_click"),
                 json={"stockId": 1, "iframeFrom": "for_my_institution", "queryId": "1234a"},
             )
 
-        # then
         assert response.status_code == 204
         assert caplog.records[0].message == "BookingModalButtonClick"
         assert caplog.records[0].extra == {
@@ -231,28 +188,22 @@ class LogsTest:
             "stockId": 1,
             "queryId": "1234a",
             "from": "for_my_institution",
-            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
-            "uai": "EAU123",
+            "userId": get_hashed_user_id(EMAIL),
+            "uai": UAI,
             "user_role": AdageFrontRoles.READONLY,
             "isFromNoResult": None,
         }
 
-    def test_log_contact_modal_button_click(self, client, caplog):
-        # given
-        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="test@mail.com")
-        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
-
-        # when
+    def test_log_contact_modal_button_click(self, test_client, caplog):
         with caplog.at_level(logging.INFO):
-            response = client.post(
-                "/adage-iframe/logs/contact-modal-button",
+            response = test_client.post(
+                url_for("adage_iframe.log_contact_modal_button_click"),
                 json={
                     "offerId": 1,
                     "iframeFrom": "contact_modal",
                 },
             )
 
-        # then
         assert response.status_code == 204
         assert caplog.records[0].message == "ContactModalButtonClick"
         assert caplog.records[0].extra == {
@@ -260,25 +211,19 @@ class LogsTest:
             "offerId": 1,
             "queryId": None,
             "from": "contact_modal",
-            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
-            "uai": "EAU123",
+            "userId": get_hashed_user_id(EMAIL),
+            "uai": UAI,
             "user_role": AdageFrontRoles.READONLY,
             "isFromNoResult": None,
         }
 
-    def test_log_fav_offer_button_click(self, client, caplog):
-        # given
-        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="test@mail.com")
-        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
-
-        # when
+    def test_log_fav_offer_button_click(self, test_client, caplog):
         with caplog.at_level(logging.INFO):
-            response = client.post(
-                "/adage-iframe/logs/fav-offer",
+            response = test_client.post(
+                url_for("adage_iframe.log_fav_offer_button_click"),
                 json={"offerId": 1, "iframeFrom": "for_my_institution", "isFavorite": True},
             )
 
-        # then
         assert response.status_code == 204
         assert caplog.records[0].message == "FavOfferButtonClick"
         assert caplog.records[0].extra == {
@@ -287,24 +232,19 @@ class LogsTest:
             "queryId": None,
             "isFavorite": True,
             "from": "for_my_institution",
-            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
-            "uai": "EAU123",
+            "userId": get_hashed_user_id(EMAIL),
+            "uai": UAI,
             "user_role": AdageFrontRoles.READONLY,
             "isFromNoResult": None,
         }
 
-    def test_log_header_link_click(self, client, caplog):
-        # given
-        test_client = client.with_adage_token(email="test@mail.com", uai="123456")
-
-        # when
+    def test_log_header_link_click(self, test_client, caplog):
         with caplog.at_level(logging.INFO):
             response = test_client.post(
-                "/adage-iframe/logs/header-link-click",
+                url_for("adage_iframe.log_header_link_click"),
                 json={"header_link_name": "search", "iframeFrom": "for_my_institution"},
             )
 
-        # then
         assert response.status_code == 204
         record = next(record for record in caplog.records if record.message == "HeaderLinkClick")
         assert record is not None
@@ -313,19 +253,15 @@ class LogsTest:
             "header_link_name": "search",
             "from": "for_my_institution",
             "queryId": None,
-            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
-            "uai": "123456",
+            "userId": get_hashed_user_id(EMAIL),
+            "uai": UAI,
             "user_role": AdageFrontRoles.READONLY,
         }
 
-    def test_log_request_form_popin_dismiss(self, client, caplog):
-        # given
-        test_client = client.with_adage_token(email="test@mail.com", uai="EAU123")
-
-        # when
+    def test_log_request_form_popin_dismiss(self, test_client, caplog):
         with caplog.at_level(logging.INFO):
             response = test_client.post(
-                "/adage-iframe/logs/request-popin-dismiss",
+                url_for("adage_iframe.log_request_form_popin_dismiss"),
                 json={
                     "collectiveOfferTemplateId": 1,
                     "phoneNumber": "0601020304",
@@ -337,7 +273,6 @@ class LogsTest:
                 },
             )
 
-        # then
         assert response.status_code == 204
         record = [record for record in caplog.records if record.message == "RequestPopinDismiss"][0]
         assert record.extra == {
@@ -349,21 +284,17 @@ class LogsTest:
             "totalStudents": 30,
             "totalTeachers": 2,
             "comment": "La première règle du Fight Club est: il est interdit de parler du Fight Club",
-            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
-            "uai": "EAU123",
+            "userId": get_hashed_user_id(EMAIL),
+            "uai": UAI,
             "user_role": AdageFrontRoles.READONLY,
             "queryId": None,
             "isFromNoResult": None,
         }
 
-    def test_log_tracking_filter(self, client, caplog):
-        # given
-        test_client = client.with_adage_token(email="test@mail.com", uai="EAU123")
-
-        # when
+    def test_log_tracking_filter(self, test_client, caplog):
         with caplog.at_level(logging.INFO):
             response = test_client.post(
-                "/adage-iframe/logs/tracking-filter",
+                url_for("adage_iframe.log_tracking_filter"),
                 json={
                     "queryId": "1",
                     "resultNumber": 36,
@@ -375,14 +306,13 @@ class LogsTest:
                 },
             )
 
-        # then
         assert response.status_code == 204
         record = [record for record in caplog.records if record.message == "TrackingFilter"][0]
         assert record.extra == {
             "analyticsSource": "adage",
             "from": "for_my_institution",
-            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
-            "uai": "EAU123",
+            "userId": get_hashed_user_id(EMAIL),
+            "uai": UAI,
             "user_role": AdageFrontRoles.READONLY,
             "queryId": "1",
             "resultNumber": 36,
@@ -393,9 +323,7 @@ class LogsTest:
             "isFromNoResult": None,
         }
 
-    def test_log_tracking_filter_spam(self, client, caplog):
-        test_client = client.with_adage_token(email="test@mail.com", uai="EAU123")
-
+    def test_log_tracking_filter_spam(self, test_client, caplog):
         url = url_for("adage_iframe.log_tracking_filter")
         data = {
             "queryId": "1",
@@ -412,39 +340,28 @@ class LogsTest:
         tracking_records = [record for record in caplog.records if record.message == "TrackingFilter"]
         assert len(tracking_records) == 1
 
-    def test_log_closer_sastifaction_survey(self, client, caplog):
-        # given
-        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="test@mail.com")
-        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
-
-        # when
+    def test_log_closer_sastifaction_survey(self, test_client, caplog):
         with caplog.at_level(logging.INFO):
-            response = client.post(
-                "/adage-iframe/logs/sat-survey",
+            response = test_client.post(
+                url_for("adage_iframe.log_open_satisfaction_survey"),
                 json={"iframeFrom": "for_my_institution", "queryId": "1234a"},
             )
 
-        # then
         assert response.status_code == 204
         assert caplog.records[0].message == "OpenSatisfactionSurvey"
         assert caplog.records[0].extra == {
             "analyticsSource": "adage",
             "queryId": "1234a",
             "from": "for_my_institution",
-            "uai": "EAU123",
+            "uai": UAI,
             "user_role": AdageFrontRoles.READONLY,
-            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
+            "userId": get_hashed_user_id(EMAIL),
         }
 
-    def test_log_tracking_autocompletion(self, client, caplog):
-        # given
-        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="test@mail.com")
-        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
-
-        # when
+    def test_log_tracking_autocompletion(self, test_client, caplog):
         with caplog.at_level(logging.INFO):
-            response = client.post(
-                "/adage-iframe/logs/tracking-autocompletion",
+            response = test_client.post(
+                url_for("adage_iframe.log_tracking_autocomplete_suggestion_click"),
                 json={
                     "suggestionType": "offer category",
                     "suggestionValue": "ai confiance, crois en moi, que je puisse, veiller sur toi",
@@ -453,7 +370,6 @@ class LogsTest:
                 },
             )
 
-        # then
         assert response.status_code == 204
         assert caplog.records[0].message == "logAutocompleteSuggestionClicked"
         record = [record for record in caplog.records if record.message == "logAutocompleteSuggestionClicked"][0]
@@ -463,69 +379,52 @@ class LogsTest:
             "queryId": "1234a",
             "suggestionType": "offer category",
             "suggestionValue": "ai confiance, crois en moi, que je puisse, veiller sur toi",
-            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
-            "uai": "EAU123",
+            "userId": get_hashed_user_id(EMAIL),
+            "uai": UAI,
             "user_role": AdageFrontRoles.READONLY,
         }
 
-    def test_log_adage_map(self, client, caplog):
-        # given
-        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="test@mail.com")
-        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
-
-        # when
+    def test_log_adage_map(self, test_client, caplog):
         with caplog.at_level(logging.INFO):
-            response = client.post(
-                "/adage-iframe/logs/tracking-map",
+            response = test_client.post(
+                url_for("adage_iframe.log_tracking_map"),
                 json={"iframeFrom": "for_my_institution", "queryId": "1234a"},
             )
 
-        # then
         assert response.status_code == 204
         assert caplog.records[0].message == "adageMapClicked"
         assert caplog.records[0].extra == {
             "analyticsSource": "adage",
             "queryId": "1234a",
             "from": "for_my_institution",
-            "uai": "EAU123",
+            "uai": UAI,
             "user_role": AdageFrontRoles.READONLY,
-            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
+            "userId": get_hashed_user_id(EMAIL),
             "isFromNoResult": None,
         }
 
-    def test_log_has_seen_all_playlist(self, client, caplog):
-        # given
-        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="test@mail.com")
-        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
-
-        # when
+    def test_log_has_seen_all_playlist(self, test_client, caplog):
         with caplog.at_level(logging.INFO):
-            response = client.post(
-                "/adage-iframe/logs/playlist",
+            response = test_client.post(
+                url_for("adage_iframe.log_has_seen_all_playlist"),
                 json={"iframeFrom": "for_my_institution", "queryId": "1234a"},
             )
 
-        # then
         assert response.status_code == 204
         assert caplog.records[0].message == "HasSeenAllPlaylist"
         assert caplog.records[0].extra == {
             "analyticsSource": "adage",
             "queryId": "1234a",
             "from": "for_my_institution",
-            "uai": "EAU123",
+            "uai": UAI,
             "user_role": AdageFrontRoles.READONLY,
-            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
+            "userId": get_hashed_user_id(EMAIL),
         }
 
-    def test_log_search_show_more(self, client, caplog):
-        # given
-        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="test@mail.com")
-        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
-
-        # when
+    def test_log_search_show_more(self, test_client, caplog):
         with caplog.at_level(logging.INFO):
-            response = client.post(
-                "/adage-iframe/logs/search-show-more",
+            response = test_client.post(
+                url_for("adage_iframe.log_search_show_more"),
                 json={
                     "iframeFrom": "for_my_institution",
                     "queryId": "1234a",
@@ -533,7 +432,6 @@ class LogsTest:
                 },
             )
 
-        # then
         assert response.status_code == 204
         assert caplog.records[0].message == "SearchShowMore"
         assert caplog.records[0].extra == {
@@ -541,9 +439,9 @@ class LogsTest:
             "source": "partnersMap",
             "queryId": "1234a",
             "from": "for_my_institution",
-            "uai": "EAU123",
+            "uai": UAI,
             "user_role": AdageFrontRoles.READONLY,
-            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
+            "userId": get_hashed_user_id(EMAIL),
         }
 
     def test_log_tracking_cta_share(self, test_client, caplog):
@@ -577,22 +475,16 @@ class LogsTest:
             "analyticsSource": "adage",
         }
 
-    def test_log_contact_url_button_click(self, client, caplog):
-        # given
-        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="test@mail.com")
-        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
-
-        # when
+    def test_log_contact_url_button_click(self, test_client, caplog):
         with caplog.at_level(logging.INFO):
-            response = client.post(
-                "/adage-iframe/logs/contact-url-click",
+            response = test_client.post(
+                url_for("adage_iframe.log_contact_url_click"),
                 json={
                     "offerId": 1,
                     "iframeFrom": "contact_modal",
                 },
             )
 
-        # then
         assert response.status_code == 204
         assert caplog.records[0].message == "ContactUrlClick"
         assert caplog.records[0].extra == {
@@ -600,8 +492,8 @@ class LogsTest:
             "offerId": 1,
             "queryId": None,
             "from": "contact_modal",
-            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
-            "uai": "EAU123",
+            "userId": get_hashed_user_id(EMAIL),
+            "uai": UAI,
             "user_role": AdageFrontRoles.READONLY,
             "isFromNoResult": None,
         }
