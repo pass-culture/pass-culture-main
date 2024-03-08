@@ -277,43 +277,6 @@ describe('SignIn', () => {
     expect(screen.getByLabelText('Adresse email *')).toHaveFocus()
   })
 
-  it('should display an error message when login rate limit exceeded', async () => {
-    renderSignIn()
-
-    const email = screen.getByLabelText('Adresse email *')
-    await userEvent.type(email, 'MonPetitEmail@exemple.com')
-    const password = screen.getByLabelText('Mot de passe *')
-    await userEvent.type(password, 'MCSolar85')
-
-    vi.spyOn(api, 'signin').mockRejectedValueOnce(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          url: '',
-          body: {
-            identifier: [
-              'Nombre de tentatives de connexion dépassé, veuillez réessayer dans une minute',
-            ],
-          },
-          status: HTTP_STATUS.TOO_MANY_REQUESTS,
-        } as ApiResult,
-        ''
-      )
-    )
-
-    await userEvent.click(
-      screen.getByRole('button', {
-        name: 'Se connecter',
-      })
-    )
-
-    expect(
-      await screen.findByText(
-        'Nombre de tentatives de connexion dépassé. Veuillez réessayer dans 1 minute.'
-      )
-    ).toBeInTheDocument()
-  })
-
   describe('sign in with new onboarding feature', () => {
     it('should not call listOfferersNames if user is admin', () => {
       const listOfferersNamesRequest = vi

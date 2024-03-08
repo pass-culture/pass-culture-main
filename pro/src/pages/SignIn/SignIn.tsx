@@ -81,16 +81,12 @@ export const SignIn = (): JSX.Element => {
 
   const onHandleFail = (payload: SigninApiErrorResponse) => {
     const { errors, status } = payload
-    if (status === HTTP_STATUS.TOO_MANY_REQUESTS) {
-      notify.error(
-        'Nombre de tentatives de connexion dépassé. Veuillez réessayer dans 1 minute.'
-      )
-    } else if (errors && Object.values(errors).length > 0) {
-      notify.error('Identifiant ou mot de passe incorrect.')
-      formik.setStatus('apiError')
-      formik.setFieldError('email', 'Identifiant ou mot de passe incorrect.')
-      formik.setFieldError('password', 'Identifiant ou mot de passe incorrect.')
-    }
+      if (errors && Object.values(errors).length > 0) {
+        notify.error('Identifiant ou mot de passe incorrect.')
+        formik.setStatus('apiError')
+        formik.setFieldError('email', 'Identifiant ou mot de passe incorrect.')
+        formik.setFieldError('password', 'Identifiant ou mot de passe incorrect.')
+      }
   }
 
   return (
