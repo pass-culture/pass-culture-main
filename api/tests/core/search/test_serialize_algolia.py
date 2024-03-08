@@ -242,6 +242,10 @@ def test_serialize_offer_gtl():
     assert serialized["offer"]["gtl_level2"] == "Œuvres classiques"
     assert serialized["offer"]["gtl_level3"] == "Antiquité"
     assert serialized["offer"]["gtl_level4"] is None
+    assert serialized["offer"]["gtlCodeLevel1"] == "01000000"
+    assert serialized["offer"]["gtlCodeLevel2"] == "01030000"
+    assert serialized["offer"]["gtlCodeLevel3"] == "01030100"
+    assert serialized["offer"]["gtlCodeLevel4"] == "01030100"
 
 
 def test_serialize_offer_visa():
