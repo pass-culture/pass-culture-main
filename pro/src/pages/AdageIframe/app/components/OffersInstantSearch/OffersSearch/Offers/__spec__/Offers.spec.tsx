@@ -680,9 +680,7 @@ describe('offers', () => {
         offerInCayenne
       )
 
-      renderOffers({ ...offersProps, submitCount: undefined }, adageUser, {
-        features: ['WIP_ENABLE_DIFFUSE_HELP'],
-      })
+      renderOffers({ ...offersProps, submitCount: undefined }, adageUser)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       const diffuseHelp = screen.queryByText('Le saviez-vous ?')
@@ -698,9 +696,7 @@ describe('offers', () => {
         offerInCayenne
       )
 
-      renderOffers({ ...offersProps, submitCount: 1 }, adageUser, {
-        features: ['WIP_ENABLE_DIFFUSE_HELP'],
-      })
+      renderOffers({ ...offersProps, submitCount: 1 }, adageUser)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       const diffuseHelp = screen.getByText('Le saviez-vous ?')
@@ -716,9 +712,7 @@ describe('offers', () => {
         offerInCayenne
       )
 
-      renderOffers({ ...offersProps, submitCount: 0 }, adageUser, {
-        features: ['WIP_ENABLE_DIFFUSE_HELP'],
-      })
+      renderOffers({ ...offersProps, submitCount: 0 }, adageUser)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       expect(screen.queryByText('Le saviez-vous ?')).not.toBeInTheDocument()
