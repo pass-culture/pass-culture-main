@@ -245,25 +245,25 @@ class LogsTest:
         # when
         with caplog.at_level(logging.INFO):
             response = client.post(
-                "/adage-iframe/logs/offer-template-detail",
+                "/adage-iframe/logs/contact-modal-button",
                 json={
                     "offerId": 1,
-                    "iframeFrom": "for_my_institution",
-                    "queryId": None,
+                    "iframeFrom": "contact_modal",
                 },
             )
 
         # then
         assert response.status_code == 204
-        assert caplog.records[0].message == "TemplateOfferDetailButtonClick"
+        assert caplog.records[0].message == "ContactModalButtonClick"
         assert caplog.records[0].extra == {
             "analyticsSource": "adage",
             "offerId": 1,
             "queryId": None,
-            "from": "for_my_institution",
+            "from": "contact_modal",
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
             "uai": "EAU123",
             "user_role": AdageFrontRoles.READONLY,
+            "isFromNoResult": None,
         }
 
     def test_log_fav_offer_button_click(self, client, caplog):
