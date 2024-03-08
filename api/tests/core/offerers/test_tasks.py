@@ -29,7 +29,7 @@ class CheckOffererIsActiveTest:
         offerer = offerers_factories.OffererFactory()
 
         response = client.post(
-            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer_is_active",
+            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
             json={"siren": offerer.siren, "tag_when_inactive": True},
             headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
         )
@@ -49,7 +49,7 @@ class CheckOffererIsActiveTest:
         offerer = offerers_factories.OffererFactory()
 
         response = client.post(
-            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer_is_active",
+            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
             json={"siren": offerer.siren, "tag_when_inactive": True},
             headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
         )
@@ -87,7 +87,7 @@ class CheckOffererIsActiveTest:
         offerer = offerers_factories.OffererFactory()
 
         response = client.post(
-            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer_is_active",
+            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
             json={"siren": offerer.siren, "tag_when_inactive": True},
             headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
         )
@@ -136,7 +136,7 @@ class CheckOffererIsActiveTest:
         offerer = offerers_factories.OffererFactory(siren="109500099")
 
         response = client.post(
-            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer_is_active",
+            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
             json={"siren": offerer.siren, "tag_when_inactive": True},
             headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
         )
@@ -181,7 +181,7 @@ class CheckOffererIsActiveTest:
         offerer = offerers_factories.OffererFactory(siren="109500099", tags=[siren_caduc_tag])
 
         response = client.post(
-            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer_is_active",
+            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
             json={"siren": offerer.siren, "tag_when_inactive": True},
             headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
         )
@@ -200,7 +200,7 @@ class CheckOffererIsActiveTest:
         user_offerer = offerers_factories.UserNotValidatedOffererFactory(offerer=offerer)
 
         response = client.post(
-            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer_is_active",
+            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
             json={"siren": offerer.siren, "tag_when_inactive": True},
             headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
         )
@@ -236,7 +236,7 @@ class CheckOffererIsActiveTest:
         offerer = offerers_factories.OffererFactory(siren="100000099")
 
         response = client.post(
-            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer_is_active",
+            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
             json={"siren": offerer.siren, "tag_when_inactive": False},
             headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
         )
@@ -251,7 +251,7 @@ class CheckOffererIsActiveTest:
         offerer = offerers_factories.OffererFactory(siren="000000000")
 
         response = client.post(
-            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer_is_active",
+            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
             json={"siren": offerer.siren, "tag_when_inactive": True},
             headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
         )
