@@ -101,7 +101,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_SUSPICIOUS_EMAIL_SEND = "Active l'envoie d'email lors de la détection d'une connexion suspicieuse"
     WIP_MANDATORY_BOOKING_CONTACT = "Rend obligatoire offer.bookingContact pour les offres retirables"
     WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING = "Active les réservations externes boost avec préfixe"
-    WIP_ENABLE_DIFFUSE_HELP = "Activer l'affichage de l'aide diffuse adage"
     WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API = "Activer la création d'évènements avec tickets dans l'API publique"
     WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY = "Activer le nouveau parcours de dépôt de coordonnées bancaires"
     WIP_ENABLE_DOUBLE_MODEL_WRITING = "Activer la double écriture des coordonnées bancaires"
@@ -177,7 +176,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC,
     FeatureToggle.ENABLE_CGR_TIMEOUT,
     FeatureToggle.WIP_ENABLE_COMPLIANCE_CALL,
-    FeatureToggle.WIP_ENABLE_DIFFUSE_HELP,
     FeatureToggle.WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API,
     FeatureToggle.WIP_ENABLE_MOCK_UBBLE,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,

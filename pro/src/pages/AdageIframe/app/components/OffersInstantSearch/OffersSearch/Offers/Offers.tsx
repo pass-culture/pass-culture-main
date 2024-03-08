@@ -13,7 +13,6 @@ import {
   VenueResponse,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import useActiveFeature from 'hooks/useActiveFeature'
 import fullGoTop from 'icons/full-go-top.svg'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { Button } from 'ui-kit'
@@ -71,9 +70,7 @@ export const Offers = ({
   const [queriesAreLoading, setQueriesAreLoading] = useState(false)
   const [fetchedOffers, setFetchedOffers] = useState<OfferMap>(new Map())
 
-  const isDiffuseHelpActive = useActiveFeature('WIP_ENABLE_DIFFUSE_HELP')
-
-  const showDiffuseHelp = isDiffuseHelpActive && (submitCount ?? 0) > 0
+  const showDiffuseHelp = (submitCount ?? 0) > 0
 
   const { adageUser } = useAdageUser()
 
