@@ -24,9 +24,9 @@ import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
 import {
   defaultGetOffererResponseModel,
+  getIndividualOfferFactory,
   getOfferVenueFactory,
   getOfferManagingOffererFactory,
-  getIndividualOfferFactory,
   categoryFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,
