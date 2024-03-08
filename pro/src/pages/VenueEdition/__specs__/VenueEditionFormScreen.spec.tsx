@@ -232,7 +232,7 @@ describe('VenueFormScreen', () => {
     renderForm(formValues, venue)
 
     expect(
-      await screen.findByText('À propos de votre page partenaire')
+      await screen.findByText('À propos de votre activité')
     ).toBeInTheDocument()
     expect(
       screen.getByText('État de votre page partenaire sur l’application :')

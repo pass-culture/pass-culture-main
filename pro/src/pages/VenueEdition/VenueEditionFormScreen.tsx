@@ -106,16 +106,17 @@ export const VenueEditionFormScreen = ({
   return (
     <>
       {venue.isPermanent && (
-        <div className={styles['page-status']}>
-          <Callout title="À propos de votre page partenaire">
-            Les informations que vous renseignez ici seront affichées dans votre
-            page partenaire, visible sur l’application pass Culture.
-          </Callout>
-          <PartnerPageIndividualSection
-            venueId={venue.id}
-            isVisibleInApp={Boolean(venue.isVisibleInApp)}
-          />
-        </div>
+        <>
+          <div className={styles['page-status']}>
+            <Callout title="Les informations que vous renseignez ci-dessous sont affichées dans votre page partenaire, visible sur l’application pass Culture" />
+            <PartnerPageIndividualSection
+              venueId={venue.id}
+              isVisibleInApp={Boolean(venue.isVisibleInApp)}
+            />
+          </div>
+
+          <hr className={styles['separator']} />
+        </>
       )}
 
       <Routes>
