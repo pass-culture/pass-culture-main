@@ -85,7 +85,6 @@ describe('OfferType', () => {
         getOffererNameFactory({
           id: 1,
           name: 'Ma super structure',
-          allowedOnAdage: true,
         }),
       ],
     })

@@ -61,12 +61,10 @@ describe('OffererStatsScreen', () => {
         getOffererNameFactory({
           id: 1,
           name: 'Mon super cinéma',
-          allowedOnAdage: true,
         }),
         getOffererNameFactory({
           id: 2,
           name: 'Ma super librairie',
-          allowedOnAdage: true,
         }),
       ],
     })
