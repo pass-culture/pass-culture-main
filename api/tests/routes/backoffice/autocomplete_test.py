@@ -8,6 +8,7 @@ from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.users import factories as users_factories
 
 
 pytestmark = [
@@ -171,3 +172,30 @@ class AutocompleteCriteriaTest:
         criteria_factories.CriterionFactory(id=10534, name="Un bon id")
 
         _test_autocomplete(authenticated_client, "backoffice_web.autocomplete_criteria", search_query, expected_texts)
+
+
+class AutocompleteBoUserTest:
+    @pytest.mark.parametrize(
+        "search_query, expected_texts",
+        [
+            ("", set()),
+            ("1", set()),
+            ("L", set()),
+            ("Le", {"Léa Hugo", "Léo Admin", "Hercule Poirot"}),  # Hercule Poirot is the authenticated admin user
+            ("Léa", {"Léa Hugo"}),
+            ("Hugo", {"Léa Hugo", "Hugo Admin"}),
+            ("Hugo A", {"Hugo Admin"}),
+            ("Pro", set()),
+            ("1234", set()),
+            ("12345", {"Louise Admin"}),
+        ],
+    )
+    def test_autocomplete_bo_users(self, authenticated_client, search_query, expected_texts):
+        users_factories.AdminFactory(firstName="Léa", lastName="Hugo")
+        users_factories.AdminFactory(firstName="Léo", lastName="Admin")
+        users_factories.AdminFactory(firstName="Hugo", lastName="Admin")
+        users_factories.AdminFactory(id=12345, firstName="Louise", lastName="Admin")
+        users_factories.UserFactory(id=1234, firstName="Léo", lastName="Hugo")
+        users_factories.ProFactory(firstName="Léa", lastName="Pro")
+
+        _test_autocomplete(authenticated_client, "backoffice_web.autocomplete_bo_users", search_query, expected_texts)
