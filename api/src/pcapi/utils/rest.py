@@ -6,7 +6,7 @@ def check_user_has_access_to_offerer(user: User, offerer_id: int) -> None:
     if not user.has_access(offerer_id):
         raise ApiErrors(
             errors={
-                "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."],
+                "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."],
             },
             status_code=403,
         )

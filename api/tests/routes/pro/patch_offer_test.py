@@ -361,7 +361,7 @@ class Returns403Test:
         # Then
         assert response.status_code == 403
         assert response.json["global"] == [
-            "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
+            "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
         ]
         assert Offer.query.get(offer.id).name == "Old name"
 
