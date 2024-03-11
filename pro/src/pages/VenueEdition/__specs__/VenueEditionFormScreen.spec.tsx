@@ -15,14 +15,12 @@ import {
   RenderWithProvidersOptions,
 } from 'utils/renderWithProviders'
 
-import { VenueEditionFormValues } from '../types'
 import { VenueEditionFormScreen } from '../VenueEditionFormScreen'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 
 const renderForm = (
-  initialValues: VenueEditionFormValues,
   venue: GetVenueResponseModel,
   options?: RenderWithProvidersOptions
 ) => {
@@ -33,10 +31,7 @@ const renderForm = (
           path="*"
           element={
             <>
-              <VenueEditionFormScreen
-                initialValues={initialValues}
-                venue={venue}
-              />
+              <VenueEditionFormScreen venue={venue} />
             </>
           }
         />
@@ -136,86 +131,17 @@ vi.mock('core/Venue/siretApiValidate', () => ({
 }))
 
 describe('VenueFormScreen', () => {
-  let formValues: VenueEditionFormValues
   let venue: GetVenueResponseModel
 
   beforeEach(() => {
-    formValues = {
-      description: '',
-      accessibility: {
-        visual: false,
-        mental: true,
-        audio: false,
-        motor: true,
-        none: false,
-      },
-      isAccessibilityAppliedOnAllOffers: false,
-      phoneNumber: '0604855967',
-      email: 'em@ail.com',
-      webSite: 'https://www.site.web',
-    }
-
     venue = {
       ...defaultGetVenue,
-      hasPendingBankInformationApplication: false,
-      demarchesSimplifieesApplicationId: '',
-      collectiveDomains: [],
-      dateCreated: '2022-02-02',
-      isVirtual: false,
-      address: 'Address',
-      banId: 'ban_id',
-      bannerMeta: null,
-      bannerUrl: '',
-      city: 'city',
-      comment: 'comment',
-      contact: {
-        email: 'email',
-        phoneNumber: '0606060606',
-        website: 'web',
-      },
-      description: 'description',
-      departementCode: '75008',
-      dmsToken: '',
       isPermanent: true,
-      latitude: 0,
-      longitude: 0,
-      name: 'name',
-      id: 15,
-      pricingPoint: null,
-      postalCode: '75008',
-      publicName: 'name',
-      siret: '88145723823022',
-      reimbursementPointId: 0,
-      withdrawalDetails: 'string',
-      collectiveAccessInformation: 'string',
-      collectiveDescription: 'string',
-      collectiveEmail: 'string',
-      collectiveInterventionArea: [],
-      collectiveLegalStatus: null,
-      collectiveNetwork: [],
-      collectivePhone: 'string',
-      collectiveStudents: [],
-      collectiveWebsite: 'string',
-      managingOfferer: {
-        address: null,
-        city: 'string',
-        dateCreated: 'string',
-        demarchesSimplifieesApplicationId: null,
-        id: 1,
-        isValidated: true,
-        name: 'name',
-        postalCode: 'string',
-        siren: null,
-        allowedOnAdage: true,
-      },
-      hasAdageId: false,
-      adageInscriptionDate: null,
-      bankAccount: null,
     }
   })
 
   it('should display readonly info', async () => {
-    renderForm(formValues, venue, { initialRouterEntries: ['/'] })
+    renderForm(venue, { initialRouterEntries: ['/'] })
 
     expect(
       await screen.findByText('Vos informations pour le grand public')
@@ -226,7 +152,7 @@ describe('VenueFormScreen', () => {
   })
 
   it('should display the partner info', async () => {
-    renderForm(formValues, venue)
+    renderForm(venue)
 
     expect(
       await screen.findByText('À propos de votre activité')
@@ -238,7 +164,7 @@ describe('VenueFormScreen', () => {
   })
 
   it('should display an error when the venue could not be updated', async () => {
-    renderForm(formValues, venue)
+    renderForm(venue)
 
     vi.spyOn(api, 'editVenue').mockRejectedValue(
       new ApiError(
@@ -261,7 +187,7 @@ describe('VenueFormScreen', () => {
 
   it('should display specific message when venue is virtual', () => {
     venue.isVirtual = true
-    renderForm(formValues, venue)
+    renderForm(venue)
 
     expect(
       screen.getByText(
@@ -275,7 +201,7 @@ describe('VenueFormScreen', () => {
   it('should diplay only some fields when the venue is virtual', async () => {
     venue.isVirtual = true
 
-    renderForm(formValues, venue)
+    renderForm(venue)
 
     await waitFor(() => {
       expect(screen.queryByTestId('wrapper-publicName')).not.toBeInTheDocument()

@@ -21,7 +21,6 @@ import { updateSelectedOffererId } from 'store/user/reducer'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import Tabs, { Tab } from 'ui-kit/Tabs/Tabs'
 
-import { setInitialFormValues } from './setInitialFormValues'
 import styles from './VenueEdition.module.scss'
 import { VenueEditionFormScreen } from './VenueEditionFormScreen'
 import { VenueEditionHeader } from './VenueEditionHeader'
@@ -129,15 +128,7 @@ export const VenueEdition = (): JSX.Element | null => {
             path="eac/edition"
             element={<CollectiveDataEdition venue={venue} />}
           />
-          <Route
-            path="*"
-            element={
-              <VenueEditionFormScreen
-                initialValues={setInitialFormValues(venue)}
-                venue={venue}
-              />
-            }
-          />
+          <Route path="*" element={<VenueEditionFormScreen venue={venue} />} />
         </Routes>
       </div>
     </AppLayout>
