@@ -35,6 +35,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
 
   const [filters, setFilters] = useState(INITIAL_FILTERS)
   const [invoices, setInvoices] = useState<InvoiceResponseV2Model[]>([])
+  const [offererHasInvoice, setOffererHasInvoice] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
   const [areFiltersDefault, setAreFiltersDefault] = useState(true)
@@ -43,10 +44,10 @@ const ReimbursementsInvoices = (): JSX.Element => {
   const { selectedOfferer } = useReimbursementContext()
 
   const hasNoSearchResult =
-    !hasError && invoices?.length === 0 && hasSearchedOnce
+    (!hasError && invoices?.length === 0 && hasSearchedOnce) ||
+    offererHasInvoice
 
-  const hasNoInvoicesYet =
-    !hasError && invoices.length === 0 && !hasSearchedOnce
+  const hasNoInvoicesYet = !hasError && !offererHasInvoice && !hasSearchedOnce
 
   const loadInvoices = useCallback(
     async (shouldReset?: boolean) => {
@@ -105,8 +106,24 @@ const ReimbursementsInvoices = (): JSX.Element => {
   )
 
   useEffect(() => {
+    const hasInvoice = async () => {
+      if (!selectedOfferer) {
+        return false
+      }
+      const result = await api.hasInvoice(selectedOfferer.id)
+      return result.hasInvoice
+    }
+    const firstLoad = async () => {
+      const offererHasInvoice = await hasInvoice()
+      setOffererHasInvoice(offererHasInvoice)
+      if (offererHasInvoice) {
+        await loadInvoices()
+      } else {
+        setIsLoading(false)
+      }
+    }
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadInvoices()
+    firstLoad()
 
     // We let the dependancies table empty here to have the same behavior as the previous version :
     //  data load when we arrive on the page
@@ -161,10 +178,11 @@ const ReimbursementsInvoices = (): JSX.Element => {
   return (
     <>
       {isNewBankDetailsJourneyEnabled && <BannerReimbursementsInfo />}
+      <h1>Factures</h1>
       <InvoicesFilters
         areFiltersDefault={areFiltersDefault}
         filters={filters}
-        disable={hasNoInvoicesYet}
+        disable={!offererHasInvoice}
         initialFilters={INITIAL_FILTERS}
         loadInvoices={loadInvoices}
         selectableOptions={filterOptions}
