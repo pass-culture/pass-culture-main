@@ -153,7 +153,6 @@ describe('screens:IndividualOffer::Informations::creation', () => {
         getOffererNameFactory({
           id: 1,
           name: 'mon offerer A',
-          allowedOnAdage: true,
         }),
       ],
       categories,

@@ -80,7 +80,6 @@ describe('IndividualOffer section: venue', () => {
       getOffererNameFactory({
         id: 1,
         name: 'Offerer AE',
-        allowedOnAdage: true,
       }),
     ]
 

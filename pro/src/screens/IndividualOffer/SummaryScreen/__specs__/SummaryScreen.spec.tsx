@@ -367,7 +367,6 @@ describe('Summary', () => {
         offerOfferer: getOffererNameFactory({
           name: 'offerOffererName',
           id: 1,
-          allowedOnAdage: true,
         }),
         showVenuePopin: {
           [venueId]: true,
@@ -406,7 +405,6 @@ describe('Summary', () => {
         offerOfferer: getOffererNameFactory({
           name: 'offerOffererName',
           id: 1,
-          allowedOnAdage: true,
         }),
         venueList: [venueListItemFactory()],
       }
@@ -460,7 +458,6 @@ describe('Summary', () => {
         offerOfferer: getOffererNameFactory({
           name: 'offerOffererName',
           id: 1,
-          allowedOnAdage: true,
         }),
         venueList: [venueListItemFactory()],
       }

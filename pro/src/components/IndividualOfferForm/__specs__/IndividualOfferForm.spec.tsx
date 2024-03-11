@@ -105,7 +105,6 @@ describe('IndividualOfferForm', () => {
       getOffererNameFactory({
         id: offererId,
         name: 'Offerer virtual and physical',
-        allowedOnAdage: true,
       }),
     ]
     venueList = [

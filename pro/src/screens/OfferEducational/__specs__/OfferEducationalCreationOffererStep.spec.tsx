@@ -17,7 +17,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
     beforeEach(() => {
       props = {
         ...defaultCreationProps,
-        userOfferers: userOfferersFactory([{ allowedOnAdage: true }]),
+        userOfferers: userOfferersFactory([{}]),
       }
     })
 
@@ -121,8 +121,8 @@ describe('screens | OfferEducational : creation offerer step', () => {
       props = {
         ...defaultCreationProps,
         userOfferers: userOfferersFactory([
-          { id: firstOffererId, allowedOnAdage: true },
-          { id: secondOffererId, allowedOnAdage: true },
+          { id: firstOffererId },
+          { id: secondOffererId },
         ]),
       }
     })
