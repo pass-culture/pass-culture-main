@@ -31,7 +31,7 @@ const renderForm = (
           path="*"
           element={
             <>
-              <VenueEditionFormScreen venue={venue} />
+              <VenueEditionFormScreen venue={venue} reloadVenueData={vi.fn()} />
             </>
           }
         />
