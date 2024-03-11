@@ -19,25 +19,38 @@ export const SortArrow = ({
   onClick,
   children,
 }: SortArrowProps) => (
-  <button type="button" className={styles['sorting-icons']} onClick={onClick}>
+  <button
+    type="button"
+    className={styles['sorting-icons']}
+    onClick={onClick}
+    title={
+      sortingMode === SortingMode.NONE
+        ? 'Trier'
+        : sortingMode === SortingMode.DESC
+          ? 'Ne plus trier'
+          : 'Trier par ordre décroissant'
+    }
+  >
     {sortingMode !== SortingMode.NONE ? (
       sortingMode === SortingMode.DESC ? (
         <SvgIcon
           className={styles['sort-icon']}
           src={fullUpIcon}
           alt="Ne plus trier"
+          width="10"
         />
       ) : (
         <SvgIcon
           className={styles['sort-icon']}
           src={fullDownIcon}
           alt="Trier par ordre décroissant"
+          width="10"
         />
       )
     ) : (
       <span className={cn(styles['sort-icon'], styles['both-icons'])}>
-        <SvgIcon src={fullUpIcon} alt="Trier par ordre croissant" />
-        <SvgIcon src={fullDownIcon} alt="" />
+        <SvgIcon src={fullUpIcon} alt="Trier par ordre croissant" width="10" />
+        <SvgIcon src={fullDownIcon} alt="" width="10" />
       </span>
     )}
     {children}
