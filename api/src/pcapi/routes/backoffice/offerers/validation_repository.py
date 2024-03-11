@@ -169,6 +169,7 @@ def list_offerers_to_be_validated(
     regions: list[str] | None = None,
     tags: list[offerers_models.OffererTag] | None = None,
     status: list[ValidationStatus] | None = None,
+    last_instructor_ids: list[int] | None = None,
     dms_adage_status: list[GraphQLApplicationStates] | None = None,
     from_datetime: datetime | None = None,
     to_datetime: datetime | None = None,
@@ -265,6 +266,25 @@ def list_offerers_to_be_validated(
         offerers_models.Offerer.id,
     )
 
+    if last_instructor_ids:
+        query = query.filter(
+            db.session.query(history_models.ActionHistory.authorUserId)
+            .filter(
+                history_models.ActionHistory.offererId == offerers_models.Offerer.id,
+                history_models.ActionHistory.actionType.in_(
+                    (
+                        history_models.ActionType.OFFERER_PENDING,
+                        history_models.ActionType.OFFERER_VALIDATED,
+                        history_models.ActionType.OFFERER_REJECTED,
+                    )
+                ),
+            )
+            .order_by(history_models.ActionHistory.actionDate.desc())
+            .limit(1)
+            .scalar_subquery()
+            .in_(last_instructor_ids)
+        )
+
     return query.distinct()
 
 
@@ -273,6 +293,7 @@ def list_users_offerers_to_be_validated(
     regions: list[str] | None = None,
     tags: list[offerers_models.OffererTag] | None = None,
     status: list[ValidationStatus] | None = None,
+    last_instructor_ids: list[int] | None = None,
     offerer_status: list[ValidationStatus] | None = None,
     from_datetime: datetime | None = None,
     to_datetime: datetime | None = None,
@@ -332,7 +353,7 @@ def list_users_offerers_to_be_validated(
     if offerer_status:
         query = query.filter(offerers_models.Offerer.validationStatus.in_(offerer_status))
 
-    return _apply_query_filters(
+    query = _apply_query_filters(
         query,
         q,
         regions,
@@ -344,3 +365,25 @@ def list_users_offerers_to_be_validated(
         offerers_models.UserOfferer,
         offerers_models.UserOfferer.offererId,
     )
+
+    if last_instructor_ids:
+        query = query.filter(
+            db.session.query(history_models.ActionHistory.authorUserId)
+            .filter(
+                history_models.ActionHistory.userId == offerers_models.UserOfferer.userId,
+                history_models.ActionHistory.offererId == offerers_models.UserOfferer.offererId,
+                history_models.ActionHistory.actionType.in_(
+                    (
+                        history_models.ActionType.USER_OFFERER_PENDING,
+                        history_models.ActionType.USER_OFFERER_VALIDATED,
+                        history_models.ActionType.USER_OFFERER_REJECTED,
+                    )
+                ),
+            )
+            .order_by(history_models.ActionHistory.actionDate.desc())
+            .limit(1)
+            .scalar_subquery()
+            .in_(last_instructor_ids)
+        )
+
+    return query
