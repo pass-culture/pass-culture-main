@@ -522,6 +522,19 @@ RESPONSE_RCS_REGISTERED_COMPANY = {
                 "fonction": "PRESIDENT",
                 "date_naissance": "1980-01",
             },
+            {
+                "type": "personne_physique",
+                "nom": "JUSTE LEBLANC",
+                "prenom": None,  # sometimes, data is not registered properly
+                "fonction": None,
+                "date_naissance": "1980-01",
+            },
+            {
+                "type": "personne_physique",
+                "raison_sociale": "AUDIT EXEMPLE - SOCIETE PAR ACTIONS SIMPLIFIEE",
+                "fonction": "COMMISSAIRE AUX COMPTES TITULAIRE",
+                "numero_identification": "123456789",
+            },
         ],
         "observations": [],
         "nom_commercial": "",
