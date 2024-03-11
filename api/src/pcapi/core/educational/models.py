@@ -10,7 +10,6 @@ import psycopg2.extras
 import sqlalchemy as sa
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.dialects import postgresql
-from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
 import sqlalchemy.orm as sa_orm
@@ -43,6 +42,7 @@ from pcapi.utils.image_conversion import ImageRatio
 from pcapi.utils.image_conversion import process_original_image
 from pcapi.utils.image_conversion import standardize_image
 from pcapi.utils.phone_number import ParsedPhoneNumber
+from pcapi.utils.typing import hybrid_property
 
 
 if typing.TYPE_CHECKING:
@@ -155,7 +155,7 @@ class HasImageMixin:
     def hasImage(self) -> bool:
         return self.imageId is not None
 
-    @hasImage.expression  # type: ignore[no-redef]
+    @hasImage.expression
     def hasImage(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.imageId is not None
 
@@ -501,7 +501,7 @@ class CollectiveOffer(
             return False
         return self.collectiveStock.hasBookingLimitDatetimePassed
 
-    @hasBookingLimitDatetimesPassed.expression  # type: ignore[no-redef]
+    @hasBookingLimitDatetimesPassed.expression
     def hasBookingLimitDatetimesPassed(cls) -> Exists:  # pylint: disable=no-self-argument
         aliased_collective_stock = sa.orm.aliased(CollectiveStock)
         return (
@@ -561,7 +561,7 @@ class CollectiveOffer(
     def isEvent(self) -> bool:
         return self.subcategory.is_event
 
-    @isEvent.expression  # type: ignore [no-redef]
+    @isEvent.expression
     def isEvent(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.subcategoryId.in_(subcategories.EVENT_SUBCATEGORIES)
 
@@ -961,7 +961,7 @@ class CollectiveStock(PcObject, Base, Model):
     def hasBookingLimitDatetimePassed(self) -> bool:
         return self.bookingLimitDatetime <= datetime.utcnow()
 
-    @hasBookingLimitDatetimePassed.expression  # type: ignore[no-redef]
+    @hasBookingLimitDatetimePassed.expression
     def hasBookingLimitDatetimePassed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.bookingLimitDatetime <= sa.func.now()
 

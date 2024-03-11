@@ -63,6 +63,7 @@ from pcapi.utils.date import numranges_to_timespan_str
 import pcapi.utils.db as db_utils
 from pcapi.utils.human_ids import humanize
 import pcapi.utils.postal_code as postal_code_utils
+from pcapi.utils.typing import hybrid_property
 
 
 if typing.TYPE_CHECKING:
@@ -1015,7 +1016,7 @@ class Offerer(
     def departementCode(self) -> str:
         return postal_code_utils.PostalCode(self.postalCode).get_departement_code()
 
-    @departementCode.expression  # type: ignore [no-redef]
+    @departementCode.expression
     def departementCode(cls) -> Case:  # pylint: disable=no-self-argument
         return case(
             (

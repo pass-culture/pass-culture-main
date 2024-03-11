@@ -4,6 +4,7 @@ from decimal import Decimal
 import enum
 from typing import TYPE_CHECKING
 
+import sqlalchemy as sa
 from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
 from sqlalchemy import Column
@@ -23,10 +24,9 @@ from sqlalchemy import exists
 from sqlalchemy import select
 from sqlalchemy.dialects import postgresql
 import sqlalchemy.exc as sa_exc
-from sqlalchemy.ext.hybrid import hybrid_property
+import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql.elements import BooleanClauseList
 from sqlalchemy.sql.elements import Label
 
 from pcapi.core.bookings import exceptions
@@ -39,6 +39,7 @@ from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 from pcapi.utils.human_ids import humanize
+from pcapi.utils.typing import hybrid_property
 
 
 if TYPE_CHECKING:
@@ -126,7 +127,7 @@ class Booking(PcObject, Base, Model):
 
     displayAsEnded = Column(Boolean, nullable=True)
 
-    cancellationLimitDate = Column(DateTime, nullable=True)
+    cancellationLimitDate: sa_orm.Mapped[datetime] = Column(DateTime, nullable=True)
 
     cancellationReason = Column(
         "cancellationReason",
@@ -233,23 +234,26 @@ class Booking(PcObject, Base, Model):
     def isConfirmed(self) -> bool:
         return self.cancellationLimitDate is not None and self.cancellationLimitDate <= datetime.utcnow()
 
-    @isConfirmed.expression  # type: ignore [no-redef]
-    def isConfirmed(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
-        return and_(cls.cancellationLimitDate.is_not(None), cls.cancellationLimitDate <= datetime.utcnow())
+    @isConfirmed.expression
+    def isConfirmed(cls) -> sa.sql.ColumnElement[sa.Boolean]:  # pylint: disable=no-self-argument
+        return and_(
+            cls.cancellationLimitDate.isnot(None),  # type: ignore [attr-defined]
+            cls.cancellationLimitDate <= datetime.utcnow(),
+        )
 
     @hybrid_property
     def is_used_or_reimbursed(self) -> bool:
         return self.status in [BookingStatus.USED, BookingStatus.REIMBURSED]
 
-    @is_used_or_reimbursed.expression  # type: ignore [no-redef]
-    def is_used_or_reimbursed(cls) -> bool:  # pylint: disable=no-self-argument
-        return cls.status.in_([BookingStatus.USED, BookingStatus.REIMBURSED])
+    @is_used_or_reimbursed.expression
+    def is_used_or_reimbursed(cls) -> sa.sql.ColumnElement[sa.Boolean]:  # pylint: disable=no-self-argument
+        return cls.status.in_([BookingStatus.USED, BookingStatus.REIMBURSED])  # type: ignore [attr-defined]
 
     @hybrid_property
     def isReimbursed(self) -> bool:
         return self.status == BookingStatus.REIMBURSED
 
-    @isReimbursed.expression  # type: ignore [no-redef]
+    @isReimbursed.expression
     def isReimbursed(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.status == BookingStatus.REIMBURSED
 
@@ -257,7 +261,7 @@ class Booking(PcObject, Base, Model):
     def isCancelled(self) -> bool:
         return self.status == BookingStatus.CANCELLED
 
-    @isCancelled.expression  # type: ignore [no-redef]
+    @isCancelled.expression
     def isCancelled(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.status == BookingStatus.CANCELLED
 
@@ -281,7 +285,7 @@ class Booking(PcObject, Base, Model):
     def isExternal(self) -> bool:
         return any(externalBooking.id for externalBooking in self.externalBookings)
 
-    @isExternal.expression  # type: ignore [no-redef]
+    @isExternal.expression
     def isExternal(cls) -> Label:  # pylint: disable=no-self-argument
         return select(
             [
