@@ -7,7 +7,7 @@ import { Link } from 'ui-kit/Banners/LinkNodes/LinkNodes'
 import style from './FormLayout.module.scss'
 
 export interface FormLayoutDescriptionProps {
-  description?: string
+  description?: string | JSX.Element
   isBanner?: boolean
   links?: Link[]
 }

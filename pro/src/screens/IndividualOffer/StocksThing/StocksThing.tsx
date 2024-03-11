@@ -221,16 +221,32 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     },
   ]
 
-  let description
+  let description: string | JSX.Element
   let links
   if (!offer.isDigital) {
     description = `Les bénéficiaires ont ${
       offer.subcategoryId === SubcategoryIdEnum.LIVRE_PAPIER ? '10' : '30'
     } jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.`
   } else {
-    description = `Les bénéficiaires ont 30 jours pour annuler leurs réservations d’offres numériques.
-
-    Dans le cas d’offres avec codes d’activation, les bénéficiaires ne peuvent pas annuler leurs réservations. Toute réservation est définitive et sera immédiatement validée.`
+    description = (
+      <div>
+        <p className={styles['callout-area']}>
+          <strong>
+            Les bénéficiaires ont 30 jours pour annuler leurs réservations
+            d’offres numériques.
+          </strong>
+        </p>
+        <p>
+          Dans le cas d’offres avec codes d’activation, les bénéficiaires ne
+          peuvent pas annuler leurs réservations. Toute réservation est
+          définitive et sera immédiatement validée.
+        </p>
+        <p>
+          Pour ajouter des codes d’activation, veuillez passer par le menu et
+          choisir l’option correspondante.
+        </p>
+      </div>
+    )
 
     let isDisabled = false
     if (stocks.length > 0 && stocks[0].hasActivationCode) {
@@ -248,9 +264,6 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   actions[0].disabled = isDisabled
 
   if (offer.isDigital) {
-    description += `
-    Pour ajouter des codes d’activation, veuillez passer par le menu et choisir l’option correspondante.`
-
     links = [
       {
         href: 'https://aide.passculture.app/hc/fr/articles/4411991970705--Acteurs-culturels-Comment-cr%C3%A9er-une-offre-num%C3%A9rique-avec-des-codes-d-activation',
