@@ -22,6 +22,7 @@ import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import * as pcapi from 'repository/pcapi/pcapi'
 import {
   categoryFactory,
+  getOffererNameFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,
   venueListItemFactory,
@@ -137,7 +138,11 @@ describe('screens:IndividualOffer::Informations::creation', () => {
     contextOverride = individualOfferContextValuesFactory({
       venueList: [venue1, venue2],
       offererNames: [
-        { id: offererId, name: 'mon offerer A', allowedOnAdage: true },
+        getOffererNameFactory({
+          id: offererId,
+          name: 'mon offerer A',
+          allowedOnAdage: true,
+        }),
       ],
       categories,
       subCategories,
@@ -322,8 +327,16 @@ describe('screens:IndividualOffer::Informations::creation', () => {
         venue2Offerer2,
       ],
       offererNames: [
-        { id: offererId1, name: 'mon offerer A', allowedOnAdage: true },
-        { id: offererId2, name: 'mon offerer B', allowedOnAdage: true },
+        getOffererNameFactory({
+          id: offererId1,
+          name: 'mon offerer A',
+          allowedOnAdage: true,
+        }),
+        getOffererNameFactory({
+          id: offererId2,
+          name: 'mon offerer B',
+          allowedOnAdage: true,
+        }),
       ],
       categories,
       subCategories,

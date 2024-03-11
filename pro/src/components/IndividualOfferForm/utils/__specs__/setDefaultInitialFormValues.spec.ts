@@ -6,7 +6,10 @@ import {
   FORM_DEFAULT_VALUES,
   IndividualOfferFormValues,
 } from 'components/IndividualOfferForm'
-import { venueListItemFactory } from 'utils/individualApiFactories'
+import {
+  getOffererNameFactory,
+  venueListItemFactory,
+} from 'utils/individualApiFactories'
 
 import setDefaultInitialFormValues from '../setDefaultInitialFormValues'
 
@@ -35,8 +38,8 @@ describe('setDefaultInitialFormValues', () => {
     }
 
     offererNames = [
-      { name: 'offerer A', id: 1, allowedOnAdage: true },
-      { name: 'offerer B', id: 2, allowedOnAdage: true },
+      getOffererNameFactory({ name: 'offerer A', id: 1, allowedOnAdage: true }),
+      getOffererNameFactory({ name: 'offerer B', id: 2, allowedOnAdage: true }),
     ]
     offererId = '1'
     venueId = '1'
@@ -69,7 +72,9 @@ describe('setDefaultInitialFormValues', () => {
   })
 
   it('should return initial values when there is only one offererName', () => {
-    offererNames = [{ name: 'offerer B', id: 2, allowedOnAdage: true }]
+    offererNames = [
+      getOffererNameFactory({ name: 'offerer B', id: 2, allowedOnAdage: true }),
+    ]
     offererId = '2'
 
     const initialValues = setDefaultInitialFormValues(

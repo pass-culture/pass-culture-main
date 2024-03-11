@@ -24,6 +24,7 @@ import {
   individualOfferContextValuesFactory,
   subcategoryFactory,
   venueListItemFactory,
+  getOffererNameFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -148,7 +149,13 @@ describe('screens:IndividualOffer::Informations::creation', () => {
 
     contextOverride = individualOfferContextValuesFactory({
       venueList: [venue1, venue2],
-      offererNames: [{ id: 1, name: 'mon offerer A', allowedOnAdage: true }],
+      offererNames: [
+        getOffererNameFactory({
+          id: 1,
+          name: 'mon offerer A',
+          allowedOnAdage: true,
+        }),
+      ],
       categories,
       subCategories,
       offer: null,

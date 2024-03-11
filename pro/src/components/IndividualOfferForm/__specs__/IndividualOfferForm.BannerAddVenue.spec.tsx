@@ -11,6 +11,7 @@ import {
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import {
   categoryFactory,
+  getOffererNameFactory,
   subcategoryFactory,
   venueListItemFactory,
 } from 'utils/individualApiFactories'
@@ -76,11 +77,11 @@ describe('IndividualOfferForm', () => {
       }),
     ]
     offererNames = [
-      {
+      getOffererNameFactory({
         id: 1,
         name: 'Offerer virtual and physical',
         allowedOnAdage: true,
-      },
+      }),
     ]
     venueList = [
       venueListItemFactory({ isVirtual: true }),

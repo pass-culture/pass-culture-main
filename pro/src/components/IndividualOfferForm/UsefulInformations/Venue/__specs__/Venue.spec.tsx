@@ -1,7 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
-import React from 'react'
 import * as yup from 'yup'
 
 import {
@@ -12,7 +11,10 @@ import {
   IndividualOfferFormValues,
   setDefaultInitialFormValues,
 } from 'components/IndividualOfferForm'
-import { venueListItemFactory } from 'utils/individualApiFactories'
+import {
+  getOffererNameFactory,
+  venueListItemFactory,
+} from 'utils/individualApiFactories'
 
 import { validationSchema, Venue, VENUE_DEFAULT_VALUES } from '..'
 import { VenueProps } from '../Venue'
@@ -42,21 +44,21 @@ describe('IndividualOffer section: venue', () => {
   let props: VenueProps
   const onSubmit = vi.fn()
   let venueList: VenueListItemResponseModel[]
-  const firstOfferer = {
+  const firstOfferer = getOffererNameFactory({
     id: 1,
     name: 'Offerer AE',
     allowedOnAdage: true,
-  }
-  const secondOfferer = {
+  })
+  const secondOfferer = getOffererNameFactory({
     id: 2,
     name: 'Offerer A9',
     allowedOnAdage: true,
-  }
-  const thirdOfferer = {
+  })
+  const thirdOfferer = getOffererNameFactory({
     id: 3,
     name: 'Offerer AM',
     allowedOnAdage: true,
-  }
+  })
 
   beforeEach(() => {
     const offererNames: GetOffererNameResponseModel[] = [

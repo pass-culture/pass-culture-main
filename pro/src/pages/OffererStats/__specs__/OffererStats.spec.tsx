@@ -4,6 +4,7 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import * as useNotification from 'hooks/useNotification'
+import { getOffererNameFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OffererStats } from '../OffererStats'
@@ -57,16 +58,16 @@ describe('OffererStatsScreen', () => {
     } as GetOffererResponseModel)
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
-        {
+        getOffererNameFactory({
           id: 1,
           name: 'Mon super cinéma',
           allowedOnAdage: true,
-        },
-        {
+        }),
+        getOffererNameFactory({
           id: 2,
           name: 'Ma super librairie',
           allowedOnAdage: true,
-        },
+        }),
       ],
     })
     vi.spyOn(api, 'getOffererStatsDashboardUrl').mockResolvedValue({

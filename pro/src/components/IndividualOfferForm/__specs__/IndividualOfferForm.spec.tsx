@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
-import React from 'react'
 
 import {
   CategoryResponseModel,
@@ -25,6 +24,7 @@ import {
   individualOfferContextValuesFactory,
   subcategoryFactory,
   venueListItemFactory,
+  getOffererNameFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -102,11 +102,11 @@ describe('IndividualOfferForm', () => {
       }),
     ]
     offererNames = [
-      {
+      getOffererNameFactory({
         id: offererId,
         name: 'Offerer virtual and physical',
         allowedOnAdage: true,
-      },
+      }),
     ]
     venueList = [
       venueListItemFactory({

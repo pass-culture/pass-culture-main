@@ -1,6 +1,5 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
@@ -16,6 +15,7 @@ import {
   defaultManagedVenues,
   defaultBankAccount,
   defaultGetOffererResponseModel,
+  getOffererNameFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -180,16 +180,16 @@ describe('BankInformations page', () => {
   it('should render with default offerer select', async () => {
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
-        {
+        getOffererNameFactory({
           id: 1,
           name: 'first offerer',
           allowedOnAdage: true,
-        },
-        {
+        }),
+        getOffererNameFactory({
           id: 2,
           name: 'second offerer',
           allowedOnAdage: true,
-        },
+        }),
       ],
     })
     renderBankInformations(customContext, store)

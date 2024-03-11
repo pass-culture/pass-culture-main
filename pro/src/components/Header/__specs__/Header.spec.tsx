@@ -4,6 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import { api } from 'apiClient/api'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
+import { getOffererNameFactory } from 'utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -116,7 +117,9 @@ describe('navigation menu', () => {
 
     it('when clicking on Stats', async () => {
       vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNames: [{ id: 123, name: 'AE', allowedOnAdage: true }],
+        offerersNames: [
+          getOffererNameFactory({ id: 123, name: 'AE', allowedOnAdage: true }),
+        ],
       })
 
       renderHeader({ features: ['ENABLE_OFFERER_STATS'] })

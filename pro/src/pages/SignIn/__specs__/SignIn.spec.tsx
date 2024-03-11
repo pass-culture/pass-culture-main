@@ -16,6 +16,7 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
+import { getOffererNameFactory } from 'utils/individualApiFactories'
 import * as utils from 'utils/recaptcha'
 import {
   RenderWithProvidersOptions,
@@ -83,16 +84,16 @@ describe('SignIn', () => {
 
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
-        {
+        getOffererNameFactory({
           id: 1,
           name: 'Mon super cinéma',
           allowedOnAdage: true,
-        },
-        {
+        }),
+        getOffererNameFactory({
           id: 1,
           name: 'Ma super librairie',
           allowedOnAdage: true,
-        },
+        }),
       ],
     })
   })
@@ -213,21 +214,6 @@ describe('SignIn', () => {
 
   describe('when user is signed in', () => {
     it('should redirect to offerers page if user is not admin', async () => {
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValueOnce({
-        offerersNames: [
-          {
-            id: 1,
-            name: 'Mon super cinéma',
-            allowedOnAdage: true,
-          },
-          {
-            id: 1,
-            name: 'Ma super librairie',
-            allowedOnAdage: true,
-          },
-        ],
-      })
-
       const storeOverrides = {
         user: {
           currentUser: {
@@ -320,22 +306,7 @@ describe('SignIn', () => {
 
   describe('sign in with new onboarding feature', () => {
     it('should not call listOfferersNames if user is admin', () => {
-      const listOfferersNamesRequest = vi
-        .spyOn(api, 'listOfferersNames')
-        .mockResolvedValueOnce({
-          offerersNames: [
-            {
-              id: 1,
-              name: 'Mon super cinéma',
-              allowedOnAdage: true,
-            },
-            {
-              id: 1,
-              name: 'Ma super librairie',
-              allowedOnAdage: true,
-            },
-          ],
-        })
+      const listOfferersNamesRequest = vi.spyOn(api, 'listOfferersNames')
 
       const storeOverrides = {
         user: {
@@ -377,21 +348,6 @@ describe('SignIn', () => {
     })
 
     it('should not redirect user to onboarding page if use has an offerer', async () => {
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNames: [
-          {
-            id: 1,
-            name: 'Mon super cinéma',
-            allowedOnAdage: true,
-          },
-          {
-            id: 1,
-            name: 'Ma super librairie',
-            allowedOnAdage: true,
-          },
-        ],
-      })
-
       renderSignIn()
 
       const email = screen.getByLabelText('Adresse email *')
