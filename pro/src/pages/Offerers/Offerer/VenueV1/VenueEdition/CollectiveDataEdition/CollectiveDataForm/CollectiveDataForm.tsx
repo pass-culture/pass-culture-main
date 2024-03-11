@@ -47,6 +47,7 @@ type CollectiveDataFormProps = {
   venue: GetVenueResponseModel
   venueCollectiveData: GetCollectiveVenueResponseModel | null
   adageVenueCollectiveData: GetCollectiveVenueResponseModel | null
+  reloadVenueData: () => Promise<void>
 }
 
 const CollectiveDataForm = ({
@@ -56,6 +57,7 @@ const CollectiveDataForm = ({
   venue,
   venueCollectiveData,
   adageVenueCollectiveData,
+  reloadVenueData,
 }: CollectiveDataFormProps): JSX.Element | null => {
   const notify = useNotification()
   const navigate = useNavigate()
@@ -88,6 +90,8 @@ const CollectiveDataForm = ({
     formik.resetForm({
       values: extractInitialValuesFromVenue(response.payload),
     })
+
+    await reloadVenueData()
 
     navigate(`/structures/${venue.managingOfferer.id}/lieux/${venue.id}/eac`)
   }

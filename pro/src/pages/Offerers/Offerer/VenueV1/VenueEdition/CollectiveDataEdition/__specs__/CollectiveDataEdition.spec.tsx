@@ -22,7 +22,10 @@ import {
   defaultGetVenue,
   getCollectiveVenueFactory,
 } from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'utils/renderWithProviders'
 
 import {
   CollectiveDataEdition,
@@ -80,13 +83,16 @@ vi.mock('react-router-dom', async () => ({
 }))
 
 const renderCollectiveDataEdition = (
-  props: Partial<CollectiveDataEditionProps> = {}
+  props: Partial<CollectiveDataEditionProps> = {},
+  options?: RenderWithProvidersOptions
 ) =>
   renderWithProviders(
     <CollectiveDataEdition
       venue={{ ...defaultGetVenue, hasAdageId: true }}
+      reloadVenueData={vi.fn()}
       {...props}
-    />
+    />,
+    { initialRouterEntries: ['/edition'], ...options }
   )
 
 describe('CollectiveDataEdition', () => {
