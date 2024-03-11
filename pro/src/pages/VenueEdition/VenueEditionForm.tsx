@@ -23,9 +23,13 @@ import { getValidationSchema } from './validationSchema'
 
 interface VenueFormProps {
   venue: GetVenueResponseModel
+  reloadVenueData: () => Promise<void>
 }
 
-export const VenueEditionForm = ({ venue }: VenueFormProps) => {
+export const VenueEditionForm = ({
+  venue,
+  reloadVenueData,
+}: VenueFormProps) => {
   const navigate = useNavigate()
   const location = useLocation()
   const notify = useNotification()
@@ -42,6 +46,8 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
         venue.id,
         serializeEditVenueBodyModel(values, !venue.siret)
       )
+
+      await reloadVenueData()
 
       navigate(`/structures/${venue.managingOfferer.id}/lieux/${venue.id}`)
 
