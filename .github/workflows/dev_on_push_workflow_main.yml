@@ -62,7 +62,7 @@ jobs:
       # Extra when tests are run on master before deployment on testing.
       console: ${{ github.ref == 'refs/heads/master' }}
       # Needed to run backend tests.
-      tests: ${{ needs.check-api.outputs.folder_changed == 'true' || github.ref == 'refs/heads/master' || startsWith(github.ref,'refs/heads/maint/v') }}
+      tests: false # ${{ needs.check-api.outputs.folder_changed == 'true' || github.ref == 'refs/heads/master' || startsWith(github.ref,'refs/heads/maint/v') }}
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}

@@ -46,3 +46,11 @@ def _index_all_venues() -> None:
     )
     search.reindex_venue_ids([venue_id for venue_id, in query])
     logger.info("Reindexing done")
+
+
+def save_sandbox_ci() -> None:
+    clean_all_database()
+    script_name = "sandbox_industrial"
+    sandbox_module = getattr(scripts, script_name)
+    sandbox_module.save_ci_sandbox()
+    logger.info("Sandbox ci saved")
