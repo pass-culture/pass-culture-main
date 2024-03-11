@@ -2,6 +2,7 @@ import { api } from 'apiClient/api'
 import { VenueListItemResponseModel } from 'apiClient/v1'
 import {
   categoryFactory,
+  getOffererNameFactory,
   subcategoryFactory,
   venueListItemFactory,
 } from 'utils/individualApiFactories'
@@ -24,17 +25,17 @@ const venue2: VenueListItemResponseModel = venueListItemFactory({
   offererName: 'ma structure',
 })
 
-const offererName1 = {
+const offererName1 = getOffererNameFactory({
   id: 68,
   name: 'une structure 1',
   allowedOnAdage: true,
-}
+})
 
-const offererName2 = {
+const offererName2 = getOffererNameFactory({
   id: 79,
   name: 'une structure 2',
   allowedOnAdage: true,
-}
+})
 
 describe('getWizardData', () => {
   it('should return empty data when user is admin and offerer not specified', async () => {
@@ -85,11 +86,11 @@ describe('getWizardData', () => {
     })
 
     const result = await getWizardData({
-      offerer: {
+      offerer: getOffererNameFactory({
         id: 47,
         name: 'test',
         allowedOnAdage: true,
-      },
+      }),
       queryOffererId: '666',
       isAdmin: false,
     })
@@ -223,11 +224,11 @@ describe('getWizardData', () => {
     })
 
     const result = await getWizardData({
-      offerer: {
+      offerer: getOffererNameFactory({
         id: 47,
         name: 'structure test',
         allowedOnAdage: true,
-      },
+      }),
       queryOffererId: '18',
       isAdmin: true,
     })
@@ -276,7 +277,11 @@ describe('getWizardData', () => {
     })
 
     const result = await getWizardData({
-      offerer: { id: 47, name: 'test', allowedOnAdage: true },
+      offerer: getOffererNameFactory({
+        id: 47,
+        name: 'test',
+        allowedOnAdage: true,
+      }),
       queryOffererId: '1',
       isAdmin: false,
     })
@@ -360,7 +365,11 @@ describe('getWizardData', () => {
     })
 
     const result = await getWizardData({
-      offerer: { id: 47, name: 'test', allowedOnAdage: true },
+      offerer: getOffererNameFactory({
+        id: 47,
+        name: 'test',
+        allowedOnAdage: true,
+      }),
       queryOffererId: '1',
       isAdmin: false,
     })
@@ -385,7 +394,11 @@ describe('getWizardData', () => {
     vi.spyOn(api, 'listOfferersNames').mockRejectedValueOnce({})
 
     const result = await getWizardData({
-      offerer: { id: 47, name: 'test', allowedOnAdage: true },
+      offerer: getOffererNameFactory({
+        id: 47,
+        name: 'test',
+        allowedOnAdage: true,
+      }),
       queryOffererId: '1',
       isAdmin: false,
     })

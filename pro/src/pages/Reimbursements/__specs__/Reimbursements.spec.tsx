@@ -9,7 +9,10 @@ import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { routesReimbursements } from 'app/AppRouter/subroutesReimbursements'
 import { ReimbursementContextProvider } from 'context/ReimbursementContext/ReimbursementContext'
-import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
+import {
+  defaultGetOffererResponseModel,
+  getOffererNameFactory,
+} from 'utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -81,11 +84,11 @@ describe('Reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY enabled
 
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
-        {
+        getOffererNameFactory({
           id: 1,
           name: 'first offerer',
           allowedOnAdage: true,
-        },
+        }),
       ],
     })
 

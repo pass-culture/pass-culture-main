@@ -8,6 +8,7 @@ import { Audience } from 'core/shared'
 import {
   defaultGetOffererResponseModel,
   getOfferManagingOffererFactory,
+  getOffererNameFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -48,7 +49,7 @@ describe('tracker screen Offers', () => {
 
     const individualOffererNames = getOfferManagingOffererFactory()
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [individualOffererNames],
+      offerersNames: [getOffererNameFactory(individualOffererNames)],
     })
 
     renderOffers(props)

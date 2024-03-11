@@ -31,6 +31,7 @@ import {
   individualOfferContextValuesFactory,
   subcategoryFactory,
   venueListItemFactory,
+  getOffererNameFactory,
 } from 'utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
@@ -363,7 +364,11 @@ describe('Summary', () => {
         offer: getIndividualOfferFactory({
           venue: getOfferVenueFactory({ id: venueId }),
         }),
-        offerOfferer: { name: 'offerOffererName', id: 1, allowedOnAdage: true },
+        offerOfferer: getOffererNameFactory({
+          name: 'offerOffererName',
+          id: 1,
+          allowedOnAdage: true,
+        }),
         showVenuePopin: {
           [venueId]: true,
         },
@@ -398,7 +403,11 @@ describe('Summary', () => {
     it('should display redirect modal if first non free offer', async () => {
       const context = {
         offer: getIndividualOfferFactory(),
-        offerOfferer: { name: 'offerOffererName', id: 1, allowedOnAdage: true },
+        offerOfferer: getOffererNameFactory({
+          name: 'offerOffererName',
+          id: 1,
+          allowedOnAdage: true,
+        }),
         venueList: [venueListItemFactory()],
       }
 
@@ -448,7 +457,11 @@ describe('Summary', () => {
     it('should not display redirect modal if hasPendingBankAccount is true', async () => {
       const context = {
         offer: getIndividualOfferFactory(),
-        offerOfferer: { name: 'offerOffererName', id: 1, allowedOnAdage: true },
+        offerOfferer: getOffererNameFactory({
+          name: 'offerOffererName',
+          id: 1,
+          allowedOnAdage: true,
+        }),
         venueList: [venueListItemFactory()],
       }
 

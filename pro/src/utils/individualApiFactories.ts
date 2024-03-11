@@ -11,6 +11,7 @@ import {
   GetOfferManagingOffererResponseModel,
   GetOfferStockResponseModel,
   GetOfferVenueResponseModel,
+  GetOffererNameResponseModel,
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
   ListOffersOfferResponseModel,
@@ -39,6 +40,7 @@ let offerId = 1
 let stockId = 1
 let venueId = 1
 let offererId = 1
+let getOffererNameId = 1
 let bookingId = 1
 let stockResponseId = 1
 let priceCategoryId = 1
@@ -309,6 +311,17 @@ export const getOfferStockFactory = (
     bookingsQuantity: 0,
     isEventDeletable: true,
     ...customGetOfferStock,
+  }
+}
+
+export function getOffererNameFactory(
+  customGetOfferer: Partial<GetOffererNameResponseModel> = {}
+): GetOffererNameResponseModel {
+  return {
+    id: getOffererNameId++,
+    name: 'Ma super structure',
+    allowedOnAdage: true,
+    ...customGetOfferer,
   }
 }
 
