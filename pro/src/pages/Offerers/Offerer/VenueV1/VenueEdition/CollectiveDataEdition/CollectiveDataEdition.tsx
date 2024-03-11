@@ -1,6 +1,6 @@
 import { addDays, isBefore } from 'date-fns'
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Route, Routes, useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import {
@@ -8,7 +8,6 @@ import {
   GetVenueResponseModel,
 } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
-import MandatoryInfo from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { getEducationalDomainsAdapter } from 'core/OfferEducational'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
@@ -25,6 +24,7 @@ import { getCulturalPartnersAdapter } from '../adapters'
 import { getVenueEducationalStatusesAdapter } from './adapters'
 import getVenueCollectiveDataAdapter from './adapters/getVenueCollectiveDataAdapter'
 import styles from './CollectiveDataEdition.module.scss'
+import { CollectiveDataEditionReadOnly } from './CollectiveDataEditionReadOnly'
 import CollectiveDataForm from './CollectiveDataForm'
 
 const fetchCulturalPartnerIfVenueHasNoCollectiveData = async (
@@ -171,16 +171,33 @@ export const CollectiveDataEdition = ({
 
       {showCollectiveDataForm && (
         <>
-          <MandatoryInfo className={styles.mandatory} />
+          <hr className={styles['separator']} />
 
-          <CollectiveDataForm
-            statuses={statuses}
-            domains={domains}
-            culturalPartners={culturalPartners}
-            venue={venue}
-            venueCollectiveData={venueCollectiveData}
-            adageVenueCollectiveData={adageVenueCollectiveData}
-          />
+          <Routes>
+            <Route
+              path=""
+              element={
+                <CollectiveDataEditionReadOnly
+                  venue={venue}
+                  culturalPartners={culturalPartners}
+                />
+              }
+            />
+            <Route
+              path="/edition"
+              element={
+                <CollectiveDataForm
+                  statuses={statuses}
+                  domains={domains}
+                  culturalPartners={culturalPartners}
+                  venue={venue}
+                  venueCollectiveData={venueCollectiveData}
+                  adageVenueCollectiveData={adageVenueCollectiveData}
+                  reloadVenueData={reloadVenueData}
+                />
+              }
+            />
+          </Routes>
         </>
       )}
     </>
