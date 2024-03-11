@@ -1,10 +1,8 @@
 import { CONSTANTS } from '../../support/constants'
 
-const connectionLinkExpected = '/connexion'
-
-describe('page connection', () => {
+describe('signin page', () => {
   it('verify unsuccessful login for unknown user', () => {
-    cy.visit(CONSTANTS.connectionLink)
+    cy.visit(CONSTANTS.signIn)
 
     cy.get(CONSTANTS.emailId).type(CONSTANTS.emailTestData)
 
@@ -12,12 +10,16 @@ describe('page connection', () => {
 
     cy.get('button[type=submit]').click()
 
-    cy.get(CONSTANTS.emailErrorId).should('exist')
+    cy.get(CONSTANTS.emailErrorId)
+      .should('be.visible')
+      .should('have.text', 'Identifiant ou mot de passe incorrect.')
 
-    cy.get(CONSTANTS.passwordErrorId).should('exist')
+    cy.get(CONSTANTS.passwordErrorId)
+      .should('be.visible')
+      .should('have.text', 'Identifiant ou mot de passe incorrect.')
 
     cy.contains(CONSTANTS.signInButton).should('be.disabled')
 
-    cy.url().should('include', connectionLinkExpected)
+    cy.url().should('include', CONSTANTS.signIn)
   })
 })
