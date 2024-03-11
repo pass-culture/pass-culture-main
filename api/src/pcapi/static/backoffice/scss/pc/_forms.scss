@@ -71,3 +71,9 @@ form[name="public_accounts_search"] .pc-field-filter {
 form[name="pro_search"] .pc-field-departments {
   min-width: 40% !important
 }
+
+.form-check-input.pc-full-opacity:disabled,
+.form-check-input.pc-full-opacity[disabled] ~ .form-check-label,
+.form-check-input.pc-full-opacity:disabled ~ .form-check-label {
+  opacity: 1;
+}

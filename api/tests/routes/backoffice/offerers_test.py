@@ -3198,7 +3198,7 @@ class CreateOffererTagCategoryTest(PostEndpointHelper):
 class GetIndividualOffererSubscriptionTest(GetEndpointHelper):
     endpoint = "backoffice_web.offerer.get_individual_subscription"
     endpoint_kwargs = {"offerer_id": 1}
-    needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+    needed_permission = {perm_models.Permissions.VALIDATE_OFFERER, perm_models.Permissions.READ_PRO_AE_INFO}
 
     # get session (1 query)
     # get user with profile and permissions (1 query)
@@ -3320,6 +3320,18 @@ class GetIndividualOffererSubscriptionTest(GetEndpointHelper):
                 "Certifications professionnelles": ["bi-check-circle-fill", "text-success"],
                 "Référencement Adage": expected_adage_classes,
             },
+        )
+
+
+class SaveIndividualSubscriptionButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+    button_label = "Enregistrer"
+
+    @property
+    def path(self):
+        individual_subscription = offerers_factories.IndividualOffererSubscription()
+        return url_for(
+            "backoffice_web.offerer.get_individual_subscription", offerer_id=individual_subscription.offerer.id
         )
 
 

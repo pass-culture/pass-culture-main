@@ -43,6 +43,7 @@ class Permissions(enum.Enum):
     CREATE_PRO_ENTITY = "créer une structure"
     READ_PRO_ENTREPRISE_INFO = "visualiser les données INSEE/RCS d'une structure"
     READ_PRO_SENSITIVE_INFO = "vérifier les attestations URSSAF/DGFIP d'une structure"
+    READ_PRO_AE_INFO = "consulter le suivi de l'inscription d'un Auto-Entrepreneur"
 
     MOVE_SIRET = "support pro avancé : déplacer ou supprimer un SIRET"
     ADVANCED_PRO_SUPPORT = "support pro avancé"
