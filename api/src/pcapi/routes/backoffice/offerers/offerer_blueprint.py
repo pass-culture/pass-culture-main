@@ -164,9 +164,15 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
     )
 
     show_subscription_tab = (
-        utils.has_current_user_permission(perm_models.Permissions.VALIDATE_OFFERER)
-        and offerer.individualSubscription
-        or (not offerer.isValidated and "auto-entrepreneur" in {tag.name for tag in offerer.tags})
+        offerer.individualSubscription
+        and (
+            utils.has_current_user_permission(perm_models.Permissions.VALIDATE_OFFERER)
+            or utils.has_current_user_permission(perm_models.Permissions.READ_PRO_AE_INFO)
+        )
+    ) or (
+        not offerer.isValidated
+        and "auto-entrepreneur" in {tag.name for tag in offerer.tags}
+        and utils.has_current_user_permission(perm_models.Permissions.VALIDATE_OFFERER)
     )
 
     return render_template(
@@ -747,7 +753,7 @@ def comment_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_blueprint.route("/individual-subscription", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+@utils.permission_required_in([perm_models.Permissions.VALIDATE_OFFERER, perm_models.Permissions.READ_PRO_AE_INFO])
 def get_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
         offerers_models.Offerer.query.filter_by(id=offerer_id)
@@ -769,6 +775,8 @@ def get_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
     if not offerer:
         raise NotFound()
 
+    read_only = not utils.has_current_user_permission(perm_models.Permissions.VALIDATE_OFFERER)
+
     individual_subscription = offerer.individualSubscription
     if individual_subscription:
         form = offerer_forms.IndividualOffererSubscriptionForm(
@@ -783,10 +791,11 @@ def get_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
             has_1yr_experience=individual_subscription.has1yrExperience,
             has_4yr_experience=individual_subscription.has5yrExperience,
             is_certificate_valid=individual_subscription.isCertificateValid,
+            read_only=read_only,
         )
     else:
         # Form with default empty values, which will be inserted in database when saved
-        form = offerer_forms.IndividualOffererSubscriptionForm()
+        form = offerer_forms.IndividualOffererSubscriptionForm(read_only=read_only)
 
     adage_statuses = [venue.dms_adage_status for venue in offerer.managedVenues]
     for value in (
@@ -807,6 +816,7 @@ def get_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
         has_adage_tag=any(tag.name == "adage" for tag in offerer.tags),
         form=form,
         dst=url_for("backoffice_web.offerer.update_individual_subscription", offerer_id=offerer_id),
+        read_only=read_only,
     )
 
 
