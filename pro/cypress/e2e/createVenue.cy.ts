@@ -58,7 +58,7 @@ describe('Create a venue', () => {
     cy.get(
       'a[aria-label="Gérer la page de ' + venueNameWithoutSiret + '"]'
     ).click()
-    cy.contains('Enregistrer et quitter').click()
+    cy.contains(venueNameWithoutSiret).should('be.visible')
 
     // Create a venue with SIRET
     cy.contains('Ajouter un lieu').click()
@@ -75,9 +75,7 @@ describe('Create a venue', () => {
     cy.get(
       'a[aria-label="Gérer la page de ' + venueNameWithSiret + '"]'
     ).click()
-    cy.contains('Enregistrer et quitter').click()
-    cy.contains('Bienvenue dans l’espace acteurs culturels').should(
-      'be.visible'
-    )
+    cy.contains(venueNameWithSiret).should('be.visible')
+    cy.contains('Vos informations pour le grand public').should('be.visible')
   })
 })
