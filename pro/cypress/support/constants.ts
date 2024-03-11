@@ -1,6 +1,6 @@
 export const CONSTANTS = {
   // connexion page //
-  connexionLink: '/connexion',
+  connectionLink: '/connexion',
   emailId: '#email',
   passwordId: '#password',
   forgotPasswordText: 'Mot de passe oublié',
@@ -16,6 +16,10 @@ export const CONSTANTS = {
   personalDataText: 'Charte des Données Personnelles',
   personalDataLink: 'https://pass.culture.fr/donnees-personnelles/',
   cookieManagementWindow: 'Gestion des cookies',
+  emailErrorId: '#error-details-email',
+  passwordErrorId: '#error-details-password',
+  emailTestData: 'user.not.exist@passculture.app',
+  passwordTestData: 'Test0123!',
   // inscription page //
   iAlreadyHaveAnAccountButton: 'J’ai déjà un compte',
 }
