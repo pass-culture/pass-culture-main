@@ -21,6 +21,7 @@ export const CONSTANTS = {
   passwordErrorId: '#error-details-password',
   emailTestData: Date.now().toString() + '@passculture.app',
   passwordTestData: Date.now().toString(),
+  emailProAccount: 'pro_adage_eligible@example.com',
   // inscription page //
   iAlreadyHaveAnAccountButton: 'J’ai déjà un compte',
 }
