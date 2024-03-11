@@ -141,7 +141,6 @@ describe('screens:IndividualOffer::Informations::creation', () => {
         getOffererNameFactory({
           id: offererId,
           name: 'mon offerer A',
-          allowedOnAdage: true,
         }),
       ],
       categories,
@@ -330,12 +329,10 @@ describe('screens:IndividualOffer::Informations::creation', () => {
         getOffererNameFactory({
           id: offererId1,
           name: 'mon offerer A',
-          allowedOnAdage: true,
         }),
         getOffererNameFactory({
           id: offererId2,
           name: 'mon offerer B',
-          allowedOnAdage: true,
         }),
       ],
       categories,

@@ -87,7 +87,6 @@ describe('Reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY enabled
         getOffererNameFactory({
           id: 1,
           name: 'first offerer',
-          allowedOnAdage: true,
         }),
       ],
     })

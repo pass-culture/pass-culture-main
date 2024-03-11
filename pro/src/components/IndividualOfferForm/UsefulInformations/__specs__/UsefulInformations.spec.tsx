@@ -63,7 +63,6 @@ describe('IndividualOffer section: UsefulInformations', () => {
       getOffererNameFactory({
         id: offererId,
         name: 'Offerer AE',
-        allowedOnAdage: true,
       }),
     ]
 

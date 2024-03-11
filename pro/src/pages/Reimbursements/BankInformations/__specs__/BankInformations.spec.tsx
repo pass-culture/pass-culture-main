@@ -183,12 +183,10 @@ describe('BankInformations page', () => {
         getOffererNameFactory({
           id: 1,
           name: 'first offerer',
-          allowedOnAdage: true,
         }),
         getOffererNameFactory({
           id: 2,
           name: 'second offerer',
-          allowedOnAdage: true,
         }),
       ],
     })

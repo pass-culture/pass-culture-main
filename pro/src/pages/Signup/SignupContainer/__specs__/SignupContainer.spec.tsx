@@ -61,12 +61,10 @@ describe('Signup', () => {
         getOffererNameFactory({
           id: 1,
           name: 'Mon super cinéma',
-          allowedOnAdage: true,
         }),
         getOffererNameFactory({
           id: 1,
           name: 'Ma super librairie',
-          allowedOnAdage: true,
         }),
       ],
     })

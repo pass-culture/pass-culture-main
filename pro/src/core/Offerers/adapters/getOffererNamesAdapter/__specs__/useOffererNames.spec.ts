@@ -13,7 +13,6 @@ describe('useOffererNames', () => {
       getOffererNameFactory({
         name: 'Structure AA',
         id: 123,
-        allowedOnAdage: true,
       }),
     ]
 

@@ -175,7 +175,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
         getOffererNameFactory({
           id: offererId,
           name: 'Offerer name',
-          allowedOnAdage: true,
         }),
       ],
       categories,

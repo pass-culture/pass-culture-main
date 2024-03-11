@@ -47,17 +47,14 @@ describe('IndividualOffer section: venue', () => {
   const firstOfferer = getOffererNameFactory({
     id: 1,
     name: 'Offerer AE',
-    allowedOnAdage: true,
   })
   const secondOfferer = getOffererNameFactory({
     id: 2,
     name: 'Offerer A9',
-    allowedOnAdage: true,
   })
   const thirdOfferer = getOffererNameFactory({
     id: 3,
     name: 'Offerer AM',
-    allowedOnAdage: true,
   })
 
   beforeEach(() => {

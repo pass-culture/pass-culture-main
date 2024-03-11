@@ -38,8 +38,8 @@ describe('setDefaultInitialFormValues', () => {
     }
 
     offererNames = [
-      getOffererNameFactory({ name: 'offerer A', id: 1, allowedOnAdage: true }),
-      getOffererNameFactory({ name: 'offerer B', id: 2, allowedOnAdage: true }),
+      getOffererNameFactory({ name: 'offerer A', id: 1 }),
+      getOffererNameFactory({ name: 'offerer B', id: 2 }),
     ]
     offererId = '1'
     venueId = '1'
@@ -72,9 +72,7 @@ describe('setDefaultInitialFormValues', () => {
   })
 
   it('should return initial values when there is only one offererName', () => {
-    offererNames = [
-      getOffererNameFactory({ name: 'offerer B', id: 2, allowedOnAdage: true }),
-    ]
+    offererNames = [getOffererNameFactory({ name: 'offerer B', id: 2 })]
     offererId = '2'
 
     const initialValues = setDefaultInitialFormValues(
