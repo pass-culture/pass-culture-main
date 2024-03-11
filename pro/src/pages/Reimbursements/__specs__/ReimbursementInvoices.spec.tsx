@@ -117,6 +117,7 @@ describe('reimbursementsWithFilters', () => {
       bankAccounts: BASE_BANK_ACCOUNTS,
       managedVenues: [],
     })
+    vi.spyOn(api, 'hasInvoice').mockResolvedValueOnce({ hasInvoice: true })
   })
 
   it('shoud render a table with invoices', async () => {
@@ -198,6 +199,7 @@ describe('reimbursementsWithFilters', () => {
 
   it('shoud render no invoice yet information block', async () => {
     vi.spyOn(api, 'getInvoices').mockResolvedValueOnce([])
+    vi.spyOn(api, 'hasInvoice').mockResolvedValueOnce({ hasInvoice: false })
     renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
@@ -208,19 +210,6 @@ describe('reimbursementsWithFilters', () => {
         'Aucun justificatif de remboursement trouvé pour votre recherche'
       )
     ).not.toBeInTheDocument()
-    expect(
-      screen.getByText(
-        'Vous n’avez pas encore de justificatifs de remboursement disponibles'
-      )
-    ).toBeInTheDocument()
-  })
-
-  it('shoud render no result block', async () => {
-    vi.spyOn(api, 'getInvoices').mockResolvedValueOnce([])
-    renderReimbursementsInvoices()
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
     expect(
       screen.getByText(
         'Vous n’avez pas encore de justificatifs de remboursement disponibles'
@@ -356,5 +345,30 @@ describe('reimbursementsWithFilters', () => {
 
     expect(screen.getByLabelText('Compte bancaire *')).toBeInTheDocument()
     expect(screen.getByText('Tous les comptes bancaires')).toBeInTheDocument()
+  })
+
+  it('should disable filter if no invoices', async () => {
+    vi.spyOn(api, 'hasInvoice').mockResolvedValueOnce({ hasInvoice: false })
+    renderReimbursementsInvoices({
+      features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
+    })
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(screen.getByLabelText('Compte bancaire *')).toBeDisabled()
+    expect(screen.getByLabelText('Début de la période')).toBeDisabled()
+    expect(screen.getByLabelText('Fin de la période')).toBeDisabled()
+  })
+
+  it('should not disable filter if has invoices', async () => {
+    renderReimbursementsInvoices({
+      features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
+    })
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(screen.getByLabelText('Compte bancaire *')).toBeEnabled()
+    expect(screen.getByLabelText('Début de la période')).toBeEnabled()
+    expect(screen.getByLabelText('Fin de la période')).toBeEnabled()
   })
 })
