@@ -16,7 +16,7 @@ class AcceslibreTest:
             f"https://acceslibre.beta.gouv.fr/api/erps/?ban_id={ban_id}",
             json=fixtures.ACCESLIBRE_RESULTS,
         )
-        slug = acceslibre.find_venue_at_accessibility_provider(name=name, public_name=public_name, ban_id=ban_id)
+        slug = acceslibre.get_id_at_accessibility_provider(name=name, public_name=public_name, ban_id=ban_id)
         assert slug == "le-bateau-livre"
 
     def test_venue_has_siret_at_provider(self, requests_mock):
@@ -27,28 +27,30 @@ class AcceslibreTest:
             f"https://acceslibre.beta.gouv.fr/api/erps/?siret={siret}",
             json=fixtures.ACCESLIBRE_RESULTS,
         )
-        slug = acceslibre.find_venue_at_accessibility_provider(name=name, public_name=public_name, siret=siret)
+        slug = acceslibre.get_id_at_accessibility_provider(name=name, public_name=public_name, siret=siret)
         assert slug == "la-librairie-chouette"
 
-    def test_find_venue_based_on_name(self, requests_mock):
+    def test_find_venue_based_on_name_and_address(self, requests_mock):
         name = "La Belette Du Nord"
         public_name = None
         city = "Lille"
         postal_code = "59800"
+        address = "30 Fausse rue"
         requests_mock.get(
             "https://acceslibre.beta.gouv.fr/api/erps/?q=La+Belette+Du+Nord&commune=Lille&code_postal=59800&page_size=50",
             json=fixtures.ACCESLIBRE_RESULTS_BY_NAME,
         )
-        slug = acceslibre.find_venue_at_accessibility_provider(
-            name=name, public_name=public_name, city=city, postal_code=postal_code
+        slug = acceslibre.get_id_at_accessibility_provider(
+            name=name, public_name=public_name, city=city, postal_code=postal_code, address=address
         )
         assert slug == "belette-du-nord"
 
-    def test_find_venue_based_on_public_name(self, requests_mock):
+    def test_find_venue_based_on_public_name_and_address(self, requests_mock):
         name = "Un truc random qui échoue"
         public_name = "LA BELETTE DU NORD - LILLE"
         city = "Lille"
         postal_code = "59800"
+        address = "28 Fausse rue"  # wrong address on purpose
         requests_mock.get(
             "https://acceslibre.beta.gouv.fr/api/erps/?q=Un+truc+random+qui+%C3%A9choue&commune=Lille&code_postal=59800&page_size=50",
             json=fixtures.ACCESLIBRE_RESULTS_EMPTY,
@@ -57,8 +59,8 @@ class AcceslibreTest:
             "https://acceslibre.beta.gouv.fr/api/erps/?q=LA+BELETTE+DU+NORD+-+LILLE&commune=Lille&code_postal=59800&page_size=50",
             json=fixtures.ACCESLIBRE_RESULTS_BY_NAME,
         )
-        slug = acceslibre.find_venue_at_accessibility_provider(
-            name=name, public_name=public_name, city=city, postal_code=postal_code
+        slug = acceslibre.get_id_at_accessibility_provider(
+            name=name, public_name=public_name, city=city, postal_code=postal_code, address=address
         )
         assert slug == "belette-du-nord"
 
