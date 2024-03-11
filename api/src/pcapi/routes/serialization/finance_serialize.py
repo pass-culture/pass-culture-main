@@ -181,3 +181,11 @@ class BankAccountResponseModel(BaseModel):
     @classmethod
     def _obfuscate_iban(cls, iban: str) -> str:
         return f"XXXX XXXX XXXX {iban[-4:]}"
+
+
+class HasInvoiceQueryModel(BaseModel):
+    offererId: int
+
+
+class HasInvoiceResponseModel(BaseModel):
+    hasInvoice: bool

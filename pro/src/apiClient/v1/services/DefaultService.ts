@@ -55,6 +55,7 @@ import type { GetStocksResponseModel } from '../models/GetStocksResponseModel';
 import type { GetVenueListResponseModel } from '../models/GetVenueListResponseModel';
 import type { GetVenueResponseModel } from '../models/GetVenueResponseModel';
 import type { GetVenuesOfOffererFromSiretResponseModel } from '../models/GetVenuesOfOffererFromSiretResponseModel';
+import type { HasInvoiceResponseModel } from '../models/HasInvoiceResponseModel';
 import type { InviteMemberQueryModel } from '../models/InviteMemberQueryModel';
 import type { InvoiceListResponseModel } from '../models/InvoiceListResponseModel';
 import type { InvoiceListV2ResponseModel } from '../models/InvoiceListV2ResponseModel';
@@ -2202,6 +2203,27 @@ export class DefaultService {
       url: '/users/validate_email',
       body: requestBody,
       mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * has_invoice <GET>
+   * @param offererId
+   * @returns HasInvoiceResponseModel OK
+   * @throws ApiError
+   */
+  public hasInvoice(
+    offererId: number,
+  ): CancelablePromise<HasInvoiceResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/v2/finance/has-invoice',
+      query: {
+        'offererId': offererId,
+      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
