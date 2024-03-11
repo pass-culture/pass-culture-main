@@ -77,9 +77,11 @@
         {{ form.date_criminal_record_received }}
       </div>
       <div class="pt-5 pb-3 px-3">
-        {{ form.csrf_token }}
-        <button type="submit"
-                class="btn btn-primary">Enregistrer</button>
+        {% if not read_only %}
+          {{ form.csrf_token }}
+          <button type="submit"
+                  class="btn btn-primary">Enregistrer</button>
+        {% endif %}
       </div>
     </div>
     <div class="col-4">
