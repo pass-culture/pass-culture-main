@@ -192,7 +192,11 @@ describe('reimbursementsWithFilters', () => {
     })
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
+    expect(
+      screen.queryByText(
+        'Aucun justificatif de remboursement trouvé pour votre recherche'
+      )
+    ).not.toBeInTheDocument()
     expect(screen.getByText('Remboursement')).toBeInTheDocument()
     expect(screen.getByText('Trop perçu')).toBeInTheDocument()
   })

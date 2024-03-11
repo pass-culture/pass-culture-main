@@ -45,7 +45,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
 
   const hasNoSearchResult =
     (!hasError && invoices?.length === 0 && hasSearchedOnce) ||
-    offererHasInvoice
+    (invoices?.length === 0 && offererHasInvoice)
 
   const hasNoInvoicesYet = !hasError && !offererHasInvoice && !hasSearchedOnce
 
