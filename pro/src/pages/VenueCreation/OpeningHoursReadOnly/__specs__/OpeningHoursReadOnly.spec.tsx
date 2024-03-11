@@ -40,13 +40,13 @@ describe('OpeningHoursReadOnly', () => {
     ]
     render(<OpeningHoursReadOnly openingHours={openingHours} />)
 
-    expect(screen.getByText('Lundi')).toBeInTheDocument()
-    expect(screen.getByText('Mardi')).toBeInTheDocument()
-    expect(screen.getByText('Mercredi')).toBeInTheDocument()
-    expect(screen.getByText('Jeudi')).toBeInTheDocument()
-    expect(screen.getByText('Vendredi')).toBeInTheDocument()
-    expect(screen.getByText('Samedi')).toBeInTheDocument()
-    expect(screen.queryByText('Dimanche')).not.toBeInTheDocument()
+    expect(screen.getByText(/Lundi/)).toBeInTheDocument()
+    expect(screen.getByText(/Mardi/)).toBeInTheDocument()
+    expect(screen.getByText(/Mercredi/)).toBeInTheDocument()
+    expect(screen.getByText(/Jeudi/)).toBeInTheDocument()
+    expect(screen.getByText(/Vendredi/)).toBeInTheDocument()
+    expect(screen.getByText(/Samedi/)).toBeInTheDocument()
+    expect(screen.queryByText(/Dimanche/)).not.toBeInTheDocument()
   })
 })
 
@@ -56,10 +56,10 @@ describe('DayAndHours', () => {
 
     render(<DayAndHours day="MONDAY" hours={openingHours} />)
 
-    expect(screen.getByText('Lundi')).toBeInTheDocument()
+    expect(screen.getByText('Lundi :')).toBeInTheDocument()
     expect(screen.getByText('14:00')).toBeInTheDocument()
     expect(screen.getByText('19:30')).toBeInTheDocument()
-    expect(screen.queryByText('et de')).not.toBeInTheDocument()
+    expect(screen.queryByText(/et de/)).not.toBeInTheDocument()
   })
 
   it('should display each hours and day when the whole day', () => {
@@ -70,11 +70,11 @@ describe('DayAndHours', () => {
 
     render(<DayAndHours day="SUNDAY" hours={openingHours} />)
 
-    expect(screen.getByText('Dimanche')).toBeInTheDocument()
+    expect(screen.getByText('Dimanche :')).toBeInTheDocument()
     expect(screen.getByText('10:00')).toBeInTheDocument()
     expect(screen.getByText('12:30')).toBeInTheDocument()
     expect(screen.getByText('14:00')).toBeInTheDocument()
     expect(screen.getByText('19:30')).toBeInTheDocument()
-    expect(screen.getByText('et de')).toBeInTheDocument()
+    expect(screen.getByText(/et de/)).toBeInTheDocument()
   })
 })
