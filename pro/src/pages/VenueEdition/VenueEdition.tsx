@@ -16,7 +16,6 @@ import { useGetVenue } from 'core/Venue/adapters/getVenueAdapter'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import useNotification from 'hooks/useNotification'
 import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
-import { CollectiveDataEditionReadOnly } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEditionReadOnly'
 import { updateSelectedOffererId } from 'store/user/reducer'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import Tabs, { Tab } from 'ui-kit/Tabs/Tabs'
@@ -121,14 +120,23 @@ export const VenueEdition = (): JSX.Element | null => {
 
         <Routes>
           <Route
-            path="eac"
-            element={<CollectiveDataEditionReadOnly venue={venue} />}
+            path="eac/*"
+            element={
+              <CollectiveDataEdition
+                venue={venue}
+                reloadVenueData={reloadVenueData}
+              />
+            }
           />
           <Route
-            path="eac/edition"
-            element={<CollectiveDataEdition venue={venue} />}
+            path="*"
+            element={
+              <VenueEditionFormScreen
+                venue={venue}
+                reloadVenueData={reloadVenueData}
+              />
+            }
           />
-          <Route path="*" element={<VenueEditionFormScreen venue={venue} />} />
         </Routes>
       </div>
     </AppLayout>
