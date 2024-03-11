@@ -861,6 +861,9 @@ def update_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
 def get_entreprise_info(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
 
+    if not offerer.siren:
+        raise NotFound()
+
     data: dict[str, typing.Any] = {}
     siren_info = None
 
@@ -888,6 +891,9 @@ def get_entreprise_info(offerer_id: int) -> utils.BackofficeResponse:
 def get_entreprise_rcs_info(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
 
+    if not offerer.siren:
+        raise NotFound()
+
     data: dict[str, typing.Any] = {}
 
     try:
@@ -902,6 +908,9 @@ def get_entreprise_rcs_info(offerer_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.READ_PRO_SENSITIVE_INFO)
 def get_entreprise_urssaf_info(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+
+    if not offerer.siren:
+        raise NotFound()
 
     data: dict[str, typing.Any] = {}
 
@@ -922,6 +931,9 @@ def get_entreprise_urssaf_info(offerer_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.READ_PRO_SENSITIVE_INFO)
 def get_entreprise_dgfip_info(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+
+    if not offerer.siren:
+        raise NotFound()
 
     data: dict[str, typing.Any] = {}
 

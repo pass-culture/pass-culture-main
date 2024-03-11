@@ -2421,3 +2421,13 @@ class GetEntrepriseInfoTest(GetEndpointHelper):
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 404
+
+    def test_venue_without_siret(self, authenticated_client):
+        venue = offerers_factories.VenueWithoutSiretFactory()
+        url = url_for(self.endpoint, venue_id=venue.id)
+
+        db.session.expire_all()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 404

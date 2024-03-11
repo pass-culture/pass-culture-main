@@ -1042,6 +1042,10 @@ def remove_siret(venue_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.READ_PRO_ENTREPRISE_INFO)
 def get_entreprise_info(venue_id: int) -> utils.BackofficeResponse:
     venue = offerers_models.Venue.query.get_or_404(venue_id)
+
+    if not venue.siret:
+        raise NotFound()
+
     siret_info = None
     siret_error = None
 
