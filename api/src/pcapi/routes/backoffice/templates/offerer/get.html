@@ -258,7 +258,7 @@
           {% if show_subscription_tab %}
             {{ build_details_tab("subscription", "Parcours auto-entrepreneur", active_tab == 'subscription') }}
           {% endif %}
-          {% if has_permission("READ_PRO_ENTREPRISE_INFO") %}
+          {% if offerer.siren and has_permission("READ_PRO_ENTREPRISE_INFO") %}
             {{ build_details_tab("entreprise", "Données Entreprise", active_tab == 'entreprise') }}
           {% endif %}
           {{ build_details_tab("pro-users", "Compte(s) pro rattaché(s)", active_tab == 'users') }}
@@ -280,7 +280,7 @@
               </turbo-frame>
             {% endcall %}
           {% endif %}
-          {% if has_permission("READ_PRO_ENTREPRISE_INFO") %}
+          {% if offerer.siren and has_permission("READ_PRO_ENTREPRISE_INFO") %}
             {% call build_details_tab_content("entreprise", active_tab == 'entreprise') %}
               <turbo-frame data-turbo="false" id="offerer_entreprise_frame" loading="lazy" src="{{ url_for("backoffice_web.offerer.get_entreprise_info", offerer_id=offerer.id) }}">
               {{ build_loading_spinner() }}
