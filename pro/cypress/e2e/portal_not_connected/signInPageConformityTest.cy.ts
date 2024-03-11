@@ -1,7 +1,7 @@
 import { CONSTANTS } from '../../support/constants'
 
 describe('signin page', () => {
-  it('verify connection page conformity', () => {
+  it('verifies signin page conformity', () => {
     cy.visit(CONSTANTS.signIn)
 
     cy.url().should('include', CONSTANTS.signIn)
