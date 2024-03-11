@@ -269,6 +269,11 @@ const routes: RouteConfig[] = [
     title: 'Parcours de souscription',
     children: routesSignupJourney,
   },
+  {
+    lazy: () => import('pages/Sitemap/Sitemap'),
+    path: '/plan-du-site',
+    title: 'Plan du site',
+  },
 ]
 
 export default routes
