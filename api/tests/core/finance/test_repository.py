@@ -276,6 +276,21 @@ class GetInvoicesQueryTest:
         invoices = repository.get_invoices_query(admin)
         assert invoices.count() == 0
 
+    def test_has_invoice(self):
+        offerer = offerers_factories.OffererFactory()
+        bank_account = factories.BankAccountFactory(offerer=offerer)
+        factories.InvoiceFactory(bankAccount=bank_account)
+
+        assert repository.has_invoice(offerer.id)
+
+    def test_has_no_invoices(self):
+        offerer = offerers_factories.OffererFactory()
+        offerer_2 = offerers_factories.OffererFactory()
+        bank_account = factories.BankAccountFactory(offerer=offerer_2)
+        factories.InvoiceFactory(bankAccount=bank_account)
+
+        assert not repository.has_invoice(offerer.id)
+
 
 class HasReimbursementTest:
     def test_booking_status(self):
