@@ -155,5 +155,33 @@ describe('components | FilterByBookingStatus', () => {
         bookingStatus: ['validated', 'booked'],
       })
     })
+
+    it('should close the tooltip when the Escape key is pressed', async () => {
+      renderFilterByBookingStatus(props)
+      await userEvent.click(screen.getByRole('img'))
+
+      expect(screen.getByText('Afficher les réservations')).toBeInTheDocument()
+
+      await userEvent.keyboard('{Escape}')
+
+      expect(
+        screen.queryByText('Afficher les réservations')
+      ).not.toBeInTheDocument()
+    })
+
+    it('should toggle the opening of the tooltip panel when the Space key is pressd', async () => {
+      renderFilterByBookingStatus(props)
+      await userEvent.click(screen.getByRole('img'))
+
+      await userEvent.keyboard('{Space}')
+
+      expect(
+        screen.queryByText('Afficher les réservations')
+      ).not.toBeInTheDocument()
+
+      await userEvent.keyboard('{Space}')
+
+      expect(screen.getByText('Afficher les réservations')).toBeInTheDocument()
+    })
   })
 })

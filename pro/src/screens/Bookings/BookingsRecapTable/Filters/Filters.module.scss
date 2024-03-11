@@ -8,6 +8,7 @@
 
 .bs-filter {
   position: relative;
+  display: inline-block;
 
   .bs-filter-label {
     @include fonts.caption;
@@ -62,7 +63,7 @@
 
 .status-container {
   position: relative;
-} 
+}
 
 .status-icon {
   width: rem.torem(16px);

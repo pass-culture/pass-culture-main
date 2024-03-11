@@ -62,18 +62,37 @@ const FilterByBookingStatus = <
   const containerRef = useRef<HTMLDivElement | null>(null)
   const { logEvent } = useAnalytics()
 
-  const showFilter = () => {
+  const showTooltip = () => {
     setIsToolTipVisible(true)
     logEvent?.(Events.CLICKED_SHOW_STATUS_FILTER, {
       from: location.pathname,
     })
   }
 
-  const hideFilters = () => {
+  const hideTooltip = () => {
     setIsToolTipVisible(false)
   }
 
-  useOnClickOrFocusOutside(containerRef, hideFilters)
+  function toggleTooltip() {
+    if (isToolTipVisible) {
+      hideTooltip()
+    } else {
+      showTooltip()
+    }
+  }
+
+  function handleKeyDown(event: React.KeyboardEvent<HTMLButtonElement>) {
+    switch (event.key) {
+      case 'Space':
+        toggleTooltip()
+        break
+      case 'Escape':
+        hideTooltip()
+        break
+    }
+  }
+
+  useOnClickOrFocusOutside(containerRef, hideTooltip)
 
   const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
     const statusId = event.target.name
@@ -96,9 +115,11 @@ const FilterByBookingStatus = <
     <div ref={containerRef}>
       <button
         className="bs-filter-button"
-        onClick={showFilter}
-        onFocus={showFilter}
+        onClick={toggleTooltip}
+        onKeyDown={handleKeyDown}
         type="button"
+        aria-expanded={isToolTipVisible}
+        aria-controls="booking-filter-tooltip"
       >
         <span className="table-head-label status-filter">Statut</span>
         <span className="status-container">
@@ -115,8 +136,7 @@ const FilterByBookingStatus = <
           )}
         </span>
       </button>
-
-      <span className="bs-filter">
+      <div className="bs-filter" id="booking-filter-tooltip">
         {isToolTipVisible && (
           <div className="bs-filter-tooltip">
             <fieldset>
@@ -137,7 +157,7 @@ const FilterByBookingStatus = <
             </fieldset>
           </div>
         )}
-      </span>
+      </div>
     </div>
   )
 }
