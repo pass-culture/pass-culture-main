@@ -23,7 +23,12 @@
         <p class="mb-1">
           <span class="fw-bold">Mandataires sociaux :</span>
           <ul class="mx-4 mb-0">
-            {% for officer in rcs_info.corporate_officers %}<li>{{ officer.role }} : {{ officer.name }}</li>{% endfor %}
+            {% for officer in rcs_info.corporate_officers %}
+              <li>
+                {% if officer.role %}{{ officer.role }} :{% endif %}
+                {{ officer.name }}
+              </li>
+            {% endfor %}
           </ul>
         </p>
       {% endif %}

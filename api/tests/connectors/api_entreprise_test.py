@@ -307,9 +307,13 @@ def test_get_rcs_registered():
         assert rcs_info.registration_date == datetime.date(2024, 1, 1)
         assert rcs_info.deregistration_date is None
         assert rcs_info.head_office_activity == "TESTER L'INTEGRATION D'API ENTREPRISE"
-        assert len(rcs_info.corporate_officers) == 1
+        assert len(rcs_info.corporate_officers) == 3
         assert rcs_info.corporate_officers[0].name == "PIERRE EXEMPLE"
         assert rcs_info.corporate_officers[0].role == "PRESIDENT"
+        assert rcs_info.corporate_officers[1].name == "JUSTE LEBLANC"
+        assert rcs_info.corporate_officers[1].role is None
+        assert rcs_info.corporate_officers[2].name == "AUDIT EXEMPLE - SOCIETE PAR ACTIONS SIMPLIFIEE"
+        assert rcs_info.corporate_officers[2].role == "COMMISSAIRE AUX COMPTES TITULAIRE"
         assert not rcs_info.observations
 
 
