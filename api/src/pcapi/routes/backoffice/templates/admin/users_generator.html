@@ -42,7 +42,7 @@
                 <span class="fw-bold">Email :</span> {{ user.email }}<span class="ms-1">{{ clipboard.copy_to_clipboard(user.email, "Copier l'email du compte") }}</span>
               </div>
               <div class="mb-1">
-                <span class="fw-bold">Mot de passe par défaut :</span> {{ get_setting("TEST_DEFAULT_PASSWORD") }}<span class="ms-1">{{ clipboard.copy_to_clipboard(get_setting("TEST_DEFAULT_PASSWORD"), "Copier le mot de passe du compte") }}</span>
+                <span class="fw-bold">Mot de passe par défaut :</span> {{ get_setting("TEST_DEFAULT_PASSWORD") }}<span class="ms-1">{{ clipboard.copy_to_clipboard(get_setting("TEST_DEFAULT_PASSWORD") , "Copier le mot de passe du compte") }}</span>
               </div>
               {% if link_to_ubble_mock %}
                 <a href="{{ link_to_ubble_mock }}"

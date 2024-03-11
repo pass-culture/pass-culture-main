@@ -64,7 +64,7 @@
                             class="btn btn-outline-primary"
                             data-bs-toggle="modal"
                             data-bs-target="#generate-invoices-modal">Générer les justificatifs</button>
-                    {{ build_lazy_modal(url_for("backoffice_web.finance_invoices.generate_invoices"), "generate-invoices-modal", "true") }}
+                    {{ build_lazy_modal(url_for("backoffice_web.finance_invoices.generate_invoices") , "generate-invoices-modal", "true") }}
                   </div>
                 {% else %}
                   <div class="card-body">

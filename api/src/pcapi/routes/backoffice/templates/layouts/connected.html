@@ -33,7 +33,7 @@
             aria-controls="{{ pc_collapse_menu_id }}">
       <i class="bi bi-list text-white h4"></i>
     </button>
-    <a href="{{ url_for('backoffice_web.home') }}"
+    <a href="{{ url_for("backoffice_web.home") }}"
        class="card-link">
       <p class="my-0 ms-5 navbar-brand text-white btn">
         <svg width="105.532"
@@ -44,8 +44,8 @@
         Back Office
       </p>
     </a>
-    <form action="{{ url_for('backoffice_web.logout') }}"
-          name="{{ url_for('backoffice_web.logout') | action_to_name }}"
+    <form action="{{ url_for("backoffice_web.logout") }}"
+          name="{{ url_for("backoffice_web.logout") | action_to_name }}"
           method="post">
       {{ csrf_token }}
       <button type="submit"
@@ -63,7 +63,7 @@
               <div class="nav nav-pills flex-column">
                 {% call menu_section("Jeunes et grand public") %}
                   {% if has_permission("READ_PUBLIC_ACCOUNT") %}
-                    {{ menu_section_item("Jeunes bénéficiaires ou à venir", "backoffice_web.public_accounts.search_public_accounts") }}
+                    {{ menu_section_item('Jeunes bénéficiaires ou à venir', 'backoffice_web.public_accounts.search_public_accounts') }}
                   {% endif %}
                 {% endcall %}
               </div>
@@ -71,38 +71,38 @@
               <div class="nav nav-pills flex-column">
                 {% call menu_section("Acteurs culturels") %}
                   {% if has_permission("READ_PRO_ENTITY") %}
-                    {{ menu_section_item("Liste des acteurs culturels", "backoffice_web.pro.search_pro") }}
-                    {{ menu_section_item("Structures à valider", "backoffice_web.validation.list_offerers_to_validate") }}
-                    {{ menu_section_item("Rattachements à valider", "backoffice_web.validation.list_offerers_attachments_to_validate") }}
+                    {{ menu_section_item('Liste des acteurs culturels', 'backoffice_web.pro.search_pro') }}
+                    {{ menu_section_item('Structures à valider', 'backoffice_web.validation.list_offerers_to_validate') }}
+                    {{ menu_section_item('Rattachements à valider', 'backoffice_web.validation.list_offerers_attachments_to_validate') }}
                   {% endif %}
-                  {% if has_permission("READ_TAGS") %}{{ menu_section_item("Tags structure", "backoffice_web.offerer_tag.list_offerer_tags") }}{% endif %}
+                  {% if has_permission("READ_TAGS") %}{{ menu_section_item('Tags structure', 'backoffice_web.offerer_tag.list_offerer_tags') }}{% endif %}
                   {% if has_permission("READ_OFFERS") %}
-                    {{ menu_section_item("Offres individuelles", "backoffice_web.offer.list_offers") }}
-                    {{ menu_section_item("Offres collectives", "backoffice_web.collective_offer.list_collective_offers") }}
-                    {{ menu_section_item("Offres collectives vitrine", "backoffice_web.collective_offer_template.list_collective_offer_templates") }}
-                    {{ menu_section_item("Opérations sur plusieurs offres", "backoffice_web.multiple_offers.multiple_offers_home") }}
+                    {{ menu_section_item('Offres individuelles', 'backoffice_web.offer.list_offers') }}
+                    {{ menu_section_item('Offres collectives', 'backoffice_web.collective_offer.list_collective_offers') }}
+                    {{ menu_section_item('Offres collectives vitrine', 'backoffice_web.collective_offer_template.list_collective_offer_templates') }}
+                    {{ menu_section_item('Opérations sur plusieurs offres', 'backoffice_web.multiple_offers.multiple_offers_home') }}
                   {% endif %}
                   {% if has_permission("PRO_FRAUD_ACTIONS") %}
-                    {{ menu_section_item("Recherche EAN via Tite Live", "backoffice_web.titelive.search_titelive") }}
+                    {{ menu_section_item('Recherche EAN via Tite Live', 'backoffice_web.titelive.search_titelive') }}
                   {% endif %}
-                  {% if has_permission("READ_TAGS") %}{{ menu_section_item("Tags des offres et lieux", "backoffice_web.tags.list_tags") }}{% endif %}
+                  {% if has_permission("READ_TAGS") %}{{ menu_section_item('Tags des offres et lieux', 'backoffice_web.tags.list_tags') }}{% endif %}
                   {% if has_permission("READ_PRO_ENTITY") and has_permission("MANAGE_PRO_ENTITY") %}
-                    {{ menu_section_item("Actions sur les lieux", "backoffice_web.venue.list_venues") }}
+                    {{ menu_section_item('Actions sur les lieux', 'backoffice_web.venue.list_venues') }}
                   {% endif %}
-                  {% if has_permission("READ_PRO_ENTITY") %}{{ menu_section_item("Préférences", "backoffice_web.preferences.edit_preferences") }}{% endif %}
+                  {% if has_permission("READ_PRO_ENTITY") %}{{ menu_section_item('Préférences', 'backoffice_web.preferences.edit_preferences') }}{% endif %}
                 {% endcall %}
               </div>
               <hr />
               {% if has_permission("MOVE_SIRET") or has_permission("MANAGE_TECH_PARTNERS") or has_permission("READ_REIMBURSEMENT_RULES") %}
                 <div class="nav nav-pills flex-column">
                   {% call menu_section("Support Pro") %}
-                    {% if has_permission("MOVE_SIRET") %}{{ menu_section_item("Déplacer un SIRET", "backoffice_web.move_siret.move_siret") }}{% endif %}
+                    {% if has_permission("MOVE_SIRET") %}{{ menu_section_item('Déplacer un SIRET', 'backoffice_web.move_siret.move_siret') }}{% endif %}
                     {% if has_permission("MANAGE_TECH_PARTNERS") %}
-                      {{ menu_section_item("Synchronisation Pivot", "backoffice_web.pivots.get_pivots") }}
-                      {{ menu_section_item("Synchronisation partenaires techniques", "backoffice_web.providers.get_providers") }}
+                      {{ menu_section_item('Synchronisation Pivot', 'backoffice_web.pivots.get_pivots') }}
+                      {{ menu_section_item('Synchronisation partenaires techniques', 'backoffice_web.providers.get_providers') }}
                     {% endif %}
                     {% if has_permission("READ_REIMBURSEMENT_RULES") %}
-                      {{ menu_section_item("Tarifs dérogatoires", "backoffice_web.reimbursement_rules.list_custom_reimbursement_rules") }}
+                      {{ menu_section_item('Tarifs dérogatoires', 'backoffice_web.reimbursement_rules.list_custom_reimbursement_rules') }}
                     {% endif %}
                   {% endcall %}
                 </div>
@@ -111,8 +111,8 @@
               {% if has_permission("READ_BOOKINGS") %}
                 <div class="nav nav-pills flex-column">
                   {% call menu_section("Réservations") %}
-                    {{ menu_section_item("Réservations individuelles", "backoffice_web.individual_bookings.list_individual_bookings") }}
-                    {{ menu_section_item("Réservations collectives", "backoffice_web.collective_bookings.list_collective_bookings") }}
+                    {{ menu_section_item('Réservations individuelles', 'backoffice_web.individual_bookings.list_individual_bookings') }}
+                    {{ menu_section_item('Réservations collectives', 'backoffice_web.collective_bookings.list_collective_bookings') }}
                   {% endcall %}
                 </div>
                 <hr />
@@ -121,10 +121,10 @@
                 <div class="nav nav-pills flex-column">
                   {% call menu_section("Finance") %}
                     {% if has_permission("READ_INCIDENTS") %}
-                      {{ menu_section_item("Gestion des incidents", "backoffice_web.finance_incidents.list_incidents") }}
+                      {{ menu_section_item('Gestion des incidents', 'backoffice_web.finance_incidents.list_incidents') }}
                     {% endif %}
                     {% if has_permission("GENERATE_INVOICES") %}
-                      {{ menu_section_item("Justificatifs de remboursement", "backoffice_web.finance_invoices.get_finance_invoices") }}
+                      {{ menu_section_item('Justificatifs de remboursement', 'backoffice_web.finance_invoices.get_finance_invoices') }}
                     {% endif %}
                   {% endcall %}
                 </div>
@@ -134,10 +134,10 @@
                 <div class="nav nav-pills flex-column">
                   {% call menu_section("Fraude et conformité") %}
                     {% if has_permission("PRO_FRAUD_ACTIONS") %}
-                      {{ menu_section_item("Règles de validation d'offres", "backoffice_web.offer_validation_rules.list_rules") }}
+                      {{ menu_section_item("Règles de validation d'offres", 'backoffice_web.offer_validation_rules.list_rules') }}
                     {% endif %}
                     {% if has_permission("BENEFICIARY_FRAUD_ACTIONS") %}
-                      {{ menu_section_item("Suspension de comptes jeunes", "backoffice_web.fraud.list_blacklisted_domain_names") }}
+                      {{ menu_section_item('Suspension de comptes jeunes', 'backoffice_web.fraud.list_blacklisted_domain_names') }}
                     {% endif %}
                   {% endcall %}
                 </div>
@@ -145,14 +145,14 @@
               {% endif %}
               <div class="nav nav-pills flex-column">
                 {% call menu_section("Admin") %}
-                  {% if has_permission("MANAGE_PERMISSIONS") %}{{ menu_section_item("Gestion des rôles", "backoffice_web.get_roles") }}{% endif %}
+                  {% if has_permission("MANAGE_PERMISSIONS") %}{{ menu_section_item('Gestion des rôles', 'backoffice_web.get_roles') }}{% endif %}
                   {% if has_permission("READ_ADMIN_ACCOUNTS") %}
-                    {{ menu_section_item("Utilisateurs BackOffice", "backoffice_web.bo_users.search_bo_users") }}
+                    {{ menu_section_item('Utilisateurs BackOffice', 'backoffice_web.bo_users.search_bo_users') }}
                   {% endif %}
-                  {% if has_permission("FEATURE_FLIPPING") %}{{ menu_section_item("Feature flipping", "backoffice_web.list_feature_flags") }}{% endif %}
+                  {% if has_permission("FEATURE_FLIPPING") %}{{ menu_section_item('Feature flipping', 'backoffice_web.list_feature_flags') }}{% endif %}
                   {% if get_setting("ENABLE_TEST_USER_GENERATION") %}
-                    {{ menu_section_item("Générateur d'utilisateurs de test", "backoffice_web.generate_user") }}
-                    {{ menu_section_item("Suppression d'utilisateur", "backoffice_web.delete_user") }}
+                    {{ menu_section_item("Générateur d'utilisateurs de test", 'backoffice_web.generate_user') }}
+                    {{ menu_section_item("Suppression d'utilisateur", 'backoffice_web.delete_user') }}
                   {% endif %}
                 {% endcall %}
               </div>

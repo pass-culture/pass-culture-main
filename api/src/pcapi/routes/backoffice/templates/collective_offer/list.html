@@ -65,9 +65,9 @@
                 {% if date_created_sort_url %}
                   <a href="{{ date_created_sort_url }}"
                      class="text-decoration-none"
-                     title="Changer pour un tri {{ 'croissant' if request.args.get('sort') == 'dateCreated' and request.args.get('order') == 'desc' else 'décroissant' }}">
+                     title="Changer pour un tri {{ 'croissant' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'desc' else 'décroissant' }}">
                     Date de création
-                    <i class="bi bi-sort-{{ 'down' if request.args.get('sort') == 'dateCreated' and request.args.get('order') == 'desc' else 'up' }}-alt"></i>
+                    <i class="bi bi-sort-{{ 'down' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'desc' else 'up' }}-alt"></i>
                   </a>
                 {% else %}
                   Date de création
@@ -117,7 +117,9 @@
                 <td>{{ links.build_offer_name_to_pc_pro_link(collective_offer) }}</td>
                 <td>{{ collective_offer.formats | format_collective_offer_formats }}</td>
                 {% if has_permission("PRO_FRAUD_ACTIONS") %}
-                <td>{% if row.rules %}{{ row.rules | join(", ") | escape }}{% endif %}</td>
+                  <td>
+                    {% if row.rules %}{{ row.rules | join(", ") | escape }}{% endif %}
+                  </td>
                 {% endif %}
                 <td>{{ collective_offer.validation | format_offer_validation_status }}</td>
                 <td>{{ links.build_pro_user_name_to_details_link(collective_offer.authorId, collective_offer.author.full_name) }}</td>
@@ -132,11 +134,11 @@
         </table>
         {% for row in rows %}
           {% set collective_offer = row.CollectiveOffer %}
-          {{ build_lazy_modal(url_for('backoffice_web.collective_offer.get_validate_collective_offer_form', collective_offer_id=collective_offer.id), "validate-collective-offer-modal-" + collective_offer.id|string) }}
-          {{ build_lazy_modal(url_for('backoffice_web.collective_offer.get_reject_collective_offer_form', collective_offer_id=collective_offer.id), "reject-collective-offer-modal-" + collective_offer.id|string) }}
+          {{ build_lazy_modal(url_for('backoffice_web.collective_offer.get_validate_collective_offer_form', collective_offer_id=collective_offer.id) , "validate-collective-offer-modal-" + collective_offer.id|string) }}
+          {{ build_lazy_modal(url_for('backoffice_web.collective_offer.get_reject_collective_offer_form', collective_offer_id=collective_offer.id) , "reject-collective-offer-modal-" + collective_offer.id|string) }}
         {% endfor %}
-        {{ build_lazy_modal(url_for("backoffice_web.collective_offer.get_batch_reject_collective_offers_form"), "batch-reject-modal", "true") }}
-        {{ build_lazy_modal(url_for("backoffice_web.collective_offer.get_batch_validate_collective_offers_form"), "batch-validate-modal", "true") }}
+        {{ build_lazy_modal(url_for("backoffice_web.collective_offer.get_batch_reject_collective_offers_form") , "batch-reject-modal", "true") }}
+        {{ build_lazy_modal(url_for("backoffice_web.collective_offer.get_batch_validate_collective_offers_form") , "batch-validate-modal", "true") }}
       {% endif %}
     </div>
   </div>

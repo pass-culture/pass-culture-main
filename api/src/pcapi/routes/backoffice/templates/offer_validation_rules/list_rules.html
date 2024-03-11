@@ -20,7 +20,7 @@
                   data-bs-toggle="modal"
                   data-bs-target="#create-offer-validation-rule"
                   type="button">Créer une règle de validation d'offre</button>
-          {{ build_lazy_modal(url_for("backoffice_web.offer_validation_rules.get_create_offer_validation_rule_form"), "create-offer-validation-rule", "lazy", "xl") }}
+          {{ build_lazy_modal(url_for("backoffice_web.offer_validation_rules.get_create_offer_validation_rule_form") , "create-offer-validation-rule", "lazy", "xl") }}
           <div>
             <table class="table mb-4">
               <thead>
@@ -66,11 +66,9 @@
               </tbody>
             </table>
             {% for rule in rows %}
-              {{ build_lazy_modal(
-              url_for("backoffice_web.offer_validation_rules.get_edit_offer_validation_rule_form", rule_id=rule.id),
+              {{ build_lazy_modal(url_for("backoffice_web.offer_validation_rules.get_edit_offer_validation_rule_form", rule_id=rule.id) ,
               "edit-offer-validation-rule-" + rule.id|string) }}
-              {{ build_lazy_modal(
-              url_for("backoffice_web.offer_validation_rules.get_delete_offer_validation_rule_form", rule_id=rule.id),
+              {{ build_lazy_modal(url_for("backoffice_web.offer_validation_rules.get_delete_offer_validation_rule_form", rule_id=rule.id) ,
               "delete-offer-validation-rule-" + rule.id|string) }}
             {% endfor %}
           </div>
