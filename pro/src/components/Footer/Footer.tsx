@@ -1,6 +1,7 @@
 import classNames from 'classnames'
 
 import useActiveFeature from 'hooks/useActiveFeature'
+import useCurrentUser from 'hooks/useCurrentUser'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { initCookieConsent } from 'utils/cookieConsentModal'
@@ -12,6 +13,8 @@ type FooterProps = {
 }
 export default function Footer({ layout }: FooterProps) {
   const isNewSideBarNavigation = useActiveFeature('WIP_ENABLE_PRO_SIDE_NAV')
+
+  const { currentUser } = useCurrentUser()
   if (!isNewSideBarNavigation) {
     return
   }
@@ -50,18 +53,19 @@ export default function Footer({ layout }: FooterProps) {
             Charte des Données Personnelles
           </ButtonLink>
         </li>
-        <li>
-          <ButtonLink
-            variant={ButtonVariant.QUATERNARY}
-            className={styles['cookies-footer-link']}
-            link={{
-              to: 'https://pass.culture.fr/donnees-personnelles/',
-              isExternal: true,
-            }}
-          >
-            Plan du site
-          </ButtonLink>
-        </li>
+        {currentUser && (
+          <li>
+            <ButtonLink
+              variant={ButtonVariant.QUATERNARY}
+              className={styles['cookies-footer-link']}
+              link={{
+                to: '/plan-du-site',
+              }}
+            >
+              Plan du site
+            </ButtonLink>
+          </li>
+        )}
         <li>
           <Button
             variant={ButtonVariant.QUATERNARY}
