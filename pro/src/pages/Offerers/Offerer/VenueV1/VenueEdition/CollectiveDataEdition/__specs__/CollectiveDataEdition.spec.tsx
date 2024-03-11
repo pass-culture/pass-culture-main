@@ -131,6 +131,19 @@ describe('CollectiveDataEdition', () => {
   })
 
   describe('render', () => {
+    it('should display read only information', async () => {
+      renderCollectiveDataEdition({}, { initialRouterEntries: ['/'] })
+
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+      expect(screen.getByText('Référencé sur ADAGE')).toBeInTheDocument()
+      expect(
+        screen.getByText('Présentation pour les enseignants')
+      ).toBeInTheDocument()
+      expect(screen.getByText('Informations du lieu')).toBeInTheDocument()
+      expect(screen.getByText('Contact')).toBeInTheDocument()
+    })
+
     it('should render form without errors', async () => {
       renderCollectiveDataEdition()
 
