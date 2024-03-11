@@ -10,7 +10,10 @@ import {
 } from 'apiClient/v1'
 import { Accessibility } from 'components/IndividualOfferForm/Accessibility'
 import { AccessiblityEnum, AccessibiltyFormValues } from 'core/shared'
-import { venueListItemFactory } from 'utils/individualApiFactories'
+import {
+  getOffererNameFactory,
+  venueListItemFactory,
+} from 'utils/individualApiFactories'
 
 import { Venue } from '..'
 import { VenueProps } from '../Venue'
@@ -74,11 +77,11 @@ describe('IndividualOffer section: venue', () => {
 
   beforeEach(() => {
     const offererNames: GetOffererNameResponseModel[] = [
-      {
+      getOffererNameFactory({
         id: 1,
         name: 'Offerer AE',
         allowedOnAdage: true,
-      },
+      }),
     ]
 
     venueAccessible = venueListItemFactory({

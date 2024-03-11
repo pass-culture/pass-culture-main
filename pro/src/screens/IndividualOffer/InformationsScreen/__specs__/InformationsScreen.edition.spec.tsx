@@ -29,6 +29,7 @@ import {
   individualOfferContextValuesFactory,
   subcategoryFactory,
   venueListItemFactory,
+  getOffererNameFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -171,7 +172,11 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       offer: offer,
       venueList: [venue1, venue2],
       offererNames: [
-        { id: offererId, name: 'Offerer name', allowedOnAdage: true },
+        getOffererNameFactory({
+          id: offererId,
+          name: 'Offerer name',
+          allowedOnAdage: true,
+        }),
       ],
       categories,
       subCategories,

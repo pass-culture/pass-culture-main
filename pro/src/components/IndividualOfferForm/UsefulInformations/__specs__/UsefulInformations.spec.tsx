@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
-import React from 'react'
 import * as yup from 'yup'
 
 import {
@@ -17,6 +16,7 @@ import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { SubmitButton } from 'ui-kit'
 import {
+  getOffererNameFactory,
   subcategoryFactory,
   venueListItemFactory,
 } from 'utils/individualApiFactories'
@@ -60,11 +60,11 @@ describe('IndividualOffer section: UsefulInformations', () => {
 
   beforeEach(() => {
     const offererNames: GetOffererNameResponseModel[] = [
-      {
+      getOffererNameFactory({
         id: offererId,
         name: 'Offerer AE',
         allowedOnAdage: true,
-      },
+      }),
     ]
 
     venueList = [

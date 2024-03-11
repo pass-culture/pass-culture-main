@@ -26,7 +26,7 @@ import * as useNotification from 'hooks/useNotification'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
-  getOfferManagingOffererFactory,
+  getOffererNameFactory,
   listOffersOfferFactory,
 } from 'utils/individualApiFactories'
 import {
@@ -561,7 +561,7 @@ describe('screen Offers', () => {
   })
 
   it('should display the button to create an offer when user is not an admin', async () => {
-    const individualOffererNames = getOfferManagingOffererFactory()
+    const individualOffererNames = getOffererNameFactory()
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [individualOffererNames],
     })
@@ -729,13 +729,7 @@ describe('screen Offers', () => {
 
   it('should display the create offer button by default for non admins with validated offerers', async () => {
     vi.spyOn(api, 'listOfferersNames').mockResolvedValueOnce({
-      offerersNames: [
-        {
-          id: 1,
-          name: 'Mon super cinéma',
-          allowedOnAdage: true,
-        },
-      ],
+      offerersNames: [getOffererNameFactory()],
     })
 
     renderOffers(props)
@@ -747,13 +741,7 @@ describe('screen Offers', () => {
 
   it('should not display the create offer button with the WIP_ENABLE_PRO_SIDE_NAV FF enabled', async () => {
     vi.spyOn(api, 'listOfferersNames').mockResolvedValueOnce({
-      offerersNames: [
-        {
-          id: 1,
-          name: 'Mon super cinéma',
-          allowedOnAdage: true,
-        },
-      ],
+      offerersNames: [getOffererNameFactory()],
     })
 
     renderOffers(props, {

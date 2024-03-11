@@ -14,6 +14,7 @@ import {
 import {
   defaultGetOffererVenueResponseModel,
   defaultGetOffererResponseModel,
+  getOffererNameFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -81,7 +82,11 @@ describe('OfferType', () => {
   beforeEach(() => {
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
-        { id: 1, name: 'Ma super structure', allowedOnAdage: true },
+        getOffererNameFactory({
+          id: 1,
+          name: 'Ma super structure',
+          allowedOnAdage: true,
+        }),
       ],
     })
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue([])
@@ -163,7 +168,11 @@ describe('OfferType', () => {
   it('should display non eligible banner if offerer can not create collective offer', async () => {
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
-        { id: 1, name: 'Ma super structure', allowedOnAdage: false },
+        getOffererNameFactory({
+          id: 1,
+          name: 'Ma super structure',
+          allowedOnAdage: false,
+        }),
       ],
     })
 

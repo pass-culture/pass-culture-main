@@ -3,17 +3,18 @@ import { waitFor, renderHook } from '@testing-library/react'
 import { api } from 'apiClient/api'
 import { GetOffererNameResponseModel } from 'apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { getOffererNameFactory } from 'utils/individualApiFactories'
 
 import { useGetOffererNames } from '..'
 
 describe('useOffererNames', () => {
   it('should return loading payload then success payload', async () => {
     const offererNames: GetOffererNameResponseModel[] = [
-      {
+      getOffererNameFactory({
         name: 'Structure AA',
         id: 123,
         allowedOnAdage: true,
-      },
+      }),
     ]
 
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({

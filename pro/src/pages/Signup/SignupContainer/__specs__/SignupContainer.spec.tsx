@@ -7,6 +7,7 @@ import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
+import { getOffererNameFactory } from 'utils/individualApiFactories'
 import * as utils from 'utils/recaptcha'
 import {
   RenderWithProvidersOptions,
@@ -57,16 +58,16 @@ describe('Signup', () => {
 
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
-        {
+        getOffererNameFactory({
           id: 1,
           name: 'Mon super cinéma',
           allowedOnAdage: true,
-        },
-        {
+        }),
+        getOffererNameFactory({
           id: 1,
           name: 'Ma super librairie',
           allowedOnAdage: true,
-        },
+        }),
       ],
     })
     Element.prototype.scrollIntoView = vi.fn()
