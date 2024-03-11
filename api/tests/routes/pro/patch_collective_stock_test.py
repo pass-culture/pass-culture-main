@@ -276,7 +276,7 @@ class Return403Test:
         # Then
         assert response.status_code == 403
         assert response.json == {
-            "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
+            "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
         }
 
     def test_edit_collective_stocks_should_not_be_possible_when_offer_created_by_public_api(self, client):

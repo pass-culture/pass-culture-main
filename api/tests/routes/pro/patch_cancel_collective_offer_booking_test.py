@@ -87,7 +87,7 @@ class Returns403Test:
 
         assert response.status_code == 403
         assert response.json == {
-            "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
+            "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
         }
         assert len(adage_api_testing.adage_requests) == 0
 

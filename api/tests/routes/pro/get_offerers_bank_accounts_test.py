@@ -32,7 +32,7 @@ class OfferersBankAccountTest:
 
         # Then
         assert response.status_code == 403
-        assert "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information." in str(response.json)
+        assert "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information." in str(response.json)
 
     @pytest.mark.usefixtures("db_session")
     def test_accessing_inexisting_offerer_return_proper_404_error(self, client):
