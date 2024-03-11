@@ -221,7 +221,7 @@ class EntrepriseBackend(BaseBackend):
             head_office_activity=data["etablissement_principal"]["activite"],
             corporate_officers=[
                 models.RCSCorporateOfficer(
-                    name=" ".join((item["prenom"], item["nom"])).strip(),
+                    name=" ".join(filter(bool, (item.get("prenom"), item.get("nom"), item.get("raison_sociale")))),
                     role=item["fonction"],
                 )
                 for item in data["mandataires_sociaux"]

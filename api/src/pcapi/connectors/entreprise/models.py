@@ -49,7 +49,7 @@ class SiretInfo(pydantic_v1.BaseModel):
 
 class RCSCorporateOfficer(pydantic_v1.BaseModel):
     name: str
-    role: str
+    role: str | None
 
 
 class RCSObservation(pydantic_v1.BaseModel):
