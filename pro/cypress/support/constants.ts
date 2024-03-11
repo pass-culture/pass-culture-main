@@ -18,8 +18,8 @@ export const CONSTANTS = {
   cookieManagementWindow: 'Gestion des cookies',
   emailErrorId: '#error-details-email',
   passwordErrorId: '#error-details-password',
-  emailTestData: 'user.not.exist@passculture.app',
-  passwordTestData: 'Test0123!',
+  emailTestData: Date.now().toString() + '@passculture.app',
+  passwordTestData: Date.now().toString(),
   // inscription page //
   iAlreadyHaveAnAccountButton: 'J’ai déjà un compte',
 }
