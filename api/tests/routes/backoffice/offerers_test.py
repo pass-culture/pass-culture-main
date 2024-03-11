@@ -1652,6 +1652,58 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             else:
                 assert html_parser.count_table_rows(response.data) == 0
 
+        def test_list_filtering_by_instructor(self, authenticated_client, offerers_to_be_validated):
+            _, pending1, _, pending2, _, pending3 = offerers_to_be_validated
+
+            instructor = users_factories.AdminFactory()
+            instructor_id = instructor.id
+            other_instructor = users_factories.AdminFactory()
+
+            history_factories.ActionHistoryFactory(
+                actionType=history_models.ActionType.OFFERER_PENDING,
+                authorUser=instructor,
+                offerer=pending1,
+            )
+
+            history_factories.ActionHistoryFactory(
+                actionDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
+                actionType=history_models.ActionType.OFFERER_PENDING,
+                authorUser=other_instructor,
+                offerer=pending2,
+            )
+            history_factories.ActionHistoryFactory(
+                actionType=history_models.ActionType.USER_OFFERER_PENDING,
+                authorUser=instructor,
+                user=users_factories.NonAttachedProFactory(),
+                offerer=pending2,
+            )
+
+            history_factories.ActionHistoryFactory(
+                actionDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
+                actionType=history_models.ActionType.OFFERER_PENDING,
+                authorUser=instructor,
+                offerer=pending3,
+            )
+            history_factories.ActionHistoryFactory(
+                actionType=history_models.ActionType.OFFERER_PENDING,
+                authorUser=other_instructor,
+                offerer=pending3,
+            )
+
+            # +1 query to fill in instructor filter
+            with assert_num_queries(self.expected_num_queries + 1):
+                response = authenticated_client.get(
+                    url_for(
+                        "backoffice_web.validation.list_offerers_to_validate",
+                        status="PENDING",
+                        instructors=instructor_id,
+                    )
+                )
+                assert response.status_code == 200
+
+            rows = html_parser.extract_table_rows(response.data)
+            assert {int(row["ID"]) for row in rows} == {pending1.id}
+
         @pytest.mark.parametrize(
             "dms_status_filter, expected_status, expected_offerer_names",
             (
@@ -2247,6 +2299,56 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
             assert {row["Email Compte pro"] for row in rows} == expected_users_emails
         else:
             assert html_parser.count_table_rows(response.data) == 0
+
+    def test_list_filtering_by_instructor(self, authenticated_client, user_offerer_to_be_validated):
+        _, pending1, _, pending2, _, pending3 = user_offerer_to_be_validated
+
+        instructor = users_factories.AdminFactory()
+        instructor_id = instructor.id
+        other_instructor = users_factories.AdminFactory()
+
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.USER_OFFERER_PENDING,
+            authorUser=instructor,
+            user=pending1.user,
+            offerer=pending1.offerer,
+        )
+
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
+            actionType=history_models.ActionType.USER_OFFERER_PENDING,
+            authorUser=other_instructor,
+            user=pending2.user,
+            offerer=pending2.offerer,
+        )
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.USER_OFFERER_PENDING,
+            authorUser=instructor,
+            user=users_factories.NonAttachedProFactory(),
+            offerer=pending2.offerer,
+        )
+
+        history_factories.ActionHistoryFactory(
+            actionDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
+            actionType=history_models.ActionType.USER_OFFERER_PENDING,
+            authorUser=instructor,
+            user=pending3.user,
+            offerer=pending3.offerer,
+        )
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.USER_OFFERER_PENDING,
+            authorUser=other_instructor,
+            user=pending3.user,
+            offerer=pending3.offerer,
+        )
+
+        # +1 query to fill in instructor filter
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(url_for(self.endpoint, status="PENDING", instructors=instructor_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert {row["Email Compte pro"] for row in rows} == {pending1.user.email}
 
     @pytest.mark.parametrize(
         "offerer_status_filter, expected_status, expected_users_emails",
