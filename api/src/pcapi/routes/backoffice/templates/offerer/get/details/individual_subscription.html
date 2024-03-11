@@ -39,15 +39,15 @@
                  style="width: {{ "100%" if individual_subscription else "0" }}"></div>
           </div>
           <ol class="breadcrumb-container position-relative d-flex p-0 justify-content-between">
-            {{ build_step("Mail envoyé", "bi-envelope-fill", "bi-check-circle-fill text-success" if individual_subscription.isEmailSent else ("bi-x-circle-fill text-danger" if individual_subscription), "step-success" if individual_subscription.isEmailSent) }}
-            {{ build_step("Casier judiciaire", "bi-person-vcard", "bi-check-circle-fill text-success" if individual_subscription.isCriminalRecordReceived else ("bi-exclamation-circle-fill text-warning" if individual_subscription), "step-success" if individual_subscription.isCriminalRecordReceived) }}
-            {{ build_step("Diplômes", "bi-mortarboard-fill", "bi-check-circle-fill text-success" if individual_subscription.isCertificateReceived else ("bi-exclamation-circle-fill text-warning" if individual_subscription), "step-success" if individual_subscription.isCertificateReceived) }}
-            {{ build_step("Certifications professionnelles", "bi-box-fill", "bi-check-circle-fill text-success" if individual_subscription.isExperienceReceived else ("bi-exclamation-circle-fill text-warning" if individual_subscription), "step-success" if individual_subscription.isExperienceReceived) }}
+            {{ build_step("Mail envoyé", "bi-envelope-fill", "bi-check-circle-fill text-success" if individual_subscription.isEmailSent else ("bi-x-circle-fill text-danger" if individual_subscription) , "step-success" if individual_subscription.isEmailSent) }}
+            {{ build_step("Casier judiciaire", "bi-person-vcard", "bi-check-circle-fill text-success" if individual_subscription.isCriminalRecordReceived else ("bi-exclamation-circle-fill text-warning" if individual_subscription) , "step-success" if individual_subscription.isCriminalRecordReceived) }}
+            {{ build_step("Diplômes", "bi-mortarboard-fill", "bi-check-circle-fill text-success" if individual_subscription.isCertificateReceived else ("bi-exclamation-circle-fill text-warning" if individual_subscription) , "step-success" if individual_subscription.isCertificateReceived) }}
+            {{ build_step("Certifications professionnelles", "bi-box-fill", "bi-check-circle-fill text-success" if individual_subscription.isExperienceReceived else ("bi-exclamation-circle-fill text-warning" if individual_subscription) , "step-success" if individual_subscription.isExperienceReceived) }}
             {% if has_adage_tag or adage_decision %}
               {% if adage_decision == "accepte" %}
-                {{ build_step("Référencement Adage", "bi-briefcase-fill", "bi-check-circle-fill text-success", "step-success") }}
+                {{ build_step('Référencement Adage', 'bi-briefcase-fill', 'bi-check-circle-fill text-success', 'step-success') }}
               {% elif adage_decision == "refuse" %}
-                {{ build_step("Référencement Adage", "bi-briefcase-fill", "bi-x-circle-fill text-danger", "step-error") }}
+                {{ build_step('Référencement Adage', 'bi-briefcase-fill', 'bi-x-circle-fill text-danger', 'step-error') }}
               {% elif adage_decision == "en_instruction" %}
                 {{ build_step("Référencement Adage", "bi-briefcase-fill", "bi-hourglass-split text-info", null) }}
               {% else %}

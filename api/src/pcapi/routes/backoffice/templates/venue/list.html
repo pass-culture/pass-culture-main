@@ -25,7 +25,7 @@
                       class="btn btn-outline-primary"
                       data-modal-selector="#batch-edit-venues-modal"
                       data-mode="fetch"
-                      data-fetch-url="{{ url_for('backoffice_web.venue.get_batch_edit_venues_form') }}"
+                      data-fetch-url="{{ url_for("backoffice_web.venue.get_batch_edit_venues_form") }}"
                       data-use-confirmation-modal="true">Éditer les lieux</button>
             </div>
           {% endif %}
@@ -52,9 +52,9 @@
                 {% if date_created_sort_url %}
                   <a href="{{ date_created_sort_url }}"
                      class="text-decoration-none"
-                     title="Changer pour un tri {{ 'croissant' if request.args.get('order') == 'desc' else 'décroissant' }}">
+                     title="Changer pour un tri {{ 'croissant' if request.args.get("order") == 'desc' else 'décroissant' }}">
                     Date de création
-                    <i class="bi bi-sort-{{ 'down' if request.args.get('order') == 'desc' else 'up' }}-alt"></i>
+                    <i class="bi bi-sort-{{ 'down' if request.args.get("order") == 'desc' else 'up' }}-alt"></i>
                   </a>
                 {% else %}
                   Date de création
@@ -88,7 +88,7 @@
           </tbody>
         </table>
         {% if can_edit %}
-          {{ build_lazy_modal(url_for('backoffice_web.venue.get_batch_edit_venues_form'), "batch-edit-venues-modal", "true") }}
+          {{ build_lazy_modal(url_for('backoffice_web.venue.get_batch_edit_venues_form') , "batch-edit-venues-modal", "true") }}
         {% endif %}
       {% endif %}
     </div>

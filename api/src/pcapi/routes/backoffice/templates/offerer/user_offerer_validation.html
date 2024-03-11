@@ -73,9 +73,9 @@
               <th scope="col">
                 <a href="{{ date_created_sort_url }}"
                    class="text-decoration-none"
-                   title="Changer pour un tri {{ 'décroissant' if request.args.get('sort') == 'dateCreated' and request.args.get('order') == 'asc' else 'croissant' }}">
+                   title="Changer pour un tri {{ 'décroissant' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'asc' else 'croissant' }}">
                   Date de la demande
-                  <i class="bi bi-sort-{{ 'up' if request.args.get('sort') == 'dateCreated' and request.args.get('order') == 'asc' else 'down' }}-alt"></i>
+                  <i class="bi bi-sort-{{ 'up' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'asc' else 'down' }}-alt"></i>
                 </a>
               </th>
               <th scope="col">Nom Structure</th>
@@ -105,8 +105,8 @@
                       </button>
                       <ul class="dropdown-menu">
                         <li class="dropdown-item p-0">
-                          <form action="{{ url_for( "backoffice_web.validation.validate_user_offerer", offerer_id=offerer.id, user_offerer_id=user_offerer.id ) }}"
-                                name="{{ url_for( "backoffice_web.validation.validate_user_offerer", offerer_id=offerer.id, user_offerer_id=user_offerer.id ) | action_to_name }}"
+                          <form action="{{ url_for("backoffice_web.validation.validate_user_offerer", offerer_id=offerer.id, user_offerer_id=user_offerer.id) }}"
+                                name="{{ url_for("backoffice_web.validation.validate_user_offerer", offerer_id=offerer.id, user_offerer_id=user_offerer.id) | action_to_name }}"
                                 method="post">
                             <button type="submit"
                                     class="btn btn-sm d-block w-100 text-start px-3">Valider</button>
@@ -137,8 +137,8 @@
                 <td>{{ item.creator_email | empty_string_if_null }}</td>
                 <td>
                   {{ item.last_comment | empty_string_if_null | replace("\n", "
-                  <br />
-                  "|safe) }}
+                                    <br />
+                                    "|safe) }}
                 </td>
               </tr>
             {% endfor %}
@@ -147,15 +147,13 @@
         {% if has_validate_permission %}
           {% for item in rows.items %}
             {% set user_offerer_id = item.UserOfferer.id %}
-            {{ build_lazy_modal(
-            url_for("backoffice_web.validation.get_reject_user_offerer_form", user_offerer_id=user_offerer_id),
+            {{ build_lazy_modal(url_for("backoffice_web.validation.get_reject_user_offerer_form", user_offerer_id=user_offerer_id) ,
             "reject-modal-" + user_offerer_id|string) }}
-            {{ build_lazy_modal(
-            url_for("backoffice_web.validation.get_user_offerer_pending_form", user_offerer_id=user_offerer_id),
+            {{ build_lazy_modal(url_for("backoffice_web.validation.get_user_offerer_pending_form", user_offerer_id=user_offerer_id) ,
             "pending-modal-" + user_offerer_id|string) }}
           {% endfor %}
-          {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_reject_user_offerer_form"), "batch-reject-modal", "true") }}
-          {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_user_offerer_pending_form"), "batch-pending-modal", "true") }}
+          {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_reject_user_offerer_form") , "batch-reject-modal", "true") }}
+          {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_user_offerer_pending_form") , "batch-pending-modal", "true") }}
         {% endif %}
       {% else %}
         Aucun rattachement ne correspond à la requête
