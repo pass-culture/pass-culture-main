@@ -24,18 +24,23 @@ export function DayAndHours({ day, hours }: DayAndHours) {
     <>
       {hours.length === 1 ? (
         <p className={styles['day-and-hours']}>
-          <span className={styles['day']}>{displayedDay}</span> <span>De</span>{' '}
-          <span className={styles['hour']}>{hours[0].open}</span> <span>à</span>{' '}
-          <span className={styles['hour']}>{hours[0].close}</span>
+          <span className={styles['day']}>
+            {displayedDay}
+            {' : '}
+          </span>{' '}
+          de <span className={styles['important']}>{hours[0].open}</span> à{' '}
+          <span className={styles['important']}>{hours[0].close}</span>
         </p>
       ) : (
         <p className={styles['day-and-hours']}>
-          <span className={styles['day']}>{displayedDay}</span> <span>De</span>{' '}
-          <span className={styles['hour']}>{hours[0].open}</span> <span>à</span>{' '}
-          <span className={styles['hour']}>{hours[0].close}</span>{' '}
-          <span className={styles['noon-separator']}>et de</span>{' '}
-          <span className={styles['hour']}>{hours[1].open}</span> <span>à</span>{' '}
-          <span className={styles['hour']}>{hours[1].close}</span>{' '}
+          <span className={styles['day']}>
+            {displayedDay}
+            {' : '}
+          </span>{' '}
+          de <span className={styles['important']}>{hours[0].open}</span> à{' '}
+          <span className={styles['important']}>{hours[0].close}</span> et de{' '}
+          <span className={styles['important']}>{hours[1].open}</span> à{' '}
+          <span className={styles['important']}>{hours[1].close}</span>{' '}
         </p>
       )}
     </>
