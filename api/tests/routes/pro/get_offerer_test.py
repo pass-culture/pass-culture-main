@@ -238,6 +238,48 @@ class GetOffererTest:
         assert response.json["hasNonFreeOffer"] is True
 
     @pytest.mark.usefixtures("db_session")
+    def test_offerer_has_inactive_non_free_offer(self, client):
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue_with_offer = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offers_factories.StockFactory(offer__venue=venue_with_offer, offer__isActive=False)
+
+        offerer_id = offerer.id
+        client = client.with_session_auth(pro.email)
+
+        response = client.get(f"/offerers/{offerer_id}")
+        assert response.status_code == 200
+        assert response.json["managedVenues"][0]["hasCreatedOffer"] is True
+        assert response.json["hasValidBankAccount"] is False
+        assert response.json["hasPendingBankAccount"] is False
+        assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == []
+        assert response.json["hasNonFreeOffer"] is False
+
+    @pytest.mark.usefixtures("db_session")
+    def test_offerer_has_inactive_non_free_collective_offer(self, client):
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue_with_offer = offerers_factories.VenueFactory(managingOfferer=offerer)
+        collective_factories.CollectiveStockFactory(
+            collectiveOffer__venue=venue_with_offer, collectiveOffer__isActive=False
+        )
+
+        offerer_id = offerer.id
+        client = client.with_session_auth(pro.email)
+
+        response = client.get(f"/offerers/{offerer_id}")
+        assert response.status_code == 200
+        assert response.json["managedVenues"][0]["hasCreatedOffer"] is True
+        assert response.json["hasValidBankAccount"] is False
+        assert response.json["hasPendingBankAccount"] is False
+        assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == []
+        assert response.json["hasNonFreeOffer"] is False
+
+    @pytest.mark.usefixtures("db_session")
     def test_offerer_has_non_free_collective_offer(self, client):
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
