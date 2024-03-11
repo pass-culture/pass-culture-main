@@ -1,4 +1,5 @@
 import re
+import typing
 
 from flask_wtf import FlaskForm
 import sqlalchemy as sa
@@ -268,14 +269,32 @@ class CreateOffererTagCategoryForm(OffererTagBaseForm):
 
 
 class IndividualOffererSubscriptionForm(FlaskForm):
-    is_email_sent = fields.PCSwitchBooleanField("Mail envoyé à l'acteur", full_row=True)
+    # full_opacity=True ensures that read-only view does not look disabled
+    is_email_sent = fields.PCSwitchBooleanField("Mail envoyé à l'acteur", full_row=True, full_opacity=True)
     date_email_sent = fields.PCOptDateField("Date d'envoi")
-    is_criminal_record_received = fields.PCSwitchBooleanField("Casier judiciaire reçu", full_row=True)
+    is_criminal_record_received = fields.PCSwitchBooleanField(
+        "Casier judiciaire reçu", full_row=True, full_opacity=True
+    )
     date_criminal_record_received = fields.PCOptDateField("Date de réception")
-    is_certificate_received = fields.PCSwitchBooleanField("Diplôme reçu", full_row=True)
+    is_certificate_received = fields.PCSwitchBooleanField("Diplôme reçu", full_row=True, full_opacity=True)
     certificate_details = fields.PCTextareaField("Type de diplôme / niveau")
-    is_experience_received = fields.PCSwitchBooleanField("Expérience reçue", full_row=True)
+    is_experience_received = fields.PCSwitchBooleanField("Expérience reçue", full_row=True, full_opacity=True)
     experience_details = fields.PCTextareaField("Type d'expérience")
-    has_1yr_experience = fields.PCSwitchBooleanField("1 à 4 ans")
-    has_4yr_experience = fields.PCSwitchBooleanField("+ 5 ans")
-    is_certificate_valid = fields.PCSwitchBooleanField("Validité du diplôme", full_row=True)
+    has_1yr_experience = fields.PCSwitchBooleanField("1 à 4 ans", full_opacity=True)
+    has_4yr_experience = fields.PCSwitchBooleanField("+ 5 ans", full_opacity=True)
+    is_certificate_valid = fields.PCSwitchBooleanField("Validité du diplôme", full_row=True, full_opacity=True)
+
+    def __init__(self, *args: typing.Any, read_only: bool = False, **kwargs: typing.Any) -> None:
+        super().__init__(*args, **kwargs)
+        if read_only:
+            self.is_email_sent.flags.readonly = True
+            self.date_email_sent.flags.readonly = True
+            self.is_criminal_record_received.flags.readonly = True
+            self.date_criminal_record_received.flags.readonly = True
+            self.is_certificate_received.flags.readonly = True
+            self.certificate_details.flags.readonly = True
+            self.is_experience_received.flags.readonly = True
+            self.experience_details.flags.readonly = True
+            self.has_1yr_experience.flags.readonly = True
+            self.has_4yr_experience.flags.readonly = True
+            self.is_certificate_valid.flags.readonly = True
