@@ -1,11 +1,11 @@
 import { CONSTANTS } from '../../support/constants'
 
-const connexionLinkExpected = '/connexion'
+const connectionLinkExpected = '/connexion'
 const inscriptionLinkExpected = '/inscription'
 
 describe('page connexion and inscription', () => {
-  it('switch between the two pages connexion and inscription using the button signIn and signUp', () => {
-    cy.visit(CONSTANTS.connexionLink)
+  it('switch between the two pages connection and inscription using the button signIn and signUp', () => {
+    cy.visit(CONSTANTS.connectionLink)
 
     cy.contains(CONSTANTS.signInButton).should('be.disabled')
 
@@ -15,7 +15,7 @@ describe('page connexion and inscription', () => {
 
     cy.contains(CONSTANTS.iAlreadyHaveAnAccountButton).click()
 
-    cy.url().should('include', connexionLinkExpected)
+    cy.url().should('include', connectionLinkExpected)
     cy.contains(CONSTANTS.signInButton).should('be.disabled')
   })
 })
