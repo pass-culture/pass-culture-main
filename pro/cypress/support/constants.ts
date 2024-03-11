@@ -1,6 +1,7 @@
 export const CONSTANTS = {
   // connexion page //
-  connectionLink: '/connexion',
+  signIn: '/connexion',
+  signUp: '/inscription',
   emailId: '#email',
   passwordId: '#password',
   forgotPasswordText: 'Mot de passe oublié',

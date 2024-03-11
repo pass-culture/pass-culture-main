@@ -1,12 +1,10 @@
 import { CONSTANTS } from '../../support/constants'
 
-const connectionLinkExpected = '/connexion'
-
-describe('page connection', () => {
+describe('signin page', () => {
   it('verify connection page conformity', () => {
-    cy.visit(CONSTANTS.connectionLink)
+    cy.visit(CONSTANTS.signIn)
 
-    cy.url().should('include', connectionLinkExpected)
+    cy.url().should('include', CONSTANTS.signIn)
 
     cy.get(CONSTANTS.emailId).should('exist')
 
