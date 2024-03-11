@@ -7,6 +7,7 @@ import { GetVenueResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { Events } from 'core/FirebaseEvents/constants'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
@@ -35,6 +36,7 @@ export const VenueEditionForm = ({
   const location = useLocation()
   const notify = useNotification()
   const { logEvent } = useAnalytics()
+  const isOpeningHoursEnabled = useActiveFeature('WIP_OPENING_HOURS')
 
   const { currentUser } = useCurrentUser()
 
@@ -124,6 +126,12 @@ export const VenueEditionForm = ({
           </FormLayout.Section>
 
           <Accessibility isCreatingVenue={false} />
+
+          {isOpeningHoursEnabled && (
+            <FormLayout.Section title="Horaires d'ouverture">
+              <div>Opening hours</div>
+            </FormLayout.Section>
+          )}
 
           <FormLayout.Section
             title="Contact"
