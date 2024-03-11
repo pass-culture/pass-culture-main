@@ -62,10 +62,12 @@ const fetchCulturalPartnerIfVenueHasNoCollectiveData = async (
 
 export interface CollectiveDataEditionProps {
   venue?: GetVenueResponseModel
+  reloadVenueData: () => Promise<void>
 }
 
 export const CollectiveDataEdition = ({
   venue,
+  reloadVenueData,
 }: CollectiveDataEditionProps): JSX.Element | null => {
   const notify = useNotification()
   const { offererId, venueId } = useParams<{

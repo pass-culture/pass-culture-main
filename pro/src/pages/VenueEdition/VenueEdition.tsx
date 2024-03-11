@@ -39,6 +39,7 @@ export const VenueEdition = (): JSX.Element | null => {
     isLoading: isLoadingVenue,
     error: errorVenue,
     data: venue,
+    reloadData: reloadVenueData,
   } = useGetVenue(Number(venueId))
   const {
     isLoading: isLoadingVenueTypes,
