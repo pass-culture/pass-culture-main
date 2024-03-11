@@ -683,6 +683,8 @@ def get_venues_with_non_free_offers_without_bank_accounts(offerer_id: int) -> li
                         offers_models.Stock.offerId == offers_models.Offer.id,
                         offers_models.Offer.venueId == models.Venue.id,
                         offers_models.Stock.price > 0,
+                        offers_models.Stock.isSoftDeleted.is_(False),
+                        offers_models.Offer.isActive.is_(True),
                     ),
                 ).exists(),
                 CollectiveStock.query.join(
@@ -691,6 +693,7 @@ def get_venues_with_non_free_offers_without_bank_accounts(offerer_id: int) -> li
                         CollectiveStock.collectiveOfferId == CollectiveOffer.id,
                         CollectiveOffer.venueId == models.Venue.id,
                         CollectiveStock.price > 0,
+                        CollectiveOffer.isActive.is_(True),
                     ),
                 ).exists(),
             ),
