@@ -125,6 +125,8 @@ export type { GetVenueManagingOffererResponseModel } from './models/GetVenueMana
 export type { GetVenuePricingPointResponseModel } from './models/GetVenuePricingPointResponseModel';
 export type { GetVenueResponseModel } from './models/GetVenueResponseModel';
 export type { GetVenuesOfOffererFromSiretResponseModel } from './models/GetVenuesOfOffererFromSiretResponseModel';
+export type { HasInvoiceQueryModel } from './models/HasInvoiceQueryModel';
+export type { HasInvoiceResponseModel } from './models/HasInvoiceResponseModel';
 export type { InviteMemberQueryModel } from './models/InviteMemberQueryModel';
 export type { InvoiceListQueryModel } from './models/InvoiceListQueryModel';
 export type { InvoiceListResponseModel } from './models/InvoiceListResponseModel';

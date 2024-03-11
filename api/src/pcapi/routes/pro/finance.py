@@ -10,6 +10,7 @@ import pcapi.core.offerers.models as offerers_models
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import finance_serialize
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils import rest
 
 from . import blueprint
 
@@ -63,6 +64,16 @@ def get_invoices_v2(query: finance_serialize.InvoiceListV2QueryModel) -> finance
     return finance_serialize.InvoiceListV2ResponseModel(
         __root__=[finance_serialize.InvoiceResponseV2Model.from_orm(invoice) for invoice in invoices]
     )
+
+
+@private_api.route("/v2/finance/has-invoice", methods=["GET"])
+@login_required
+@spectree_serialize(response_model=finance_serialize.HasInvoiceResponseModel, api=blueprint.pro_private_schema)
+def has_invoice(query: finance_serialize.HasInvoiceQueryModel) -> finance_serialize.HasInvoiceResponseModel:
+    rest.check_user_has_access_to_offerer(current_user, offerer_id=query.offererId)
+    offerer_has_invoice = finance_repository.has_invoice(query.offererId)
+
+    return finance_serialize.HasInvoiceResponseModel(hasInvoice=offerer_has_invoice)
 
 
 @private_api.route("/finance/reimbursement-points", methods=["GET"])

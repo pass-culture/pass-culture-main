@@ -4,6 +4,7 @@ import pytest
 
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 
 
@@ -204,3 +205,43 @@ class GetInvoicesTest:
         assert response.status_code == 200
         invoices = response.json
         assert len(invoices) == 0
+
+    def test_has_invoices_returns_true_if_offerer_has_invoices(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        bank_account = finance_factories.BankAccountFactory(offerer=user_offerer.offerer)
+        offerer_id = user_offerer.offerer.id
+        finance_factories.InvoiceFactory(bankAccount=bank_account)
+
+        client = client.with_session_auth(user_offerer.user.email)
+        # 1 - Fetch user session
+        # 2 - Fetch user
+        # 3 - Check user permission
+        # 4 - Check if offerer has invoice
+        with assert_num_queries(4):
+            response = client.get("/v2/finance/has-invoice", params={"offererId": offerer_id})
+            assert response.status_code == 200
+
+        assert response.json == {"hasInvoice": True}
+
+    def test_has_invoices_returns_false_if_offerer_has_no_invoices(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        finance_factories.BankAccountFactory(offerer=user_offerer.offerer)
+
+        client = client.with_session_auth(user_offerer.user.email)
+        response = client.get("/v2/finance/has-invoice", params={"offererId": user_offerer.offerer.id})
+
+        assert response.status_code == 200
+        assert response.json == {"hasInvoice": False}
+
+    def test_has_invoices_when_user_has_no_access_to_offerer(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        user_offerer_2 = offerers_factories.UserOffererFactory()
+        finance_factories.BankAccountFactory(offerer=user_offerer.offerer)
+
+        client = client.with_session_auth(user_offerer.user.email)
+        response = client.get("/v2/finance/has-invoice", params={"offererId": user_offerer_2.offerer.id})
+
+        assert response.status_code == 403
+        assert response.json == {
+            "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
+        }

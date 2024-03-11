@@ -1026,3 +1026,11 @@ def get_invoices_query(
         invoices = invoices.filter(models.Invoice.date < datetime_until)
 
     return invoices
+
+
+def has_invoice(offerer_id: int) -> bool:
+    return db.session.query(
+        models.Invoice.query.join(models.Invoice.bankAccount)
+        .filter(models.BankAccount.offererId == offerer_id)
+        .exists()
+    ).scalar()
