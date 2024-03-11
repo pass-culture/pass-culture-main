@@ -2172,13 +2172,14 @@ def get_venue_opening_hours_by_weekday(venue: models.Venue, weekday: models.Week
 def set_accessibility_provider_id(venue: models.Venue) -> None:
     if not venue.accessibilityProvider:
         venue.accessibilityProvider = models.AccessibilityProvider(
-            externalAccessibilityId=accessibility_provider.find_venue_at_accessibility_provider(
+            externalAccessibilityId=accessibility_provider.get_id_at_accessibility_provider(
                 name=venue.name,
                 public_name=venue.publicName,
                 siret=venue.siret,
                 ban_id=venue.banId,
                 city=venue.city,
                 postal_code=venue.postalCode,
+                address=venue.address,
             )
         )
         db.session.add(venue.accessibilityProvider)
