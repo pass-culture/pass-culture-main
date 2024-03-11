@@ -26,6 +26,6 @@ class CheckUserHasAccessToOffererTest:
             check_user_has_access_to_offerer(user, offerer.id)
 
         assert error.value.errors["global"] == [
-            "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
+            "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
         ]
         assert error.value.status_code == 403
