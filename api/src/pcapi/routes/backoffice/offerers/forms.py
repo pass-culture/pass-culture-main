@@ -99,6 +99,13 @@ class OffererValidationListForm(utils.PCForm):
             ValidationStatus, formatter=filters.format_validation_status, exclude_opts=(ValidationStatus.DELETED,)
         ),
     )
+    instructors = fields.PCTomSelectField(
+        "Auteur de la dernière action",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_bo_users",
+    )
     dms_adage_status = fields.PCSelectMultipleField(
         "États du dossier DMS Adage",
         choices=utils.choices_from_enum(GraphQLApplicationStates, filters.format_dms_application_status),
@@ -150,6 +157,13 @@ class UserOffererValidationListForm(utils.PCForm):
     status = fields.PCSelectMultipleField(
         "États de la demande de rattachement",
         choices=utils.choices_from_enum(ValidationStatus, filters.format_validation_status),
+    )
+    instructors = fields.PCTomSelectField(
+        "Auteur de la dernière action",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_bo_users",
     )
     offerer_status = fields.PCSelectMultipleField(
         "États de la structure", choices=utils.choices_from_enum(ValidationStatus, filters.format_validation_status)

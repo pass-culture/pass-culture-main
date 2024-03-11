@@ -2,8 +2,11 @@ import datetime
 import logging
 
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.history import factories as history_factories
+from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.users import factories as users_factories
 from pcapi.models.validation_status_mixin import ValidationStatus
 
 
@@ -16,47 +19,83 @@ def create_industrial_individual_offerers() -> None:
     ae_tag = offerers_models.OffererTag.query.filter_by(name="auto-entrepreneur").one()
     adage_tag = offerers_models.OffererTag.query.filter_by(name="adage").one()
 
+    instructor = users_factories.AdminFactory(firstName="Instructeur", lastName="d'Autoentrepreneur")
+    other_instructor = users_factories.AdminFactory(firstName="Instructeur", lastName="Bis")
+
     # offerer with tag but subscription row not yet created
-    offerer = offerers_factories.NotValidatedOffererFactory(name="JOE DALTON", tags=[ae_tag])
-    offerers_factories.VenueFactory(name="JOE DALTON", managingOfferer=offerer)
+    offerer = offerers_factories.NotValidatedOffererFactory(name="JOE AUTOENTREPRENEUR", tags=[ae_tag])
+    offerers_factories.VenueFactory(name="JOE AUTOENTREPRENEUR", managingOfferer=offerer)
     offerers_factories.UserOffererFactory(
-        offerer=offerer, user__firstName="Joe", user__lastName="Dalton", user__email="joe.dalton@example.com"
+        offerer=offerer,
+        user__firstName="Joe",
+        user__lastName="Autoentrepreneur",
+        user__email="joe.autoentrepreneur@example.com",
     )
 
     # individual offerer with email sent, no collective
     offerer = offerers_factories.NotValidatedOffererFactory(
-        name="JACK DALTON",
+        name="JACK AUTOENTREPRENEUR",
         tags=[ae_tag],
         validationStatus=ValidationStatus.PENDING,
     )
-    offerers_factories.VenueFactory(name="JACK DALTON", managingOfferer=offerer)
+    history_factories.ActionHistoryFactory(
+        actionType=history_models.ActionType.OFFERER_PENDING,
+        authorUser=instructor,
+        offerer=offerer,
+        comment="Première action",
+    )
+    offerers_factories.VenueFactory(name="JACK AUTOENTREPRENEUR", managingOfferer=offerer)
     offerers_factories.UserOffererFactory(
-        offerer=offerer, user__firstName="Jack", user__lastName="Dalton", user__email="jack.dalton@example.com"
+        offerer=offerer,
+        user__firstName="Jack",
+        user__lastName="Autoentrepreneur",
+        user__email="jack.autoentrepreneur@example.com",
     )
     offerers_factories.IndividualOffererSubscription(offerer=offerer)
 
     # individual offerer with Adage application submitted
     offerer = offerers_factories.NotValidatedOffererFactory(
-        name="WILLIAM DALTON",
+        name="WILLIAM AUTOENTREPRENEUR",
         tags=[ae_tag, adage_tag],
         validationStatus=ValidationStatus.PENDING,
     )
-    venue = offerers_factories.VenueFactory(name="WILLIAM DALTON", managingOfferer=offerer)
+    history_factories.ActionHistoryFactory(
+        actionType=history_models.ActionType.OFFERER_PENDING,
+        authorUser=instructor,
+        offerer=offerer,
+        comment="Première action",
+    )
+    venue = offerers_factories.VenueFactory(name="WILLIAM AUTOENTREPRENEUR", managingOfferer=offerer)
     offerers_factories.UserOffererFactory(
-        offerer=offerer, user__firstName="William", user__lastName="Dalton", user__email="william.dalton@example.com"
+        offerer=offerer,
+        user__firstName="William",
+        user__lastName="Autoentrepreneur",
+        user__email="william.autoentrepreneur@example.com",
     )
     offerers_factories.IndividualOffererSubscription(offerer=offerer)
     educational_factories.CollectiveDmsApplicationFactory(venue=venue, state="en_instruction")
 
     # individual offerer with Adage application accepted and everything received
     offerer = offerers_factories.NotValidatedOffererFactory(
-        name="AVERELL DALTON",
+        name="AVERELL AUTOENTREPRENEUR",
         tags=[ae_tag, adage_tag],
         validationStatus=ValidationStatus.PENDING,
     )
-    venue = offerers_factories.VenueFactory(name="AVERELL DALTON", managingOfferer=offerer)
+    history_factories.ActionHistoryFactory(
+        actionType=history_models.ActionType.OFFERER_PENDING, authorUser=instructor, offerer=offerer
+    )
+    history_factories.ActionHistoryFactory(
+        actionType=history_models.ActionType.OFFERER_PENDING,
+        authorUser=other_instructor,
+        offerer=offerer,
+        comment="Seconde action",
+    )
+    venue = offerers_factories.VenueFactory(name="AVERELL AUTOENTREPRENEUR", managingOfferer=offerer)
     offerers_factories.UserOffererFactory(
-        offerer=offerer, user__firstName="Averell", user__lastName="Dalton", user__email="averell.dalton@example.com"
+        offerer=offerer,
+        user__firstName="Averell",
+        user__lastName="Autoentrepreneur",
+        user__email="averell.autoentrepreneur@example.com",
     )
     offerers_factories.IndividualOffererSubscription(
         offerer=offerer,

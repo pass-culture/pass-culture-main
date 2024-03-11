@@ -5,6 +5,7 @@ from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.users import models as users_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.clean_accents import clean_accents
@@ -298,3 +299,40 @@ def autocomplete_cashflow_batches() -> AutocompleteResponse:
     return AutocompleteResponse(
         items=[AutocompleteItem(id=cashflow_batch.id, text=cashflow_batch.label) for cashflow_batch in cashflow_batches]
     )
+
+
+def _get_bo_users_base_query() -> sa.orm.Query:
+    return users_models.User.query.join(users_models.User.backoffice_profile).options(
+        sa.orm.load_only(users_models.User.id, users_models.User.firstName, users_models.User.lastName)
+    )
+
+
+def prefill_bo_users_choices(autocomplete_field: fields.PCTomSelectField) -> None:
+    if autocomplete_field.data:
+        users = (
+            _get_bo_users_base_query()
+            .filter(users_models.User.id.in_(autocomplete_field.data))
+            .order_by(users_models.User.full_name)
+        )
+        autocomplete_field.choices = [(user.id, user.full_name) for user in users]
+
+
+@blueprint.backoffice_web.route("/autocomplete/bo-users", methods=["GET"])
+@spectree_serialize(response_model=AutocompleteResponse, api=blueprint.backoffice_web_schema)
+def autocomplete_bo_users() -> AutocompleteResponse:
+    query_string = request.args.get("q", "").strip()
+
+    is_numeric_query = query_string.isnumeric()
+    if not is_numeric_query and len(query_string) < 2:
+        return AutocompleteResponse(items=[])
+
+    if is_numeric_query:
+        query_filter = users_models.User.id == int(query_string)
+    else:
+        query_filter = sa.func.immutable_unaccent(users_models.User.firstName + " " + users_models.User.lastName).ilike(
+            f"%{clean_accents(query_string)}%"
+        )
+
+    users = _get_bo_users_base_query().filter(query_filter).limit(NUM_RESULTS)
+
+    return AutocompleteResponse(items=[AutocompleteItem(id=user.id, text=user.full_name) for user in users])
