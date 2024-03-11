@@ -304,28 +304,30 @@ export const defaultDMSApplicationForEAC: DMSApplicationForEAC = {
 }
 
 export const defaultGetVenue: GetVenueResponseModel = {
+  id: 1,
+  audioDisabilityCompliant: false,
+  collectiveDmsApplications: [],
+  collectiveDomains: [],
   dateCreated: new Date().toISOString(),
   dmsToken: 'fakeDmsToken',
   hasAdageId: true,
-  collectiveDmsApplications: [],
   isVirtual: false,
-  collectiveDomains: [],
   managingOfferer: {
+    id: 1,
     city: 'Paris',
     dateCreated: new Date().toISOString(),
     isValidated: true,
     name: 'Ma super structure',
-    id: 1,
     postalCode: '75000',
     siren: '',
     allowedOnAdage: true,
   },
-  mentalDisabilityCompliant: null,
-  motorDisabilityCompliant: null,
+  mentalDisabilityCompliant: true,
+  motorDisabilityCompliant: false,
   name: 'Lieu de test',
-  id: 1,
-  venueTypeCode: VenueTypeCode.CENTRE_CULTUREL,
   timezone: 'Europe/Paris',
+  venueTypeCode: VenueTypeCode.CENTRE_CULTUREL,
+  visualDisabilityCompliant: true,
 }
 
 export const defaultGetCollectiveOfferRequest: GetCollectiveOfferRequestResponseModel =
