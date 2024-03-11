@@ -1842,6 +1842,14 @@ class BatchEditVenuesTest(PostEndpointHelper):
 
         mock_async_index_venue_ids.assert_called_once()
 
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.authorUserId == legit_user.id
+        assert action.venue == venues[1]
+        assert action.extraData["modified_info"] == {
+            "isPermanent": {"old_info": not set_permanent, "new_info": set_permanent}
+        }
+
     def test_batch_edit_venues_only_criteria(self, legit_user, authenticated_client, criteria):
         new_criterion = criteria_factories.CriterionFactory()
         venues = [
@@ -1902,6 +1910,14 @@ class BatchEditVenuesTest(PostEndpointHelper):
             assert mails_testing.outbox[0]["params"]["VENUE_FORM_URL"] == urls.build_pc_pro_venue_link(venue)
 
         mock_async_index_venue_ids.assert_called_once()
+
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.authorUserId == legit_user.id
+        assert action.venue == venue
+        assert action.extraData["modified_info"] == {
+            "isPermanent": {"old_info": not set_permanent, "new_info": set_permanent}
+        }
 
 
 class GetRemovePricingPointFormTest(GetEndpointHelper):
