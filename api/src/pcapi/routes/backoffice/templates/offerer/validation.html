@@ -62,7 +62,7 @@
                       class="btn btn-outline-primary"
                       data-use-confirmation-modal="true"
                       data-mode="fetch"
-                      data-fetch-url="{{ url_for('backoffice_web.validation.get_batch_offerer_pending_form') }}"
+                      data-fetch-url="{{ url_for("backoffice_web.validation.get_batch_offerer_pending_form") }}"
                       data-modal-selector="#batch-pending-modal">Mettre en attente</button>
               <button disabled
                       type="button"
@@ -93,9 +93,9 @@
               <th scope="col">
                 <a href="{{ date_created_sort_url }}"
                    class="text-decoration-none"
-                   title="Changer pour un tri {{ 'décroissant' if request.args.get('sort') == 'dateCreated' and request.args.get('order') == 'asc' else 'croissant' }}">
+                   title="Changer pour un tri {{ 'décroissant' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'asc' else 'croissant' }}">
                   Date de la demande
-                  <i class="bi bi-sort-{{ 'up' if request.args.get('sort') == 'dateCreated' and request.args.get('order') == 'asc' else 'down' }}-alt"></i>
+                  <i class="bi bi-sort-{{ 'up' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'asc' else 'down' }}-alt"></i>
                 </a>
               </th>
               <th scope="col">Dernier commentaire</th>
@@ -173,8 +173,8 @@
                 <td>{{ offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
                 <td>
                   {{ item.last_comment | empty_string_if_null | replace("\n", "
-                  <br />
-                  "|safe) }}
+                                    <br />
+                                    "|safe) }}
                 </td>
                 <td>{{ links.build_siren_to_external_link(offerer) }}</td>
                 <td>{{ (item.creator_email) | empty_string_if_null }}</td>
@@ -188,15 +188,13 @@
         {% if has_validate_permission %}
           {% for item in rows.items %}
             {% set offerer = item.Offerer %}
-            {{ build_lazy_modal(
-            url_for("backoffice_web.validation.get_reject_offerer_form", offerer_id=offerer.id),
+            {{ build_lazy_modal(url_for("backoffice_web.validation.get_reject_offerer_form", offerer_id=offerer.id) ,
             "reject-modal-" + offerer.id|string) }}
-            {{ build_lazy_modal(
-            url_for("backoffice_web.validation.get_offerer_pending_form", offerer_id=offerer.id),
+            {{ build_lazy_modal(url_for("backoffice_web.validation.get_offerer_pending_form", offerer_id=offerer.id) ,
             "pending-modal-" + offerer.id|string) }}
           {% endfor %}
-          {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_reject_offerer_form"), "batch-reject-modal", "true") }}
-          {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_offerer_pending_form"), "batch-pending-modal", "true") }}
+          {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_reject_offerer_form") , "batch-reject-modal", "true") }}
+          {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_offerer_pending_form") , "batch-pending-modal", "true") }}
         {% endif %}
       {% else %}
         Aucune structure ne correspond à la requête

@@ -3,11 +3,11 @@
 {% macro build_history_view(dst, form, actions, show_venue) %}
   {% if form %}
     {% set modal_title %}
-    {{ caller() }}
-  {% endset %}
-  {% call build_comment_modal(dst, form) %}
-    {{ modal_title }}
-  {% endcall %}
-{% endif %}
-{{ build_actions_table(actions, show_venue) }}
+      {{ caller() }}
+    {% endset %}
+    {% call build_comment_modal(dst, form) %}
+      {{ modal_title }}
+    {% endcall %}
+  {% endif %}
+  {{ build_actions_table(actions, show_venue) }}
 {% endmacro %}

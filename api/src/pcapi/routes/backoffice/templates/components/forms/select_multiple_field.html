@@ -28,7 +28,7 @@
             size="2">
       {% for value, label, selected, _ in field.iter_choices() %}
         <option value="{{ value }}" {{ "selected" if selected else "" }}>
-          {{ label  }}
+          {{ label }}
         </option>
       {% endfor %}
     </select>

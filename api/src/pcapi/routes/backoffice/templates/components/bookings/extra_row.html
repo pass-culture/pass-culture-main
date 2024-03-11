@@ -5,20 +5,17 @@
     <i class="bi bi-chevron-right"></i>
   </button>
 {% endmacro %}
-
 {% macro build_collective_booking_extra_row(booking, stock, offer) %}
-    {% call build_booking_extra_row(booking, stock, offer) %}
-      <li>Formats : {{ offer.formats | format_collective_offer_formats }}</li>
-    {% endcall %}
+  {% call build_booking_extra_row(booking, stock, offer) %}
+    <li>Formats : {{ offer.formats | format_collective_offer_formats }}</li>
+  {% endcall %}
 {% endmacro %}
-
 {% macro build_individual_booking_extra_row(booking, stock, offer) %}
-    {% call build_booking_extra_row(booking, stock, offer) %}
-      <li>Catégorie : {{ offer.subcategoryId | format_offer_category }}</li>
-      <li>Sous-catégorie : {{ offer.subcategoryId | format_offer_subcategory }}</li>
-    {% endcall %}
+  {% call build_booking_extra_row(booking, stock, offer) %}
+    <li>Catégorie : {{ offer.subcategoryId | format_offer_category }}</li>
+    <li>Sous-catégorie : {{ offer.subcategoryId | format_offer_subcategory }}</li>
+  {% endcall %}
 {% endmacro %}
-
 {% macro build_booking_extra_row(booking, stock, offer) %}
   <tr class="collapse accordion-collapse pc-booking-{{ booking.id }}">
     <td colspan="100%">

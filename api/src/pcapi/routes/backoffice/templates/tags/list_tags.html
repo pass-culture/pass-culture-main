@@ -18,7 +18,7 @@
                     data-bs-toggle="modal"
                     data-bs-target="#create-offer-venue-tag"
                     type="button">Créer un tag offres et lieux</button>
-            {{ build_lazy_modal(url_for("backoffice_web.tags.get_create_tag_form"), "create-offer-venue-tag") }}
+            {{ build_lazy_modal(url_for("backoffice_web.tags.get_create_tag_form") , "create-offer-venue-tag") }}
           {% endif %}
           <div class="mt-4">
             <form name="filter-offer-venue-tag"
@@ -82,9 +82,9 @@
                                 </li>
                               {% endif %}
                             </ul>
-                            {{ build_lazy_modal(url_for("backoffice_web.tags.get_update_tag_form", tag_id=tag.id), "update-offer-venue-tag-" + tag.id | string) }}
+                            {{ build_lazy_modal(url_for("backoffice_web.tags.get_update_tag_form", tag_id=tag.id) , "update-offer-venue-tag-" + tag.id | string) }}
                             {% if has_permission("MANAGE_TAGS_N2") %}
-                              {{ build_lazy_modal(url_for("backoffice_web.tags.get_delete_tag_form", tag_id=tag.id), "delete-offer-venue-tag-" + tag.id | string) }}
+                              {{ build_lazy_modal(url_for("backoffice_web.tags.get_delete_tag_form", tag_id=tag.id) , "delete-offer-venue-tag-" + tag.id | string) }}
                             {% endif %}
                           </div>
                         {% endif %}

@@ -8,7 +8,7 @@
               data-bs-toggle="modal"
               data-bs-target="#create-offerer-modal"
               type="button">Créer une structure</button>
-      {{ build_lazy_modal(url_for('backoffice_web.pro.get_create_offerer_form'), "create-offerer-modal") }}
+      {{ build_lazy_modal(url_for('backoffice_web.pro.get_create_offerer_form') , "create-offerer-modal") }}
     </div>
   {% endif %}
   {% call build_base_search() %}

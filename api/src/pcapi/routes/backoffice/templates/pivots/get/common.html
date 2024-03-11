@@ -23,7 +23,7 @@
                 type="button">Créer un pivot</button>
       </div>
     </div>
-    {{ build_lazy_modal(url_for("backoffice_web.pivots.get_create_pivot_form", name=pivot_name), "create-" + pivot_name) }}
+    {{ build_lazy_modal(url_for("backoffice_web.pivots.get_create_pivot_form", name=pivot_name) , "create-" + pivot_name) }}
   </div>
 {% endmacro %}
 {% macro build_pivot_row_menu(pivot_name, row, can_delete) %}
@@ -48,7 +48,7 @@
         </li>
       {% endif %}
     </ul>
-    {{ build_lazy_modal(url_for("backoffice_web.pivots.get_update_pivot_form", name=pivot_name, pivot_id=row.id), "update-" + pivot_name + "-" + row.id | string) }}
-    {{ build_lazy_modal(url_for("backoffice_web.pivots.get_delete_pivot_form", name=pivot_name, pivot_id=row.id), "delete-" + pivot_name + "-" + row.id | string) }}
+    {{ build_lazy_modal(url_for("backoffice_web.pivots.get_update_pivot_form", name=pivot_name, pivot_id=row.id) , "update-" + pivot_name + "-" + row.id | string) }}
+    {{ build_lazy_modal(url_for("backoffice_web.pivots.get_delete_pivot_form", name=pivot_name, pivot_id=row.id) , "delete-" + pivot_name + "-" + row.id | string) }}
   </div>
 {% endmacro %}
