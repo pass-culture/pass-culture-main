@@ -1,15 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 type UseAdapterLoading = {
   data?: undefined
   isLoading: true
   error?: undefined
+  reloadData: () => Promise<void>
 }
 
 type UseAdapterSuccess<T> = {
   data: T
   isLoading: false
   error?: undefined
+  reloadData: () => Promise<void>
 }
 
 type UseAdapterFailure<T> = {
@@ -19,6 +21,7 @@ type UseAdapterFailure<T> = {
     message: string
     payload: T
   }
+  reloadData: () => Promise<void>
 }
 
 const useAdapter = <ISuccessPayload, IFailurePayload>(
@@ -30,35 +33,38 @@ const useAdapter = <ISuccessPayload, IFailurePayload>(
   | UseAdapterSuccess<ISuccessPayload>
   | UseAdapterFailure<IFailurePayload> => {
   const [hookResponse, setHookResponse] = useState<
-    | UseAdapterLoading
-    | UseAdapterSuccess<ISuccessPayload>
-    | UseAdapterFailure<IFailurePayload>
+    | Omit<UseAdapterLoading, 'reloadData'>
+    | Omit<UseAdapterSuccess<ISuccessPayload>, 'reloadData'>
+    | Omit<UseAdapterFailure<IFailurePayload>, 'reloadData'>
   >({ isLoading: true })
 
-  useEffect(() => {
-    async function loadData() {
-      const response = await getData()
-      if (response.isOk) {
-        setHookResponse({
-          data: response.payload,
-          isLoading: false,
-        })
-      } else {
-        setHookResponse({
-          error: {
-            message: response.message,
-            payload: response.payload,
-          },
-          isLoading: false,
-        })
-      }
+  const loadData = useCallback(async () => {
+    const response = await getData()
+    if (response.isOk) {
+      setHookResponse({
+        data: response.payload,
+        isLoading: false,
+      })
+    } else {
+      setHookResponse({
+        error: {
+          message: response.message,
+          payload: response.payload,
+        },
+        isLoading: false,
+      })
     }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadData()
   }, [])
 
-  return hookResponse
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    loadData()
+  }, [loadData])
+
+  return {
+    ...hookResponse,
+    reloadData: loadData,
+  }
 }
 
 export default useAdapter
