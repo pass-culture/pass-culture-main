@@ -145,7 +145,7 @@ def test_get_offerer_stats_returns_403_if_user_has_no_rights_on_offerer(client):
 
     assert response.status_code == 403
     assert response.json == {
-        "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
+        "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
     }
 
 
