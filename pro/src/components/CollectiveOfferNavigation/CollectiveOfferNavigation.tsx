@@ -136,6 +136,7 @@ const CollectiveOfferNavigation = ({
             `/offre/${offerId}/collectif/vitrine/creation/apercu`
         }
 
+      // @ts-expect-error switch fallthrough
       case CollectiveOfferStep.STOCKS:
         if (isTemplate) {
           stepList[CollectiveOfferStep.DETAILS].url =
@@ -144,6 +145,9 @@ const CollectiveOfferNavigation = ({
           stepList[CollectiveOfferStep.DETAILS].url =
             `/offre/collectif/${offerId}/creation${requestIdUrl}`
         }
+
+      case CollectiveOfferStep.DETAILS:
+      // Nothing to do here
     }
   }
 
