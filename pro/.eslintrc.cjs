@@ -79,10 +79,14 @@ module.exports = {
         'import/no-named-as-default': 'error',
         '@typescript-eslint/await-thenable': 'error',
         'react/prop-types': 'error',
+        '@typescript-eslint/prefer-string-starts-ends-with': 'error',
+        '@typescript-eslint/ban-types': 'error',
+        '@typescript-eslint/switch-exhaustiveness-check': 'error',
 
         // TODO turn into errors
         '@typescript-eslint/no-floating-promises': 'warn',
         'react-hooks/exhaustive-deps': 'warn',
+        eqeqeq: 'warn',
       },
     },
   ],
