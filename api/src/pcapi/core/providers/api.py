@@ -277,7 +277,8 @@ def synchronize_stocks(
         offers_by_venue_reference = offers_repository.get_offers_map_by_venue_reference(products_references, venue.id)
 
     offers_update_mapping = [
-        {"id": offer_id, "lastProviderId": provider_id} for offer_id in offers_by_provider_reference.values()
+        {"id": offer_id, "lastProviderId": provider_id, "isActive": True}
+        for offer_id in offers_by_provider_reference.values()
     ]
     db.session.bulk_update_mappings(offers_models.Offer, offers_update_mapping)
 

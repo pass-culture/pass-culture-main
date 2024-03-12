@@ -94,8 +94,8 @@ def create_product(ean, **kwargs):
     )
 
 
-def create_offer(ean, venue: offerers_models.Venue):
-    return offers_factories.OfferFactory(product=create_product(ean), idAtProvider=ean, venue=venue)
+def create_offer(ean, venue: offerers_models.Venue, is_active=True):
+    return offers_factories.OfferFactory(product=create_product(ean), idAtProvider=ean, venue=venue, isActive=is_active)
 
 
 def create_stock(ean, siret, venue: offerers_models.Venue, **kwargs):
@@ -154,7 +154,7 @@ class SynchronizeStocksTest:
         )
         offer = create_offer(spec[1]["ref"], venue)
         product = create_product(spec[2]["ref"])
-        create_product(spec[4]["ref"])
+        offer_to_reactivate = create_offer(spec[4]["ref"], venue, is_active=False)
         create_product(spec[6]["ref"], isGcuCompatible=False)
         create_product(spec[7]["ref"], name=offers_models.UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER)
 
@@ -233,6 +233,8 @@ class SynchronizeStocksTest:
             reason=search.IndexationReason.STOCK_SYNCHRONIZATION,
             log_extra={"provider_id": provider.id},
         )
+
+        assert offer_to_reactivate.isActive is True
 
     def test_build_new_offers_from_stock_details(self, db_session):
         # Given
