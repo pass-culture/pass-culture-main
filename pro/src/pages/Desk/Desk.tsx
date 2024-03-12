@@ -130,6 +130,9 @@ export const Desk = (): JSX.Element => {
         Saisissez les contremarques présentées par les bénéficiaires afin de les
         valider ou de les invalider.
       </p>
+      <div className={styles['mandatory']}>
+        Tous les champs suivis d’un * sont obligatoires.
+      </div>
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit} className={styles['desk-form']}>
           <TextInput

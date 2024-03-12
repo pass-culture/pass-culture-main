@@ -91,6 +91,9 @@ const OffererStatsScreen = ({ offererOptions }: OffererStatsScreenProps) => {
         Vos statistiques sont calculées et mises à jour quotidiennement dans la
         nuit.
       </p>
+      <div className={styles['mandatory']}>
+        Tous les champs suivis d’un * sont obligatoires.
+      </div>
 
       <FieldLayout label="Structure" name="offererId">
         <SelectInput

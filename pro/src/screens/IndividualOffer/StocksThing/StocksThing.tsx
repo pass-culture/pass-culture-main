@@ -302,6 +302,9 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
         />
       )}
       <form onSubmit={formik.handleSubmit} data-testid="stock-thing-form">
+        <div className={styles['mandatory']}>
+          Tous les champs suivis d’un * sont obligatoires.
+        </div>
         <FormLayout>
           <div aria-current="page">
             <FormLayoutDescription
