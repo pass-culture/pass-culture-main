@@ -19,6 +19,7 @@ export const CONSTANTS = {
   cookieManagementWindow: 'Gestion des cookies',
   emailErrorId: '#error-details-email',
   passwordErrorId: '#error-details-password',
+  incorrectUsernameOrPasswordText: 'Identifiant ou mot de passe incorrect.',
   emailTestData: Date.now().toString() + '@passculture.app',
   passwordTestData: Date.now().toString(),
   emailProAccount: 'pro_adage_eligible@example.com',
