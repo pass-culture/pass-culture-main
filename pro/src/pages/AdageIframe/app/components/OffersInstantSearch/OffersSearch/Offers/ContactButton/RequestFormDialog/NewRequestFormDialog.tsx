@@ -80,6 +80,14 @@ const NewRequestFormDialog = ({
     validationSchema: validationSchema,
   })
 
+  const logContactUrl = () => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    apiAdage.logContactUrlClick({
+      iframeFrom: location.pathname,
+      offerId: offerId,
+    })
+  }
+
   const getDescriptionElement = () => {
     if (contactEmail && !contactPhone && !contactUrl && !contactForm) {
       return renderContactElement('par mail', contactEmail)
@@ -147,6 +155,7 @@ const NewRequestFormDialog = ({
             <div className={styles['form-description-link']}>
               <i>via</i> son site :
               <ButtonLink
+                onClick={logContactUrl}
                 variant={ButtonVariant.TERNARYPINK}
                 className={styles['form-description-link-text']}
                 link={{
@@ -195,6 +204,7 @@ const NewRequestFormDialog = ({
         Il vous propose de le faire <i>via</i> son site :
       </div>
       <ButtonLink
+        onClick={logContactUrl}
         variant={ButtonVariant.TERNARYPINK}
         className={styles['form-description-link-text']}
         link={{
