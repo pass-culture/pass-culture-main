@@ -12,11 +12,11 @@ describe('signin page', () => {
 
     cy.get(CONSTANTS.emailErrorId)
       .should('be.visible')
-      .should('have.text', 'Identifiant ou mot de passe incorrect.')
+      .should('have.text', CONSTANTS.incorrectUsernameOrPasswordText)
 
     cy.get(CONSTANTS.passwordErrorId)
       .should('be.visible')
-      .should('have.text', 'Identifiant ou mot de passe incorrect.')
+      .should('have.text', CONSTANTS.incorrectUsernameOrPasswordText)
 
     cy.contains(CONSTANTS.signInButton).should('be.disabled')
 
