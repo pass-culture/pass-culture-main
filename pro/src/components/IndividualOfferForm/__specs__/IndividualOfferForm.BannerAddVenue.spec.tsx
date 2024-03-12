@@ -126,7 +126,7 @@ describe('IndividualOfferForm', () => {
       const subcategorySelect = await screen.findByLabelText('Sous-catégorie *')
       await userEvent.selectOptions(subcategorySelect, 'physical')
 
-      expect(screen.getByText('+ Ajouter un lieu')).toBeInTheDocument()
+      expect(screen.getByText('Ajouter un lieu')).toBeInTheDocument()
     })
 
     it('should not display venue banner when offererId is not set', async () => {
@@ -148,7 +148,7 @@ describe('IndividualOfferForm', () => {
       const subcategorySelect = await screen.findByLabelText('Sous-catégorie *')
       await userEvent.selectOptions(subcategorySelect, 'physical')
 
-      expect(screen.queryByText('+ Ajouter un lieu')).not.toBeInTheDocument()
+      expect(screen.queryByText('Ajouter un lieu')).not.toBeInTheDocument()
     })
 
     it('should not display venue banner when subcategory is virtual', async () => {
@@ -170,7 +170,7 @@ describe('IndividualOfferForm', () => {
       const subcategorySelect = await screen.findByLabelText('Sous-catégorie *')
       await userEvent.selectOptions(subcategorySelect, 'virtual')
 
-      expect(screen.queryByText('+ Ajouter un lieu')).not.toBeInTheDocument()
+      expect(screen.queryByText('Ajouter un lieu')).not.toBeInTheDocument()
     })
 
     it('should not display venue banner when subcategory is not virtual but both venue type exist', async () => {
@@ -185,7 +185,7 @@ describe('IndividualOfferForm', () => {
       const subcategorySelect = await screen.findByLabelText('Sous-catégorie *')
       await userEvent.selectOptions(subcategorySelect, 'physical')
 
-      expect(screen.queryByText('+ Ajouter un lieu')).not.toBeInTheDocument()
+      expect(screen.queryByText('Ajouter un lieu')).not.toBeInTheDocument()
     })
   })
 })
