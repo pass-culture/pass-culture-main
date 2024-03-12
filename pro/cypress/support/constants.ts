@@ -1,5 +1,5 @@
 export const CONSTANTS = {
-  // connexion page //
+  // signIn page //
   signIn: '/connexion',
   signUp: '/inscription',
   emailId: '#email',
@@ -20,9 +20,22 @@ export const CONSTANTS = {
   emailErrorId: '#error-details-email',
   passwordErrorId: '#error-details-password',
   incorrectUsernameOrPasswordText: 'Identifiant ou mot de passe incorrect.',
-  emailTestData: Date.now().toString() + '@passculture.app',
-  passwordTestData: Date.now().toString(),
+  randomEmail: Date.now().toString() + '@passculture.app',
+  randomPassword: Date.now().toString() + 'TestCypress!',
   emailProAccount: 'pro_adage_eligible@example.com',
-  // inscription page //
+  // signUp page //
   iAlreadyHaveAnAccountButton: 'J’ai déjà un compte',
+  lastNameId: '#lastName',
+  randomLastName: 'France',
+  firstNameId: '#firstName',
+  randomFirstName: 'LE PAX',
+  phoneNumberId: '#phoneNumber',
+  randomPhoneNumber: '600000000',
+  // signUp confirmation page //
+  signUpConfirmationLink: 'inscription/confirmation',
+  // CRUD //
+  post: 'POST',
+  get: 'GET',
+  // API //
+  signUpApi: '/v2/users/signup/pro',
 }

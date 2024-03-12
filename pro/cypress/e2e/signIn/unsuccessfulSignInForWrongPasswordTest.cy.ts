@@ -6,7 +6,7 @@ describe('signin page', () => {
 
     cy.get(CONSTANTS.emailId).type(CONSTANTS.emailProAccount)
 
-    cy.get(CONSTANTS.passwordId).type(CONSTANTS.passwordTestData)
+    cy.get(CONSTANTS.passwordId).type(CONSTANTS.randomPassword)
 
     cy.get('button[type=submit]').click()
 
