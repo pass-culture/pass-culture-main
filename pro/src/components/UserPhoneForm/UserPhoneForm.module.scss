@@ -14,3 +14,10 @@
     margin-left: rem.torem(16px);
   }
 }
+
+.mandatory {
+  @include fonts.caption;
+
+  color: colors.$grey-dark;
+  margin-bottom: rem.torem(16px);
+}

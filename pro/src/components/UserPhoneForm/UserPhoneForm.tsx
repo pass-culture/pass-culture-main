@@ -69,6 +69,9 @@ const UserPhoneForm = ({
         <Form onSubmit={formik.handleSubmit}>
           <FormLayout>
             <FormLayout.Row>
+              <div className={styles['mandatory']}>
+                Tous les champs suivis d’un * sont obligatoires.
+              </div>
               <TextInput
                 label="Téléphone"
                 name="phoneNumber"
