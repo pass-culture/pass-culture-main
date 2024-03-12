@@ -103,6 +103,7 @@ def get_pricing_ordering_date(
     )
     # IMPORTANT: if you change this, you must also adapt the SQL query
     # in `core.offerers.api.link_venue_to_pricing_point()`
+
     return max(
         get_pricing_point_link(booking).timespan.lower,
         stock.beginningDatetime or booking.dateUsed,
@@ -777,7 +778,6 @@ def update_finance_event_pricing_date(stock: offers_models.Stock) -> None:
     finance_events_from_pricing_point = models.FinanceEvent.query.options(
         sqla.orm.joinedload(models.FinanceEvent.pricings)
     ).filter(models.FinanceEvent.pricingPointId == pricing_point_id)
-
     bookings_of_this_stock = bookings_models.Booking.query.with_entities(bookings_models.Booking.id).filter(
         bookings_models.Booking.stockId == stock.id
     )
