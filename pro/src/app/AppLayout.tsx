@@ -1,5 +1,5 @@
 import classnames from 'classnames'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import DomainNameBanner from 'components/DomainNameBanner'
 import Footer from 'components/Footer/Footer'
@@ -34,6 +34,39 @@ export const AppLayout = ({
   const openButtonRef = useRef<HTMLButtonElement>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const navPanel = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const modalElement = navPanel.current
+    if (!modalElement) {
+      return () => {}
+    }
+
+    const focusableElements = modalElement.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    )
+    const firstElement = focusableElements[0]
+    const lastElement = focusableElements[focusableElements.length - 1]
+
+    const handleTabKeyPress = (event: KeyboardEvent) => {
+      if (event.key === 'Tab') {
+        if (event.shiftKey && document.activeElement === firstElement) {
+          event.preventDefault()
+          lastElement.focus()
+        } else if (!event.shiftKey && document.activeElement === lastElement) {
+          event.preventDefault()
+          firstElement.focus()
+        }
+      }
+    }
+
+    if (lateralPanelOpen) {
+      modalElement.addEventListener('keydown', handleTabKeyPress)
+    }
+
+    return () => {
+      modalElement.removeEventListener('keydown', handleTabKeyPress)
+    }
+  }, [lateralPanelOpen])
 
   return (
     <>
