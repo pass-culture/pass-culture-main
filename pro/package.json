@@ -51,7 +51,7 @@
     "date-fns-tz": "^2.0.1",
     "downshift": "^8.4.0",
     "formik": "^2.4.5",
-    "libphonenumber-js": "1.10.57",
+    "libphonenumber-js": "1.10.58",
     "lodash.invert": "^4.3.0",
     "lodash.isequal": "^4.5.0",
     "lodash.memoize": "^4.1.2",
