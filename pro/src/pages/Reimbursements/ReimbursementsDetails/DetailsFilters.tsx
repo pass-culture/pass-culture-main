@@ -85,7 +85,9 @@ const DetailsFilters = ({
           Réinitialiser les filtres
         </Button>
       </div>
-
+      <div className={styles['mandatory']}>
+        Tous les champs suivis d’un * sont obligatoires.
+      </div>
       <FormLayout.Row inline>
         <FieldLayout label="Lieu" name="lieu">
           <SelectInput
