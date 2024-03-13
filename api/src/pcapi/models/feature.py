@@ -108,6 +108,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_DOUBLE_MODEL_WRITING = "Activer la double écriture des coordonnées bancaires"
     WIP_ENABLE_COMPLIANCE_CALL = "Activer les appels à l'API Compliance pour donner un score aux offres"
     WIP_ENABLE_MOCK_UBBLE = "Utiliser le mock Ubble à la place du vrai Ubble"
+    WIP_ENABLE_OFFER_PRICE_LIMITATION = "Activer les règles de limitation de modification de prix des offres"
     WIP_ENABLE_BOOST_SHOWTIMES_FILTER = "Activer le filtre pour les requêtes showtimes Boost"
     WIP_ENABLE_GOOGLE_SSO = "Activer la connexion SSO pour les jeunes"
     WIP_ENABLE_FINANCE_INCIDENT = "Active les incidents de finance"
@@ -180,6 +181,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_COMPLIANCE_CALL,
     FeatureToggle.WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API,
     FeatureToggle.WIP_ENABLE_MOCK_UBBLE,
+    FeatureToggle.WIP_ENABLE_OFFER_PRICE_LIMITATION,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_ENABLE_SUSPICIOUS_EMAIL_SEND,
     FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE,

@@ -580,6 +580,7 @@ def create_stock(
                 stock=created_stock,
             )
         )
+    # offers can be created without stock in API, so we fill the lastValidationPrice at the first stock creation
     if offer.lastValidationPrice is None and offer.validation == offer_mixin.OfferValidationStatus.APPROVED:
         offer.lastValidationPrice = price
     repository.add_to_session(created_stock, *created_activation_codes, offer)
