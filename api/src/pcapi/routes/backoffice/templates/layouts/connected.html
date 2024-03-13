@@ -151,6 +151,7 @@
                     {{ menu_section_item('Utilisateurs BackOffice', 'backoffice_web.bo_users.search_bo_users') }}
                   {% endif %}
                   {% if has_permission("FEATURE_FLIPPING") %}{{ menu_section_item('Feature flipping', 'backoffice_web.list_feature_flags') }}{% endif %}
+                  {{ menu_section_item('Liste des sous-catégories', 'backoffice_web.get_subcategories') }}
                   {% if get_setting("ENABLE_TEST_USER_GENERATION") %}
                     {{ menu_section_item("Générateur d'utilisateurs de test", 'backoffice_web.generate_user') }}
                     {{ menu_section_item("Suppression d'utilisateur", 'backoffice_web.delete_user') }}
