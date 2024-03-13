@@ -264,3 +264,4 @@ junit_family = "xunit1"
 markers = [
     "backoffice"
 ]
+requests_mock_case_sensitive = true
