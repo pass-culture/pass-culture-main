@@ -17,6 +17,7 @@ function renderAdageOfferHeader(
   props: AdageOfferProps = {
     offer: defaultCollectiveTemplateOffer,
     adageUser: defaultAdageUser,
+    isPreview: false,
   }
 ) {
   return renderWithProviders(
@@ -29,6 +30,18 @@ function renderAdageOfferHeader(
 describe('AdageOfferHeader', () => {
   it('should show the offer title', () => {
     renderAdageOfferHeader()
+
+    expect(
+      screen.getByText(defaultCollectiveTemplateOffer.name)
+    ).toBeInTheDocument()
+  })
+
+  it("should show the offer title even if it's a preview of the offer", () => {
+    renderAdageOfferHeader({
+      offer: defaultCollectiveTemplateOffer,
+      adageUser: defaultAdageUser,
+      isPreview: true,
+    })
 
     expect(
       screen.getByText(defaultCollectiveTemplateOffer.name)

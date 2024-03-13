@@ -140,4 +140,15 @@ describe('AdageOfferPartnerPanel', () => {
       screen.getByRole('button', { name: 'Contacter le partenaire' })
     ).toBeInTheDocument()
   })
+
+  it('should show a generic distance to school if the offer is a preview', () => {
+    renderAdageOfferPartnerPanel({
+      offer: defaultCollectiveTemplateOffer,
+      isPreview: true,
+    })
+
+    expect(
+      screen.getByText(/à X km de votre établissement scolaire/)
+    ).toBeInTheDocument()
+  })
 })

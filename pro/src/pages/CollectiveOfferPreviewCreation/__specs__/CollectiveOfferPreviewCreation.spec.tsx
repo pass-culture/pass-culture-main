@@ -1,7 +1,11 @@
-import { screen } from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 
+import { api } from 'apiClient/api'
 import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
-import { getCollectiveOfferFactory } from 'utils/collectiveApiFactories'
+import {
+  defaultGetVenue,
+  getCollectiveOfferTemplateFactory,
+} from 'utils/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -31,7 +35,7 @@ const renderCollectiveOfferPreviewCreation = (
 }
 
 const defaultProps = {
-  offer: getCollectiveOfferFactory(),
+  offer: getCollectiveOfferTemplateFactory(),
   setOffer: vi.fn(),
   reloadCollectiveOffer: vi.fn(),
   isTemplate: false,
@@ -39,7 +43,11 @@ const defaultProps = {
 }
 
 describe('CollectiveOfferPreviewCreation', () => {
-  it('should render collective offer preview ', () => {
+  beforeEach(() => {
+    vi.spyOn(api, 'getVenue').mockResolvedValue(defaultGetVenue)
+  })
+
+  it('should render collective offer preview ', async () => {
     renderCollectiveOfferPreviewCreation(
       '/offre/A1/collectif/creation/recapitulatif',
       defaultProps
@@ -49,9 +57,12 @@ describe('CollectiveOfferPreviewCreation', () => {
         name: /Créer une nouvelle offre collective/,
       })
     ).toBeInTheDocument()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
     expect(
       screen.getByRole('heading', {
-        name: 'aperçu',
+        name: defaultProps.offer.name,
       })
     ).toBeInTheDocument()
   })
