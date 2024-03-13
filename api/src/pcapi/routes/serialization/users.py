@@ -131,6 +131,16 @@ class LoginUserBodyModel(BaseModel):
         alias_generator = to_camel
 
 
+class NavStateResponseModel(BaseModel):
+    newNavDate: datetime | None
+    eligibilityDate: datetime | None
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        orm_mode = True
+
+
 class SharedLoginUserResponseModel(BaseModel):
     activity: str | None
     address: str | None
@@ -155,6 +165,7 @@ class SharedLoginUserResponseModel(BaseModel):
     phoneNumber: str | None
     postalCode: str | None
     roles: list[users_models.UserRole]
+    navState: NavStateResponseModel | None
 
     class Config:
         json_encoders = {datetime: format_into_utc_date}
@@ -168,6 +179,7 @@ class SharedLoginUserResponseModel(BaseModel):
     def from_orm(cls, user: users_models.User) -> "SharedLoginUserResponseModel":
         user.isAdmin = user.has_admin_role
         user.hasUserOfferer = user.has_user_offerer
+        user.navState = NavStateResponseModel.from_orm(user.pro_new_nav_state)
         result = super().from_orm(user)
         return result
 
@@ -198,6 +210,7 @@ class SharedCurrentUserResponseModel(BaseModel):
     phoneValidationStatus: users_models.PhoneValidationStatusType | None
     postalCode: str | None
     roles: list[users_models.UserRole]
+    navState: NavStateResponseModel | None
 
     class Config:
         json_encoders = {datetime: format_into_utc_date}
@@ -208,6 +221,7 @@ class SharedCurrentUserResponseModel(BaseModel):
     def from_orm(cls, user: users_models.User) -> "SharedCurrentUserResponseModel":
         user.isAdmin = user.has_admin_role
         user.hasUserOfferer = user.has_user_offerer
+        user.navState = NavStateResponseModel.from_orm(user.pro_new_nav_state)
         result = super().from_orm(user)
         return result
 
