@@ -1464,6 +1464,39 @@ class NewBankAccountJourneyTest:
         assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
 
     @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
+    def test_legacy_data_convert_into_bank_account_does_not_have_status_history(
+        self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client, db_session
+    ):
+        siret = "85331845900049"
+        siren = siret[:9]
+        venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
+        # Legacy bankInformation turned into a bankAccount
+        finance_factories.BankAccountFactory(
+            iban="FR7630006000011234567890189",
+            bic="BICAGRIFRPP",
+            offerer=venue.managingOfferer,
+            status=finance_models.BankAccountApplicationStatus.DRAFT,
+            label="Intitulé du compte bancaire",
+            dsApplicationId=self.dsv5_application_id,
+        )
+
+        # The DS application status change, this should work, even if the bankAccount doesn't have a BankAccountStatusHistory
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
+            state=GraphQLApplicationStates.on_going.value,
+        )
+        update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
+
+        bank_account = finance_models.BankAccount.query.one()
+        assert bank_account.bic == "BICAGRIFRPP"
+        assert bank_account.iban == "FR7630006000011234567890189"
+        assert bank_account.offerer == venue.managingOfferer
+        assert bank_account.status == finance_models.BankAccountApplicationStatus.ON_GOING
+        assert bank_account.label == "Intitulé du compte bancaire"
+        assert bank_account.dsApplicationId == self.dsv5_application_id
+
+        assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
+
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
     def test_offerer_can_have_several_bank_informations(
         self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client
     ):
