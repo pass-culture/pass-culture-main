@@ -47,7 +47,7 @@ class Returns200Test:
                     "categoryId": "LIVRE",
                     "proLabel": "Abonnement (bibliothèques, médiathèques...)",
                     "appLabel": "Abonnement (bibliothèques, médiathèques...)",
-                    "searchGroupName": "BIBLIOTHEQUES_MEDIATHEQUE",
+                    "searchGroupName": "LIVRES",
                     "isEvent": False,
                     "conditionalFields": [],
                     "canExpire": True,
