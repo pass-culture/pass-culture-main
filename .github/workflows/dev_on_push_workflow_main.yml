@@ -94,6 +94,7 @@ jobs:
 
   prepare-cache-master:
     name: "Reset cache on master on dependency update"
+    needs: build-api
     uses: ./.github/workflows/dev_on_workflow_update_api_client_template.yml
     if: github.ref == 'refs/heads/master'
     with:
