@@ -1379,7 +1379,6 @@ def test_public_api(client):
                     "description": "An enumeration.",
                     "enum": [
                         "ARTS_LOISIRS_CREATIFS",
-                        "BIBLIOTHEQUES_MEDIATHEQUE",
                         "CARTES_JEUNES",
                         "CD_VINYLE_MUSIQUE_EN_LIGNE",
                         "CONCERTS_FESTIVALS",
