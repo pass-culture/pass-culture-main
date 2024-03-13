@@ -12,6 +12,7 @@ def install_routes(app: Flask) -> None:
     from . import favorites
     from . import offerers
     from . import offers
+    from . import recommendation
     from . import settings
     from . import subscription
     from . import universal_links
