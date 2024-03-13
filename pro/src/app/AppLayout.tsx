@@ -6,7 +6,7 @@ import Footer from 'components/Footer/Footer'
 import Header from 'components/Header/Header'
 import SideNavLinks from 'components/SideNavLinks/SideNavLinks'
 import SkipLinks from 'components/SkipLinks'
-import useActiveFeature from 'hooks/useActiveFeature'
+import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import { Button } from 'ui-kit'
@@ -28,7 +28,7 @@ export const AppLayout = ({
   pageName = 'Accueil',
   layout = 'basic',
 }: AppLayoutProps) => {
-  const isNewSideBarNavigation = useActiveFeature('WIP_ENABLE_PRO_SIDE_NAV')
+  const isNewSideBarNavigation = useIsNewInterfaceActive()
   const [lateralPanelOpen, setLateralPanelOpen] = useState(false)
 
   const openButtonRef = useRef<HTMLButtonElement>(null)
