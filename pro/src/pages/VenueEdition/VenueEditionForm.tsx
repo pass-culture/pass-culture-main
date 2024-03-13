@@ -17,6 +17,7 @@ import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 import { Accessibility } from '../VenueCreation/Accessibility/Accessibility'
 import { VenueFormActionBar } from '../VenueCreation/VenueFormActionBar/VenueFormActionBar'
 
+import { OpeningHoursForm } from './OpeningHoursForm/OpeningHoursForm'
 import { RouteLeavingGuardVenueEdition } from './RouteLeavingGuardVenueEdition'
 import { serializeEditVenueBodyModel } from './serializers'
 import { setInitialFormValues } from './setInitialFormValues'
@@ -127,45 +128,49 @@ export const VenueEditionForm = ({
 
           <Accessibility isCreatingVenue={false} />
 
-          {isOpeningHoursEnabled && (
-            <FormLayout.Section title="Horaires d'ouverture">
-              <div>Opening hours</div>
-            </FormLayout.Section>
+          {!venue.isVirtual && (
+            <>
+              {isOpeningHoursEnabled && (
+                <FormLayout.Section title="Horaires d'ouverture">
+                  <OpeningHoursForm />
+                </FormLayout.Section>
+              )}
+
+              <FormLayout.Section
+                title="Contact"
+                description={
+                  'Ces informations seront affichées dans votre page partenaire, sur l’application pass Culture. ' +
+                  'Elles permettront aux bénéficiaires de vous contacter en cas de besoin.'
+                }
+              >
+                <FormLayout.Row>
+                  <PhoneNumberInput
+                    name="phoneNumber"
+                    label="Téléphone"
+                    isOptional
+                  />
+                </FormLayout.Row>
+
+                <FormLayout.Row>
+                  <TextInput
+                    name="email"
+                    label="Adresse email"
+                    placeholder="email@exemple.com"
+                    isOptional
+                  />
+                </FormLayout.Row>
+
+                <FormLayout.Row>
+                  <TextInput
+                    name="webSite"
+                    label="URL de votre site web"
+                    placeholder="https://exemple.com"
+                    isOptional
+                  />
+                </FormLayout.Row>
+              </FormLayout.Section>
+            </>
           )}
-
-          <FormLayout.Section
-            title="Contact"
-            description={
-              'Ces informations seront affichées dans votre page partenaire, sur l’application pass Culture. ' +
-              'Elles permettront aux bénéficiaires de vous contacter en cas de besoin.'
-            }
-          >
-            <FormLayout.Row>
-              <PhoneNumberInput
-                name="phoneNumber"
-                label="Téléphone"
-                isOptional
-              />
-            </FormLayout.Row>
-
-            <FormLayout.Row>
-              <TextInput
-                name="email"
-                label="Adresse email"
-                placeholder="email@exemple.com"
-                isOptional
-              />
-            </FormLayout.Row>
-
-            <FormLayout.Row>
-              <TextInput
-                name="webSite"
-                label="URL de votre site web"
-                placeholder="https://exemple.com"
-                isOptional
-              />
-            </FormLayout.Row>
-          </FormLayout.Section>
         </FormLayout>
 
         <VenueFormActionBar venue={venue} />

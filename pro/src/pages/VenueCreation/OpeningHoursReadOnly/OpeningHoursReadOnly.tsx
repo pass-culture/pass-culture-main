@@ -2,6 +2,7 @@ import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescript
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 
 import styles from './OpeningHoursReadOnly.module.scss'
+import { mapDayToFrench } from './utils'
 
 type OpeningHours = {
   openingHours: Array<Record<string, any>>
@@ -51,34 +52,4 @@ type openClose = {
 
 type Hours = {
   hours: Array<openClose>
-}
-
-function mapDayToFrench(
-  day: string
-):
-  | 'Lundi'
-  | 'Mardi'
-  | 'Mercredi'
-  | 'Jeudi'
-  | 'Vendredi'
-  | 'Samedi'
-  | 'Dimanche' {
-  switch (day) {
-    case 'MONDAY':
-      return 'Lundi'
-    case 'TUESDAY':
-      return 'Mardi'
-    case 'WEDNESDAY':
-      return 'Mercredi'
-    case 'THURSDAY':
-      return 'Jeudi'
-    case 'FRIDAY':
-      return 'Vendredi'
-    case 'SATURDAY':
-      return 'Samedi'
-    case 'SUNDAY':
-      return 'Dimanche'
-    default:
-      return 'Dimanche'
-  }
 }
