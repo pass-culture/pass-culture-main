@@ -40,7 +40,7 @@ jobs:
     outputs:
       pcapi_helm_secrets_file_base64: ${{ steps.set-secrets-file-output.outputs.secrets_file_base64 }}
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4.1.2
       - name: "Authentification to Google"
         uses: 'google-github-actions/auth@v2'
         with:
@@ -87,7 +87,7 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4.1.2
       - name: "Authentification to Google"
         uses: 'google-github-actions/auth@v2'
         with:
@@ -101,7 +101,7 @@ jobs:
             PASSCULTURE_SA_ACCESS_TOKEN:passculture-metier-ehp/passculture-main-sa-access-token
             ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4.1.2
         with:
           repository: pass-culture/pass-culture-deployment
           token: ${{ steps.secrets.outputs.PASSCULTURE_SA_ACCESS_TOKEN }}
