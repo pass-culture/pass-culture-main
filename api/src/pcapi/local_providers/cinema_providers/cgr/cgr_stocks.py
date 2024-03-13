@@ -170,6 +170,9 @@ class CGRStocks(LocalProvider):
         show_utc_datetime = utils_date.local_datetime_to_default_timezone(
             datetime.datetime.combine(showtime.Date, showtime.Heure), local_tz
         )
+        show_utc_datetime = show_utc_datetime.astimezone(tz=datetime.timezone.utc).replace(
+            tzinfo=None
+        )  # to enable comparison in finance event update
         old_beginning_datetime = stock.beginningDatetime
         stock.beginningDatetime = show_utc_datetime
         stock.bookingLimitDatetime = show_utc_datetime

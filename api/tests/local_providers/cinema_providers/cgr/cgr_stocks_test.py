@@ -20,6 +20,7 @@ from pcapi.utils.human_ids import humanize
 import tests
 from tests.connectors.cgr import soap_definitions
 from tests.local_providers.cinema_providers.cgr import fixtures
+from tests.local_providers.provider_test_utils import create_finance_event_to_update
 
 
 @pytest.mark.usefixtures("db_session")
@@ -452,7 +453,9 @@ class CGRStocksTest:
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
 
         cgr_provider = get_provider_by_local_class("CGRStocks")
-        venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider, isDuoOffers=True)
+        venue_provider = providers_factories.VenueProviderFactory(
+            provider=cgr_provider, isDuoOffers=True, venue__pricing_point="self"
+        )
         cinema_provider_pivot = providers_factories.CGRCinemaProviderPivotFactory(
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
@@ -485,10 +488,24 @@ class CGRStocksTest:
             "https://cgr-cinema-0.example.com/web_service",
             text=fixtures.cgr_response_template([fixtures.FILM_138473_NEW_DATE]),
         )
+        to_compare = []
         cgr_stocks = CGRStocks(venue_provider=venue_provider)
-        with mock.patch("pcapi.core.finance.api.update_finance_event_pricing_date") as mock_update_finance_event:
-            cgr_stocks.updateObjects()
-        mock_update_finance_event.assert_called_once()
+        for providable_infos in cgr_stocks:
+            for providable_info in providable_infos:
+                if isinstance(providable_info.type(), offers_models.Stock):
+                    stock_synchronised = offers_models.Stock.query.filter_by(
+                        idAtProviders=providable_info.id_at_providers
+                    ).one_or_none()
+                    assert stock_synchronised is not None
+                    event_created = create_finance_event_to_update(
+                        stock=stock_synchronised, venue_provider=venue_provider
+                    )
+                    to_compare.append((event_created.pricingOrderingDate, event_created))
+
+        cgr_stocks = CGRStocks(venue_provider=venue_provider)
+        cgr_stocks.updateObjects()
+        for last_pricingOrderingDate, event in to_compare:
+            assert event.pricingOrderingDate != last_pricingOrderingDate
 
     def should_create_product_with_correct_thumb(self, requests_mock):
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
