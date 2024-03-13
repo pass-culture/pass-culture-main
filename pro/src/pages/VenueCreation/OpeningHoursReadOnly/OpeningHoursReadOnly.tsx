@@ -1,3 +1,6 @@
+import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
+import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
+
 import styles from './OpeningHoursReadOnly.module.scss'
 
 type OpeningHours = {
@@ -5,43 +8,37 @@ type OpeningHours = {
 }
 
 export function OpeningHoursReadOnly({ openingHours }: OpeningHours) {
-  return openingHours.map((row) => (
-    <DayAndHours
-      day={Object.keys(row)[0]}
-      hours={Object.values(row)[0]}
-      key={Object.keys(row)[0]}
-    />
-  ))
+  return (
+    <SummarySubSection title={'Horaires d’ouverture'}>
+      <SummaryDescriptionList
+        descriptions={openingHours
+          .filter((dateAndHour) => dateAndHour && Object.values(dateAndHour)[0])
+          .map((dateAndHour) => {
+            return {
+              title: mapDayToFrench(Object.keys(dateAndHour)[0]),
+              text: <Hours hours={Object.values(dateAndHour)[0]} />,
+            }
+          })}
+      />
+    </SummarySubSection>
+  )
 }
 
-export function DayAndHours({ day, hours }: DayAndHours) {
-  const displayedDay = mapDayToFrench(day)
-  if (!hours) {
-    return <></>
-  }
-
+export function Hours({ hours }: Hours) {
   return (
     <>
       {hours.length === 1 ? (
-        <p className={styles['day-and-hours']}>
-          <span className={styles['day']}>
-            {displayedDay}
-            {' : '}
-          </span>{' '}
+        <>
           de <span className={styles['important']}>{hours[0].open}</span> à{' '}
           <span className={styles['important']}>{hours[0].close}</span>
-        </p>
+        </>
       ) : (
-        <p className={styles['day-and-hours']}>
-          <span className={styles['day']}>
-            {displayedDay}
-            {' : '}
-          </span>{' '}
+        <>
           de <span className={styles['important']}>{hours[0].open}</span> à{' '}
           <span className={styles['important']}>{hours[0].close}</span> et de{' '}
           <span className={styles['important']}>{hours[1].open}</span> à{' '}
           <span className={styles['important']}>{hours[1].close}</span>{' '}
-        </p>
+        </>
       )}
     </>
   )
@@ -52,9 +49,8 @@ type openClose = {
   close: string
 }
 
-type DayAndHours = {
-  day: string
-  hours: Array<openClose> | null
+type Hours = {
+  hours: Array<openClose>
 }
 
 function mapDayToFrench(

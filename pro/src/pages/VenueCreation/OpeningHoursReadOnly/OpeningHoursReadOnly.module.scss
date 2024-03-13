@@ -3,11 +3,6 @@
 @use "styles/variables/_colors.scss" as colors;
 
 
-.day-and-hours {
-  margin: rem.torem(8px) 0;
-  padding: rem.torem(8px) 0;
-}
-
 .important {
   @include fonts.body-important;
 }

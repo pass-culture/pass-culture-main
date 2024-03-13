@@ -1,6 +1,6 @@
 import { screen, render } from '@testing-library/react'
 
-import { DayAndHours, OpeningHoursReadOnly } from '../OpeningHoursReadOnly'
+import { Hours, OpeningHoursReadOnly } from '../OpeningHoursReadOnly'
 
 describe('OpeningHoursReadOnly', () => {
   it('should display each necessary days', () => {
@@ -54,9 +54,8 @@ describe('DayAndHours', () => {
   it('should display each hours and day when half a day', () => {
     const openingHours = [{ open: '14:00', close: '19:30' }]
 
-    render(<DayAndHours day="MONDAY" hours={openingHours} />)
+    render(<Hours hours={openingHours} />)
 
-    expect(screen.getByText('Lundi :')).toBeInTheDocument()
     expect(screen.getByText('14:00')).toBeInTheDocument()
     expect(screen.getByText('19:30')).toBeInTheDocument()
     expect(screen.queryByText(/et de/)).not.toBeInTheDocument()
@@ -68,9 +67,8 @@ describe('DayAndHours', () => {
       { open: '14:00', close: '19:30' },
     ]
 
-    render(<DayAndHours day="SUNDAY" hours={openingHours} />)
+    render(<Hours hours={openingHours} />)
 
-    expect(screen.getByText('Dimanche :')).toBeInTheDocument()
     expect(screen.getByText('10:00')).toBeInTheDocument()
     expect(screen.getByText('12:30')).toBeInTheDocument()
     expect(screen.getByText('14:00')).toBeInTheDocument()
