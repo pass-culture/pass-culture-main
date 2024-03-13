@@ -1,6 +1,10 @@
+import datetime
 from pathlib import Path
 
+import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.finance import factories as finance_factories
+from pcapi.core.finance import models as finance_models
 from pcapi.core.providers.models import VenueProvider
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.models import Model
@@ -105,3 +109,17 @@ class TestLocalProviderWithThumbIndexAt4(LocalProvider):
 
     def __next__(self):
         pass
+
+
+def create_finance_event_to_update(stock, venue_provider):
+    """Create the different objects in db for finance event update"""
+
+    booking = bookings_factories.UsedBookingFactory(stock=stock, dateUsed=datetime.datetime.utcnow())
+    event = finance_factories.FinanceEventFactory(
+        booking=booking,
+        pricingOrderingDate=stock.beginningDatetime,
+        status=finance_models.FinanceEventStatus.PRICED,
+        venue=venue_provider.venue,
+    )
+    finance_factories.PricingFactory(event=event, booking=event.booking)
+    return event
