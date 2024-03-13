@@ -17,7 +17,8 @@ vi.mock('apiClient/api', () => ({
 const renderStatisticsDashboard = (
   hasActiveOffer = true,
   features: string[] = [],
-  isAdmin = false
+  isAdmin = false,
+  hasNewNav = false
 ) =>
   renderWithProviders(
     <StatisticsDashboard
@@ -33,6 +34,9 @@ const renderStatisticsDashboard = (
           currentUser: {
             id: 12,
             isAdmin,
+            navState: {
+              newNavDate: hasNewNav ? '2021-01-01' : null,
+            },
           },
         },
       },
@@ -139,7 +143,7 @@ describe('StatisticsDashboard', () => {
   })
 
   it("should not display the create offer button with the WIP_ENABLE_PRO_SIDE_NAV FF enabled and the user isn't Admin", () => {
-    renderStatisticsDashboard(false, ['WIP_ENABLE_PRO_SIDE_NAV'], false)
+    renderStatisticsDashboard(false, ['WIP_ENABLE_PRO_SIDE_NAV'], false, true)
 
     expect(screen.queryByText(/Créer une offre/)).not.toBeInTheDocument()
   })

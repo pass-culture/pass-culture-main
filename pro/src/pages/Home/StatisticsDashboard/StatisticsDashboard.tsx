@@ -7,8 +7,8 @@ import {
   GetOffererResponseModel,
   GetOffererStatsResponseModel,
 } from 'apiClient/v1'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
+import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import fullMoreIcon from 'icons/full-more.svg'
 import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
 import { ButtonLink } from 'ui-kit/Button'
@@ -33,7 +33,7 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
 
   const { currentUser } = useCurrentUser()
 
-  const isNewSideBarNavigation = useActiveFeature('WIP_ENABLE_PRO_SIDE_NAV')
+  const isNewSideBarNavigation = useIsNewInterfaceActive()
 
   const displayCreateOfferButton =
     (isNewSideBarNavigation && currentUser.isAdmin) || !isNewSideBarNavigation

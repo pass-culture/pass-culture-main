@@ -20,9 +20,9 @@ import {
 import { Events } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared/types'
 import { SelectOption } from 'custom_types/form'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
+import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import useNotification from 'hooks/useNotification'
 import strokeLibraryIcon from 'icons/stroke-library.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
@@ -78,7 +78,7 @@ const Bookings = <
   const [urlParams, setUrlParams] =
     useState<PreFiltersParams>(DEFAULT_PRE_FILTERS)
 
-  const isNewSideNavActive = useActiveFeature('WIP_ENABLE_PRO_SIDE_NAV')
+  const isNewSideNavActive = useIsNewInterfaceActive()
 
   const resetPreFilters = useCallback(() => {
     setWereBookingsRequested(false)
