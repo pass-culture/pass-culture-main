@@ -56,7 +56,6 @@ class LocalProvider(Iterator):
         old_beginning_datetime: datetime | None,
     ) -> None:
         assert stock.beginningDatetime is not None  # to make mypy happy
-        stock.beginningDatetime = stock.beginningDatetime.replace(tzinfo=None)
         if (
             stock.id is not None
             and old_beginning_datetime is not None

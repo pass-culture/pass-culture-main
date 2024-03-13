@@ -9,8 +9,6 @@ import sqlalchemy as sa
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.external_bookings.boost import constants as boost_constants
-from pcapi.core.finance import factories as finance_factories
-from pcapi.core.finance import models as finance_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.offers.models import Offer
@@ -28,6 +26,7 @@ from pcapi.repository import transaction
 from pcapi.utils.human_ids import humanize
 
 import tests
+from tests.local_providers.provider_test_utils import create_finance_event_to_update
 
 from . import fixtures
 
@@ -878,28 +877,30 @@ class BoostStocksTest:
         with mock.patch("pcapi.core.finance.api.update_finance_event_pricing_date") as mock_update_finance_event:
             boost_stocks.updateObjects()
         mock_update_finance_event.assert_not_called()
-        stock = offers_models.Stock.query.one()
-
-        # We need a pre-existing finance event bind to the stock that has been created
-        # Otherwise, we will have nothing to update in `update_finance_event`
-        booking = bookings_factories.UsedBookingFactory(stock=stock, dateUsed=datetime.datetime.utcnow())
-        event = finance_factories.FinanceEventFactory(
-            booking=booking,
-            pricingOrderingDate=stock.beginningDatetime,
-            status=finance_models.FinanceEventStatus.PRICED,
-            venue=venue_provider.venue,
-        )
-        last_pricingOrderingDate = event.pricingOrderingDate
-        finance_factories.PricingFactory(event=event, booking=event.booking)
 
         # synchronize again with new event date
         requests_mock.get(
             "https://cinema-0.example.com/api/showtimes/36683",
             json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA_WITH_NEW_DATE,
         )
+        to_compare = []
         boost_stocks = BoostStocks(venue_provider=venue_provider)
+        for providable_infos in boost_stocks:
+            for providable_info in providable_infos:
+                if isinstance(providable_info.type(), offers_models.Stock):
+                    stock_synchronised = offers_models.Stock.query.filter_by(
+                        idAtProviders=providable_info.id_at_providers
+                    ).one_or_none()
+                    assert stock_synchronised is not None
+                    event_created = create_finance_event_to_update(
+                        stock=stock_synchronised, venue_provider=venue_provider
+                    )
+                    to_compare.append((event_created.pricingOrderingDate, event_created))
+
+        boost_stocks = BoostStocks(venue_provider=venue_provider)  # because the iterator is consumed
         boost_stocks.updateObjects()
-        assert event.pricingOrderingDate != last_pricingOrderingDate
+        for last_pricingOrderingDate, event in to_compare:
+            assert event.pricingOrderingDate != last_pricingOrderingDate
 
     def should_create_offer_with_correct_thumb(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
