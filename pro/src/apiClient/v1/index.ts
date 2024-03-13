@@ -157,6 +157,7 @@ export type { LoginUserBodyModel } from './models/LoginUserBodyModel';
 export type { ManagedVenues } from './models/ManagedVenues';
 export type { MusicTypeResponse } from './models/MusicTypeResponse';
 export type { NationalProgramModel } from './models/NationalProgramModel';
+export type { NavStateResponseModel } from './models/NavStateResponseModel';
 export type { NewPasswordBodyModel } from './models/NewPasswordBodyModel';
 export { OfferAddressType } from './models/OfferAddressType';
 export { OfferContactFormEnum } from './models/OfferContactFormEnum';
