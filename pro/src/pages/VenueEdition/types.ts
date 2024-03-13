@@ -7,4 +7,5 @@ export interface VenueEditionFormValues {
   isAccessibilityAppliedOnAllOffers: boolean
   phoneNumber: string | null
   webSite: string | null
+  days: string[]
 }
