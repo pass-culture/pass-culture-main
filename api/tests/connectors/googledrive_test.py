@@ -166,7 +166,7 @@ def test_search_file(mocked_request, tmpdir):
     url = mocked_request.call_args_list[0].args[5]
     assert (
         url == "https://www.googleapis.com/drive/v3/files"
-        "?q=name%3D%27name%27+and+%27parent-folder-id%27+in+parents+and+trashed+%3D+false&spaces=drive&fields=files%28id%29&alt=json"
+        "?q=name%3D%27name%27+and+%27parent-folder-id%27+in+parents+and+trashed+%3D+false&spaces=drive&fields=files%28id%29&supportsAllDrives=true&includeItemsFromAllDrives=true&alt=json"
     )
     assert mocked_request.call_args_list[0].kwargs["method"] == "GET"
     assert mocked_request.call_args_list[0].kwargs["body"] is None
