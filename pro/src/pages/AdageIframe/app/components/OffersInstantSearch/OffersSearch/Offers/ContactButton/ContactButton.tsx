@@ -19,7 +19,7 @@ export interface ContactButtonProps {
   position: number
   queryId: string
   userEmail?: string | null
-  userRole: AdageFrontRoles
+  userRole?: AdageFrontRoles
   isInSuggestions?: boolean
   children?: React.ReactNode
   isPreview?: boolean

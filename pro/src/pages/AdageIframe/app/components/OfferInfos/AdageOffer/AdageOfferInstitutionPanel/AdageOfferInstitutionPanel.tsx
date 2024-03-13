@@ -15,7 +15,7 @@ import styles from './AdageOfferInstitutionPanel.module.scss'
 
 export type AdageOfferInstitutionPanelProps = {
   offer: CollectiveOfferResponseModel
-  adageUser: AuthenticatedResponse
+  adageUser?: AuthenticatedResponse
 }
 
 export default function AdageOfferInstitutionPanel({
@@ -51,7 +51,7 @@ export default function AdageOfferInstitutionPanel({
           </div>
         )}
         <PrebookingButton
-          canPrebookOffers={adageUser.role === AdageFrontRoles.REDACTOR}
+          canPrebookOffers={adageUser?.role === AdageFrontRoles.REDACTOR}
           offerId={offer.id}
           queryId={''}
           stock={offer.stock}

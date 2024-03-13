@@ -23,7 +23,7 @@ export interface NewRequestFormDialogProps {
   closeModal: () => void
   offerId: number
   userEmail?: string | null
-  userRole: AdageFrontRoles
+  userRole?: AdageFrontRoles
   contactEmail: string
   contactPhone: string
   contactForm: string
