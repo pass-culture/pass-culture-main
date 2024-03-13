@@ -11,6 +11,7 @@ from pcapi.core.offers.exceptions import UnexpectedCinemaProvider
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.exceptions import InactiveProvider
 from pcapi.core.users.models import User
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 from pcapi.routes.native.security import authenticated_and_active_user_required
@@ -100,6 +101,7 @@ def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
             "Could not book offer: Event sold out",
             extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
         )
+        db.session.commit()
         raise ApiErrors({"code": "PROVIDER_STOCK_SOLD_OUT"})
     except external_bookings_exceptions.ExternalBookingNotEnoughSeatsError as error:
         offers_api.edit_stock(
@@ -107,6 +109,7 @@ def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
             quantity=(stock.dnBookedQuantity + error.remainingQuantity),
             editing_provider=stock.offer.lastProvider,
         )
+        db.session.commit()
         logger.info(
             "Could not book offer: Event has not enough seats left",
             extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
