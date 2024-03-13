@@ -182,11 +182,16 @@ class GoogleDriveBackend(BaseBackend):
         return bytes_io
 
     def search_file(self, parent_folder_id: str, name: str) -> str | None:
-        """Search for an existing file and return its id, if it exists."""
+        """
+        Search for an existing file and return its id, if it exists.
+        Documentation: https://developers.google.com/drive/api/reference/rest/v3/files/list?hl=fr
+        """
         request = self.service.files().list(
             q=f"name='{name}' and '{parent_folder_id}' in parents and trashed = false",
             spaces="drive",
             fields="files(id)",
+            supportsAllDrives=True,
+            includeItemsFromAllDrives=True,
         )
         response = request.execute()
         if not response["files"]:
