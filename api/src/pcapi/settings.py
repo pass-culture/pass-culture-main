@@ -515,3 +515,8 @@ GOOGLE_MAPS_API_KEY = secrets_utils.get("GOOGLE_MAPS_API_KEY")
 ACCESLIBRE_BACKEND = os.environ.get("ACCESLIBRE_BACKEND")
 ACCESLIBRE_API_KEY = secrets_utils.get("ACCESLIBRE_API_KEY")
 ACCESLIBRE_API_URL = "https://acceslibre.beta.gouv.fr/api/erps/"
+
+# Recommendation API
+RECOMMENDATION_BACKEND = os.environ.get("RECOMMENDATION_BACKEND", "pcapi.connectors.recommendation.TestingBackend")
+RECOMMENDATION_API_AUTHENTICATION_TOKEN = os.environ.get("RECOMMENDATION_API_AUTHENTICATION_TOKEN", "")
+RECOMMENDATION_API_URL = os.environ.get("RECOMMENDATION_API_URL", "")

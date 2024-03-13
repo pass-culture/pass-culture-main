@@ -1263,6 +1263,97 @@ def test_public_api(client):
                     "title": "PhoneValidationRemainingAttemptsRequest",
                     "type": "object",
                 },
+                "PlaylistRequestBody": {
+                    "additionalProperties": False,
+                    "properties": {
+                        "categories": {
+                            "items": {
+                                "type": "string",
+                            },
+                            "nullable": True,
+                            "title": "Categories",
+                            "type": "array",
+                        },
+                        "end_date": {
+                            "nullable": True,
+                            "title": "End Date",
+                            "type": "string",
+                        },
+                        "is_duo": {
+                            "nullable": True,
+                            "title": "Is Duo",
+                            "type": "boolean",
+                        },
+                        "is_event": {
+                            "nullable": True,
+                            "title": "Is Event",
+                            "type": "boolean",
+                        },
+                        "is_reco_shuffled": {
+                            "nullable": True,
+                            "title": "Is Reco Shuffled",
+                            "type": "boolean",
+                        },
+                        "offer_type_list": {
+                            "items": {
+                                "additionalProperties": {
+                                    "type": "string",
+                                },
+                                "type": "object",
+                            },
+                            "nullable": True,
+                            "title": "Offer Type List",
+                            "type": "array",
+                        },
+                        "price_max": {
+                            "nullable": True,
+                            "title": "Price Max",
+                            "type": "number",
+                        },
+                        "price_min": {
+                            "nullable": True,
+                            "title": "Price Min",
+                            "type": "number",
+                        },
+                        "start_date": {
+                            "nullable": True,
+                            "title": "Start Date",
+                            "type": "string",
+                        },
+                        "subcategories": {
+                            "items": {
+                                "type": "string",
+                            },
+                            "nullable": True,
+                            "title": "Subcategories",
+                            "type": "array",
+                        },
+                    },
+                    "title": "PlaylistRequestBody",
+                    "type": "object",
+                },
+                "PlaylistRequestQuery": {
+                    "additionalProperties": False,
+                    "properties": {
+                        "latitude": {
+                            "nullable": True,
+                            "title": "Latitude",
+                            "type": "number",
+                        },
+                        "longitude": {
+                            "nullable": True,
+                            "title": "Longitude",
+                            "type": "number",
+                        },
+                        "modelEndpoint": {
+                            "nullable": True,
+                            "title": "Modelendpoint",
+                            "type": "string",
+                        },
+                    },
+                    "title": "PlaylistRequestQuery",
+                    "type": "object",
+                },
                 "PopOverIcon": {
                     "description": "An enumeration.",
                     "enum": ["INFO", "ERROR", "WARNING", "CLOCK", "FILE", "MAGNIFYING_GLASS"],
@@ -1495,6 +1586,39 @@ def test_public_api(client):
                     },
                     "required": ["refreshToken", "accessToken", "accountState"],
                     "title": "SigninResponse",
+                    "type": "object",
+                },
+                "SimilarOffersRequestQuery": {
+                    "additionalProperties": False,
+                    "properties": {
+                        "categories": {
+                            "items": {
+                                "type": "string",
+                            },
+                            "nullable": True,
+                            "title": "Categories",
+                            "type": "array",
+                        },
+                        "latitude": {
+                            "nullable": True,
+                            "title": "Latitude",
+                            "type": "number",
+                        },
+                        "longitude": {
+                            "nullable": True,
+                            "title": "Longitude",
+                            "type": "number",
+                        },
+                        "subcategories": {
+                            "items": {
+                                "type": "string",
+                            },
+                            "nullable": True,
+                            "title": "Subcategories",
+                            "type": "array",
+                        },
+                    },
+                    "title": "SimilarOffersRequestQuery",
                     "type": "object",
                 },
                 "SubcategoriesResponseModelv2": {
@@ -3156,6 +3280,169 @@ def test_public_api(client):
                     "summary": "update_user_email <POST>",
                     "tags": [],
                 }
+            },
+            "/native/v1/recommendation/playlist": {
+                "post": {
+                    "description": "",
+                    "operationId": "post__native_v1_recommendation_playlist",
+                    "parameters": [
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "modelEndpoint",
+                            "required": False,
+                            "schema": {
+                                "nullable": True,
+                                "title": "Modelendpoint",
+                                "type": "string",
+                            },
+                        },
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "longitude",
+                            "required": False,
+                            "schema": {
+                                "nullable": True,
+                                "title": "Longitude",
+                                "type": "number",
+                            },
+                        },
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "latitude",
+                            "required": False,
+                            "schema": {
+                                "nullable": True,
+                                "title": "Latitude",
+                                "type": "number",
+                            },
+                        },
+                    ],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PlaylistRequestBody",
+                                },
+                            },
+                        },
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "OK",
+                        },
+                        "403": {
+                            "description": "Forbidden",
+                        },
+                        "422": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/ValidationError",
+                                    },
+                                },
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [
+                        {
+                            "JWTAuth": [],
+                        },
+                    ],
+                    "summary": "playlist <POST>",
+                    "tags": [],
+                },
+            },
+            "/native/v1/recommendation/similar_offers/{offer_id}": {
+                "get": {
+                    "description": "",
+                    "operationId": "get__native_v1_recommendation_similar_offers_{offer_id}",
+                    "parameters": [
+                        {
+                            "description": "",
+                            "in": "path",
+                            "name": "offer_id",
+                            "required": True,
+                            "schema": {
+                                "format": "int32",
+                                "type": "integer",
+                            },
+                        },
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "longitude",
+                            "required": False,
+                            "schema": {
+                                "nullable": True,
+                                "title": "Longitude",
+                                "type": "number",
+                            },
+                        },
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "latitude",
+                            "required": False,
+                            "schema": {
+                                "nullable": True,
+                                "title": "Latitude",
+                                "type": "number",
+                            },
+                        },
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "categories",
+                            "required": False,
+                            "schema": {
+                                "items": {
+                                    "type": "string",
+                                },
+                                "nullable": True,
+                                "title": "Categories",
+                                "type": "array",
+                            },
+                        },
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "subcategories",
+                            "required": False,
+                            "schema": {
+                                "items": {
+                                    "type": "string",
+                                },
+                                "nullable": True,
+                                "title": "Subcategories",
+                                "type": "array",
+                            },
+                        },
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "OK",
+                        },
+                        "403": {
+                            "description": "Forbidden",
+                        },
+                        "422": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/ValidationError",
+                                    },
+                                },
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "similar_offers <GET>",
+                    "tags": [],
+                },
             },
             "/native/v1/refresh_access_token": {
                 "post": {
