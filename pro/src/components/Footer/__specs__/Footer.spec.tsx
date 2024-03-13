@@ -9,7 +9,8 @@ import Footer from '../Footer'
 
 const renderFooter = (
   isConnected: boolean = true,
-  options?: RenderWithProvidersOptions
+  options?: RenderWithProvidersOptions,
+  hasNewNav: boolean = false
 ) => {
   const storeOverrides = {
     user: {
@@ -17,6 +18,9 @@ const renderFooter = (
         ? {
             isAdmin: false,
             hasSeenProTutorials: true,
+            navState: {
+              newNavDate: hasNewNav ? '2021-01-01' : null,
+            },
           }
         : null,
       initialized: true,
@@ -30,9 +34,13 @@ const renderFooter = (
 
 describe('Footer', () => {
   it('should  render footer if ff is active', () => {
-    renderFooter(true, {
-      features: ['WIP_ENABLE_PRO_SIDE_NAV'],
-    })
+    renderFooter(
+      true,
+      {
+        features: ['WIP_ENABLE_PRO_SIDE_NAV'],
+      },
+      true
+    )
 
     expect(
       screen.queryByRole('link', { name: 'CGU professionnels' })

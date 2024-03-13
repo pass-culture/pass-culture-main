@@ -2,8 +2,8 @@ import React from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
+import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullMailIcon from 'icons/full-mail.svg'
 import fullParametersIcon from 'icons/full-parameters.svg'
@@ -18,7 +18,7 @@ import styles from './Support.module.scss'
 export const Support: () => JSX.Element | null = () => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
-  const isNewSideBarNavigation = useActiveFeature('WIP_ENABLE_PRO_SIDE_NAV')
+  const isNewSideBarNavigation = useIsNewInterfaceActive()
 
   return (
     <Card>

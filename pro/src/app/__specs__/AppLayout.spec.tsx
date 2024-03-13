@@ -57,6 +57,9 @@ describe('src | AppLayout', () => {
   describe('side navigation', () => {
     it('should render the new header when the WIP_ENABLE_PRO_SIDE_NAV is active', () => {
       options.features = ['WIP_ENABLE_PRO_SIDE_NAV']
+      options.storeOverrides.user.currentUser.navState = {
+        newNavDate: '2021-01-01',
+      }
       renderApp(props, options)
 
       expect(screen.getByText('Se déconnecter')).toBeInTheDocument()
@@ -66,6 +69,9 @@ describe('src | AppLayout', () => {
     describe('on smaller screen sizes', () => {
       beforeEach(() => {
         options.features = ['WIP_ENABLE_PRO_SIDE_NAV']
+        options.storeOverrides.user.currentUser.navState = {
+          newNavDate: '2021-01-01',
+        }
         renderApp(props, options)
 
         global.innerWidth = 500

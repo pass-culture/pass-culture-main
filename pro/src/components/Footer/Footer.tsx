@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 
-import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
+import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { initCookieConsent } from 'utils/cookieConsentModal'
@@ -12,9 +12,9 @@ type FooterProps = {
   layout?: 'basic' | 'funnel' | 'without-nav' | 'sticky-actions'
 }
 export default function Footer({ layout }: FooterProps) {
-  const isNewSideBarNavigation = useActiveFeature('WIP_ENABLE_PRO_SIDE_NAV')
-
   const { currentUser } = useCurrentUser()
+  const isNewSideBarNavigation = useIsNewInterfaceActive()
+
   if (!isNewSideBarNavigation) {
     return
   }
