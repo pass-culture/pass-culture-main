@@ -34,7 +34,9 @@ def handle_inactive_dms_applications(procedure_number: int, with_never_eligible_
             if with_never_eligible_applicant_rule and _is_never_eligible_applicant(draft_application):
                 continue
             _mark_without_continuation_a_draft_application(draft_application)
-            _mark_cancel_dms_fraud_check(draft_application.number, draft_application.profile.email)
+            _mark_cancel_dms_fraud_check(
+                draft_application.number, draft_application.applicant.email or draft_application.profile.email
+            )
             marked_applications_count += 1
         except (dms_exceptions.DmsGraphQLApiException, Exception):  # pylint: disable=broad-except
             logger.exception(
@@ -66,7 +68,7 @@ def _has_inactivity_delay_expired(dms_application: dms_models.DmsApplicationResp
 def _is_message_from_applicant(
     dms_application: dms_models.DmsApplicationResponse, message: dms_models.DMSMessage
 ) -> bool:
-    return message.email == dms_application.profile.email
+    return message.email == (dms_application.applicant.email or dms_application.profile.email)
 
 
 def _mark_without_continuation_a_draft_application(dms_application: dms_models.DmsApplicationResponse) -> None:
