@@ -137,6 +137,29 @@ def check_stock_price(price: decimal.Decimal, offer: models.Offer, error_key: st
         )
         raise errors
 
+    if FeatureToggle.WIP_ENABLE_OFFER_PRICE_LIMITATION.is_active():
+        offer_price_limitation_rule = models.OfferPriceLimitationRule.query.filter(
+            models.OfferPriceLimitationRule.subcategoryId == offer.subcategoryId
+        ).one_or_none()
+        if offer_price_limitation_rule and (offer.lastValidationPrice is not None or offer.stocks):
+            reference_price = (
+                offer.lastValidationPrice
+                if offer.lastValidationPrice is not None
+                else sorted(offer.stocks, key=lambda s: s.id)[0].price
+            )
+            if (
+                price < (1 - offer_price_limitation_rule.rate) * reference_price
+                or price > (1 + offer_price_limitation_rule.rate) * reference_price
+            ):
+                if error_key == "price":
+                    error_key += "LimitationRule"
+                errors = api_errors.ApiErrors()
+                errors.add_error(
+                    error_key,
+                    "Vous ne pouvez pas modifier autant le prix, ou créer un stock avec un prix aussi différent; il faut créer une nouvelle offre pour changer le prix.",
+                )
+                raise errors
+
     # Cache this part to avoid N+1 when creating many stocks on the same offer.
     cache_attribute = f"_cached_checked_custom_reimbursement_rules_{offer.id}"
     if not flask.has_request_context() or not getattr(flask.request, cache_attribute, False):
