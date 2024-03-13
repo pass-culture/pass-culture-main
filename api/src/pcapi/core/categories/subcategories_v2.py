@@ -25,7 +25,6 @@ class OnlineOfflinePlatformChoices(Enum):
 
 class SearchGroups(Enum):
     ARTS_LOISIRS_CREATIFS = "Arts & loisirs créatifs"
-    BIBLIOTHEQUES_MEDIATHEQUE = "Bibliothèques, Médiathèques"
     CARTES_JEUNES = "Cartes jeunes"
     CD_VINYLE_MUSIQUE_EN_LIGNE = "CD, vinyles, musique en ligne"
     CONCERTS_FESTIVALS = "Concerts & festivals"
