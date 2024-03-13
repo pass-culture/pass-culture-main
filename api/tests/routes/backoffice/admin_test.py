@@ -579,3 +579,34 @@ class UpdateBoUserTest(PostEndpointHelper):
         db.session.refresh(user)
         assert "Hacked" not in user.full_name
         assert history_models.ActionHistory.query.count() == 0
+
+
+class GetSubcategoriesTest:
+    endpoint = "backoffice_web.get_subcategories"
+
+    def test_get_subcategories(self, authenticated_client):
+
+        response = authenticated_client.get(url_for(self.endpoint))
+
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert rows[0]["pro_label"] == "Abonnement (bibliothèques, médiathèques...)"
+        assert rows[0]["app_label"] == "Abonnement (bibliothèques, médiathèques...)"
+        assert rows[0]["Nom tech de la sous-catégorie"] == "ABO_BIBLIOTHEQUE"
+        assert rows[0]["Nom tech de la catégorie"] == "LIVRE"
+        assert rows[0]["native_category"] == "BIBLIOTHEQUE"
+        assert rows[0]["search_group_name"] == "BIBLIOTHEQUES_MEDIATHEQUE"
+        assert rows[0]["homepage_label_name"] == "LIVRES"
+        assert rows[0]["is_event"] == "Non"
+        assert rows[0]["conditional_fields"] == "{}"
+        assert rows[0]["can_expire"] == "Oui"
+        assert rows[0]["is_physical_deposit"] == "Oui"
+        assert rows[0]["is_digital_deposit"] == "Non"
+        assert rows[0]["online_offline_platform"] == "OFFLINE"
+        assert rows[0]["reimbursement_rule"] == "STANDARD"
+        assert rows[0]["can_be_duo"] == "Non"
+        assert rows[0]["can_be_educational"] == "Non"
+        assert rows[0]["is_selectable"] == "Oui"
+        assert rows[0]["Réservable par les 15-17 si gratuite"] == "Oui"
+        assert rows[0]["Réservable par les 15-17 si payante"] == "Non"
+        assert rows[0]["can_be_withdrawable"] == "Non"

@@ -7,6 +7,7 @@ import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
 from pcapi import settings
+from pcapi.core.categories import subcategories_v2
 from pcapi.core.history import models as history_models
 from pcapi.core.permissions import api as perm_api
 from pcapi.core.permissions import models as perm_models
@@ -129,3 +130,11 @@ def toggle_feature_flag(feature_flag_id: int, set_to_active: bool) -> utils.Back
         f"Le feature flag {feature_flag.name} a été " + ("activé" if feature_flag.isActive else "désactivé"), "success"
     )
     return redirect(url_for(".list_feature_flags"), code=303)
+
+
+@blueprint.backoffice_web.route("/admin/subcategories", methods=["GET"])
+def get_subcategories() -> utils.BackofficeResponse:
+
+    all_subcategories = subcategories_v2.ALL_SUBCATEGORIES_DICT.values()
+
+    return render_template("admin/subcategories.html", rows=all_subcategories)
