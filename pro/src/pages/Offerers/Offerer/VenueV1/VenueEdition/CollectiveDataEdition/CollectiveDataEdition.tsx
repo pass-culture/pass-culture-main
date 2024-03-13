@@ -1,5 +1,5 @@
 import { addDays, isBefore } from 'date-fns'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -136,16 +136,13 @@ export const CollectiveDataEdition = ({
       isBefore(new Date(venue?.adageInscriptionDate), addDays(new Date(), -30))
   )
 
-  const showCollectiveDataForm = Boolean(
-    venue?.hasAdageId && canCreateCollectiveOffer
-  )
   const collectiveDmsApplication = getLastCollectiveDmsApplication(
     venue.collectiveDmsApplications
   )
 
   return (
     <>
-      {showCollectiveDataForm && (
+      {canCreateCollectiveOffer && (
         <Callout title="Les informations suivantes sont visibles par les enseignants et établissements sur ADAGE">
           Cela leur permet de mieux comprendre votre démarche d’éducation
           artistique et culturelle.
@@ -169,7 +166,7 @@ export const CollectiveDataEdition = ({
         </div>
       )}
 
-      {showCollectiveDataForm && (
+      {canCreateCollectiveOffer && (
         <>
           <MandatoryInfo className={styles.mandatory} />
 
