@@ -114,6 +114,26 @@ class HandleDmsApplicationTest:
             "user_id": user.id,
         }
 
+    def test_handle_dms_application_made_for_beneficiary_by_representative(self):
+        representative = users_factories.UserFactory(dateOfBirth=datetime.datetime(1980, 1, 1))
+        applicant = users_factories.UserFactory(dateOfBirth=datetime.datetime(2000, 1, 1))
+        dms_response = make_parsed_graphql_application(
+            application_number=1234,
+            state=dms_models.GraphQLApplicationStates.accepted,
+            email=representative.email,
+            applicant_email=applicant.email,
+            birth_date=datetime.datetime(2016, 1, 1),
+        )
+
+        dms_subscription_api.handle_dms_application(dms_response)
+
+        assert push_testing.requests[0] == {
+            "can_be_asynchronously_retried": True,
+            "event_name": "user_identity_check_started",
+            "event_payload": {"type": "dms"},
+            "user_id": applicant.id,
+        }
+
     def test_concurrent_accepted_calls(self):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime(2000, 1, 1), roles=[users_models.UserRole.UNDERAGE_BENEFICIARY]
