@@ -332,6 +332,7 @@ class AcceslibreBackend(BaseBackend):
     def _send_request_with_slug(
         self,
         slug: str,
+        request_widget_infos: bool | None = False,
     ) -> dict:
         """
         Acceslibre has a specific GET route /api/erps/{slug} that
@@ -340,6 +341,8 @@ class AcceslibreBackend(BaseBackend):
         """
         api_key = settings.ACCESLIBRE_API_KEY
         url = settings.ACCESLIBRE_API_URL + slug
+        if request_widget_infos:
+            url += "/widget"
         headers = {"Authorization": f"Api-Key {api_key}"}
         try:
             response = requests.get(url, headers=headers, timeout=ACCESLIBRE_REQUEST_TIMEOUT)
@@ -423,5 +426,5 @@ class AcceslibreBackend(BaseBackend):
         return created_at
 
     def get_accessibility_infos(self, slug: str) -> AccessibilityInfo:
-        accesslibre_data = self._send_request_with_slug(slug=slug)
+        accesslibre_data = self._send_request_with_slug(slug=slug, request_widget_infos=True)
         return acceslibre_to_accessibility_infos(accesslibre_data)
