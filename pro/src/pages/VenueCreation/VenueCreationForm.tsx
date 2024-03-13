@@ -20,7 +20,7 @@ import { Accessibility } from './Accessibility/Accessibility'
 import { SiretOrCommentFields } from './SiretOrCommentFields/SiretOrCommentFields'
 import { VenueCreationFormValues } from './types'
 import styles from './VenueCreationForm.module.scss'
-import { VenueFormActionBar } from './VenueFormActionBar'
+import { VenueFormActionBar } from './VenueFormActionBar/VenueFormActionBar'
 import { venueSubmitRedirectUrl } from './venueSubmitRedirectUrl'
 
 type VenueFormProps = {
@@ -182,7 +182,7 @@ export const VenueCreationForm = ({
         </RouteLeavingGuard>
       </FormLayout>
 
-      <VenueFormActionBar isCreatingVenue={true} />
+      <VenueFormActionBar isCreatingVenue />
     </div>
   )
 }

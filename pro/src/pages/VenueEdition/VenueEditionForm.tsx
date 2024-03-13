@@ -14,7 +14,7 @@ import { TextArea, TextInput } from 'ui-kit'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 
 import { Accessibility } from '../VenueCreation/Accessibility/Accessibility'
-import { VenueFormActionBar } from '../VenueCreation/VenueFormActionBar'
+import { VenueFormActionBar } from '../VenueCreation/VenueFormActionBar/VenueFormActionBar'
 
 import { serializeEditVenueBodyModel } from './serializers'
 import { setInitialFormValues } from './setInitialFormValues'
@@ -163,7 +163,7 @@ export const VenueEditionForm = ({
           )}
         </FormLayout>
 
-        <VenueFormActionBar isCreatingVenue={false} />
+        <VenueFormActionBar venue={venue} />
       </Form>
     </Formik>
   )
