@@ -1,5 +1,6 @@
 import dataclasses
 import datetime
+from decimal import Decimal
 from unittest import mock
 from unittest.mock import patch
 
@@ -9,6 +10,7 @@ import pytest
 from pcapi.core import search
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
+from pcapi.core.categories import subcategories_v2
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional import sendinblue_template_ids
 import pcapi.core.offerers.factories as offerers_factories
@@ -16,6 +18,7 @@ from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.date import format_into_utc_date
 
@@ -1112,6 +1115,41 @@ class Returns400Test:
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
         assert response.status_code == 400
         assert response.json["price300"] == ["Le prix d’une offre ne peut excéder 300 euros."]
+
+    @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
+    def test_cannot_update_stock_with_price_outside_of_price_limitation_rule(self, client):
+        offers_factories.OfferPriceLimitationRuleFactory(
+            subcategoryId=subcategories_v2.ACHAT_INSTRUMENT.id, rate=Decimal("0.5")
+        )
+        offer = offers_factories.OfferFactory(
+            isActive=False,
+            validation=OfferValidationStatus.DRAFT,
+            subcategoryId=subcategories_v2.ACHAT_INSTRUMENT.id,
+            lastValidationPrice=Decimal("100"),
+        )
+        existing_stock = offers_factories.StockFactory(offer=offer, price=120)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        stock_data = {
+            "offerId": offer.id,
+            "stocks": [
+                {
+                    "id": existing_stock.id,
+                    "price": 151,
+                }
+            ],
+        }
+
+        # Then
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        assert response.status_code == 400
+        assert response.json["priceLimitationRule"] == [
+            "Vous ne pouvez pas modifier autant le prix, ou créer un stock avec un prix aussi différent; il faut créer une nouvelle offre pour changer le prix."
+        ]
 
     def test_cannot_update_event_stock_with_price_higher_than_300_euros(self, client):
         offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)

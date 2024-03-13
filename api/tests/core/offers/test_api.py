@@ -123,6 +123,73 @@ class CreateStockTest:
         # Then
         assert error.value.errors == {"price300": ["Le prix d’une offre ne peut excéder 300 euros."]}
 
+    @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
+    @pytest.mark.parametrize("new_price", [49, 151])
+    def test_does_not_allow_price_outside_of_price_limitation(self, new_price):
+        # Given
+        factories.OfferPriceLimitationRuleFactory(
+            subcategoryId=subcategories.ACHAT_INSTRUMENT.id, rate=decimal.Decimal("0.5")
+        )
+        offer_with_no_stock = factories.ThingOfferFactory(
+            subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
+        )
+
+        api.create_stock(offer=offer_with_no_stock, price=100, quantity=12)
+        db.session.refresh(offer_with_no_stock)
+        assert offer_with_no_stock.lastValidationPrice == 100
+
+        # When
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.create_stock(offer=offer_with_no_stock, price=new_price, quantity=12)
+
+        # Then
+        assert error.value.errors == {
+            "priceLimitationRule": [
+                "Vous ne pouvez pas modifier autant le prix, ou créer un stock avec un prix aussi différent; il faut créer une nouvelle offre pour changer le prix."
+            ]
+        }
+
+    @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
+    @pytest.mark.parametrize("new_price", [49, 151])
+    def test_does_not_allow_price_while_no_last_validation_price(self, new_price):
+        # Given
+        factories.OfferPriceLimitationRuleFactory(
+            subcategoryId=subcategories.ACHAT_INSTRUMENT.id, rate=decimal.Decimal("0.5")
+        )
+        offer = factories.ThingOfferFactory(subcategoryId=subcategories.ACHAT_INSTRUMENT.id, lastValidationPrice=None)
+        factories.ThingStockFactory(price=100, offer=offer)
+        factories.ThingStockFactory(price=8, offer=offer)
+
+        # When
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.create_stock(offer=offer, price=new_price, quantity=12)
+
+        # Then
+        assert error.value.errors == {
+            "priceLimitationRule": [
+                "Vous ne pouvez pas modifier autant le prix, ou créer un stock avec un prix aussi différent; il faut créer une nouvelle offre pour changer le prix."
+            ]
+        }
+
+    @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
+    @pytest.mark.parametrize("new_price", [49, 151])
+    def test_allow_price_edition_while_unrelated_price_limitation_rule(self, new_price):
+        # Given
+        factories.OfferPriceLimitationRuleFactory(
+            subcategoryId=subcategories.ABO_BIBLIOTHEQUE.id, rate=decimal.Decimal("0.5")
+        )
+        offer = factories.ThingStockFactory(
+            offer__subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
+            offer__lastValidationPrice=decimal.Decimal("100.00"),
+            price=decimal.Decimal("100.00"),
+        ).offer
+
+        # When
+        new_stock = api.create_stock(offer=offer, price=new_price, quantity=12)
+
+        # Then
+        assert new_stock.price == decimal.Decimal(str(new_price))
+
     def test_cannot_create_with_different_price_if_reimbursement_rule_exists(self):
         # If a stock exists with a price, we cannot add a new stock
         # with another price.
@@ -386,6 +453,71 @@ class EditStockTest:
         with pytest.raises(api_errors.ApiErrors) as error:
             api.edit_stock(stock=stock, price=9, quantity=None)
         assert error.value.errors["price"][0].startswith("Vous ne pouvez pas modifier le prix")
+
+    @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
+    @pytest.mark.parametrize("new_price", [49, 151])
+    def test_does_not_allow_price_outside_of_price_limitation(self, new_price):
+        # Given
+        factories.OfferPriceLimitationRuleFactory(
+            subcategoryId=subcategories.ACHAT_INSTRUMENT.id, rate=decimal.Decimal("0.5")
+        )
+        existing_stock = factories.ThingStockFactory(
+            price=110,
+            offer__subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
+            offer__lastValidationPrice=decimal.Decimal("100"),
+        )
+
+        # When
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.edit_stock(stock=existing_stock, price=new_price, quantity=existing_stock.quantity)
+
+        # Then
+        assert error.value.errors == {
+            "priceLimitationRule": [
+                "Vous ne pouvez pas modifier autant le prix, ou créer un stock avec un prix aussi différent; il faut créer une nouvelle offre pour changer le prix."
+            ]
+        }
+
+    @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
+    @pytest.mark.parametrize("new_price", [49, 151])
+    def test_does_not_allow_price_while_no_last_validation_price(self, new_price):
+        # Given
+        factories.OfferPriceLimitationRuleFactory(
+            subcategoryId=subcategories.ACHAT_INSTRUMENT.id, rate=decimal.Decimal("0.5")
+        )
+        offer = factories.ThingOfferFactory(subcategoryId=subcategories.ACHAT_INSTRUMENT.id, lastValidationPrice=None)
+        existing_stock = factories.ThingStockFactory(price=100, offer=offer)
+        factories.ThingStockFactory(price=1, offer=offer)
+
+        # When
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.edit_stock(stock=existing_stock, price=new_price, quantity=existing_stock.quantity)
+
+        # Then
+        assert error.value.errors == {
+            "priceLimitationRule": [
+                "Vous ne pouvez pas modifier autant le prix, ou créer un stock avec un prix aussi différent; il faut créer une nouvelle offre pour changer le prix."
+            ]
+        }
+
+    @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
+    @pytest.mark.parametrize("new_price", [49, 151])
+    def test_allow_price_edition_while_unrelated_price_limitation_rule(self, new_price):
+        # Given
+        factories.OfferPriceLimitationRuleFactory(
+            subcategoryId=subcategories.ABO_BIBLIOTHEQUE.id, rate=decimal.Decimal("0.5")
+        )
+        existing_stock = factories.ThingStockFactory(
+            price=110,
+            offer__subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
+            offer__lastValidationPrice=decimal.Decimal("100"),
+        )
+
+        # When
+        api.edit_stock(stock=existing_stock, price=new_price, quantity=existing_stock.quantity)
+
+        # Then
+        assert existing_stock.price == decimal.Decimal(str(new_price))
 
     def test_does_not_allow_beginning_datetime_for_thing_offers(self):
         # Given
