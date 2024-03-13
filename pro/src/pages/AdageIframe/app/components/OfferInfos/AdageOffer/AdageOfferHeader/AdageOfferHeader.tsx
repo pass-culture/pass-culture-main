@@ -60,11 +60,15 @@ export default function AdageOfferHeader({
       </div>
       <div className={styles['offer-header-details']}>
         <div className={styles['offer-header-title-container']}>
-          <h1 className={styles['offer-header-title']}>{offer.name}</h1>
+          {isPreview ? (
+            <h2 className={styles['offer-header-title']}>{offer.name}</h2>
+          ) : (
+            <h1 className={styles['offer-header-title']}>{offer.name}</h1>
+          )}
 
           {!isPreview && offer.isTemplate && (
             <div className={styles['offer-header-actions']}>
-              {adageUser.role === AdageFrontRoles.REDACTOR && (
+              {adageUser?.role === AdageFrontRoles.REDACTOR && (
                 <OfferFavoriteButton
                   offer={offer}
                   className={styles['offer-header-action']}

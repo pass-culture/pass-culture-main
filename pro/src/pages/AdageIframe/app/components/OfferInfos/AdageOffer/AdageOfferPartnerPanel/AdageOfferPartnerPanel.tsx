@@ -18,7 +18,7 @@ import styles from './AdageOfferPartnerPanel.module.scss'
 
 export type AdageOfferPartnerPanelProps = {
   offer: CollectiveOfferTemplateResponseModel
-  adageUser: AuthenticatedResponse
+  adageUser?: AuthenticatedResponse
   isPreview?: boolean
 }
 
@@ -34,6 +34,7 @@ export default function AdageOfferPartnerPanel({
     venue.coordinates.latitude !== undefined &&
     venue.coordinates.longitude !== null &&
     venue.coordinates.longitude !== undefined &&
+    adageUser &&
     adageUser.lat !== null &&
     adageUser.lat !== undefined &&
     adageUser.lon !== null &&
@@ -91,14 +92,14 @@ export default function AdageOfferPartnerPanel({
       </div>
 
       <div className={styles['partner-panel-location']}>
-        {(venue.city || venue.postalCode || distanceToSchool) && (
+        {(venue.city || venue.postalCode || distanceToSchool || isPreview) && (
           <Callout variant={CalloutVariant.INFO}>
             Ce partenaire est situé{' '}
             <b className={styles['partner-panel-location-bold']}>
               {(venue.city || venue.postalCode) &&
-                `à ${venue.city ?? ''} ${venue.postalCode ?? ''}`}
-              {distanceToSchool &&
-                `, à ${distanceToSchool} de votre
+                `à ${venue.city ?? ''} ${venue.postalCode ?? ''}, `}
+              {(isPreview || distanceToSchool) &&
+                `à ${isPreview ? 'X km' : distanceToSchool} de votre
             établissement scolaire`}
               .
             </b>
@@ -115,8 +116,8 @@ export default function AdageOfferPartnerPanel({
           offerId={offer.id}
           position={0}
           queryId={''}
-          userEmail={adageUser.email}
-          userRole={adageUser.role}
+          userEmail={adageUser?.email}
+          userRole={adageUser?.role}
           isPreview={isPreview}
         >
           <SvgIcon
