@@ -76,7 +76,7 @@ class AcceslibreTest:
     def test_get_accessibility_infos_from_widget(self, requests_mock):
         slug = "mon-super-slug"
         requests_mock.get(
-            f"https://acceslibre.beta.gouv.fr/api/erps/{slug}",
+            f"https://acceslibre.beta.gouv.fr/api/erps/{slug}/widget",
             json=fixtures.ACCESLIBRE_WIDGET_RESULT,
         )
         accessibility_infos = acceslibre.get_accessibility_infos(slug)
