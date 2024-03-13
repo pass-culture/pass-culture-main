@@ -142,7 +142,7 @@ describe('CollectiveDataEdition', () => {
 
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-      expect(screen.getByText('Référencé sur ADAGE')).toBeInTheDocument()
+      expect(screen.getByText('Référencé dans ADAGE')).toBeInTheDocument()
       expect(
         screen.getByText('Présentation pour les enseignants')
       ).toBeInTheDocument()

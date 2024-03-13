@@ -30,6 +30,11 @@ describe('Update a venue', () => {
     cy.contains('Auditif').click()
     cy.contains('Enregistrer et quitter').click()
 
+    cy.contains('Vos informations pour le grand public').should('be.visible')
+    cy.contains('On peut ajouter des choses, vraiment fantastique !!!').should(
+      'be.visible'
+    )
+
     cy.contains('Paramètres de l’activité').click()
     cy.get('#venueLabel').select('Musée de France')
     cy.get('#withdrawalDetails')
