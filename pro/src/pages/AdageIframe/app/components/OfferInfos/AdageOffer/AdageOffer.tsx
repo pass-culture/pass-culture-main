@@ -21,7 +21,7 @@ import AdageOfferPartnerPanel from './AdageOfferPartnerPanel/AdageOfferPartnerPa
 
 export type AdageOfferProps = {
   offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
-  adageUser: AuthenticatedResponse
+  adageUser?: AuthenticatedResponse
   isPreview?: boolean
 }
 
