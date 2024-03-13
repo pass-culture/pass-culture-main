@@ -465,7 +465,7 @@ class ImportBankAccountMixin:
         bank_account = (
             finance_models.BankAccount.query.filter_by(dsApplicationId=self.application_details.application_id)
             .options(sqla_orm.load_only(finance_models.BankAccount.id))
-            .join(
+            .outerjoin(
                 finance_models.BankAccountStatusHistory,
                 sqla.and_(
                     finance_models.BankAccountStatusHistory.bankAccountId == finance_models.BankAccount.id,
