@@ -1,0 +1,57 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/variables/_size.scss" as size;
+
+.fake-adage-page {
+  margin-top: rem.torem(32px);
+  background-color: colors.$grey-light;
+  border: 1px solid transparent;
+
+  &-header {
+    background-color: colors.$adage-blue-external;
+    height: rem.torem(54px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 rem.torem(10px);
+
+    &-burger {
+      border: 0.5px solid colors.$white;
+      border-radius: rem.torem(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: rem.torem(48px);
+      height: rem.torem(32px);
+    }
+  }
+
+  &-pass {
+    background-color: colors.$white;
+    border-radius: rem.torem(16px);
+    box-shadow: 0 0 16px 0 colors.$medium-shadow;
+
+    &-header {
+      padding: 0 rem.torem(16px);
+      color: colors.$brand;
+      height: rem.torem(48px);
+      display: flex;
+      align-items: center;
+      box-shadow: 0 0 16px 0 colors.$medium-shadow;
+      border-top-right-radius: rem.torem(16px);
+      border-top-left-radius: rem.torem(16px);
+      position: relative;
+      z-index: 1;
+    }
+
+    &-content {
+      padding-top: rem.torem(24px);
+    }
+  }
+}
+
+@media (min-width: size.$mobile) {
+  .fake-adage-page-pass {
+    margin: rem.torem(40px);
+  }
+}
