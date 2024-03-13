@@ -80,6 +80,7 @@ fragment DossierFragment on Dossier {
       nom
       prenom
       dateDeNaissance
+      email
     }
   }
 }
