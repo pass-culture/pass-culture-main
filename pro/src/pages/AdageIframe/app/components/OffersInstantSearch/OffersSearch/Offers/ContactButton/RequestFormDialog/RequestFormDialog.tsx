@@ -21,7 +21,7 @@ export interface RequestFormDialogProps {
   contactPhone?: string | null
   offerId: number
   userEmail?: string | null
-  userRole: AdageFrontRoles
+  userRole?: AdageFrontRoles
   isPreview: boolean
 }
 
