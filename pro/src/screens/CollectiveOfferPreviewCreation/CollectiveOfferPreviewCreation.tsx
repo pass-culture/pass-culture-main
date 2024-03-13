@@ -6,6 +6,7 @@ import {
 } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import useNotification from 'hooks/useNotification'
+import AdagePreviewLayout from 'pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
 import publishCollectiveOfferTemplateAdapter from 'screens/CollectiveOfferSummaryCreation/adapters/publishCollectiveOfferTemplateAdapter'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -46,7 +47,7 @@ const CollectiveOfferPreviewCreationScreen = ({
 
   return (
     <div>
-      <h1>aperçu</h1>
+      <AdagePreviewLayout offer={offer} />
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
           <ButtonLink
