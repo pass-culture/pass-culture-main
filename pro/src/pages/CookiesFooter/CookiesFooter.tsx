@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
-import useActiveFeature from 'hooks/useActiveFeature'
+import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import { Button } from 'ui-kit'
 import ButtonLink from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -10,7 +10,7 @@ import { initCookieConsent } from 'utils/cookieConsentModal'
 import styles from './CookiesFooter.module.scss'
 
 const CookiesFooter = ({ className }: { className?: string }) => {
-  const isNewSideBarNavigation = useActiveFeature('WIP_ENABLE_PRO_SIDE_NAV')
+  const isNewSideBarNavigation = useIsNewInterfaceActive()
 
   if (isNewSideBarNavigation) {
     return

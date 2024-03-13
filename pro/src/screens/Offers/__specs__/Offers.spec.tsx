@@ -38,9 +38,23 @@ import Offers, { OffersProps } from '../Offers'
 
 const renderOffers = (
   props: OffersProps,
-  options?: RenderWithProvidersOptions
+  options?: RenderWithProvidersOptions,
+  hasNewNav: boolean = false
 ) => {
-  renderWithProviders(<Offers {...props} />, options)
+  renderWithProviders(<Offers {...props} />, {
+    storeOverrides: {
+      user: {
+        currentUser: {
+          id: 12,
+          isAdmin: false,
+          navState: {
+            newNavDate: hasNewNav ? '2021-01-01' : null,
+          },
+        },
+      },
+    },
+    ...options,
+  })
 }
 
 const categoriesAndSubcategories = {
@@ -744,9 +758,13 @@ describe('screen Offers', () => {
       offerersNames: [getOffererNameFactory()],
     })
 
-    renderOffers(props, {
-      features: ['WIP_ENABLE_PRO_SIDE_NAV'],
-    })
+    renderOffers(
+      props,
+      {
+        features: ['WIP_ENABLE_PRO_SIDE_NAV'],
+      },
+      true
+    )
     await waitFor(() => {
       expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
     })

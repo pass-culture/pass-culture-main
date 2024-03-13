@@ -23,7 +23,7 @@ import {
 import { Audience } from 'core/shared'
 import getUserValidatedOfferersNamesAdapter from 'core/shared/adapters/getUserValidatedOfferersNamesAdapter'
 import { SelectOption } from 'custom_types/form'
-import useActiveFeature from 'hooks/useActiveFeature'
+import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import fullPlusIcon from 'icons/full-plus.svg'
 import strokeLibraryIcon from 'icons/stroke-library.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
@@ -81,8 +81,7 @@ const Offers = ({
 
   const [areAllOffersSelected, setAreAllOffersSelected] = useState(false)
   const [selectedOfferIds, setSelectedOfferIds] = useState<string[]>([])
-
-  const isNewSideBarNavigation = useActiveFeature('WIP_ENABLE_PRO_SIDE_NAV')
+  const isNewSideBarNavigation = useIsNewInterfaceActive()
 
   const { isAdmin } = currentUser
   const currentPageOffersSubset = offers.slice(
