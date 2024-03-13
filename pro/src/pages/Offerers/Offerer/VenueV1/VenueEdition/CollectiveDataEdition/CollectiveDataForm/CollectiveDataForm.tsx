@@ -243,11 +243,15 @@ const CollectiveDataForm = ({
             <ActionsBarSticky.Left>
               <ButtonLink
                 variant={ButtonVariant.SECONDARY}
-                link={{ isExternal: false, to: `/accueil` }}
+                link={{
+                  isExternal: false,
+                  to: `/structures/${venue.managingOfferer.id}/lieux/${venue.id}/eac`,
+                }}
               >
                 Annuler et quitter
               </ButtonLink>
             </ActionsBarSticky.Left>
+
             <ActionsBarSticky.Right>
               <SubmitButton isLoading={isLoading}>
                 Enregistrer et quitter
