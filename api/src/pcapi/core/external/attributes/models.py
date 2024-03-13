@@ -7,6 +7,15 @@ from pcapi.core.users import models as users_models
 
 
 @dataclass
+class Recommendation:
+    url: str
+    name: str
+    description: str | None = None
+    image_url: str | None = None
+    external_url: str | None = None
+
+
+@dataclass
 class UserAttributes:
     booking_categories: list[str]
     booking_count: int  # count non-canceled bookings from user

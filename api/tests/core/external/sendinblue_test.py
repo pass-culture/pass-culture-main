@@ -9,6 +9,9 @@ from sib_api_v3_sdk.models.request_contact_import import RequestContactImport
 
 from pcapi import settings
 from pcapi.core.cultural_survey import models as cultural_survey_models
+from pcapi.core.external.attributes.models import Recommendation
+from pcapi.core.external.commands.update_sendingblue_recommendations import get_offers_recommendations_from_ids
+from pcapi.core.external.commands.update_sendingblue_recommendations import update_contacts_recommendations
 from pcapi.core.external.sendinblue import SendinblueUserUpdateData
 from pcapi.core.external.sendinblue import add_contacts_to_list
 from pcapi.core.external.sendinblue import build_file_body
@@ -16,7 +19,11 @@ from pcapi.core.external.sendinblue import format_cultural_survey_answers
 from pcapi.core.external.sendinblue import format_user_attributes
 from pcapi.core.external.sendinblue import import_contacts_in_sendinblue
 from pcapi.core.external.sendinblue import make_update_request
+from pcapi.core.external.sendinblue import update_contact_recommendations
+from pcapi.core.offers import factories as offer_factories
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_settings
+from pcapi.core.users.factories import UserFactory
 import pcapi.core.users.testing as sendinblue_testing
 from pcapi.tasks.serialization import sendinblue_tasks
 
@@ -358,4 +365,93 @@ class BulkImportUsersDataTest:
             "email": email,
             "attributes": attributes,
             "emailBlacklisted": False,
+        }
+
+
+class RecommendationsTest:
+    def test_get_offers_recommendations_from_ids(self):
+        product1 = offer_factories.ProductFactory(
+            thumbCount=1,
+        )
+        offer1 = offer_factories.OfferFactory(
+            name="Offer 1",
+            description="Offer 1 description",
+            product=product1,
+            url="https://example.com/offer1",
+            subcategoryId="CINE_PLEIN_AIR",
+        )
+        offer2 = offer_factories.OfferFactory(
+            name="Offer 2",
+            subcategoryId="SUPPORT_PHYSIQUE_FILM",
+            description=None,
+        )
+        offers = [offer1.id, offer2.id]
+        with assert_num_queries(1):
+            recommendations = get_offers_recommendations_from_ids(offers)
+        assert recommendations == {
+            offer1.id: Recommendation(
+                url="https://webapp-v2.example.com/offer/" + str(offer1.id),
+                name="Offer 1",
+                description="Offer 1 description",
+                image_url=offer1.image.url,
+                external_url="https://example.com/offer1",
+            ),
+            offer2.id: Recommendation(
+                url="https://webapp-v2.example.com/offer/" + str(offer2.id),
+                name="Offer 2",
+            ),
+        }
+
+    def test_update_contact_recommendations(self):
+        offer1 = offer_factories.OfferFactory(
+            name="Offer 1",
+            description="Offer 1 description",
+            url="https://example.com/offer1",
+            subcategoryId="CINE_PLEIN_AIR",
+        )
+        offer2 = offer_factories.OfferFactory(
+            name="Offer 2",
+            subcategoryId="SUPPORT_PHYSIQUE_FILM",
+        )
+        recommendations = get_offers_recommendations_from_ids([offer1.id, offer2.id])
+        user = UserFactory()
+        update_contact_recommendations(user, recommendations)
+        assert sendinblue_testing.sendinblue_requests[0] == {
+            "email": user.email,
+            "attributes": {"RECOMMENDATIONS": recommendations},
+            "emailBlacklisted": None,
+        }
+
+    @patch("pcapi.core.external.commands.update_sendingblue_recommendations.get_recommendation_offer_ids")
+    def test_update_contacts_recommendations(self, mock_get_recommendation_offer_ids):
+        offer1 = offer_factories.OfferFactory(
+            name="Offer 1",
+            description="Offer 1 description",
+            url="https://example.com/offer1",
+            subcategoryId="CINE_PLEIN_AIR",
+        )
+        offer2 = offer_factories.OfferFactory(
+            name="Offer 2",
+            subcategoryId="SUPPORT_PHYSIQUE_FILM",
+        )
+        recommendations = get_offers_recommendations_from_ids([offer1.id, offer2.id])
+        users = [UserFactory(), UserFactory()]
+        mock_get_recommendation_offer_ids.return_value = [
+            (users[0], [offer1.id, offer2.id]),
+            (users[1], [offer1.id, offer2.id]),
+        ]
+        with assert_num_queries(3):
+            # - call to users[0].id
+            # - call to users[1].id, because they are UserFactory objects
+            # - the actual request
+            update_contacts_recommendations(users)
+        assert sendinblue_testing.sendinblue_requests[0] == {
+            "email": users[0].email,
+            "attributes": {"RECOMMENDATIONS": list(recommendations.values())},
+            "emailBlacklisted": None,
+        }
+        assert sendinblue_testing.sendinblue_requests[1] == {
+            "email": users[1].email,
+            "attributes": {"RECOMMENDATIONS": list(recommendations.values())},
+            "emailBlacklisted": None,
         }

@@ -100,6 +100,16 @@ class SendinblueOptionalAttributes(Enum):
     INTENDED_CATEGORIES = "INTENDED_CATEGORIES"
 
 
+def update_contact_recommendations(
+    user: users_models.User, recommendations: list[attributes_models.Recommendation]
+) -> None:
+    contact_request = UpdateSendinblueContactRequest(
+        email=user.email,
+        attributes={"RECOMMENDATIONS": recommendations},
+    )
+    update_contact_attributes_task.delay(contact_request)
+
+
 def update_contact_email(user: users_models.User, old_email: str, new_email: str, asynchronous: bool = True) -> None:
     contact_list_ids = (
         [settings.SENDINBLUE_PRO_CONTACT_LIST_ID]
