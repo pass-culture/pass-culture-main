@@ -37,7 +37,7 @@ jobs:
     env:
       DOCKER_REGISTRY: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4.1.2
         with:
           ref: ${{ inputs.ref }}
       - name: "Authentification to Google"
