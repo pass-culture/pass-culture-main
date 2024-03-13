@@ -30,5 +30,6 @@ export const setInitialFormValues = (
     isAccessibilityAppliedOnAllOffers: false,
     phoneNumber: venue.contact?.phoneNumber || '',
     webSite: venue.contact?.website || '',
+    days: [],
   }
 }
