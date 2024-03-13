@@ -158,6 +158,8 @@ export const createPatchOfferTemplatePayload = (
   if (isCustomContactFormActive) {
     changedValues.contactEmail =
       (offer.contactOptions?.email && offer.email) || null
+    changedValues.contactPhone =
+      (offer.contactOptions?.phone && offer.phone) || null
     changedValues.contactForm =
       offer.contactOptions?.form && offer.contactFormType === 'form'
         ? OfferContactFormEnum.FORM
