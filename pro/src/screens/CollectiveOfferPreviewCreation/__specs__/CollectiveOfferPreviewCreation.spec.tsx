@@ -1,9 +1,12 @@
-import { screen } from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
 import * as useNotification from 'hooks/useNotification'
-import { getCollectiveOfferTemplateFactory } from 'utils/collectiveApiFactories'
+import {
+  defaultGetVenue,
+  getCollectiveOfferTemplateFactory,
+} from 'utils/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -44,14 +47,18 @@ describe('CollectiveOfferConfirmation', () => {
       ...notifsImport,
       error: mockNotifyError,
     }))
+
+    vi.spyOn(api, 'getVenue').mockResolvedValue(defaultGetVenue)
   })
 
-  it('should render selection duplication page', () => {
+  it('should render selection duplication page', async () => {
     renderCollectiveOfferPreviewCreation(defaultProps)
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(
       screen.getByRole('heading', {
-        name: 'aperçu',
+        name: defaultProps.offer.name,
       })
     ).toBeInTheDocument()
   })
