@@ -123,7 +123,7 @@ describe('CollectiveOfferSummary', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     const duplicateOffer = screen.getByRole('button', {
-      name: 'Créer une offre réservable pour un établissement scolaire',
+      name: 'Créer une offre réservable',
     })
     await userEvent.click(duplicateOffer)
 
@@ -144,7 +144,7 @@ describe('CollectiveOfferSummary', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     const duplicateOffer = screen.getByRole('button', {
-      name: 'Créer une offre réservable pour un établissement scolaire',
+      name: 'Créer une offre réservable',
     })
     await userEvent.click(duplicateOffer)
 
@@ -166,7 +166,7 @@ describe('CollectiveOfferSummary', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     const duplicateOffer = screen.getByRole('button', {
-      name: 'Créer une offre réservable pour un établissement scolaire',
+      name: 'Créer une offre réservable',
     })
 
     await userEvent.click(duplicateOffer)
@@ -184,7 +184,7 @@ describe('CollectiveOfferSummary', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     const duplicateOffer = screen.getByRole('button', {
-      name: 'Créer une offre réservable pour un établissement scolaire',
+      name: 'Créer une offre réservable',
     })
 
     await userEvent.click(duplicateOffer)
@@ -205,7 +205,7 @@ describe('CollectiveOfferSummary', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     const duplicateOffer = screen.getByRole('button', {
-      name: 'Créer une offre réservable pour un établissement scolaire',
+      name: 'Créer une offre réservable',
     })
 
     await userEvent.click(duplicateOffer)
