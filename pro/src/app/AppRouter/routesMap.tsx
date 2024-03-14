@@ -220,6 +220,14 @@ const routes: RouteConfig[] = [
   },
   {
     lazy: () =>
+      import(
+        'pages/CollectiveOfferPreviewEdition/CollectiveOfferPreviewEdition'
+      ),
+    path: '/offre/:offerId/collectif/preview',
+    title: 'Aperçu - Prévisualisation d’une offre collective vitrine',
+  },
+  {
+    lazy: () =>
       import('pages/CollectiveOfferStockEdition/CollectiveOfferStockEdition'),
     path: '/offre/:offerId/collectif/stocks/edition',
     title: 'Date et prix - Modifier une offre collective réservable',
