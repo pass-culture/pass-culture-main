@@ -91,3 +91,11 @@ class UserGenerationForbiddenException(Exception):
 
 class MissingLoginMethod(Exception):
     pass
+
+
+class ProUserNotEligibleForNewNav(Exception):
+    pass
+
+
+class ProUserNotYetEligibleForNewNav(Exception):
+    pass

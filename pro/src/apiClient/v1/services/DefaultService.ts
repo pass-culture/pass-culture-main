@@ -2051,6 +2051,22 @@ export class DefaultService {
     });
   }
   /**
+   * post_new_pro_nav <POST>
+   * @returns void
+   * @throws ApiError
+   */
+  public postNewProNav(): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/users/new-pro-nav',
+      errors: {
+        400: `Bad Request`,
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
    * post_change_password <POST>
    * @param requestBody
    * @returns void
