@@ -31,11 +31,15 @@
       display: flex;
       flex-direction: row;
       justify-content: space-between;
-      align-items: center;
+      align-items: top;
       margin-bottom: rem.torem(24px);
 
       &-edit-link {
         height: unset;
+      }
+
+      @media (min-width: size.$tablet) {
+        align-items: center;
       }
     }
   }
