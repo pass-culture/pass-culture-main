@@ -185,6 +185,19 @@ describe('VenueFormScreen', () => {
     })
   })
 
+  it('should display the route leaving guard when leaving without saving', async () => {
+    renderForm(venue)
+
+    await userEvent.type(screen.getByLabelText('Description'), 'test')
+    await userEvent.click(screen.getByText('Annuler et quitter'))
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Les informations non enregistrées seront perdues')
+      ).toBeInTheDocument()
+    })
+  })
+
   it('should display specific message when venue is virtual', () => {
     venue.isVirtual = true
     renderForm(venue)

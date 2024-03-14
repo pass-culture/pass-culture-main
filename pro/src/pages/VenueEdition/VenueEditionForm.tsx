@@ -1,4 +1,4 @@
-import { Form, Formik, FormikConfig } from 'formik'
+import { Form, Formik, FormikConfig, FormikConsumer } from 'formik'
 import { useNavigate, useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -16,6 +16,7 @@ import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 import { Accessibility } from '../VenueCreation/Accessibility/Accessibility'
 import { VenueFormActionBar } from '../VenueCreation/VenueFormActionBar/VenueFormActionBar'
 
+import { RouteLeavingGuardVenueEdition } from './RouteLeavingGuardVenueEdition'
 import { serializeEditVenueBodyModel } from './serializers'
 import { setInitialFormValues } from './setInitialFormValues'
 import { VenueEditionFormValues } from './types'
@@ -160,6 +161,14 @@ export const VenueEditionForm = ({
         </FormLayout>
 
         <VenueFormActionBar venue={venue} />
+
+        <FormikConsumer>
+          {(formik) => (
+            <RouteLeavingGuardVenueEdition
+              shouldBlock={formik.dirty && !formik.isSubmitting}
+            />
+          )}
+        </FormikConsumer>
       </Form>
     </Formik>
   )

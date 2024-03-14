@@ -226,9 +226,7 @@ describe('CollectiveDataEdition', () => {
 
       await waitFor(() =>
         expect(
-          screen.getByText(
-            'Voulez vous quitter la page d’informations pour les enseignants ?'
-          )
+          screen.getByText('Les informations non enregistrées seront perdues')
         ).toBeInTheDocument()
       )
     })
