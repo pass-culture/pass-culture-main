@@ -10,6 +10,10 @@ function start_backend {
     RUN='cd $ROOT_PATH && docker-compose -f "$ROOT_PATH"/docker-compose-backend.yml build && docker-compose -f "$ROOT_PATH"/docker-compose-backend.yml up'
 }
 
+function start_proxy_backend {
+    RUN='cd $ROOT_PATH && docker-compose -f "$ROOT_PATH"/docker-compose-backend.yml build --build-arg="network_mode=proxy" && docker-compose -f "$ROOT_PATH"/docker-compose-backend.yml up'
+}
+
 function restart_backend {
     RUN='sudo rm -rf "$ROOT_PATH"/api/static/object_store_data;
     docker-compose -f "$ROOT_PATH"/docker-compose-backend.yml down --volumes;

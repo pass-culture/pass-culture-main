@@ -197,15 +197,14 @@ elif [[ "$CMD" == "restore-db" ]]; then
     ./api/scalingo/anonymize_database.sh -p Password_ ;
     rm $backup_file'
 
-# Restore a postgresql database from file (non anonymized)
-elif [[ "$CMD" == "restore-db-intact" ]]; then
-  source "$INFRA_SCRIPTS_PATH"/restore_db.sh
-  restore_db_intact $1
-
 # Start API server with database and nginx server
 elif [[ "$CMD" == "start-backend" ]]; then
   source "$INFRA_SCRIPTS_PATH"/start_backend.sh
   start_backend
+
+elif [[ "$CMD" == "start-proxy-backend" ]]; then
+  source "$INFRA_SCRIPTS_PATH"/start_backend.sh
+  start_proxy_backend
 
 # Start pro or adage application
 elif [[ "$CMD" == "start-pro" ]]; then
