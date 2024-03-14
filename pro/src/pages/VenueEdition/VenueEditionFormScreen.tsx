@@ -43,15 +43,20 @@ export const VenueEditionFormScreen = ({
         </>
       )}
 
-      <Routes>
-        <Route path="" element={<VenueEditionReadOnly venue={venue} />} />
-        <Route
-          path="/edition"
-          element={
-            <VenueEditionForm venue={venue} reloadVenueData={reloadVenueData} />
-          }
-        />
-      </Routes>
+      {!venue.isVirtual && (
+        <Routes>
+          <Route path="" element={<VenueEditionReadOnly venue={venue} />} />
+          <Route
+            path="/edition"
+            element={
+              <VenueEditionForm
+                venue={venue}
+                reloadVenueData={reloadVenueData}
+              />
+            }
+          />
+        </Routes>
+      )}
     </>
   )
 }
