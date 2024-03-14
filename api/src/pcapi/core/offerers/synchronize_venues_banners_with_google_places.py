@@ -151,9 +151,9 @@ def synchronize_venues_banners_with_google_places(
                     continue
             else:
                 place_id = get_place_id(venue.name, venue.address, venue.city, venue.postalCode)
+                venue.googlePlacesInfo = offerers_models.GooglePlacesInfo(placeId=place_id)
                 if not place_id:
                     continue
-                venue.googlePlacesInfo = offerers_models.GooglePlacesInfo(placeId=place_id)
 
             nb_places_found += 1
             place_details = get_place_photos_and_owner(venue.googlePlacesInfo.placeId)
