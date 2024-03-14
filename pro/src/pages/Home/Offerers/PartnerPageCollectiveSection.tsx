@@ -54,7 +54,9 @@ export function PartnerPageCollectiveSection({
       <section className={styles['details']}>
         <div>
           {header}
-          <Tag variant={TagVariant.LIGHT_GREEN}>Référencé dans ADAGE</Tag>
+          <Tag className={styles['tag']} variant={TagVariant.LIGHT_GREEN}>
+            Référencé dans ADAGE
+          </Tag>
         </div>
         {isDisplayedInHomepage && (
           <p className={styles['details-description']}>
@@ -70,7 +72,9 @@ export function PartnerPageCollectiveSection({
       <section className={styles['details']}>
         <div>
           {header}
-          <Tag variant={TagVariant.LIGHT_BLUE}>Non référencé dans ADAGE</Tag>
+          <Tag className={styles['tag']} variant={TagVariant.LIGHT_BLUE}>
+            Non référencé dans ADAGE
+          </Tag>
         </div>
 
         <p className={styles['details-description']}>
@@ -118,7 +122,9 @@ export function PartnerPageCollectiveSection({
       <section className={styles['details']}>
         <div>
           {header}
-          <Tag variant={TagVariant.LIGHT_BLUE}>Non référencé dans ADAGE</Tag>
+          <Tag className={styles['tag']} variant={TagVariant.LIGHT_BLUE}>
+            Non référencé dans ADAGE
+          </Tag>
         </div>
 
         <p className={styles['details-description']}>
@@ -137,7 +143,9 @@ export function PartnerPageCollectiveSection({
     <section className={styles['details']}>
       <div>
         {header}
-        <Tag variant={TagVariant.LIGHT_YELLOWN}>Référencement en cours</Tag>
+        <Tag className={styles['tag']} variant={TagVariant.LIGHT_YELLOWN}>
+          Référencement en cours
+        </Tag>
       </div>
 
       <p className={styles['details-description']}>

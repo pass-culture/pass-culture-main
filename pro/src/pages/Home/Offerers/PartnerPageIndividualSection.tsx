@@ -51,9 +51,13 @@ export function PartnerPageIndividualSection({
           </span>
         )}
         {isVisibleInApp ? (
-          <Tag variant={TagVariant.LIGHT_GREEN}>Visible</Tag>
+          <Tag className={styles['tag']} variant={TagVariant.LIGHT_GREEN}>
+            Visible
+          </Tag>
         ) : (
-          <Tag variant={TagVariant.LIGHT_BLUE}>Non visible</Tag>
+          <Tag className={styles['tag']} variant={TagVariant.LIGHT_BLUE}>
+            Non visible
+          </Tag>
         )}
       </div>
       {isDisplayedInHomepage && (
