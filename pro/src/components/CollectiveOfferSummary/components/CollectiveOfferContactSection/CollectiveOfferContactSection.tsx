@@ -34,7 +34,7 @@ const CollectiveOfferContactSection = ({
 
   if (isCustomContactActive && isOfferTemplate) {
     const formDescriptionText = offer.contactForm
-      ? 'Le formulaure sandard Pass Culture'
+      ? 'Le formulaire standard Pass Culture'
       : offer.contactUrl
     description.push({
       title: 'Formulaire de contact',
