@@ -78,5 +78,5 @@ class AcceslibreTest:
             json=fixtures.ACCESLIBRE_WIDGET_RESULT,
         )
         accessibility_infos = acceslibre.get_accessibility_infos(slug)
-        assert accessibility_infos.trained_personnal == ["Personnel sensibilisé / formé"]
+        assert accessibility_infos.trained_personnel == ["Personnel sensibilisé / formé"]
         assert accessibility_infos.access_modality == ["Chemin d'accès de plain pied", "Entrée de plain pied"]

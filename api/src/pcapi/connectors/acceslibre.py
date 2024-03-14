@@ -38,7 +38,7 @@ class AccessibilityInfo(pydantic_v1.BaseModel):
     deaf_and_hard_of_hearing_amenities: list[str] = pydantic_v1.Field(default_factory=list)
     facilities: list[str] = pydantic_v1.Field(default_factory=list)
     sound_beacon: list[str] = pydantic_v1.Field(default_factory=list)
-    trained_personnal: list[str] = pydantic_v1.Field(default_factory=list)
+    trained_personnel: list[str] = pydantic_v1.Field(default_factory=list)
     transport_modality: list[str] = pydantic_v1.Field(default_factory=list)
 
     @pydantic_v1.root_validator(pre=True)
@@ -120,7 +120,7 @@ def acceslibre_to_accessibility_infos(response: dict) -> AccessibilityInfo:
         elif section["title"] == "balise sonore":
             accessibility_infos.sound_beacon = section["labels"]
         elif section["title"] == "personnel":
-            accessibility_infos.trained_personnal = section["labels"]
+            accessibility_infos.trained_personnel = section["labels"]
         elif section["title"] == "stationnement":
             accessibility_infos.transport_modality = section["labels"]
     return accessibility_infos
