@@ -413,4 +413,13 @@ class AccessibilityProviderFactory(BaseFactory):
 
     venue = factory.SubFactory(VenueFactory)
     externalAccessibilityId = factory.Sequence("le-petit-rintintin-{}".format)
+    externalAccessibilityData = {
+        "access_modality": ["Chemin d'accès de plain pied", "Entrée de plain pied"],
+        "audio_description": [],
+        "deaf_and_hard_of_hearing_amenities": [],
+        "facilities": ["Sanitaire adapté"],
+        "sound_beacon": [],
+        "trained_personnel": [],
+        "transport_modality": ["Stationnement adapté dans l'établissement"],
+    }
     lastUpdateAtProvider = datetime.datetime(2024, 3, 1, 0, 0)
