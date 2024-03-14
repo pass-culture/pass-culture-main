@@ -46,6 +46,7 @@ class UserAttributes:
     postal_code: str | None
     products_use_date: dict
     roles: list[str]
+    subscribed_themes: list[str]
     suspension_date: datetime.datetime | None  # Added for Zendesk
     suspension_reason: users_constants.SuspensionReason | None  # Added for Zendesk
 
