@@ -211,7 +211,7 @@ describe('app', () => {
 
       // Then
       const contentTitle = await screen.findByText(
-        'Une erreur s’est produite.',
+        'Une erreur s’est produite',
         { selector: 'h1' }
       )
       expect(contentTitle).toBeInTheDocument()
