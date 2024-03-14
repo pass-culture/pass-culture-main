@@ -51,7 +51,7 @@ class Returns200Test:
             "lastConnectionDate": format_into_utc_date(user.lastConnectionDate),
             "lastName": "Smisse",
             "needsToFillCulturalSurvey": False,
-            "notificationSubscriptions": {"marketing_email": True, "marketing_push": True},
+            "notificationSubscriptions": {"marketing_email": True, "marketing_push": True, "subscribed_themes": []},
             "phoneNumber": "+33612345678",
             "phoneValidationStatus": None,
             "postalCode": None,

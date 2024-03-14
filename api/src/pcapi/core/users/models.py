@@ -2,6 +2,7 @@ from __future__ import annotations  # to type models before their declaration
 
 from dataclasses import asdict
 from dataclasses import dataclass
+from dataclasses import field
 from datetime import date
 from datetime import datetime
 from decimal import Decimal
@@ -72,6 +73,7 @@ class EligibilityType(enum.Enum):
 class NotificationSubscriptions:
     marketing_push: bool = True
     marketing_email: bool = True
+    subscribed_themes: list[str] = field(default_factory=list)
 
 
 # calculate date of latest birthday
@@ -179,7 +181,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         MutableDict.as_mutable(postgresql.json.JSONB),
         nullable=True,
         default=asdict(NotificationSubscriptions()),
-        server_default="""{"marketing_push": true, "marketing_email": true}""",
+        server_default="""{"marketing_push": true, "marketing_email": true, "subscribed_themes": []}""",
     )
     password: bytes = sa.Column(sa.LargeBinary(60), nullable=True)
     _phoneNumber = sa.Column(sa.String(20), nullable=True, index=True, name="phoneNumber")

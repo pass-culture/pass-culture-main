@@ -133,7 +133,7 @@ class AccountTest:
             "recreditAmountToShow": None,
             "requiresIdCheck": True,
             "showEligibleCard": False,
-            "subscriptions": {"marketingPush": True, "marketingEmail": True},
+            "subscriptions": {"marketingPush": True, "marketingEmail": True, "subscribedThemes": []},
             "subscriptionMessage": None,
             "status": {
                 "statusType": young_status.YoungStatusType.BENEFICIARY.value,
