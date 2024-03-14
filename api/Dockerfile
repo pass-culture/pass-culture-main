@@ -107,9 +107,11 @@ USER pcapi
 
 ########## LIB PROD ##########
 
+FROM builder-${network_mode} AS builder-prod
+
 FROM lib AS lib-prod
 
-COPY --from=builder /home/pcapi/.local /home/pcapi/.local
+COPY --from=builder-prod /home/pcapi/.local /home/pcapi/.local
 
 ########## LIB DEV ##########
 
