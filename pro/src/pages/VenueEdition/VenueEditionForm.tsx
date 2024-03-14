@@ -102,65 +102,61 @@ export const VenueEditionForm = ({
     >
       <Form>
         <FormLayout fullWidthActions>
-          {!venue.isVirtual && (
-            <FormLayout.Section
-              title="À propos de votre activité"
-              description={
-                venue.isVirtual
-                  ? undefined
-                  : 'Ces informations seront affichées dans votre page lieu sur l’application pass Culture (sauf pour les lieux administratifs). Elles permettront aux jeunes d’en savoir plus sur votre lieu.'
-              }
-            >
-              <FormLayout.Row>
-                <TextArea
-                  name="description"
-                  label="Description"
-                  placeholder="Par exemple : mon établissement propose des spectacles, de l’improvisation..."
-                  maxLength={1000}
-                  countCharacters
-                  isOptional
-                />
-              </FormLayout.Row>
-            </FormLayout.Section>
-          )}
+          <FormLayout.Section
+            title="À propos de votre activité"
+            description={
+              venue.isVirtual
+                ? undefined
+                : 'Ces informations seront affichées dans votre page lieu sur l’application pass Culture (sauf pour les lieux administratifs). Elles permettront aux jeunes d’en savoir plus sur votre lieu.'
+            }
+          >
+            <FormLayout.Row>
+              <TextArea
+                name="description"
+                label="Description"
+                placeholder="Par exemple : mon établissement propose des spectacles, de l’improvisation..."
+                maxLength={1000}
+                countCharacters
+                isOptional
+              />
+            </FormLayout.Row>
+          </FormLayout.Section>
 
-          {!venue.isVirtual && <Accessibility isCreatingVenue={false} />}
+          <Accessibility isCreatingVenue={false} />
 
-          {!venue.isVirtual && (
-            <FormLayout.Section
-              title="Contact"
-              description={
-                'Ces informations seront affichées dans votre page lieu, sur l’application pass Culture. ' +
-                'Elles permettront aux bénéficiaires de vous contacter en cas de besoin.'
-              }
-            >
-              <FormLayout.Row>
-                <PhoneNumberInput
-                  name="phoneNumber"
-                  label="Téléphone"
-                  isOptional
-                />
-              </FormLayout.Row>
+          <FormLayout.Section
+            title="Contact"
+            description={
+              'Ces informations seront affichées dans votre page lieu, sur l’application pass Culture. ' +
+              'Elles permettront aux bénéficiaires de vous contacter en cas de besoin.'
+            }
+          >
+            <FormLayout.Row>
+              <PhoneNumberInput
+                name="phoneNumber"
+                label="Téléphone"
+                isOptional
+              />
+            </FormLayout.Row>
 
-              <FormLayout.Row>
-                <TextInput
-                  name="email"
-                  label="Adresse email"
-                  placeholder="email@exemple.com"
-                  isOptional
-                />
-              </FormLayout.Row>
+            <FormLayout.Row>
+              <TextInput
+                name="email"
+                label="Adresse email"
+                placeholder="email@exemple.com"
+                isOptional
+              />
+            </FormLayout.Row>
 
-              <FormLayout.Row>
-                <TextInput
-                  name="webSite"
-                  label="URL de votre site web"
-                  placeholder="https://exemple.com"
-                  isOptional
-                />
-              </FormLayout.Row>
-            </FormLayout.Section>
-          )}
+            <FormLayout.Row>
+              <TextInput
+                name="webSite"
+                label="URL de votre site web"
+                placeholder="https://exemple.com"
+                isOptional
+              />
+            </FormLayout.Row>
+          </FormLayout.Section>
         </FormLayout>
 
         <VenueFormActionBar venue={venue} />
