@@ -13,13 +13,13 @@ import { handleAllFranceDepartmentOptions } from 'core/shared'
 import { venueInterventionOptions } from 'core/shared/interventionOptions'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
+import { RouteLeavingGuardVenueEdition } from 'pages/VenueEdition/RouteLeavingGuardVenueEdition'
 import { ButtonLink, Select, SubmitButton, TextArea, TextInput } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { MultiSelectAutocomplete } from 'ui-kit/form/MultiSelectAutoComplete/MultiSelectAutocomplete'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 
 import editVenueCollectiveDataAdapter from '../adapters/editVenueCollectiveDataAdapter'
-import RouteLeavingGuardVenueCollectiveDataEdition from '../RouteLeavingGuardVenueCollectiveDataEdition'
 
 import styles from './CollectiveDataForm.module.scss'
 import { COLLECTIVE_DATA_FORM_INITIAL_VALUES } from './initialValues'
@@ -66,16 +66,12 @@ const CollectiveDataForm = ({
     string[] | null
   >(null)
   const [isLoading, setIsLoading] = useState(false)
-  const [isClickingFromActionBar, setIsClickingFromActionBar] =
-    useState<boolean>(false)
-
   const initialValues = venueCollectiveData
     ? extractInitialValuesFromVenue(venueCollectiveData)
     : COLLECTIVE_DATA_FORM_INITIAL_VALUES
 
   const onSubmit = async (values: CollectiveDataFormValues) => {
     setIsLoading(true)
-    setIsClickingFromActionBar(true)
     const response = await editVenueCollectiveDataAdapter({
       venueId: venue.id,
       values,
@@ -83,7 +79,6 @@ const CollectiveDataForm = ({
 
     if (!response.isOk) {
       notify.error(response.message)
-      setIsClickingFromActionBar(false)
       return setIsLoading(false)
     }
 
@@ -261,8 +256,8 @@ const CollectiveDataForm = ({
         </form>
       </FormikProvider>
 
-      <RouteLeavingGuardVenueCollectiveDataEdition
-        shouldBlock={formik.dirty && !isClickingFromActionBar}
+      <RouteLeavingGuardVenueEdition
+        shouldBlock={formik.dirty && !formik.isSubmitting}
       />
     </>
   )
