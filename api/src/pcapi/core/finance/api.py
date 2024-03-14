@@ -104,7 +104,6 @@ def get_pricing_ordering_date(
     )
     # IMPORTANT: if you change this, you must also adapt the SQL query
     # in `core.offerers.api.link_venue_to_pricing_point()`
-
     return max(
         get_pricing_point_link(booking).timespan.lower,
         stock.beginningDatetime or booking.dateUsed,
