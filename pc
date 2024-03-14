@@ -175,6 +175,10 @@ elif [[ "$CMD" == "restart-backend" ]]; then
   source "$INFRA_SCRIPTS_PATH"/start_backend.sh
   restart_backend
 
+elif [[ "$CMD" == "restart-proxy-backend" ]]; then
+  source "$INFRA_SCRIPTS_PATH"/start_backend.sh
+  restart_proxy_backend
+
 # Clear all data in postgresql database
 elif [[ "$CMD" == "reset-all-db" ]]; then
   RUN='docker exec -it '$FLASK_CONTAINER_NAME' bash -c "rm -rf /usr/src/app/static/object_store_data/*";
