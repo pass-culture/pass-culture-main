@@ -1651,3 +1651,22 @@ def anonymize_user_deposits() -> None:
     )
 
     db.session.commit()
+
+
+def enable_new_pro_nav(user: models.User) -> None:
+    pro_new_nav_state = models.UserProNewNavState.query.filter(
+        models.UserProNewNavState.userId == user.id
+    ).one_or_none()
+
+    if not pro_new_nav_state or not pro_new_nav_state.eligibilityDate:
+        raise exceptions.ProUserNotEligibleForNewNav()
+
+    if pro_new_nav_state.eligibilityDate > datetime.datetime.utcnow():
+        raise exceptions.ProUserNotYetEligibleForNewNav()
+
+    if pro_new_nav_state.newNavDate:
+        return
+
+    pro_new_nav_state.newNavDate = datetime.datetime.utcnow()
+    db.session.add(pro_new_nav_state)
+    db.session.commit()
