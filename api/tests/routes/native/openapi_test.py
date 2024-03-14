@@ -1005,6 +1005,12 @@ def test_public_api(client):
                     "properties": {
                         "marketingEmail": {"title": "Marketingemail", "type": "boolean"},
                         "marketingPush": {"title": "Marketingpush", "type": "boolean"},
+                        "subscribedThemes": {
+                            "default": [],
+                            "items": {"type": "string"},
+                            "title": "Subscribedthemes",
+                            "type": "array",
+                        },
                     },
                     "required": ["marketingEmail", "marketingPush"],
                     "title": "NotificationSubscriptions",

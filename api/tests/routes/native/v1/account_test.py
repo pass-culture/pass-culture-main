@@ -800,7 +800,7 @@ class UserProfileUpdateTest:
         response = client.post(
             "/native/v1/profile",
             json={
-                "subscriptions": {"marketingPush": True, "marketingEmail": False},
+                "subscriptions": {"marketingPush": True, "marketingEmail": False, "subscribedThemes": ["cinema"]},
             },
         )
 
@@ -810,6 +810,7 @@ class UserProfileUpdateTest:
 
         assert user.get_notification_subscriptions().marketing_push
         assert not user.get_notification_subscriptions().marketing_email
+        assert user.get_notification_subscriptions().subscribed_themes == ["cinema"]
         assert len(push_testing.requests) == 2
 
     def test_unsubscribe_push_notifications(self, client, app):
@@ -817,7 +818,8 @@ class UserProfileUpdateTest:
 
         client.with_token(email=self.identifier)
         response = client.post(
-            "/native/v1/profile", json={"subscriptions": {"marketingPush": False, "marketingEmail": False}}
+            "/native/v1/profile",
+            json={"subscriptions": {"marketingPush": False, "marketingEmail": False, "subscribedThemes": []}},
         )
 
         assert response.status_code == 200
@@ -826,26 +828,19 @@ class UserProfileUpdateTest:
         assert not user.get_notification_subscriptions().marketing_push
         assert not user.get_notification_subscriptions().marketing_email
 
-        assert len(push_testing.requests) == 2
-        assert push_testing.requests[0].get("user_id") == user.id
-        assert push_testing.requests[0].get("attribute_values", {}).get("u.marketing_push_subscription") is False
-        assert push_testing.requests[0].get("user_id") == user.id
-        assert push_testing.requests[0].get("attribute_values", {}).get("u.marketing_push_subscription") is False
+        android_batch_request = push_testing.requests[0]
+        ios_batch_request = push_testing.requests[1]
+        android_batch_attributes = android_batch_request.get("attribute_values", {})
+        ios_batch_attributes = ios_batch_request.get("attribute_values", {})
 
-    def test_unsubscribe_push_notifications_with_batch(self, client):
-        user = users_factories.UserFactory(email=self.identifier)
-
-        client.with_token(email=self.identifier)
-        response = client.post(
-            "/native/v1/profile", json={"subscriptions": {"marketingPush": False, "marketingEmail": False}}
-        )
-
-        assert response.status_code == 200
-        assert len(push_testing.requests) == 2
-        assert push_testing.requests[0].get("user_id") == user.id
-        assert push_testing.requests[0].get("attribute_values", {}).get("u.marketing_push_subscription") is False
-        assert push_testing.requests[0].get("user_id") == user.id
-        assert push_testing.requests[0].get("attribute_values", {}).get("u.marketing_push_subscription") is False
+        assert android_batch_request.get("user_id") == user.id
+        assert android_batch_attributes.get("u.marketing_push_subscription") is False
+        assert android_batch_attributes.get("u.marketing_email_subscription") is False
+        assert android_batch_attributes.get("ut.permanent_theme_preference") is None
+        assert ios_batch_request.get("user_id") == user.id
+        assert ios_batch_attributes.get("u.marketing_push_subscription") is False
+        assert ios_batch_attributes.get("u.marketing_email_subscription") is False
+        assert ios_batch_attributes.get("ut.permanent_theme_preference") is None
 
     def test_update_user_profile_reset_recredit_amount_to_show(self, client, app):
         user = users_factories.UnderageBeneficiaryFactory(email=self.identifier, recreditAmountToShow=30)
