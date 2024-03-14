@@ -182,36 +182,38 @@ const NewRequestFormDialog = ({
           </li>
         )}
 
-        {isDefaultForm && userRole === AdageFrontRoles.REDACTOR && (
-          <li>
-            en renseignant{' '}
-            <span className={styles['form-description-text-value']}>
-              le formulaire ci-dessous
-            </span>
-          </li>
-        )}
-      </ul>
-      {isDefaultForm && userRole === AdageFrontRoles.REDACTOR && (
-        <>
-          <hr />
-          <MandatoryInfo className={styles['form-mandatory']} />
-          {isPreview && (
-            <Callout
-              variant={CalloutVariant.DEFAULT}
-              className={styles['contact-callout']}
-            >
-              Vous ne pouvez pas envoyer de demande de contact car ceci est un
-              aperçu de test du formulaire que verront les enseignants une fois
-              l’offre publiée.
-            </Callout>
+        {isDefaultForm &&
+          (userRole === AdageFrontRoles.REDACTOR || isPreview) && (
+            <li>
+              en renseignant{' '}
+              <span className={styles['form-description-text-value']}>
+                le formulaire ci-dessous
+              </span>
+            </li>
           )}
-          <DefaultFormContact
-            closeRequestFormDialog={closeRequestFormDialog}
-            formik={formik}
-            isPreview={isPreview}
-          />
-        </>
-      )}
+      </ul>
+      {isDefaultForm &&
+        (userRole === AdageFrontRoles.REDACTOR || isPreview) && (
+          <>
+            <hr />
+            <MandatoryInfo className={styles['form-mandatory']} />
+            {isPreview && (
+              <Callout
+                variant={CalloutVariant.DEFAULT}
+                className={styles['contact-callout']}
+              >
+                Vous ne pouvez pas envoyer de demande de contact car ceci est un
+                aperçu de test du formulaire que verront les enseignants une
+                fois l’offre publiée.
+              </Callout>
+            )}
+            <DefaultFormContact
+              closeRequestFormDialog={closeRequestFormDialog}
+              formik={formik}
+              isPreview={isPreview}
+            />
+          </>
+        )}
     </div>
   )
 
