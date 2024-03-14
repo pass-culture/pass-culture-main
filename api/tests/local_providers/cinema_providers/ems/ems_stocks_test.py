@@ -7,7 +7,6 @@ from pathlib import Path
 from unittest import mock
 
 import pytest
-import sqlalchemy as sa
 
 from pcapi import settings
 from pcapi.connectors.ems import EMSScheduleConnector
@@ -100,9 +99,8 @@ class EMSStocksTest:
         # synchronize with show with new date
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0_WITH_NEW_DATE)
         requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
-
-        # we suppose that the last stock row was inserted in the first update call
-        stock = offers_models.Stock.query.order_by(sa.asc("id")).first()
+        # targeting specific stock whith idAtprovider
+        stock = offers_models.Stock.query.where(offers_models.Stock.idAtProviders.like("%999700079243")).first()
         assert stock is not None
         event_created = create_finance_event_to_update(stock=stock, venue_provider=venue_provider)
         last_pricingOrderingDate = event_created.pricingOrderingDate
