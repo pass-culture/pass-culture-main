@@ -133,7 +133,7 @@ describe('CollectiveOfferSummary', () => {
     expect(screen.getByText('email@test.co')).toBeInTheDocument()
     expect(screen.getByText('00000000')).toBeInTheDocument()
     expect(
-      screen.getByText('Le formulaure sandard Pass Culture')
+      screen.getByText('Le formulaire standard Pass Culture')
     ).toBeInTheDocument()
   })
 
