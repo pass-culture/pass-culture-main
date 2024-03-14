@@ -1,16 +1,38 @@
-import './UnauthenticatedError.scss'
-import * as React from 'react'
+import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
+import { ButtonLink } from 'ui-kit'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-export const UnauthenticatedError = (): JSX.Element => {
+import styles from './UnauthenticatedError.module.scss'
+
+export default function UnauthenticatedError(): JSX.Element {
   return (
-    <main className="error" id="content">
-      <h1>Une erreur s’est produite.</h1>
-      <div>
-        Contactez{' '}
-        <a href="mailto:adage-pass-culture@education.gouv.fr">
-          adage-pass-culture@education.gouv.fr
-        </a>{' '}
-        pour obtenir de l’aide.
+    <main className={styles['error']} id="content">
+      <div className={styles['error-header']}>
+        <div className={styles['error-header-brand']}>
+          <SvgIcon
+            src={logoPassCultureIcon}
+            alt="Logo du pass Culture"
+            width="109"
+            viewBox="0 0 71 24"
+          />
+        </div>
+      </div>
+      <div className={styles['error-content']}>
+        <h1 className={styles['error-content-title']}>
+          Une erreur s’est produite
+        </h1>
+        <p>
+          Contactez{' '}
+          <ButtonLink
+            link={{
+              isExternal: true,
+              to: 'mailto:adage-pass-culture@education.gouv.fr',
+            }}
+          >
+            adage-pass-culture@education.gouv.fr
+          </ButtonLink>{' '}
+          pour obtenir de l’aide.
+        </p>
       </div>
     </main>
   )
