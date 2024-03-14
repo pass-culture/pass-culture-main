@@ -43,7 +43,11 @@ class Returns204Test:
         assert user.phoneNumber == "+33102030405"
         assert user.dateOfBirth is None
         assert user.dateCreated is not None
-        assert user.notificationSubscriptions == {"marketing_push": True, "marketing_email": False}
+        assert user.notificationSubscriptions == {
+            "marketing_push": True,
+            "marketing_email": False,
+            "subscribed_themes": [],
+        }
 
         actions_list = history_models.ActionHistory.query.order_by(history_models.ActionHistory.actionType).all()
         assert len(actions_list) == 1
