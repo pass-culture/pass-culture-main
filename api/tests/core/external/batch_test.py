@@ -45,6 +45,7 @@ class FormatUserAttributesTest:
             "ut.most_favorite_offer_subcat": ["CINE_PLEIN_AIR", "SUPPORT_PHYSIQUE_FILM"],
             "u.marketing_email_subscription": True,
             "u.marketing_push_subscription": True,
+            "ut.permanent_theme_preference": ["cinema"],
             "u.postal_code": None,
             "ut.roles": ["BENEFICIARY"],
         }

@@ -78,6 +78,7 @@ class SendinblueAttributes(Enum):
     MOST_BOOKED_MUSIC_TYPE = "MOST_BOOKED_MUSIC_TYPE"
     MOST_FAVORITE_OFFER_SUBCATEGORIES = "MOST_FAVORITE_OFFER_SUBCATEGORIES"
     OFFERER_NAME = "OFFERER_NAME"
+    PERMANENT_THEME_PREFERENCE = "PERMANENT_THEME_PREFERENCE"
     POSTAL_CODE = "POSTAL_CODE"
     PRODUCT_BRUT_X_USE_DATE = "PRODUCT_BRUT_X_USE_DATE"
     USER_ID = "USER_ID"
@@ -229,6 +230,8 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
             attributes, "most_favorite_offer_subcategories", format_list
         ),
         SendinblueAttributes.OFFERER_NAME.value: _get_attr(attributes, "offerers_names", format_list),
+        SendinblueAttributes.PERMANENT_THEME_PREFERENCE.value: _get_attr(attributes, "subscribed_themes", format_list)
+        or "",
         SendinblueAttributes.POSTAL_CODE.value: _get_attr(attributes, "postal_code", format_list_or_str),
         SendinblueAttributes.PRODUCT_BRUT_X_USE_DATE.value: _get_attr(
             attributes, "products_use_date", lambda v: v.get("product_brut_x_use")
