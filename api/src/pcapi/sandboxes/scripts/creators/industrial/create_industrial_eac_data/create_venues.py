@@ -57,7 +57,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
     create_venue(
         managingOfferer=offerer,
         name=f"reimbursementPoint {offerer.name} 91",
-        adageId="7894896",
+        adageId="10837",
         adageInscriptionDate=datetime.utcnow() - timedelta(days=5),
         reimbursement=True,
         venueEducationalStatusId=next(educational_status_iterator),
