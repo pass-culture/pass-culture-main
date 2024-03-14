@@ -159,7 +159,7 @@ const NewRequestFormDialog = ({
         {isCustomForm && (
           <li>
             <div className={styles['form-description-link']}>
-              <i>via</i> son site :
+              <i>via</i> son formulaire :
               <ButtonLink
                 onClick={logContactUrl}
                 variant={ButtonVariant.TERNARYPINK}
@@ -195,14 +195,16 @@ const NewRequestFormDialog = ({
         <>
           <hr />
           <MandatoryInfo className={styles['form-mandatory']} />
-          <Callout
-            variant={CalloutVariant.DEFAULT}
-            className={styles['contact-callout']}
-          >
-            Vous ne pouvez pas envoyer de demande de contact car ceci est un
-            aperçu de test du formulaire que verront les enseignants une fois
-            l’offre publiée.
-          </Callout>
+          {isPreview && (
+            <Callout
+              variant={CalloutVariant.DEFAULT}
+              className={styles['contact-callout']}
+            >
+              Vous ne pouvez pas envoyer de demande de contact car ceci est un
+              aperçu de test du formulaire que verront les enseignants une fois
+              l’offre publiée.
+            </Callout>
+          )}
           <DefaultFormContact
             closeRequestFormDialog={closeRequestFormDialog}
             formik={formik}
@@ -216,7 +218,7 @@ const NewRequestFormDialog = ({
   const renderCustomFormElement = () => (
     <div>
       <div className={styles['form-description-link-site']}>
-        Il vous propose de le faire <i>via</i> son site :
+        Il vous propose de le faire <i>via</i> son formulaire :
       </div>
       <ButtonLink
         onClick={logContactUrl}
