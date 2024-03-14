@@ -956,6 +956,7 @@ def update_notification_subscription(
     user.notificationSubscriptions = {
         "marketing_push": subscriptions.marketing_push,
         "marketing_email": subscriptions.marketing_email,
+        "subscribed_themes": subscriptions.subscribed_themes,
     }
 
     repository.save(user)
