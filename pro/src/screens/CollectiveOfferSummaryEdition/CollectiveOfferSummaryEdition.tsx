@@ -22,6 +22,9 @@ import { computeCollectiveOffersUrl } from 'core/Offers/utils'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
+import fullEditIcon from 'icons/full-edit.svg'
+import fullMoreIcon from 'icons/full-more.svg'
+import fullShowIcon from 'icons/full-show.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -54,6 +57,11 @@ const CollectiveOfferSummaryEdition = ({
     offer.isTemplate
   )}/collectif/stocks/edition`
 
+  const previewLink = `/offre/${computeURLCollectiveOfferId(
+    offer.id,
+    offer.isTemplate
+  )}/collectif/preview`
+
   const visibilityEditLink = `/offre/${offer.id}/collectif/visibilite/edition`
   const { logEvent } = useAnalytics()
 
@@ -73,17 +81,27 @@ const CollectiveOfferSummaryEdition = ({
 
       {offer.isTemplate && (
         <div className={styles['duplicate-offer']}>
-          <p className={styles['duplicate-offer-description']}>
-            Vous pouvez dupliquer cette offre autant de fois que vous le
-            souhaitez pour l’associer aux établissements scolaires qui vous
-            contactent. <br />
-            &nbsp;· L’offre vitrine restera visible sur ADAGE <br />
-            &nbsp;· L’offre associée à l’établissement devra être préréservée
-            par l’enseignant(e) qui vous a contacté
-          </p>
-
+          <ButtonLink
+            link={{
+              to: offerEditLink,
+              isExternal: false,
+            }}
+            icon={fullEditIcon}
+          >
+            Modifier l’offre
+          </ButtonLink>
+          <ButtonLink
+            link={{
+              to: previewLink,
+              isExternal: false,
+            }}
+            icon={fullShowIcon}
+          >
+            Aperçu dans ADAGE
+          </ButtonLink>
           <Button
-            variant={ButtonVariant.PRIMARY}
+            variant={ButtonVariant.TERNARY}
+            icon={fullMoreIcon}
             onClick={() => {
               logEvent?.(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
                 from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
@@ -98,7 +116,7 @@ const CollectiveOfferSummaryEdition = ({
               )
             }}
           >
-            Créer une offre réservable pour un établissement scolaire
+            Créer une offre réservable
           </Button>
         </div>
       )}
