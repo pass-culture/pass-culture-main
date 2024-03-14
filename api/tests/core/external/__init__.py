@@ -50,6 +50,7 @@ common_user_attributes = attributes_models.UserAttributes(
     products_use_date={"product_brut_x_use": datetime(2021, 5, 6)},
     user_id=1,
     roles=["BENEFICIARY"],
+    subscribed_themes=[],
     suspension_date=None,
     suspension_reason=None,
 )

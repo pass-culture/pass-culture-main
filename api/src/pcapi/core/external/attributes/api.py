@@ -116,6 +116,7 @@ def get_anonymized_attributes(user: users_models.User) -> models.UserAttributes 
         most_booked_movie_genre=None,
         most_booked_music_type=None,
         most_favorite_offer_subcategories=None,
+        subscribed_themes=[],
         suspension_date=None,
         suspension_reason=None,
     )
@@ -421,6 +422,7 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
             if booking.dateUsed and booking.stock.offer.productId in TRACKED_PRODUCT_IDS
         },
         roles=[role.value for role in user.roles],
+        subscribed_themes=user.get_notification_subscriptions().subscribed_themes,
         suspension_date=user.suspension_date,
         suspension_reason=user.suspension_reason,
     )
