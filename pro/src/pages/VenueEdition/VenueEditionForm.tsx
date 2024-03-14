@@ -107,7 +107,7 @@ export const VenueEditionForm = ({
             description={
               venue.isVirtual
                 ? undefined
-                : 'Ces informations seront affichées dans votre page lieu sur l’application pass Culture (sauf pour les lieux administratifs). Elles permettront aux jeunes d’en savoir plus sur votre lieu.'
+                : 'Cet espace vous permet de présenter votre activité culturelle aux utilisateurs de l’application pass Culture. Vous pouvez décrire les différentes actions que vous menez, votre histoire ou préciser des informations sur votre activité.'
             }
           >
             <FormLayout.Row>
@@ -127,7 +127,7 @@ export const VenueEditionForm = ({
           <FormLayout.Section
             title="Contact"
             description={
-              'Ces informations seront affichées dans votre page lieu, sur l’application pass Culture. ' +
+              'Ces informations seront affichées dans votre page partenaire, sur l’application pass Culture. ' +
               'Elles permettront aux bénéficiaires de vous contacter en cas de besoin.'
             }
           >
