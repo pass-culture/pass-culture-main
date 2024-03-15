@@ -1724,10 +1724,10 @@
     "@firebase/util" "1.9.4"
     tslib "^2.1.0"
 
-"@firebase/app@^0.9.28":
-  version "0.9.28"
-  resolved "https://registry.yarnpkg.com/@firebase/app/-/app-0.9.28.tgz#16a0d8ec91de429379bedeca42717cee3a2374d2"
-  integrity sha512-MS0+EtNixrwJbVDs5Bt/lhUhzeWGUtUoP6X+zYZck5GAZwI5g4F91noVA9oIXlFlpn6Q1xIbiaHA2GwGk7/7Ag==
+"@firebase/app@^0.9.29":
+  version "0.9.29"
+  resolved "https://registry.yarnpkg.com/@firebase/app/-/app-0.9.29.tgz#444280f0ddf1da4b2a974c86a6a8c6405d950fb7"
+  integrity sha512-HbKTjfmILklasIu/ij6zKnFf3SgLYXkBDVN7leJfVGmohl+zA7Ig+eXM1ZkT1pyBJ8FTYR+mlOJer/lNEnUCtw==
   dependencies:
     "@firebase/component" "0.6.5"
     "@firebase/logger" "0.4.0"
