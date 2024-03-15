@@ -160,15 +160,15 @@ describe('AdageOfferHeader', () => {
       offer: {
         ...defaultCollectiveTemplateOffer,
         dates: {
-          end: '2024-01-29T23:00:28.040559Z',
-          start: '2024-01-23T23:00:28.040547Z',
+          end: '2024-01-29T20:00:28.040559Z',
+          start: '2024-01-23T20:00:28.040547Z',
         },
       },
       adageUser: defaultAdageUser,
     })
 
     expect(
-      screen.getByText('Du 23 janvier au 29 janvier 2024 à 23h')
+      screen.getByText('Du 23 janvier au 29 janvier 2024 à 21h')
     ).toBeInTheDocument()
   })
 
