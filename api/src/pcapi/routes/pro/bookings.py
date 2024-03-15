@@ -4,7 +4,11 @@ from flask_login import current_user
 from flask_login import login_required
 
 from pcapi.core.bookings.models import BookingExportType
+from pcapi.core.bookings.models import BookingStatusFilter
 import pcapi.core.bookings.repository as booking_repository
+from pcapi.core.offers.models import Offer
+from pcapi.models import api_errors
+from pcapi.routes.serialization.bookings_recap_serialize import ExportBookingsQueryModel
 from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsQueryModel
 from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsResponseModel
 from pcapi.routes.serialization.bookings_recap_serialize import UserHasBookingResponse
@@ -62,6 +66,57 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
 def get_user_has_bookings() -> UserHasBookingResponse:
     user = current_user._get_current_object()
     return UserHasBookingResponse(hasBookings=booking_repository.user_has_bookings(user))
+
+
+@blueprint.pro_private_api.route("/bookings/offer/<int:offer_id>/csv", methods=["GET"])
+@login_required
+@spectree_serialize(
+    json_format=False,
+    response_headers={
+        "Content-Type": "text/csv; charset=utf-8;",
+        "Content-Disposition": "attachment; filename=reservations_pass_culture.csv",
+    },
+    api=blueprint.pro_private_schema,
+)
+def export_bookings_for_offer_as_csv(offer_id: int, query: ExportBookingsQueryModel) -> bytes | api_errors.ApiErrors:
+    user = current_user._get_current_object()
+    offer = Offer.query.get(int(offer_id))
+
+    if not user.has_access(offer.venue.managingOffererId):
+        return api_errors.ForbiddenError({"global": "You are not allowed to access this offer"})
+
+    if query.status == BookingStatusFilter.VALIDATED:
+        return cast(
+            str, booking_repository.export_validated_bookings_by_offer_id(offer_id, export_type=BookingExportType.CSV)
+        ).encode("utf-8-sig")
+    return cast(
+        str, booking_repository.export_bookings_by_offer_id(offer_id, export_type=BookingExportType.CSV)
+    ).encode("utf-8-sig")
+
+
+@blueprint.pro_private_api.route("/bookings/offer/<int:offer_id>/excel", methods=["GET"])
+@login_required
+@spectree_serialize(
+    json_format=False,
+    response_headers={
+        "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "Content-Disposition": "attachment; filename=reservations_pass_culture.xlsx",
+    },
+    api=blueprint.pro_private_schema,
+)
+def export_bookings_for_offer_as_excel(offer_id: int, query: ExportBookingsQueryModel) -> bytes | api_errors.ApiErrors:
+    user = current_user._get_current_object()
+    offer = Offer.query.get(int(offer_id))
+
+    if not user.has_access(offer.venue.managingOffererId):
+        return api_errors.ForbiddenError({"global": "You are not allowed to access this offer"})
+
+    if query.status == BookingStatusFilter.VALIDATED:
+        return cast(
+            bytes,
+            booking_repository.export_validated_bookings_by_offer_id(offer_id, export_type=BookingExportType.EXCEL),
+        )
+    return cast(bytes, booking_repository.export_bookings_by_offer_id(offer_id, export_type=BookingExportType.EXCEL))
 
 
 @blueprint.pro_private_api.route("/bookings/csv", methods=["GET"])
