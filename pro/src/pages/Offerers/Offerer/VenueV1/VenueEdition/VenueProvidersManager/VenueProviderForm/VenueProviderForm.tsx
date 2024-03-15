@@ -1,7 +1,11 @@
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { getError, isErrorAPIError } from 'apiClient/helpers'
+import {
+  getError,
+  getHumanReadableApiError,
+  isErrorAPIError,
+} from 'apiClient/helpers'
 import {
   PostVenueProviderBody,
   VenueProviderResponse,
@@ -14,7 +18,6 @@ import useNotification from 'hooks/useNotification'
 import AllocineProviderForm from '../AllocineProviderForm/AllocineProviderForm'
 import { CinemaProviderForm } from '../CinemaProviderForm/CinemaProviderForm'
 import StocksProviderForm from '../StocksProviderForm/StocksProviderForm'
-import { getRequestErrorStringFromErrors } from '../utils/getRequestErrorStringFromErrors'
 
 interface VenueProviderFormProps {
   afterSubmit: (createdVenueProvider?: VenueProviderResponse) => void
@@ -43,7 +46,7 @@ const VenueProviderForm = ({
       .catch((error) => {
         isSucess = false
         if (isErrorAPIError(error)) {
-          notify.error(getRequestErrorStringFromErrors(getError(error)))
+          notify.error(getHumanReadableApiError(getError(error)))
           afterSubmit()
         }
       })
