@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { getHumanReadableApiError } from 'apiClient/helpers'
 import Callout from 'components/Callout/Callout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { OfferAppPreview } from 'components/OfferAppPreview'
@@ -14,7 +15,6 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
-import { publishIndividualOffer } from 'core/Offers/adapters/publishIndividualOffer'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'hooks'
@@ -72,14 +72,15 @@ const SummaryScreen = () => {
     const offererResponse = isNewBankDetailsJourneyEnabled
       ? await api.getOfferer(offer.venue.managingOfferer.id)
       : null
-    const publishIndividualOfferResponse = await publishIndividualOffer({
-      offerId: offer.id,
-    })
 
-    if (publishIndividualOfferResponse.isOk) {
+    try {
+      const publishIndividualOfferResponse = await api.patchPublishOffer({
+        id: offer.id,
+      })
+
       const shouldDisplayRedirectDialog =
         (isNewBankDetailsJourneyEnabled &&
-          publishIndividualOfferResponse.payload.isNonFreeOffer &&
+          publishIndividualOfferResponse.isNonFreeOffer &&
           offererResponse &&
           !offererResponse.hasNonFreeOffer &&
           !offererResponse.hasValidBankAccount &&
@@ -92,8 +93,8 @@ const SummaryScreen = () => {
       } else {
         navigate(offerConfirmationStepUrl)
       }
-    } else {
-      notification.error('Une erreur s’est produite, veuillez réessayer')
+    } catch (error) {
+      notification.error(getHumanReadableApiError(error))
     }
     setIsDisabled(false)
   }
