@@ -62,16 +62,28 @@ def check_active_offerers(dry_run: bool = False, day: int | None = None) -> None
 
 
 @blueprint.cli.command("synchronize_venues_banners_with_google_places")
-@click.argument("start_venue_id", type=int, required=False, default=0)
-@click.argument("end_venue_id", type=int, required=False, default=None)
-@click.argument("limit", type=int, required=False, default=None)
-def synchronize_venues_banners_with_google_places(
-    start_venue_id: int = 0, end_venue_id: int | None = None, limit: int | None = None
-) -> None:
+@click.option("--frequency", type=int, required=False, default=1)
+def synchronize_venues_banners_with_google_places(frequency: int = 1) -> None:
     """Synchronize venues banners with Google Places API.
-    The command searches for venues without banner and with a permanent venue type in google places api.
-    it creates entries in the database for the venues with the banner url found in google places api and stores their placeId.
-    then it aploads the banner to gcp and stores the url in the database.
+
+    This command is meant to be called every day.
+    The `frequency` parameter is used to split the venues into blocks, to update a fraction of the venues every day.
+    1 means all venues are updated once a month, 2 means twice a month, 4 means once a week.
+
+    Args:
+        frequency (int): The frequency of the command per month. Default is 1, to synchronize all venues once a month.
     """
-    banner_url_synchronizations.delete_venues_banners(start_venue_id, end_venue_id, limit)
-    banner_url_synchronizations.synchronize_venues_banners_with_google_places(start_venue_id, end_venue_id, limit)
+
+    if frequency not in (1, 2, 4):
+        raise click.BadParameter("frequency must be 1, 2 or 4")
+
+    day = datetime.date.today().day
+    if day > banner_url_synchronizations.SHORTEST_MONTH_LENGTH:
+        logger.info(
+            "[gmaps_banner_synchro] synchronize_venues_banners_with_google_places command does not execute after 28th"
+        )
+        return
+
+    venues = banner_url_synchronizations.get_venues_without_photo(frequency)
+    banner_url_synchronizations.delete_venues_banners(venues)
+    banner_url_synchronizations.synchronize_venues_banners_with_google_places(venues)

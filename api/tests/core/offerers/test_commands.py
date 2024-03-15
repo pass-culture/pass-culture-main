@@ -1,3 +1,4 @@
+import logging
 from unittest.mock import patch
 
 import pytest
@@ -27,3 +28,16 @@ class CheckActiveOfferersTest:
 
         # Only check that the task is called; its behavior is tested in offerers/test_task.py
         mock_get_siren.assert_called_once_with(offerer.siren, with_address=False, raise_if_non_public=False)
+
+
+class SynchronizeVenuesBannerWithGooglePlacesTest:
+    @pytest.mark.parametrize("day", [29, 30, 31])
+    def test_does_not_execute_and_log_after_28th(self, day, caplog, app):
+        with time_machine.travel(f"2024-12-{day:02d} 23:00:00"):
+            with caplog.at_level(logging.INFO):
+                run_command(app, "synchronize_venues_banners_with_google_places")
+
+        assert (
+            caplog.records[0].message
+            == "[gmaps_banner_synchro] synchronize_venues_banners_with_google_places command does not execute after 28th"
+        )
