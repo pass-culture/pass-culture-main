@@ -1,8 +1,12 @@
 import { useFormikContext } from 'formik'
+import { useState } from 'react'
 
+import fullLessIcon from 'icons/full-less.svg'
+import fullMoreIcon from 'icons/full-more.svg'
 import { mapDayToFrench } from 'pages/VenueEdition/OpeningHoursReadOnly/utils'
 import { DayCheckbox } from 'screens/IndividualOffer/StocksEventCreation/DayCheckbox'
-import { TimePicker } from 'ui-kit'
+import { Button, TimePicker } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { VenueEditionFormValues } from '../types'
 
@@ -66,6 +70,12 @@ export function OpeningHoursForm() {
 }
 
 function HourLine() {
+  const [isFullLineDisplayed, setIsFullLineDisplayed] = useState(false)
+
+  function toggleFullLine() {
+    setIsFullLineDisplayed(!isFullLineDisplayed)
+  }
+
   return (
     <span className={styles['hour-line']}>
       <TimePicker
@@ -84,25 +94,42 @@ function HourLine() {
         hideFooter
         inline
         className={styles['time-picker']}
-      />
-      |
-      <TimePicker
-        label={'Horaire d’ouverture 2'}
-        name={`3`}
-        isLabelHidden
-        hideFooter
-        inline
-        className={styles['time-picker']}
-      />
-      -
-      <TimePicker
-        label={'Horaire de fermeture 2'}
-        name={`4`}
-        isLabelHidden
-        hideFooter
-        inline
-        className={styles['time-picker']}
-      />
+      />{' '}
+      {isFullLineDisplayed && (
+        <>
+          |
+          <TimePicker
+            label={'Horaire d’ouverture 2'}
+            name={`3`}
+            isLabelHidden
+            hideFooter
+            inline
+            className={styles['time-picker']}
+          />
+          -
+          <TimePicker
+            label={'Horaire de fermeture 2'}
+            name={`4`}
+            isLabelHidden
+            hideFooter
+            inline
+            className={styles['time-picker']}
+          />
+        </>
+      )}
+      {isFullLineDisplayed ? (
+        <Button
+          variant={ButtonVariant.TERNARY}
+          icon={fullLessIcon}
+          onClick={toggleFullLine}
+        />
+      ) : (
+        <Button
+          variant={ButtonVariant.TERNARY}
+          icon={fullMoreIcon}
+          onClick={toggleFullLine}
+        />
+      )}
     </span>
   )
 }
