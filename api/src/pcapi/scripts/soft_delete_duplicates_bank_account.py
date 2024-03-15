@@ -8,6 +8,8 @@ from sqlalchemy.engine.row import Row
 
 from pcapi.app import app
 from pcapi.core.finance.models import BankAccount
+from pcapi.core.finance.models import Cashflow
+from pcapi.core.finance.models import Invoice
 from pcapi.core.history.models import ActionHistory
 from pcapi.core.history.models import ActionType
 from pcapi.core.offerers.models import VenueBankAccountLink
@@ -31,6 +33,8 @@ class SoftDeleteBankAccounts:
         self.opened_venue_bank_account_link = 0
         self.action_history_created = 0
         self.bank_account_soft_deleted = 0
+        self.switched_cashflows = 0
+        self.switched_invoices = 0
 
     def go(self) -> None:
         try:
@@ -53,23 +57,40 @@ class SoftDeleteBankAccounts:
         if self.dry_run:
             print(f"{self.bank_account_soft_deleted} bank accounts would have been soft deleted")
             print(f"{self.closed_venue_bank_account_link} links would have been closed")
+            print(f"{self.opened_venue_bank_account_link} links would have been created")
             print(f"{self.action_history_created} action history would have been created")
+            print(f"{self.switched_cashflows} cashflows would have been switched")
+            print(f"{self.switched_invoices} invoices would have been switched")
         else:
             print(f"{self.bank_account_soft_deleted} bank accounts soft deleted")
             print(f"{self.closed_venue_bank_account_link} links closed")
+            print(f"{self.opened_venue_bank_account_link} links opened")
             print(f"{self.action_history_created} action history created")
+            print(f"{self.switched_cashflows} cashflows switched")
+            print(f"{self.switched_invoices} invoices switched")
 
     def _go(self) -> None:
         rows = self.fetch_duplicates_without_finance_data()
         for row in rows:
-            for bank_account_id in row.duplicates:
-                print(
-                    f"processing bank_account {bank_account_id} ({row.bank_account_iban}) from offerer {row.offererId}"
-                )
-                self.close_current_venues_links(bank_account_id, row)
-                self.soft_delete_bank_account(bank_account_id)
+            for duplicate_id in row.duplicates:
+                print(f"processing bank_account {duplicate_id} ({row.bank_account_iban}) from offerer {row.offererId}")
+                main_bank_account = self.find_main_bank_account(duplicate_id, row)
+                if main_bank_account is None:
+                    # Multiple or none candidate, we won't be able to do anything without further discussion
+                    # skipping it
+                    print(f"unable to process bank_account {duplicate_id}")
+                    continue
+                self.switch_finance_data_to_main_bank_account(main_bank_account, duplicate_id, row)
+                self.close_current_venues_links(main_bank_account, duplicate_id, row)
+                self.soft_delete_bank_account(duplicate_id)
 
-    def link_venues_on_main_bank_account(self, duplicate_id: int, row: Row, venues_ids: list[int]) -> None:
+    def find_main_bank_account(self, duplicate_id: int, row: Row) -> BankAccount | None:
+        """
+        Try to find a "main" bank account.
+        As in "a bank account within the same offerer, with same IBAN & BIC, but link to a DS application"
+
+        "try" being the key word as there can be multiple candidates...
+        """
         try:
             main_bank_account = BankAccount.query.filter(
                 BankAccount.iban == row.bank_account_iban,
@@ -80,11 +101,38 @@ class SoftDeleteBankAccounts:
             ).one()
         except sa.orm.exc.MultipleResultsFound:
             print(f"multiple candidates found for main bank account of duplicate {duplicate_id}")
-            return
+            return None
         except sa.orm.exc.NoResultFound:
+            # We shouldn't reach that point as we only processing duplicates bank accounts
             print(f"No candidate found for main bank_account of duplicate {duplicate_id}")
-            return
+            return None
 
+        return main_bank_account
+
+    def switch_finance_data_to_main_bank_account(
+        self, main_bank_account: BankAccount, duplicate_id: int, row: Row
+    ) -> None:
+        cashflow_mapping = []
+        for (cashflow_id,) in Cashflow.query.filter_by(bankAccountId=duplicate_id).with_entities(Cashflow.id).all():
+            cashflow_mapping.append({"id": cashflow_id, "bankAccountId": main_bank_account.id})
+
+        db.session.bulk_update_mappings(Cashflow, cashflow_mapping)
+        db.session.flush()
+        self.switched_cashflows += len(cashflow_mapping)
+        print(f"switch {len(cashflow_mapping)} cashflows to main {main_bank_account.id} from duplicate {duplicate_id}")
+
+        invoice_mapping = []
+        for (invoice_id,) in Invoice.query.filter_by(bankAccountId=duplicate_id).with_entities(Invoice.id).all():
+            invoice_mapping.append({"id": invoice_id, "bankAccountId": main_bank_account.id})
+
+        db.session.bulk_update_mappings(Invoice, invoice_mapping)
+        db.session.flush()
+        self.switched_invoices += len(invoice_mapping)
+        print(f"switch {len(invoice_mapping)} invoices to main {main_bank_account} from duplicate {duplicate_id}")
+
+    def link_venues_on_main_bank_account(
+        self, main_bank_account: BankAccount, duplicate_id: int, row: Row, venues_ids: list[int]
+    ) -> None:
         new_links = []
         action_history = []
         now = datetime.datetime.utcnow()
@@ -116,11 +164,11 @@ class SoftDeleteBankAccounts:
         )
         print(f"created {len(action_history)} action history accordingly")
 
-    def close_current_venues_links(self, bank_account_id: int, row: Row) -> None:
+    def close_current_venues_links(self, main_bank_account: BankAccount, duplicate_id: int, row: Row) -> None:
         venues_ids_linked = []
         mapping = []
         now = datetime.datetime.utcnow()
-        for current_link in self.fetch_current_venues_links(bank_account_id):
+        for current_link in self.fetch_current_venues_links(duplicate_id):
             mapping.append(
                 {"id": current_link.id, "timespan": db_utils.make_timerange(current_link.timespan.lower, now)}
             )
@@ -140,7 +188,7 @@ class SoftDeleteBankAccounts:
 
         # We just close active venues link on a duplicate
         # Now we need to switch them to a main bank account, if possible
-        self.link_venues_on_main_bank_account(bank_account_id, row, venues_ids_linked)
+        self.link_venues_on_main_bank_account(main_bank_account, duplicate_id, row, venues_ids_linked)
 
     def soft_delete_bank_account(self, bank_account_id: int) -> None:
         db.session.query(BankAccount).filter_by(id=bank_account_id).update(
@@ -162,9 +210,7 @@ class SoftDeleteBankAccounts:
                 """
                 -- All offerer that have at least one duplicate bank account (i.e. same IBAN & BIC):
                 --      without a dsApplicationId
-                --      without any cashflow
-                --      without any invoice
-
+                --      reference by cashflows and/or invoices
                 SELECT *,
                        cardinality(duplicates) AS how_much_duplicates
                 FROM
@@ -177,19 +223,20 @@ class SoftDeleteBankAccounts:
                    AND bank_account."iban"=duplicate."iban"
                    AND bank_account."bic"=duplicate."bic"
                    AND bank_account."offererId"=duplicate."offererId"
+                   AND bank_account."dsApplicationId" IS NOT NULL
+                   AND duplicate."dsApplicationId" IS NULL
+                   -- We only want to process older orphans bank_information
+                   AND duplicate."id" > 200000
                    LEFT OUTER JOIN cashflow on duplicate.id=cashflow."bankAccountId"
                    LEFT OUTER JOIN invoice on duplicate.id=invoice."bankAccountId"
                    WHERE 
-                        bank_account."dsApplicationId" IS NOT NULL
-                        AND bank_account."isActive" is True
-                        AND duplicate."dsApplicationId" IS NULL
+                        bank_account."isActive" is True
                         AND duplicate."isActive" is True
-                        AND cashflow."bankAccountId" IS NULL
-                        AND invoice."bankAccountId" IS NULL
+                        AND (cashflow."bankAccountId" IS NOT NULL) OR (invoice."bankAccountId" IS NOT NULL)
                    GROUP BY bank_account."offererId",
                             bank_account.iban, bank_account.bic) as duplicates_query
-                ORDER BY cardinality(duplicates) DESC;
-            """
+                ORDER BY how_much_duplicates DESC;
+                """
             )
         )
 
