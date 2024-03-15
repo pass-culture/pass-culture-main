@@ -17,7 +17,7 @@ interface RouteMeta {
 
 export interface RouteConfig {
   path: string
-  title?: string
+  title: string
   element?: JSX.Element
   lazy?: any
   meta?: RouteMeta
@@ -29,11 +29,13 @@ const routes: RouteConfig[] = [
   {
     element: <Navigate to="/accueil" />,
     path: '/',
+    title: 'Espace acteurs culturels',
   },
   {
     lazy: () => import('pages/AdageIframe/app/App'),
     path: '/adage-iframe/*',
     meta: { public: true },
+    title: 'ADAGE',
   },
   {
     lazy: () => import('pages/Signup/Signup'),
