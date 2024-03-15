@@ -103,6 +103,9 @@ describe('getHumanReadableApiError', () => {
   })
 
   it('should parse a dict body', () => {
+    expect(getHumanReadableApiError(apiErrorFactory({ global: 'toto' }))).toBe(
+      'toto'
+    )
     expect(
       getHumanReadableApiError(apiErrorFactory({ global: ['toto'] }))
     ).toBe('toto')

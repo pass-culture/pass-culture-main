@@ -38,18 +38,14 @@ export const getHumanReadableApiError = (
   const { body } = error
 
   if (body instanceof Array && body.length > 0) {
-    return body
-      .map((error) =>
-        Object.keys(error)
-          .map((key) => error[key])
-          .join(' ')
-      )
-      .join(' ')
+    return body.map((bodyValue) => Object.values(bodyValue).join(' ')).join(' ')
   }
 
   if (body instanceof Object && Object.keys(body).length > 0) {
-    return Object.keys(body)
-      .map((key) => body[key].map((error: any) => error).join(' '))
+    return Object.values(body)
+      .map((bodyValue) =>
+        bodyValue instanceof Array ? bodyValue.join(' ') : bodyValue
+      )
       .join(' ')
   }
 
