@@ -13,7 +13,7 @@ import { DEFAULT_CINEMA_PROVIDER_FORM_VALUES } from './constants'
 import { CinemaProviderFormValues } from './types'
 
 export interface CinemaProviderFormProps {
-  saveVenueProvider: (values: PostVenueProviderBody) => boolean
+  saveVenueProvider: (values: PostVenueProviderBody) => Promise<boolean>
   providerId: number
   venueId: number
   offererId: number
@@ -34,7 +34,7 @@ export const CinemaProviderForm = ({
   const [isLoading, setIsLoading] = useState(false)
   const { logEvent } = useAnalytics()
 
-  const handleFormSubmit = (values: CinemaProviderFormValues) => {
+  const handleFormSubmit = async (values: CinemaProviderFormValues) => {
     const payload = {
       providerId,
       venueId,
@@ -44,7 +44,7 @@ export const CinemaProviderForm = ({
 
     setIsLoading(true)
 
-    const isSuccess = saveVenueProvider(payload)
+    const isSuccess = await saveVenueProvider(payload)
     logEvent?.(SynchronizationEvents.CLICKED_IMPORT, {
       offererId: offererId,
       venueId: venueId,

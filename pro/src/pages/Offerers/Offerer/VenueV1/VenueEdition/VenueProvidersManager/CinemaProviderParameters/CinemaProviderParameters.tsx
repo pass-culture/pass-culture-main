@@ -25,26 +25,21 @@ const CinemaProviderParameters = ({
   const [isOpenedFormDialog, setIsOpenedFormDialog] = useState(false)
   const notification = useNotification()
 
-  const editVenueProvider = (
+  const editVenueProvider = async (
     payload: CinemaProviderParametersValues
-  ): boolean => {
-    let isSucess = false
+  ): Promise<boolean> => {
+    try {
+      const editedVenueProvider = await api.updateVenueProvider(payload)
 
-    api
-      .updateVenueProvider(payload)
-      .then((editedVenueProvider) => {
-        afterVenueProviderEdit(editedVenueProvider)
-        notification.success(
-          "Les modifications ont bien été importées et s'appliqueront aux nouvelles séances créées."
-        )
-        isSucess = true
-      })
-      .catch(() => {
-        isSucess = false
-        notification.error('Une erreur s’est produite, veuillez réessayer')
-      })
-
-    return isSucess
+      afterVenueProviderEdit(editedVenueProvider)
+      notification.success(
+        "Les modifications ont bien été importées et s'appliqueront aux nouvelles séances créées."
+      )
+      return true
+    } catch (error) {
+      notification.error('Une erreur s’est produite, veuillez réessayer')
+      return false
+    }
   }
 
   const openFormDialog = () => {
@@ -55,14 +50,13 @@ const CinemaProviderParameters = ({
     setIsOpenedFormDialog(false)
   }
 
-  const onConfirmDialog = (
+  const onConfirmDialog = async (
     payload: CinemaProviderParametersValues
-  ): boolean => {
-    payload = {
+  ): Promise<boolean> => {
+    const isSuccess = await editVenueProvider({
       ...payload,
       isActive: venueProvider.isActive,
-    }
-    const isSuccess = editVenueProvider(payload)
+    })
 
     closeFormDialog()
     return isSuccess
