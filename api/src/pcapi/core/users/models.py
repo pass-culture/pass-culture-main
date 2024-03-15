@@ -150,7 +150,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     address = sa.Column(sa.Text, nullable=True)
     city = sa.Column(sa.String(100), nullable=True)
     civility = sa.Column(sa.VARCHAR(length=20), nullable=True)
-    clearTextPassword = None
+    clearTextPassword: str | None = None
     comment = sa.Column(sa.Text(), nullable=True)
     culturalSurveyFilledDate = sa.Column(sa.DateTime, nullable=True)
     # culturalSurveyId is obsolete. the column is kept for backward compatibility with the existing data

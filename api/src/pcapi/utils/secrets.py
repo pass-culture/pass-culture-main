@@ -8,7 +8,7 @@ from pcapi.utils.blueprint import Blueprint
 
 blueprint = Blueprint(__name__, __name__)
 
-SECRET_KEYS = []
+SECRET_KEYS: list[str] = []
 
 
 def get(key: str, default: str | None = None) -> str:
