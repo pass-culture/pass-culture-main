@@ -71,7 +71,7 @@ class Returns400Test:
         response = client.patch("/offers/publish", json={"id": offer.id})
 
         assert response.status_code == 400
-        assert response.json["offer"] == "Offer not publishable"
+        assert response.json["offer"] == "Cette offre n’a pas de stock réservable"
         offer = offers_models.Offer.query.get(offer.id)
         assert offer.validation == OfferValidationStatus.DRAFT
 
@@ -93,6 +93,6 @@ class Returns400Test:
         response = client.patch("/offers/publish", json={"id": stock.offerId})
 
         assert response.status_code == 400
-        assert response.json["offer"] == "Offer not publishable"
+        assert response.json["offer"] == "Cette offre n’a pas de stock réservable"
         offer = offers_models.Offer.query.get(stock.offerId)
         assert offer.validation == OfferValidationStatus.DRAFT
