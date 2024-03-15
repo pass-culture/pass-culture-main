@@ -29,23 +29,20 @@ const VenueProviderForm = ({
   const displayAllocineProviderForm = isAllocineProvider(provider)
   const displayCDSProviderForm = isCinemaProvider(provider)
   const notify = useNotification()
-  const createVenueProvider = (payload?: PostVenueProviderBody): boolean => {
-    let isSucess = false
+  const createVenueProvider = async (
+    payload?: PostVenueProviderBody
+  ): Promise<boolean> => {
+    try {
+      const createdVenueProvider = await api.createVenueProvider(payload)
 
-    api
-      .createVenueProvider(payload)
-      .then((createdVenueProvider) => {
-        isSucess = true
-        notify.success('La synchronisation a bien été initiée.')
-        afterSubmit(createdVenueProvider)
-      })
-      .catch((error) => {
-        isSucess = false
-        notify.error(getHumanReadableApiError(error))
-        afterSubmit()
-      })
-
-    return isSucess
+      notify.success('La synchronisation a bien été initiée.')
+      afterSubmit(createdVenueProvider)
+      return true
+    } catch (error) {
+      notify.error(getHumanReadableApiError(error))
+      afterSubmit()
+      return false
+    }
   }
 
   return displayAllocineProviderForm ? (
