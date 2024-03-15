@@ -15,7 +15,7 @@ import styles from './StocksProviderForm.module.scss'
 export interface StocksProviderFormProps {
   offererId: number
   providerId: number
-  saveVenueProvider: (payload?: PostVenueProviderBody) => boolean
+  saveVenueProvider: (payload?: PostVenueProviderBody) => Promise<boolean>
   siret?: string | null
   venueId: number
   hasOffererProvider: boolean
@@ -51,7 +51,7 @@ const StocksProviderForm = ({
     setIsConfirmDialogOpened(false)
   }
 
-  const handleFormSubmit = () => {
+  const handleFormSubmit = async () => {
     setIsCheckingApi(true)
 
     const payload: PostVenueProviderBody = {
@@ -60,7 +60,7 @@ const StocksProviderForm = ({
       venueId,
     }
 
-    const isSuccess = saveVenueProvider(payload)
+    const isSuccess = await saveVenueProvider(payload)
     logEvent?.(SynchronizationEvents.CLICKED_VALIDATE_IMPORT, {
       offererId: offererId,
       venueId: venueId,

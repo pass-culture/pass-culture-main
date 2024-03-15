@@ -19,7 +19,7 @@ export interface FormValuesProps {
 }
 
 export interface AllocineProviderFormProps {
-  saveVenueProvider: (payload: PostVenueProviderBody) => boolean
+  saveVenueProvider: (payload: PostVenueProviderBody) => Promise<boolean>
   providerId: number
   offererId: number
   venueId: number
@@ -45,7 +45,7 @@ const AllocineProviderForm = ({
   const [isLoading, setIsLoading] = useState(false)
   const { logEvent } = useAnalytics()
 
-  const handleSubmit = (formValues: FormValuesProps) => {
+  const handleSubmit = async (formValues: FormValuesProps) => {
     const { isDuo = true, price } = formValues
     const quantity =
       formValues.quantity !== '' && formValues.quantity !== undefined
@@ -63,7 +63,7 @@ const AllocineProviderForm = ({
 
     setIsLoading(true)
 
-    const isSuccess = saveVenueProvider(payload)
+    const isSuccess = await saveVenueProvider(payload)
     logEvent?.(SynchronizationEvents.CLICKED_IMPORT, {
       offererId: offererId,
       venueId: venueId,
