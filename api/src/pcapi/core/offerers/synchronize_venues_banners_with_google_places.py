@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 GOOGLE_PLACES_BANNER_STORAGE_FOLDER = settings.THUMBS_FOLDER_NAME + "/google_places"
+SHORTEST_MONTH_LENGTH = 28
 
 
 class PlacePhoto(pydantic.BaseModel):
@@ -47,7 +48,13 @@ class PlaceResponse(pydantic.BaseModel):
     status: str
 
 
-def get_venues_without_photo(begin: int, end: int | None, limit: int | None = None) -> list[offerers_models.Venue]:
+def get_venues_without_photo(frequency: int) -> list[offerers_models.Venue]:
+    day = datetime.date.today().day
+    if day > SHORTEST_MONTH_LENGTH:
+        # No need to query, no venue will be found
+        # x % SHORTEST_MONTH_LENGTH is always < SHORTEST_MONTH_LENGTH
+        return []
+
     query = (
         offerers_models.Venue.query.join(offerers_models.Offerer)
         .filter(
@@ -55,16 +62,11 @@ def get_venues_without_photo(begin: int, end: int | None, limit: int | None = No
             offerers_models.Venue.bannerUrl.is_(None),  # type: ignore [attr-defined]
             offerers_models.Venue.venueTypeCode != "Lieu administratif",
             offerers_models.Offerer.isActive.is_(True),
-            offerers_models.Venue.id >= begin,
+            offerers_models.Venue.id % (SHORTEST_MONTH_LENGTH // frequency) == (day - 1) // frequency,
         )
         .order_by(offerers_models.Venue.id)
     )
-    if end is not None:
-        query = query.filter(offerers_models.Venue.id <= end)
-    if limit is not None:
-        query = query.limit(limit)
-    venues = query.all()
-    return venues
+    return query.all()
 
 
 def get_place_id(name: str, address: str | None, city: str | None, postal_code: str | None) -> str | None:
@@ -128,15 +130,11 @@ def save_photo_to_gcp(venue_id: int, photo: PlacePhoto, prefix: str) -> str:
 
 
 def synchronize_venues_banners_with_google_places(
-    start_venue_id: int, end_venue_id: int | None, limit: int | None
+    venues: list[offerers_models.Venue],
 ) -> None:
-    venues_without_photos = get_venues_without_photo(start_venue_id, end_venue_id, limit)
     logger.info(
-        "[gmaps_banner_synchro] synchronize_venues_banners_with_google_places %s %s %s: the number of venues tried: %s",
-        start_venue_id,
-        end_venue_id,
-        limit,
-        len(venues_without_photos),
+        "[gmaps_banner_synchro] synchronize_venues_banners_with_google_places",
+        extra={"partial_ids": [venue.id for venue in venues[:10]], "length": len(venues)},
     )
     nb_places_found = 0
     nb_places_with_photo = 0
@@ -144,7 +142,7 @@ def synchronize_venues_banners_with_google_places(
     nb_images_ignored_due_to_ratio_venue_id = 0
     images_ignored_due_to_ratio = []
     banner_synchronized_venue_ids = set()
-    for venue in venues_without_photos:
+    for venue in venues:
         try:
             if venue.googlePlacesInfo:
                 if (datetime.datetime.utcnow() - venue.googlePlacesInfo.updateDate).days > 62:
@@ -191,7 +189,7 @@ def synchronize_venues_banners_with_google_places(
     logger.info(
         "[gmaps_banner_synchro]Synchronized venues with Google Places",
         extra={
-            "nb_places_fetched": len(venues_without_photos),
+            "nb_places_fetched": len(venues),
             "nb_places_found": nb_places_found,
             "nb_places_with_photo": nb_places_with_photo,
             "nb_places_with_owner_photo": nb_places_with_owner_photo,
@@ -208,26 +206,18 @@ def synchronize_venues_banners_with_google_places(
         )
 
 
-def delete_venues_banners(start_venue_id: int, end_venue_id: int | None, limit: int | None) -> None:
+def delete_venues_banners(venues: list[offerers_models.Venue]) -> None:
+    venue_ids = [venue.id for venue in venues]
     logger.info(
         "deleting old google places banners",
-        extra={
-            "begin": start_venue_id,
-            "end": end_venue_id,
-            "limit": limit,
-        },
+        extra={"partial_ids": venue_ids[:10], "venues_updated_count": len(venue_ids)},
     )
     google_places_info_query = offerers_models.GooglePlacesInfo.query.filter(
-        offerers_models.GooglePlacesInfo.venueId >= start_venue_id,
+        offerers_models.GooglePlacesInfo.venueId.in_(venue_ids),
         offerers_models.GooglePlacesInfo.bannerUrl.is_not(None),
     ).order_by(offerers_models.GooglePlacesInfo.venueId)
+
     nb_deleted_banners = 0
-    if end_venue_id is not None:
-        google_places_info_query = google_places_info_query.filter(
-            offerers_models.GooglePlacesInfo.venueId <= end_venue_id
-        )
-    if limit is not None:
-        google_places_info_query = google_places_info_query.limit(limit)
     venues_ids_with_deleted_banners = set()
     for place_info in google_places_info_query:
         try:
