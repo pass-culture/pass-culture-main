@@ -38,11 +38,11 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
             },
             {
               title: 'Adresse e-mail',
-              text: venue.contact?.phoneNumber ?? 'Non renseignée',
+              text: venue.contact?.email ?? 'Non renseignée',
             },
             {
               title: 'URL de votre site web',
-              text: venue.contact?.phoneNumber ?? 'Non renseignée',
+              text: venue.contact?.website ?? 'Non renseignée',
             },
           ]}
         />
