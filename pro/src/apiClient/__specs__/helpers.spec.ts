@@ -2,7 +2,11 @@ import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 
-import { getErrorCode, serializeApiErrors } from '../helpers'
+import {
+  getErrorCode,
+  getHumanReadableApiError,
+  serializeApiErrors,
+} from '../helpers'
 
 describe('test apiClient:helpers', () => {
   describe('test getErrorCode', () => {
@@ -64,5 +68,36 @@ describe('test apiClient:helpers', () => {
       f2: 'e2',
       f3: 'e3',
     })
+  })
+})
+
+describe('getHumanReadableApiError', () => {
+  const arrayOfObject1 = [{ global: 'toto' }]
+
+  const arrayOfObject2 = [{ global: 'toto' }, { booking: 'titi' }]
+
+  const objectWithArrays1 = {
+    global: ['toto'],
+  }
+
+  const objectWithArrays2 = {
+    booking: ['tata'],
+    global: ['toto', 'titi'],
+  }
+
+  const noErrror = {}
+
+  it('parse array of objects', () => {
+    expect(getHumanReadableApiError(arrayOfObject1)).toBe('toto')
+    expect(getHumanReadableApiError(arrayOfObject2)).toBe('toto titi')
+  })
+
+  it('parse hash with arrays', () => {
+    expect(getHumanReadableApiError(objectWithArrays1)).toBe('toto')
+    expect(getHumanReadableApiError(objectWithArrays2)).toBe('tata toto titi')
+  })
+
+  it('parse empty error', () => {
+    expect(getHumanReadableApiError(noErrror)).toBe('')
   })
 })
