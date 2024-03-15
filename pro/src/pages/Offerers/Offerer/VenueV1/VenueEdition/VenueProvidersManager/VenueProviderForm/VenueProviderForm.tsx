@@ -1,11 +1,7 @@
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import {
-  getError,
-  getHumanReadableApiError,
-  isErrorAPIError,
-} from 'apiClient/helpers'
+import { getHumanReadableApiError } from 'apiClient/helpers'
 import {
   PostVenueProviderBody,
   VenueProviderResponse,
@@ -45,10 +41,8 @@ const VenueProviderForm = ({
       })
       .catch((error) => {
         isSucess = false
-        if (isErrorAPIError(error)) {
-          notify.error(getHumanReadableApiError(getError(error)))
-          afterSubmit()
-        }
+        notify.error(getHumanReadableApiError(error))
+        afterSubmit()
       })
 
     return isSucess
