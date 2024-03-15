@@ -70,15 +70,19 @@ const FieldLayout = ({
 
   return (
     <div
-      className={cn(styles['field-layout'], className, {
-        [styles['field-layout-small-label']]: smallLabel,
-        [styles['field-layout-inline']]: inline,
-      })}
+      className={cn(
+        styles['field-layout'],
+        {
+          [styles['field-layout-small-label']]: smallLabel,
+          [styles['field-layout-inline']]: inline,
+        },
+        className
+      )}
       data-testid={`wrapper-${name}`}
     >
       <div
         className={cn(styles['field-layout-label-container'], {
-          [styles['label-hidden']]: isLabelHidden,
+          ['visually-hidden']: isLabelHidden,
           classNameLabel,
         })}
       >

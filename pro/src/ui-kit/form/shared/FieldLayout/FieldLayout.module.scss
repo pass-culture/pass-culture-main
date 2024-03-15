@@ -16,10 +16,6 @@
 
     &-container {
       margin-bottom: rem.torem(forms.$label-space-before-input);
-
-      &.label-hidden {
-        display: none;
-      }
     }
 
     &-break {
