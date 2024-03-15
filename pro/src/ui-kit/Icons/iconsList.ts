@@ -20,6 +20,7 @@ import fullHideIcon from 'icons/full-hide.svg'
 import fullInfoIcon from 'icons/full-info.svg'
 import fullKeyIcon from 'icons/full-key.svg'
 import fullLeftIcon from 'icons/full-left.svg'
+import fullLessIcon from 'icons/full-less.svg'
 import fullLikeIcon from 'icons/full-like.svg'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullLogoutIcon from 'icons/full-logout.svg'
@@ -138,6 +139,7 @@ export const fullIcons: IconListItem[] = [
   { src: fullHelpIcon },
   { src: fullLinkIcon },
   { src: fullMoreIcon },
+  { src: fullLessIcon },
   { src: fullMailIcon },
   { src: fullEditIcon },
   { src: fullDuplicateIcon },
