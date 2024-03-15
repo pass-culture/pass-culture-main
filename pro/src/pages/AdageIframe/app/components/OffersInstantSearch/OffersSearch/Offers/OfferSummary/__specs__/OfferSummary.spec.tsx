@@ -21,7 +21,7 @@ describe('offer summary', () => {
   it('should show the dates range of a template offers', () => {
     const offer: CollectiveOfferTemplateResponseModel = {
       ...defaultCollectiveTemplateOffer,
-      dates: { start: '2023-10-24T00:00:00', end: '2023-10-24T23:59:00' },
+      dates: { start: '2023-10-23T22:00:00Z', end: '2023-10-24T21:59:00Z' },
       isTemplate: true,
     }
     renderOfferSummary({ offer })
