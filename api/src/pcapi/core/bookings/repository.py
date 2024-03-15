@@ -323,6 +323,18 @@ def get_bookings_from_deposit(deposit_id: int) -> list[Booking]:
     )
 
 
+def export_validated_bookings_by_offer_id(offer_id: int, export_type: BookingExportType) -> str | bytes:
+    if export_type == BookingExportType.EXCEL:
+        return _write_bookings_to_excel(Booking.query.join(Stock).filter(Stock.offerId == offer_id))
+    return _write_bookings_to_csv(Booking.query.join(Stock).filter(Stock.offerId == offer_id))
+
+
+def export_bookings_by_offer_id(offer_id: int, export_type: BookingExportType) -> str | bytes:
+    if export_type == BookingExportType.EXCEL:
+        return _write_bookings_to_excel(Booking.query.join(Stock).filter(Stock.offerId == offer_id))
+    return _write_bookings_to_csv(Booking.query.join(Stock).filter(Stock.offerId == offer_id))
+
+
 def get_export(
     user: User,
     booking_period: tuple[date, date] | None = None,
@@ -597,6 +609,30 @@ def _get_booking_status(status: BookingStatus, is_confirmed: bool) -> str:
     if cancellation_limit_date_exists_and_past and status == BookingStatus.CONFIRMED:
         return BOOKING_STATUS_LABELS["confirmed"]
     return BOOKING_STATUS_LABELS[status]
+
+
+def _write_bookings_to_csv(query: BaseQuery) -> str:
+    output = StringIO()
+    writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
+    writer.writerow(BOOKING_EXPORT_HEADER)
+    return output.getvalue()
+
+
+def _write_bookings_to_excel(query: BaseQuery) -> bytes:
+    output = BytesIO()
+    workbook = xlsxwriter.Workbook(output)
+
+    bold = workbook.add_format({"bold": 1})
+    col_width = 18
+
+    worksheet = workbook.add_worksheet()
+    row = 0
+
+    for col_num, title in enumerate(BOOKING_EXPORT_HEADER):
+        worksheet.write(row, col_num, title, bold)
+        worksheet.set_column(col_num, col_num, col_width)
+    workbook.close()
+    return output.getvalue()
 
 
 def _serialize_csv_report(query: BaseQuery) -> str:
