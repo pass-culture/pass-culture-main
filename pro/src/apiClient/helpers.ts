@@ -13,8 +13,6 @@ export const serializeApiErrors = (
   return errors
 }
 
-// defaultMessage = 'Une erreur s’est produite, veuillez réessayer'
-
 export const getErrorCode = (error: ApiError): string => {
   return error.body.code
 }
@@ -29,9 +27,18 @@ export const getError = (error: ApiError): any => {
   return error.body
 }
 
-export const getHumanReadableApiError = (errors: any) => {
-  if (errors instanceof Array) {
-    return errors
+export const getHumanReadableApiError = (
+  error: unknown,
+  defaultMessage = 'Une erreur s’est produite, veuillez réessayer'
+) => {
+  if (!isErrorAPIError(error)) {
+    return defaultMessage
+  }
+
+  const { body } = error
+
+  if (body instanceof Array && body.length > 0) {
+    return body
       .map((error) =>
         Object.keys(error)
           .map((key) => error[key])
@@ -40,13 +47,13 @@ export const getHumanReadableApiError = (errors: any) => {
       .join(' ')
   }
 
-  if (errors instanceof Object) {
-    return Object.keys(errors)
-      .map((key) => errors[key].map((error: any) => error).join(' '))
+  if (body instanceof Object && Object.keys(body).length > 0) {
+    return Object.keys(body)
+      .map((key) => body[key].map((error: any) => error).join(' '))
       .join(' ')
   }
 
-  return ''
+  return defaultMessage
 }
 
 // FIXME: find a way to test this by mocking ReadableStream

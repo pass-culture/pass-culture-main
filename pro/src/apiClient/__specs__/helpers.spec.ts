@@ -71,33 +71,63 @@ describe('test apiClient:helpers', () => {
   })
 })
 
+const apiErrorFactory = (customBody: any = {}): ApiError => {
+  const request: ApiRequestOptions = {
+    method: 'GET',
+    url: 'https://test.url',
+  }
+  const response: ApiResult = {
+    url: 'https://test.url',
+    ok: false,
+    status: 500,
+    statusText: 'UNAUTHORIZED',
+    body: customBody,
+  }
+  return new ApiError(
+    request,
+    response,
+    "Vous n'etes pas authorisé à voir cette page."
+  )
+}
+
 describe('getHumanReadableApiError', () => {
-  const arrayOfObject1 = [{ global: 'toto' }]
-
-  const arrayOfObject2 = [{ global: 'toto' }, { booking: 'titi' }]
-
-  const objectWithArrays1 = {
-    global: ['toto'],
-  }
-
-  const objectWithArrays2 = {
-    booking: ['tata'],
-    global: ['toto', 'titi'],
-  }
-
-  const noErrror = {}
-
-  it('parse array of objects', () => {
-    expect(getHumanReadableApiError(arrayOfObject1)).toBe('toto')
-    expect(getHumanReadableApiError(arrayOfObject2)).toBe('toto titi')
+  it('should parse a list body', () => {
+    expect(
+      getHumanReadableApiError(apiErrorFactory([{ global: 'toto' }]))
+    ).toBe('toto')
+    expect(
+      getHumanReadableApiError(
+        apiErrorFactory([{ global: 'toto' }, { booking: 'titi' }])
+      )
+    ).toBe('toto titi')
   })
 
-  it('parse hash with arrays', () => {
-    expect(getHumanReadableApiError(objectWithArrays1)).toBe('toto')
-    expect(getHumanReadableApiError(objectWithArrays2)).toBe('tata toto titi')
+  it('should parse a dict body', () => {
+    expect(
+      getHumanReadableApiError(apiErrorFactory({ global: ['toto'] }))
+    ).toBe('toto')
+    expect(
+      getHumanReadableApiError(
+        apiErrorFactory({
+          booking: ['tata'],
+          global: ['toto', 'titi'],
+        })
+      )
+    ).toBe('tata toto titi')
   })
 
   it('parse empty error', () => {
-    expect(getHumanReadableApiError(noErrror)).toBe('')
+    expect(getHumanReadableApiError(apiErrorFactory([]))).toBe(
+      'Une erreur s’est produite, veuillez réessayer'
+    )
+    expect(getHumanReadableApiError(apiErrorFactory({}))).toBe(
+      'Une erreur s’est produite, veuillez réessayer'
+    )
+    expect(getHumanReadableApiError(apiErrorFactory(''))).toBe(
+      'Une erreur s’est produite, veuillez réessayer'
+    )
+    expect(getHumanReadableApiError(apiErrorFactory(null))).toBe(
+      'Une erreur s’est produite, veuillez réessayer'
+    )
   })
 })

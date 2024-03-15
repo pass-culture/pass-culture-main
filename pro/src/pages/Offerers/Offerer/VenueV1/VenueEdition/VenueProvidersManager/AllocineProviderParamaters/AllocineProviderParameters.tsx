@@ -1,11 +1,7 @@
 import React, { useState } from 'react'
 
 import { api } from 'apiClient/api'
-import {
-  getError,
-  getHumanReadableApiError,
-  isErrorAPIError,
-} from 'apiClient/helpers'
+import { getHumanReadableApiError } from 'apiClient/helpers'
 import { PostVenueProviderBody, VenueProviderResponse } from 'apiClient/v1'
 import useNotification from 'hooks/useNotification'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -44,9 +40,8 @@ const AllocineProviderParameters = ({
       })
       .catch((error) => {
         isSucess = false
-        if (isErrorAPIError(error)) {
-          notification.error(getHumanReadableApiError(getError(error)))
-        }
+
+        notification.error(getHumanReadableApiError(error))
       })
 
     return isSucess
