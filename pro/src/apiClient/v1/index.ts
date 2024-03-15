@@ -83,6 +83,7 @@ export type { EducationalRedactor } from './models/EducationalRedactor';
 export type { EducationalRedactorQueryModel } from './models/EducationalRedactorQueryModel';
 export type { EducationalRedactorResponseModel } from './models/EducationalRedactorResponseModel';
 export type { EducationalRedactors } from './models/EducationalRedactors';
+export type { ExportBookingsQueryModel } from './models/ExportBookingsQueryModel';
 export type { FeatureResponseModel } from './models/FeatureResponseModel';
 export type { FinanceBankAccountListResponseModel } from './models/FinanceBankAccountListResponseModel';
 export type { FinanceBankAccountResponseModel } from './models/FinanceBankAccountResponseModel';

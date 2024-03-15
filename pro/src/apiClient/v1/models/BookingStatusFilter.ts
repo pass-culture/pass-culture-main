@@ -9,4 +9,5 @@ export enum BookingStatusFilter {
   BOOKED = 'booked',
   VALIDATED = 'validated',
   REIMBURSED = 'reimbursed',
+  ALL = 'all',
 }

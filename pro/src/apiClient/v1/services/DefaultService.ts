@@ -120,6 +120,58 @@ import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class DefaultService {
   constructor(public readonly httpRequest: BaseHttpRequest) {}
   /**
+   * export_bookings_for_offer_as_csv <GET>
+   * @param offerId
+   * @param status
+   * @returns any OK
+   * @throws ApiError
+   */
+  public exportBookingsForOfferAsCsv(
+    offerId: number,
+    status: BookingStatusFilter,
+  ): CancelablePromise<any> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/bookings/offer/{offer_id}/csv',
+      path: {
+        'offer_id': offerId,
+      },
+      query: {
+        'status': status,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * export_bookings_for_offer_as_excel <GET>
+   * @param offerId
+   * @param status
+   * @returns any OK
+   * @throws ApiError
+   */
+  public exportBookingsForOfferAsExcel(
+    offerId: number,
+    status: BookingStatusFilter,
+  ): CancelablePromise<any> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/bookings/offer/{offer_id}/excel',
+      path: {
+        'offer_id': offerId,
+      },
+      query: {
+        'status': status,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
    * get_bookings_pro <GET>
    * @param page
    * @param venueId

@@ -67,6 +67,7 @@ class BookingStatusFilter(enum.Enum):
     BOOKED = "booked"
     VALIDATED = "validated"
     REIMBURSED = "reimbursed"
+    ALL = "all"
 
 
 class BookingExportType(enum.Enum):

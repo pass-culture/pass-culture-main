@@ -158,6 +158,14 @@ def serialize_booking_recap(booking_recap: BookingRecap) -> BookingRecapResponse
     return serialized_booking_recap
 
 
+class ExportBookingsQueryModel(BaseModel):
+    status: BookingStatusFilter
+
+    class config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
 class ListBookingsQueryModel(BaseModel):
     page: int = 1
     venue_id: int | None
