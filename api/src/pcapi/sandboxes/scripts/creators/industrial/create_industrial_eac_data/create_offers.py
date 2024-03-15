@@ -5,6 +5,7 @@ from itertools import count
 from itertools import cycle
 import typing
 
+from pcapi.core import search
 from pcapi.core.categories.subcategories_v2 import EacFormat
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
@@ -92,6 +93,8 @@ def create_offers(
         domains=domains,
         reimbursed_booking=False,
     )
+
+    search.index_all_collective_offers_and_templates()
 
 
 def create_offers_base_list(
