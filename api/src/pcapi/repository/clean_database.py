@@ -102,6 +102,7 @@ tables_to_clean: list[flask_sqlalchemy.Model] = [
     fraud_models.BeneficiaryFraudReview,
     offers_models.OfferValidationSubRule,
     offers_models.OfferValidationRule,
+    offers_models.OfferPriceLimitationRule,
     users_models.SingleSignOn,
     users_models.User,
     users_models.UserSession,
