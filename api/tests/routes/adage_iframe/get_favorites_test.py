@@ -7,6 +7,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.testing import assert_num_queries
+from pcapi.utils.date import format_into_utc_date
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -67,8 +68,8 @@ class GetFavoriteOfferTest:
                     "name": "offer name",
                     "stock": {
                         "id": stock.id,
-                        "beginningDatetime": "2021-05-15T00:00:00",
-                        "bookingLimitDatetime": "2021-05-14T23:00:00",
+                        "beginningDatetime": format_into_utc_date(stock.beginningDatetime),
+                        "bookingLimitDatetime": format_into_utc_date(stock.bookingLimitDatetime),
                         "isBookable": True,
                         "price": 1000,
                         "numberOfTickets": 25,
@@ -188,8 +189,8 @@ class GetFavoriteOfferTest:
                     "imageUrl": None,
                     "nationalProgram": None,
                     "dates": {
-                        "start": collective_offer_template.start.isoformat(),
-                        "end": collective_offer_template.end.isoformat(),
+                        "start": format_into_utc_date(collective_offer_template.start),
+                        "end": format_into_utc_date(collective_offer_template.end),
                     },
                     "formats": [fmt.value for fmt in subcategories.EVENEMENT_CINE.formats],
                     "isTemplate": True,
