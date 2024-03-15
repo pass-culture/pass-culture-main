@@ -2,11 +2,8 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
 } from 'apiClient/adage'
-import {
-  getDateTimeToFrenchText,
-  getRangeToFrenchText,
-  toDateStrippedOfTimezone,
-} from 'utils/date'
+import { getDateTimeToFrenchText, getRangeToFrenchText } from 'utils/date'
+import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 export function getFormattedDatesForTemplateOffer(
   offer: CollectiveOfferTemplateResponseModel
@@ -15,8 +12,14 @@ export function getFormattedDatesForTemplateOffer(
     (offer.dates?.start &&
       offer.dates?.end &&
       getRangeToFrenchText(
-        toDateStrippedOfTimezone(offer.dates.start),
-        toDateStrippedOfTimezone(offer.dates.end)
+        getLocalDepartementDateTimeFromUtc(
+          offer.dates.start,
+          offer.venue.departmentCode
+        ),
+        getLocalDepartementDateTimeFromUtc(
+          offer.dates.end,
+          offer.venue.departmentCode
+        )
       )) ||
     'Tout au long de l’année scolaire (l’offre est permanente)'
   )
@@ -27,7 +30,10 @@ export function getFormattedDatesForBookableOffer(
 ) {
   return offer.stock.beginningDatetime
     ? `Le ${getDateTimeToFrenchText(
-        toDateStrippedOfTimezone(offer.stock.beginningDatetime),
+        getLocalDepartementDateTimeFromUtc(
+          offer.stock.beginningDatetime,
+          offer.venue.departmentCode
+        ),
         { dateStyle: 'long', timeStyle: 'short' }
       )}`
     : null

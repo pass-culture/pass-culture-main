@@ -169,7 +169,7 @@ describe('offer', () => {
 
       expect(screen.getByText('A la mairie')).toBeInTheDocument()
 
-      expect(screen.getByText('25/09/2021 à 19:00')).toBeInTheDocument()
+      expect(screen.getByText('26/09/2021 à 00:00')).toBeInTheDocument()
       expect(
         screen.queryByText('Jusqu’à', { exact: false })
       ).not.toBeInTheDocument()
