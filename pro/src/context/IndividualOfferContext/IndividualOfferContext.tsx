@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
-import { useLoaderData, useNavigate } from 'react-router-dom'
+import React, { createContext, useContext, useState } from 'react'
+import { useLoaderData } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -10,13 +10,9 @@ import {
   SubcategoryResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import useActiveFeature from 'hooks/useActiveFeature'
-import useNotification from 'hooks/useNotification'
 import { IndividualOfferWizardLoaderData } from 'pages/IndividualOfferWizard/IndividualOfferWizard'
 import Spinner from 'ui-kit/Spinner/Spinner'
-
-import { getWizardData } from './adapters/getWizardData/getWizardData'
 
 export interface IndividualOfferContextValues {
   offerId: number | null
@@ -50,74 +46,72 @@ export const useIndividualOfferContext = () => {
 export interface IndividualOfferContextProviderProps {
   children: React.ReactNode
   isUserAdmin: boolean
-  offerId?: string
   queryOffererId?: string
 }
 
-const GET_CATEGORIES_KEY = 'getCategories'
+const GET_CATEGORIES_QUERY_KEY = 'getCategories'
+const GET_VENUES_QUERY_KEY = 'getVenues'
+const GET_OFFERER_NAMES_QUERY_KEY = 'getOffererNames'
 
 export function IndividualOfferContextProvider({
   children,
   isUserAdmin,
-  offerId,
   queryOffererId,
 }: IndividualOfferContextProviderProps) {
   const { offer } = useLoaderData() as IndividualOfferWizardLoaderData
-  const notify = useNotification()
-  const navigate = useNavigate()
   const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
-  const [isLoading, setIsLoading] = useState<boolean>(true)
-  const categoriesQuery = useSWR([GET_CATEGORIES_KEY], api.getCategories, {
-    fallbackData: { categories: [], subcategories: [] },
-  })
-  const [subcategory, setSubcategory] = useState<SubcategoryResponseModel>()
-  const [offererNames, setOffererNames] = useState<
-    GetOffererNameResponseModel[]
-  >([])
-  const [venueList, setVenueList] = useState<VenueListItemResponseModel[]>([])
-  const [showVenuePopin, setShowVenuePopin] = useState<Record<string, boolean>>(
-    {}
+
+  const offerer = offer ? offer.venue.managingOfferer : null
+  const queryOffererIdAsNumber =
+    queryOffererId !== undefined ? Number(queryOffererId) : undefined
+  const offererId: number | undefined =
+    isUserAdmin && offerer ? offerer.id : queryOffererIdAsNumber
+
+  // We dont want to fetch all venues if admin hasn't selected an offerer
+  // TODO: move venuesQuery and offererNamesQuery to the Offer component
+  // src/pages/IndividualOfferWizard/Offer/Offer.tsx
+  // because it's the only one using this data
+  // this can be done once the WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY FF is removed
+  // (because venuesQuery is still used here by the old variable showVenuePopin)
+  const shouldNotFetchVenues = isUserAdmin && !offererId
+  const venuesQuery = useSWR(
+    () => (shouldNotFetchVenues ? null : [GET_VENUES_QUERY_KEY, offererId]),
+    ([, offererIdParam]) => api.getVenues(null, true, offererIdParam),
+    { fallbackData: { venues: [] } }
+  )
+  const offererNamesQuery = useSWR(
+    [GET_OFFERER_NAMES_QUERY_KEY, offererId],
+    ([, offererIdParam]) => api.listOfferersNames(null, null, offererIdParam),
+    { fallbackData: { offerersNames: [] } }
+  )
+  const categoriesQuery = useSWR(
+    [GET_CATEGORIES_QUERY_KEY],
+    () => api.getCategories(),
+    { fallbackData: { categories: [], subcategories: [] } }
   )
 
-  const offerOfferer = offer ? offer.venue.managingOfferer : null
+  const [subcategory, setSubcategory] = useState<SubcategoryResponseModel>()
 
-  useEffect(() => {
-    async function loadData() {
-      const response = await getWizardData({
-        offerer: offerOfferer || undefined,
-        queryOffererId,
-        isAdmin: isUserAdmin,
-      })
+  const showVenuePopin: Record<string, boolean> =
+    !isNewBankDetailsJourneyEnabled
+      ? venuesQuery.data.venues.reduce(
+          (previousValue, currentValue) => ({
+            ...previousValue,
+            [currentValue.id]:
+              !currentValue.hasCreatedOffer &&
+              currentValue.hasMissingReimbursementPoint,
+          }),
+          {}
+        )
+      : {}
 
-      if (response.isOk) {
-        setOffererNames(response.payload.offererNames)
-        setVenueList(response.payload.venueList)
-
-        if (!isNewBankDetailsJourneyEnabled) {
-          const venuesPopinDisplaying: Record<string, boolean> = {}
-          response.payload.venueList.forEach((v) => {
-            venuesPopinDisplaying[v.id] =
-              !v.hasCreatedOffer && v.hasMissingReimbursementPoint
-          })
-          setShowVenuePopin(venuesPopinDisplaying)
-        }
-      } else {
-        setOffererNames([])
-        setVenueList([])
-        navigate('/accueil')
-        notify.error(GET_DATA_ERROR_MESSAGE)
-      }
-      setIsLoading(false)
-    }
-    if (!offerId || offer !== null) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      loadData()
-    }
-  }, [offerId, offerOfferer])
-
-  if (isLoading || categoriesQuery.isLoading) {
+  if (
+    offererNamesQuery.isLoading ||
+    categoriesQuery.isLoading ||
+    venuesQuery.isLoading
+  ) {
     return <Spinner />
   }
 
@@ -128,9 +122,9 @@ export function IndividualOfferContextProvider({
         offer,
         categories: categoriesQuery.data.categories,
         subCategories: categoriesQuery.data.subcategories,
-        offererNames,
-        venueList,
-        offerOfferer,
+        offererNames: offererNamesQuery.data.offerersNames,
+        venueList: venuesQuery.data.venues,
+        offerOfferer: offerer,
         showVenuePopin: showVenuePopin,
         subcategory,
         setSubcategory,
