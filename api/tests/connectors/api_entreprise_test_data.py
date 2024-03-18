@@ -508,6 +508,9 @@ RESPONSE_SIREN_ERROR_422 = {
     ]
 }
 
+
+RESPONSE_SIREN_ERROR_429 = {"errors": ["Vous avez effectué trop de requêtes"]}
+
 RESPONSE_RCS_REGISTERED_COMPANY = {
     "data": {
         "siren": "123456789",
