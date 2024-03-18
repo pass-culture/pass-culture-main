@@ -3,6 +3,7 @@ import { render } from '@testing-library/react'
 import React, { ReactNode } from 'react'
 import { Provider } from 'react-redux'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
+import { SWRConfig } from 'swr'
 
 import { configureTestStore } from 'store/testUtils'
 
@@ -44,7 +45,9 @@ export const renderWithProviders = (
 
   const { rerender, ...otherRenderResult } = render(
     <Provider store={store}>
-      <RouterProvider router={router} />
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <RouterProvider router={router} />
+      </SWRConfig>
     </Provider>
   )
 
@@ -55,7 +58,9 @@ export const renderWithProviders = (
 
       return rerender(
         <Provider store={store}>
-          <RouterProvider router={router} />
+          <SWRConfig value={{ provider: () => new Map() }}>
+            <RouterProvider router={router} />
+          </SWRConfig>
         </Provider>
       )
     },
