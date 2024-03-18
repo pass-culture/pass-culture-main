@@ -4,13 +4,10 @@ import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import {
-  ApiError,
   GetOffererResponseModel,
   GetVenueResponseModel,
   VenueProviderResponse,
 } from 'apiClient/v1'
-import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { Providers } from 'core/Venue/types'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { defaultGetVenue } from 'utils/collectiveApiFactories'
@@ -196,18 +193,7 @@ describe('route VenueEdition', () => {
   })
 
   it('should return to home when not able to get venue informations', async () => {
-    vi.spyOn(api, 'getVenue').mockRejectedValue(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          status: 404,
-          body: {
-            global: ['error'],
-          },
-        } as ApiResult,
-        ''
-      )
-    )
+    vi.spyOn(api, 'getVenue').mockRejectedValueOnce('error')
     renderVenueEdition(venue.id, offerer.id)
 
     await waitForElementToBeRemoved(screen.getByTestId('spinner'))

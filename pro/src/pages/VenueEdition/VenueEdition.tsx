@@ -8,11 +8,12 @@ import {
   useLocation,
   useParams,
 } from 'react-router-dom'
+import useSWR from 'swr'
 
+import { api } from 'apiClient/api'
 import { AppLayout } from 'app/AppLayout'
 import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
 import { SAVED_OFFERER_ID_KEY } from 'core/shared'
-import { useGetVenue } from 'core/Venue/adapters/getVenueAdapter'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import useNotification from 'hooks/useNotification'
 import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
@@ -24,6 +25,8 @@ import styles from './VenueEdition.module.scss'
 import { VenueEditionFormScreen } from './VenueEditionFormScreen'
 import { VenueEditionHeader } from './VenueEditionHeader'
 
+export const GET_VENUE_QUERY_KEY = 'getVenue'
+
 export const VenueEdition = (): JSX.Element | null => {
   const homePath = '/accueil'
   const { offererId, venueId } = useParams<{
@@ -34,13 +37,11 @@ export const VenueEdition = (): JSX.Element | null => {
   const location = useLocation()
   const dispatch = useDispatch()
 
-  // TODO: refactor with the new loading pattern once we know which one to use
-  const {
-    isLoading: isLoadingVenue,
-    error: errorVenue,
-    data: venue,
-    reloadData: reloadVenueData,
-  } = useGetVenue(Number(venueId))
+  const venueQuery = useSWR(
+    [GET_VENUE_QUERY_KEY, venueId],
+    ([, venueIdParam]) => api.getVenue(Number(venueIdParam))
+  )
+
   const {
     isLoading: isLoadingVenueTypes,
     error: errorVenueTypes,
@@ -60,20 +61,24 @@ export const VenueEdition = (): JSX.Element | null => {
     }
   }, [offererId, dispatch])
 
-  if (errorOfferer || errorVenue || errorVenueTypes) {
-    const loadingError = [errorOfferer, errorVenue, errorVenueTypes].find(
+  if (errorOfferer || venueQuery.error || errorVenueTypes) {
+    const loadingError = [errorOfferer, venueQuery.error, errorVenueTypes].find(
       (error) => error !== undefined
     )
     if (loadingError !== undefined) {
-      notify.error(loadingError.message)
+      notify.error(
+        'Une erreur est survenue lors de la récupération de votre lieu'
+      )
       return <Navigate to={homePath} />
     }
     /* istanbul ignore next: Never */
     return null
   }
 
+  const venue = venueQuery.data
+
   if (
-    isLoadingVenue ||
+    venueQuery.isLoading ||
     isLoadingVenueTypes ||
     isLoadingOfferer ||
     !offerer ||
@@ -122,22 +127,9 @@ export const VenueEdition = (): JSX.Element | null => {
         <Routes>
           <Route
             path="eac/*"
-            element={
-              <CollectiveDataEdition
-                venue={venue}
-                reloadVenueData={reloadVenueData}
-              />
-            }
+            element={<CollectiveDataEdition venue={venue} />}
           />
-          <Route
-            path="*"
-            element={
-              <VenueEditionFormScreen
-                venue={venue}
-                reloadVenueData={reloadVenueData}
-              />
-            }
-          />
+          <Route path="*" element={<VenueEditionFormScreen venue={venue} />} />
         </Routes>
       </div>
     </AppLayout>
