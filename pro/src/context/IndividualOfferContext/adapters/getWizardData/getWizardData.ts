@@ -1,12 +1,9 @@
 import { api } from 'apiClient/api'
 import {
-  CategoryResponseModel,
   GetOffererNameResponseModel,
-  SubcategoryResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
 interface GetWizardDataArgs {
   offerOffererId?: string
@@ -19,10 +16,6 @@ interface GetWizardDataArgs {
 interface OfferWizardData {
   offererNames: GetOffererNameResponseModel[]
   venueList: VenueListItemResponseModel[]
-  categoriesData: {
-    categories: CategoryResponseModel[]
-    subCategories: SubcategoryResponseModel[]
-  }
 }
 
 type GetIndividualOfferAdapter = Adapter<
@@ -45,10 +38,6 @@ export const getWizardData: GetIndividualOfferAdapter = async ({
   const successPayload: OfferWizardData = {
     offererNames: [],
     venueList: [],
-    categoriesData: {
-      categories: [],
-      subCategories: [],
-    },
   }
 
   if (isAdmin && !offerer && !queryOffererId) {
@@ -57,17 +46,6 @@ export const getWizardData: GetIndividualOfferAdapter = async ({
       message: null,
       payload: successPayload,
     })
-  }
-
-  try {
-    const categoriesResponse = await api.getCategories()
-    successPayload.categoriesData = {
-      categories: categoriesResponse.categories,
-      subCategories: categoriesResponse.subcategories,
-    }
-  } catch (e) {
-    sendSentryCustomError(e)
-    return Promise.resolve(FAILING_RESPONSE)
   }
 
   const offererId = isAdmin && offerer ? offerer.id : queryOffererId
