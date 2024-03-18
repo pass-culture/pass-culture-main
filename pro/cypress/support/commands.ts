@@ -36,8 +36,7 @@
 //   }
 // }
 
-// TODO Albéric: can be re-added when this issue is solved: https://github.com/testing-library/cypress-testing-library/issues/252
-// import '@testing-library/cypress/add-commands'
+import '@testing-library/cypress/add-commands'
 
 Cypress.on('uncaught:exception', () => {
   // returning false here prevents Cypress from failing the test
