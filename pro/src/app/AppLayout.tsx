@@ -4,8 +4,10 @@ import React, { useEffect, useRef, useState } from 'react'
 import DomainNameBanner from 'components/DomainNameBanner'
 import Footer from 'components/Footer/Footer'
 import Header from 'components/Header/Header'
+import NewNavReview from 'components/NewNavReview/NewNavReview'
 import SideNavLinks from 'components/SideNavLinks/SideNavLinks'
 import SkipLinks from 'components/SkipLinks'
+import useCurrentUser from 'hooks/useCurrentUser'
 import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
@@ -29,6 +31,7 @@ export const AppLayout = ({
   layout = 'basic',
 }: AppLayoutProps) => {
   const isNewSideBarNavigation = useIsNewInterfaceActive()
+  const { currentUser } = useCurrentUser()
   const [lateralPanelOpen, setLateralPanelOpen] = useState(false)
 
   const openButtonRef = useRef<HTMLButtonElement>(null)
@@ -142,6 +145,8 @@ export const AppLayout = ({
           </nav>
         )}
         <div className={styles['main-wrapper']}>
+          {isNewSideBarNavigation &&
+            Boolean(currentUser.navState?.eligibilityDate) && <NewNavReview />}
           <main
             id="content"
             className={classnames(

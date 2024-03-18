@@ -31,6 +31,7 @@ $nav-height: rem.torem(72px);
 $footer-height: rem.torem(72px);
 $container-padding-bottom: calc($action-bar-sticky-height + rem.torem(16px));
 $side-logo-width: 35%;
+$side-nav-width: rem.torem(268px);
 
 // Mixin used to "center" with input
 // We are using margin-top and not flex center because when there is an error the

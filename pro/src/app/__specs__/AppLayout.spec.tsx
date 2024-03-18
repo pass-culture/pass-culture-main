@@ -66,6 +66,32 @@ describe('src | AppLayout', () => {
       expect(screen.queryByAltText('Menu')).not.toBeInTheDocument()
     })
 
+    it('should display review banner if user has new nav active', () => {
+      options.features = ['WIP_ENABLE_PRO_SIDE_NAV']
+      options.storeOverrides.user.currentUser.navState = {
+        newNavDate: '2021-01-01',
+        eligibilityDate: '2021-01-01',
+      }
+      renderApp(props, options)
+
+      expect(
+        screen.getByRole('button', { name: 'Je donne mon avis' })
+      ).toBeInTheDocument()
+    })
+
+    it('should not display review banner if user has new nav active but is not eligible (from a/b test)', () => {
+      options.features = ['WIP_ENABLE_PRO_SIDE_NAV']
+      options.storeOverrides.user.currentUser.navState = {
+        newNavDate: '2021-01-01',
+        eligibilityDate: null,
+      }
+      renderApp(props, options)
+
+      expect(
+        screen.queryByRole('button', { name: 'Je donne mon avis' })
+      ).not.toBeInTheDocument()
+    })
+
     describe('on smaller screen sizes', () => {
       beforeEach(() => {
         options.features = ['WIP_ENABLE_PRO_SIDE_NAV']
