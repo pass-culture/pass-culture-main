@@ -89,7 +89,6 @@ const renderCollectiveDataEdition = (
   renderWithProviders(
     <CollectiveDataEdition
       venue={{ ...defaultGetVenue, hasAdageId: true }}
-      reloadVenueData={vi.fn()}
       {...props}
     />,
     { initialRouterEntries: ['/edition'], ...options }
