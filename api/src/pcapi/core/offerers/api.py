@@ -2170,18 +2170,21 @@ def get_venue_opening_hours_by_weekday(venue: models.Venue, weekday: models.Week
 
 
 def set_accessibility_provider_id(venue: models.Venue) -> None:
-    if not venue.accessibilityProvider:
-        venue.accessibilityProvider = models.AccessibilityProvider(
-            externalAccessibilityId=accessibility_provider.get_id_at_accessibility_provider(
-                name=venue.name,
-                public_name=venue.publicName,
-                siret=venue.siret,
-                ban_id=venue.banId,
-                city=venue.city,
-                postal_code=venue.postalCode,
-                address=venue.address,
+    if accessibility_provider_id := accessibility_provider.get_id_at_accessibility_provider(
+        name=venue.name,
+        public_name=venue.publicName,
+        siret=venue.siret,
+        ban_id=venue.banId,
+        city=venue.city,
+        postal_code=venue.postalCode,
+        address=venue.address,
+    ):
+        if not venue.accessibilityProvider:
+            venue.accessibilityProvider = models.AccessibilityProvider(
+                externalAccessibilityId=accessibility_provider_id
             )
-        )
+        else:
+            venue.accessibilityProvider.externalAccessibilityId = accessibility_provider_id
         db.session.add(venue.accessibilityProvider)
 
 
@@ -2190,10 +2193,15 @@ def set_accessibility_last_update_at_provider(venue: models.Venue) -> None:
         venue.accessibilityProvider.lastUpdateAtProvider = accessibility_provider.get_last_update_at_provider(
             slug=venue.accessibilityProvider.externalAccessibilityId
         )
+        db.session.add(venue.accessibilityProvider)
 
 
 def set_accessibility_infos_from_provider_id(venue: models.Venue) -> None:
     if venue.accessibilityProvider:
-        venue.accessibilityProvider.externalAccessibilityData = accessibility_provider.get_accessibility_infos(
+        accessibility_data = accessibility_provider.get_accessibility_infos(
             slug=venue.accessibilityProvider.externalAccessibilityId
-        ).dict()
+        )
+        venue.accessibilityProvider.externalAccessibilityData = (
+            accessibility_data.dict() if accessibility_data else None
+        )
+        db.session.add(venue.accessibilityProvider)
