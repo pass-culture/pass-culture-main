@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import {
@@ -9,10 +10,10 @@ import {
   useParams,
 } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import { AppLayout } from 'app/AppLayout'
 import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
-import { SAVED_OFFERER_ID_KEY } from 'core/shared'
-import { useGetVenue } from 'core/Venue/adapters/getVenueAdapter'
+import { GET_DATA_ERROR_MESSAGE, SAVED_OFFERER_ID_KEY } from 'core/shared'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import useNotification from 'hooks/useNotification'
 import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
@@ -23,6 +24,8 @@ import Tabs, { Tab } from 'ui-kit/Tabs/Tabs'
 import styles from './VenueEdition.module.scss'
 import { VenueEditionFormScreen } from './VenueEditionFormScreen'
 import { VenueEditionHeader } from './VenueEditionHeader'
+
+export const GET_VENUE_QUERY_KEY = 'venue'
 
 export const VenueEdition = (): JSX.Element | null => {
   const homePath = '/accueil'
@@ -35,12 +38,13 @@ export const VenueEdition = (): JSX.Element | null => {
   const dispatch = useDispatch()
 
   // TODO: refactor with the new loading pattern once we know which one to use
-  const {
-    isLoading: isLoadingVenue,
-    error: errorVenue,
-    data: venue,
-    reloadData: reloadVenueData,
-  } = useGetVenue(Number(venueId))
+  const venueQuery = useQuery({
+    queryKey: [GET_VENUE_QUERY_KEY, Number(venueId)],
+    queryFn: () => api.getVenue(Number(venueId)),
+  })
+
+  const venue = venueQuery.data
+
   const {
     isLoading: isLoadingVenueTypes,
     error: errorVenueTypes,
@@ -60,12 +64,12 @@ export const VenueEdition = (): JSX.Element | null => {
     }
   }, [offererId, dispatch])
 
-  if (errorOfferer || errorVenue || errorVenueTypes) {
-    const loadingError = [errorOfferer, errorVenue, errorVenueTypes].find(
+  if (errorOfferer || venueQuery.isError || errorVenueTypes) {
+    const loadingError = [errorOfferer, venueQuery.error, errorVenueTypes].find(
       (error) => error !== undefined
     )
     if (loadingError !== undefined) {
-      notify.error(loadingError.message)
+      notify.error(GET_DATA_ERROR_MESSAGE)
       return <Navigate to={homePath} />
     }
     /* istanbul ignore next: Never */
@@ -73,7 +77,7 @@ export const VenueEdition = (): JSX.Element | null => {
   }
 
   if (
-    isLoadingVenue ||
+    venueQuery.isPending ||
     isLoadingVenueTypes ||
     isLoadingOfferer ||
     !offerer ||
@@ -122,22 +126,9 @@ export const VenueEdition = (): JSX.Element | null => {
         <Routes>
           <Route
             path="eac/*"
-            element={
-              <CollectiveDataEdition
-                venue={venue}
-                reloadVenueData={reloadVenueData}
-              />
-            }
+            element={<CollectiveDataEdition venue={venue} />}
           />
-          <Route
-            path="*"
-            element={
-              <VenueEditionFormScreen
-                venue={venue}
-                reloadVenueData={reloadVenueData}
-              />
-            }
-          />
+          <Route path="*" element={<VenueEditionFormScreen venue={venue} />} />
         </Routes>
       </div>
     </AppLayout>

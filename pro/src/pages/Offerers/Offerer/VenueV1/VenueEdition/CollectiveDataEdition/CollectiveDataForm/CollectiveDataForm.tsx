@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { FormikProvider, useFormik } from 'formik'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -14,6 +15,7 @@ import { venueInterventionOptions } from 'core/shared/interventionOptions'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
 import { RouteLeavingGuardVenueEdition } from 'pages/VenueEdition/RouteLeavingGuardVenueEdition'
+import { GET_VENUE_QUERY_KEY } from 'pages/VenueEdition/VenueEdition'
 import { ButtonLink, Select, SubmitButton, TextArea, TextInput } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { MultiSelectAutocomplete } from 'ui-kit/form/MultiSelectAutoComplete/MultiSelectAutocomplete'
@@ -47,7 +49,6 @@ type CollectiveDataFormProps = {
   venue: GetVenueResponseModel
   venueCollectiveData: GetCollectiveVenueResponseModel | null
   adageVenueCollectiveData: GetCollectiveVenueResponseModel | null
-  reloadVenueData: () => Promise<void>
 }
 
 const CollectiveDataForm = ({
@@ -57,10 +58,10 @@ const CollectiveDataForm = ({
   venue,
   venueCollectiveData,
   adageVenueCollectiveData,
-  reloadVenueData,
 }: CollectiveDataFormProps): JSX.Element | null => {
   const notify = useNotification()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
   const [previousInterventionValues, setPreviousInterventionValues] = useState<
     string[] | null
@@ -86,7 +87,9 @@ const CollectiveDataForm = ({
       values: extractInitialValuesFromVenue(response.payload),
     })
 
-    await reloadVenueData()
+    await queryClient.invalidateQueries({
+      queryKey: [GET_VENUE_QUERY_KEY, venue.id],
+    })
 
     navigate(`/structures/${venue.managingOfferer.id}/lieux/${venue.id}/eac`)
   }

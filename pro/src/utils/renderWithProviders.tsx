@@ -1,4 +1,5 @@
 /* istanbul ignore file: Those are test helpers, their coverage is not relevant */
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render } from '@testing-library/react'
 import React, { ReactNode } from 'react'
 import { Provider } from 'react-redux'
@@ -39,12 +40,17 @@ export const renderWithProviders = (
       lastLoaded: overrides?.storeOverrides?.features?.lastLoaded,
     },
   }
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  })
   const store = configureTestStore(storeOverrides)
   const router = createRouterFromOverrides(component, overrides, initialPath)
 
   const { rerender, ...otherRenderResult } = render(
     <Provider store={store}>
-      <RouterProvider router={router} />
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
     </Provider>
   )
 
@@ -55,7 +61,9 @@ export const renderWithProviders = (
 
       return rerender(
         <Provider store={store}>
-          <RouterProvider router={router} />
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
         </Provider>
       )
     },

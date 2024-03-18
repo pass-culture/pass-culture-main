@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { Form, Formik, FormikConfig, FormikConsumer } from 'formik'
 import { useNavigate, useLocation } from 'react-router-dom'
 
@@ -23,21 +24,19 @@ import { serializeEditVenueBodyModel } from './serializers'
 import { setInitialFormValues } from './setInitialFormValues'
 import { VenueEditionFormValues } from './types'
 import { getValidationSchema } from './validationSchema'
+import { GET_VENUE_QUERY_KEY } from './VenueEdition'
 
 interface VenueFormProps {
   venue: GetVenueResponseModel
-  reloadVenueData: () => Promise<void>
 }
 
-export const VenueEditionForm = ({
-  venue,
-  reloadVenueData,
-}: VenueFormProps) => {
+export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   const navigate = useNavigate()
   const location = useLocation()
   const notify = useNotification()
   const { logEvent } = useAnalytics()
   const isOpeningHoursEnabled = useActiveFeature('WIP_OPENING_HOURS')
+  const queryClient = useQueryClient()
 
   const { currentUser } = useCurrentUser()
 
@@ -51,7 +50,9 @@ export const VenueEditionForm = ({
         serializeEditVenueBodyModel(values, !venue.siret)
       )
 
-      await reloadVenueData()
+      await queryClient.invalidateQueries({
+        queryKey: [GET_VENUE_QUERY_KEY, venue.id],
+      })
 
       navigate(`/structures/${venue.managingOfferer.id}/lieux/${venue.id}`)
 

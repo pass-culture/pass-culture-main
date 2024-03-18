@@ -43,6 +43,7 @@
     "@sentry/browser": "^7.100.1",
     "@sentry/react": "^7.103.0",
     "@sentry/tracing": "^7.103.0",
+    "@tanstack/react-query": "^5.28.4",
     "@zootools/email-spell-checker": "^1.12.0",
     "chart.js": "^4.4.2",
     "chartjs-adapter-date-fns": "^3.0.0",

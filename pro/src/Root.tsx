@@ -1,4 +1,4 @@
-import React from 'react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Provider } from 'react-redux'
 
 import { AppRouter } from 'app/AppRouter'
@@ -15,12 +15,16 @@ interface RootProps {
 const Root = ({ isAdageIframe }: RootProps): JSX.Element => {
   const { store } = createStore()
 
+  const queryClient = new QueryClient()
+
   return (
     <Provider store={store}>
       <AnalyticsContextProvider>
         <RemoteContextProvider>
           <StoreProvider isAdageIframe={isAdageIframe}>
-            <AppRouter />
+            <QueryClientProvider client={queryClient}>
+              <AppRouter />
+            </QueryClientProvider>
           </StoreProvider>
         </RemoteContextProvider>
       </AnalyticsContextProvider>
