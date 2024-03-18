@@ -17,7 +17,6 @@ from pcapi.core.providers.repository import get_provider_by_local_class
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi.local_providers import TiteLiveThings
-from pcapi.local_providers.titelive_things.titelive_things import ADULT_ADVISOR_TEXT
 from pcapi.local_providers.titelive_things.titelive_things import BASE_VAT
 from pcapi.local_providers.titelive_things.titelive_things import BOX_SUPPORT_CODE
 from pcapi.local_providers.titelive_things.titelive_things import CALENDAR_SUPPORT_CODE
@@ -300,14 +299,13 @@ class TiteliveThingsTest:
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
-    def test_does_not_create_product_when_product_is_lectorat_eighteen_with_adult_advisor_comment(
+    def test_does_not_create_product_when_product_is_lectorat_eighteen(
         self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
     ):
         get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
         DATA_LINE_PARTS[COLUMN_INDICES["id_lectorat"]] = LECTORAT_EIGHTEEN_ID
-        DATA_LINE_PARTS[COLUMN_INDICES["commentaire"]] = ADULT_ADVISOR_TEXT
 
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
