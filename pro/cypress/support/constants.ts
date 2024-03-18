@@ -33,7 +33,7 @@ export const CONSTANTS = {
   phoneNumber: '600000000',
   // signUp confirmation page //
   signUpConfirmationLink: 'inscription/confirmation',
-  // CRUD //
+  //  CRUD  //
   post: 'POST',
   get: 'GET',
   //  API  //
