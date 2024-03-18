@@ -693,6 +693,8 @@ def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
             sa.orm.joinedload(offerers_models.Venue.collectiveDmsApplications).load_only(
                 educational_models.CollectiveDmsApplication.state,
                 educational_models.CollectiveDmsApplication.lastChangeDate,
+                educational_models.CollectiveDmsApplication.application,
+                educational_models.CollectiveDmsApplication.procedure,
             ),
             sa.orm.joinedload(offerers_models.Venue.registration).load_only(
                 offerers_models.VenueRegistration.target,

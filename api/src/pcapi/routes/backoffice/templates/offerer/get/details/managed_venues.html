@@ -12,6 +12,7 @@
       <th scope="col">Présence web</th>
       <th scope="col">Offres cibles</th>
       <th scope="col">Statut DMS Adage</th>
+      <th scope="col">Dossier DMS Adage</th>
     </tr>
   </thead>
   <tbody>
@@ -39,6 +40,7 @@
         </td>
         <td>{{ venue.target | format_venue_target }}</td>
         <td>{{ venue.dms_adage_status | format_dms_status if venue.dms_adage_status else "" }}</td>
+        <td>{{ links.build_dms_adage_application_external_link(venue) if venue.last_collective_dms_application else "" }}</td>
       </tr>
     {% endfor %}
   </tbody>
