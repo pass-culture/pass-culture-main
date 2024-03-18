@@ -2,8 +2,8 @@ export const CONSTANTS = {
   // signIn page //
   signIn: '/connexion',
   signUp: '/inscription',
-  emailId: '#email',
-  passwordId: '#password',
+  emailField: '#email',
+  passwordField: '#password',
   forgotPasswordText: 'Mot de passe oublié',
   requestPasswordLink: '/demande-mot-de-passe',
   signInButton: 'Se connecter',
@@ -25,12 +25,12 @@ export const CONSTANTS = {
   emailProAccount: 'pro_adage_eligible@example.com',
   // signUp page //
   iAlreadyHaveAnAccountButton: 'J’ai déjà un compte',
-  lastNameId: '#lastName',
-  randomLastName: 'France',
-  firstNameId: '#firstName',
-  randomFirstName: 'LE PAX',
-  phoneNumberId: '#phoneNumber',
-  randomPhoneNumber: '600000000',
+  lastNameField: '#lastName',
+  lastName: 'France',
+  firstNameField: '#firstName',
+  firstName: 'LE PAX',
+  phoneNumberField: '#phoneNumber',
+  phoneNumber: '600000000',
   // signUp confirmation page //
   signUpConfirmationLink: 'inscription/confirmation',
   // CRUD //

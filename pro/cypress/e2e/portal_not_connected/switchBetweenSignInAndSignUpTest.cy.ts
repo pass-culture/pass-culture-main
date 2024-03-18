@@ -13,6 +13,7 @@ describe('page signin and signup', () => {
     cy.contains(CONSTANTS.iAlreadyHaveAnAccountButton).click()
 
     cy.url().should('include', CONSTANTS.signIn)
+
     cy.contains(CONSTANTS.signInButton).should('be.disabled')
   })
 })

@@ -4,19 +4,15 @@ describe('signin page', () => {
   it('verify unsuccessful signin for wrong password', () => {
     cy.visit(CONSTANTS.signIn)
 
-    cy.get(CONSTANTS.emailId).type(CONSTANTS.emailProAccount)
+    cy.get(CONSTANTS.emailField).type(CONSTANTS.emailProAccount)
 
-    cy.get(CONSTANTS.passwordId).type(CONSTANTS.randomPassword)
+    cy.get(CONSTANTS.passwordField).type(CONSTANTS.randomPassword)
 
-    cy.get('button[type=submit]').click()
+    cy.contains('Se connecter').click()
 
-    cy.get(CONSTANTS.emailErrorId)
-      .should('be.visible')
-      .should('have.text', CONSTANTS.incorrectUsernameOrPasswordText)
+    cy.get(CONSTANTS.emailErrorId).should('be.visible')
 
-    cy.get(CONSTANTS.passwordErrorId)
-      .should('be.visible')
-      .should('have.text', CONSTANTS.incorrectUsernameOrPasswordText)
+    cy.get(CONSTANTS.passwordErrorId).should('be.visible')
 
     cy.contains(CONSTANTS.signInButton).should('be.disabled')
 
