@@ -145,11 +145,11 @@ def get_id_at_accessibility_provider(
     )
 
 
-def get_last_update_at_provider(slug: str) -> datetime:
+def get_last_update_at_provider(slug: str) -> datetime | None:
     return _get_backend().get_last_update_at_provider(slug)
 
 
-def get_accessibility_infos(slug: str) -> AccessibilityInfo:
+def get_accessibility_infos(slug: str) -> AccessibilityInfo | None:
     """Fetch accessibility data from acceslibre and save them in an AccessibilityInfo object
     This object will then be saved in db in the AccessibilityProvider.externalAccessibilityData JSONB
     """
@@ -214,23 +214,29 @@ def match_venue_with_acceslibre(
     return None
 
 
-def acceslibre_to_accessibility_infos(response: dict) -> AccessibilityInfo:
+def acceslibre_to_accessibility_infos(acceslibre_data: dict) -> AccessibilityInfo:
     accessibility_infos = AccessibilityInfo()
-    for section in response["sections"]:
-        if section["title"] == "accès":
-            accessibility_infos.access_modality = section["labels"]
-        elif section["title"] == "audiodescription":
-            accessibility_infos.audio_description = section["labels"]
-        elif section["title"] == "équipements sourd et malentendant":
-            accessibility_infos.deaf_and_hard_of_hearing_amenities = section["labels"]
-        elif section["title"] == "sanitaire":
-            accessibility_infos.facilities = section["labels"]
-        elif section["title"] == "balise sonore":
-            accessibility_infos.sound_beacon = section["labels"]
-        elif section["title"] == "personnel":
-            accessibility_infos.trained_personnel = section["labels"]
-        elif section["title"] == "stationnement":
-            accessibility_infos.transport_modality = section["labels"]
+    acceslibre_mapping = {
+        "accès": "access_modality",
+        "audiodescription": "audio_description",
+        "équipements sourd et malentendant": "deaf_and_hard_of_hearing_amenities",
+        "sanitaire": "facilities",
+        "balise sonore": "sound_beacon",
+        "personnel": "trained_personnel",
+        "stationnement": "transport_modality",
+    }
+
+    for section in acceslibre_data:
+        try:
+            title = section["title"]
+            labels = section["labels"]
+        except KeyError:
+            raise AccesLibreApiException(
+                "'title' or 'labels' key is missing in one of the sections. Check API response or contact Acceslibre"
+            )
+        attribute_name = acceslibre_mapping.get(title)
+        if attribute_name:
+            setattr(accessibility_infos, attribute_name, labels)
     return accessibility_infos
 
 
@@ -259,10 +265,10 @@ class BaseBackend:
     ) -> str | None:
         raise NotImplementedError()
 
-    def get_last_update_at_provider(self, slug: str) -> datetime:
+    def get_last_update_at_provider(self, slug: str) -> datetime | None:
         raise NotImplementedError()
 
-    def get_accessibility_infos(self, slug: str) -> AccessibilityInfo:
+    def get_accessibility_infos(self, slug: str) -> AccessibilityInfo | None:
         raise NotImplementedError()
 
 
@@ -299,10 +305,10 @@ class TestingBackend(BaseBackend):
     ) -> str | None:
         return "mon-lieu-chez-acceslibre"
 
-    def get_last_update_at_provider(self, slug: str) -> datetime:
+    def get_last_update_at_provider(self, slug: str) -> datetime | None:
         return datetime(2024, 3, 1, 0, 0)
 
-    def get_accessibility_infos(self, slug: str) -> AccessibilityInfo:
+    def get_accessibility_infos(self, slug: str) -> AccessibilityInfo | None:
         return AccessibilityInfo(sound_beacon=["Balise sonore"])
 
 
@@ -333,7 +339,7 @@ class AcceslibreBackend(BaseBackend):
         self,
         slug: str,
         request_widget_infos: bool | None = False,
-    ) -> dict:
+    ) -> dict | None:
         """
         Acceslibre has a specific GET route /api/erps/{slug} that
         we can requested when a venue slug is known. This slug is saved in the
@@ -348,14 +354,16 @@ class AcceslibreBackend(BaseBackend):
             response = requests.get(url, headers=headers, timeout=ACCESLIBRE_REQUEST_TIMEOUT)
         except requests.exceptions.RequestException:
             raise AccesLibreApiException(f"Error connecting AccesLibre API for {url}")
-        try:
-            return response.json()
-        except json.JSONDecodeError:
-            logger.error(
-                "Got non-JSON or malformed JSON response from AccesLibre",
-                extra={"url": response.url, "response": response.content},
-            )
-            raise AccesLibreApiException(f"Non-JSON response from AccesLibre API for {response.url}")
+        if response.status_code == 200:
+            try:
+                return response.json()
+            except json.JSONDecodeError:
+                logger.error(
+                    "Got non-JSON or malformed JSON response from AccesLibre",
+                    extra={"url": response.url, "response": response.content},
+                )
+                raise AccesLibreApiException(f"Non-JSON response from AccesLibre API for {response.url}")
+        return None
 
     def find_venue_at_accessibility_provider(
         self,
@@ -417,14 +425,23 @@ class AcceslibreBackend(BaseBackend):
             return matching_venue["slug"]
         return None
 
-    def get_last_update_at_provider(self, slug: str) -> datetime:
-        response = self._send_request_with_slug(slug=slug)
-        created_at = parser.isoparse(response["created_at"])
-        updated_at = parser.isoparse(response["updated_at"])
-        if updated_at > created_at:
-            return updated_at
-        return created_at
+    def get_last_update_at_provider(self, slug: str) -> datetime | None:
+        if response := self._send_request_with_slug(slug=slug):
+            created_at = parser.isoparse(response["created_at"])
+            updated_at = parser.isoparse(response["updated_at"])
+            if updated_at > created_at:
+                return updated_at
+            return created_at
+        # if Venue is not found at acceslibre, we return None
+        return None
 
-    def get_accessibility_infos(self, slug: str) -> AccessibilityInfo:
-        accesslibre_data = self._send_request_with_slug(slug=slug, request_widget_infos=True)
-        return acceslibre_to_accessibility_infos(accesslibre_data)
+    def get_accessibility_infos(self, slug: str) -> AccessibilityInfo | None:
+        if response := self._send_request_with_slug(slug=slug, request_widget_infos=True):
+            try:
+                acceslibre_data = response["sections"]
+            except KeyError:
+                raise AccesLibreApiException(
+                    "'sections' key is missing in the response from acceslibre. Check API response or contact Acceslibre"
+                )
+            return acceslibre_to_accessibility_infos(acceslibre_data)
+        return None
