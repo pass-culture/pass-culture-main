@@ -29,7 +29,8 @@ PASS_CULTURE_CONTEXT = "Vérification des acteurs culturels inscrits sur le pass
 
 
 class EntrepriseBackend(BaseBackend):
-    timeout = 3
+    # less than 1-minute nginx timeout
+    timeout = 50
 
     def _get(self, subpath: str) -> dict:
         if not settings.ENTREPRISE_API_URL:
