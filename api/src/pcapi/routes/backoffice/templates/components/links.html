@@ -97,7 +97,7 @@
     <a href="https://annuaire-entreprises.data.gouv.fr/entreprise/{{ offerer.siren }}"
        target="_blank"
        title="Visualiser dans l'Annuaire des Entreprises"
-       class="link-primary">{{ offerer.siren }}</a>
+       class="link-primary">{{ offerer.siren }} <i class="bi bi-box-arrow-up-right"></i></a>
   {% endif %}
 {% endmacro %}
 {% macro build_siret_to_external_link(venue) %}
@@ -105,6 +105,12 @@
     <a href="https://annuaire-entreprises.data.gouv.fr/etablissement/{{ venue.siret }}"
        target="_blank"
        title="Visualiser dans l'Annuaire des Entreprises"
-       class="link-primary">{{ venue.siret }}</a>
+       class="link-primary">{{ venue.siret }} <i class="bi bi-box-arrow-up-right"></i></a>
   {% endif %}
+{% endmacro %}
+{% macro build_dms_adage_application_external_link(venue) %}
+  <a href="https://www.demarches-simplifiees.fr/procedures/{{ venue.last_collective_dms_application.procedure }}/dossiers/{{ venue.last_collective_dms_application.application }}"
+     target="_blank"
+     title="Visualiser le dossier Démarches Simplifiées Adage"
+     class="link-primary">{{ venue.last_collective_dms_application.application }} <i class="bi bi-box-arrow-up-right"></i></a>
 {% endmacro %}
