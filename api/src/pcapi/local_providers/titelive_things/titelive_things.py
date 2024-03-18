@@ -42,7 +42,6 @@ GTL_LEVEL_02_AFTER_3_AND_BEFORE_6 = "03"
 
 LECTORAT_EIGHTEEN_ID = "45"
 
-ADULT_ADVISOR_TEXT = "réservé à un public averti"
 TOEIC_TEXT = "toeic"
 TOEFL_TEXT = "toefl"
 
@@ -342,10 +341,7 @@ class TiteLiveThings(LocalProvider):
             return "object"
 
         # ouvrage "lectorat 18+" (Pornographie / ultra-violence)
-        if (
-            self.product_infos[INFO_KEYS["LECTORAT_ID"]] == LECTORAT_EIGHTEEN_ID
-            and ADULT_ADVISOR_TEXT in self.product_infos[INFO_KEYS["COMMENTAIRE"]]
-        ):
+        if self.product_infos[INFO_KEYS["LECTORAT_ID"]] == LECTORAT_EIGHTEEN_ID:
             return "pornography-or-violence"
 
         # Petite jeunesse (livres pour le bains, peluches, puzzles, etc...)
