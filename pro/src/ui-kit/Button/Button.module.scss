@@ -1,7 +1,7 @@
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_size.scss" as size;
+@use "styles/variables/themes.scss" as *;
 
 .button {
   @include fonts.button;
@@ -49,65 +49,65 @@
   }
 
   &:focus-visible {
-    outline: rem.torem(1px) solid colors.$input-text-color;
+    outline: rem.torem(1px) solid var(--color-input-text-color);
     outline-offset: rem.torem(2px);
   }
 
   &-primary {
     min-height: rem.torem(40px);
     align-items: center;
-    color: colors.$white;
-    background-color: colors.$primary;
-    border-color: colors.$primary;
+    color: var(--color-white);
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
 
     &:hover {
-      background-color: colors.$primary-dark;
-      border-color: colors.$primary-dark;
+      background-color: var(--color-primary-dark);
+      border-color: var(--color-primary-dark);
     }
 
     &:disabled,
     &.button-disabled {
-      background-color: colors.$grey-light;
-      color: colors.$grey-dark;
-      border-color: colors.$grey-light;
+      background-color: var(--color-grey-light);
+      color: var(--color-grey-dark);
+      border-color: var(--color-grey-light);
     }
 
     .button-icon {
-      color: colors.$white;
+      color: var(--color-white);
     }
   }
 
   &-secondary {
     min-height: rem.torem(40px);
     align-items: center;
-    color: colors.$primary;
-    background-color: colors.$white;
-    border-color: colors.$primary;
+    color: var(--color-primary);
+    background-color: var(--color-white);
+    border-color: var(--color-primary);
 
     &:hover {
-      color: colors.$white;
-      background-color: colors.$primary-dark;
-      border-color: colors.$primary-dark;
+      color: var(--color-white);
+      background-color: var(--color-primary-dark);
+      border-color: var(--color-primary-dark);
 
       .button-icon {
-        color: colors.$white;
+        color: var(--color-white);
       }
     }
 
     &:disabled,
     &.button-disabled {
-      background-color: colors.$white;
-      border-color: colors.$primary-disabled;
-      color: colors.$primary-disabled;
+      background-color: var(--color-white);
+      border-color: var(--color-primary-disabled);
+      color: var(--color-primary-disabled);
     }
 
     &:disabled .button-icon,
     &.button-disabled .button-icon {
-      color: colors.$grey-medium;
+      color: var(--color-grey-medium);
     }
 
     .button-icon {
-      color: colors.$primary;
+      color: var(--color-primary);
     }
   }
 
@@ -117,11 +117,11 @@
   &-quaternary-pink {
     @include fonts.button;
 
-    color: colors.$black;
+    color: var(--color-black);
     align-items: flex-start;
 
     &-pink {
-      color: colors.$primary;
+      color: var(--color-primary);
     }
 
     background-color: transparent;
@@ -139,12 +139,12 @@
     &:disabled,
     &.button-disabled {
       text-decoration: none;
-      color: colors.$grey-dark;
+      color: var(--color-grey-dark);
     }
 
     &:disabled .button-icon,
     &.button-disabled .button-icon {
-      color: colors.$grey-semi-dark;
+      color: var(--color-grey-semi-dark);
     }
 
     .button-icon:not(.has-tooltip) {
@@ -165,7 +165,7 @@
 
     margin-top: rem.torem(6px);
     margin-bottom: rem.torem(6px);
-    color: colors.$black;
+    color: var(--color-black);
 
     .button-icon:not(.has-tooltip) {
       height: rem.torem(16px);
@@ -191,17 +191,17 @@
   }
 
   &-box {
-    background-color: colors.$white;
+    background-color: var(--color-white);
     justify-content: flex-start;
     width: 100%;
     padding: rem.torem(12px) rem.torem(8px);
-    border: rem.torem(1px) solid colors.$grey-dark;
+    border: rem.torem(1px) solid var(--color-grey-dark);
     border-radius: rem.torem(6px);
     max-width: rem.torem(400px);
 
     &:hover:not(:disabled, .button-disabled) {
       box-shadow: rem.torem(0) rem.torem(3px) rem.torem(4px)
-        colors.$medium-shadow;
+        var(--color-medium-shadow);
     }
 
     &:focus-visible {
@@ -213,7 +213,7 @@
           content: "";
           position: absolute;
           inset: rem.torem(-4px);
-          border: 1px solid colors.$input-text-color;
+          border: 1px solid var(--color-input-text-color);
           border-radius: rem.torem(8px);
         }
       }
@@ -226,22 +226,22 @@
 
     .button-icon {
       &:not(.button-icon-arrow) {
-        color: colors.$primary;
+        color: var(--color-primary);
       }
 
       &.button-icon-arrow {
-        color: colors.$black;
+        color: var(--color-black);
       }
     }
 
     &:disabled,
     &.button-disabled {
-      background: colors.$grey-light;
-      border-color: colors.$grey-light;
-      color: colors.$grey-dark;
+      background: var(--color-grey-light);
+      border-color: var(--color-grey-light);
+      color: var(--color-grey-dark);
 
       .button-icon {
-        color: colors.$grey-dark;
+        color: var(--color-grey-dark);
       }
     }
   }

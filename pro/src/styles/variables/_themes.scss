@@ -1,0 +1,183 @@
+@use "styles/variables/_colors.scss" as colors;
+
+html[data-theme="pink"] {
+  // GENERAL COLORS
+  --color-white: #fff;
+  --color-grey-light: #f1f1f4;
+  --color-grey-medium: #cbcdd2;
+  --color-grey-semi-dark: #90949d;
+  --color-grey-dark: #696a6f;
+  --color-black: #161617;
+
+  // SHADOWS COLORS
+  --color-medium-shadow: #67686b29;
+  --color-large-shadow: #25026c26;
+
+  // BRAND & ACTIONS COLORS
+  --color-brand: #870087;
+  --color-primary: #eb0055;
+  --color-secondary-lighter: #c1a3ff;
+  --color-secondary-light: #6123df;
+  --color-secondary: #320096;
+  --color-secondary-dark: #25026c;
+  --color-primary-dark: #cb0659;
+
+  // STATE COLORS
+  --color-accent: #06f;
+  --color-valid: #15884f;
+  --color-error-light: #e60039;
+  --color-error: #b60025;
+  --color-accent-light: #b3e7ff;
+  --color-alert-dark: #f9c030;
+
+  // GRADIENTS COLORS
+  --color-grey-lighter-for-gradient: #e1e1e7;
+  --color-linear-gradient-to-right: linear-gradient(
+    to right,
+    var(--color-primary),
+    var(--color-secondary)
+  );
+  --color-linear-gradient-skeleton: linear-gradient(
+    191deg,
+    var(--color-grey-lighter-for-gradient),
+    var(--color-grey-light),
+    var(--color-grey-lighter-for-gradient)
+  );
+  --color-adage-linear-gradient-image-preview: linear-gradient(
+    207.06deg,
+    var(--color-grey-light) 43.41%,
+    var(--color-grey-lighter-for-gradient) 107.01%
+  );
+
+  // BACKGROUND COLORS
+  --color-background-secondary: #f3edff;
+  --color-background-accent-light: #e5f0ff;
+  --color-background-valid: #eaf8f0;
+  --color-background-alert: #fff8df;
+  --color-background-error: #fdf4f6;
+  --color-background-content: #f6f6f6;
+
+  // FORMS & INPUT COLORS
+  --color-input-text-color: var(--color-black);
+  --color-input-border-color: var(--color-grey-semi-dark);
+  --color-input-border-color-focus: var(--color-black);
+  --color-input-border-color-error: var(--color-error);
+  --color-input-border-color-disabled: var(--color-grey-medium);
+  --color-input-bg-color: var(--color-white);
+  --color-input-bg-color-disabled: var(--color-grey-light);
+  --color-input-text-color-disabled: var(--color-grey-dark);
+
+  // TODO used in button, should be remplaced by real disable colors
+  // see ticket PC-27778
+  --color-primary-disabled: #ff99be;
+
+  // ADAGE COLORS
+  // waiting for designer approval :
+  --color-adage-discovery-background: #fbfafc;
+  --color-adage-purple: #4613ad;
+  --color-adage-blue: #448;
+  --color-adage-orange-light: #fa9f16;
+  --color-adage-orange-dark: #b85901;
+  --color-adage-purple-light: #ad87ff;
+  --color-adage-purple-dark: #8337e9;
+  --color-adage-pink-light: #ec3478;
+  --color-adage-pink-dark: #c01371;
+  --color-adage-green-light: #27dca8;
+  --color-adage-green-dark: #0e8474;
+  --color-adage-red-light: #f8733d;
+  --color-adage-red-dark: #ca3f13;
+  --color-adage-blue-light: #1fc5e9;
+  --color-adage-blue-dark: #0e78b7;
+  --color-adage-blue-external: #626fad;
+}
+
+html[data-theme="blue"] {
+  // GENERAL COLORS
+  --color-white: #fff;
+  --color-grey-light: #f1f1f4;
+  --color-grey-medium: #cbcdd2;
+  --color-grey-semi-dark: #90949d;
+  --color-grey-dark: #696a6f;
+  --color-black: #161617;
+
+  // SHADOWS COLORS
+  --color-medium-shadow: #67686b29;
+  --color-large-shadow: #25026c26;
+
+  // BRAND & ACTIONS COLORS
+  --color-brand: #870087;
+  --color-primary: #320096;
+  --color-secondary-lighter: #c1a3ff;
+  --color-secondary-light: #6123df;
+  --color-secondary: #320096;
+  --color-secondary-dark: #25026c;
+  --color-primary-dark: #25026c;
+
+  // STATE COLORS
+  --color-accent: #06f;
+  --color-valid: #15884f;
+  --color-error-light: #e60039;
+  --color-error: #b60025;
+  --color-accent-light: #b3e7ff;
+  --color-alert-dark: #f9c030;
+
+  // GRADIENTS COLORS
+  --color-grey-lighter-for-gradient: #e1e1e7;
+  --color-linear-gradient-to-right: linear-gradient(
+    to right,
+    var(--color-primary),
+    var(--color-secondary)
+  );
+  --color-linear-gradient-skeleton: linear-gradient(
+    191deg,
+    var(--color-grey-lighter-for-gradient),
+    var(--color-grey-light),
+    var(--color-grey-lighter-for-gradient)
+  );
+  --color-adage-linear-gradient-image-preview: linear-gradient(
+    207.06deg,
+    var(--color-grey-light) 43.41%,
+    var(--color-grey-lighter-for-gradient) 107.01%
+  );
+
+  // BACKGROUND COLORS
+  --color-background-secondary: #f3edff;
+  --color-background-accent-light: #e5f0ff;
+  --color-background-valid: #eaf8f0;
+  --color-background-alert: #fff8df;
+  --color-background-error: #fdf4f6;
+  --color-background-content: #f6f6f6;
+
+  // FORMS & INPUT COLORS
+  --color-input-text-color: var(--color-black);
+  --color-input-border-color: var(--color-grey-semi-dark);
+  --color-input-border-color-focus: var(--color-black);
+  --color-input-border-color-error: var(--color-error);
+  --color-input-border-color-disabled: var(--color-grey-medium);
+  --color-input-bg-color: var(--color-white);
+  --color-input-bg-color-disabled: var(--color-grey-light);
+  --color-input-text-color-disabled: var(--color-grey-dark);
+
+  // TODO used in button, should be remplaced by real disable colors
+  // see ticket PC-27778
+  --color-primary-disabled: var(--color-grey-light);
+
+  // ADAGE COLORS
+  // waiting for designer approval :
+  --color-adage-discovery-background: #fbfafc;
+  --color-adage-purple: #4613ad;
+  --color-adage-blue: #448;
+  --color-adage-orange-light: #fa9f16;
+  --color-adage-orange-dark: #b85901;
+  --color-adage-purple-light: #ad87ff;
+  --color-adage-purple-dark: #8337e9;
+  --color-adage-pink-light: #ec3478;
+  --color-adage-pink-dark: #c01371;
+  --color-adage-green-light: #27dca8;
+  --color-adage-green-dark: #0e8474;
+  --color-adage-red-light: #f8733d;
+  --color-adage-red-dark: #ca3f13;
+  --color-adage-blue-light: #1fc5e9;
+  --color-adage-blue-dark: #0e78b7;
+  --color-adage-blue-external: #626fad;
+}
