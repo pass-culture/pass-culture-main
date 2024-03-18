@@ -11,7 +11,6 @@ import pydantic.v1 as pydantic_v1
 from pydantic.v1 import validator
 from pydantic.v1.utils import GetterDict
 from spectree import BaseFile
-import typing_extensions
 
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import utils as finance_utils
@@ -365,27 +364,27 @@ if typing.TYPE_CHECKING:
     event_category_reading_fields = CategoryRelatedFields
     product_category_edition_fields = CategoryRelatedFields
 else:
-    product_category_creation_fields = typing_extensions.Annotated[
+    product_category_creation_fields = typing.Annotated[
         typing.Union[tuple(product_category_creation_models.values())],
         pydantic_v1.Field(description=CATEGORY_RELATED_FIELD_DESCRIPTION),
     ]
-    product_category_reading_fields = typing_extensions.Annotated[
+    product_category_reading_fields = typing.Annotated[
         typing.Union[tuple(product_category_reading_models.values())],
         pydantic_v1.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
     ]
-    product_category_edition_fields = typing_extensions.Annotated[
+    product_category_edition_fields = typing.Annotated[
         typing.Union[tuple(product_category_edition_models.values())],
         pydantic_v1.Field(discriminator="subcategory_id"),
     ]
-    event_category_creation_fields = typing_extensions.Annotated[
+    event_category_creation_fields = typing.Annotated[
         typing.Union[tuple(event_category_creation_models.values())],
         pydantic_v1.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
     ]
-    event_category_edition_fields = typing_extensions.Annotated[
+    event_category_edition_fields = typing.Annotated[
         typing.Union[tuple(event_category_edition_models.values())],
         pydantic_v1.Field(discriminator="subcategory_id"),
     ]
-    event_category_reading_fields = typing_extensions.Annotated[
+    event_category_reading_fields = typing.Annotated[
         typing.Union[tuple(event_category_reading_models.values())],
         pydantic_v1.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
     ]

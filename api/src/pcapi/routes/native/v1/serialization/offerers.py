@@ -1,11 +1,11 @@
-from typing_extensions import TypedDict
+import typing
 
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import base
 
 
-class BannerMetaModel(TypedDict, total=False):
+class BannerMetaModel(typing.TypedDict, total=False):
     image_credit: base.VenueImageCredit | None
 
 
