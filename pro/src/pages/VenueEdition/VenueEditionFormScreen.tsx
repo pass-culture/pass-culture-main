@@ -10,12 +10,10 @@ import { VenueEditionReadOnly } from './VenueEditionReadOnly'
 
 interface VenueEditionProps {
   venue: GetVenueResponseModel
-  reloadVenueData: () => Promise<void>
 }
 
 export const VenueEditionFormScreen = ({
   venue,
-  reloadVenueData,
 }: VenueEditionProps): JSX.Element => {
   if (venue.isVirtual) {
     return (
@@ -46,15 +44,7 @@ export const VenueEditionFormScreen = ({
       {!venue.isVirtual && (
         <Routes>
           <Route path="" element={<VenueEditionReadOnly venue={venue} />} />
-          <Route
-            path="/edition"
-            element={
-              <VenueEditionForm
-                venue={venue}
-                reloadVenueData={reloadVenueData}
-              />
-            }
-          />
+          <Route path="/edition" element={<VenueEditionForm venue={venue} />} />
         </Routes>
       )}
     </>

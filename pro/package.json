@@ -68,6 +68,7 @@
     "react-router-dom": "^6.22.3",
     "reselect": "^5.1.0",
     "search-insights": "^2.13.0",
+    "swr": "^2.2.5",
     "uuidv4": "^6.2.13",
     "yup": "^1.4.0"
   },

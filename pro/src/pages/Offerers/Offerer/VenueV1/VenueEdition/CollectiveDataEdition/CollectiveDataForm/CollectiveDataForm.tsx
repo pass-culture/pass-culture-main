@@ -1,6 +1,7 @@
 import { FormikProvider, useFormik } from 'formik'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useSWRConfig } from 'swr'
 
 import {
   GetCollectiveVenueResponseModel,
@@ -14,6 +15,7 @@ import { venueInterventionOptions } from 'core/shared/interventionOptions'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
 import { RouteLeavingGuardVenueEdition } from 'pages/VenueEdition/RouteLeavingGuardVenueEdition'
+import { GET_VENUE_QUERY_KEY } from 'pages/VenueEdition/VenueEdition'
 import { ButtonLink, Select, SubmitButton, TextArea, TextInput } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { MultiSelectAutocomplete } from 'ui-kit/form/MultiSelectAutoComplete/MultiSelectAutocomplete'
@@ -46,7 +48,6 @@ type CollectiveDataFormProps = {
   venue: GetVenueResponseModel
   venueCollectiveData: GetCollectiveVenueResponseModel | null
   adageVenueCollectiveData: GetCollectiveVenueResponseModel | null
-  reloadVenueData: () => Promise<void>
 }
 
 export const CollectiveDataForm = ({
@@ -56,10 +57,11 @@ export const CollectiveDataForm = ({
   venue,
   venueCollectiveData,
   adageVenueCollectiveData,
-  reloadVenueData,
 }: CollectiveDataFormProps): JSX.Element | null => {
   const notify = useNotification()
   const navigate = useNavigate()
+
+  const { mutate } = useSWRConfig()
 
   const [previousInterventionValues, setPreviousInterventionValues] = useState<
     string[] | null
@@ -85,7 +87,7 @@ export const CollectiveDataForm = ({
       values: extractInitialValuesFromVenue(response.payload),
     })
 
-    await reloadVenueData()
+    await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
 
     navigate(`/structures/${venue.managingOfferer.id}/lieux/${venue.id}/eac`)
   }
