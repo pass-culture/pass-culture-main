@@ -5,6 +5,8 @@ import pytest
 import time_machine
 
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers.synchronize_venues_banners_with_google_places import PlaceDetails
+from pcapi.core.offerers.synchronize_venues_banners_with_google_places import PlacePhoto
 
 from tests.test_utils import run_command
 
@@ -41,3 +43,32 @@ class SynchronizeVenuesBannerWithGooglePlacesTest:
             caplog.records[0].message
             == "[gmaps_banner_synchro] synchronize_venues_banners_with_google_places command does not execute after 28th"
         )
+
+    @patch("pcapi.core.offerers.synchronize_venues_banners_with_google_places.get_venues_without_photo")
+    @patch("pcapi.core.offerers.synchronize_venues_banners_with_google_places.get_place_id")
+    @patch("pcapi.core.offerers.synchronize_venues_banners_with_google_places.get_place_photos_and_owner")
+    @patch("pcapi.core.offerers.synchronize_venues_banners_with_google_places.save_photo_to_gcp")
+    def test_synchronize_venues_banners_with_google_places_batching(
+        self,
+        mock_save_photo_to_gcp,
+        mock_get_place_photos_and_owner,
+        mock_get_place_id,
+        mock_get_venues_without_photo,
+        app,
+    ):
+
+        venues = [offerers_factories.VenueFactory() for _ in range(5)]
+        mock_get_venues_without_photo.return_value = venues
+        mock_get_place_photos_and_owner.return_value = PlaceDetails(
+            name="test", photos=[PlacePhoto(height=100, photo_reference="test", width=100, html_attributions=[])]
+        )
+        mock_get_place_id.return_value = "test"
+        mock_save_photo_to_gcp.return_value = "https://test.com/test.jpg"
+
+        with patch("pcapi.models.db.session.commit") as mock_commit:
+            run_command(app, "synchronize_venues_banners_with_google_places", "--batch-size", 2)
+
+        assert mock_get_place_id.call_count == 5
+        assert mock_get_place_photos_and_owner.call_count == 5
+        assert mock_save_photo_to_gcp.call_count == 5
+        assert mock_commit.call_count == 3

@@ -131,6 +131,7 @@ def save_photo_to_gcp(venue_id: int, photo: PlacePhoto, prefix: str) -> str:
 
 def synchronize_venues_banners_with_google_places(
     venues: list[offerers_models.Venue],
+    batch_size: int = 50,
 ) -> None:
     logger.info(
         "[gmaps_banner_synchro] synchronize_venues_banners_with_google_places",
@@ -142,7 +143,8 @@ def synchronize_venues_banners_with_google_places(
     nb_images_ignored_due_to_ratio_venue_id = 0
     images_ignored_due_to_ratio = []
     banner_synchronized_venue_ids = set()
-    for venue in venues:
+    count = 0
+    for count, venue in enumerate(venues, 1):
         try:
             if venue.googlePlacesInfo:
                 if (datetime.datetime.utcnow() - venue.googlePlacesInfo.updateDate).days > 62:
@@ -170,11 +172,9 @@ def synchronize_venues_banners_with_google_places(
             venue.googlePlacesInfo.bannerUrl = save_photo_to_gcp(venue.id, photo, photo_prefix)
             venue.googlePlacesInfo.bannerMeta = photo.model_dump()
             banner_synchronized_venue_ids.add(venue.id)
-            db.session.commit()
         except image_conversion.ImageRatioError:
             nb_images_ignored_due_to_ratio_venue_id += 1
             images_ignored_due_to_ratio.append(venue.id)
-            db.session.rollback()
             continue
         except Exception as e:  # pylint: disable=broad-except
             logger.exception(
@@ -183,8 +183,33 @@ def synchronize_venues_banners_with_google_places(
                 e,
                 extra={"venue_id": venue.id, "error": e},
             )
+            continue
+        try:
+            if count % batch_size == 0:
+                db.session.commit()
+        except Exception as e:  # pylint: disable=broad-except
+            logger.exception(
+                "[gmaps_banner_synchro]commit failed batch_begin: %s, batch_end:%s, error %s: ",
+                count - batch_size,
+                count,
+                e,
+                extra={"batch_begin": count - batch_size, "batch_end": count, "error": e},
+            )
             db.session.rollback()
             continue
+
+    try:
+        if count % batch_size > 0:
+            db.session.commit()
+    except Exception as e:  # pylint: disable=broad-except
+        logger.exception(
+            "[gmaps_banner_synchro]commit failed batch_begin: %s, batch_begin:%s, error %s: ",
+            count - (count % batch_size),
+            count,
+            e,
+            extra={"batch_begin": count - (count % batch_size), "batch_end": count, "error": e},
+        )
+        db.session.rollback()
     async_index_venue_ids(banner_synchronized_venue_ids, IndexationReason.GOOGLE_PLACES_BANNER_SYNCHRONIZATION)
     logger.info(
         "[gmaps_banner_synchro]Synchronized venues with Google Places",
@@ -235,7 +260,8 @@ def delete_venues_banners(venues: list[offerers_models.Venue]) -> None:
         place_info.bannerUrl = None
         place_info.bannerMeta = None
         venues_ids_with_deleted_banners.add(place_info.venueId)
-    db.session.commit()
+    if nb_deleted_banners > 0:
+        db.session.commit()
     async_index_venue_ids(venues_ids_with_deleted_banners, IndexationReason.GOOGLE_PLACES_BANNER_SYNCHRONIZATION)
     logger.info(
         "deleted old google places banners",

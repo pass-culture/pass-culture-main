@@ -63,7 +63,8 @@ def check_active_offerers(dry_run: bool = False, day: int | None = None) -> None
 
 @blueprint.cli.command("synchronize_venues_banners_with_google_places")
 @click.option("--frequency", type=int, required=False, default=1)
-def synchronize_venues_banners_with_google_places(frequency: int = 1) -> None:
+@click.option("--batch-size", type=int, required=False, default=50)
+def synchronize_venues_banners_with_google_places(frequency: int = 1, batch_size: int = 50) -> None:
     """Synchronize venues banners with Google Places API.
 
     This command is meant to be called every day.
@@ -72,6 +73,7 @@ def synchronize_venues_banners_with_google_places(frequency: int = 1) -> None:
 
     Args:
         frequency (int): The frequency of the command per month. Default is 1, to synchronize all venues once a month.
+        batch_size (int): The batch size for synchronizing with google maps, it's only used for writing in our database. Default is 50.
     """
 
     if frequency not in (1, 2, 4):
@@ -83,7 +85,9 @@ def synchronize_venues_banners_with_google_places(frequency: int = 1) -> None:
             "[gmaps_banner_synchro] synchronize_venues_banners_with_google_places command does not execute after 28th"
         )
         return
-
+    if batch_size < 1:
+        logger.error("Batch size must be greater than 0")
+        return
     venues = banner_url_synchronizations.get_venues_without_photo(frequency)
     banner_url_synchronizations.delete_venues_banners(venues)
-    banner_url_synchronizations.synchronize_venues_banners_with_google_places(venues)
+    banner_url_synchronizations.synchronize_venues_banners_with_google_places(venues, batch_size=batch_size)
