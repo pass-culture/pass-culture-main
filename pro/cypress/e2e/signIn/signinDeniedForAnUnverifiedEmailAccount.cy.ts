@@ -14,8 +14,6 @@ describe('signup and signin pages', () => {
 
     cy.get(CONSTANTS.phoneNumberField).type(CONSTANTS.phoneNumber)
 
-    // cy.contains('Créer mon compte').click()
-
     cy.get('button[type=submit]').click()
 
     cy.url().should('include', CONSTANTS.signUpConfirmationLink)
@@ -30,9 +28,13 @@ describe('signup and signin pages', () => {
 
     cy.url().should('include', CONSTANTS.signIn)
 
-    cy.get(CONSTANTS.emailErrorId).should('be.visible')
+    cy.get(CONSTANTS.emailErrorId)
+      .should('be.visible')
+      .should('have.text', 'Identifiant ou mot de passe incorrect.')
 
-    cy.get(CONSTANTS.passwordErrorId).should('be.visible')
+    cy.get(CONSTANTS.passwordErrorId)
+      .should('be.visible')
+      .should('have.text', 'Identifiant ou mot de passe incorrect.')
 
     cy.contains(CONSTANTS.signInButton).should('be.disabled')
   })
