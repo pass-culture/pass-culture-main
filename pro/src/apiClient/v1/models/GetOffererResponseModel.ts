@@ -13,6 +13,7 @@ export type GetOffererResponseModel = {
   demarchesSimplifieesApplicationId?: string | null;
   hasActiveOffer: boolean;
   hasAvailablePricingPoints: boolean;
+  hasBankAccountWithPendingCorrections: boolean;
   hasDigitalVenueAtLeastOneOffer: boolean;
   hasNonFreeOffer: boolean;
   hasPendingBankAccount: boolean;

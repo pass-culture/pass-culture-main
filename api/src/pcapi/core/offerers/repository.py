@@ -477,6 +477,7 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
         - hasValidBankAccount
         - hasPendingBankAccount
         - hasNonFreeOffers
+        - hasBankAccountWithPendingCorrections
     """
     has_non_free_offers_subquery = (
         sqla.select(1)
@@ -562,7 +563,20 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
         .correlate(models.Offerer)
         .exists()
     )
-
+    has_bank_account_with_pending_corrections_subquery = (
+        sqla.select(1)
+        .select_from(finance_models.BankAccount)
+        .where(
+            sqla.and_(
+                finance_models.BankAccount.offererId == models.Offerer.id,
+                finance_models.BankAccount.isActive.is_(True),
+                finance_models.BankAccount.status
+                == finance_models.BankAccountApplicationStatus.WITH_PENDING_CORRECTIONS,
+            ),
+        )
+        .correlate(models.Offerer)
+        .exists()
+    )
     return (
         db.session.query(
             models.Offerer,
@@ -570,6 +584,7 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
             has_valid_bank_account_subquery.label("hasValidBankAccount"),
             has_pending_bank_account_subquery.label("hasPendingBankAccount"),
             has_active_offers_subquery.label("hasActiveOffer"),
+            has_bank_account_with_pending_corrections_subquery.label("hasBankAccountWithPendingCorrections"),
         )
         .filter(models.Offerer.id == offerer_id)
         .outerjoin(models.Venue, models.Venue.managingOffererId == models.Offerer.id)

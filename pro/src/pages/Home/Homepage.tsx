@@ -106,6 +106,7 @@ export const Homepage = (): JSX.Element => {
             hasAvailablePricingPoints: false,
             hasDigitalVenueAtLeastOneOffer: false,
             hasValidBankAccount: true,
+            hasBankAccountWithPendingCorrections: false,
             hasPendingBankAccount: false,
             hasNonFreeOffer: true,
             venuesWithNonFreeOffersWithoutBankAccounts: [],
