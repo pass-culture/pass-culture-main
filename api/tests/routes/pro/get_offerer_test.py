@@ -67,6 +67,7 @@ class GetOffererTest:
             "hasValidBankAccount": False,
             "hasPendingBankAccount": False,
             "hasActiveOffer": False,
+            "hasBankAccountWithPendingCorrections": False,
             "venuesWithNonFreeOffersWithoutBankAccounts": [],
             "hasNonFreeOffer": False,
             "isActive": offerer.isActive,
@@ -279,6 +280,7 @@ class GetOffererTest:
         assert response.json["hasPendingBankAccount"] is False
         assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == []
         assert response.json["hasNonFreeOffer"] is False
+        assert response.json["hasBankAccountWithPendingCorrections"] is False
 
     @pytest.mark.usefixtures("db_session")
     def test_offerer_has_non_free_collective_offer(self, client):
@@ -301,6 +303,7 @@ class GetOffererTest:
         assert response.json["hasPendingBankAccount"] is False
         assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == [venue_with_collective_offer.id]
         assert response.json["hasNonFreeOffer"] is True
+        assert response.json["hasBankAccountWithPendingCorrections"] is False
 
     @pytest.mark.usefixtures("db_session")
     def test_offerer_has_free_offer(self, client):
@@ -321,6 +324,7 @@ class GetOffererTest:
         assert response.json["hasPendingBankAccount"] is False
         assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == []
         assert response.json["hasNonFreeOffer"] is False
+        assert response.json["hasBankAccountWithPendingCorrections"] is False
 
     @pytest.mark.usefixtures("db_session")
     def test_offerer_has_free_collective_offer(self, client):
@@ -343,6 +347,7 @@ class GetOffererTest:
         assert response.json["hasPendingBankAccount"] is False
         assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == []
         assert response.json["hasNonFreeOffer"] is False
+        assert response.json["hasBankAccountWithPendingCorrections"] is False
 
     @pytest.mark.usefixtures("db_session")
     def test_we_dont_display_anything_if_offerer_dont_have_any_bank_accounts_nor_venues(self, client):
@@ -396,6 +401,7 @@ class GetOffererTest:
         assert offerer["hasPendingBankAccount"] is False
         assert offerer["venuesWithNonFreeOffersWithoutBankAccounts"] == []
         assert offerer["hasNonFreeOffer"] is False
+        assert response.json["hasBankAccountWithPendingCorrections"] is False
 
     @pytest.mark.usefixtures("db_session")
     def test_client_can_know_which_venues_have_non_free_offers_without_bank_accounts(self, client):
@@ -474,6 +480,31 @@ class GetOffererTest:
         assert offerer["hasPendingBankAccount"] is True
         assert offerer["venuesWithNonFreeOffersWithoutBankAccounts"] == []
         assert offerer["hasNonFreeOffer"] is False
+        assert offerer["hasBankAccountWithPendingCorrections"] is False
+
+    @pytest.mark.usefixtures("db_session")
+    def test_client_can_know_if_offerer_has_any_pending_bank_account(self, client):
+        # Given
+        pro_user = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        finance_factories.BankAccountFactory(
+            offerer=offerer, status=finance_models.BankAccountApplicationStatus.WITH_PENDING_CORRECTIONS
+        )
+        # When
+        http_client = client.with_session_auth(pro_user.email)
+
+        response = http_client.get(f"/offerers/{offerer.id}")
+
+        # Then
+        assert response.status_code == 200
+        offerer = response.json
+
+        assert offerer["hasValidBankAccount"] is False
+        assert offerer["hasPendingBankAccount"] is False
+        assert offerer["venuesWithNonFreeOffersWithoutBankAccounts"] == []
+        assert offerer["hasNonFreeOffer"] is False
+        assert offerer["hasBankAccountWithPendingCorrections"] is True
 
     @pytest.mark.usefixtures("db_session")
     def test_client_can_know_if_have_any_pending_bank_accounts_draft_included(self, client):
@@ -495,6 +526,7 @@ class GetOffererTest:
         assert offerer["hasPendingBankAccount"] is True
         assert offerer["venuesWithNonFreeOffersWithoutBankAccounts"] == []
         assert offerer["hasNonFreeOffer"] is False
+        assert offerer["hasBankAccountWithPendingCorrections"] is False
 
     @pytest.mark.usefixtures("db_session")
     def test_client_can_know_which_venues_have_non_free_offers_without_bank_accounts_taking_collective_offer_into_account(
@@ -536,6 +568,7 @@ class GetOffererTest:
             non_linked_venue_with_collective_offer.id,
         ]
         assert offerer["hasNonFreeOffer"]
+        assert offerer["hasBankAccountWithPendingCorrections"] is False
 
     @pytest.mark.usefixtures("db_session")
     def test_user_can_know_if_each_managed_venues_has_venue_provider(self, client):
@@ -559,6 +592,7 @@ class GetOffererTest:
         assert response.json["hasPendingBankAccount"] is False
         assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == []
         assert response.json["hasNonFreeOffer"] is False
+        assert response.json["hasBankAccountWithPendingCorrections"] is False
 
     @pytest.mark.usefixtures("db_session")
     def test_offerer_properties_rely_only_on_the_offerer_data(self, client):
@@ -587,6 +621,7 @@ class GetOffererTest:
         assert response.json["hasPendingBankAccount"] is False
         assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == []
         assert response.json["hasNonFreeOffer"] is False
+        assert response.json["hasBankAccountWithPendingCorrections"] is False
 
     @pytest.mark.usefixtures("db_session")
     def test_user_can_correctly_see_if_there_is_venues_without_bank_account_left(self, client):

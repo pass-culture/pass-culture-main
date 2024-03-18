@@ -33,6 +33,7 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
       hasDigitalVenueAtLeastOneOffer: true,
       hasValidBankAccount: true,
       hasPendingBankAccount: false,
+      hasBankAccountWithPendingCorrections: false,
       venuesWithNonFreeOffersWithoutBankAccounts: [],
       hasNonFreeOffer: true,
       hasActiveOffer: true,
