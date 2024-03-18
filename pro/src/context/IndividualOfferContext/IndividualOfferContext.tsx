@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { useLoaderData, useNavigate } from 'react-router-dom'
+import useSWR from 'swr'
 
+import { api } from 'apiClient/api'
 import {
   CategoryResponseModel,
   GetIndividualOfferResponseModel,
@@ -52,6 +54,8 @@ export interface IndividualOfferContextProviderProps {
   queryOffererId?: string
 }
 
+const GET_CATEGORIES_KEY = 'getCategories'
+
 export function IndividualOfferContextProvider({
   children,
   isUserAdmin,
@@ -65,10 +69,9 @@ export function IndividualOfferContextProvider({
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
   const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [categories, setCategories] = useState<CategoryResponseModel[]>([])
-  const [subCategories, setSubCategories] = useState<
-    SubcategoryResponseModel[]
-  >([])
+  const categoriesQuery = useSWR([GET_CATEGORIES_KEY], api.getCategories, {
+    fallbackData: { categories: [], subcategories: [] },
+  })
   const [subcategory, setSubcategory] = useState<SubcategoryResponseModel>()
   const [offererNames, setOffererNames] = useState<
     GetOffererNameResponseModel[]
@@ -89,8 +92,6 @@ export function IndividualOfferContextProvider({
       })
 
       if (response.isOk) {
-        setCategories(response.payload.categoriesData.categories)
-        setSubCategories(response.payload.categoriesData.subCategories)
         setOffererNames(response.payload.offererNames)
         setVenueList(response.payload.venueList)
 
@@ -103,8 +104,6 @@ export function IndividualOfferContextProvider({
           setShowVenuePopin(venuesPopinDisplaying)
         }
       } else {
-        setCategories([])
-        setSubCategories([])
         setOffererNames([])
         setVenueList([])
         navigate('/accueil')
@@ -118,7 +117,7 @@ export function IndividualOfferContextProvider({
     }
   }, [offerId, offerOfferer])
 
-  if (isLoading === true) {
+  if (isLoading || categoriesQuery.isLoading) {
     return <Spinner />
   }
 
@@ -127,8 +126,8 @@ export function IndividualOfferContextProvider({
       value={{
         offerId: offer?.id || null,
         offer,
-        categories,
-        subCategories,
+        categories: categoriesQuery.data.categories,
+        subCategories: categoriesQuery.data.subcategories,
         offererNames,
         venueList,
         offerOfferer,
