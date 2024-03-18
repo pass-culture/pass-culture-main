@@ -16,6 +16,7 @@ import pcapi.core.educational.api.institution as institution_api
 import pcapi.core.educational.api.playlists as playlists_api
 import pcapi.core.educational.models as educational_models
 from pcapi.core.educational.utils import create_adage_jwt_fake_valid_token
+from pcapi.repository import transaction
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.utils.blueprint import Blueprint
 
@@ -123,8 +124,9 @@ def synchronize_venues_from_adage_cultural_partners() -> None:
 
 @blueprint.cli.command("synchronize_offerers_from_adage_cultural_partners")
 def synchronize_offerers_from_adage_cultural_partners() -> None:
-    adage_cultural_partners = adage_api.get_cultural_partners()
-    adage_api.synchronize_adage_ids_on_offerers(adage_cultural_partners.partners)
+    with transaction():
+        adage_cultural_partners = adage_api.get_cultural_partners()
+        adage_api.synchronize_adage_ids_on_offerers(adage_cultural_partners.partners)
 
 
 @blueprint.cli.command("eac_notify_pro_one_day")
