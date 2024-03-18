@@ -159,7 +159,7 @@ pc start-backend
 Si la base de données n'a pas été initialisée, vous devez suivre les étapes suivantes :
 
 * Ajouter cette variable au fichier `.env.local.secret` à la racine du dossier `api/` (en complétant par le port de
-  votre serveur postgresql):
+  votre serveur postgresql, habituellement `5432`):
   ```dotenv
   DATABASE_URL=postgresql://pass_culture:passq@localhost:<port>/pass_culture
   ```
@@ -170,6 +170,17 @@ Si la base de données n'a pas été initialisée, vous devez suivre les étapes
     permet d'installer `PostGIS`
   - MacOS : `PostGIS` est fourni avec la distribution [Postgres.app](https://postgresapp.com/). Si une autre manière
     d'installer `PostgreSQL` a été choisie, alors la commande d'installation est `brew install postgis`
+
+* créer les _users_ et _database_ suivants:
+
+```sql
+CREATE DABATBASE pass_culture;
+CREATE DATABASE pass_culture_test;
+CREATE ROLE pass_culture SUPERUSER LOGIN PASSWORD 'passq';
+CREATE ROLE pytest SUPERUSER LOGIN PASSWORD 'pytest';
+GRANT ALL PRIVILEGES ON DATABASE pass_culture to pass_culture;
+GRANT ALL PRIVILEGES ON DATABASE pass_culture_test to pytest;
+```
 
 * Installer les extensions et jouer les migrations en ayant dans le `poetry shell` :
 
@@ -184,6 +195,21 @@ Vous pouvez maintenant lancer l'application Flask
 ```shell
 python src/pcapi/app.py
 ```
+
+Pour lancer les tests manuellement sans passer par docker :
+
+* Assurez-vous d'avoir bien créé la base de données `pass_culture` et l'_user_ `pytest`
+
+
+* Ajouter cette variable au fichier `.env.local.secret` à la racine du dossier `api/` (en complétant par le port de
+  votre serveur postgresql, habituellement `5432`):
+  ```dotenv
+  DATABASE_URL_TEST=postgresql://pytest:pytest@localhost:<port>/pass_culture_test
+  ``` 
+
+* Vous pouvez maintenant lancer les tests sans docker depuis un `poetry shell` avec `pytest` (cf. ci-dessus)
+
+Si vous souhaitez (ré)utiliser docker par la suite, n'oubliez pas de commenter `DATABASE_URL` et `DATABASE_URL_TEST` dans `.env.local.secret`, et d'arrêter le service redis-server
 
 ### Database de jeu
 
