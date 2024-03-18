@@ -1094,7 +1094,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
         venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer, isPermanent=True)
         venue_2 = offerers_factories.VenueFactory(managingOfferer=offerer)
         offerers_factories.VenueRegistrationFactory(venue=venue_2)
-        educational_factories.CollectiveDmsApplicationFactory(venue=venue_2)
+        educational_factories.CollectiveDmsApplicationFactory(venue=venue_2, application=35)
         offerers_factories.VenueFactory(managingOfferer=other_offerer)
 
         url = url_for(self.endpoint, offerer_id=offerer.id)
@@ -1128,6 +1128,8 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert rows[1]["Présence web"] == "https://example.com https://pass.culture.fr"
         assert rows[1]["Offres cibles"] == "Indiv. et coll."
         assert rows[1]["Statut DMS Adage"] == "En construction"
+        assert rows[1]["Dossier DMS Adage"] == "35"
+        assert "https://www.demarches-simplifiees.fr/procedures/1/dossiers/35" in str(response.data)
 
 
 class GetOffererBankAccountTest(GetEndpointHelper):
