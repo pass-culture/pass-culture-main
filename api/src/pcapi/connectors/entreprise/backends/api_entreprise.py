@@ -62,6 +62,8 @@ class EntrepriseBackend(BaseBackend):
                 except (ValueError, KeyError):
                     # If not, fallback to the generic error (common label for all APIs)
                     error_message = errors[0]["detail"]
+                except TypeError:
+                    error_message = errors[0]
             except json.JSONDecodeError:
                 errors = None
                 error_message = None

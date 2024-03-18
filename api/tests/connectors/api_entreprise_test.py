@@ -154,6 +154,20 @@ def test_get_siren_invalid_parameter():
 
 
 @override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+def test_get_siren_reached_rate_limit():
+    siren = settings.PASS_CULTURE_SIRET[:9]
+    with requests_mock.Mocker() as mock:
+        mock.get(
+            f"https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/{siren}/siege_social",
+            status_code=429,
+            json=api_entreprise_test_data.RESPONSE_SIREN_ERROR_429,
+        )
+        with pytest.raises(exceptions.RateLimitExceeded) as error:
+            api.get_siren(siren)
+        assert str(error.value) == "Vous avez effectué trop de requêtes"
+
+
+@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siret():
     siret = "12345678900017"
     with requests_mock.Mocker() as mock:
