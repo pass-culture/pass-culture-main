@@ -1,8 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-import { FormLayoutDescription } from '..'
-import { FormLayoutDescriptionProps } from '../FormLayoutDescription'
+import {
+  FormLayoutDescription,
+  FormLayoutDescriptionProps,
+} from '../FormLayoutDescription'
 
 const renderFormLayoutDescription = ({
   description,
