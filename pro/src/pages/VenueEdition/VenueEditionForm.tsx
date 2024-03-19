@@ -128,7 +128,7 @@ export const VenueEditionForm = ({
 
           <Accessibility isCreatingVenue={false} />
 
-          {isOpeningHoursEnabled && (
+          {isOpeningHoursEnabled && venue.isPermanent && (
             <FormLayout.Section title="Horaires d'ouverture">
               <OpeningHoursForm />
             </FormLayout.Section>
