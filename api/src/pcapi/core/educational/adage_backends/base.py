@@ -36,7 +36,7 @@ class AdageClient:
     def get_adage_educational_redactor_from_uai(self, uai: str) -> list[dict[str, str]]:
         raise NotImplementedError()
 
-    def notify_reimburse_collective_booking(self, data: prebooking.AdageReibursementNotification) -> None:
+    def notify_reimburse_collective_booking(self, data: prebooking.AdageReimbursementNotification) -> None:
         raise NotImplementedError()
 
     def notify_redactor_when_collective_request_is_made(self, data: serialize.AdageCollectiveRequest) -> None:
