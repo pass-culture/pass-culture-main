@@ -1,3 +1,5 @@
+import decimal
+
 import pytest
 import time_machine
 
@@ -27,7 +29,7 @@ class Return200Test:
             "offerId": offer.id,
             "beginningDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
-            "totalPrice": 1500,
+            "totalPrice": 1500.12,
             "numberOfTickets": 38,
             "educationalPriceDetail": "Détail du prix",
         }
@@ -41,7 +43,7 @@ class Return200Test:
         created_stock: CollectiveStock = CollectiveStock.query.get(response_dict["id"])
         offer = CollectiveOffer.query.get(offer.id)
         assert offer.id == created_stock.collectiveOfferId
-        assert created_stock.price == 1500
+        assert created_stock.price == decimal.Decimal("1500.12")
         assert created_stock.priceDetail == "Détail du prix"
         assert offer.validation == OfferValidationStatus.DRAFT
 

@@ -1,5 +1,6 @@
 from datetime import date
 from datetime import datetime
+import decimal
 
 from pcapi.core.educational import models
 from pcapi.routes.adage.v1.serialization.config import AdageBaseResponseModel
@@ -36,11 +37,11 @@ class AdageCollectiveOffer(AdageBaseResponseModel):
     numberOfTickets: int
     participants: list[models.StudentLevels]
     postalCode: str
-    price: float
+    price: decimal.Decimal
     priceDetail: str | None
     quantity: int
     subcategoryLabel: str
-    totalAmount: float
+    totalAmount: decimal.Decimal
     venueName: str
     venueTimezone: str
     isDigital: bool

@@ -1,5 +1,6 @@
 import csv
 from datetime import datetime
+import decimal
 from enum import Enum
 from io import BytesIO
 from io import StringIO
@@ -436,7 +437,7 @@ class CollectiveBookingByIdResponseModel(BaseModel):
     offerVenue: CollectiveOfferOfferVenueResponseModel
     beginningDatetime: datetime
     students: list[models.StudentLevels]
-    price: float
+    price: decimal.Decimal
     educationalInstitution: EducationalInstitutionResponseModel
     educationalRedactor: CollectiveBookingEducationalRedactorResponseModel
     numberOfTickets: int

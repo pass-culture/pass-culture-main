@@ -434,7 +434,10 @@ def uncancel_collective_booking(
 
 
 def notify_reimburse_collective_booking(
-    collective_booking: educational_models.CollectiveBooking, reason: str, value: float | None = None, details: str = ""
+    collective_booking: educational_models.CollectiveBooking,
+    reason: str,
+    value: decimal.Decimal | None = None,
+    details: str = "",
 ) -> None:
     price = collective_booking.collectiveStock.price
     value = value or price
