@@ -9,7 +9,6 @@ export type VenueProviderResponse = {
   isDuo?: boolean;
   isFromAllocineProvider: boolean;
   lastSyncDate?: string;
-  nOffers: number;
   price?: number;
   provider: ProviderResponse;
   quantity?: number;

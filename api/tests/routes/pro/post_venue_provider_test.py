@@ -149,7 +149,6 @@ class Returns201Test:
             "isDuo",
             "isFromAllocineProvider",
             "lastSyncDate",
-            "nOffers",
             "price",
             "provider",
             "quantity",

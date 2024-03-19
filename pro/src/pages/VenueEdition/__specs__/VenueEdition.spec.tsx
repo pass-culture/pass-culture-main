@@ -88,7 +88,6 @@ describe('route VenueEdition', () => {
         isActive: true,
         isFromAllocineProvider: false,
         lastSyncDate: undefined,
-        nOffers: 0,
         venueId: 2,
         venueIdAtOfferProvider: 'cdsdemorc1',
         provider: {

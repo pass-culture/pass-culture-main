@@ -174,16 +174,6 @@ class VenueProvider(PcObject, Base, Model, DeactivableMixin):
             return ("global", "Votre lieu est déjà lié à cette source")
         return PcObject.restize_integrity_error(error)
 
-    @property
-    def nOffers(self) -> int:
-        from pcapi.core.offers.models import Offer
-
-        return Offer.query.filter_by(
-            venueId=self.venueId,
-            isActive=True,
-            lastProviderId=self.providerId,
-        ).count()
-
 
 class CinemaProviderPivot(PcObject, Base, Model):
     """Stores whether a Venue has requested to be synced with a Provider"""
