@@ -1,7 +1,7 @@
 import { CONSTANTS } from '../../support/constants'
 
-describe('invalid voucher', () => {
-  it('verify of invalid entry vouhcer', () => {
+describe('invalid token', () => {
+  it('enter invalid token and verify error message', () => {
     cy.login({
       email: CONSTANTS.emailProAccount,
       password: CONSTANTS.passwordProAccount,
