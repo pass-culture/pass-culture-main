@@ -106,66 +106,68 @@ export const VenueEditionForm = ({
     >
       <Form>
         <FormLayout fullWidthActions>
-          <FormLayout.Section
-            title="À propos de votre activité"
-            description={
-              venue.isVirtual
-                ? undefined
-                : 'Cet espace vous permet de présenter votre activité culturelle aux utilisateurs de l’application pass Culture. Vous pouvez décrire les différentes actions que vous menez, votre histoire ou préciser des informations sur votre activité.'
-            }
-          >
-            <FormLayout.Row>
-              <TextArea
-                name="description"
-                label="Description"
-                placeholder="Par exemple : mon établissement propose des spectacles, de l’improvisation..."
-                maxLength={1000}
-                countCharacters
-                isOptional
-              />
-            </FormLayout.Row>
-          </FormLayout.Section>
+          <FormLayout.Section title="Vos informations pour le grand public">
+            <FormLayout.SubSection
+              title="À propos de votre activité"
+              description={
+                venue.isVirtual
+                  ? undefined
+                  : 'Cet espace vous permet de présenter votre activité culturelle aux utilisateurs de l’application pass Culture. Vous pouvez décrire les différentes actions que vous menez, votre histoire ou préciser des informations sur votre activité.'
+              }
+            >
+              <FormLayout.Row>
+                <TextArea
+                  name="description"
+                  label="Description"
+                  placeholder="Par exemple : mon établissement propose des spectacles, de l’improvisation..."
+                  maxLength={1000}
+                  countCharacters
+                  isOptional
+                />
+              </FormLayout.Row>
+            </FormLayout.SubSection>
 
-          <Accessibility isCreatingVenue={false} />
+            <Accessibility isCreatingVenue={false} />
 
-          {isOpeningHoursEnabled && venue.isPermanent && (
-            <FormLayout.Section title="Horaires d'ouverture">
-              <OpeningHoursForm />
-            </FormLayout.Section>
-          )}
+            {isOpeningHoursEnabled && venue.isPermanent && (
+              <FormLayout.SubSection title="Horaires d'ouverture">
+                <OpeningHoursForm />
+              </FormLayout.SubSection>
+            )}
 
-          <FormLayout.Section
-            title="Contact"
-            description={
-              'Ces informations seront affichées dans votre page partenaire, sur l’application pass Culture. ' +
-              'Elles permettront aux bénéficiaires de vous contacter en cas de besoin.'
-            }
-          >
-            <FormLayout.Row>
-              <PhoneNumberInput
-                name="phoneNumber"
-                label="Téléphone"
-                isOptional
-              />
-            </FormLayout.Row>
+            <FormLayout.SubSection
+              title="Contact"
+              description={
+                'Ces informations seront affichées dans votre page partenaire, sur l’application pass Culture. ' +
+                'Elles permettront aux bénéficiaires de vous contacter en cas de besoin.'
+              }
+            >
+              <FormLayout.Row>
+                <PhoneNumberInput
+                  name="phoneNumber"
+                  label="Téléphone"
+                  isOptional
+                />
+              </FormLayout.Row>
 
-            <FormLayout.Row>
-              <TextInput
-                name="email"
-                label="Adresse email"
-                placeholder="email@exemple.com"
-                isOptional
-              />
-            </FormLayout.Row>
+              <FormLayout.Row>
+                <TextInput
+                  name="email"
+                  label="Adresse email"
+                  placeholder="email@exemple.com"
+                  isOptional
+                />
+              </FormLayout.Row>
 
-            <FormLayout.Row>
-              <TextInput
-                name="webSite"
-                label="URL de votre site web"
-                placeholder="https://exemple.com"
-                isOptional
-              />
-            </FormLayout.Row>
+              <FormLayout.Row>
+                <TextInput
+                  name="webSite"
+                  label="URL de votre site web"
+                  placeholder="https://exemple.com"
+                  isOptional
+                />
+              </FormLayout.Row>
+            </FormLayout.SubSection>
           </FormLayout.Section>
         </FormLayout>
 

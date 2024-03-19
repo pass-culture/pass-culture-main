@@ -25,7 +25,7 @@ import { getVenueEducationalStatusesAdapter } from './adapters'
 import getVenueCollectiveDataAdapter from './adapters/getVenueCollectiveDataAdapter'
 import styles from './CollectiveDataEdition.module.scss'
 import { CollectiveDataEditionReadOnly } from './CollectiveDataEditionReadOnly'
-import CollectiveDataForm from './CollectiveDataForm'
+import { CollectiveDataForm } from './CollectiveDataForm/CollectiveDataForm'
 
 const fetchCulturalPartnerIfVenueHasNoCollectiveData = async (
   venueResponse: GetCollectiveVenueResponseModel

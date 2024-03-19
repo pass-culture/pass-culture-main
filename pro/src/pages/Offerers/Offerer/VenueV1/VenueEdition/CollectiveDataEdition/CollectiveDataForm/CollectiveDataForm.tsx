@@ -21,7 +21,6 @@ import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 
 import editVenueCollectiveDataAdapter from '../adapters/editVenueCollectiveDataAdapter'
 
-import styles from './CollectiveDataForm.module.scss'
 import { COLLECTIVE_DATA_FORM_INITIAL_VALUES } from './initialValues'
 import { CollectiveDataFormValues } from './type'
 import { extractInitialValuesFromVenue } from './utils/extractInitialValuesFromVenue'
@@ -50,7 +49,7 @@ type CollectiveDataFormProps = {
   reloadVenueData: () => Promise<void>
 }
 
-const CollectiveDataForm = ({
+export const CollectiveDataForm = ({
   statuses,
   domains,
   culturalPartners,
@@ -131,108 +130,118 @@ const CollectiveDataForm = ({
     <>
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit}>
-          <div className={styles.form}>
-            <div className={styles.section}>
-              Présentation pour les enseignants
-            </div>
+          <FormLayout fullWidthActions>
+            <FormLayout.Section title="Vos informations pour les enseignants">
+              <FormLayout.SubSection
+                title="Présentation pour les enseignants"
+                description={
+                  venue.isVirtual
+                    ? undefined
+                    : 'Cet espace vous permet de présenter votre activité culturelle aux utilisateurs de l’application pass Culture. Vous pouvez décrire les différentes actions que vous menez, votre histoire ou préciser des informations sur votre activité.'
+                }
+              >
+                <FormLayout.Row>
+                  <TextArea
+                    name="collectiveDescription"
+                    label="Démarche d’éducation artistique et culturelle"
+                    placeholder="Présenter la démarche d’éducation artistique et culturelle : présentation du lieu, actions menées auprès du public scolaire..."
+                    maxLength={500}
+                    countCharacters
+                    isOptional
+                  />
+                </FormLayout.Row>
 
-            <FormLayout.Row>
-              <TextArea
-                name="collectiveDescription"
-                label="Démarche d’éducation artistique et culturelle"
-                placeholder="Présenter la démarche d’éducation artistique et culturelle : présentation du lieu, actions menées auprès du public scolaire..."
-                maxLength={500}
-                countCharacters
-                isOptional
-              />
-            </FormLayout.Row>
-            <FormLayout.Row>
-              <MultiSelectAutocomplete
-                name="collectiveStudents"
-                label="Public cible"
-                options={studentOptions}
-                placeholder="Sélectionner un public cible"
-                className={styles.row}
-                hideTags
-                isOptional
-              />
-            </FormLayout.Row>
-            <FormLayout.Row>
-              <TextInput
-                name="collectiveWebsite"
-                label="URL de votre site web"
-                placeholder="https://exemple.com"
-                isOptional
-                className={styles.row}
-              />
-            </FormLayout.Row>
-            <div className={styles.section}>Informations du lieu</div>
-            <FormLayout.Row>
-              <MultiSelectAutocomplete
-                hideTags
-                options={domains}
-                name="collectiveDomains"
-                label="Domaine artistique et culturel"
-                placeholder="Sélectionner un ou plusieurs domaine(s)"
-                className={styles.row}
-                isOptional
-              />
-            </FormLayout.Row>
-            <FormLayout.Row>
-              <MultiSelectAutocomplete
-                hideTags
-                options={venueInterventionOptions}
-                name="collectiveInterventionArea"
-                label="Zone de mobilité"
-                placeholder="Sélectionner une ou plusieurs zone(s) de mobilité"
-                className={styles.row}
-                isOptional
-              />
-            </FormLayout.Row>
-            <FormLayout.Row>
-              <Select
-                options={[
-                  { value: '', label: 'Sélectionner un statut' },
-                  ...statuses,
-                ]}
-                name="collectiveLegalStatus"
-                label="Statut"
-                className={styles.row}
-                placeholder="Association, établissement public..."
-                isOptional
-              />
-            </FormLayout.Row>
-            <FormLayout.Row>
-              <MultiSelectAutocomplete
-                options={culturalPartners}
-                name="collectiveNetwork"
-                label="Réseaux partenaires EAC"
-                className={styles.row}
-                placeholder="Sélectionner un ou plusieurs réseau(x) partenaire(s)"
-                isOptional
-                maxDisplayOptions={20}
-                maxDisplayOptionsLabel="20 résultats maximum. Veuillez affiner votre recherche"
-                hideTags
-              />
-            </FormLayout.Row>
-            <div className={styles.contact}>Contact</div>
-            <FormLayout.Row className={styles.phone}>
-              <PhoneNumberInput
-                name="collectivePhone"
-                label="Téléphone"
-                isOptional
-              />
-            </FormLayout.Row>
-            <FormLayout.Row>
-              <TextInput
-                name="collectiveEmail"
-                label="Email"
-                placeholder="email@exemple.com"
-                isOptional
-                className={styles.row}
-              />
-            </FormLayout.Row>
-          </div>
+                <FormLayout.Row>
+                  <MultiSelectAutocomplete
+                    name="collectiveStudents"
+                    label="Public cible"
+                    options={studentOptions}
+                    placeholder="Sélectionner un public cible"
+                    hideTags
+                    isOptional
+                  />
+                </FormLayout.Row>
+
+                <FormLayout.Row>
+                  <TextInput
+                    name="collectiveWebsite"
+                    label="URL de votre site web"
+                    placeholder="https://exemple.com"
+                    isOptional
+                  />
+                </FormLayout.Row>
+              </FormLayout.SubSection>
+
+              <FormLayout.SubSection title="Informations du lieu">
+                <FormLayout.Row>
+                  <MultiSelectAutocomplete
+                    hideTags
+                    options={domains}
+                    name="collectiveDomains"
+                    label="Domaine artistique et culturel"
+                    placeholder="Sélectionner un ou plusieurs domaine(s)"
+                    isOptional
+                  />
+                </FormLayout.Row>
+
+                <FormLayout.Row>
+                  <MultiSelectAutocomplete
+                    hideTags
+                    options={venueInterventionOptions}
+                    name="collectiveInterventionArea"
+                    label="Zone de mobilité"
+                    placeholder="Sélectionner une ou plusieurs zone(s) de mobilité"
+                    isOptional
+                  />
+                </FormLayout.Row>
+
+                <FormLayout.Row>
+                  <Select
+                    options={[
+                      { value: '', label: 'Sélectionner un statut' },
+                      ...statuses,
+                    ]}
+                    name="collectiveLegalStatus"
+                    label="Statut"
+                    placeholder="Association, établissement public..."
+                    isOptional
+                  />
+                </FormLayout.Row>
+
+                <FormLayout.Row>
+                  <MultiSelectAutocomplete
+                    options={culturalPartners}
+                    name="collectiveNetwork"
+                    label="Réseaux partenaires EAC"
+                    placeholder="Sélectionner un ou plusieurs réseau(x) partenaire(s)"
+                    isOptional
+                    maxDisplayOptions={20}
+                    maxDisplayOptionsLabel="20 résultats maximum. Veuillez affiner votre recherche"
+                    hideTags
+                  />
+                </FormLayout.Row>
+              </FormLayout.SubSection>
+
+              <FormLayout.SubSection title="Contact">
+                <FormLayout.Row>
+                  <PhoneNumberInput
+                    name="collectivePhone"
+                    label="Téléphone"
+                    isOptional
+                  />
+                </FormLayout.Row>
+
+                <FormLayout.Row>
+                  <TextInput
+                    name="collectiveEmail"
+                    label="Email"
+                    placeholder="email@exemple.com"
+                    isOptional
+                  />
+                </FormLayout.Row>
+              </FormLayout.SubSection>
+            </FormLayout.Section>
+          </FormLayout>
 
           <ActionsBarSticky>
             <ActionsBarSticky.Left>
@@ -262,5 +271,3 @@ const CollectiveDataForm = ({
     </>
   )
 }
-
-export default CollectiveDataForm
