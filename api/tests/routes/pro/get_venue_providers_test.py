@@ -3,7 +3,6 @@ from datetime import datetime
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.offers import factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 
@@ -21,27 +20,12 @@ class Returns200Test:
             lastSyncDate=datetime(2021, 8, 16),
         )
 
-        # test that nOffers only containe active offers
-        offers_factories.OfferFactory(
-            venue=venue_provider.venue,
-            lastProviderId=venue_provider.provider.id,
-            idAtProvider="testIdAtProvider1",
-            isActive=True,
-        )
-        offers_factories.OfferFactory(
-            venue=venue_provider.venue,
-            lastProviderId=venue_provider.provider.id,
-            idAtProvider="testIdAtProvider2",
-            isActive=False,
-        )
-
         # when
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         response = auth_request.get(f"/venueProviders?venueId={venue_provider.venue.id}")
 
         # then
         assert response.status_code == 200
-        assert response.json["venue_providers"][0].get("nOffers") == 1
         assert response.json["venue_providers"][0].get("id") == venue_provider.id
         assert response.json["venue_providers"][0].get("venueId") == venue_provider.venue.id
         assert response.json["venue_providers"][0].get("lastSyncDate") == "2021-08-16T00:00:00Z"

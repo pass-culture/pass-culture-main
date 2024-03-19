@@ -6,7 +6,6 @@ import {
   isCinemaProvider,
   getProviderInfo,
 } from 'core/Providers'
-import { pluralize } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
 import AllocineProviderParameters from '../AllocineProviderParamaters/AllocineProviderParameters'
@@ -31,8 +30,7 @@ const VenueProviderItem = ({
   venueDepartmentCode,
   offererId,
 }: VenueProviderItemV2Props): JSX.Element => {
-  const { lastSyncDate, nOffers, provider, venueIdAtOfferProvider } =
-    venueProvider
+  const { lastSyncDate, provider, venueIdAtOfferProvider } = venueProvider
 
   const providerInfo = getProviderInfo(provider.name)
 
@@ -81,10 +79,6 @@ const VenueProviderItem = ({
               </div>
               <div className="venue-id-at-offer-provider">
                 Compte : <span>{venueIdAtOfferProvider}</span>
-              </div>
-              <div className="offers-container-counter">
-                Offres synchronisées :{' '}
-                <span>{pluralize(nOffers, 'offres')}</span>
               </div>
             </div>
           )
