@@ -687,7 +687,7 @@ class Cashflow(Base, Model):
     """A cashflow represents a specific amount money that is transferred
     between us and a third party. It may be outgoing or incoming.
 
-    By definition a cashflow cannot be zero.
+    Cashflows with zero amount are there to enable generating invoices lines with 100% offerer contribution
     """
 
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
@@ -726,8 +726,6 @@ class Cashflow(Base, Model):
     invoices: list["Invoice"] = sqla_orm.relationship(
         "Invoice", secondary="invoice_cashflow", back_populates="cashflows"
     )
-
-    __table_args__ = (sqla.CheckConstraint('("amount" != 0)', name="non_zero_amount_check"),)
 
 
 class CashflowLog(Base, Model):
