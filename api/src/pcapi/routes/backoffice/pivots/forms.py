@@ -26,7 +26,7 @@ class EditAllocineForm(EditPivotForm):
     theater_id = fields.PCStringField(
         "Identifiant cinéma (Allociné)",
         validators=(
-            wtforms.validators.InputRequired("Information obligatoire"),
+            wtforms.validators.DataRequired("Information obligatoire"),
             wtforms.validators.Length(min=1, max=20, message="Doit contenir au maximum %(max)d caractères"),
         ),
     )
@@ -40,7 +40,7 @@ class EditBoostForm(EditPivotForm):
     cinema_url = fields.PCStringField(
         "URL du cinéma (Boost)",
         validators=(
-            wtforms.validators.InputRequired("Information obligatoire"),
+            wtforms.validators.DataRequired("Information obligatoire"),
             wtforms.validators.URL("Doit avoir la forme d'une URL"),
         ),
     )
@@ -66,7 +66,7 @@ class EditCGRForm(EditPivotForm):
     cinema_url = fields.PCStringField(
         "URL du cinéma (CGR)",
         validators=(
-            wtforms.validators.InputRequired("Information obligatoire"),
+            wtforms.validators.DataRequired("Information obligatoire"),
             wtforms.validators.URL("Doit avoir la forme d'une URL"),
         ),
     )

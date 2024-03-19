@@ -46,7 +46,7 @@ class EditOffererForm(FlaskForm):
     name = fields.PCStringField(
         "Nom de la structure",
         validators=(
-            wtforms.validators.InputRequired("Le nom est obligatoire"),
+            wtforms.validators.DataRequired("Le nom est obligatoire"),
             wtforms.validators.Length(max=140, message="doit contenir moins de %(max)d caractères"),
         ),
     )
@@ -245,7 +245,7 @@ class OffererTagBaseForm(FlaskForm):
     name = fields.PCStringField(
         "Nom",
         validators=(
-            wtforms.validators.InputRequired("Information obligatoire"),
+            wtforms.validators.DataRequired("Information obligatoire"),
             wtforms.validators.Length(min=1, max=140, message="Doit contenir moins de %(max)d caractères"),
             wtforms.validators.Regexp(TAG_NAME_REGEX, message="Le nom ne doit contenir aucun caractère d'espacement"),
         ),

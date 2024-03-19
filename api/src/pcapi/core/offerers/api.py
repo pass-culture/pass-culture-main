@@ -1384,7 +1384,7 @@ def get_venue_by_id(venue_id: int) -> offerers_models.Venue:
 def search_offerer(search_query: str, departments: typing.Iterable[str] = ()) -> BaseQuery:
     offerers = models.Offerer.query
 
-    search_query = search_query.strip() if search_query else ""
+    search_query = search_query.strip()
     if not search_query:
         return offerers.filter(False)
 

@@ -27,7 +27,7 @@ class EditVenueForm(EditVirtualVenueForm):
     name = fields.PCStringField(
         "Nom juridique",
         validators=[
-            validators.InputRequired("Information obligatoire"),
+            validators.DataRequired("Information obligatoire"),
             validators.Length(min=1, max=140, message="doit contenir entre %(min)d et %(max)d caractères"),
         ],
     )
