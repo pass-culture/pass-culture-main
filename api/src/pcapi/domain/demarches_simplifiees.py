@@ -35,6 +35,7 @@ def parse_raw_bank_info_data(data: dict, procedure_version: int) -> dict:
     result = {
         "status": data["state"],
         "updated_at": data["dateDerniereModification"],
+        "last_pending_correction_date": data["dateDerniereCorrectionEnAttente"],
         "dossier_id": data["id"],
         "application_id": data["number"],
     }
