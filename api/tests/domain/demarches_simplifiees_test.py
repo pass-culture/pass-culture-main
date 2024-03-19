@@ -33,6 +33,7 @@ EXPECTED_RESULT_V4 = {
     "venue_url_annotation_id": "AnotherInterestingId",
     "venue_url_annotation_value": "",
     "dossier_id": "Q2zzbXAtNzgyODAw",
+    "last_pending_correction_date": None,
 }
 
 
@@ -140,6 +141,7 @@ class ParseRawBankInfoDataTest:
             "number": 1234,
             "champs": champs,
             "dateDerniereModification": "2021-11-12T14:51:42+01:00",
+            "dateDerniereCorrectionEnAttente": None,
             "state": "en_construction",
             "annotations": [
                 {"label": "Nouvelle annotation texte", "id": "OtherId"},

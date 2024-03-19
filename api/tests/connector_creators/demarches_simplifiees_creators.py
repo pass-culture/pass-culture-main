@@ -47,6 +47,7 @@ def get_bank_info_response_procedure_v4(
     annotations: list | None = None,
     dossier_id: str = "Q2zzbXAtNzgyODAw",
     application_id: int = 9,
+    last_pending_correction_date: str | None = None,
 ) -> dict:
     etablissement = etablissement or {
         "etablissement": {
@@ -93,6 +94,7 @@ def get_bank_info_response_procedure_v4(
             },
         ],
         "dateDerniereModification": "2020-01-03T01:00:00+01:00",
+        "dateDerniereCorrectionEnAttente": last_pending_correction_date,
         "state": state,
         "annotations": annotations,
     }
@@ -107,6 +109,7 @@ def get_bank_info_response_procedure_v4_as_batch(
     dossier_id: str = "Q2zzbXAtNzgyODAw",
     application_id: int = 9,
     last_modification_date: str = "2020-01-03T01:00:00+01:00",
+    last_pending_correction_date: str | None = None,
 ) -> dict:
     etablissement = etablissement or {
         "etablissement": {
@@ -168,6 +171,7 @@ def get_bank_info_response_procedure_v4_as_batch(
                             },
                         ],
                         "dateDerniereModification": last_modification_date,
+                        "dateDerniereCorrectionEnAttente": last_pending_correction_date,
                         "state": state,
                         "annotations": annotations,
                     }
@@ -186,6 +190,7 @@ def get_bank_info_response_procedure_v5(
     bic: str = "BICAGRIFRPP",
     iban: str = "FR76 3000 6000 0112 3456 7890 189",
     last_modification_date: str = "2023-10-26T14:51:09+02:00",
+    last_pending_correction_date: str | None = None,
     siret: str = "85331845900049",
 ) -> dict:
     iban = "".join(iban.split())
@@ -204,6 +209,7 @@ def get_bank_info_response_procedure_v5(
                         "number": application_id,
                         "state": state,
                         "dateDerniereModification": last_modification_date,
+                        "dateDerniereCorrectionEnAttente": last_pending_correction_date,
                         "demandeur": {"siret": siret},
                         "champs": [
                             {
