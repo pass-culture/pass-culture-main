@@ -18,12 +18,14 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import BookingStatusFilter
 import pcapi.core.bookings.repository as booking_repository
 from pcapi.core.bookings.repository import get_bookings_from_deposit
+from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.testing import assert_no_duplicated_queries
+from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.domain.booking_recap import booking_recap_history
@@ -756,7 +758,10 @@ class GetOfferBookingsByStatusCSVTest:
     ):
         assert data_dict["Lieu"] == venue.name
         assert data_dict["Nom de l’offre"] == offer.name
-        assert data_dict["Date de l'évènement"] == ""
+        booking.venueDepartmentCode = booking.venue.departementCode
+        assert data_dict["Date de l'évènement"] == str(
+            convert_booking_dates_utc_to_venue_timezone(booking.stock.beginningDatetime, booking)
+        )
         assert data_dict["EAN"] == ((offer.extraData or {}).get("ean") or "")
         assert data_dict["Nom et prénom du bénéficiaire"] == " ".join((beneficiary.lastName, beneficiary.firstName))
         assert data_dict["Email du bénéficiaire"] == beneficiary.email
@@ -780,7 +785,7 @@ class GetOfferBookingsByStatusCSVTest:
             assert data_dict["Contremarque"] == token
         else:
             assert data_dict["Contremarque"] == ""
-        assert data_dict["Intitulé du tarif"] == ""
+        assert data_dict["Intitulé du tarif"] == booking.stock.priceCategory.label
         assert data_dict["Prix de la réservation"] == f"{booking.amount:.2f}"
         assert data_dict["Statut de la contremarque"] == status
         if booking.reimbursementDate:
@@ -808,17 +813,33 @@ class GetOfferBookingsByStatusCSVTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.ThingStockFactory(offer=offer)
+        stock = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=10)
+        )
+
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
         validated_booking_2 = bookings_factories.BookingFactory(
             stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock)
 
-        # When
-        bookings_csv = booking_repository.export_validated_bookings_by_offer_id(
-            offer_id=offer.id, export_type=BookingExportType.CSV
+        stock_2 = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=40)
         )
+        bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary_2)
+        bookings_factories.BookingFactory(stock=stock_2)
+
+        # When
+        queries = 0
+        queries += 1  # Get bookings
+
+        offer_id = offer.id
+        with assert_num_queries(queries):
+            bookings_csv = booking_repository.export_validated_bookings_by_offer_id(
+                offer_id=offer_id,
+                event_beginning_date=date.today() + timedelta(days=10),
+                export_type=BookingExportType.CSV,
+            )
 
         # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
@@ -864,16 +885,24 @@ class GetOfferBookingsByStatusCSVTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.ThingStockFactory(offer=offer)
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
         validated_booking_2 = bookings_factories.BookingFactory(
             stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock)
 
+        stock_2 = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=40)
+        )
+        bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary_2)
+        bookings_factories.BookingFactory(stock=stock_2)
+
         # When
         bookings_csv = booking_repository.export_validated_bookings_by_offer_id(
-            offer_id=offer.id, export_type=BookingExportType.CSV
+            offer_id=offer.id,
+            event_beginning_date=date.today() + timedelta(days=5),
+            export_type=BookingExportType.CSV,
         )
 
         # Then
@@ -929,7 +958,9 @@ class GetOfferBookingsByStatusCSVTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.ThingStockFactory(offer=offer)
+        stock = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=10)
+        )
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
         validated_booking_2 = bookings_factories.BookingFactory(
             stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
@@ -939,7 +970,9 @@ class GetOfferBookingsByStatusCSVTest:
 
         # When
         bookings_csv = booking_repository.export_bookings_by_offer_id(
-            offer_id=offer.id, export_type=BookingExportType.CSV
+            offer_id=offer.id,
+            event_beginning_date=date.today() + timedelta(days=10),
+            export_type=BookingExportType.CSV,
         )
 
         # Then
@@ -990,7 +1023,7 @@ class GetOfferBookingsByStatusCSVTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.ThingStockFactory(offer=offer)
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
         validated_booking_2 = bookings_factories.BookingFactory(
             stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
@@ -1000,7 +1033,9 @@ class GetOfferBookingsByStatusCSVTest:
 
         # When
         bookings_csv = booking_repository.export_bookings_by_offer_id(
-            offer_id=offer.id, export_type=BookingExportType.CSV
+            offer_id=offer.id,
+            event_beginning_date=date.today() + timedelta(days=5),
+            export_type=BookingExportType.CSV,
         )
 
         # Then
@@ -1070,7 +1105,10 @@ class GetOfferBookingsByStatusExcelTest:
         # Nom de l’offre
         assert sheet.cell(row=row, column=2).value == offer.name
         # Date de l'évènement
-        assert sheet.cell(row=row, column=3).value == "None"
+        booking.venueDepartmentCode = booking.venue.departementCode
+        assert sheet.cell(row=row, column=3).value == str(
+            convert_booking_dates_utc_to_venue_timezone(booking.stock.beginningDatetime, booking)
+        )
         # EAN
         assert sheet.cell(row=row, column=4).value == ((offer.extraData or {}).get("ean") or None)
         # Nom et prénom du bénéficiaire
@@ -1098,7 +1136,7 @@ class GetOfferBookingsByStatusExcelTest:
         else:
             assert sheet.cell(row=row, column=10).value == None
         # Intitulé du tarif
-        assert sheet.cell(row=row, column=11).value is None
+        assert sheet.cell(row=row, column=11).value == booking.stock.priceCategory.label
         # Prix de la réservation
         assert sheet.cell(row=row, column=12).value == float(str(booking.amount).rstrip("0"))
         # Statut de la contremarque
@@ -1132,17 +1170,29 @@ class GetOfferBookingsByStatusExcelTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.ThingStockFactory(offer=offer)
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=3))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
         validated_booking_2 = bookings_factories.BookingFactory(
             stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock)
 
-        # When
-        bookings_excel = booking_repository.export_validated_bookings_by_offer_id(
-            offer_id=offer.id, export_type=BookingExportType.EXCEL
+        stock_2 = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5)
         )
+        bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary)
+        bookings_factories.BookingFactory(
+            stock=stock_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+        )
+        bookings_factories.BookingFactory(stock=stock_2)
+
+        # When
+        with assert_num_queries(2):
+            bookings_excel = booking_repository.export_validated_bookings_by_offer_id(
+                offer_id=offer.id,
+                event_beginning_date=date.today() + timedelta(days=3),
+                export_type=BookingExportType.EXCEL,
+            )
         headers = [
             "Lieu",
             "Nom de l’offre",
@@ -1186,16 +1236,27 @@ class GetOfferBookingsByStatusExcelTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.ThingStockFactory(offer=offer)
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=3))
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
         validated_booking_2 = bookings_factories.BookingFactory(
             stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
         )
         bookings_factories.BookingFactory(stock=stock)
 
+        stock_2 = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5)
+        )
+        bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary)
+        bookings_factories.BookingFactory(
+            stock=stock_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+        )
+        bookings_factories.BookingFactory(stock=stock_2)
+
         # When
         bookings_excel = booking_repository.export_validated_bookings_by_offer_id(
-            offer_id=offer.id, export_type=BookingExportType.EXCEL
+            offer_id=offer.id,
+            event_beginning_date=date.today() + timedelta(days=3),
+            export_type=BookingExportType.EXCEL,
         )
         headers = [
             "Lieu",
@@ -1249,7 +1310,9 @@ class GetOfferBookingsByStatusExcelTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.ThingStockFactory(offer=offer)
+        stock = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=30)
+        )
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
         validated_booking_2 = bookings_factories.BookingFactory(
             stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
@@ -1257,9 +1320,20 @@ class GetOfferBookingsByStatusExcelTest:
         reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=beneficiary_3, stock=stock)
         new_booking = bookings_factories.BookingFactory(user=beneficiary_4, stock=stock)
 
+        stock_2 = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5)
+        )
+        bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary)
+        bookings_factories.BookingFactory(
+            stock=stock_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+        )
+        bookings_factories.BookingFactory(stock=stock_2)
+
         # When
         bookings_excel = booking_repository.export_bookings_by_offer_id(
-            offer_id=offer.id, export_type=BookingExportType.EXCEL
+            offer_id=offer.id,
+            event_beginning_date=date.today() + timedelta(days=30),
+            export_type=BookingExportType.EXCEL,
         )
         headers = [
             "Lieu",
@@ -1308,7 +1382,9 @@ class GetOfferBookingsByStatusExcelTest:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.ThingStockFactory(offer=offer)
+        stock = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=30)
+        )
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
         validated_booking_2 = bookings_factories.BookingFactory(
             stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
@@ -1316,9 +1392,20 @@ class GetOfferBookingsByStatusExcelTest:
         reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=beneficiary, stock=stock)
         new_booking = bookings_factories.BookingFactory(user=beneficiary_2, stock=stock, quantity=2)
 
+        stock_2 = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5)
+        )
+        bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary)
+        bookings_factories.BookingFactory(
+            stock=stock_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+        )
+        bookings_factories.BookingFactory(stock=stock_2)
+
         # When
         bookings_excel = booking_repository.export_bookings_by_offer_id(
-            offer_id=offer.id, export_type=BookingExportType.EXCEL
+            offer_id=offer.id,
+            event_beginning_date=date.today() + timedelta(days=30),
+            export_type=BookingExportType.EXCEL,
         )
         headers = [
             "Lieu",

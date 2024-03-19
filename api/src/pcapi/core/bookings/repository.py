@@ -325,7 +325,7 @@ def get_bookings_from_deposit(deposit_id: int) -> list[Booking]:
     )
 
 
-def _create_export_query(offer_id: int) -> BaseQuery:
+def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery:
     return (
         Booking.query.join(Booking.offerer)
         .join(Booking.user)
@@ -333,7 +333,8 @@ def _create_export_query(offer_id: int) -> BaseQuery:
         .join(Booking.venue)
         .join(Booking.stock)
         .join(Stock.offer)
-        .filter(Stock.offerId == offer_id)
+        .filter(Stock.offerId == offer_id, field_to_venue_timezone(Stock.beginningDatetime) == event_beginning_date)
+        .order_by(Booking.id)
         .with_entities(
             Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
             Venue.departementCode.label("venueDepartmentCode"),
@@ -366,8 +367,10 @@ def _create_export_query(offer_id: int) -> BaseQuery:
     )
 
 
-def export_validated_bookings_by_offer_id(offer_id: int, export_type: BookingExportType) -> str | bytes:
-    offer_validated_bookings_query = _create_export_query(offer_id)
+def export_validated_bookings_by_offer_id(
+    offer_id: int, event_beginning_date: date, export_type: BookingExportType
+) -> str | bytes:
+    offer_validated_bookings_query = _create_export_query(offer_id, event_beginning_date)
     offer_validated_bookings_query = offer_validated_bookings_query.filter(
         or_(Booking.isConfirmed.is_(True), Booking.status == BookingStatus.USED)  # type: ignore [attr-defined]
     )
@@ -376,8 +379,10 @@ def export_validated_bookings_by_offer_id(offer_id: int, export_type: BookingExp
     return _write_bookings_to_csv(offer_validated_bookings_query)
 
 
-def export_bookings_by_offer_id(offer_id: int, export_type: BookingExportType) -> str | bytes:
-    offer_bookings_query = _create_export_query(offer_id)
+def export_bookings_by_offer_id(
+    offer_id: int, event_beginning_date: date, export_type: BookingExportType
+) -> str | bytes:
+    offer_bookings_query = _create_export_query(offer_id, event_beginning_date)
     if export_type == BookingExportType.EXCEL:
         return _write_bookings_to_excel(offer_bookings_query)
     return _write_bookings_to_csv(offer_bookings_query)
