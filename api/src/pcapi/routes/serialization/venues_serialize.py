@@ -201,6 +201,20 @@ class LegalStatusResponseModel(BaseModel):
         orm_mode = True
 
 
+class AccessibilityDataModel(BaseModel):
+    access_modality: list[str]
+    audio_description: list[str]
+    deaf_and_hard_of_hearing_amenities: list[str]
+    facilities: list[str]
+    sound_beacon: list[str]
+    trained_personnel: list[str]
+    transport_modality: list[str]
+
+    class Config:
+        extra = "forbid"
+        alias_generator = to_camel
+
+
 class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin):
     dateCreated: datetime
     id: int
@@ -211,6 +225,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     demarchesSimplifieesApplicationId: str | None
     departementCode: str | None
     dmsToken: str
+    externalAccessibilityData: AccessibilityDataModel | None
     hasPendingBankInformationApplication: bool | None
     managingOfferer: GetVenueManagingOffererResponseModel
     pricingPoint: GetVenuePricingPointResponseModel | None
@@ -281,6 +296,10 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
         venue.hasAdageId = bool(venue.adageId)
 
         venue.venueOpeningHours = venue.opening_days
+        if venue.accessibilityProvider and venue.accessibilityProvider.externalAccessibilityData:
+            venue.externalAccessibilityData = {
+                to_camel(key): value for key, value in venue.accessibilityProvider.externalAccessibilityData.items()
+            }
         return super().from_orm(venue)
 
 

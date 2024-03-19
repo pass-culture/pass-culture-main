@@ -82,6 +82,7 @@ class Returns200Test:
             "departementCode": venue.departementCode,
             "description": venue.description,
             "dmsToken": "PRO-" + venue.dmsToken,
+            "externalAccessibilityData": None,
             "isPermanent": venue.isPermanent,
             "isVirtual": venue.isVirtual,
             "latitude": float(venue.latitude),
@@ -390,6 +391,35 @@ class Returns200Test:
         response = auth_request.get("/venues/%s" % venue.id)
         assert response.json["venueOpeningHours"][3] == {
             "THURSDAY": [{"open": "10:00", "close": "13:00"}, {"open": "14:00", "close": "19:30"}]
+        }
+
+    def should_return_none_when_venue_has_no_accessibility_provider(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
+        venue = offerers_factories.VenueFactory(
+            name="L'encre et la plume", managingOfferer=user_offerer.offerer, venueTypeCode=VenueTypeCode.LIBRARY
+        )
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        response = auth_request.get("/venues/%s" % venue.id)
+        assert venue.accessibilityProvider == None
+        assert response.json["externalAccessibilityData"] == None
+
+    def should_return_accessibility_data_when_venue_has_accessibility_provider(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
+        venue = offerers_factories.VenueFactory(
+            name="L'encre et la plume", managingOfferer=user_offerer.offerer, venueTypeCode=VenueTypeCode.LIBRARY
+        )
+        offerers_factories.AccessibilityProviderFactory(venue=venue)
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        response = auth_request.get("/venues/%s" % venue.id)
+        assert venue.accessibilityProvider is not None
+        assert response.json["externalAccessibilityData"] == {
+            "accessModality": ["Chemin d'accès de plain pied", "Entrée de plain pied"],
+            "audioDescription": [],
+            "deafAndHardOfHearingAmenities": [],
+            "facilities": ["Sanitaire adapté"],
+            "soundBeacon": [],
+            "trainedPersonnel": [],
+            "transportModality": ["Stationnement adapté dans l'établissement"],
         }
 
 
