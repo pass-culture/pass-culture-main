@@ -10,6 +10,7 @@ export { CancelablePromise, CancelError } from './core/CancelablePromise';
 export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
+export type { AccessibilityDataModel } from './models/AccessibilityDataModel';
 export type { AdageCulturalPartnerResponseModel } from './models/AdageCulturalPartnerResponseModel';
 export type { AdageCulturalPartnersResponseModel } from './models/AdageCulturalPartnersResponseModel';
 export type { Address } from './models/Address';
