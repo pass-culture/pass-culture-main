@@ -74,7 +74,7 @@ class BatchSuspendUsersForm(SuspendUserForm):
         "Liste des ID d'utilisateurs",
         rows=10,
         validators=(
-            wtforms.validators.InputRequired("Information obligatoire"),
+            wtforms.validators.DataRequired("Information obligatoire"),
             wtforms.validators.Length(min=1, max=10000, message="doit contenir entre %(min)d et %(max)d caractères"),
         ),
     )

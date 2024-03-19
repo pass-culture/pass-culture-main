@@ -88,14 +88,14 @@ class PCOptPasswordField(wtforms.PasswordField):
 
 class PCStringField(PCOptStringField):
     validators = [
-        validators.InputRequired("Information obligatoire"),
+        validators.DataRequired("Information obligatoire"),
         validators.Length(min=1, max=64, message="doit contenir entre %(min)d et %(max)d caractères"),
     ]
 
 
 class PCPasswordField(PCOptPasswordField):
     validators = [
-        validators.InputRequired("Information obligatoire"),
+        validators.DataRequired("Information obligatoire"),
         validators.Length(min=1, max=64, message="doit contenir entre %(min)d et %(max)d caractères"),
     ]
 
@@ -120,7 +120,7 @@ class DomainNameValidator:
 class PCDomainName(wtforms.StringField):
     widget = partial(widget, template="components/forms/inline_form_field.html")
     validators = [
-        validators.InputRequired("Information obligatoire"),
+        validators.DataRequired("Information obligatoire"),
         validators.Length(min=1, max=64, message="doit contenir entre %(min)d et %(max)d caractères"),
         DomainNameValidator("doit contenir un nom de domaine valide"),
     ]
@@ -132,7 +132,7 @@ class PCDomainName(wtforms.StringField):
 class PCHiddenField(PCStringField):
     widget = partial(widget, template="components/forms/string_field.html")
     validators = [
-        validators.InputRequired("Information obligatoire"),
+        validators.DataRequired("Information obligatoire"),
         validators.Length(max=64, message="doit contenir au maximum %(max)d caractères"),
     ]
 
@@ -147,7 +147,7 @@ class PCOptHiddenField(PCStringField):
 
 class PCPostalCodeHiddenField(PCOptHiddenField):
     validators = [
-        validators.InputRequired("Information obligatoire"),
+        validators.DataRequired("Information obligatoire"),
         PostalCodeValidator("Le code postal doit contenir 5 caractères"),
     ]
 
@@ -175,7 +175,7 @@ class PCOptPostalCodeField(PCStringField):
 
 class PCPostalCodeField(PCStringField):
     validators = [
-        validators.InputRequired("Information obligatoire"),
+        validators.DataRequired("Information obligatoire"),
         PostalCodeValidator("Le code postal doit contenir 5 caractères"),
     ]
 
@@ -208,7 +208,7 @@ class PCOptCommentField(PCTextareaField):
 
 class PCCommentField(PCTextareaField):
     validators = [
-        validators.InputRequired("Information obligatoire"),
+        validators.DataRequired("Information obligatoire"),
         validators.Length(min=1, max=1024, message="doit contenir entre %(min)d et %(max)d caractères"),
     ]
 
@@ -370,7 +370,7 @@ class PCOptSearchField(wtforms.StringField):
 
 
 class PCSearchField(PCOptSearchField):
-    validators = [validators.InputRequired("Information obligatoire")]
+    validators = [validators.DataRequired("Information obligatoire")]
 
 
 class PCSwitchBooleanField(wtforms.BooleanField):

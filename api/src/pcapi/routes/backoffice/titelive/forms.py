@@ -14,7 +14,7 @@ class SearchEanForm(FlaskForm):
     ean = fields.PCSearchField(
         "EAN-13",
         validators=[
-            validators.InputRequired("L'EAN est obligatoire"),
+            validators.DataRequired("L'EAN est obligatoire"),
             validators.Length(min=13, max=13, message="L'EAN doit faire exactement 13 chiffres"),
         ],
     )

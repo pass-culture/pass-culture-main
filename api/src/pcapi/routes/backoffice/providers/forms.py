@@ -10,7 +10,7 @@ class EditProviderForm(FlaskForm):
     name = fields.PCStringField(
         "Nom du partenaire",
         validators=(
-            wtforms.validators.InputRequired("Information obligatoire"),
+            wtforms.validators.DataRequired("Information obligatoire"),
             wtforms.validators.Length(min=1, max=140, message="Doit contenir moins de %(max)d caractères"),
         ),
     )
@@ -58,14 +58,14 @@ class CreateProviderForm(EditProviderForm):
     siren = fields.PCStringField(
         "SIREN",
         validators=(
-            wtforms.validators.InputRequired("Information obligatoire"),
+            wtforms.validators.DataRequired("Information obligatoire"),
             wtforms.validators.Length(min=9, max=9, message="Doit contenir %(max)d caractères"),
         ),
     )
     city = fields.PCStringField(
         "Ville (si le SIREN n'est pas déjà enregistré)",
         validators=(
-            wtforms.validators.InputRequired("Information obligatoire"),
+            wtforms.validators.DataRequired("Information obligatoire"),
             wtforms.validators.Length(min=1, max=140, message="Doit contenir moins de %(max)d caractères"),
         ),
     )
