@@ -165,6 +165,7 @@ class BookingsExportStatusFilter(Enum):
 
 class BookingsExportQueryModel(BaseModel):
     status: BookingsExportStatusFilter
+    event_date: date
 
     class config:
         alias_generator = to_camel

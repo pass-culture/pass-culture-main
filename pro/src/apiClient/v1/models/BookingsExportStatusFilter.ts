@@ -5,8 +5,7 @@
 /**
  * An enumeration.
  */
-export enum BookingStatusFilter {
-  BOOKED = 'booked',
+export enum BookingsExportStatusFilter {
   VALIDATED = 'validated',
-  REIMBURSED = 'reimbursed',
+  ALL = 'all',
 }

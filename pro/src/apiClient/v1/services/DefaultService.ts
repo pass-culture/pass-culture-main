@@ -7,6 +7,7 @@ import type { AdageCulturalPartnersResponseModel } from '../models/AdageCultural
 import type { AttachImageFormModel } from '../models/AttachImageFormModel';
 import type { AttachImageResponseModel } from '../models/AttachImageResponseModel';
 import type { BookingExportType } from '../models/BookingExportType';
+import type { BookingsExportStatusFilter } from '../models/BookingsExportStatusFilter';
 import type { BookingStatusFilter } from '../models/BookingStatusFilter';
 import type { CategoriesResponseModel } from '../models/CategoriesResponseModel';
 import type { ChangePasswordBodyModel } from '../models/ChangePasswordBodyModel';
@@ -123,12 +124,14 @@ export class DefaultService {
    * export_bookings_for_offer_as_csv <GET>
    * @param offerId
    * @param status
+   * @param eventDate
    * @returns any OK
    * @throws ApiError
    */
   public exportBookingsForOfferAsCsv(
     offerId: number,
-    status: BookingStatusFilter,
+    status: BookingsExportStatusFilter,
+    eventDate: string,
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',
@@ -138,6 +141,7 @@ export class DefaultService {
       },
       query: {
         'status': status,
+        'event_date': eventDate,
       },
       errors: {
         403: `Forbidden`,
@@ -149,12 +153,14 @@ export class DefaultService {
    * export_bookings_for_offer_as_excel <GET>
    * @param offerId
    * @param status
+   * @param eventDate
    * @returns any OK
    * @throws ApiError
    */
   public exportBookingsForOfferAsExcel(
     offerId: number,
-    status: BookingStatusFilter,
+    status: BookingsExportStatusFilter,
+    eventDate: string,
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',
@@ -164,6 +170,7 @@ export class DefaultService {
       },
       query: {
         'status': status,
+        'event_date': eventDate,
       },
       errors: {
         403: `Forbidden`,

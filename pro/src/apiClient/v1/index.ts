@@ -24,6 +24,8 @@ export type { BookingRecapResponseBookingStatusHistoryModel } from './models/Boo
 export type { BookingRecapResponseModel } from './models/BookingRecapResponseModel';
 export type { BookingRecapResponseStockModel } from './models/BookingRecapResponseStockModel';
 export { BookingRecapStatus } from './models/BookingRecapStatus';
+export type { BookingsExportQueryModel } from './models/BookingsExportQueryModel';
+export { BookingsExportStatusFilter } from './models/BookingsExportStatusFilter';
 export { BookingStatusFilter } from './models/BookingStatusFilter';
 export type { BookingStatusHistoryResponseModel } from './models/BookingStatusHistoryResponseModel';
 export type { CategoriesResponseModel } from './models/CategoriesResponseModel';
@@ -82,7 +84,6 @@ export type { EducationalRedactor } from './models/EducationalRedactor';
 export type { EducationalRedactorQueryModel } from './models/EducationalRedactorQueryModel';
 export type { EducationalRedactorResponseModel } from './models/EducationalRedactorResponseModel';
 export type { EducationalRedactors } from './models/EducationalRedactors';
-export type { ExportBookingsQueryModel } from './models/ExportBookingsQueryModel';
 export type { FeatureResponseModel } from './models/FeatureResponseModel';
 export type { FinanceBankAccountListResponseModel } from './models/FinanceBankAccountListResponseModel';
 export type { FinanceBankAccountResponseModel } from './models/FinanceBankAccountResponseModel';
