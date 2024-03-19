@@ -6,6 +6,11 @@ from cryptography.fernet import Fernet
 from pcapi import settings
 
 
+# Only the first 100 characters of a password are relevant. This
+# avoids exhaustion of resources if a huge password is provided.
+MAX_PASSWORD_LENGTH = 100
+
+
 def _hash_password_with_bcrypt(clear_text: str) -> bytes:
     return bcrypt.hashpw(clear_text.encode("utf-8"), bcrypt.gensalt())
 
@@ -32,7 +37,7 @@ def hash_password(clear_text: str) -> bytes:
         hasher = _hash_password_with_md5
     else:
         hasher = _hash_password_with_bcrypt
-    return hasher(clear_text)
+    return hasher(clear_text[:MAX_PASSWORD_LENGTH])
 
 
 def check_password(clear_text: str, hashed: bytes) -> bool:
@@ -40,7 +45,7 @@ def check_password(clear_text: str, hashed: bytes) -> bool:
         checker = _check_password_with_md5
     else:
         checker = _check_password_with_bcrypt
-    return checker(clear_text, hashed)
+    return checker(clear_text[:MAX_PASSWORD_LENGTH], hashed)
 
 
 def encrypt(clear_text: str) -> str:
