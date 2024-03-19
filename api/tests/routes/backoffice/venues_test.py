@@ -503,6 +503,11 @@ class GetVenueTest(GetEndpointHelper):
         content = html_parser.content_as_text(response.data)
         assert f"Statut du dossier DMS Adage : {format_dms_status(state)}" in content
         assert f"{label} : " + (getattr(collectiveDmsApplication, dateKey)).strftime("%d/%m/%Y") in content
+        assert f"Numéro de dossier DMS Adage : {collectiveDmsApplication.application}" in content
+        assert (
+            f"https://www.demarches-simplifiees.fr/procedures/{collectiveDmsApplication.procedure}/dossiers/{collectiveDmsApplication.application}"
+            in str(response.data)
+        )
 
     def test_get_venue_with_provider(self, authenticated_client, random_venue):
         venue_provider = providers_factories.AllocineVenueProviderFactory(
