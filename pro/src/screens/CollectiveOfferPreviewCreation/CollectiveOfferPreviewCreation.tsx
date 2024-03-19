@@ -47,6 +47,10 @@ const CollectiveOfferPreviewCreationScreen = ({
 
   return (
     <div>
+      <p>
+        Voici à quoi ressemblera votre offre une fois publiée sur la plateforme
+        ADAGE.
+      </p>
       <AdagePreviewLayout offer={offer} />
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
