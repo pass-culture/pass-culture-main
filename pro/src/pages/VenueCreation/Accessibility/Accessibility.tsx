@@ -23,8 +23,12 @@ export const Accessibility = ({ isCreatingVenue }: AccessiblityProps) => {
     [values.accessibility, initialValues.accessibility]
   )
 
+  const FormSectionComponent = isCreatingVenue
+    ? FormLayout.Section
+    : FormLayout.SubSection
+
   return (
-    <FormLayout.Section title="Critères d’accessibilité">
+    <FormSectionComponent title="Critères d’accessibilité">
       <FormLayout.Row
         sideComponent={
           <InfoBox
@@ -58,6 +62,6 @@ export const Accessibility = ({ isCreatingVenue }: AccessiblityProps) => {
           </FormLayout.Row>
         </>
       )}
-    </FormLayout.Section>
+    </FormSectionComponent>
   )
 }
