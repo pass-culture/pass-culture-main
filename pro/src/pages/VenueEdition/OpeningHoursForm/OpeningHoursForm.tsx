@@ -25,11 +25,9 @@ export function OpeningHoursForm() {
   return (
     <>
       <fieldset className={styles['day-inputs']}>
-        <div className={styles['legend-wrapper']}>
-          <legend className={styles['legend']}>
-            Sélectionner vos jours d’ouverture :
-          </legend>
-        </div>
+        <legend className={styles['legend']}>
+          Sélectionner vos jours d’ouverture :
+        </legend>
         {daysOfWeek.map((engDay) => {
           const frDay = mapDayToFrench(engDay)
           return (
