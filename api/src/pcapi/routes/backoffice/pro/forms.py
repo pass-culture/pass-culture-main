@@ -86,7 +86,7 @@ class CreateOffererForm(FlaskForm):
     public_name = fields.PCStringField(
         "Nom d'usage du lieu",
         validators=(
-            wtforms.validators.InputRequired("Information obligatoire"),
+            wtforms.validators.DataRequired("Information obligatoire"),
             wtforms.validators.Length(max=255, message="doit contenir au maximum %(max)d caractères"),
         ),
     )

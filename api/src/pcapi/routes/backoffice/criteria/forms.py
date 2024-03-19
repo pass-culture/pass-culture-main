@@ -9,7 +9,7 @@ class EditCriterionForm(FlaskForm):
     name = fields.PCStringField(
         "Nom",
         validators=(
-            wtforms.validators.InputRequired("Information obligatoire"),
+            wtforms.validators.DataRequired("Information obligatoire"),
             wtforms.validators.Length(min=1, max=140, message="Doit contenir moins de %(max)d caractères"),
         ),
     )

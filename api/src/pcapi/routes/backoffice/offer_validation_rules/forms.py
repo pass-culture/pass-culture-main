@@ -261,7 +261,7 @@ class CreateOfferValidationRuleForm(FlaskForm):
     name = fields.PCStringField(
         "Nom de la règle",
         validators=(
-            wtforms.validators.InputRequired("Information obligatoire"),
+            wtforms.validators.DataRequired("Information obligatoire"),
             wtforms.validators.Length(max=256, message="ne doit pas dépasser %(max)d caractères"),
         ),
     )

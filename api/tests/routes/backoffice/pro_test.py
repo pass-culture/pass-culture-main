@@ -258,18 +258,16 @@ class SearchProUserTest:
             total_items=1,
         )
 
-    def test_can_search_pro_with_empty_content(self, authenticated_client):
+    @pytest.mark.parametrize(
+        "pro_type",
+        [TypeOptions.OFFERER.name, TypeOptions.VENUE.name, TypeOptions.USER.name, TypeOptions.BANK_ACCOUNT.name],
+    )
+    def test_search_pro_with_empty_content(self, authenticated_client, pro_type):
         self._create_accounts()
 
-        search_query = " "
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(
-                url_for(self.endpoint, q=search_query, pro_type=TypeOptions.OFFERER.name)
-            )
-            assert response.status_code == 200
-
-        p_leads = html_parser.extract(response.data, tag="p", class_="lead")
-        assert p_leads[-1] == "0 résultat"
+        with assert_num_queries(self.expected_num_queries_when_no_query):
+            response = authenticated_client.get(url_for(self.endpoint, q=" ", pro_type=pro_type))
+            assert response.status_code == 400
 
 
 class SearchOffererTest:

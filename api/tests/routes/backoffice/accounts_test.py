@@ -151,6 +151,12 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 400
 
+    @pytest.mark.parametrize("query", ["", " ", "   "])
+    def test_empty_query(self, authenticated_client, query):
+        with assert_num_queries(self.expected_num_queries_when_no_query):
+            response = authenticated_client.get(url_for(self.endpoint, q=query))
+            assert response.status_code == 400
+
     def test_can_search_public_account_by_id(self, authenticated_client):
         underage, _, _, _, _ = create_bunch_of_accounts()
         user_id = underage.id
