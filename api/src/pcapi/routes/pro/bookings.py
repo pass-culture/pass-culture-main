@@ -87,10 +87,16 @@ def export_bookings_for_offer_as_csv(offer_id: int, query: BookingsExportQueryMo
 
     if query.status == BookingsExportStatusFilter.VALIDATED:
         return cast(
-            str, booking_repository.export_validated_bookings_by_offer_id(offer_id, export_type=BookingExportType.CSV)
+            str,
+            booking_repository.export_validated_bookings_by_offer_id(
+                offer_id, event_beginning_date=query.event_date, export_type=BookingExportType.CSV
+            ),
         ).encode("utf-8-sig")
     return cast(
-        str, booking_repository.export_bookings_by_offer_id(offer_id, export_type=BookingExportType.CSV)
+        str,
+        booking_repository.export_bookings_by_offer_id(
+            offer_id, event_beginning_date=query.event_date, export_type=BookingExportType.CSV
+        ),
     ).encode("utf-8-sig")
 
 
@@ -114,9 +120,16 @@ def export_bookings_for_offer_as_excel(offer_id: int, query: BookingsExportQuery
     if query.status == BookingsExportStatusFilter.VALIDATED:
         return cast(
             bytes,
-            booking_repository.export_validated_bookings_by_offer_id(offer_id, export_type=BookingExportType.EXCEL),
+            booking_repository.export_validated_bookings_by_offer_id(
+                offer_id, event_beginning_date=query.event_date, export_type=BookingExportType.EXCEL
+            ),
         )
-    return cast(bytes, booking_repository.export_bookings_by_offer_id(offer_id, export_type=BookingExportType.EXCEL))
+    return cast(
+        bytes,
+        booking_repository.export_bookings_by_offer_id(
+            offer_id, event_beginning_date=query.event_date, export_type=BookingExportType.EXCEL
+        ),
+    )
 
 
 @blueprint.pro_private_api.route("/bookings/csv", methods=["GET"])
