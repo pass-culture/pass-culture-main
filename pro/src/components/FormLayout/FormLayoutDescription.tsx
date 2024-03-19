@@ -11,7 +11,8 @@ export interface FormLayoutDescriptionProps {
   isBanner?: boolean
   links?: Link[]
 }
-const Description = ({
+
+export const FormLayoutDescription = ({
   description,
   isBanner = false,
   links,
@@ -35,5 +36,3 @@ const Description = ({
     )}
   </>
 )
-
-export default Description
