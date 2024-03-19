@@ -147,6 +147,8 @@ def get_venue(venue_id: int) -> offerers_models.Venue:
                 educational_models.CollectiveDmsApplication.state,
                 educational_models.CollectiveDmsApplication.depositDate,
                 educational_models.CollectiveDmsApplication.lastChangeDate,
+                educational_models.CollectiveDmsApplication.application,
+                educational_models.CollectiveDmsApplication.procedure,
             ),
             sa.orm.joinedload(offerers_models.Venue.venueProviders)
             .load_only(
