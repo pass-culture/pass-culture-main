@@ -218,6 +218,10 @@
                 <p class="mb-1">
                   <span class="fw-bold">Pas de dossier DMS Adage</span>
                 </p>
+              {% else %}
+                <p class="mb-1">
+                  <span class="fw-bold">Numéro de dossier DMS Adage :{{ links.build_dms_adage_application_external_link(venue) }}</span>
+                </p>
               {% endif %}
               {% if venue.adageId %}
                 <p class="mb-1">
