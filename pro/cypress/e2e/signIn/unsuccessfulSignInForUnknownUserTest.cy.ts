@@ -4,9 +4,9 @@ describe('signin page', () => {
   it('verify unsuccessful login for unknown user', () => {
     cy.visit(CONSTANTS.signIn)
 
-    cy.get(CONSTANTS.emailId).type(CONSTANTS.emailTestData)
+    cy.get(CONSTANTS.emailField).type(CONSTANTS.randomEmail)
 
-    cy.get(CONSTANTS.passwordId).type(CONSTANTS.passwordTestData)
+    cy.get(CONSTANTS.passwordField).type(CONSTANTS.randomPassword)
 
     cy.get('button[type=submit]').click()
 
