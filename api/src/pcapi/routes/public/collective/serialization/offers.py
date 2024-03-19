@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timezone
+import decimal
 from typing import Any
 from typing import Sequence
 
@@ -255,7 +256,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     visualDisabilityCompliant: bool | None
     beginningDatetime: str
     bookingLimitDatetime: str
-    totalPrice: float
+    totalPrice: decimal.Decimal
     numberOfTickets: int
     educationalPriceDetail: str | None
     educationalInstitution: str | None
@@ -357,7 +358,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     # stock part
     beginning_datetime: datetime
     booking_limit_datetime: datetime
-    total_price: float
+    total_price: decimal.Decimal
     number_of_tickets: int
     educational_price_detail: str | None
     # link to educational institution

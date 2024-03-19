@@ -183,7 +183,7 @@ def import_eac_dms_application(ignore_previous: bool = False) -> None:
 )
 @click.option(
     "--value",
-    type=float,
+    type=Decimal,
     default=None,
     help="Value reimbursed. It must be lower than the booking value. If omitted it is set to the booking value.",
 )
@@ -193,7 +193,7 @@ def import_eac_dms_application(ignore_previous: bool = False) -> None:
     default="",
     help="Free text with details about the reimbursement.",
 )
-def notify_reimburse_collective_booking(booking_id: int, reason: str, value: float, details: str) -> None:
+def notify_reimburse_collective_booking(booking_id: int, reason: str, value: Decimal, details: str) -> None:
     collective_booking = educational_repository.find_collective_booking_by_id(booking_id)
     if not collective_booking:
         print(f"Collective booking {booking_id} not found")

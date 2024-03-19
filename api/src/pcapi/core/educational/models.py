@@ -940,7 +940,7 @@ class CollectiveStock(PcObject, Base, Model):
 
     collectiveBookings: list["CollectiveBooking"] = relationship("CollectiveBooking", back_populates="collectiveStock")
 
-    price: float = sa.Column(
+    price: decimal.Decimal = sa.Column(
         sa.Numeric(10, 2),
         sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"),
         index=True,
@@ -1390,7 +1390,7 @@ class CollectiveBooking(PcObject, Base, Model):
 
     @property
     def total_amount(self) -> Decimal:
-        return Decimal(self.collectiveStock.price)
+        return self.collectiveStock.price
 
 
 class CollectiveOfferTemplateDomain(Base, Model):
