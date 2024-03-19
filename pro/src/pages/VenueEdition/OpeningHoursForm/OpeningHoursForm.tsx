@@ -29,7 +29,7 @@ export function OpeningHoursForm() {
 
   return (
     <>
-      <fieldset className={styles['day-inputs']}>
+      <fieldset className={styles['inputs-line']}>
         <legend className={styles['legend-days']}>
           Sélectionner vos jours d’ouverture :
         </legend>
@@ -122,13 +122,19 @@ function HourLine() {
           variant={ButtonVariant.TERNARY}
           icon={fullLessIcon}
           onClick={toggleFullLine}
-        />
+          hasTooltip
+        >
+          Supprimer la plage horaire
+        </Button>
       ) : (
         <Button
           variant={ButtonVariant.TERNARY}
           icon={fullMoreIcon}
           onClick={toggleFullLine}
-        />
+          hasTooltip
+        >
+          Ajouter une plage horaire
+        </Button>
       )}
     </span>
   )

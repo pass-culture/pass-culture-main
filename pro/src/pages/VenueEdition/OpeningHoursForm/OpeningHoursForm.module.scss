@@ -6,7 +6,6 @@
   gap: rem.torem(8px);
   display: inline-flex;
   flex-wrap: wrap;
-  align-items: center;
 }
 
 .legend-days {
@@ -25,6 +24,7 @@
 
 .day-checkbox {
   flex-grow: 1;
+  flex-shrink: 1;
 }
 
 .hour-line {
