@@ -9,6 +9,7 @@ class AddressModelsTest:
     def test_address_is_unique_over_a_ban_id(self) -> None:
         AddressFactory(
             banId="75108_5194_00089",
+            inseeCode="75056",
             street="89 Rue de la Boétie",
             postalCode="75008",
             city="Paris",
@@ -20,6 +21,7 @@ class AddressModelsTest:
         with pytest.raises(IntegrityError):
             AddressFactory(
                 banId="75108_5194_00089",
+                inseeCode="75056",
                 street="89 Rue de la Boétie-oups typo-",
                 postalCode="75008",
                 city="Paris",
