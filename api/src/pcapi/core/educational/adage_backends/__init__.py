@@ -1,7 +1,7 @@
 from pcapi import settings
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational.adage_backends import serialize
-from pcapi.routes.adage.v1.serialization.prebooking import AdageReibursementNotification
+from pcapi.routes.adage.v1.serialization.prebooking import AdageReimbursementNotification
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingResponse
 from pcapi.routes.serialization import venues_serialize
@@ -58,7 +58,7 @@ def get_adage_educational_redactor_from_uai(uai: str) -> list[dict[str, str]]:
     return result
 
 
-def notify_reimburse_collective_booking(data: AdageReibursementNotification) -> None:
+def notify_reimburse_collective_booking(data: AdageReimbursementNotification) -> None:
     backend = import_string(settings.ADAGE_BACKEND)
     result = backend().notify_reimburse_collective_booking(data)
     return result
