@@ -1401,6 +1401,44 @@ class NewBankAccountJourneyTest:
         assert accepted_status_history.timespan.upper is None
 
     @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
+    def test_DSv5_pending_correction_status_handled(
+        self, mock_archive_dossier, mock_update_text_annotation, mock_graph_client, db_session
+    ):
+        siret = "85331845900049"
+        siren = siret[:9]
+        venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
+
+        mock_graph_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
+            state=GraphQLApplicationStates.draft.value, last_pending_correction_date="2023-10-27T14:51:09+02:00"
+        )
+
+        update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
+
+        # Old journey
+        bank_information = finance_models.BankInformation.query.one()
+        assert bank_information.venue == venue
+        assert not bank_information.bic
+        assert bank_information.status == finance_models.BankInformationStatus.DRAFT
+
+        # New journey
+        bank_account = finance_models.BankAccount.query.one()
+        assert bank_account.bic == "BICAGRIFRPP"
+        assert bank_account.iban == "FR7630006000011234567890189"
+        assert bank_account.offerer == venue.managingOfferer
+        assert bank_account.status == finance_models.BankAccountApplicationStatus.WITH_PENDING_CORRECTIONS
+        assert bank_account.label == "Intitulé du compte bancaire"
+        assert bank_account.dsApplicationId == self.dsv5_application_id
+        mock_archive_dossier.assert_not_called()
+
+        assert not offerers_models.VenueBankAccountLink.query.count()
+        assert not history_models.ActionHistory.query.count()
+
+        on_going_status_history = finance_models.BankAccountStatusHistory.query.one()
+
+        assert on_going_status_history.status == bank_account.status
+        assert not on_going_status_history.timespan.upper
+
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
     def test_dsv5_with_no_status_changes_does_not_create_nor_link_nor_status_changes_logs(
         self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client, db_session
     ):

@@ -244,6 +244,11 @@ class ApplicationDetailNewJourney(ApplicationDetail):
     def to_representation(cls: "ApplicationDetailNewJourney", obj: dict) -> dict:
         to_representation = super().to_representation(obj)
         to_representation["status"] = finance_models.BankAccountApplicationStatus(obj["status"])
+        if (
+            to_representation["status"] == finance_models.BankAccountApplicationStatus.DRAFT
+            and obj["last_pending_correction_date"]
+        ):
+            to_representation["status"] = finance_models.BankAccountApplicationStatus.WITH_PENDING_CORRECTIONS
         if to_representation["procedure_version"] == 5:
             to_representation["siren"] = to_representation["siret"][:9]
             to_representation["label"] = obj["label"]

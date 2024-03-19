@@ -19,6 +19,7 @@ query getDemarche($demarcheNumber: Int!, $state: DossierState, $order: Order, $f
         number
         state
         dateDerniereModification
+        dateDerniereCorrectionEnAttente
 	demandeur {
 	  ... on PersonneMorale {
 	     siret
