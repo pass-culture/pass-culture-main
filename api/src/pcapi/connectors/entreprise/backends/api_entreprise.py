@@ -10,8 +10,13 @@ Data is not persistent on the platform after redis cache expiration.
 import datetime
 import json
 import logging
+import random
 import re
+import time
+import typing
 from urllib.parse import urljoin
+
+from flask import current_app
 
 from pcapi import settings
 from pcapi.connectors.entreprise import exceptions
@@ -32,6 +37,55 @@ class EntrepriseBackend(BaseBackend):
     # less than 1-minute nginx timeout
     timeout = 50
 
+    @staticmethod
+    def _get_lock_name(subpath: str) -> str:
+        # result is "/v3/insee/", "/v4/dgfip/", etc. which keeps rate limit by provider
+        return f"cache:entreprise:{subpath[:-len(subpath.split('/', 3)[3])]}:lock"
+
+    def _check_rate_limit(self, subpath: str, headers: typing.Mapping[str, str]) -> None:
+        """
+        Documentation: https://entreprise.api.gouv.fr/developpeurs#respecter-la-volumétrie
+        Be careful with DGFIP endpoint: rate limit is 5 calls per minute!
+        """
+        rate_limit_total = headers.get("RateLimit-Limit")
+        if not rate_limit_total:
+            return
+
+        rate_limit_remaining = headers.get("RateLimit-Remaining")
+        rate_limit_reset = headers.get("RateLimit-Reset")
+
+        assert rate_limit_remaining  # helps mypy
+        assert rate_limit_reset  # helps mypy
+
+        percent_reached = 100 - (100 * int(rate_limit_remaining)) / int(rate_limit_total)
+        seconds_before_reset = max(0, int(rate_limit_reset) - int(time.time()))
+        if percent_reached > 80:
+            logger.warning(
+                "More than 80% of rate limit reached on API Entreprise",
+                extra={
+                    "subpath": subpath,
+                    "percent": percent_reached,
+                    "limit": int(rate_limit_total),
+                    "remaining": int(rate_limit_remaining),
+                    "seconds_before_reset": seconds_before_reset,
+                },
+            )
+            current_app.redis_client.set(self._get_lock_name(subpath), "1", ex=seconds_before_reset)
+
+    def _ensure_rate_limit(self, subpath: str) -> None:
+        """
+        Ensure that we don't reach rate limit for the requested endpoint.
+        Rather, wait until reset time when reasonable.
+        """
+        slept_time = 0.0
+        while (ttl := current_app.redis_client.ttl(self._get_lock_name(subpath))) > 0:
+            if slept_time + ttl > self.timeout:
+                raise exceptions.RateLimitExceeded("Rate limited, please try again later")
+            # Some randomness (+ 0 to 2 seconds) so that concurrent calls do not start at the same time
+            time_to_sleep = ttl + random.random() * 2
+            time.sleep(time_to_sleep)
+            slept_time += time_to_sleep
+
     def _get(self, subpath: str) -> dict:
         if not settings.ENTREPRISE_API_URL:
             raise ValueError("ENTREPRISE_API_URL is not configured")
@@ -49,11 +103,16 @@ class EntrepriseBackend(BaseBackend):
 
         headers = {"Authorization": "Bearer " + settings.ENTREPRISE_API_TOKEN}
 
+        self._ensure_rate_limit(subpath)
+
         try:
             response = requests.get(url, params=params, headers=headers, timeout=self.timeout)
         except requests.exceptions.RequestException as exc:
             logger.exception("Network error on API Entreprise", extra={"exc": exc, "url": url})
             raise exceptions.ApiException(f"Network error on API Entreprise: {url}") from exc
+
+        self._check_rate_limit(subpath, response.headers)
+
         if not response.ok:
             try:
                 errors = response.json()["errors"]
