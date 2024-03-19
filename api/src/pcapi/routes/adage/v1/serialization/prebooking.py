@@ -1,4 +1,5 @@
 from datetime import datetime
+import decimal
 import typing
 from typing import Iterable
 
@@ -68,7 +69,7 @@ class EducationalBookingBaseResponse(AdageBaseResponseModel):
     name: str = Field(description="Name of event")
     numberOfTickets: int | None = Field(description="Number of tickets")
     postalCode: str | None
-    price: float
+    price: decimal.Decimal
     quantity: int = Field(description="Number of place prebooked")
     redactor: Redactor
     UAICode: str = Field(description="Educational institution UAI code")
@@ -78,7 +79,7 @@ class EducationalBookingBaseResponse(AdageBaseResponseModel):
     priceDetail: str | None = Field(description="Offer's stock price detail")
     venueTimezone: str
     subcategoryLabel: str = Field(description="Subcategory label")
-    totalAmount: float = Field(description="Total price of the prebooking")
+    totalAmount: decimal.Decimal = Field(description="Total price of the prebooking")
     url: str | None = Field(description="Url to access the offer")
     withdrawalDetails: str | None
     domain_ids: list[int]
@@ -111,7 +112,7 @@ class EducationalBookingPerYearResponse(AdageBaseResponseModel):
     UAICode: str
     status: EducationalBookingStatus | CollectiveBookingStatus
     confirmationLimitDate: datetime
-    totalAmount: float
+    totalAmount: decimal.Decimal
     beginningDatetime: datetime
     venueTimezone: str
     name: str
@@ -293,12 +294,12 @@ def _get_educational_offer_accessibility(offer: educational_models.CollectiveOff
 
 class AdageReimbursementNotification(EducationalBookingBaseResponse):
     reimbursementReason: str
-    reimbursedValue: float
+    reimbursedValue: decimal.Decimal
     reimbursementDetails: str
 
 
 def serialize_reimbursement_notification(
-    collective_booking: CollectiveBooking, reason: str, value: float, details: str
+    collective_booking: CollectiveBooking, reason: str, value: decimal.Decimal, details: str
 ) -> AdageReimbursementNotification:
     stock: educational_models.CollectiveStock = collective_booking.collectiveStock
     offer: educational_models.CollectiveOffer = stock.collectiveOffer
