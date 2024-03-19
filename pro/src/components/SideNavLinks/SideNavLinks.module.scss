@@ -45,7 +45,13 @@
   height: 100%;
 
   &-open {
-    height: calc(100% - #{size.$top-menu-height});
+    min-height: calc(100% - #{size.$top-menu-height});
+    height: auto;
+
+    @media (min-width: size.$tablet) {
+      min-height: 100%;
+      height: auto;
+    }
   }
 
   &-first-group {
