@@ -45,6 +45,7 @@ describe('Create an individual offer (thing)', () => {
     cy.get('#withdrawalDetails').type(
       'Seuls les dauphins et les souris peuvent le lire.'
     )
+    cy.contains('Non accessible').click()
     cy.contains('Psychique ou cognitif').click()
     cy.contains('Moteur').click()
     cy.contains('Auditif').click()
