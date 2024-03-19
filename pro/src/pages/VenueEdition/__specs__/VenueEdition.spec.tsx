@@ -79,6 +79,7 @@ describe('route VenueEdition', () => {
       id: 12,
       publicName: 'Cinéma des iles',
       dmsToken: 'dms-token-12345',
+      isPermanent: true,
     }
 
     venueProviders = [
@@ -216,7 +217,7 @@ describe('route VenueEdition', () => {
     expect(await screen.findByText('Home')).toBeInTheDocument()
   })
 
-  it('should display Opening hours section if WIP_OPENING_HOURS feature flag is enabled', async () => {
+  it('should display Opening hours section if WIP_OPENING_HOURS feature flag is enabled and venue is permanent', async () => {
     renderVenueEdition(venue.id, offerer.id, {
       features: ['WIP_OPENING_HOURS'],
     })
