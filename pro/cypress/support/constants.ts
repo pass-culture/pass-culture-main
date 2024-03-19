@@ -36,7 +36,7 @@ export const CONSTANTS = {
   //  CRUD  //
   post: 'POST',
   get: 'GET',
-  //   API   //
+  //    API   //
   signUpApi: '/v2/users/signup/pro',
   passwordProAccount: 'user@AZERTY123',
 }
