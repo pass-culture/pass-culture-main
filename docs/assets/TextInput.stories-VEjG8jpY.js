@@ -1,0 +1,19 @@
+import{j as t}from"./jsx-runtime-vNq4Oc-g.js";import{b as h}from"./formik.esm-ymFmkpzG.js";import{s as I}from"./stroke-search-zTyM_Af6.js";import{T as b}from"./Thumb-WqEZ8B4u.js";import"./index-4g5l5LRQ.js";import"./_commonjsHelpers-4gQjN7DL.js";import"./full-next-6FYpialQ.js";import"./ButtonLink-3YIwl7lt.js";import"./index-XNbs-YUW.js";import"./index-kapi_vjX.js";import"./index-CQtvWCGL.js";import"./SvgIcon-QVOPtTle.js";import"./Button.module-ZSasnFkE.js";import"./Button-oYJex9-4.js";import"./stroke-pass-84wyy11D.js";import"./Tooltip-kKBX527K.js";import"./useTooltipProps-5VZ0BXiJ.js";import"./stroke-offer-kjKFmafA.js";import"./BaseInput-AweWbigz.js";import"./BaseRadio-FPTZu85Z.js";import"./FieldError-Tc_LJzie.js";import"./stroke-error-U5wg3Vd5.js";import"./FieldSuccess-GGwnsLIr.js";import"./stroke-valid-qcZpl8lN.js";import"./full-clear-0L2gsxg_.js";import"./Divider-RocaqWVQ.js";import"./SubmitButton-6M_ftIuY.js";import"./index-VFMbf6KQ.js";import"./SelectInput-6KaGHNHr.js";import"./stroke-down-4xbrRvHV.js";import"./BaseCheckbox-ktuHWrzJ.js";import"./date-Kqo95BZo.js";import"./typeof-Q9eVcF_1.js";import"./Banner-IWldAFdx.js";import"./shadow-tips-help-vs0tLBP5.js";import"./shadow-tips-warning-og_aO0Ug.js";import"./stroke-close-KQNU-49n.js";import"./LinkNodes-m1sxgbK0.js";import"./full-link-GGegv9yK.js";import"./InfoBox-avFwKXmv.js";const tr={title:"ui-kit/forms/TextInput",component:b,decorators:[u=>t.jsx(h,{initialValues:{email:""},onSubmit:()=>{},children:t.jsx(u,{})})]},r={args:{name:"email",placeholder:"Input placeholder"}},o={args:{name:"email",label:"Email",placeholder:"Input placeholder"}},e={args:{name:"email",label:"Email",placeholder:"Input placeholder",leftIcon:I}};var a,m,p;r.parameters={...r.parameters,docs:{...(a=r.parameters)==null?void 0:a.docs,source:{originalSource:`{
+  args: {
+    name: 'email',
+    placeholder: 'Input placeholder'
+  }
+}`,...(p=(m=r.parameters)==null?void 0:m.docs)==null?void 0:p.source}}};var i,l,s;o.parameters={...o.parameters,docs:{...(i=o.parameters)==null?void 0:i.docs,source:{originalSource:`{
+  args: {
+    name: 'email',
+    label: 'Email',
+    placeholder: 'Input placeholder'
+  }
+}`,...(s=(l=o.parameters)==null?void 0:l.docs)==null?void 0:s.source}}};var n,c,d;e.parameters={...e.parameters,docs:{...(n=e.parameters)==null?void 0:n.docs,source:{originalSource:`{
+  args: {
+    name: 'email',
+    label: 'Email',
+    placeholder: 'Input placeholder',
+    leftIcon: strokeSearch
+  }
+}`,...(d=(c=e.parameters)==null?void 0:c.docs)==null?void 0:d.source}}};const ar=["WithoutLabel","WithLabel","WithLeftIcon"];export{o as WithLabel,e as WithLeftIcon,r as WithoutLabel,ar as __namedExportsOrder,tr as default};
