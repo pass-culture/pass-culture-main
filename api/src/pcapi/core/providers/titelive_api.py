@@ -99,7 +99,9 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
         while has_next_page:
             titelive_json_response = titelive.search_products(self.titelive_base, from_date, page_index)
             titelive_product_page = self.deserialize_titelive_search_json(titelive_json_response)
-            allowed_product_page = self.filter_allowed_products(titelive_product_page)
+            titlive_recent_product_page = self.filter_recent_products(titelive_product_page, from_date)
+            allowed_product_page = self.filter_allowed_products(titlive_recent_product_page)
+            allowed_product_page.result = [oeuvre for oeuvre in allowed_product_page.result if oeuvre.article]
             yield allowed_product_page
             # sometimes titelive returns a partially filled page while having a next page in store for us
             has_next_page = bool(titelive_product_page.result)
@@ -110,6 +112,16 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
         self, titelive_json_response: dict[str, typing.Any]
     ) -> TiteliveProductSearchResponse[TiteliveSearchResultType]:
         raise NotImplementedError()
+
+    def filter_recent_products(
+        self,
+        titelive_product_page: TiteliveProductSearchResponse[TiteliveSearchResultType],
+        from_date: datetime.date,
+    ) -> TiteliveProductSearchResponse[TiteliveSearchResultType]:
+        """Filters out articles that were not updated since from_date."""
+        for oeuvre in titelive_product_page.result:
+            oeuvre.article = [article for article in oeuvre.article if article.datemodification >= from_date]
+        return titelive_product_page
 
     def filter_allowed_products(
         self,
