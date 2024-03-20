@@ -18,7 +18,7 @@ export const VenueProviderList = ({
   venueProviders,
 }: VenueProviderListProps): JSX.Element => {
   return (
-    <ul className="provider-list">
+    <ul>
       {venueProviders.map((venueProvider) => (
         <VenueProviderItem
           afterDelete={afterVenueProviderDelete}

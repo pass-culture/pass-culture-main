@@ -51,13 +51,15 @@ export const VenueProviderItem = ({
             />
           </div>
         </div>
+
         {!venueProvider.provider.hasOffererProvider ? (
           !lastSyncDate ? (
             <div className={style['venue-id-at-offer-provider-container']}>
-              <div className="venue-id-at-offer-provider">
+              <div>
                 Compte : <span>{venueIdAtOfferProvider}</span>
               </div>
-              <span>
+
+              <span className={style['venue-id-at-offer-provider-message']}>
                 Importation en cours. Cette étape peut durer plusieurs dizaines
                 de minutes. Vous pouvez fermer votre navigateur et revenir plus
                 tard.
@@ -67,7 +69,8 @@ export const VenueProviderItem = ({
             <div className={style['venue-id-at-offer-provider-container']}>
               <div className={style['last-synchronisation']}>
                 <span>Dernière synchronisation :</span>
-                <span data-testid="last-sync-date">
+
+                <span>
                   &nbsp;
                   {formatLocalTimeDateString(
                     lastSyncDate,
@@ -76,7 +79,8 @@ export const VenueProviderItem = ({
                   )}
                 </span>
               </div>
-              <div className="venue-id-at-offer-provider">
+
+              <div>
                 Compte : <span>{venueIdAtOfferProvider}</span>
               </div>
             </div>
