@@ -1,3 +1,4 @@
+import { GetVenueResponseModel } from 'apiClient/v1'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 
@@ -5,21 +6,23 @@ import styles from './OpeningHoursReadOnly.module.scss'
 import { mapDayToFrench } from './utils'
 
 type OpeningHours = {
-  openingHours: Array<Record<string, any>>
+  openingHours: GetVenueResponseModel['venueOpeningHours']
 }
 
 export function OpeningHoursReadOnly({ openingHours }: OpeningHours) {
   return (
     <SummarySubSection title={'Horaires d’ouverture'}>
       <SummaryDescriptionList
-        descriptions={openingHours
-          .filter((dateAndHour) => dateAndHour && Object.values(dateAndHour)[0])
-          .map((dateAndHour) => {
-            return {
-              title: mapDayToFrench(Object.keys(dateAndHour)[0]),
-              text: <Hours hours={Object.values(dateAndHour)[0]} />,
-            }
-          })}
+        descriptions={(
+          openingHours?.filter(
+            (dateAndHour) => dateAndHour && Object.values(dateAndHour)[0]
+          ) ?? []
+        ).map((dateAndHour) => {
+          return {
+            title: mapDayToFrench(Object.keys(dateAndHour)[0]),
+            text: <Hours hours={Object.values(dateAndHour)[0]} />,
+          }
+        })}
       />
     </SummarySubSection>
   )
