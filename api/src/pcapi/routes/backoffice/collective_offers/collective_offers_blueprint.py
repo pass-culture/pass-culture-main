@@ -233,9 +233,6 @@ def _get_collective_offers(form: forms.InternalSearchForm) -> list[educational_m
             rules_subquery.label("rules"),
         )
         .filter(educational_models.CollectiveOffer.id.in_(_get_collective_offer_ids_query(form).subquery()))
-        # 1-1 relationships so join will not increase the number of SQL rows
-        .join(educational_models.CollectiveOffer.venue)
-        .join(offerers_models.Venue.managingOfferer)
         .options(
             sa.orm.load_only(
                 educational_models.CollectiveOffer.id,
@@ -248,14 +245,14 @@ def _get_collective_offers(form: forms.InternalSearchForm) -> list[educational_m
             sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).load_only(
                 educational_models.CollectiveStock.beginningDatetime,
             ),
-            sa.orm.joinedload(educational_models.CollectiveOffer.venue).load_only(
+            sa.orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True).load_only(
                 offerers_models.Venue.managingOffererId,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.departementCode,
             )
             # needed to check if stock is bookable and compute initial/remaining stock:
-            .joinedload(offerers_models.Venue.managingOfferer).load_only(
+            .joinedload(offerers_models.Venue.managingOfferer, innerjoin=True).load_only(
                 offerers_models.Offerer.name, offerers_models.Offerer.isActive, offerers_models.Offerer.validationStatus
             ),
             sa.orm.joinedload(educational_models.CollectiveOffer.institution).load_only(
