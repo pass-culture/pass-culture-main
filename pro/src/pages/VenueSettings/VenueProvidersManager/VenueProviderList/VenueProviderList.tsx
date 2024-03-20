@@ -2,21 +2,21 @@ import React from 'react'
 
 import { VenueProviderResponse, GetVenueResponseModel } from 'apiClient/v1'
 
-import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
+import { VenueProviderItem } from './VenueProviderItem'
 
-interface VenueProviderListV2Props {
+interface VenueProviderListProps {
   afterVenueProviderDelete: (deletedVenueProvider: number) => void
   afterVenueProviderEdit: (editedVenueProvider: VenueProviderResponse) => void
   venue: GetVenueResponseModel
   venueProviders: VenueProviderResponse[]
 }
 
-const VenueProviderList = ({
+export const VenueProviderList = ({
   afterVenueProviderDelete,
   afterVenueProviderEdit,
   venue,
   venueProviders,
-}: VenueProviderListV2Props): JSX.Element => {
+}: VenueProviderListProps): JSX.Element => {
   return (
     <ul className="provider-list">
       {venueProviders.map((venueProvider) => (
@@ -32,5 +32,3 @@ const VenueProviderList = ({
     </ul>
   )
 }
-
-export default VenueProviderList

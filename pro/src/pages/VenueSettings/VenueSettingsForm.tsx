@@ -14,13 +14,13 @@ import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
 import BankAccountInfos from 'pages/VenueCreation/BankAccountInfos/BankAccountInfos'
-import { OffersSynchronization } from 'pages/VenueCreation/OffersSynchronization'
 import { SiretOrCommentFields } from 'pages/VenueCreation/SiretOrCommentFields/SiretOrCommentFields'
 import { VenueFormActionBar } from 'pages/VenueCreation/VenueFormActionBar/VenueFormActionBar'
 import { WithdrawalDetails } from 'pages/VenueCreation/WithdrawalDetails'
 import { TextInput, InfoBox, Select } from 'ui-kit'
 
 import { VenueSettingsFormValues } from './types'
+import { OffersSynchronization } from './VenueProvidersManager/OffersSynchronization'
 
 interface VenueFormProps {
   offerer: GetOffererResponseModel

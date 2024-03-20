@@ -10,7 +10,7 @@ interface DeleteVenueProviderDialogProps {
   isLoading: boolean
 }
 
-const DeleteVenueProviderDialog = ({
+export const DeleteVenueProviderDialog = ({
   onConfirm,
   onCancel,
   isLoading,
@@ -39,5 +39,3 @@ const DeleteVenueProviderDialog = ({
     </ConfirmDialog>
   )
 }
-
-export default DeleteVenueProviderDialog

@@ -21,7 +21,7 @@ export interface StocksProviderFormProps {
   hasOffererProvider: boolean
 }
 
-const StocksProviderForm = ({
+export const StocksProviderForm = ({
   saveVenueProvider,
   providerId,
   siret,
@@ -123,5 +123,3 @@ const StocksProviderForm = ({
     </>
   )
 }
-
-export default StocksProviderForm

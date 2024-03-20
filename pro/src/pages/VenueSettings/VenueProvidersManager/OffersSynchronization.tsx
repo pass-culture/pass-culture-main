@@ -3,8 +3,9 @@ import React, { useState } from 'react'
 import { VenueProviderResponse, GetVenueResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { Providers } from 'core/Venue/types'
-import AddVenueProviderButton from 'pages/Offerers/Offerer/VenueV1/VenueEdition/VenueProvidersManager/AddVenueProviderButton'
-import VenueProviderList from 'pages/Offerers/Offerer/VenueV1/VenueEdition/VenueProvidersManager/VenueProviderList/VenueProviderList'
+
+import { AddVenueProviderButton } from './AddVenueProviderButton'
+import { VenueProviderList } from './VenueProviderList/VenueProviderList'
 
 interface OffersSynchronization {
   provider: Providers[]
@@ -12,7 +13,7 @@ interface OffersSynchronization {
   venue: GetVenueResponseModel
 }
 
-const OffersSynchronization = ({
+export const OffersSynchronization = ({
   venue,
   provider,
   venueProvider,
@@ -61,5 +62,3 @@ const OffersSynchronization = ({
     </FormLayout.Section>
   )
 }
-
-export default OffersSynchronization

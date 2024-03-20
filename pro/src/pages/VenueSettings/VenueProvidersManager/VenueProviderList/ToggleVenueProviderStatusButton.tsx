@@ -9,15 +9,15 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { Button } from 'ui-kit/index'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import ToggleVenueProviderStatusDialog from '../ToggleVenueProviderStatusDialog/ToggleVenueProviderStatusDialog'
-import style from '../VenueProviderItem/VenueProviderItem.module.scss'
+import { ToggleVenueProviderStatusDialog } from './ToggleVenueProviderStatusDialog'
+import style from './VenueProviderItem.module.scss'
 
 interface ToggleVenueProviderStatusButtonProps {
   venueProvider: VenueProviderResponse
   afterEdit: (venueProvider: VenueProviderResponse) => void
 }
 
-const ToggleVenueProviderStatusButton = ({
+export const ToggleVenueProviderStatusButton = ({
   venueProvider,
   afterEdit,
 }: ToggleVenueProviderStatusButtonProps) => {
@@ -92,5 +92,3 @@ const ToggleVenueProviderStatusButton = ({
     </>
   )
 }
-
-export default ToggleVenueProviderStatusButton

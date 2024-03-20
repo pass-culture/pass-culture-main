@@ -5,7 +5,7 @@ import { PostVenueProviderBody } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import { validationSchema } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/VenueProvidersManager/AllocineProviderForm/validationSchema'
+import { validationSchema } from 'pages/VenueSettings/VenueProvidersManager/AllocineProviderForm/validationSchema'
 import { Banner, Button, Checkbox, InfoBox, TextInput } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -28,7 +28,7 @@ export interface AllocineProviderFormProps {
   initialValues?: FormValuesProps
 }
 
-const AllocineProviderForm = ({
+export const AllocineProviderForm = ({
   saveVenueProvider,
   providerId,
   offererId,
@@ -178,5 +178,3 @@ const AllocineProviderForm = ({
     </FormikProvider>
   )
 }
-
-export default AllocineProviderForm
