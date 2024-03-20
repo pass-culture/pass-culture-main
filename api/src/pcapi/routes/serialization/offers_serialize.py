@@ -224,6 +224,7 @@ class ListOffersOfferResponseModel(BaseModel):
     venue: base_serializers.ListOffersVenueResponseModel
     status: OfferStatus
     isShowcase: bool | None
+    test: str = "test"
 
 
 class ListOffersResponseModel(BaseModel):
