@@ -1,9 +1,27 @@
-import React from 'react'
+import cn from 'classnames'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import Stepper from 'components/Stepper'
 import { Step } from 'components/Stepper/Stepper'
+import {
+  Events,
+  OFFER_FROM_TEMPLATE_ENTRIES,
+} from 'core/FirebaseEvents/constants'
+import { createOfferFromTemplate } from 'core/OfferEducational'
+import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
+import useActiveFeature from 'hooks/useActiveFeature'
+import useAnalytics from 'hooks/useAnalytics'
+import useNotification from 'hooks/useNotification'
 import { useOfferStockEditionURL } from 'hooks/useOfferEditionURL'
+import fullEditIcon from 'icons/full-edit.svg'
+import fullMoreIcon from 'icons/full-more.svg'
+import fullShowIcon from 'icons/full-show.svg'
+import { Divider } from 'ui-kit'
+import { Button, ButtonLink } from 'ui-kit/Button'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import Tabs from 'ui-kit/Tabs'
+
+import styles from './CollectiveOfferNavigation.module.scss'
 
 export enum CollectiveOfferStep {
   DETAILS = 'details',
@@ -19,7 +37,6 @@ export interface CollectiveOfferNavigationProps {
   isCreatingOffer: boolean
   isCompletingDraft?: boolean
   offerId?: number
-  isOfferEducational?: boolean
   className?: string
   isTemplate: boolean
   haveStock?: boolean
@@ -36,6 +53,22 @@ const CollectiveOfferNavigation = ({
   haveStock = false,
   requestId = null,
 }: CollectiveOfferNavigationProps): JSX.Element => {
+  const { logEvent } = useAnalytics()
+  const notify = useNotification()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const isMarseilleActive = useActiveFeature('WIP_ENABLE_MARSEILLE')
+
+  const offerEditLink = `/offre/${computeURLCollectiveOfferId(
+    offerId,
+    isTemplate
+  )}/collectif/edition`
+
+  const previewLink = `/offre/${computeURLCollectiveOfferId(
+    offerId,
+    isTemplate
+  )}/collectif/preview`
+
   const stockEditionUrl = useOfferStockEditionURL(true, offerId)
   const isEditingExistingOffer = !(isCreatingOffer || isCompletingDraft)
 
@@ -159,7 +192,63 @@ const CollectiveOfferNavigation = ({
   }))
 
   return isEditingExistingOffer ? (
-    <Tabs tabs={tabs} selectedKey={activeStep} />
+    <>
+      <div className={styles['duplicate-offer']}>
+        {!location.pathname.includes('edition') && (
+          <ButtonLink
+            link={{
+              to: offerEditLink,
+              isExternal: false,
+            }}
+            icon={fullEditIcon}
+          >
+            Modifier l’offre
+          </ButtonLink>
+        )}
+        <ButtonLink
+          link={{
+            to: previewLink,
+            isExternal: false,
+          }}
+          icon={fullShowIcon}
+        >
+          Aperçu dans ADAGE
+        </ButtonLink>
+        {isTemplate && (
+          <Button
+            variant={ButtonVariant.TERNARY}
+            icon={fullMoreIcon}
+            onClick={() => {
+              logEvent?.(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
+                from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
+              })
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
+              createOfferFromTemplate(
+                navigate,
+                notify,
+                offerId,
+                undefined,
+                isMarseilleActive
+              )
+            }}
+          >
+            Créer une offre réservable
+          </Button>
+        )}
+      </div>
+      <Divider />
+      <Tabs
+        tabs={tabs}
+        selectedKey={activeStep}
+        className={cn(styles['tabs'], {
+          [styles['tabs-active']]: [
+            CollectiveOfferStep.DETAILS,
+            CollectiveOfferStep.STOCKS,
+            CollectiveOfferStep.VISIBILITY,
+          ].includes(activeStep),
+        })}
+      />
+    </>
   ) : (
     <Stepper activeStep={activeStep} className={className} steps={steps} />
   )

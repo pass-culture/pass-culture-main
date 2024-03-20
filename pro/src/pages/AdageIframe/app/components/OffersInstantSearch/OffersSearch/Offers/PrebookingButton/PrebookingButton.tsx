@@ -23,7 +23,7 @@ const PrebookingButton = ({
   isInSuggestions,
   children,
   hideLimitDate,
-  isPreview,
+  isPreview = false,
 }: {
   className?: string
   stock: OfferStockResponse

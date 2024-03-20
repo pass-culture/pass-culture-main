@@ -7,6 +7,7 @@ import {
 } from 'apiClient/v1'
 import {
   defaultGetVenue,
+  getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -27,7 +28,7 @@ describe('AdagePreviewLayout', () => {
     })
   })
 
-  it('should show a preview of the offer', async () => {
+  it('should show a preview of the offer template', async () => {
     renderAdagePreviewLayout({
       ...getCollectiveOfferTemplateFactory(),
       name: 'My test name',
@@ -37,6 +38,19 @@ describe('AdagePreviewLayout', () => {
 
     expect(
       screen.getByRole('heading', { name: 'My test name' })
+    ).toBeInTheDocument()
+  })
+
+  it('should show a preview of the offer bookable', async () => {
+    renderAdagePreviewLayout({
+      ...getCollectiveOfferFactory(),
+      name: 'My test name bookable',
+    })
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(
+      screen.getByRole('heading', { name: 'My test name bookable' })
     ).toBeInTheDocument()
   })
 

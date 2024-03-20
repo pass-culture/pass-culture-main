@@ -25,6 +25,7 @@
   }
 
   &-section {
+    margin-top: rem.torem(8px);
     margin-bottom: rem.torem(40px);
 
     &-header {
@@ -32,7 +33,7 @@
       flex-direction: row;
       justify-content: space-between;
       align-items: top;
-      margin-bottom: rem.torem(24px);
+      margin: rem.torem(24px) 0;
 
       &-edit-link {
         height: unset;

@@ -16,13 +16,13 @@ import styles from './AdageOfferInstitutionPanel.module.scss'
 export type AdageOfferInstitutionPanelProps = {
   offer: CollectiveOfferResponseModel
   adageUser?: AuthenticatedResponse
-  isPreview: boolean
+  isPreview?: boolean
 }
 
 export default function AdageOfferInstitutionPanel({
   offer,
   adageUser,
-  isPreview,
+  isPreview = false,
 }: AdageOfferInstitutionPanelProps) {
   return (
     <div className={styles['institution-panel']}>

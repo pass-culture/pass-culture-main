@@ -11,7 +11,7 @@ interface PrebookingModal {
 const PrebookingModal = ({
   closeModal,
   preBookCurrentStock,
-  isPreview,
+  isPreview = false,
 }: PrebookingModal): JSX.Element => {
   return (
     <ConfirmDialog
