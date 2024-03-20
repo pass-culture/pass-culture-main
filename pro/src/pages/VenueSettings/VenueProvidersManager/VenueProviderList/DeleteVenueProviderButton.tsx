@@ -42,7 +42,6 @@ export const DeleteVenueProviderButton = ({
   return (
     <>
       <Button
-        className={style['provider-action-button']}
         onClick={() => setIsModalOpen(true)}
         variant={ButtonVariant.TERNARY}
       >
