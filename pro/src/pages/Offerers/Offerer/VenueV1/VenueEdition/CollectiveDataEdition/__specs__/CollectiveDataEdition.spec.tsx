@@ -481,7 +481,7 @@ describe('CollectiveDataEdition', () => {
       expect(api.getEducationalPartner).not.toHaveBeenCalled()
     })
 
-    it('should prefill form with educational partner data when venue has no collectiva data', async () => {
+    it('should prefill form with educational partner data when venue has no collective data', async () => {
       vi.spyOn(api, 'getEducationalPartner').mockResolvedValueOnce({
         id: 1,
         siteWeb: 'https://monsite.com',

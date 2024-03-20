@@ -67,8 +67,9 @@ export const CollectiveDataForm = ({
     string[] | null
   >(null)
   const [isLoading, setIsLoading] = useState(false)
-  const initialValues = venueCollectiveData
-    ? extractInitialValuesFromVenue(venueCollectiveData)
+  const venueData = venueCollectiveData ?? adageVenueCollectiveData
+  const initialValues = venueData
+    ? extractInitialValuesFromVenue(venueData)
     : COLLECTIVE_DATA_FORM_INITIAL_VALUES
 
   const onSubmit = async (values: CollectiveDataFormValues) => {
@@ -83,10 +84,6 @@ export const CollectiveDataForm = ({
       return setIsLoading(false)
     }
 
-    formik.resetForm({
-      values: extractInitialValuesFromVenue(response.payload),
-    })
-
     await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
 
     navigate(`/structures/${venue.managingOfferer.id}/lieux/${venue.id}/eac`)
@@ -97,6 +94,7 @@ export const CollectiveDataForm = ({
     onSubmit: onSubmit,
     validationSchema,
   })
+
   useEffect(() => {
     handleAllFranceDepartmentOptions(
       formik.values.collectiveInterventionArea,
@@ -107,26 +105,6 @@ export const CollectiveDataForm = ({
 
     setPreviousInterventionValues(formik.values.collectiveInterventionArea)
   }, [formik.values.collectiveInterventionArea])
-
-  useEffect(() => {
-    formik.resetForm({
-      values: venueCollectiveData
-        ? extractInitialValuesFromVenue(venueCollectiveData)
-        : COLLECTIVE_DATA_FORM_INITIAL_VALUES,
-    })
-  }, [venueCollectiveData])
-
-  useEffect(() => {
-    async function setExtractInitialValuesFromVenue() {
-      if (adageVenueCollectiveData) {
-        await formik.setValues(
-          extractInitialValuesFromVenue(adageVenueCollectiveData)
-        )
-      }
-    }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    setExtractInitialValuesFromVenue()
-  }, [adageVenueCollectiveData])
 
   return (
     <>
