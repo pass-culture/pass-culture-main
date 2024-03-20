@@ -43,7 +43,6 @@ class TiteliveMusicSearch(TiteliveSearch[TiteliveMusicOeuvre]):
             oeuvre.article = [
                 article for article in oeuvre.article if is_music_codesupport_allowed(article.codesupport)
             ]
-        titelive_product_page.result = [oeuvre for oeuvre in titelive_product_page.result if oeuvre.article]
         return titelive_product_page
 
     def upsert_titelive_result_in_dict(

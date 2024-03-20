@@ -199,6 +199,9 @@ MAX_RESULTS_PER_PAGE = 25
 
 
 def search_products(titelive_base: TiteliveBase, from_date: datetime.date, page_index: int) -> dict[str, typing.Any]:
+    """Returns Titelive oeuvres for which an article has been modified since from_date.
+    All the articles of an oeuvre are returned even if they have not been modified recently.
+    """
     try:
         url = f"{settings.TITELIVE_EPAGINE_API_URL}/search"
         headers = {"Content-Type": "application/json", "Authorization": "Bearer {}".format(get_jwt_token())}

@@ -47,8 +47,12 @@ class TiteliveArticle(BaseModel):
     dispo: str
     prix: decimal.Decimal | None
     resume: str | None
+    datemodification: datetime.date | None
 
     _convert_dateparution = pydantic_v1.validator("dateparution", pre=True, allow_reuse=True)(
+        date_utils.parse_french_date
+    )
+    _convert_datemodification = pydantic_v1.validator("datemodification", pre=True, allow_reuse=True)(
         date_utils.parse_french_date
     )
 
