@@ -1,12 +1,17 @@
 import { useEffect, useState } from 'react'
 
-import { CollectiveOfferTemplateResponseModel } from 'apiClient/adage'
+import {
+  CollectiveOfferResponseModel,
+  CollectiveOfferTemplateResponseModel,
+} from 'apiClient/adage'
 import { api } from 'apiClient/api'
 import {
+  GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetVenueResponseModel,
   OfferAddressType,
 } from 'apiClient/v1'
+import { isCollectiveOffer } from 'core/OfferEducational'
 import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -18,7 +23,9 @@ import adageBurger from './assets/adage-burger.svg'
 import adageLogo from './assets/adage-logo.png'
 
 type AdagePreviewLayoutProps = {
-  offer: GetCollectiveOfferTemplateResponseModel
+  offer:
+    | GetCollectiveOfferTemplateResponseModel
+    | GetCollectiveOfferResponseModel
 }
 
 export default function AdagePreviewLayout({ offer }: AdagePreviewLayoutProps) {
@@ -46,11 +53,16 @@ export default function AdagePreviewLayout({ offer }: AdagePreviewLayoutProps) {
     return
   }
 
+  const isBookable = isCollectiveOffer(offer) && offer.collectiveStock
+
   //The venue and offerVenue from the created offer in pro must be modified to match the model of a venue in the adage iframe
-  const offerForAdage: CollectiveOfferTemplateResponseModel = {
+  let offerForAdage:
+    | CollectiveOfferTemplateResponseModel
+    | CollectiveOfferResponseModel = {
     ...offer,
     isExpired: false,
     isSoldOut: false,
+    contactEmail: offer.contactEmail,
     venue: {
       ...offer.venue,
       coordinates: { latitude: venue.latitude, longitude: venue.longitude },
@@ -59,6 +71,26 @@ export default function AdagePreviewLayout({ offer }: AdagePreviewLayoutProps) {
       city: venue.city,
       address: venue.address,
     },
+  }
+
+  if (isBookable) {
+    offerForAdage = {
+      ...offerForAdage,
+      teacher: offer.teacher,
+      educationalInstitution: {
+        city: offer.institution?.city ?? '',
+        institutionType: offer.institution?.institutionType,
+        name: offer.institution?.name ?? '',
+        postalCode: offer.institution?.postalCode ?? '',
+        id: offer.institution?.id ?? 0,
+      },
+      stock: {
+        ...offer.collectiveStock,
+        price: Number(offer.collectiveStock?.price),
+        id: Number(offer.collectiveStock?.id),
+        isBookable: offer.isBookable,
+      },
+    }
   }
 
   if (offerForAdage.offerVenue.addressType === OfferAddressType.OFFERER_VENUE) {
