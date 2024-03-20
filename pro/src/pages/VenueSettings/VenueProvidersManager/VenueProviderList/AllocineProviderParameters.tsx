@@ -8,8 +8,8 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { Button } from 'ui-kit/index'
 
 import { FormValuesProps } from '../AllocineProviderForm/AllocineProviderForm'
-import AllocineProviderFormDialog from '../AllocineProviderFormDialog/AllocineProviderFormDialog'
 
+import { AllocineProviderFormDialog } from './AllocineProviderFormDialog'
 import style from './AllocineProviderParameters.module.scss'
 
 interface AllocineProviderParametersProps {
@@ -18,7 +18,7 @@ interface AllocineProviderParametersProps {
   offererId: number
 }
 
-const AllocineProviderParameters = ({
+export const AllocineProviderParameters = ({
   venueProvider,
   afterVenueProviderEdit,
   offererId,
@@ -118,5 +118,3 @@ const AllocineProviderParameters = ({
     </div>
   )
 }
-
-export default AllocineProviderParameters

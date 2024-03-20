@@ -11,7 +11,7 @@ interface ToggleVenueProviderStatusDialogProps {
   isActive: boolean
 }
 
-const ToggleVenueProviderStatusDialog = ({
+export const ToggleVenueProviderStatusDialog = ({
   onConfirm,
   onCancel,
   isLoading,
@@ -56,5 +56,3 @@ const ToggleVenueProviderStatusDialog = ({
     </ConfirmDialog>
   )
 }
-
-export default ToggleVenueProviderStatusDialog

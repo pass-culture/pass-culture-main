@@ -6,7 +6,8 @@ import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import StocksProviderForm, {
+import {
+  StocksProviderForm,
   StocksProviderFormProps,
 } from '../StocksProviderForm'
 
