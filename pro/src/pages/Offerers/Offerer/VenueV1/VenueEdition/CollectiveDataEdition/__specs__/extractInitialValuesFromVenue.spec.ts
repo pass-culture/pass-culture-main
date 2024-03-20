@@ -1,12 +1,13 @@
-import { StudentLevels } from 'apiClient/v1'
-import { VenueCollectiveInformation } from 'core/Venue/types'
+import { GetVenueResponseModel, StudentLevels } from 'apiClient/v1'
+import { defaultGetVenue } from 'utils/collectiveApiFactories'
 
 import { COLLECTIVE_DATA_FORM_INITIAL_VALUES } from '../CollectiveDataForm/initialValues'
 import { extractInitialValuesFromVenue } from '../CollectiveDataForm/utils/extractInitialValuesFromVenue'
 
 describe('extractInitialValuesFromVenue', () => {
   it('should extract initial values', () => {
-    const venue: VenueCollectiveInformation = {
+    const venue: GetVenueResponseModel = {
+      ...defaultGetVenue,
       collectiveDescription: 'description EAC',
       collectiveDomains: [{ id: 1, name: 'domain1' }],
       collectiveEmail: null,
