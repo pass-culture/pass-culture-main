@@ -31,8 +31,11 @@ describe('Update a venue', () => {
     cy.contains('Non accessible').click()
     cy.contains('Psychique ou cognitif').click()
     cy.contains('Auditif').click()
+    cy.intercept({ method: 'PATCH', url: '/venues/*' }).as('patchVenue')
     cy.contains('Enregistrer et quitter').click()
+    cy.wait('@patchVenue')
 
+    cy.contains('Annuler et quitter').should('not.exist')
     cy.contains('Vos informations pour le grand public').should('be.visible')
     cy.contains('On peut ajouter des choses, vraiment fantastique !!!').should(
       'be.visible'
