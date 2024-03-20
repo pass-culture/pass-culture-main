@@ -4,11 +4,11 @@ from flask_login import current_user
 from flask_login import login_required
 
 from pcapi.core.bookings.models import BookingExportType
-from pcapi.core.bookings.models import BookingStatusFilter
 import pcapi.core.bookings.repository as booking_repository
 from pcapi.core.offers.models import Offer
 from pcapi.models import api_errors
-from pcapi.routes.serialization.bookings_recap_serialize import ExportBookingsQueryModel
+from pcapi.routes.serialization.bookings_recap_serialize import BookingsExportQueryModel
+from pcapi.routes.serialization.bookings_recap_serialize import BookingsExportStatusFilter
 from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsQueryModel
 from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsResponseModel
 from pcapi.routes.serialization.bookings_recap_serialize import UserHasBookingResponse
@@ -78,14 +78,14 @@ def get_user_has_bookings() -> UserHasBookingResponse:
     },
     api=blueprint.pro_private_schema,
 )
-def export_bookings_for_offer_as_csv(offer_id: int, query: ExportBookingsQueryModel) -> bytes | api_errors.ApiErrors:
+def export_bookings_for_offer_as_csv(offer_id: int, query: BookingsExportQueryModel) -> bytes | api_errors.ApiErrors:
     user = current_user._get_current_object()
     offer = Offer.query.get(int(offer_id))
 
     if not user.has_access(offer.venue.managingOffererId):
         return api_errors.ForbiddenError({"global": "You are not allowed to access this offer"})
 
-    if query.status == BookingStatusFilter.VALIDATED:
+    if query.status == BookingsExportStatusFilter.VALIDATED:
         return cast(
             str, booking_repository.export_validated_bookings_by_offer_id(offer_id, export_type=BookingExportType.CSV)
         ).encode("utf-8-sig")
@@ -104,14 +104,14 @@ def export_bookings_for_offer_as_csv(offer_id: int, query: ExportBookingsQueryMo
     },
     api=blueprint.pro_private_schema,
 )
-def export_bookings_for_offer_as_excel(offer_id: int, query: ExportBookingsQueryModel) -> bytes | api_errors.ApiErrors:
+def export_bookings_for_offer_as_excel(offer_id: int, query: BookingsExportQueryModel) -> bytes | api_errors.ApiErrors:
     user = current_user._get_current_object()
     offer = Offer.query.get(int(offer_id))
 
     if not user.has_access(offer.venue.managingOffererId):
         return api_errors.ForbiddenError({"global": "You are not allowed to access this offer"})
 
-    if query.status == BookingStatusFilter.VALIDATED:
+    if query.status == BookingsExportStatusFilter.VALIDATED:
         return cast(
             bytes,
             booking_repository.export_validated_bookings_by_offer_id(offer_id, export_type=BookingExportType.EXCEL),
