@@ -1,9 +1,14 @@
 import { api } from 'apiClient/api'
+import {
+  getHumanReadableApiError,
+  isErrorAPIError,
+  serializeApiErrors,
+} from 'apiClient/helpers'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { updateIndividualOffer } from 'core/Offers/adapters'
 import { serializePatchOffer } from 'core/Offers/adapters/updateIndividualOffer/serializers'
 
-import upsertStocksThingAdapter from './adapters/upsertStocksThingAdapter'
+import { serializeStockThingList } from './adapters/serializers'
 import { StockThingFormValues, StockThingFormik } from './types'
 import buildInitialValues from './utils/buildInitialValues'
 
@@ -26,18 +31,16 @@ export const submitToApi = async (
     throw new Error(offerMessage)
   }
 
-  const {
-    isOk: isUpsertStocksOk,
-    payload,
-    message: upsertStocksMessage,
-  } = await upsertStocksThingAdapter({
-    offerId: offer.id,
-    values,
-    departementCode: offer.venue.departementCode,
-  })
-  if (!isUpsertStocksOk) {
-    setErrors(payload.errors)
-    throw new Error(upsertStocksMessage)
+  try {
+    await api.upsertStocks({
+      offerId: offer.id,
+      stocks: serializeStockThingList(values, offer.venue.departementCode),
+    })
+  } catch (error) {
+    if (isErrorAPIError(error)) {
+      setErrors(serializeApiErrors(error.body))
+    }
+    throw new Error(getHumanReadableApiError(error))
   }
 
   const [offerResponse, stockResponse] = await Promise.all([
