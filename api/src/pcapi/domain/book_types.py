@@ -73,19 +73,22 @@ book_types = [
             GTL(code="02000000", label="Jeunesse", level=1),
             GTL(code="01060000", label="Biographie / Témoignage littéraire", level=2),
             GTL(code="01040000", label="Contes / Légendes", level=2),
+            GTL(code="92000000", label="Romance", level=1),
+            GTL(code="91000000", label="Fantasy & Science-fiction", level=1),
+            GTL(code="90000000", label="Policier & Thriller", level=1),
         ],
         children=[
-            BookSubType(position=1, label="Romances", gtls=[GTL(code="01020600", label="Roman sentimental", level=3)]),
-            BookSubType(position=2, label="Thriller", gtls=[GTL(code="01020500", label="Thriller", level=3)]),
-            BookSubType(position=3, label="Fantasy", gtls=[GTL(code="01020900", label="Fantasy", level=3)]),
-            BookSubType(position=4, label="Policier", gtls=[GTL(code="01020400", label="Policier", level=3)]),
+            BookSubType(position=1, label="Romances", gtls=[GTL(code="92000000", label="Romance", level=1)]),
+            BookSubType(position=2, label="Thriller", gtls=[GTL(code="90020000", label="Thriller", level=2)]),
+            BookSubType(position=3, label="Fantasy", gtls=[GTL(code="91030000", label="Fantasy", level=2)]),
+            BookSubType(position=4, label="Policier", gtls=[GTL(code="90010000", label="Policier", level=2)]),
             BookSubType(
                 position=5, label="Œuvres classiques", gtls=[GTL(code="01030000", label="Œuvres classiques", level=2)]
             ),
             BookSubType(
-                position=6, label="Science-fiction", gtls=[GTL(code="01020700", label="Science-fiction", level=3)]
+                position=6, label="Science-fiction", gtls=[GTL(code="91010000", label="Science-fiction", level=2)]
             ),
-            BookSubType(position=7, label="Horreur", gtls=[GTL(code="01020802", label="Horreur / Terreur", level=4)]),
+            BookSubType(position=7, label="Horreur", gtls=[GTL(code="91020200", label="Horreur / Terreur", level=3)]),
             BookSubType(
                 position=8,
                 label="Aventure",
