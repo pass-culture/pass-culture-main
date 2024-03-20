@@ -21,6 +21,7 @@ export const serializeEditVenueBodyModel = (
     isEmailAppliedOnAllOffers: true,
     isAccessibilityAppliedOnAllOffers:
       formValues.isAccessibilityAppliedOnAllOffers,
+    venueOpeningHours: serializeOpeningHours(formValues),
   }
 
   if (hideSiret) {
@@ -30,4 +31,37 @@ export const serializeEditVenueBodyModel = (
   }
 
   return payload
+}
+
+function serializeOpeningHours(
+  formValues: VenueEditionFormValues
+): EditVenueBodyModel['venueOpeningHours'] {
+  const returnValue = []
+  for (const day of formValues.days) {
+    // @ts-expect-error FIXME: fix this
+    const dayValues = formValues[day]
+    const timespan = []
+    const morning = []
+    const afternoon = []
+    if (dayValues.morningStartingHour && dayValues.morningEndingHour) {
+      morning.push(dayValues.morningStartingHour, dayValues.morningEndingHour)
+      timespan.push(morning)
+    }
+    if (dayValues.afternoonStartingHour && dayValues.afternoonEndingHour) {
+      afternoon.push(
+        dayValues.afternoonStartingHour,
+        dayValues.afternoonEndingHour
+      )
+      timespan.push(afternoon)
+    }
+
+    if (morning.length > 0) {
+      returnValue.push({
+        weekday: day,
+        timespan,
+      })
+    }
+  }
+
+  return returnValue
 }

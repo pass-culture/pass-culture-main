@@ -59,7 +59,7 @@ export function OpeningHoursForm() {
                       {mapDayToFrench(day)}
                     </legend>
                   </div>
-                  <HourLine />
+                  <HourLine day={day} />
                 </fieldset>
               </li>
             ))}
@@ -69,18 +69,22 @@ export function OpeningHoursForm() {
   )
 }
 
-function HourLine() {
+function HourLine({ day }: { day: string }) {
+  const { setFieldValue } = useFormikContext<VenueEditionFormValues>()
   const [isFullLineDisplayed, setIsFullLineDisplayed] = useState(false)
 
-  function toggleFullLine() {
-    setIsFullLineDisplayed(!isFullLineDisplayed)
+  async function removeAfternoon() {
+    setIsFullLineDisplayed(false)
+
+    await setFieldValue(`${day}.afternoonStartingHour`, '')
+    await setFieldValue(`${day}.afternoonEndingHour`, '')
   }
 
   return (
     <span className={styles['hour-line']}>
       <TimePicker
         label={'Horaire d’ouverture 1'}
-        name={`1`}
+        name={`${day}.morningStartingHour`}
         isLabelHidden
         hideFooter
         inline
@@ -89,7 +93,7 @@ function HourLine() {
       -
       <TimePicker
         label={'Horaire de fermeture 1'}
-        name={`2`}
+        name={`${day}.morningEndingHour`}
         isLabelHidden
         hideFooter
         inline
@@ -100,7 +104,7 @@ function HourLine() {
           |
           <TimePicker
             label={'Horaire d’ouverture 2'}
-            name={`3`}
+            name={`${day}.afternoonStartingHour`}
             isLabelHidden
             hideFooter
             inline
@@ -109,7 +113,7 @@ function HourLine() {
           -
           <TimePicker
             label={'Horaire de fermeture 2'}
-            name={`4`}
+            name={`${day}.afternoonEndingHour`}
             isLabelHidden
             hideFooter
             inline
@@ -121,7 +125,7 @@ function HourLine() {
         <Button
           variant={ButtonVariant.TERNARY}
           icon={fullLessIcon}
-          onClick={toggleFullLine}
+          onClick={removeAfternoon}
           hasTooltip
         >
           Supprimer la plage horaire
@@ -130,7 +134,7 @@ function HourLine() {
         <Button
           variant={ButtonVariant.TERNARY}
           icon={fullMoreIcon}
-          onClick={toggleFullLine}
+          onClick={() => setIsFullLineDisplayed(true)}
           hasTooltip
         >
           Ajouter une plage horaire
