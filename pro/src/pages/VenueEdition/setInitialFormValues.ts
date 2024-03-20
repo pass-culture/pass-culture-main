@@ -1,5 +1,6 @@
 import { GetVenueResponseModel, VenueListItemResponseModel } from 'apiClient/v1'
 import { AccessiblityEnum } from 'core/shared'
+import { DEFAULT_INTITIAL_OPENING_HOURS } from 'pages/VenueCreation/constants'
 
 import { VenueEditionFormValues } from './types'
 
@@ -40,13 +41,13 @@ function buildOpeningHoursValues(
   if (!venueOpeningHours || venueOpeningHours.length === 0) {
     return {
       days: [],
-      monday: INITIAL_TIME,
-      tuesday: INITIAL_TIME,
-      wednesday: INITIAL_TIME,
-      thursday: INITIAL_TIME,
-      friday: INITIAL_TIME,
-      saturday: INITIAL_TIME,
-      sunday: INITIAL_TIME,
+      monday: DEFAULT_INTITIAL_OPENING_HOURS,
+      tuesday: DEFAULT_INTITIAL_OPENING_HOURS,
+      wednesday: DEFAULT_INTITIAL_OPENING_HOURS,
+      thursday: DEFAULT_INTITIAL_OPENING_HOURS,
+      friday: DEFAULT_INTITIAL_OPENING_HOURS,
+      saturday: DEFAULT_INTITIAL_OPENING_HOURS,
+      sunday: DEFAULT_INTITIAL_OPENING_HOURS,
     }
   }
   const days = venueOpeningHours
@@ -73,13 +74,6 @@ function buildOpeningHoursValues(
   }
 }
 
-const INITIAL_TIME = {
-  morningStartingHour: '',
-  morningEndingHour: '',
-  afternoonStartingHour: '',
-  afternoonEndingHour: '',
-}
-
 function buildHourOfDay(dayOpeningHour: Record<string, any> | undefined) {
   return dayOpeningHour
     ? {
@@ -92,5 +86,5 @@ function buildHourOfDay(dayOpeningHour: Record<string, any> | undefined) {
           ? Object.values(dayOpeningHour)[1].close
           : '',
       }
-    : INITIAL_TIME
+    : DEFAULT_INTITIAL_OPENING_HOURS
 }
