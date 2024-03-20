@@ -4,10 +4,8 @@ import { CalloutVariant } from 'components/Callout/types'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import fullLinkIcon from 'icons/full-link.svg'
-import strokeValidIcon from 'icons/stroke-valid.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import Timeline, { TimelineStepType } from 'ui-kit/Timeline/Timeline'
 import { getDateToFrenchText } from 'utils/date'
 
@@ -304,17 +302,7 @@ export const CollectiveDmsTimeline = ({
     hasAdageId &&
     collectiveDmsApplication.state !== DMSApplicationstatus.ACCEPTE
   ) {
-    return (
-      <div className={styles['timeline-added-in-adage']}>
-        <SvgIcon
-          className={styles['timeline-added-in-adage-icon']}
-          src={strokeValidIcon}
-          alt=""
-          width="20"
-        />
-        <span>Ce lieu est référencé sur ADAGE</span>
-      </div>
-    )
+    return
   }
 
   switch (collectiveDmsApplication.state) {
@@ -367,17 +355,7 @@ export const CollectiveDmsTimeline = ({
         )
       }
 
-      return (
-        <div className={styles['timeline-added-in-adage']}>
-          <SvgIcon
-            className={styles['timeline-added-in-adage-icon']}
-            src={strokeValidIcon}
-            alt=""
-            width="20"
-          />
-          <span>Ce lieu est référencé sur ADAGE</span>
-        </div>
-      )
+      return
     case DMSApplicationstatus.REFUSE:
       return refusedByDms
     case DMSApplicationstatus.SANS_SUITE:
