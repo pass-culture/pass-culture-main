@@ -158,8 +158,13 @@ def serialize_booking_recap(booking_recap: BookingRecap) -> BookingRecapResponse
     return serialized_booking_recap
 
 
-class ExportBookingsQueryModel(BaseModel):
-    status: BookingStatusFilter
+class BookingsExportStatusFilter(Enum):
+    VALIDATED = "validated"
+    ALL = "all"
+
+
+class BookingsExportQueryModel(BaseModel):
+    status: BookingsExportStatusFilter
 
     class config:
         alias_generator = to_camel
