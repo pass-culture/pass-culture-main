@@ -8,11 +8,10 @@ import {
 } from 'core/Providers'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
-import AllocineProviderParameters from '../AllocineProviderParamaters/AllocineProviderParameters'
-import CinemaProviderParameters from '../CinemaProviderParameters/CinemaProviderParameters'
-import DeleteVenueProviderButton from '../DeleteVenueProviderButton/DeleteVenueProviderButton'
-import ToggleVenueProviderStatusButton from '../ToggleVenueProviderStatusButton/ToggleVenueProviderStatusButton'
-
+import { AllocineProviderParameters } from './AllocineProviderParameters'
+import { CinemaProviderParameters } from './CinemaProviderParameters'
+import { DeleteVenueProviderButton } from './DeleteVenueProviderButton'
+import { ToggleVenueProviderStatusButton } from './ToggleVenueProviderStatusButton'
 import style from './VenueProviderItem.module.scss'
 
 interface VenueProviderItemV2Props {
@@ -23,7 +22,7 @@ interface VenueProviderItemV2Props {
   offererId: number
 }
 
-const VenueProviderItem = ({
+export const VenueProviderItem = ({
   afterDelete,
   afterSubmit,
   venueProvider,
@@ -101,5 +100,3 @@ const VenueProviderItem = ({
     </li>
   )
 }
-
-export default VenueProviderItem

@@ -11,9 +11,9 @@ import { isAllocineProvider, isCinemaProvider } from 'core/Providers'
 import { Providers } from 'core/Venue/types'
 import useNotification from 'hooks/useNotification'
 
-import AllocineProviderForm from '../AllocineProviderForm/AllocineProviderForm'
-import { CinemaProviderForm } from '../CinemaProviderForm/CinemaProviderForm'
-import StocksProviderForm from '../StocksProviderForm/StocksProviderForm'
+import { AllocineProviderForm } from './AllocineProviderForm/AllocineProviderForm'
+import { CinemaProviderForm } from './CinemaProviderForm/CinemaProviderForm'
+import { StocksProviderForm } from './StocksProviderForm/StocksProviderForm'
 
 interface VenueProviderFormProps {
   afterSubmit: (createdVenueProvider?: VenueProviderResponse) => void
@@ -21,7 +21,7 @@ interface VenueProviderFormProps {
   venue: GetVenueResponseModel
 }
 
-const VenueProviderForm = ({
+export const VenueProviderForm = ({
   afterSubmit,
   provider,
   venue,
@@ -72,5 +72,3 @@ const VenueProviderForm = ({
     />
   )
 }
-
-export default VenueProviderForm

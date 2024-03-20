@@ -3,7 +3,8 @@ import React from 'react'
 import { PostVenueProviderBody } from 'apiClient/v1'
 import DialogBox from 'components/DialogBox/DialogBox'
 
-import AllocineProviderForm, {
+import {
+  AllocineProviderForm,
   FormValuesProps,
 } from '../AllocineProviderForm/AllocineProviderForm'
 
@@ -18,7 +19,7 @@ interface AllocineProviderFormDialogProps {
   offererId: number
 }
 
-const AllocineProviderFormDialog = ({
+export const AllocineProviderFormDialog = ({
   onCancel,
   onConfirm,
   initialValues,
@@ -51,5 +52,3 @@ const AllocineProviderFormDialog = ({
     </DialogBox>
   )
 }
-
-export default AllocineProviderFormDialog

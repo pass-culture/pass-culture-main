@@ -7,15 +7,15 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { Button } from 'ui-kit/index'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import DeleteVenueProviderDialog from '../DeleteVenueProviderDialog/DeleteVenueProviderDialog'
-import style from '../VenueProviderItem/VenueProviderItem.module.scss'
+import { DeleteVenueProviderDialog } from './DeleteVenueProviderDialog'
+import style from './VenueProviderItem.module.scss'
 
 interface DeleteVenueProviderButtonProps {
   venueProviderId: number
   afterDelete: (deletedVenueProvider: number) => void
 }
 
-const DeleteVenueProviderButton = ({
+export const DeleteVenueProviderButton = ({
   venueProviderId,
   afterDelete,
 }: DeleteVenueProviderButtonProps): JSX.Element => {
@@ -64,5 +64,3 @@ const DeleteVenueProviderButton = ({
     </>
   )
 }
-
-export default DeleteVenueProviderButton

@@ -11,8 +11,8 @@ import SelectInput from 'ui-kit/form/Select/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared'
 import { sortByLabel } from 'utils/strings'
 
-import { DEFAULT_PROVIDER_OPTION } from '../utils/_constants'
-import VenueProviderForm from '../VenueProviderForm/VenueProviderForm'
+import { DEFAULT_PROVIDER_OPTION } from './utils/_constants'
+import { VenueProviderForm } from './VenueProviderForm'
 
 interface AddVenueProviderButtonProps {
   providers: Providers[]
@@ -20,7 +20,7 @@ interface AddVenueProviderButtonProps {
   venue: GetVenueResponseModel
 }
 
-const AddVenueProviderButton = ({
+export const AddVenueProviderButton = ({
   providers,
   setVenueProviders,
   venue,
@@ -94,5 +94,3 @@ const AddVenueProviderButton = ({
 
   return isCreationMode ? VenueProviderSelection : AddButton
 }
-
-export default AddVenueProviderButton
