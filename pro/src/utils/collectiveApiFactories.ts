@@ -15,7 +15,6 @@ import {
   GetCollectiveOfferManagingOffererResponseModel,
   GetCollectiveOfferRequestResponseModel,
   GetCollectiveOfferVenueResponseModel,
-  GetCollectiveVenueResponseModel,
   GetVenueResponseModel,
   OfferAddressType,
   OfferStatus,
@@ -255,24 +254,6 @@ export const collectiveBookingByIdFactory = (
     venueId: 1,
     venuePostalCode: '75000',
     ...customCollectiveBookingById,
-  }
-}
-
-export const getCollectiveVenueFactory = (
-  customGetCollectiveVenue: Partial<GetCollectiveVenueResponseModel> = {}
-): GetCollectiveVenueResponseModel => {
-  return {
-    collectiveDomains: [],
-    collectiveDescription: '',
-    collectiveEmail: '',
-    collectiveInterventionArea: [],
-    collectiveLegalStatus: null,
-    collectiveNetwork: [],
-    collectivePhone: '',
-    collectiveStudents: [],
-    collectiveWebsite: '',
-    siret: '1234567890',
-    ...customGetCollectiveVenue,
   }
 }
 

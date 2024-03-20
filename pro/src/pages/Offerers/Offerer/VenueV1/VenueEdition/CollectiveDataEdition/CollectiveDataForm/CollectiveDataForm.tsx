@@ -3,11 +3,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
-import {
-  GetCollectiveVenueResponseModel,
-  GetVenueResponseModel,
-  StudentLevels,
-} from 'apiClient/v1'
+import { GetVenueResponseModel, StudentLevels } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import FormLayout from 'components/FormLayout'
 import { handleAllFranceDepartmentOptions } from 'core/shared'
@@ -23,7 +19,6 @@ import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 
 import editVenueCollectiveDataAdapter from '../adapters/editVenueCollectiveDataAdapter'
 
-import { COLLECTIVE_DATA_FORM_INITIAL_VALUES } from './initialValues'
 import { CollectiveDataFormValues } from './type'
 import { extractInitialValuesFromVenue } from './utils/extractInitialValuesFromVenue'
 import { validationSchema } from './validationSchema'
@@ -46,8 +41,6 @@ type CollectiveDataFormProps = {
   domains: SelectOption[]
   culturalPartners: SelectOption[]
   venue: GetVenueResponseModel
-  venueCollectiveData: GetCollectiveVenueResponseModel | null
-  adageVenueCollectiveData: GetCollectiveVenueResponseModel | null
 }
 
 export const CollectiveDataForm = ({
@@ -55,8 +48,6 @@ export const CollectiveDataForm = ({
   domains,
   culturalPartners,
   venue,
-  venueCollectiveData,
-  adageVenueCollectiveData,
 }: CollectiveDataFormProps): JSX.Element | null => {
   const notify = useNotification()
   const navigate = useNavigate()
@@ -67,10 +58,7 @@ export const CollectiveDataForm = ({
     string[] | null
   >(null)
   const [isLoading, setIsLoading] = useState(false)
-  const venueData = venueCollectiveData ?? adageVenueCollectiveData
-  const initialValues = venueData
-    ? extractInitialValuesFromVenue(venueData)
-    : COLLECTIVE_DATA_FORM_INITIAL_VALUES
+  const initialValues = extractInitialValuesFromVenue(venue)
 
   const onSubmit = async (values: CollectiveDataFormValues) => {
     setIsLoading(true)
