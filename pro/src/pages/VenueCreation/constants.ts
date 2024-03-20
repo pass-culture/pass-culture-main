@@ -3,6 +3,13 @@ import { AccessiblityEnum } from 'core/shared'
 
 import { VenueCreationFormValues } from './types'
 
+export const DEFAULT_INTITIAL_OPENING_HOURS = {
+  morningStartingHour: '',
+  morningEndingHour: '',
+  afternoonStartingHour: '',
+  afternoonEndingHour: '',
+}
+
 export const DEFAULT_FORM_VALUES: VenueCreationFormValues = {
   ...DEFAULT_ADDRESS_FORM_VALUES,
   accessibility: {
