@@ -1,4 +1,5 @@
 import logging
+import re
 import time
 
 from flask import current_app as app
@@ -23,6 +24,8 @@ from . import exceptions
 
 
 logger = logging.getLogger(__name__)
+
+PHONE_VALIDATION_TEST_EMAIL_RE = re.compile(r"^.+\+e2e@.+$")
 
 
 def _check_phone_number_validation_is_authorized(user: users_models.User) -> None:
@@ -169,7 +172,12 @@ def validate_phone_number(user: users_models.User, code: str) -> None:
     _check_and_update_phone_validation_attempts(app.redis_client, user)
 
     try:
-        token = token_utils.SixDigitsToken.load_and_check(code, token_utils.TokenType.PHONE_VALIDATION, user.id)
+        if settings.DISABLE_PHONE_VALIDATION_FOR_E2E_TESTS and PHONE_VALIDATION_TEST_EMAIL_RE.match(user.email):
+            token = token_utils.SixDigitsToken.load_without_checking(
+                code, token_utils.TokenType.PHONE_VALIDATION, user.id
+            )
+        else:
+            token = token_utils.SixDigitsToken.load_and_check(code, token_utils.TokenType.PHONE_VALIDATION, user.id)
     except users_exceptions.InvalidToken:
         code_validation_attempts = sending_limit.get_code_validation_attempts(app.redis_client, user)
         if code_validation_attempts.remaining == 0:
