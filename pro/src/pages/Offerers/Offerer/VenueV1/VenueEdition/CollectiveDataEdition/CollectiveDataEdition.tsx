@@ -1,21 +1,17 @@
 import { addDays, isBefore } from 'date-fns'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Route, Routes, useParams } from 'react-router-dom'
+import useSWR from 'swr'
 
+import { api } from 'apiClient/api'
 import { GetVenueResponseModel } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
-import { getEducationalDomainsAdapter } from 'core/OfferEducational'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
-import useNotification from 'hooks/useNotification'
 import { PartnerPageCollectiveSection } from 'pages/Home/Offerers/PartnerPageCollectiveSection'
 import { CollectiveDmsTimeline } from 'pages/VenueCreation/CollectiveDmsTimeline/CollectiveDmsTimeline'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { getLastCollectiveDmsApplication } from 'utils/getLastCollectiveDmsApplication'
 
-import { getCulturalPartnersAdapter } from '../adapters'
-
-import { getVenueEducationalStatusesAdapter } from './adapters'
 import styles from './CollectiveDataEdition.module.scss'
 import { CollectiveDataEditionReadOnly } from './CollectiveDataEditionReadOnly'
 import { CollectiveDataForm } from './CollectiveDataForm/CollectiveDataForm'
@@ -24,49 +20,54 @@ export interface CollectiveDataEditionProps {
   venue?: GetVenueResponseModel
 }
 
+const GET_EDUCATIONAL_DOMAINS_QUERY_KEY = 'listEducationalDomains'
+const GET_EDUCATIONAL_STATUSES_QUERY_KEY = 'getVenuesEducationalStatuses'
+const GET_CULTURAL_PARTNERS_QUERY_KEY = 'getEducationalPartners'
+
 export const CollectiveDataEdition = ({
   venue,
 }: CollectiveDataEditionProps): JSX.Element | null => {
-  const notify = useNotification()
   const { offererId, venueId } = useParams<{
     offererId: string
     venueId: string
   }>()
 
-  const [domains, setDomains] = useState<SelectOption[]>([])
-  const [statuses, setStatuses] = useState<SelectOption[]>([])
-  const [culturalPartners, setCulturalPartners] = useState<SelectOption[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const domainsQuery = useSWR([GET_EDUCATIONAL_DOMAINS_QUERY_KEY], () =>
+    api.listEducationalDomains()
+  )
+  const educationalStatusesQuery = useSWR(
+    [GET_EDUCATIONAL_STATUSES_QUERY_KEY],
+    () => api.getVenuesEducationalStatuses()
+  )
+  const culturalPartnersQuery = useSWR([GET_CULTURAL_PARTNERS_QUERY_KEY], () =>
+    api.getEducationalPartners()
+  )
+  const domains: SelectOption[] =
+    domainsQuery.data?.map((domain) => ({
+      value: domain.id.toString(),
+      label: domain.name,
+    })) ?? []
+  const statuses: SelectOption[] =
+    educationalStatusesQuery.data?.statuses.map((status) => ({
+      value: status.id,
+      label: status.name,
+    })) ?? []
+  const culturalPartners: SelectOption[] =
+    culturalPartnersQuery.data?.partners.map((culturalPartner) => ({
+      value: culturalPartner.id.toString(),
+      label: culturalPartner.libelle,
+    })) ?? []
+
   const canCreateCollectiveOffer = venue?.managingOfferer.allowedOnAdage
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const allResponses = await Promise.all([
-        getEducationalDomainsAdapter(),
-        getVenueEducationalStatusesAdapter(),
-        getCulturalPartnersAdapter(),
-      ])
-
-      if (allResponses.some((response) => !response.isOk)) {
-        notify.error(GET_DATA_ERROR_MESSAGE)
-      }
-
-      const [domainsResponse, statusesResponse, culturalPartnersResponse] =
-        allResponses
-
-      setDomains(domainsResponse.payload)
-      setStatuses(statusesResponse.payload)
-      setCulturalPartners(culturalPartnersResponse.payload)
-
-      setIsLoading(false)
-    }
-    if (venueId && offererId) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      fetchData()
-    }
-  }, [])
-
-  if (!venueId || !offererId || !venue || isLoading) {
+  if (
+    !venueId ||
+    !offererId ||
+    !venue ||
+    domainsQuery.isLoading ||
+    educationalStatusesQuery.isLoading ||
+    culturalPartnersQuery.isLoading
+  ) {
     return <Spinner className={styles.spinner} />
   }
 
