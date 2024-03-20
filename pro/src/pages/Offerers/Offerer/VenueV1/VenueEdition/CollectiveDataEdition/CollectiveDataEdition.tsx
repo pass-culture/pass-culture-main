@@ -2,11 +2,7 @@ import { addDays, isBefore } from 'date-fns'
 import React, { useEffect, useState } from 'react'
 import { Route, Routes, useParams } from 'react-router-dom'
 
-import { api } from 'apiClient/api'
-import {
-  GetCollectiveVenueResponseModel,
-  GetVenueResponseModel,
-} from 'apiClient/v1'
+import { GetVenueResponseModel } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
 import { getEducationalDomainsAdapter } from 'core/OfferEducational'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
@@ -16,49 +12,13 @@ import { PartnerPageCollectiveSection } from 'pages/Home/Offerers/PartnerPageCol
 import { CollectiveDmsTimeline } from 'pages/VenueCreation/CollectiveDmsTimeline/CollectiveDmsTimeline'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { getLastCollectiveDmsApplication } from 'utils/getLastCollectiveDmsApplication'
-import { sendSentryCustomError } from 'utils/sendSentryCustomError'
-import { venueHasCollectiveInformation } from 'utils/venueHasCollectiveInformation'
 
 import { getCulturalPartnersAdapter } from '../adapters'
 
 import { getVenueEducationalStatusesAdapter } from './adapters'
-import getVenueCollectiveDataAdapter from './adapters/getVenueCollectiveDataAdapter'
 import styles from './CollectiveDataEdition.module.scss'
 import { CollectiveDataEditionReadOnly } from './CollectiveDataEditionReadOnly'
 import { CollectiveDataForm } from './CollectiveDataForm/CollectiveDataForm'
-
-const fetchCulturalPartnerIfVenueHasNoCollectiveData = async (
-  venueResponse: GetCollectiveVenueResponseModel
-): Promise<GetCollectiveVenueResponseModel | null> => {
-  if (!venueResponse.siret) {
-    return null
-  }
-
-  try {
-    const culturalPartnerResponse = await api.getEducationalPartner(
-      venueResponse.siret
-    )
-
-    return {
-      ...venueResponse,
-      collectiveLegalStatus: culturalPartnerResponse.statutId
-        ? {
-            id: culturalPartnerResponse.statutId,
-            name: '',
-          }
-        : null,
-      collectiveWebsite: culturalPartnerResponse.siteWeb,
-      collectiveDomains: culturalPartnerResponse.domaineIds.map((id) => ({
-        id,
-        name: '',
-      })),
-    }
-  } catch (e) {
-    sendSentryCustomError(e)
-
-    return null
-  }
-}
 
 export interface CollectiveDataEditionProps {
   venue?: GetVenueResponseModel
@@ -77,10 +37,6 @@ export const CollectiveDataEdition = ({
   const [statuses, setStatuses] = useState<SelectOption[]>([])
   const [culturalPartners, setCulturalPartners] = useState<SelectOption[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [venueCollectiveData, setVenueCollectiveData] =
-    useState<GetCollectiveVenueResponseModel | null>(null)
-  const [adageVenueCollectiveData, setAdageVenueCollectiveData] =
-    useState<GetCollectiveVenueResponseModel | null>(null)
   const canCreateCollectiveOffer = venue?.managingOfferer.allowedOnAdage
 
   useEffect(() => {
@@ -89,34 +45,18 @@ export const CollectiveDataEdition = ({
         getEducationalDomainsAdapter(),
         getVenueEducationalStatusesAdapter(),
         getCulturalPartnersAdapter(),
-        getVenueCollectiveDataAdapter(Number(venueId) ?? ''),
       ])
 
       if (allResponses.some((response) => !response.isOk)) {
         notify.error(GET_DATA_ERROR_MESSAGE)
       }
 
-      const [
-        domainsResponse,
-        statusesResponse,
-        culturalPartnersResponse,
-        venueResponse,
-      ] = allResponses
+      const [domainsResponse, statusesResponse, culturalPartnersResponse] =
+        allResponses
 
       setDomains(domainsResponse.payload)
       setStatuses(statusesResponse.payload)
       setCulturalPartners(culturalPartnersResponse.payload)
-      if (venueResponse.isOk) {
-        if (venueHasCollectiveInformation(venueResponse.payload)) {
-          setVenueCollectiveData(venueResponse.payload)
-        } else {
-          const collectiveData =
-            await fetchCulturalPartnerIfVenueHasNoCollectiveData(
-              venueResponse.payload
-            )
-          setAdageVenueCollectiveData(collectiveData)
-        }
-      }
 
       setIsLoading(false)
     }
@@ -191,8 +131,6 @@ export const CollectiveDataEdition = ({
                   domains={domains}
                   culturalPartners={culturalPartners}
                   venue={venue}
-                  venueCollectiveData={venueCollectiveData}
-                  adageVenueCollectiveData={adageVenueCollectiveData}
                 />
               }
             />
