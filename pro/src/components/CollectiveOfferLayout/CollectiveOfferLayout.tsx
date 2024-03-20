@@ -50,7 +50,9 @@ const CollectiveOfferLayout = ({
 
   const navigationProps = {
     activeStep: getActiveStep(location.pathname),
-    offerId: Number(offerIdFromParams),
+    offerId: offerIdFromParams?.includes('T-')
+      ? Number(offerIdFromParams.split('T-')[1])
+      : Number(offerIdFromParams),
     isCreatingOffer: isCreation,
   }
   return (
@@ -82,7 +84,6 @@ const CollectiveOfferLayout = ({
               [styles['stepper-navigation']]: navigationProps.isCreatingOffer,
             })}
             isCreatingOffer={navigationProps.isCreatingOffer}
-            isOfferEducational
             offerId={navigationProps.offerId}
             isTemplate={isTemplate}
             haveStock={haveStock}

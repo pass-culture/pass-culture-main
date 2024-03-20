@@ -1,6 +1,26 @@
 import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
+import { ApiRequestOptions } from 'apiClient/adage/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/adage/core/ApiResult'
+import { api } from 'apiClient/api'
+import {
+  ApiError,
+  CollectiveOfferResponseIdModel,
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
+} from 'apiClient/v1'
+import {
+  Events,
+  OFFER_FROM_TEMPLATE_ENTRIES,
+} from 'core/FirebaseEvents/constants'
+import * as useAnalytics from 'hooks/useAnalytics'
+import * as useNotification from 'hooks/useNotification'
+import {
+  defaultGetVenue,
+  getCollectiveOfferTemplateFactory,
+} from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveOfferNavigation, {
@@ -13,15 +33,49 @@ const renderCollectiveOfferNavigation = (
 ) => renderWithProviders(<CollectiveOfferNavigation {...props} />)
 
 describe('CollectiveOfferNavigation', () => {
+  let offer:
+    | GetCollectiveOfferTemplateResponseModel
+    | GetCollectiveOfferResponseModel
   let props: CollectiveOfferNavigationProps
   const offerId = 1
+  const mockLogEvent = vi.fn()
+  const notifyError = vi.fn()
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    offer = getCollectiveOfferTemplateFactory({ isTemplate: true })
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+
+    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(offer)
+
+    vi.spyOn(api, 'getVenue').mockResolvedValue(defaultGetVenue)
+
+    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(offer)
+
+    vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
+      educationalOfferers: [],
+    })
+
+    vi.spyOn(api, 'listEducationalDomains').mockResolvedValue([])
+    vi.spyOn(api, 'getNationalPrograms').mockResolvedValue([])
+
+    vi.spyOn(api, 'createCollectiveOffer').mockResolvedValue(
+      {} as CollectiveOfferResponseIdModel
+    )
+
+    const notifsImport = (await vi.importActual(
+      'hooks/useNotification'
+    )) as ReturnType<typeof useNotification.default>
+    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
+      ...notifsImport,
+      error: notifyError,
+    }))
+
     props = {
       activeStep: CollectiveOfferStep.DETAILS,
       isCreatingOffer: true,
       offerId: offerId,
-      isOfferEducational: true,
       isTemplate: false,
     }
   })
@@ -133,14 +187,20 @@ describe('CollectiveOfferNavigation', () => {
 
     const linkItems = await screen.findAllByRole('link')
 
-    expect(linkItems).toHaveLength(3)
+    expect(linkItems).toHaveLength(5)
     expect(linkItems[0].getAttribute('href')).toBe(
       `/offre/${offerId}/collectif/edition`
     )
     expect(linkItems[1].getAttribute('href')).toBe(
-      `/offre/${offerId}/collectif/stocks/edition`
+      `/offre/${offerId}/collectif/preview`
     )
     expect(linkItems[2].getAttribute('href')).toBe(
+      `/offre/${offerId}/collectif/edition`
+    )
+    expect(linkItems[3].getAttribute('href')).toBe(
+      `/offre/${offerId}/collectif/stocks/edition`
+    )
+    expect(linkItems[4].getAttribute('href')).toBe(
       `/offre/${offerId}/collectif/visibilite/edition`
     )
   })
@@ -161,5 +221,125 @@ describe('CollectiveOfferNavigation', () => {
     expect(links[2].getAttribute('href')).toBe(
       `/offre/${offerId}/collectif/creation/recapitulatif`
     )
+  })
+
+  it('should log event when clicking duplicate offer button', async () => {
+    renderCollectiveOfferNavigation({
+      ...props,
+      isTemplate: true,
+      isCreatingOffer: false,
+    })
+
+    const duplicateOffer = screen.getByRole('button', {
+      name: 'Créer une offre réservable',
+    })
+    await userEvent.click(duplicateOffer)
+
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_DUPLICATE_TEMPLATE_OFFER,
+      {
+        from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
+      }
+    )
+  })
+
+  it('should show create bookable offer if offer is template in edition', () => {
+    renderCollectiveOfferNavigation({
+      ...props,
+      isTemplate: true,
+      isCreatingOffer: false,
+    })
+
+    const duplicateOffer = screen.getByRole('button', {
+      name: 'Créer une offre réservable',
+    })
+
+    expect(duplicateOffer).toBeInTheDocument()
+  })
+
+  it('should return an error when the collective offer could not be retrieved', async () => {
+    vi.spyOn(api, 'getCollectiveOfferTemplate').mockRejectedValueOnce('')
+
+    renderCollectiveOfferNavigation({
+      ...props,
+      isTemplate: true,
+      isCreatingOffer: false,
+    })
+
+    const duplicateOffer = screen.getByRole('button', {
+      name: 'Créer une offre réservable',
+    })
+    await userEvent.click(duplicateOffer)
+
+    expect(notifyError).toHaveBeenCalledWith(
+      'Une erreur est survenue lors de la récupération de votre offre'
+    )
+  })
+
+  it('should return an error when the duplication failed', async () => {
+    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce(
+      getCollectiveOfferTemplateFactory({ isTemplate: true, isActive: true })
+    )
+    vi.spyOn(api, 'createCollectiveOffer').mockRejectedValueOnce(
+      new ApiError({} as ApiRequestOptions, { status: 400 } as ApiResult, '')
+    )
+
+    renderCollectiveOfferNavigation({
+      ...props,
+      isTemplate: true,
+      isCreatingOffer: false,
+    })
+
+    const duplicateOffer = screen.getByRole('button', {
+      name: 'Créer une offre réservable',
+    })
+
+    await userEvent.click(duplicateOffer)
+
+    expect(notifyError).toHaveBeenCalledWith(
+      'Une ou plusieurs erreurs sont présentes dans le formulaire'
+    )
+  })
+
+  it('should return an error when trying to get offerer image', async () => {
+    fetchMock.mockResponse('Service Unavailable', { status: 503 })
+
+    renderCollectiveOfferNavigation({
+      ...props,
+      isTemplate: true,
+      isCreatingOffer: false,
+    })
+
+    const duplicateOffer = screen.getByRole('button', {
+      name: 'Créer une offre réservable',
+    })
+
+    await userEvent.click(duplicateOffer)
+
+    expect(notifyError).toHaveBeenCalledWith('Impossible de dupliquer l’image')
+  })
+
+  it('should return an error when trying to get offerer image blob', async () => {
+    const mockResponse = new Response()
+    vi.spyOn(mockResponse, 'blob').mockResolvedValue(
+      Promise.resolve(undefined) as unknown as Blob
+    )
+
+    vi.spyOn(global, 'fetch').mockResolvedValue(mockResponse)
+
+    renderCollectiveOfferNavigation({
+      ...props,
+      isTemplate: true,
+      isCreatingOffer: false,
+    })
+
+    const duplicateOffer = screen.getByRole('button', {
+      name: 'Créer une offre réservable',
+    })
+
+    await userEvent.click(duplicateOffer)
+
+    expect(notifyError).toHaveBeenCalledWith('Impossible de dupliquer l’image')
   })
 })
