@@ -33,7 +33,7 @@ export function OpeningHoursForm() {
         <legend className={styles['legend-days']}>
           Sélectionner vos jours d’ouverture :
         </legend>
-        {daysOfWeek.map((engDay) => {
+        {daysOfWeek?.map((engDay) => {
           const frDay = mapDayToFrench(engDay)
           return (
             <DayCheckbox
@@ -43,6 +43,7 @@ export function OpeningHoursForm() {
               value={engDay.toLowerCase()}
               className={styles['day-checkbox']}
               key={engDay}
+              checked={days.includes(engDay)}
             />
           )
         })}
@@ -59,7 +60,19 @@ export function OpeningHoursForm() {
                       {mapDayToFrench(day)}
                     </legend>
                   </div>
-                  <HourLine day={day} />
+                  <HourLine
+                    day={
+                      // FIX ME: is there a way to avoid this "as" ?
+                      day as
+                        | 'monday'
+                        | 'tuesday'
+                        | 'wednesday'
+                        | 'thursday'
+                        | 'friday'
+                        | 'saturday'
+                        | 'sunday'
+                    }
+                  />
                 </fieldset>
               </li>
             ))}
@@ -69,9 +82,23 @@ export function OpeningHoursForm() {
   )
 }
 
-function HourLine({ day }: { day: string }) {
-  const { setFieldValue } = useFormikContext<VenueEditionFormValues>()
-  const [isFullLineDisplayed, setIsFullLineDisplayed] = useState(false)
+function HourLine({
+  day,
+}: {
+  day:
+    | 'monday'
+    | 'tuesday'
+    | 'wednesday'
+    | 'thursday'
+    | 'friday'
+    | 'saturday'
+    | 'sunday'
+}) {
+  const { setFieldValue, initialValues } =
+    useFormikContext<VenueEditionFormValues>()
+  const [isFullLineDisplayed, setIsFullLineDisplayed] = useState(
+    Boolean(initialValues[day].afternoonStartingHour)
+  )
 
   async function removeAfternoon() {
     setIsFullLineDisplayed(false)
