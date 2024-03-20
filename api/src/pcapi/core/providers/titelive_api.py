@@ -198,8 +198,6 @@ def update_product_thumbnails(
 
         try:
             image_bytes = titelive.download_titelive_image(new_thumbnail_url)
-            if product.thumbCount > 0:
-                thumb_storage.remove_thumb(product, storage_id_suffix="")
             thumb_storage.create_thumb(product, image_bytes, storage_id_suffix_str="", keep_ratio=True)
         except requests.ExternalAPIException as e:
             logger.error(
