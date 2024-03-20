@@ -6,8 +6,7 @@ import useNotification from 'hooks/useNotification'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Button } from 'ui-kit/index'
 
-import { CinemaProviderFormDialog } from '../CinemaProviderFormDialog/CinemaProviderFormDialog'
-
+import { CinemaProviderFormDialog } from './CinemaProviderFormDialog'
 import style from './CinemaProviderParameters.module.scss'
 import { CinemaProviderParametersValues } from './types'
 
@@ -17,7 +16,7 @@ interface CinemaProviderParametersProps {
   offererId: number
 }
 
-const CinemaProviderParameters = ({
+export const CinemaProviderParameters = ({
   venueProvider,
   afterVenueProviderEdit,
   offererId,
@@ -96,5 +95,3 @@ const CinemaProviderParameters = ({
     </div>
   )
 }
-
-export default CinemaProviderParameters
