@@ -814,3 +814,38 @@ def get_offer_coordinates(offer: AnyCollectiveOffer) -> tuple[float | Decimal, f
         return (None, None)
 
     return latitude, longitude
+
+
+def change_collective_offer_venue(offer: educational_models.CollectiveOffer, new_venue: offerers_models.Venue) -> None:
+    if not offer.collectiveStock:
+        raise exceptions.CollectiveStockNotFound()
+    for booking in offer.collectiveStock.collectiveBookings:
+        if booking.status == educational_models.CollectiveBookingStatus.REIMBURSED:
+            raise exceptions.BookingIsAlreadyRefunded()
+        if booking.status == educational_models.CollectiveBookingStatus.USED:
+            raise exceptions.CollectiveBookingIsAlreadyUsed()
+
+    if not offerers_api.can_offerer_create_educational_offer(new_venue.managingOffererId):
+        raise exceptions.OffererNonEligibleForEAC()
+
+    if offer.collectiveOfferTemplate:
+        new_template = offer.collectiveOfferTemplate.duplicate()
+        _update_offer_venue(new_template, new_venue.id)
+        db.session.add(new_template)
+        offer.collectiveOfferTemplate = new_template
+    _update_offer_venue(offer, new_venue.id)
+    notify_educational_redactor_on_collective_offer_or_stock_edit(
+        collective_offer_id=offer.id,
+        updated_fields=["offererName", "venueName"],
+    )
+
+
+def _update_offer_venue(offer: AnyCollectiveOffer, new_venue_id: int) -> None:
+    old_venue_id = offer.venueId
+    offer.venueId = new_venue_id
+    if offer.offerVenue.get("addressType") == "offererVenue":
+        if offer.offerVenue.get("venueId") == old_venue_id:
+            offer.offerVenue["venueId"] = new_venue_id
+        else:
+            # TODO que faire quand c'est un autre lieu ?
+            ...

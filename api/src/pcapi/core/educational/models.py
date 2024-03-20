@@ -1,3 +1,4 @@
+from copy import copy
 from datetime import date
 from datetime import datetime
 import decimal
@@ -895,6 +896,28 @@ class CollectiveOfferTemplate(
             offerId=collective_offer.offerId,
             priceDetail=price_detail,
         )
+
+    def duplicate(self, *, ignore_attributes: set | None = None) -> "CollectiveOfferTemplate":
+        ignore_attributes = ignore_attributes or set()
+        ignore_attributes |= {"id"}
+        join_attributes = [
+            "domains",
+            "educationalRedactorsFavorite",
+            "flaggingValidationRules",
+            "provider",
+        ]
+        mapping = {}
+        for attribute_name, attribute_value in vars(self).items():
+            if attribute_name in ignore_attributes:
+                continue
+            if attribute_name.startswith("_"):
+                continue
+            mapping[attribute_name] = copy(attribute_value)
+
+        for attribute_name in join_attributes:
+            if attribute_name not in ignore_attributes:
+                mapping[attribute_name] = copy(getattr(self, attribute_name))
+        return type(self)(**mapping)
 
     @hybrid_property
     def is_expired(self) -> bool:

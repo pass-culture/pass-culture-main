@@ -5,6 +5,7 @@ from unittest import mock
 import pytest
 from sqlalchemy import exc as sa_exc
 
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import factories
 from pcapi.core.educational.models import CollectiveBookingStatus
@@ -12,7 +13,10 @@ from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import HasImageMixin
-import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offers import factories as offers_factories
+from pcapi.core.providers import factories as providers_factory
+from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.validation_status_mixin import ValidationStatus
@@ -525,6 +529,102 @@ class CollectiveOfferTemplateIsEligibleForSearchTest:
         unsearchable_offer = factories.CollectiveOfferTemplateFactory(venue=virtual_venue)
         assert searchable_offer.is_eligible_for_search
         assert not unsearchable_offer.is_eligible_for_search
+
+
+class CollectiveOffeTemplateIsDuplicateTest:
+    def test_duplicate_collectiveOffer_template(self):
+        template = factories.CollectiveOfferTemplateFactory(
+            offerId=offers_factories.OfferFactory().id,
+            author=users_factories.ProFactory(),
+            durationMinutes=120,
+            priceDetail="A price details description",
+            bookingEmails=["email1@example.com", "example2@example.com"],
+            collectiveOffers=[factories.CollectiveOfferFactory(), factories.CollectiveOfferFactory()],
+            provider=providers_factory.ProviderFactory(),
+            collectiveOfferRequest=[factories.CollectiveOfferRequestFactory()],
+            flaggingValidationRules=[offers_factories.OfferValidationRuleFactory()],
+            nationalProgram=factories.NationalProgramFactory(),
+            formats=[subcategories.EacFormat.CONCERT],
+        )
+        factories.EducationalRedactorWithFavoriteCollectiveOfferTemplate(favoriteCollectiveOfferTemplates=[template])
+        factories.PlaylistFactory(collective_offer_template=template)
+
+        db.session.refresh(template)
+
+        duplicated_template = template.duplicate()
+        db.session.flush()
+
+        assert template.id != duplicated_template.id
+        assert template.offerId == duplicated_template.offerId
+        assert template.isActive == duplicated_template.isActive
+        assert template.authorId == duplicated_template.authorId
+        assert template.name == duplicated_template.name
+        assert template.description == duplicated_template.description
+        assert template.durationMinutes == duplicated_template.durationMinutes
+        assert template.dateCreated == duplicated_template.dateCreated
+        assert not template.dateCreated is duplicated_template.dateCreated
+        assert template.subcategoryId == duplicated_template.subcategoryId
+        assert template.dateUpdated == duplicated_template.dateUpdated
+        assert not template.dateUpdated is duplicated_template.dateUpdated
+        assert template.students == duplicated_template.students
+        assert not template.students is duplicated_template.students
+        assert template.priceDetail == duplicated_template.priceDetail
+        assert template.bookingEmails == duplicated_template.bookingEmails
+        assert not template.bookingEmails is duplicated_template.bookingEmails
+        assert template.contactEmail == duplicated_template.contactEmail
+        assert template.contactPhone == duplicated_template.contactPhone
+        assert template.offerVenue == duplicated_template.offerVenue
+        assert not template.offerVenue is duplicated_template.offerVenue
+        assert template.interventionArea == duplicated_template.interventionArea
+        assert not template.interventionArea is duplicated_template.interventionArea
+        assert template.domains == duplicated_template.domains
+        assert not template.domains is duplicated_template.domains
+        assert duplicated_template.collectiveOffers == []
+        assert template.providerId == duplicated_template.providerId
+        assert duplicated_template.collectiveOfferRequest == []
+        assert template.flaggingValidationRules == duplicated_template.flaggingValidationRules
+        assert not template.flaggingValidationRules is duplicated_template.flaggingValidationRules
+        assert template.nationalProgramId == duplicated_template.nationalProgramId
+        assert template.educationalRedactorsFavorite == duplicated_template.educationalRedactorsFavorite
+        assert not template.educationalRedactorsFavorite is duplicated_template.educationalRedactorsFavorite
+        assert template.dateRange == duplicated_template.dateRange
+        assert not template.dateRange is duplicated_template.dateRange
+        assert template.formats == duplicated_template.formats
+        assert not template.formats is duplicated_template.formats
+        assert duplicated_template.collective_playlists == []
+
+    def test_duplicate_collectiveOffer_template_ignore_field(self):
+        template = factories.CollectiveOfferTemplateFactory(
+            priceDetail="A price details description",
+            flaggingValidationRules=[offers_factories.OfferValidationRuleFactory()],
+        )
+        db.session.refresh(template)
+
+        duplicated_template = template.duplicate(ignore_attributes={"priceDetail"})
+        db.session.flush()
+
+        assert template.id != duplicated_template.id
+        assert template.students == duplicated_template.students
+        assert not template.students is duplicated_template.students
+        assert duplicated_template.priceDetail is None
+        assert template.flaggingValidationRules == duplicated_template.flaggingValidationRules
+        assert not template.flaggingValidationRules is duplicated_template.flaggingValidationRules
+
+    def test_duplicate_collectiveOffer_template_ignore_join(self):
+        template = factories.CollectiveOfferTemplateFactory(
+            flaggingValidationRules=[offers_factories.OfferValidationRuleFactory()],
+        )
+        factories.EducationalRedactorWithFavoriteCollectiveOfferTemplate(favoriteCollectiveOfferTemplates=[template])
+        db.session.refresh(template)
+
+        duplicated_template = template.duplicate(ignore_attributes={"educationalRedactorsFavorite"})
+        db.session.flush()
+
+        assert template.id != duplicated_template.id
+        assert template.priceDetail == duplicated_template.priceDetail
+        assert duplicated_template.educationalRedactorsFavorite == []
+        assert template.flaggingValidationRules == duplicated_template.flaggingValidationRules
+        assert not template.flaggingValidationRules is duplicated_template.flaggingValidationRules
 
 
 class EducationalInstitutionProgramTest:

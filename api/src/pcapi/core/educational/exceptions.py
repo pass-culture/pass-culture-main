@@ -209,3 +209,7 @@ class UpdateCollectiveOfferTemplateError(Exception):
 class StartsBeforeOfferCreation(UpdateCollectiveOfferTemplateError):
     field = "dates.start"
     msg = "Can't start before template creation date"
+
+
+class OffererNonEligibleForEAC(Exception):
+    pass
