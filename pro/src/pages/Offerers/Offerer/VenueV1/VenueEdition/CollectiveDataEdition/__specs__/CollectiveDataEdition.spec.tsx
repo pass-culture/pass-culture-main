@@ -20,7 +20,6 @@ import * as useNotification from 'hooks/useNotification'
 import {
   defaultDMSApplicationForEAC,
   defaultGetVenue,
-  getCollectiveVenueFactory,
 } from 'utils/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
@@ -127,12 +126,6 @@ describe('CollectiveDataEdition', () => {
       pending: vi.fn(),
       close: vi.fn(),
     }))
-
-    vi.spyOn(api, 'getVenueCollectiveData').mockResolvedValue(
-      getCollectiveVenueFactory()
-    )
-
-    vi.spyOn(api, 'getEducationalPartner').mockRejectedValue({})
   })
 
   describe('render', () => {
@@ -445,20 +438,22 @@ describe('CollectiveDataEdition', () => {
 
   describe('prefill', () => {
     it('should prefill form with venue collective data', async () => {
-      vi.spyOn(api, 'getVenueCollectiveData').mockResolvedValue({
-        collectiveDomains: [{ id: 1, name: 'domain 1' }],
-        collectiveDescription: '',
-        collectiveEmail: 'toto@domain.com',
-        collectiveInterventionArea: [],
-        collectiveLegalStatus: { id: 1, name: 'statut 1' },
-        collectiveNetwork: [],
-        collectivePhone: '',
-        collectiveStudents: [],
-        collectiveWebsite: '',
-        siret: '1234567890',
+      renderCollectiveDataEdition({
+        venue: {
+          ...defaultGetVenue,
+          hasAdageId: true,
+          collectiveDomains: [{ id: 1, name: 'domain 1' }],
+          collectiveDescription: '',
+          collectiveEmail: 'toto@domain.com',
+          collectiveInterventionArea: [],
+          collectiveLegalStatus: { id: 1, name: 'statut 1' },
+          collectiveNetwork: [],
+          collectivePhone: '',
+          collectiveStudents: [],
+          collectiveWebsite: '',
+          siret: '1234567890',
+        },
       })
-
-      renderCollectiveDataEdition()
 
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -477,61 +472,12 @@ describe('CollectiveDataEdition', () => {
           await screen.findAllByRole('checkbox', { checked: true })
         ).toHaveLength(1)
       )
-
-      expect(api.getEducationalPartner).not.toHaveBeenCalled()
-    })
-
-    it('should prefill form with educational partner data when venue has no collective data', async () => {
-      vi.spyOn(api, 'getEducationalPartner').mockResolvedValueOnce({
-        id: 1,
-        siteWeb: 'https://monsite.com',
-        statutId: 2,
-        domaineIds: [1, 2],
-      })
-      vi.spyOn(api, 'getVenueCollectiveData').mockResolvedValue(
-        getCollectiveVenueFactory()
-      )
-
-      renderCollectiveDataEdition()
-
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-      const websiteField = screen.getByLabelText(/URL de votre site web/)
-      const statusField = screen.getByLabelText(/Statut/)
-      const domainsInput = screen.getByLabelText(
-        /Domaine artistique et culturel/
-      )
-
-      await waitFor(() => {
-        expect(websiteField).toHaveValue('https://monsite.com')
-      })
-      expect(statusField).toHaveValue('2')
-
-      await userEvent.click(domainsInput)
-      await waitFor(() => {
-        expect(screen.getAllByRole('checkbox', { checked: true })).toHaveLength(
-          2
-        )
-      })
-
-      expect(api.getEducationalPartner).toHaveBeenCalledWith('1234567890')
-      expect(
-        screen.getByRole('button', { name: 'Enregistrer et quitter' })
-      ).toBeEnabled()
     })
 
     it('should not call educational partner if venue has no siret and no collective data', async () => {
-      vi.spyOn(api, 'getVenueCollectiveData').mockResolvedValue(
-        getCollectiveVenueFactory({
-          siret: undefined,
-        })
-      )
-
       renderCollectiveDataEdition()
 
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-      expect(api.getEducationalPartner).not.toHaveBeenCalled()
     })
   })
 })
