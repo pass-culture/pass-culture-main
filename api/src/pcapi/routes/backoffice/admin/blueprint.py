@@ -133,6 +133,7 @@ def toggle_feature_flag(feature_flag_id: int, set_to_active: bool) -> utils.Back
 
 
 @blueprint.backoffice_web.route("/admin/subcategories", methods=["GET"])
+@utils.custom_login_required(redirect_to=".home")
 def get_subcategories() -> utils.BackofficeResponse:
 
     all_subcategories = subcategories_v2.ALL_SUBCATEGORIES_DICT.values()
