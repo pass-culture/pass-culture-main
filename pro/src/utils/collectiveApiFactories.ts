@@ -15,7 +15,6 @@ import {
   GetCollectiveOfferManagingOffererResponseModel,
   GetCollectiveOfferRequestResponseModel,
   GetCollectiveOfferVenueResponseModel,
-  GetCollectiveVenueResponseModel,
   GetVenueResponseModel,
   OfferAddressType,
   OfferStatus,
@@ -258,24 +257,6 @@ export const collectiveBookingByIdFactory = (
   }
 }
 
-export const getCollectiveVenueFactory = (
-  customGetCollectiveVenue: Partial<GetCollectiveVenueResponseModel> = {}
-): GetCollectiveVenueResponseModel => {
-  return {
-    collectiveDomains: [],
-    collectiveDescription: '',
-    collectiveEmail: '',
-    collectiveInterventionArea: [],
-    collectiveLegalStatus: null,
-    collectiveNetwork: [],
-    collectivePhone: '',
-    collectiveStudents: [],
-    collectiveWebsite: '',
-    siret: '1234567890',
-    ...customGetCollectiveVenue,
-  }
-}
-
 export const defaultEducationalInstitution: EducationalInstitutionResponseModel =
   {
     city: 'Paris',
@@ -304,28 +285,30 @@ export const defaultDMSApplicationForEAC: DMSApplicationForEAC = {
 }
 
 export const defaultGetVenue: GetVenueResponseModel = {
+  id: 1,
+  audioDisabilityCompliant: false,
+  collectiveDmsApplications: [],
+  collectiveDomains: [],
   dateCreated: new Date().toISOString(),
   dmsToken: 'fakeDmsToken',
   hasAdageId: true,
-  collectiveDmsApplications: [],
   isVirtual: false,
-  collectiveDomains: [],
   managingOfferer: {
+    id: 1,
     city: 'Paris',
     dateCreated: new Date().toISOString(),
     isValidated: true,
     name: 'Ma super structure',
-    id: 1,
     postalCode: '75000',
     siren: '',
     allowedOnAdage: true,
   },
-  mentalDisabilityCompliant: null,
-  motorDisabilityCompliant: null,
+  mentalDisabilityCompliant: true,
+  motorDisabilityCompliant: false,
   name: 'Lieu de test',
-  id: 1,
-  venueTypeCode: VenueTypeCode.CENTRE_CULTUREL,
   timezone: 'Europe/Paris',
+  venueTypeCode: VenueTypeCode.CENTRE_CULTUREL,
+  visualDisabilityCompliant: true,
 }
 
 export const defaultGetCollectiveOfferRequest: GetCollectiveOfferRequestResponseModel =

@@ -205,7 +205,11 @@ class TransactionalEmail(Enum):
     BANK_ACCOUNT_VALIDATED = models.TemplatePro(
         id_prod=1095, id_not_prod=149, tags=["pro_cordonnées_bancaire_validées"]
     )
+    EXTERNAL_BOOKING_SUPPORT_CANCELLATION = models.TemplatePro(
+        id_prod=1189, id_not_prod=158, sender=models.TransactionalSender.SUPPORT_PRO
+    )
 
     # Finance incidents
     RETRIEVE_INCIDENT_AMOUNT_ON_INDIVIDUAL_BOOKINGS = models.Template(id_prod=1111, id_not_prod=150)
     RETRIEVE_INCIDENT_AMOUNT_ON_COLLECTIVE_BOOKINGS = models.Template(id_prod=1112, id_not_prod=151)
+    COMMERCIAL_GESTURE_REIMBURSEMENT = models.Template(id_prod=1187, id_not_prod=157)

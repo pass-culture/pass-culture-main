@@ -1,132 +1,73 @@
 import { addDays, isBefore } from 'date-fns'
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import React from 'react'
+import { Route, Routes, useParams } from 'react-router-dom'
+import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import {
-  GetCollectiveVenueResponseModel,
-  GetVenueResponseModel,
-} from 'apiClient/v1'
+import { GetVenueResponseModel } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
-import MandatoryInfo from 'components/FormLayout/FormLayoutMandatoryInfo'
-import { getEducationalDomainsAdapter } from 'core/OfferEducational'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
-import useNotification from 'hooks/useNotification'
 import { PartnerPageCollectiveSection } from 'pages/Home/Offerers/PartnerPageCollectiveSection'
 import { CollectiveDmsTimeline } from 'pages/VenueCreation/CollectiveDmsTimeline/CollectiveDmsTimeline'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { getLastCollectiveDmsApplication } from 'utils/getLastCollectiveDmsApplication'
-import { sendSentryCustomError } from 'utils/sendSentryCustomError'
-import { venueHasCollectiveInformation } from 'utils/venueHasCollectiveInformation'
 
-import { getCulturalPartnersAdapter } from '../adapters'
-
-import { getVenueEducationalStatusesAdapter } from './adapters'
-import getVenueCollectiveDataAdapter from './adapters/getVenueCollectiveDataAdapter'
 import styles from './CollectiveDataEdition.module.scss'
-import CollectiveDataForm from './CollectiveDataForm'
-
-const fetchCulturalPartnerIfVenueHasNoCollectiveData = async (
-  venueResponse: GetCollectiveVenueResponseModel
-): Promise<GetCollectiveVenueResponseModel | null> => {
-  if (!venueResponse.siret) {
-    return null
-  }
-
-  try {
-    const culturalPartnerResponse = await api.getEducationalPartner(
-      venueResponse.siret
-    )
-
-    return {
-      ...venueResponse,
-      collectiveLegalStatus: culturalPartnerResponse.statutId
-        ? {
-            id: culturalPartnerResponse.statutId,
-            name: '',
-          }
-        : null,
-      collectiveWebsite: culturalPartnerResponse.siteWeb,
-      collectiveDomains: culturalPartnerResponse.domaineIds.map((id) => ({
-        id,
-        name: '',
-      })),
-    }
-  } catch (e) {
-    sendSentryCustomError(e)
-
-    return null
-  }
-}
+import { CollectiveDataEditionReadOnly } from './CollectiveDataEditionReadOnly'
+import { CollectiveDataForm } from './CollectiveDataForm/CollectiveDataForm'
 
 export interface CollectiveDataEditionProps {
   venue?: GetVenueResponseModel
 }
 
+const GET_EDUCATIONAL_DOMAINS_QUERY_KEY = 'listEducationalDomains'
+const GET_EDUCATIONAL_STATUSES_QUERY_KEY = 'getVenuesEducationalStatuses'
+const GET_CULTURAL_PARTNERS_QUERY_KEY = 'getEducationalPartners'
+
 export const CollectiveDataEdition = ({
   venue,
 }: CollectiveDataEditionProps): JSX.Element | null => {
-  const notify = useNotification()
   const { offererId, venueId } = useParams<{
     offererId: string
     venueId: string
   }>()
 
-  const [domains, setDomains] = useState<SelectOption[]>([])
-  const [statuses, setStatuses] = useState<SelectOption[]>([])
-  const [culturalPartners, setCulturalPartners] = useState<SelectOption[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [venueCollectiveData, setVenueCollectiveData] =
-    useState<GetCollectiveVenueResponseModel | null>(null)
-  const [adageVenueCollectiveData, setAdageVenueCollectiveData] =
-    useState<GetCollectiveVenueResponseModel | null>(null)
+  const domainsQuery = useSWR([GET_EDUCATIONAL_DOMAINS_QUERY_KEY], () =>
+    api.listEducationalDomains()
+  )
+  const educationalStatusesQuery = useSWR(
+    [GET_EDUCATIONAL_STATUSES_QUERY_KEY],
+    () => api.getVenuesEducationalStatuses()
+  )
+  const culturalPartnersQuery = useSWR([GET_CULTURAL_PARTNERS_QUERY_KEY], () =>
+    api.getEducationalPartners()
+  )
+  const domains: SelectOption[] =
+    domainsQuery.data?.map((domain) => ({
+      value: domain.id.toString(),
+      label: domain.name,
+    })) ?? []
+  const statuses: SelectOption[] =
+    educationalStatusesQuery.data?.statuses.map((status) => ({
+      value: status.id,
+      label: status.name,
+    })) ?? []
+  const culturalPartners: SelectOption[] =
+    culturalPartnersQuery.data?.partners.map((culturalPartner) => ({
+      value: culturalPartner.id.toString(),
+      label: culturalPartner.libelle,
+    })) ?? []
+
   const canCreateCollectiveOffer = venue?.managingOfferer.allowedOnAdage
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const allResponses = await Promise.all([
-        getEducationalDomainsAdapter(),
-        getVenueEducationalStatusesAdapter(),
-        getCulturalPartnersAdapter(),
-        getVenueCollectiveDataAdapter(Number(venueId) ?? ''),
-      ])
-
-      if (allResponses.some((response) => !response.isOk)) {
-        notify.error(GET_DATA_ERROR_MESSAGE)
-      }
-
-      const [
-        domainsResponse,
-        statusesResponse,
-        culturalPartnersResponse,
-        venueResponse,
-      ] = allResponses
-
-      setDomains(domainsResponse.payload)
-      setStatuses(statusesResponse.payload)
-      setCulturalPartners(culturalPartnersResponse.payload)
-      if (venueResponse.isOk) {
-        if (venueHasCollectiveInformation(venueResponse.payload)) {
-          setVenueCollectiveData(venueResponse.payload)
-        } else {
-          const collectiveData =
-            await fetchCulturalPartnerIfVenueHasNoCollectiveData(
-              venueResponse.payload
-            )
-          setAdageVenueCollectiveData(collectiveData)
-        }
-      }
-
-      setIsLoading(false)
-    }
-    if (venueId && offererId) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      fetchData()
-    }
-  }, [])
-
-  if (!venueId || !offererId || !venue || isLoading) {
+  if (
+    !venueId ||
+    !offererId ||
+    !venue ||
+    domainsQuery.isLoading ||
+    educationalStatusesQuery.isLoading ||
+    culturalPartnersQuery.isLoading
+  ) {
     return <Spinner className={styles.spinner} />
   }
 
@@ -171,16 +112,30 @@ export const CollectiveDataEdition = ({
 
       {showCollectiveDataForm && (
         <>
-          <MandatoryInfo className={styles.mandatory} />
+          <hr className={styles['separator']} />
 
-          <CollectiveDataForm
-            statuses={statuses}
-            domains={domains}
-            culturalPartners={culturalPartners}
-            venueId={venueId}
-            venueCollectiveData={venueCollectiveData}
-            adageVenueCollectiveData={adageVenueCollectiveData}
-          />
+          <Routes>
+            <Route
+              path=""
+              element={
+                <CollectiveDataEditionReadOnly
+                  venue={venue}
+                  culturalPartners={culturalPartners}
+                />
+              }
+            />
+            <Route
+              path="/edition"
+              element={
+                <CollectiveDataForm
+                  statuses={statuses}
+                  domains={domains}
+                  culturalPartners={culturalPartners}
+                  venue={venue}
+                />
+              }
+            />
+          </Routes>
         </>
       )}
     </>

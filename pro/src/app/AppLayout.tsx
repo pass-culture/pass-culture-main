@@ -1,12 +1,14 @@
 import classnames from 'classnames'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import DomainNameBanner from 'components/DomainNameBanner'
 import Footer from 'components/Footer/Footer'
 import Header from 'components/Header/Header'
+import NewNavReview from 'components/NewNavReview/NewNavReview'
 import SideNavLinks from 'components/SideNavLinks/SideNavLinks'
 import SkipLinks from 'components/SkipLinks'
-import useActiveFeature from 'hooks/useActiveFeature'
+import useCurrentUser from 'hooks/useCurrentUser'
+import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import { Button } from 'ui-kit'
@@ -28,12 +30,46 @@ export const AppLayout = ({
   pageName = 'Accueil',
   layout = 'basic',
 }: AppLayoutProps) => {
-  const isNewSideBarNavigation = useActiveFeature('WIP_ENABLE_PRO_SIDE_NAV')
+  const isNewSideBarNavigation = useIsNewInterfaceActive()
+  const { currentUser } = useCurrentUser()
   const [lateralPanelOpen, setLateralPanelOpen] = useState(false)
 
   const openButtonRef = useRef<HTMLButtonElement>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const navPanel = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const modalElement = navPanel.current
+    if (!modalElement) {
+      return () => {}
+    }
+
+    const focusableElements = modalElement.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    )
+    const firstElement = focusableElements[0]
+    const lastElement = focusableElements[focusableElements.length - 1]
+
+    const handleTabKeyPress = (event: KeyboardEvent) => {
+      if (event.key === 'Tab') {
+        if (event.shiftKey && document.activeElement === firstElement) {
+          event.preventDefault()
+          lastElement.focus()
+        } else if (!event.shiftKey && document.activeElement === lastElement) {
+          event.preventDefault()
+          firstElement.focus()
+        }
+      }
+    }
+
+    if (lateralPanelOpen) {
+      modalElement.addEventListener('keydown', handleTabKeyPress)
+    }
+
+    return () => {
+      modalElement.removeEventListener('keydown', handleTabKeyPress)
+    }
+  }, [lateralPanelOpen])
 
   return (
     <>
@@ -109,6 +145,8 @@ export const AppLayout = ({
           </nav>
         )}
         <div className={styles['main-wrapper']}>
+          {isNewSideBarNavigation &&
+            Boolean(currentUser.navState?.eligibilityDate) && <NewNavReview />}
           <main
             id="content"
             className={classnames(

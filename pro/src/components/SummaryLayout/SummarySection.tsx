@@ -23,24 +23,21 @@ export const SummarySection = ({
 }: SummaryLayoutSectionProps): JSX.Element => (
   <div className={cn(style['summary-layout-section'], className)}>
     <div className={style['summary-layout-section-header']}>
-      <div className={style['summary-layout-section-header-content']}>
-        <h2 className={style['section-title']}>{title}</h2>
+      <h2 className={style['section-title']}>{title}</h2>
 
-        {editLink && (
-          <ButtonLink
-            link={{
-              to: editLink,
-              isExternal: false,
-              'aria-label': props['aria-label'],
-            }}
-            className={style['summary-layout-section-header-edit-link']}
-            icon={fullEditIcon}
-          >
-            Modifier
-          </ButtonLink>
-        )}
-      </div>
-      <div className={style['summary-layout-section-header-separator']}></div>
+      {editLink && (
+        <ButtonLink
+          link={{
+            to: editLink,
+            isExternal: false,
+            'aria-label': props['aria-label'],
+          }}
+          className={style['summary-layout-section-header-edit-link']}
+          icon={fullEditIcon}
+        >
+          Modifier
+        </ButtonLink>
+      )}
     </div>
     {children}
   </div>

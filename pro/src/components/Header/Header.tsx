@@ -5,6 +5,7 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
+import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import fullBurgerIcon from 'icons/full-burger.svg'
 import fullLogoutIcon from 'icons/full-logout.svg'
 import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
@@ -42,7 +43,7 @@ const Header = forwardRef(
     const { logEvent } = useAnalytics()
     const location = useLocation()
     const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
-    const isNewSideBarNavigation = useActiveFeature('WIP_ENABLE_PRO_SIDE_NAV')
+    const isNewSideBarNavigation = useIsNewInterfaceActive()
 
     if (isNewSideBarNavigation && isTopMenuVisible) {
       return (

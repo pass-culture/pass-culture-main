@@ -1,8 +1,9 @@
-/* generated using openapi-typescript-codegen -- do no edit */
+/* generated using openapi-typescript-codegen -- do not edit */
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
 import type { GenderEnum } from './GenderEnum';
+import type { NavStateResponseModel } from './NavStateResponseModel';
 import type { UserRole } from './UserRole';
 export type SharedLoginUserResponseModel = {
   activity?: string | null;
@@ -22,6 +23,7 @@ export type SharedLoginUserResponseModel = {
   isEmailValidated: boolean;
   lastConnectionDate?: string | null;
   lastName?: string | null;
+  navState?: NavStateResponseModel | null;
   needsToFillCulturalSurvey?: boolean | null;
   phoneNumber?: string | null;
   postalCode?: string | null;

@@ -137,7 +137,7 @@ def handle_dms_application(
     dms_application: dms_models.DmsApplicationResponse,
 ) -> fraud_models.BeneficiaryFraudCheck | None:
     application_number = dms_application.number
-    user_email = email_utils.sanitize_email(dms_application.profile.email)
+    user_email = email_utils.sanitize_email(dms_application.applicant.email or dms_application.profile.email)
     application_scalar_id = dms_application.id
     state = dms_application.state
     procedure_number = dms_application.procedure.number

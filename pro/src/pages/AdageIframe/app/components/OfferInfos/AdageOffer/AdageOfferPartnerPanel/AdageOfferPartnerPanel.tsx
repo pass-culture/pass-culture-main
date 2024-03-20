@@ -1,10 +1,12 @@
-import { CollectiveOfferTemplateResponseModel } from 'apiClient/adage'
+import {
+  AuthenticatedResponse,
+  CollectiveOfferTemplateResponseModel,
+} from 'apiClient/adage'
 import Callout from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullMailIcon from 'icons/full-mail.svg'
 import strokeInstitutionIcon from 'icons/stroke-institution.svg'
-import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -16,19 +18,23 @@ import styles from './AdageOfferPartnerPanel.module.scss'
 
 export type AdageOfferPartnerPanelProps = {
   offer: CollectiveOfferTemplateResponseModel
+  adageUser?: AuthenticatedResponse
+  isPreview?: boolean
 }
 
 export default function AdageOfferPartnerPanel({
   offer,
+  adageUser,
+  isPreview = false,
 }: AdageOfferPartnerPanelProps) {
   const venue = offer.venue
-  const { adageUser } = useAdageUser()
 
   const distanceToSchool =
     venue.coordinates.latitude !== null &&
     venue.coordinates.latitude !== undefined &&
     venue.coordinates.longitude !== null &&
     venue.coordinates.longitude !== undefined &&
+    adageUser &&
     adageUser.lat !== null &&
     adageUser.lat !== undefined &&
     adageUser.lon !== null &&
@@ -67,7 +73,7 @@ export default function AdageOfferPartnerPanel({
 
         <div>
           <p className={styles['partner-panel-info-name']}>{venue.name}</p>
-          {venue.adageId && (
+          {venue.adageId && !isPreview && (
             <ButtonLink
               link={{
                 isExternal: true,
@@ -86,14 +92,14 @@ export default function AdageOfferPartnerPanel({
       </div>
 
       <div className={styles['partner-panel-location']}>
-        {(venue.city || venue.postalCode || distanceToSchool) && (
+        {(venue.city || venue.postalCode || distanceToSchool || isPreview) && (
           <Callout variant={CalloutVariant.INFO}>
             Ce partenaire est situé{' '}
             <b className={styles['partner-panel-location-bold']}>
               {(venue.city || venue.postalCode) &&
-                `à ${venue.city ?? ''} ${venue.postalCode ?? ''}`}
-              {distanceToSchool &&
-                `, à ${distanceToSchool} de votre
+                `à ${venue.city ?? ''} ${venue.postalCode ?? ''}, `}
+              {(isPreview || distanceToSchool) &&
+                `à ${isPreview ? 'X km' : distanceToSchool} de votre
             établissement scolaire`}
               .
             </b>
@@ -110,8 +116,9 @@ export default function AdageOfferPartnerPanel({
           offerId={offer.id}
           position={0}
           queryId={''}
-          userEmail={adageUser.email}
-          userRole={adageUser.role}
+          userEmail={adageUser?.email}
+          userRole={adageUser?.role}
+          isPreview={isPreview}
         >
           <SvgIcon
             src={fullMailIcon}

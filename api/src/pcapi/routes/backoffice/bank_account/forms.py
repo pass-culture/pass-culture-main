@@ -8,7 +8,7 @@ class EditBankAccountForm(utils.PCForm):
     label = fields.PCStringField(
         "Intitulé du compte bancaire",
         validators=[
-            validators.InputRequired("Information obligatoire"),
+            validators.DataRequired("Information obligatoire"),
             validators.Length(min=1, max=64, message="doit contenir entre %(min)d et %(max)d caractères"),
         ],
     )

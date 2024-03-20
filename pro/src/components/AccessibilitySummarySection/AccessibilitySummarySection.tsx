@@ -1,10 +1,5 @@
 import React from 'react'
 
-import {
-  GetCollectiveOfferTemplateResponseModel,
-  GetCollectiveOfferResponseModel,
-  GetIndividualOfferResponseModel,
-} from 'apiClient/v1'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import { AccessiblityEnum } from 'core/shared'
@@ -12,46 +7,51 @@ import { AccessibilityLabel } from 'ui-kit/AccessibilityLabel'
 
 import styles from './AccessibilitySummarySection.module.scss'
 
-interface AccessibilitySummarySectionProps {
-  offer:
-    | GetIndividualOfferResponseModel
-    | GetCollectiveOfferTemplateResponseModel
-    | GetCollectiveOfferResponseModel
+// This interface is verified by both collective/individual offers and venues
+interface AccessibleItem {
+  audioDisabilityCompliant?: boolean | null
+  mentalDisabilityCompliant?: boolean | null
+  motorDisabilityCompliant?: boolean | null
+  visualDisabilityCompliant?: boolean | null
 }
 
-const AccessibilitySummarySection = ({
-  offer,
+interface AccessibilitySummarySectionProps {
+  accessibleItem: AccessibleItem
+}
+
+export const AccessibilitySummarySection = ({
+  accessibleItem,
 }: AccessibilitySummarySectionProps) => (
-  <SummarySubSection title="Accessibilité">
-    {!offer.visualDisabilityCompliant &&
-      !offer.motorDisabilityCompliant &&
-      !offer.mentalDisabilityCompliant &&
-      !offer.audioDisabilityCompliant && (
+  <SummarySubSection title="Modalités d’accessibilité">
+    {!accessibleItem.visualDisabilityCompliant &&
+      !accessibleItem.motorDisabilityCompliant &&
+      !accessibleItem.mentalDisabilityCompliant &&
+      !accessibleItem.audioDisabilityCompliant && (
         <SummaryDescriptionList descriptions={[{ text: 'Non accessible' }]} />
       )}
 
-    {offer.visualDisabilityCompliant && (
+    {accessibleItem.visualDisabilityCompliant && (
       <AccessibilityLabel
         className={styles['accessibility-row']}
         name={AccessiblityEnum.VISUAL}
       />
     )}
 
-    {offer.mentalDisabilityCompliant && (
+    {accessibleItem.mentalDisabilityCompliant && (
       <AccessibilityLabel
         className={styles['accessibility-row']}
         name={AccessiblityEnum.MENTAL}
       />
     )}
 
-    {offer.motorDisabilityCompliant && (
+    {accessibleItem.motorDisabilityCompliant && (
       <AccessibilityLabel
         className={styles['accessibility-row']}
         name={AccessiblityEnum.MOTOR}
       />
     )}
 
-    {offer.audioDisabilityCompliant && (
+    {accessibleItem.audioDisabilityCompliant && (
       <AccessibilityLabel
         className={styles['accessibility-row']}
         name={AccessiblityEnum.AUDIO}
@@ -59,5 +59,3 @@ const AccessibilitySummarySection = ({
     )}
   </SummarySubSection>
 )
-
-export default AccessibilitySummarySection

@@ -5,55 +5,33 @@ import createFetchMock from 'vitest-fetch-mock'
 
 import { apiAdresse } from 'apiClient/adresse'
 import { api } from 'apiClient/api'
-import { ApiError, GetVenueResponseModel, VenueTypeCode } from 'apiClient/v1'
+import { ApiError, GetVenueResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
 import { defaultGetVenue } from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  renderWithProviders,
+  RenderWithProvidersOptions,
+} from 'utils/renderWithProviders'
 
-import { VenueEditionFormValues } from '../types'
 import { VenueEditionFormScreen } from '../VenueEditionFormScreen'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 
 const renderForm = (
-  initialValues: VenueEditionFormValues,
   venue: GetVenueResponseModel,
-  isAdmin = false,
-  hasBookingQuantity?: boolean,
-  features: string[] = []
+  options?: RenderWithProvidersOptions
 ) => {
-  const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        id: 'user_id',
-        isAdmin,
-      },
-    },
-  }
-
   renderWithProviders(
     <>
       <Routes>
         <Route
-          path="/structures/AE/lieux/creation"
+          path="*"
           element={
             <>
-              <VenueEditionFormScreen
-                initialValues={initialValues}
-                venue={venue}
-              />
-            </>
-          }
-        />
-        <Route
-          path="/structures/AE/lieux/:venueId"
-          element={
-            <>
-              <div>Lieu créé</div>
+              <VenueEditionFormScreen venue={venue} />
             </>
           }
         />
@@ -61,9 +39,8 @@ const renderForm = (
       <Notification />
     </>,
     {
-      storeOverrides,
-      initialRouterEntries: ['/structures/AE/lieux/creation'],
-      features,
+      initialRouterEntries: ['/edition'],
+      ...options,
     }
   )
 }
@@ -153,156 +130,32 @@ vi.mock('core/Venue/siretApiValidate', () => ({
   default: () => Promise.resolve(),
 }))
 
-const venueResponse: GetVenueResponseModel = {
-  hasPendingBankInformationApplication: false,
-  demarchesSimplifieesApplicationId: '',
-  collectiveDomains: [],
-  dateCreated: '2022-02-02',
-  isVirtual: false,
-  visualDisabilityCompliant: false,
-  audioDisabilityCompliant: false,
-  motorDisabilityCompliant: false,
-  mentalDisabilityCompliant: false,
-  address: 'Address',
-  bannerMeta: null,
-  bannerUrl: '',
-  city: 'city',
-  comment: 'comment',
-  contact: {
-    email: 'email',
-    phoneNumber: '0606060606',
-    website: 'web',
-  },
-  description: 'description',
-  departementCode: '75008',
-  dmsToken: 'dms-token-12345',
-  isPermanent: true,
-  latitude: 0,
-  longitude: 0,
-  bookingEmail: 'a@b.c',
-  name: 'name',
-  id: 0,
-  pricingPoint: null,
-  postalCode: '75008',
-  publicName: 'name',
-  siret: '88145723823022',
-  timezone: 'Europe/Paris',
-  venueTypeCode: VenueTypeCode.COURS_ET_PRATIQUE_ARTISTIQUES,
-  venueLabelId: 1,
-  reimbursementPointId: 0,
-  withdrawalDetails: 'string',
-  collectiveAccessInformation: 'string',
-  collectiveDescription: 'string',
-  collectiveEmail: 'string',
-  collectiveInterventionArea: [],
-  collectiveLegalStatus: null,
-  collectiveNetwork: [],
-  collectivePhone: 'string',
-  collectiveStudents: [],
-  collectiveWebsite: 'string',
-  adageInscriptionDate: null,
-  hasAdageId: false,
-  collectiveDmsApplications: [],
-  managingOfferer: {
-    address: null,
-    city: 'string',
-    dateCreated: 'string',
-    demarchesSimplifieesApplicationId: null,
-    id: 1,
-    isValidated: true,
-    name: 'name',
-    postalCode: 'string',
-    siren: null,
-    allowedOnAdage: true,
-  },
-}
-
 describe('VenueFormScreen', () => {
-  let formValues: VenueEditionFormValues
   let venue: GetVenueResponseModel
 
   beforeEach(() => {
-    formValues = {
-      description: '',
-      accessibility: {
-        visual: false,
-        mental: true,
-        audio: false,
-        motor: true,
-        none: false,
-      },
-      isAccessibilityAppliedOnAllOffers: false,
-      phoneNumber: '0604855967',
-      email: 'em@ail.com',
-      webSite: 'https://www.site.web',
-    }
-
     venue = {
       ...defaultGetVenue,
-      hasPendingBankInformationApplication: false,
-      demarchesSimplifieesApplicationId: '',
-      collectiveDomains: [],
-      dateCreated: '2022-02-02',
-      isVirtual: false,
-      address: 'Address',
-      banId: 'ban_id',
-      bannerMeta: null,
-      bannerUrl: '',
-      city: 'city',
-      comment: 'comment',
-      contact: {
-        email: 'email',
-        phoneNumber: '0606060606',
-        website: 'web',
-      },
-      description: 'description',
-      departementCode: '75008',
-      dmsToken: '',
       isPermanent: true,
-      latitude: 0,
-      longitude: 0,
-      name: 'name',
-      id: 15,
-      pricingPoint: null,
-      postalCode: '75008',
-      publicName: 'name',
-      siret: '88145723823022',
-      reimbursementPointId: 0,
-      withdrawalDetails: 'string',
-      collectiveAccessInformation: 'string',
-      collectiveDescription: 'string',
-      collectiveEmail: 'string',
-      collectiveInterventionArea: [],
-      collectiveLegalStatus: null,
-      collectiveNetwork: [],
-      collectivePhone: 'string',
-      collectiveStudents: [],
-      collectiveWebsite: 'string',
-      managingOfferer: {
-        address: null,
-        city: 'string',
-        dateCreated: 'string',
-        demarchesSimplifieesApplicationId: null,
-        id: 1,
-        isValidated: true,
-        name: 'name',
-        postalCode: 'string',
-        siren: null,
-        allowedOnAdage: true,
-      },
-      hasAdageId: false,
-      adageInscriptionDate: null,
-      bankAccount: null,
     }
   })
 
-  it('should display the partner info', async () => {
-    renderForm(formValues, venue, false)
+  it('should display readonly info', async () => {
+    renderForm(venue, { initialRouterEntries: ['/'] })
 
     expect(
-      await screen.findByText(
-        'Les informations que vous renseignez ci-dessous sont affichées dans votre page partenaire, visible sur l’application pass Culture'
-      )
+      await screen.findByText('Vos informations pour le grand public')
+    ).toBeInTheDocument()
+    expect(screen.getByText('À propos de votre activité')).toBeInTheDocument()
+    expect(screen.getByText('Modalités d’accessibilité')).toBeInTheDocument()
+    expect(screen.getByText('Informations de contact')).toBeInTheDocument()
+  })
+
+  it('should display the partner info', async () => {
+    renderForm(venue)
+
+    expect(
+      await screen.findByText('À propos de votre activité')
     ).toBeInTheDocument()
     expect(
       screen.getByText('État de votre page partenaire sur l’application :')
@@ -311,7 +164,7 @@ describe('VenueFormScreen', () => {
   })
 
   it('should display an error when the venue could not be updated', async () => {
-    renderForm(formValues, venue)
+    renderForm(venue)
 
     vi.spyOn(api, 'editVenue').mockRejectedValue(
       new ApiError(
@@ -332,9 +185,22 @@ describe('VenueFormScreen', () => {
     })
   })
 
+  it('should display the route leaving guard when leaving without saving', async () => {
+    renderForm(venue)
+
+    await userEvent.type(screen.getByLabelText('Description'), 'test')
+    await userEvent.click(screen.getByText('Annuler et quitter'))
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Les informations non enregistrées seront perdues')
+      ).toBeInTheDocument()
+    })
+  })
+
   it('should display specific message when venue is virtual', () => {
     venue.isVirtual = true
-    renderForm(formValues, venue)
+    renderForm(venue)
 
     expect(
       screen.getByText(
@@ -345,28 +211,10 @@ describe('VenueFormScreen', () => {
     expect(screen.queryAllByRole('input')).toHaveLength(0)
   })
 
-  it('should let update venue without siret', async () => {
-    const testedVenue = {
-      ...venue,
-      siret: null,
-    }
-
-    renderForm(formValues, testedVenue)
-
-    const editVenue = vi
-      .spyOn(api, 'editVenue')
-      .mockResolvedValue(venueResponse)
-
-    await userEvent.click(screen.getByText(/Enregistrer/))
-
-    expect(editVenue).toHaveBeenCalled()
-    expect(editVenue).not.toHaveBeenCalledWith(15, { siret: '' })
-  })
-
   it('should diplay only some fields when the venue is virtual', async () => {
     venue.isVirtual = true
 
-    renderForm(formValues, venue, false)
+    renderForm(venue)
 
     await waitFor(() => {
       expect(screen.queryByTestId('wrapper-publicName')).not.toBeInTheDocument()

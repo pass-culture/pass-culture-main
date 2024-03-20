@@ -5,6 +5,7 @@
          name="{{ field.name }}"
          data-original-name="{{ field.name }}"
          class="form-control value-element-form"
+         {% if field.flags.readonly %}readonly {% endif +%}
          value="{{ field.data if field.data else "" }}" />
   <label class="label-element-form"
          data-original-name="{{ field.name }}"

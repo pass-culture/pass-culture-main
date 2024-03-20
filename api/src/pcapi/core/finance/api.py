@@ -59,6 +59,7 @@ import pcapi.core.history.models as history_models
 from pcapi.core.logging import log_elapsed
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.mails.transactional import send_booking_cancellation_by_pro_to_beneficiary_email
+from pcapi.core.mails.transactional.finance_incidents.finance_incident_notification import send_commercial_gesture_email
 from pcapi.core.mails.transactional.finance_incidents.finance_incident_notification import send_finance_incident_emails
 from pcapi.core.object_storage import store_public_object
 from pcapi.core.offerers import repository as offerers_repository
@@ -572,13 +573,10 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
             )
         )
     else:
-        is_booking_collective = isinstance(booking, educational_models.CollectiveBooking)
         amount = -rule.apply(booking)  # outgoing, thus negative
         lines = [
             models.PricingLine(
-                amount=-utils.to_eurocents(
-                    booking.collectiveStock.price if is_booking_collective else booking.total_amount
-                ),
+                amount=-utils.to_eurocents(booking.total_amount),
                 category=models.PricingLineCategory.OFFERER_REVENUE,
             )
         ]
@@ -777,7 +775,6 @@ def update_finance_event_pricing_date(stock: offers_models.Stock) -> None:
     finance_events_from_pricing_point = models.FinanceEvent.query.options(
         sqla.orm.joinedload(models.FinanceEvent.pricings)
     ).filter(models.FinanceEvent.pricingPointId == pricing_point_id)
-
     bookings_of_this_stock = bookings_models.Booking.query.with_entities(bookings_models.Booking.id).filter(
         bookings_models.Booking.stockId == stock.id
     )
@@ -1232,20 +1229,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                 total = pricings.with_entities(sqla.func.sum(models.Pricing.amount)).scalar() or 0
 
                 # The total is positive if the pro owes us more than we do.
-                if total >= 0:
-                    if total == 0:
-                        # TODO: Manage invoices for transaction with amount equal to zero
-
-                        # We should not call `_mark_as_processed` with
-                        # `pricings` (see comment below about the next
-                        # call to `_mark_as_processed`), but we don't
-                        # really have a simpler way here. We can live
-                        # with that, because it is very unlikely that
-                        # a new pricing appeared since we calculated
-                        # the total, and it's even more unlikely that
-                        # the total is also zero.
-                        _mark_as_processed(pricings.with_entities(models.Pricing.id))
-                        continue
+                if total > 0:
 
                     all_current_incidents = (
                         models.FinanceIncident.query.join(models.FinanceIncident.booking_finance_incidents)
@@ -1881,6 +1865,7 @@ def _filter_invoiceable_cashflows(query: BaseQuery) -> BaseQuery:
 
 
 def _get_cashflows_by_reimbursement_points(batch: models.CashflowBatch, only_debit_notes: bool = False) -> list:
+    """Legacy"""
     query = _filter_invoiceable_cashflows(
         db.session.query(
             models.Cashflow.reimbursementPointId.label("reimbursement_point_id"),
@@ -2001,7 +1986,7 @@ def _get_cashflows_by_bank_accounts(batch: models.CashflowBatch, only_debit_note
         )
     ).filter(models.Cashflow.batchId == batch.id)
 
-    query = query.filter(models.Cashflow.amount > 0) if only_debit_notes else query.filter(models.Cashflow.amount < 0)
+    query = query.filter(models.Cashflow.amount > 0) if only_debit_notes else query.filter(models.Cashflow.amount <= 0)
 
     rows = query.group_by(models.Cashflow.bankAccountId).all()
 
@@ -2932,7 +2917,7 @@ def _prepare_invoice_context_legacy(invoice: models.Invoice, batch: models.Cashf
 def _prepare_invoice_context(invoice: models.Invoice, batch: models.CashflowBatch) -> dict:
     # Easier to sort here and not in PostgreSQL, and not much slower
     # because there are very few cashflows (and usually only 1).
-    cashflows = sorted(invoice.cashflows, key=lambda c: (c.creationDate, c.id))
+    cashflows = sorted(filter(lambda c: c.amount != 0, invoice.cashflows), key=lambda c: (c.creationDate, c.id))
 
     invoice_lines = sorted(invoice.lines, key=lambda k: (k.group["position"], -k.rate))
     total_used_bookings_amount = 0
@@ -3977,17 +3962,20 @@ def validate_finance_incident(finance_incident: models.FinanceIncident, force_de
     db.session.commit()
 
     # send mail to pro
-    send_finance_incident_emails(finance_incident)
-
-    # send mail to beneficiaries or educational redactor
-    for booking_incident in finance_incident.booking_finance_incidents:
-        if not booking_incident.is_partial:
-            if booking_incident.collectiveBooking:
-                educational_api_booking.notify_reimburse_collective_booking(
-                    collective_booking=booking_incident.collectiveBooking, reason="NO_EVENT"
-                )
-            else:
-                send_booking_cancellation_by_pro_to_beneficiary_email(booking_incident.booking)
+    match finance_incident.kind:
+        case models.IncidentType.OVERPAYMENT:
+            send_finance_incident_emails(finance_incident)
+            # send mail to beneficiaries or educational redactor
+            for booking_incident in finance_incident.booking_finance_incidents:
+                if not booking_incident.is_partial:
+                    if booking_incident.collectiveBooking:
+                        educational_api_booking.notify_reimburse_collective_booking(
+                            collective_booking=booking_incident.collectiveBooking, reason="NO_EVENT"
+                        )
+                    else:
+                        send_booking_cancellation_by_pro_to_beneficiary_email(booking_incident.booking)
+        case models.IncidentType.COMMERCIAL_GESTURE:
+            send_commercial_gesture_email(finance_incident)
 
 
 def cancel_finance_incident(incident: models.FinanceIncident, comment: str) -> None:

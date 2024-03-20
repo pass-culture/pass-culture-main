@@ -2100,3 +2100,48 @@ class AnonymizeUserDepositsTest:
         for deposit in user_old_deposit.deposits:
             assert deposit.dateCreated == now - relativedelta(years=11, day=1, month=1)
             assert deposit.expirationDate == now - relativedelta(years=10, day=1, month=1)
+
+
+class EnableNewProNavTest:
+    def test_user_without_new_nav_state_raises(self) -> None:
+        user = users_factories.ProFactory()
+
+        with pytest.raises(users_exceptions.ProUserNotEligibleForNewNav):
+            users_api.enable_new_pro_nav(user)
+
+    def test_user_with_new_nav_state_not_eligible_raises(self) -> None:
+        pro_new_nav_state = users_factories.UserProNewNavStateFactory(eligibilityDate=None, newNavDate=None)
+
+        with pytest.raises(users_exceptions.ProUserNotEligibleForNewNav):
+            users_api.enable_new_pro_nav(pro_new_nav_state.user)
+
+        assert not pro_new_nav_state.newNavDate
+
+    def test_user_eligible_in_the_future_raises(self) -> None:
+        pro_new_nav_state = users_factories.UserProNewNavStateFactory(
+            eligibilityDate=datetime.datetime.utcnow() + datetime.timedelta(days=2), newNavDate=None
+        )
+
+        with pytest.raises(users_exceptions.ProUserNotYetEligibleForNewNav):
+            users_api.enable_new_pro_nav(pro_new_nav_state.user)
+
+        assert not pro_new_nav_state.newNavDate
+
+    def test_user_eligible(self) -> None:
+        pro_new_nav_state = users_factories.UserProNewNavStateFactory(
+            eligibilityDate=datetime.datetime.utcnow() - datetime.timedelta(days=1), newNavDate=None
+        )
+
+        users_api.enable_new_pro_nav(pro_new_nav_state.user)
+
+        assert pro_new_nav_state.newNavDate
+
+    def test_user_already_with_new_nav_should_not_update_date(self) -> None:
+        yesterday_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        pro_new_nav_state = users_factories.UserProNewNavStateFactory(
+            eligibilityDate=yesterday_date - datetime.timedelta(days=2), newNavDate=yesterday_date
+        )
+
+        users_api.enable_new_pro_nav(pro_new_nav_state.user)
+
+        assert pro_new_nav_state.newNavDate == yesterday_date

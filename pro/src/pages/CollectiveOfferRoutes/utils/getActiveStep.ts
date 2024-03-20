@@ -15,5 +15,9 @@ export const getActiveStep = (
     return CollectiveOfferStep.SUMMARY
   }
 
+  if (locationPathname.includes('apercu')) {
+    return CollectiveOfferStep.PREVIEW
+  }
+
   return CollectiveOfferStep.DETAILS
 }

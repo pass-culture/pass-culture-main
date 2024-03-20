@@ -19,7 +19,7 @@ describe('adageOfferDates', () => {
         },
       })
 
-      expect(datesText).toEqual('Du 23 janvier au 29 janvier 2024 à 23h')
+      expect(datesText).toEqual('Du 24 janvier au 30 janvier 2024')
     })
 
     it('should show that the offer is permanent if it has no dates', () => {
@@ -44,7 +44,7 @@ describe('adageOfferDates', () => {
         },
       })
 
-      expect(dateText).toEqual('Le 29 janvier 2024 à 23:00')
+      expect(dateText).toEqual('Le 30 janvier 2024 à 00:00')
     })
 
     it('should not return a date if the beginning of the offer does not exist', () => {

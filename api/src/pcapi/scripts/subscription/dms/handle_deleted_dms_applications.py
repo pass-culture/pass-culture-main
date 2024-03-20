@@ -3,7 +3,6 @@ import logging
 import typing
 
 from sqlalchemy import Integer
-from typing_extensions import TypeGuard
 
 from pcapi.connectors.dms import api as dms_api
 from pcapi.connectors.dms import models as dms_models
@@ -14,7 +13,7 @@ from pcapi.models import db
 logger = logging.getLogger(__name__)
 
 
-def is_dms_content(obj: typing.Any) -> TypeGuard[fraud_models.DMSContent]:
+def is_dms_content(obj: typing.Any) -> typing.TypeGuard[fraud_models.DMSContent]:
     return isinstance(obj, fraud_models.DMSContent)
 
 

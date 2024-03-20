@@ -34,6 +34,7 @@ def make_graphql_application(  # pylint: disable=dangerous-default-value
     construction_datetime: str = "2020-05-13T09:09:46+02:00",
     last_modification_date: str = "2020-05-13T10:41:23+02:00",
     email: str | None = "young.individual@example.com",
+    applicant_email: str | None = None,
     first_name: str = "John",
     full_graphql_response: bool = False,
     has_next_page: bool = False,
@@ -158,6 +159,7 @@ def make_graphql_application(  # pylint: disable=dangerous-default-value
             "nom": last_name,
             "prenom": first_name,
             "dateDeNaissance": None,
+            "email": applicant_email,
         },
     }
     if city is not None:

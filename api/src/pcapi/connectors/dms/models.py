@@ -62,6 +62,7 @@ class Applicant(pydantic_v1.BaseModel):
     first_name: str = pydantic_v1.Field(alias="prenom")
     id: str
     last_name: str = pydantic_v1.Field(alias="nom")
+    email: str | None
 
 
 class DmsField(pydantic_v1.BaseModel):

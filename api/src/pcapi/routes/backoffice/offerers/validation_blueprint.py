@@ -22,6 +22,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms.empty import BatchForm
@@ -67,6 +68,7 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
         form.regions.data,
         form.tags.data,
         form.status.data,
+        form.instructors.data,
         form.dms_adage_status.data,
         date_utils.date_to_localized_datetime(form.from_date.data, datetime.datetime.min.time()),
         date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time()),
@@ -89,6 +91,8 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
     )
 
     form.page.data = 1  # Reset to first page when form is submitted ("Appliquer" clicked)
+
+    autocomplete.prefill_bo_users_choices(form.instructors)
 
     return render_template(
         "offerer/validation.html",
@@ -445,6 +449,7 @@ def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
         form.regions.data,
         form.tags.data,
         form.status.data,
+        form.instructors.data,
         form.offerer_status.data,
         date_utils.date_to_localized_datetime(form.from_date.data, datetime.datetime.min.time()),
         date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time()),
@@ -467,6 +472,8 @@ def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
     )
 
     form.page.data = 1  # Reset to first page when form is submitted ("Appliquer" clicked)
+
+    autocomplete.prefill_bo_users_choices(form.instructors)
 
     return render_template(
         "offerer/user_offerer_validation.html",

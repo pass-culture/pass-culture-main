@@ -709,8 +709,8 @@ class CollectiveOfferTemplate(
     contactForm: OfferContactFormEnum | None = sa.Column(
         MagicEnum(OfferContactFormEnum),
         nullable=True,
-        server_default=OfferContactFormEnum.FORM.value,
-        default=OfferContactFormEnum.FORM,
+        server_default=None,
+        default=None,
     )
 
     @declared_attr

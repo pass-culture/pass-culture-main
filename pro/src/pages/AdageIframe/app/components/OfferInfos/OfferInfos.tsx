@@ -132,7 +132,7 @@ export const OfferInfos = () => {
             />
           </div>
           {isNewOfferInfoEnabled ? (
-            <AdageOffer offer={offer} />
+            <AdageOffer offer={offer} adageUser={adageUser} />
           ) : (
             <div className={styles['offer-container']}>
               <Offer offer={offer} position={0} queryId="" openDetails={true} />

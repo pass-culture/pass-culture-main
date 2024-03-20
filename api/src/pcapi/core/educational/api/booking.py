@@ -26,7 +26,7 @@ from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
-from pcapi.routes.adage.v1.serialization.prebooking import serialize_reibursement_notification
+from pcapi.routes.adage.v1.serialization.prebooking import serialize_reimbursement_notification
 from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
 from pcapi.routes.serialization import collective_bookings_serialize
 
@@ -443,7 +443,7 @@ def notify_reimburse_collective_booking(
             f"Collective booking {collective_booking.id} is priced at {price}. We cannot reimburse more than that."
         )
     adage_client.notify_reimburse_collective_booking(
-        data=serialize_reibursement_notification(
+        data=serialize_reimbursement_notification(
             collective_booking=collective_booking,
             reason=reason,
             value=value,

@@ -26,6 +26,7 @@ const renderNewRequestFormDialog = (
       contactForm="form"
       contactPhone=""
       contactUrl=""
+      isPreview={false}
       {...props}
     />
   )
@@ -35,6 +36,7 @@ vi.mock('apiClient/api', () => ({
   apiAdage: {
     createCollectiveRequest: vi.fn(),
     logRequestFormPopinDismiss: vi.fn(),
+    logContactUrlClick: vi.fn(),
   },
 }))
 
@@ -275,6 +277,24 @@ describe('NewRequestFormDialog', () => {
       requestedDate: undefined,
       totalStudents: undefined,
       totalTeachers: undefined,
+    })
+  })
+
+  it('should log event when user click on custom link form', async () => {
+    renderNewRequestFormDialog({
+      contactEmail: '',
+      contactPhone: '',
+      contactForm: '',
+      contactUrl: 'https://example.com',
+    })
+
+    const buttonLink = screen.getByText('Aller sur le site')
+
+    await userEvent.click(buttonLink)
+
+    expect(apiAdage.logContactUrlClick).toHaveBeenCalledWith({
+      iframeFrom: '/',
+      offerId: 1,
     })
   })
 })

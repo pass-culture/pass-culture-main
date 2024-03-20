@@ -63,6 +63,7 @@ class GoogleAccountRequest(BaseAccountRequest):
 class NotificationSubscriptions(BaseModel):
     marketing_email: bool
     marketing_push: bool
+    subscribed_themes: list[str] = []
 
     class Config:
         alias_generator = to_camel

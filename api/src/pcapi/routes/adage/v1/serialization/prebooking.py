@@ -291,20 +291,20 @@ def _get_educational_offer_accessibility(offer: educational_models.CollectiveOff
     return ", ".join(disability_compliance) or "Non accessible"
 
 
-class AdageReibursementNotification(EducationalBookingBaseResponse):
+class AdageReimbursementNotification(EducationalBookingBaseResponse):
     reimbursementReason: str
     reimbursedValue: float
     reimbursementDetails: str
 
 
-def serialize_reibursement_notification(
+def serialize_reimbursement_notification(
     collective_booking: CollectiveBooking, reason: str, value: float, details: str
-) -> AdageReibursementNotification:
+) -> AdageReimbursementNotification:
     stock: educational_models.CollectiveStock = collective_booking.collectiveStock
     offer: educational_models.CollectiveOffer = stock.collectiveOffer
     domains = offer.domains
     venue: offerers_models.Venue = offer.venue
-    return AdageReibursementNotification(
+    return AdageReimbursementNotification(
         accessibility=_get_educational_offer_accessibility(offer),
         address=_get_collective_offer_address(offer),
         beginningDatetime=stock.beginningDatetime,

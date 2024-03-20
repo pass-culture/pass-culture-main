@@ -10,14 +10,18 @@ import {
 } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import AdageOfferHeader, { AdageOfferProps } from '../AdageOfferHeader'
+import { AdageOfferProps } from '../../AdageOffer'
+import AdageOfferHeader from '../AdageOfferHeader'
 
 function renderAdageOfferHeader(
-  props: AdageOfferProps = { offer: defaultCollectiveTemplateOffer },
-  user = defaultAdageUser
+  props: AdageOfferProps = {
+    offer: defaultCollectiveTemplateOffer,
+    adageUser: defaultAdageUser,
+    isPreview: false,
+  }
 ) {
   return renderWithProviders(
-    <AdageUserContextProvider adageUser={user}>
+    <AdageUserContextProvider adageUser={defaultAdageUser}>
       <AdageOfferHeader {...props} />
     </AdageUserContextProvider>
   )
@@ -32,9 +36,22 @@ describe('AdageOfferHeader', () => {
     ).toBeInTheDocument()
   })
 
+  it("should show the offer title even if it's a preview of the offer", () => {
+    renderAdageOfferHeader({
+      offer: defaultCollectiveTemplateOffer,
+      adageUser: defaultAdageUser,
+      isPreview: true,
+    })
+
+    expect(
+      screen.getByText(defaultCollectiveTemplateOffer.name)
+    ).toBeInTheDocument()
+  })
+
   it('should show the offer image if it has one', () => {
     renderAdageOfferHeader({
       offer: { ...defaultCollectiveTemplateOffer, imageUrl: 'test_url' },
+      adageUser: defaultAdageUser,
     })
 
     expect(screen.getByRole('img')).toHaveAttribute('src', 'test_url')
@@ -43,6 +60,7 @@ describe('AdageOfferHeader', () => {
   it('should not show an image if the offer has no image', () => {
     renderAdageOfferHeader({
       offer: { ...defaultCollectiveTemplateOffer, imageUrl: undefined },
+      adageUser: defaultAdageUser,
     })
 
     expect(screen.queryByRole('img')).not.toBeInTheDocument()
@@ -60,7 +78,10 @@ describe('AdageOfferHeader', () => {
   })
 
   it('should not show the action buttons if the offer is bookable', () => {
-    renderAdageOfferHeader({ offer: defaultCollectiveOffer })
+    renderAdageOfferHeader({
+      offer: defaultCollectiveOffer,
+      adageUser: defaultAdageUser,
+    })
 
     expect(
       screen.queryByRole('button', { name: 'Enregistrer en favoris' })
@@ -71,10 +92,10 @@ describe('AdageOfferHeader', () => {
   })
 
   it('should not show the favorite button if the user is not admin', () => {
-    renderAdageOfferHeader(
-      { offer: defaultCollectiveTemplateOffer },
-      { ...defaultAdageUser, role: AdageFrontRoles.READONLY }
-    )
+    renderAdageOfferHeader({
+      offer: defaultCollectiveTemplateOffer,
+      adageUser: { ...defaultAdageUser, role: AdageFrontRoles.READONLY },
+    })
 
     expect(
       screen.queryByRole('button', { name: 'Enregistrer en favoris' })
@@ -92,6 +113,7 @@ describe('AdageOfferHeader', () => {
           city: 'Ville test',
         },
       },
+      adageUser: defaultAdageUser,
     })
 
     expect(screen.getByText(/Test venue name/)).toBeInTheDocument()
@@ -107,6 +129,7 @@ describe('AdageOfferHeader', () => {
           addressType: OfferAddressType.SCHOOL,
         },
       },
+      adageUser: defaultAdageUser,
     })
 
     expect(
@@ -124,6 +147,7 @@ describe('AdageOfferHeader', () => {
           otherAddress: '123 this is a very specific address',
         },
       },
+      adageUser: defaultAdageUser,
     })
 
     expect(
@@ -136,14 +160,15 @@ describe('AdageOfferHeader', () => {
       offer: {
         ...defaultCollectiveTemplateOffer,
         dates: {
-          end: '2024-01-29T23:00:28.040559Z',
-          start: '2024-01-23T23:00:28.040547Z',
+          end: '2024-01-29T20:00:28.040559Z',
+          start: '2024-01-23T20:00:28.040547Z',
         },
       },
+      adageUser: defaultAdageUser,
     })
 
     expect(
-      screen.getByText('Du 23 janvier au 29 janvier 2024 à 23h')
+      screen.getByText('Du 23 janvier au 29 janvier 2024 à 21h')
     ).toBeInTheDocument()
   })
 
@@ -153,6 +178,7 @@ describe('AdageOfferHeader', () => {
         ...defaultCollectiveTemplateOffer,
         dates: undefined,
       },
+      adageUser: defaultAdageUser,
     })
 
     expect(
@@ -168,6 +194,7 @@ describe('AdageOfferHeader', () => {
         ...defaultCollectiveTemplateOffer,
         students: [StudentLevels.CAP_1RE_ANN_E, StudentLevels.COLL_GE_3E],
       },
+      adageUser: defaultAdageUser,
     })
 
     expect(screen.getByText('Multiniveaux')).toBeInTheDocument()
@@ -189,6 +216,7 @@ describe('AdageOfferHeader', () => {
           price: 12000,
         },
       },
+      adageUser: defaultAdageUser,
     })
 
     expect(screen.getByText('120 € pour 100 élèves')).toBeInTheDocument()

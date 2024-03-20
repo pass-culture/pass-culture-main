@@ -57,9 +57,14 @@
   }
 }
 
+
 .mandatory {
   @include fonts.caption;
 
   color: colors.$grey-dark;
   margin-bottom: rem.torem(16px);
+}
+
+.callout-area {
+  margin-bottom: 16px;
 }

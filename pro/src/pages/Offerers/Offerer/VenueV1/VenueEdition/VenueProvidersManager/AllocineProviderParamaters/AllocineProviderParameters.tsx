@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 import { api } from 'apiClient/api'
-import { getError, isErrorAPIError } from 'apiClient/helpers'
+import { getHumanReadableApiError } from 'apiClient/helpers'
 import { PostVenueProviderBody, VenueProviderResponse } from 'apiClient/v1'
 import useNotification from 'hooks/useNotification'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -9,7 +9,6 @@ import { Button } from 'ui-kit/index'
 
 import { FormValuesProps } from '../AllocineProviderForm/AllocineProviderForm'
 import AllocineProviderFormDialog from '../AllocineProviderFormDialog/AllocineProviderFormDialog'
-import { getRequestErrorStringFromErrors } from '../utils/getRequestErrorStringFromErrors'
 
 import style from './AllocineProviderParameters.module.scss'
 
@@ -27,26 +26,20 @@ const AllocineProviderParameters = ({
   const [isOpenedFormDialog, setIsOpenedFormDialog] = useState(false)
   const notification = useNotification()
 
-  const editVenueProvider = (payload: PostVenueProviderBody): boolean => {
-    let isSucess = false
-
-    api
-      .updateVenueProvider(payload)
-      .then((editedVenueProvider) => {
-        afterVenueProviderEdit(editedVenueProvider)
-        notification.success(
-          "Les modifications ont bien été importées et s'appliqueront aux nouvelles séances créées."
-        )
-        isSucess = true
-      })
-      .catch((error) => {
-        isSucess = false
-        if (isErrorAPIError(error)) {
-          notification.error(getRequestErrorStringFromErrors(getError(error)))
-        }
-      })
-
-    return isSucess
+  const editVenueProvider = async (
+    payload: PostVenueProviderBody
+  ): Promise<boolean> => {
+    try {
+      const editedVenueProvider = await api.updateVenueProvider(payload)
+      afterVenueProviderEdit(editedVenueProvider)
+      notification.success(
+        "Les modifications ont bien été importées et s'appliqueront aux nouvelles séances créées."
+      )
+      return true
+    } catch (error) {
+      notification.error(getHumanReadableApiError(error))
+      return false
+    }
   }
 
   const openFormDialog = () => {
@@ -57,12 +50,13 @@ const AllocineProviderParameters = ({
     setIsOpenedFormDialog(false)
   }
 
-  const onConfirmDialog = (payload: PostVenueProviderBody): boolean => {
-    payload = {
+  const onConfirmDialog = async (
+    payload: PostVenueProviderBody
+  ): Promise<boolean> => {
+    const isSuccess = await editVenueProvider({
       ...payload,
       isActive: venueProvider.isActive,
-    }
-    const isSuccess = editVenueProvider(payload)
+    })
 
     closeFormDialog()
     return isSuccess

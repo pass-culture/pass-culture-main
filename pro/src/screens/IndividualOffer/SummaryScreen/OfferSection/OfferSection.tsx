@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
-import AccessibilitySummarySection from 'components/AccessibilitySummarySection'
+import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import {
   Description,
@@ -205,7 +205,7 @@ const OfferSummary = ({
         <SummaryDescriptionList descriptions={practicalInfoDescriptions} />
       </SummarySubSection>
 
-      <AccessibilitySummarySection offer={offer} />
+      <AccessibilitySummarySection accessibleItem={offer} />
 
       <SummarySubSection title="Lien pour le grand public">
         <SummaryDescriptionList

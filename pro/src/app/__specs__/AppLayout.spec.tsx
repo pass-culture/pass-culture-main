@@ -57,15 +57,47 @@ describe('src | AppLayout', () => {
   describe('side navigation', () => {
     it('should render the new header when the WIP_ENABLE_PRO_SIDE_NAV is active', () => {
       options.features = ['WIP_ENABLE_PRO_SIDE_NAV']
+      options.storeOverrides.user.currentUser.navState = {
+        newNavDate: '2021-01-01',
+      }
       renderApp(props, options)
 
       expect(screen.getByText('Se déconnecter')).toBeInTheDocument()
       expect(screen.queryByAltText('Menu')).not.toBeInTheDocument()
     })
 
+    it('should display review banner if user has new nav active', () => {
+      options.features = ['WIP_ENABLE_PRO_SIDE_NAV']
+      options.storeOverrides.user.currentUser.navState = {
+        newNavDate: '2021-01-01',
+        eligibilityDate: '2021-01-01',
+      }
+      renderApp(props, options)
+
+      expect(
+        screen.getByRole('button', { name: 'Je donne mon avis' })
+      ).toBeInTheDocument()
+    })
+
+    it('should not display review banner if user has new nav active but is not eligible (from a/b test)', () => {
+      options.features = ['WIP_ENABLE_PRO_SIDE_NAV']
+      options.storeOverrides.user.currentUser.navState = {
+        newNavDate: '2021-01-01',
+        eligibilityDate: null,
+      }
+      renderApp(props, options)
+
+      expect(
+        screen.queryByRole('button', { name: 'Je donne mon avis' })
+      ).not.toBeInTheDocument()
+    })
+
     describe('on smaller screen sizes', () => {
       beforeEach(() => {
         options.features = ['WIP_ENABLE_PRO_SIDE_NAV']
+        options.storeOverrides.user.currentUser.navState = {
+          newNavDate: '2021-01-01',
+        }
         renderApp(props, options)
 
         global.innerWidth = 500
@@ -76,12 +108,21 @@ describe('src | AppLayout', () => {
         expect(screen.getByLabelText('Menu')).toBeInTheDocument()
       })
 
-      it('should focus the close button when the button menu is clicked', () => {
-        userEvent.click(screen.getByLabelText('Menu'))
+      it('should focus the close button when the button menu is clicked', async () => {
+        await userEvent.click(screen.getByLabelText('Menu'))
 
-        waitFor(() => {
-          expect(screen.getByLabelText('Fermer')).toHaveFocus()
-        })
+        expect(screen.getByLabelText('Fermer')).toHaveFocus()
+      })
+
+      it('should trap focus when side nav is open', async () => {
+        await userEvent.click(screen.getByLabelText('Menu'))
+
+        expect(screen.getByLabelText('Fermer')).toHaveFocus()
+        const NB_ITEMS_IN_NAV = 11
+        for (let i = 0; i < NB_ITEMS_IN_NAV; i++) {
+          await userEvent.tab()
+        }
+        expect(screen.getByLabelText('Fermer')).toHaveFocus()
       })
     })
   })

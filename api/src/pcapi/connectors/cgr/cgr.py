@@ -10,7 +10,6 @@ from pcapi import settings
 from pcapi.connectors.cgr.exceptions import CGRAPIException
 from pcapi.connectors.serialization import cgr_serializers
 from pcapi.core.providers import models as providers_models
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils import requests
 from pcapi.utils.crypto import decrypt
 
@@ -65,10 +64,8 @@ def reservation_pass_culture(
         "pEmail": body.pEmail,
         "pToken": body.pToken,
         "pDateLimiteAnnul": body.pDateLimiteAnnul,
+        "pTimeoutReservation": CGR_TIMEOUT,
     }
-
-    if FeatureToggle.ENABLE_CGR_TIMEOUT.is_active():
-        params["pTimeoutReservation"] = CGR_TIMEOUT
 
     response = service.ReservationPassCulture(**params)
     response = json.loads(response)

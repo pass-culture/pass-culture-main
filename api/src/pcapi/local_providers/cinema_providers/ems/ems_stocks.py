@@ -178,10 +178,12 @@ class EMSStocks:
 
         local_tz = utils_date.get_department_timezone(self.venue.departementCode)
         beginning_datetime = datetime.datetime.strptime(session.date, "%Y%m%d%H%M")
-        beginning_datetime_in_utc = utils_date.local_datetime_to_default_timezone(beginning_datetime, local_tz)
+        beginning_datetime_no_tz = utils_date.local_datetime_to_default_timezone(beginning_datetime, local_tz).replace(
+            tzinfo=None
+        )
         old_beginning_datetime = stock.beginningDatetime
-        stock.beginningDatetime = beginning_datetime_in_utc
-        stock.bookingLimitDatetime = beginning_datetime_in_utc
+        stock.beginningDatetime = beginning_datetime_no_tz
+        stock.bookingLimitDatetime = beginning_datetime_no_tz
         _maybe_update_finance_event_pricing_date(stock, old_beginning_datetime)
 
         show_price = decimal.Decimal(session.pass_culture_price)

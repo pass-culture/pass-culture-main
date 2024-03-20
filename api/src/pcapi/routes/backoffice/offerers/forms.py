@@ -1,4 +1,5 @@
 import re
+import typing
 
 from flask_wtf import FlaskForm
 import sqlalchemy as sa
@@ -45,7 +46,7 @@ class EditOffererForm(FlaskForm):
     name = fields.PCStringField(
         "Nom de la structure",
         validators=(
-            wtforms.validators.InputRequired("Le nom est obligatoire"),
+            wtforms.validators.DataRequired("Le nom est obligatoire"),
             wtforms.validators.Length(max=140, message="doit contenir moins de %(max)d caractères"),
         ),
     )
@@ -99,6 +100,13 @@ class OffererValidationListForm(utils.PCForm):
             ValidationStatus, formatter=filters.format_validation_status, exclude_opts=(ValidationStatus.DELETED,)
         ),
     )
+    instructors = fields.PCTomSelectField(
+        "Auteur de la dernière action",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_bo_users",
+    )
     dms_adage_status = fields.PCSelectMultipleField(
         "États du dossier DMS Adage",
         choices=utils.choices_from_enum(GraphQLApplicationStates, filters.format_dms_application_status),
@@ -150,6 +158,13 @@ class UserOffererValidationListForm(utils.PCForm):
     status = fields.PCSelectMultipleField(
         "États de la demande de rattachement",
         choices=utils.choices_from_enum(ValidationStatus, filters.format_validation_status),
+    )
+    instructors = fields.PCTomSelectField(
+        "Auteur de la dernière action",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_bo_users",
     )
     offerer_status = fields.PCSelectMultipleField(
         "États de la structure", choices=utils.choices_from_enum(ValidationStatus, filters.format_validation_status)
@@ -230,7 +245,7 @@ class OffererTagBaseForm(FlaskForm):
     name = fields.PCStringField(
         "Nom",
         validators=(
-            wtforms.validators.InputRequired("Information obligatoire"),
+            wtforms.validators.DataRequired("Information obligatoire"),
             wtforms.validators.Length(min=1, max=140, message="Doit contenir moins de %(max)d caractères"),
             wtforms.validators.Regexp(TAG_NAME_REGEX, message="Le nom ne doit contenir aucun caractère d'espacement"),
         ),
@@ -254,14 +269,32 @@ class CreateOffererTagCategoryForm(OffererTagBaseForm):
 
 
 class IndividualOffererSubscriptionForm(FlaskForm):
-    is_email_sent = fields.PCSwitchBooleanField("Mail envoyé à l'acteur", full_row=True)
+    # full_opacity=True ensures that read-only view does not look disabled
+    is_email_sent = fields.PCSwitchBooleanField("Mail envoyé à l'acteur", full_row=True, full_opacity=True)
     date_email_sent = fields.PCOptDateField("Date d'envoi")
-    is_criminal_record_received = fields.PCSwitchBooleanField("Casier judiciaire reçu", full_row=True)
+    is_criminal_record_received = fields.PCSwitchBooleanField(
+        "Casier judiciaire reçu", full_row=True, full_opacity=True
+    )
     date_criminal_record_received = fields.PCOptDateField("Date de réception")
-    is_certificate_received = fields.PCSwitchBooleanField("Diplôme reçu", full_row=True)
+    is_certificate_received = fields.PCSwitchBooleanField("Diplôme reçu", full_row=True, full_opacity=True)
     certificate_details = fields.PCTextareaField("Type de diplôme / niveau")
-    is_experience_received = fields.PCSwitchBooleanField("Expérience reçue", full_row=True)
+    is_experience_received = fields.PCSwitchBooleanField("Expérience reçue", full_row=True, full_opacity=True)
     experience_details = fields.PCTextareaField("Type d'expérience")
-    has_1yr_experience = fields.PCSwitchBooleanField("1 à 4 ans")
-    has_4yr_experience = fields.PCSwitchBooleanField("+ 5 ans")
-    is_certificate_valid = fields.PCSwitchBooleanField("Validité du diplôme", full_row=True)
+    has_1yr_experience = fields.PCSwitchBooleanField("1 à 4 ans", full_opacity=True)
+    has_4yr_experience = fields.PCSwitchBooleanField("+ 5 ans", full_opacity=True)
+    is_certificate_valid = fields.PCSwitchBooleanField("Validité du diplôme", full_row=True, full_opacity=True)
+
+    def __init__(self, *args: typing.Any, read_only: bool = False, **kwargs: typing.Any) -> None:
+        super().__init__(*args, **kwargs)
+        if read_only:
+            self.is_email_sent.flags.readonly = True
+            self.date_email_sent.flags.readonly = True
+            self.is_criminal_record_received.flags.readonly = True
+            self.date_criminal_record_received.flags.readonly = True
+            self.is_certificate_received.flags.readonly = True
+            self.certificate_details.flags.readonly = True
+            self.is_experience_received.flags.readonly = True
+            self.experience_details.flags.readonly = True
+            self.has_1yr_experience.flags.readonly = True
+            self.has_4yr_experience.flags.readonly = True
+            self.is_certificate_valid.flags.readonly = True

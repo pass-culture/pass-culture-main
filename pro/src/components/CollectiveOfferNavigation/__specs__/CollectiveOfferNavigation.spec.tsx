@@ -51,12 +51,12 @@ describe('CollectiveOfferNavigation', () => {
     renderCollectiveOfferNavigation(props)
 
     const listItems = await screen.findAllByRole('listitem')
-    expect(listItems).toHaveLength(3)
+    expect(listItems).toHaveLength(4)
     expect(screen.queryByText('Date et prix')).not.toBeInTheDocument()
     expect(screen.queryByText('Visibilité')).not.toBeInTheDocument()
 
     const links = screen.queryAllByRole('link')
-    expect(links).toHaveLength(1)
+    expect(links).toHaveLength(3)
     expect(links[0].getAttribute('href')).toBe(
       `/offre/collectif/vitrine/${offerId}/creation`
     )
@@ -66,7 +66,7 @@ describe('CollectiveOfferNavigation', () => {
     props.activeStep = CollectiveOfferStep.STOCKS
     renderCollectiveOfferNavigation(props)
     const links = screen.queryAllByRole('link')
-    expect(links).toHaveLength(2)
+    expect(links).toHaveLength(3)
     expect(links[0].getAttribute('href')).toBe(
       `/offre/collectif/${offerId}/creation`
     )
@@ -79,7 +79,7 @@ describe('CollectiveOfferNavigation', () => {
     props.activeStep = CollectiveOfferStep.VISIBILITY
     renderCollectiveOfferNavigation(props)
     const links = screen.queryAllByRole('link')
-    expect(links).toHaveLength(2)
+    expect(links).toHaveLength(3)
     expect(links[0].getAttribute('href')).toBe(
       `/offre/collectif/${offerId}/creation`
     )
@@ -92,7 +92,7 @@ describe('CollectiveOfferNavigation', () => {
     props.activeStep = CollectiveOfferStep.SUMMARY
     renderCollectiveOfferNavigation(props)
     const links = screen.queryAllByRole('link')
-    expect(links).toHaveLength(3)
+    expect(links).toHaveLength(4)
     expect(links[0].getAttribute('href')).toBe(
       `/offre/collectif/${offerId}/creation`
     )

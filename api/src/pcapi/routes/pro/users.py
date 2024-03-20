@@ -336,3 +336,16 @@ def connect_as(token: str) -> Response:
     flask.session["internal_admin_id"] = token_data.internal_admin_id
 
     return flask.redirect(token_data.redirect_link, code=302)
+
+
+@blueprint.pro_private_api.route("/users/new-pro-nav", methods=["POST"])
+@login_required
+@spectree_serialize(on_success_status=204, on_error_statuses=[400], api=blueprint.pro_private_schema)
+def post_new_pro_nav() -> None:
+    errors = ApiErrors()
+    errors.status_code = 400
+    try:
+        users_api.enable_new_pro_nav(user=current_user)
+    except (users_exceptions.ProUserNotEligibleForNewNav, users_exceptions.ProUserNotYetEligibleForNewNav) as exc:
+        errors.add_error("global", "Vous n'êtes pas éligible à la nouvelle navigation")
+        raise errors from exc

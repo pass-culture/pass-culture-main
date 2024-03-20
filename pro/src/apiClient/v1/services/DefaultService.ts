@@ -1,4 +1,4 @@
-/* generated using openapi-typescript-codegen -- do no edit */
+/* generated using openapi-typescript-codegen -- do not edit */
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
@@ -7,6 +7,7 @@ import type { AdageCulturalPartnersResponseModel } from '../models/AdageCultural
 import type { AttachImageFormModel } from '../models/AttachImageFormModel';
 import type { AttachImageResponseModel } from '../models/AttachImageResponseModel';
 import type { BookingExportType } from '../models/BookingExportType';
+import type { BookingsExportStatusFilter } from '../models/BookingsExportStatusFilter';
 import type { BookingStatusFilter } from '../models/BookingStatusFilter';
 import type { CategoriesResponseModel } from '../models/CategoriesResponseModel';
 import type { ChangePasswordBodyModel } from '../models/ChangePasswordBodyModel';
@@ -119,6 +120,64 @@ import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class DefaultService {
   constructor(public readonly httpRequest: BaseHttpRequest) {}
+  /**
+   * export_bookings_for_offer_as_csv <GET>
+   * @param offerId
+   * @param status
+   * @param eventDate
+   * @returns any OK
+   * @throws ApiError
+   */
+  public exportBookingsForOfferAsCsv(
+    offerId: number,
+    status: BookingsExportStatusFilter,
+    eventDate: string,
+  ): CancelablePromise<any> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/bookings/offer/{offer_id}/csv',
+      path: {
+        'offer_id': offerId,
+      },
+      query: {
+        'status': status,
+        'event_date': eventDate,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * export_bookings_for_offer_as_excel <GET>
+   * @param offerId
+   * @param status
+   * @param eventDate
+   * @returns any OK
+   * @throws ApiError
+   */
+  public exportBookingsForOfferAsExcel(
+    offerId: number,
+    status: BookingsExportStatusFilter,
+    eventDate: string,
+  ): CancelablePromise<any> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/bookings/offer/{offer_id}/excel',
+      path: {
+        'offer_id': offerId,
+      },
+      query: {
+        'status': status,
+        'event_date': eventDate,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
   /**
    * get_bookings_pro <GET>
    * @param page
@@ -1991,6 +2050,22 @@ export class DefaultService {
       url: '/users/new-password',
       body: requestBody,
       mediaType: 'application/json',
+      errors: {
+        400: `Bad Request`,
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * post_new_pro_nav <POST>
+   * @returns void
+   * @throws ApiError
+   */
+  public postNewProNav(): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/users/new-pro-nav',
       errors: {
         400: `Bad Request`,
         403: `Forbidden`,

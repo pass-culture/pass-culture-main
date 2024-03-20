@@ -78,3 +78,11 @@
 .details-link {
   margin-top: rem.torem(16px);
 }
+
+.tag{
+  margin-top: rem.torem(8px);
+
+  @media (min-width: size.$tablet) {
+    margin-top: 0;
+  }
+}

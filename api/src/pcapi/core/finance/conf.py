@@ -28,7 +28,7 @@ GRANTED_DEPOSIT_AMOUNT_18_v2 = decimal.Decimal(300)
 GRANT_18_DIGITAL_CAP_V1 = decimal.Decimal(200)
 GRANT_18_DIGITAL_CAP_V2 = decimal.Decimal(100)
 GRANT_18_PHYSICAL_CAP_V1 = decimal.Decimal(200)
-GRANT_18_PHYSICAL_CAP_V2 = None
+GRANT_18_PHYSICAL_CAP_V2: decimal.Decimal | None = None
 
 WALLIS_AND_FUTUNA_DEPARTMENT_CODE = "986"
 MAYOTTE_DEPARTMENT_CODE = "976"
@@ -82,8 +82,8 @@ def physical_cap_applies_to_offer(offer: offers_models.Offer) -> bool:
 
 
 class SpecificCaps:
-    DIGITAL_CAP = None
-    PHYSICAL_CAP = None
+    DIGITAL_CAP: decimal.Decimal | None = None
+    PHYSICAL_CAP: decimal.Decimal | None = None
 
     def __init__(self, digital_cap: decimal.Decimal | None, physical_cap: decimal.Decimal | None) -> None:
         self.DIGITAL_CAP = digital_cap

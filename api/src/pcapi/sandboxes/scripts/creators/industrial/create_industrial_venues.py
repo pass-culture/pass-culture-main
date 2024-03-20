@@ -10,6 +10,7 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.providers import factories as providers_factories
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.sandboxes.scripts.mocks.accessibility_mocks import ACCESSIBILITY_MOCK
 from pcapi.sandboxes.scripts.mocks.venue_mocks import MOCK_NAMES
 
 
@@ -43,6 +44,7 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
 
     venue_by_name = {}
     mock_index = 0
+    mock_accessibility_index = 0
 
     iban_count = 0
     iban_prefix = "FR7630001007941234567890185"
@@ -57,6 +59,7 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
         longitude = float(geoloc_match.group(3)) if geoloc_match else None
 
         venue_name = MOCK_NAMES[mock_index % len(MOCK_NAMES)]
+        venue_accessibility = ACCESSIBILITY_MOCK[mock_accessibility_index % len(ACCESSIBILITY_MOCK)]
 
         # create all possible cases:
         # offerer with or without iban / venue with or without iban
@@ -105,6 +108,9 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
                 pricing_point="self" if siret else None,
                 bank_account=bank_account,
             )
+            venue_accessibility = offerers_factories.AccessibilityProviderFactory(
+                venue=venue, externalAccessibilityData=venue_accessibility
+            )
 
             if offerer.validationStatus == ValidationStatus.NEW:
                 offerers_factories.VenueRegistrationFactory(venue=venue)
@@ -131,6 +137,7 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
                     reimbursement_point="self",
                 )
                 venue_by_name[second_venue_name] = second_venue
+            mock_accessibility_index += 1
 
         bic_suffix += 1
         mock_index += 1

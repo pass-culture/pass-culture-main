@@ -7,11 +7,12 @@ import { Link } from 'ui-kit/Banners/LinkNodes/LinkNodes'
 import style from './FormLayout.module.scss'
 
 export interface FormLayoutDescriptionProps {
-  description?: string
+  description?: string | JSX.Element
   isBanner?: boolean
   links?: Link[]
 }
-const Description = ({
+
+export const FormLayoutDescription = ({
   description,
   isBanner = false,
   links,
@@ -35,5 +36,3 @@ const Description = ({
     )}
   </>
 )
-
-export default Description

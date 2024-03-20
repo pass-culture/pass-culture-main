@@ -286,7 +286,41 @@ WHERE reason is not null
 
 TRUNCATE TABLE activity;
 TRUNCATE TABLE user_session;
+
+-- Avoid synchronization with providers
 UPDATE venue_provider SET "isActive" = false;
+-- Deactivate the related offers
+-- Analysis of the query: https://passculture.atlassian.net/browse/PC-28443
+-- TL;DR: It takes about 100 seconds, and uses the indexes. No seq scan of the offer table is happening.
+-- This is the best we can do to avoid a full table scan.
+UPDATE offer
+SET "isActive" = false
+FROM venue_provider
+JOIN provider ON provider.id = venue_provider."providerId"
+WHERE venue_provider."venueId" = offer."venueId"
+  AND provider."localClass" = 'CDSStocks'
+;
+UPDATE offer
+SET "isActive" = false
+FROM venue_provider
+JOIN provider ON provider.id = venue_provider."providerId"
+WHERE venue_provider."venueId" = offer."venueId"
+  AND provider."localClass" = 'BoostStocks'
+;
+UPDATE offer
+SET "isActive" = false
+FROM venue_provider
+JOIN provider ON provider.id = venue_provider."providerId"
+WHERE venue_provider."venueId" = offer."venueId"
+  AND provider."localClass" = 'CGRStocks'
+;
+UPDATE offer
+SET "isActive" = false
+FROM venue_provider
+JOIN provider ON provider.id = venue_provider."providerId"
+WHERE venue_provider."venueId" = offer."venueId"
+  AND provider."localClass" = 'EMSStocks'
+;
 
 -- Anonymize redactor for table CollectiveOfferRequest
 UPDATE collective_offer_request

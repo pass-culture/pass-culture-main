@@ -4,7 +4,6 @@ from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
 import pytest
-import time_machine
 
 from pcapi.analytics.amplitude import testing as amplitude_testing
 from pcapi.analytics.amplitude.backends import amplitude_connector
@@ -97,7 +96,6 @@ class HandleDmsApplicationTest:
         "L’équipe du pass Culture"
     )
 
-    @time_machine.travel("2016-11-02")
     def test_handle_dms_application_sends_user_identity_check_started_event(self):
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime(2000, 1, 1))
         dms_response = make_parsed_graphql_application(
@@ -114,6 +112,26 @@ class HandleDmsApplicationTest:
             "event_name": "user_identity_check_started",
             "event_payload": {"type": "dms"},
             "user_id": user.id,
+        }
+
+    def test_handle_dms_application_made_for_beneficiary_by_representative(self):
+        representative = users_factories.UserFactory(dateOfBirth=datetime.datetime(1980, 1, 1))
+        applicant = users_factories.UserFactory(dateOfBirth=datetime.datetime(2000, 1, 1))
+        dms_response = make_parsed_graphql_application(
+            application_number=1234,
+            state=dms_models.GraphQLApplicationStates.accepted,
+            email=representative.email,
+            applicant_email=applicant.email,
+            birth_date=datetime.datetime(2016, 1, 1),
+        )
+
+        dms_subscription_api.handle_dms_application(dms_response)
+
+        assert push_testing.requests[0] == {
+            "can_be_asynchronously_retried": True,
+            "event_name": "user_identity_check_started",
+            "event_payload": {"type": "dms"},
+            "user_id": applicant.id,
         }
 
     def test_concurrent_accepted_calls(self):
@@ -139,7 +157,6 @@ class HandleDmsApplicationTest:
         assert fraud_models.BeneficiaryFraudCheck.query.first().status == fraud_models.FraudCheckStatus.OK
 
     @patch("pcapi.core.subscription.dms.api._process_in_progress_application")
-    @time_machine.travel("2016-11-02")
     def test_multiple_call_for_same_application(self, mock_process_in_progress, db_session):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime(2000, 1, 1), roles=[users_models.UserRole.UNDERAGE_BENEFICIARY]
@@ -404,7 +421,6 @@ class HandleDmsApplicationTest:
         assert orphan.latest_modification_datetime == datetime.datetime(2020, 5, 13, 7, 9, 46)
 
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
-    @time_machine.travel("2022-05-13")
     def test_correcting_application_resets_errors(self, mock_send_user_message, db_session):
         user = users_factories.UserFactory(email="john.stiles@example.com")
         dms_response = make_parsed_graphql_application(

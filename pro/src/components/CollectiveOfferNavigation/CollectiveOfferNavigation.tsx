@@ -11,6 +11,7 @@ export enum CollectiveOfferStep {
   VISIBILITY = 'visibility',
   SUMMARY = 'recapitulatif',
   CONFIRMATION = 'confirmation',
+  PREVIEW = 'preview',
 }
 
 export interface CollectiveOfferNavigationProps {
@@ -86,7 +87,19 @@ const CollectiveOfferNavigation = ({
       url:
         offerId && haveStock
           ? `/offre/${offerId}/collectif/creation/recapitulatif`
-          : '',
+          : offerId
+            ? `/offre/${offerId}/collectif/vitrine/creation/recapitulatif`
+            : ``,
+    }
+    if (isTemplate) {
+      stepList[CollectiveOfferStep.PREVIEW] = {
+        id: CollectiveOfferStep.PREVIEW,
+        label: 'Aperçu',
+        url:
+          offerId && haveStock
+            ? `/offre/${offerId}/collectif/vitrine/creation/apercu`
+            : '',
+      }
     }
     stepList[CollectiveOfferStep.CONFIRMATION] = {
       id: CollectiveOfferStep.CONFIRMATION,
@@ -116,6 +129,14 @@ const CollectiveOfferNavigation = ({
             `/offre/${offerId}/collectif/stocks`
         }
 
+      // @ts-expect-error switch fallthrough
+      case CollectiveOfferStep.PREVIEW:
+        if (isTemplate) {
+          stepList[CollectiveOfferStep.PREVIEW].url =
+            `/offre/${offerId}/collectif/vitrine/creation/apercu`
+        }
+
+      // @ts-expect-error switch fallthrough
       case CollectiveOfferStep.STOCKS:
         if (isTemplate) {
           stepList[CollectiveOfferStep.DETAILS].url =
@@ -124,6 +145,9 @@ const CollectiveOfferNavigation = ({
           stepList[CollectiveOfferStep.DETAILS].url =
             `/offre/collectif/${offerId}/creation${requestIdUrl}`
         }
+
+      case CollectiveOfferStep.DETAILS:
+      // Nothing to do here
     }
   }
 

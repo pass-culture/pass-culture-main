@@ -6,6 +6,7 @@ const STEP_STOCKS = 'stocks'
 const STEP_VISIBILITY = 'visibility'
 const STEP_CONFIRMATION = 'confirmation'
 const STEP_RECAP = 'summary'
+const STEP_PREVIEW = 'preview'
 
 const collectiveUrlPatterns: { [key: string]: RegExp } = {
   [STEP_OFFER]: /\/offre\/creation\/collectif/g,
@@ -18,6 +19,8 @@ const collectiveUrlPatterns: { [key: string]: RegExp } = {
     /\/offre(\/((T-){0,1}[A-Z0-9]+))\/collectif(\/vitrine)?(\/[A-Z,0-9]+)?(\/creation)?\/recapitulatif/g,
   [STEP_CONFIRMATION]:
     /\/offre\/((T-){0,1}[A-Z0-9]+)\/collectif(\/vitrine)?(\/[A-Z,0-9]+)?\/confirmation/g,
+  [STEP_PREVIEW]:
+    /\/offre(\/((T-){0,1}[A-Z0-9]+))\/collectif(\/vitrine)?(\/[A-Z,0-9]+)?(\/creation)?\/apercu/g,
 }
 
 export const shouldBlockNavigation: BlockerFunction = ({
@@ -53,7 +56,10 @@ export const shouldBlockNavigation: BlockerFunction = ({
     (from === STEP_RECAP && to === STEP_VISIBILITY) ||
     (from === STEP_RECAP && to === STEP_STOCKS) ||
     (from === STEP_RECAP && to === STEP_OFFER_EDITION) ||
-    (from === STEP_RECAP && to === STEP_OFFER)
+    (from === STEP_RECAP && to === STEP_OFFER) ||
+    (from === STEP_RECAP && to === STEP_PREVIEW) ||
+    (from === STEP_PREVIEW && to === STEP_OFFER_EDITION) ||
+    (from === STEP_PREVIEW && to === STEP_RECAP)
   ) {
     return false
   }
@@ -71,7 +77,9 @@ export const shouldBlockNavigation: BlockerFunction = ({
     // or to recap
     to === STEP_RECAP ||
     // or from collective to individual or reverse
-    (from === STEP_OFFER && to === STEP_OFFER)
+    (from === STEP_OFFER && to === STEP_OFFER) ||
+    // or to preview
+    to === STEP_PREVIEW
   ) {
     return false
   }

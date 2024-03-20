@@ -16,7 +16,7 @@ import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/Reimburse
 import BankAccountInfos from 'pages/VenueCreation/BankAccountInfos/BankAccountInfos'
 import { OffersSynchronization } from 'pages/VenueCreation/OffersSynchronization'
 import { SiretOrCommentFields } from 'pages/VenueCreation/SiretOrCommentFields/SiretOrCommentFields'
-import { VenueFormActionBar } from 'pages/VenueCreation/VenueFormActionBar'
+import { VenueFormActionBar } from 'pages/VenueCreation/VenueFormActionBar/VenueFormActionBar'
 import { WithdrawalDetails } from 'pages/VenueCreation/WithdrawalDetails'
 import { TextInput, InfoBox, Select } from 'ui-kit'
 
@@ -175,7 +175,7 @@ export const VenueSettingsForm = ({
         )}
       </FormLayout>
 
-      <VenueFormActionBar isCreatingVenue={false} />
+      <VenueFormActionBar venue={venue} />
     </>
   )
 }

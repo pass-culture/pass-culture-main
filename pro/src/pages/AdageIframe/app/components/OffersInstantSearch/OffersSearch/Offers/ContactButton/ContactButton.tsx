@@ -19,9 +19,10 @@ export interface ContactButtonProps {
   position: number
   queryId: string
   userEmail?: string | null
-  userRole: AdageFrontRoles
+  userRole?: AdageFrontRoles
   isInSuggestions?: boolean
   children?: React.ReactNode
+  isPreview?: boolean
 }
 
 const ContactButton = ({
@@ -37,6 +38,7 @@ const ContactButton = ({
   userRole,
   isInSuggestions,
   children,
+  isPreview = false,
 }: ContactButtonProps): JSX.Element => {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -47,15 +49,17 @@ const ContactButton = ({
   const handleButtonClick = () => {
     setIsModalOpen(true)
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    apiAdage.logContactModalButtonClick({
-      iframeFrom: location.pathname,
-      offerId,
-      queryId: queryId,
-      isFromNoResult: isInSuggestions,
-    })
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    logClickOnOffer(offerId.toString(), position, queryId)
+    if (!isPreview) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      apiAdage.logContactModalButtonClick({
+        iframeFrom: location.pathname,
+        offerId,
+        queryId: queryId,
+        isFromNoResult: isInSuggestions,
+      })
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      logClickOnOffer(offerId.toString(), position, queryId)
+    }
   }
 
   const closeModal = () => {
@@ -80,6 +84,7 @@ const ContactButton = ({
             contactPhone={contactPhone ?? ''}
             contactUrl={contactUrl ?? ''}
             contactForm={contactForm ?? ''}
+            isPreview={isPreview}
           />
         ) : (
           <RequestFormDialog
@@ -89,6 +94,7 @@ const ContactButton = ({
             offerId={offerId}
             userEmail={userEmail}
             userRole={userRole}
+            isPreview={isPreview}
           />
         ))}
     </>

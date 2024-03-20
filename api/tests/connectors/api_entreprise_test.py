@@ -1,4 +1,7 @@
 import datetime
+import logging
+import time
+import unittest.mock
 
 import pytest
 import requests_mock
@@ -151,6 +154,25 @@ def test_get_siren_invalid_parameter():
             "collectivité ou une administration, ce paramètre doit donc être votre numéro de SIRET ; si vous êtes un "
             "éditeur, il s'agit du SIRET de l'organisation publique cliente demandant la donnée."
         )
+
+
+@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+def test_get_siren_reached_rate_limit():
+    siren = settings.PASS_CULTURE_SIRET[:9]
+    with requests_mock.Mocker() as mock:
+        mock.get(
+            f"https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/{siren}/siege_social",
+            headers={
+                "RateLimit-Limit": "250",
+                "RateLimit-Remaining": "0",
+                "RateLimit-Reset": str(int(time.time()) + 30),
+            },
+            status_code=429,
+            json=api_entreprise_test_data.RESPONSE_SIREN_ERROR_429,
+        )
+        with pytest.raises(exceptions.RateLimitExceeded) as error:
+            api.get_siren(siren)
+        assert str(error.value) == "Vous avez effectué trop de requêtes"
 
 
 @override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
@@ -453,3 +475,112 @@ def test_get_dgfip_inactive_company():
             str(error.value)
             == "L'identifiant indiqué n'existe pas, n'est pas connu ou ne comporte aucune information pour cet appel."
         )
+
+
+@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@unittest.mock.patch("time.sleep")
+@unittest.mock.patch("flask.current_app.redis_client.set")
+@unittest.mock.patch("flask.current_app.redis_client.ttl", return_value=-1)
+def test_check_rate_limit_ok(mock_redis_client_ttl, mock_redis_client_set, mock_sleep, caplog):
+    siren = "123456789"
+    with requests_mock.Mocker() as mock:
+        mock_request = mock.get(
+            f"https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/{siren}",
+            headers={
+                "RateLimit-Limit": "250",
+                "RateLimit-Remaining": "120",  # More than 20% remaining
+                "RateLimit-Reset": str(int(time.time()) + 15),
+            },
+            json=api_entreprise_test_data.RESPONSE_SIREN_COMPANY,
+        )
+        with caplog.at_level(logging.WARNING):
+            api.get_siren(siren, with_address=False)
+
+    assert mock_redis_client_ttl.call_count == 1
+    assert mock_sleep.call_count == 0
+    assert mock_request.call_count == 1
+    assert mock_redis_client_set.call_count == 1
+    assert mock_redis_client_set.mock_calls[0].args[0] == f"cache:entreprise:/v3/insee/sirene/unites_legales/{siren}"
+    assert caplog.records == []
+
+
+@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@unittest.mock.patch("flask.current_app.redis_client.set")
+def test_check_rate_limit_near_limit(mock_redis_client_set, caplog):
+    siren = "123456789"
+    reset_timestamp = int(time.time()) + 15
+    with requests_mock.Mocker() as mock:
+        mock_request = mock.get(
+            f"https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/{siren}",
+            headers={
+                "RateLimit-Limit": "250",
+                "RateLimit-Remaining": "45",  # Less than 20% remaining
+                "RateLimit-Reset": str(reset_timestamp),
+            },
+            json=api_entreprise_test_data.RESPONSE_SIREN_COMPANY,
+        )
+        with caplog.at_level(logging.WARNING):
+            api.get_siren(siren, with_address=False)
+
+    assert mock_request.call_count == 1
+    assert mock_redis_client_set.call_count == 2
+    assert mock_redis_client_set.mock_calls[0].args == ("cache:entreprise:/v3/insee/:lock", "1")
+    assert mock_redis_client_set.mock_calls[0].kwargs["ex"] >= reset_timestamp - time.time()
+    assert mock_redis_client_set.mock_calls[0].kwargs["ex"] < 50
+    assert mock_redis_client_set.mock_calls[1].args[0] == f"cache:entreprise:/v3/insee/sirene/unites_legales/{siren}"
+
+    assert caplog.messages == ["More than 80% of rate limit reached on API Entreprise"]
+    assert caplog.records[0].extra["limit"] == 250
+    assert caplog.records[0].extra["remaining"] == 45
+    assert caplog.records[0].extra["percent"] == 82.0
+
+
+@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@unittest.mock.patch("time.sleep")
+@unittest.mock.patch("flask.current_app.redis_client.set")
+@unittest.mock.patch("flask.current_app.redis_client.ttl", side_effect=[20, -1])
+def test_rate_limit_locked(mock_redis_client_ttl, mock_redis_client_set, mock_sleep):
+    siren = "123456789"
+    with requests_mock.Mocker() as mock:
+        mock_request = mock.get(
+            f"https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/{siren}",
+            headers={
+                "RateLimit-Limit": "250",
+                "RateLimit-Remaining": "249",
+                "RateLimit-Reset": str(int(time.time()) + 59),
+            },
+            json=api_entreprise_test_data.RESPONSE_SIREN_COMPANY,
+        )
+        api.get_siren(siren, with_address=False)
+
+    assert mock_redis_client_ttl.call_count == 2  # before and after sleep
+    assert mock_sleep.call_count == 1
+    assert mock_request.call_count == 1
+    assert mock_redis_client_set.call_count == 1  # cached data only
+
+
+@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@unittest.mock.patch("time.sleep")
+@unittest.mock.patch("flask.current_app.redis_client.set")
+@unittest.mock.patch("flask.current_app.redis_client.ttl", return_value=20)
+def test_rate_limit_locked_over_timeout(mock_redis_client_ttl, mock_redis_client_set, mock_sleep):
+    siren = "123456789"
+    with requests_mock.Mocker() as mock:
+        mock_request = mock.get(
+            f"https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/{siren}",
+            headers={
+                "RateLimit-Limit": "250",
+                "RateLimit-Remaining": "0",
+                "RateLimit-Reset": str(int(time.time()) + 55),
+            },
+            status_code=429,
+            json=api_entreprise_test_data.RESPONSE_SIREN_ERROR_429,
+        )
+        with pytest.raises(exceptions.RateLimitExceeded):
+            api.get_siren(siren, with_address=False)
+
+    # should have slept 20+ seconds twice, then third one (20 seconds ttl again) would be over timeout
+    assert mock_redis_client_ttl.call_count == 3
+    assert mock_sleep.call_count == 2
+    assert mock_request.call_count == 0
+    assert mock_redis_client_set.call_count == 0

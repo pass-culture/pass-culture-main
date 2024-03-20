@@ -1,17 +1,22 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
+import { GetVenueResponseModel } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import { ButtonLink, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { VenueCreationFormValues } from '../types'
 
-interface VenueFormActionBarProps {
-  isCreatingVenue: boolean
+export interface VenueFormActionBarProps {
+  isCreatingVenue?: boolean
+  venue?: GetVenueResponseModel
 }
 
-const VenueFormActionBar = ({ isCreatingVenue }: VenueFormActionBarProps) => {
+export const VenueFormActionBar = ({
+  isCreatingVenue,
+  venue,
+}: VenueFormActionBarProps) => {
   const { isSubmitting } = useFormikContext<VenueCreationFormValues>()
 
   return (
@@ -20,7 +25,9 @@ const VenueFormActionBar = ({ isCreatingVenue }: VenueFormActionBarProps) => {
         <ButtonLink
           variant={ButtonVariant.SECONDARY}
           link={{
-            to: '/accueil',
+            to: isCreatingVenue
+              ? '/accueil'
+              : `/structures/${venue?.managingOfferer?.id}/lieux/${venue?.id}`,
             isExternal: false,
           }}
         >
@@ -36,5 +43,3 @@ const VenueFormActionBar = ({ isCreatingVenue }: VenueFormActionBarProps) => {
     </ActionsBarSticky>
   )
 }
-
-export default VenueFormActionBar

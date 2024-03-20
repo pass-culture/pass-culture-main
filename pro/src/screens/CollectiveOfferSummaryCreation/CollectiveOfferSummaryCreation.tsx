@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import {
-  GetOffererResponseModel,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
+  GetOffererResponseModel,
 } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import CollectiveOfferSummary from 'components/CollectiveOfferSummary'
@@ -47,12 +47,18 @@ const CollectiveOfferSummaryCreation = ({
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
 
-  const confirmationUrl = offer.isTemplate
-    ? `/offre/${offer.id}/collectif/vitrine/confirmation`
+  const nextRedirectionUrl = offer.isTemplate
+    ? `/offre/${offer.id}/collectif/vitrine/creation/apercu`
     : `/offre/${computeURLCollectiveOfferId(
         offer.id,
         offer.isTemplate
       )}/collectif/confirmation`
+
+  const backRedirectionUrl = offer.isTemplate
+    ? `/offre/collectif/vitrine/${offer.id}/creation`
+    : `/offre/${offer.id}/collectif/visibilite${
+        requestId ? `?requete=${requestId}` : ''
+      }`
 
   const publishOffer = async () => {
     if (offer.isTemplate) {
@@ -61,7 +67,7 @@ const CollectiveOfferSummaryCreation = ({
         return notify.error(response.message)
       }
       setOffer(response.payload)
-      return navigate(confirmationUrl)
+      return navigate(nextRedirectionUrl)
     }
 
     const response = await publishCollectiveOfferAdapter(offer.id)
@@ -80,51 +86,54 @@ const CollectiveOfferSummaryCreation = ({
     if (shouldDisplayRedirectDialog) {
       setDisplayRedirectDialog(true)
     } else {
-      navigate(confirmationUrl)
+      navigate(nextRedirectionUrl)
     }
   }
-  const backRedirectionUrl = offer.isTemplate
-    ? `/offre/collectif/vitrine/${offer.id}/creation`
-    : `/offre/${offer.id}/collectif/visibilite${
-        requestId ? `?requete=${requestId}` : ''
-      }`
 
   return (
-    <>
-      <div className={styles['summary']}>
-        <CollectiveOfferSummary
-          offer={offer}
-          offerEditLink={`/offre/collectif${
-            offer.isTemplate ? '/vitrine' : ''
-          }/${offer.id}/creation`}
-          stockEditLink={`/offre/${offer.id}/collectif/stocks`}
-          visibilityEditLink={`/offre/${offer.id}/collectif/visibilite`}
-        />
-        <ActionsBarSticky>
-          <ActionsBarSticky.Left>
-            <ButtonLink
-              variant={ButtonVariant.SECONDARY}
-              link={{
-                to: backRedirectionUrl,
-                isExternal: false,
-              }}
-            >
-              Étape précédente
-            </ButtonLink>
-          </ActionsBarSticky.Left>
-          <ActionsBarSticky.Right>
-            <Button onClick={publishOffer}>Publier l’offre</Button>{' '}
-          </ActionsBarSticky.Right>
-        </ActionsBarSticky>
-      </div>
+    <div className={styles['summary']}>
+      <CollectiveOfferSummary
+        offer={offer}
+        offerEditLink={`/offre/collectif${
+          offer.isTemplate ? '/vitrine' : ''
+        }/${offer.id}/creation`}
+        stockEditLink={`/offre/${offer.id}/collectif/stocks`}
+        visibilityEditLink={`/offre/${offer.id}/collectif/visibilite`}
+      />
+      <ActionsBarSticky>
+        <ActionsBarSticky.Left>
+          <ButtonLink
+            variant={ButtonVariant.SECONDARY}
+            link={{
+              to: backRedirectionUrl,
+              isExternal: false,
+            }}
+          >
+            Étape précédente
+          </ButtonLink>
+        </ActionsBarSticky.Left>
+        {offer.isTemplate ? (
+          <ButtonLink
+            variant={ButtonVariant.PRIMARY}
+            link={{
+              to: nextRedirectionUrl,
+              isExternal: false,
+            }}
+          >
+            Étape suivante
+          </ButtonLink>
+        ) : (
+          <Button onClick={publishOffer}>Publier l’offre</Button>
+        )}
+      </ActionsBarSticky>
       {displayRedirectDialog && offerer?.id && (
         <RedirectToBankAccountDialog
-          cancelRedirectUrl={confirmationUrl}
+          cancelRedirectUrl={nextRedirectionUrl}
           offerId={offerer?.id}
           venueId={offer.venue.id}
         />
       )}
-    </>
+    </div>
   )
 }
 

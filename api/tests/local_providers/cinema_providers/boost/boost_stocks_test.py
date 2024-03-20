@@ -9,6 +9,7 @@ import sqlalchemy as sa
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.external_bookings.boost import constants as boost_constants
+from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import PriceCategory
@@ -25,6 +26,7 @@ from pcapi.repository import transaction
 from pcapi.utils.human_ids import humanize
 
 import tests
+from tests.local_providers.provider_test_utils import create_finance_event_to_update
 
 from . import fixtures
 
@@ -842,7 +844,7 @@ class BoostStocksTest:
 
     def should_update_finance_event_when_stock_beginning_datetime_is_updated(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
-        venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
+        venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True, venue__pricing_point="self")
         cinema_provider_pivot = BoostCinemaProviderPivotFactory(
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
@@ -851,7 +853,6 @@ class BoostStocksTest:
         requests_mock.get(
             "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
         )
-
         requests_mock.get(
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
@@ -862,6 +863,7 @@ class BoostStocksTest:
         )
         requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
         boost_stocks = BoostStocks(venue_provider=venue_provider)
+
         with mock.patch("pcapi.core.finance.api.update_finance_event_pricing_date") as mock_update_finance_event:
             boost_stocks.updateObjects()
         mock_update_finance_event.assert_not_called()
@@ -881,10 +883,24 @@ class BoostStocksTest:
             "https://cinema-0.example.com/api/showtimes/36683",
             json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA_WITH_NEW_DATE,
         )
+        to_compare = []
         boost_stocks = BoostStocks(venue_provider=venue_provider)
-        with mock.patch("pcapi.core.finance.api.update_finance_event_pricing_date") as mock_update_finance_event:
-            boost_stocks.updateObjects()
-        mock_update_finance_event.assert_called_once()
+        for providable_infos in boost_stocks:
+            for providable_info in providable_infos:
+                if isinstance(providable_info.type(), offers_models.Stock):
+                    stock_synchronised = offers_models.Stock.query.filter_by(
+                        idAtProviders=providable_info.id_at_providers
+                    ).one_or_none()
+                    assert stock_synchronised is not None
+                    event_created = create_finance_event_to_update(
+                        stock=stock_synchronised, venue_provider=venue_provider
+                    )
+                    to_compare.append((event_created.pricingOrderingDate, event_created))
+
+        boost_stocks = BoostStocks(venue_provider=venue_provider)  # because the iterator is consumed
+        boost_stocks.updateObjects()
+        for last_pricingOrderingDate, event in to_compare:
+            assert event.pricingOrderingDate != last_pricingOrderingDate
 
     def should_create_offer_with_correct_thumb(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")

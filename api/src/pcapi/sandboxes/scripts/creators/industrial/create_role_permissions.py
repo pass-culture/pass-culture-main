@@ -13,6 +13,10 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS,
         perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT,
     ],
+    "codir_admin": [
+        perm_models.Permissions.READ_INCIDENTS,
+        perm_models.Permissions.MANAGE_INCIDENTS,
+    ],
     "support_n1": [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
     ],
@@ -24,6 +28,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     "support_pro": [
         perm_models.Permissions.READ_PRO_ENTITY,
         perm_models.Permissions.READ_PRO_ENTREPRISE_INFO,
+        perm_models.Permissions.READ_PRO_AE_INFO,
         perm_models.Permissions.MANAGE_PRO_ENTITY,
         perm_models.Permissions.DELETE_PRO_ENTITY,
         perm_models.Permissions.CREATE_PRO_ENTITY,
@@ -45,6 +50,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_PRO_ENTITY,
         perm_models.Permissions.READ_PRO_ENTREPRISE_INFO,
         perm_models.Permissions.READ_PRO_SENSITIVE_INFO,
+        perm_models.Permissions.READ_PRO_AE_INFO,
         perm_models.Permissions.VALIDATE_OFFERER,
         perm_models.Permissions.MANAGE_BOOKINGS,
         perm_models.Permissions.READ_BOOKINGS,
@@ -113,6 +119,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_PRO_ENTITY,
         perm_models.Permissions.READ_PRO_ENTREPRISE_INFO,
         perm_models.Permissions.READ_PRO_SENSITIVE_INFO,
+        perm_models.Permissions.READ_PRO_AE_INFO,
         perm_models.Permissions.MANAGE_PRO_ENTITY,
         perm_models.Permissions.DELETE_PRO_ENTITY,
         perm_models.Permissions.CREATE_PRO_ENTITY,
@@ -147,6 +154,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_PRO_ENTITY,
         perm_models.Permissions.READ_PRO_ENTREPRISE_INFO,
         perm_models.Permissions.READ_PRO_SENSITIVE_INFO,
+        perm_models.Permissions.READ_PRO_AE_INFO,
         perm_models.Permissions.MANAGE_PRO_ENTITY,
         perm_models.Permissions.DELETE_PRO_ENTITY,
         perm_models.Permissions.CREATE_PRO_ENTITY,

@@ -2,7 +2,6 @@ from datetime import datetime
 from datetime import timedelta
 
 import pytest
-import time_machine
 
 from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
@@ -48,18 +47,19 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
 
-    @time_machine.travel("2020-10-15 00:00:00")
     def test_returns_an_event_stock(self, client):
         # Given
         now = datetime.utcnow()
+        booking_datetime = now + timedelta(hours=1)
+        booking_datetime_as_isoformat = booking_datetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
         user_offerer = offerers_factories.UserOffererFactory()
         event_offer = offers_factories.EventOfferFactory(venue__managingOfferer=user_offerer.offerer)
         stock = offers_factories.EventStockFactory(
             dateCreated=now,
             dateModified=now,
             dateModifiedAtLastProvider=now,
-            beginningDatetime=now + timedelta(hours=1),
-            bookingLimitDatetime=now + timedelta(hours=1),
+            beginningDatetime=booking_datetime,
+            bookingLimitDatetime=booking_datetime,
             offer=event_offer,
         )
 
@@ -74,8 +74,8 @@ class Returns200Test:
             "stocks": [
                 {
                     "activationCodesExpirationDatetime": None,
-                    "beginningDatetime": "2020-10-15T01:00:00Z",
-                    "bookingLimitDatetime": "2020-10-15T01:00:00Z",
+                    "beginningDatetime": booking_datetime_as_isoformat,
+                    "bookingLimitDatetime": booking_datetime_as_isoformat,
                     "bookingsQuantity": 0,
                     "hasActivationCode": False,
                     "priceCategoryId": stock.priceCategoryId,
@@ -88,7 +88,6 @@ class Returns200Test:
             ],
         }
 
-    @time_machine.travel("2020-10-15 00:00:00")
     def test_returns_a_thing_stock(self, client):
         # Given
         now = datetime.utcnow()
@@ -181,7 +180,6 @@ class Returns200Test:
         assert len(response.json["stocks"]) == 0
         assert response.json["hasStocks"] == True
 
-    @time_machine.travel("2020-10-15 00:00:00")
     def test_should_return_total_stock_count_when_unfiltered(self, client):
         # Given
         date_1 = datetime.utcnow()
@@ -197,17 +195,18 @@ class Returns200Test:
         assert response.json["stockCount"] == 5
         assert len(response.json["stocks"]) == 5
 
-    @time_machine.travel("2020-10-15 00:00:00")
     def test_should_return_filtered_stock_count(self, client):
         # Given
         now = datetime.utcnow()
+        beginning_datetime = now + timedelta(seconds=1)
+        booking_limit_datetime = beginning_datetime.replace(hour=23, minute=59) - timedelta(days=3)
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
         offers_factories.ThingStockFactory.create_batch(
             4, dateCreated=now, dateModified=now, beginningDatetime=now, offer=offer
         )
         last_stock = offers_factories.ThingStockFactory(
-            dateCreated=now, dateModified=now, beginningDatetime=now + timedelta(seconds=1), offer=offer
+            dateCreated=now, dateModified=now, beginningDatetime=beginning_datetime, offer=offer
         )
 
         # When
@@ -223,8 +222,8 @@ class Returns200Test:
             "stocks": [
                 {
                     "activationCodesExpirationDatetime": None,
-                    "beginningDatetime": "2020-10-15T00:00:01Z",
-                    "bookingLimitDatetime": "2020-10-12T23:59:01Z",
+                    "beginningDatetime": beginning_datetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                    "bookingLimitDatetime": booking_limit_datetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
                     "bookingsQuantity": 0,
                     "hasActivationCode": False,
                     "id": last_stock.id,
@@ -237,7 +236,6 @@ class Returns200Test:
             ],
         }
 
-    @time_machine.travel("2020-10-15 00:00:00")
     def test_should_return_filtered_stock_count_and_filtered_stock_list(self, client):
         # Given
         date_1 = datetime.utcnow()
@@ -260,7 +258,6 @@ class Returns200Test:
         assert response.json["stockCount"] == 3
         assert len(response.json["stocks"]) == 2
 
-    @time_machine.travel("2020-10-15 00:00:00")
     def test_should_return_filtered_stock_count_and_filtered_stock_list_with_stocks_inferior_to_limit_per_page(
         self, client
     ):
@@ -285,7 +282,6 @@ class Returns200Test:
         assert response.json["stockCount"] == 3
         assert len(response.json["stocks"]) == 3
 
-    @time_machine.travel("2020-10-15 22:37:00")
     def test_performance(self, client):
         # Given
         date_1 = datetime.utcnow()
@@ -298,4 +294,4 @@ class Returns200Test:
         # When
         client = client.with_session_auth(email=user_offerer.user.email)
         with testing.assert_no_duplicated_queries():
-            client.get(f"/offers/{offer.id}/stocks?date={date_1.date()}&time=22:37")
+            client.get(f"/offers/{offer.id}/stocks?date={date_1.date()}&time={date_1.hour}:{date_1.minute}")

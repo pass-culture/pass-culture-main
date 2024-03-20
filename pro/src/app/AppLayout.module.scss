@@ -29,7 +29,6 @@
   }
 
   &-full {
-    margin-top: rem.torem(26px);
     overflow-y: scroll;
   }
 }
@@ -38,7 +37,7 @@
   background: colors.$white;
   box-shadow: 0 0 rem.torem(60px) colors.$large-shadow;
   border-radius: rem.torem(10px);
-  margin: rem.torem(26px) auto 0 auto;
+  margin: rem.torem(calc(26px + size.$top-menu-height) auto 0 auto);
   max-width: rem.torem(size.$main-content-width);
 
   &-old {
@@ -55,8 +54,10 @@
   &-wrapper {
     display: none;
     position: fixed;
+    top: size.$top-menu-height;
+    left: 0;
     width: 100%;
-    z-index: zIndex.$lateral-menu-backdrop-z-index;
+    z-index: zIndex.$lateral-menu-z-index-mobile;
     min-height: calc(100vh - size.$top-menu-height);
 
     &::before {
@@ -74,10 +75,11 @@
 
   &-menu {
     background: colors.$white;
-    z-index: zIndex.$lateral-menu-z-index;
+    z-index: zIndex.$lateral-menu-z-index-mobile;
     position: fixed;
     max-width: rem.torem(268px);
     inset: 0;
+    overflow-y: auto;
   }
 
   &-nav {
@@ -111,9 +113,13 @@
 @media (min-width: size.$tablet) {
   .lateral-panel {
     &-wrapper {
-      position: initial;
+      z-index: zIndex.$lateral-menu-z-index;
+      position: fixed;
+      top: size.$top-menu-height;
+      left: 0;
+      bottom: 0;
       display: block;
-      width: rem.torem(268px);
+      width: size.$side-nav-width;
 
       &::before {
         display: none;
@@ -121,6 +127,7 @@
     }
 
     &-menu {
+      z-index: zIndex.$lateral-menu-z-index;
       position: initial;
       height: 100%;
       width: 100%;
@@ -131,7 +138,6 @@
     &-nav {
       display: none;
     }
-
   }
 }
 
@@ -141,11 +147,23 @@
   }
 
   &-funnel {
-    min-height: calc(100vh - (size.$footer-height + size.$nav-height + size.$action-bar-sticky-height));
+    min-height: calc(
+      100vh -
+        (
+          size.$footer-height + size.$nav-height +
+            size.$action-bar-sticky-height
+        )
+    );
   }
 
   &-sticky-actions {
-    min-height: calc(100vh - (size.$footer-height + size.$nav-height + size.$action-bar-sticky-height));
+    min-height: calc(
+      100vh -
+        (
+          size.$footer-height + size.$nav-height +
+            size.$action-bar-sticky-height
+        )
+    );
   }
 }
 

@@ -1,5 +1,3 @@
-import React from 'react'
-
 import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
@@ -14,44 +12,13 @@ import strokeOfferIcon from 'icons/stroke-offer.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
 import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types/offers'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { getRangeToFrenchText } from 'utils/date'
 import {
-  getRangeToFrenchText,
-  toDateStrippedOfTimezone,
-  toISOStringWithoutMilliseconds,
-} from 'utils/date'
-import { formatLocalTimeDateString } from 'utils/timezone'
+  formatLocalTimeDateString,
+  getLocalDepartementDateTimeFromUtc,
+} from 'utils/timezone'
 
 import styles from './OfferSummary.module.scss'
-
-const extractDepartmentCode = (venuePostalCode: string): string => {
-  const departmentNumberBase: number = parseInt(venuePostalCode.slice(0, 2))
-  if (departmentNumberBase > 95) {
-    return venuePostalCode.slice(0, 3)
-  } else {
-    return venuePostalCode.slice(0, 2)
-  }
-}
-
-const getLocalBeginningDatetime = (
-  beginningDatetime: string,
-  venuePostalCode: string | null | undefined
-): string => {
-  if (!venuePostalCode) {
-    return ''
-  }
-
-  const departmentCode = extractDepartmentCode(venuePostalCode)
-  const stockBeginningDate = new Date(beginningDatetime)
-  const stockBeginningDateISOString =
-    toISOStringWithoutMilliseconds(stockBeginningDate)
-  const stockLocalBeginningDate = formatLocalTimeDateString(
-    stockBeginningDateISOString,
-    departmentCode,
-    'dd/MM/yyyy à HH:mm'
-  )
-
-  return stockLocalBeginningDate
-}
 
 export type OfferSummaryProps = {
   offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
@@ -75,8 +42,14 @@ const OfferSummary = ({ offer }: OfferSummaryProps): JSX.Element => {
     ((offer.dates?.start &&
       offer.dates?.end &&
       getRangeToFrenchText(
-        toDateStrippedOfTimezone(offer.dates.start),
-        toDateStrippedOfTimezone(offer.dates.end)
+        getLocalDepartementDateTimeFromUtc(
+          offer.dates.start,
+          venue.departmentCode
+        ),
+        getLocalDepartementDateTimeFromUtc(
+          offer.dates.end,
+          venue.departmentCode
+        )
       )) ||
       'Tout au long de l’année scolaire (l’offre est permanente)')
 
@@ -158,7 +131,11 @@ const OfferSummary = ({ offer }: OfferSummaryProps): JSX.Element => {
             />
           </dt>
           <dd>
-            {getLocalBeginningDatetime(beginningDatetime, venue.postalCode)}
+            {formatLocalTimeDateString(
+              beginningDatetime,
+              venue.departmentCode,
+              'dd/MM/yyyy à HH:mm'
+            )}
           </dd>
         </div>
       )}

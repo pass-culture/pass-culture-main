@@ -104,6 +104,7 @@ import strokeRepaymentIcon from 'icons/stroke-repayment.svg'
 import strokeRightIcon from 'icons/stroke-right.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import strokeShareIcon from 'icons/stroke-share.svg'
+import strokeShoutIcon from 'icons/stroke-shout.svg'
 import strokeShowIcon from 'icons/stroke-show.svg'
 import strokeStarIcon from 'icons/stroke-star.svg'
 import strokeTeacherIcon from 'icons/stroke-teacher.svg'
@@ -246,6 +247,7 @@ export const strokeIcons: IconListItem[] = [
   { src: strokeNoBookingIcon, viewBox: '0 0 200 156' }, // TODO standardize viewbox
   { src: strokeBookingHold, viewBox: '0 0 200 156' }, // TODO standardize viewbox
   { src: stroke404Icon, viewBox: '0 0 308 194' }, // TODO standardize viewbox
+  { src: strokeShoutIcon },
 ]
 
 export const shadowIcons: IconListItem[] = [

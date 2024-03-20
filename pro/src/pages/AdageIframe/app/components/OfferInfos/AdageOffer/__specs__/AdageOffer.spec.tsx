@@ -12,7 +12,10 @@ import AdageOffer from '../AdageOffer'
 function renderAdageOffer() {
   return renderWithProviders(
     <AdageUserContextProvider adageUser={defaultAdageUser}>
-      <AdageOffer offer={defaultCollectiveTemplateOffer} />
+      <AdageOffer
+        offer={defaultCollectiveTemplateOffer}
+        adageUser={defaultAdageUser}
+      />
     </AdageUserContextProvider>
   )
 }

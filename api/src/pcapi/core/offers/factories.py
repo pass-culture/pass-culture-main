@@ -319,3 +319,11 @@ class OfferValidationSubRuleFactory(BaseFactory):
     attribute = models.OfferValidationAttribute.NAME
     operator = models.OfferValidationRuleOperator.CONTAINS
     comparated = {"comparated": ["suspicious", "verboten"]}
+
+
+class OfferPriceLimitationRuleFactory(BaseFactory):
+    class Meta:
+        model = models.OfferPriceLimitationRule
+
+    subcategoryId = subcategories.ACHAT_INSTRUMENT.id
+    rate = decimal.Decimal(0.3)

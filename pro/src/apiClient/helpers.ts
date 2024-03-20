@@ -17,14 +17,39 @@ export const getErrorCode = (error: ApiError): string => {
   return error.body.code
 }
 
-export const isError = (error: any): error is Error =>
-  typeof error === 'object' && 'message' in error
+export const isError = (error: unknown): error is Error =>
+  typeof error === 'object' && error !== null && 'message' in error
 
-export const isErrorAPIError = (error: any): error is ApiError =>
-  'name' in error && error.name === 'ApiError'
+export const isErrorAPIError = (error: unknown): error is ApiError =>
+  isError(error) && 'name' in error && error.name === 'ApiError'
 
 export const getError = (error: ApiError): any => {
   return error.body
+}
+
+export const getHumanReadableApiError = (
+  error: unknown,
+  defaultMessage = 'Une erreur s’est produite, veuillez réessayer'
+) => {
+  if (!isErrorAPIError(error)) {
+    return defaultMessage
+  }
+
+  const { body } = error
+
+  if (body instanceof Array && body.length > 0) {
+    return body.map((bodyValue) => Object.values(bodyValue).join(' ')).join(' ')
+  }
+
+  if (body instanceof Object && Object.keys(body).length > 0) {
+    return Object.values(body)
+      .map((bodyValue) =>
+        bodyValue instanceof Array ? bodyValue.join(' ') : bodyValue
+      )
+      .join(' ')
+  }
+
+  return defaultMessage
 }
 
 // FIXME: find a way to test this by mocking ReadableStream

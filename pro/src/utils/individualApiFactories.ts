@@ -339,6 +339,7 @@ export const defaultGetOffererResponseModel: GetOffererResponseModel = {
   hasPendingBankAccount: false,
   hasNonFreeOffer: true,
   hasActiveOffer: true,
+  hasBankAccountWithPendingCorrections: false,
   venuesWithNonFreeOffersWithoutBankAccounts: [],
   isActive: false,
   isValidated: false,

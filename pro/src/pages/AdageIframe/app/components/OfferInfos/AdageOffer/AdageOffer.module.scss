@@ -4,6 +4,7 @@
 @use "styles/variables/_size.scss" as size;
 
 .offer {
+  container: offer / inline-size;
   position: relative;
 
   &::before {
@@ -86,7 +87,7 @@
   }
 }
 
-@media (min-width: size.$tablet) {
+@container offer (min-width: #{size.$tablet}) {
   .offer-body {
     flex-direction: row;
   }
@@ -97,7 +98,7 @@
   }
 }
 
-@media (min-width: size.$mobile) {
+@container offer (width >= #{size.$mobile}) {
   .offer-header {
     flex-direction: row;
     align-items: unset;

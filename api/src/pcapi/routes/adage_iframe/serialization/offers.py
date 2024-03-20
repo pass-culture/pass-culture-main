@@ -46,20 +46,16 @@ class OfferStockResponse(BaseModel):
         orm_mode = True
         alias_generator = to_camel
         allow_population_by_field_name = True
+        json_encoders = {datetime: format_into_utc_date}
 
 
 class OfferVenueResponse(BaseModel):
-    @classmethod
-    def from_orm(cls, venue: offerers_models.Venue) -> "OfferVenueResponse":
-        venue.coordinates = {"latitude": venue.latitude, "longitude": venue.longitude}
-        result = super().from_orm(venue)
-        return result
-
     id: int
     address: str | None
     city: str | None
     name: str
     postalCode: str | None
+    departementCode: str | None = Field(alias="departmentCode")
     publicName: str | None
     coordinates: common_models.Coordinates
     managingOfferer: OfferManagingOffererResponse
@@ -70,6 +66,12 @@ class OfferVenueResponse(BaseModel):
     class Config:
         orm_mode = True
         allow_population_by_field_name = True
+
+    @classmethod
+    def from_orm(cls, venue: offerers_models.Venue) -> "OfferVenueResponse":
+        venue.coordinates = {"latitude": venue.latitude, "longitude": venue.longitude}
+        result = super().from_orm(venue)
+        return result
 
 
 class CategoryResponseModel(BaseModel):
@@ -243,6 +245,9 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
 
 class ListCollectiveOffersResponseModel(BaseModel):
     collectiveOffers: list[CollectiveOfferResponseModel]
+
+    class Config:
+        json_encoders = {datetime: format_into_utc_date}
 
 
 class TemplateDatesModel(BaseModel):

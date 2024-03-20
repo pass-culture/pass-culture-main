@@ -9,7 +9,7 @@ from pcapi.utils.requests import ExternalAPIException
 
 
 DEFAULT_LIMIT = 1000
-DEFAULT_ID_PICTURE_STORE_STATUS = None
+DEFAULT_ID_PICTURE_STORE_STATUS: bool | None = None
 
 logger = logging.getLogger()
 

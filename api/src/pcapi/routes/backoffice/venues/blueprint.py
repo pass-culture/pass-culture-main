@@ -26,6 +26,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import repository as finance_repository
 from pcapi.core.finance import siret_api
 from pcapi.core.history import models as history_models
+from pcapi.core.history.api import add_action
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -831,10 +832,19 @@ def _update_venues_criteria(
 
 def _update_permanent_venues(venues: list[offerers_models.Venue], is_permanent: bool) -> list[offerers_models.Venue]:
     venues_to_update = [venue for venue in venues if venue.isPermanent != is_permanent]
+
     for venue in venues_to_update:
+        add_action(
+            action_type=history_models.ActionType.INFO_MODIFIED,
+            author=current_user,
+            venue=venue,
+            modified_info={"isPermanent": {"old_info": venue.isPermanent, "new_info": is_permanent}},
+        )
         venue.isPermanent = is_permanent
         if is_permanent and venue.thumbCount == 0:
             transactional_mails.send_permanent_venue_needs_picture(venue)
+
+    db.session.flush()
 
     return venues_to_update
 

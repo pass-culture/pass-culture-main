@@ -4,13 +4,10 @@ import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import {
-  ApiError,
   GetOffererResponseModel,
   GetVenueResponseModel,
   VenueProviderResponse,
 } from 'apiClient/v1'
-import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { Providers } from 'core/Venue/types'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { defaultGetVenue } from 'utils/collectiveApiFactories'
@@ -46,7 +43,9 @@ const renderVenueEdition = (
     </Routes>,
     {
       storeOverrides,
-      initialRouterEntries: [`/structures/${offererId}/lieux/${venueId}`],
+      initialRouterEntries: [
+        `/structures/${offererId}/lieux/${venueId}/edition`,
+      ],
       ...options,
     }
   )
@@ -77,6 +76,7 @@ describe('route VenueEdition', () => {
       id: 12,
       publicName: 'Cinéma des iles',
       dmsToken: 'dms-token-12345',
+      isPermanent: true,
     }
 
     venueProviders = [
@@ -85,7 +85,6 @@ describe('route VenueEdition', () => {
         isActive: true,
         isFromAllocineProvider: false,
         lastSyncDate: undefined,
-        nOffers: 0,
         venueId: 2,
         venueIdAtOfferProvider: 'cdsdemorc1',
         provider: {
@@ -194,23 +193,30 @@ describe('route VenueEdition', () => {
   })
 
   it('should return to home when not able to get venue informations', async () => {
-    vi.spyOn(api, 'getVenue').mockRejectedValue(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          status: 404,
-          body: {
-            global: ['error'],
-          },
-        } as ApiResult,
-        ''
-      )
-    )
+    vi.spyOn(api, 'getVenue').mockRejectedValueOnce('error')
     renderVenueEdition(venue.id, offerer.id)
 
     await waitForElementToBeRemoved(screen.getByTestId('spinner'))
     expect(api.getVenue).toHaveBeenCalledTimes(1)
 
     expect(await screen.findByText('Home')).toBeInTheDocument()
+  })
+
+  it('should display Opening hours section if WIP_OPENING_HOURS feature flag is enabled and venue is permanent', async () => {
+    renderVenueEdition(venue.id, offerer.id, {
+      features: ['WIP_OPENING_HOURS'],
+    })
+
+    await waitForElementToBeRemoved(screen.getByTestId('spinner'))
+
+    expect(screen.getByText("Horaires d'ouverture")).toBeInTheDocument()
+  })
+
+  it('should not display Opening hours section if WIP_OPENING_HOURS feature flag is disabled', async () => {
+    renderVenueEdition(venue.id, offerer.id)
+
+    await waitForElementToBeRemoved(screen.getByTestId('spinner'))
+
+    expect(screen.queryByText("Horaires d'ouverture")).not.toBeInTheDocument()
   })
 })

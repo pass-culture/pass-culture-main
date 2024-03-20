@@ -23,6 +23,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices impo
     create_specific_invoice_with_bank_account,
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import create_specific_invoice
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_price_limitation_rules import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_validation_rules import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_with_custom_reimbursement_rule import (
     create_industrial_offerer_with_custom_reimbursement_rule,
@@ -44,6 +45,7 @@ def save_test_cases_sandbox() -> None:
     create_offers_for_each_subcategory()
     create_offers_with_same_author()
     create_roles_with_permissions()
+    create_industrial_offer_price_limitation_rules()
     create_industrial_offer_validation_rules()
     create_industrial_gdpr_users()
     create_industrial_offerer_with_custom_reimbursement_rule()
@@ -169,6 +171,26 @@ def create_offer_with_ean(ean: str, venue: offerers_models.Venue, author: str) -
     offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
 
 
+def _create_offer_and_stocks_for_allocine_venues(venue: offerers_models.Venue) -> None:
+    film_offer = offers_factories.OfferFactory(
+        venue=venue,
+        subcategoryId=subcategories_v2.SEANCE_CINE.id,
+        name=f"Séance Allociné - {venue.name}",
+    )
+    for daydelta in range(30):
+        day = datetime.date.today() + datetime.timedelta(days=daydelta)
+        for hour in (0, 5, 11, 17, 21):
+            beginning_datetime = datetime.datetime.combine(day, datetime.time(hour=hour))
+            is_full = random.random() < 0.3
+            quantity = random.randint(1, 100) if not is_full else 0
+            offers_factories.StockFactory(
+                offer=film_offer,
+                beginningDatetime=beginning_datetime,
+                bookingLimitDatetime=beginning_datetime - datetime.timedelta(minutes=30),
+                quantity=quantity,
+            )
+
+
 def create_allocine_venues() -> None:
     for venue_data in venues_mock.cinemas_venues:
         allocine_offerer = offerers_factories.OffererFactory(name=f"Structure du lieu allocine {venue_data['name']}")
@@ -200,6 +222,7 @@ def create_allocine_venues() -> None:
             venueIdAtOfferProvider=pivot.theaterId,
         )
         providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
+        _create_offer_and_stocks_for_allocine_venues(allocine_synchonized_venue)
 
 
 def create_venues_across_cities() -> None:

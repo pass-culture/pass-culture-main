@@ -110,7 +110,7 @@ export const VenueSettingsFormScreen = ({
         )
       )
 
-      navigate('/accueil')
+      navigate(`/structures/${venue.managingOfferer.id}/lieux/${venue.id}`)
 
       if (currentUser.isAdmin) {
         notify.success(PATCH_SUCCESS_MESSAGE)

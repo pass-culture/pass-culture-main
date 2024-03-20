@@ -19,7 +19,8 @@ export interface RequestFormDialogProps {
   contactPhone?: string | null
   offerId: number
   userEmail?: string | null
-  userRole: AdageFrontRoles
+  userRole?: AdageFrontRoles
+  isPreview: boolean
 }
 
 const RequestFormDialog = ({
@@ -29,6 +30,7 @@ const RequestFormDialog = ({
   offerId,
   userEmail,
   userRole,
+  isPreview,
 }: RequestFormDialogProps): JSX.Element => {
   const notify = useNotification()
   const initialValues = {
@@ -50,17 +52,19 @@ const RequestFormDialog = ({
     closeModal()
   }
   const closeRequestFormDialog = async () => {
-    await apiAdage.logRequestFormPopinDismiss({
-      iframeFrom: location.pathname,
-      collectiveOfferTemplateId: offerId,
-      comment: formik.values.description,
-      phoneNumber: formik.values.teacherPhone,
-      requestedDate: isDateValid(formik.values.offerDate)
-        ? new Date(formik.values.offerDate).toISOString()
-        : undefined,
-      totalStudents: formik.values.nbStudents,
-      totalTeachers: formik.values.nbTeachers,
-    })
+    if (!isPreview) {
+      await apiAdage.logRequestFormPopinDismiss({
+        iframeFrom: location.pathname,
+        collectiveOfferTemplateId: offerId,
+        comment: formik.values.description,
+        phoneNumber: formik.values.teacherPhone,
+        requestedDate: isDateValid(formik.values.offerDate)
+          ? new Date(formik.values.offerDate).toISOString()
+          : undefined,
+        totalStudents: formik.values.nbStudents,
+        totalTeachers: formik.values.nbTeachers,
+      })
+    }
     closeModal()
   }
 
@@ -80,7 +84,7 @@ const RequestFormDialog = ({
         <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
         {contactPhone}
       </div>
-      {userRole === AdageFrontRoles.REDACTOR && (
+      {userRole === AdageFrontRoles.REDACTOR && !isPreview && (
         <>
           <div className={styles['form-description']}>
             <div className={styles['form-description-text']}>
@@ -92,6 +96,7 @@ const RequestFormDialog = ({
           <DefaultFormContact
             closeRequestFormDialog={closeRequestFormDialog}
             formik={formik}
+            isPreview={isPreview}
           />
         </>
       )}

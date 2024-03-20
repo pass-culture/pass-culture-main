@@ -29,6 +29,7 @@ import pcapi.core.finance.repository as finance_repository
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import repository as offers_repository
+import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.exceptions as offers_exceptions
 import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import Offer
@@ -189,7 +190,7 @@ def classify_and_sort_bookings(
     return (sorted_ended_bookings, sorted_ongoing_bookings)
 
 
-def book_offer(
+def _book_offer(
     beneficiary: User,
     stock_id: int,
     quantity: int,
@@ -217,10 +218,6 @@ def book_offer(
         )
         if is_activation_code_applicable:
             validation.check_activation_code_available(stock)
-
-        first_venue_booking = not db.session.query(
-            Booking.query.filter(Booking.venueId == stock.offer.venueId).exists()
-        ).scalar()
 
         # FIXME (dbaty, 2020-10-20): if we directly set relations (for
         # example with `booking.user = beneficiary`) instead of foreign keys,
@@ -293,6 +290,48 @@ def book_offer(
                 finance_models.FinanceEventMotive.BOOKING_USED,
                 booking=booking,
             )
+    return booking
+
+
+def book_offer(
+    beneficiary: User,
+    stock_id: int,
+    quantity: int,
+) -> Booking:
+    """
+    Return a booking or raise an exception if it's not possible.
+    Update a user's credit information on Batch.
+    """
+    stock = offers_models.Stock.query.filter_by(id=stock_id).one_or_none()
+    if not stock:
+        raise offers_exceptions.StockDoesNotExist()
+
+    first_venue_booking = not db.session.query(
+        Booking.query.filter(Booking.venueId == stock.offer.venueId).exists()
+    ).scalar()
+
+    try:
+        booking = _book_offer(beneficiary, stock_id, quantity)
+    except external_bookings_exceptions.ExternalBookingNotEnoughSeatsError as error:
+        offers_api.edit_stock(
+            stock,
+            quantity=(stock.dnBookedQuantity + error.remainingQuantity),
+            editing_provider=stock.offer.lastProvider,
+        )
+        db.session.commit()
+        logger.info(
+            "Could not book offer: Event has not enough seats left",
+            extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
+        )
+        raise
+    except external_bookings_exceptions.ExternalBookingSoldOutError:
+        offers_api.edit_stock(stock, quantity=stock.dnBookedQuantity, editing_provider=stock.offer.lastProvider)
+        db.session.commit()
+        logger.info(
+            "Could not book offer: Event sold out",
+            extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
+        )
+        raise
 
     logger.info(
         "Beneficiary booked an offer",
@@ -412,10 +451,11 @@ def _cancel_booking(
     reason: BookingCancellationReasons,
     cancel_even_if_used: bool = False,
     raise_if_error: bool = False,
+    one_side_cancellation: bool = False,
 ) -> bool:
     """Cancel booking and update a user's credit information on Batch"""
     try:
-        if not _execute_cancel_booking(booking, reason, cancel_even_if_used, raise_if_error):
+        if not _execute_cancel_booking(booking, reason, cancel_even_if_used, raise_if_error, one_side_cancellation):
             return False
     except external_bookings_exceptions.ExternalBookingAlreadyCancelledError as error:
         booking.cancel_booking(reason, cancel_even_if_used)
@@ -454,6 +494,7 @@ def _execute_cancel_booking(
     reason: BookingCancellationReasons,
     cancel_even_if_used: bool = False,
     raise_if_error: bool = False,
+    one_side_cancellation: bool = False,
 ) -> bool:
     with transaction():
         with db.session.no_autoflush:
@@ -475,7 +516,8 @@ def _execute_cancel_booking(
                         finance_models.FinanceEventMotive.BOOKING_CANCELLED_AFTER_USE,
                         booking=booking,
                     )
-                _cancel_external_booking(booking, stock)
+                if not one_side_cancellation:
+                    _cancel_external_booking(booking, stock)
             except (
                 BookingIsAlreadyUsed,
                 BookingIsAlreadyCancelled,
@@ -686,13 +728,18 @@ def mark_as_used_with_uncancelling(booking: Booking) -> None:
     update_external_user(booking.user)
 
 
-def mark_as_cancelled(booking: Booking, reason: BookingCancellationReasons) -> None:
+def mark_as_cancelled(
+    booking: Booking, reason: BookingCancellationReasons, one_side_cancellation: bool = False
+) -> None:
     """
     A booking can be cancelled only if it has not been cancelled before and if
     it has not been refunded. Since a payment can be retried, it is safer to
     say that a booking with payment, whatever its status, should be considered
     refunded. A used booking without payment can be marked as cancelled by an
     admin user.
+
+    One side cancellation. Mainly to be used from the backoffice. The external provider API
+    is not called and the booking is cancelled on our side.
     """
     if booking.status == BookingStatus.CANCELLED:
         raise exceptions.BookingIsAlreadyCancelled()
@@ -700,8 +747,34 @@ def mark_as_cancelled(booking: Booking, reason: BookingCancellationReasons) -> N
     if finance_repository.has_reimbursement(booking):
         raise exceptions.BookingIsAlreadyRefunded()
 
-    _cancel_booking(booking, reason, cancel_even_if_used=True, raise_if_error=True)
-    transactional_mails.send_booking_cancellation_by_beneficiary_to_pro_email(booking)
+    if one_side_cancellation:
+        if (
+            reason != BookingCancellationReasons.BACKOFFICE
+            or (
+                booking.stock.offer.lastProvider
+                and booking.stock.offer.lastProvider.localClass
+                not in constants.ONE_SIDE_BOOKINGS_CANCELLATION_PROVIDERS
+            )
+            or (
+                booking.stock.beginningDatetime
+                and booking.stock.beginningDatetime < datetime.datetime.utcnow() - datetime.timedelta(days=15)
+            )
+        ):
+            raise exceptions.OneSideCancellationForbidden()
+
+    _cancel_booking(
+        booking, reason, cancel_even_if_used=True, raise_if_error=True, one_side_cancellation=one_side_cancellation
+    )
+
+    if one_side_cancellation:
+        logging.info("External booking cancelled unilaterally", extra={"booking_id": booking.id})
+        assert booking.stock.beginningDatetime
+        if booking.stock.beginningDatetime < datetime.datetime.utcnow():
+            transactional_mails.send_booking_cancelled_unilaterally_provider_support_email(booking)
+        else:
+            transactional_mails.send_booking_cancellation_by_beneficiary_to_pro_email(booking, one_side_cancellation)
+    else:
+        transactional_mails.send_booking_cancellation_by_beneficiary_to_pro_email(booking)
 
 
 def mark_as_unused(booking: Booking) -> None:

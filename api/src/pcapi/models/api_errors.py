@@ -50,8 +50,8 @@ class ForbiddenError(ApiErrors):
 
 class UnauthorizedError(ApiErrors):
     status_code = 401
-    www_authenticate = None
-    realm = None
+    www_authenticate: str | None = None
+    realm: str | None = None
 
     def __init__(
         self,

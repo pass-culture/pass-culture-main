@@ -25,6 +25,7 @@ from pcapi.local_providers.provider_manager import synchronize_ems_venue_provide
 from pcapi.utils.human_ids import humanize
 
 import tests
+from tests.local_providers.provider_test_utils import create_finance_event_to_update
 
 from . import fixtures
 
@@ -69,10 +70,14 @@ class EMSStocksTest:
         requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
 
         venue = offerers_factories.VenueFactory(
-            bookingEmail="seyne-sur-mer-booking@example.com", withdrawalDetails="Modalité de retrait"
+            bookingEmail="seyne-sur-mer-booking@example.com",
+            withdrawalDetails="Modalité de retrait",
+            pricing_point="self",
         )
         ems_provider = get_provider_by_local_class("EMSStocks")
-        providers_factories.VenueProviderFactory(venue=venue, provider=ems_provider, venueIdAtOfferProvider="9997")
+        venue_provider = providers_factories.VenueProviderFactory(
+            venue=venue, provider=ems_provider, venueIdAtOfferProvider="9997"
+        )
         cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
             venue=venue, provider=ems_provider, idAtProvider="9997"
         )
@@ -94,10 +99,13 @@ class EMSStocksTest:
         # synchronize with show with new date
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0_WITH_NEW_DATE)
         requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
-
-        with mock.patch("pcapi.core.finance.api.update_finance_event_pricing_date") as mock_update_finance_event:
-            synchronize_ems_venue_providers()
-        mock_update_finance_event.assert_called_once()
+        # targeting specific stock whith idAtprovider
+        stock = offers_models.Stock.query.where(offers_models.Stock.idAtProviders.like("%999700079243")).first()
+        assert stock is not None
+        event_created = create_finance_event_to_update(stock=stock, venue_provider=venue_provider)
+        last_pricingOrderingDate = event_created.pricingOrderingDate
+        synchronize_ems_venue_providers()
+        assert event_created.pricingOrderingDate != last_pricingOrderingDate
 
     def should_reuse_price_category(self, requests_mock):
         connector = EMSScheduleConnector()

@@ -23,6 +23,12 @@
   @include fonts.body-important;
 }
 
+.contact-callout {
+  margin-top: rem.torem(32px);
+  margin-bottom: rem.torem(16px);
+  text-align: left;
+}
+
 .form {
   &-description {
     @include fonts.body;

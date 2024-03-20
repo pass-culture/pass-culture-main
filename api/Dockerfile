@@ -1,3 +1,4 @@
+ARG network_mode=default
 ########## BUILDER ##########
 
 FROM python:3.11-slim AS builder
@@ -21,6 +22,24 @@ COPY ./pyproject.toml ./poetry.lock ./
 
 ENV PATH=$PATH:/home/pcapi/.local/bin
 
+FROM builder AS builder-proxy
+
+COPY /cacert.pem /cacert.pem
+
+RUN REQUESTS_CA_BUNDLE=/cacert.pem PIP_CERT=/cacert.pem CURL_CA_BUNDLE=/cacert.pem pip install poetry
+
+WORKDIR /home/pcapi
+
+RUN poetry check --lock
+
+ENV VIRTUAL_ENV=/home/pcapi/.local
+
+RUN python -m venv $VIRTUAL_ENV
+
+RUN REQUESTS_CA_BUNDLE=/cacert.pem PIP_CERT=/cacert.pem CURL_CA_BUNDLE=/cacert.pem poetry install --without dev --no-root
+
+FROM builder AS builder-default
+
 RUN pip install poetry
 
 WORKDIR /home/pcapi
@@ -35,7 +54,13 @@ RUN poetry install --without dev --no-root
 
 ########## DEV BUILDER ##########
 
-FROM builder AS builder-dev
+FROM builder-${network_mode} AS builder-dev-proxy
+
+RUN poetry check --lock
+
+RUN REQUESTS_CA_BUNDLE=/cacert.pem PIP_CERT=/cacert.pem CURL_CA_BUNDLE=/cacert.pem poetry install --only dev
+
+FROM builder-${network_mode} AS builder-dev-default
 
 RUN poetry check --lock
 
@@ -82,11 +107,15 @@ USER pcapi
 
 ########## LIB PROD ##########
 
+FROM builder-${network_mode} AS builder-prod
+
 FROM lib AS lib-prod
 
-COPY --from=builder /home/pcapi/.local /home/pcapi/.local
+COPY --from=builder-prod /home/pcapi/.local /home/pcapi/.local
 
 ########## LIB DEV ##########
+
+FROM builder-dev-${network_mode} AS builder-dev
 
 FROM lib AS lib-dev
 
@@ -126,8 +155,10 @@ RUN apt-get install --no-install-recommends -y curl less gnupg2 && \
     curl -s https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/pgsql.gpg && \
     echo "deb [signed-by=/etc/apt/trusted.gpg.d/pgsql.gpg] http://apt.postgresql.org/pub/repos/apt/ `. /etc/os-release && \
     echo $VERSION_CODENAME`-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
+    echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
+    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg && \
     apt-get update && \
-    apt-get --no-install-recommends -y install postgresql-client-12 && \
+    apt-get --no-install-recommends -y install postgresql-client-12 google-cloud-sdk && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists*
 

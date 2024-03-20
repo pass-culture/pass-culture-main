@@ -1,3 +1,6 @@
+from pcapi.sandboxes.scripts.creators.industrial.add_accessibility_compliance_to_venues import (
+    add_accessibility_compliance_to_venues,
+)
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_admin_users import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_app_users import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bank_accounts import create_industrial_bank_accounts
@@ -20,6 +23,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_individual_of
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_iris import create_iris
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_mediations import *
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_price_limitation_rules import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_validation_rules import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_tags import create_industrial_offerer_tags
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerers import *
@@ -133,3 +137,5 @@ def save_industrial_sandbox() -> None:
     create_industrial_bank_accounts()
 
     create_industrial_venues_with_timezone()
+
+    add_accessibility_compliance_to_venues()

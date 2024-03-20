@@ -17,7 +17,7 @@ interface RouteMeta {
 
 export interface RouteConfig {
   path: string
-  title?: string
+  title: string
   element?: JSX.Element
   lazy?: any
   meta?: RouteMeta
@@ -29,11 +29,13 @@ const routes: RouteConfig[] = [
   {
     element: <Navigate to="/accueil" />,
     path: '/',
+    title: 'Espace acteurs culturels',
   },
   {
     lazy: () => import('pages/AdageIframe/app/App'),
     path: '/adage-iframe/*',
     meta: { public: true },
+    title: 'ADAGE',
   },
   {
     lazy: () => import('pages/Signup/Signup'),
@@ -178,6 +180,14 @@ const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
+        'pages/CollectiveOfferPreviewCreation/CollectiveOfferPreviewCreation'
+      ),
+    path: '/offre/:offerId/collectif/vitrine/creation/apercu',
+    title: 'Aperçu - Créer une offre vitrine',
+  },
+  {
+    lazy: () =>
+      import(
         'pages/CollectiveOfferSummaryCreation/CollectiveOfferSummaryCreation'
       ),
     path: '/offre/:offerId/collectif/vitrine/creation/recapitulatif',
@@ -207,6 +217,14 @@ const routes: RouteConfig[] = [
       ),
     path: '/offre/:offerId/collectif/recapitulatif',
     title: 'Récapitulatif - Modifier une offre collective réservable',
+  },
+  {
+    lazy: () =>
+      import(
+        'pages/CollectiveOfferPreviewEdition/CollectiveOfferPreviewEdition'
+      ),
+    path: '/offre/:offerId/collectif/preview',
+    title: 'Aperçu - Prévisualisation d’une offre collective vitrine',
   },
   {
     lazy: () =>

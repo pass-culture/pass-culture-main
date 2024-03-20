@@ -194,6 +194,7 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
         most_booked_music_type=None,
         most_favorite_offer_subcategories=["LIVRE_PAPIER"],
         roles=[UserRole.BENEFICIARY.value],
+        subscribed_themes=[],
         suspension_date=None,
         suspension_reason=None,
     )
@@ -253,6 +254,7 @@ def test_get_user_attributes_ex_beneficiary_because_of_expiration():
         most_booked_music_type=None,
         most_favorite_offer_subcategories=None,
         roles=[UserRole.BENEFICIARY.value],
+        subscribed_themes=[],
         suspension_date=None,
         suspension_reason=None,
     )
@@ -318,6 +320,7 @@ def test_get_user_attributes_beneficiary_because_of_credit():
         most_booked_music_type=None,
         most_favorite_offer_subcategories=["CONCERT"],
         roles=[UserRole.BENEFICIARY.value],
+        subscribed_themes=[],
         suspension_date=None,
         suspension_reason=None,
     )
@@ -452,6 +455,7 @@ def test_get_user_attributes_not_beneficiary():
         most_booked_music_type=None,
         most_favorite_offer_subcategories=None,
         roles=[],
+        subscribed_themes=[],
         suspension_date=None,
         suspension_reason=None,
     )

@@ -3,7 +3,9 @@
 @use "styles/variables/size.scss" as size;
 
 .footer {
-  height: size.$footer-height;
+  @media (min-width: size.$mobile) {
+    height: size.$footer-height;
+  }
 
   &-layout-sticky-actions {
     height: size.$footer-height + size.$action-bar-sticky-height;
@@ -23,12 +25,18 @@
 
   ul {
     display: flex;
-    align-items: center;
     height: 100%;
-    justify-content: space-between;
-    max-width: rem.torem(575px);
+    flex-direction: column;
     width: 100%;
-    margin: 0 auto;
-    gap: 16px;
+    margin: rem.torem(24px);
+    gap: rem.torem(16px);
+    justify-content: center;
+    align-items: flex-start;
+
+    @media (min-width: size.$mobile) {
+      flex-direction: row;
+      align-items: center;
+      margin: 0 auto;
+    }
   }
 }

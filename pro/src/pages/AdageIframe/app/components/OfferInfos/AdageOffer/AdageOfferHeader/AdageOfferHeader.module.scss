@@ -88,7 +88,7 @@
   }
 }
 
-@media (min-width: size.$mobile) {
+@container (min-width: #{size.$mobile}) {
   .offer-header-title {
     @include fonts.title3;
   }
@@ -107,7 +107,7 @@
   }
 }
 
-@media (min-width: size.$tablet) {
+@container (min-width: #{size.$tablet}) {
   .offer-header-title {
     @include fonts.title1;
   }

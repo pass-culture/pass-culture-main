@@ -111,8 +111,8 @@ export const defaultAdageUser: AuthenticatedResponse = {
   institutionName: 'Mon établissement',
   role: AdageFrontRoles.REDACTOR,
   uai: '1234567A',
-  lat: null,
-  lon: null,
+  lat: 1,
+  lon: 2,
 }
 
 export const defaultEducationalInstitution: EducationalInstitutionWithBudgetResponseModel =

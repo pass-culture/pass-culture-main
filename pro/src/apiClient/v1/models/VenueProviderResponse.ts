@@ -1,4 +1,4 @@
-/* generated using openapi-typescript-codegen -- do no edit */
+/* generated using openapi-typescript-codegen -- do not edit */
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
@@ -9,7 +9,6 @@ export type VenueProviderResponse = {
   isDuo?: boolean;
   isFromAllocineProvider: boolean;
   lastSyncDate?: string;
-  nOffers: number;
   price?: number;
   provider: ProviderResponse;
   quantity?: number;
