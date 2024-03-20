@@ -35,6 +35,11 @@ class PcTomSelectField extends PcAddOn {
     plugins: ['dropdown_input', 'clear_button', 'checkbox_options'],
     persist: false,
     create: false,
+    render: {
+      no_results: function(data, escape) {
+        return '<div class="no-results">Aucun résultat pour "' + escape(data.input) + '"</div>'
+      },
+    },
   }
 
   state = {
@@ -112,11 +117,6 @@ class PcTomSelectField extends PcAddOn {
           .then((response) => response.json())
           .then((json) => callback(json.items))
           .catch((error) => callback(undefined, error))
-      },
-      render: {
-        no_results: (data, escape) => {
-          return '<div class="no-results">Aucun résultat pour "' + escape(data.input) + '"</div>'
-        },
       },
       ...(tomselectOptions ? { options: JSON.parse(tomselectOptions) } : {}),
       ...(tomselectItems ? { items: JSON.parse(tomselectItems) } : {}),
