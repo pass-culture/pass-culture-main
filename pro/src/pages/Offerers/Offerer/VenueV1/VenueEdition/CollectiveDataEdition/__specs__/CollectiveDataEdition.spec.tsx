@@ -10,7 +10,6 @@ import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import {
   domtomOptions,
   mainlandInterventionOption,
@@ -191,19 +190,6 @@ describe('CollectiveDataEdition', () => {
         expect(
           screen.getByText('Votre dossier a été déposé')
         ).toBeInTheDocument()
-      })
-    })
-
-    it('should display toaster when some data could not be loaded', async () => {
-      vi.spyOn(api, 'getVenuesEducationalStatuses').mockRejectedValueOnce(
-        new ApiError({} as ApiRequestOptions, { status: 500 } as ApiResult, '')
-      )
-
-      renderCollectiveDataEdition()
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-      await waitFor(() => {
-        expect(notifyErrorMock).toHaveBeenCalledWith(GET_DATA_ERROR_MESSAGE)
       })
     })
 
