@@ -31,5 +31,47 @@ export const setInitialFormValues = (
     phoneNumber: venue.contact?.phoneNumber || '',
     webSite: venue.contact?.website || '',
     days: [],
+    monday: {
+      morningStartingHour: '',
+      morningEndingHour: '',
+      afternoonStartingHour: '',
+      afternoonEndingHour: '',
+    },
+    tuesday: {
+      morningStartingHour: '',
+      morningEndingHour: '',
+      afternoonStartingHour: '',
+      afternoonEndingHour: '',
+    },
+    wednesday: {
+      morningStartingHour: '',
+      morningEndingHour: '',
+      afternoonStartingHour: '',
+      afternoonEndingHour: '',
+    },
+    thursday: {
+      morningStartingHour: '',
+      morningEndingHour: '',
+      afternoonStartingHour: '',
+      afternoonEndingHour: '',
+    },
+    friday: {
+      morningStartingHour: '',
+      morningEndingHour: '',
+      afternoonStartingHour: '',
+      afternoonEndingHour: '',
+    },
+    saturday: {
+      morningStartingHour: '',
+      morningEndingHour: '',
+      afternoonStartingHour: '',
+      afternoonEndingHour: '',
+    },
+    sunday: {
+      morningStartingHour: '',
+      morningEndingHour: '',
+      afternoonStartingHour: '',
+      afternoonEndingHour: '',
+    },
   }
 }
