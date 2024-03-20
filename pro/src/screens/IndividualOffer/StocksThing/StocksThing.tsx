@@ -193,7 +193,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   }
 
   const getMaximumBookingDatetime = (date: Date | undefined) => {
-    if (date == undefined) {
+    if (date === undefined) {
       return undefined
     }
     const result = new Date(date)
