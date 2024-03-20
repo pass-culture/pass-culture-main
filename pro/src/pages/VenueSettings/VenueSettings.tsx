@@ -1,10 +1,11 @@
 import { Navigate, useParams } from 'react-router-dom'
+import useSWR from 'swr'
 
+import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
-import { useGetVenue } from 'core/Venue/adapters/getVenueAdapter'
 import { useGetVenueLabels } from 'core/Venue/adapters/getVenueLabelsAdapter'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import { useAdapter } from 'hooks'
@@ -22,6 +23,8 @@ import { offerHasBookingQuantity } from './offerHasBookingQuantity'
 import { setInitialFormValues } from './setInitialFormValues'
 import { VenueSettingsFormScreen } from './VenueSettingsScreen'
 
+const GET_VENUE_QUERY_KEY = 'getVenue'
+
 const VenueSettings = (): JSX.Element | null => {
   const homePath = '/accueil'
   const { offererId, venueId } = useParams<{
@@ -30,12 +33,12 @@ const VenueSettings = (): JSX.Element | null => {
   }>()
   const notify = useNotification()
 
-  // TODO: refactor with the new loading pattern once we know which one to use
-  const {
-    isLoading: isLoadingVenue,
-    error: errorVenue,
-    data: venue,
-  } = useGetVenue(Number(venueId))
+  const venueQuery = useSWR(
+    [GET_VENUE_QUERY_KEY, venueId],
+    ([, venueIdParam]) => api.getVenue(Number(venueIdParam))
+  )
+  const venue = venueQuery.data
+
   const {
     isLoading: isLoadingVenueLabels,
     error: errorVenueLabels,
@@ -77,7 +80,7 @@ const VenueSettings = (): JSX.Element | null => {
 
   if (
     errorOfferer ||
-    errorVenue ||
+    venueQuery.error ||
     errorVenueLabels ||
     errorVenueTypes ||
     errorVenueProviders ||
@@ -85,7 +88,12 @@ const VenueSettings = (): JSX.Element | null => {
   ) {
     const loadingError = [
       errorOfferer,
-      errorVenue,
+      venueQuery.error
+        ? {
+            message:
+              'Une erreur est survenue lors de la récupération de votre lieu',
+          }
+        : undefined,
       errorVenueLabels,
       errorVenueTypes,
     ].find((error) => error !== undefined)
@@ -98,7 +106,7 @@ const VenueSettings = (): JSX.Element | null => {
   }
 
   if (
-    isLoadingVenue ||
+    venueQuery.isLoading ||
     isLoadingVenueLabels ||
     isLoadingVenueTypes ||
     isLoadingProviders ||
@@ -111,6 +119,10 @@ const VenueSettings = (): JSX.Element | null => {
         <Spinner />
       </AppLayout>
     )
+  }
+
+  if (!venue) {
+    return null
   }
 
   return (
