@@ -1,5 +1,3 @@
-import React from 'react'
-
 import './OfferDetails.scss'
 
 import {
@@ -7,7 +5,7 @@ import {
   CollectiveOfferTemplateResponseModel,
 } from 'apiClient/adage'
 
-import OfferInterventionArea from './OfferInterventionArea'
+import { getInterventionAreaLabels } from './OfferInterventionArea/OfferInterventionArea'
 import OfferSection from './OfferSection'
 import OfferVenue from './OfferVenue'
 
@@ -102,7 +100,7 @@ const OfferDetails = ({
 
       {interventionArea?.length > 0 && (
         <OfferSection title="Zone de Mobilité">
-          <OfferInterventionArea interventionArea={interventionArea} />
+          <div>{getInterventionAreaLabels(interventionArea)}</div>
         </OfferSection>
       )}
 
