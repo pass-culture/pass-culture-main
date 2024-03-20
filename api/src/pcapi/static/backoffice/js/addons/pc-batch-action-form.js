@@ -120,7 +120,7 @@ class PcBatchActionForm extends PcAddOn {
   }
 
   #onBatchButtonClick = async (event) => {
-    const { useConfirmationModal, pcTableMultiSelectId, toggleId, url, mode, fetchUrl } = event.target.dataset
+    const { useConfirmationModal, pcTableMultiSelectId, toggleId, url, mode, fetchUrl, modalSelector } = event.target.dataset
     const { inputIdsName } = this.state[toggleId]
     const tableMultiSelectState = this.app.addons.PcTableMultiSelectId.state[pcTableMultiSelectId]
     const idsStr = [...tableMultiSelectState.selectedRowsIds].join(',')
@@ -140,12 +140,14 @@ class PcBatchActionForm extends PcAddOn {
       $form.submit()
       return
     }
-    const $modal = document.querySelector(event.target.dataset.modalSelector)
+    const $modal = document.querySelector(modalSelector)
     const $form = $modal.querySelector('form') // no support for turbo loading="lazy" yet
-    const $objectIds = $form.querySelector(`input[name="${inputIdsName}"]`)
-    $objectIds.value = idsStr
+    if ($form) {
+      const $objectIds = $form.querySelector(`input[name="${inputIdsName}"]`)
+      $objectIds.value = idsStr
+    }
 
-    if (mode === 'fetch' && fetchUrl) {
+    if (mode === 'fetch' && fetchUrl && $form) {
       try {
         const $turboFrame = $modal.querySelector('turbo-frame')
         const formData = new FormData()
