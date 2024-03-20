@@ -1,14 +1,12 @@
 @use "styles/variables/_forms.scss" as forms;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/variables/_colors.scss" as colors;
 
 $checkbox-size: rem.torem(40px);
 
-
 .checkbox input {
   &:hover,
-  &:focus ,
+  &:focus,
   &:checked {
     &::after {
       background-image: none;
@@ -22,40 +20,42 @@ $checkbox-size: rem.torem(40px);
   position: relative;
   width: $checkbox-size;
   height: $checkbox-size;
-  background-color: colors.$white;
-  border: rem.torem(1px) solid colors.$grey-dark;
+  background-color: var(--color-white);
+  border: rem.torem(1px) solid var(--color-grey-dark);
   border-radius: 50%;
-  transition: border 150ms ease, background 150ms ease;
+  transition:
+    border 150ms ease,
+    background 150ms ease;
 
   &:focus-within {
-    outline: rem.torem(1px) solid colors.$black;
+    outline: rem.torem(1px) solid var(--color-black);
     outline-offset: rem.torem(2px);
   }
 
   &:not(:checked) {
     &:focus {
-      border-color: colors.$grey-dark;
+      border-color: var(--color-grey-dark);
     }
 
     &:hover {
-      border-color: colors.$grey-dark;
+      border-color: var(--color-grey-dark);
     }
   }
 
   &:hover {
     box-shadow: forms.$input-hover-shadow;
-    background-color: colors.$white;
+    background-color: var(--color-white);
     cursor: pointer;
   }
 
   &:checked {
-    border: rem.torem(2px) solid colors.$secondary-light;
-    background-color: colors.$background-secondary;
+    border: rem.torem(2px) solid var(--color-secondary-light);
+    background-color: var(--color-background-secondary);
     font-weight: 700;
-    
+
     &:focus {
-      border: rem.torem(2px) solid colors.$secondary-light;
-      background-color: colors.$background-secondary;
+      border: rem.torem(2px) solid var(--color-secondary-light);
+      background-color: var(--color-background-secondary);
     }
   }
 
@@ -66,5 +66,4 @@ $checkbox-size: rem.torem(40px);
     left: 50%;
     transform: translate(-50%, -50%);
   }
-  
 }

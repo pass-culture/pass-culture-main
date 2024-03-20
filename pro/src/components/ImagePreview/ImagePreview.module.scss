@@ -1,10 +1,9 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/variables/_size.scss" as size;
 
 .image-preview-previews {
-  background: colors.$grey-light;
+  background: var(--color-grey-light);
   display: flex;
   justify-content: center;
   padding: rem.torem(16px) 0;

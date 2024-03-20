@@ -1,5 +1,4 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/variables/_size.scss" as size;
 @use "styles/mixins/_fonts.scss" as fonts;
 
@@ -16,7 +15,7 @@ $banner-left-padding: rem.torem(16px);
 
     &::before,
     .close-icon-banner {
-      background: colors.$white;
+      background: var(--color-white);
       font-weight: 700;
       position: absolute;
     }
@@ -25,11 +24,11 @@ $banner-left-padding: rem.torem(16px);
       padding: 0 rem.torem(8px) 0 rem.torem(40px);
       top: rem.torem(-10px);
       left: rem.torem(14px);
-      background: colors.$white;
+      background: var(--color-white);
     }
 
     .icon {
-      color: colors.$primary;
+      color: var(--color-primary);
       width: rem.torem(24px);
       height: rem.torem(24px);
       top: rem.torem(-15px);
@@ -44,7 +43,7 @@ $banner-left-padding: rem.torem(16px);
     }
 
     .bi-banner-text {
-      color: colors.$black;
+      color: var(--color-black);
 
       &.provider {
         display: flex;
@@ -76,47 +75,47 @@ $banner-left-padding: rem.torem(16px);
       position: absolute;
       bottom: rem.torem(-2px);
       right: rem.torem(80px);
-      background: colors.$white;
+      background: var(--color-white);
       width: rem.torem(24px);
       height: rem.torem(3px);
     }
   }
 
   &.attention {
-    border: rem.torem(1px) solid colors.$primary;
-    color: colors.$primary;
+    border: rem.torem(1px) solid var(--color-primary);
+    color: var(--color-primary);
 
     svg,
     a,
     .bi-link {
-      color: colors.$black;
+      color: var(--color-black);
     }
 
     .close-icon-banner {
-      fill: colors.$primary;
-      color: colors.$primary;
+      fill: var(--color-primary);
+      color: var(--color-primary);
     }
   }
 
   &.notification-info {
-    border: rem.torem(1px) solid colors.$secondary-light;
-    color: colors.$secondary-light;
+    border: rem.torem(1px) solid var(--color-secondary-light);
+    color: var(--color-secondary-light);
 
     .close-icon-banner,
     .close-icon {
-      fill: colors.$secondary-light;
-      color: colors.$secondary-light;
+      fill: var(--color-secondary-light);
+      color: var(--color-secondary-light);
     }
   }
 
   &.light {
-    background: colors.$grey-light;
-    color: colors.$grey-dark;
+    background: var(--color-grey-light);
+    color: var(--color-grey-dark);
   }
 
   &.new {
-    background: colors.$accent;
-    color: colors.$white;
+    background: var(--color-accent);
+    color: var(--color-white);
 
     .content {
       display: flex;
@@ -130,13 +129,13 @@ $banner-left-padding: rem.torem(16px);
 
     a,
     .bi-link {
-      color: colors.$white;
+      color: var(--color-white);
     }
 
     .close-icon,
     path {
-      fill: colors.$white;
-      color: colors.$white;
+      fill: var(--color-white);
+      color: var(--color-white);
     }
   }
 
@@ -164,8 +163,8 @@ $banner-left-padding: rem.torem(16px);
 
       .close-icon-banner,
       path {
-        fill: colors.$white;
-        color: colors.$white;
+        fill: var(--color-white);
+        color: var(--color-white);
       }
     }
   }
@@ -201,7 +200,7 @@ $banner-left-padding: rem.torem(16px);
   position: absolute;
   height: rem.torem(26px);
   align-items: center;
-  background: colors.$white;
+  background: var(--color-white);
   top: 0;
   left: $banner-left-padding;
   transform: translateY(-50%);

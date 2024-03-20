@@ -1,121 +1,122 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/variables/_size.scss" as size;
 
 .bank-account {
-	display: grid;
-	padding: rem.torem(16px) rem.torem(24px);
-	grid-template-columns: rem.torem(281px) auto;
-	border: rem.torem(1px) solid colors.$grey-medium;
-	border-radius: rem.torem(6px);
-	box-shadow: rem.torem(0) rem.torem(3px) rem.torem(4px) colors.$medium-shadow;
+  display: grid;
+  padding: rem.torem(16px) rem.torem(24px);
+  grid-template-columns: rem.torem(281px) auto;
+  border: rem.torem(1px) solid var(--color-grey-medium);
+  border-radius: rem.torem(6px);
+  box-shadow: rem.torem(0) rem.torem(3px) rem.torem(4px)
+    var(--color-medium-shadow);
 
-	@media (max-width: size.$tablet) {
+  @media (max-width: size.$tablet) {
     display: flex;
-		flex-direction: column;
+    flex-direction: column;
   }
 }
 
-.informations-section, .linked-venues-section {
-	padding: rem.torem(8px) 0;
+.informations-section,
+.linked-venues-section {
+  padding: rem.torem(8px) 0;
 }
 
 .informations-section {
-	border-right: rem.torem(1px) solid colors.$grey-medium;
+  border-right: rem.torem(1px) solid var(--color-grey-medium);
 
-	@media (max-width: size.$tablet) {
+  @media (max-width: size.$tablet) {
     border-right: none;
-		border-bottom: rem.torem(1px) solid colors.$grey-medium;
-		padding-bottom: rem.torem(24px);
-		margin-bottom: rem.torem(16px);
+    border-bottom: rem.torem(1px) solid var(--color-grey-medium);
+    padding-bottom: rem.torem(24px);
+    margin-bottom: rem.torem(16px);
   }
 
-	&-title {
-		@include fonts.title4;
+  &-title {
+    @include fonts.title4;
 
-		margin-bottom: rem.torem(16px);
-	}
+    margin-bottom: rem.torem(16px);
+  }
 
-	&-content {
-		@include fonts.body-important;
+  &-content {
+    @include fonts.body-important;
 
-		display: flex;
-		flex-direction: column;
-		gap: rem.torem(8px);
-	}
+    display: flex;
+    flex-direction: column;
+    gap: rem.torem(8px);
+  }
 }
 
 .linked-venues-section {
-	display: flex;
-	flex-direction: column;
+  display: flex;
+  flex-direction: column;
 
-	@media (min-width: size.$tablet) {
-		margin-left: rem.torem(24px);
+  @media (min-width: size.$tablet) {
+    margin-left: rem.torem(24px);
   }
 
-	&-title {
-		@include fonts.body-important;
+  &-title {
+    @include fonts.body-important;
 
-		margin-bottom: rem.torem(16px);
-		display: inline-flex;
+    margin-bottom: rem.torem(16px);
+    display: inline-flex;
 
-		.error-icon {
-			color: colors.$error;
-			margin-left: rem.torem(8px);
-		}
-	}
+    .error-icon {
+      color: var(--color-error);
+      margin-left: rem.torem(8px);
+    }
+  }
 
-	.issue-text {
-		@include fonts.small-caption;
+  .issue-text {
+    @include fonts.small-caption;
 
-		color: colors.$error;
-		margin-bottom: rem.torem(16px);
-	}
+    color: var(--color-error);
+    margin-bottom: rem.torem(16px);
+  }
 
-	.linked-venues {
-		margin-bottom: rem.torem(24px);
-		display: flex;
-		flex-direction: column;
-		gap: rem.torem(8px);
-	}
+  .linked-venues {
+    margin-bottom: rem.torem(24px);
+    display: flex;
+    flex-direction: column;
+    gap: rem.torem(8px);
+  }
 
-	.linked-venue {
-		width: 100%;
-		background-color: colors.$grey-light;
-		border-radius: rem.torem(6px);
-		padding: rem.torem(12px) rem.torem(16px);
+  .linked-venue {
+    width: 100%;
+    background-color: var(--color-grey-light);
+    border-radius: rem.torem(6px);
+    padding: rem.torem(12px) rem.torem(16px);
 
-		@media (max-width: size.$tablet) {
-			white-space: nowrap;
-			overflow: hidden;
-			text-overflow: ellipsis;
-		}
-	}
+    @media (max-width: size.$tablet) {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
 }
 
 .pending-account {
-	display: flex;
-	flex-direction: column;
-	gap: rem.torem(16px);
-	padding: rem.torem(16px);
-	margin-left: rem.torem(24px);
-	border-radius: rem.torem(6px);
-	background-color: colors.$grey-light;
-	color: colors.$black;
-	text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: rem.torem(16px);
+  padding: rem.torem(16px);
+  margin-left: rem.torem(24px);
+  border-radius: rem.torem(6px);
+  background-color: var(--color-grey-light);
+  color: var(color-black);
+  text-align: center;
 
-	.status-icon {
-		margin: auto;
-    color: colors.$grey-dark;
+  .status-icon {
+    margin: auto;
+    color: var(--color-grey-dark);
 
     &.error-icon {
-      color: colors.$error;
+      color: var(--color-error);
     }
-	}
+  }
 
   &.needs-correction {
-    background: colors.$background-error;
+    background: var(--color-background-error);
   }
 
   .account-status {

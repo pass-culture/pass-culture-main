@@ -1,6 +1,5 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
 
 .offer-date-filter {
   width: rem.torem(173px);
@@ -13,7 +12,7 @@
 
 .bookings-page {
   .vertical-bar {
-    background-color: colors.$grey-medium;
+    background-color: var(--color-grey-medium);
     height: rem.torem(40px);
     width: rem.torem(1px);
   }
@@ -23,7 +22,7 @@
     display: flex;
 
     .separator {
-      background-color: colors.$grey-medium;
+      background-color: var(--color-grey-medium);
       flex: 5;
       height: rem.torem(1px);
     }
@@ -66,7 +65,7 @@
 .pf-refresh-message {
   @include fonts.body;
 
-  color: colors.$error-light;
+  color: var(--color-error-light);
   line-height: rem.torem(16px);
   text-align: center;
 }

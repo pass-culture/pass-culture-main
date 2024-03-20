@@ -1,6 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_size.scss" as size;
-@use "styles/variables/_colors.scss" as colors;
 
 .explanatory-text {
   margin-bottom: rem.torem(24px);
@@ -28,10 +27,10 @@
 
 .image-preview {
   object-fit: cover;
-  border: rem.torem(1px) solid colors.$grey-medium;
+  border: rem.torem(1px) solid var(--color-grey-medium);
   border-radius: rem.torem(4px);
   box-shadow: 0 rem.torem(1px) rem.torem(8px)
-    rgba(colors.$large-shadow, $alpha: 0.15);
+    rgb(var(--color-large-shadow) 0.15);
 
   &.preview-venue {
     width: 100%;

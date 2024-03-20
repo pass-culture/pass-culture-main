@@ -1,5 +1,4 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_forms.scss" as forms;
 
@@ -37,7 +36,7 @@ input[type="search"]::-webkit-search-cancel-button {
   background-image: url("../../../icons/full-clear.svg");
   background-size: rem.torem(20px);
   background-repeat: no-repeat;
-  color: colors.$grey-dark;
-  fill: colors.$grey-dark;
+  color: var(--color-grey-dark);
+  fill: var(--color-grey-dark);
   cursor: pointer;
 }

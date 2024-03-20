@@ -1,6 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/variables/_size.scss" as size;
 
 .title {
@@ -25,7 +24,7 @@
 
   // The trick is to "slide" the gradient with background-position
   // while the actual background is 3x the size of the actual block
-  background: colors.$linear-gradient-skeleton;
+  background: var(--color-linear-gradient-skeleton);
   background-size: 300% 300%;
   animation: loadinggradient 2s ease infinite;
 }
@@ -54,7 +53,7 @@
   &-icon {
     width: rem.torem(48px);
     height: rem.torem(48px);
-    color: colors.$secondary-light;
+    color: var(--color-secondary-light);
     margin-right: rem.torem(8px);
   }
 

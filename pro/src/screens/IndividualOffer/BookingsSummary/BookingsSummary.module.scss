@@ -1,11 +1,10 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
 
 .no-data {
   text-align: center;
 
   &-icon {
-    color: colors.$grey-medium;
+    color: var(--color-grey-medium);
     width: rem.torem(128px);
     height: rem.torem(100px);
     margin-bottom: rem.torem(16px);

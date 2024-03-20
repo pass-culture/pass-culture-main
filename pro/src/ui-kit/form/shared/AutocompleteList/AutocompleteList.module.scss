@@ -1,4 +1,3 @@
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_size.scss" as size;
 
@@ -11,7 +10,7 @@ $dropdown-icon-size: rem.torem(20px);
   .dropdown-indicator {
     background: none;
     border: none;
-    fill: colors.$grey-light;
+    fill: var(--color-grey-light);
     position: absolute;
     right: rem.torem(16px);
     bottom: calc((size.$input-min-height - $dropdown-icon-size) / 2);
@@ -26,10 +25,10 @@ $dropdown-icon-size: rem.torem(20px);
 
   .pellet {
     align-items: center;
-    background-color: colors.$grey-light;
+    background-color: var(--color-grey-light);
     border-radius: rem.torem(100px);
     box-sizing: border-box;
-    color: colors.$black;
+    color: var(--color-black);
     font-weight: 600;
     cursor: pointer;
     display: flex;
@@ -46,14 +45,14 @@ $dropdown-icon-size: rem.torem(20px);
 
 .menu {
   border-radius: rem.torem(6px);
-  box-shadow: 0 rem.torem(3px) rem.torem(4px) colors.$medium-shadow;
+  box-shadow: 0 rem.torem(3px) rem.torem(4px) var(--color-medium-shadow);
   font-size: rem.torem(15px);
   margin: 0 rem.torem(1.6px);
   max-height: rem.torem(296px);
   overflow-y: scroll;
   padding: rem.torem(8px) 0;
   position: absolute;
-  background-color: colors.$white;
+  background-color: var(--color-white);
   width: 100%;
   right: 0;
   z-index: 1;
@@ -69,6 +68,6 @@ $dropdown-icon-size: rem.torem(20px);
 
   label:hover,
   label:focus-within {
-    background-color: colors.$grey-light;
+    background-color: var(--color-grey-light);
   }
 }

@@ -1,5 +1,4 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
 
 .offerer-stats-no-result {
   &-container {
@@ -14,8 +13,7 @@
   }
 
   &-icon {
-    color: colors.$grey-medium;
+    color: var(--color-grey-medium);
     width: rem.torem(88px);
   }
-
 }

@@ -1,6 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/variables/_colors.scss" as colors;
 
 .table-wrapper {
   display: flex;
@@ -16,7 +15,7 @@
 .table-header {
   @include fonts.caption;
 
-  color: colors.$black;
+  color: var(--color-black);
   line-height: rem.torem(20px);
   min-height: rem.torem(60px);
   padding: rem.torem(14px);
@@ -25,13 +24,13 @@
 }
 
 .table-body {
-  border-bottom: rem.torem(1px) solid colors.$grey-medium;
+  border-bottom: rem.torem(1px) solid var(--color-grey-medium);
 }
 
 .table-row {
   display: flex;
   flex-flow: row wrap;
-  border-top: rem.torem(1px) solid colors.$grey-medium;
+  border-top: rem.torem(1px) solid var(--color-grey-medium);
   padding: rem.torem(16px) 0;
 
   &:first-child {

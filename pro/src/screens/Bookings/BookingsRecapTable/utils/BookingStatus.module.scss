@@ -1,35 +1,33 @@
-@use "styles/variables/_colors.scss" as colors;
-
 .booking-status-booked {
-  color: colors.$white;
-  background-color: colors.$secondary;
+  color: var(--color-white);
+  background-color: var(--color-secondary);
 }
 
 .booking-status-pending {
-  background-color: colors.$alert-dark;
-  color: colors.$black;
+  background-color: var(--color-alert-dark);
+  color: var(--color-black);
 
   svg {
-    color: colors.$black;
+    color: var(--color-black);
   }
 }
 
 .booking-status-validated {
-  color: colors.$white;
-  background-color: colors.$accent;
+  color: var(--color-white);
+  background-color: var(--color-accent);
 }
 
 .booking-status-cancelled {
-  color: colors.$white;
-  background-color: colors.$grey-dark;
+  color: var(--color-white);
+  background-color: var(--color-grey-dark);
 }
 
 .booking-status-reimbursed {
-  color: colors.$white;
-  background-color: colors.$valid;
+  color: var(--color-white);
+  background-color: var(--color-valid);
 }
 
 .booking-status-confirmed {
-  color: colors.$white;
-  background-color: colors.$black;
+  color: var(--color-white);
+  background-color: var(--color-black);
 }

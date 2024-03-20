@@ -1,6 +1,5 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/variables/_forms.scss" as forms;
 
 .menu-button {
@@ -17,7 +16,7 @@
     &:focus,
     &:focus-visible,
     &:hover {
-      color: colors.$primary;
+      color: var(--color-primary);
     }
   }
 }
@@ -27,11 +26,11 @@
   display: flex;
   flex-direction: column;
   gap: rem.torem(8px);
-  border: 1px solid colors.$grey-light;
+  border: 1px solid var(--color-grey-light);
   border-radius: rem.torem(6px);
-  box-shadow: 0 3px 4px 0 colors.$medium-shadow;
+  box-shadow: 0 3px 4px 0 var(--color-medium-shadow);
   padding: rem.torem(16px) 0;
-  background: colors.$white;
+  background: var(--color-white);
 }
 
 .menu-item[data-reach-menu-item] {
@@ -39,11 +38,11 @@
 
   display: flex;
   padding: 0 16px;
-  color: colors.$black;
+  color: var(--color-black);
 
   &[data-selected] {
-    background: colors.$grey-medium;
-    color: colors.$black;
+    background: var(--color-grey-medium);
+    color: var(--color-black);
     cursor: pointer;
   }
 }
@@ -55,6 +54,6 @@
   margin-right: rem.torem(8px);
 
   path {
-    fill: colors.$black;
+    fill: var(--color-black);
   }
 }

@@ -1,5 +1,4 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .timeline {
@@ -13,14 +12,14 @@
     @include fonts.body;
 
     font-weight: 700;
-    color: colors.$grey-dark;
+    color: var(--color-grey-dark);
   }
 
   &-step-title-disabled {
     @include fonts.body-important;
 
     line-height: rem.torem(20px);
-    color: colors.$grey-dark;
+    color: var(--color-grey-dark);
   }
 
   &-step-decription-with-link {
@@ -30,7 +29,7 @@
   &-infobox {
     border-radius: rem.torem(5px);
     padding: rem.torem(16px);
-    background-color: colors.$background-secondary;
+    background-color: var(--color-background-secondary);
     margin-top: rem.torem(16px);
 
     &-text {
@@ -46,20 +45,20 @@
 .contact-link {
   @include fonts.button;
 
-  color: colors.$black;
+  color: var(--color-black);
 
   &:hover,
   &:focus {
-    color: colors.$black;
+    color: var(--color-black);
     cursor: pointer;
     text-decoration: underline;
   }
 }
 
 .button-important {
-  color: colors.$primary;
+  color: var(--color-primary);
 
   svg {
-    fill: colors.$primary !important;
+    fill: var(--color-primary) !important;
   }
 }

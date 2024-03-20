@@ -1,6 +1,5 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
 
 .hero-section {
   display: flex;
@@ -24,7 +23,7 @@
       @include fonts.caption;
 
       background-color: transparent;
-      color: colors.$primary;
+      color: var(--color-primary);
       display: flex;
       justify-content: flex-end;
       line-height: rem.torem(34px);
@@ -32,7 +31,7 @@
       &:focus,
       &:hover {
         background-color: transparent;
-        color: colors.$primary;
+        color: var(--color-primary);
       }
     }
   }

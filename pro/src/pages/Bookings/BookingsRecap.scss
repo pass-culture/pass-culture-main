@@ -1,4 +1,3 @@
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 
@@ -19,7 +18,7 @@
     }
 
     &-separator {
-      border-bottom: rem.torem(1px) solid colors.$grey-medium;
+      border-bottom: rem.torem(1px) solid var(--color-grey-medium);
       display: block;
       position: absolute;
       top: 50%;
@@ -29,7 +28,7 @@
 
   .br-warning {
     align-items: center;
-    color: colors.$grey-dark;
+    color: var(--color-grey-dark);
     display: flex;
     flex-direction: column;
     height: rem.torem(400px);

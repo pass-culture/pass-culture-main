@@ -1,4 +1,3 @@
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
 
 .base-file-input-container {
@@ -7,7 +6,7 @@
   padding: 0 rem.torem(32px);
 
   &:focus-within {
-    outline: rem.torem(1px) solid colors.$input-text-color;
+    outline: rem.torem(1px) solid var(--color-input-text-color);
     outline-offset: rem.torem(2px);
   }
 }

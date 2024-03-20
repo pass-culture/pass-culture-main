@@ -1,6 +1,5 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
 
 .booking-status-label {
   @include fonts.caption;
@@ -15,7 +14,7 @@
   text-align: left;
 
   &:focus-visible {
-    outline: rem.torem(1px) solid colors.$black;
+    outline: rem.torem(1px) solid var(--color-black);
     outline-offset: rem.torem(2px);
   }
 }
@@ -23,17 +22,17 @@
 .booking-status-icon {
   width: rem.torem(17px);
   height: rem.torem(17px);
-  color: colors.$white;
+  color: var(--color-white);
   padding-right: rem.torem(4px);
   vertical-align: middle;
 }
 
 .bs-tooltip {
   white-space: initial;
-  background-color: colors.$white;
+  background-color: var(--color-white);
   border-radius: rem.torem(4px);
-  box-shadow: 0 rem.torem(2px) rem.torem(10px) 0 colors.$large-shadow;
-  color: colors.$black;
+  box-shadow: 0 rem.torem(2px) rem.torem(10px) 0 var(--color-large-shadow);
+  color: var(--color-black);
   display: block;
   padding: rem.torem(16px) rem.torem(24px) rem.torem(16px) rem.torem(24px);
   position: absolute;

@@ -1,12 +1,11 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_size.scss" as size;
-@use "styles/variables/_colors.scss" as colors;
 
 .newsletter-container {
   position: relative;
   display: flex;
   min-height: rem.torem(53px);
-  background: linear-gradient(colors.$primary, colors.$secondary);
+  background: linear-gradient(var(--color-primary), var(--color-secondary));
   border-radius: 6px;
   width: 100%;
   padding: rem.torem(1px);
@@ -23,7 +22,7 @@
   }
 
   .newsletter-link {
-    background-color: colors.$white;
+    background-color: var(--color-white);
     width: 100%;
     border-radius: 5px;
     position: relative;
