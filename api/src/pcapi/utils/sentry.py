@@ -11,9 +11,11 @@ from pcapi import settings
 from pcapi.utils.health_checker import read_version_from_file
 
 
-def ignore_flask_shell_event(
-    event: dict[str, typing.Any], _hint: dict[str, typing.Any]
-) -> dict[str, typing.Any] | None:
+if typing.TYPE_CHECKING:
+    from sentry_sdk._types import Event
+
+
+def ignore_flask_shell_event(event: "Event", _hint: dict[str, typing.Any]) -> "Event | None":
     if len(sys.argv) >= 2 and "flask" in sys.argv[0] and sys.argv[1] == "shell":
         return None
     return event
