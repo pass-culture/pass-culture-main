@@ -5,12 +5,16 @@ import { AccessibilitySummarySection } from 'components/AccessibilitySummarySect
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
+import useActiveFeature from 'hooks/useActiveFeature'
+import { OpeningHoursReadOnly } from 'pages/VenueEdition/OpeningHoursReadOnly/OpeningHoursReadOnly'
 
 interface VenueEditionReadOnlyProps {
   venue: GetVenueResponseModel
 }
 
 export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
+  const isOpeningHoursEnabled = useActiveFeature('WIP_OPENING_HOURS')
+
   return (
     <SummarySection
       title="Vos informations pour le grand public"
@@ -28,7 +32,9 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
       </SummarySubSection>
 
       <AccessibilitySummarySection accessibleItem={venue} />
-
+      {isOpeningHoursEnabled && venue.isPermanent && (
+        <OpeningHoursReadOnly openingHours={venue.venueOpeningHours} />
+      )}
       <SummarySubSection title="Informations de contact">
         <SummaryDescriptionList
           descriptions={[
