@@ -16,7 +16,6 @@ export const SummarySubSection = ({
 }: SummaryLayoutSubSectionProps): JSX.Element => (
   <div className={cn(style['summary-layout-sub-section'], className)}>
     <h3 className={style['summary-layout-sub-section-title']}>{title}</h3>
-
     {children}
   </div>
 )

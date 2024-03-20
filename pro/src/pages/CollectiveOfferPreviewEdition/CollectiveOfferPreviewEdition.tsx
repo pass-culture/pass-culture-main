@@ -14,7 +14,9 @@ import styles from './CollectiveOfferPreviewEdition.module.scss'
 export const CollectiveOfferPreviewEdition = ({
   offer,
 }: MandatoryCollectiveOfferFromParamsProps) => {
-  const backRedirectionUrl = `/offre/T-${offer.id}/collectif/recapitulatif`
+  const backRedirectionUrl = offer.isTemplate
+    ? `/offre/T-${offer.id}/collectif/recapitulatif`
+    : `/offre/${offer.id}/collectif/recapitulatif`
 
   return (
     <AppLayout layout={'sticky-actions'}>
