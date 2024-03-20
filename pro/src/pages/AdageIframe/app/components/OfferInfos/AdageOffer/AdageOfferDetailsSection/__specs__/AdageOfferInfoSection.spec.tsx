@@ -111,4 +111,23 @@ describe('AdageOfferInfoSection', () => {
 
     expect(screen.getByText('1 400 € pour 10 élèves')).toBeInTheDocument()
   })
+
+  it('should show the intervention areas', () => {
+    renderAdageOfferInfoSection({
+      offer: {
+        ...defaultCollectiveTemplateOffer,
+        interventionArea: ['56', '29'],
+        offerVenue: {
+          ...defaultCollectiveTemplateOffer.offerVenue,
+          addressType: OfferAddressType.OTHER,
+        },
+      },
+    })
+
+    expect(
+      screen.getByRole('heading', { name: 'Zone de mobilité' })
+    ).toBeInTheDocument()
+
+    expect(screen.getByText('Morbihan (56)')).toBeInTheDocument()
+  })
 })

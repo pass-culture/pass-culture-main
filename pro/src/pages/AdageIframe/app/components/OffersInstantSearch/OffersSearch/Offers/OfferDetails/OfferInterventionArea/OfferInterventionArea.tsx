@@ -1,5 +1,3 @@
-import React from 'react'
-
 import {
   ALL_FRANCE_OPTION_VALUE,
   MAINLAND_OPTION_VALUE,
@@ -8,9 +6,9 @@ import {
   domtomOptions,
 } from 'pages/AdageIframe/app/constants/departmentOptions'
 
-export const getInterventionAreaLabels = (
+export const getInterventionAreaLabelsToDisplay = (
   interventionArea: string[]
-): string => {
+): string[] => {
   const labels: string[] = []
 
   if (
@@ -27,7 +25,7 @@ export const getInterventionAreaLabels = (
       }
     })
 
-    return labels.join(' - ')
+    return labels
   }
 
   departmentOptions.forEach((interventionOption) => {
@@ -38,13 +36,9 @@ export const getInterventionAreaLabels = (
     }
   })
 
-  return labels.join(' - ')
+  return labels
 }
 
-const OfferInterventionArea = ({
-  interventionArea,
-}: {
-  interventionArea: string[]
-}): JSX.Element => <div>{getInterventionAreaLabels(interventionArea)}</div>
-
-export default OfferInterventionArea
+export function getInterventionAreaLabels(interventionAreas: string[]): string {
+  return getInterventionAreaLabelsToDisplay(interventionAreas).join(` - `)
+}

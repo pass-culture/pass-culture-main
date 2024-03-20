@@ -5,6 +5,7 @@ import {
 import { OfferAddressType } from 'apiClient/v1'
 import { isCollectiveOfferBookable } from 'pages/AdageIframe/app/types/offers'
 
+import { getInterventionAreaLabelsToDisplay } from '../../../OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea/OfferInterventionArea'
 import styles from '../AdageOffer.module.scss'
 import {
   getFormattedDatesForBookableOffer,
@@ -46,6 +47,8 @@ export default function AdageOfferInfoSection({
 
   const location = getLocationForOfferVenue(offerVenue)
 
+  const interventionArea = offer.interventionArea ?? []
+
   const isOfferBookable = isCollectiveOfferBookable(offer)
 
   return (
@@ -63,6 +66,31 @@ export default function AdageOfferInfoSection({
           ? getFormattedDatesForBookableOffer(offer)
           : getFormattedDatesForTemplateOffer(offer)}
       </div>
+
+      {!isOfferBookable &&
+        offer.offerVenue.addressType !== OfferAddressType.OFFERER_VENUE &&
+        interventionArea.length > 0 && (
+          <div className={styles['offer-section-group-item']}>
+            <h3 className={styles['offer-section-group-item-subtitle']}>
+              Zone de mobilité
+            </h3>
+            {getInterventionAreaLabelsToDisplay(interventionArea).map(
+              (area, i) => (
+                <span key={area}>
+                  {i > 0 ? (
+                    <span className={styles['offer-section-group-list-pipe']}>
+                      {' '}
+                      |{' '}
+                    </span>
+                  ) : (
+                    ''
+                  )}
+                  {area}
+                </span>
+              )
+            )}
+          </div>
+        )}
 
       {(isOfferBookable || offer.educationalPriceDetail) && (
         <div className={styles['offer-section-group-item']}>
