@@ -11,6 +11,7 @@ from pcapi.core.subscription.phone_validation import exceptions as phone_validat
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.core.users.api import create_phone_validation_token
 
 
 @pytest.mark.usefixtures("db_session")
@@ -150,3 +151,29 @@ class SendSMSTest:
         assert caplog.records[0].message == "Exception caught while sending SMS"
         assert caplog.records[1].levelname == "WARNING"
         assert caplog.records[1].message == "Sendinblue replied with status=524 when sending SMS"
+
+
+@pytest.mark.usefixtures("db_session")
+@override_settings(DISABLE_PHONE_VALIDATION_FOR_E2E_TESTS=True)
+class BypassPhoneValidationTest:
+    def test_bypass_if_email_has_e2e_suffix(self):
+        user = users_factories.UserFactory(email="x+e2e@example.com")
+        create_phone_validation_token(user, "+33600000000")
+
+        phone_validation_api.validate_phone_number(user, "wrong-code")
+
+        assert user.phoneNumber == "+33600000000"
+        assert user.phoneValidationStatus == users_models.PhoneValidationStatusType.VALIDATED
+        phone_validation_fraud_check = user.beneficiaryFraudChecks[-1]
+        assert phone_validation_fraud_check.type == fraud_models.FraudCheckType.PHONE_VALIDATION
+        assert phone_validation_fraud_check.status == fraud_models.FraudCheckStatus.OK
+
+    def test_doesnt_validate_if_email_doesnt_have_e2e_suffix_and_code_is_wrong(self):
+        user = users_factories.UserFactory(email="x@example.com")
+        create_phone_validation_token(user, "+33600000000")
+
+        with pytest.raises(phone_validation_exceptions.NotValidCode):
+            phone_validation_api.validate_phone_number(user, "wrong-code")
+
+        assert user.phoneNumber is None
+        assert user.phoneValidationStatus is None
