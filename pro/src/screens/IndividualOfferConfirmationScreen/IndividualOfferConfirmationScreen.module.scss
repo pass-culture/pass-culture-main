@@ -1,8 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/variables/_size.scss" as size;
-
 
 .confirmation-container {
   text-align: center;
@@ -10,7 +8,7 @@
 
 .validate-icon {
   height: rem.torem(56px);
-  color: colors.$valid;
+  color: var(--color-valid);
 }
 
 .pending-icon {
@@ -36,7 +34,7 @@
   display: flex;
   flex-direction: column-reverse;
 
-  >:last-child {
+  > :last-child {
     margin-bottom: rem.torem(16px);
   }
 }
@@ -50,7 +48,7 @@
     display: inline;
     padding-bottom: rem.torem(24px);
 
-    >:first-child {
+    > :first-child {
       margin-right: rem.torem(24px);
     }
   }

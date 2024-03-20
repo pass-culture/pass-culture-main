@@ -1,6 +1,5 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/variables/_size.scss" as size;
 
 $step-label-height: rem.torem(12px);
@@ -9,7 +8,7 @@ $number-size: rem.torem(30px);
 .stepper {
   @include fonts.caption;
 
-  color: colors.$grey-semi-dark;
+  color: var(--color-grey-semi-dark);
   display: flex;
   justify-content: space-between;
   padding-bottom: $step-label-height;
@@ -27,7 +26,7 @@ $number-size: rem.torem(30px);
     .step {
       display: flex;
       position: relative;
-      color: colors.$grey-dark;
+      color: var(--color-grey-dark);
       align-items: center;
     }
 
@@ -37,7 +36,7 @@ $number-size: rem.torem(30px);
       .inner {
         @include fonts.button;
 
-        border: solid 1px colors.$grey-dark;
+        border: solid 1px var(--color-grey-dark);
         border-radius: 50%;
         width: $number-size;
         height: $number-size;
@@ -50,27 +49,27 @@ $number-size: rem.torem(30px);
 
     &.selectionnable {
       .step {
-        color: colors.$black;
+        color: var(--color-black);
 
         .number {
           .inner {
-            border-color: colors.$secondary-light;
-            color: colors.$secondary-light;
+            border-color: var(--color-secondary-light);
+            color: var(--color-secondary-light);
           }
         }
       }
 
       :hover {
         .label {
-          text-decoration: underline colors.$black;
+          text-decoration: underline var(--color-black);
         }
 
         .number {
           .inner {
             box-shadow:
               inset $number-size $number-size $number-size
-                colors.$background-secondary,
-              0 0 0 rem.torem(4px) colors.$background-secondary;
+                var(--color-background-secondary),
+              0 0 0 rem.torem(4px) var(--color-background-secondary);
           }
         }
       }
@@ -78,7 +77,7 @@ $number-size: rem.torem(30px);
 
     &.active {
       .step {
-        color: colors.$secondary-light;
+        color: var(--color-secondary-light);
 
         .label {
           text-decoration: underline;
@@ -86,9 +85,9 @@ $number-size: rem.torem(30px);
 
         .number {
           .inner {
-            border-color: colors.$secondary-light;
-            background-color: colors.$secondary-light;
-            color: colors.$white;
+            border-color: var(--color-secondary-light);
+            background-color: var(--color-secondary-light);
+            color: var(--color-white);
             box-shadow: none;
           }
         }
@@ -101,7 +100,7 @@ $number-size: rem.torem(30px);
       .label {
         .inner {
           span {
-            outline: rem.torem(1px) solid colors.$input-text-color;
+            outline: rem.torem(1px) solid var(--color-input-text-color);
             outline-offset: rem.torem(4px);
             border-radius: rem.torem(4px);
           }
@@ -129,7 +128,7 @@ $number-size: rem.torem(30px);
 
         &::after {
           border-radius: rem.torem(2px);
-          background-color: colors.$grey-semi-dark;
+          background-color: var(--color-grey-semi-dark);
           content: "";
           width: 100%;
           height: rem.torem(2px);
@@ -137,7 +136,7 @@ $number-size: rem.torem(30px);
 
         &.active {
           &::after {
-            background-color: colors.$secondary-light;
+            background-color: var(--color-secondary-light);
           }
         }
       }

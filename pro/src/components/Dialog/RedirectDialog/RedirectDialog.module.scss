@@ -1,4 +1,3 @@
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
 
 .redirect-dialog {
@@ -10,6 +9,6 @@
   }
 
   &-cancel-button {
-    color: colors.$primary;
+    color: var(--color-primary);
   }
 }

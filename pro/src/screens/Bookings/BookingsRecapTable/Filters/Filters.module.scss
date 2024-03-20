@@ -1,4 +1,3 @@
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 
@@ -13,15 +12,15 @@
   .bs-filter-label {
     @include fonts.caption;
 
-    color: colors.$grey-dark;
+    color: var(--color-grey-dark);
     padding-bottom: rem.torem(8px);
     white-space: nowrap;
   }
 
   .bs-filter-tooltip {
-    background-color: colors.$white;
+    background-color: var(--color-white);
     border-radius: rem.torem(4px);
-    box-shadow: 0 rem.torem(2px) rem.torem(10px) 0 colors.$large-shadow;
+    box-shadow: 0 rem.torem(2px) rem.torem(10px) 0 var(--color-large-shadow);
     left: rem.torem(-90px);
     margin-top: rem.torem(8px);
     padding: rem.torem(16px);
@@ -49,7 +48,7 @@
 .table-head-label {
   @include fonts.caption;
 
-  color: colors.$black;
+  color: var(--color-black);
   line-height: rem.torem(20px);
   min-height: rem.torem(60px);
   padding: rem.torem(14px);
@@ -70,7 +69,7 @@
   vertical-align: middle;
 
   &.active {
-    color: colors.$primary;
+    color: var(--color-primary);
   }
 }
 
@@ -78,6 +77,6 @@
   position: absolute;
   top: 0;
   right: 0;
-  border: solid rem.torem(3px) colors.$primary;
+  border: solid rem.torem(3px) var(--color-primary);
   border-radius: rem.torem(4px);
 }

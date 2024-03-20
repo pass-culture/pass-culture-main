@@ -1,7 +1,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_size.scss" as size;
-@use "styles/variables/_colors.scss" as colors;
 
 .header {
   display: flex;
@@ -41,7 +40,7 @@
 .venue-type {
   @include fonts.body-important;
 
-  color: colors.$grey-dark;
+  color: var(--color-grey-dark);
   text-transform: uppercase;
 }
 
@@ -51,7 +50,7 @@
 
 .separator {
   width: 100%;
-  border-top: 2px solid colors.$grey-medium;
+  border-top: 2px solid var(--color-grey-medium);
 
   // override default style
   margin: 0;

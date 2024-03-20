@@ -1,5 +1,4 @@
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
 
 .dialog-container {
@@ -14,7 +13,7 @@
   display: flex;
   flex-direction: column;
   margin-top: rem.torem(32px);
-  border: rem.torem(2px) dashed colors.$grey-medium;
+  border: rem.torem(2px) dashed var(--color-grey-medium);
   border-radius: rem.torem(3px);
   width: 100%;
   padding: rem.torem(32px) 0;

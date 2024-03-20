@@ -1,10 +1,9 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/variables/_size.scss" as size;
 
 .discovery {
-  background-color: colors.$adage-discovery-background;
+  background-color: var(--color-adage-discovery-background);
 
   &-playlists {
     display: flex;
@@ -17,7 +16,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    background-color: colors.$background-secondary;
+    background-color: var(--color-background-secondary);
     width: auto;
     height: rem.torem(158px);
     padding-left: rem.torem(24px);

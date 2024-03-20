@@ -1,12 +1,10 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
-
 
 .important {
   @include fonts.body-important;
 }
 
 .day {
-  color: colors.$grey-dark;
+  color: var(--color-grey-dark);
 }

@@ -1,5 +1,4 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/variables/_size.scss" as size;
 
 @mixin logo-side() {
@@ -8,7 +7,11 @@
   justify-content: center;
   width: 100%;
   min-height: rem.torem(120px);
-  background-image: linear-gradient(97deg, colors.$primary, colors.$secondary);
+  background-image: linear-gradient(
+    97deg,
+    var(--color-primary),
+    var(--color-secondary)
+  );
 
   @media (min-width: size.$tablet) {
     min-width: rem.torem(202px);
@@ -16,7 +19,8 @@
     background-size: cover;
     min-height: 100vh;
     background-image: url("./linear-gradient.jpg");
-    box-shadow: inset rem.torem(-10px) 0 rem.torem(20px) 0 colors.$large-shadow;
+    box-shadow: inset rem.torem(-10px) 0 rem.torem(20px) 0
+      var(--color-large-shadow);
     max-width: size.$logo-side-width;
     position: sticky;
     height: 100vh;

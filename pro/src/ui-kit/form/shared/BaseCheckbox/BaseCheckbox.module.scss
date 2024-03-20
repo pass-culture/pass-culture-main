@@ -1,9 +1,7 @@
 @use "styles/variables/_forms.scss" as forms;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/variables/_size.scss" as size;
-
 
 .base-checkbox {
   display: flex;
@@ -18,10 +16,10 @@
     @include fonts.caption;
 
     margin-left: rem.torem(28px);
-    color: colors.$grey-dark;
+    color: var(--color-grey-dark);
 
     &.disabled {
-      color: colors.$grey-medium;
+      color: var(--color-grey-medium);
     }
   }
 
@@ -30,10 +28,9 @@
     width: 100%;
 
     :disabled + & {
-      color: colors.$input-text-color-disabled;
+      color: var(--color-input-text-color-disabled);
       cursor: default;
     }
-
   }
 
   &-icon {
@@ -43,21 +40,22 @@
 
     &-svg {
       width: rem.torem(20px);
-      fill: colors.$input-text-color;
+      fill: var(--color-input-text-color);
 
       :disabled + & {
-        fill: colors.$input-text-color-disabled;
+        fill: var(--color-input-text-color-disabled);
       }
     }
   }
 
   &-input {
     appearance: none;
-    background-color: colors.$input-bg-color;
-    border: rem.torem(2px) solid colors.$input-border-color;
+    background-color: var(--color-input-bg-color);
+    border: rem.torem(2px) solid var(--color-input-border-color);
     border-radius: rem.torem(3px);
-    transition: border 150ms ease,
-    background 150ms ease;
+    transition:
+      border 150ms ease,
+      background 150ms ease;
     flex: 0 0 auto;
     font-size: inherit;
     margin-right: rem.torem(8px);
@@ -69,8 +67,9 @@
     width: size.$checkbox-size;
     cursor: pointer;
 
-    &:checked, &:indeterminate {
-      background-color: colors.$grey-dark;
+    &:checked,
+    &:indeterminate {
+      background-color: var(--color-grey-dark);
 
       &::after {
         background-image: url("./checkbox-check.svg");
@@ -83,17 +82,17 @@
       }
 
       &:hover {
-        background-color: colors.$primary;
-        border-color: colors.$primary;
+        background-color: var(--color-primary);
+        border-color: var(--color-primary);
       }
 
       &:focus-visible {
-        background-color: colors.$primary-dark;
-        border-color: colors.$primary-dark;
+        background-color: var(--color-primary-dark);
+        border-color: var(--color-primary-dark);
       }
 
       &.has-error {
-        border-color: colors.$input-border-color-error;
+        border-color: var(--color-input-border-color-error);
       }
     }
 
@@ -103,36 +102,38 @@
       }
     }
 
-    &:disabled, &:disabled:checked, &:disabled:indeterminate {
-      background-color: colors.$grey-medium;
-      border-color: colors.$grey-medium;
+    &:disabled,
+    &:disabled:checked,
+    &:disabled:indeterminate {
+      background-color: var(--color-grey-medium);
+      border-color: var(--color-grey-medium);
       cursor: not-allowed;
       opacity: 1;
     }
 
     &:not(:checked, :indeterminate) {
-      background-color: colors.$white;
+      background-color: var(--color-white);
 
       &:hover {
-        border-color: colors.$primary;
+        border-color: var(--color-primary);
       }
 
       &:focus-visible {
-        border-color: colors.$primary-dark;
+        border-color: var(--color-primary-dark);
       }
 
       &:disabled {
-        border-color: colors.$grey-medium;
+        border-color: var(--color-grey-medium);
         opacity: 1;
       }
 
       &.has-error {
-        border-color: colors.$input-border-color-error;
+        border-color: var(--color-input-border-color-error);
       }
     }
 
     &:focus-visible {
-      outline: rem.torem(1px) solid colors.$input-text-color;
+      outline: rem.torem(1px) solid var(--color-input-text-color);
       outline-offset: rem.torem(4px);
       border-radius: rem.torem(4px);
     }
@@ -140,7 +141,7 @@
 }
 
 .with-border {
-  border: rem.torem(1px) solid colors.$grey-semi-dark;
+  border: rem.torem(1px) solid var(--color-grey-semi-dark);
   border-radius: rem.torem(6px);
   min-width: 100%;
   padding-left: rem.torem(16px);
@@ -152,7 +153,7 @@
   }
 
   &:focus-within {
-    outline: rem.torem(1px) solid colors.$input-text-color;
+    outline: rem.torem(1px) solid var(--color-input-text-color);
     outline-offset: rem.torem(4px);
     border-radius: rem.torem(4px);
   }

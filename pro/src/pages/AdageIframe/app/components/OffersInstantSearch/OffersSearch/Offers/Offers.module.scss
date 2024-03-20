@@ -1,6 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/variables/_colors.scss" as colors;
 
 .offers-stats {
   margin-top: rem.torem(24px);
@@ -50,10 +49,10 @@
   display: flex;
   align-items: center;
   gap: rem.torem(8px);
-  background-color: colors.$grey-light;
+  background-color: var(--color-grey-light);
   padding: rem.torem(16px);
   border-radius: rem.torem(30px);
-  box-shadow: 0 3px 4px 0 colors.$medium-shadow;
+  box-shadow: 0 3px 4px 0 var(--color-medium-shadow);
   cursor: pointer;
 
   &-icon {
@@ -63,19 +62,19 @@
 
   &:hover {
     text-decoration: underline;
-    box-shadow: 0 3px 4px 0 colors.$medium-shadow;
+    box-shadow: 0 3px 4px 0 var(--color-medium-shadow);
   }
 
   &:active {
-    color: colors.$grey-dark;
+    color: var(--color-grey-dark);
     text-decoration: none;
-    box-shadow: 0 3px 4px 0 colors.$medium-shadow;
+    box-shadow: 0 3px 4px 0 var(--color-medium-shadow);
   }
 
   &:focus-visible {
-    border: solid rem.torem(2px) colors.$black;
+    border: solid rem.torem(2px) var(--color-black);
     text-decoration: underline;
     outline: none;
-    box-shadow: 0 3px 4px 0 colors.$medium-shadow;
+    box-shadow: 0 3px 4px 0 var(--color-medium-shadow);
   }
 }

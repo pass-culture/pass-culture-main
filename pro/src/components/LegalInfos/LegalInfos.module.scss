@@ -1,14 +1,13 @@
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .legal-infos {
   @include fonts.caption;
 
-  color: colors.$grey-dark;
+  color: var(--color-grey-dark);
 
   .quaternary-link {
-    color: colors.$primary;
+    color: var(--color-primary);
     display: inline;
     text-decoration: underline;
   }

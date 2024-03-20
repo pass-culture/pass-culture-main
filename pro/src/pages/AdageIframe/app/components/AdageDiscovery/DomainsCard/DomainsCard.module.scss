@@ -1,6 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/variables/_colors.scss" as colors;
 
 .container {
   display: flex;
@@ -9,10 +8,10 @@
   width: rem.torem(186px);
   min-height: rem.torem(96px);
   border-radius: rem.torem(16px);
-  color: colors.$white;
+  color: var(--color-white);
 
   &:focus-visible {
-    outline: rem.torem(2px) solid colors.$input-text-color;
+    outline: rem.torem(2px) solid var(--color-input-text-color);
     outline-offset: rem.torem(2px);
     border-radius: rem.torem(16px);
   }
@@ -39,26 +38,44 @@
   }
 
   &-orange {
-    background: linear-gradient(colors.$adage-orange-light, colors.$adage-orange-dark);
+    background: linear-gradient(
+      var(--color-adage-orange-light),
+      var(--color-adage-orange-dark)
+    );
   }
 
   &-purple {
-    background: linear-gradient(colors.$adage-purple-light, colors.$adage-purple-dark);
+    background: linear-gradient(
+      var(--color-adage-purple-light),
+      var(--color-adage-purple-dark)
+    );
   }
 
   &-pink {
-    background: linear-gradient(colors.$adage-pink-light, colors.$adage-pink-dark);
+    background: linear-gradient(
+      var(--color-adage-pink-light),
+      var(--color-adage-pink-dark)
+    );
   }
 
   &-green {
-    background: linear-gradient(colors.$adage-green-light, colors.$adage-green-dark);
+    background: linear-gradient(
+      var(--color-adage-green-light),
+      var(--color-adage-green-dark)
+    );
   }
 
   &-red {
-    background: linear-gradient(colors.$adage-red-light, colors.$adage-red-dark);
+    background: linear-gradient(
+      var(--color-adage-red-light),
+      var(--color-adage-red-dark)
+    );
   }
 
   &-blue {
-    background: linear-gradient(colors.$adage-blue-light, colors.$adage-blue-dark);
+    background: linear-gradient(
+      var(--color-adage-blue-light),
+      var(--color-adage-blue-dark)
+    );
   }
 }

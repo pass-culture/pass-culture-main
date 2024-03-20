@@ -1,4 +1,3 @@
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 
@@ -21,54 +20,54 @@
 
   &.small-outline {
     padding: rem.torem(1px) rem.torem(4px);
-    color: colors.$secondary-light;
-    border: solid rem.torem(1px) colors.$secondary-light;
+    color: var(--color-secondary-light);
+    border: solid rem.torem(1px) var(--color-secondary-light);
   }
 
   &.light-grey {
-    background-color: colors.$grey-light;
-    color: colors.$black;
+    background-color: var(--color-grey-light);
+    color: var(--color-black);
   }
 
   &.dark-grey {
-    background-color: colors.$grey-dark;
-    color: colors.$white;
+    background-color: var(--color-grey-dark);
+    color: var(--color-white);
   }
 
   &.black {
-    background-color: colors.$black;
-    color: colors.$white;
+    background-color: var(--color-black);
+    color: var(--color-white);
   }
 
   &.light-purple {
-    background-color: colors.$grey-light;
-    color: colors.$secondary;
+    background-color: var(--color-grey-light);
+    color: var(--color-secondary);
   }
 
   &.purple {
-    background-color: colors.$secondary;
-    color: colors.$white;
+    background-color: var(--color-secondary);
+    color: var(--color-white);
   }
 
   &.red {
-    background-color: colors.$error-light;
-    color: colors.$white;
+    background-color: var(--color-error-light);
+    color: var(--color-white);
   }
 
   &.green {
-    background-color: colors.$valid;
-    color: colors.$white;
+    background-color: var(--color-valid);
+    color: var(--color-white);
   }
 
   &.light-green {
-    background-color: colors.$background-valid;
+    background-color: var(--color-background-valid);
   }
 
   &.light-yellow {
-    background-color: colors.$background-alert;
+    background-color: var(--color-background-alert);
   }
 
   &.light-blue {
-    background-color: colors.$background-accent-light;
+    background-color: var(--color-background-accent-light);
   }
 }

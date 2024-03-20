@@ -1,6 +1,5 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
 
 .bookings-header {
   align-items: center;
@@ -19,7 +18,7 @@
 
     &:focus,
     &:hover {
-      color: colors.$black;
+      color: var(--color-black);
       text-decoration: none;
     }
 

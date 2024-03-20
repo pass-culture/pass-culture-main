@@ -1,4 +1,3 @@
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_a11y.scss" as a11y;
@@ -16,7 +15,7 @@ $arrow-triangle-height: rem.torem(8px);
 
   display: block;
   align-self: start;
-  color: colors.$white;
+  color: var(--color-white);
   padding: rem.torem(4px);
   max-width: rem.torem(200px);
   border-radius: rem.torem(3px);
@@ -26,7 +25,7 @@ $arrow-triangle-height: rem.torem(8px);
   top: 0;
   left: 50%;
   transform: translate(-50%, calc(-120% - #{$arrow-triangle-height}));
-  background-color: colors.$secondary-dark;
+  background-color: var(--color-secondary-dark);
 
   &::after {
     content: "";
@@ -36,7 +35,8 @@ $arrow-triangle-height: rem.torem(8px);
     height: 0;
     border-width: $arrow-triangle-height;
     border-style: solid;
-    border-color: colors.$secondary-dark transparent transparent transparent;
+    border-color: var(--color-secondary-dark) transparent transparent
+      transparent;
     bottom: -($arrow-triangle-height * 2);
     left: 50%;
     transform: translate(-50%);

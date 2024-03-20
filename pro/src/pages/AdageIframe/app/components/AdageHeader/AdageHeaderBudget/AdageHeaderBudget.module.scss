@@ -1,10 +1,9 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_size.scss" as size;
 
 .adage-header-budget {
-  border-left: 1px solid colors.$grey-medium;
+  border-left: 1px solid var(--color-grey-medium);
   padding-left: rem.torem(32px);
   display: none;
 
@@ -25,7 +24,7 @@
     @include fonts.title4;
 
     white-space: nowrap;
-    color: colors.$brand;
+    color: var(--color-brand);
     margin-left: rem.torem(20px);
   }
 }

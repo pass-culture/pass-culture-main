@@ -1,4 +1,3 @@
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
 
 .image-preview-shell {
@@ -7,7 +6,7 @@
 }
 
 .image-preview-home-preview {
-  background-color: colors.$white;
+  background-color: var(--color-white);
   border-radius: rem.torem(5px);
   left: rem.torem(16px);
   position: absolute;

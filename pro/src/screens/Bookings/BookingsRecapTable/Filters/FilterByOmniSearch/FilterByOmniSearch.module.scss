@@ -1,9 +1,8 @@
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .vertical-bar {
-  background-color: colors.$grey-medium;
+  background-color: var(--color-grey-medium);
   height: rem.torem(40px);
   width: rem.torem(1px);
 }

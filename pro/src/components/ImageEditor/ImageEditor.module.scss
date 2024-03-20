@@ -1,4 +1,3 @@
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 
@@ -28,7 +27,7 @@
       margin-left: rem.torem(28px);
       margin-right: rem.torem(28px);
       padding-bottom: rem.torem(4px);
-      color: colors.$grey-dark;
+      color: var(--color-grey-dark);
     }
 
     &-input {

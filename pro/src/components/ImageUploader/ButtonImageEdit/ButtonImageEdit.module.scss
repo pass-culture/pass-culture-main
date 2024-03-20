@@ -1,4 +1,3 @@
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 
@@ -8,11 +7,11 @@
   justify-content: center;
   align-items: center;
   gap: rem.torem(16px);
-  border: rem.torem(1px) solid colors.$grey-medium;
-  background-color: colors.$grey-light;
-  color: colors.$black;
+  border: rem.torem(1px) solid var(--color-grey-medium);
+  background-color: var(--color-grey-light);
+  color: var(--color-black);
   box-shadow: 0 rem.torem(1px) rem.torem(8px)
-    rgba(colors.$large-shadow, $alpha: 0.15);
+    rgb(var(--color-large-shadow) 0.15);
   border-radius: rem.torem(4px);
   cursor: pointer;
 
@@ -33,7 +32,7 @@
 
   &:hover {
     box-shadow: 0 rem.torem(1px) rem.torem(8px)
-      rgba(colors.$large-shadow, $alpha: 0.3);
+      rgb(var(--color-large-shadow) 0.3);
 
     .image-upload-button-label {
       text-decoration: underline;
@@ -41,14 +40,14 @@
   }
 
   &:active {
-    background-color: colors.$grey-medium;
+    background-color: var(--color-grey-medium);
   }
 }
 
 .icon {
   height: rem.torem(32px);
   width: rem.torem(32px);
-  color: colors.$grey-dark;
+  color: var(--color-grey-dark);
 }
 
 .label {
