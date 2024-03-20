@@ -25,6 +25,7 @@ const daysOfWeek = [
 export function OpeningHoursForm() {
   const {
     values: { days },
+    setFieldValue,
   } = useFormikContext<VenueEditionFormValues>()
 
   return (
@@ -44,6 +45,12 @@ export function OpeningHoursForm() {
               className={styles['day-checkbox']}
               key={engDay}
               checked={days.includes(engDay)}
+              onClick={async () => {
+                await setFieldValue(`${engDay}.morningStartingHour`, '')
+                await setFieldValue(`${engDay}.morningEndingHour`, '')
+                await setFieldValue(`${engDay}.afternoonStartingHour`, '')
+                await setFieldValue(`${engDay}.afternoonEndingHour`, '')
+              }}
             />
           )
         })}

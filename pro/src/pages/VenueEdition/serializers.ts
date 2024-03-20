@@ -37,7 +37,15 @@ function serializeOpeningHours(
   formValues: VenueEditionFormValues
 ): EditVenueBodyModel['venueOpeningHours'] {
   const returnValue = []
-  for (const day of formValues.days) {
+  for (const day of [
+    'monday',
+    'tuesday',
+    'wednesday',
+    'thursday',
+    'friday',
+    'saturday',
+    'sunday',
+  ]) {
     // @ts-expect-error FIXME: fix this
     const dayValues = formValues[day]
     const timespan = []
@@ -55,12 +63,10 @@ function serializeOpeningHours(
       timespan.push(afternoon)
     }
 
-    if (morning.length > 0) {
-      returnValue.push({
-        weekday: day,
-        timespan,
-      })
-    }
+    returnValue.push({
+      weekday: day,
+      timespan,
+    })
   }
 
   return returnValue
