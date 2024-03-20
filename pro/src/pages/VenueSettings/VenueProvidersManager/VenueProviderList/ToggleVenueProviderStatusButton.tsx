@@ -55,7 +55,6 @@ export const ToggleVenueProviderStatusButton = ({
     <>
       {venueProvider.isActive ? (
         <Button
-          className={style['provider-action-button']}
           onClick={() => setIsModalOpen(true)}
           variant={ButtonVariant.TERNARY}
         >
@@ -68,7 +67,6 @@ export const ToggleVenueProviderStatusButton = ({
         </Button>
       ) : (
         <Button
-          className={style['provider-action-button']}
           onClick={() => setIsModalOpen(true)}
           variant={ButtonVariant.TERNARY}
         >

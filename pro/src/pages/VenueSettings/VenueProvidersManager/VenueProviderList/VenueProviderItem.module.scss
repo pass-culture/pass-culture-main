@@ -1,6 +1,7 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_size.scss" as size;
 
 .venue-provider-row {
   align-items: center;
@@ -18,29 +19,33 @@
 .provider-name-container {
   @include fonts.caption;
 
-  align-content: space-between;
+  display: flex;
+  flex-direction: column;
+  gap: rem.torem(16px);
   background-color: colors.$grey-light;
   border-radius: rem.torem(6px);
-  display: flex;
-  flex-flow: row wrap;
-  padding: 0 rem.torem(20px);
-  width: rem.torem(825px);
+  padding: rem.torem(12px) rem.torem(20px);
+
+  @media (min-width: size.$tablet) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
 }
 
 .provider-name {
   @include fonts.title4;
-
-  flex: 1;
-  margin: auto;
 }
 
 .provider-actions {
   display: flex;
-  height: rem.torem(44px);
-}
+  flex-direction: column;
+  gap: rem.torem(8px);
 
-.provider-action-button {
-  padding: 0 rem.torem(4px);
+  @media (min-width: size.$tablet) {
+    flex-direction: row;
+    align-items: center;
+  }
 }
 
 .provider-action-icon {

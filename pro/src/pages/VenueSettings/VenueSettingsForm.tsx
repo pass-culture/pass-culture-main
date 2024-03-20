@@ -50,15 +50,15 @@ export const VenueSettingsForm = ({
 
   return (
     <>
-      <FormLayout fullWidthActions>
-        {!venue.isVirtual && provider && venueProvider && (
-          <OffersSynchronization
-            provider={provider}
-            venueProvider={venueProvider}
-            venue={venue}
-          />
-        )}
+      {!venue.isVirtual && provider && venueProvider && (
+        <OffersSynchronization
+          provider={provider}
+          venueProvider={venueProvider}
+          venue={venue}
+        />
+      )}
 
+      <FormLayout fullWidthActions>
         <FormLayout.Section title="Informations administratives">
           {!venue.isVirtual && (
             <FormLayout.Row>

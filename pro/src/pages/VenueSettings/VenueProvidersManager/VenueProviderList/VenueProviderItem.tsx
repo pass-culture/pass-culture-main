@@ -40,11 +40,13 @@ export const VenueProviderItem = ({
           <div className={style['provider-name']}>
             {providerInfo?.name ?? provider.name}
           </div>
+
           <div className={style['provider-actions']}>
             <ToggleVenueProviderStatusButton
               venueProvider={venueProvider}
               afterEdit={afterSubmit}
             />
+
             <DeleteVenueProviderButton
               afterDelete={afterDelete}
               venueProviderId={venueProvider.id}
@@ -87,6 +89,7 @@ export const VenueProviderItem = ({
           )
         ) : null}
       </div>
+
       {isAllocineProvider(venueProvider.provider) && (
         <AllocineProviderParameters
           venueProvider={venueProvider}
@@ -94,6 +97,7 @@ export const VenueProviderItem = ({
           offererId={offererId}
         />
       )}
+
       {isCinemaProvider(venueProvider.provider) && (
         <CinemaProviderParameters
           venueProvider={venueProvider}
