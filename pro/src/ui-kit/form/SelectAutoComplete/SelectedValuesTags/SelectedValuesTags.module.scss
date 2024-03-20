@@ -1,5 +1,4 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .multi-select-autocomplete-tags {
@@ -13,15 +12,15 @@
   @include fonts.highlight;
 
   &:hover {
-    background-color: colors.$grey-medium;
+    background-color: var(--color-grey-medium);
   }
 
   white-space: nowrap;
   justify-content: center;
-  border: solid rem.torem(1px) colors.$grey-light;
+  border: solid rem.torem(1px) var(--color-grey-light);
   border-radius: rem.torem(4px);
-  background-color: colors.$grey-light;
-  color: colors.$black;
+  background-color: var(--color-grey-light);
+  color: var(--color-black);
   display: inline-flex;
   line-height: rem.torem(16px);
   padding: 0 rem.torem(4px) rem.torem(1px) rem.torem(4px);

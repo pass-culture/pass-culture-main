@@ -1,5 +1,4 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .copie-me-box {
@@ -8,7 +7,7 @@
   align-items: center;
   padding: rem.torem(4px);
   width: rem.torem(300px);
-  border: rem.torem(1px) solid colors.$grey-semi-dark;
+  border: rem.torem(1px) solid var(--color-grey-semi-dark);
   border-radius: rem.torem(30px);
 
   .code {
@@ -31,13 +30,13 @@
 
     @keyframes to-green {
       0% {
-        background-color: colors.$valid;
-        border-color: colors.$valid;
+        background-color: var(--color-valid);
+        border-color: var(--color-valid);
       }
 
       80% {
-        background-color: colors.$valid;
-        border-color: colors.$valid;
+        background-color: var(--color-valid);
+        border-color: var(--color-valid);
       }
     }
   }

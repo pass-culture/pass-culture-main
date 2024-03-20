@@ -1,5 +1,4 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_size.scss" as size;
 
@@ -25,7 +24,7 @@
 
   &-active {
     position: relative;
-    color: colors.$primary;
+    color: var(--color-primary);
 
     &::after {
       content: "";
@@ -34,12 +33,12 @@
       left: 0;
       width: 100%;
       height: rem.torem(4px);
-      background-color: colors.$primary;
+      background-color: var(--color-primary);
       border-radius: rem.torem(2px) rem.torem(2px) 0 0;
     }
 
     .adage-header-item-icon {
-      fill: colors.$primary;
+      fill: var(--color-primary);
     }
   }
 
@@ -47,11 +46,11 @@
     width: rem.torem(20px);
     min-width: rem.torem(20px);
     height: rem.torem(20px);
-    fill: colors.$black;
+    fill: var(--color-black);
   }
 
   &:hover {
-    background-color: colors.$grey-light;
+    background-color: var(--color-grey-light);
   }
 }
 
@@ -59,8 +58,8 @@
   @include fonts.body-important;
 
   padding: 0 rem.torem(8px);
-  background-color: colors.$primary;
-  color: colors.$white;
+  background-color: var(--color-primary);
+  color: var(--color-white);
   border-radius: rem.torem(22px);
   margin-left: rem.torem(4px);
 }

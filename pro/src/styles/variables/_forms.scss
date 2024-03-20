@@ -1,8 +1,7 @@
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
 
 $input-hover-shadow: 0 rem.torem(3px) rem.torem(4px) 0
-colors.$medium-shadow;
+  var(--color-medium-shadow);
 $input-border-width-focus: rem.torem(2px);
 $input-border-radius: rem.torem(20px);
 $input-right-icon-padding: rem.torem(32px);

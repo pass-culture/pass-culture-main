@@ -1,4 +1,3 @@
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_forms.scss" as forms;
 @use "styles/mixins/_rem.scss" as rem;
 
@@ -10,7 +9,7 @@
 
 .multi-select-autocomplete-placeholder-input::placeholder {
   &:not(:disabled) {
-    color: colors.$black;
+    color: var(--color-black);
   }
 }
 
@@ -20,9 +19,9 @@
 
   .pellet {
     align-items: center;
-    background-color: colors.$grey-light;
+    background-color: var(--color-grey-light);
     border-radius: rem.torem(100px);
-    color: colors.$black;
+    color: var(--color-black);
     font-weight: 600;
     cursor: pointer;
     display: flex;

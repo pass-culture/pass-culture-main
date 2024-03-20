@@ -1,4 +1,3 @@
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 
@@ -10,13 +9,13 @@
 
   @include fonts.caption;
 
-  color: colors.$grey-dark;
+  color: var(--color-grey-dark);
 
   &-failing-constraint {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: colors.$error-light;
+    color: var(--color-error-light);
 
     img {
       margin: rem.torem(3px);

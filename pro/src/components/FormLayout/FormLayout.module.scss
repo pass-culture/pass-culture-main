@@ -1,5 +1,4 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_size.scss" as size;
 
@@ -7,7 +6,7 @@ $info-box-width: clamp(rem.torem(240px), 29vw, rem.torem(316px));
 $info-box-margin-left: rem.torem(24px);
 
 .form-layout {
-  background-color: colors.$white;
+  background-color: var(--color-white);
 
   &.full-width-actions {
     @media (min-width: size.$tablet) {
@@ -109,7 +108,7 @@ $info-box-margin-left: rem.torem(24px);
   @include fonts.caption;
 
   margin-bottom: rem.torem(32px);
-  color: colors.$grey-dark;
+  color: var(--color-grey-dark);
 }
 
 @media (min-width: size.$tablet) {
@@ -128,7 +127,7 @@ $info-box-margin-left: rem.torem(24px);
 
       &-inner {
         position: absolute;
-        background: colors.$white;
+        background: var(--color-white);
       }
     }
   }

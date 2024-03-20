@@ -1,5 +1,4 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_size.scss" as size;
 
@@ -10,9 +9,9 @@
     justify-content: center;
     align-items: flex-start;
     padding: rem.torem(16px) rem.torem(24px);
-    border-bottom: solid rem.torem(1px) colors.$grey-medium;
+    border-bottom: solid rem.torem(1px) var(--color-grey-medium);
     margin-top: size.$top-menu-height;
-    background-color: colors.$white;
+    background-color: var(--color-white);
 
     @media (min-width: size.$tablet) {
       margin-left: size.$side-nav-width;
@@ -21,7 +20,7 @@
   }
 
   &-icon {
-    color: colors.$secondary-light;
+    color: var(--color-secondary-light);
     min-width: rem.torem(20px);
   }
 

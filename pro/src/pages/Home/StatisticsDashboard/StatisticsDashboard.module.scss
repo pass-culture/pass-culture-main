@@ -1,6 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/variables/_size.scss" as size;
 
 .section {
@@ -25,7 +24,7 @@
 .no-data {
   @include fonts.body-important;
 
-  color: colors.$grey-dark;
+  color: var(--color-grey-dark);
   display: flex;
   align-items: center;
   justify-content: center;

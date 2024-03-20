@@ -1,4 +1,3 @@
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
 
 $margin-between-steps: rem.torem(32px);
@@ -21,7 +20,7 @@ $time-line-width: rem.torem(2px);
   z-index: 1;
   width: $icon-size;
   height: $icon-size;
-  background-color: colors.$white;
+  background-color: var(--color-white);
   top: $vertical-offset-icon-from-step;
 
   // Multiply by -1 at the end because calc() syntax doesn't accept - at the start
@@ -31,31 +30,31 @@ $time-line-width: rem.torem(2px);
 }
 
 .icon-error {
-  color: colors.$error;
+  color: var(--color-error);
 
   path {
-    fill: colors.$error;
+    fill: var(--color-error);
   }
 }
 
 .icon-success {
-  color: colors.$valid;
+  color: var(--color-valid);
 }
 
 .icon-success-disabled {
-  color: colors.$grey-semi-dark;
+  color: var(--color-grey-semi-dark);
 }
 
 .icon-waiting {
-  color: colors.$grey-dark;
+  color: var(--color-grey-dark);
 }
 
 .icon-disabled {
-  color: colors.$grey-medium;
+  color: var(--color-grey-medium);
 }
 
 .icon-wrong {
-  color: colors.$error;
+  color: var(--color-error);
 }
 
 .step {
@@ -81,20 +80,20 @@ $time-line-width: rem.torem(2px);
 
 .line-success::after {
   border-style: solid;
-  border-color: colors.$valid;
+  border-color: var(--color-valid);
 }
 
 .line-error::after {
   border-style: solid;
-  border-color: colors.$grey-semi-dark;
+  border-color: var(--color-grey-semi-dark);
 }
 
 .line-waiting::after {
   border-style: dashed;
-  border-color: colors.$grey-dark;
+  border-color: var(--color-grey-dark);
 }
 
 .line-disabled::after {
   border-style: dashed;
-  border-color: colors.$grey-medium;
+  border-color: var(--color-grey-medium);
 }

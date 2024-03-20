@@ -1,6 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_forms.scss" as forms;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .form {
@@ -60,7 +59,7 @@
 .dialog {
   border: none;
   width: 100%;
-  background-color: colors.$white;
+  background-color: var(--color-white);
   position: absolute;
   top: rem.torem(-16px);
   right: 0;
@@ -77,7 +76,7 @@
       &-text {
         @include fonts.caption;
 
-        color: colors.$grey-dark;
+        color: var(--color-grey-dark);
         display: flex;
         align-items: center;
         margin-top: rem.torem(16px);
@@ -112,11 +111,11 @@
         &:hover,
         &:focus-within,
         &[aria-selected="true"] {
-          background-color: colors.$grey-light;
+          background-color: var(--color-grey-light);
         }
 
         &-icon {
-          color: colors.$grey-dark;
+          color: var(--color-grey-dark);
         }
 
         svg {
@@ -127,7 +126,7 @@
       &-category {
         @include fonts.button;
 
-        color: colors.$primary;
+        color: var(--color-primary);
       }
     }
   }
@@ -137,7 +136,7 @@
   z-index: 1;
   position: fixed;
   inset: 0;
-  background-color: rgba(colors.$input-text-color, 0.16);
+  background-color: rgb(var(--color-input-text-color) 0.16);
 }
 
 .panel-footer {
@@ -147,7 +146,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  border-top: rem.torem(1px) solid colors.$grey-medium;
+  border-top: rem.torem(1px) solid var(--color-grey-medium);
 
   &-link {
     @include fonts.caption;

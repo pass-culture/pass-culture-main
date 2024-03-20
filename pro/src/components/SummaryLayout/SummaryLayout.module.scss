@@ -1,5 +1,4 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/variables/_size.scss" as size;
 @use "styles/mixins/_fonts.scss" as fonts;
 
@@ -60,7 +59,7 @@
     max-width: 100%;
 
     &-title {
-      color: colors.$grey-dark;
+      color: var(--color-grey-dark);
       flex-shrink: 0;
     }
 

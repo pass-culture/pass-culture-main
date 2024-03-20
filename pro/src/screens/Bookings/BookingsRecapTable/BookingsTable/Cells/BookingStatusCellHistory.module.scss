@@ -1,4 +1,3 @@
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
 
 .booking-status-history li {
@@ -15,26 +14,26 @@
   width: rem.torem(14px);
 
   &.bs-history-booked {
-    background-color: colors.$secondary;
+    background-color: var(--color-secondary);
   }
 
   &.bs-history-pending {
-    background-color: colors.$alert-dark;
+    background-color: var(--color-alert-dark);
   }
 
   &.bs-history-cancelled {
-    background-color: colors.$grey-dark;
+    background-color: var(--color-grey-dark);
   }
 
   &.bs-history-confirmed {
-    background-color: colors.$black;
+    background-color: var(--color-black);
   }
 
   &.bs-history-reimbursed {
-    background-color: colors.$valid;
+    background-color: var(--color-valid);
   }
 
   &.bs-history-validated {
-    background-color: colors.$accent;
+    background-color: var(--color-accent);
   }
 }

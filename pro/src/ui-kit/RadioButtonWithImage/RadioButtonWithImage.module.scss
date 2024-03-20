@@ -1,4 +1,3 @@
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/variables/_forms.scss" as forms;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
@@ -8,7 +7,7 @@ $radio-size: rem.torem(16px);
 
 .button {
   background-color: transparent;
-  border: rem.torem(1px) solid colors.$grey-dark;
+  border: rem.torem(1px) solid var(--color-grey-dark);
   border-radius: rem.torem(8px);
   position: relative;
   font-size: rem.torem(15px);
@@ -18,7 +17,7 @@ $radio-size: rem.torem(16px);
 
   &-radio-on,
   &-radio-off {
-    fill: colors.$white;
+    fill: var(--color-white);
     position: absolute;
     top: rem.torem(16px);
     left: rem.torem(16px);
@@ -27,7 +26,7 @@ $radio-size: rem.torem(16px);
   }
 
   &-radio-on {
-    color: colors.$secondary-light;
+    color: var(--color-secondary-light);
     top: calc(rem.torem(16px) - $border-size-selected);
     right: calc(rem.torem(16px) - $border-size-selected);
   }
@@ -37,8 +36,8 @@ $radio-size: rem.torem(16px);
     size: 44px;
     width: rem.torem(44px);
     height: rem.torem(44px);
-    color: colors.$secondary-light;
-    fill: colors.$secondary-light; // TODO: delete after all icons update
+    color: var(--color-secondary-light);
+    fill: var(--color-secondary-light); // TODO: delete after all icons update
   }
 
   &:hover {
@@ -47,28 +46,28 @@ $radio-size: rem.torem(16px);
   }
 
   &:focus-within {
-    outline: rem.torem(1px) solid colors.$black;
+    outline: rem.torem(1px) solid var(--color-black);
     outline-offset: rem.torem(4px);
   }
 
   &.is-selected {
-    border-color: colors.$secondary-light;
-    border: $border-size-selected solid colors.$secondary-light;
+    border-color: var(--color-secondary-light);
+    border: $border-size-selected solid var(--color-secondary-light);
     font-weight: 700;
-    background-color: colors.$background-secondary;
+    background-color: var(--color-background-secondary);
   }
 
   &.is-disabled {
-    background-color: colors.$grey-light;
-    color: colors.$grey-dark;
-    border-color: colors.$grey-dark;
+    background-color: var(--color-grey-light);
+    color: var(--color-grey-dark);
+    border-color: var(--color-grey-dark);
 
     .button-icon {
-      fill: colors.$grey-dark;
+      fill: var(--color-grey-dark);
     }
 
     .button-check-mark {
-      fill: colors.$grey-dark;
+      fill: var(--color-grey-dark);
     }
   }
 
@@ -80,7 +79,7 @@ $radio-size: rem.torem(16px);
   &-description {
     @include fonts.caption;
 
-    color: colors.$grey-dark;
+    color: var(--color-grey-dark);
     margin-top: rem.torem(4px);
   }
 }

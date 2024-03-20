@@ -1,6 +1,5 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/variables/_size.scss" as size;
 
 .activation-codes-upload {
@@ -28,11 +27,11 @@
     @include fonts.caption;
 
     margin-top: rem.torem(16px);
-    color: colors.$grey-dark;
+    color: var(--color-grey-dark);
   }
 
   .activation-codes-upload-separator {
-    border: rem.torem(1px) solid colors.$grey-medium;
+    border: rem.torem(1px) solid var(--color-grey-medium);
     margin-bottom: rem.torem(16px);
     margin-top: rem.torem(24px);
     width: 100%;

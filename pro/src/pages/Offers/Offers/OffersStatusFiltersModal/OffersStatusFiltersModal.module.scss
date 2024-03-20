@@ -1,12 +1,11 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
 
 .offers-status-filters {
-  background: colors.$white;
+  background: var(--color-white);
   border-radius: rem.torem(4px);
   /* stylelint-disable-next-line color-function-notation */
-  box-shadow: 0 rem.torem(2px) rem.torem(10px) 0 rgba(colors.$black, 0.3);
+  box-shadow: 0 rem.torem(2px) rem.torem(10px) 0 rgba(var(--color-black), 0.3);
   display: flex;
   flex-direction: column;
   padding: rem.torem(16px);
@@ -18,7 +17,7 @@
   .osf-title {
     @include fonts.caption;
 
-    color: colors.$grey-dark;
+    color: var(--color-grey-dark);
     white-space: nowrap;
   }
 

@@ -1,52 +1,51 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .callout {
   position: relative;
   display: flex;
   justify-content: left;
-  color: colors.$black;
+  color: var(--color-black);
   border-radius: rem.torem(8px);
   padding: rem.torem(16px);
 
   &-default {
-    background-color: colors.$background-secondary;
+    background-color: var(--color-background-secondary);
 
     .icon {
-      color: colors.$secondary-light;
+      color: var(--color-secondary-light);
     }
   }
 
   &-info {
-    background-color: colors.$background-accent-light;
+    background-color: var(--color-background-accent-light);
 
     .icon {
-      color: colors.$accent;
+      color: var(--color-accent);
     }
   }
 
   &-success {
-    background-color: colors.$background-valid;
+    background-color: var(--color-background-valid);
 
     .icon {
-      color: colors.$valid;
+      color: var(--color-valid);
     }
   }
 
   &-warning {
-    background-color: colors.$background-alert;
+    background-color: var(--color-background-alert);
 
     .icon {
-      color: colors.$alert-dark;
+      color: var(--color-alert-dark);
     }
   }
 
   &-error {
-    background-color: colors.$background-error;
+    background-color: var(--color-background-error);
 
     .icon {
-      color: colors.$error;
+      color: var(--color-error);
     }
   }
 

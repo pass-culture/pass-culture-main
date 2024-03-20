@@ -1,6 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/variables/_size.scss" as size;
 @use "styles/variables/_z-index.scss" as zIndex;
 
@@ -38,11 +37,11 @@
 }
 
 .page-content {
-  background: colors.$white;
+  background: var(--color-white);
   border-radius: rem.torem(10px);
   margin: rem.torem(calc(size.$top-menu-height + rem.torem(32px)) auto 0 auto);
   max-width: rem.torem(size.$main-content-width);
-  border: rem.torem(1px) solid colors.$grey-medium;
+  border: rem.torem(1px) solid var(--color-grey-medium);
 
   @media (min-width: size.$tablet) {
     margin-left: calc(size.$side-nav-width + rem.torem(32px));
@@ -50,7 +49,7 @@
 
   &-old {
     margin: rem.torem(-88px) auto 0 auto;
-    box-shadow: 0 0 rem.torem(60px) colors.$large-shadow;
+    box-shadow: 0 0 rem.torem(60px) var(--color-large-shadow);
     border: none;
   }
 
@@ -79,7 +78,7 @@
       display: block;
       position: fixed;
       inset: 0;
-      background: rgba(colors.$input-text-color, 0.48);
+      background: rgb(var(--color-input-text-color) 0.48);
     }
 
     &-open {
@@ -88,7 +87,7 @@
   }
 
   &-menu {
-    background: colors.$white;
+    background: var(--color-white);
     z-index: zIndex.$lateral-menu-z-index-mobile;
     position: fixed;
     max-width: rem.torem(268px);
@@ -181,7 +180,7 @@
 
 .main-wrapper {
   width: 100%;
-  background-color: colors.$background-content;
+  background-color: var(--color-background-content);
 
   &-old {
     background-color: transparent;

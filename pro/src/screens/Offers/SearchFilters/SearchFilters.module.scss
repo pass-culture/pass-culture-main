@@ -1,4 +1,3 @@
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_size.scss" as size;
 
@@ -8,7 +7,7 @@
   margin-top: rem.torem(23px);
 
   .separator {
-    background-color: colors.$grey-medium;
+    background-color: var(--color-grey-medium);
     flex: 1;
     height: rem.torem(1px);
   }
@@ -22,7 +21,7 @@
 .offerer-close-icon {
   width: rem.torem(14px);
   height: rem.torem(14px);
-  color: colors.$black;
+  color: var(--color-black);
 }
 
 @media (min-width: size.$tablet) {

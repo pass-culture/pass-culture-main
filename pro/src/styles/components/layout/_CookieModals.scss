@@ -2,37 +2,40 @@
 
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_a11y.scss" as a11y;
 
 $action-gap: rem.torem(10px);
 
-.orejime-Modal-header, .orejime-Modal-body, .orejime-Modal-footer {
+.orejime-Modal-header,
+.orejime-Modal-body,
+.orejime-Modal-footer {
   padding: 0;
 }
 
-.orejime-Notice, .orejime-Modal {
-  background: colors.$white;
-  box-shadow: 0 2px 16px colors.$medium-shadow;
-  color: colors.$input-text-color;
+.orejime-Notice,
+.orejime-Modal {
+  background: var(--color-white);
+  box-shadow: 0 2px 16px var(--color-medium-shadow);
+  color: var(--color-input-text-color);
 }
 
-.orejime-Notice-actionItem button, .orejime-Modal-form button {
+.orejime-Notice-actionItem button,
+.orejime-Modal-form button {
   text-align: center;
   border-radius: rem.torem(30px);
-  border: rem.torem(2px) solid colors.$primary;
+  border: rem.torem(2px) solid var(--color-primary);
   padding: rem.torem(10px) rem.torem(24px);
   line-height: fonts.$body-line-height;
-  background: colors.$primary;
+  background: var(--color-primary);
   cursor: pointer;
 
   &:hover {
-    background-color: colors.$primary-dark;
-    border-color: colors.$primary-dark;
+    background-color: var(--color-primary-dark);
+    border-color: var(--color-primary-dark);
   }
 
   &:focus-visible {
-    outline: rem.torem(1px) solid colors.$input-text-color;
+    outline: rem.torem(1px) solid var(--color-input-text-color);
     outline-offset: rem.torem(2px);
   }
 
@@ -51,7 +54,7 @@ $action-gap: rem.torem(10px);
   &-title {
     @include fonts.body-important;
 
-    color: colors.$input-text-color;
+    color: var(--color-input-text-color);
     line-height: fonts.$body-line-height;
     margin-bottom: rem.torem(8px);
   }
@@ -63,9 +66,9 @@ $action-gap: rem.torem(10px);
 
   &-description {
     margin-bottom: rem.torem(16px);
-    color: colors.$black;
+    color: var(--color-black);
 
-    @include fonts.body
+    @include fonts.body;
   }
 
   &-actions {
@@ -78,7 +81,8 @@ $action-gap: rem.torem(10px);
       width: 100%;
     }
 
-    .orejime-Notice-actionItem--save, .orejime-Notice-actionItem--decline {
+    .orejime-Notice-actionItem--save,
+    .orejime-Notice-actionItem--decline {
       width: calc(50% - ($action-gap / 2));
     }
 
@@ -86,20 +90,21 @@ $action-gap: rem.torem(10px);
       width: 100%;
 
       button {
-        background: colors.$white;
-        color: colors.$primary;
+        background: var(--color-white);
+        color: var(--color-primary);
 
         &:hover {
-          color: colors.$white;
-          background-color: colors.$primary-dark;
-          border-color: colors.$primary-dark;
+          color: var(--color-white);
+          background-color: var(--color-primary-dark);
+          border-color: var(--color-primary-dark);
         }
       }
     }
   }
 }
 
-.orejime-ModalWrapper, .orejime-Modal {
+.orejime-ModalWrapper,
+.orejime-Modal {
   width: rem.torem(735px);
 }
 
@@ -130,14 +135,14 @@ $action-gap: rem.torem(10px);
   margin: rem.torem(32px) 0;
 
   button {
-    background: colors.$white;
-    color: colors.$primary;
+    background: var(--color-white);
+    color: var(--color-primary);
     cursor: pointer;
 
     &[disabled] {
-      background: colors.$grey-light;
-      border-color: colors.$grey-light;
-      color: colors.$grey-dark;
+      background: var(--color-grey-light);
+      border-color: var(--color-grey-light);
+      color: var(--color-grey-dark);
       border-radius: 30px;
       opacity: 1;
       cursor: default;
@@ -145,9 +150,9 @@ $action-gap: rem.torem(10px);
     }
 
     &:hover {
-      color: colors.$white;
-      background-color: colors.$primary-dark;
-      border-color: colors.$primary-dark;
+      color: var(--color-white);
+      background-color: var(--color-primary-dark);
+      border-color: var(--color-primary-dark);
     }
   }
 }
@@ -159,7 +164,7 @@ $action-gap: rem.torem(10px);
     }
 
     &-input:checked + .orejime-AppItem-label .orejime-AppItem-slider {
-      background-color: colors.$valid;
+      background-color: var(--color-valid);
 
       &::before {
         transform: translateX(26px);
@@ -167,7 +172,7 @@ $action-gap: rem.torem(10px);
     }
 
     &-input:focus-visible + .orejime-AppItem-label .orejime-AppItem-slider {
-      outline: rem.torem(1px) solid colors.$input-text-color;
+      outline: rem.torem(1px) solid var(--color-input-text-color);
       outline-offset: 0;
     }
 
@@ -175,7 +180,8 @@ $action-gap: rem.torem(10px);
       box-shadow: none;
     }
 
-    &-switch, &-slider {
+    &-switch,
+    &-slider {
       width: rem.torem(56px);
     }
 
@@ -202,7 +208,7 @@ $action-gap: rem.torem(10px);
       display: inline-block;
 
       & > span {
-        color: colors.$input-text-color;
+        color: var(--color-input-text-color);
       }
     }
 
@@ -228,7 +234,8 @@ $action-gap: rem.torem(10px);
   }
 }
 
-.orejime-Modal-footer, .orejime-Modal-header {
+.orejime-Modal-footer,
+.orejime-Modal-header {
   border: none;
 }
 

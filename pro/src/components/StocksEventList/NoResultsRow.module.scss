@@ -1,5 +1,4 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .no-data {
@@ -7,7 +6,7 @@
   text-align: center;
 
   &-icon {
-    color: colors.$grey-medium;
+    color: var(--color-grey-medium);
     width: rem.torem(88px);
     height: rem.torem(88px);
     margin-bottom: rem.torem(16px);

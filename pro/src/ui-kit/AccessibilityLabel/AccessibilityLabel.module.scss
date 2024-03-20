@@ -1,5 +1,4 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
 
 .accessibility-label {
   display: flex;
@@ -9,6 +8,6 @@
   .icon {
     margin-right: rem.torem(8px);
     width: rem.torem(24px);
-    fill: colors.$black;
+    fill: var(--color-black);
   }
 }

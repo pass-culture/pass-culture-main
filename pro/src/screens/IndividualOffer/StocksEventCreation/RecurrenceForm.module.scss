@@ -1,6 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_forms.scss" as forms;
-@use "styles/variables/_colors.scss" as colors;
 @use "styles/variables/_size.scss" as size;
 @use "styles/mixins/_forms.scss" as formsM;
 @use "styles/mixins/_fonts.scss" as fonts;
@@ -15,7 +14,7 @@
 
 .section {
   padding: rem.torem(16px);
-  border: 1px solid colors.$medium-shadow;
+  border: 1px solid var(--color-medium-shadow);
   border-radius: rem.torem(8px);
   margin-bottom: rem.torem(16px);
 }
@@ -31,10 +30,10 @@
   &-icon {
     width: rem.torem(20px);
     height: rem.torem(20px);
-    color: colors.$secondary-light;
+    color: var(--color-secondary-light);
 
     path {
-      fill: colors.$secondary-light;
+      fill: var(--color-secondary-light);
     }
   }
 }
@@ -83,8 +82,6 @@
   max-width: rem.torem(100px);
 }
 
-
-
 .date-input {
   width: rem.torem(200px);
   margin-bottom: 0;
@@ -126,8 +123,8 @@
 
     line-height: rem.torem(12px);
     content: "Bientôt";
-    background-color: colors.$secondary-light;
-    color: colors.$white;
+    background-color: var(--color-secondary-light);
+    color: var(--color-white);
     border-radius: rem.torem(2px);
     padding: rem.torem(2px) rem.torem(4px);
     transform: rotate(-6deg) translateY(-50%);
@@ -143,15 +140,15 @@
   .align-icon {
     @include size.input-center-with-top-margin(size.$button-icon-size);
   }
-  
+
   .price-category-input {
-  width: rem.torem(328px);
+    width: rem.torem(328px);
   }
 }
 
 .mandatory {
   @include fonts.caption;
 
-  color: colors.$grey-dark;
+  color: var(--color-grey-dark);
   margin-bottom: rem.torem(16px);
 }

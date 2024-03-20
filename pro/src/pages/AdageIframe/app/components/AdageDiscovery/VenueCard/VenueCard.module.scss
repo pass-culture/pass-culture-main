@@ -1,6 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/variables/_colors.scss" as colors;
 
 $venue-image-height: rem.torem(184px);
 $venue-image-width: rem.torem(276px);
@@ -29,7 +28,7 @@ $venue-image-width: rem.torem(276px);
 
   &:hover {
     .venue-image {
-      box-shadow: 0 0 rem.torem(4px) colors.$large-shadow;
+      box-shadow: 0 0 rem.torem(4px) var(--color-large-shadow);
     }
 
     .venue-infos-name,
@@ -39,14 +38,14 @@ $venue-image-width: rem.torem(276px);
   }
 
   &:focus-visible {
-    outline: rem.torem(1px) solid colors.$input-text-color;
+    outline: rem.torem(1px) solid var(--color-input-text-color);
     outline-offset: rem.torem(4px);
     border-radius: rem.torem(16px);
   }
 }
 
 .venue-image {
-  border: rem.torem(1px) solid colors.$white;
+  border: rem.torem(1px) solid var(--color-white);
   width: $venue-image-width;
   height: $venue-image-height;
   border-radius: rem.torem(16px);
@@ -56,8 +55,8 @@ $venue-image-width: rem.torem(276px);
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: colors.$grey-light;
-    color: colors.$grey-semi-dark;
+    background-color: var(--color-grey-light);
+    color: var(--color-grey-semi-dark);
   }
 }
 
@@ -76,7 +75,7 @@ $venue-image-width: rem.torem(276px);
   &-distance {
     @include fonts.small-caption;
 
-    color: colors.$grey-dark;
+    color: var(--color-grey-dark);
     text-transform: uppercase;
   }
 }

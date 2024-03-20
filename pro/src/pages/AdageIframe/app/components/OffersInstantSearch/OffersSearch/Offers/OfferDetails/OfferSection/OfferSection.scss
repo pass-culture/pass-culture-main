@@ -1,5 +1,4 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
 
 .offer-details-section {
   &:not(:last-of-type) {
@@ -9,7 +8,7 @@
   &-title {
     font-size: rem.torem(15px);
     font-weight: 700;
-    color: colors.$grey-dark;
+    color: var(--color-grey-dark);
     margin: 0 0 rem.torem(5px);
   }
 }

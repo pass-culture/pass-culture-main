@@ -1,5 +1,4 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_colors.scss" as colors;
 
 .actions {
   display: flex;
@@ -9,7 +8,7 @@
 }
 
 .separator {
-  background-color: colors.$grey-medium;
+  background-color: var(--color-grey-medium);
   height: rem.torem(24px);
   width: rem.torem(1px);
 }

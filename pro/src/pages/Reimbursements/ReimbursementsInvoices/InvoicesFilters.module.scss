@@ -8,7 +8,6 @@
   margin-bottom: rem.torem(36px);
 }
 
-
 .header {
   display: flex;
   justify-content: space-between;
@@ -24,7 +23,7 @@
   position: relative;
 
   &-separator {
-    border-bottom: rem.torem(1px) solid colors.$grey-medium;
+    border-bottom: rem.torem(1px) solid var(--color-grey-medium);
     position: absolute;
     top: 50%;
     width: 100%;
@@ -34,7 +33,6 @@
     display: flex;
     justify-content: center;
     position: relative;
-
   }
 
   &-search-button {
@@ -49,7 +47,7 @@
     position: relative;
 
     &-separator {
-      border-bottom: rem.torem(1px) solid colors.$grey-medium;
+      border-bottom: rem.torem(1px) solid var(--color-grey-medium);
       position: absolute;
       top: 50%;
       width: 100%;
