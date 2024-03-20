@@ -1,5 +1,6 @@
-import React from 'react'
+import useSWR from 'swr'
 
+import { api } from 'apiClient/api'
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
@@ -9,12 +10,13 @@ import {
   SummaryDescriptionList,
 } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
-import { useGetVenue } from 'core/Venue/adapters/getVenueAdapter'
 import useNotification from 'hooks/useNotification'
 import { getInterventionAreaLabels } from 'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea/OfferInterventionArea'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import { formatOfferEventAddress } from '../utils/formatOfferEventAddress'
+
+const GET_VENUE_QUERY_KEY = 'getVenue'
 
 interface CollectiveOfferLocationSectionProps {
   offer:
@@ -26,16 +28,29 @@ export default function CollectiveOfferLocationSection({
   offer,
 }: CollectiveOfferLocationSectionProps) {
   const notify = useNotification()
-  const { error, isLoading, data: venue } = useGetVenue(offer.venue.id)
+
+  const venueQuery = useSWR(
+    [GET_VENUE_QUERY_KEY, offer.venue.id],
+    ([, venueIdParam]) => api.getVenue(venueIdParam)
+  )
 
   const interventionAreas = getInterventionAreaLabels(offer.interventionArea)
 
-  if (isLoading) {
+  const venue = venueQuery.data
+
+  if (venueQuery.isLoading) {
     return <Spinner />
   }
-  if (error) {
-    notify.error(error.message)
+
+  if (venueQuery.error) {
+    notify.error(
+      'Une erreur est survenue lors de la récupération de votre lieu'
+    )
     return null
+  }
+
+  if (!venue) {
+    return
   }
 
   const descriptions: Description[] = [
