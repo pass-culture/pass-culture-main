@@ -83,6 +83,7 @@ module.exports = {
         '@typescript-eslint/prefer-string-starts-ends-with': 'error',
         '@typescript-eslint/ban-types': 'error',
         '@typescript-eslint/switch-exhaustiveness-check': 'error',
+        '@typescript-eslint/no-unnecessary-type-arguments': 'error',
 
         // TODO turn into errors
         '@typescript-eslint/no-floating-promises': 'warn',
