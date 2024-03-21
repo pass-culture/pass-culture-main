@@ -84,8 +84,8 @@ class PostProductTest:
     def test_product_creation_with_full_body(self, client, clear_tests_assets_bucket):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
 
-        next_minute = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=1)
-        next_minute_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_minute, "973")
+        in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
+        in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
             json={
@@ -112,7 +112,7 @@ class PostProductTest:
                 "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
                 "name": "Le champ des possibles",
                 "stock": {
-                    "bookingLimitDatetime": next_minute_in_non_utc_tz.isoformat(),
+                    "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
                     "price": 1234,
                     "quantity": 3,
                 },
@@ -141,7 +141,7 @@ class PostProductTest:
         assert created_stock.price == decimal.Decimal("12.34")
         assert created_stock.quantity == 3
         assert created_stock.offer == created_offer
-        assert created_stock.bookingLimitDatetime == next_minute
+        assert created_stock.bookingLimitDatetime == in_ten_minutes
 
         created_mediation = offers_models.Mediation.query.one()
         assert created_mediation.offer == created_offer
@@ -178,7 +178,7 @@ class PostProductTest:
             "status": "ACTIVE",
             "stock": {
                 "bookedQuantity": 0,
-                "bookingLimitDatetime": date_utils.format_into_utc_date(next_minute),
+                "bookingLimitDatetime": date_utils.format_into_utc_date(in_ten_minutes),
                 "price": 1234,
                 "quantity": 3,
             },
