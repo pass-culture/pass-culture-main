@@ -148,7 +148,7 @@ def test_update_external_pro_user_attributes(
 
     # Offerer not linked to user email but with the same booking email
     offerer3 = offerers_factories.OffererFactory(
-        siren="777888999", name="Plage Events", tags=[offerers_factories.OffererTagFactory(label="Collectivité")]
+        siren="777899888", name="Plage Events", tags=[offerers_factories.OffererTagFactory(label="Collectivité")]
     )
     venue3 = offerers_factories.VenueFactory(
         managingOfferer=offerer3,
@@ -157,7 +157,7 @@ def test_update_external_pro_user_attributes(
         postalCode="83700",
         city="Saint-Raphaël",
         bookingEmail=email,
-        siret="77788899900001",
+        siret="77789988800001",
         isPermanent=False,
         venueTypeCode=VenueTypeCode.PERFORMING_ARTS,
         venueLabelId=None,

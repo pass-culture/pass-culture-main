@@ -118,7 +118,7 @@ def test_get_siren_with_non_public_data_do_not_raise():
 
 @override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siren_of_inactive_company():
-    siren = "777888999"
+    siren = "777899888"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/{siren}",
@@ -127,7 +127,7 @@ def test_get_siren_of_inactive_company():
         siren_info = api.get_siren(siren, with_address=False)
         assert siren_info.siren == siren
         assert siren_info.name == "LE RIDEAU FERME"
-        assert siren_info.head_office_siret == "77788899900021"
+        assert siren_info.head_office_siret == "77789988800021"
         assert siren_info.ape_code == "90.01Z"
         assert siren_info.ape_label == "Arts du spectacle vivant"
         assert siren_info.legal_category_code == "5499"
@@ -256,7 +256,7 @@ def test_get_siret_with_non_public_data_do_not_raise():
 
 @override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siret_of_inactive_company():
-    siret = "77788899900021"
+    siret = "77789988800021"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v3/insee/sirene/etablissements/{siret}",
