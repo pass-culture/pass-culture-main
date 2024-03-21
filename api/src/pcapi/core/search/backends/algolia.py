@@ -578,6 +578,7 @@ class AlgoliaBackend(base.SearchBackend):
             "has_at_least_one_bookable_offer": has_at_least_one_bookable_offer,
             "date_created": venue.dateCreated.timestamp(),
             "postalCode": venue.postalCode,
+            "adress": venue.address,
         }
 
     @classmethod
