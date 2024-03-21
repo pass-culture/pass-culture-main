@@ -1,5 +1,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_fonts.scss" as fonts;
+
 
 .inputs-line {
   margin-bottom: rem.torem(8px);
@@ -10,16 +12,6 @@
 
 .legend-days {
   margin-bottom: rem.torem(16px);
-}
-
-.legend-wrapper {
-  display: flex;
-  align-items: center;
-  gap: rem.torem(8px);
-}
-
-.legend-hours {
-  margin-right: rem.torem(24px);
 }
 
 .day-checkbox {
@@ -35,4 +27,35 @@
 
 .time-picker {
   margin-bottom: 0;
+}
+
+.hour-cell {
+  padding: rem.torem(8px);
+  padding-left: 0
+}
+
+.column-header, .row-header {
+  @include fonts.body;
+
+  text-align: center;
+  padding: rem.torem(8px);
+  padding-left: 0
+}
+
+.row-header {
+  text-align: left;
+  vertical-align: top;
+  min-width: rem.torem(100px);
+  padding-top: rem.torem(16px);
+  padding-right: rem.torem(24px);
+}
+
+.second-hour {
+  display: inline-flex;
+  align-items: center;
+  gap: rem.torem(8px);
+}
+
+.hour-cell-afternoon-displayed {
+  padding-bottom: 0;
 }
