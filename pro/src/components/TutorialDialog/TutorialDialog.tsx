@@ -21,13 +21,14 @@ const TutorialDialog = (): JSX.Element => {
 
   const saveHasSeenProTutorials = useCallback(() => {
     logEvent?.(Events.FIRST_LOGIN)
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     api
       .patchUserTutoSeen()
       .then(() => {
         dispatch(updateUser({ ...currentUser, hasSeenProTutorials: true }))
       })
       .finally(() => setAreTutoDisplayed(false))
-  }, [currentUser, logEvent])
+  }, [currentUser, logEvent, dispatch])
 
   return areTutoDisplayed ? (
     <DialogBox
