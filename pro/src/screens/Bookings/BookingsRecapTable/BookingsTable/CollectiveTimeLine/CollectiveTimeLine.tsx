@@ -486,20 +486,20 @@ const CollectiveTimeLine = ({
 
   let lastValidatedStep = waitingReimbursedStep
   if (
-    bookingDetails.bankInformationStatus ==
+    bookingDetails.bankInformationStatus ===
     CollectiveBookingBankInformationStatus.DRAFT
   ) {
     lastValidatedStep = waitingPendingBankInfo
   }
   if (
     isNewBankDetailsJourneyEnabled &&
-    bookingDetails.bankAccountStatus ==
+    bookingDetails.bankAccountStatus ===
       CollectiveBookingBankAccountStatus.MISSING
   ) {
     lastValidatedStep = waitingMissingBankInfo
   } else if (
     !isNewBankDetailsJourneyEnabled &&
-    bookingDetails.bankInformationStatus ==
+    bookingDetails.bankInformationStatus ===
       CollectiveBookingBankInformationStatus.MISSING
   ) {
     lastValidatedStep = oldWaitingMissingBankInfo

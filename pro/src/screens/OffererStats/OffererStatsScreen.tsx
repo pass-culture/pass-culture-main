@@ -71,7 +71,7 @@ const OffererStatsScreen = ({ offererOptions }: OffererStatsScreenProps) => {
         setIframeUrl('')
         return
       }
-      if (venueId == 'all') {
+      if (venueId === 'all') {
         response = await api.getOffererStatsDashboardUrl(
           Number(selectedOffererId)
         )

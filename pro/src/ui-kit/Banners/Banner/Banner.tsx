@@ -72,7 +72,7 @@ const Banner = ({
           <button onClick={handleOnClick} type="button">
             {
               /* istanbul ignore next: graphic variation */
-              type != 'light' ? (
+              type !== 'light' ? (
                 <SvgIcon
                   src={fullClearIcon}
                   alt="Masquer le bandeau"

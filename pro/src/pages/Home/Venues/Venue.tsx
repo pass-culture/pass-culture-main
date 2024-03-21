@@ -50,7 +50,7 @@ export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
     venue_id: venue.id,
   }
 
-  if (prevInitialOpenState != shouldShowVenueOfferSteps) {
+  if (prevInitialOpenState !== shouldShowVenueOfferSteps) {
     setIsToggleOpen(shouldShowVenueOfferSteps)
     setPrevInitialOpenState(shouldShowVenueOfferSteps)
   }

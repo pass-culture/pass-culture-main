@@ -66,7 +66,7 @@ export const CollectiveTableRow = ({
 
   // We expand row if bookingId match the one in the context
   useEffect(() => {
-    if (defaultOpenedBookingId == booking.bookingId) {
+    if (defaultOpenedBookingId === booking.bookingId) {
       setIsExpanded(true)
       setTimeout(
         () =>

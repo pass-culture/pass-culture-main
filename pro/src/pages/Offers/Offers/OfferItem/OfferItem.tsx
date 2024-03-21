@@ -49,7 +49,7 @@ const OfferItem = ({
   )
 
   const isOfferInactiveOrExpiredOrDisabled =
-    offer.status == OFFER_STATUS_DRAFT
+    offer.status === OFFER_STATUS_DRAFT
       ? false
       : !offer.isActive ||
         offer.hasBookingLimitDatetimesPassed ||

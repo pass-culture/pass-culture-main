@@ -30,7 +30,7 @@ const setFormReadOnlyFields = (
   }
 
   if (
-    currentStock.activationCodes?.length != 0 ||
+    currentStock.activationCodes?.length !== 0 ||
     (stocks?.length > 0 && stocks[0].hasActivationCode)
   ) {
     return ['quantity']

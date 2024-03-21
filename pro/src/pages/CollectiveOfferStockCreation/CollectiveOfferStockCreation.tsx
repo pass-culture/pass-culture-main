@@ -142,7 +142,7 @@ export const CollectiveOfferStockCreation = ({
     }
 
     let url = `/offre/${computeURLCollectiveOfferId(
-      isTemplate && createdOfferTemplateId != null
+      isTemplate && createdOfferTemplateId !== null
         ? createdOfferTemplateId
         : offer.id,
       isTemplate

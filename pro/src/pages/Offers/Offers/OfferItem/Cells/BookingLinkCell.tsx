@@ -46,7 +46,7 @@ export const BookingLinkCell = ({
       }
     >
       Voir la{' '}
-      {bookingStatus == CollectiveBookingStatus.PENDING
+      {bookingStatus === CollectiveBookingStatus.PENDING
         ? 'préréservation'
         : 'réservation'}
     </ListIconButton>

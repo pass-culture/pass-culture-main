@@ -55,11 +55,11 @@ const FiltersTags = ({
     useFormikContext<SearchFormValues>()
 
   const getOfferAdressTypeTag = () => {
-    if (values.eventAddressType == OfferAddressType.OTHER) {
+    if (values.eventAddressType === OfferAddressType.OTHER) {
       return <></>
     }
     const label =
-      values.eventAddressType == OfferAddressType.OFFERER_VENUE
+      values.eventAddressType === OfferAddressType.OFFERER_VENUE
         ? 'Sortie chez un partenaire culturel'
         : 'Intervention d’un partenaire culturel dans mon établissement'
 
@@ -101,21 +101,22 @@ const FiltersTags = ({
       {getGeoLocalisationTag()}
       {values.academies.map((academy) =>
         createTag(academy, async () => {
-          if (values.academies.length == 1) {
+          if (values.academies.length === 1) {
             setLocalisationFilterState(LocalisationFilterStates.NONE)
           }
           await setFieldValue(
             'academies',
-            values.academies.filter((x) => x != academy)
+            values.academies.filter((x) => x !== academy)
           )
           handleSubmit()
         })
       )}
       {values.departments.map((department) =>
         createTag(
-          departmentOptions.find((dpt) => dpt.value == department)?.label || '',
+          departmentOptions.find((dpt) => dpt.value === department)?.label ||
+            '',
           async () => {
-            if (values.departments.length == 1) {
+            if (values.departments.length === 1) {
               setLocalisationFilterState(LocalisationFilterStates.NONE)
             }
             await setFieldValue(
@@ -128,12 +129,12 @@ const FiltersTags = ({
       )}
       {values.domains.map((domain) =>
         createTag(
-          domainsOptions.find((dmn) => dmn.value == Number(domain))?.label ||
+          domainsOptions.find((dmn) => dmn.value === Number(domain))?.label ||
             '',
           async () => {
             await setFieldValue(
               'domains',
-              values.domains.filter((x) => x != domain)
+              values.domains.filter((x) => x !== domain)
             )
             handleSubmit()
           }
@@ -143,7 +144,7 @@ const FiltersTags = ({
         createTag(student, async () => {
           await setFieldValue(
             'students',
-            values.students.filter((x) => x != student)
+            values.students.filter((x) => x !== student)
           )
           handleSubmit()
         })
@@ -153,7 +154,7 @@ const FiltersTags = ({
         createTag(format, async () => {
           await setFieldValue(
             'formats',
-            values.formats.filter((x) => x != format)
+            values.formats.filter((x) => x !== format)
           )
           handleSubmit()
         })

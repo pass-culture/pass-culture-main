@@ -52,11 +52,11 @@ const Validation = (): JSX.Element => {
   }[activity?.targetCustomer ?? Target.INDIVIDUAL]
 
   useEffect(() => {
-    if (offerer === null || offerer == DEFAULT_OFFERER_FORM_VALUES) {
+    if (offerer === null || offerer === DEFAULT_OFFERER_FORM_VALUES) {
       navigate('/parcours-inscription/identification')
       return
     }
-    if (activity === null || activity == DEFAULT_ACTIVITY_VALUES) {
+    if (activity === null || activity === DEFAULT_ACTIVITY_VALUES) {
       navigate('/parcours-inscription/activite')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

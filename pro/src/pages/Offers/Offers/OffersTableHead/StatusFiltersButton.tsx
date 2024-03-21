@@ -65,7 +65,7 @@ const StatusFiltersButton = ({
 }: StatusFiltersButtonProps) => {
   const [isStatusFiltersVisible, setIsStatusFiltersVisible] = useState(false)
 
-  const isFilteredByStatus = Boolean(status && status != ALL_STATUS)
+  const isFilteredByStatus = Boolean(status && status !== ALL_STATUS)
 
   function toggleStatusFiltersVisibility() {
     setIsStatusFiltersVisible(!isStatusFiltersVisible)

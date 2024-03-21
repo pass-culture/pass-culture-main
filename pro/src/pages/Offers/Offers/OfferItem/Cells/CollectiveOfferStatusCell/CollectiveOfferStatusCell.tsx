@@ -79,7 +79,7 @@ export const getCollectiveStatusLabel = (
         />
       )
     case OfferStatus.SOLD_OUT:
-      return lastBookingStatus == 'PENDING' ? (
+      return lastBookingStatus === 'PENDING' ? (
         <CollectiveStatusLabel
           className={style['status-pre-booked']}
           icon={
@@ -108,7 +108,7 @@ export const getCollectiveStatusLabel = (
         />
       )
     case OfferStatus.EXPIRED:
-      return lastBookingStatus && lastBookingStatus != 'CANCELLED' ? (
+      return lastBookingStatus && lastBookingStatus !== 'CANCELLED' ? (
         <CollectiveStatusLabel
           className={style['status-ended']}
           icon={

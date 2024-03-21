@@ -62,7 +62,7 @@ const EmailSpellCheckInput = <FormType,>({
         placeholder={placeholder}
         onBlur={handleEmailValidation}
         onFocus={resetEmailValidation}
-        hideFooter={emailValidationTip != null} // This is needed to hide the footer div that takes some space
+        hideFooter={emailValidationTip !== null} // This is needed to hide the footer div that takes some space
         autoComplete="email"
         className={className}
         maxLength={maxLength}

@@ -175,7 +175,7 @@ const ActionsBar = ({
       >
         Désactiver
       </Button>
-      {audience == Audience.INDIVIDUAL && (
+      {audience === Audience.INDIVIDUAL && (
         <Button
           onClick={() => handleOpenDeleteDialog()}
           icon={fullTrashIcon}

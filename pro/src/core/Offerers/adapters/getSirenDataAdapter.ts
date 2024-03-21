@@ -63,7 +63,7 @@ const getSirenDataAdapter: GetSirenDataAdapter = async (humanSiren: string) => {
     }
   } catch (e) {
     let message = 'Une erreur est survenue'
-    if (isErrorAPIError(e) && e.status == 400) {
+    if (isErrorAPIError(e) && e.status === 400) {
       if (e.body.global) {
         message = e.body.global[0]
       }

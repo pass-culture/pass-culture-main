@@ -55,7 +55,7 @@ const AddressSelect = ({ description, suggestionLimit }: AddressProps) => {
 
   // TODO we should not use useEffect for this but an event handler on the input
   useEffect(() => {
-    if (addressesMap[searchField.value] != undefined) {
+    if (addressesMap[searchField.value] !== undefined) {
       handleAddressSelect(
         setFieldValue,
         addressesMap[searchField.value],

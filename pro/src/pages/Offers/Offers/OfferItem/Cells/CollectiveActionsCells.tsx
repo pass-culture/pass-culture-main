@@ -22,8 +22,8 @@ export const CollectiveActionsCells = ({
       <div className={styles['actions-column-container']}>
         <DuplicateOfferCell offerId={offer.id} isShowcase={offer.isShowcase} />
 
-        {(offer.status == OfferStatus.SOLD_OUT ||
-          offer.status == OfferStatus.EXPIRED) &&
+        {(offer.status === OfferStatus.SOLD_OUT ||
+          offer.status === OfferStatus.EXPIRED) &&
           offer.booking && (
             <BookingLinkCell
               bookingId={offer.booking.id}
