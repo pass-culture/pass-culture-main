@@ -989,10 +989,13 @@ class CreateIncidentTest(PostEndpointHelper):
                 "kind": finance_models.IncidentType.OVERPAYMENT.name,
                 "object_ids": object_ids,
             },
+            follow_redirects=True,
         )
 
-        assert response.status_code == 303
-        assert finance_models.FinanceIncident.query.count() == 1
+        assert response.status_code == 200
+        incidents = finance_models.FinanceIncident.query.all()
+        assert len(incidents) == 1
+        incident = incidents[0]
         assert finance_models.BookingFinanceIncident.query.count() == 1
         booking_finance_incident = finance_models.BookingFinanceIncident.query.first()
         assert booking_finance_incident.newTotalAmount == 0
@@ -1001,6 +1004,16 @@ class CreateIncidentTest(PostEndpointHelper):
         assert action_history.actionType == history_models.ActionType.FINANCE_INCIDENT_CREATED
         assert action_history.authorUser == legit_user
         assert action_history.comment == "Origine de la demande"
+
+        soup = html_parser.get_soup(response.data)
+        alerts = soup.find_all("div", class_="alert")
+        assert len(alerts) == 1
+        alert = alerts[0]
+        assert html_parser._filter_whitespaces(alert.text) == "Un nouvel incident a été créé pour 1 réservation"
+        url_tags = alert.find_all("a")
+        assert len(url_tags) == 1
+        url_tag = url_tags[0]
+        assert f"/finance/incidents/{incident.id}" == url_tag.attrs["href"]
 
     def test_not_creating_incident_if_already_exists(self, authenticated_client):
         booking = bookings_factories.ReimbursedBookingFactory()
@@ -1077,7 +1090,8 @@ class CreateIncidentTest(PostEndpointHelper):
         assert finance_models.FinanceIncident.query.count() == 0  # didn't create new incident
         assert history_models.ActionHistory.query.count() == 0
 
-    def test_create_comercial_gesture_incident_from_one_booking_without_deposit_balance(
+    @pytest.mark.skip(reason="Temporarily hide commercial gesture creation from the backoffice")
+    def test_create_commercial_gesture_incident_from_one_booking_without_deposit_balance(
         self, legit_user, authenticated_client
     ):
         booking = bookings_factories.CancelledBookingFactory(user__deposit__amount=decimal.Decimal(2.0))
@@ -1105,7 +1119,8 @@ class CreateIncidentTest(PostEndpointHelper):
         assert action_history.authorUser == legit_user
         assert action_history.comment == "Origine de la demande"
 
-    def test_create_comercial_gesture_incident_from_one_booking_with_deposit_balance(
+    @pytest.mark.skip(reason="Temporarily hide commercial gesture creation from the backoffice")
+    def test_create_commercial_gesture_incident_from_one_booking_with_deposit_balance(
         self, legit_user, authenticated_client
     ):
         booking = bookings_factories.CancelledBookingFactory()
@@ -1132,7 +1147,8 @@ class CreateIncidentTest(PostEndpointHelper):
             in html_parser.extract_alert(redirected_response.data)
         )
 
-    def test_create_comercial_gesture_incident_from_used_booking(self, legit_user, authenticated_client):
+    @pytest.mark.skip(reason="Temporarily hide commercial gesture creation from the backoffice")
+    def test_create_commercial_gesture_incident_from_used_booking(self, legit_user, authenticated_client):
         booking = bookings_factories.UsedBookingFactory()
 
         object_ids = str(booking.id)
@@ -1157,7 +1173,8 @@ class CreateIncidentTest(PostEndpointHelper):
             in html_parser.extract_alert(redirected_response.data)
         )
 
-    def test_not_create_comercial_gesture_incident_too_expensive(self, authenticated_client):
+    @pytest.mark.skip(reason="Temporarily hide commercial gesture creation from the backoffice")
+    def test_not_create_commercial_gesture_incident_too_expensive(self, authenticated_client):
         booking = bookings_factories.UsedBookingFactory()
 
         object_ids = str(booking.id)
