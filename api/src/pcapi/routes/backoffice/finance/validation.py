@@ -58,10 +58,9 @@ def check_incident_collective_booking(collective_booking: educational_models.Col
 def check_total_amount(
     input_amount: decimal.Decimal | None,
     bookings: list[bookings_models.Booking | educational_models.CollectiveBooking],
-    is_commercial_gesture: bool = False,
 ) -> bool:
     # Temporary: The total_amount field is optional only for multiple bookings incident (no need for total overpayment)
-    if len(bookings) == 1 and not input_amount and not is_commercial_gesture:
+    if len(bookings) == 1 and not input_amount:
         return True
 
     if not input_amount:
@@ -73,29 +72,12 @@ def check_total_amount(
         return False
 
     max_incident_amount = sum(booking.total_amount for booking in bookings)
-    if is_commercial_gesture:
-        for booking in bookings:
-            cg_amount = booking.quantity * input_amount
-            if cg_amount > (decimal.Decimal(1.20) * booking.total_amount):
-                flash(
-                    "Le montant de l'incident ne peut pas être supérieur à 120% du montant d'une réservation sélectionnée",
-                    "warning",
-                )
-                return False
-
-            if cg_amount > decimal.Decimal(300 * len(bookings)):
-                flash(
-                    "Le montant de l'incident ne peut JAMAIS être supérieur à 300€ par réservation.",
-                    "warning",
-                )
-                return False
-    else:
-        if input_amount > max_incident_amount:
-            flash(
-                "Le montant de l'incident ne peut pas être supérieur au montant total des réservations sélectionnées.",
-                "warning",
-            )
-            return False
+    if input_amount > max_incident_amount:
+        flash(
+            "Le montant de l'incident ne peut pas être supérieur au montant total des réservations sélectionnées.",
+            "warning",
+        )
+        return False
     return True
 
 

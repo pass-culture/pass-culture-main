@@ -265,7 +265,7 @@ def get_history(finance_incident_id: int) -> utils.BackofficeResponse:
 @finance_incidents_blueprint.route("get-incident-creation-form", methods=["GET", "POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def get_incident_creation_form() -> utils.BackofficeResponse:
-    form = forms.BookingIncidentForm(kind=finance_models.IncidentType.OVERPAYMENT.name)
+    form = forms.BookingOverPaymentIncidentForm()
     additional_data = {}
     information = None
 
@@ -341,7 +341,7 @@ def get_collective_booking_incident_creation_form(collective_booking_id: int) ->
     if not collective_booking:
         raise NotFound()
 
-    form = forms.CollectiveIncidentCreationForm(kind=finance_models.IncidentType.OVERPAYMENT.name)
+    form = forms.CollectiveOverPaymentIncidentCreationForm()
     additional_data = _initialize_collective_booking_additional_data(collective_booking)
 
     return render_template(
@@ -361,20 +361,13 @@ def get_collective_booking_incident_creation_form(collective_booking_id: int) ->
 @finance_incidents_blueprint.route("/create-from-individual-booking", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def create_individual_booking_incident() -> utils.BackofficeResponse:
-    form = forms.BookingIncidentForm()
+    form = forms.BookingOverPaymentIncidentForm()
 
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer, 303)
 
     amount = form.total_amount.data
-    is_commercial_gesture = form.kind.data == finance_models.IncidentType.COMMERCIAL_GESTURE.name
-    bookings_filters = [bookings_models.Booking.id.in_(form.object_ids_list)]
-
-    if is_commercial_gesture:
-        bookings_filters.append(bookings_models.Booking.status == bookings_models.BookingStatus.CANCELLED)
-    else:
-        bookings_filters.append(bookings_models.Booking.status == bookings_models.BookingStatus.REIMBURSED)
 
     bookings = (
         bookings_models.Booking.query.options(
@@ -384,7 +377,10 @@ def create_individual_booking_incident() -> utils.BackofficeResponse:
             .joinedload(finance_models.Deposit.user)
             .load_only(users_models.User.id),
         )
-        .filter(*bookings_filters)
+        .filter(
+            bookings_models.Booking.id.in_(form.object_ids_list),
+            bookings_models.Booking.status == bookings_models.BookingStatus.REIMBURSED,
+        )
         .all()
     )
 
@@ -395,42 +391,19 @@ def create_individual_booking_incident() -> utils.BackofficeResponse:
         )
         return redirect(request.referrer or url_for("backoffice_web.individual_bookings.list_individual_bookings"), 303)
 
-    if is_commercial_gesture:
-        if not validation.check_all_same_stock(bookings):
-            flash(
-                "Un geste commercial ne peut concerner que des réservations faites sur un même stock",
-                "warning",
-            )
-            return redirect(
-                request.referrer or url_for("backoffice_web.individual_bookings.list_individual_bookings"), 303
-            )
-
-        amount /= sum(x.quantity for x in bookings)
-        if not validation.check_empty_deposits(bookings, amount):
-            flash(
-                "Au moins un des jeunes ayant fait une réservation a encore du crédit pour payer la réservation",
-                "warning",
-            )
-            return redirect(
-                request.referrer or url_for("backoffice_web.individual_bookings.list_individual_bookings"), 303
-            )
-
-    if not (
-        validation.check_incident_bookings(bookings)
-        and validation.check_total_amount(amount, bookings, is_commercial_gesture)
-    ):
+    if not (validation.check_incident_bookings(bookings) and validation.check_total_amount(amount, bookings)):
         return redirect(request.referrer or url_for("backoffice_web.individual_bookings.list_individual_bookings"), 303)
 
-    finance_api.create_finance_incident(
-        kind=form.kind.data,
+    incident = finance_api.create_overpayment_finance_incident(
         bookings=bookings,
         amount=amount,
         origin=form.origin.data,
     )
+    incident_url = url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=incident.id)
 
     flash(
-        Markup("Un nouvel incident a été créé pour {count} réservation{s}").format(
-            count=len(bookings), s="" if len(bookings) == 1 else "s"
+        Markup('Un nouvel <a href="{url}">incident</a> a été créé pour {count} réservation{s}').format(
+            url=incident_url, count=len(bookings), s="" if len(bookings) == 1 else "s"
         ),
         "success",
     )
@@ -445,27 +418,28 @@ def create_collective_booking_incident(collective_booking_id: int) -> utils.Back
         raise NotFound()
 
     redirect_url = request.referrer or url_for("backoffice_web.collective_bookings.list_collective_bookings")
-    form = forms.CollectiveIncidentCreationForm()
+    form = forms.CollectiveOverPaymentIncidentCreationForm()
 
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer, 303)
 
-    is_commercial_gesture = form.kind.data == finance_models.IncidentType.COMMERCIAL_GESTURE.name
-
     booking_has_no_incident = validation.check_incident_collective_booking(collective_booking)
     is_valid_amount = validation.check_total_amount(
         input_amount=collective_booking.total_amount,
         bookings=[collective_booking],
-        is_commercial_gesture=is_commercial_gesture,
     )
 
     if not (booking_has_no_incident and is_valid_amount):
         return redirect(redirect_url, 303)
 
-    finance_api.create_finance_incident(kind=form.kind.data, bookings=[collective_booking], origin=form.origin.data)
+    incident = finance_api.create_overpayment_finance_incident(bookings=[collective_booking], origin=form.origin.data)
+    incident_url = url_for(
+        "backoffice_web.finance_incidents.get_incident",
+        finance_incident_id=incident.id,
+    )
 
-    flash("Le nouvel incident a été créé.", "success")
+    flash(Markup('Le nouvel <a href="{url}">incident</a> a été créé."').format(url=incident_url), "success")
     return redirect(redirect_url, 303)
 
 

@@ -25,23 +25,14 @@ class BaseIncidentCreationForm(FlaskForm):
     class Meta:
         locales = ["fr_FR", "fr"]
 
-    kind = fields.PCSelectField(
-        "Type d'incident",
-        choices=[
-            (opt.name, filters.format_finance_incident_type_str(opt))
-            for opt in finance_models.IncidentType
-            if opt not in not_implemented_incident_types
-        ],
-    )
-
     origin = fields.PCStringField("Origine de la demande")
 
 
-class CollectiveIncidentCreationForm(BaseIncidentCreationForm):
+class CollectiveOverPaymentIncidentCreationForm(BaseIncidentCreationForm):
     pass
 
 
-class BookingIncidentForm(empty_forms.BatchForm, BaseIncidentCreationForm):
+class BookingOverPaymentIncidentForm(empty_forms.BatchForm, BaseIncidentCreationForm):
     class Meta:
         locales = ["fr_FR", "fr"]
 
