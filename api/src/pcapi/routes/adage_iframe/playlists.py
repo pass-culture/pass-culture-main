@@ -136,7 +136,9 @@ def new_template_offers_playlist(
 
     playlist_items = (
         repository.get_collective_offer_templates_for_playlist_query(
-            institution_id=institution.id, playlist_type=educational_models.PlaylistType.NEW_OFFER
+            institution_id=institution.id,
+            playlist_type=educational_models.PlaylistType.NEW_OFFER,
+            max_distance=educational_models.PLAYLIST_RURALITY_MAX_DISTANCE_MAPPING.get(institution.ruralLevel, 60),
         )
         .limit(10)
         .all()
@@ -182,11 +184,14 @@ def get_local_offerers_playlist(
 
     playlist_items = (
         repository.get_collective_offer_templates_for_playlist_query(
-            institution_id=institution.id, playlist_type=educational_models.PlaylistType.LOCAL_OFFERER
+            institution_id=institution.id,
+            playlist_type=educational_models.PlaylistType.LOCAL_OFFERER,
+            max_distance=educational_models.PLAYLIST_RURALITY_MAX_DISTANCE_MAPPING.get(institution.ruralLevel, 60),
         )
         .limit(10)
         .all()
     )
+    # TODO: add some more items if the playlist is too empty
 
     distances = {item.venueId: item.distanceInKm for item in playlist_items}
     venues = offerers_api.get_venues_by_ids(distances.keys())
