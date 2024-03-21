@@ -1,20 +1,32 @@
 import { screen } from '@testing-library/react'
 
+import {
+  CollectiveOfferResponseModel,
+  CollectiveOfferTemplateResponseModel,
+} from 'apiClient/adage'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
   defaultAdageUser,
+  defaultCollectiveOffer,
   defaultCollectiveTemplateOffer,
 } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import AdageOffer from '../AdageOffer'
 
-function renderAdageOffer() {
+function renderAdageOffer({
+  offer,
+  isPreview = false,
+}: {
+  offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
+  isPreview?: boolean
+}) {
   return renderWithProviders(
     <AdageUserContextProvider adageUser={defaultAdageUser}>
       <AdageOffer
-        offer={defaultCollectiveTemplateOffer}
+        offer={offer}
         adageUser={defaultAdageUser}
+        isPreview={isPreview}
       />
     </AdageUserContextProvider>
   )
@@ -22,7 +34,7 @@ function renderAdageOffer() {
 
 describe('AdageOffer', () => {
   it('should display the offer information sections', () => {
-    renderAdageOffer()
+    renderAdageOffer({ offer: defaultCollectiveTemplateOffer })
 
     expect(
       screen.getByRole('heading', { name: 'Détails de l’offre' })
@@ -36,10 +48,18 @@ describe('AdageOffer', () => {
   })
 
   it('should show the offer cultural partner infos for a collective offer', () => {
-    renderAdageOffer()
+    renderAdageOffer({ offer: defaultCollectiveTemplateOffer })
 
     expect(
       screen.getByRole('heading', { name: 'Partenaire culturel' })
+    ).toBeInTheDocument()
+  })
+
+  it('should show the offer instistution panel for a collective bookable offer', () => {
+    renderAdageOffer({ offer: defaultCollectiveOffer })
+
+    expect(
+      screen.getByRole('heading', { name: 'Offre adressée à :' })
     ).toBeInTheDocument()
   })
 })

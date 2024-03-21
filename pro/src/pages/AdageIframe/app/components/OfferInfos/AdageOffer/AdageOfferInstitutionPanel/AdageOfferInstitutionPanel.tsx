@@ -16,11 +16,13 @@ import styles from './AdageOfferInstitutionPanel.module.scss'
 export type AdageOfferInstitutionPanelProps = {
   offer: CollectiveOfferResponseModel
   adageUser?: AuthenticatedResponse
+  isPreview: boolean
 }
 
 export default function AdageOfferInstitutionPanel({
   offer,
   adageUser,
+  isPreview,
 }: AdageOfferInstitutionPanelProps) {
   return (
     <div className={styles['institution-panel']}>
@@ -51,11 +53,14 @@ export default function AdageOfferInstitutionPanel({
           </div>
         )}
         <PrebookingButton
-          canPrebookOffers={adageUser?.role === AdageFrontRoles.REDACTOR}
+          canPrebookOffers={
+            adageUser?.role === AdageFrontRoles.REDACTOR || isPreview
+          }
           offerId={offer.id}
           queryId={''}
           stock={offer.stock}
           hideLimitDate={true}
+          isPreview={isPreview}
         >
           <SvgIcon
             src={fullDeskIcon}

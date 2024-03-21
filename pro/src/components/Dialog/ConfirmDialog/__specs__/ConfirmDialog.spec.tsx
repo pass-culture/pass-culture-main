@@ -36,4 +36,20 @@ describe('ConfirmDialog', () => {
     await userEvent.click(screen.getByText('Annuler'))
     expect(onCancel).toHaveBeenCalledTimes(1)
   })
+
+  it('should disabled confirm button', () => {
+    render(
+      <ConfirmDialog
+        title="Dialog"
+        onConfirm={onConfirm}
+        onCancel={onCancel}
+        confirmText="Valider"
+        cancelText="Annuler"
+        confirmButtonDisabled={true}
+      />
+    )
+
+    const confirmButton = screen.getByText('Valider')
+    expect(confirmButton).toBeDisabled()
+  })
 })

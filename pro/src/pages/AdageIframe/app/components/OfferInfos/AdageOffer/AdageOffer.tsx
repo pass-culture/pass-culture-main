@@ -98,7 +98,11 @@ export default function AdageOffer({
         <div className={styles['offer-side']}>
           {isOfferBookable ? (
             (offer.teacher || offer.educationalInstitution) && (
-              <AdageOfferInstitutionPanel offer={offer} adageUser={adageUser} />
+              <AdageOfferInstitutionPanel
+                offer={offer}
+                adageUser={adageUser}
+                isPreview={isPreview}
+              />
             )
           ) : (
             <AdageOfferPartnerPanel
