@@ -83,7 +83,7 @@ def export_bookings_for_offer_as_csv(offer_id: int, query: BookingsExportQueryMo
     offer = Offer.query.get(int(offer_id))
 
     if not user.has_access(offer.venue.managingOffererId):
-        return api_errors.ForbiddenError({"global": "You are not allowed to access this offer"})
+        raise api_errors.ForbiddenError({"global": "You are not allowed to access this offer"})
 
     if query.status == BookingsExportStatusFilter.VALIDATED:
         return cast(
@@ -115,7 +115,7 @@ def export_bookings_for_offer_as_excel(offer_id: int, query: BookingsExportQuery
     offer = Offer.query.get(int(offer_id))
 
     if not user.has_access(offer.venue.managingOffererId):
-        return api_errors.ForbiddenError({"global": "You are not allowed to access this offer"})
+        raise api_errors.ForbiddenError({"global": "You are not allowed to access this offer"})
 
     if query.status == BookingsExportStatusFilter.VALIDATED:
         return cast(
