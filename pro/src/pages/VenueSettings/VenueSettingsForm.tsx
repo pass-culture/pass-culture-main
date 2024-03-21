@@ -64,7 +64,6 @@ export const VenueSettingsForm = ({
             <FormLayout.Row>
               <SiretOrCommentFields
                 initialSiret={initialValues.siret}
-                readOnly
                 isToggleDisabled
                 isCreatedEntity={false}
                 updateIsSiretValued={updateIsSiretValued}

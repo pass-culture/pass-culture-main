@@ -17,7 +17,8 @@ export const isSiretStartingWithSiren = (
 export const generateSiretValidationSchema = (
   isVenueVirtual: boolean,
   isSiretValued: boolean,
-  siren?: string | null
+  siren?: string | null,
+  initialSiret?: string
 ) => {
   const siretValidationSchema = {
     siret: isVenueVirtual
@@ -39,6 +40,9 @@ export const generateSiretValidationSchema = (
             'apiSiretValid',
             'Le code SIRET saisi n’est pas valide',
             async (siret) => {
+              if (siret === initialSiret) {
+                return true
+              }
               const response = await siretApiValidate(siret || '')
               return !response
             }
