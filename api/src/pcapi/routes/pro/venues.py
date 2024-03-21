@@ -113,7 +113,8 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
     venue = Venue.query.get_or_404(venue_id)
 
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
-    if body.siret and not sirene.siret_is_active(body.siret):
+    has_siret_changed = bool(body.siret and body.siret != venue.siret)
+    if body.siret and not sirene.siret_is_active(body.siret, raise_if_non_public=has_siret_changed):
         raise ApiErrors(errors={"siret": ["SIRET is no longer active"]})
 
     not_venue_fields = {
