@@ -1,10 +1,11 @@
 import { AccessibiltyFormValues } from 'core/shared'
 
-type DayValues = {
+export type DayValues = {
   morningStartingHour: string
   morningEndingHour: string
   afternoonStartingHour: string
   afternoonEndingHour: string
+  isAfternoonOpen: boolean
 }
 
 export interface VenueEditionFormValues {
