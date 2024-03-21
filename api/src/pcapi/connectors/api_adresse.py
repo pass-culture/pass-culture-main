@@ -4,8 +4,11 @@ Documentation of the API: https://adresse.data.gouv.fr/api-doc/adresse
 Further explanations at: https://guides.etalab.gouv.fr/apis-geo/1-api-adresse.html
 """
 
+import csv
+from io import StringIO
 import json
 import logging
+import re
 
 import pydantic.v1 as pydantic_v1
 
@@ -50,6 +53,10 @@ def _get_backend() -> "BaseBackend":
     return backend_class()
 
 
+def format_q(address: str, city: str) -> str:
+    return _get_backend().format_q(address, city)
+
+
 def get_municipality_centroid(city: str, postcode: str | None = None, citycode: str | None = None) -> AddressInfo:
     """Return information about the requested city."""
     return _get_backend().get_municipality_centroid(postcode=postcode, citycode=citycode, city=city)
@@ -60,13 +67,47 @@ def get_address(address: str, postcode: str | None = None, city: str | None = No
     return _get_backend().get_single_address_result(address=address, postcode=postcode, city=city)
 
 
+def search_csv(payload: str, columns: list[str] | None, result_columns: list[str] | None = None) -> csv.DictReader:
+    """Search CSV."""
+    return _get_backend().search_csv(payload, columns=columns, result_columns=result_columns)
+
+
 class BaseBackend:
+    # TODO: move this out of BaseBackend ?
+    @staticmethod
+    def format_q(address: str, city: str) -> str:
+        # Address:
+        address = address.replace(",", "")
+        address = address.title()
+        # TODO: subs can be improved
+        subs = (
+            (" Bd ", " Boulevard "),
+            (" Pl ", " Place "),
+            (" T ", "ter "),
+        )
+        for pattern, repl in subs:
+            address = re.sub(pattern, repl, address)
+
+        # City:
+        city = city.replace(",", "")
+        if (s := city.split()[0].lower()) in ("paris", "marseille", "lyon"):
+            city = s
+        city = city.capitalize()
+
+        q = " ".join([address, city])
+        return q
+
     def get_municipality_centroid(
         self, city: str, postcode: str | None = None, citycode: str | None = None
     ) -> AddressInfo:
         raise NotImplementedError()
 
     def get_single_address_result(self, address: str, postcode: str | None, city: str | None = None) -> AddressInfo:
+        raise NotImplementedError()
+
+    def search_csv(
+        self, payload: str, columns: list[str] | None, result_columns: list[str] | None = None
+    ) -> csv.DictReader:
         raise NotImplementedError()
 
 
@@ -92,6 +133,18 @@ class TestingBackend(BaseBackend):
             score=0.9651727272727272,
             latitude=48.87171,
             longitude=2.308289,
+        )
+
+    def search_csv(
+        self, payload: str, columns: list[str] | None, result_columns: list[str] | None = None
+    ) -> csv.DictReader:
+        return csv.DictReader(
+            [
+                "venue_id,venue_ban_id,q,result_id,result_label,result_score",
+                "1,,3 Rue de Valois Paris,75101_9575_00003,3 Rue de Valois 75001 Paris,0.9651727272727272",
+                "2,,3 Rue de Valois Paris,75101_9575_00003,3 Rue de Valois 75001 Paris,0.9651727272727272",
+                "3,,3 Rue de Valois Paris,75101_9575_00003,3 Rue de Valois 75001 Paris,0.9651727272727272",
+            ],
         )
 
 
@@ -202,3 +255,65 @@ class ApiAdresseBackend(BaseBackend):
             label=properties["label"],
             postcode=properties["postcode"],
         )
+
+    # **************
+    # * Search CSV *
+    # **************
+
+    def search_csv(
+        self,
+        payload: str,
+        columns: list[str] | None,
+        result_columns: list[str] | None = None,
+    ) -> csv.DictReader:
+        url = f"{self.base_url}/csv"
+
+        payload_size = len(payload.encode("utf-8"))
+        if payload_size > 50000000:
+            raise ValueError("Payload is too large")
+
+        if len(set(line.count(",") for line in payload.split("\n"))) != 1:
+            raise ValueError("Malformed payload")
+
+        if columns is None:
+            msg = "All columns will be concatenated to build the search address"
+            logger.warning(msg, extra={"url": url})
+            columns = []
+
+        headers = payload.partition("\n")[0].split(",")
+        if not set(columns).issubset(headers):
+            raise ValueError("Mismatch between columns and payload headers")
+
+        if result_columns is None:
+            result_columns = []
+        valid_result_columns = (
+            "latitude",
+            "longitude",
+            "result_city",
+            "result_citycode",
+            "result_context",
+            "result_district",
+            "result_housenumber",
+            "result_id",
+            "result_label",
+            "result_name",
+            "result_oldcity",
+            "result_oldcitycode",
+            "result_postcode",
+            "result_score",
+            "result_score_next",
+            "result_status",
+            "result_street",
+            "result_type",
+        )
+        if not set(result_columns).issubset(valid_result_columns):
+            raise ValueError("Invalid result_columns")
+
+        files = [("data", payload)]
+        for column in columns:
+            files.append(("columns", (None, column)))  # type: ignore
+        for result_column in result_columns:
+            files.append(("result_columns", (None, result_column)))  # type: ignore
+        response = requests.post(url, files=files, timeout=60)
+        response.raise_for_status()
+        return csv.DictReader(StringIO(response.text))
