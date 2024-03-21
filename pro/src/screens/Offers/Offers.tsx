@@ -226,7 +226,7 @@ const Offers = ({
       return 'Vous ne pouvez pas publier des brouillons depuis cette liste'
     }
     if (
-      audience == Audience.COLLECTIVE &&
+      audience === Audience.COLLECTIVE &&
       selectedOffers.some((offer) => offer.hasBookingLimitDatetimesPassed)
     ) {
       return 'Vous ne pouvez pas publier des offres collectives dont la date de réservation est passée'

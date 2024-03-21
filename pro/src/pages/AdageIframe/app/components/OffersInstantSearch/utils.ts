@@ -49,7 +49,7 @@ export const adageFiltersToFacetFilters = ({
   const filteredFormats: string[] = formats.map((format) => `formats:${format}`)
 
   let filteredDepartments: string[] = []
-  if (eventAddressType == OfferAddressType.SCHOOL) {
+  if (eventAddressType === OfferAddressType.SCHOOL) {
     filteredDepartments = departments.flatMap((department) => [
       `offer.schoolInterventionArea:${department}`,
     ])

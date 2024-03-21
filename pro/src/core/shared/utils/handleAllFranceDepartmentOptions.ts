@@ -50,7 +50,7 @@ export const handleAllFranceDepartmentOptions = (
     return setValue(
       formikValues.filter(
         (value) =>
-          !(mainlandValues.includes(value) || value == ALL_FRANCE_OPTION_VALUE)
+          !(mainlandValues.includes(value) || value === ALL_FRANCE_OPTION_VALUE)
       )
     )
   }
