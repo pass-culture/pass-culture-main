@@ -73,3 +73,71 @@ MUNICIPALITY_CENTROID_RESPONSE = {
     "filters": {"citycode": "75118", "type": "municipality"},
     "limit": 1,
 }
+
+SEARCH_CSV_HEADERS = [
+    "venue_id",
+    "venue_ban_id",
+    "q",
+    "latitude",
+    "longitude",
+    "result_id",
+    "result_label",
+    "result_score",
+]
+SEARCH_CSV_RESULTS = [
+    # Matching ban_id:
+    {
+        "venue_id": 1,
+        "venue_ban_id": "38185_1660_00033",
+        "q": "33 Boulevard Clemenceau Grenoble",
+        "latitude": 45.18403,
+        "longitude": 5.740288,
+        "result_id": "38185_1660_00033",
+        "result_label": "33 Boulevard Clemenceau 38100 Grenoble",
+        "result_score": 0.9762045454545454,
+    },
+    # Mismatching ban_id / Wrong ban_id / Housenumber / Fixable:
+    {
+        "venue_id": 2,
+        "venue_ban_id": "38185_3000_00033",
+        "q": "33 Boulevard Clemenceau Grenoble",
+        "latitude": 45.18403,
+        "longitude": 5.740288,
+        "result_id": "38185_1660_00033",
+        "result_label": "33 Boulevard Clemenceau 38100 Grenoble",
+        "result_score": 0.9762045454545454,
+    },
+    # Mismatching ban_id / Missing ban_id / Housenumber / Fixable:
+    {
+        "venue_id": 3,
+        "venue_ban_id": None,
+        "q": "33 Boulevard Clemenceau Grenoble",
+        "latitude": 45.18403,
+        "longitude": 5.740288,
+        "result_id": "38185_1660_00033",
+        "result_label": "33 Boulevard Clemenceau 38100 Grenoble",
+        "result_score": 0.9762045454545454,
+    },
+    # Mismatching ban_id / Wrong ban_id / Street / Fixable:
+    {
+        "venue_id": 4,
+        "venue_ban_id": "38185_3000_00033",
+        "q": "Boulevard Clemenceau Grenoble",
+        "latitude": 45.183808,
+        "longitude": 5.739678,
+        "result_id": "38185_1660",
+        "result_label": "Boulevard Clemenceau 38100 Grenoble",
+        "result_score": 0.9762045454545454,
+    },
+    # Mismatching ban_id / Missing ban_id / Street / Non-fixable:
+    {
+        "venue_id": 5,
+        "venue_ban_id": None,
+        "q": "This address does not exist",
+        "latitude": 48.644701,
+        "longitude": -3.898144,
+        "result_id": "29023_2455",
+        "result_label": "Rue des Hauts de Ty Nod 29660 Carantec",
+        "result_score": 0.17157103896103892,
+    },
+]
