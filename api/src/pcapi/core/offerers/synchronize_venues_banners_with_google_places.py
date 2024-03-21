@@ -106,6 +106,26 @@ def get_owner_photo(photos: list[PlacePhoto], owner_name: str) -> PlacePhoto | N
     return None
 
 
+def get_crop_params(photo: PlacePhoto, expected_ratio: image_conversion.ImageRatio) -> image_conversion.CropParams:
+    ratio = photo.width / photo.height
+
+    x_crop_percent = 0.0
+    y_crop_percent = 0.0
+    width_crop_percentage = 1.0
+    height_crop_percentage = 1.0
+    if ratio < expected_ratio.value:  # height is too big
+        new_height = photo.width / expected_ratio.value
+        height_crop_percentage = new_height / photo.height
+        y_crop_start = (photo.height - new_height) / 2
+        y_crop_percent = y_crop_start / photo.height
+    else:  # width is too big
+        new_width = photo.height * expected_ratio.value
+        width_crop_percentage = new_width / photo.width
+        x_crop_start = (photo.width - new_width) / 2
+        x_crop_percent = x_crop_start / photo.width
+    return image_conversion.CropParams(x_crop_percent, y_crop_percent, height_crop_percentage, width_crop_percentage)
+
+
 def save_photo_to_gcp(venue_id: int, photo: PlacePhoto, prefix: str) -> str:
     gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
     photos_result = gmaps.places_photo(
@@ -122,6 +142,7 @@ def save_photo_to_gcp(venue_id: int, photo: PlacePhoto, prefix: str) -> str:
         object_id,
         image_conversion.standardize_image(
             content=data,
+            crop_params=get_crop_params(photo, image_conversion.ImageRatio.LANDSCAPE),
             ratio=image_conversion.ImageRatio.LANDSCAPE,
         ),
         "image/jpeg",
@@ -139,8 +160,6 @@ def synchronize_venues_banners_with_google_places(
     nb_places_found = 0
     nb_places_with_photo = 0
     nb_places_with_owner_photo = 0
-    nb_images_ignored_due_to_ratio_venue_id = 0
-    images_ignored_due_to_ratio = []
     banner_synchronized_venue_ids = set()
     for venue in venues:
         try:
@@ -171,11 +190,6 @@ def synchronize_venues_banners_with_google_places(
             venue.googlePlacesInfo.bannerMeta = photo.model_dump()
             banner_synchronized_venue_ids.add(venue.id)
             db.session.commit()
-        except image_conversion.ImageRatioError:
-            nb_images_ignored_due_to_ratio_venue_id += 1
-            images_ignored_due_to_ratio.append(venue.id)
-            db.session.rollback()
-            continue
         except Exception as e:  # pylint: disable=broad-except
             logger.exception(
                 "[gmaps_banner_synchro]venue id: %s error %s: ",
@@ -195,15 +209,6 @@ def synchronize_venues_banners_with_google_places(
             "nb_places_with_owner_photo": nb_places_with_owner_photo,
         },
     )
-    if nb_images_ignored_due_to_ratio_venue_id:
-        logger.warning(
-            "[gmaps_banner_synchro]Images ignored due to ratio: %s",
-            nb_images_ignored_due_to_ratio_venue_id,
-            extra={
-                "nb_images_ignored_due_to_ratio_venue_id": nb_images_ignored_due_to_ratio_venue_id,
-                "concerned venue Ids": images_ignored_due_to_ratio,
-            },
-        )
 
 
 def delete_venues_banners(venues: list[offerers_models.Venue]) -> None:
