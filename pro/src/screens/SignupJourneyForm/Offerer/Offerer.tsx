@@ -81,7 +81,7 @@ const Offerer = (): JSX.Element => {
       postalCode: response.payload.values.postalCode,
       hasVenueWithSiret:
         siretResponse.payload.venues.find(
-          (venue) => venue.siret == formattedSiret
+          (venue) => venue.siret === formattedSiret
         ) !== undefined,
       legalCategoryCode: response.payload.values.legalCategoryCode,
       banId: response.payload.values.banId,

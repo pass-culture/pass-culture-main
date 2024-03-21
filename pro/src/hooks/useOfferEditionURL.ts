@@ -13,7 +13,7 @@ export const useOfferEditionURL = (
     const id = computeURLCollectiveOfferId(offerId, Boolean(isShowcase))
     return `/offre/${id}/collectif/recapitulatif`
   }
-  if (status && status == OFFER_STATUS_DRAFT) {
+  if (status && status === OFFER_STATUS_DRAFT) {
     return getIndividualOfferUrl({
       offerId,
       mode: OFFER_WIZARD_MODE.CREATION,

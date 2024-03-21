@@ -99,7 +99,7 @@ export const AppLayout = ({
           }
         }}
       >
-        {isNewSideBarNavigation && layout == 'basic' && (
+        {isNewSideBarNavigation && layout === 'basic' && (
           <nav
             id="lateral-panel"
             className={classnames({

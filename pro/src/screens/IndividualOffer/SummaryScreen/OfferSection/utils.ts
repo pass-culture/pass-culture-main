@@ -3,7 +3,7 @@ const humanizeDelay = (delay: number): string => {
 
   if (timeInHour < 1) {
     return `${timeInHour * 60} minutes`
-  } else if (timeInHour == 1) {
+  } else if (timeInHour === 1) {
     return `${timeInHour} heure`
   } else if (timeInHour > 48) {
     return `${timeInHour / 24} jours`

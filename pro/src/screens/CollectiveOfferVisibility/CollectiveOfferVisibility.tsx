@@ -165,7 +165,7 @@ const CollectiveOfferVisibility = ({
           institutionsOptions
             .find(
               (option) =>
-                option.institutionId ==
+                option.institutionId ===
                 requestInformations?.institution.institutionId
             )
             ?.value.toString() || '',
