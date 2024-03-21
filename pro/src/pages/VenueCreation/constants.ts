@@ -8,6 +8,7 @@ export const DEFAULT_INTITIAL_OPENING_HOURS = {
   morningEndingHour: '',
   afternoonStartingHour: '',
   afternoonEndingHour: '',
+  isAfternoonOpen: false,
 }
 
 export const DEFAULT_FORM_VALUES: VenueCreationFormValues = {

@@ -2,7 +2,7 @@ import { GetVenueResponseModel, VenueListItemResponseModel } from 'apiClient/v1'
 import { AccessiblityEnum } from 'core/shared'
 import { DEFAULT_INTITIAL_OPENING_HOURS } from 'pages/VenueCreation/constants'
 
-import { VenueEditionFormValues } from './types'
+import { DayValues, VenueEditionFormValues } from './types'
 
 export const buildAccessibilityFormValues = (
   venue: GetVenueResponseModel | VenueListItemResponseModel
@@ -74,7 +74,9 @@ function buildOpeningHoursValues(
   }
 }
 
-function buildHourOfDay(dayOpeningHour: Record<string, any> | undefined) {
+function buildHourOfDay(
+  dayOpeningHour: Record<string, any> | undefined
+): DayValues {
   return dayOpeningHour
     ? {
         morningStartingHour: Object.values(dayOpeningHour)[0].open,
@@ -85,6 +87,7 @@ function buildHourOfDay(dayOpeningHour: Record<string, any> | undefined) {
         afternoonEndingHour: Object.values(dayOpeningHour)[1]
           ? Object.values(dayOpeningHour)[1].close
           : '',
+        isAfternoonOpen: Object.values(dayOpeningHour)[1] ? true : false,
       }
     : DEFAULT_INTITIAL_OPENING_HOURS
 }

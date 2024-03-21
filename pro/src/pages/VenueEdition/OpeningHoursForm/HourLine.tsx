@@ -33,6 +33,7 @@ export function HourLine({
 
     await setFieldValue(`${day}.afternoonStartingHour`, '')
     await setFieldValue(`${day}.afternoonEndingHour`, '')
+    await setFieldValue(`${day}.isAfternoonOpen`, false)
   }
 
   return (
@@ -89,7 +90,10 @@ export function HourLine({
         <Button
           variant={ButtonVariant.TERNARY}
           icon={fullMoreIcon}
-          onClick={() => setIsFullLineDisplayed(true)}
+          onClick={async () => {
+            await setFieldValue(`${day}.isAfternoonOpen`, true)
+            setIsFullLineDisplayed(true)
+          }}
           hasTooltip
         >
           Ajouter une plage horaire
