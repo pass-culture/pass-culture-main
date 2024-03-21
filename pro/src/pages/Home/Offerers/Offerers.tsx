@@ -62,8 +62,7 @@ const Offerers = ({
     }
   }
 
-  const isOffererSoftDeleted =
-    selectedOfferer && selectedOfferer.isActive === false
+  const isOffererSoftDeleted = selectedOfferer && !selectedOfferer.isActive
   const userHasOfferers = offererOptions.length > 0
   const permanentVenues =
     selectedOfferer?.managedVenues?.filter((venue) => venue.isPermanent) ?? []
