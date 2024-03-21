@@ -101,7 +101,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
 
         # Then
         assert email_data.template == models.Template(
-            id_prod=225, id_not_prod=37, tags=["jeunes_offre_annulee_pros"], send_to_ehp=False
+            id_prod=225, id_not_prod=161, tags=["jeunes_offre_annulee_pros"], send_to_ehp=False
         )
         assert email_data.params == {
             "EVENT_DATE": None,
