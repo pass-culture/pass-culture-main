@@ -132,8 +132,7 @@ const doesBookingStatusMatchFilter = <
 
 const isBookingCollectiveBooking = (
   booking: BookingRecapResponseModel | CollectiveBookingResponseModel
-): booking is CollectiveBookingResponseModel =>
-  booking.stock.offerIsEducational === true
+): booking is CollectiveBookingResponseModel => booking.stock.offerIsEducational
 
 export const filterBookingsRecap = <
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel,

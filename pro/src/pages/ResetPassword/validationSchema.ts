@@ -9,9 +9,9 @@ export const validationSchema = yup.object().shape({
     .test(
       'isPasswordValid',
       'Veuillez renseigner un mot de passe valide avec : ',
-      (paswordValue) => {
-        const errors = passwordValidationStatus(paswordValue)
-        const hasError = Object.values(errors).some((e) => e === true)
+      (passwordValue) => {
+        const errors = passwordValidationStatus(passwordValue)
+        const hasError = Object.values(errors).some((error) => error)
         return !hasError
       }
     ),
