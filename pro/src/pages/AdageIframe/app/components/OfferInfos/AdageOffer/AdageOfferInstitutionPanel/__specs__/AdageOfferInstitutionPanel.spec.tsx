@@ -12,6 +12,7 @@ function renderAdageOfferInstitutionPanel(
   props: AdageOfferInstitutionPanelProps = {
     offer: defaultCollectiveOffer,
     adageUser: defaultAdageUser,
+    isPreview: false,
   }
 ) {
   return renderWithProviders(
@@ -46,6 +47,7 @@ describe('AdageOfferPartnerPanel', () => {
         },
       },
       adageUser: defaultAdageUser,
+      isPreview: false,
     })
 
     expect(screen.queryByText('À préréserver')).not.toBeInTheDocument()

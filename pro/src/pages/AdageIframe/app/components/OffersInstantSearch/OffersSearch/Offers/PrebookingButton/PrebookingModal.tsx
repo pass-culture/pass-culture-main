@@ -6,10 +6,12 @@ import strokePassIcon from 'icons/stroke-pass.svg'
 interface PrebookingModal {
   closeModal: () => void
   preBookCurrentStock: () => Promise<void>
+  isPreview?: boolean
 }
 const PrebookingModal = ({
   closeModal,
   preBookCurrentStock,
+  isPreview,
 }: PrebookingModal): JSX.Element => {
   return (
     <ConfirmDialog
@@ -20,6 +22,7 @@ const PrebookingModal = ({
       confirmText="Préréserver"
       cancelText="Fermer"
       extraClassNames="prebooking-modal"
+      confirmButtonDisabled={isPreview}
     >
       <p className="prebooking-modal-text">
         Si oui, une fois votre préréservation confirmée :
