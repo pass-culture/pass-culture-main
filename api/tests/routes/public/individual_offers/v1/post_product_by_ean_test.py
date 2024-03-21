@@ -35,8 +35,8 @@ class PostProductByEanTest:
         )
         unknown_ean = "1234567897123"
 
-        next_minute = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=1)
-        next_minute_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_minute, "973")
+        in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
+        in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
             json={
@@ -45,7 +45,7 @@ class PostProductByEanTest:
                     {
                         "ean": product.extraData["ean"],
                         "stock": {
-                            "bookingLimitDatetime": next_minute_in_non_utc_tz.isoformat(),
+                            "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
                             "price": 1234,
                             "quantity": 3,
                         },
@@ -53,7 +53,7 @@ class PostProductByEanTest:
                     {
                         "ean": unknown_ean,
                         "stock": {
-                            "bookingLimitDatetime": next_minute_in_non_utc_tz.isoformat(),
+                            "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
                             "price": 1234,
                             "quantity": 3,
                         },
@@ -83,7 +83,7 @@ class PostProductByEanTest:
         assert created_stock.price == decimal.Decimal("12.34")
         assert created_stock.quantity == 3
         assert created_stock.offer == created_offer
-        assert created_stock.bookingLimitDatetime == next_minute
+        assert created_stock.bookingLimitDatetime == in_ten_minutes
 
     def test_valid_ean_with_multiple_products(self, client):
         # FIXME : (mageoffray, 2023-11-07) Delete this test one product database is cleaned
@@ -269,8 +269,8 @@ class PostProductByEanTest:
         cd_stock = offers_factories.ThingStockFactory(offer=cd_offer, quantity=10, price=100)
         book_stock = offers_factories.ThingStockFactory(offer=book_offer, quantity=10, price=100)
 
-        next_minute = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=1)
-        next_minute_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_minute, "973")
+        in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
+        in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
             json={
@@ -279,7 +279,7 @@ class PostProductByEanTest:
                     {
                         "ean": cd_product.extraData["ean"],
                         "stock": {
-                            "bookingLimitDatetime": next_minute_in_non_utc_tz.isoformat(),
+                            "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
                             "price": 1234,
                             "quantity": 0,
                         },
@@ -287,7 +287,7 @@ class PostProductByEanTest:
                     {
                         "ean": book_product.extraData["ean"],
                         "stock": {
-                            "bookingLimitDatetime": next_minute_in_non_utc_tz.isoformat(),
+                            "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
                             "price": 2345,
                             "quantity": 25,
                         },
@@ -318,8 +318,8 @@ class PostProductByEanTest:
         # environments, therefore we cannot rely on its side effects
         update_sib_pro_task_mock.side_effect = None
 
-        next_minute = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=1)
-        next_minute_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_minute, "973")
+        in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
+        in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
             json={
@@ -327,7 +327,7 @@ class PostProductByEanTest:
                     {
                         "ean": product.extraData["ean"],
                         "stock": {
-                            "bookingLimitDatetime": next_minute_in_non_utc_tz.isoformat(),
+                            "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
                             "price": 1234,
                             "quantity": 3,
                         },
