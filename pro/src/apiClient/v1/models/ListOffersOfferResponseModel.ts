@@ -20,6 +20,7 @@ export type ListOffersOfferResponseModel = {
   status: OfferStatus;
   stocks: Array<ListOffersStockResponseModel>;
   subcategoryId: SubcategoryIdEnum;
+  test?: string;
   thumbUrl?: string | null;
   venue: ListOffersVenueResponseModel;
 };
