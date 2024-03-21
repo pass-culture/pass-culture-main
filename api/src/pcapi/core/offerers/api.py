@@ -104,7 +104,6 @@ def update_venue(
     reimbursement_point_id = attrs.pop("reimbursementPointId", UNCHANGED)
 
     modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
-
     if not admin_update:
         # run validation when the venue update is triggered by a pro
         # user. This can be bypassed when done by and admin/backoffice

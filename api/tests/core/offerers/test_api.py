@@ -534,18 +534,31 @@ class EditVenueTest:
         # Then
         assert updated_venue.siret == venue_data["siret"]
 
-    @pytest.mark.parametrize("venue_data", [{"siret": "12345678954321"}, {"siret": None, "comment": "test"}])
-    def test_existing_siret_is_not_editable(self, venue_data, app) -> None:
+    @pytest.mark.parametrize(
+        "venue_data", [{"siret": "12345678954321", "name": "newName"}, {"siret": None, "comment": "test"}]
+    )
+    def test_existing_siret_is_editable(self, venue_data, app) -> None:
         # Given
         user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory(siret="12345678900001")
+        venue = offerers_factories.VenueFactory(siret="12345678900001", managingOfferer__siren="123456789")
 
         # when
-        with pytest.raises(api_errors.ApiErrors) as error:
-            offerers_api.update_venue(venue, author=user, **venue_data)
+        offerers_api.update_venue(venue, author=user, **venue_data)
 
         # Then
-        assert error.value.errors["siret"] == ["Vous ne pouvez pas modifier le siret d'un lieu"]
+        assert venue.siret == venue_data["siret"]
+        if venue_data["siret"] is not None:
+            assert venue.name == venue_data["name"]
+
+    def test_remove_siret(self, app) -> None:
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory(
+            siret="12345678900001",
+            managingOfferer__siren="123456789",
+        )
+        with pytest.raises(api_errors.ApiErrors) as error:
+            offerers_api.update_venue(venue, author=user, name=venue.name, siret="")
+        assert error.value.errors["siret"] == ["Vous ne pouvez pas supprimer le siret d'un lieu"]
 
     @pytest.mark.parametrize("venue_data", [{"name": "New name"}, {"name": None}])
     def test_name_is_not_editable(self, venue_data, app) -> None:

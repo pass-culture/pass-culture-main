@@ -27,12 +27,12 @@ def get_siren(siren: str, with_address: bool = True, raise_if_non_public: bool =
 def get_siret(siret: str, raise_if_non_public: bool = True) -> models.SiretInfo:
     """Return information about the requested SIRET."""
     _check_feature_flag()
-    return get_backend(settings.SIRENE_BACKEND).get_siret(siret, raise_if_non_public=raise_if_non_public)
+    return get_backend(settings.SIRENE_BACKEND).get_siret(siret, raise_if_non_public)
 
 
-def siret_is_active(siret: str) -> bool:
+def siret_is_active(siret: str, raise_if_non_public: bool = True) -> bool:
     """Return whether the requested SIRET is active."""
-    siret_info = get_siret(siret)
+    siret_info = get_siret(siret, raise_if_non_public)
     return siret_info.active
 
 
