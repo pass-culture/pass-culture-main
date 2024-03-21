@@ -14,6 +14,7 @@ type ConfirmDialogProps = DialogProps & {
   cancelText: string
   isLoading?: boolean
   leftButtonAction?: () => void
+  confirmButtonDisabled?: boolean
 }
 
 const ConfirmDialog = ({
@@ -28,6 +29,7 @@ const ConfirmDialog = ({
   icon,
   hideIcon = false,
   extraClassNames,
+  confirmButtonDisabled = false,
   leftButtonAction = onCancel,
 }: ConfirmDialogProps): JSX.Element => {
   return (
@@ -51,7 +53,7 @@ const ConfirmDialog = ({
         <Button
           onClick={onConfirm}
           isLoading={isLoading}
-          disabled={isLoading}
+          disabled={isLoading || confirmButtonDisabled}
           testId="confirm-dialog-button-confirm"
         >
           {confirmText}
