@@ -368,9 +368,9 @@ RESPONSE_SIRET_COMPANY_WITH_NON_PUBLIC_DATA = {
 
 RESPONSE_SIREN_INACTIVE_COMPANY = {
     "data": {
-        "siren": "777888999",
+        "siren": "777899888",
         "rna": None,
-        "siret_siege_social": "77788899900021",
+        "siret_siege_social": "77789988800021",
         "categorie_entreprise": None,
         "type": "personne_morale",
         "personne_morale_attributs": {"raison_sociale": "LE RIDEAU FERME", "sigle": None},
@@ -405,15 +405,15 @@ RESPONSE_SIREN_INACTIVE_COMPANY = {
         "date_creation": 1262300400,
     },
     "links": {
-        "siege_social": "https://entreprise.api.gouv.fr/v3/insee/sirene/etablissements/77788899900021",
-        "siege_social_adresse": "https://entreprise.api.gouv.fr/v3/insee/sirene/etablissements/77788899900021/adresse",
+        "siege_social": "https://entreprise.api.gouv.fr/v3/insee/sirene/etablissements/77789988800021",
+        "siege_social_adresse": "https://entreprise.api.gouv.fr/v3/insee/sirene/etablissements/77789988800021/adresse",
     },
     "meta": {"date_derniere_mise_a_jour": 1618178400, "redirect_from_siren": None},
 }
 
 RESPONSE_SIRET_INACTIVE_COMPANY = {
     "data": {
-        "siret": "77788899900021",
+        "siret": "77789988800021",
         "siege_social": True,
         "etat_administratif": "F",
         "date_fermeture": 1703977200,
@@ -430,9 +430,9 @@ RESPONSE_SIRET_INACTIVE_COMPANY = {
         "status_diffusion": "diffusible",
         "date_creation": 1262300400,
         "unite_legale": {
-            "siren": "777888999",
+            "siren": "777899888",
             "rna": None,
-            "siret_siege_social": "77788899900021",
+            "siret_siege_social": "77789988800021",
             "type": "personne_morale",
             "personne_morale_attributs": {"raison_sociale": "LE RIDEAU FERME", "sigle": None},
             "personne_physique_attributs": {
@@ -492,7 +492,7 @@ RESPONSE_SIRET_INACTIVE_COMPANY = {
             },
         },
     },
-    "links": {"unite_legale": "https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/777888999"},
+    "links": {"unite_legale": "https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/777899888"},
     "meta": {"date_derniere_mise_a_jour": 1618178400, "redirect_from_siret": None},
 }
 

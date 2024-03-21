@@ -833,7 +833,7 @@ class CreateOffererTest(PostEndpointHelper):
         "siret,expected_warning",
         [
             ("00000000000001", "Le SIRET 00000000000001 n'existe pas"),
-            ("90000009900001", "L'établissement portant le SIRET 90000009900001 est fermé"),
+            ("90009900000001", "L'établissement portant le SIRET 90009900000001 est fermé"),
             (
                 "12345678900001",
                 "L'établissement portant le SIRET 12345678900001 est diffusible, l'acteur culturel peut créer la structure sur PC Pro",
