@@ -73,7 +73,7 @@ const getSiretDataAdapter: GetSiretDataAdapter = async (humanSiret: string) => {
       1
     )
     /* istanbul ignore next: DEBT, TO FIX */
-    if (addressData.length == 0) {
+    if (addressData.length === 0) {
       return {
         isOk: false,
         message: 'Adresse introuvable',
@@ -102,7 +102,7 @@ const getSiretDataAdapter: GetSiretDataAdapter = async (humanSiret: string) => {
     }
   } catch (e) {
     let message = 'Impossible de vérifier le SIRET saisi.'
-    if (isErrorAPIError(e) && e.status == 400) {
+    if (isErrorAPIError(e) && e.status === 400) {
       message = e.body
       /* istanbul ignore next: DEBT, TO FIX */
       if (e.body.global) {

@@ -47,7 +47,7 @@ export const OffererCreation = (): JSX.Element => {
         navigate(`/accueil?structure=${createdOfferer.id}`, { replace: true })
       }
     } catch (error) {
-      if (isErrorAPIError(error) && error.status == 400) {
+      if (isErrorAPIError(error) && error.status === 400) {
         if (error.body.siren) {
           notification.error('Le code SIREN saisi n’est pas valide.')
         } else if (error.body.user_offerer) {

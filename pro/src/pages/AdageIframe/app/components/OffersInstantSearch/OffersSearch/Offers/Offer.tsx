@@ -199,7 +199,7 @@ const Offer = ({
                 ) : (
                   <PrebookingButton
                     canPrebookOffers={
-                      adageUser.role == AdageFrontRoles.REDACTOR
+                      adageUser.role === AdageFrontRoles.REDACTOR
                     }
                     className={style['offer-prebooking-button']}
                     offerId={offer.id}

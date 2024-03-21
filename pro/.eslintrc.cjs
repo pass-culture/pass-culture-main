@@ -75,6 +75,7 @@ module.exports = {
             ],
           },
         ],
+        eqeqeq: 'error',
         'require-await': 'error',
         'import/no-named-as-default': 'error',
         '@typescript-eslint/await-thenable': 'error',
@@ -86,7 +87,6 @@ module.exports = {
         // TODO turn into errors
         '@typescript-eslint/no-floating-promises': 'warn',
         'react-hooks/exhaustive-deps': 'warn',
-        eqeqeq: 'warn',
       },
     },
   ],

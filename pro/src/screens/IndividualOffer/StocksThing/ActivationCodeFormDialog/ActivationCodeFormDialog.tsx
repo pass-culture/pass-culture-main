@@ -29,7 +29,7 @@ const ActivationCodeFormDialog = ({
     useState<string[]>()
   const [isFileInputDisabled, setIsFileInputDisabled] = useState(false)
   const hasNoActivationCodes =
-    unsavedActivationCodes === undefined || unsavedActivationCodes.length == 0
+    unsavedActivationCodes === undefined || unsavedActivationCodes.length === 0
 
   const submitFile = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,7 +37,7 @@ const ActivationCodeFormDialog = ({
 
       const currentFile =
         e.currentTarget.files !== null ? e.currentTarget.files[0] : null
-      if (currentFile == null) {
+      if (currentFile === null) {
         setIsFileInputDisabled(false)
         return
       }

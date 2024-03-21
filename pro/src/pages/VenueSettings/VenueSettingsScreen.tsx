@@ -78,7 +78,7 @@ export const VenueSettingsFormScreen = ({
     if (
       valueMeta &&
       valueMeta.touched &&
-      valueMeta.value != valueMeta.initialValue
+      valueMeta.value !== valueMeta.initialValue
     ) {
       if (isWithdrawalDialogOpen) {
         setIsWithdrawalDialogOpen(false)
