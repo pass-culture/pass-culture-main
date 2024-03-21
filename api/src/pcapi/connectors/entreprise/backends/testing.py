@@ -63,12 +63,6 @@ class TestingBackend(BaseBackend):
                 return "1000"  # Entreprise individuelle
 
     @classmethod
-    def _is_active(cls, siren_or_siret: str) -> bool:
-        # allows to get a closed offerer in dev/testing environments:
-        # any SIREN which ends with "99" or SIRET in which SIREN part ends with "99"
-        return siren_or_siret[7:9] != "99"
-
-    @classmethod
     def _is_diffusible(cls, siren_or_siret: str) -> bool:
         # allows to get a non-diffusible offerer in dev/testing environments: any SIREN which starts with '9'
         return siren_or_siret[0] != "9"
@@ -82,6 +76,12 @@ class TestingBackend(BaseBackend):
     def _is_late_for_taxes(cls, siren_or_siret: str) -> bool:
         # allows to get companies registered at the RCS or not, depending on the third digit in the SIREN/SIRET
         return siren_or_siret[2] == "9"
+
+    @classmethod
+    def _is_active(cls, siren_or_siret: str) -> bool:
+        # allows to get a closed offerer in dev/testing environments:
+        # any SIREN which are like "xxxx99xxx"
+        return siren_or_siret[4:6] != "99"
 
     @classmethod
     def _get_urssaf_dates(cls) -> tuple[datetime.date, datetime.date]:
