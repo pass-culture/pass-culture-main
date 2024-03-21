@@ -119,7 +119,7 @@ class NativeCategory(Enum):
     ACHAT_LOCATION_INSTRUMENT = "Achat & location d'instrument"
     ARTS_VISUELS = "Arts visuels"
     AUTRES_MEDIAS = "Autres médias"
-    BIBLIOTHEQUE_MEDIATHEQUE = "Bibliothèque, médiathèque"
+    BIBLIOTHEQUE_MEDIATHEQUE = "Abonnements aux médiathèques et bibliothèques"
     CARTES_CINEMA = "Cartes cinéma"
     CARTES_JEUNES = "Cartes jeunes"
     CD = "CD"
