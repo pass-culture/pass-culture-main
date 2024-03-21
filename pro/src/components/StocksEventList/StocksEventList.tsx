@@ -201,7 +201,7 @@ const StocksEventList = ({
     allStocksChecked === PartialCheck.CHECKED
       ? pluralize(stocksCountWithFilters, 'dates sélectionnées')
       : pluralize(
-          checkedStocks.filter((e) => e === true).length,
+          checkedStocks.filter((stock) => stock).length,
           'dates sélectionnées'
         )
   const isAtLeastOneStockChecked = checkedStocks.some((e) => e)

@@ -50,7 +50,7 @@ export const generateValidationSchema = (
       .nullable()
       .required('Champ requis')
       .when([], {
-        is: () => preventPriceIncrease === false,
+        is: () => !preventPriceIncrease,
         then: (schema) =>
           schema.min(
             todayAtMidnight(),

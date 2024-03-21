@@ -84,6 +84,7 @@ module.exports = {
         '@typescript-eslint/ban-types': 'error',
         '@typescript-eslint/switch-exhaustiveness-check': 'error',
         '@typescript-eslint/no-unnecessary-type-arguments': 'error',
+        '@typescript-eslint/no-unnecessary-boolean-literal-compare': 'error',
 
         // TODO turn into errors
         '@typescript-eslint/no-floating-promises': 'warn',
