@@ -76,7 +76,7 @@ export const OfferFilters = ({
 
   const activeLocalisationFilterCount = getActiveLocalisationFilterCount()
 
-  const [academiesOptions, setAcademieOptions] = useState<Option<string>[]>([])
+  const [academiesOptions, setAcademieOptions] = useState<Option[]>([])
   const [formatsOptions] = useState<Option<EacFormat>[]>(
     Object.values(EacFormat).map((format) => ({
       value: format,

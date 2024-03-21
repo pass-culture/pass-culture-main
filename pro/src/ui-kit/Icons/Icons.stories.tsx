@@ -26,7 +26,7 @@ export const Icons = () => {
   const [fillColorInput, setFillColorInput] = useState('#000000')
   const [backgroundColorInput, setBackgroundColorInput] = useState('#ffffff')
 
-  const onClick = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const onClick = async (e: React.MouseEvent<HTMLDivElement>) => {
     e.persist()
     const target = e.currentTarget as Element
 
