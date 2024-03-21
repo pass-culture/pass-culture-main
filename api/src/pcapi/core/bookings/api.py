@@ -1,12 +1,15 @@
 import datetime
+import json
 import logging
 import typing
 
+from flask import current_app
 import sentry_sdk
 import sqlalchemy as sa
 from sqlalchemy.orm import joinedload
 
 from pcapi.analytics.amplitude import events as amplitude_events
+from pcapi.connectors.ems import EMSAPIException
 from pcapi.core import search
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
@@ -21,6 +24,8 @@ from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.external.attributes.api import update_external_user
 import pcapi.core.external_bookings.api as external_bookings_api
 from pcapi.core.external_bookings.boost.client import get_boost_external_booking_barcode
+from pcapi.core.external_bookings.ems import constants as ems_constants
+from pcapi.core.external_bookings.ems.client import EMSClientAPI
 import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.exceptions as finance_exceptions
@@ -1085,3 +1090,33 @@ def cancel_unstored_external_bookings() -> None:
                     int(external_booking_info["venue_id"]),
                     [external_booking_info["barcode"]],
                 )
+
+
+def cancel_ems_external_bookings() -> None:
+    EMS_DEADLINE_BEFORE_CANCELLING = 90
+    redis_client = current_app.redis_client
+    ems_queue = ems_constants.EMS_EXTERNAL_BOOKINGS_TO_CANCEL
+
+    while redis_client.llen(ems_queue) > 0:
+        booking_to_cancel = json.loads(redis_client.rpop(ems_queue))
+        cinema_id, token, timestamp = (
+            booking_to_cancel["cinema_id"],
+            booking_to_cancel["token"],
+            booking_to_cancel["timestamp"],
+        )
+
+        if timestamp + EMS_DEADLINE_BEFORE_CANCELLING > datetime.datetime.utcnow().timestamp():
+            # This is the oldest booking to cancel we have in the queue and its too recent.
+            redis_client.rpush(ems_queue, json.dumps(booking_to_cancel))
+            return
+
+        client = EMSClientAPI(cinema_id=cinema_id)
+        try:
+            tickets = client.get_ticket(token)
+        except EMSAPIException:
+            logger.info(
+                "This external booking doesn't exist",
+                extra={"token": token, "cinema_id": cinema_id},
+            )
+            continue
+        client.cancel_booking_with_tickets(tickets)
