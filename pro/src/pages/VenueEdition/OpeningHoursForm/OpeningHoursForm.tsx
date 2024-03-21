@@ -52,34 +52,40 @@ export function OpeningHoursForm() {
         })}
       </fieldset>
       {days.length > 0 && (
-        <ul>
-          {days
-            .sort((a, b) => daysOfWeek.indexOf(a) - daysOfWeek.indexOf(b))
-            .map((day) => (
-              <li key={day}>
-                <fieldset className={styles['inputs-line']}>
-                  <div className={styles['legend-wrapper']}>
-                    <legend className={styles['legend-hours']}>
-                      {mapDayToFrench(day)}
-                    </legend>
-                  </div>
-                  <HourLine
-                    day={
-                      // FIX ME: is there a way to avoid this "as" ?
-                      day as
-                        | 'monday'
-                        | 'tuesday'
-                        | 'wednesday'
-                        | 'thursday'
-                        | 'friday'
-                        | 'saturday'
-                        | 'sunday'
-                    }
-                  />
-                </fieldset>
-              </li>
-            ))}
-        </ul>
+        <table>
+          <thead>
+            <tr>
+              <th scope="col" className={styles['column-header']}></th>
+              <th scope="col" className={styles['column-header']}>
+                Ouvre à
+              </th>
+              <th scope="col" className={styles['column-header']}>
+                Ferme à
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {days
+              .sort((a, b) => daysOfWeek.indexOf(a) - daysOfWeek.indexOf(b))
+              .map((day) => (
+                <HourLine
+                  day={
+                    // FIX ME: is there a way to avoid this "as" ?
+                    day as
+                      | 'monday'
+                      | 'tuesday'
+                      | 'wednesday'
+                      | 'thursday'
+                      | 'friday'
+                      | 'saturday'
+                      | 'sunday'
+                  }
+                  key={day}
+                />
+              ))}
+          </tbody>
+        </table>
       )}
     </>
   )

@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { useFormikContext } from 'formik'
 import { useState } from 'react'
 
@@ -6,6 +7,7 @@ import fullMoreIcon from 'icons/full-more.svg'
 import { Button, TimePicker } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
+import { mapDayToFrench } from '../OpeningHoursReadOnly/utils'
 import { VenueEditionFormValues } from '../types'
 
 import styles from './OpeningHoursForm.module.scss'
@@ -22,10 +24,9 @@ export function HourLine({
     | 'saturday'
     | 'sunday'
 }) {
-  const { setFieldValue, initialValues } =
-    useFormikContext<VenueEditionFormValues>()
+  const { setFieldValue, values } = useFormikContext<VenueEditionFormValues>()
   const [isFullLineDisplayed, setIsFullLineDisplayed] = useState(
-    Boolean(initialValues[day].afternoonStartingHour)
+    Boolean(values[day].afternoonStartingHour)
   )
 
   async function removeAfternoon() {
@@ -37,68 +38,101 @@ export function HourLine({
   }
 
   return (
-    <span className={styles['hour-line']}>
-      <TimePicker
-        label={'Horaire d’ouverture 1'}
-        name={`${day}.morningStartingHour`}
-        isLabelHidden
-        hideFooter
-        inline
-        className={styles['time-picker']}
-      />
-      -
-      <TimePicker
-        label={'Horaire de fermeture 1'}
-        name={`${day}.morningEndingHour`}
-        isLabelHidden
-        hideFooter
-        inline
-        className={styles['time-picker']}
-      />{' '}
+    <>
+      <tr>
+        <th
+          scope="row"
+          rowSpan={isFullLineDisplayed ? 2 : 1}
+          className={styles['row-header']}
+        >
+          {mapDayToFrench(day)}
+        </th>
+        <td
+          className={cn(styles['hour-cell'], {
+            [styles['hour-cell-afternoon-displayed']]: isFullLineDisplayed,
+          })}
+        >
+          <TimePicker
+            label={'Horaire d’ouverture 1'}
+            name={`${day}.morningStartingHour`}
+            isLabelHidden
+            hideFooter
+            className={styles['time-picker']}
+          />
+        </td>
+        <td
+          className={cn(styles['hour-cell'], {
+            [styles['hour-cell-afternoon-displayed']]: isFullLineDisplayed,
+          })}
+        >
+          <span className={styles['second-hour']}>
+            -
+            <TimePicker
+              label={'Horaire de fermeture 1'}
+              name={`${day}.morningEndingHour`}
+              isLabelHidden
+              hideFooter
+              className={styles['time-picker']}
+            />
+          </span>
+        </td>
+        <td
+          className={cn(styles['hour-cell'], {
+            [styles['hour-cell-afternoon-displayed']]: isFullLineDisplayed,
+          })}
+        >
+          {!isFullLineDisplayed && (
+            <Button
+              variant={ButtonVariant.TERNARY}
+              icon={fullMoreIcon}
+              onClick={async () => {
+                await setFieldValue(`${day}.isAfternoonOpen`, true)
+                setIsFullLineDisplayed(true)
+              }}
+              hasTooltip
+            >
+              Ajouter une plage horaire
+            </Button>
+          )}
+        </td>
+      </tr>
       {isFullLineDisplayed && (
-        <>
-          |
-          <TimePicker
-            label={'Horaire d’ouverture 2'}
-            name={`${day}.afternoonStartingHour`}
-            isLabelHidden
-            hideFooter
-            inline
-            className={styles['time-picker']}
-          />
-          -
-          <TimePicker
-            label={'Horaire de fermeture 2'}
-            name={`${day}.afternoonEndingHour`}
-            isLabelHidden
-            hideFooter
-            inline
-            className={styles['time-picker']}
-          />
-        </>
+        <tr>
+          <td className={styles['hour-cell']}>
+            <TimePicker
+              label={'Horaire d’ouverture 2'}
+              name={`${day}.afternoonStartingHour`}
+              isLabelHidden
+              hideFooter
+              className={styles['time-picker']}
+            />
+          </td>
+          <td className={styles['hour-cell']}>
+            <span className={styles['second-hour']}>
+              -
+              <TimePicker
+                label={'Horaire de fermeture 2'}
+                name={`${day}.afternoonEndingHour`}
+                isLabelHidden
+                hideFooter
+                className={styles['time-picker']}
+              />
+            </span>
+          </td>
+          <td scope="row" className={styles['hour-cell']}>
+            {isFullLineDisplayed && (
+              <Button
+                variant={ButtonVariant.TERNARY}
+                icon={fullLessIcon}
+                onClick={removeAfternoon}
+                hasTooltip
+              >
+                Supprimer la plage horaire
+              </Button>
+            )}
+          </td>
+        </tr>
       )}
-      {isFullLineDisplayed ? (
-        <Button
-          variant={ButtonVariant.TERNARY}
-          icon={fullLessIcon}
-          onClick={removeAfternoon}
-          hasTooltip
-        >
-          Supprimer la plage horaire
-        </Button>
-      ) : (
-        <Button
-          variant={ButtonVariant.TERNARY}
-          icon={fullMoreIcon}
-          onClick={async () => {
-            await setFieldValue(`${day}.isAfternoonOpen`, true)
-            setIsFullLineDisplayed(true)
-          }}
-          hasTooltip
-        >
-          Ajouter une plage horaire
-        </Button>
-      )}
-    </span>
+    </>
   )
 }
