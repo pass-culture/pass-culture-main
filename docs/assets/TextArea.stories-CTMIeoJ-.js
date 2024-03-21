@@ -1,0 +1,10 @@
+import{j as t}from"./jsx-runtime-CKrituN3.js";import{b as c}from"./formik.esm-BvpVdGSF.js";import{d}from"./Thumb-DFUCE6e5.js";import"./index-CBqU2yxZ.js";import"./_commonjsHelpers-BosuxZz1.js";import"./full-next-DBJ5r-A4.js";import"./ButtonLink-DC_BkhTM.js";import"./index-BpvXyOxN.js";import"./index-D-qxk1LK.js";import"./index-Bc47ZfBr.js";import"./SvgIcon-B4BQC89V.js";import"./Button.module-BhjxwRn1.js";import"./Button-DDhnNY6Y.js";import"./stroke-pass-C0Oiu4_F.js";import"./Tooltip-Cq8-p23V.js";import"./useTooltipProps-DrCYBs0a.js";import"./stroke-offer-0nLSn_F5.js";import"./BaseInput-B2IUvXnA.js";import"./BaseRadio-Dio7H15q.js";import"./FieldError-DD_lQZ-D.js";import"./stroke-error-BKdTEWJV.js";import"./FieldSuccess-BCZaewdc.js";import"./stroke-valid-D5TrCdxa.js";import"./full-clear-CvNWe6Ae.js";import"./Divider-wJtZnYeg.js";import"./SubmitButton-CfppJW9r.js";import"./index-Dk74W0Oi.js";import"./SelectInput-CrgzEjiA.js";import"./stroke-down-DYCZHAeS.js";import"./BaseCheckbox-DSexW-Il.js";import"./date-BA7XsK05.js";import"./typeof-QjJsDpFa.js";import"./Banner-C9BLtk6G.js";import"./shadow-tips-help-BWD8Tj4_.js";import"./shadow-tips-warning-Cyw-iOmq.js";import"./stroke-close-C6KSko98.js";import"./LinkNodes-V0OU6n4o.js";import"./full-link-Ct7SQyQr.js";import"./InfoBox-eJgvdobp.js";const Y={title:"ui-kit/forms/TextArea",component:d,decorators:[n=>t.jsx(c,{initialValues:{description:""},onSubmit:()=>{},children:t.jsx(n,{})})]},r={args:{name:"description"}},o={args:{name:"description",label:"Description"}};var i,m,p;r.parameters={...r.parameters,docs:{...(i=r.parameters)==null?void 0:i.docs,source:{originalSource:`{
+  args: {
+    name: 'description'
+  }
+}`,...(p=(m=r.parameters)==null?void 0:m.docs)==null?void 0:p.source}}};var e,s,a;o.parameters={...o.parameters,docs:{...(e=o.parameters)==null?void 0:e.docs,source:{originalSource:`{
+  args: {
+    name: 'description',
+    label: 'Description'
+  }
+}`,...(a=(s=o.parameters)==null?void 0:s.docs)==null?void 0:a.source}}};const Z=["WithoutLabel","WithLabel"];export{o as WithLabel,r as WithoutLabel,Z as __namedExportsOrder,Y as default};
