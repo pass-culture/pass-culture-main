@@ -978,7 +978,7 @@ class SubcategoriesTest:
                             {"code": "01060000", "label": "Biographie / Témoignage littéraire", "level": 2},
                             {"code": "01040000", "label": "Contes / Légendes", "level": 2},
                         ],
-                        "label": "Romans et littérature",
+                        "label": "Romans & littérature",
                         "position": 1,
                     },
                     {
@@ -1043,7 +1043,7 @@ class SubcategoriesTest:
                                 "position": 1,
                             },
                             {
-                                "label": "Action & Aventure",
+                                "label": "Action & aventure",
                                 "gtls": [
                                     {"code": "03020109", "label": "Action / Aventures", "level": 4},
                                     {"code": "03020209", "label": "Action / Aventures", "level": 4},
@@ -1058,7 +1058,7 @@ class SubcategoriesTest:
                                 "position": 2,
                             },
                             {
-                                "label": "Fantastique & Épouvante",
+                                "label": "Fantastique & épouvante",
                                 "gtls": [
                                     {"code": "03020206", "label": "Fantastique / Epouvante", "level": 4},
                                     {"code": "03020305", "label": "Fantastique / Epouvante", "level": 4},
@@ -1072,7 +1072,7 @@ class SubcategoriesTest:
                                 "position": 3,
                             },
                             {
-                                "label": "Documentaire & Société",
+                                "label": "Documentaire & société",
                                 "gtls": [
                                     {"code": "03020103", "label": "Documentaire / Société", "level": 4},
                                     {"code": "03020203", "label": "Documentaire / Société", "level": 4},
@@ -1117,7 +1117,7 @@ class SubcategoriesTest:
                                 "position": 6,
                             },
                             {
-                                "label": "Policier & Thriller",
+                                "label": "Policier & thriller",
                                 "gtls": [
                                     {"code": "03020107", "label": "Policier / Thriller", "level": 4},
                                     {"code": "03020207", "label": "Policier / Thriller", "level": 4},
@@ -1177,7 +1177,7 @@ class SubcategoriesTest:
                                 "position": 10,
                             },
                             {
-                                "label": "Super Héros",
+                                "label": "Super héros",
                                 "gtls": [{"code": "03030400", "label": "Super Héros", "level": 3}],
                                 "position": 11,
                             },
@@ -1191,13 +1191,13 @@ class SubcategoriesTest:
                             {"code": "03020000", "label": "Bandes dessinées", "level": 2},
                             {"code": "03030000", "label": "Comics", "level": 2},
                         ],
-                        "label": "BD & Comics",
+                        "label": "BD & comics",
                         "position": 3,
                     },
                     {
                         "children": [
                             {
-                                "label": "Vie quotidienne & Bien-être",
+                                "label": "Vie quotidienne & bien-être",
                                 "gtls": [{"code": "04060000", "label": "Vie quotidienne & Bien-être", "level": 2}],
                                 "position": 1,
                             },
@@ -1227,12 +1227,12 @@ class SubcategoriesTest:
                                 "position": 6,
                             },
                             {
-                                "label": "Nature & Plein air",
+                                "label": "Nature & plein air",
                                 "gtls": [{"code": "04010000", "label": "Nature & Plein air", "level": 2}],
                                 "position": 7,
                             },
                             {
-                                "label": "Habitat & Maison",
+                                "label": "Habitat & maison",
                                 "gtls": [{"code": "04040000", "label": "Habitat / Maison", "level": 2}],
                                 "position": 8,
                             },
@@ -1243,7 +1243,7 @@ class SubcategoriesTest:
                             },
                         ],
                         "gtls": [{"code": "04000000", "label": "Vie pratique & Loisirs", "level": 1}],
-                        "label": "Loisirs & Bien-être",
+                        "label": "Loisirs & bien-être",
                         "position": 4,
                     },
                     {
@@ -1259,22 +1259,22 @@ class SubcategoriesTest:
                                 "position": 2,
                             },
                             {
-                                "label": "Sciences sociales & Société",
+                                "label": "Sciences sociales & société",
                                 "gtls": [{"code": "09120000", "label": "Sciences sociales  / Société", "level": 2}],
                                 "position": 3,
                             },
                             {
-                                "label": "Psychologie & Psychanalyse",
+                                "label": "Psychologie & psychanalyse",
                                 "gtls": [{"code": "09090000", "label": "Psychologie / Psychanalyse", "level": 2}],
                                 "position": 4,
                             },
                             {
-                                "label": "Actualité & Reportage",
+                                "label": "Actualité & reportage",
                                 "gtls": [{"code": "01110000", "label": "Actualités & Reportages", "level": 2}],
                                 "position": 5,
                             },
                             {
-                                "label": "Anthropologie & Ethnologie",
+                                "label": "Anthropologie & ethnologie",
                                 "gtls": [
                                     {"code": "09010000", "label": "Anthropologie", "level": 2},
                                     {"code": "09020000", "label": "Ethnologie", "level": 2},
@@ -1286,7 +1286,7 @@ class SubcategoriesTest:
                             {"code": "09000000", "label": "Sciences humaines & sociales", "level": 1},
                             {"code": "01110000", "label": "Actualités & Reportages", "level": 2},
                         ],
-                        "label": "Société & Politique",
+                        "label": "Société & politique",
                         "position": 5,
                     },
                     {
@@ -1318,7 +1318,7 @@ class SubcategoriesTest:
                             {"code": "01070000", "label": "Littérature argumentative", "level": 2},
                             {"code": "01050000", "label": "Récit", "level": 2},
                         ],
-                        "label": "Théâtre, Poésie & Essais",
+                        "label": "Théâtre, poésie & essais",
                         "position": 6,
                     },
                     {
@@ -1369,7 +1369,7 @@ class SubcategoriesTest:
                                 "position": 7,
                             },
                             {
-                                "label": "Physiques, Mathématiques & Informatique",
+                                "label": "Physiques, mathématiques & informatique",
                                 "gtls": [
                                     {"code": "10030000", "label": "Sciences physiques", "level": 2},
                                     {"code": "10020000", "label": "Mathématiques", "level": 2},
@@ -1378,7 +1378,7 @@ class SubcategoriesTest:
                                 "position": 8,
                             },
                             {
-                                "label": "Sciences appliquées & Industrie",
+                                "label": "Sciences appliquées & industrie",
                                 "gtls": [{"code": "10060000", "label": "Sciences appliquées et industrie", "level": 2}],
                                 "position": 9,
                             },
@@ -1421,7 +1421,7 @@ class SubcategoriesTest:
                                 "position": 1,
                             },
                             {
-                                "label": "Peinture, Sculpture & Arts graphiques",
+                                "label": "Peinture, sculpture & arts graphiques",
                                 "gtls": [
                                     {"code": "06100100", "label": "Arts appliqués / Arts décoratifs autre", "level": 3},
                                     {"code": "06100300", "label": "Décoration d'intérieur", "level": 3},
@@ -1433,12 +1433,12 @@ class SubcategoriesTest:
                                 "position": 2,
                             },
                             {
-                                "label": "Photos & Cinéma",
+                                "label": "Photos & cinéma",
                                 "gtls": [{"code": "06070000", "label": "Arts de l'image", "level": 2}],
                                 "position": 3,
                             },
                             {
-                                "label": "Architecture, Urbanisme & Design",
+                                "label": "Architecture, urbanisme & design",
                                 "gtls": [{"code": "06040000", "label": "Architecture / Urbanisme", "level": 2}],
                                 "position": 4,
                             },
@@ -1449,7 +1449,7 @@ class SubcategoriesTest:
                             },
                         ],
                         "gtls": [{"code": "06000000", "label": "Arts et spectacles", "level": 1}],
-                        "label": "Mode et Art",
+                        "label": "Mode & art",
                         "position": 8,
                     },
                     {
@@ -1527,7 +1527,7 @@ class SubcategoriesTest:
                             },
                         ],
                         "gtls": [{"code": "05000000", "label": "Tourisme & Voyages", "level": 1}],
-                        "label": "Tourisme & Voyages",
+                        "label": "Tourisme & voyages",
                         "position": 9,
                     },
                 ],
