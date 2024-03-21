@@ -1,9 +1,19 @@
+import csv
+from io import StringIO
+
 import pytest
 
 from pcapi.connectors import api_adresse
 from pcapi.core.testing import override_settings
 
 from tests.connectors.api_adresse import fixtures
+
+
+def test_format_q():
+    assert api_adresse.format_q("", "") == " "
+    assert api_adresse.format_q("20 Rue Saint-Martin 75004 Paris", "PARIS 4") == "20 Rue Saint-Martin Paris"
+    assert api_adresse.format_q(" 33, BD CLEMENCEAU, ", " ,GRENOBLE ") == "33 Boulevard Clemenceau Grenoble"
+    assert api_adresse.format_q("105 RUE DES HAIES", "PARIS 20") == "105 Rue Des Haies Paris"
 
 
 @override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
@@ -98,3 +108,22 @@ def test_error_handling_on_non_json_response(requests_mock):
     )
     with pytest.raises(api_adresse.AdresseApiException):
         api_adresse.get_address(address, postcode, city)
+
+
+@override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+def test_search_csv(requests_mock):
+    text = api_adresse.format_payload(fixtures.SEARCH_CSV_HEADERS, fixtures.SEARCH_CSV_RESULTS)
+    requests_mock.post("https://api-adresse.data.gouv.fr/search/csv", text=text)
+    payload = api_adresse.format_payload(fixtures.SEARCH_CSV_HEADERS[:3], fixtures.SEARCH_CSV_RESULTS)
+    results = api_adresse.search_csv(
+        payload,
+        columns=["q"],
+        result_columns=[
+            api_adresse.ResultColumn.LATITUDE,
+            api_adresse.ResultColumn.LONGITUDE,
+            api_adresse.ResultColumn.RESULT_ID,
+            api_adresse.ResultColumn.RESULT_LABEL,
+            api_adresse.ResultColumn.RESULT_SCORE,
+        ],
+    )
+    assert list(results) == list(csv.DictReader(StringIO(text)))

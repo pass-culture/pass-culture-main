@@ -4,8 +4,12 @@ Documentation of the API: https://adresse.data.gouv.fr/api-doc/adresse
 Further explanations at: https://guides.etalab.gouv.fr/apis-geo/1-api-adresse.html
 """
 
+import csv
+import enum
+from io import StringIO
 import json
 import logging
+import re
 
 import pydantic.v1 as pydantic_v1
 
@@ -45,6 +49,75 @@ class AddressInfo(pydantic_v1.BaseModel):
     score: float
 
 
+class ResultColumn(enum.Enum):
+    LATITUDE = "latitude"
+    LONGITUDE = "longitude"
+    RESULT_CITY = "result_city"
+    RESULT_CITYCODE = "result_citycode"
+    RESULT_CONTEXT = "result_context"
+    RESULT_DISTRICT = "result_district"
+    RESULT_HOUSENUMBER = "result_housenumber"
+    RESULT_ID = "result_id"
+    RESULT_LABEL = "result_label"
+    RESULT_NAME = "result_name"
+    RESULT_OLDCITY = "result_oldcity"
+    RESULT_OLDCITYCODE = "result_oldcitycode"
+    RESULT_POSTCODE = "result_postcode"
+    RESULT_SCORE = "result_score"
+    RESULT_SCORE_NEXT = "result_score_next"
+    RESULT_STATUS = "result_status"
+    RESULT_STREET = "result_street"
+    RESULT_TYPE = "result_type"
+
+
+def format_q(address: str, city: str) -> str:
+    """
+    This method formats the search address (q) in order to get the most accurate results from BAN.
+
+    Hence, this method:
+     - only uses address and city, without postcode.
+       In several cases, including postcode can induce errors in results.
+       Some cities have several postcodes and results may differ depending on the given postcode.
+       Examples (q --> result):
+       With postcode: '33 Boulevard Clemenceau 38000 Grenoble' --> '33 Boulevard Gambetta 38000 Grenoble'
+       Without postcode: '33 Boulevard Clemenceau Grenoble' --> '33 Boulevard Clemenceau 38100 Grenoble'
+
+     - normalizes / formats address and city to get as close as possible to the address format used by BAN.
+       It also makes sure neither address nor city contains a comma, as it would break the CSV payload.
+       Examples (q --> result):
+       Not normalized: '105 RUE DES HAIES PARIS 20' --> 'Voie Ao/20 75020 Paris'
+       Normalized: '105 Rue Des Haies Paris' --> '105 Rue des Haies 75020 Paris'
+    """
+    # Address:
+    address = address.strip()
+    address = address.replace(",", " ")
+    address = " ".join(address.split())  # substitute multiple whitespaces with a single one
+    address = address.title()
+    # TODO: subs can be improved
+    subs = (
+        (r"\s*\d{5}.*", ""),  # Remove postcode and city from address
+        (" Bd ", " Boulevard "),
+        (" Pl ", " Place "),
+        (" T ", "ter "),
+    )
+    for pattern, repl in subs:
+        address = re.sub(pattern, repl, address)
+
+    # City:
+    city = city.strip()
+    city = city.replace(",", "")
+    if city and (s := city.split()[0].lower()) in ("paris", "marseille", "lyon"):
+        city = s
+    city = city.capitalize()
+
+    q = " ".join([address, city])
+    return q
+
+
+def format_payload(headers: list[str], lines: list[dict]) -> str:
+    return "\n".join([",".join(headers)] + [",".join([str(line[field]) for field in headers]) for line in lines])
+
+
 def _get_backend() -> "BaseBackend":
     backend_class = module_loading.import_string(settings.ADRESSE_BACKEND)
     return backend_class()
@@ -60,6 +133,15 @@ def get_address(address: str, postcode: str | None = None, city: str | None = No
     return _get_backend().get_single_address_result(address=address, postcode=postcode, city=city)
 
 
+def search_csv(
+    payload: str,
+    columns: list[str] | None = None,
+    result_columns: list[ResultColumn] | None = None,
+) -> csv.DictReader:
+    """Search CSV."""
+    return _get_backend().search_csv(payload, columns=columns, result_columns=result_columns)
+
+
 class BaseBackend:
     def get_municipality_centroid(
         self, city: str, postcode: str | None = None, citycode: str | None = None
@@ -67,6 +149,14 @@ class BaseBackend:
         raise NotImplementedError()
 
     def get_single_address_result(self, address: str, postcode: str | None, city: str | None = None) -> AddressInfo:
+        raise NotImplementedError()
+
+    def search_csv(
+        self,
+        payload: str,
+        columns: list[str] | None = None,
+        result_columns: list[ResultColumn] | None = None,
+    ) -> csv.DictReader:
         raise NotImplementedError()
 
 
@@ -94,40 +184,65 @@ class TestingBackend(BaseBackend):
             longitude=2.308289,
         )
 
+    def search_csv(
+        self,
+        payload: str,
+        columns: list[str] | None = None,
+        result_columns: list[ResultColumn] | None = None,
+    ) -> csv.DictReader:
+        return csv.DictReader("q,result_id\n33 Boulevard Clemenceau Grenoble,38185_1660_00033")
+
 
 class ApiAdresseBackend(BaseBackend):
-    base_url = "https://api-adresse.data.gouv.fr/search"
-    timeout = 3
+    base_url = "https://api-adresse.data.gouv.fr"
 
-    def _send_search_request(self, parameters: dict) -> dict:
-        url = self.base_url
+    def _request(
+        self,
+        method: str,
+        url: str,
+        params: dict | None = None,
+        files: list | None = None,
+        timeout: int | float | None = None,
+    ) -> requests.Response:
+        methods = {
+            "GET": requests.get,
+            "POST": requests.post,
+        }
         try:
-            response = requests.get(
-                url,
-                params=parameters,
-                timeout=self.timeout,
-            )
+            response = methods[method](url, params=params, files=files, timeout=timeout)  # type: ignore
         except requests.exceptions.RequestException as exc:
-            logger.exception("Network error on Adresse API", extra={"exc": exc, "url": url})
-            raise AdresseApiException("Network error on Adresse API") from exc
+            msg = "Network error on Adresse API"
+            logger.exception(msg, extra={"exc": exc, "url": url})
+            raise AdresseApiException(msg) from exc
 
-        if response.status_code == 400:
-            raise InvalidFormatException()
         if response.status_code in (500, 503):
             raise AdresseApiException("Adresse API is unavailable")
+        if response.status_code == 400:
+            raise InvalidFormatException()
         if response.status_code != 200:
             raise AdresseApiException(f"Unexpected {response.status_code} response from Adresse API: {url}")
+
+        return response
+
+    def _search(self, params: dict) -> dict:
+        url = f"{self.base_url}/search"
+        response = self._request("GET", url, params=params, timeout=3)
         try:
             data = response.json()
         except json.JSONDecodeError:
             raise AdresseApiException("Unexpected non-JSON response from Adresse API")
         return data
 
+    def _search_csv(self, files: list) -> str:
+        url = f"{self.base_url}/search/csv"
+        response = self._request("POST", url, files=files, timeout=60)
+        return response.text
+
     def get_municipality_centroid(
         self, city: str, postcode: str | None = None, citycode: str | None = None
     ) -> AddressInfo:
         """Fallback to querying the city, because the q parameter must contain part of the address label"""
-        parameters = {
+        params = {
             "q": city,
             "postcode": postcode,
             "citycode": citycode,
@@ -135,7 +250,7 @@ class ApiAdresseBackend(BaseBackend):
             "autocomplete": 0,
             "limit": 1,
         }
-        data = self._send_search_request(parameters=parameters)
+        data = self._search(params=params)
         if self._is_result_empty(data):
             logger.error(
                 "No result from API Adresse for a municipality",
@@ -152,14 +267,14 @@ class ApiAdresseBackend(BaseBackend):
         see https://forum.etalab.gouv.fr/t/interpretation-du-score/3852/4
         If no result is found, we return the centroid of the municipality
         """
-        parameters = {
+        params = {
             "q": address,
             "postcode": postcode,
             "autocomplete": 0,
             "limit": 1,
         }
 
-        data = self._send_search_request(parameters=parameters)
+        data = self._search(params=params)
         if self._is_result_empty(data):
             logger.info(
                 "No result from API Adresse for queried address",
@@ -202,3 +317,40 @@ class ApiAdresseBackend(BaseBackend):
             label=properties["label"],
             postcode=properties["postcode"],
         )
+
+    def search_csv(
+        self,
+        payload: str,
+        columns: list[str] | None = None,
+        result_columns: list[ResultColumn] | None = None,
+    ) -> csv.DictReader:
+        url = f"{self.base_url}/csv"
+
+        payload_size = len(payload.encode("utf-8"))
+        if payload_size > 50 * 1000 * 1000:  # 50 Mb
+            raise ValueError("Payload is too large")
+
+        if len(set(line.count(",") for line in payload.split("\n"))) != 1:
+            raise ValueError("Malformed payload")
+
+        if columns is None:
+            msg = "All columns will be concatenated to build the search address"
+            logger.warning(msg, extra={"url": url})
+            columns = []
+
+        headers = payload.partition("\n")[0].split(",")
+        if not set(columns).issubset(headers):
+            raise ValueError("Mismatch between columns and payload headers")
+
+        if result_columns is None:
+            result_columns = []
+        if any(result_column not in ResultColumn for result_column in result_columns):
+            raise ValueError("Invalid result_columns")
+
+        files = [("data", payload)]
+        for column in columns:
+            files.append(("columns", (None, column)))  # type: ignore
+        for result_column in result_columns:
+            files.append(("result_columns", (None, result_column.value)))  # type: ignore
+        text = self._search_csv(files)
+        return csv.DictReader(StringIO(text))
