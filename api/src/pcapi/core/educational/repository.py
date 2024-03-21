@@ -957,7 +957,9 @@ def get_collective_offer_template_by_ids(offer_ids: list[int]) -> list[education
 
 
 def get_collective_offer_templates_for_playlist_query(
-    institution_id: int, playlist_type: educational_models.PlaylistType, max_distance: int | None = 60
+    institution_id: int,
+    playlist_type: educational_models.PlaylistType,
+    max_distance: int | None = 60,
 ) -> BaseQuery:
     query = educational_models.CollectivePlaylist.query.filter(
         educational_models.CollectivePlaylist.type == playlist_type,

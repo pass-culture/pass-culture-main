@@ -166,20 +166,29 @@ class GetLocalOfferersPlaylistTest(SharedPlaylistsErrorTests):
 
     def test_get_local_offerers_playlist(self, client):
         IMAGE_URL = "http://localhost/image.png"
-        playlist_venues = offerers_factories.VenueFactory.create_batch(2, _bannerUrl=IMAGE_URL)
+        playlist_venues = offerers_factories.VenueFactory.create_batch(3, _bannerUrl=IMAGE_URL)
         offerers_factories.VenueFactory()
 
-        institution = educational_factories.EducationalInstitutionFactory()
+        institution = educational_factories.EducationalInstitutionFactory(
+            ruralLevel=educational_models.InstitutionRuralLevel.URBAIN_DENSE
+        )
 
-        expected_distance = 10.0
+        expected_distance = 2.5
 
-        for venue in playlist_venues:
+        for venue in playlist_venues[:2]:
             educational_models.CollectivePlaylist(
                 type=educational_models.PlaylistType.LOCAL_OFFERER,
                 distanceInKm=expected_distance,
                 institution=institution,
                 venue=venue,
             )
+        # This one should not be part of the playlist - outside the distance limit
+        educational_models.CollectivePlaylist(
+            type=educational_models.PlaylistType.LOCAL_OFFERER,
+            distanceInKm=50,
+            institution=institution,
+            venue=playlist_venues[-1],
+        )
 
         redactor = educational_factories.EducationalRedactorFactory()
 
@@ -192,7 +201,7 @@ class GetLocalOfferersPlaylistTest(SharedPlaylistsErrorTests):
             response = iframe_client.get(url_for(self.endpoint))
 
         assert response.status_code == 200
-        assert len(response.json["venues"]) == len(playlist_venues)
+        assert len(response.json["venues"]) == 2
 
         response_venues = sorted(response.json["venues"], key=lambda resp: resp["id"])
         venues = sorted(playlist_venues, key=lambda venue: venue.id)
