@@ -178,7 +178,6 @@ const ReimbursementsInvoices = (): JSX.Element => {
   return (
     <>
       {isNewBankDetailsJourneyEnabled && <BannerReimbursementsInfo />}
-      <h1>Factures</h1>
       <InvoicesFilters
         areFiltersDefault={areFiltersDefault}
         filters={filters}
