@@ -38,8 +38,6 @@ const steps: Step[] = [
     className: 'tutorial-content',
   },
 ]
-const getStep = (position: number): Step | undefined =>
-  steps.find((step: Step) => step.position === position)
 
 interface TutorialProps {
   onFinish: () => void
@@ -48,19 +46,20 @@ interface TutorialProps {
 const Tutorial = ({ onFinish }: TutorialProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const [activeStepPosition, setActiveStepPosition] = useState<number>(1)
-  const hasNextStep: boolean = getStep(activeStepPosition + 1) !== undefined
-  const hasPreviousStep: boolean = getStep(activeStepPosition - 1) !== undefined
+  const hasNextStep: boolean = activeStepPosition < steps.length
+  const hasPreviousStep: boolean = activeStepPosition > 1
   const goToStep = useCallback(
     (newStepPosition: number) => () => setActiveStepPosition(newStepPosition),
     []
   )
-  const activeStep = getStep(activeStepPosition) as Step
+  const activeStep =
+    steps.find((step: Step) => step.position === activeStepPosition) ?? steps[0]
 
   useEffect(() => {
     logEvent?.(Events.TUTO_PAGE_VIEW, {
       page_number: activeStep.position.toString(),
     })
-  }, [activeStep])
+  }, [logEvent, activeStep])
 
   return (
     <div className={styles['tutorial']} data-testid="tutorial-container">
@@ -72,20 +71,19 @@ const Tutorial = ({ onFinish }: TutorialProps): JSX.Element => {
       <section className={styles['tutorial-footer']}>
         <div className={styles['nav-step-list-section']}>
           {steps.map((step) => {
-            const navStepClasses = [styles['nav-step']]
-            if (activeStepPosition === step.position) {
-              navStepClasses.push(styles['nav-step-active'])
-            } else if (activeStepPosition > step.position) {
-              navStepClasses.push(styles['nav-step-done'])
-            }
-
+            const isActiveStep = activeStepPosition === step.position
             return (
               <button
-                className={cn(navStepClasses)}
+                className={cn(styles['nav-step'], {
+                  [styles['nav-step-active']]: isActiveStep,
+                  [styles['nav-step-done']]: activeStepPosition > step.position,
+                })}
                 data-testid="nav-dot"
                 key={step.position}
                 onClick={goToStep(step.position)}
                 type="button"
+                aria-current={isActiveStep ? 'page' : false}
+                aria-label={`Étape du tutoriel ${step.position} sur ${steps.length}`}
               />
             )
           })}
