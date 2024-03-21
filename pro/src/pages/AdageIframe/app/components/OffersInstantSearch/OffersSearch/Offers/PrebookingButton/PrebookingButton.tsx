@@ -23,6 +23,7 @@ const PrebookingButton = ({
   isInSuggestions,
   children,
   hideLimitDate,
+  isPreview,
 }: {
   className?: string
   stock: OfferStockResponse
@@ -32,6 +33,7 @@ const PrebookingButton = ({
   isInSuggestions?: boolean
   children?: React.ReactNode
   hideLimitDate?: boolean
+  isPreview?: boolean
 }): JSX.Element | null => {
   const [hasPrebookedOffer, setHasPrebookedOffer] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -105,6 +107,7 @@ const PrebookingButton = ({
         <PrebookingModal
           closeModal={closeModal}
           preBookCurrentStock={preBookCurrentStock}
+          isPreview={isPreview}
         />
       )}
     </>
