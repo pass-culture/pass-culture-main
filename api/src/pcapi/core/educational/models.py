@@ -133,6 +133,17 @@ class InstitutionRuralLevel(enum.Enum):
     RURAL_AUTONOME_PEU_DENSE = "rural autonome peu dense"
 
 
+# Mapping from rurality level to distance in km
+PLAYLIST_RURALITY_MAX_DISTANCE_MAPPING = {
+    InstitutionRuralLevel.URBAIN_DENSE: 3,
+    InstitutionRuralLevel.URBAIN_DENSITE_INTERMEDIAIRE: 10,
+    InstitutionRuralLevel.RURAL_SOUS_FORTE_INFLUENCE_D_UN_POLE: 15,
+    InstitutionRuralLevel.RURAL_SOUS_FAIBLE_INFLUENCE_D_UN_POLE: 60,
+    InstitutionRuralLevel.RURAL_AUTONOME_PEU_DENSE: 60,
+    InstitutionRuralLevel.RURAL_AUTONOME_TRES_PEU_DENSE: 60,
+}
+
+
 class PlaylistType(enum.Enum):
     CLASSROOM = "Dans votre classe"
     LOCAL_OFFERER = "À proximité de l'établissement"
