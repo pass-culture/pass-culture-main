@@ -3629,7 +3629,7 @@ class GetEntrepriseInfoRcsTest(GetEndpointHelper):
         assert content == "Activité commerciale : Non"
 
     def test_get_rcs_info_deregistered(self, authenticated_client):
-        offerer = offerers_factories.OffererFactory(siren="030000099")
+        offerer = offerers_factories.OffererFactory(siren="030099000")
         url = url_for(self.endpoint, offerer_id=offerer.id)
 
         db.session.expire_all()

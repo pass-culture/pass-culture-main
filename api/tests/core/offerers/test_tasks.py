@@ -133,7 +133,7 @@ class CheckOffererIsActiveTest:
     def test_tag_inactive_offerer(self, mock_search_file, mock_append_to_spreadsheet, client, siren_caduc_tag):
         # Using TestingBackend:
         # SIREN makes offerer inactive (ends with 99), late for taxes (third digit is 9), SARL (fourth digit is 5)
-        offerer = offerers_factories.OffererFactory(siren="109500099")
+        offerer = offerers_factories.OffererFactory(siren="109599000")
 
         response = client.post(
             f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
@@ -196,7 +196,7 @@ class CheckOffererIsActiveTest:
     @override_features(ENABLE_CODIR_OFFERERS_REPORT=False)
     def test_reject_inactive_offerer_waiting_for_validation(self, client, siren_caduc_tag):
         # Using TestingBackend: SIREN makes offerer inactive (ends with 99), EI
-        offerer = offerers_factories.PendingOffererFactory(siren="100000099")
+        offerer = offerers_factories.PendingOffererFactory(siren="100099000")
         user_offerer = offerers_factories.UserNotValidatedOffererFactory(offerer=offerer)
 
         response = client.post(
