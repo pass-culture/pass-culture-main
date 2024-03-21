@@ -295,6 +295,7 @@ def test_serialize_venue():
         "has_at_least_one_bookable_offer": False,
         "date_created": venue.dateCreated.timestamp(),
         "postalCode": venue.postalCode,
+        "adress": venue.address,
     }
 
 
