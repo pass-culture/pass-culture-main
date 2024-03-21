@@ -47,7 +47,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
     try {
       await api.editVenue(
         venue.id,
-        serializeEditVenueBodyModel(values, !venue.siret)
+        serializeEditVenueBodyModel(values, !venue.siret, isOpeningHoursEnabled)
       )
 
       await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
