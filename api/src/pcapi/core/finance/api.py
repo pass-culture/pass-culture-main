@@ -3806,14 +3806,13 @@ def update_bank_account_venues_links(
                 )
 
 
-def create_finance_incident(
-    kind: models.IncidentType,
+def create_overpayment_finance_incident(
     bookings: list[bookings_models.Booking | educational_models.CollectiveBooking],
     amount: float | None = None,
     origin: str | None = None,
-) -> None:
+) -> models.FinanceIncident:
     incident = models.FinanceIncident(
-        kind=kind,
+        kind=models.IncidentType.OVERPAYMENT,
         status=models.IncidentStatus.CREATED,
         venueId=bookings[0].venueId,
         details={
@@ -3823,7 +3822,7 @@ def create_finance_incident(
         },
     )
     db.session.add(incident)
-    db.session.commit()
+    db.session.flush()
 
     booking_finance_incidents_to_create = []
     if isinstance(bookings[0], educational_models.CollectiveBooking):
@@ -3836,20 +3835,11 @@ def create_finance_incident(
             )
         )
     else:
-        stock_id = bookings[0].stockId if kind == models.IncidentType.COMMERCIAL_GESTURE.name and bookings else 0
         for booking in bookings:
             new_total_amount = decimal.Decimal(0)
-            if kind == models.IncidentType.COMMERCIAL_GESTURE.name:
-                # all bookings in a commercial gesture must be from the same stock therefore they all have the same
-                # amount.
-                new_total_amount = amount * booking.quantity
-
-                if booking.stockId != stock_id:
-                    raise exceptions.CommercialGestureOnMultipleStock()
-            else:
-                # Only total overpayment if multiple bookings are selected
-                if amount and len(bookings) == 1:
-                    new_total_amount = booking.total_amount - decimal.Decimal(amount)
+            # Only total overpayment if multiple bookings are selected
+            if amount and len(bookings) == 1:
+                new_total_amount = booking.total_amount - decimal.Decimal(amount)
 
             booking_finance_incidents_to_create.append(
                 models.BookingFinanceIncident(
@@ -3869,6 +3859,8 @@ def create_finance_incident(
     )
 
     db.session.commit()
+
+    return incident
 
 
 def _create_finance_events_from_incident(
