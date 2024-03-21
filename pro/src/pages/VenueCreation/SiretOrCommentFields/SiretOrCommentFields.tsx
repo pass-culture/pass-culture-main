@@ -16,7 +16,6 @@ export type SiretOrCommentInterface = {
   isCreatedEntity: boolean
   initialSiret?: string
   isToggleDisabled?: boolean
-  readOnly: boolean
   setIsFieldNameFrozen?: (isNameFrozen: boolean) => void
   // TODO Albéric: not sure why there are two states, could be refactored
   updateIsSiretValued: (isSiretValued: boolean) => void
@@ -29,7 +28,6 @@ export const SiretOrCommentFields = ({
   isCreatedEntity,
   isToggleDisabled = false,
   setIsFieldNameFrozen,
-  readOnly,
   updateIsSiretValued,
   setIsSiretValued,
   siren,
@@ -64,8 +62,7 @@ export const SiretOrCommentFields = ({
     if (
       !valideSiretLength(siret) ||
       !isSiretStartingWithSiren(siret, siren) ||
-      !isSiretSelected ||
-      readOnly
+      !isSiretSelected
     ) {
       setIsFieldNameFrozen && setIsFieldNameFrozen(false)
       return
@@ -120,7 +117,7 @@ export const SiretOrCommentFields = ({
           <Toggle
             label="Ce lieu possède un SIRET"
             isActiveByDefault={isSiretSelected}
-            isDisabled={readOnly || isToggleDisabled}
+            isDisabled={isToggleDisabled}
             handleClick={handleToggleClick}
           />
         </FormLayout.Row>
@@ -129,7 +126,6 @@ export const SiretOrCommentFields = ({
         <TextInput
           name="siret"
           label="SIRET du lieu"
-          disabled={readOnly}
           type="text"
           onChange={(e) => onSiretChange(e.target.value)}
         />

@@ -69,7 +69,6 @@ export const VenueCreationForm = ({
           <FormLayout.Row>
             <SiretOrCommentFields
               initialSiret={initialValues.siret}
-              readOnly={Boolean(initialValues.siret)}
               isToggleDisabled={false}
               isCreatedEntity
               setIsFieldNameFrozen={setIsFieldNameFrozen}

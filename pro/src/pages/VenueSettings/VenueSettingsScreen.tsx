@@ -157,9 +157,13 @@ export const VenueSettingsFormScreen = ({
       })
     }
   }
-
   const formValidationSchema = getValidationSchema(venue.isVirtual).concat(
-    generateSiretValidationSchema(venue.isVirtual, isSiretValued, offerer.siren)
+    generateSiretValidationSchema(
+      venue.isVirtual,
+      isSiretValued,
+      offerer.siren,
+      initialValues.siret
+    )
   )
 
   const formik = useFormik({

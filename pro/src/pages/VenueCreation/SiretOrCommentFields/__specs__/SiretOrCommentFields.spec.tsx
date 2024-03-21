@@ -74,7 +74,6 @@ describe('components | SiretOrCommentFields', () => {
     props = {
       isCreatedEntity: true,
       setIsFieldNameFrozen: setIsFieldNameFrozen,
-      readOnly: false,
       updateIsSiretValued: updateIsSiretValued,
       setIsSiretValued: setIsSiretValued,
       siren: '123456789',
