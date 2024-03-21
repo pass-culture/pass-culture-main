@@ -12,7 +12,7 @@ from pcapi.utils.health_checker import read_version_from_file
 
 
 if typing.TYPE_CHECKING:
-    from sentry_sdk._types import Event
+    from sentry_sdk.types import Event
 
 
 def ignore_flask_shell_event(event: "Event", _hint: dict[str, typing.Any]) -> "Event | None":
