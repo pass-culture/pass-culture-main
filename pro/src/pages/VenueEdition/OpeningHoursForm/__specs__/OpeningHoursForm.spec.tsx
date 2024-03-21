@@ -1,9 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Formik, Form } from 'formik'
+import * as yup from 'yup'
 
 import { setInitialFormValues } from 'pages/VenueEdition/setInitialFormValues'
 import { VenueEditionFormValues } from 'pages/VenueEdition/types'
+import { openingHoursValidationSchema } from 'pages/VenueEdition/validationSchema'
 import { SubmitButton } from 'ui-kit'
 import { defaultGetVenue } from 'utils/collectiveApiFactories'
 
@@ -17,7 +19,16 @@ const renderOpeningHoursForm = ({
     setInitialFormValues(venue)
 
   return render(
-    <Formik initialValues={initialValues} onSubmit={onSubmit}>
+    <Formik
+      initialValues={initialValues}
+      onSubmit={onSubmit}
+      validationSchema={yup.object().shape({
+        monday: yup.object().when('days', {
+          is: (days: string[]) => days.includes('monday'),
+          then: (schema) => schema.shape(openingHoursValidationSchema),
+        }),
+      })}
+    >
       {({ handleSubmit }) => (
         <Form onSubmit={handleSubmit}>
           <OpeningHoursForm />
@@ -76,36 +87,42 @@ describe('OpeningHoursForm', () => {
           afternoonStartingHour: '12:59',
           morningEndingHour: '12:37',
           morningStartingHour: '08:00',
+          isAfternoonOpen: true,
         },
         saturday: {
           afternoonEndingHour: '',
           afternoonStartingHour: '',
           morningEndingHour: '',
           morningStartingHour: '',
+          isAfternoonOpen: false,
         },
         sunday: {
           afternoonEndingHour: '',
           afternoonStartingHour: '',
           morningEndingHour: '',
           morningStartingHour: '',
+          isAfternoonOpen: false,
         },
         thursday: {
           afternoonEndingHour: '',
           afternoonStartingHour: '',
           morningEndingHour: '',
           morningStartingHour: '',
+          isAfternoonOpen: false,
         },
         tuesday: {
           afternoonEndingHour: '',
           afternoonStartingHour: '',
           morningEndingHour: '',
           morningStartingHour: '',
+          isAfternoonOpen: false,
         },
         wednesday: {
           afternoonEndingHour: '',
           afternoonStartingHour: '',
           morningEndingHour: '',
           morningStartingHour: '',
+          isAfternoonOpen: false,
         },
       }),
       expect.anything()
@@ -163,5 +180,44 @@ describe('OpeningHoursForm', () => {
     expect(screen.getAllByLabelText(/Horaire de fermeture 1/)[1]).toHaveValue(
       '10:02'
     )
+  })
+
+  it('should display errors', async () => {
+    renderOpeningHoursForm({})
+
+    await userEvent.click(screen.getByLabelText('Lundi'))
+    await userEvent.click(screen.getByText('Ajouter une plage horaire'))
+
+    await userEvent.click(screen.getByText('Submit'))
+
+    expect(
+      screen.getAllByText('Veuillez renseigner une heure de début')
+    ).toHaveLength(2)
+    expect(
+      screen.getAllByText('Veuillez renseigner une heure de fin')
+    ).toHaveLength(2)
+
+    await userEvent.type(
+      screen.getByLabelText(/Horaire d’ouverture 1/),
+      '18:00'
+    )
+    await userEvent.type(
+      screen.getByLabelText(/Horaire de fermeture 1/),
+      '10:30'
+    )
+    await userEvent.type(
+      screen.getByLabelText(/Horaire d’ouverture 2/),
+      '18:00'
+    )
+    await userEvent.type(
+      screen.getByLabelText(/Horaire de fermeture 2/),
+      '10:00'
+    )
+
+    expect(
+      screen.getAllByText(
+        "L'heure de fin doit être supérieure à l'heure de début"
+      )
+    ).toHaveLength(2)
   })
 })
