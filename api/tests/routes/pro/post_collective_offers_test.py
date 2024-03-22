@@ -58,7 +58,10 @@ def assert_offer_values(offer, data, user, offerer):
     # if there is no booking emails and the offer is build from a
     # template, the booking emails are set using the contact email
     if not data["bookingEmails"] and data["templateId"]:
-        assert offer.bookingEmails == [data["contactEmail"]]
+        if data["contactEmail"]:
+            assert offer.bookingEmails == [data["contactEmail"]]
+        else:
+            assert offer.bookingEmails == []
     else:
         assert set(offer.bookingEmails) == set(data["bookingEmails"])
     assert offer.subcategoryId == data["subcategoryId"]
@@ -146,6 +149,7 @@ class Returns200Test:
     def test_create_offer_from_template_no_domains_nor_intervention_area_nor_booking_emails(self, client):
         """Ensure that if a template id is set, domains, intervention
         area and booking emails can be missing
+        Also ensures the contact mail/phone can be missing
         """
         # Given
         venue = offerers_factories.VenueFactory()
@@ -164,11 +168,79 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         # Then
-        assert response.status_code == 201
+        assert response.status_code == 201, response.json
 
         offer_id = response.json["id"]
         offer = CollectiveOffer.query.get(offer_id)
 
+        assert_offer_values(offer, data, user, offerer)
+
+    def test_create_offer_from_template_no_contact_email(self, client):
+        """Ensure that if a template id is set, domains, intervention
+        area and booking emails can be missing
+        Also ensures the contact mail/phone can be missing
+        """
+        # Given
+        venue = offerers_factories.VenueFactory()
+        template = educational_factories.CollectiveOfferTemplateFactory(
+            venue=venue, contactEmail=None, contactPhone=None
+        )
+        offerer = venue.managingOfferer
+        user = offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com").user
+
+        # When
+        data = {
+            **base_offer_payload(venue=venue, domains=[], template_id=template.id),
+            "contactEmail": "",
+            "contactPhone": "",
+        }
+
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        # Then
+        assert response.status_code == 201, response.json
+
+        offer_id = response.json["id"]
+        offer = CollectiveOffer.query.get(offer_id)
+
+        # Alter contactEmail because we expect None although we sent ""
+        data["contactEmail"] = None
+        assert_offer_values(offer, data, user, offerer)
+
+    def test_create_offer_from_template_no_contact_email_nor_booking_emails(self, client):
+        """Ensure that if a template id is set, domains, intervention
+        area and booking emails can be missing
+        Also ensures the contact mail/phone can be missing
+        """
+        # Given
+        venue = offerers_factories.VenueFactory()
+        template = educational_factories.CollectiveOfferTemplateFactory(
+            venue=venue, contactEmail=None, contactPhone=None
+        )
+        offerer = venue.managingOfferer
+        user = offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com").user
+
+        # When
+        data = {
+            **base_offer_payload(venue=venue, domains=[], template_id=template.id),
+            "interventionArea": [],
+            "bookingEmails": [],
+            "contactEmail": "",
+            "contactPhone": "",
+        }
+
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        # Then
+        assert response.status_code == 201, response.json
+
+        offer_id = response.json["id"]
+        offer = CollectiveOffer.query.get(offer_id)
+
+        # Alter contactEmail because we expect None although we sent ""
+        data["contactEmail"] = None
         assert_offer_values(offer, data, user, offerer)
 
     @override_features(WIP_ENABLE_MARSEILLE=True)

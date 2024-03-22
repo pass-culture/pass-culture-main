@@ -13,7 +13,7 @@ import type { OfferVenueResponse } from './OfferVenueResponse';
 import type { StudentLevels } from './StudentLevels';
 export type CollectiveOfferResponseModel = {
   audioDisabilityCompliant?: boolean | null;
-  contactEmail: string;
+  contactEmail?: string | null;
   contactPhone?: string | null;
   description?: string | null;
   domains: Array<OfferDomain>;
