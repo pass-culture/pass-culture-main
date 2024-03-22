@@ -21,7 +21,7 @@ const NewNavReview = () => {
         />
         <div>
           <span className={styles['new-nav-review-bold-text']}>
-            Vous êtes sur la nouvelle version !
+            Vous êtes sur la nouvelle interface !
           </span>{' '}
           Dites-nous ce que vous en pensez pour nous aider à l’améliorer.
         </div>

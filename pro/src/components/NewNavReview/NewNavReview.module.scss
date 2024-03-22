@@ -10,7 +10,7 @@
     justify-content: center;
     align-items: center;
     padding: rem.torem(16px) rem.torem(24px);
-    border-bottom: solid rem.torem(1px) colors.$grey-medium;
+    border: solid rem.torem(1px) colors.$grey-medium;
     margin-top: size.$top-menu-height;
 
     @media (min-width: size.$tablet) {
@@ -19,7 +19,7 @@
   }
 
   &-icon {
-    color: colors.$secondary;
+    color: colors.$secondary-light;
     min-width: rem.torem(20px);
   }
 
