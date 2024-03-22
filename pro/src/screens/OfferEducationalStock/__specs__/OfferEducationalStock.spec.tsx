@@ -209,4 +209,20 @@ describe('OfferEducationalStock', () => {
       screen.getByText("L'heure doit être postérieure à l'heure actuelle")
     ).toBeInTheDocument()
   })
+
+  it('should have a cancel button instead of the previous step button when editing the offer', () => {
+    const testProps: OfferEducationalStockProps = {
+      ...defaultProps,
+      mode: Mode.EDITION,
+    }
+
+    renderWithProviders(<OfferEducationalStock {...testProps} />)
+    expect(
+      screen.queryByRole('button', { name: /Étape suivante/ })
+    ).not.toBeInTheDocument()
+
+    expect(
+      screen.queryByRole('button', { name: 'Annuler et quitter' })
+    ).not.toBeInTheDocument()
+  })
 })
