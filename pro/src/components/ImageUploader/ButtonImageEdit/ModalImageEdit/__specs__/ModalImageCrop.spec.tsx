@@ -4,7 +4,7 @@ import React from 'react'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import ModalImageCrop from '../ModalImageCrop'
+import { ModalImageCrop } from '../ModalImageCrop'
 
 const mockReplaceImage = vi.fn()
 const defaultProps = {

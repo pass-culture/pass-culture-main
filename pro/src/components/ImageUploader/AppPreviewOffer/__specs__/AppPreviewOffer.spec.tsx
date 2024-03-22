@@ -3,7 +3,7 @@ import React from 'react'
 
 import { RootState } from 'store/rootReducer'
 
-import AppPreviewOffer, { AppPreviewOfferProps } from '../AppPreviewOffer'
+import { AppPreviewOffer, AppPreviewOfferProps } from '../AppPreviewOffer'
 
 interface RenderAppPreviewOfferProps {
   storeOverride?: Partial<RootState>

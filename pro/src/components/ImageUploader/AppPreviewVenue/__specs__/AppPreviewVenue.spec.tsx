@@ -3,7 +3,7 @@ import React from 'react'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import AppPreviewVenue, { AppPreviewVenueProps } from '../AppPreviewVenue'
+import { AppPreviewVenue, AppPreviewVenueProps } from '../AppPreviewVenue'
 
 const renderAppPreviewVenue = (props: AppPreviewVenueProps) =>
   renderWithProviders(<AppPreviewVenue {...props} />)

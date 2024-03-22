@@ -9,7 +9,7 @@ interface ModalImageDeleteProps {
   onDismiss: () => void
 }
 
-const ModalImageDelete = ({
+export const ModalImageDelete = ({
   isLoading,
   onConfirm,
   onDismiss,
@@ -28,5 +28,3 @@ const ModalImageDelete = ({
     </ConfirmDialog>
   )
 }
-
-export default ModalImageDelete

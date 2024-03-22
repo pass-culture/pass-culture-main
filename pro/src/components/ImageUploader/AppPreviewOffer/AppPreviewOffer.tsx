@@ -12,7 +12,9 @@ export interface AppPreviewOfferProps {
   imageUrl: string
 }
 
-const AppPreviewOffer = ({ imageUrl }: AppPreviewOfferProps): JSX.Element => (
+export const AppPreviewOffer = ({
+  imageUrl,
+}: AppPreviewOfferProps): JSX.Element => (
   <ImagePreviewsWrapper>
     <ImagePreview title="Page d’accueil">
       <img
@@ -47,5 +49,3 @@ const AppPreviewOffer = ({ imageUrl }: AppPreviewOfferProps): JSX.Element => (
     </ImagePreview>
   </ImagePreviewsWrapper>
 )
-
-export default AppPreviewOffer

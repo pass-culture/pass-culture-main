@@ -5,7 +5,7 @@ import React from 'react'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { RootState } from 'store/rootReducer'
 
-import ButtonAppPreview, { ButtonAppPreviewProps } from '../ButtonAppPreview'
+import { ButtonAppPreview, ButtonAppPreviewProps } from '../ButtonAppPreview'
 
 interface RenderButtonAppPreviewProps {
   storeOverride?: Partial<RootState>

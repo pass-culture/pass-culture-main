@@ -1,4 +1,4 @@
-import { UploadImageValues } from 'components/ImageUploader/ButtonImageEdit'
+import { UploadImageValues } from 'components/ImageUploader/ButtonImageEdit/types'
 import { IndividualOfferImage } from 'core/Offers/types'
 
 export const buildInitialValues = (

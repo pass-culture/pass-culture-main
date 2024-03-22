@@ -1,5 +1,5 @@
 import { EacFormat, OfferStatus } from 'apiClient/v1'
-import { CropParams } from 'components/ImageUploader'
+import { CropParams } from 'components/ImageUploader/ButtonImageEdit/types'
 import { CollectiveOfferStatus } from 'core/OfferEducational'
 
 import { ALL_FORMATS, ALL_STATUS } from './constants'

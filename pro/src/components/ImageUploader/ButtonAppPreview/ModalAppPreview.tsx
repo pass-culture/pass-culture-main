@@ -1,9 +1,10 @@
 import React from 'react'
 
 import DialogBox from 'components/DialogBox'
-import { AppPreviewOffer } from 'components/ImageUploader/AppPreviewOffer'
-import { AppPreviewVenue } from 'components/ImageUploader/AppPreviewVenue'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
+
+import { AppPreviewOffer } from '../AppPreviewOffer/AppPreviewOffer'
+import { AppPreviewVenue } from '../AppPreviewVenue/AppPreviewVenue'
 
 import style from './ModalAppPreview.module.scss'
 
@@ -14,7 +15,7 @@ interface ModalAppPreviewProps {
   children?: never
 }
 
-const ModalAppPreview = ({
+export const ModalAppPreview = ({
   mode,
   hideModal,
   imageUrl,
@@ -43,5 +44,3 @@ const ModalAppPreview = ({
     </DialogBox>
   )
 }
-
-export default ModalAppPreview

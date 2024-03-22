@@ -31,7 +31,7 @@ interface ModalImageEditProps {
 }
 // FIXME: find a way to test FileReader
 /* istanbul ignore next: DEBT, TO FIX */
-const ModalImageEdit = ({
+export const ModalImageEdit = ({
   mode,
   onDismiss,
   onImageUpload,
@@ -173,5 +173,3 @@ const ModalImageEdit = ({
     </DialogBox>
   )
 }
-
-export default ModalImageEdit

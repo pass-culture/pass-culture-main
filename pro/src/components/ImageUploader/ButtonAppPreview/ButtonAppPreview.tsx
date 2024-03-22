@@ -13,7 +13,7 @@ export interface ButtonAppPreviewProps {
   imageUrl: string
 }
 
-const ButtonAppPreview = ({
+export const ButtonAppPreview = ({
   imageUrl,
   mode,
 }: ButtonAppPreviewProps): JSX.Element => {
@@ -39,5 +39,3 @@ const ButtonAppPreview = ({
     </>
   )
 }
-
-export default ButtonAppPreview

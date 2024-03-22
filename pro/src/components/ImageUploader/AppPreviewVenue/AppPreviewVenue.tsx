@@ -13,7 +13,9 @@ export interface AppPreviewVenueProps {
   imageUrl: string
 }
 
-const AppPreviewVenue = ({ imageUrl }: AppPreviewVenueProps): JSX.Element => {
+export const AppPreviewVenue = ({
+  imageUrl,
+}: AppPreviewVenueProps): JSX.Element => {
   const notification = useNotification()
 
   const showError = useCallback(() => {
@@ -57,5 +59,3 @@ const AppPreviewVenue = ({ imageUrl }: AppPreviewVenueProps): JSX.Element => {
     </ImagePreviewsWrapper>
   )
 }
-
-export default AppPreviewVenue
