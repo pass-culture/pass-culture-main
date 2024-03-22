@@ -3,7 +3,11 @@ from pcapi.core.educational.adage_backends.serialize import AdageCollectiveReque
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingResponse
 
 
-adage_requests: list[dict[str, AdageCollectiveOffer | AdageCollectiveRequest | EducationalBookingResponse | str]] = []
+AdageRequestItem = (
+    str | AdageCollectiveOffer | AdageCollectiveRequest | EducationalBookingResponse | dict[str, int | str | None]
+)
+
+adage_requests: list[dict[str, AdageRequestItem | None]] = []
 
 
 def reset_requests() -> None:
