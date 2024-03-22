@@ -27,14 +27,17 @@ interface ModalImageEditProps {
   mode: UploaderModeEnum
   onDismiss: () => void
   onImageUpload: (values: OnImageUploadArgs) => void
+  onImageDelete: () => void
   initialValues?: UploadImageValues
 }
+
 // FIXME: find a way to test FileReader
 /* istanbul ignore next: DEBT, TO FIX */
 export const ModalImageEdit = ({
   mode,
   onDismiss,
   onImageUpload,
+  onImageDelete,
   initialValues = {},
 }: ModalImageEditProps): JSX.Element | null => {
   const [isReady, setIsReady] = useState<boolean>(false)
@@ -154,6 +157,7 @@ export const ModalImageEdit = ({
           }
           onEditedImageSave={onEditedImageSave}
           onReplaceImage={onReplaceImage}
+          onImageDelete={onImageDelete}
           onSetCredit={setCredit}
           saveInitialPosition={setEditorInitialPosition}
           mode={mode}
