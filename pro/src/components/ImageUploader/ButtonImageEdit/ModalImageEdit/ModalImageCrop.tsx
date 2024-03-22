@@ -12,6 +12,7 @@ import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { useGetImageBitmap } from 'hooks/useGetBitmap'
 import useNotification from 'hooks/useNotification'
 import fullDownloadIcon from 'icons/full-download.svg'
+import fullTrashIcon from 'icons/full-trash.svg'
 import { Button, Divider, SubmitButton, TextInput } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -24,6 +25,7 @@ interface ModalImageCropProps {
   onSetCredit: (credit: string) => void
   children?: never
   onReplaceImage: () => void
+  onImageDelete: () => void
   initialPosition?: Position
   initialScale?: number
   saveInitialPosition: (position: Position) => void
@@ -39,6 +41,7 @@ export interface ImageEditorFormValues {
 
 export const ModalImageCrop = ({
   onReplaceImage,
+  onImageDelete,
   image,
   credit,
   onSetCredit,
@@ -160,6 +163,14 @@ export const ModalImageCrop = ({
                   variant={ButtonVariant.TERNARY}
                 >
                   Remplacer l’image
+                </Button>
+
+                <Button
+                  icon={fullTrashIcon}
+                  onClick={onImageDelete}
+                  variant={ButtonVariant.TERNARY}
+                >
+                  Supprimer l’image
                 </Button>
               </div>
             </div>
