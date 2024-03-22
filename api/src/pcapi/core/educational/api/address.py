@@ -1,6 +1,8 @@
 from datetime import datetime
 import typing
 
+import sqlalchemy as sa
+
 from pcapi.core.educational import models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
@@ -25,15 +27,19 @@ def get_venue_address_by_adage_id(adage_id: str) -> models.AdageVenueAddress | N
     return models.AdageVenueAddress.query.filter_by(adageId=adage_id).one_or_none()
 
 
-def unlink_unknown_venue_addresses(known_adage_ids: typing.Collection[str]) -> int:
-    """Find unknown AdageVenueAddress (adageId not in known_adage_ids)
-    and remove their adageId and adageInscriptionDate.
+def unlink_deactivated_venue_addresses(deactivated_adage_venues_ids: typing.Mapping[str, int]) -> int:
+    """Find deactivated AdageVenueAddress rows and remove their adageId
+    and adageInscriptionDate.
     """
-    count = models.AdageVenueAddress.query.filter(models.AdageVenueAddress.adageId.not_in(known_adage_ids)).update(
-        {"adageId": None, "adageInscriptionDate": None}, synchronize_session="evaluate"
-    )
+    adage_ids = set(deactivated_adage_venues_ids.keys())
+    venue_ids = set(deactivated_adage_venues_ids.values())
 
-    return count
+    return models.AdageVenueAddress.query.filter(
+        sa.or_(
+            models.AdageVenueAddress.adageId.in_(adage_ids),
+            models.AdageVenueAddress.venueId.in_(venue_ids),
+        )
+    ).update({"adageId": None, "adageInscriptionDate": None}, synchronize_session="evaluate")
 
 
 def upsert_venues_addresses(adage_ids_venues: typing.Mapping[str, int]) -> None:

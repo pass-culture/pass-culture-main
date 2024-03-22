@@ -1,4 +1,6 @@
 from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
 from unittest.mock import patch
 
 from pydantic.v1 import parse_obj_as
@@ -68,9 +70,6 @@ def test_synchronize_adage_ids_on_venues(db_session):
     venue5_data = {**BASE_DATA, "id": adage_id4, "venueId": venue5.id, "synchroPass": 1, "actif": None}
     venue6_data = {**BASE_DATA, "id": adage_id3, "venueId": venue6.id, "synchroPass": 0, "actif": None}
 
-    email1 = get_emails_by_venue(venue1)
-    email2 = get_emails_by_venue(venue2)
-
     with requests_mock.Mocker() as request_mock:
         request_mock.get(
             "https://adage-api-url/v1/partenaire-culturel",
@@ -82,6 +81,13 @@ def test_synchronize_adage_ids_on_venues(db_session):
         )
         with patch("pcapi.core.educational.api.adage.send_eac_offerer_activation_email") as mock_activation_mail:
             educational_api_adage.synchronize_adage_ids_on_venues()
+
+    db.session.refresh(venue1)
+    db.session.refresh(venue2)
+    db.session.refresh(venue3)
+    db.session.refresh(venue4)
+    db.session.refresh(venue5)
+    db.session.refresh(venue6)
 
     # venue1 had not adageId and obtained two after synchronization
     # (venues merged)
@@ -130,8 +136,15 @@ def test_synchronize_adage_ids_on_venues(db_session):
     assert {ava.adageId for ava in venue6.adage_addresses} == {None}
     assert {ava.adageInscriptionDate for ava in venue6.adage_addresses} == {None}
 
-    assert set(i.args[0] for i in mock_activation_mail.call_args_list) == {venue1, venue2}
-    assert set(str(i.args[1]) for i in mock_activation_mail.call_args_list) == {str(list(email1)), str(list(email2))}
+    expected_emails = get_emails_by_venue(venue1) | get_emails_by_venue(venue2)
+    expected_venues = {venue1.id, venue2.id}
+
+    calls_args = mock_activation_mail.call_args_list
+    called_venues = {call[0][0].id for call in calls_args}
+    called_emails = {call[0][1][0] for call in calls_args}
+
+    assert called_emails == expected_emails
+    assert called_venues == expected_venues
 
 
 @override_settings(
@@ -166,6 +179,8 @@ def test_synchronize_adage_ids_on_venues_with_unknon_venue(db_session):
         )
         with patch("pcapi.core.educational.api.adage.send_eac_offerer_activation_email"):
             educational_api_adage.synchronize_adage_ids_on_venues()
+
+    db.session.refresh(venue)
 
     # venue had not adageId and obtained two after synchronization
     # (venues merged)
@@ -311,3 +326,60 @@ def test_synchronize_adage_ids_on_offerers_for_tricky_case(db_session):
     db.session.commit()
 
     assert venue1.managingOfferer.allowedOnAdage
+
+
+@override_settings(
+    ADAGE_API_URL="https://adage-api-url",
+    ADAGE_API_KEY="adage-api-key",
+    ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
+)
+@patch("pcapi.core.educational.api.adage.send_eac_offerer_activation_email")
+def test_synchronize_adage_ids_on_venues_with_timestamp_filter(mock_send_eac_email, db_session):
+    venue1 = offerers_factories.VenueFactory()
+    venue2 = offerers_factories.VenueFactory(adageId="11", adageInscriptionDate=datetime.utcnow())
+
+    adage_id1 = 128028
+    adage_id2 = 128029
+
+    yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).isoformat()  # pylint: disable=datetime-now
+    a_month_ago = (datetime.now(timezone.utc) - timedelta(days=31)).isoformat()  # pylint: disable=datetime-now
+
+    venue1_data = {**BASE_DATA, "id": adage_id1, "venueId": venue1.id, "dateModification": yesterday}
+    venue2_data = {**BASE_DATA, "id": adage_id2, "venueId": venue2.id, "dateModification": a_month_ago}
+
+    with requests_mock.Mocker() as request_mock:
+        request_mock.get(
+            "https://adage-api-url/v1/partenaire-culturel",
+            request_headers={
+                "X-omogen-api-key": "adage-api-key",
+            },
+            status_code=200,
+            json=[venue1_data, venue2_data],
+        )
+
+        from pcapi.core.educational.adage_backends.adage import AdageHttpClient
+
+        orig_get_cultural_partners = AdageHttpClient().get_cultural_partners
+        rows = orig_get_cultural_partners()
+        mocked_cultural_partners = [next(row for row in rows if row["venueId"] == venue1.id)]
+
+        mock_path = "pcapi.core.educational.api.adage.adage_client"
+        with patch(mock_path) as mock_adage_client:
+            mock_adage_client.get_cultural_partners.return_value = mocked_cultural_partners
+            educational_api_adage.synchronize_adage_ids_on_venues()
+
+    db.session.refresh(venue1)
+    db.session.refresh(venue2)
+
+    # venue1 had not adageId and obtained one after synchronization
+    # -> a new AdageVenueAddress must have been created
+    assert venue1.adageId == str(adage_id1)
+    assert venue1.adageInscriptionDate is not None
+    assert {ava.adageId for ava in venue1.adage_addresses} == {str(adage_id1)}
+    assert {ava.adageInscriptionDate.date() for ava in venue1.adage_addresses} == {venue1.adageInscriptionDate.date()}
+
+    # venue2 had not adageId and obtained none after synchronization
+    # -> it has been (arbitrarily) ignored because of its `dateModification`
+    assert venue2.adageId == "11"
+    assert venue2.adageInscriptionDate is not None
+    assert len(venue2.adage_addresses) == 1

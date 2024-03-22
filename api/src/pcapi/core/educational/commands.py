@@ -19,6 +19,7 @@ from pcapi.core.educational.utils import create_adage_jwt_fake_valid_token
 from pcapi.repository import transaction
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.utils.blueprint import Blueprint
+import pcapi.utils.date as date_utils
 
 
 blueprint = Blueprint(__name__, __name__)
@@ -125,16 +126,19 @@ def import_deposit_csv(path: str, year: int, ministry: str, conflict: str, final
     default=False,
     help="Activate debugging (add logs)",
 )
+@click.option("--with-timestamp", type=bool, is_flag=True, default=False, help="Add timestamp (couple days ago)")
 @log_cron_with_transaction
-def synchronize_venues_from_adage_cultural_partners(debug: bool = False) -> None:
-    adage_api.synchronize_adage_ids_on_venues(debug)
+def synchronize_venues_from_adage_cultural_partners(debug: bool = False, with_timestamp: bool = False) -> None:
+    timestamp = date_utils.days_ago_timestamp(2) if with_timestamp else None
+    adage_api.synchronize_adage_ids_on_venues(debug=debug, timestamp=timestamp)
 
 
 @blueprint.cli.command("synchronize_offerers_from_adage_cultural_partners")
-@log_cron_with_transaction
-def synchronize_offerers_from_adage_cultural_partners() -> None:
+@click.option("--with-timestamp", type=bool, is_flag=True, default=False, help="Add timestamp (couple days ago)")
+def synchronize_offerers_from_adage_cultural_partners(with_timestamp: bool = False) -> None:
+    timestamp = date_utils.days_ago_timestamp(2) if with_timestamp else None
     with transaction():
-        adage_cultural_partners = adage_api.get_cultural_partners()
+        adage_cultural_partners = adage_api.get_cultural_partners(timestamp=timestamp)
         adage_api.synchronize_adage_ids_on_offerers(adage_cultural_partners.partners)
 
 

@@ -1,6 +1,8 @@
 from datetime import date
 from datetime import datetime
 from datetime import time
+from datetime import timedelta
+from datetime import timezone as tz
 from zoneinfo import ZoneInfo
 
 from babel.dates import format_date
@@ -209,3 +211,9 @@ def numranges_to_readble_str(numranges: list[NumericRange] | None) -> str:
     if numranges is None:
         return ""
     return ", ".join(f"{int_to_time(int(numrange.lower))}-{int_to_time(int(numrange.upper))}" for numrange in numranges)
+
+
+def days_ago_timestamp(days: int) -> int:
+    """Get a timestamp from a date `days` ago"""
+    days_ago = datetime.now(tz.utc) - timedelta(days=2)  # pylint: disable=datetime-now
+    return int(days_ago.timestamp())
