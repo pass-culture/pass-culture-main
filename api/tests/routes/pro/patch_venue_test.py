@@ -384,14 +384,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert len(venue.action_history) == 1
 
-        tuesday_opening_hours = next(
-            (
-                opening_hours["TUESDAY"]
-                for opening_hours in response.json["venueOpeningHours"]
-                if "TUESDAY" in opening_hours
-            ),
-            None,
-        )
+        tuesday_opening_hours = response.json["venueOpeningHours"].get("TUESDAY")
         assert tuesday_opening_hours[0] == {"open": "10:00", "close": "13:00"}
         assert tuesday_opening_hours[1] == {"open": "14:00", "close": "19:30"}
 
