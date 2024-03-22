@@ -62,7 +62,7 @@ export type GetVenueResponseModel = {
   siret?: string | null;
   timezone: string;
   venueLabelId?: number | null;
-  venueOpeningHours?: Array<Record<string, any>> | null;
+  venueOpeningHours?: Record<string, any> | null;
   venueTypeCode: VenueTypeCode;
   visualDisabilityCompliant?: boolean | null;
   withdrawalDetails?: string | null;

@@ -721,16 +721,19 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
         return self.registration.target if self.registration else None
 
     @property
-    def opening_days(self) -> list[dict]:
-        opening_days = []
+    def opening_days(self) -> dict | None:
+        if not self.openingHours:
+            return None
 
+        opening_days = {}
         for opening_hours in self.openingHours:
             timespan_list = (
                 [{"open": start, "close": end} for start, end in numranges_to_timespan_str(opening_hours.timespan)]
                 if opening_hours.timespan
                 else None
             )
-            opening_days.append({opening_hours.weekday.value: timespan_list})
+            opening_days[opening_hours.weekday.value] = timespan_list
+
         return opening_days
 
 
