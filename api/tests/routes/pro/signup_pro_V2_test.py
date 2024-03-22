@@ -1,10 +1,16 @@
 from dataclasses import asdict
+from datetime import datetime
 
 import pytest
+from sqlalchemy.orm import joinedload
 
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.offerers.factories import OffererInvitationFactory
+from pcapi.core.testing import override_features
+from pcapi.core.users.factories import ProFactory
+from pcapi.core.users.factories import UserProNewNavStateFactory
 from pcapi.core.users.models import User
 
 
@@ -58,6 +64,46 @@ class Returns204Test:
         assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0]["To"] == user.email
         assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.EMAIL_VALIDATION_TO_PRO.value)
+
+    @override_features(WIP_ENABLE_NEW_NAV_AB_TEST=True)
+    def test_user_inherit_new_nav_by_id_repartition_for_ab_test(self, client):
+        data = BASE_DATA_PRO.copy()
+        emails = ["user1@example.com", "user2@example.com"]
+        for email in emails:
+            response = client.post("/v2/users/signup/pro", json=data | {"email": email})
+            assert response.status_code == 204
+        users = User.query.options(joinedload(User.pro_new_nav_state)).filter(User.pro_new_nav_state.has()).all()
+        assert len(users) == 1
+        assert users[0].pro_new_nav_state.eligibilityDate is None
+        assert users[0].pro_new_nav_state.newNavDate is not None
+
+    @override_features(WIP_ENABLE_NEW_NAV_AB_TEST=True)
+    def test_user_inherit_new_nav_for_inviter_ab_test(self, client):
+        """Test the new navigation activation at creation. Only the newNavDate is set
+        The eligibilityDate is used to distinguish between the beta test dans the A/B test so It should only be set manually
+        """
+        inviter_with_new_nav = UserProNewNavStateFactory(newNavDate=datetime.utcnow()).user
+        invitation_with_new_nav = OffererInvitationFactory(user=inviter_with_new_nav)
+        inviter_with_old_nav = UserProNewNavStateFactory(newNavDate=None).user
+        invitation_with_old_nav = OffererInvitationFactory(user=inviter_with_old_nav)
+        inviter_without_nav_state = ProFactory()
+        invitation_without_nav_state = OffererInvitationFactory(user=inviter_without_nav_state)
+        data = BASE_DATA_PRO.copy()
+        response = client.post("/v2/users/signup/pro", json=data | {"email": invitation_with_new_nav.email})
+        assert response.status_code == 204
+        user_invited = User.query.filter_by(email=invitation_with_new_nav.email).one()
+        assert user_invited.pro_new_nav_state.eligibilityDate is None
+        assert user_invited.pro_new_nav_state.newNavDate is not None
+
+        response = client.post("/v2/users/signup/pro", json=data | {"email": invitation_with_old_nav.email})
+        assert response.status_code == 204
+        user_invited = User.query.filter_by(email=invitation_with_old_nav.email).one()
+        assert user_invited.pro_new_nav_state is None
+
+        response = client.post("/v2/users/signup/pro", json=data | {"email": invitation_without_nav_state.email})
+        assert response.status_code == 204
+        user_invited = User.query.filter_by(email=invitation_without_nav_state.email).one()
+        assert user_invited.pro_new_nav_state is None
 
     def when_successful_and_mark_pro_user_as_no_cultural_survey_needed(self, client):
         data = BASE_DATA_PRO.copy()

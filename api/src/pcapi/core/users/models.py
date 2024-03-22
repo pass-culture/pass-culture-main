@@ -885,6 +885,7 @@ class UserProNewNavState(PcObject, Base, Model):
         nullable=False,
     )
     user: User = orm.relationship(User, foreign_keys=[userId], back_populates="pro_new_nav_state", uselist=False)
-
+    # If set, it means that the user can choose to switch to the new nav from that date. Otherwise, they must stay on the old nav.
     eligibilityDate: datetime = sa.Column(sa.DateTime, nullable=True)
+    # If set, it means that the user has switched to the new nav at that date. Otherwise, it means that they are still on the old nav
     newNavDate: datetime = sa.Column(sa.DateTime, nullable=True)
