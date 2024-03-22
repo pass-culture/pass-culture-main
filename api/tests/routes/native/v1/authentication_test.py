@@ -395,7 +395,7 @@ class SSOSigninTest:
 
     @patch("pcapi.connectors.google_oauth.get_google_user")
     @override_features(WIP_ENABLE_GOOGLE_SSO=True)
-    def test_single_sign_on_validates_email(self, mocked_google_oauth, client, caplog):
+    def test_single_sign_on_validates_email_and_deletes_password(self, mocked_google_oauth, client, caplog):
         user = users_factories.UserFactory(email=self.valid_google_user.email, isEmailValidated=False)
         oauth_state_token = token_utils.UUIDToken.create(
             token_utils.TokenType.OAUTH_STATE, users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME
@@ -409,6 +409,7 @@ class SSOSigninTest:
 
         assert response.status_code == 200, response.json
         assert user.isEmailValidated
+        assert user.password is None
 
     @patch("pcapi.connectors.google_oauth.get_google_user")
     @override_features(WIP_ENABLE_GOOGLE_SSO=True)

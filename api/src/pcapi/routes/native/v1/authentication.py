@@ -273,6 +273,10 @@ def google_auth(body: authentication.GoogleSigninRequest) -> authentication.Sign
 
     with transaction():
         if not user.isEmailValidated:
+            # An account registered with a password and with its email not validated is a symptom
+            # of an account pre-hijacking attack waiting for an email validation. To prevent this
+            # we disable the email + password login when a SSO is enabled.
+            user.password = None
             user.isEmailValidated = True
 
         if not single_sign_on:
