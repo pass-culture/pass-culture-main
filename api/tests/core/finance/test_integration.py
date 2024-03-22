@@ -68,7 +68,7 @@ def test_integration_full_workflow_new_journey(css_font_http_request_mock):
     venue = offerers_factories.VenueFactory(pricing_point="self")
     bank_account = factories.BankAccountFactory(offerer=venue.managingOfferer)
     offerers_factories.VenueBankAccountLinkFactory(
-        venue=venue, bankAccount=bank_account, timespan=(datetime.datetime.utcnow(),)
+        venue=venue, bankAccount=bank_account, timespan=(datetime.datetime.utcnow() - datetime.timedelta(days=10),)
     )
     booking = bookings_factories.BookingFactory(stock__offer__venue=venue)
 
