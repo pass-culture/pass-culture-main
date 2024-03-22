@@ -174,7 +174,7 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
     venue: OfferVenueResponse
     students: list[educational_models.StudentLevels]
     offerVenue: CollectiveOfferOfferVenue
-    contactEmail: str
+    contactEmail: str | None
     contactPhone: str | None
     durationMinutes: int | None
     offerId: int | None

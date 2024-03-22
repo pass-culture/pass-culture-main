@@ -340,7 +340,7 @@ class CollectiveOffer(
         "CollectiveStock", back_populates="collectiveOffer", uselist=False
     )
 
-    contactEmail: str = sa.Column(sa.String(120), nullable=False)
+    contactEmail: str | None = sa.Column(sa.String(120), nullable=True)
 
     contactPhone: str | None = sa.Column(sa.Text, nullable=True)
 
