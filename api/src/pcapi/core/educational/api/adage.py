@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from datetime import datetime
 from functools import partial
 import json
@@ -5,6 +6,7 @@ import logging
 import typing
 
 from pydantic.v1 import parse_obj_as
+import sqlalchemy as sa
 
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import models as educational_models
@@ -35,7 +37,9 @@ def find_collective_bookings_for_adage(
     )
 
 
-def get_cultural_partners(*, force_update: bool = False) -> venues_serialize.AdageCulturalPartners:
+def get_cultural_partners(
+    *, timestamp: int | None = None, force_update: bool = False
+) -> venues_serialize.AdageCulturalPartners:
     CULTURAL_PARTNERS_CACHE_KEY = "api:adage_cultural_partner:cache"
     CULTURAL_PARTNERS_CACHE_TIMEOUT = 24 * 60 * 60  # 24h in seconds
 
@@ -43,13 +47,17 @@ def get_cultural_partners(*, force_update: bool = False) -> venues_serialize.Ada
         adage_data = adage_client.get_cultural_partners()
         return json.dumps(adage_data)
 
-    cultural_partners_json = get_from_cache(
-        key_template=CULTURAL_PARTNERS_CACHE_KEY,
-        retriever=_get_cultural_partners,
-        expire=CULTURAL_PARTNERS_CACHE_TIMEOUT,
-        return_type=str,
-        force_update=force_update,
-    )
+    if not timestamp:
+        cultural_partners_json = get_from_cache(
+            key_template=CULTURAL_PARTNERS_CACHE_KEY,
+            retriever=_get_cultural_partners,
+            expire=CULTURAL_PARTNERS_CACHE_TIMEOUT,
+            return_type=str,
+            force_update=force_update,
+        )
+    else:
+        adage_data = adage_client.get_cultural_partners(timestamp)
+        cultural_partners_json = json.dumps(adage_data)
 
     cultural_partners_json = typing.cast(str, cultural_partners_json)
     cultural_partners = json.loads(cultural_partners_json)
@@ -137,26 +145,45 @@ def synchronize_adage_ids_on_offerers(partners_from_adage: list[venues_serialize
     )
 
 
-def synchronize_adage_ids_on_venues(debug: bool = False) -> None:
+@dataclass
+class CulturalPartner:
+    adage_id: str
+    venue_id: int | None
+    synchro: int | None
+    active: int | None
+
+
+def synchronize_adage_ids_on_venues(debug: bool = False, timestamp: int | None = None) -> None:
     from pcapi.core.external.attributes.api import update_external_pro
 
-    adage_cultural_partners = get_cultural_partners(force_update=True)
+    adage_cultural_partners = get_cultural_partners(force_update=True, timestamp=timestamp)
 
-    adage_ids_venues = {}  # adage ids as keys, venue ids as values
-    filtered_cultural_partner_by_ids = {}  # venue ids as keys, response object as values
+    adage_cps = []
+    venue_to_adage_id = {}
 
     for cultural_partner in adage_cultural_partners.partners:
-        if cultural_partner.venueId is not None and (cultural_partner.synchroPass and cultural_partner.actif == 1):
-            filtered_cultural_partner_by_ids[cultural_partner.venueId] = cultural_partner
-            adage_ids_venues[str(cultural_partner.id)] = cultural_partner.venueId
-
-    deactivated_venues: list[offerers_models.Venue] = (
-        educational_repository.get_venue_base_query()
-        .filter(
-            offerers_models.Venue.id.not_in(filtered_cultural_partner_by_ids.keys()),
-            offerers_models.Venue.adageId.is_not(None),
+        adage_id = str(cultural_partner.id)
+        adage_cps.append(
+            CulturalPartner(
+                adage_id=adage_id,
+                venue_id=cultural_partner.venueId,
+                synchro=cultural_partner.synchroPass,
+                active=cultural_partner.actif,
+            )
         )
-        .all()
+
+        if cultural_partner.venueId:
+            venue_to_adage_id[cultural_partner.venueId] = adage_id
+
+    deactivated = [row for row in adage_cps if not row.adage_id or row.synchro != 1 or row.active != 1]
+    deactivated_adage_ids = {row.adage_id for row in deactivated}
+    deactivated_venue_ids = {row.venue_id for row in deactivated if row.venue_id}
+
+    deactivated_venues: list[offerers_models.Venue] = offerers_models.Venue.query.filter(
+        sa.or_(
+            offerers_models.Venue.adageId.in_(deactivated_adage_ids),
+            offerers_models.Venue.id.in_(deactivated_venue_ids),
+        )
     )
 
     deactivated_venue_ids = {venue.id for venue in deactivated_venues}
@@ -168,9 +195,18 @@ def synchronize_adage_ids_on_venues(debug: bool = False) -> None:
             extra={"deactivated_venues": deactivated_venue_ids},
         )
 
-    venues: list[offerers_models.Venue] = offerers_models.Venue.query.filter(
-        offerers_models.Venue.id.in_(filtered_cultural_partner_by_ids.keys())
-    ).all()
+    searched_ids = {cp.venue_id for cp in adage_cps} - deactivated_venue_ids
+    searched_adage_ids = {cp.adage_id for cp in adage_cps} - deactivated_adage_ids
+    venues: list[offerers_models.Venue] = (
+        offerers_models.Venue.query.filter(
+            sa.or_(
+                offerers_models.Venue.adageId.in_(searched_adage_ids),
+                offerers_models.Venue.id.in_(searched_ids),
+            )
+        )
+        .options(sa.orm.joinedload(offerers_models.Venue.adage_addresses))
+        .all()
+    )
 
     to_update_venue_ids = {venue.id for venue in venues}
 
@@ -189,9 +225,9 @@ def synchronize_adage_ids_on_venues(debug: bool = False) -> None:
             db.session.add(venue)
 
         for venue in venues:
+            # Update the users in SiB in case of previous adageId being none
+            # This is because we track if the user has an adageId, not the value of the adageId
             if not venue.adageId:
-                # Update the users in SiB in case of previous adageId being none
-                # This is because we track if the user has an adageId, not the value of the adageId
                 emails = get_emails_by_venue(venue)
                 for email in emails:
                     update_external_pro(email)
@@ -199,27 +235,28 @@ def synchronize_adage_ids_on_venues(debug: bool = False) -> None:
                     send_eac_offerer_activation_email(venue, list(emails))
                 venue.adageInscriptionDate = datetime.utcnow()
 
-            adage_id = str(filtered_cultural_partner_by_ids[venue.id].id)
+            adage_id = venue_to_adage_id[venue.id]
             if venue.adageId != adage_id:
                 adage_id_updates[venue.id] = adage_id
 
             venue.adageId = adage_id
             db.session.add(venue)
 
-        # filter adage_ids_venues rows that are linked to an unexisting
+        # filter adage_cps rows that are linked to an unexisting
         # venue. This can happen since the base data comes from an
-        # external source (`adage_cultural_partners`).
-        venue_ids = {venue.id for venue in venues} | {venue.id for venue in deactivated_venues}
-        adage_ids_venues = {
-            adage_id: venue_id for adage_id, venue_id in adage_ids_venues.items() if venue_id in venue_ids
-        }
+        # external source (`adage_cultural_partners`). Also, ignore
+        # deactivated venues.
+        venue_ids = {venue.id for venue in venues}
+        adage_venues_ids = {cp.adage_id: cp.venue_id for cp in adage_cps if cp.venue_id in venue_ids}
+        address_api.upsert_venues_addresses(adage_venues_ids)
 
-        address_api.upsert_venues_addresses(adage_ids_venues)
-        unlink_count = address_api.unlink_unknown_venue_addresses(adage_ids_venues.keys())
+        # No need to filter non-existing venue ids:
+        deactivated_adage_venues_ids: dict[str, int] = {cp.adage_id: cp.venue_id for cp in deactivated if cp.venue_id}
+        unlink_count = address_api.unlink_deactivated_venue_addresses(deactivated_adage_venues_ids)
 
     if debug:
         logger.info("%d adage ids updates", len(adage_id_updates), extra=adage_id_updates)  # type: ignore
-        logger.info("%d adage venue addresses updates", len(adage_ids_venues), extra=adage_ids_venues)
+        logger.info("%d adage venue addresses updates", len(adage_venues_ids), extra=adage_venues_ids)
         logger.info("%d unknown adage venue addresses unlinked", unlink_count)
 
 

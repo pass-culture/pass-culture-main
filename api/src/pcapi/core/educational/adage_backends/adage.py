@@ -123,11 +123,17 @@ class AdageHttpClient(AdageClient):
                 api_response.text,
             )
 
-    def get_cultural_partners(self) -> list[dict[str, str | int | float | None]]:
+    def get_cultural_partners(self, timestamp: int | None = None) -> list[dict[str, str | int | float | None]]:
         api_url = f"{self.base_url}/v1/partenaire-culturel"
+
+        params = {}
+        if timestamp:
+            params["dateModificationMin"] = timestamp
+
         try:
             api_response = requests.get(
                 api_url,
+                params=params,
                 headers={self.header_key: self.api_key},
             )
         except ConnectionError as exp:
