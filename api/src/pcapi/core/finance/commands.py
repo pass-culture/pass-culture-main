@@ -41,7 +41,7 @@ def generate_cashflows_and_payment_files(override_feature_flag: bool, cutoff: da
         logger.info("%s is not active, cronjob will not run.", flag.name)
         return
     if not cutoff:
-        last_day = datetime.date.today() - datetime.timedelta(hours=1)
+        last_day = datetime.date.today() - datetime.timedelta(days=1)
         cutoff = finance_utils.get_cutoff_as_datetime(last_day)
 
     finance_api.generate_cashflows_and_payment_files(cutoff)
