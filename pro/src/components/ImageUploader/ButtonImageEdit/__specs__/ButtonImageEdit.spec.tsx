@@ -17,6 +17,7 @@ describe('test ButtonImageEdit', () => {
     props = {
       mode: UploaderModeEnum.OFFER,
       onImageUpload: vi.fn(),
+      onImageDelete: vi.fn(),
     }
   })
 

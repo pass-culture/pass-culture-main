@@ -55,6 +55,7 @@ export const ImageUploader = ({
                     cropParams,
                   }}
                   onImageUpload={onImageUpload}
+                  onImageDelete={onImageDelete}
                   onClickButtonImage={onClickButtonImageAdd}
                 />
                 {mode !== UploaderModeEnum.OFFER_COLLECTIVE && (
@@ -69,6 +70,7 @@ export const ImageUploader = ({
         <ButtonImageEdit
           mode={mode}
           onImageUpload={onImageUpload}
+          onImageDelete={onImageDelete}
           onClickButtonImage={onClickButtonImageAdd}
         />
       )}

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { api } from 'apiClient/api'
 import {
   BannerMetaModel,
   GetOffererResponseModel,
@@ -96,6 +97,12 @@ export const VenueEditionHeader = ({
     }
   }
 
+  const handleOnImageDelete = async () => {
+    await api.deleteVenueBanner(venue.id)
+
+    setImageValues(buildInitialValues(null, null))
+  }
+
   const logButtonAddClick = () => {
     logEvent?.(Events.CLICKED_ADD_IMAGE, {
       venueId: venue.id,
@@ -159,6 +166,7 @@ export const VenueEditionHeader = ({
             mode={UploaderModeEnum.VENUE}
             initialValues={imageValues}
             onImageUpload={handleOnImageUpload}
+            onImageDelete={handleOnImageDelete}
             onClickButtonImage={logButtonAddClick}
           >
             Modifier l’image
