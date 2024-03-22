@@ -14,8 +14,8 @@ describe('adageOfferDates', () => {
       const datesText = getFormattedDatesForTemplateOffer({
         ...defaultCollectiveTemplateOffer,
         dates: {
-          end: '2024-01-29T23:00:28.040559Z',
-          start: '2024-01-23T23:00:28.040547Z',
+          end: '2024-01-30T00:00:28.040559Z',
+          start: '2024-01-24T00:00:28.040547Z',
         },
       })
 

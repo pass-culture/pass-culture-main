@@ -168,7 +168,7 @@ describe('AdageOfferHeader', () => {
     })
 
     expect(
-      screen.getByText('Du 23 janvier au 29 janvier 2024 à 21h')
+      screen.getByText('Du 23 janvier au 29 janvier 2024 à 20h')
     ).toBeInTheDocument()
   })
 
