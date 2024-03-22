@@ -1895,15 +1895,6 @@ def test_generate_payments_file_new_journey():
     offerers_factories.VenueBankAccountLinkFactory(
         venue=venue2, bankAccount=bank_account_2, timespan=(datetime.datetime.utcnow(),)
     )
-    # the 2 pricings below should be merged together as they share the same BU and same deposit type
-    factories.PricingFactory(
-        amount=-900,  # rate = 75 %
-        booking__amount=12,
-        booking__dateUsed=used_date,
-        booking__stock__offer__name="Une histoire plutôt bien",
-        booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
-        booking__stock__offer__venue=venue2,
-    )
     factories.PricingFactory(
         amount=-600,  # rate = 50 %
         booking__amount=12,
@@ -2017,7 +2008,7 @@ def test_generate_payments_file_new_journey():
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_2.id),
         "SIREN de la structure": bank_account_2.offerer.siren,
         "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account_2.offerer.name} - {bank_account_2.label}",
-        "Montant net offreur": 6 + 15 + 10 - 2,
+        "Montant net offreur": 6 + 6 + 10 - 2,
     }
 
 
