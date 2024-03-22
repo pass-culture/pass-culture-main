@@ -18,6 +18,7 @@ import { UploadImageValues } from './types'
 
 export type ButtonImageEditProps = {
   onImageUpload: (values: OnImageUploadArgs) => void
+  onImageDelete: () => void
   initialValues?: UploadImageValues
   mode: UploaderModeEnum
   onClickButtonImage?: () => void
@@ -28,6 +29,7 @@ export const ButtonImageEdit = ({
   mode,
   initialValues = {},
   onImageUpload,
+  onImageDelete,
   onClickButtonImage,
   children,
 }: ButtonImageEditProps): JSX.Element => {
@@ -37,6 +39,11 @@ export const ButtonImageEdit = ({
   const onClickButtonImageAdd = () => {
     onClickButtonImage && onClickButtonImage()
     setIsModalOpen(true)
+  }
+
+  const handleImageDelete = () => {
+    onImageDelete()
+    setIsModalOpen(false)
   }
 
   return (
@@ -71,6 +78,7 @@ export const ButtonImageEdit = ({
           mode={mode}
           onDismiss={() => setIsModalOpen(false)}
           onImageUpload={onImageUpload}
+          onImageDelete={handleImageDelete}
           initialValues={initialValues}
         />
       )}
