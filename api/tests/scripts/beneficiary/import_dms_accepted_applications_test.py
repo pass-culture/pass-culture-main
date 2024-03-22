@@ -431,7 +431,12 @@ class RunIntegrationTest:
         assert mails_testing.outbox[0]["params"] == {"DUPLICATE_BENEFICIARY_EMAIL": "joh***@example.com"}
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
-    def test_import_with_existing_user_with_the_same_id_number(self, get_applications_with_details, mocker):
+    @patch("pcapi.core.subscription.api.activate_beneficiary_if_no_missing_step")
+    def test_import_with_existing_user_with_the_same_id_number(
+        self,
+        mocked_activate_beneficiary_if_no_missing_step,
+        get_applications_with_details,
+    ):
         beneficiary = users_factories.BeneficiaryGrant18Factory(idPieceNumber="123412341234")
         applicant = users_factories.UserFactory(
             email=self.EMAIL,
@@ -449,10 +454,9 @@ class RunIntegrationTest:
             )
         ]
 
-        process_mock = mocker.patch("pcapi.core.subscription.api.activate_beneficiary_if_no_missing_step")
         import_all_updated_dms_applications(6712558)
 
-        assert process_mock.call_count == 0
+        mocked_activate_beneficiary_if_no_missing_step.assert_not_called()
         assert users_models.User.query.count() == 2
 
         fraud_check = applicant.beneficiaryFraudChecks[0]
