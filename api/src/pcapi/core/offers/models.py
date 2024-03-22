@@ -1107,3 +1107,21 @@ class PriceCategory(PcObject, Base, Model):
     @property
     def label(self) -> str:
         return self.priceCategoryLabel.label
+
+
+class TiteliveGtlType(enum.Enum):
+    BOOK = "book"
+    MUSIC = "music"
+
+
+class TiteliveGtlMapping(PcObject, Base, Model):
+    __tablename__ = "titelive_gtl_mapping"
+
+    gtlType: TiteliveGtlType = sa.Column(sa.Enum(TiteliveGtlType), nullable=False)
+    gtlId: str = sa.Column(sa.Text, nullable=True, unique=False, index=True)
+    gtlLabelLevel1: str = sa.Column(sa.Text, nullable=True, unique=False)
+    gtlLabelLevel2: str = sa.Column(sa.Text, nullable=True, unique=False)
+    gtlLabelLevel3: str = sa.Column(sa.Text, nullable=True, unique=False)
+    gtlLabelLevel4: str = sa.Column(sa.Text, nullable=True, unique=False)
+
+    sa.Index("gtl_type_idx", gtlType, postgresql_using="hash")
