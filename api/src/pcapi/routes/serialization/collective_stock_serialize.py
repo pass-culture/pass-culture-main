@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timezone
+import decimal
 import logging
 from typing import Any
 
@@ -83,7 +84,7 @@ class CollectiveStockCreationBodyModel(BaseModel):
     offer_id: int
     beginning_datetime: datetime
     booking_limit_datetime: datetime | None
-    total_price: float
+    total_price: decimal.Decimal
     number_of_tickets: int
     educational_price_detail: str | None
 
