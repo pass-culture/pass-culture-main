@@ -125,7 +125,7 @@ describe('CollectiveOfferVisibility', () => {
         /Nom de l’établissement scolaire ou code UAI/
       )
     ).toBeDisabled()
-    expect(screen.getByText(/Valider et enregistrer l’offre/)).toBeDisabled()
+    expect(screen.getByText(/Enregistrer les modifications/)).toBeDisabled()
   })
 
   it('should disable submit button if the user did not select an institution', () => {
@@ -438,5 +438,16 @@ describe('CollectiveOfferVisibility', () => {
         expect(notifyError).toHaveBeenCalledTimes(1)
       })
     })
+  })
+
+  it('should have a cancel button instead of the previous step button when editing the offer', () => {
+    renderVisibilityStep({ ...props, mode: Mode.EDITION })
+    expect(
+      screen.queryByRole('button', { name: /Étape suivante/ })
+    ).not.toBeInTheDocument()
+
+    expect(
+      screen.queryByRole('button', { name: 'Annuler et quitter' })
+    ).not.toBeInTheDocument()
   })
 })

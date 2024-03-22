@@ -191,13 +191,18 @@ const OfferEducationalStock = <
                 <ButtonLink
                   variant={ButtonVariant.SECONDARY}
                   link={{
-                    to: `/offre/collectif/${offer.id}/creation${
-                      requestId ? `?requete=${requestId}` : ''
-                    }`,
+                    to:
+                      mode === Mode.CREATION
+                        ? `/offre/collectif/${offer.id}/creation${
+                            requestId ? `?requete=${requestId}` : ''
+                          }`
+                        : '/offres/collectives',
                     isExternal: false,
                   }}
                 >
-                  Étape précédente
+                  {mode === Mode.CREATION
+                    ? 'Étape précédente'
+                    : 'Annuler et quitter'}
                 </ButtonLink>
                 <SubmitButton
                   className=""
@@ -207,7 +212,7 @@ const OfferEducationalStock = <
                   }
                   isLoading={isLoading}
                 >
-                  {mode === Mode.EDITION
+                  {mode !== Mode.CREATION
                     ? 'Enregistrer les modifications'
                     : 'Étape suivante'}
                 </SubmitButton>
