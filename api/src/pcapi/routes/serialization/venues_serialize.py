@@ -233,7 +233,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     siret: str | None
     timezone: str
     venueLabelId: int | None
-    venueOpeningHours: list[dict] | None
+    venueOpeningHours: dict | None
     venueTypeCode: offerers_models.VenueTypeCode
     collectiveDescription: str | None
     collectiveStudents: list[educational_models.StudentLevels] | None
