@@ -2,7 +2,7 @@
 import type { StoryObj } from '@storybook/react'
 import { Formik } from 'formik'
 
-import ImageEditor from './ImageEditor'
+import { ImageEditor } from './ImageEditor'
 import sampleImage from './sample-image.jpg'
 
 export default {

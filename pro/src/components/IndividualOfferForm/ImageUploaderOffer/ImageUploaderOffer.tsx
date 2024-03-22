@@ -1,8 +1,8 @@
 import React from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { ImageUploader } from 'components/ImageUploader'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
+import { ImageUploader } from 'components/ImageUploader/ImageUploader'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { Events } from 'core/FirebaseEvents/constants'

@@ -4,7 +4,7 @@ import React from 'react'
 
 import { RootState } from 'store/rootReducer'
 
-import ButtonImageDelete, { ButtonImageDeleteProps } from '../ButtonImageDelete'
+import { ButtonImageDelete, ButtonImageDeleteProps } from '../ButtonImageDelete'
 
 interface RenderButtonImageDeleteProps {
   storeOverride?: Partial<RootState>

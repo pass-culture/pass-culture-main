@@ -12,7 +12,7 @@ export interface ButtonImageDeleteProps {
   onImageDelete: () => void
 }
 
-const ButtonImageDelete = ({
+export const ButtonImageDelete = ({
   onImageDelete,
 }: ButtonImageDeleteProps): JSX.Element => {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -47,5 +47,3 @@ const ButtonImageDelete = ({
     </>
   )
 }
-
-export default ButtonImageDelete

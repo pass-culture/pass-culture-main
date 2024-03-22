@@ -3,7 +3,7 @@ interface Dimension {
   height: number
 }
 
-const getCropMaxDimension = ({
+export const getCropMaxDimension = ({
   originalDimensions,
   orientation,
 }: {
@@ -30,5 +30,3 @@ const getCropMaxDimension = ({
     }
   }
 }
-
-export default getCropMaxDimension
