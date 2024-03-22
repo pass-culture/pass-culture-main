@@ -288,7 +288,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             description=offer.description,
             subcategoryId=offer.subcategoryId,
             bookingEmails=offer.bookingEmails,
-            contactEmail=offer.contactEmail,
+            contactEmail=offer.contactEmail,  # type: ignore [arg-type]
             contactPhone=offer.contactPhone,  # type: ignore [arg-type]
             domains=[domain.id for domain in offer.domains],
             durationMinutes=offer.durationMinutes,
