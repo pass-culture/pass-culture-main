@@ -1579,13 +1579,10 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
                 models.BankAccount.id == models.Cashflow.bankAccountId,
             )
             .join(models.BankAccount.offerer)
-            .join(bookings_models.Booking.deposit)
             .filter(models.Cashflow.batchId == batch_id)
             .group_by(
                 models.BankAccount.id,
-                offerers_models.Offerer.name,
-                offerers_models.Offerer.siren,
-                models.Deposit.type,
+                offerers_models.Offerer.id,
             )
             .with_entities(
                 models.BankAccount.id.label("bank_account_id"),
@@ -1605,22 +1602,10 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
                 models.BankAccount.id == models.Cashflow.bankAccountId,
             )
             .join(models.BankAccount.offerer)
-            .join(educational_models.CollectiveBooking.educationalInstitution)
-            .join(
-                educational_models.EducationalDeposit,
-                sqla.and_(
-                    educational_models.EducationalDeposit.educationalYearId
-                    == educational_models.CollectiveBooking.educationalYearId,
-                    educational_models.EducationalDeposit.educationalInstitutionId
-                    == educational_models.EducationalInstitution.id,
-                ),
-            )
             .filter(models.Cashflow.batchId == batch_id)
             .group_by(
                 models.BankAccount.id,
-                offerers_models.Offerer.name,
-                offerers_models.Offerer.siren,
-                educational_models.EducationalDeposit.ministry,
+                offerers_models.Offerer.id,
             )
             .with_entities(
                 models.BankAccount.id.label("bank_account_id"),
@@ -1654,7 +1639,7 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
     )
 
     rows = (
-        indiv_query.union(indiv_incident_query, collective_query, collective_incident_query)
+        indiv_query.union_all(indiv_incident_query, collective_query, collective_incident_query)
         .group_by(
             sqla.column("bank_account_id"),
             sqla.column("bank_account_label"),
