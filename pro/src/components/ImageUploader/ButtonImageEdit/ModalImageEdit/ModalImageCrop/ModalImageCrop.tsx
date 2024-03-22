@@ -134,20 +134,35 @@ const ModalImageCrop = ({
           <div className={style['modal-image-crop-form']}>
             <header>
               <h1 className={style['modal-image-crop-header']}>
-                Ajouter une image
+                Modifier une image
               </h1>
             </header>
+
             <p className={style['modal-image-crop-right']}>
               En utilisant ce contenu, je certifie que je suis propriétaire ou
               que je dispose des autorisations nécessaires pour l’utilisation de
               celui-ci.
             </p>
-            <ImageEditor
-              {...imageEditorConfig}
-              image={image}
-              initialPosition={initialPosition}
-              ref={editorRef}
-            />
+
+            <div className={style['modal-image-crop-editor']}>
+              <ImageEditor
+                {...imageEditorConfig}
+                image={image}
+                initialPosition={initialPosition}
+                ref={editorRef}
+              />
+
+              <div className={style['modal-image-crop-actions']}>
+                <Button
+                  icon={fullDownloadIcon}
+                  onClick={onReplaceImage}
+                  variant={ButtonVariant.TERNARY}
+                >
+                  Remplacer l’image
+                </Button>
+              </div>
+            </div>
+
             <TextInput
               countCharacters
               className={style['modal-image-crop-credit']}
@@ -160,15 +175,10 @@ const ModalImageCrop = ({
               isOptional
             />
           </div>
+
           <Divider />
+
           <footer className={style['modal-image-crop-footer']}>
-            <Button
-              icon={fullDownloadIcon}
-              onClick={onReplaceImage}
-              variant={ButtonVariant.TERNARY}
-            >
-              Remplacer l’image
-            </Button>
             <SubmitButton>{submitButtonText}</SubmitButton>
           </footer>
         </Form>
