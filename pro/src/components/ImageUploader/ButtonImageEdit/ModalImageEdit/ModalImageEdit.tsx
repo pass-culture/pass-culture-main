@@ -134,7 +134,7 @@ const ModalImageEdit = ({
   return (
     <DialogBox
       hasCloseButton
-      labelledBy="Ajouter une image"
+      labelledBy="Modifier une image"
       onDismiss={onDismiss}
     >
       {!image ? (
