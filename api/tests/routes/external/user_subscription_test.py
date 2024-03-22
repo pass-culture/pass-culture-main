@@ -1179,7 +1179,7 @@ class UbbleWebhookTest:
             content.identification_url == f"{settings.UBBLE_API_URL}/identifications/{str(content.identification_id)}"
         )
 
-    def test_fraud_check_valid(self, client, ubble_mocker, mocker):
+    def test_fraud_check_valid(self, client, ubble_mocker):
         current_identification_state = test_factories.IdentificationState.PROCESSING
         notified_identification_state = test_factories.IdentificationState.VALID
         _, request_data, ubble_identification_response = self._init_test(
@@ -1228,7 +1228,7 @@ class UbbleWebhookTest:
         assert fraud_check.user.dateOfBirth.date().isoformat() == document.birth_date
         assert fraud_check.user.idPieceNumber == document.document_number
 
-    def test_fraud_check_invalid(self, client, ubble_mocker, mocker):
+    def test_fraud_check_invalid(self, client, ubble_mocker):
         current_identification_state = test_factories.IdentificationState.PROCESSING
         notified_identification_state = test_factories.IdentificationState.INVALID
         _, request_data, ubble_identification_response = self._init_test(
@@ -1273,7 +1273,7 @@ class UbbleWebhookTest:
             content.identification_url == f"{settings.UBBLE_API_URL}/identifications/{str(content.identification_id)}"
         )
 
-    def test_fraud_check_unprocessable(self, client, ubble_mocker, mocker):
+    def test_fraud_check_unprocessable(self, client, ubble_mocker):
         current_identification_state = test_factories.IdentificationState.PROCESSING
         notified_identification_state = test_factories.IdentificationState.UNPROCESSABLE
         _, request_data, ubble_identification_response = self._init_test(
@@ -1337,7 +1337,7 @@ class UbbleWebhookTest:
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK
 
     @pytest.mark.parametrize("email", ["whatever+ubble_test@example.com", "Test-ywh-12345678@yeswehack.ninja"])
-    def test_birth_date_overrided_with_ubble_test_emails(self, client, ubble_mocker, mocker, email):
+    def test_birth_date_overrided_with_ubble_test_emails(self, client, ubble_mocker, email):
         subscription_birth_date = datetime.datetime.combine(
             datetime.date.today(), datetime.time(0, 0)
         ) - relativedelta.relativedelta(years=18, months=6)
@@ -1389,7 +1389,7 @@ class UbbleWebhookTest:
         assert user.has_beneficiary_role is True
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK
 
-    def test_birth_date_not_overridden_with_non_ubble_test_emails(self, client, ubble_mocker, mocker):
+    def test_birth_date_not_overridden_with_non_ubble_test_emails(self, client, ubble_mocker):
         email = "whatever@example.com"
         subscription_birth_date = datetime.datetime.combine(
             datetime.date.today(), datetime.time(0, 0)
@@ -1431,7 +1431,7 @@ class UbbleWebhookTest:
         assert fraud_check.status == fraud_models.FraudCheckStatus.KO
 
     @testing.override_settings(IS_PROD=True)
-    def test_ubble_test_emails_not_actives_on_production(self, client, ubble_mocker, mocker):
+    def test_ubble_test_emails_not_actives_on_production(self, client, ubble_mocker):
         email = "whatever+ubble_test@example.com"
         subscription_birth_date = datetime.datetime.combine(
             datetime.date.today(), datetime.time(0, 0)
