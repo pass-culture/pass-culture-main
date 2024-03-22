@@ -12,7 +12,7 @@ interface ModalImageUploadBrowserProps {
   mode: UploaderModeEnum
 }
 
-const ModalImageUploadBrowser = ({
+export const ModalImageUploadBrowser = ({
   onImageClientUpload,
   mode,
 }: ModalImageUploadBrowserProps) => {
@@ -36,5 +36,3 @@ const ModalImageUploadBrowser = ({
     </section>
   )
 }
-
-export default ModalImageUploadBrowser

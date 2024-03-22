@@ -2,7 +2,7 @@ import { useFormikContext } from 'formik'
 import { forwardRef, useCallback, useEffect, useState } from 'react'
 import AvatarEditor, { Position } from 'react-avatar-editor'
 
-import { ImageEditorFormValues } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageCrop/ModalImageCrop'
+import { ImageEditorFormValues } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageCrop'
 import Slider from 'ui-kit/form/Slider/Slider'
 
 import CanvasTools from './canvas'
@@ -41,7 +41,7 @@ interface ImageEditorProps extends ImageEditorConfig {
   children?: never
 }
 
-const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
+export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
   (
     {
       image,
@@ -165,5 +165,3 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
   }
 )
 ImageEditor.displayName = 'ImageEditor'
-
-export default ImageEditor

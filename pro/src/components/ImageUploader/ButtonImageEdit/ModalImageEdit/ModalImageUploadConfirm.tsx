@@ -1,7 +1,7 @@
 import React from 'react'
 
-import { AppPreviewOffer } from 'components/ImageUploader/AppPreviewOffer'
-import { AppPreviewVenue } from 'components/ImageUploader/AppPreviewVenue'
+import { AppPreviewOffer } from 'components/ImageUploader/AppPreviewOffer/AppPreviewOffer'
+import { AppPreviewVenue } from 'components/ImageUploader/AppPreviewVenue/AppPreviewVenue'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { Button, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -17,7 +17,7 @@ interface ModalImageUploadConfirmProps {
   onUploadImage: () => void
 }
 
-const ModalImageUploadConfirm = ({
+export const ModalImageUploadConfirm = ({
   imageUrl,
   isUploading,
   onGoBack,
@@ -60,5 +60,3 @@ const ModalImageUploadConfirm = ({
     </div>
   )
 }
-
-export default ModalImageUploadConfirm
