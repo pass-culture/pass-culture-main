@@ -21,7 +21,7 @@ class AdageClient:
     def notify_booking_cancellation_by_offerer(self, data: prebooking.EducationalBookingResponse) -> None:
         raise NotImplementedError()
 
-    def get_cultural_partners(self) -> list[dict[str, str | int | float | None]]:
+    def get_cultural_partners(self, timestamp: int | None = None) -> list[dict[str, str | int | float | None]]:
         raise NotImplementedError()
 
     def notify_institution_association(self, data: serialize.AdageCollectiveOffer) -> None:

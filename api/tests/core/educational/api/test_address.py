@@ -14,7 +14,7 @@ class UnlinkUnknownVenueAddressesTest:
         venues = offerers_factories.CollectiveVenueFactory.create_batch(2)
 
         with atomic():
-            api.unlink_unknown_venue_addresses([])
+            api.unlink_deactivated_venue_addresses({venue.adageId: venue.id for venue in venues})
 
         venue_addresses = get_venue_addresses([venue.id for venue in venues])
         assert len(venue_addresses) == len(venues)
@@ -26,7 +26,7 @@ class UnlinkUnknownVenueAddressesTest:
         to_keep = offerers_factories.CollectiveVenueFactory.create_batch(2)
 
         with atomic():
-            api.unlink_unknown_venue_addresses([venue.adageId for venue in to_keep])
+            api.unlink_deactivated_venue_addresses({venue.adageId: venue.id for venue in to_unlink})
 
         venue_addresses = get_venue_addresses([venue.id for venue in to_unlink + to_keep])
         assert {ava.adageId for ava in venue_addresses} == {venue.adageId for venue in to_keep} | {None}
