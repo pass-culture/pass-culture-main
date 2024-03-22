@@ -8,9 +8,6 @@
   align-items: center;
   width: fit-content;
   margin: 0 auto;
-  border: rem.torem(2px) solid colors.$grey-light;
-  border-bottom-left-radius: rem.torem(4px);
-  border-bottom-right-radius: rem.torem(4px);
 
   &-label {
     @include fonts.body;
@@ -23,7 +20,7 @@
     display: flex;
     align-items: center;
     padding-top: rem.torem(8px);
-    padding-bottom: rem.torem(24px);
+    padding-bottom: rem.torem(16px);
 
     &-label {
       @include fonts.caption;

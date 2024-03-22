@@ -33,7 +33,7 @@ const ModalImageUploadConfirm = ({
   return (
     <div className={style['container']}>
       <header>
-        <h1 className={style['header']}>Ajouter une image</h1>
+        <h1 className={style['header']}>Modifier une image</h1>
       </header>
       <div className={style['subtitle']}>
         Prévisualisation de votre image dans l’application pass Culture
