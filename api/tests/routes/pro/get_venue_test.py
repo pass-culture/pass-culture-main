@@ -389,9 +389,10 @@ class Returns200Test:
         )
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         response = auth_request.get("/venues/%s" % venue.id)
-        assert response.json["venueOpeningHours"][3] == {
-            "THURSDAY": [{"open": "10:00", "close": "13:00"}, {"open": "14:00", "close": "19:30"}]
-        }
+        assert response.json["venueOpeningHours"]["THURSDAY"] == [
+            {"open": "10:00", "close": "13:00"},
+            {"open": "14:00", "close": "19:30"},
+        ]
 
     def should_return_none_when_venue_has_no_accessibility_provider(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
