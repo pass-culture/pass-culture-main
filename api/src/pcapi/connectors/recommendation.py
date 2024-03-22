@@ -4,7 +4,6 @@ This is a mere proxy. Input validation is done by the recommendation
 API, and this module returns the raw response.
 """
 
-import datetime
 import json
 import logging
 
@@ -15,7 +14,7 @@ from pcapi.utils import requests
 
 
 logger = logging.getLogger(__name__)
-HTTP_TIMEOUT = datetime.timedelta(seconds=5)
+HTTP_TIMEOUT = 5
 
 
 class RecommendationApiException(Exception):
