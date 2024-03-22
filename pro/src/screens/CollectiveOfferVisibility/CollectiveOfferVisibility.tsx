@@ -311,16 +311,19 @@ const CollectiveOfferVisibility = ({
                 <ButtonLink
                   variant={ButtonVariant.SECONDARY}
                   link={{
-                    to: `/offre/${offer.id}/collectif/stocks${
-                      requestId ? `?requete=${requestId}` : ''
-                    }`,
+                    to:
+                      mode === Mode.CREATION
+                        ? `/offre/${offer.id}/collectif/stocks${
+                            requestId ? `?requete=${requestId}` : ''
+                          }`
+                        : '/offres/collectives',
                     isExternal: false,
                   }}
                 >
-                  Étape précédente
+                  {mode === Mode.CREATION
+                    ? 'Étape précédente'
+                    : 'Annuler et quitter'}
                 </ButtonLink>
-              </ActionsBarSticky.Left>
-              <ActionsBarSticky.Right>
                 <SubmitButton
                   disabled={
                     buttonPressed ||
@@ -331,9 +334,9 @@ const CollectiveOfferVisibility = ({
                 >
                   {mode === Mode.CREATION
                     ? 'Étape suivante'
-                    : 'Valider et enregistrer l’offre'}
+                    : 'Enregistrer les modifications'}
                 </SubmitButton>
-              </ActionsBarSticky.Right>
+              </ActionsBarSticky.Left>
             </ActionsBarSticky>
           </FormLayout>
         </form>
