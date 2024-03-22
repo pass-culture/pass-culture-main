@@ -10,8 +10,10 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { UploaderModeEnum } from '../types'
 
 import style from './ButtonImageEdit.module.scss'
-import { ModalImageEdit } from './ModalImageEdit'
-import { OnImageUploadArgs } from './ModalImageEdit/ModalImageEdit'
+import {
+  ModalImageEdit,
+  OnImageUploadArgs,
+} from './ModalImageEdit/ModalImageEdit'
 import { UploadImageValues } from './types'
 
 export type ButtonImageEditProps = {
@@ -22,7 +24,7 @@ export type ButtonImageEditProps = {
   children?: React.ReactNode
 }
 
-const ButtonImageEdit = ({
+export const ButtonImageEdit = ({
   mode,
   initialValues = {},
   onImageUpload,
@@ -75,5 +77,3 @@ const ButtonImageEdit = ({
     </>
   )
 }
-
-export default ButtonImageEdit

@@ -1,11 +1,13 @@
 import cn from 'classnames'
 
-import { ButtonAppPreview } from './ButtonAppPreview'
-import { ButtonImageDelete } from './ButtonImageDelete'
-import { ButtonImageEdit, UploadImageValues } from './ButtonImageEdit'
+import { ButtonAppPreview } from './ButtonAppPreview/ButtonAppPreview'
+import { ButtonImageDelete } from './ButtonImageDelete/ButtonImageDelete'
+import { ButtonImageEdit } from './ButtonImageEdit/ButtonImageEdit'
 import { OnImageUploadArgs } from './ButtonImageEdit/ModalImageEdit/ModalImageEdit'
+import { UploadImageValues } from './ButtonImageEdit/types'
 import styles from './ImageUploader.module.scss'
 import { UploaderModeEnum } from './types'
+
 export interface ImageUploaderProps {
   className?: string
   onImageUpload: (values: OnImageUploadArgs) => void
@@ -16,7 +18,7 @@ export interface ImageUploaderProps {
   hideActionButtons?: boolean
 }
 
-const ImageUploader = ({
+export const ImageUploader = ({
   className,
   onImageUpload,
   onImageDelete,
@@ -73,5 +75,3 @@ const ImageUploader = ({
     </div>
   )
 }
-
-export default ImageUploader

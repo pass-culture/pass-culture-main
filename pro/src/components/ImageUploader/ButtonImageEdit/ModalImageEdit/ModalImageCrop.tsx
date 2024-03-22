@@ -2,7 +2,8 @@ import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useRef } from 'react'
 import AvatarEditor, { CroppedRect, Position } from 'react-avatar-editor'
 
-import ImageEditor, {
+import {
+  ImageEditor,
   ImageEditorConfig,
 } from 'components/ImageEditor/ImageEditor'
 import { coordonateToPosition } from 'components/ImageEditor/utils'
@@ -15,7 +16,7 @@ import { Button, Divider, SubmitButton, TextInput } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import style from './ModalImageCrop.module.scss'
-import { getCropMaxDimension } from './utils'
+import { getCropMaxDimension } from './utils/getCropMaxDimension'
 
 interface ModalImageCropProps {
   image: File
@@ -36,7 +37,7 @@ export interface ImageEditorFormValues {
   scale: number
 }
 
-const ModalImageCrop = ({
+export const ModalImageCrop = ({
   onReplaceImage,
   image,
   credit,
@@ -186,5 +187,3 @@ const ModalImageCrop = ({
     </section>
   )
 }
-
-export default ModalImageCrop

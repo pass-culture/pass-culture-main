@@ -5,9 +5,10 @@ import {
   GetOffererResponseModel,
   GetVenueResponseModel,
 } from 'apiClient/v1'
-import { ImageUploader, UploadImageValues } from 'components/ImageUploader'
-import { ButtonImageEdit } from 'components/ImageUploader/ButtonImageEdit'
+import { ButtonImageEdit } from 'components/ImageUploader/ButtonImageEdit/ButtonImageEdit'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
+import { UploadImageValues } from 'components/ImageUploader/ButtonImageEdit/types'
+import { ImageUploader } from 'components/ImageUploader/ImageUploader'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { Events } from 'core/FirebaseEvents/constants'
 import { SelectOption } from 'custom_types/form'
