@@ -3,6 +3,8 @@ import logging
 import random
 import typing
 
+from sqlalchemy.sql.expression import func
+
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository
@@ -58,6 +60,7 @@ def get_classroom_playlist(
         repository.get_collective_offer_templates_for_playlist_query(
             institution_id=institution.id, playlist_type=educational_models.PlaylistType.CLASSROOM
         )
+        .order_by(func.random())
         .limit(10)
         .all()
     )
@@ -140,6 +143,7 @@ def new_template_offers_playlist(
             playlist_type=educational_models.PlaylistType.NEW_OFFER,
             max_distance=educational_models.PLAYLIST_RURALITY_MAX_DISTANCE_MAPPING.get(institution.ruralLevel, 60),
         )
+        .order_by(educational_models.CollectivePlaylist.distanceInKm)
         .limit(10)
         .all()
     )
@@ -188,6 +192,7 @@ def get_local_offerers_playlist(
             playlist_type=educational_models.PlaylistType.LOCAL_OFFERER,
             max_distance=educational_models.PLAYLIST_RURALITY_MAX_DISTANCE_MAPPING.get(institution.ruralLevel, 60),
         )
+        .order_by(func.random())
         .limit(10)
         .all()
     )
