@@ -90,6 +90,36 @@ class GetClassroomPlaylistTest(SharedPlaylistsErrorTests):
         assert response.status_code == 403
         assert "auth" in response.json
 
+    def test_get_classroom_playlist_random_order(self, client):
+        expected_distance = 10.0
+        institution = educational_factories.EducationalInstitutionFactory()
+
+        offers = educational_factories.CollectiveOfferTemplateFactory.create_batch(15)
+        for offer in offers:
+            educational_models.CollectivePlaylist(
+                type=educational_models.PlaylistType.CLASSROOM,
+                distanceInKm=expected_distance,
+                institution=institution,
+                collective_offer_template=offer,
+            )
+
+        iframe_client = _get_iframe_client(client, uai=institution.institutionId)
+        response = iframe_client.get(url_for(self.endpoint))
+        assert response.status_code == 200
+
+        playlist_order_1 = [o["id"] for o in response.json["collectiveOffers"]]
+        # To avoid flackyness, let's give it 5 tries.
+        # If none are different, we can be confident enough that's not a false negative
+        max_try = 5
+        while max_try > 0:
+            response = iframe_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
+            playlist_order_2 = [o["id"] for o in response.json["collectiveOffers"]]
+            if playlist_order_1 != playlist_order_2:
+                return
+            max_try -= 1
+        assert playlist_order_1 != playlist_order_2
+
 
 class GetNewTemplateOffersPlaylistQueryTest(SharedPlaylistsErrorTests):
     endpoint = "adage_iframe.new_template_offers_playlist"
@@ -220,6 +250,41 @@ class GetLocalOfferersPlaylistTest(SharedPlaylistsErrorTests):
 
         assert response.status_code == 200
         assert response.json == {"venues": []}
+
+    def test_get_classroom_playlist_random_order(self, client):
+        playlist_venues = offerers_factories.VenueFactory.create_batch(15)
+        offerers_factories.VenueFactory()
+
+        institution = educational_factories.EducationalInstitutionFactory(
+            ruralLevel=educational_models.InstitutionRuralLevel.URBAIN_DENSE
+        )
+
+        for venue in playlist_venues:
+            educational_models.CollectivePlaylist(
+                type=educational_models.PlaylistType.LOCAL_OFFERER,
+                distanceInKm=2.5,
+                institution=institution,
+                venue=venue,
+            )
+
+        redactor = educational_factories.EducationalRedactorFactory()
+        iframe_client = _get_iframe_client(client, email=redactor.email, uai=institution.institutionId)
+
+        response = iframe_client.get(url_for(self.endpoint))
+        assert response.status_code == 200
+
+        playlist_order_1 = [o["id"] for o in response.json["venues"]]
+        # To avoid flackyness, let's give it 5 tries.
+        # If none are different, we can be confident enough that's not a false negative
+        max_try = 5
+        while max_try > 0:
+            response = iframe_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
+            playlist_order_2 = [o["id"] for o in response.json["venues"]]
+            if playlist_order_1 != playlist_order_2:
+                return
+            max_try -= 1
+        assert playlist_order_1 != playlist_order_2
 
 
 def _get_iframe_client(client, email=None, uai=None):
