@@ -16,7 +16,14 @@ def create_users_offerers() -> list[offerers_models.Offerer]:
         offerer__siren="444608442",
         offerer__allowedOnAdage=True,
     )
+    user_offerer_new_nav = offerers_factories.UserOffererFactory(
+        user__email="eac_2_lieu_new_nav@example.com",
+        offerer__name="eac_2_lieu [BON EAC]",
+        offerer__siren="444608443",
+        offerer__allowedOnAdage=True,
+    )
     offerers.append(user_offerer.offerer)
+    offerers.append(user_offerer_new_nav.offerer)
     user_offerer = offerers_factories.UserOffererFactory(
         user__email="squad-eac@passculture.app",
         offerer=user_offerer.offerer,
