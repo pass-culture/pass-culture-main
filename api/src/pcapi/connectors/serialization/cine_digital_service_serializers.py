@@ -80,6 +80,7 @@ class ShowCDS(BaseModel):
 
 class MediaCDS(BaseModel):
     id: int
+    allocineid: str
     title: str
     duration: int  # CDS api returns duration in seconds
     posterpath: str | None
