@@ -2,6 +2,7 @@ from datetime import datetime
 from datetime import timedelta
 import logging
 import re
+from textwrap import shorten
 from typing import Any
 from typing import Literal
 
@@ -239,6 +240,10 @@ class ApplicationDetailOldJourney(ApplicationDetail):
 class ApplicationDetailNewJourney(ApplicationDetail):
     status: finance_models.BankAccountApplicationStatus
     label: str | None = None
+
+    @validator("label")
+    def truncate_label(cls: "ApplicationDetailNewJourney", label: str) -> str:
+        return shorten(label, width=100, placeholder="...")
 
     @root_validator(pre=True)
     def to_representation(cls: "ApplicationDetailNewJourney", obj: dict) -> dict:

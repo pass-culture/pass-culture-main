@@ -845,6 +845,25 @@ class NewBankAccountJourneyTest:
 
         assert len(mails_testing.outbox) == 0
 
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
+    def test_edge_case_label_too_long_format_DSv4(
+        self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client
+    ):
+        siret = "85331845900049"
+        siren = siret[:9]
+        venue = offerers_factories.VenueFactory(
+            pricing_point="self",
+            managingOfferer__siren=siren,
+            publicName="The longest name ever PARIS LIBRAIRIES ASSOCIATION DES LIBRAIRIES DE PARIS LIBRAIRIE COMME UN ROMAN 39 RUE DE BRETAGNE 75003 PARIS",
+        )
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v4_as_batch(
+            state=GraphQLApplicationStates.accepted.value, dms_token=venue.dmsToken
+        )
+        update_ds_applications_for_procedure(settings.DMS_VENUE_PROCEDURE_ID_V4, since=None)
+        bank_account = finance_models.BankAccount.query.one()
+        assert len(bank_account.label) <= 100
+        assert bank_account.label[-3:] == "..."  # Check the placeholder indication
+
     @pytest.mark.parametrize("ff_activated", [True, False])
     def test_v4_stop_using_bank_informations_and_bank_account_if_rejected(
         self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client, ff_activated
@@ -1193,6 +1212,22 @@ class NewBankAccountJourneyTest:
         assert finance_models.BankAccountStatusHistory.query.count() == 1  # One status change recorded
 
         assert len(mails_testing.outbox) == 0
+
+    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
+    def test_edge_case_label_too_long_format_DSv5(
+        self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client
+    ):
+        siret = "85331845900049"
+        siren = siret[:9]
+        offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
+            state=GraphQLApplicationStates.accepted.value,
+            label="PARIS LIBRAIRIES ASSOCIATION DES LIBRAIRIES DE PARIS LIBRAIRIE COMME UN ROMAN 39 RUE DE BRETAGNE 75003 PARIS",
+        )
+        update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
+        bank_account = finance_models.BankAccount.query.one()
+        assert len(bank_account.label) <= 100
+        assert bank_account.label[-3:] == "..."  # Check the placeholder indication
 
     @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
     def test_DSv5_link_is_not_created_if_several_venues_exists(
