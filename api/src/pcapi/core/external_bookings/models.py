@@ -19,12 +19,12 @@ class Ticket:
 @dataclass
 class Movie:
     id: str
-    allocineid: str | None
     title: str
     duration: int  # duration in minutes
     description: str
     posterpath: str | None
     visa: str | None
+    allocineid: str | None = None
 
 
 class ExternalBookingsClientAPI:

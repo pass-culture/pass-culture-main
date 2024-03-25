@@ -80,12 +80,12 @@ class ShowCDS(BaseModel):
 
 class MediaCDS(BaseModel):
     id: int
-    allocineid: str
     title: str
     duration: int  # CDS api returns duration in seconds
     posterpath: str | None
     storyline: str
     visanumber: str | None
+    allocineid: str | None = None
 
     class Config:
         allow_population_by_field_name = True
