@@ -55,7 +55,7 @@ const Offerers = (): JSX.Element => {
 
   const permanentVenues =
     (venuesOfOfferer &&
-      venuesOfOfferer?.venues.filter((venue) => venue.isPermanent)) ??
+      venuesOfOfferer.venues.filter((venue) => venue.isPermanent)) ??
     []
   const displayToggleVenueList = permanentVenues.length > 5
 
@@ -197,7 +197,7 @@ const Offerers = (): JSX.Element => {
         previousTo={SIGNUP_JOURNEY_STEP_IDS.OFFERER}
         isDisabled={false}
         logEvent={logEvent}
-        legalCategoryCode={offerer?.legalCategoryCode}
+        legalCategoryCode={offerer.legalCategoryCode}
       />
       {showLinkDialog && (
         <ConfirmDialog

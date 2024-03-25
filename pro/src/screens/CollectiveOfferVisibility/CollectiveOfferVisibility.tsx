@@ -166,7 +166,7 @@ const CollectiveOfferVisibility = ({
             .find(
               (option) =>
                 option.institutionId ===
-                requestInformations?.institution.institutionId
+                requestInformations.institution.institutionId
             )
             ?.value.toString() || '',
       }
@@ -180,7 +180,7 @@ const CollectiveOfferVisibility = ({
 
   const selectedTeacher: TeacherOption | null = requestId
     ? teachersOptions[0]
-    : teachersOptions?.find(
+    : teachersOptions.find(
         (teacher) => teacher.value === formik.values.teacher
       ) ?? null
 
@@ -190,8 +190,8 @@ const CollectiveOfferVisibility = ({
           .toLowerCase()
           .includes(formik.values['search-institution'].trim().toLowerCase())
       )[0]
-    : institutionsOptions?.find(
-        (institution) => institution?.value === formik.values.institution
+    : institutionsOptions.find(
+        (institution) => institution.value === formik.values.institution
       ) ?? null
 
   const onChangeTeacher = async () => {
@@ -206,7 +206,7 @@ const CollectiveOfferVisibility = ({
       return
     }
     const { payload } = await getEducationalRedactorsAdapter({
-      uai: selectedInstitution?.institutionId,
+      uai: selectedInstitution.institutionId,
       candidate: searchTeacherValue,
     })
     payload &&

@@ -78,7 +78,7 @@ export const OffersInstantSearch = (): JSX.Element | null => {
   useEffect(() => {
     function setFacetFiltersFromParams(venue?: VenueResponse | null) {
       const filtersFromParams = {
-        uai: adageUser?.uai ? [adageUser.uai, 'all'] : ['all'],
+        uai: adageUser.uai ? [adageUser.uai, 'all'] : ['all'],
         domains: domainParam ? [domainParam] : [],
         students: filterOnMarseilleStudents ? DEFAULT_MARSEILLE_STUDENTS : [],
         venue: venue ?? null,

@@ -20,7 +20,7 @@ const useLogNavigation = (): void => {
       // when the end was not explicitely specified in the path
       // we do not want to log it
       delete urlParams['*']
-      logEvent?.(Events.PAGE_VIEW, {
+      logEvent(Events.PAGE_VIEW, {
         ...urlParams,
         ...queryParams,
         from: previousPage,

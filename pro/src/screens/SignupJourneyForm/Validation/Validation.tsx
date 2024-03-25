@@ -88,7 +88,7 @@ const Validation = (): JSX.Element => {
       target:
         /* istanbul ignore next: the form validation already handles this */
         activity.targetCustomer ?? Target.EDUCATIONAL,
-      createVenueWithoutSiret: offerer?.createVenueWithoutSiret ?? false,
+      createVenueWithoutSiret: offerer.createVenueWithoutSiret ?? false,
       address: offerer.address,
       banId: offerer.banId,
       longitude: offerer.longitude ?? 0,
@@ -144,11 +144,11 @@ const Validation = (): JSX.Element => {
           className={styles['data-displaying']}
         >
           <div className={styles['data-line']}>
-            {offerer?.publicName || offerer?.name}
+            {offerer.publicName || offerer.name}
           </div>
-          <div className={styles['data-line']}>{offerer?.siret}</div>
+          <div className={styles['data-line']}>{offerer.siret}</div>
           <div className={styles['data-line']}>
-            {offerer?.address}, {offerer?.postalCode} {offerer?.city}
+            {offerer.address}, {offerer.postalCode} {offerer.city}
           </div>
         </Banner>
       </section>
@@ -182,7 +182,7 @@ const Validation = (): JSX.Element => {
         >
           <div className={styles['data-line']}>
             {
-              venueTypes?.find(
+              venueTypes.find(
                 (venueType) => venueType.value === activity.venueTypeCode
               )?.label
             }
@@ -208,7 +208,7 @@ const Validation = (): JSX.Element => {
         withRightIcon={false}
         nextStepTitle="Valider et créer ma structure"
         logEvent={logEvent}
-        legalCategoryCode={offerer?.legalCategoryCode}
+        legalCategoryCode={offerer.legalCategoryCode}
       />
     </div>
   )

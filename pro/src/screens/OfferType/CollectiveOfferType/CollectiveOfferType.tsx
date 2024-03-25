@@ -203,7 +203,7 @@ const CollectiveOfferType = ({
           <Banner
             links={[
               {
-                href: `/structures/${queryOffererId}/lieux/${lastDmsApplication?.venueId}/eac`,
+                href: `/structures/${queryOffererId}/lieux/${lastDmsApplication.venueId}/eac`,
                 label: 'Voir ma demande de référencement',
               },
             ]}

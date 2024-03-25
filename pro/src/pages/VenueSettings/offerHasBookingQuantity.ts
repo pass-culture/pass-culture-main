@@ -9,7 +9,7 @@ export const offerHasBookingQuantity = (
 
 const stocksHasBookingQuantity = (stocks: ListOffersStockResponseModel[]) => {
   return stocks.some((stock) => {
-    const currentBookingQuantity = stock?.bookingQuantity
+    const currentBookingQuantity = stock.bookingQuantity
     return currentBookingQuantity && currentBookingQuantity > 0
   })
 }

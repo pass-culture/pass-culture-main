@@ -41,7 +41,7 @@ const PhoneNumberInput = ({
 
     // save formatted phone number i.e +33639980101 even if user types 0639980101 or 639980101
     if (phoneNumber) {
-      await helpers.setValue(phoneNumber?.number, false)
+      await helpers.setValue(phoneNumber.number, false)
     }
 
     setPhoneInputValue(phoneNumberInputValue)

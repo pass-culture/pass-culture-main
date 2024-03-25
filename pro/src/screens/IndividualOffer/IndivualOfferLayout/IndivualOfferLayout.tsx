@@ -62,7 +62,7 @@ const IndivualOfferLayout = ({
 
       {offer?.lastProvider?.name && (
         <SynchronizedProviderInformation
-          providerName={offer?.lastProvider?.name}
+          providerName={offer.lastProvider.name}
         />
       )}
 

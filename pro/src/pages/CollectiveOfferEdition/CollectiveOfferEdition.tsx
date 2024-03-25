@@ -36,13 +36,11 @@ const CollectiveOfferEdition = ({
             nationalPrograms={offerEducationalFormData.nationalPrograms}
             offer={offer}
             setOffer={setOffer}
-            isOfferActive={offer?.isActive}
+            isOfferActive={offer.isActive}
             isOfferBooked={
-              offer && isOfferTemplate
-                ? false
-                : offer?.collectiveStock?.isBooked
+              offer && isOfferTemplate ? false : offer.collectiveStock?.isBooked
             }
-            mode={offer?.isEditable ? Mode.EDITION : Mode.READ_ONLY}
+            mode={offer.isEditable ? Mode.EDITION : Mode.READ_ONLY}
             reloadCollectiveOffer={reloadCollectiveOffer}
             isTemplate={isOfferTemplate}
           />

@@ -70,7 +70,7 @@ export const CollectiveTableRow = ({
       setIsExpanded(true)
       setTimeout(
         () =>
-          detailsRef?.current?.scrollIntoView({
+          detailsRef.current?.scrollIntoView({
             behavior: doesUserPreferReducedMotion() ? 'auto' : 'smooth',
           }),
         100
