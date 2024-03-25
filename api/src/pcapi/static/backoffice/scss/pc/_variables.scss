@@ -2,6 +2,19 @@
 @import "../bootstrap/functions";
 @import "../bootstrap/variables";
 
+$secondary-light: #6123df;
+$secondary-lighter: #c1a3ff;
+
+// Extending boostrap theme colors
+$custom-colors: (
+  "secondary-light": $secondary-light,
+  "secondary-lighter": $secondary-lighter
+);
+$theme-colors: map-merge($theme-colors, $custom-colors);
+
+// Ensure our extent `theme-colors` map isn't overridden
+@import "../bootstrap/bootstrap";
+
 $pc-body-body-bg-color: #f9f9f9;
 $pc-code-font-family: Consolas, "courier new", serif;
 $pc-code-padding: 0.5rem;
