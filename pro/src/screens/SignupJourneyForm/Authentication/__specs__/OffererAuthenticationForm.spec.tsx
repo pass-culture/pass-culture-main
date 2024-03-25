@@ -24,7 +24,7 @@ fetchMock.enableMocks()
 
 vi.mock('apiClient/adresse', async () => {
   return {
-    ...((await vi.importActual('apiClient/adresse')) ?? {}),
+    ...(await vi.importActual('apiClient/adresse')),
     default: {
       getDataFromAddress: vi.fn(),
     },

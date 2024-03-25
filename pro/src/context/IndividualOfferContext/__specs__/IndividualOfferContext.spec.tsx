@@ -19,7 +19,7 @@ const offerer = getOfferManagingOffererFactory()
 const apiOffer: GetIndividualOfferResponseModel = getIndividualOfferFactory()
 
 vi.mock('react-router-dom', async () => ({
-  ...((await vi.importActual('react-router-dom')) ?? {}),
+  ...(await vi.importActual('react-router-dom')),
   useLoaderData: vi.fn(),
 }))
 
