@@ -195,6 +195,7 @@ def test_serialize_offer_event():
     "extra_data,expected_distinct",
     (
         [{}, "1"],
+        [{"allocineId": 12345, "visa": "56070"}, "12345"],
         [{"visa": "56070"}, "56070"],
         [{"visa": "56070", "diffusionVersion": "VO"}, "56070VO"],
         [{"visa": "56070", "diffusionVersion": "VF"}, "56070VF"],

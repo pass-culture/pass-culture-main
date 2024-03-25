@@ -434,7 +434,9 @@ class AlgoliaBackend(base.SearchBackend):
 
         # Field used by Algolia (not the frontend) to deduplicate results
         # https://www.algolia.com/doc/api-reference/api-parameters/distinct/
-        distinct = extra_data.get("visa") or extra_data.get("ean") or str(offer.id)
+        distinct = (
+            str(extra_data.get("allocineId", "")) or extra_data.get("visa") or extra_data.get("ean") or str(offer.id)
+        )
         distinct += extra_data.get("diffusionVersion") or ""
 
         music_type_label = None
