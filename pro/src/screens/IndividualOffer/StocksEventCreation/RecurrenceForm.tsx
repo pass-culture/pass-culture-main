@@ -236,7 +236,9 @@ export const RecurrenceForm = ({
                 )}
               </>
             )}
-
+            <div className={styles['mandatory']}>
+              Tous les champs suivis d’un * sont obligatoires.
+            </div>
             {values.recurrenceType !== RecurrenceType.MONTHLY && (
               <FormLayout.Row inline>
                 <DatePicker
