@@ -91,10 +91,8 @@ export const PriceCategoriesScreen = ({
 
   const isDisabledBySynchronization =
     Boolean(offer.lastProvider) && !isOfferAllocineSynchronized(offer)
-  const isDisabledByStatus = offer.status
-    ? isOfferDisabled(offer.status)
-    : false
-  const isDisabled = isDisabledByStatus || isDisabledBySynchronization
+  const isDisabled =
+    isOfferDisabled(offer.status) || isDisabledBySynchronization
   const canBeDuo = subCategories.find(
     (subCategory) => subCategory.id === offer.subcategoryId
   )?.canBeDuo

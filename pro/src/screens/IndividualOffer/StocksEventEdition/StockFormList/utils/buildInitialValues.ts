@@ -39,7 +39,9 @@ export const buildInitialValues = ({
       }),
     }
     const defaultPriceCategoryOptionId =
-      priceCategoriesOptions.length === 1 ? priceCategoriesOptions[0].value : ''
+      priceCategoriesOptions.length === 1
+        ? String(priceCategoriesOptions[0].value)
+        : ''
 
     return {
       ...hiddenValues,
@@ -76,8 +78,8 @@ export const buildInitialValues = ({
           )
         : '',
       priceCategoryId: stock.priceCategoryId
-        ? String(stock.priceCategoryId) ?? defaultPriceCategoryOptionId
-        : '',
+        ? String(stock.priceCategoryId)
+        : defaultPriceCategoryOptionId,
     }
   }),
 })

@@ -66,13 +66,7 @@ const ButtonLink = ({
         iconPosition !== IconPositionEnum.RIGHT && svgIcon
       }
       {variant === ButtonVariant.BOX ? (
-        <div
-          className={cn({
-            [styles['button-arrow-content']]: variant === ButtonVariant.BOX,
-          })}
-        >
-          {children}
-        </div>
+        <div className={styles['button-arrow-content']}>{children}</div>
       ) : (
         <>{children}</>
       )}

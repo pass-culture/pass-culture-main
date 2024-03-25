@@ -254,40 +254,40 @@ const CollectiveOfferVisibility = ({
                 L’établissement et l’enseignant renseignés sont les seuls à
                 pouvoir visualiser et préréserver votre offre sur ADAGE.
               </p>
-              {institutionsOptions && (
-                <FormLayout.Row className={styles['row-layout']}>
-                  {isLoadingInstitutions ? (
-                    <Spinner />
-                  ) : (
-                    <>
-                      <SelectAutocomplete
-                        name="institution"
-                        type="search"
-                        options={institutionsOptions}
-                        label="Nom de l’établissement scolaire ou code UAI"
-                        placeholder="Ex : Lycee General Simone Weil ou 010456E ou Le Havre"
-                        hideArrow
-                        onReset={async () => {
-                          setTeachersOptions([])
+
+              <FormLayout.Row className={styles['row-layout']}>
+                {isLoadingInstitutions ? (
+                  <Spinner />
+                ) : (
+                  <>
+                    <SelectAutocomplete
+                      name="institution"
+                      type="search"
+                      options={institutionsOptions}
+                      label="Nom de l’établissement scolaire ou code UAI"
+                      placeholder="Ex : Lycee General Simone Weil ou 010456E ou Le Havre"
+                      hideArrow
+                      onReset={async () => {
+                        setTeachersOptions([])
+                        await formik.setFieldValue('search-teacher', '')
+                      }}
+                      onSearch={async () => {
+                        if (formik.dirty) {
+                          await formik.setFieldValue('institution', '')
                           await formik.setFieldValue('search-teacher', '')
-                        }}
-                        onSearch={async () => {
-                          if (formik.dirty) {
-                            await formik.setFieldValue('institution', '')
-                            await formik.setFieldValue('search-teacher', '')
-                          }
-                        }}
-                        resetOnOpen={false}
-                        disabled={mode === Mode.READ_ONLY}
-                        searchInOptions={(options, pattern) =>
-                          searchPatternInOptions(options, pattern, 300)
                         }
-                        leftIcon={strokeSearch}
-                      />
-                    </>
-                  )}
-                </FormLayout.Row>
-              )}
+                      }}
+                      resetOnOpen={false}
+                      disabled={mode === Mode.READ_ONLY}
+                      searchInOptions={(options, pattern) =>
+                        searchPatternInOptions(options, pattern, 300)
+                      }
+                      leftIcon={strokeSearch}
+                    />
+                  </>
+                )}
+              </FormLayout.Row>
+
               <FormLayout.Row className={styles['row-layout']}>
                 <SelectAutocomplete
                   name="teacher"

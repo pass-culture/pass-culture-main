@@ -45,6 +45,7 @@ const NotificationToaster = ({
   } else if (type === 'information') {
     icon = fullInfoIcon
   }
+
   return (
     <div
       data-testid={`global-notification-${type}`}
@@ -54,7 +55,7 @@ const NotificationToaster = ({
           styles['notification'],
           styles[
             //graphic variation
-            /* istanbul ignore next */ `is-${type || 'success'}`
+            /* istanbul ignore next */ `is-${type}`
           ],
           /* istanbul ignore next: DEBT, TO FIX */ isVisible
             ? styles['show']
@@ -63,7 +64,7 @@ const NotificationToaster = ({
             styles['with-sticky-action-bar']
         )
       }
-      role={notificationAttribute ?? 'status'}
+      role={notificationAttribute}
     >
       <SvgIcon className={styles['icon']} src={icon} alt="" />
       {text}

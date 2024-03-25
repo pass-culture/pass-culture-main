@@ -109,9 +109,7 @@ const SelectAutocomplete = ({
   }, [containerRef])
 
   useEffect(() => {
-    if (onSearch) {
-      onSearch(searchField.value.trim())
-    }
+    onSearch(searchField.value.trim())
 
     setHoveredOptionIndex(null)
   }, [searchField.value])

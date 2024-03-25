@@ -32,9 +32,10 @@ const setFormReadOnlyFields = ({
     return []
   }
 
-  const isDisabledStatus = offerStatus
-    ? [OFFER_STATUS_REJECTED, OFFER_STATUS_PENDING].includes(offerStatus)
-    : false
+  const isDisabledStatus = [
+    OFFER_STATUS_REJECTED,
+    OFFER_STATUS_PENDING,
+  ].includes(offerStatus)
 
   const isOfferSynchronized = lastProviderName !== null
   const isOfferSynchronizedAllocine = isAllocineProviderName(lastProviderName)

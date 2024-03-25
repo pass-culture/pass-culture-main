@@ -33,13 +33,7 @@ const OptionsList = ({
   return (
     <div className={cx(styles['menu'], className)} role="listbox">
       {filteredOptions.length === 0 && (
-        <span
-          className={cx({
-            [styles['menu--no-results']]: filteredOptions.length === 0,
-          })}
-        >
-          Aucun résultat
-        </span>
+        <span className={styles['menu--no-results']}>Aucun résultat</span>
       )}
       <ul
         data-testid="list"
