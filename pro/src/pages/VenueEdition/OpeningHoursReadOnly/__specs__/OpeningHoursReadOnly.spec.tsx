@@ -48,6 +48,15 @@ describe('OpeningHoursReadOnly', () => {
     expect(screen.getByText(/Samedi/)).toBeInTheDocument()
     expect(screen.queryByText(/Dimanche/)).not.toBeInTheDocument()
   })
+
+  it('should display no opening hours !', () => {
+    const openingHours = undefined
+    render(<OpeningHoursReadOnly openingHours={openingHours} />)
+
+    expect(
+      screen.getByText(/Vous n’avez pas renseigné d’horaires d’ouverture./)
+    ).toBeInTheDocument()
+  })
 })
 
 describe('DayAndHours', () => {
