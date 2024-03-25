@@ -1,7 +1,9 @@
 from datetime import datetime
 import decimal
+import logging
 from typing import Iterator
 
+from pcapi.models.feature import FeatureToggle
 import sqlalchemy as sqla
 
 from pcapi import settings
@@ -28,6 +30,8 @@ ACCEPTED_MEDIA_OPTIONS_TICKET_LABEL = {
     "VO": ShowtimeFeatures.VO.value,
     "3D": ShowtimeFeatures.THREE_D.value,
 }
+
+logger = logging.getLogger(__name__)
 
 
 class CDSStocks(LocalProvider):
@@ -66,6 +70,17 @@ class CDSStocks(LocalProvider):
             self.movie_information = movie_infos
             self.filtered_movie_showtimes = _find_showtimes_by_movie_id(self.shows, int(self.movie_information.id))  # type: ignore [assignment]
             if not self.filtered_movie_showtimes:
+                return []
+
+        self.product = self.get_movie_product(self.movie_information)
+        if not self.product:
+            logger.info(
+                "Product not found for allocine Id %s",
+                self.movie_information.IDFilmAlloCine,
+                extra={"allocineId": self.movie_information.IDFilmAlloCine, "venueId": self.venue.id},
+                technical_message_id="allocineId.not_found",
+            )
+            if FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS.is_active():
                 return []
 
         providable_information_list = []
@@ -277,6 +292,12 @@ class CDSStocks(LocalProvider):
                 )
 
         return shows_with_pass_culture_tariff
+
+    def get_movie_product(self, film: Movie) -> offers_models.Product | None:
+        product = offers_models.Product.query.filter(
+            offers_models.Product.extraData["allocineId"].cast(sqla.Integer) == film.allocineid
+        ).one_or_none()
+        return product
 
 
 def _find_showtimes_by_movie_id(showtimes_information: list[dict], movie_id: int) -> list[dict]:
