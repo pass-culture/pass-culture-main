@@ -3,6 +3,7 @@ import { screen } from '@testing-library/react'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { App } from '../App'
@@ -54,6 +55,7 @@ describe('App', () => {
       },
     }
     vi.spyOn(window, 'scrollTo')
+    vi.spyOn(api, 'listFeatures').mockResolvedValue([])
   })
 
   it('should render App and children components when isMaintenanceActivated is false', async () => {

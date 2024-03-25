@@ -111,12 +111,10 @@ const FormVenue = ({
           n’est pas validée.
         </Banner>
       )}
-      {isEligible === true && venuesOptions.length > 0 && (
+      {isEligible && venuesOptions.length > 0 && (
         <FormLayout.Row>
           <Select
-            disabled={
-              venuesOptions.length === 1 || !isEligible || disableVenueSelection
-            }
+            disabled={venuesOptions.length === 1 || disableVenueSelection}
             label={VENUE_LABEL}
             name="venueId"
             options={venuesOptions}

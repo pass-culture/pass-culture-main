@@ -6,14 +6,7 @@ export const isFeatureActive = (
   state: RootState,
   featureName: string
 ): boolean => {
-  if (featureName === null) {
-    return true
-  }
-
   const features = state.features.list
-  if (!features) {
-    return false
-  }
 
   const currentFeature = features.find(
     (feature) => feature.nameKey === featureName

@@ -54,9 +54,7 @@ const Offerers = (): JSX.Element => {
   )
 
   const permanentVenues =
-    (venuesOfOfferer &&
-      venuesOfOfferer.venues.filter((venue) => venue.isPermanent)) ??
-    []
+    venuesOfOfferer?.venues.filter((venue) => venue.isPermanent) ?? []
   const displayToggleVenueList = permanentVenues.length > 5
 
   useEffect(() => {

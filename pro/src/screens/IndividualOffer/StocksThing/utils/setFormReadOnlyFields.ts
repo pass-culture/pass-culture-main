@@ -16,9 +16,10 @@ const setFormReadOnlyFields = (
   stocks: GetOfferStockResponseModel[],
   currentStock: StockThingFormValues
 ): string[] => {
-  const isDisabledStatus = offer.status
-    ? [OFFER_STATUS_REJECTED, OFFER_STATUS_PENDING].includes(offer.status)
-    : false
+  const isDisabledStatus = [
+    OFFER_STATUS_REJECTED,
+    OFFER_STATUS_PENDING,
+  ].includes(offer.status)
   const isOfferSynchronized = !!offer.lastProvider
   const isOfferSynchronizedAllocine =
     offer.lastProvider && isAllocineProvider(offer.lastProvider)

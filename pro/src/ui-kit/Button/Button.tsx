@@ -55,11 +55,7 @@ const Button = forwardRef(
           />
         )}
         {variant === ButtonVariant.BOX ? (
-          <div
-            className={cn({
-              [styles['button-arrow-content']]: variant === ButtonVariant.BOX,
-            })}
-          ></div>
+          <div className={styles['button-arrow-content']}></div>
         ) : (
           <>
             {isLoading && loadingDiv}
