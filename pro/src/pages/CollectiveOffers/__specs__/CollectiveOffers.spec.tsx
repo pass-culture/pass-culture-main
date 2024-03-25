@@ -12,23 +12,24 @@ import {
 import { SearchFiltersParams } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
+import { venueListItemFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { CollectiveOffers } from '../CollectiveOffers'
 
 const proVenues = [
-  {
+  venueListItemFactory({
     id: 1,
     name: 'Ma venue',
     offererName: 'Mon offerer',
     isVirtual: false,
-  },
-  {
+  }),
+  venueListItemFactory({
     id: 2,
     name: 'Ma venue virtuelle',
     offererName: 'Mon offerer',
     isVirtual: true,
-  },
+  }),
 ]
 
 const renderOffers = async (
@@ -85,10 +86,8 @@ describe('route CollectiveOffers', () => {
     }
     offersRecap = [collectiveOfferFactory()]
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
-    vi.spyOn(api, 'getVenues').mockResolvedValue(
-      // @ts-expect-error FIX ME
-      { venues: proVenues }
-    )
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
+    vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
   })
 
   describe('render', () => {

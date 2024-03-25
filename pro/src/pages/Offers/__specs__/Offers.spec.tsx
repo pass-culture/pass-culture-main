@@ -111,6 +111,7 @@ describe('route Offers', () => {
     vi.spyOn(api, 'getCategories').mockResolvedValueOnce(
       categoriesAndSubcategories
     )
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
   })
 
