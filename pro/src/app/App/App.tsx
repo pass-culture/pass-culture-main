@@ -85,7 +85,7 @@ const App = (): JSX.Element | null => {
         }
       }, 1000)
     } else {
-      window.Beamer.destroy()
+      window.Beamer?.destroy()
     }
   }, [currentUser, consentedToBeamer])
 
