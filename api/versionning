@@ -1,0 +1,13 @@
+#!/bin/bash
+show_help() {
+    echo "Usage: $(basename $0) command [OPTIONS]"
+    echo "possible commands:"
+    ls -1 "versionning_utils" | sed -e 's/\.sh$//'
+    echo "use: $(basename $0) command -h, --help for more information"
+    exit 0
+}
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+  show_help
+fi
+command=$1
+./versionning_utils/$command.sh "${@:2}"
