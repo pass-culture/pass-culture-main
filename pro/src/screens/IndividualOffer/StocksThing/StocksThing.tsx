@@ -315,13 +315,18 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
           minExpirationDate={minExpirationDate}
         />
       )}
+
       <form onSubmit={formik.handleSubmit} data-testid="stock-thing-form">
         <FormLayout>
           <div aria-current="page">
+            <div className={styles['mandatory']}>
+              Tous les champs suivis d’un * sont obligatoires.
+            </div>
             <FormLayoutDescription
               description={description}
               links={links}
               isBanner
+              className={styles['callout-area-margin']}
             />
 
             <div className={styles['stock-form-row']}>

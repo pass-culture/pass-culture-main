@@ -1,4 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_colors.scss" as colors;
 
 .input-price,
 .input-quantity {
@@ -57,4 +59,14 @@
 
 .callout-area {
   margin-bottom: 16px;
+}
+
+.callout-area-margin {
+  margin-top: rem.torem(32px);
+}
+
+.mandatory {
+  @include fonts.caption;
+
+  color: colors.$grey-dark;
 }

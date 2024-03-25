@@ -134,6 +134,10 @@ export const RecurrenceForm = ({
           Ajouter une ou plusieurs dates
         </Title>
 
+        <div className={styles['mandatory']}>
+          Tous les champs suivis d’un * sont obligatoires.
+        </div>
+
         <fieldset>
           <div className={styles['section']}>
             <div className={styles['legend']}>
@@ -236,9 +240,6 @@ export const RecurrenceForm = ({
                 )}
               </>
             )}
-            <div className={styles['mandatory']}>
-              Tous les champs suivis d’un * sont obligatoires.
-            </div>
             {values.recurrenceType !== RecurrenceType.MONTHLY && (
               <FormLayout.Row inline>
                 <DatePicker
