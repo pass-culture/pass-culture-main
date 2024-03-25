@@ -18,8 +18,6 @@ from sqlalchemy.orm import Query
 
 from pcapi import settings
 from pcapi.connectors import api_adresse
-from pcapi.connectors.entreprise import exceptions as sirene_exceptions
-from pcapi.connectors.entreprise import sirene
 from pcapi.core import mails as mails_api
 from pcapi.core import token as token_utils
 import pcapi.core.bookings.models as bookings_models
@@ -46,13 +44,10 @@ import pcapi.core.users.utils as users_utils
 from pcapi.domain.password import random_password
 from pcapi.models import db
 from pcapi.models import feature
-from pcapi.models import pc_object
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications import push as push_api
 from pcapi.repository import repository
 from pcapi.repository import transaction
-from pcapi.routes.serialization.users import ImportUserFromCsvModel
 from pcapi.routes.serialization.users import ProUserCreationBodyV2Model
 from pcapi.utils.clean_accents import clean_accents
 import pcapi.utils.date as date_utils
@@ -750,55 +745,6 @@ def get_domains_credit(
     return domains_credit
 
 
-def import_pro_user_and_offerer_from_csv(pro_user: ImportUserFromCsvModel) -> models.User:
-    new_pro_user = create_pro_user(pro_user)
-
-    offerer = _generate_offerer(pro_user)
-    user_offerer = offerers_api.grant_user_offerer_access(offerer, new_pro_user)
-    digital_venue = offerers_api.create_digital_venue(offerer)
-
-    new_pro_user = _set_offerer_departement_code(new_pro_user, offerer)
-    db.session.add_all([new_pro_user, user_offerer, offerer, digital_venue])
-
-    history_api.add_action(
-        history_models.ActionType.USER_CREATED, author=new_pro_user, user=new_pro_user, offerer=offerer
-    )
-
-    repository.save(new_pro_user, user_offerer, offerer, digital_venue)
-    token = token_utils.Token.create(
-        token_utils.TokenType.EMAIL_VALIDATION,
-        ttl=constants.EMAIL_VALIDATION_TOKEN_UPON_MANUAL_CREATION_LIFE_TIME,
-        user_id=new_pro_user.id,
-    )
-
-    try:
-        siren_info = sirene.get_siren(offerer.siren or "")
-    except sirene_exceptions.SireneException as exc:
-        logger.info("Could not fetch info from Sirene API", extra={"exc": exc})
-        siren_info = None
-
-    offerers_api.auto_tag_new_offerer(offerer, siren_info, new_pro_user)
-    extra_data: dict[str, typing.Any] = {}
-    if siren_info:
-        extra_data = {"sirene_info": dict(siren_info)}
-
-    history_api.add_action(
-        history_models.ActionType.OFFERER_NEW,
-        new_pro_user,
-        user=new_pro_user,
-        offerer=offerer,
-        **extra_data,
-    )
-
-    db.session.commit()
-
-    transactional_mails.send_email_validation_to_pro_email(new_pro_user, token)
-
-    external_attributes_api.update_external_pro(new_pro_user.email)
-
-    return new_pro_user
-
-
 def create_pro_user_V2(pro_user: ProUserCreationBodyV2Model) -> models.User:
     new_pro_user = create_pro_user(pro_user)
     repository.add_to_session(new_pro_user)  # valide user with pcapi.validation.models.user
@@ -820,11 +766,9 @@ def create_pro_user_V2(pro_user: ProUserCreationBodyV2Model) -> models.User:
     return new_pro_user
 
 
-def create_pro_user(pro_user: ImportUserFromCsvModel | ProUserCreationBodyV2Model) -> models.User:
+def create_pro_user(pro_user: ProUserCreationBodyV2Model) -> models.User:
     user_kwargs = {
-        k: v
-        for k, v in pro_user.dict(by_alias=True).items()
-        if k not in ("latitude", "longitude", "name", "siren", "contactOk", "token", "_sa_instance_state")
+        k: v for k, v in pro_user.dict(by_alias=True).items() if k not in ("contactOk", "token", "_sa_instance_state")
     }
     password_arg = user_kwargs.pop("password")
     new_pro_user = models.User(**user_kwargs)
@@ -850,27 +794,6 @@ def create_pro_user(pro_user: ImportUserFromCsvModel | ProUserCreationBodyV2Mode
         new_pro_user.deposits = [deposit]
 
     return new_pro_user
-
-
-def _generate_offerer(user_data: ImportUserFromCsvModel) -> offerers_models.Offerer:
-    offerer = offerers_models.Offerer()
-    if offerer.is_soft_deleted():
-        raise pc_object.DeletedRecordException()
-
-    for key, value in user_data.dict(by_alias=True).items():
-        setattr(offerer, key, value)
-
-    # If offerer was rejected, it appears as deleted from the view. When registering again with the same SIREN, it
-    # should look like it was created again, with up-to-date data, and start a new validation process.
-    # So in any case, creation date is now:
-    offerer.dateCreated = datetime.datetime.utcnow()
-
-    if not settings.IS_INTEGRATION:
-        offerer.validationStatus = ValidationStatus.NEW
-    else:
-        offerer.validationStatus = ValidationStatus.VALIDATED
-
-    return offerer
 
 
 def _set_offerer_departement_code(new_user: models.User, offerer: offerers_models.Offerer) -> models.User:

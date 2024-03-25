@@ -5,8 +5,9 @@ from dateutil.relativedelta import relativedelta
 import pytest
 
 from pcapi import settings
-from pcapi.core.offerers.models import Offerer
-import pcapi.core.users.factories as users_factories
+from pcapi.core.finance import models as finance_models
+from pcapi.core.offerers import models as offerers_models
+from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.scripts.beneficiary import import_test_users
 
@@ -18,7 +19,7 @@ CSV = f"""Nom,Prénom,Mail,Téléphone,Département,Code postal,Date de naissanc
 Doux,Jeanne,jeanne.doux@example.com,0102030405,86,86140,{AGE18_ELIGIBLE_BIRTH_DATE:%Y-%m-%d},BENEFICIARY,,,interne:test
 Smisse,Jean,jean.smisse@example.com,0102030406,44,44000,{AGE18_ELIGIBLE_BIRTH_DATE:%Y-%m-%d},BENEFICIARY,,,interne:test
 Vienne,Jeune17,jeune17.vienne@example.com,0102030407,44,44000,{AGE17_ELIGIBLE_BIRTH_DATE:%Y-%m-%d},UNDERAGE_BENEFICIARY,,,interne:test
-Pro,Pierre,pro@example.com,0123456789,06,06000,2000-01-01,PRO,111222333,PierrePro$123,interne:test
+Pro,Pierre,pro@example.com,0123456789,06,06000,2000-01-01,PRO,11122233,PierrePro$123,interne:test
 """
 
 
@@ -76,9 +77,28 @@ class ReadFileTest:
         assert pierre.has_test_role
         assert len(pierre.deposits) == 0
 
-        offerer = Offerer.query.one()
-        assert offerer.siren == "111222333"
+        offerer = offerers_models.Offerer.query.one()
+        assert offerer.siren == "111222337"
+        assert offerer.name == "Structure Pro"
+        assert offerer.postalCode == "06000"
+        assert offerer.city == "MA VILLE"
         assert offerer.isValidated
+
+        venue = offerers_models.Venue.query.filter_by(name="Lieu Pro").one()
+        assert venue.siret == "11122233700011"
+        assert venue.postalCode == "06000"
+        assert venue.city == "MA VILLE"
+        assert venue.managingOfferer == offerer
+
+        digital_venue = offerers_models.Venue.query.filter_by(name="Offre numérique").one()
+        assert digital_venue.siret is None
+        assert digital_venue.managingOfferer == offerer
+
+        bank_account = finance_models.BankAccount.query.one()
+        assert bank_account.offerer == offerer
+        assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
+        assert len(bank_account.venueLinks) == 1
+        assert bank_account.venueLinks[0].venue == venue
 
         assert pierre.checkPassword("PierrePro$123")
 
