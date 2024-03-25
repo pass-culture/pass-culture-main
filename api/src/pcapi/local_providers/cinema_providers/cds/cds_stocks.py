@@ -1,5 +1,6 @@
 from datetime import datetime
 import decimal
+import logging
 from typing import Iterator
 
 import sqlalchemy as sqla
@@ -19,6 +20,7 @@ from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository.providable_queries import get_last_update_for_provider
 import pcapi.utils.date as utils_date
 
@@ -28,6 +30,8 @@ ACCEPTED_MEDIA_OPTIONS_TICKET_LABEL = {
     "VO": ShowtimeFeatures.VO.value,
     "3D": ShowtimeFeatures.THREE_D.value,
 }
+
+logger = logging.getLogger(__name__)
 
 
 class CDSStocks(LocalProvider):
@@ -66,6 +70,17 @@ class CDSStocks(LocalProvider):
             self.movie_information = movie_infos
             self.filtered_movie_showtimes = _find_showtimes_by_movie_id(self.shows, int(self.movie_information.id))  # type: ignore [assignment]
             if not self.filtered_movie_showtimes:
+                return []
+
+        self.product = self.get_movie_product(self.movie_information)
+        if not self.product:
+            logger.info(
+                "Product not found for allocine Id %s",
+                self.movie_information.allocineid,
+                extra={"allocineId": self.movie_information.allocineid, "venueId": self.venue.id},
+                technical_message_id="allocineId.not_found",
+            )
+            if FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS.is_active():
                 return []
 
         providable_information_list = []
@@ -124,24 +139,37 @@ class CDSStocks(LocalProvider):
         if isinstance(pc_object, offers_models.Stock):
             self.fill_stock_attributes(pc_object)
 
-    def fill_offer_attributes(self, cds_offer: offers_models.Offer) -> None:
-        cds_offer.venueId = self.venue.id
-        cds_offer.bookingEmail = self.venue.bookingEmail
-        cds_offer.withdrawalDetails = self.venue.withdrawalDetails
+    def update_from_movie_information(self, offer: offers_models.Offer, movie_information: Movie) -> None:
+        if self.product:
+            offer.product = self.product
+            offer.name = self.product.name
+            offer.description = self.product.description
+            offer.durationMinutes = self.product.durationMinutes
+            if self.product.extraData:
+                offer.extraData = offers_models.OfferExtraData()
+                offer.extraData.update(self.product.extraData)
+                offer.extraData["visa"] = self.product.extraData.get("visa") or movie_information.visa
+        else:
+            offer.name = movie_information.title
+            if movie_information.description:
+                offer.description = movie_information.description
+            if movie_information.duration:
+                offer.durationMinutes = movie_information.duration
+            offer.extraData = {"visa": movie_information.visa}
 
-        self.update_from_movie_information(cds_offer, self.movie_information)
+    def fill_offer_attributes(self, offer: offers_models.Offer) -> None:
+        self.update_from_movie_information(offer, self.movie_information)
 
-        if self.movie_information.visa:
-            cds_offer.extraData = {"visa": self.movie_information.visa}
+        offer.venueId = self.venue.id
+        offer.bookingEmail = self.venue.bookingEmail
+        offer.withdrawalDetails = self.venue.withdrawalDetails
+        offer.subcategoryId = subcategories.SEANCE_CINE.id
 
-        cds_offer.name = self.movie_information.title
-        cds_offer.subcategoryId = subcategories.SEANCE_CINE.id
-
-        is_new_offer_to_insert = cds_offer.id is None
+        is_new_offer_to_insert = offer.id is None
         if is_new_offer_to_insert:
-            cds_offer.isDuo = self.isDuo
-            cds_offer.id = offers_repository.get_next_offer_id_from_database()
-        last_update_for_current_provider = get_last_update_for_provider(self.provider.id, cds_offer)
+            offer.isDuo = self.isDuo
+            offer.id = offers_repository.get_next_offer_id_from_database()
+        last_update_for_current_provider = get_last_update_for_provider(self.provider.id, offer)
 
         if not last_update_for_current_provider or last_update_for_current_provider.date() != datetime.today().date():
             if self.movie_information.posterpath:
@@ -150,7 +178,7 @@ class CDSStocks(LocalProvider):
                 if image:
                     offers_api.create_mediation(
                         user=None,
-                        offer=cds_offer,
+                        offer=offer,
                         credit=None,
                         image_as_bytes=image,
                         keep_ratio=True,
@@ -158,7 +186,7 @@ class CDSStocks(LocalProvider):
                     )
                     self.createdThumbs += 1
 
-        self.last_offer = cds_offer
+        self.last_offer = offer
 
     def fill_stock_attributes(self, cds_stock: offers_models.Stock) -> None:
         # `idAtProviders` can't be None at this point
@@ -242,13 +270,6 @@ class CDSStocks(LocalProvider):
 
         return price_category_label
 
-    def update_from_movie_information(self, obj: offers_models.Offer, movie_information: Movie) -> None:
-        if movie_information.description:
-            obj.description = movie_information.description
-        if self.movie_information.duration:
-            obj.durationMinutes = movie_information.duration
-        obj.extraData = {"visa": self.movie_information.visa}
-
     def get_object_thumb(self) -> bytes:
         if self.movie_information.posterpath:
             image_url = self.movie_information.posterpath
@@ -277,6 +298,14 @@ class CDSStocks(LocalProvider):
                 )
 
         return shows_with_pass_culture_tariff
+
+    def get_movie_product(self, film: Movie) -> offers_models.Product | None:
+        if not film.allocineid:
+            return None
+
+        return offers_models.Product.query.filter(
+            offers_models.Product.extraData["allocineId"] == film.allocineid
+        ).one_or_none()
 
 
 def _find_showtimes_by_movie_id(showtimes_information: list[dict], movie_id: int) -> list[dict]:
