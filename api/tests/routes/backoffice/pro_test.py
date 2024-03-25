@@ -710,7 +710,7 @@ class CreateOffererTest(PostEndpointHelper):
 
         form_data = {
             "email": user.email,
-            "siret": "90000000100001",
+            "siret": "90000000100017",
             "public_name": "Le Masque de Fer",
             "venue_type_code": offerers_models.VenueTypeCode.PERFORMING_ARTS.name,
             "web_presence": "https://www.example.com, https://offers.example.com",
@@ -769,7 +769,7 @@ class CreateOffererTest(PostEndpointHelper):
                 "ape_code": "90.01Z",
                 "ape_label": "Arts du spectacle vivant",
                 "diffusible": False,
-                "head_office_siret": "90000000100001",
+                "head_office_siret": "90000000100017",
                 "legal_category_code": "1000",
                 "name": "[ND]",
                 "siren": "900000001",

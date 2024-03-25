@@ -29,6 +29,7 @@ from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.utils import regions as regions_utils
+from pcapi.utils.siren import is_valid_siren
 
 from . import forms as offerer_forms
 from . import serialization
@@ -876,6 +877,9 @@ def get_entreprise_info(offerer_id: int) -> utils.BackofficeResponse:
     if not offerer.siren:
         raise NotFound()
 
+    if not is_valid_siren(offerer.siren):
+        return render_template("offerer/get/details/entreprise_info.html", is_invalid_siren=True, offerer=offerer)
+
     data: dict[str, typing.Any] = {}
     siren_info = None
 
@@ -895,7 +899,7 @@ def get_entreprise_info(offerer_id: int) -> utils.BackofficeResponse:
     if siren_info and siren_info.legal_category_code:
         data["show_dgfip_card"] = not entreprise_api.siren_is_individual_or_public(siren_info)
 
-    return render_template("offerer/get/details/entreprise_info.html", offerer_id=offerer_id, **data)
+    return render_template("offerer/get/details/entreprise_info.html", offerer=offerer, **data)
 
 
 @offerer_blueprint.route("/api-entreprise/rcs", methods=["GET"])
@@ -903,7 +907,7 @@ def get_entreprise_info(offerer_id: int) -> utils.BackofficeResponse:
 def get_entreprise_rcs_info(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
 
-    if not offerer.siren:
+    if not offerer.siren or not is_valid_siren(offerer.siren):
         raise NotFound()
 
     data: dict[str, typing.Any] = {}
@@ -921,7 +925,7 @@ def get_entreprise_rcs_info(offerer_id: int) -> utils.BackofficeResponse:
 def get_entreprise_urssaf_info(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
 
-    if not offerer.siren:
+    if not offerer.siren or not is_valid_siren(offerer.siren):
         raise NotFound()
 
     data: dict[str, typing.Any] = {}
@@ -944,7 +948,7 @@ def get_entreprise_urssaf_info(offerer_id: int) -> utils.BackofficeResponse:
 def get_entreprise_dgfip_info(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
 
-    if not offerer.siren:
+    if not offerer.siren or not is_valid_siren(offerer.siren):
         raise NotFound()
 
     data: dict[str, typing.Any] = {}

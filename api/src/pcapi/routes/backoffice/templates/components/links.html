@@ -108,6 +108,12 @@
        class="link-primary">{{ venue.siret }} <i class="bi bi-box-arrow-up-right"></i></a>
   {% endif %}
 {% endmacro %}
+{% macro build_search_company_external_link(terms) %}
+  <a href="https://annuaire-entreprises.data.gouv.fr/rechercher?terme={{ terms }}"
+     target="_blank"
+     title="Rechercher dans l'Annuaire des Entreprises"
+     class="link-primary">{{ terms }} <i class="bi bi-box-arrow-up-right"></i></a>
+{% endmacro %}
 {% macro build_dms_adage_application_external_link(venue) %}
   <a href="https://www.demarches-simplifiees.fr/procedures/{{ venue.last_collective_dms_application.procedure }}/dossiers/{{ venue.last_collective_dms_application.application }}"
      target="_blank"
