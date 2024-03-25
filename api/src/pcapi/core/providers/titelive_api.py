@@ -4,6 +4,8 @@ import functools
 import logging
 import typing
 
+import PIL
+
 from pcapi import repository
 from pcapi.connectors import thumb_storage
 from pcapi.connectors import titelive
@@ -211,7 +213,7 @@ def update_product_thumbnails(
         try:
             image_bytes = titelive.download_titelive_image(new_thumbnail_url)
             thumb_storage.create_thumb(product, image_bytes, storage_id_suffix_str="", keep_ratio=True)
-        except requests.ExternalAPIException as e:
+        except (requests.ExternalAPIException, PIL.UnidentifiedImageError) as e:
             logger.error(
                 "Error while downloading Titelive image",
                 extra={"exception": e, "url": new_thumbnail_url, "request_type": "image"},
