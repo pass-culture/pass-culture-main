@@ -15,7 +15,7 @@ export interface VenueEditionFormValues {
   isAccessibilityAppliedOnAllOffers: boolean
   phoneNumber: string | null
   webSite: string | null
-  days: string[]
+  days: Day[]
   monday: DayValues
   tuesday: DayValues
   wednesday: DayValues
@@ -24,3 +24,12 @@ export interface VenueEditionFormValues {
   saturday: DayValues
   sunday: DayValues
 }
+
+export type Day =
+  | 'monday'
+  | 'tuesday'
+  | 'wednesday'
+  | 'thursday'
+  | 'friday'
+  | 'saturday'
+  | 'sunday'

@@ -3,12 +3,12 @@ import { useFormikContext } from 'formik'
 import { mapDayToFrench } from 'pages/VenueEdition/OpeningHoursReadOnly/utils'
 import { DayCheckbox } from 'screens/IndividualOffer/StocksEventCreation/DayCheckbox'
 
-import { VenueEditionFormValues } from '../types'
+import { VenueEditionFormValues, Day } from '../types'
 
 import { HourLine } from './HourLine'
 import styles from './OpeningHoursForm.module.scss'
 
-const daysOfWeek = [
+const daysOfWeek: Day[] = [
   'monday',
   'tuesday',
   'wednesday',
@@ -30,22 +30,22 @@ export function OpeningHoursForm() {
         <legend className={styles['legend-days']}>
           Sélectionner vos jours d’ouverture :
         </legend>
-        {daysOfWeek?.map((engDay) => {
-          const frDay = mapDayToFrench(engDay)
+        {daysOfWeek?.map((day) => {
+          const dayLabel = mapDayToFrench(day)
           return (
             <DayCheckbox
-              letter={frDay[0]}
-              label={frDay}
+              letter={dayLabel[0]}
+              label={dayLabel}
               name="days"
-              value={engDay.toLowerCase()}
+              value={day.toLowerCase()}
               className={styles['day-checkbox']}
-              key={engDay}
-              checked={days.includes(engDay)}
+              key={day}
+              checked={days.includes(day)}
               onClick={async () => {
-                await setFieldValue(`${engDay}.morningStartingHour`, '')
-                await setFieldValue(`${engDay}.morningEndingHour`, '')
-                await setFieldValue(`${engDay}.afternoonStartingHour`, '')
-                await setFieldValue(`${engDay}.afternoonEndingHour`, '')
+                await setFieldValue(`${day}.morningStartingHour`, '')
+                await setFieldValue(`${day}.morningEndingHour`, '')
+                await setFieldValue(`${day}.afternoonStartingHour`, '')
+                await setFieldValue(`${day}.afternoonEndingHour`, '')
               }}
             />
           )
@@ -69,20 +69,7 @@ export function OpeningHoursForm() {
             {days
               .sort((a, b) => daysOfWeek.indexOf(a) - daysOfWeek.indexOf(b))
               .map((day) => (
-                <HourLine
-                  day={
-                    // FIX ME: is there a way to avoid this "as" ?
-                    day as
-                      | 'monday'
-                      | 'tuesday'
-                      | 'wednesday'
-                      | 'thursday'
-                      | 'friday'
-                      | 'saturday'
-                      | 'sunday'
-                  }
-                  key={day}
-                />
+                <HourLine day={day} key={day} />
               ))}
           </tbody>
         </table>
