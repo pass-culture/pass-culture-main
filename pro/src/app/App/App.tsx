@@ -1,6 +1,6 @@
 import { setUser as setSentryUser } from '@sentry/browser'
 import { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -8,8 +8,8 @@ import { findCurrentRoute } from 'app/AppRouter/findCurrentRoute'
 import Notification from 'components/Notification/Notification'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { useConfigureFirebase } from 'hooks/useAnalytics'
-import useCurrentUser from 'hooks/useCurrentUser'
 import { updateUser } from 'store/user/reducer'
+import { selectCurrentUser } from 'store/user/selectors'
 import { Consents, initCookieConsent } from 'utils/cookieConsentModal'
 
 import useFocus from './hook/useFocus'
@@ -22,7 +22,7 @@ window.beamer_config = { product_id: 'vjbiYuMS52566', lazy: true }
 const App = (): JSX.Element | null => {
   const isBeamerEnabled = useActiveFeature('ENABLE_BEAMER')
   const location = useLocation()
-  const { currentUser } = useCurrentUser()
+  const currentUser = useSelector(selectCurrentUser)
   const [consentedToFirebase, setConsentedToFirebase] = useState(false)
   const [consentedToBeamer, setConsentedToBeamer] = useState(false)
   const dispatch = useDispatch()
@@ -63,7 +63,7 @@ const App = (): JSX.Element | null => {
   }, [location.pathname])
 
   useConfigureFirebase({
-    currentUserId: currentUser.id.toString(),
+    currentUserId: currentUser?.id.toString(),
     isCookieEnabled: consentedToFirebase,
   })
   usePageTitle()
