@@ -153,6 +153,7 @@ def get_bank_info_response_procedure_v5(
     last_modification_date: str = "2023-10-26T14:51:09+02:00",
     last_pending_correction_date: str | None = None,
     siret: str = "85331845900049",
+    label: str | None = "Intitulé du compte bancaire",
 ) -> dict:
     iban = "".join(iban.split())
 
@@ -183,7 +184,7 @@ def get_bank_info_response_procedure_v5(
                                 "id": "Q2hhbXAtMzU3MzQ1Mw==",
                                 "label": "Intitulé du compte bancaire",
                                 "stringValue": "Intitulé du compte bancaire",
-                                "value": "Intitulé du compte bancaire",
+                                "value": label,
                             },
                             {
                                 "id": "Q2hhbXAtMzUyNzI3",
