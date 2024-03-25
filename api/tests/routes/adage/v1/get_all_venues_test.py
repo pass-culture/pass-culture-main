@@ -26,7 +26,7 @@ class Returns200Test:
                     "id": venue1.id,
                     "adageId": venue1.adageId,
                     "name": venue1.name,
-                    "address": venue1.address,
+                    "address": venue1.street,
                     "latitude": float(venue1.latitude),
                     "longitude": float(venue1.longitude),
                     "city": venue1.city,

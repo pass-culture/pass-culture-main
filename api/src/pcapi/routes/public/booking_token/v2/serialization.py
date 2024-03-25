@@ -89,7 +89,7 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
         userName=booking.userName,
         firstName=booking.user.firstName,
         lastName=booking.user.lastName,
-        venueAddress=booking.venue.address,
+        venueAddress=booking.venue.street,
         venueDepartmentCode=booking.venue.departementCode,
         venueName=booking.venue.name,
     )

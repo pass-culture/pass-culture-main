@@ -102,7 +102,7 @@ def test_serialize_offer():
             "name": "Les Librairies Associées",
         },
         "venue": {
-            "address": offer.venue.address,
+            "address": offer.venue.street,
             "city": offer.venue.city,
             "departmentCode": "86",
             "id": offer.venueId,
@@ -296,7 +296,7 @@ def test_serialize_venue():
         "has_at_least_one_bookable_offer": False,
         "date_created": venue.dateCreated.timestamp(),
         "postalCode": venue.postalCode,
-        "adress": venue.address,
+        "adress": venue.street,
     }
 
 

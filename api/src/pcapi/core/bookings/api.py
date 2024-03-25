@@ -136,7 +136,7 @@ def get_individual_bookings(user: User) -> list[Booking]:
             .joinedload(Offer.venue)
             .load_only(
                 Venue.name,
-                Venue.address,
+                Venue.street,
                 Venue.postalCode,
                 Venue.city,
                 Venue.latitude,

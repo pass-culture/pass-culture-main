@@ -63,7 +63,7 @@ class VenueFactory(BaseFactory):
     latitude: float | None = 48.87004
     longitude: float | None = 2.37850
     managingOfferer = factory.SubFactory(OffererFactory)
-    address = factory.LazyAttribute(lambda o: None if o.isVirtual else "1 boulevard Poissonnière")
+    street = factory.LazyAttribute(lambda o: None if o.isVirtual else "1 boulevard Poissonnière")
     banId = factory.LazyAttribute(lambda o: None if o.isVirtual else "75102_7560_00001")
     postalCode = factory.LazyAttribute(lambda o: None if o.isVirtual else "75000")
     departementCode = factory.LazyAttribute(lambda o: None if o.isVirtual else _get_department_code(o.postalCode))
@@ -205,7 +205,7 @@ class GooglePlacesInfoFactory(BaseFactory):
 
 class VirtualVenueFactory(VenueFactory):
     isVirtual = True
-    address = None
+    street = None
     departementCode = None
     postalCode = None
     city = None

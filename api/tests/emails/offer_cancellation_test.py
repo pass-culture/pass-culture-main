@@ -41,7 +41,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         assert f"pour {stock.offer.name}" in html_recap
         assert f"proposé par {venue.name}" in html_recap
         assert "le 20 juillet 2019, 14:00" in html_recap
-        assert venue.address in html_recap
+        assert venue.street in html_recap
         assert venue.city in html_recap
         assert venue.postalCode in html_recap
 
@@ -101,7 +101,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         assert booking.email in html_action
         assert f"pour {stock.offer.name}" in html_recap
         assert f"proposé par {venue.name}" in html_recap
-        assert venue.address in html_recap
+        assert venue.street in html_recap
         assert venue.city in html_recap
         assert venue.postalCode in html_recap
         assert booking2.firstName in html_recap_table

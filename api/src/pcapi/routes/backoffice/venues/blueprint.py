@@ -223,12 +223,12 @@ def render_venue_details(
                 siret=venue.siret,
                 city=venue.city,
                 postal_address_autocomplete=(
-                    f"{venue.address}, {venue.postalCode} {venue.city}"
-                    if venue.address is not None and venue.city is not None and venue.postalCode is not None
+                    f"{venue.street}, {venue.postalCode} {venue.city}"
+                    if venue.street is not None and venue.city is not None and venue.postalCode is not None
                     else None
                 ),
                 postal_code=venue.postalCode,
-                address=venue.address,
+                address=venue.street,
                 ban_id=venue.banId,
                 booking_email=venue.bookingEmail,
                 phone_number=venue.contact.phone_number if venue.contact else None,

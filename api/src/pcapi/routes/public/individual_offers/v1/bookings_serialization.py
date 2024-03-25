@@ -68,7 +68,7 @@ class GetBookingResponse(serialization.ConfiguredBaseModel):
             offer_ean=extra_data.get("ean"),
             venue_id=booking.venue.id,
             venue_name=booking.venue.name,
-            venue_address=booking.venue.address,  # type: ignore [arg-type]
+            venue_address=booking.venue.street,
             venue_departement_code=booking.venue.departementCode,  # type: ignore [arg-type]
             user_email=booking.email,
             user_birth_date=birth_date,

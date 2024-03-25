@@ -731,7 +731,7 @@ class CreateOffererTest(PostEndpointHelper):
         assert new_venue.name == form_data["public_name"]
         assert new_venue.publicName == form_data["public_name"]
         assert new_venue.venueTypeCode == offerers_models.VenueTypeCode.PERFORMING_ARTS
-        assert new_venue.address == "[ND]"
+        assert new_venue.street == "[ND]"
         assert new_venue.departementCode == "06"
         assert new_venue.postalCode == "06400"
         assert new_venue.city == "CANNES"

@@ -35,7 +35,7 @@ class CollectiveOffersGetVenuesTest:
                 "id": venue.id,
                 "legalName": venue.name,
                 "location": {
-                    "address": venue.address,
+                    "address": venue.street,
                     "city": venue.city,
                     "postalCode": venue.postalCode,
                     "type": "physical" if not venue.isVirtual else "digital",
@@ -109,7 +109,7 @@ class GetOfferersVenuesTest:
                         "id": venue.id,
                         "legalName": venue.name,
                         "location": {
-                            "address": venue.address,
+                            "address": venue.street,
                             "city": venue.city,
                             "postalCode": venue.postalCode,
                             "type": "physical" if not venue.isVirtual else "digital",

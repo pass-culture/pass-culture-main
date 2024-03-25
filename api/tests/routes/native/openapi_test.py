@@ -2250,6 +2250,7 @@ def test_public_api(client):
                         "postalCode": {"nullable": True, "title": "Postalcode", "type": "string"},
                         "publicName": {"nullable": True, "title": "Publicname", "type": "string"},
                         "openingHours": {"nullable": True, "title": "Openinghours", "type": "object"},
+                        "street": {"nullable": True, "title": "Street", "type": "string"},
                         "venueTypeCode": {"$ref": "#/components/schemas/VenueTypeCodeKey"},
                         "withdrawalDetails": {"nullable": True, "title": "Withdrawaldetails", "type": "string"},
                     },

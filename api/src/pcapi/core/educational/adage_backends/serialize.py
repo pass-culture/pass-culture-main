@@ -91,7 +91,7 @@ def serialize_collective_offer(collective_offer: models.CollectiveOffer) -> Adag
 
 
 def _get_collective_offer_address(offer: models.CollectiveOffer) -> str:
-    default_address = f"{offer.venue.address}, {offer.venue.postalCode} {offer.venue.city}"
+    default_address = f"{offer.venue.street}, {offer.venue.postalCode} {offer.venue.city}"
 
     if offer.offerVenue is None:
         return default_address

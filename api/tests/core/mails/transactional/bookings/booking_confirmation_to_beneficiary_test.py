@@ -56,7 +56,7 @@ def get_expected_base_sendinblue_email_data(booking, mediation, **overrides):
             "OFFER_CATEGORY": booking.stock.offer.category.id,
             "OFFER_SUBCATEGORY": booking.stock.offer.subcategoryId,
             "VENUE_NAME": booking.stock.offer.venue.name,
-            "VENUE_ADDRESS": booking.stock.offer.venue.address,
+            "VENUE_ADDRESS": booking.stock.offer.venue.street,
             "VENUE_POSTAL_CODE": booking.stock.offer.venue.postalCode,
             "VENUE_CITY": booking.stock.offer.venue.city,
             "ALL_BUT_NOT_VIRTUAL_THING": True,

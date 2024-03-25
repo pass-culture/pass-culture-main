@@ -343,7 +343,7 @@ class GetOfferManagingOffererResponseModel(BaseModel):
 
 
 class GetOfferVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
-    address: str | None
+    street: str | None
     bookingEmail: str | None
     city: str | None
     departementCode: str | None
