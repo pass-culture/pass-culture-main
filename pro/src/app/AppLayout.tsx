@@ -146,7 +146,7 @@ export const AppLayout = ({
         )}
         <div className={styles['main-wrapper']}>
           {isNewSideBarNavigation &&
-            Boolean(currentUser.navState?.eligibilityDate) && <NewNavReview />}
+            Boolean(currentUser?.navState?.eligibilityDate) && <NewNavReview />}
           <main
             id="content"
             className={classnames(
