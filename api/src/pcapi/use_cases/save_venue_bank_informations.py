@@ -1,6 +1,7 @@
 from abc import ABC
 from datetime import datetime
 import logging
+from textwrap import shorten
 import typing
 
 import schwifty
@@ -492,6 +493,7 @@ class ImportBankAccountMixin:
             label = self.application_details.label
             if label is None:
                 label = venue.common_name if venue is not None else self.application_details.obfuscatedIban
+                label = shorten(label, width=100, placeholder="...")
             bank_account = finance_models.BankAccount(
                 iban=self.application_details.iban,
                 bic=self.application_details.bic,

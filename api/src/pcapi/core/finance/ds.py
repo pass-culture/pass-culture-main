@@ -56,7 +56,6 @@ def import_ds_bank_information_applications(procedure_number: int, ignore_previo
 
 def update_ds_applications_for_procedure(procedure_number: int, since: datetime.datetime | None) -> None:
     logger.info("[DS] Started processing Bank Account procedure %s", procedure_number)
-
     current_import = ds_models.LatestDmsImport(
         procedureId=procedure_number,
         latestImportDatetime=datetime.datetime.utcnow(),
