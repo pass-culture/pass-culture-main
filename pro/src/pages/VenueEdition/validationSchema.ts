@@ -3,6 +3,8 @@ import * as yup from 'yup'
 import { urlRegex } from 'core/shared'
 import { isPhoneValid } from 'core/shared/utils/validation'
 
+import { Day } from './types'
+
 const isOneTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)
 
@@ -53,36 +55,36 @@ export const getValidationSchema = (isVenueVirtual: boolean) =>
         },
       }),
     monday: yup.object().when('days', {
-      is: (days: string[]) => days.includes('monday'),
+      is: (days: Day[]) => days.includes('monday'),
       then: (schema) => schema.shape(openingHoursValidationSchema),
     }),
     tuesday: yup.object().when('days', {
-      is: (days: string[]) => days.includes('tuesday'),
+      is: (days: Day[]) => days.includes('tuesday'),
       then: (schema) => schema.shape(openingHoursValidationSchema),
     }),
     wednesday: yup.object().when('days', {
-      is: (days: string[]) => days.includes('wednesday'),
+      is: (days: Day[]) => days.includes('wednesday'),
       then: (schema) => schema.shape(openingHoursValidationSchema),
     }),
     thursday: yup.object().when('days', {
-      is: (days: string[]) => days.includes('thursday'),
+      is: (days: Day[]) => days.includes('thursday'),
       then: (schema) => schema.shape(openingHoursValidationSchema),
     }),
     friday: yup.object().when('days', {
-      is: (days: string[]) => days.includes('friday'),
+      is: (days: Day[]) => days.includes('friday'),
       then: (schema) => schema.shape(openingHoursValidationSchema),
     }),
     saturday: yup.object().when('days', {
-      is: (days: string[]) => days.includes('saturday'),
+      is: (days: Day[]) => days.includes('saturday'),
       then: (schema) => schema.shape(openingHoursValidationSchema),
     }),
     sunday: yup.object().when('days', {
-      is: (days: string[]) => days.includes('sunday'),
+      is: (days: Day[]) => days.includes('sunday'),
       then: (schema) => schema.shape(openingHoursValidationSchema),
     }),
   })
 
-export const openingHoursValidationSchema = {
+const openingHoursValidationSchema = {
   morningStartingHour: yup
     .string()
     .required('Veuillez renseigner une heure de début'),

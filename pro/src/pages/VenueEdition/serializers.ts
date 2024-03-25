@@ -1,6 +1,6 @@
 import { EditVenueBodyModel } from 'apiClient/v1'
 
-import { VenueEditionFormValues } from './types'
+import { VenueEditionFormValues, Day } from './types'
 
 export const serializeEditVenueBodyModel = (
   formValues: VenueEditionFormValues,
@@ -40,7 +40,7 @@ function serializeOpeningHours(
   formValues: VenueEditionFormValues
 ): EditVenueBodyModel['venueOpeningHours'] {
   const returnValue = []
-  for (const day of [
+  const days: Day[] = [
     'monday',
     'tuesday',
     'wednesday',
@@ -48,8 +48,8 @@ function serializeOpeningHours(
     'friday',
     'saturday',
     'sunday',
-  ]) {
-    // @ts-expect-error FIXME: fix this
+  ]
+  for (const day of days) {
     const dayValues = formValues[day]
     const timespan = []
     const morning = []

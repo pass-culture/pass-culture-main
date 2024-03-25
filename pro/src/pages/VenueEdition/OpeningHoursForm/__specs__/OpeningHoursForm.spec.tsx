@@ -1,11 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Formik, Form } from 'formik'
-import * as yup from 'yup'
 
 import { setInitialFormValues } from 'pages/VenueEdition/setInitialFormValues'
 import { VenueEditionFormValues } from 'pages/VenueEdition/types'
-import { openingHoursValidationSchema } from 'pages/VenueEdition/validationSchema'
+import { getValidationSchema } from 'pages/VenueEdition/validationSchema'
 import { SubmitButton } from 'ui-kit'
 import { defaultGetVenue } from 'utils/collectiveApiFactories'
 
@@ -22,12 +21,7 @@ const renderOpeningHoursForm = ({
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
-      validationSchema={yup.object().shape({
-        monday: yup.object().when('days', {
-          is: (days: string[]) => days.includes('monday'),
-          then: (schema) => schema.shape(openingHoursValidationSchema),
-        }),
-      })}
+      validationSchema={getValidationSchema(false)}
     >
       {({ handleSubmit }) => (
         <Form onSubmit={handleSubmit}>

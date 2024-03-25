@@ -2,7 +2,7 @@ import { GetVenueResponseModel, VenueListItemResponseModel } from 'apiClient/v1'
 import { AccessiblityEnum } from 'core/shared'
 import { DEFAULT_INTITIAL_OPENING_HOURS } from 'pages/VenueCreation/constants'
 
-import { DayValues, VenueEditionFormValues } from './types'
+import { DayValues, VenueEditionFormValues, Day } from './types'
 
 export const buildAccessibilityFormValues = (
   venue: GetVenueResponseModel | VenueListItemResponseModel
@@ -52,7 +52,7 @@ function buildOpeningHoursValues(
   }
   const days = venueOpeningHours
     .filter((dateAndHour) => dateAndHour && Object.values(dateAndHour)[0])
-    .map((dateAndHour) => Object.keys(dateAndHour)[0].toLowerCase())
+    .map((dateAndHour) => Object.keys(dateAndHour)[0].toLowerCase()) as Day[]
 
   const monday = buildHourOfDay(venueOpeningHours[0].MONDAY)
   const tuesday = buildHourOfDay(venueOpeningHours[1].TUESDAY)

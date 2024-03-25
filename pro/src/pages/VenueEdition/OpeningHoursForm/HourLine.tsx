@@ -8,22 +8,15 @@ import { Button, TimePicker } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { mapDayToFrench } from '../OpeningHoursReadOnly/utils'
-import { VenueEditionFormValues } from '../types'
+import { Day, VenueEditionFormValues } from '../types'
 
 import styles from './OpeningHoursForm.module.scss'
 
-export function HourLine({
-  day,
-}: {
-  day:
-    | 'monday'
-    | 'tuesday'
-    | 'wednesday'
-    | 'thursday'
-    | 'friday'
-    | 'saturday'
-    | 'sunday'
-}) {
+type HourLineProps = {
+  day: Day
+}
+
+export function HourLine({ day }: HourLineProps) {
   const { setFieldValue, values } = useFormikContext<VenueEditionFormValues>()
   const [isFullLineDisplayed, setIsFullLineDisplayed] = useState(
     Boolean(values[day].afternoonStartingHour)
