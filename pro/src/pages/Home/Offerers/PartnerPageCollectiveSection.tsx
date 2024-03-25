@@ -115,8 +115,8 @@ export function PartnerPageCollectiveSection({
       </section>
     )
   } else if (
-    lastDmsApplication?.state === DMSApplicationstatus.REFUSE ||
-    lastDmsApplication?.state === DMSApplicationstatus.SANS_SUITE
+    lastDmsApplication.state === DMSApplicationstatus.REFUSE ||
+    lastDmsApplication.state === DMSApplicationstatus.SANS_SUITE
   ) {
     return (
       <section className={styles['details']}>

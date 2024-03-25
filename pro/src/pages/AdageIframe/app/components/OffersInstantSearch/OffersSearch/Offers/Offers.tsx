@@ -167,7 +167,7 @@ export const Offers = ({
     )
   }
 
-  if (hits?.length === 0 || offers.length === 0 || !results) {
+  if (hits.length === 0 || offers.length === 0 || !results) {
     return displayNoResult ? (
       <NoResultsPage query={results?.query} venue={venue} />
     ) : null
@@ -189,7 +189,7 @@ export const Offers = ({
             <Offer
               offer={offer}
               position={index}
-              queryId={results?.queryID ?? ''}
+              queryId={results.queryID ?? ''}
               isInSuggestions={indexId?.startsWith('no_results_offers')}
             />
             {index === 0 && showDiffuseHelp && (
@@ -200,7 +200,7 @@ export const Offers = ({
               />
             )}
             {index === 1 && showSurveySatisfaction && (
-              <SurveySatisfaction queryId={results?.queryID} />
+              <SurveySatisfaction queryId={results.queryID} />
             )}
           </li>
         ))}

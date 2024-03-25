@@ -29,7 +29,7 @@ export const VenueCreationLinks = ({ offerer }: VenueCreationLinksProps) => {
   const virtualVenue = getVirtualVenueFromOfferer(offerer)
   const physicalVenues = getPhysicalVenuesFromOfferer(offerer)
   const hasVirtualOffers = Boolean(virtualVenue)
-  const hasPhysicalVenue = physicalVenues?.length > 0
+  const hasPhysicalVenue = physicalVenues.length > 0
 
   if (!hasPhysicalVenue) {
     return

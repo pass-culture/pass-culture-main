@@ -14,7 +14,7 @@ const SignupValidation = (): JSX.Element | null => {
 
   useEffect(() => {
     const validateTokenAndRedirect = async () => {
-      if (currentUser?.id) {
+      if (currentUser.id) {
         setUrlToRedirect('/')
       } else if (token) {
         try {
@@ -36,7 +36,7 @@ const SignupValidation = (): JSX.Element | null => {
     }
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     validateTokenAndRedirect()
-  }, [token, currentUser?.id])
+  }, [token, currentUser.id])
 
   return urlToRedirect ? <Navigate to={urlToRedirect} replace /> : null
 }

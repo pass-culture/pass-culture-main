@@ -40,7 +40,7 @@ const OfferSummary = ({ offer }: OfferSummaryProps): JSX.Element => {
   const formattedDates =
     isCollectiveOfferTemplate(offer) &&
     ((offer.dates?.start &&
-      offer.dates?.end &&
+      offer.dates.end &&
       getRangeToFrenchText(
         getLocalDepartementDateTimeFromUtc(
           offer.dates.start,
@@ -62,7 +62,7 @@ const OfferSummary = ({ offer }: OfferSummaryProps): JSX.Element => {
   }
 
   const studentsLabel = students
-    ? students?.length > 1
+    ? students.length > 1
       ? 'Multi niveaux'
       : students[0]
     : ''

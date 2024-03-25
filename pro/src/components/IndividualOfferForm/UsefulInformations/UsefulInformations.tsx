@@ -121,7 +121,7 @@ const UsefulInformations = ({
             maxLength={90}
             name="bookingContact"
             placeholder="email@exemple.com"
-            disabled={readOnlyFields?.includes('bookingContact')}
+            disabled={readOnlyFields.includes('bookingContact')}
           />
         </FormLayout.Row>
       )}

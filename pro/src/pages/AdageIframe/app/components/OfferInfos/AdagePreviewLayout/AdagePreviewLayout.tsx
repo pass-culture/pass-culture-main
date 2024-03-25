@@ -36,7 +36,7 @@ export default function AdagePreviewLayout({ offer }: AdagePreviewLayoutProps) {
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     getOfferVenue()
-  }, [offer.id, offer.venue?.id])
+  }, [offer.id, offer.venue.id])
 
   if (loadingVenue) {
     return <Spinner />

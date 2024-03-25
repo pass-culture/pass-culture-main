@@ -11,9 +11,9 @@ export const extractInitialValuesFromVenue = (
     collectiveWebsite: venue.collectiveWebsite ?? '',
     collectivePhone: venue.collectivePhone ?? '',
     collectiveEmail: venue.collectiveEmail ?? '',
-    collectiveLegalStatus: venue.collectiveLegalStatus?.id?.toString() ?? '',
+    collectiveLegalStatus: venue.collectiveLegalStatus?.id.toString() ?? '',
     collectiveDomains:
-      venue.collectiveDomains?.map((domain) => domain.id.toString()) ?? [],
+      venue.collectiveDomains.map((domain) => domain.id.toString()) ?? [],
     collectiveNetwork: venue.collectiveNetwork ?? [],
     collectiveInterventionArea: venue.collectiveInterventionArea ?? [],
     'search-collectiveStudents': '',

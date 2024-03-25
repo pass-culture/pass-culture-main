@@ -306,7 +306,7 @@ const StocksEventEdition = ({
       )
     } catch (error) {
       if (error instanceof Error) {
-        notify.error(error?.message)
+        notify.error(error.message)
       }
       return
     }

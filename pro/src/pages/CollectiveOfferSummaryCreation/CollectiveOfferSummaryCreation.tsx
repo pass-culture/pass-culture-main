@@ -19,7 +19,7 @@ export const CollectiveOfferSummaryCreation = ({
   return (
     <AppLayout layout={'sticky-actions'}>
       <CollectiveOfferLayout
-        subTitle={offer?.name}
+        subTitle={offer.name}
         isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
         isTemplate={isTemplate}
         isCreation={true}

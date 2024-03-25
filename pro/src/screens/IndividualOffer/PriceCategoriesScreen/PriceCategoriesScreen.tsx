@@ -131,7 +131,7 @@ export const PriceCategoriesScreen = ({
       await submitToApi(values, offer, formik.resetForm)
     } catch (error) {
       if (error instanceof Error) {
-        notify.error(error?.message)
+        notify.error(error.message)
       }
       return
     }

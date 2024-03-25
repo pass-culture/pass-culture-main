@@ -43,7 +43,7 @@ export const useCollectiveOfferImageUpload = (
       // Image field is empty
       if (imageOffer === null) {
         // Delete image if one was present before
-        if (offer?.imageUrl === undefined || offer?.imageUrl === null) {
+        if (offer?.imageUrl === undefined || offer.imageUrl === null) {
           return
         }
 
@@ -70,9 +70,9 @@ export const useCollectiveOfferImageUpload = (
         : postCollectiveOfferImageAdapter
       const { isOk, message, payload } = await adapter({
         offerId,
-        imageFile: imageToUpload?.imageFile,
-        credit: imageToUpload?.credit,
-        cropParams: imageToUpload?.cropParams,
+        imageFile: imageToUpload.imageFile,
+        credit: imageToUpload.credit,
+        cropParams: imageToUpload.cropParams,
       })
 
       if (!isOk) {
@@ -80,7 +80,7 @@ export const useCollectiveOfferImageUpload = (
       }
       setImageOffer({
         url: payload.imageUrl,
-        credit: imageToUpload?.credit,
+        credit: imageToUpload.credit,
       })
     },
     [imageOffer, imageToUpload]

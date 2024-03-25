@@ -114,7 +114,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       await submitToApi(values, offer, formik.resetForm, formik.setErrors)
     } catch (error) {
       if (error instanceof Error) {
-        notify.error(error?.message)
+        notify.error(error.message)
       }
       return
     }
@@ -275,7 +275,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   }
 
   const submitActivationCodes = async (activationCodes: string[]) => {
-    await formik.setFieldValue('quantity', activationCodes?.length, true)
+    await formik.setFieldValue('quantity', activationCodes.length, true)
     await formik.setFieldValue('activationCodes', activationCodes)
     setIsActivationCodeFormVisible(false)
   }

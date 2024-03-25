@@ -29,7 +29,7 @@ const ReimbursementsTabs = () => {
   )
   const hasWarning =
     (selectedOfferer &&
-      selectedOfferer?.venuesWithNonFreeOffersWithoutBankAccounts.length > 0) ??
+      selectedOfferer.venuesWithNonFreeOffersWithoutBankAccounts.length > 0) ??
     false
 
   const getSteps = () => {

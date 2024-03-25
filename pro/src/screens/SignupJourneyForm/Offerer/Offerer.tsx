@@ -90,7 +90,7 @@ const Offerer = (): JSX.Element => {
 
   // Need to wait for offerer to be updated in the context to redirect user
   useEffect(() => {
-    if (offerer?.siret && offerer?.siret !== '') {
+    if (offerer?.siret && offerer.siret !== '') {
       let to
       if (offerer.hasVenueWithSiret) {
         to = SIGNUP_JOURNEY_STEP_IDS.OFFERERS

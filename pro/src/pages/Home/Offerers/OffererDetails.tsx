@@ -47,7 +47,7 @@ export const OffererDetails = ({
     const newOffererId = event.target.value
     if (newOffererId === CREATE_OFFERER_SELECT_ID) {
       navigate('/structures/creation')
-    } else if (newOffererId !== selectedOfferer?.id.toString()) {
+    } else if (newOffererId !== selectedOfferer.id.toString()) {
       searchParams.set('structure', newOffererId)
       setSearchParams(searchParams)
       dispatch(updateSelectedOffererId(Number(newOffererId)))

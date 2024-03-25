@@ -68,7 +68,7 @@ export const Homepage = (): JSX.Element => {
     const physicalVenues = getPhysicalVenuesFromOfferer(selectedOfferer)
     const virtualVenue = getVirtualVenueFromOfferer(selectedOfferer)
 
-    return physicalVenues?.length === 0 && !virtualVenue
+    return physicalVenues.length === 0 && !virtualVenue
   }, [selectedOfferer])
 
   const offererOptions = sortByLabel(
@@ -162,7 +162,7 @@ export const Homepage = (): JSX.Element => {
         />
       )}
 
-      {selectedOfferer?.isValidated && selectedOfferer?.isActive && (
+      {selectedOfferer?.isValidated && selectedOfferer.isActive && (
         <section className={styles['section']}>
           <StatisticsDashboard offerer={selectedOfferer} />
         </section>

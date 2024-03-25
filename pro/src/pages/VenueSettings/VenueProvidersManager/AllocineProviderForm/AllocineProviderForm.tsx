@@ -58,7 +58,7 @@ export const AllocineProviderForm = ({
       price: String(price),
       providerId,
       venueId,
-      isActive: initialValues?.isActive,
+      isActive: initialValues.isActive,
     }
 
     setIsLoading(true)

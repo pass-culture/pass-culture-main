@@ -42,7 +42,7 @@ export const OffererCreation = (): JSX.Element => {
       } else {
         const createdOfferer = await api.createOfferer({
           ...response.payload.values,
-          siren: formValues.siren?.replace(/\s/g, ''),
+          siren: formValues.siren.replace(/\s/g, ''),
         })
         navigate(`/accueil?structure=${createdOfferer.id}`, { replace: true })
       }
@@ -100,7 +100,7 @@ export const OffererCreation = (): JSX.Element => {
                   <span>Siège social : </span>
                   {offerer?.postalCode && (
                     <span>
-                      {`${offerer?.address} - ${offerer?.postalCode} ${offerer?.city}`}
+                      {`${offerer.address} - ${offerer.postalCode} ${offerer.city}`}
                     </span>
                   )}
                 </div>
@@ -108,7 +108,7 @@ export const OffererCreation = (): JSX.Element => {
               <FormLayout.Row>
                 <div className={styles['op-detail-creation-form']}>
                   <span>Désignation : </span>
-                  {offerer?.name && <span>{offerer?.name}</span>}
+                  {offerer?.name && <span>{offerer.name}</span>}
                 </div>
               </FormLayout.Row>
               <div className={styles['offerer-form-validation']}>

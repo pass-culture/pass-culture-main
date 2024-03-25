@@ -9,7 +9,7 @@ export const getIndividualOfferImage = (
       return {
         originalUrl: offer.activeMediation.thumbUrl,
         url: offer.activeMediation.thumbUrl,
-        credit: offer.activeMediation?.credit || '',
+        credit: offer.activeMediation.credit || '',
       }
     }
   } else if (offer.thumbUrl) {

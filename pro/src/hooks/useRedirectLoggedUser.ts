@@ -20,7 +20,7 @@ const useRedirectLoggedUser = () => {
   useEffect(() => {
     async function fetchOfferersNames() {
       const { offerersNames } = await api.listOfferersNames()
-      if (offerersNames?.length === 0) {
+      if (offerersNames.length === 0) {
         navigate('/parcours-inscription')
       } else {
         redirectToUrl()

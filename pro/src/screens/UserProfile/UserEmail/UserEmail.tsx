@@ -31,7 +31,7 @@ const UserEmail = ({
 
   const getPendingEmailRequest = async () => {
     const response = await getPendingEmailValidationAdapter()
-    const newEmail = response.payload?.newEmail || ''
+    const newEmail = response.payload.newEmail || ''
     setPendingEmailValidation(newEmail)
   }
 

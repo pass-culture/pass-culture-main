@@ -20,7 +20,7 @@ export const getStockCollectiveOfferAdapter: GetStockCollectiveOfferAdapter =
     try {
       const offer = await api.getCollectiveOffer(offerId)
 
-      const isBooked = Boolean(offer?.collectiveStock?.isBooked)
+      const isBooked = Boolean(offer.collectiveStock?.isBooked)
 
       return {
         isOk: true,

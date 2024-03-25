@@ -32,7 +32,7 @@ const CsvTable = ({ getCsvData }: CsvTableProps): JSX.Element => {
     <div id="spinner-container">
       <Spinner />
     </div>
-  ) : dataFromCsv?.data?.length ? (
+  ) : dataFromCsv?.data.length ? (
     <main id="content" className="csv-main-container">
       <div id="csv-container">
         <table id="csv-table">

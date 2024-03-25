@@ -27,7 +27,7 @@ export const VenueFormActionBar = ({
           link={{
             to: isCreatingVenue
               ? '/accueil'
-              : `/structures/${venue?.managingOfferer?.id}/lieux/${venue?.id}`,
+              : `/structures/${venue?.managingOfferer.id}/lieux/${venue?.id}`,
             isExternal: false,
           }}
         >

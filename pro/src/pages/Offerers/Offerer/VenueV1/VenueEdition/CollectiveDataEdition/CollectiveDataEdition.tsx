@@ -72,13 +72,13 @@ export const CollectiveDataEdition = ({
   }
 
   const hasAdageIdForMoreThan30Days = Boolean(
-    venue?.hasAdageId &&
-      venue?.adageInscriptionDate &&
-      isBefore(new Date(venue?.adageInscriptionDate), addDays(new Date(), -30))
+    venue.hasAdageId &&
+      venue.adageInscriptionDate &&
+      isBefore(new Date(venue.adageInscriptionDate), addDays(new Date(), -30))
   )
 
   const showCollectiveDataForm = Boolean(
-    venue?.hasAdageId && canCreateCollectiveOffer
+    venue.hasAdageId && canCreateCollectiveOffer
   )
   const collectiveDmsApplication = getLastCollectiveDmsApplication(
     venue.collectiveDmsApplications

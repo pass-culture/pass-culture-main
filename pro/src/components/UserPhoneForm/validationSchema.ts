@@ -21,7 +21,7 @@ const validationSchema = yup.object().shape({
         } catch (e) {
           return false
         }
-        const isValid = phoneNumber?.isValid()
+        const isValid = phoneNumber.isValid()
         if (!isValid) {
           return false
         }

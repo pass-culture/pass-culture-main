@@ -14,7 +14,7 @@ export const computeInitialValues = (
   offer: GetIndividualOfferResponseModel
 ): PriceCategoriesFormValues => {
   const initialPriceCategories =
-    !offer.priceCategories || offer?.priceCategories.length === 0
+    !offer.priceCategories || offer.priceCategories.length === 0
       ? [FIRST_INITIAL_PRICE_CATEGORY]
       : offer.priceCategories
 

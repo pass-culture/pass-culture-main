@@ -95,7 +95,7 @@ const OfferEducationalActions = ({
 
     if (
       !offer.collectiveStock?.bookingLimitDatetime ||
-      toDateStrippedOfTimezone(offer.collectiveStock?.bookingLimitDatetime) >
+      toDateStrippedOfTimezone(offer.collectiveStock.bookingLimitDatetime) >
         new Date()
     ) {
       setIsOfferActive(true)

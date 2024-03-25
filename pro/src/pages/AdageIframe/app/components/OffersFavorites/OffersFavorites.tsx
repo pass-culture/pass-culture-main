@@ -23,7 +23,7 @@ export const OffersFavorites = () => {
     const fetchFavorites = async () => {
       setIsLoading(true)
       const offers =
-        (await apiAdage.getCollectiveFavorites())?.favoritesTemplate ?? []
+        (await apiAdage.getCollectiveFavorites()).favoritesTemplate ?? []
       setFavoriteOffers(offers)
       setIsLoading(false)
     }

@@ -588,7 +588,7 @@ const StocksEventList = ({
                 if (priceCategory) {
                   price = `${formatPrice(
                     priceCategory.price
-                  )} - ${priceCategory?.label}`
+                  )} - ${priceCategory.label}`
                 }
 
                 const stockIndex = stocks.findIndex((s) => s.id === stock.id)
@@ -637,7 +637,7 @@ const StocksEventList = ({
                         <Button
                           variant={ButtonVariant.TERNARY}
                           onClick={async () => {
-                            if (stock.id?.toString()) {
+                            if (stock.id.toString()) {
                               await onDeleteStock(stockIndex, stock.id)
                             }
                           }}

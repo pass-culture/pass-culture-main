@@ -60,13 +60,13 @@ export const VenueOfferSteps = ({
     or if the offerer has no paid offerer
   */
   const offererHasCreatedOffer = Boolean(
-    offerer?.managedVenues?.some((venue) => venue.hasCreatedOffer)
+    offerer.managedVenues?.some((venue) => venue.hasCreatedOffer)
   )
   const offererHasBankAccount = Boolean(
-    offerer?.hasPendingBankAccount || offerer?.hasValidBankAccount
+    offerer.hasPendingBankAccount || offerer.hasValidBankAccount
   )
   const displayButtonDependingVenue =
-    (!isFirstVenue && !offerer?.hasNonFreeOffer) ||
+    (!isFirstVenue && !offerer.hasNonFreeOffer) ||
     (isFirstVenue && !offererHasCreatedOffer)
 
   const shouldDisplayEACInformationSection =
@@ -203,7 +203,7 @@ export const VenueOfferSteps = ({
             {venue && shouldDisplayEACInformationSection && (
               <ButtonLink
                 className={styles['step-button-width']}
-                isDisabled={!venue?.hasAdageId}
+                isDisabled={!venue.hasAdageId}
                 variant={ButtonVariant.BOX}
                 icon={fullNextIcon}
                 link={{
@@ -249,8 +249,8 @@ export const VenueOfferSteps = ({
                   icon={fullLinkIcon}
                   link={{
                     to: `https://www.demarches-simplifiees.fr/dossiers${
-                      venue?.demarchesSimplifieesApplicationId
-                        ? `/${venue?.demarchesSimplifieesApplicationId}/messagerie`
+                      venue.demarchesSimplifieesApplicationId
+                        ? `/${venue.demarchesSimplifieesApplicationId}/messagerie`
                         : ''
                     }`,
                     isExternal: true,

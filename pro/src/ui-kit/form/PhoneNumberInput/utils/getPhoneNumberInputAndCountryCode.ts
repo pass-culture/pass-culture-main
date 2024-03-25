@@ -23,7 +23,7 @@ export const getPhoneNumberInputAndCountryCode = (
   const phoneNumberWithCountryCode =
     parseAndValidateFrenchPhoneNumber(phoneNumber)
 
-  if (phoneNumberWithCountryCode?.number) {
+  if (phoneNumberWithCountryCode.number) {
     const countryCode = PHONE_CODE_COUNTRY_CODE_OPTIONS.find(
       (option) =>
         option.label === `+${phoneNumberWithCountryCode.countryCallingCode}`

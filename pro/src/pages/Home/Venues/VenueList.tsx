@@ -30,7 +30,7 @@ export const VenueList = ({ offerer }: VenueListProps) => {
         <Venue venue={virtualVenue} offerer={offerer} isFirstVenue />
       )}
 
-      {physicalVenues?.map((venue, index) => (
+      {physicalVenues.map((venue, index) => (
         <Venue
           key={offerer.id + '-' + venue.id}
           venue={venue}

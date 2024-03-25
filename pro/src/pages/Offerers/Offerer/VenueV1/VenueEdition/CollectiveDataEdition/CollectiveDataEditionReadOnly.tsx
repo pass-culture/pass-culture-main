@@ -70,7 +70,7 @@ export const CollectiveDataEditionReadOnly = ({
                         (partner) => partner.value === network
                       )?.label
                   )
-                  ?.join(', ') ?? 'Non renseigné',
+                  .join(', ') ?? 'Non renseigné',
             },
           ]}
         />

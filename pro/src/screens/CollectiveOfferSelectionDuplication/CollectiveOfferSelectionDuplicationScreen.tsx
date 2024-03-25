@@ -133,7 +133,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                   </p>
                 </legend>
 
-                {offers?.slice(0, 5).map((offer) => (
+                {offers.slice(0, 5).map((offer) => (
                   <div
                     key={offer.id}
                     className={cn(styles['offer-selection'], {
@@ -161,7 +161,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                   </div>
                 ))}
               </fieldset>
-              {offers?.length < 1 && (
+              {offers.length < 1 && (
                 <div className={styles['search-no-results']}>
                   <SvgIcon
                     src={strokeSearchIcon}

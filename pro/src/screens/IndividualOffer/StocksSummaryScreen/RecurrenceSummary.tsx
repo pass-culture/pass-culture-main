@@ -17,7 +17,7 @@ export const RecurrenceSummary = ({
     <>
       <EventCancellationBanner offer={offer} />
 
-      {stocks.length !== 0 && offer?.priceCategories && (
+      {stocks.length !== 0 && offer.priceCategories && (
         <StocksEventList
           priceCategories={offer.priceCategories}
           departmentCode={offer.venue.departementCode}

@@ -125,7 +125,7 @@ export const computeInitialValuesFromOffer = (
     }
   }
 
-  const eventAddress = offer?.offerVenue
+  const eventAddress = offer.offerVenue
   const participants = {
     all: Object.values(StudentLevels).every((student) =>
       offer.students.includes(student)
@@ -176,7 +176,7 @@ export const computeInitialValuesFromOffer = (
     'search-domains': '',
     'search-formats': '',
     'search-interventionArea': '',
-    nationalProgramId: offer.nationalProgram?.id?.toString() || '',
+    nationalProgramId: offer.nationalProgram?.id.toString() || '',
     isTemplate: Boolean(offer.isTemplate),
     datesType: isCollectiveOfferTemplate(offer)
       ? offer.dates

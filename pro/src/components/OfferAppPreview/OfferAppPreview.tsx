@@ -28,7 +28,7 @@ const OfferAppPreview = ({ offer }: OfferAppPreviewProps): JSX.Element => {
         {image ? (
           <img
             className={style['offer-img']}
-            src={image?.url}
+            src={image.url}
             alt="Image de l’offre"
           />
         ) : (
