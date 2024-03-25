@@ -76,8 +76,8 @@ class CDSStocks(LocalProvider):
         if not self.product:
             logger.info(
                 "Product not found for allocine Id %s",
-                self.movie_information.IDFilmAlloCine,
-                extra={"allocineId": self.movie_information.IDFilmAlloCine, "venueId": self.venue.id},
+                self.movie_information.allocineid,
+                extra={"allocineId": self.movie_information.allocineid, "venueId": self.venue.id},
                 technical_message_id="allocineId.not_found",
             )
             if FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS.is_active():
