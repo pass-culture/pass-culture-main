@@ -77,32 +77,6 @@ class UserEmailValidationResponseModel(BaseModel):
         orm_mode = True
 
 
-class ImportUserFromCsvModel(BaseModel):
-    address: str
-    city: str
-    email: pydantic_v1.EmailStr
-    first_name: str
-    last_name: str
-    latitude: float | None = None
-    longitude: float | None = None
-    name: str
-    password: str
-    phone_number: str
-    postal_code: str
-    siren: str
-    contact_ok: bool
-
-    @validator("password")
-    @classmethod
-    def validate_password_strength(cls, password: str) -> str:
-        check_password_strength("password", password)
-        return password
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-
 class ProUserCreationBodyV2Model(BaseModel):
     email: pydantic_v1.EmailStr
     first_name: str

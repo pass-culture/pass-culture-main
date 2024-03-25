@@ -41,10 +41,9 @@ from pcapi.core.users.email import update as email_update
 from pcapi.models import db
 from pcapi.notifications.push import testing as batch_testing
 from pcapi.routes.native.v1.serialization import account as account_serialization
-from pcapi.routes.serialization.users import ImportUserFromCsvModel
+from pcapi.routes.serialization.users import ProUserCreationBodyV2Model
 
 import tests
-from tests.test_utils import gen_offerer_tags
 
 
 DATA_DIR = pathlib.Path(tests.__path__[0]) / "files"
@@ -748,20 +747,16 @@ class DomainsCreditTest:
 class CreateProUserTest:
     data = {
         "email": "prouser@example.com",
-        "password": "P@ssword12345",
         "firstName": "Jean",
         "lastName": "Test",
-        "contactOk": False,
+        "password": "P@ssword12345",
         "phoneNumber": "0666666666",
-        "name": "Le Petit Rintintin",
-        "siren": "123456789",
-        "address": "1 rue du test",
-        "postalCode": "44000",
-        "city": "Nantes",
+        "contactOk": False,
+        "token": "token",
     }
 
     def test_create_pro_user(self):
-        pro_user_creation_body = ImportUserFromCsvModel(**self.data)
+        pro_user_creation_body = ProUserCreationBodyV2Model(**self.data)
 
         pro_user = users_api.create_pro_user(pro_user_creation_body)
 
@@ -775,7 +770,7 @@ class CreateProUserTest:
 
     @override_settings(IS_INTEGRATION=True)
     def test_create_pro_user_in_integration(self):
-        pro_user_creation_body = ImportUserFromCsvModel(**self.data)
+        pro_user_creation_body = ProUserCreationBodyV2Model(**self.data)
 
         pro_user = users_api.create_pro_user(pro_user_creation_body)
 
@@ -786,34 +781,6 @@ class CreateProUserTest:
         assert not pro_user.has_admin_role
         assert pro_user.has_beneficiary_role
         assert pro_user.deposits
-
-
-class CreateProUserAndOffererTest:
-    @override_settings(NATIONAL_PARTNERS_EMAIL_DOMAINS="example.com,partner.com")
-    def test_offerer_auto_tagging(self):
-        # Given
-        gen_offerer_tags()
-        user_info = ImportUserFromCsvModel(
-            address="1 rue des polissons",
-            city="Paris",
-            email="user@example.com",
-            firstName="Jerry",
-            lastName="khan",
-            name="The best name",
-            password="The p@ssw0rd",
-            phoneNumber="0607080910",
-            postalCode="75017",
-            siren=777084122,
-            contactOk=True,
-        )
-
-        # When
-        user = users_api.import_pro_user_and_offerer_from_csv(user_info)
-
-        # Then
-        offerer = user.UserOfferers[0].offerer
-        assert offerer.name == user_info.name
-        assert "Partenaire national" in (tag.label for tag in offerer.tags)
 
 
 class BeneficiaryInformationUpdateTest:

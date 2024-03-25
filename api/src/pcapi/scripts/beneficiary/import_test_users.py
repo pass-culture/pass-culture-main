@@ -8,13 +8,17 @@ import click
 from click_option_group import RequiredMutuallyExclusiveOptionGroup
 from click_option_group import optgroup
 from flask import Blueprint
+import schwifty
 
 from pcapi import settings
 from pcapi.connectors.googledrive import GoogleDriveBackend
-import pcapi.core.finance.api as finance_api
+from pcapi.core.finance import api as finance_api
+from pcapi.core.finance import models as finance_models
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
-import pcapi.core.users.api as users_api
+from pcapi.core.offerers import api as offerers_api
+from pcapi.core.offerers import models as offerers_models
+from pcapi.core.users import api as users_api
 from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
@@ -23,8 +27,12 @@ from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications.internal.transactional import import_test_user_failure
 from pcapi.repository import repository
-from pcapi.routes.serialization.users import ImportUserFromCsvModel
+from pcapi.routes.serialization import base as base_serialize
+from pcapi.routes.serialization import offerers_serialize
+from pcapi.routes.serialization import venues_serialize
+from pcapi.routes.serialization.users import ProUserCreationBodyV2Model
 from pcapi.utils.email import sanitize_email
+from pcapi.utils.siren import complete_siren_or_siret
 
 
 logger = logging.getLogger(__name__)
@@ -39,6 +47,16 @@ def _get_password(row: dict) -> str:
     if row.get("Mot de passe"):  # Keep compatibility with CSV without this column
         return row["Mot de passe"]
     return settings.TEST_DEFAULT_PASSWORD
+
+
+def _get_siret(siren: str) -> str:
+    # SIREN is CSV file may be incomplete so that a valid one is computed with check digit.
+    # SIRET is also calculated as the first valid code with check digit.
+    # This is useful for API Entreprise (staging) calls, which require a valid format.
+    # Keep compatibility with a full 9-digit SIREN.
+    if len(siren) == 8:
+        siren = complete_siren_or_siret(siren)
+    return complete_siren_or_siret(f"{siren}0001")
 
 
 def _create_beneficiary(row: dict, role: UserRole | None) -> User:
@@ -65,24 +83,39 @@ def _create_beneficiary(row: dict, role: UserRole | None) -> User:
 
 
 def _create_pro_user(row: dict) -> User:
-    user = users_api.import_pro_user_and_offerer_from_csv(
-        ImportUserFromCsvModel(
-            address="1 avenue des pros",
-            city="MA VILLE",
-            firstName=row["Prénom"],  # type: ignore [call-arg]
-            lastName=row["Nom"],
+    user = users_api.create_pro_user(
+        ProUserCreationBodyV2Model(  # type: ignore [call-arg]
             email=row["Mail"],
-            name=f'Entreprise {row["Nom"]}',
+            firstName=row["Prénom"],
+            lastName=row["Nom"],
             password=_get_password(row),
             phoneNumber=row["Téléphone"],
-            postalCode=row["Code postal"],
-            siren=row["SIREN"],
-            contactOk=True,
+            contactOk=False,
+            token="token",
         )
     )
 
+    siret = _get_siret(row["SIREN"])
+    offerer_creation_info = offerers_serialize.CreateOffererQueryModel(
+        address="1 avenue de la Culture",
+        city="MA VILLE",
+        latitude=46.126,
+        longitude=-3.033,
+        name=f'Structure {row["Nom"]}',
+        postalCode=row["Code postal"],
+        siren=siret[:9],
+    )
+    new_onboarding_info = offerers_api.NewOnboardingInfo(
+        target=offerers_models.Target.INDIVIDUAL_AND_EDUCATIONAL,
+        venueTypeCode=offerers_models.VenueTypeCode.ADMINISTRATIVE.name,
+        webPresence="https://www.example.com",
+    )
+    user_offerer = offerers_api.create_offerer(
+        user, offerer_creation_info, new_onboarding_info, comment="Créée par la commande `import_test_users`"
+    )
+
     # Validate offerer
-    offerer = user.UserOfferers[0].offerer
+    offerer = user_offerer.offerer
     offerer.validationStatus = ValidationStatus.VALIDATED
     offerer.dateValidated = datetime.datetime.utcnow()
     db.session.add(offerer)
@@ -93,6 +126,47 @@ def _create_pro_user(row: dict) -> User:
         user=user,
         offerer=offerer,
         comment="Validée automatiquement par le script de création",
+    )
+
+    venue_creation_info = venues_serialize.PostVenueBodyModel(
+        address=base_serialize.VenueAddress(offerer_creation_info.address),
+        banId=None,
+        bookingEmail=base_serialize.VenueBookingEmail(user.email),
+        city=base_serialize.VenueCity(offerer_creation_info.city),
+        comment=None,
+        latitude=46.126,
+        longitude=-3.033,
+        managingOffererId=offerer.id,
+        name=base_serialize.VenueName(f'Lieu {row["Nom"]}'),
+        publicName=None,
+        postalCode=row["Code postal"],
+        siret=base_serialize.VenueSiret(siret),
+        venueLabelId=None,
+        venueTypeCode=offerers_models.VenueTypeCode.ADMINISTRATIVE.name,
+        withdrawalDetails=None,
+        description=None,
+        contact=None,
+        audioDisabilityCompliant=False,
+        mentalDisabilityCompliant=False,
+        motorDisabilityCompliant=False,
+        visualDisabilityCompliant=False,
+    )
+    venue = offerers_api.create_venue(venue_creation_info, strict_accessibility_compliance=False)
+    offerers_api.create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
+
+    bank_account = finance_models.BankAccount(
+        label=f"Compte de {user.firstName}",
+        offerer=offerer,
+        iban=schwifty.IBAN.generate("FR", bank_code="10010", account_code=f"{siret[:9]:010}").compact,
+        bic="BDFEFRPP",
+        dsApplicationId=int(siret),
+        status=finance_models.BankAccountApplicationStatus.ACCEPTED,
+    )
+    db.session.add(bank_account)
+    db.session.add(
+        offerers_models.VenueBankAccountLink(
+            venue=venue, bankAccount=bank_account, timespan=(datetime.datetime.utcnow(),)
+        )
     )
 
     user.validationToken = None
