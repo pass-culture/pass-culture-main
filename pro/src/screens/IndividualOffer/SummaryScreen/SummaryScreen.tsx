@@ -199,7 +199,7 @@ const SummaryScreen = () => {
       {displayRedirectDialog && offerOfferer?.id && offer.venue.id && (
         <RedirectToBankAccountDialog
           cancelRedirectUrl={offerConfirmationStepUrl}
-          offerId={offerOfferer?.id}
+          offerId={offerOfferer.id}
           venueId={offer.venue.id}
         />
       )}

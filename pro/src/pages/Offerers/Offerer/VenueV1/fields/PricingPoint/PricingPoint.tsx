@@ -50,7 +50,7 @@ const PricingPoint = ({
 
   const handleClick = async () => {
     const pricingPointId = pricingPointSelectField.value
-    if (venue?.id) {
+    if (venue.id) {
       setIsSubmitingPricingPoint(true)
       try {
         await api.linkVenueToPricingPoint(venue.id, {
@@ -157,7 +157,7 @@ const PricingPoint = ({
             id="venueSiret"
             name="venueSiret"
             data-testid={'pricingPointSelect'}
-            defaultValue={venue.pricingPoint ? venue.pricingPoint?.id : ''}
+            defaultValue={venue.pricingPoint ? venue.pricingPoint.id : ''}
             label={
               'Lieu avec SIRET utilisé pour le calcul de votre barème de remboursement'
             }

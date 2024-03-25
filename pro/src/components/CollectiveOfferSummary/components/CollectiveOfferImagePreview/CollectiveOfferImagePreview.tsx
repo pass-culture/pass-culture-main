@@ -22,7 +22,7 @@ const CollectiveOfferImagePreview = ({
 }: CollectiveOfferImagePreviewProps): JSX.Element => {
   return (
     <SummarySubSection title="Image de l’offre">
-      {offer?.imageUrl ? (
+      {offer.imageUrl ? (
         <img
           alt={offer.name}
           src={offer.imageUrl}

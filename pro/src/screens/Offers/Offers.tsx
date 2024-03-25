@@ -121,10 +121,7 @@ const Offers = ({
   useEffect(() => {
     const loadValidatedUserOfferers = async () => {
       const validatedUserOfferers = await getUserValidatedOfferersNamesAdapter()
-      if (
-        validatedUserOfferers.isOk &&
-        validatedUserOfferers?.payload?.length
-      ) {
+      if (validatedUserOfferers.isOk && validatedUserOfferers.payload.length) {
         setIsOffererValidated(true)
       } else {
         setIsOffererValidated(false)

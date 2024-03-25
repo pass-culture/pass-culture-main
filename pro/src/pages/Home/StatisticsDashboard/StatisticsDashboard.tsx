@@ -71,8 +71,8 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
 
       {!isLoading && (
         <Card>
-          {stats?.jsonData.topOffers?.length ||
-          stats?.jsonData.dailyViews?.length ? (
+          {stats?.jsonData.topOffers.length ||
+          stats?.jsonData.dailyViews.length ? (
             <div
               className={cn(styles['data-container'], {
                 [styles['has-top-offers']]: stats.jsonData.topOffers.length > 0,

@@ -126,16 +126,16 @@ const BankInformations = (): JSX.Element => {
         </ButtonLink>
       </div>
       {selectedOffererBankAccounts &&
-        selectedOffererBankAccounts?.bankAccounts.length > 0 && (
+        selectedOffererBankAccounts.bankAccounts.length > 0 && (
           <div className={styles['bank-accounts']}>
-            {selectedOffererBankAccounts?.bankAccounts.map((bankAccount) => (
+            {selectedOffererBankAccounts.bankAccounts.map((bankAccount) => (
               <ReimbursementBankAccount
                 bankAccount={bankAccount}
                 offererId={selectedOfferer?.id}
                 key={bankAccount.id}
                 onUpdateButtonClick={(bankAccountId) => {
                   setSelectedBankAccount(
-                    selectedOffererBankAccounts?.bankAccounts.find(
+                    selectedOffererBankAccounts.bankAccounts.find(
                       (bankAccount) => bankAccount.id === bankAccountId
                     ) ?? null
                   )
@@ -143,7 +143,7 @@ const BankInformations = (): JSX.Element => {
                 managedVenues={selectedOffererBankAccounts.managedVenues}
                 hasWarning={
                   (selectedOfferer &&
-                    selectedOfferer?.venuesWithNonFreeOffersWithoutBankAccounts
+                    selectedOfferer.venuesWithNonFreeOffersWithoutBankAccounts
                       .length > 0) ??
                   false
                 }
@@ -156,8 +156,8 @@ const BankInformations = (): JSX.Element => {
         className={styles['add-bank-account-button']}
         variant={
           /* istanbul ignore next : graphic changes */ selectedOfferer &&
-          (selectedOfferer?.hasPendingBankAccount ||
-            selectedOfferer?.hasValidBankAccount)
+          (selectedOfferer.hasPendingBankAccount ||
+            selectedOfferer.hasValidBankAccount)
             ? ButtonVariant.SECONDARY
             : ButtonVariant.PRIMARY
         }

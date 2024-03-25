@@ -77,10 +77,12 @@ const OfferDetails = ({
       {durationString && (
         <OfferSection title="Durée">{durationString}</OfferSection>
       )}
-      {students?.length > 0 && (
+      {students.length > 0 && (
         <OfferSection title="Public Cible">
           <ul className="offer-details-list">
-            {students?.map((student) => <li key={student}>{student}</li>)}
+            {students.map((student) => (
+              <li key={student}>{student}</li>
+            ))}
           </ul>
         </OfferSection>
       )}
@@ -98,7 +100,7 @@ const OfferDetails = ({
         </OfferSection>
       )}
 
-      {interventionArea?.length > 0 && (
+      {interventionArea.length > 0 && (
         <OfferSection title="Zone de Mobilité">
           <div>{getInterventionAreaLabels(interventionArea)}</div>
         </OfferSection>

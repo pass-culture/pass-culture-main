@@ -129,7 +129,7 @@ const CollectiveOfferSummaryCreation = ({
       {displayRedirectDialog && offerer?.id && (
         <RedirectToBankAccountDialog
           cancelRedirectUrl={nextRedirectionUrl}
-          offerId={offerer?.id}
+          offerId={offerer.id}
           venueId={offer.venue.id}
         />
       )}

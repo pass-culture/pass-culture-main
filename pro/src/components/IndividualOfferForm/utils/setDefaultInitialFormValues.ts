@@ -56,7 +56,7 @@ const setDefaultInitialFormValues = (
       ? subcategoryFields
       : FORM_DEFAULT_VALUES.subCategoryFields,
     offererId: initialOffererId,
-    venueId: venue?.id ? String(venue?.id) : FORM_DEFAULT_VALUES.venueId,
+    venueId: venue?.id ? String(venue.id) : FORM_DEFAULT_VALUES.venueId,
     withdrawalDetails: initialWithdrawalDetails,
     accessibility: initialAccessibility,
     isVenueVirtual: initialIsVenueVirtual,

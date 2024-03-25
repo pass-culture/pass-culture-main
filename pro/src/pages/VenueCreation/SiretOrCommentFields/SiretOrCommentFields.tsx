@@ -74,7 +74,7 @@ export const SiretOrCommentFields = ({
     const response = await getSiretData(siret)
 
     /* istanbul ignore next: DEBT, TO FIX */
-    if (!response?.isOk) {
+    if (!response.isOk) {
       return
     }
     const address = `${response.payload.values?.address} ${response.payload.values?.postalCode} ${response.payload.values?.city}`

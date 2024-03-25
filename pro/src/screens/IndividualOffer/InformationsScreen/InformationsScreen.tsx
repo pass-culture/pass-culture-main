@@ -118,9 +118,7 @@ const InformationsScreen = ({
         'withdrawalType',
       ].some((field) => {
         const fieldMeta = formik.getFieldMeta(field)
-        return (
-          fieldMeta?.touched && fieldMeta?.value !== fieldMeta?.initialValue
-        )
+        return fieldMeta.touched && fieldMeta.value !== fieldMeta.initialValue
       })
 
       const showWithdrawalMailDialog =

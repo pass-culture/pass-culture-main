@@ -12,9 +12,7 @@ export const getFilteredVenueListBySubcategory = (
     return venueList
   }
 
-  if (
-    subcategory?.onlineOfflinePlatform === CATEGORY_STATUS.ONLINE_OR_OFFLINE
-  ) {
+  if (subcategory.onlineOfflinePlatform === CATEGORY_STATUS.ONLINE_OR_OFFLINE) {
     return venueList
   }
 

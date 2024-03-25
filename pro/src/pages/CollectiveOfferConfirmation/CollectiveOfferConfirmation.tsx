@@ -30,7 +30,7 @@ const CollectiveOfferConfirmation = ({
     <AppLayout>
       <CollectiveOfferConfirmationScreen
         isShowcase={offer.isTemplate}
-        offerStatus={offer?.status}
+        offerStatus={offer.status}
         offererId={offer.venue.managingOfferer.id}
         institutionDisplayName={getInstitutionDisplayName()}
       />

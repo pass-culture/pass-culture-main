@@ -116,7 +116,7 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
                   {
                     title: 'Demande reçue le',
                     text: informations?.dateCreated
-                      ? getDateToFrenchText(informations?.dateCreated)
+                      ? getDateToFrenchText(informations.dateCreated)
                       : '-',
                   },
                   {
@@ -169,7 +169,7 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
                 {
                   title: 'Date souhaitée',
                   text: informations?.requestedDate
-                    ? getDateToFrenchText(informations?.requestedDate)
+                    ? getDateToFrenchText(informations.requestedDate)
                     : '-',
                 },
                 {

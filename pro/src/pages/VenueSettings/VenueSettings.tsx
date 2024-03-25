@@ -125,7 +125,7 @@ const VenueSettings = (): JSX.Element | null => {
         providers={providers}
         venue={venue}
         venueProviders={venueProviders}
-        hasBookingQuantity={venue?.id ? hasBookingQuantity : false}
+        hasBookingQuantity={venue.id ? hasBookingQuantity : false}
       />
     </AppLayout>
   )

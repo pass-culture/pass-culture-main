@@ -16,7 +16,7 @@ export function getFormattedDatesForTemplateOffer(
   //  is saved as "2024-01-25T15:15:00Z" and thus should be displayed as "Le 25 janvier 2024 à 15h15"
   return (
     (offer.dates?.start &&
-      offer.dates?.end &&
+      offer.dates.end &&
       getRangeToFrenchText(
         toDateStrippedOfTimezone(offer.dates.start),
         toDateStrippedOfTimezone(offer.dates.end)

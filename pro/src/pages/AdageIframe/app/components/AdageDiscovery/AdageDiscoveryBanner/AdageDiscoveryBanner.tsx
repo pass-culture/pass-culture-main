@@ -19,15 +19,15 @@ export default function AdageDiscoveryBanner() {
     }
 
     const onDocumentScroll = () => {
-      if (circlesGroupRef?.current) {
+      if (circlesGroupRef.current) {
         circlesGroupRef.current.style.transform = translateYWithSpeed(4)
       }
 
-      if (ovalsGroupRef?.current) {
+      if (ovalsGroupRef.current) {
         ovalsGroupRef.current.style.transform = translateYWithSpeed(8)
       }
 
-      if (crossesGroupRef?.current) {
+      if (crossesGroupRef.current) {
         crossesGroupRef.current.style.transform = translateYWithSpeed(10)
       }
     }
