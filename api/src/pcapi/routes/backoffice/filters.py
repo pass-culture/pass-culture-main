@@ -576,6 +576,13 @@ def format_music_subtype(music_subtype_id: int | str) -> str:
         return f"Autre[{music_subtype_id}]"
 
 
+def format_music_gtl_id(music_gtl_id: int | str) -> str:
+    return next(
+        (music_genre.label for music_genre in categories.TITELIVE_MUSIC_TYPES if music_genre.gtl_id == music_gtl_id),
+        f"Autre[{music_gtl_id}]",
+    )
+
+
 def format_show_type(show_type_id: int | str) -> str:
     try:
         return show_types.SHOW_TYPES_LABEL_BY_CODE.get(int(show_type_id), f"Autre[{show_type_id}]")
@@ -1103,6 +1110,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_offer_validation_operator"] = format_offer_validation_operator
     app.jinja_env.filters["format_music_type"] = format_music_type
     app.jinja_env.filters["format_music_subtype"] = format_music_subtype
+    app.jinja_env.filters["format_music_gtl_id"] = format_music_gtl_id
     app.jinja_env.filters["format_show_type"] = format_show_type
     app.jinja_env.filters["format_show_subtype"] = format_show_subtype
     app.jinja_env.filters["get_comparated_format_function"] = get_comparated_format_function

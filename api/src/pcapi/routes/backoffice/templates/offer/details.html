@@ -107,18 +107,37 @@
                 <p class="mb-1">
                   <span class="fw-bold">Sous-catégorie :</span> {{ offer.subcategoryId | format_offer_subcategory }}
                 </p>
-                {% if offer.extraData.musicType or offer.extraData.musicSubType %}
-                  <span class="fw-bold">Type de musique :</span>
-                  {% if offer.extraData.musicType %}
-                    {{ offer.extraData.musicType | format_music_type }}
-                  {% else %}
-                    [Non renseigné]
+                {% if is_feature_active("ENABLE_PRO_TITELIVE_MUSIC_GENRES") %}
+                  {% if offer.extraData.musicType or offer.extraData.musicSubType %}
+                    <span class="fw-bold">Type de musique :</span>
+                    {% if offer.extraData.musicType %}
+                      {{ offer.extraData.musicType | format_music_type }}
+                    {% else %}
+                      [Non renseigné]
+                    {% endif %}
+                    -
+                    {% if offer.extraData.musicSubType %}
+                      {{ offer.extraData.musicSubType | format_music_subtype }}
+                    {% else %}
+                      [Non renseigné]
+                    {% endif %}
                   {% endif %}
-                  -
-                  {% if offer.extraData.musicSubType %}
-                    {{ offer.extraData.musicSubType | format_music_subtype }}
-                  {% else %}
-                    [Non renseigné]
+                {% else %}
+                  {% if offer.extraData.musicType %}
+                    <span class="fw-bold">Type de musique :</span>
+                    {% if is_feature_active() %}
+                      {% if offer.extraData.musicType and offer.extraData.gtl_id %}
+                        {{ offer.extraData.gtl_id | format_music_gtl_id }}
+                      {% else %}
+                        {% if offer.extraData.musicType %}
+                          {{ offer.extraData.musicType | format_music_type }}
+                        {% else %}
+                          [Non renseigné]
+                        {% endif %}
+                      {% endif %}
+                    {% else %}
+                      {{ offer.extraData.musicType | format_music_type }}
+                    {% endif %}
                   {% endif %}
                 {% endif %}
                 {% if offer.extraData.showType or offer.extraData.showSubType %}
