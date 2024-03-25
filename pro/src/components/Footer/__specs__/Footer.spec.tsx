@@ -43,7 +43,7 @@ describe('Footer', () => {
     )
 
     expect(
-      screen.queryByRole('link', { name: 'CGU professionnels' })
+      screen.queryByRole('link', { name: /CGU professionnels/ })
     ).toBeInTheDocument()
   })
 

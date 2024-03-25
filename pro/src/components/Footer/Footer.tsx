@@ -2,6 +2,7 @@ import classNames from 'classnames'
 import { useSelector } from 'react-redux'
 
 import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
+import fullLinkIcon from 'icons/full-link.svg'
 import { selectCurrentUser } from 'store/user/selectors'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -37,6 +38,8 @@ export default function Footer({ layout }: FooterProps) {
               isExternal: true,
               target: '_blank',
             }}
+            icon={fullLinkIcon}
+            svgAlt="Nouvelle fenêtre"
           >
             CGU professionnels
           </ButtonLink>
@@ -50,6 +53,8 @@ export default function Footer({ layout }: FooterProps) {
               isExternal: true,
               target: '_blank',
             }}
+            icon={fullLinkIcon}
+            svgAlt="Nouvelle fenêtre"
           >
             Charte des Données Personnelles
           </ButtonLink>
