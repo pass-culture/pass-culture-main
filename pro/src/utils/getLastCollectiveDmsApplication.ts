@@ -7,9 +7,10 @@ import {
 export const getLastCollectiveDmsApplication = (
   collectiveDmsApplications: DMSApplicationForEAC[]
 ): DMSApplicationForEAC | null => {
-  if (!collectiveDmsApplications || collectiveDmsApplications.length === 0) {
+  if (collectiveDmsApplications.length === 0) {
     return null
   }
+
   return collectiveDmsApplications.reduce((previous, current) =>
     new Date(previous.lastChangeDate) > new Date(current.lastChangeDate)
       ? previous

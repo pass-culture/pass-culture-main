@@ -175,9 +175,7 @@ const StocksEventEdition = ({
           : undefined,
         priceCategoryIdFilter ? Number(priceCategoryIdFilter) : undefined,
         currentSortingColumn ?? undefined,
-        currentSortingMode
-          ? currentSortingMode === SortingMode.DESC
-          : undefined,
+        currentSortingMode === SortingMode.DESC,
         Number(page || 1)
       ),
     [
@@ -214,15 +212,14 @@ const StocksEventEdition = ({
     } else {
       searchParams.delete('orderBy')
     }
-    if (currentSortingMode) {
-      if (currentSortingMode === SortingMode.DESC) {
-        searchParams.set('orderByDesc', '1')
-      } else if (currentSortingMode === SortingMode.ASC) {
-        searchParams.set('orderByDesc', '0')
-      } else {
-        searchParams.delete('orderByDesc')
-      }
+    if (currentSortingMode === SortingMode.DESC) {
+      searchParams.set('orderByDesc', '1')
+    } else if (currentSortingMode === SortingMode.ASC) {
+      searchParams.set('orderByDesc', '0')
+    } else {
+      searchParams.delete('orderByDesc')
     }
+
     setSearchParams(searchParams)
 
     async function loadStocks() {
@@ -812,7 +809,7 @@ const StocksEventEdition = ({
                               />
                             </td>
 
-                            {actions && actions.length > 0 && (
+                            {actions.length > 0 && (
                               <td className={styles['stock-actions']}>
                                 <StockFormActions
                                   actions={actions}

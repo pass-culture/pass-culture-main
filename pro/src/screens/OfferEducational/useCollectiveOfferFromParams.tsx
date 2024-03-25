@@ -88,7 +88,7 @@ const useCollectiveOfferFromParams = (
         offer: undefined,
         setOffer: () => {},
         reloadCollectiveOffer: () => Promise.resolve(),
-        isTemplate: false || pathNameIncludesTemplate,
+        isTemplate: pathNameIncludesTemplate,
         offerer: undefined,
       }
     }
