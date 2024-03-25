@@ -18,7 +18,7 @@ import { CollectiveOffers } from '../CollectiveOffers'
 //FIX ME : extract inital values and constant to reduce code duplication with CollectiveOffers.spec.tsx
 
 vi.mock('react-router-dom', async () => ({
-  ...((await vi.importActual('react-router-dom')) ?? {}),
+  ...(await vi.importActual('react-router-dom')),
   useNavigate: vi.fn(),
 }))
 
@@ -65,7 +65,7 @@ const proVenues = [
 ]
 
 vi.mock('repository/venuesService', async () => ({
-  ...((await vi.importActual('repository/venuesService')) ?? {}),
+  ...(await vi.importActual('repository/venuesService')),
 }))
 
 describe('route CollectiveOffers', () => {

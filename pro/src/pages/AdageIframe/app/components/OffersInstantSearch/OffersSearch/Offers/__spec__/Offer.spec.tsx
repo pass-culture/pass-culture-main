@@ -42,7 +42,7 @@ vi.mock('pages/AdageIframe/libs/initAlgoliaAnalytics')
 
 vi.mock('utils/config', async () => {
   return {
-    ...((await vi.importActual('utils/config')) ?? {}),
+    ...(await vi.importActual('utils/config')),
     LOGS_DATA: true,
   }
 })

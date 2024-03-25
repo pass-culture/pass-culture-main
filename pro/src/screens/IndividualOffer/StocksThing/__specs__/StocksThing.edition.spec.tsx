@@ -34,7 +34,7 @@ vi.mock('screens/IndividualOffer/Informations/utils', () => {
 })
 
 vi.mock('react-router-dom', async () => ({
-  ...((await vi.importActual('react-router-dom')) ?? {}),
+  ...(await vi.importActual('react-router-dom')),
   useFetcher: () => ({
     submit: vi.fn(),
   }),
@@ -47,7 +47,7 @@ vi.mock('repository/pcapi/pcapi', () => ({
 
 vi.mock('utils/date', async () => {
   return {
-    ...((await vi.importActual('utils/date')) ?? {}),
+    ...(await vi.importActual('utils/date')),
     getToday: vi
       .fn()
       .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),

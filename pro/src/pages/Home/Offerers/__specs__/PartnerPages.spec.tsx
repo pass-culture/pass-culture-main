@@ -27,7 +27,7 @@ const renderPartnerPages = (props: Partial<PartnerPagesProps> = {}) => {
 }
 
 vi.mock('react-router-dom', async () => ({
-  ...((await vi.importActual('react-router-dom')) ?? {}),
+  ...(await vi.importActual('react-router-dom')),
   useLoaderData: vi.fn(),
 }))
 

@@ -26,7 +26,7 @@ vi.mock('apiClient/api', () => ({
 }))
 
 vi.mock('react-router-dom', async () => ({
-  ...((await vi.importActual('react-router-dom')) ?? {}),
+  ...(await vi.importActual('react-router-dom')),
   useFetcher: () => ({
     submit: mockFetcherSubmit,
   }),

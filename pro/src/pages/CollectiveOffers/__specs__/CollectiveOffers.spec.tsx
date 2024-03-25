@@ -50,11 +50,11 @@ const renderOffers = async (
 }
 
 vi.mock('repository/venuesService', async () => ({
-  ...((await vi.importActual('repository/venuesService')) ?? {}),
+  ...(await vi.importActual('repository/venuesService')),
 }))
 
 vi.mock('utils/date', async () => ({
-  ...((await vi.importActual('utils/date')) ?? {}),
+  ...(await vi.importActual('utils/date')),
   getToday: vi.fn(() => new Date('2020-12-15T12:00:00Z')),
 }))
 

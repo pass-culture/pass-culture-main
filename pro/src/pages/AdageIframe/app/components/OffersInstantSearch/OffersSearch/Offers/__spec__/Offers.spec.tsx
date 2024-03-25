@@ -31,7 +31,7 @@ import {
 import { Offers, OffersProps } from '../Offers'
 
 vi.mock('react-router-dom', async () => ({
-  ...((await vi.importActual('react-router-dom')) ?? {}),
+  ...(await vi.importActual('react-router-dom')),
   useParams: () => ({
     venueId: '',
     siret: '',
@@ -125,7 +125,7 @@ describe('offers', () => {
   beforeEach(() => {
     vi.mock('react-instantsearch', async () => {
       return {
-        ...((await vi.importActual('react-instantsearch')) ?? {}),
+        ...(await vi.importActual('react-instantsearch')),
         useStats: () => ({
           ...defaultUseStatsReturn,
           nbHits: 2,

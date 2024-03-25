@@ -18,7 +18,7 @@ import {
 import { CollectiveOfferSummaryCreation } from '../CollectiveOfferSummaryCreation'
 
 vi.mock('react-router-dom', async () => ({
-  ...((await vi.importActual('react-router-dom')) ?? {}),
+  ...(await vi.importActual('react-router-dom')),
   useParams: () => ({
     requestId: vi.fn(),
     requete: '1',

@@ -117,7 +117,7 @@ const setGeoRadiusMock = vi.fn()
 
 vi.mock('react-instantsearch', async () => {
   return {
-    ...((await vi.importActual('react-instantsearch')) ?? {}),
+    ...(await vi.importActual('react-instantsearch')),
     useSearchBox: () => ({ refine: refineSearch }),
     useInstantSearch: () => ({
       scopedResults: [

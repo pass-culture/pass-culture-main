@@ -31,7 +31,7 @@ const renderVenueCreation = (offererId: string) => {
 }
 
 vi.mock('react-router-dom', async () => ({
-  ...((await vi.importActual('react-router-dom')) ?? {}),
+  ...(await vi.importActual('react-router-dom')),
   useParams: () => ({
     offererId: '1234',
   }),

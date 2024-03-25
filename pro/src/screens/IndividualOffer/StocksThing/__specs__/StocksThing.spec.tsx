@@ -40,7 +40,7 @@ import StocksThing, { StocksThingProps } from '../StocksThing'
 
 vi.mock('utils/date', async () => {
   return {
-    ...((await vi.importActual('utils/date')) ?? {}),
+    ...(await vi.importActual('utils/date')),
     getToday: vi
       .fn()
       .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),

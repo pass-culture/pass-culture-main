@@ -13,7 +13,7 @@ import StatusToggleButton, {
 } from '../StatusToggleButton'
 
 vi.mock('react-router-dom', async () => ({
-  ...((await vi.importActual('react-router-dom')) ?? {}),
+  ...(await vi.importActual('react-router-dom')),
   useFetcher: vi.fn(),
 }))
 

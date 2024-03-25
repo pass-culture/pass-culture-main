@@ -36,7 +36,7 @@ window.scrollTo = vi.fn().mockImplementation(() => {})
 
 vi.mock('react-instantsearch', async () => {
   return {
-    ...((await vi.importActual('react-instantsearch')) ?? {}),
+    ...(await vi.importActual('react-instantsearch')),
     Configure: vi.fn(() => <div />),
     InstantSearch: vi.fn(({ children }) => <div>{children}</div>),
     useStats: () => ({ nbHits: 1 }),
@@ -51,7 +51,7 @@ vi.mock('react-instantsearch', async () => {
 
 vi.mock('utils/config', async () => {
   return {
-    ...((await vi.importActual('utils/config')) ?? {}),
+    ...(await vi.importActual('utils/config')),
     ALGOLIA_API_KEY: 'adage-api-key',
     ALGOLIA_APP_ID: '1',
     ALGOLIA_COLLECTIVE_OFFERS_INDEX: 'adage-collective-offers',

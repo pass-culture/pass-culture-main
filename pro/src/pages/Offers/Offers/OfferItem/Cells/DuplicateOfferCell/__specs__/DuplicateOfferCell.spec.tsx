@@ -37,7 +37,7 @@ vi.mock('core/OfferEducational/utils/createOfferFromTemplate', () => ({
 
 const offerId = 1
 vi.mock('react-router-dom', async () => ({
-  ...((await vi.importActual('react-router-dom')) ?? {}),
+  ...(await vi.importActual('react-router-dom')),
   useNavigate: vi.fn(),
 }))
 

@@ -72,7 +72,7 @@ vi.mock('core/shared/interventionOptions', async () => {
 
 const mockedUsedNavigate = vi.fn()
 vi.mock('react-router-dom', async () => ({
-  ...((await vi.importActual('react-router-dom')) ?? {}),
+  ...(await vi.importActual('react-router-dom')),
   useParams: () => ({
     offererId: 'O1',
     venueId: 'V1',

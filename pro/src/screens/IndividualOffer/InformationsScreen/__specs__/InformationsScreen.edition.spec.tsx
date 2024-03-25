@@ -714,12 +714,10 @@ describe('screens:IndividualOffer::Informations:edition', () => {
           withdrawalDelay: 0,
           bookingsCount: 1,
         }
-        if (contextOverride.subCategories) {
-          contextOverride.subCategories[0].conditionalFields = [
-            'withdrawalDelay',
-            'withdrawalType',
-          ]
-        }
+        contextOverride.subCategories[0].conditionalFields = [
+          'withdrawalDelay',
+          'withdrawalType',
+        ]
 
         expectedBody.withdrawalDelay = 0
         expectedBody.withdrawalType = WithdrawalTypeEnum.ON_SITE

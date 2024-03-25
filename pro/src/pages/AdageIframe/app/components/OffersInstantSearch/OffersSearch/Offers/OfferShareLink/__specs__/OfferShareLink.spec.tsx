@@ -19,7 +19,7 @@ vi.mock('apiClient/api', () => ({
 
 vi.mock('utils/config', async () => {
   return {
-    ...((await vi.importActual('utils/config')) ?? {}),
+    ...(await vi.importActual('utils/config')),
     LOGS_DATA: true,
   }
 })
