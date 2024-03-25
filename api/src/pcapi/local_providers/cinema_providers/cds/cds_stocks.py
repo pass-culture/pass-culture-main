@@ -3,7 +3,6 @@ import decimal
 import logging
 from typing import Iterator
 
-from pcapi.models.feature import FeatureToggle
 import sqlalchemy as sqla
 
 from pcapi import settings
@@ -21,6 +20,7 @@ from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository.providable_queries import get_last_update_for_provider
 import pcapi.utils.date as utils_date
 
@@ -139,17 +139,29 @@ class CDSStocks(LocalProvider):
         if isinstance(pc_object, offers_models.Stock):
             self.fill_stock_attributes(pc_object)
 
+    def update_from_movie_information(self, offer: offers_models.Offer, movie_information: Movie) -> None:
+        offer.name = self.movie_information.title
+        if movie_information.description:
+            offer.description = movie_information.description
+        if self.movie_information.duration:
+            offer.durationMinutes = movie_information.duration
+        offer.extraData = {"visa": self.movie_information.visa}
+
+        if FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS.is_active():
+            assert self.product and self.product.extraData
+            offer.name = self.product.name
+            offer.description = self.product.description
+            offer.durationMinutes = self.product.durationMinutes
+            offer.extraData = offers_models.OfferExtraData()
+            offer.extraData.update(self.product.extraData)
+            offer.product = self.product
+
     def fill_offer_attributes(self, cds_offer: offers_models.Offer) -> None:
+        self.update_from_movie_information(cds_offer, self.movie_information)
+
         cds_offer.venueId = self.venue.id
         cds_offer.bookingEmail = self.venue.bookingEmail
         cds_offer.withdrawalDetails = self.venue.withdrawalDetails
-
-        self.update_from_movie_information(cds_offer, self.movie_information)
-
-        if self.movie_information.visa:
-            cds_offer.extraData = {"visa": self.movie_information.visa}
-
-        cds_offer.name = self.movie_information.title
         cds_offer.subcategoryId = subcategories.SEANCE_CINE.id
 
         is_new_offer_to_insert = cds_offer.id is None
@@ -256,13 +268,6 @@ class CDSStocks(LocalProvider):
             self.price_category_labels.append(price_category_label)
 
         return price_category_label
-
-    def update_from_movie_information(self, obj: offers_models.Offer, movie_information: Movie) -> None:
-        if movie_information.description:
-            obj.description = movie_information.description
-        if self.movie_information.duration:
-            obj.durationMinutes = movie_information.duration
-        obj.extraData = {"visa": self.movie_information.visa}
 
     def get_object_thumb(self) -> bytes:
         if self.movie_information.posterpath:
