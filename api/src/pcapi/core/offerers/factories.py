@@ -7,6 +7,7 @@ from pcapi.core.factories import BaseFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import crypto
+from pcapi.utils import siren as siren_utils
 from pcapi.utils.date import timespan_str_to_numrange
 import pcapi.utils.postal_code as postal_code_utils
 
@@ -30,7 +31,7 @@ class OffererFactory(BaseFactory):
     address = "1 boulevard Poissonnière"
     postalCode = "75000"
     city = "Paris"
-    siren = factory.Sequence(lambda n: f"{n + 1:09}")
+    siren = factory.Sequence(lambda n: siren_utils.complete_siren_or_siret(f"{n + 1:08}"))  # ensures valid format
     isActive = True
     validationStatus = ValidationStatus.VALIDATED
     allowedOnAdage = True
@@ -67,7 +68,9 @@ class VenueFactory(BaseFactory):
     departementCode = factory.LazyAttribute(lambda o: None if o.isVirtual else _get_department_code(o.postalCode))
     city = factory.LazyAttribute(lambda o: None if o.isVirtual else "Paris")
     publicName = factory.SelfAttribute("name")
-    siret = factory.LazyAttributeSequence(lambda o, n: f"{o.managingOfferer.siren}{n:05}")
+    siret = factory.LazyAttributeSequence(
+        lambda o, n: siren_utils.complete_siren_or_siret(f"{o.managingOfferer.siren}{n:04}")
+    )
     isVirtual = False
     isPermanent = factory.LazyAttribute(lambda o: o.venueTypeCode in models.PERMENANT_VENUE_TYPES)
     venueTypeCode = models.VenueTypeCode.OTHER

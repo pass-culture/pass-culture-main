@@ -132,8 +132,8 @@ class CheckOffererIsActiveTest:
     @patch("pcapi.connectors.googledrive.TestingBackend.search_file", return_value="report-file-id")
     def test_tag_inactive_offerer(self, mock_search_file, mock_append_to_spreadsheet, client, siren_caduc_tag):
         # Using TestingBackend:
-        # SIREN makes offerer inactive (ends with 99), late for taxes (third digit is 9), SARL (fourth digit is 5)
-        offerer = offerers_factories.OffererFactory(siren="109599000")
+        # SIREN makes offerer inactive (because of 99), late for taxes (third digit is 9), SARL (fourth digit is 5)
+        offerer = offerers_factories.OffererFactory(siren="109599001")
 
         response = client.post(
             f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
@@ -177,8 +177,8 @@ class CheckOffererIsActiveTest:
         self, mock_search_file, mock_append_to_spreadsheet, client, siren_caduc_tag
     ):
         # Using TestingBackend:
-        # SIREN makes offerer inactive (ends with 99), late for taxes (third digit is 9), SARL (fourth digit is 5)
-        offerer = offerers_factories.OffererFactory(siren="109500099", tags=[siren_caduc_tag])
+        # SIREN makes offerer inactive (because of 99), late for taxes (third digit is 9), SARL (fourth digit is 5)
+        offerer = offerers_factories.OffererFactory(siren="109599001", tags=[siren_caduc_tag])
 
         response = client.post(
             f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
@@ -195,8 +195,8 @@ class CheckOffererIsActiveTest:
 
     @override_features(ENABLE_CODIR_OFFERERS_REPORT=False)
     def test_reject_inactive_offerer_waiting_for_validation(self, client, siren_caduc_tag):
-        # Using TestingBackend: SIREN makes offerer inactive (ends with 99), EI
-        offerer = offerers_factories.PendingOffererFactory(siren="100099000")
+        # Using TestingBackend: SIREN makes offerer inactive (because of 99), EI
+        offerer = offerers_factories.PendingOffererFactory(siren="100099001")
         user_offerer = offerers_factories.UserNotValidatedOffererFactory(offerer=offerer)
 
         response = client.post(
@@ -232,8 +232,8 @@ class CheckOffererIsActiveTest:
 
     @override_features(ENABLE_CODIR_OFFERERS_REPORT=False)
     def test_do_not_tag_inactive_offerer(self, client, siren_caduc_tag):
-        # Using TestingBackend: SIREN makes offerer inactive (ends with 99), EI
-        offerer = offerers_factories.OffererFactory(siren="100000099")
+        # Using TestingBackend: SIREN makes offerer inactive (because of 99), EI
+        offerer = offerers_factories.OffererFactory(siren="100099001")
 
         response = client.post(
             f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
@@ -260,3 +260,16 @@ class CheckOffererIsActiveTest:
         assert not offerer.tags
 
         mock_append_to_spreadsheet.assert_not_called()
+
+    def test_invalid_siren_format(self, client, caplog):
+        # Using TestingBackend: SIREN filled with zeros throws UnknownEntityException
+        offerer = offerers_factories.OffererFactory(siren="123456789")
+
+        response = client.post(
+            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
+            json={"siren": offerer.siren, "tag_when_inactive": False},
+            headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
+        )
+
+        assert response.status_code == 204
+        assert caplog.records[0].message == "Invalid SIREN format in the database"
