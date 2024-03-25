@@ -30,7 +30,7 @@ vi.mock('apiClient/api', () => ({
 
 vi.mock('react-instantsearch', async () => {
   return {
-    ...((await vi.importActual('react-instantsearch')) ?? {}),
+    ...(await vi.importActual('react-instantsearch')),
     Configure: vi.fn(() => <div />),
     InstantSearch: vi.fn(({ children }) => <div>{children}</div>),
     useStats: () => ({ nbHits: 1 }),

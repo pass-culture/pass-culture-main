@@ -32,7 +32,7 @@ vi.mock('apiClient/api', () => ({
 
 vi.mock('react-router-dom', async () => {
   return {
-    ...((await vi.importActual('react-router-dom')) ?? {}),
+    ...(await vi.importActual('react-router-dom')),
     useParams: () => ({
       offerId: '1',
       requestId: '2',

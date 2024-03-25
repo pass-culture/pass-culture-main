@@ -54,7 +54,7 @@ const renderOffersSuggestionsComponent = (
 
 vi.mock('react-instantsearch', async () => {
   return {
-    ...((await vi.importActual('react-instantsearch')) ?? {}),
+    ...(await vi.importActual('react-instantsearch')),
     useInstantSearch: () => ({
       scopedResults: [
         {
