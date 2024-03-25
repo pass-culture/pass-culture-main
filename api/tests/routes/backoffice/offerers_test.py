@@ -1120,6 +1120,94 @@ class GetOffererUsersTest(GetEndpointHelper):
         options = select.find_all("option")
         assert [option["value"] for option in options] == ["", str(user3.id), str(user2.id)]
 
+    @override_features(WIP_ENABLE_NEW_NAV_AB_TEST=False)
+    def test_user_offerer_details_tab_with_new_nav_tags_without_ff(self, authenticated_client, offerer):
+        user_with_new_nav = users_factories.ProFactory()
+        users_factories.UserProNewNavStateFactory(user=user_with_new_nav)
+        offerers_factories.UserOffererFactory(user=user_with_new_nav, offerer=offerer)
+
+        user_with_old_nav = users_factories.ProFactory()
+        users_factories.UserProNewNavStateFactory(user=user_with_old_nav, eligibilityDate=None, newNavDate=None)
+        offerers_factories.UserOffererFactory(user=user_with_old_nav, offerer=offerer)
+
+        eligible_user_with_inactivated_new_nav = users_factories.ProFactory()
+        users_factories.UserProNewNavStateFactory(
+            user=eligible_user_with_inactivated_new_nav, eligibilityDate=datetime.datetime.utcnow(), newNavDate=None
+        )
+        offerers_factories.UserOffererFactory(user=eligible_user_with_inactivated_new_nav, offerer=offerer)
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+
+        assert len(rows) == 3
+
+        assert rows[0]["ID"] == str(user_with_new_nav.id)
+        assert rows[0]["Statut"] == "Validé"
+        assert "Interface" not in rows[0]
+        assert rows[0]["Prénom / Nom"] == user_with_new_nav.full_name
+        assert rows[0]["Email"] == user_with_new_nav.email
+
+        assert rows[1]["ID"] == str(user_with_old_nav.id)
+        assert rows[1]["Statut"] == "Validé"
+        assert "Interface" not in rows[1]
+        assert rows[1]["Prénom / Nom"] == user_with_old_nav.full_name
+        assert rows[1]["Email"] == user_with_old_nav.email
+
+        assert rows[2]["ID"] == str(eligible_user_with_inactivated_new_nav.id)
+        assert rows[2]["Statut"] == "Validé"
+        assert "Interface" not in rows[2]
+        assert rows[2]["Prénom / Nom"] == eligible_user_with_inactivated_new_nav.full_name
+        assert rows[2]["Email"] == eligible_user_with_inactivated_new_nav.email
+
+    @override_features(WIP_ENABLE_NEW_NAV_AB_TEST=True)
+    def test_user_offerer_details_tab_with_new_nav_tags(self, authenticated_client, offerer):
+        user_with_new_nav = users_factories.ProFactory()
+        users_factories.UserProNewNavStateFactory(user=user_with_new_nav)
+        offerers_factories.UserOffererFactory(user=user_with_new_nav, offerer=offerer)
+
+        user_with_old_nav = users_factories.ProFactory()
+        users_factories.UserProNewNavStateFactory(user=user_with_old_nav, eligibilityDate=None, newNavDate=None)
+        offerers_factories.UserOffererFactory(user=user_with_old_nav, offerer=offerer)
+
+        eligible_user_with_inactivated_new_nav = users_factories.ProFactory()
+        users_factories.UserProNewNavStateFactory(
+            user=eligible_user_with_inactivated_new_nav, eligibilityDate=datetime.datetime.utcnow(), newNavDate=None
+        )
+        offerers_factories.UserOffererFactory(user=eligible_user_with_inactivated_new_nav, offerer=offerer)
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+
+        assert len(rows) == 3
+
+        assert rows[0]["ID"] == str(user_with_new_nav.id)
+        assert rows[0]["Statut"] == "Validé"
+        assert rows[0]["Interface"] == "Nouvelle interface"
+        assert rows[0]["Prénom / Nom"] == user_with_new_nav.full_name
+        assert rows[0]["Email"] == user_with_new_nav.email
+
+        assert rows[1]["ID"] == str(user_with_old_nav.id)
+        assert rows[1]["Statut"] == "Validé"
+        assert rows[1]["Interface"] == "Ancienne interface"
+        assert rows[1]["Prénom / Nom"] == user_with_old_nav.full_name
+        assert rows[1]["Email"] == user_with_old_nav.email
+
+        assert rows[2]["ID"] == str(eligible_user_with_inactivated_new_nav.id)
+        assert rows[2]["Statut"] == "Validé"
+        assert rows[2]["Interface"] == "Ancienne interface"
+        assert rows[2]["Prénom / Nom"] == eligible_user_with_inactivated_new_nav.full_name
+        assert rows[2]["Email"] == eligible_user_with_inactivated_new_nav.email
+
 
 class GetDeleteOffererAttachmentFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.offerer.get_delete_user_offerer_form"
