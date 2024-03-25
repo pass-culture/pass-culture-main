@@ -57,7 +57,7 @@ export const serializePatchOffer = ({
   shouldSendMail = false,
 }: SerializePatchOffer): PatchOfferBodyModel => {
   let sentValues: Partial<IndividualOfferFormValues> = formValues
-  if (offer?.lastProvider) {
+  if (offer.lastProvider) {
     const {
       ALLOCINE: allocineEditableFields,
       ALL_PROVIDERS: allProvidersEditableFields,

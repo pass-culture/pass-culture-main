@@ -22,7 +22,7 @@ export const extractInitialVisibilityValues = (
   teacher?: EducationalRedactorResponseModel | null,
   requestInformations?: GetCollectiveOfferRequestResponseModel | null
 ): VisibilityFormValues => ({
-  institution: institution?.id?.toString() ?? '',
+  institution: institution?.id.toString() ?? '',
   'search-institution': institution
     ? formatInstitutionDisplayName(institution)
     : requestInformations

@@ -9,8 +9,8 @@ export const applyVenueDefaultsToFormValues = (
   isOfferCreated: boolean
 ): OfferEducationalFormValues => {
   const venue = offerers
-    ?.find(({ id }) => id.toString() === values.offererId)
-    ?.managedVenues?.find(({ id }) => id.toString() === values.venueId)
+    .find(({ id }) => id.toString() === values.offererId)
+    ?.managedVenues.find(({ id }) => id.toString() === values.venueId)
 
   if (isOfferCreated || venue === undefined) {
     return { ...values }

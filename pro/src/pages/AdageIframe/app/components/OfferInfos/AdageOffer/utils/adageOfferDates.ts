@@ -10,7 +10,7 @@ export function getFormattedDatesForTemplateOffer(
 ) {
   return (
     (offer.dates?.start &&
-      offer.dates?.end &&
+      offer.dates.end &&
       getRangeToFrenchText(
         getLocalDepartementDateTimeFromUtc(
           offer.dates.start,

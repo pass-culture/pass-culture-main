@@ -24,7 +24,7 @@ export const IndividualOfferNavigation = () => {
   const mode = useOfferWizardMode()
   const hasOffer = offer !== null
   const hasPriceCategories = Boolean(
-    offer?.priceCategories && offer?.priceCategories?.length > 0
+    offer?.priceCategories && offer.priceCategories.length > 0
   )
   const { search } = useLocation()
   const queryParams = new URLSearchParams(search)

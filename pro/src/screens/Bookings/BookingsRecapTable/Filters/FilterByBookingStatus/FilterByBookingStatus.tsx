@@ -26,7 +26,7 @@ const getAvailableBookingStatuses = (audience: Audience) => {
       : COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS
 
   const statusOptions = statuses.map((bookingStatus) => ({
-    title: bookingStatus?.status ?? '',
+    title: bookingStatus.status ?? '',
     value: bookingStatus.id,
   }))
 

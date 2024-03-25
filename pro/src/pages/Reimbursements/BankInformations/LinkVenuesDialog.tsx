@@ -45,7 +45,7 @@ const LinkVenuesDialog = ({
 
   const availableManagedVenuesIds = managedVenues
     .filter((venue) => !venue.bankAccountId && venue.hasPricingPoint)
-    ?.map((venue) => venue.id)
+    .map((venue) => venue.id)
   const notification = useNotification()
   const { logEvent } = useAnalytics()
 

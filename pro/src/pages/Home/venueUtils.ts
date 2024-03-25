@@ -12,7 +12,7 @@ export const getVirtualVenueFromOfferer = (
     return null
   }
 
-  return offerer?.managedVenues?.find((venue) => venue.isVirtual) ?? null
+  return offerer.managedVenues?.find((venue) => venue.isVirtual) ?? null
 }
 
 export const getPhysicalVenuesFromOfferer = (

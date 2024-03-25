@@ -286,7 +286,7 @@ const SelectAutocomplete = ({
           value={field.value || ''}
           data-testid="select"
         >
-          {options?.map(({ label, value }) => (
+          {options.map(({ label, value }) => (
             <option key={`option-${value}`} value={value}>
               {label}
             </option>

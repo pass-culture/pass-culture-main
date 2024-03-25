@@ -30,7 +30,7 @@ export const onVenueChange = async (
     return
   }
   await setFieldValue('isVenueVirtual', newVenue.isVirtual)
-  await setFieldValue('withdrawalDetails', newVenue?.withdrawalDetails || '')
+  await setFieldValue('withdrawalDetails', newVenue.withdrawalDetails || '')
   await setFieldValue('accessibility', buildAccessibilityFormValues(newVenue))
 }
 

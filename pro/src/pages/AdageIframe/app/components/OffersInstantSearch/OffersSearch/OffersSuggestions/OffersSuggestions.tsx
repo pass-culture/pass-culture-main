@@ -38,7 +38,7 @@ function getSearchIndexIdDisplayed(
 
   //  Find first index that has results
   for (const result of noResultIndexesResults) {
-    if (result.results?.nbHits > 0) {
+    if (result.results.nbHits > 0) {
       return result.indexId
     }
   }

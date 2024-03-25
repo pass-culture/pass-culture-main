@@ -5,7 +5,7 @@ const useIsNewInterfaceActive = (): boolean => {
   const { currentUser } = useCurrentUser()
   const isNewNavActive = useActiveFeature('WIP_ENABLE_PRO_SIDE_NAV')
 
-  return isNewNavActive && Boolean(currentUser?.navState?.newNavDate)
+  return isNewNavActive && Boolean(currentUser.navState?.newNavDate)
 }
 
 export default useIsNewInterfaceActive

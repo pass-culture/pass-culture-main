@@ -42,7 +42,7 @@ const ListIconButton = ({
       width={LIST_ICON_SIZE}
     />
   )
-  const content = !buttonAttrs?.disabled ? (
+  const content = !buttonAttrs.disabled ? (
     <Tooltip
       content={children}
       tooltipContainerClassName={styles['tooltip']}

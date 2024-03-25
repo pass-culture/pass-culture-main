@@ -25,7 +25,7 @@ export function CollectiveBookingStatusCell({
     <div
       className={cn(
         styles['booking-status-label'],
-        bookingDisplayInfo?.statusClassName
+        bookingDisplayInfo.statusClassName
       )}
     >
       <SvgIcon

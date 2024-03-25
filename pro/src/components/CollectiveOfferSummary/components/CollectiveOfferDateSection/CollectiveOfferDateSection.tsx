@@ -14,7 +14,7 @@ export default function CollectiveOfferDateSection({
 }: CollectiveOfferDateSectionProps) {
   let description = 'Tout au long de l’année scolaire (l’offre est permanente)'
 
-  if (offer.dates?.start && offer.dates?.end) {
+  if (offer.dates?.start && offer.dates.end) {
     const startDateWithoutTz = toDateStrippedOfTimezone(offer.dates.start)
     const endDateWithoutTz = toDateStrippedOfTimezone(offer.dates.end)
 
