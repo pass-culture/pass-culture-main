@@ -14,7 +14,7 @@ import {
   OfferEducationalFormValues,
   isCollectiveOffer,
 } from 'core/OfferEducational'
-import { computeOffersUrl } from 'core/Offers/utils'
+import { computeCollectiveOffersUrl } from 'core/Offers/utils'
 import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -194,7 +194,7 @@ const OfferEducationalForm = ({
         <ActionsBarSticky.Left>
           <ButtonLink
             variant={ButtonVariant.SECONDARY}
-            link={{ to: computeOffersUrl({}), isExternal: false }}
+            link={{ to: computeCollectiveOffersUrl({}), isExternal: false }}
           >
             Annuler et quitter
           </ButtonLink>
