@@ -11,16 +11,15 @@ import pcapi.core.categories.subcategories_v2 as subcategories
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import StudentLevels
-from pcapi.core.subscription.phone_validation.exceptions import InvalidPhoneNumber
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization.collective_offers_serialize import validate_venue_id
 from pcapi.routes.serialization.national_programs import NationalProgramModel
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
+from pcapi.routes.shared.validation import phone_number_validator
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import email as email_utils
-from pcapi.utils import phone_number
 from pcapi.validation.routes.offers import check_collective_offer_name_length_is_valid
 
 
@@ -72,14 +71,6 @@ def validate_emails(emails: list[str]) -> list[str]:
         if not email_utils.is_valid_email(email):
             raise ValueError(f"{email} n'est pas une adresse mail valide")
     return emails
-
-
-def validate_phone_number(number: str | None) -> str:
-    try:
-        parsed = phone_number.parse_phone_number(number)
-    except InvalidPhoneNumber:
-        raise ValueError("Ce numéro de telephone ne semble pas valide")
-    return phone_number.get_formatted_phone_number(parsed)
 
 
 def validate_number_of_tickets(number_of_tickets: int | None) -> int:
@@ -153,10 +144,6 @@ def beginning_datetime_validator(field_name: str) -> classmethod:
 
 def price_detail_validator(field_name: str) -> classmethod:
     return validator(field_name, allow_reuse=True)(validate_price_detail)
-
-
-def phone_number_validator(field_name: str) -> classmethod:
-    return validator(field_name, allow_reuse=True)(validate_phone_number)
 
 
 def email_validator(field_name: str) -> classmethod:

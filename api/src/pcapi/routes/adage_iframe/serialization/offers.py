@@ -17,6 +17,7 @@ from pcapi.routes.native.v1.serialization import common_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization.collective_offers_serialize import validate_venue_id
 from pcapi.routes.serialization.national_programs import NationalProgramModel
+from pcapi.routes.shared import validation
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 
@@ -366,6 +367,8 @@ class PostCollectiveRequestBodyModel(BaseModel):
     total_students: int | None
     total_teachers: int | None
     comment: str
+
+    _validate_phone_number = validation.phone_number_validator("phone_number", nullable=True)
 
     class Config:
         alias_generator = to_camel
