@@ -282,6 +282,8 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
     address = Column(String(200), nullable=True)
 
+    street = Column(Text(), nullable=True)
+
     postalCode = Column(String(6), nullable=True)
 
     city = Column(String(50), nullable=True)
