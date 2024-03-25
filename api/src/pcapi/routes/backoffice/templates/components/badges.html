@@ -11,6 +11,12 @@
     <span class="me-1 pb-1 badge rounded-pill text-bg-danger">{{ deleted }}</span>
   {% endif %}
 {% endmacro %}
+{% macro build_new_navigation_badge() %}
+  <span class="me-1 pb-1 badge rounded-pill text-bg-secondary-light">Nouvelle interface</span>
+{% endmacro %}
+{% macro build_old_navigation_badge() %}
+  <span class="me-1 pb-1 badge rounded-pill text-bg-secondary-lighter">Ancienne interface</span>
+{% endmacro %}
 {% macro build_venue_badges(venue) %}
   <span class="me-1 pb-1 badge rounded-pill text-bg-secondary align-middle">
     {% if venue.isPermanent %}
