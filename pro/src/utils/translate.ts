@@ -19,19 +19,24 @@ const translateObjectKeysAndValues = (
   return result
 }
 
+// This is a bit janky because for types used by both individual and collective offers,
+// we only declare one type here. It works but only because
+// the individual and collective types share the same values
+// (ie OfferStatus.ACTIVE === CollectiveOfferStatus.ACTIVE)
+// TODO refactor to split individual and collective behavior
 const mapBrowserStatusToApi: Record<
   string,
   OfferStatus | CollectiveOfferStatus
 > = {
-  active: OfferStatus.ACTIVE || CollectiveOfferStatus.ACTIVE,
-  inactive: OfferStatus.INACTIVE || CollectiveOfferStatus.INACTIVE,
+  active: OfferStatus.ACTIVE,
+  inactive: OfferStatus.INACTIVE,
   epuisee: OfferStatus.SOLD_OUT,
   prereservee: CollectiveOfferStatus.PREBOOKED,
   reservee: CollectiveOfferStatus.BOOKED,
-  expiree: OfferStatus.EXPIRED || CollectiveOfferStatus.EXPIRED,
+  expiree: OfferStatus.EXPIRED,
   terminee: CollectiveOfferStatus.ENDED,
-  'en-attente': OfferStatus.PENDING || CollectiveOfferStatus.PENDING,
-  refusee: OfferStatus.REJECTED || CollectiveOfferStatus.REJECTED,
+  'en-attente': OfferStatus.PENDING,
+  refusee: OfferStatus.REJECTED,
   draft: OfferStatus.DRAFT,
 }
 

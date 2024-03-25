@@ -406,7 +406,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                 </div>
               )}
 
-              {actions && actions.length > 0 && (
+              {actions.length > 0 && (
                 <div className={styles['stock-actions']}>
                   <StockFormActions actions={actions} />
                 </div>

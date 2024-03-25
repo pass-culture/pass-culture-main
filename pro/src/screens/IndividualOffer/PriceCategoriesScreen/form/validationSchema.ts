@@ -29,9 +29,7 @@ const priceCategoryValidationSchema = yup.object().shape({
 
         if (
           currentPriceCategoryFormValues.label === '' ||
-          currentPriceCategoryFormValues.label === undefined ||
-          currentPriceCategoryFormValues.price === '' ||
-          currentPriceCategoryFormValues.price === undefined
+          currentPriceCategoryFormValues.price === ''
         ) {
           return true
         }

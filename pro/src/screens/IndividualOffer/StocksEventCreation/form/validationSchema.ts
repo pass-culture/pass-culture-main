@@ -67,6 +67,7 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
         if (!list) {
           return
         }
+
         const beginningTimesMap = [...list]
         const duplicateIndex = beginningTimesMap.reduce<yup.ValidationError[]>(
           (accumulator, currentValue, index) => {
@@ -87,7 +88,7 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
           []
         )
 
-        if (duplicateIndex) {
+        if (duplicateIndex.length > 0) {
           return new yup.ValidationError(duplicateIndex)
         }
         return true
@@ -134,7 +135,7 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
           []
         )
 
-        if (duplicateIndex) {
+        if (duplicateIndex.length > 0) {
           return new yup.ValidationError(duplicateIndex)
         }
         return true

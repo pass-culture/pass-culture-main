@@ -14,12 +14,10 @@ export const getPriceCategoryOptions = (
     return a.price - b.price
   })
 
-  return (
-    newPriceCategories.map(
-      (priceCategory): SelectOption => ({
-        label: `${formatPrice(priceCategory.price)} - ${priceCategory.label}`,
-        value: priceCategory.id,
-      })
-    ) ?? []
+  return newPriceCategories.map(
+    (priceCategory): SelectOption => ({
+      label: `${formatPrice(priceCategory.price)} - ${priceCategory.label}`,
+      value: priceCategory.id,
+    })
   )
 }

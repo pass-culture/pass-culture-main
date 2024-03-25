@@ -62,13 +62,7 @@ const AutocompleteList = ({
           role="listbox"
         >
           {filteredOptions.length === 0 && (
-            <span
-              className={cx({
-                [styles['menu--no-results']]: filteredOptions.length === 0,
-              })}
-            >
-              Aucun résultat
-            </span>
+            <span className={styles['menu--no-results']}>Aucun résultat</span>
           )}
           {filteredOptions.map((option) => renderOption(option))}
         </div>
