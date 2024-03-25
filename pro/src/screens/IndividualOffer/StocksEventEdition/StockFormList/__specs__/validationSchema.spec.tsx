@@ -6,7 +6,7 @@ import { getValidationSchema } from '../validationSchema'
 
 vi.mock('utils/date', async () => {
   return {
-    ...((await vi.importActual('utils/date')) ?? {}),
+    ...(await vi.importActual('utils/date')),
     getToday: vi.fn(() => new Date('2020-12-15T12:00:00Z')),
   }
 })

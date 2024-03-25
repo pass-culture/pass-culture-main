@@ -24,7 +24,7 @@ window.open = vi.fn()
 
 vi.mock('utils/config', async () => {
   return {
-    ...((await vi.importActual('utils/config')) ?? {}),
+    ...(await vi.importActual('utils/config')),
     WEBAPP_URL: 'https://localhost',
   }
 })

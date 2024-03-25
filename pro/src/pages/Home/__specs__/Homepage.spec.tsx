@@ -33,7 +33,7 @@ vi.mock('utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn().mockReturnValue(false),
 }))
 vi.mock('react-router-dom', async () => ({
-  ...((await vi.importActual('react-router-dom')) ?? {}),
+  ...(await vi.importActual('react-router-dom')),
   useLoaderData: vi.fn(),
 }))
 

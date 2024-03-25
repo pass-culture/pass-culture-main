@@ -5,7 +5,8 @@ import useIsElementVisible from '../useIsElementVisible'
 
 const TestComponent = () => {
   const elementWatched = useRef(null)
-  const titleIsVisible = useIsElementVisible(elementWatched)
+  const [titleIsVisible] = useIsElementVisible(elementWatched)
+
   return (
     <main style={{ height: '1000px' }}>
       <h1 ref={elementWatched}>Title</h1>
@@ -13,6 +14,7 @@ const TestComponent = () => {
     </main>
   )
 }
+
 const disconnect = vi.fn()
 const observe = vi.fn()
 const unobserve = vi.fn()

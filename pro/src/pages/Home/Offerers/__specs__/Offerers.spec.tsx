@@ -13,7 +13,7 @@ import {
 import Offerers, { OfferersProps } from '../Offerers'
 
 vi.mock('react-router-dom', async () => ({
-  ...((await vi.importActual('react-router-dom')) ?? {}),
+  ...(await vi.importActual('react-router-dom')),
   useLoaderData: vi.fn(() => ({
     venueTypes: [],
     offererNames: [{ name: 'name', id: 1 }],

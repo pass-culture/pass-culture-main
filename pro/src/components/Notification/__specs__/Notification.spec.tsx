@@ -34,9 +34,7 @@ describe('Notification', () => {
       const notificationElement = screen.getByText(notification.text)
       expect(notificationElement).toBeInTheDocument()
       expect(notificationElement).toHaveClass('show')
-      expect(notificationElement).toHaveClass(
-        `is-${notificationType.type || 'success'}`
-      )
+      expect(notificationElement).toHaveClass(`is-${notificationType.type}`)
       expect(notificationElement).toHaveAttribute('role', notificationType.role)
     }
   )
