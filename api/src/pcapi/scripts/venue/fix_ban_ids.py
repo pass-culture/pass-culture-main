@@ -15,7 +15,7 @@ from pcapi.models import db
 
 logger = logging.getLogger(__name__)
 
-ObjVenue = namedtuple("ObjVenue", ["id", "banId", "address", "city"])
+ObjVenue = namedtuple("ObjVenue", ["id", "banId", "street", "city"])
 
 
 class SearchedVenue(pydantic.BaseModel):
@@ -41,7 +41,7 @@ def _get_permanent_venues(json_venues_path: str | None = None) -> list[ObjVenue]
             ObjVenue(
                 id=venue["Venue ID"],
                 banId=venue["Ban ID"],
-                address=venue["Venue Address"],
+                street=venue["Venue Address"],
                 city=venue["Venue City"],
             )
             for venue in venues
@@ -59,7 +59,7 @@ def _search_csv_venues(venues: list[ObjVenue] | list[Venue]) -> list[SearchedVen
     for venue in venues:
         id_ = venue.id
         ban_id = venue.banId or ""
-        address = venue.address or ""
+        address = venue.street or ""
         city = venue.city or ""
         q = format_q(address, city)
         lines.append(

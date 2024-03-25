@@ -54,7 +54,7 @@ class VenueResponse(serialization.ConfiguredBaseModel):
             dateCreated=venue.dateCreated,
             id=venue.id,
             location=(
-                VenuePhysicalLocation(address=venue.address, city=venue.city, postalCode=venue.postalCode)
+                VenuePhysicalLocation(address=venue.street, city=venue.city, postalCode=venue.postalCode)
                 if not venue.isVirtual
                 else VenueDigitalLocation()
             ),

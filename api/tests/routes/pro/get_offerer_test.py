@@ -74,7 +74,7 @@ class GetOffererTest:
                     "adageInscriptionDate": (
                         format_into_utc_date(venue.adageInscriptionDate) if venue.adageInscriptionDate else None
                     ),
-                    "address": venue.address,
+                    "street": venue.street,
                     "audioDisabilityCompliant": False,
                     "bannerMeta": venue.bannerMeta,
                     "bannerUrl": venue.bannerUrl,

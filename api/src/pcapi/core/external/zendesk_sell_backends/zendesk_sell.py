@@ -328,7 +328,7 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
                 "twitter": social_medias.get("twitter", ""),
                 "facebook": social_medias.get("facebook", ""),
                 "address": {
-                    "line1": venue.address,
+                    "line1": venue.street,
                     "city": venue.city,
                     "postal_code": venue.postalCode,
                 },

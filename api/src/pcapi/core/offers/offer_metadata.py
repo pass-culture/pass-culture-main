@@ -22,7 +22,7 @@ def _get_metadata_from_venue(venue: Venue) -> Metadata:
         "name": venue.name,
         "address": {
             "@type": "PostalAddress",
-            "streetAddress": venue.address,
+            "streetAddress": venue.street,
             "postalCode": venue.postalCode,
             "addressLocality": venue.city,
         },

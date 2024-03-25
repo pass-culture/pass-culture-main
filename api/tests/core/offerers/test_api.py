@@ -81,7 +81,7 @@ def test_new_offerer_auto_tagging(db_session, ape_code, expected_tag):
 class CreateVenueTest:
     def base_data(self, offerer):
         return {
-            "address": "rue du test",
+            "street": "rue du test",
             "city": "Paris",
             "postalCode": "75000",
             "banId": "75113_1834_00007",
@@ -104,7 +104,7 @@ class CreateVenueTest:
         offerers_api.create_venue(data)
 
         venue = offerers_models.Venue.query.one()
-        assert venue.address == "rue du test"
+        assert venue.street == "rue du test"
         assert venue.banId == "75113_1834_00007"
         assert venue.city == "Paris"
         assert venue.postalCode == "75000"
@@ -2212,7 +2212,7 @@ class UpdateOffererTagTest:
 
 class CreateFromOnboardingDataTest:
     def assert_common_venue_attrs(self, venue: offerers_models.Venue) -> None:
-        assert venue.address == "3 RUE DE VALOIS"
+        assert venue.street == "3 RUE DE VALOIS"
         assert venue.banId == "75101_9575_00003"
         assert venue.bookingEmail == "pro@example.com"
         assert venue.city == "Paris"
@@ -2433,7 +2433,7 @@ class CreateFromOnboardingDataTest:
         # 1 virtual Venue + 1 Venue with siret have been created
         assert len(created_user_offerer.offerer.managedVenues) == 2
         created_venue, _ = sorted(created_user_offerer.offerer.managedVenues, key=lambda v: v.isVirtual)
-        assert created_venue.address == "n/d"
+        assert created_venue.street == "n/d"
         assert created_venue.city == "Paris"
         assert created_venue.latitude == decimal.Decimal("2.30829")
         assert created_venue.longitude == decimal.Decimal("48.87171")
@@ -2457,7 +2457,7 @@ class CreateFromOnboardingDataTest:
         # 1 virtual Venue + 1 Venue with siret have been created
         assert len(created_user_offerer.offerer.managedVenues) == 2
         created_venue, _ = sorted(created_user_offerer.offerer.managedVenues, key=lambda v: v.isVirtual)
-        assert created_venue.address == "3 RUE DE VALOIS"
+        assert created_venue.street == "3 RUE DE VALOIS"
         assert created_venue.banId is None
         assert created_venue.city == "Paris"
         assert created_venue.latitude == decimal.Decimal("2.30829")

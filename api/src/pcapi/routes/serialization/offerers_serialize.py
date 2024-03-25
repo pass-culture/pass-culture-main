@@ -22,7 +22,7 @@ from pcapi.utils.email import sanitize_email
 
 class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     adageInscriptionDate: datetime | None
-    address: str | None
+    street: str | None
     bookingEmail: str | None
     city: str | None
     comment: str | None
@@ -193,13 +193,13 @@ class GetOfferersNamesQueryModel(BaseModel):
 
 
 class GetEducationalOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
-    address: str | None
     city: str | None
     id: int
     isVirtual: bool
     publicName: str | None
     name: str
     postalCode: str | None
+    street: str | None
     collectiveInterventionArea: list[str] | None
     collectivePhone: str | None
     collectiveEmail: str | None

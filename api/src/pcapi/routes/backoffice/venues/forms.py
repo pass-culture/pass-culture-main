@@ -49,7 +49,7 @@ class EditVenueForm(EditVirtualVenueForm):
         has_manual_editing=True,
         limit=10,
     )
-    address = fields.PCHiddenField(
+    street = fields.PCHiddenField(
         "Adresse",
         validators=(wtforms.validators.Length(max=200, message="doit contenir moins de %(max)d caractères"),),
     )

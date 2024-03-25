@@ -44,7 +44,7 @@ class Returns200Test:
         assert not created_offerer.isValidated
         assert created_offerer.postalCode == "75001"
         created_venue = offerers_models.Venue.query.filter(offerers_models.Venue.isVirtual.is_(False)).one()
-        assert created_venue.address == "3 RUE DE VALOIS"
+        assert created_venue.street == "3 RUE DE VALOIS"
         assert created_venue.bookingEmail == "pro@example.com"
         assert created_venue.city == "Paris"
         assert created_venue.audioDisabilityCompliant is None

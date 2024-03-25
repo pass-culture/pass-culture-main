@@ -103,7 +103,7 @@ def test_create_venue():
     assert posted_json["data"]["email"] == venue.bookingEmail
     assert posted_json["data"]["phone"] == venue.contact.phone_number
     assert posted_json["data"]["address"] == {
-        "line1": venue.address,
+        "line1": venue.street,
         "city": venue.city,
         "postal_code": venue.postalCode,
     }
@@ -149,7 +149,7 @@ def test_update_venue():
     assert put_json["data"]["email"] == venue.bookingEmail
     assert put_json["data"]["phone"] is None
     assert put_json["data"]["address"] == {
-        "line1": venue.address,
+        "line1": venue.street,
         "city": venue.city,
         "postal_code": venue.postalCode,
     }
@@ -195,7 +195,7 @@ def test_create_venue_without_parent_offerer():
     assert posted_venue_json["data"]["email"] == venue.bookingEmail
     assert posted_venue_json["data"]["phone"] == venue.contact.phone_number
     assert posted_venue_json["data"]["address"] == {
-        "line1": venue.address,
+        "line1": venue.street,
         "city": venue.city,
         "postal_code": venue.postalCode,
     }
@@ -257,7 +257,7 @@ def test_create_venue_and_parent_offerer():
     assert posted_venue_json["data"]["email"] == venue.bookingEmail
     assert posted_venue_json["data"]["phone"] == venue.contact.phone_number
     assert posted_venue_json["data"]["address"] == {
-        "line1": venue.address,
+        "line1": venue.street,
         "city": venue.city,
         "postal_code": venue.postalCode,
     }

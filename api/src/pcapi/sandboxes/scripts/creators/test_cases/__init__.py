@@ -61,7 +61,7 @@ def create_offers_with_gtls() -> None:
         venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
         latitude=45.91967,
         longitude=3.06504,
-        address="13 AVENUE BARADUC",
+        street="13 AVENUE BARADUC",
         postalCode="63140",
         city="CHATEL-GUYON",
         departementCode="63",
@@ -80,7 +80,7 @@ def create_offers_with_gtls() -> None:
         venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
         latitude=46.66979,
         longitude=-1.42979,
-        address="11 RUE GEORGES CLEMENCEAU",
+        street="11 RUE GEORGES CLEMENCEAU",
         postalCode="85000",
         city="LA ROCHE-SUR-YON",
         departementCode="85",
@@ -135,7 +135,7 @@ def create_offers_with_same_ean() -> None:
                     venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
                     latitude=venue_data["latitude"],
                     longitude=venue_data["longitude"],
-                    address=venue_data["address"],
+                    street=venue_data["address"],
                     postalCode=venue_data["postalCode"],
                     city=venue_data["city"],
                     departementCode=venue_data["departementCode"],
@@ -196,7 +196,7 @@ def create_allocine_venues() -> None:
             venueTypeCode=offerers_models.VenueTypeCode.MOVIE,
             latitude=venue_data["latitude"],
             longitude=venue_data["longitude"],
-            address=venue_data["address"],
+            street=venue_data["address"],
             postalCode=venue_data["postalCode"],
             city=venue_data["city"],
             departementCode=venue_data["departementCode"],
@@ -230,7 +230,7 @@ def create_venues_across_cities() -> None:
                 venueTypeCode=venue_type_code,
                 latitude=venue["latitude"],
                 longitude=venue["longitude"],
-                address=venue["address"],
+                street=venue["address"],
                 postalCode=venue["postalCode"],
                 city=venue["city"],
                 departementCode=venue["departementCode"],
@@ -302,7 +302,7 @@ def create_offers_with_same_author() -> None:
             venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
             latitude=venue["latitude"],
             longitude=venue["longitude"],
-            address=venue["address"],
+            street=venue["address"],
             postalCode=venue["postalCode"],
             city=venue["city"],
             departementCode=venue["departementCode"],
@@ -483,7 +483,7 @@ def create_venues_with_practical_info_graphical_edge_cases() -> None:
     )
     offerers_factories.VenueFactory(
         name="Lieu avec une adresse trop longue",
-        address=(
+        street=(
             "50 rue de l'adresse la plus longue qui a presque atteint la limite de caractères en base de données, "
             "une adresse vraiment très longue qui prend toute la place sur l'écran, bâtiment B, étage 3, salle 4"
         ),

@@ -121,7 +121,7 @@ class GetEducationalOfferersTest:
                     "allowedOnAdage": offerer_2.allowedOnAdage,
                     "managedVenues": [
                         {
-                            "address": venue_offerer_2.address,
+                            "address": venue_offerer_2.street,
                             "audioDisabilityCompliant": venue_offerer_2.audioDisabilityCompliant,
                             "city": venue_offerer_2.city,
                             "id": venue_offerer_2.id,

@@ -1752,7 +1752,7 @@ def create_from_onboarding_data(
     venue = offerers_repository.find_venue_by_siret(onboarding_data.siret)
     if not venue or onboarding_data.createVenueWithoutSiret:
         common_kwargs = dict(
-            address=onboarding_data.address or "n/d",  # handle empty VoieEtablissement from Sirene API
+            street=onboarding_data.address or "n/d",  # handle empty VoieEtablissement from Sirene API
             banId=onboarding_data.banId,
             bookingEmail=user.email,
             city=onboarding_data.city,
@@ -2103,7 +2103,7 @@ def set_accessibility_provider_id(venue: models.Venue) -> None:
         ban_id=venue.banId,
         city=venue.city,
         postal_code=venue.postalCode,
-        address=venue.address,
+        address=venue.street,
     )
     if id_and_url_at_provider:
         if not venue.accessibilityProvider:
