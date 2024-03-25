@@ -109,6 +109,37 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
         .where(offerers_models.Venue.managingOffererId == offerers_models.Offerer.id)
         .where(~offerers_models.Venue.isVirtual)
     )
+    has_new_nav_users_subquery = (
+        sa.select(1)
+        .select_from(offerers_models.UserOfferer)
+        .join(
+            users_models.UserProNewNavState,
+            sa.and_(
+                users_models.UserProNewNavState.userId == offerers_models.UserOfferer.userId,
+                users_models.UserProNewNavState.newNavDate < datetime.datetime.utcnow(),
+            ),
+        )
+        .where(
+            offerers_models.UserOfferer.offererId == offerers_models.Offerer.id,
+        )
+        .correlate(offerers_models.Offerer)
+        .exists()
+    )
+
+    has_old_nav_users_subquery = (
+        sa.select(1)
+        .select_from(offerers_models.UserOfferer)
+        .outerjoin(
+            users_models.UserProNewNavState,
+            users_models.UserProNewNavState.userId == offerers_models.UserOfferer.userId,
+        )
+        .where(
+            offerers_models.UserOfferer.offererId == offerers_models.Offerer.id,
+            users_models.UserProNewNavState.newNavDate.is_(None),
+        )
+        .correlate(offerers_models.Offerer)
+        .exists()
+    )
 
     offerer_query = (
         db.session.query(
@@ -127,6 +158,12 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
             ),
         )
     )
+
+    if FeatureToggle.WIP_ENABLE_NEW_NAV_AB_TEST.is_active():
+        offerer_query = offerer_query.options(
+            sa.orm.with_expression(offerers_models.Offerer.hasNewNavUsers, has_new_nav_users_subquery),
+            sa.orm.with_expression(offerers_models.Offerer.hasOldNavUsers, has_old_nav_users_subquery),
+        )
 
     row = offerer_query.one_or_none()
     if not row:
