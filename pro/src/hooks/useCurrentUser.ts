@@ -12,11 +12,14 @@ const useCurrentUser = (): UseCurrentUserReturn => {
   const currentUser = useSelector(selectCurrentUser)
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
+  if (!currentUser) {
+    throw new Error(
+      'useCurrentUser should only be used on authenticated pages. Use useSelector(selectCurrentUser) otherwise.'
+    )
+  }
+
   return {
-    // TODO : handle the null case by redirecting to login
-    // (currently handled by the <RouteWrapper> component)
-    // eslint-disable-next-line
-    currentUser: currentUser!!,
+    currentUser,
     selectedOffererId,
   }
 }

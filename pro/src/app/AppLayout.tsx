@@ -1,5 +1,6 @@
 import classnames from 'classnames'
 import React, { useEffect, useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import DomainNameBanner from 'components/DomainNameBanner'
 import Footer from 'components/Footer/Footer'
@@ -7,10 +8,10 @@ import Header from 'components/Header/Header'
 import NewNavReview from 'components/NewNavReview/NewNavReview'
 import SideNavLinks from 'components/SideNavLinks/SideNavLinks'
 import SkipLinks from 'components/SkipLinks'
-import useCurrentUser from 'hooks/useCurrentUser'
 import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
+import { selectCurrentUser } from 'store/user/selectors'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -31,7 +32,7 @@ export const AppLayout = ({
   layout = 'basic',
 }: AppLayoutProps) => {
   const isNewSideBarNavigation = useIsNewInterfaceActive()
-  const { currentUser } = useCurrentUser()
+  const currentUser = useSelector(selectCurrentUser)
   const [lateralPanelOpen, setLateralPanelOpen] = useState(false)
 
   const openButtonRef = useRef<HTMLButtonElement>(null)
