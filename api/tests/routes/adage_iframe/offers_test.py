@@ -13,6 +13,15 @@ from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFr
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+def base_body():
+    return {
+        "phoneNumber": "0139980101",
+        "totalStudents": 30,
+        "totalTeachers": 2,
+        "comment": "Un commentaire sublime que nous avons là",
+    }
+
+
 class CreateCollectiveRequestTest:
     endpoint = "adage_iframe.create_collective_request"
 
@@ -21,19 +30,11 @@ class CreateCollectiveRequestTest:
         educational_redactor = educational_factories.EducationalRedactorFactory()
         offer = educational_factories.CollectiveOfferTemplateFactory()
 
-        body = {
-            "phoneNumber": "0139980101",
-            "totalStudents": 30,
-            "totalTeachers": 2,
-            "comment": "Un commentaire sublime que nous avons là",
-        }
-
-        # When
+        body = base_body()
         client = client.with_adage_token(email=educational_redactor.email, uai=educational_institution.institutionId)
         with caplog.at_level(logging.INFO):
             response = client.post(url_for(self.endpoint, offer_id=offer.id), json=body)
 
-        # Then
         assert response.status_code == 200
         assert response.json["email"] == educational_redactor.email
         assert response.json["phoneNumber"] == "+33139980101"
@@ -74,19 +75,10 @@ class CreateCollectiveRequestTest:
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_redactor = educational_factories.EducationalRedactorFactory(email="JamesHolden@rocinante.com")
 
-        body = {
-            "email": "JamesHolden@rocinante.com",
-            "phoneNumber": "0139980101",
-            "totalStudents": 30,
-            "totalTeachers": 2,
-            "comment": "Un commentaire sublime que nous avons là",
-        }
-
-        # When
+        unknown_template_id = 0
         client = client.with_adage_token(email=educational_redactor.email, uai=educational_institution.institutionId)
-        response = client.post(url_for(self.endpoint, offer_id=0), json=body)
+        response = client.post(url_for(self.endpoint, offer_id=unknown_template_id), json=base_body())
 
-        # Then
         assert response.status_code == 404
         assert response.json == {"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}
 
@@ -94,19 +86,10 @@ class CreateCollectiveRequestTest:
         educational_redactor = educational_factories.EducationalRedactorFactory(email="JamesHolden@rocinante.com")
         offer = educational_factories.CollectiveOfferTemplateFactory()
 
-        body = {
-            "email": "JamesHolden@rocinante.com",
-            "phoneNumber": "0139980101",
-            "totalStudents": 30,
-            "totalTeachers": 2,
-            "comment": "Un commentaire sublime que nous avons là",
-        }
+        unknown_uai = "unknown"
+        client = client.with_adage_token(email=educational_redactor.email, uai=unknown_uai)
+        response = client.post(url_for(self.endpoint, offer_id=offer.id), json=base_body())
 
-        # When
-        client = client.with_adage_token(email=educational_redactor.email, uai="oh no, oh no, nonono")
-        response = client.post(url_for(self.endpoint, offer_id=offer.id), json=body)
-
-        # Then
         assert response.status_code == 404
         assert response.json == {"code": "INSTITUTION_NOT_FOUND"}
         assert not adage_api_testing.adage_requests
@@ -121,13 +104,6 @@ class CreateCollectiveRequestTest:
         educational_redactor = educational_factories.EducationalRedactorFactory.build()
         offer = educational_factories.CollectiveOfferTemplateFactory()
 
-        body = {
-            "phoneNumber": "0139980101",
-            "totalStudents": 30,
-            "totalTeachers": 2,
-            "comment": "Un commentaire sublime que nous avons là",
-        }
-
         client = client.with_adage_token(
             email=educational_redactor.email,
             civility=educational_redactor.civility,
@@ -136,7 +112,7 @@ class CreateCollectiveRequestTest:
             uai=educational_institution.institutionId,
         )
 
-        response = client.post(url_for(self.endpoint, offer_id=offer.id), json=body)
+        response = client.post(url_for(self.endpoint, offer_id=offer.id), json=base_body())
         assert response.status_code == 200
 
         # quick checks: response and adage request
@@ -150,3 +126,16 @@ class CreateCollectiveRequestTest:
         assert found_redactor.civility == educational_redactor.civility
         assert found_redactor.firstName == educational_redactor.firstName
         assert found_redactor.lastName == educational_redactor.lastName
+
+    def test_invalid_phone_number(self, client):
+        educational_institution = educational_factories.EducationalInstitutionFactory()
+        educational_redactor = educational_factories.EducationalRedactorFactory()
+        offer = educational_factories.CollectiveOfferTemplateFactory()
+
+        body = {**base_body(), "phoneNumber": "0000000000000000"}
+
+        client = client.with_adage_token(email=educational_redactor.email, uai=educational_institution.institutionId)
+        response = client.post(url_for(self.endpoint, offer_id=offer.id), json=body)
+
+        assert response.status_code == 400
+        assert "phoneNumber" in response.json
