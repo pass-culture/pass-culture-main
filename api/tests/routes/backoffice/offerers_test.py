@@ -158,6 +158,76 @@ class GetOffererTest(GetEndpointHelper):
         assert "Validée" in badges
         assert "Suspendue" not in badges
 
+    @pytest.mark.parametrize(
+        "new_nav_ff_activated,new_nav_users,old_nav_users",
+        [
+            (True, True, True),
+            (False, True, True),
+            (True, False, True),
+            (False, False, True),
+            (True, True, False),
+            (False, True, False),
+            (True, False, False),
+            (False, False, False),
+        ],
+    )
+    def test_get_offerer_with_new_nav_badges(
+        self, new_nav_ff_activated, new_nav_users, old_nav_users, authenticated_client, offerer
+    ):
+        if new_nav_users:
+            user_with_new_nav = users_factories.ProFactory()
+            users_factories.UserProNewNavStateFactory(user=user_with_new_nav)
+            offerers_factories.UserOffererFactory(user=user_with_new_nav, offerer=offerer)
+        if old_nav_users:
+            _user_exclude_from_beta_test = users_factories.ProFactory()
+
+            user_with_nav_date_in_the_future = users_factories.ProFactory()
+            users_factories.UserProNewNavStateFactory(
+                user=user_with_nav_date_in_the_future,
+                eligibilityDate=None,
+                newNavDate=datetime.datetime.utcnow() + datetime.timedelta(days=5),
+            )
+            offerers_factories.UserOffererFactory(user=user_with_nav_date_in_the_future, offerer=offerer)
+
+            user_with_old_nav = users_factories.ProFactory()
+            users_factories.UserProNewNavStateFactory(user=user_with_old_nav, eligibilityDate=None, newNavDate=None)
+            offerers_factories.UserOffererFactory(user=user_with_old_nav, offerer=offerer)
+
+            eligible_user_with_inactivated_new_nav = users_factories.ProFactory()
+            users_factories.UserProNewNavStateFactory(
+                user=eligible_user_with_inactivated_new_nav, eligibilityDate=datetime.datetime.utcnow(), newNavDate=None
+            )
+            offerers_factories.UserOffererFactory(user=eligible_user_with_inactivated_new_nav, offerer=offerer)
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        # if offerer is not removed from the current session, any get
+        # query won't be executed because of this specific testing
+        # environment. This would tamper the real database queries
+        # count.
+        db.session.expire(offerer)
+
+        with (
+            override_features(WIP_ENABLE_NEW_NAV_AB_TEST=new_nav_ff_activated),
+            assert_num_queries(self.expected_num_queries),
+        ):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        badges = html_parser.extract(response.data, tag="span", class_="badge")
+        assert "Structure" in badges
+        assert "Validée" in badges
+        assert "Suspendue" not in badges
+
+        if new_nav_ff_activated:
+            if new_nav_users:
+                assert "Nouvelle interface" in badges
+            if old_nav_users:
+                assert "Ancienne interface" in badges
+        else:
+            assert "Nouvelle interface" not in badges
+            assert "Ancienne interface" not in badges
+
     @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_offerer_detail_contains_venue_bank_information_stats_legacy(
         self,
@@ -2559,6 +2629,8 @@ class ValidateOffererAttachmentTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, user_offerer_id=user_offerer.id)
 
         assert response.status_code == 303
+
+        db.session.expire_all()
 
         redirected_response = authenticated_client.get(response.headers["location"])
         assert "est déjà validé" in redirected_response.data.decode("utf8")

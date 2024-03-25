@@ -44,6 +44,8 @@
       Suspendue
     </span>
   {% endif %}
+  {% if offerer.hasNewNavUsers %}{{ build_new_navigation_badge() }}{% endif %}
+  {% if offerer.hasOldNavUsers %}{{ build_old_navigation_badge() }}{% endif %}
 {% endmacro %}
 {% macro build_user_offerer_status_badge(user_offerer) %}
   {{ build_status_badge(user_offerer, "Nouveau", "En attente", "Validé", "Rejeté", "Supprimé") }}

@@ -993,6 +993,9 @@ class Offerer(
 
     allowedOnAdage: bool = Column(Boolean, nullable=False, default=False, server_default=sa.sql.expression.false())
 
+    hasNewNavUsers: sa_orm.Mapped["bool | None"] = sa.orm.query_expression()
+    hasOldNavUsers: sa_orm.Mapped["bool | None"] = sa.orm.query_expression()
+
     @property
     def bic(self) -> str | None:
         return self.bankInformation.bic if self.bankInformation else None
