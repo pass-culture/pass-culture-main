@@ -4,6 +4,7 @@ import datetime
 from pcapi.connectors.entreprise import exceptions
 from pcapi.connectors.entreprise import models
 from pcapi.connectors.entreprise.backends.base import BaseBackend
+from pcapi.utils import siren as siren_utils
 
 
 class TestingBackend(BaseBackend):
@@ -97,7 +98,7 @@ class TestingBackend(BaseBackend):
             return models.SirenInfo(
                 siren=siren,
                 name="[ND]",
-                head_office_siret=siren + "00001",
+                head_office_siret=siren_utils.complete_siren_or_siret(siren + "0001"),
                 ape_code="90.01Z",
                 ape_label="Arts du spectacle vivant",
                 legal_category_code=self._legal_category_code(siren),
@@ -111,7 +112,7 @@ class TestingBackend(BaseBackend):
         return models.SirenInfo(
             siren=siren,
             name="MINISTERE DE LA CULTURE",
-            head_office_siret=siren + "00001",
+            head_office_siret=siren_utils.complete_siren_or_siret(siren + "0001"),
             ape_code=ape_code,
             ape_label=ape_label,
             legal_category_code=self._legal_category_code(siren),

@@ -19,6 +19,7 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
 from pcapi.routes.serialization import BaseModel
 from pcapi.tasks.decorator import task
+from pcapi.utils import siren as siren_utils
 from pcapi.utils.urls import build_backoffice_offerer_link
 
 
@@ -34,6 +35,10 @@ class CheckOffererSirenRequest(BaseModel):
 
 @task(settings.GCP_CHECK_OFFERER_SIREN_QUEUE_NAME, "/offerers/check_offerer", task_request_timeout=3 * 60)  # type: ignore [arg-type]
 def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
+    if not siren_utils.is_valid_siren(payload.siren):
+        logger.error("Invalid SIREN format in the database", extra={"siren": payload.siren})
+        return
+
     try:
         siren_info = sirene.get_siren(payload.siren, with_address=False, raise_if_non_public=False)
     except entreprise_exceptions.SireneException:

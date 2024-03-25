@@ -49,6 +49,7 @@ from pcapi.routes.serialization import base as serialize_base
 from pcapi.routes.serialization import reimbursement_csv_serialize
 from pcapi.utils import regions as regions_utils
 from pcapi.utils.clean_accents import clean_accents
+from pcapi.utils.siren import is_valid_siret
 from pcapi.utils.string import to_camelcase
 from pcapi.workers.fully_sync_venue_job import fully_sync_venue_job
 
@@ -1057,6 +1058,9 @@ def get_entreprise_info(venue_id: int) -> utils.BackofficeResponse:
 
     if not venue.siret:
         raise NotFound()
+
+    if not is_valid_siret(venue.siret):
+        return render_template("venue/get/entreprise_info.html", is_invalid_siret=True, venue=venue)
 
     siret_info = None
     siret_error = None
