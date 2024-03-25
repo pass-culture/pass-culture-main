@@ -517,6 +517,7 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
             users_models.User.roles,
             offerers_models.UserOfferer,
             offerers_models.OffererInvitation,
+            users_models.UserProNewNavState.newNavDate.is_not(None).label("hasNewNav"),
         )
         .select_from(users_models.User)
         .outerjoin(
@@ -533,6 +534,7 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
                 offerers_models.OffererInvitation.email == users_models.User.email,
             ),
         )
+        .outerjoin(users_models.UserProNewNavState, users_models.UserProNewNavState.userId == users_models.User.id)
         .options(options)
         .filter(users_models.User.id.in_(user_ids_subquery))
         .order_by(offerers_models.UserOfferer.id, users_models.User.full_name)

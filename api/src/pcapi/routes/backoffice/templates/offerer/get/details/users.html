@@ -1,4 +1,6 @@
 {% from "components/badges.html" import build_user_offerer_status_badge %}
+{% from "components/badges.html" import build_new_navigation_badge %}
+{% from "components/badges.html" import build_old_navigation_badge %}
 {% import "components/links.html" as links %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% import "components/clipboard.html" as clipboard %}
@@ -55,6 +57,7 @@
       <th scope="col"></th>
       <th scope="col">ID</th>
       <th scope="col">Statut</th>
+      {% if is_feature_active('WIP_ENABLE_NEW_NAV_AB_TEST') %}<th scope="col">Interface</th>{% endif %}
       <th scope="col">Prénom / Nom</th>
       <th scope="col">Email</th>
       <th scope="col">Invitation</th>
@@ -117,6 +120,15 @@
             <span class="me-1 pb-1 badge rounded-pill text-bg-light">Invité</span>
           {% endif %}
         </td>
+        {% if is_feature_active('WIP_ENABLE_NEW_NAV_AB_TEST') %}
+          <td>
+            {% if row.hasNewNav %}
+              {{ build_new_navigation_badge() }}
+            {% else %}
+              {{ build_old_navigation_badge() }}
+            {% endif %}
+          </td>
+        {% endif %}
         <td class="fw-bolder text-break">{{ row.full_name | empty_string_if_null }}</td>
         <td class="fw-bolder">
           {{ row.email | empty_string_if_null }}<span class="ms-1">{{ clipboard.copy_to_clipboard(row.email, "Copier l'email du compte") }}</span>
