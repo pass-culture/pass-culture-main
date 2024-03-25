@@ -227,11 +227,29 @@ class TiteliveSearchTest:
         assert len(synced_products) == 3
         assert all(synced_product.thumbUrl is not None for synced_product in synced_products)
 
-    def test_sync_thumbnails_failure_is_silent(self, requests_mock):
+    def test_sync_thumbnails_network_failure_is_silent(self, requests_mock):
         self._configure_login_and_images(requests_mock)
         requests_mock.get("https://catsearch.epagine.fr/v1/search?page=1", json=fixtures.MUSIC_SEARCH_FIXTURE)
         requests_mock.get("https://catsearch.epagine.fr/v1/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE)
         requests_mock.get("https://images.epagine.fr/323/3700187679324.jpg", exc=requests.exceptions.RequestException)
+
+        assert TiteliveMusicSearch().synchronize_products(datetime.date(2022, 12, 1)) is None
+
+        synced_products = offers_models.Product.query.all()
+        assert len(synced_products) == 3
+        assert len([product for product in synced_products if product.thumbUrl is not None]) == 2
+
+        no_thumbnail_product = next(
+            (product for product in synced_products if product.idAtProviders == "3700187679324"), None
+        )
+        assert no_thumbnail_product is not None
+        assert no_thumbnail_product.thumbUrl is None
+
+    def test_sync_thumbnails_open_failure_is_silent(self, requests_mock):
+        self._configure_login_and_images(requests_mock)
+        requests_mock.get("https://catsearch.epagine.fr/v1/search?page=1", json=fixtures.MUSIC_SEARCH_FIXTURE)
+        requests_mock.get("https://catsearch.epagine.fr/v1/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE)
+        requests_mock.get("https://images.epagine.fr/323/3700187679324.jpg", body=b"")
 
         assert TiteliveMusicSearch().synchronize_products(datetime.date(2022, 12, 1)) is None
 
