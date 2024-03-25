@@ -14,7 +14,7 @@
 
 .container {
   position: relative;
-  padding-bottom: calc(size.$action-bar-sticky-height + rem.torem(16px));
+  padding-bottom: rem.torem(32px);
   width: 100%;
 
   &-without-nav {
