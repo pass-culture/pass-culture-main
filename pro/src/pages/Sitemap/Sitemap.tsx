@@ -1,13 +1,15 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
 import { AppLayout } from 'app/AppLayout'
-import useCurrentUser from 'hooks/useCurrentUser'
+import { selectCurrentOffererId } from 'store/user/selectors'
 
 import styles from './Sitemap.module.scss'
 
 export const Sitemap = () => {
-  const { selectedOffererId } = useCurrentUser()
+  const selectedOffererId = useSelector(selectCurrentOffererId)
+
   return (
     <AppLayout>
       <h1>Plan du site</h1>

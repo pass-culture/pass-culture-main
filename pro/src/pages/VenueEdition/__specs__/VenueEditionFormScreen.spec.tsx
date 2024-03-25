@@ -24,6 +24,16 @@ const renderForm = (
   venue: GetVenueResponseModel,
   options?: RenderWithProvidersOptions
 ) => {
+  const storeOverrides = {
+    user: {
+      initialized: true,
+      currentUser: {
+        id: 'EY',
+        isAdmin: false,
+      },
+    },
+  }
+
   renderWithProviders(
     <>
       <Routes>
@@ -40,6 +50,7 @@ const renderForm = (
     </>,
     {
       initialRouterEntries: ['/edition'],
+      storeOverrides,
       ...options,
     }
   )

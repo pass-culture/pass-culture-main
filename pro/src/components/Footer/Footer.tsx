@@ -1,7 +1,8 @@
 import classNames from 'classnames'
+import { useSelector } from 'react-redux'
 
-import useCurrentUser from 'hooks/useCurrentUser'
 import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
+import { selectCurrentUser } from 'store/user/selectors'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { initCookieConsent } from 'utils/cookieConsentModal'
@@ -12,7 +13,7 @@ type FooterProps = {
   layout?: 'basic' | 'funnel' | 'without-nav' | 'sticky-actions'
 }
 export default function Footer({ layout }: FooterProps) {
-  const { currentUser } = useCurrentUser()
+  const currentUser = useSelector(selectCurrentUser)
   const isNewSideBarNavigation = useIsNewInterfaceActive()
 
   if (!isNewSideBarNavigation) {

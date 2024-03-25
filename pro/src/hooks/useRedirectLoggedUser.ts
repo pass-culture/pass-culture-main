@@ -1,13 +1,13 @@
 import { useEffect } from 'react'
+import { useSelector } from 'react-redux'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-
-import useCurrentUser from './useCurrentUser'
+import { selectCurrentUser } from 'store/user/selectors'
 
 const useRedirectLoggedUser = () => {
   const navigate = useNavigate()
-  const { currentUser } = useCurrentUser()
+  const currentUser = useSelector(selectCurrentUser)
 
   const [searchParams] = useSearchParams()
   const redirectToUrl = () => {
