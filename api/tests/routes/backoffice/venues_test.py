@@ -887,7 +887,7 @@ class UpdateVenueTest(PostEndpointHelper):
             "siret": venue.siret or "",
             "city": venue.city or "",
             "postal_code": venue.postalCode or "",
-            "address": venue.address or "",
+            "street": venue.street or "",
             "ban_id": venue.banId or "",
             "booking_email": venue.bookingEmail or "",
             "phone_number": venue.contact.phone_number or "",
@@ -913,7 +913,7 @@ class UpdateVenueTest(PostEndpointHelper):
             "siret": venue.managingOfferer.siren + "98765",
             "city": "Umeå",
             "postal_code": "90325",
-            "address": "Skolgatan 31A",
+            "street": "Skolgatan 31A",
             "booking_email": venue.bookingEmail + ".update",
             "phone_number": "+33102030456",
             "is_permanent": True,
@@ -934,7 +934,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.siret == data["siret"]
         assert venue.city == data["city"]
         assert venue.postalCode == data["postal_code"]
-        assert venue.address == data["address"]
+        assert venue.street == data["street"]
         assert venue.bookingEmail == data["booking_email"]
         assert venue.contact.phone_number == data["phone_number"]
         assert venue.isPermanent == data["is_permanent"]
@@ -952,7 +952,7 @@ class UpdateVenueTest(PostEndpointHelper):
         update_snapshot = venue.action_history[0].extraData["modified_info"]
 
         assert update_snapshot["city"]["new_info"] == data["city"]
-        assert update_snapshot["address"]["new_info"] == data["address"]
+        assert update_snapshot["street"]["new_info"] == data["street"]
         assert update_snapshot["bookingEmail"]["new_info"] == data["booking_email"]
         assert update_snapshot["latitude"]["new_info"] == data["latitude"]
         assert update_snapshot["longitude"]["new_info"] == data["longitude"]
@@ -1284,7 +1284,7 @@ class UpdateVenueTest(PostEndpointHelper):
 
         db.session.refresh(venue)
 
-        assert venue.address == data["address"]
+        assert venue.street == data["street"]
         assert venue.banId == data["ban_id"]
         assert venue.isPermanent == data["is_permanent"]
         assert venue.action_history[0].extraData == {

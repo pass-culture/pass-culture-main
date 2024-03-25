@@ -100,6 +100,7 @@ class VenueModel(BaseModel):
         venue.siren = venue.managingOfferer.siren
         venue.isAdmin = venue.venueTypeCode == VenueTypeCode.ADMINISTRATIVE
         venue.offerer = venue.managingOfferer
+        venue.address = venue.street
 
         return super().from_orm(venue)
 

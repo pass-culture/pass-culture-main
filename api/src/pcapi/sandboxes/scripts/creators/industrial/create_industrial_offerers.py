@@ -96,7 +96,7 @@ def create_industrial_offerers() -> dict[str, Offerer]:
             offerer.siren = str(MOCK_ADAGE_ELIGIBLE_SIREN)
             offerers_factories.VenueFactory(
                 managingOfferer=offerer,
-                address=offerer.address,
+                street=offerer.address,
                 bookingEmail="fake@email.com",
                 city=offerer.city,
                 comment="Salle de cinéma",

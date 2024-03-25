@@ -10,7 +10,7 @@
     {% if field.has_reset %}data-has-reset="true"{% endif %}
     {% if field.has_manual_editing %}data-has-manual-editing="true"{% endif %}
     {# Bellow data are necessary to tell add on PcPostalAddressAutocomplete which field in the form to set on selection #}
-    {% if field.address %}data-address-input-name="{{ field.address }}"{% endif %}
+    {% if field.street %}data-street-input-name="{{ field.street }}"{% endif %}
     {% if field.city %}data-city-input-name="{{ field.city }}"{% endif %}
     {% if field.postal_code %}data-postal-code-input-name="{{ field.postal_code }}"{% endif %}
     {% if field.latitude %}data-latitude-input-name="{{ field.latitude }}"{% endif %}

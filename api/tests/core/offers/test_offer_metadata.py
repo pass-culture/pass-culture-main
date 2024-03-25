@@ -148,7 +148,7 @@ class OfferMetadataTest:
         def should_have_a_location_when_event_is_physical(self):
             offer = offers_factories.EventOfferFactory(
                 venue__name="Le Poney qui tousse",
-                venue__address="Rue du Poney qui tousse",
+                venue__street="Rue du Poney qui tousse",
                 venue__postalCode="75001",
                 venue__city="Boulgourville",
                 venue__latitude="47.097456",

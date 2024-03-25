@@ -137,7 +137,7 @@ class BaseVenueResponse(BaseModel):
     isVirtual: bool
     name: str
 
-    address: str | None
+    street: str | None
     bannerUrl: str | None
     contact: VenueContactModel | None
     city: str | None

@@ -129,7 +129,7 @@ def _create_pro_user(row: dict) -> User:
     )
 
     venue_creation_info = venues_serialize.PostVenueBodyModel(
-        address=base_serialize.VenueAddress(offerer_creation_info.address),
+        street=base_serialize.VenueAddress(offerer_creation_info.address),
         banId=None,
         bookingEmail=base_serialize.VenueBookingEmail(user.email),
         city=base_serialize.VenueCity(offerer_creation_info.city),

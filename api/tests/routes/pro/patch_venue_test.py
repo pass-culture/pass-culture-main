@@ -16,7 +16,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 def populate_missing_data_from_venue(venue_data: dict, venue: offerers_models.Venue) -> dict:
     return {
-        "address": venue.address,
+        "street": venue.street,
         "banId": venue.banId,
         "bookingEmail": venue.bookingEmail,
         "city": venue.city,
@@ -64,7 +64,7 @@ class Returns200Test:
         venue = offerers_models.Venue.query.get(venue_id)
         assert venue.publicName == "Ma librairie"
         assert venue.venueTypeCode == offerers_models.VenueTypeCode.BOOKSTORE
-        assert response.json["address"] == venue.address
+        assert response.json["street"] == venue.street
         assert response.json["banId"] == venue.banId
         assert response.json["city"] == venue.city
         assert response.json["siret"] == venue.siret

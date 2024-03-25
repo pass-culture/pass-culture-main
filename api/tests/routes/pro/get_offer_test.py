@@ -186,7 +186,7 @@ class Returns200Test:
             "thumbUrl": None,
             "url": None,
             "venue": {
-                "address": "1 boulevard Poissonnière",
+                "street": "1 boulevard Poissonnière",
                 "audioDisabilityCompliant": False,
                 "bookingEmail": "test@test.com",
                 "city": "Paris",

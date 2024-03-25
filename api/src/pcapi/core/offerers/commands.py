@@ -178,7 +178,7 @@ def synchronize_accessibility_with_acceslibre(dry_run: bool = False, force_sync:
                         ban_id=venue.banId,
                         city=venue.city,
                         postal_code=venue.postalCode,
-                        address=venue.address,
+                        address=venue.street,
                     )
                 except accessibility_provider.AccesLibreApiException as e:
                     logger.exception("An error occurred while processing venue: %s, Error: %s", venue, e)

@@ -259,7 +259,7 @@ def _get_collective_offer_contact(offer: educational_models.CollectiveOffer) -> 
 
 
 def _get_collective_offer_address(offer: educational_models.CollectiveOffer) -> str:
-    default_address = f"{offer.venue.address}, {offer.venue.postalCode} {offer.venue.city}"
+    default_address = f"{offer.venue.street}, {offer.venue.postalCode} {offer.venue.city}"
 
     if offer.offerVenue is None:
         return default_address

@@ -312,7 +312,7 @@ def test_with_venue_filter_with_pricings(client, cutoff, fortnight):
     assert row["SIRET du lieu"] == venue1.siret
     assert row["IBAN"] == bank_account_1.iban
     assert row["Raison sociale du lieu"] == venue1.name
-    assert row["Adresse du lieu"] == f"{venue1.address} {venue1.postalCode} {venue1.city}"
+    assert row["Adresse du lieu"] == f"{venue1.street} {venue1.postalCode} {venue1.city}"
     assert row["SIRET du lieu"] == venue1.siret
     assert row["Nom de l'offre"] == offer.name
     assert row["N° de réservation (offre collective)"] == ""
@@ -427,7 +427,7 @@ def test_with_reimbursement_period_filter_with_pricings(client, cutoff, fortnigh
         assert row["SIRET du lieu"] == venue.siret
         assert row["IBAN"] == bank_account.iban
         assert row["Raison sociale du lieu"] == venue.name
-        assert row["Adresse du lieu"] == f"{venue.address} {venue.postalCode} {venue.city}"
+        assert row["Adresse du lieu"] == f"{venue.street} {venue.postalCode} {venue.city}"
         assert row["SIRET du lieu"] == venue.siret
         assert row["Nom de l'offre"] == offer.name
         assert row["N° de réservation (offre collective)"] == ""
@@ -523,7 +523,7 @@ def test_with_venue_filter_with_pricings_collective_use_case(client, cutoff, for
     assert row["SIRET du lieu"] == venue1.siret
     assert row["IBAN"] == bank_account_1.iban
     assert row["Raison sociale du lieu"] == venue1.name
-    assert row["Adresse du lieu"] == f"{venue1.address} {venue1.postalCode} {venue1.city}"
+    assert row["Adresse du lieu"] == f"{venue1.street} {venue1.postalCode} {venue1.city}"
     assert row["SIRET du lieu"] == venue1.siret
     assert row["Nom de l'offre"] == collective_offer.name
     assert row["N° de réservation (offre collective)"] == str(collective_booking.id)
@@ -644,7 +644,7 @@ def test_with_reimbursement_period_filter_with_pricings_collective_use_case(clie
         assert row["SIRET du lieu"] == venue.siret
         assert row["IBAN"] == bank_account.iban
         assert row["Raison sociale du lieu"] == venue.name
-        assert row["Adresse du lieu"] == f"{venue.address} {venue.postalCode} {venue.city}"
+        assert row["Adresse du lieu"] == f"{venue.street} {venue.postalCode} {venue.city}"
         assert row["SIRET du lieu"] == venue.siret
         assert row["Nom de l'offre"] == collective_offer.name
         assert row["N° de réservation (offre collective)"] == str(collective_booking.id)

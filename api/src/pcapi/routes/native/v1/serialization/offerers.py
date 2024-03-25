@@ -18,6 +18,7 @@ class VenueAccessibilityModel(BaseModel):
 
 class VenueResponse(base.BaseVenueResponse):
     id: int
+    address: str | None
     accessibility: VenueAccessibilityModel
     venueTypeCode: offerers_models.VenueTypeCodeKey
     bannerMeta: BannerMetaModel | None
@@ -31,4 +32,5 @@ class VenueResponse(base.BaseVenueResponse):
             motorDisability=venue.motorDisabilityCompliant,
             visualDisability=venue.visualDisabilityCompliant,
         )
+        venue.address = venue.street
         return super().from_orm(venue)

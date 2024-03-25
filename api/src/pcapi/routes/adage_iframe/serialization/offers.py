@@ -71,6 +71,7 @@ class OfferVenueResponse(BaseModel):
     @classmethod
     def from_orm(cls, venue: offerers_models.Venue) -> "OfferVenueResponse":
         venue.coordinates = {"latitude": venue.latitude, "longitude": venue.longitude}
+        venue.address = venue.street
         result = super().from_orm(venue)
         return result
 
@@ -210,7 +211,7 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
             offerVenue=CollectiveOfferOfferVenue(
                 name=offerVenue.name if offerVenue else None,
                 publicName=offerVenue.publicName if offerVenue else None,
-                address=offerVenue.address if offerVenue else None,
+                address=offerVenue.street if offerVenue else None,
                 postalCode=offerVenue.postalCode if offerVenue else None,
                 city=offerVenue.city if offerVenue else None,
                 **offer.offerVenue,
@@ -308,7 +309,7 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
             offerVenue=CollectiveOfferOfferVenue(
                 name=offerVenue.name if offerVenue else None,
                 publicName=offerVenue.publicName if offerVenue else None,
-                address=offerVenue.address if offerVenue else None,
+                address=offerVenue.street if offerVenue else None,
                 postalCode=offerVenue.postalCode if offerVenue else None,
                 city=offerVenue.city if offerVenue else None,
                 **offer.offerVenue,
