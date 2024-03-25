@@ -126,6 +126,7 @@ class BaseVenueResponse(BaseModel):
     longitude: float | None
     postalCode: str | None
     publicName: str | None
+    venueOpeningHours: list[dict] | None
     withdrawalDetails: str | None
 
 
