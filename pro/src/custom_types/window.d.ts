@@ -9,7 +9,7 @@ declare global {
     ) => Promise<ImageBitmap>
 
     beamer_config: Record<string, unknown>
-    Beamer: {
+    Beamer?: {
       init: () => void
       update: (config: any) => void
       destroy: () => void
