@@ -3533,7 +3533,7 @@ class GetEntrepriseInfoTest(GetEndpointHelper):
     expected_num_queries = 3
 
     def test_offerer_entreprise_info(self, authenticated_client):
-        offerer = offerers_factories.OffererFactory(siren="123456789")
+        offerer = offerers_factories.OffererFactory(siren="123456782")
         url = url_for(self.endpoint, offerer_id=offerer.id)
 
         db.session.expire_all()
@@ -3545,7 +3545,7 @@ class GetEntrepriseInfoTest(GetEndpointHelper):
         # Values come from TestingBackend, check display
         sirene_content = html_parser.extract_cards_text(response.data)[0]
         assert "Nom : MINISTERE DE LA CULTURE" in sirene_content
-        assert "SIRET du siège social : 12345678900001" in sirene_content
+        assert "SIRET du siège social : 12345678200010" in sirene_content
         assert "Adresse : 3 RUE DE VALOIS" in sirene_content
         assert "Code postal : 75001" in sirene_content
         assert "Ville : PARIS" in sirene_content
@@ -3588,6 +3588,22 @@ class GetEntrepriseInfoTest(GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 404
 
+    def test_offerer_with_invalid_siren(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory(siren="222222222")
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        db.session.expire_all()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        sirene_content = html_parser.extract_cards_text(response.data)[0]
+        assert (
+            "Erreur Le format du numéro SIREN est détecté comme invalide, nous ne pouvons pas récupérer de données sur l'entreprise."
+            in sirene_content
+        )
+
 
 class GetEntrepriseInfoRcsTest(GetEndpointHelper):
     endpoint = "backoffice_web.offerer.get_entreprise_rcs_info"
@@ -3600,7 +3616,7 @@ class GetEntrepriseInfoRcsTest(GetEndpointHelper):
     expected_num_queries = 3
 
     def test_get_rcs_info_registered(self, authenticated_client):
-        offerer = offerers_factories.OffererFactory(siren="010000000")
+        offerer = offerers_factories.OffererFactory(siren="010000008")
         url = url_for(self.endpoint, offerer_id=offerer.id)
 
         db.session.expire_all()
@@ -3617,7 +3633,7 @@ class GetEntrepriseInfoRcsTest(GetEndpointHelper):
         assert "Activité du siège social : TEST" in content
 
     def test_get_rcs_info_not_registered(self, authenticated_client):
-        offerer = offerers_factories.OffererFactory(siren="020000000")
+        offerer = offerers_factories.OffererFactory(siren="020000006")
         url = url_for(self.endpoint, offerer_id=offerer.id)
 
         db.session.expire_all()
@@ -3631,7 +3647,7 @@ class GetEntrepriseInfoRcsTest(GetEndpointHelper):
         assert content == "Activité commerciale : Non"
 
     def test_get_rcs_info_deregistered(self, authenticated_client):
-        offerer = offerers_factories.OffererFactory(siren="030099000")
+        offerer = offerers_factories.OffererFactory(siren="030099006")
         url = url_for(self.endpoint, offerer_id=offerer.id)
 
         db.session.expire_all()
@@ -3670,7 +3686,7 @@ class GetEntrepriseInfoUrssafTest(GetEndpointHelper):
     expected_num_queries = 4
 
     def test_get_urssaf_info_ok(self, authenticated_client):
-        offerer = offerers_factories.OffererFactory(siren="123456789")
+        offerer = offerers_factories.OffererFactory(siren="123456782")
         url = url_for(self.endpoint, offerer_id=offerer.id)
 
         db.session.expire_all()
@@ -3690,7 +3706,7 @@ class GetEntrepriseInfoUrssafTest(GetEndpointHelper):
         )
 
     def test_get_urssaf_info_taxes_not_paid(self, authenticated_client):
-        offerer = offerers_factories.OffererFactory(siren="009000000")
+        offerer = offerers_factories.OffererFactory(siren="009000001")
         url = url_for(self.endpoint, offerer_id=offerer.id)
 
         db.session.expire_all()
@@ -3731,7 +3747,7 @@ class GetEntrepriseInfoDgfipTest(GetEndpointHelper):
     expected_num_queries = 4
 
     def test_get_dgfip_info_ok(self, authenticated_client):
-        offerer = offerers_factories.OffererFactory(siren="123456789")
+        offerer = offerers_factories.OffererFactory(siren="123456782")
         url = url_for(self.endpoint, offerer_id=offerer.id)
 
         db.session.expire_all()
@@ -3750,7 +3766,7 @@ class GetEntrepriseInfoDgfipTest(GetEndpointHelper):
         )
 
     def test_get_dgfip_info_taxes_not_paid(self, authenticated_client):
-        offerer = offerers_factories.OffererFactory(siren="009000000")
+        offerer = offerers_factories.OffererFactory(siren="009000001")
         url = url_for(self.endpoint, offerer_id=offerer.id)
 
         db.session.expire_all()

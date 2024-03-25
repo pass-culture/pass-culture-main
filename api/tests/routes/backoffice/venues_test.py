@@ -2400,7 +2400,7 @@ class GetEntrepriseInfoTest(GetEndpointHelper):
     expected_num_queries = 3
 
     def test_venue_entreprise_info(self, authenticated_client):
-        venue = offerers_factories.VenueFactory(siret="12345678900012")
+        venue = offerers_factories.VenueFactory(siret="12345678200010")
         url = url_for(self.endpoint, venue_id=venue.id)
 
         db.session.expire_all()
@@ -2421,7 +2421,7 @@ class GetEntrepriseInfoTest(GetEndpointHelper):
         assert "Activité principale : Création artistique relevant des arts plastiques" in sirene_content
 
     def test_siret_not_found(self, authenticated_client):
-        venue = offerers_factories.VenueFactory(siret="00000000000001")
+        venue = offerers_factories.VenueFactory(siret="00000000000018")
         url = url_for(self.endpoint, venue_id=venue.id)
 
         db.session.expire_all()
@@ -2452,3 +2452,19 @@ class GetEntrepriseInfoTest(GetEndpointHelper):
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 404
+
+    def test_venue_with_invalid_siret(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(siret="22222222222222")
+        url = url_for(self.endpoint, venue_id=venue.id)
+
+        db.session.expire_all()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        sirene_content = html_parser.extract_cards_text(response.data)[0]
+        assert (
+            "Erreur Le format du numéro SIRET est détecté comme invalide, nous ne pouvons pas récupérer de données sur l'établissement."
+            in sirene_content
+        )
