@@ -20,12 +20,19 @@
         {% for year, year_stats in details | dictsort(reverse=true) %}
           <tr>
             <td class="text-start">{{ year }}</td>
-            <td class="text-end">{{ year_stats.individual | format_amount | safe }}</td>
+            <td class="text-end">{{ year_stats.individual | format_amount | safe }}</td>
             <td class="text-end">{{ year_stats.collective | format_amount | safe }}</td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
+    {% if "En cours" in details %}
+      <div class="my-3 small">
+        Note : Le CA « En cours » correspond aux réservations qui n'ont pas encore été validées.
+        Ce chiffre d'affaires en cours n'est pas certain (annulations possibles), chaque réservation
+        sera comptabilisée sur l'année du jour de sa validation.
+      </div>
+    {% endif %}
   </div>
 </div>
 <div class="modal-footer">
