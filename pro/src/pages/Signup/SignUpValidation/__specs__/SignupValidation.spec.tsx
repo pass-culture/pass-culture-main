@@ -9,6 +9,7 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import type { UseCurrentUserReturn } from 'hooks/useCurrentUser'
 import * as useCurrentUser from 'hooks/useCurrentUser'
 import * as useNotification from 'hooks/useNotification'
+import { RootState } from 'store/rootReducer'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import SignUpValidation from '../SignUpValidation'
@@ -17,7 +18,10 @@ vi.mock('repository/pcapi/pcapi')
 vi.mock('hooks/useCurrentUser')
 vi.mock('hooks/useNotification')
 
-const renderSignupValidation = (url: string) =>
+const renderSignupValidation = (
+  url: string,
+  storeOverrides: Partial<RootState> = {}
+) =>
   renderWithProviders(
     <Routes>
       <Route path="/validation/:token" element={<SignUpValidation />} />
@@ -25,6 +29,7 @@ const renderSignupValidation = (url: string) =>
       <Route path="/connexion" element={<div>Connexion</div>} />
     </Routes>,
     {
+      storeOverrides,
       initialRouterEntries: [url],
     }
   )
@@ -51,13 +56,22 @@ describe('src | components | pages | Signup | validation', () => {
 
   it('should redirect to home page if the user is logged in', () => {
     const validateUser = vi.spyOn(api, 'validateUser')
-    vi.spyOn(useCurrentUser, 'default').mockReturnValue({
-      currentUser: {
-        id: 123,
+    const storeOverrides = {
+      user: {
+        initialized: true,
+        currentUser: {
+          isAdmin: false,
+          dateCreated: '2001-01-01',
+          email: 'test@email.com',
+          id: 12,
+          roles: [],
+          isEmailValidated: true,
+        },
+        selectedOffererId: null,
       },
-    } as UseCurrentUserReturn)
+    }
     // when the user is logged in and lands on signup validation page
-    renderSignupValidation('/validation/AAA')
+    renderSignupValidation('/validation/AAA', storeOverrides)
 
     // then the validity of his token should not be verified
     expect(validateUser).not.toHaveBeenCalled()
