@@ -55,10 +55,10 @@
                 <span class="fw-bold">Catégorie juridique :</span> {{ siren_info.legal_category_code | format_legal_category_code }}
               </p>
               <p class="mb-1">
-                <span class="fw-bold">Code APE :</span> {{ siren_info.ape_code }}
+                <span class="fw-bold">Code APE :</span> {{ siren_info.ape_code | empty_string_if_null }}
               </p>
               <p class="mb-1">
-                <span class="fw-bold">Activité principale :</span> {{ siren_info.ape_label }}
+                <span class="fw-bold">Activité principale :</span> {{ siren_info.ape_label | empty_string_if_null }}
               </p>
             </div>
           </div>
