@@ -88,7 +88,7 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
                         modified_info={"tags": {"new_info": tag.label}},
                     )
 
-    if FeatureToggle.ENABLE_CODIR_OFFERERS_REPORT.is_active():
+    if offerer.isValidated and FeatureToggle.ENABLE_CODIR_OFFERERS_REPORT.is_active():
         # check attestations
         try:
             urssaf_status = "OK" if entreprise_api.get_urssaf(payload.siren).attestation_delivered else "REFUS"

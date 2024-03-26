@@ -22,6 +22,7 @@ class CheckActiveOfferersTest:
         offerers_factories.OffererFactory(id=23 + 29)  # not checked today
         offerers_factories.OffererFactory(id=23 + 28 * 2, isActive=False)  # not checked because inactive
         offerers_factories.OffererFactory(id=23 + 28 * 3, tags=[tag])  # not checked because already tagged
+        offerers_factories.RejectedOffererFactory(id=23 + 28 * 4, isActive=True)  # not checked because rejected
 
         with time_machine.travel("2024-12-24 23:00:00"):
             run_command(app, "check_active_offerers")
