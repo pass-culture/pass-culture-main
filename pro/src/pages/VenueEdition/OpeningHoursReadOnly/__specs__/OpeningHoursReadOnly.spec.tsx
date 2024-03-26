@@ -4,40 +4,31 @@ import { Hours, OpeningHoursReadOnly } from '../OpeningHoursReadOnly'
 
 describe('OpeningHoursReadOnly', () => {
   it('should display each necessary days', () => {
-    const openingHours = [
-      { MONDAY: [{ open: '14:00', close: '19:30' }] },
-      {
-        TUESDAY: [
-          { open: '10:00', close: '13:00' },
-          { open: '14:00', close: '19:30' },
-        ],
-      },
-      {
-        WEDNESDAY: [
-          { open: '10:00', close: '13:00' },
-          { open: '14:00', close: '19:30' },
-        ],
-      },
-      {
-        THURSDAY: [
-          { open: '10:00', close: '13:00' },
-          { open: '14:00', close: '19:30' },
-        ],
-      },
-      {
-        FRIDAY: [
-          { open: '10:00', close: '13:00' },
-          { open: '14:00', close: '19:30' },
-        ],
-      },
-      {
-        SATURDAY: [
-          { open: '10:00', close: '13:00' },
-          { open: '14:00', close: '19:30' },
-        ],
-      },
-      { SUNDAY: null },
-    ]
+    const openingHours = {
+      MONDAY: [{ open: '14:00', close: '19:30' }],
+      TUESDAY: [
+        { open: '10:00', close: '13:00' },
+        { open: '14:00', close: '19:30' },
+      ],
+      WEDNESDAY: [
+        { open: '10:00', close: '13:00' },
+        { open: '14:00', close: '19:30' },
+      ],
+      THURSDAY: [
+        { open: '10:00', close: '13:00' },
+        { open: '14:00', close: '19:30' },
+      ],
+      FRIDAY: [
+        { open: '10:00', close: '13:00' },
+        { open: '14:00', close: '19:30' },
+      ],
+      SATURDAY: [
+        { open: '10:00', close: '13:00' },
+        { open: '14:00', close: '19:30' },
+      ],
+      SUNDAY: null,
+    }
+
     render(<OpeningHoursReadOnly openingHours={openingHours} />)
 
     expect(screen.getByText(/Lundi/)).toBeInTheDocument()

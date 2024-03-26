@@ -10,24 +10,27 @@ type OpeningHours = {
 }
 
 export function OpeningHoursReadOnly({ openingHours }: OpeningHours) {
+  const filledDays = Object.entries(openingHours ?? {}).filter(
+    (dateAndHour) => dateAndHour[1]
+  )
+
+  if (!openingHours || filledDays.length === 0) {
+    return (
+      <SummarySubSection title={'Horaires d’ouverture'}>
+        <p>Vous n’avez pas renseigné d’horaires d’ouverture.</p>
+      </SummarySubSection>
+    )
+  }
   return (
     <SummarySubSection title={'Horaires d’ouverture'}>
-      {openingHours?.length ? (
-        <SummaryDescriptionList
-          descriptions={openingHours
-            .filter(
-              (dateAndHour) => dateAndHour && Object.values(dateAndHour)[0]
-            )
-            .map((dateAndHour) => {
-              return {
-                title: mapDayToFrench(Object.keys(dateAndHour)[0]),
-                text: <Hours hours={Object.values(dateAndHour)[0]} />,
-              }
-            })}
-        />
-      ) : (
-        <p>Vous n’avez pas renseigné d’horaires d’ouverture.</p>
-      )}
+      <SummaryDescriptionList
+        descriptions={filledDays.map((dateAndHour) => {
+          return {
+            title: mapDayToFrench(dateAndHour[0]),
+            text: <Hours hours={dateAndHour[1]} />,
+          }
+        })}
+      />
     </SummarySubSection>
   )
 }
