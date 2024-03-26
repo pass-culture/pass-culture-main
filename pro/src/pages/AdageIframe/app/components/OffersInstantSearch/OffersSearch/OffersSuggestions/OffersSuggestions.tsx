@@ -38,7 +38,10 @@ function getSearchIndexIdDisplayed(
 
   //  Find first index that has results
   for (const result of noResultIndexesResults) {
-    if (result.results.nbHits > 0) {
+    // react-instantsearch results mignt be null but the lib does not
+    // export a SearchResults type that we could use to make sure of that
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (result.results?.nbHits > 0) {
       return result.indexId
     }
   }
