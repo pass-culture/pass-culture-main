@@ -1,20 +1,21 @@
 import { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { useParams, Navigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { getError, isErrorAPIError } from 'apiClient/helpers'
-import useCurrentUser from 'hooks/useCurrentUser'
+import { selectCurrentUser } from 'store/user/selectors'
 
 type Params = { token: string }
 
 const SignupValidation = (): JSX.Element | null => {
   const { token } = useParams<Params>()
-  const { currentUser } = useCurrentUser()
+  const currentUser = useSelector(selectCurrentUser)
   const [urlToRedirect, setUrlToRedirect] = useState<string>()
 
   useEffect(() => {
     const validateTokenAndRedirect = async () => {
-      if (currentUser.id) {
+      if (currentUser?.id) {
         setUrlToRedirect('/')
       } else if (token) {
         try {
@@ -36,7 +37,7 @@ const SignupValidation = (): JSX.Element | null => {
     }
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     validateTokenAndRedirect()
-  }, [token, currentUser.id])
+  }, [token, currentUser?.id])
 
   return urlToRedirect ? <Navigate to={urlToRedirect} replace /> : null
 }
