@@ -1,4 +1,3 @@
-@use "sass:math" as math;
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
@@ -18,17 +17,13 @@
   cursor: pointer;
 
   &.add-image-venue {
-    $height: rem.torem(176px);
-
-    width: math.div($height * 3, 2);
-    height: $height;
+    height: rem.torem(176px);
+    aspect-ratio: 3 / 2;
   }
 
   &.add-image-offer {
-    $width: rem.torem(176px);
-
-    height: math.div($width * 3, 2);
-    width: $width;
+    width: rem.torem(176px);
+    aspect-ratio: 2 / 3;
 
     .label {
       // Force the text to wrap

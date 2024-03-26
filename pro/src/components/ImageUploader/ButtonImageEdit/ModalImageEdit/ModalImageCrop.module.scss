@@ -58,7 +58,7 @@
 
   &-footer {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     padding-left: rem.torem(6px);
     padding-right: rem.torem(12px);
   }
