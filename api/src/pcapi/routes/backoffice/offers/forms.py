@@ -14,6 +14,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.domain import music_types
 from pcapi.domain import show_types
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.backoffice import autocomplete
@@ -149,7 +150,6 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
                 "venue",
                 "validation",
                 "music_type",
-                "music_sub_type",
                 "show_type",
                 "show_sub_type",
                 "price",
@@ -161,13 +161,38 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
 
     def __init__(self, *args: list, **kwargs: dict):
         super().__init__(*args, **kwargs)
+        if not FeatureToggle.ENABLE_PRO_TITELIVE_MUSIC_GENRES.is_active():
+            # Order in the list is important for the display
+            self.search_field.choices.insert(
+                self.search_field.choices.index(
+                    (
+                        IndividualOffersSearchAttributes.MUSIC_TYPE.name,
+                        IndividualOffersSearchAttributes.MUSIC_TYPE.value,
+                    )
+                )
+                + 1,
+                (
+                    IndividualOffersSearchAttributes.MUSIC_SUB_TYPE.name,
+                    IndividualOffersSearchAttributes.MUSIC_SUB_TYPE.value,
+                ),
+            )
+            json_dict: dict = json.loads(self.json_data)
+            json_dict["all_available_fields"].insert(
+                json_dict["all_available_fields"].index("music_type") + 1,
+                "music_sub_type",
+            )
+            OfferAdvancedSearchSubForm.json_data = json.dumps(json_dict)
         autocomplete.prefill_criteria_choices(self.criteria)
         autocomplete.prefill_offerers_choices(self.offerer)
         autocomplete.prefill_venues_choices(self.venue)
 
     search_field = fields.PCSelectWithPlaceholderValueField(
         "Champ de recherche",
-        choices=forms_utils.choices_from_enum(IndividualOffersSearchAttributes),
+        choices=(
+            forms_utils.choices_from_enum(
+                IndividualOffersSearchAttributes, exclude_opts=[IndividualOffersSearchAttributes.MUSIC_SUB_TYPE]
+            )
+        ),
         validators=[
             wtforms.validators.Optional(""),
         ],
@@ -277,7 +302,11 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
     )
     music_type = fields.PCSelectMultipleField(
         "Type de musique",
-        choices=[(str(s), music_types.MUSIC_TYPES_LABEL_BY_CODE[s]) for s in music_types.MUSIC_TYPES_LABEL_BY_CODE],
+        choices=(
+            [(str(s), music_types.MUSIC_TYPES_LABEL_BY_CODE[s]) for s in music_types.MUSIC_TYPES_LABEL_BY_CODE]
+            if not FeatureToggle.ENABLE_PRO_TITELIVE_MUSIC_GENRES.is_active()
+            else [(s.gtl_id, s.label) for s in categories.TITELIVE_MUSIC_TYPES]
+        ),
         search_inline=True,
         field_list_compatibility=True,
     )
