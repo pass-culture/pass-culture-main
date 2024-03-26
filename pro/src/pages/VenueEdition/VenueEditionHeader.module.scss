@@ -21,6 +21,13 @@
   @media (min-width: size.$tablet) {
     align-self: flex-start;
   }
+
+  > button,
+  > img {
+    @media (min-width: size.$tablet) {
+      height: rem.torem(232px) !important;
+    }
+  }
 }
 
 .venue-details {
