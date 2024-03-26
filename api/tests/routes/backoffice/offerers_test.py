@@ -158,7 +158,8 @@ class GetOffererTest(GetEndpointHelper):
         assert "Validée" in badges
         assert "Suspendue" not in badges
 
-    def test_offerer_detail_contains_venue_bank_information_stats(
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
+    def test_offerer_detail_contains_venue_bank_information_stats_legacy(
         self,
         authenticated_client,
         offerer,
@@ -175,6 +176,24 @@ class GetOffererTest(GetEndpointHelper):
             assert response.status_code == 200
 
         assert "Présence CB dans les lieux : 2 OK / 2 KO " in html_parser.content_as_text(response.data)
+
+    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
+    def test_offerer_detail_contains_venue_bank_information_stats(
+        self,
+        authenticated_client,
+        offerer,
+        venue_with_accepted_self_reimbursement_point,
+        venue_with_accepted_reimbursement_point,  # and accepted bank account
+        venue_with_expired_reimbursement_point,  # and expired bank account
+        random_venue,
+    ):
+        offerer_id = offerer.id
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer_id))
+            assert response.status_code == 200
+
+        assert "Présence CB dans les lieux : 1 OK / 2 KO " in html_parser.content_as_text(response.data)
 
     def test_offerer_with_educational_venue_has_adage_data(self, authenticated_client, offerer, venue_with_adage_id):
         offerer_id = offerer.id

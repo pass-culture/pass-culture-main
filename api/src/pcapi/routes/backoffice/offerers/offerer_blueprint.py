@@ -26,6 +26,7 @@ from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.utils import regions as regions_utils
@@ -55,17 +56,22 @@ def _self_redirect(
 
 
 def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
+    bank_link_class: typing.Type[offerers_models.VenueBankAccountLink | offerers_models.VenueReimbursementPointLink] = (
+        offerers_models.VenueBankAccountLink
+        if FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active()
+        else offerers_models.VenueReimbursementPointLink
+    )
     bank_informations_query = sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
         sa.select(
-            sa.case((offerers_models.VenueReimbursementPointLink.id.is_(None), "ko"), else_="ok").label("status"),
+            sa.case((bank_link_class.id.is_(None), "ko"), else_="ok").label("status"),  # type: ignore [attr-defined]
             sa.func.count(offerers_models.Venue.id).label("number"),
         )
         .select_from(offerers_models.Venue)
         .outerjoin(
-            offerers_models.VenueReimbursementPointLink,
+            bank_link_class,
             sa.and_(
-                offerers_models.VenueReimbursementPointLink.venueId == offerers_models.Venue.id,
-                offerers_models.VenueReimbursementPointLink.timespan.contains(datetime.datetime.utcnow()),
+                bank_link_class.venueId == offerers_models.Venue.id,
+                bank_link_class.timespan.contains(datetime.datetime.utcnow()),
             ),
         )
         .filter(

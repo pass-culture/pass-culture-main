@@ -332,6 +332,14 @@ def venue_with_expired_reimbursement_point_fixture(
             datetime.datetime.utcnow() - datetime.timedelta(days=1),
         ],
     )
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue,
+        timespan=[
+            datetime.datetime.utcnow() - datetime.timedelta(days=365),
+            datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        ],
+        bankAccount=finance_factories.BankAccountFactory(label="Ancien compte", offererId=venue.managingOffererId),
+    )
     return venue
 
 
