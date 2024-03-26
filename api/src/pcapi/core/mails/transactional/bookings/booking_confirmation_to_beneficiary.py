@@ -86,7 +86,7 @@ def get_booking_confirmation_to_beneficiary_email_data(
             ),
             "CODE_EXPIRATION_DATE": code_expiration_date,
             "VENUE_NAME": venue.publicName if venue.publicName else venue.name,
-            "VENUE_ADDRESS": bookings_common.get_venue_address(booking),
+            "VENUE_ADDRESS": bookings_common.get_venue_street(booking),
             "VENUE_POSTAL_CODE": venue.postalCode,
             "VENUE_CITY": venue.city,
             "ALL_BUT_NOT_VIRTUAL_THING": offer.isEvent or (not offer.isEvent and not offer.isDigital),

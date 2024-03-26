@@ -545,7 +545,7 @@ class FindAllOffererPaymentsTest:
             offer__name="Test Book",
             offer__venue__managingOfferer__address="7 rue du livre",
             offer__venue__name="La petite librairie",
-            offer__venue__address="123 rue de Paris",
+            offer__venue__street="123 rue de Paris",
             offer__venue__postalCode="75000",
             offer__venue__city="Paris",
             offer__venue__siret=12345678912345,
