@@ -137,6 +137,20 @@ def test_get_siren_of_inactive_company():
 
 
 @override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+def test_get_siren_without_ape():
+    siren = "194700936"
+    with requests_mock.Mocker() as mock:
+        mock.get(
+            f"https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/{siren}",
+            json=api_entreprise_test_data.RESPONSE_SIREN_WITHOUT_APE,
+        )
+        siren_info = api.get_siren(siren, with_address=False)
+        assert siren_info.siren == siren
+        assert siren_info.name == "LYCEE D'ENSEIGNEMENT PROFESSIONNEL"
+        assert siren_info.ape_code is None
+
+
+@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siren_invalid_parameter():
     siren = settings.PASS_CULTURE_SIRET[:9]
     with requests_mock.Mocker() as mock:

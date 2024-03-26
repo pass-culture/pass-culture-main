@@ -25,7 +25,7 @@ class SirenInfo(pydantic_v1.BaseModel):
         siren: pydantic_v1.constr(strip_whitespace=True, min_length=9, max_length=9)
         head_office_siret: pydantic_v1.constr(strip_whitespace=True, min_length=14, max_length=14)
     name: str
-    ape_code: str
+    ape_code: str | None
     ape_label: str | None = None  # optional, set only from API Entreprise
     active: bool
     diffusible: bool
@@ -42,7 +42,7 @@ class SiretInfo(pydantic_v1.BaseModel):
     diffusible: bool
     name: str
     address: SireneAddress
-    ape_code: str
+    ape_code: str | None
     ape_label: str | None = None  # optional, set only from API Entreprise
     legal_category_code: str
 

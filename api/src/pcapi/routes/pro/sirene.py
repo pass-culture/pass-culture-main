@@ -24,7 +24,7 @@ def get_siren_info(siren: str) -> sirene_serializers.SirenInfo:
         siren=siren,
         name=info.name,
         address=sirene_serializers.Address(**info_address_dict),
-        ape_code=info.ape_code,
+        ape_code=info.ape_code or "00.00Z",  # APE code can be null, frontend expects a string
     )
 
 
@@ -44,6 +44,6 @@ def get_siret_info(siret: str) -> sirene_serializers.SiretInfo:
         name=info.name,
         active=info.active,
         address=sirene_serializers.Address(**info_address_dict),
-        ape_code=info.ape_code,
+        ape_code=info.ape_code or "00.00Z",  # APE code can be null, frontend expects a string
         legal_category_code=info.legal_category_code,
     )
