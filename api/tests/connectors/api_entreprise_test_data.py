@@ -496,6 +496,56 @@ RESPONSE_SIRET_INACTIVE_COMPANY = {
     "meta": {"date_derniere_mise_a_jour": 1618178400, "redirect_from_siret": None},
 }
 
+RESPONSE_SIREN_WITHOUT_APE = {
+    "data": {
+        "siren": "194700936",
+        "rna": None,
+        "siret_siege_social": "19470093600017",
+        "categorie_entreprise": None,
+        "type": "personne_morale",
+        "personne_morale_attributs": {
+            "raison_sociale": "LYCEE D'ENSEIGNEMENT PROFESSIONNEL",
+            "sigle": "LPO LYC METIER",
+        },
+        "personne_physique_attributs": {
+            "pseudonyme": None,
+            "prenom_usuel": None,
+            "prenom_1": None,
+            "prenom_2": None,
+            "prenom_3": None,
+            "prenom_4": None,
+            "nom_usage": None,
+            "nom_naissance": None,
+            "sexe": None,
+        },
+        "diffusable_commercialement": True,
+        "status_diffusion": "diffusible",
+        "forme_juridique": {"code": "7331", "libelle": "\u00c9tablissement public local d'enseignement"},
+        "activite_principale": {
+            "code": None,
+            "nomenclature": None,
+            "libelle": "ancienne r\u00e9vision NAF () non support\u00e9e",
+        },
+        "tranche_effectif_salarie": {
+            "de": None,
+            "a": None,
+            "code": "NN",
+            "date_reference": None,
+            "intitule": "Unit\u00e9s non employeuses",
+        },
+        "etat_administratif": "C",
+        "economie_sociale_et_solidaire": None,
+        "date_cessation": 415321200,
+        "date_creation": -132022800,
+    },
+    "links": {
+        "siege_social": "https://entreprise.api.gouv.fr/v3/insee/sirene/etablissements/19470093600017",
+        "siege_social_adresse": "https://entreprise.api.gouv.fr/v3/insee/sirene/etablissements/19470093600017/adresse",
+    },
+    "meta": {"date_derniere_mise_a_jour": 1678921200, "redirect_from_siren": None},
+}
+
+
 RESPONSE_SIREN_ERROR_422 = {
     "errors": [
         {
