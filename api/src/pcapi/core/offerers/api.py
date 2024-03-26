@@ -722,16 +722,17 @@ def auto_tag_new_offerer(
     tag_names_to_apply = set()
 
     if siren_info:
-        tag_label = APE_TAG_MAPPING.get(siren_info.ape_code)
-        if tag_label:
-            tag = offerers_models.OffererTag.query.filter_by(label=tag_label).one_or_none()
-            if not tag:
-                logger.error(
-                    "Could not assign tag to offerer: tag not found in DB",
-                    extra={"offerer": offerer.id, "tag_label": tag_label},
-                )
-            else:
-                offerer.tags.append(tag)
+        if siren_info.ape_code:
+            tag_label = APE_TAG_MAPPING.get(siren_info.ape_code)
+            if tag_label:
+                tag = offerers_models.OffererTag.query.filter_by(label=tag_label).one_or_none()
+                if not tag:
+                    logger.error(
+                        "Could not assign tag to offerer: tag not found in DB",
+                        extra={"offerer": offerer.id, "tag_label": tag_label},
+                    )
+                else:
+                    offerer.tags.append(tag)
 
         if not siren_info.diffusible:
             tag_names_to_apply.add("non-diffusible")
