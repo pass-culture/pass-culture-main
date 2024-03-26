@@ -193,8 +193,12 @@ class CheckOffererIsActiveTest:
         mock_search_file.assert_called_once()
         mock_append_to_spreadsheet.assert_called_once()
 
-    @override_features(ENABLE_CODIR_OFFERERS_REPORT=False)
-    def test_reject_inactive_offerer_waiting_for_validation(self, client, siren_caduc_tag):
+    @override_features(ENABLE_CODIR_OFFERERS_REPORT=True)
+    @patch("pcapi.connectors.googledrive.TestingBackend.append_to_spreadsheet", return_value=1)
+    @patch("pcapi.connectors.googledrive.TestingBackend.search_file", return_value="report-file-id")
+    def test_reject_inactive_offerer_waiting_for_validation(
+        self, mock_search_file, mock_append_to_spreadsheet, client, siren_caduc_tag
+    ):
         # Using TestingBackend: SIREN makes offerer inactive (because of 99), EI
         offerer = offerers_factories.PendingOffererFactory(siren="100099001")
         user_offerer = offerers_factories.UserNotValidatedOffererFactory(offerer=offerer)
@@ -229,6 +233,32 @@ class CheckOffererIsActiveTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["To"] == user_offerer.user.email
         assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.NEW_OFFERER_REJECTION.value)
+
+        # Offerers report should only list validated offerers, not rejected
+        mock_search_file.assert_not_called()
+        mock_append_to_spreadsheet.assert_not_called()
+
+    @override_features(ENABLE_CODIR_OFFERERS_REPORT=True)
+    @patch("pcapi.connectors.googledrive.TestingBackend.append_to_spreadsheet", return_value=1)
+    @patch("pcapi.connectors.googledrive.TestingBackend.search_file", return_value="report-file-id")
+    def test_active_offerer_waiting_for_validation(
+        self, mock_search_file, mock_append_to_spreadsheet, client, siren_caduc_tag
+    ):
+        offerer = offerers_factories.PendingOffererFactory()
+
+        response = client.post(
+            f"{settings.API_URL}/cloud-tasks/offerers/check_offerer",
+            json={"siren": offerer.siren, "tag_when_inactive": True},
+            headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
+        )
+
+        assert response.status_code == 204
+        assert offerer.isWaitingForValidation
+        assert not offerer.tags
+
+        # Offerers report should only list validated offerers, not waiting for validation
+        mock_search_file.assert_not_called()
+        mock_append_to_spreadsheet.assert_not_called()
 
     @override_features(ENABLE_CODIR_OFFERERS_REPORT=False)
     def test_do_not_tag_inactive_offerer(self, client, siren_caduc_tag):

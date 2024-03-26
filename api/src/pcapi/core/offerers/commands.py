@@ -42,6 +42,7 @@ def check_active_offerers(dry_run: bool = False, day: int | None = None) -> None
     offerers_query = offerers_models.Offerer.query.filter(
         offerers_models.Offerer.id % 28 == day - 1,
         offerers_models.Offerer.isActive,
+        sa.not_(offerers_models.Offerer.isRejected),
         offerers_models.Offerer.siren.is_not(None),
     ).options(sa.orm.load_only(offerers_models.Offerer.siren))
 
