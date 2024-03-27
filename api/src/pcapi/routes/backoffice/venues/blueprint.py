@@ -35,6 +35,7 @@ from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import api as providers_api
 from pcapi.core.providers import models as providers_models
+from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
@@ -133,41 +134,79 @@ def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
 
 
 def get_venue(venue_id: int) -> offerers_models.Venue:
-    venue = (
-        offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
-        .options(
-            sa.orm.joinedload(offerers_models.Venue.managingOfferer),
-            sa.orm.joinedload(offerers_models.Venue.contact),
-            sa.orm.joinedload(offerers_models.Venue.bankInformation),
-            sa.orm.joinedload(offerers_models.Venue.reimbursement_point_links)
-            .joinedload(offerers_models.VenueReimbursementPointLink.reimbursementPoint)
-            .load_only(offerers_models.Venue.id),
-            sa.orm.joinedload(offerers_models.Venue.venueLabel),
-            sa.orm.joinedload(offerers_models.Venue.criteria).load_only(criteria_models.Criterion.name),
-            sa.orm.joinedload(offerers_models.Venue.collectiveDmsApplications).load_only(
-                educational_models.CollectiveDmsApplication.state,
-                educational_models.CollectiveDmsApplication.depositDate,
-                educational_models.CollectiveDmsApplication.lastChangeDate,
-                educational_models.CollectiveDmsApplication.application,
-                educational_models.CollectiveDmsApplication.procedure,
-            ),
-            sa.orm.joinedload(offerers_models.Venue.venueProviders)
-            .load_only(
-                providers_models.VenueProvider.id,
-                providers_models.VenueProvider.lastSyncDate,
-                providers_models.VenueProvider.isActive,
-            )
-            .joinedload(providers_models.VenueProvider.provider)
-            .load_only(
-                providers_models.Provider.id,
-                providers_models.Provider.name,
-                providers_models.Provider.localClass,
-                providers_models.Provider.apiUrl,
-                providers_models.Provider.isActive,
+    has_new_nav_users_subquery = (
+        sa.select(1)
+        .select_from(offerers_models.UserOfferer)
+        .join(
+            users_models.UserProNewNavState,
+            sa.and_(
+                users_models.UserProNewNavState.userId == offerers_models.UserOfferer.userId,
+                users_models.UserProNewNavState.newNavDate < datetime.utcnow(),
             ),
         )
-        .one_or_none()
+        .where(offerers_models.UserOfferer.offererId == offerers_models.Venue.managingOffererId)
+        .correlate(offerers_models.Venue)
+        .exists()
     )
+
+    has_old_nav_users_subquery = (
+        sa.select(1)
+        .select_from(offerers_models.UserOfferer)
+        .outerjoin(
+            users_models.UserProNewNavState,
+            users_models.UserProNewNavState.userId == offerers_models.UserOfferer.userId,
+        )
+        .where(
+            offerers_models.UserOfferer.offererId == offerers_models.Venue.managingOffererId,
+            users_models.UserProNewNavState.newNavDate.is_(None),
+        )
+        .correlate(offerers_models.Venue)
+        .exists()
+    )
+
+    venue_query = offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
+
+    if FeatureToggle.WIP_ENABLE_PRO_SIDE_NAV.is_active():
+        venue_query = venue_query.options(
+            sa.orm.joinedload(offerers_models.Venue.managingOfferer)
+            .with_expression(offerers_models.Offerer.hasNewNavUsers, has_new_nav_users_subquery)
+            .with_expression(offerers_models.Offerer.hasOldNavUsers, has_old_nav_users_subquery)
+        )
+    else:
+        venue_query = venue_query.options(sa.orm.joinedload(offerers_models.Venue.managingOfferer))
+
+    venue_query = venue_query.options(
+        sa.orm.joinedload(offerers_models.Venue.contact),
+        sa.orm.joinedload(offerers_models.Venue.bankInformation),
+        sa.orm.joinedload(offerers_models.Venue.reimbursement_point_links)
+        .joinedload(offerers_models.VenueReimbursementPointLink.reimbursementPoint)
+        .load_only(offerers_models.Venue.id),
+        sa.orm.joinedload(offerers_models.Venue.venueLabel),
+        sa.orm.joinedload(offerers_models.Venue.criteria).load_only(criteria_models.Criterion.name),
+        sa.orm.joinedload(offerers_models.Venue.collectiveDmsApplications).load_only(
+            educational_models.CollectiveDmsApplication.state,
+            educational_models.CollectiveDmsApplication.depositDate,
+            educational_models.CollectiveDmsApplication.lastChangeDate,
+            educational_models.CollectiveDmsApplication.application,
+            educational_models.CollectiveDmsApplication.procedure,
+        ),
+        sa.orm.joinedload(offerers_models.Venue.venueProviders)
+        .load_only(
+            providers_models.VenueProvider.id,
+            providers_models.VenueProvider.lastSyncDate,
+            providers_models.VenueProvider.isActive,
+        )
+        .joinedload(providers_models.VenueProvider.provider)
+        .load_only(
+            providers_models.Provider.id,
+            providers_models.Provider.name,
+            providers_models.Provider.localClass,
+            providers_models.Provider.apiUrl,
+            providers_models.Provider.isActive,
+        ),
+    )
+
+    venue = venue_query.one_or_none()
 
     if not venue:
         raise NotFound()
