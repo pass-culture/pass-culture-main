@@ -1,40 +1,47 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import React from 'react'
+import { Outlet, Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
-import {
-  ReimbursementContext,
-  ReimbursementContextValues,
-} from 'context/ReimbursementContext/ReimbursementContext'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import BankInformations from 'pages/Reimbursements/BankInformations/BankInformations'
 import {
-  defaultManagedVenues,
   defaultBankAccount,
   defaultGetOffererResponseModel,
+  defaultManagedVenues,
   getOffererNameFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 const renderBankInformations = (
-  customContext: Partial<ReimbursementContextValues> = {},
+  offerer: GetOffererResponseModel | null,
   storeOverrides: any,
   initialRouterEntriesOverrides = '/remboursements/informations-bancaires'
 ) => {
-  const contextValues: ReimbursementContextValues = {
-    selectedOfferer: null,
-    setSelectedOfferer: () => {},
-    ...customContext,
-  }
-
   renderWithProviders(
     <>
-      <ReimbursementContext.Provider value={contextValues}>
-        <BankInformations />
-      </ReimbursementContext.Provider>
+      <Routes>
+        <Route
+          path="/remboursements/informations-bancaires"
+          element={
+            <Outlet
+              context={{
+                selectedOfferer: {
+                  ...defaultGetOffererResponseModel,
+                  ...offerer,
+                },
+                setSelectedOfferer: function () {},
+              }}
+            />
+          }
+        >
+          <Route index element={<BankInformations />} />
+        </Route>
+      </Routes>
       <Notification />
     </>,
     {
@@ -48,7 +55,6 @@ const mockLogEvent = vi.fn()
 
 describe('BankInformations page', () => {
   let store: any
-  let customContext: Partial<ReimbursementContextValues>
   let offerer: GetOffererResponseModel
 
   beforeEach(() => {
@@ -66,10 +72,6 @@ describe('BankInformations page', () => {
       hasValidBankAccount: false,
     }
 
-    customContext = {
-      selectedOfferer: offerer,
-    }
-
     vi.spyOn(api, 'getOffererBankAccountsAndAttachedVenues').mockResolvedValue({
       id: 1,
       bankAccounts: [],
@@ -80,14 +82,16 @@ describe('BankInformations page', () => {
   })
 
   it('should display not validated bank account message', async () => {
-    renderBankInformations(customContext, store)
-
+    renderBankInformations(
+      { ...offerer, hasValidBankAccount: false, hasPendingBankAccount: false },
+      store
+    )
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
     expect(
       screen.getByText(
-        'Ajoutez au moins un compte bancaire pour percevoir vos remboursements.'
+        /Ajoutez au moins un compte bancaire pour percevoir vos remboursements/
       )
     ).toBeInTheDocument()
     expect(screen.getByText('Ajouter un compte bancaire')).toBeInTheDocument()
@@ -95,14 +99,10 @@ describe('BankInformations page', () => {
   })
 
   it('should render message when the user has a valid bank account and no pending one', async () => {
-    if (customContext.selectedOfferer) {
-      customContext.selectedOfferer = {
-        ...customContext.selectedOfferer,
-        hasValidBankAccount: true,
-      }
-    }
-    renderBankInformations(customContext, store)
-
+    renderBankInformations(
+      { ...offerer, hasValidBankAccount: true, hasPendingBankAccount: false },
+      store
+    )
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
@@ -121,14 +121,7 @@ describe('BankInformations page', () => {
   })
 
   it('should render message when has a pending bank account and no valid one', async () => {
-    if (customContext.selectedOfferer) {
-      customContext.selectedOfferer = {
-        ...customContext.selectedOfferer,
-        hasPendingBankAccount: true,
-      }
-    }
-    renderBankInformations(customContext, store)
-
+    renderBankInformations({ ...offerer, hasPendingBankAccount: true }, store)
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
@@ -152,9 +145,9 @@ describe('BankInformations page', () => {
       'getOffererBankAccountsAndAttachedVenues'
     ).mockRejectedValueOnce({})
 
-    renderBankInformations(customContext, store)
-
+    renderBankInformations(offerer, store)
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
     expect(api.getOffererBankAccountsAndAttachedVenues).toHaveBeenCalledTimes(1)
     expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
     expect(
@@ -165,7 +158,7 @@ describe('BankInformations page', () => {
   })
 
   it('should render with default offerer select ', async () => {
-    renderBankInformations(customContext, store)
+    renderBankInformations(offerer, store)
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(screen.queryByText('Ajouter un compte bancaire')).toBeInTheDocument()
@@ -190,7 +183,7 @@ describe('BankInformations page', () => {
         }),
       ],
     })
-    renderBankInformations(customContext, store)
+    renderBankInformations(offerer, store)
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(screen.queryByText('Ajouter un compte bancaire')).toBeInTheDocument()
@@ -204,8 +197,7 @@ describe('BankInformations page', () => {
   })
 
   it('should show AddBankInformationsDialog on click add bank account button', async () => {
-    renderBankInformations(customContext, store)
-
+    renderBankInformations(offerer, store)
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(
@@ -237,7 +229,7 @@ describe('BankInformations page', () => {
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    renderBankInformations(customContext, store)
+    renderBankInformations(offerer, store)
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     await userEvent.click(screen.getByText('Ajouter un compte bancaire'))
@@ -259,11 +251,8 @@ describe('BankInformations page', () => {
 
     renderBankInformations(
       {
-        ...customContext,
-        selectedOfferer: {
-          ...defaultGetOffererResponseModel,
-          hasValidBankAccount: true,
-        },
+        ...defaultGetOffererResponseModel,
+        hasValidBankAccount: true,
       },
       store
     )

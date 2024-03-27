@@ -4,7 +4,11 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { InvoiceResponseModel, VenueListItemResponseModel } from 'apiClient/v1'
-import { venueListItemFactory } from 'utils/individualApiFactories'
+import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
+import {
+  defaultGetOffererResponseModel,
+  venueListItemFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ReimbursementsDetails from '../ReimbursementsDetails/ReimbursementsDetails'
@@ -12,6 +16,15 @@ import ReimbursementsDetails from '../ReimbursementsDetails/ReimbursementsDetail
 vi.mock('utils/date', async () => ({
   ...(await vi.importActual('utils/date')),
   getToday: vi.fn(() => new Date('2020-12-15T12:00:00Z')),
+}))
+
+const contextData: ReimbursementsContextProps = {
+  selectedOfferer: defaultGetOffererResponseModel,
+  setSelectedOfferer: function () {},
+}
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual('react-router-dom')),
+  useOutletContext: () => contextData,
 }))
 
 const venueId = 12

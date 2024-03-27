@@ -3,22 +3,30 @@ import {
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
-import { Routes, Route } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { routesReimbursements } from 'app/AppRouter/subroutesReimbursements'
-import { ReimbursementContextProvider } from 'context/ReimbursementContext/ReimbursementContext'
 import {
   defaultGetOffererResponseModel,
   getOffererNameFactory,
 } from 'utils/individualApiFactories'
 import {
-  RenderWithProvidersOptions,
   renderWithProviders,
+  RenderWithProvidersOptions,
 } from 'utils/renderWithProviders'
 
-import { Reimbursements } from '../Reimbursements'
+import { Reimbursements, ReimbursementsContextProps } from '../Reimbursements'
+
+const contextData: ReimbursementsContextProps = {
+  selectedOfferer: defaultGetOffererResponseModel,
+  setSelectedOfferer: function () {},
+}
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual('react-router-dom')),
+  useOutletContext: () => contextData,
+}))
 
 const renderReimbursements = (options?: RenderWithProvidersOptions) => {
   const storeOverrides = {
@@ -32,16 +40,14 @@ const renderReimbursements = (options?: RenderWithProvidersOptions) => {
   }
 
   renderWithProviders(
-    <ReimbursementContextProvider>
-      <Routes>
-        <Route path="/remboursements" element={<Reimbursements />}>
-          {routesReimbursements.map((route) => (
-            <Route key={route.path} path={route.path} element={route.element} />
-          ))}
-        </Route>
-        <Route path="/accueil" element={<>Home Page</>} />
-      </Routes>
-    </ReimbursementContextProvider>,
+    <Routes>
+      <Route path="/remboursements" element={<Reimbursements />}>
+        {routesReimbursements.map((route) => (
+          <Route key={route.path} path={route.path} element={route.element} />
+        ))}
+      </Route>
+      <Route path="/accueil" element={<>Home Page</>} />
+    </Routes>,
     {
       initialRouterEntries: ['/remboursements'],
       storeOverrides,

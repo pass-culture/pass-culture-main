@@ -10,8 +10,8 @@ import {
 } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import AddBankAccountCallout from 'components/Callout/AddBankAccountCallout'
+import BankAccountHasPendingCorrectionCallout from 'components/Callout/BankAccountHasPendingCorrectionCallout'
 import LinkVenueCallout from 'components/Callout/LinkVenueCallout'
-import PendingBankAccountCallout from 'components/Callout/PendingBankAccountCallout'
 import { Newsletter } from 'components/Newsletter'
 import TutorialDialog from 'components/TutorialDialog'
 import { hasStatusCode } from 'core/OfferEducational'
@@ -140,6 +140,7 @@ export const Homepage = (): JSX.Element => {
         })
       }
     }
+
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     logProFlags()
     // FIX ME: fixing this broke a test...
@@ -152,7 +153,7 @@ export const Homepage = (): JSX.Element => {
       <div className={styles['reimbursements-banners']}>
         <AddBankAccountCallout offerer={selectedOfferer} />
         <LinkVenueCallout offerer={selectedOfferer} />
-        <PendingBankAccountCallout offerer={selectedOfferer} />
+        <BankAccountHasPendingCorrectionCallout offerer={selectedOfferer} />
       </div>
 
       {selectedOfferer !== null && (

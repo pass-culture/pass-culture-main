@@ -1,14 +1,15 @@
 import { format, subMonths } from 'date-fns'
 import React, { useEffect, useState } from 'react'
+import { useOutletContext } from 'react-router-dom'
 
 import { VenueListItemResponseModel } from 'apiClient/v1'
 import ButtonDownloadCSV from 'components/ButtonDownloadCSV'
-import { useReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
 import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
 import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
+import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
 import { ButtonLink } from 'ui-kit/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -48,7 +49,8 @@ const ReimbursementsDetails = (): JSX.Element => {
     currentUser.isAdmin && venue === ALL_VENUES_OPTION_ID
   const shouldDisableButtons =
     !isPeriodFilterSelected || requireVenueFilterForAdmin
-  const { selectedOfferer } = useReimbursementContext()
+
+  const { selectedOfferer }: ReimbursementsContextProps = useOutletContext()
   const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
