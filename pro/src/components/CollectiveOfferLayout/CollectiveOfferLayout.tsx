@@ -15,7 +15,6 @@ export interface CollectiveOfferLayoutProps {
   isCreation?: boolean
   isTemplate?: boolean
   isFromTemplate?: boolean
-  haveStock?: boolean
   requestId?: string | null
 }
 
@@ -23,7 +22,6 @@ const CollectiveOfferLayout = ({
   children,
   subTitle,
   isFromTemplate = false,
-  haveStock = false,
   isCreation = false,
   isTemplate = false,
   requestId = null,
@@ -86,7 +84,6 @@ const CollectiveOfferLayout = ({
             isCreatingOffer={navigationProps.isCreatingOffer}
             offerId={navigationProps.offerId}
             isTemplate={isTemplate}
-            haveStock={haveStock}
             requestId={requestId}
           />
         )
