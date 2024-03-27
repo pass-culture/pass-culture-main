@@ -90,14 +90,28 @@ class CheckPricesForStockTest:
         with pytest.raises(ApiErrors) as error:
             validation.check_stock_price(121, offer)
         assert error.value.errors["priceLimitationRule"] == [
-            "Vous ne pouvez pas modifier autant le prix, ou créer un stock avec un prix aussi différent; il faut créer une nouvelle offre pour changer le prix."
+            "Le prix indiqué est invalide, veuillez créer une nouvelle offre"
         ]
 
         with pytest.raises(ApiErrors) as error:
             validation.check_stock_price(39, offer)
         assert error.value.errors["priceLimitationRule"] == [
-            "Vous ne pouvez pas modifier autant le prix, ou créer un stock avec un prix aussi différent; il faut créer une nouvelle offre pour changer le prix."
+            "Le prix indiqué est invalide, veuillez créer une nouvelle offre"
         ]
+
+    @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
+    def test_price_limitation_rule_ok_with_draft_offer(self):
+        offers_factories.OfferPriceLimitationRuleFactory(
+            subcategoryId=subcategories.ACHAT_INSTRUMENT.id, rate=Decimal("0.5")
+        )
+        offer = offers_factories.ThingStockFactory(
+            price=100,
+            offer__subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
+            offer__lastValidationPrice=Decimal("80.00"),
+            offer__validation=OfferValidationStatus.DRAFT,
+        ).offer
+        validation.check_stock_price(90, offer)
+        validation.check_stock_price(15, offer)
 
     @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
     def test_price_limitation_rule_with_no_last_validation_price(self):
@@ -116,13 +130,13 @@ class CheckPricesForStockTest:
         with pytest.raises(ApiErrors) as error:
             validation.check_stock_price(121, offer)
         assert error.value.errors["priceLimitationRule"] == [
-            "Vous ne pouvez pas modifier autant le prix, ou créer un stock avec un prix aussi différent; il faut créer une nouvelle offre pour changer le prix."
+            "Le prix indiqué est invalide, veuillez créer une nouvelle offre"
         ]
 
         with pytest.raises(ApiErrors) as error:
             validation.check_stock_price(39, offer)
         assert error.value.errors["priceLimitationRule"] == [
-            "Vous ne pouvez pas modifier autant le prix, ou créer un stock avec un prix aussi différent; il faut créer une nouvelle offre pour changer le prix."
+            "Le prix indiqué est invalide, veuillez créer une nouvelle offre"
         ]
 
 

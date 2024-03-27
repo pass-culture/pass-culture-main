@@ -23,6 +23,7 @@ from pcapi.domain import music_types
 from pcapi.domain import show_types
 from pcapi.models import api_errors
 from pcapi.models.feature import FeatureToggle
+from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.public.books_stocks import serialization
 from pcapi.utils import date
 
@@ -141,7 +142,11 @@ def check_stock_price(price: decimal.Decimal, offer: models.Offer, error_key: st
         offer_price_limitation_rule = models.OfferPriceLimitationRule.query.filter(
             models.OfferPriceLimitationRule.subcategoryId == offer.subcategoryId
         ).one_or_none()
-        if offer_price_limitation_rule and (offer.lastValidationPrice is not None or offer.stocks):
+        if (
+            offer_price_limitation_rule
+            and offer.validation is not OfferValidationStatus.DRAFT
+            and (offer.lastValidationPrice is not None or offer.stocks)
+        ):
             reference_price = (
                 offer.lastValidationPrice
                 if offer.lastValidationPrice is not None
@@ -156,7 +161,7 @@ def check_stock_price(price: decimal.Decimal, offer: models.Offer, error_key: st
                 errors = api_errors.ApiErrors()
                 errors.add_error(
                     error_key,
-                    "Vous ne pouvez pas modifier autant le prix, ou créer un stock avec un prix aussi différent; il faut créer une nouvelle offre pour changer le prix.",
+                    "Le prix indiqué est invalide, veuillez créer une nouvelle offre",
                 )
                 raise errors
 
