@@ -173,10 +173,6 @@ class EducationalRedactorNotFound(Exception):
     pass
 
 
-class StudentsNotOpenedYet(Exception):
-    pass
-
-
 class ValidationFailedOnCollectiveOffer(Exception):
     pass
 

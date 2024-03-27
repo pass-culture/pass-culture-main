@@ -39,8 +39,6 @@ def create_collective_stock(
         collective_stock = educational_api_stock.create_collective_stock(body, current_user)
     except educational_exceptions.CollectiveStockAlreadyExists:
         raise ApiErrors({"code": "EDUCATIONAL_STOCK_ALREADY_EXISTS"}, status_code=409)
-    except educational_exceptions.StudentsNotOpenedYet:
-        raise ApiErrors({"code": "EDUCATIONAL_STUDENTS_NOT_OPEND_YET"}, status_code=403)
 
     return collective_stock_serialize.CollectiveStockResponseModel.from_orm(collective_stock)
 
@@ -82,11 +80,6 @@ def edit_collective_stock(
     except educational_exceptions.PriceRequesteCantBedHigherThanActualPrice:
         raise ApiErrors(
             {"educationalStock": "Le prix demandé ne peux être supérieur aux prix actuel si l'offre a été confirmée."},
-            status_code=403,
-        )
-    except educational_exceptions.StudentsNotOpenedYet:
-        raise ApiErrors(
-            {"beginningDatetime": "Les offres pour les 6eme 5eme ne peuvent pas avoir lieux avant le 01/09/2023"},
             status_code=403,
         )
     except offers_exceptions.OfferEditionBaseException as error:

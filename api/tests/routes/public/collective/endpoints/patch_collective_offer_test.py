@@ -150,43 +150,6 @@ class CollectiveOffersPublicPatchOfferTest:
         # Then
         assert response.status_code == 403
 
-    def test_patch_offer_6_5_only_too_early(self, client):
-        # Given
-        venue_provider = provider_factories.VenueProviderFactory()
-        venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
-
-        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
-        offer = educational_factories.CollectiveOfferFactory(
-            imageCredit="pouet",
-            imageId="123456789",
-            venue=venue,
-            provider=venue_provider.provider,
-            students=[educational_models.StudentLevels.COLLEGE4],
-        )
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
-            beginningDatetime=datetime(2022, 8, 1),
-        )
-
-        payload = {
-            "students": [
-                educational_models.StudentLevels.COLLEGE5.name,
-                educational_models.StudentLevels.COLLEGE6.name,
-            ],
-        }
-
-        # When
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
-            )
-
-        # Then
-        assert response.status_code == 403
-
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
-        assert offer.students == [educational_models.StudentLevels.COLLEGE4]
-
     def test_change_venue(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()

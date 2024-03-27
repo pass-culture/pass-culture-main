@@ -228,15 +228,6 @@ def post_collective_offer_public(
             errors={"educationalInstitutionId": ["L'établissement scolaire n'est pas actif."]},
             status_code=403,
         )
-    except educational_exceptions.StudentsNotOpenedYet:
-        raise ApiErrors(
-            errors={
-                "students": [
-                    "Les offres collectives pour les étudiants en 6ème 5ème ne peuvent avoir lieu avant le 01/09/2023."
-                ]
-            },
-            status_code=403,
-        )
     except educational_exceptions.EducationalDomainsNotFound:
         raise ApiErrors(
             errors={"domains": ["Domaine scolaire non trouvé."]},
@@ -548,15 +539,6 @@ def patch_collective_offer_public(
         raise ApiErrors(
             errors={"subcategoryId": ["La sous-catégorie n'est pas éligible pour les offres collectives."]},
             status_code=404,
-        )
-    except educational_exceptions.StudentsNotOpenedYet:
-        raise ApiErrors(
-            errors={
-                "students": [
-                    "Les offres collectives pour les étudiants en 6ème 5ème ne peuvent avoir lieu avant le 01/09/2023."
-                ]
-            },
-            status_code=403,
         )
     except offers_validation.OfferValidationError as err:
         raise ApiErrors(errors={err.field: err.msg}, status_code=400)

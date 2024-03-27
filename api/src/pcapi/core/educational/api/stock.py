@@ -45,17 +45,6 @@ def create_collective_stock(
     if booking_limit_datetime is None:
         booking_limit_datetime = beginning
 
-    if beginning < datetime.datetime(2023, 9, 1, tzinfo=beginning.tzinfo):
-        # FIXME: remove after 2023-09-01
-        new_students = []
-        for student in collective_offer.students:
-            if student not in (educational_models.StudentLevels.COLLEGE5, educational_models.StudentLevels.COLLEGE6):
-                new_students.append(student)
-        if new_students:
-            collective_offer.students = new_students
-        else:
-            raise exceptions.StudentsNotOpenedYet()
-
     collective_stock = educational_models.CollectiveStock(
         collectiveOffer=collective_offer,
         beginningDatetime=beginning,

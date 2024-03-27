@@ -19,7 +19,6 @@ from pcapi.core.educational.adage_backends.serialize import serialize_collective
 from pcapi.core.educational.api import adage as educational_api_adage
 import pcapi.core.educational.api.national_program as national_program_api
 from pcapi.core.educational.exceptions import AdageException
-from pcapi.core.educational.exceptions import StudentsNotOpenedYet
 from pcapi.core.educational.models import HasImageMixin
 from pcapi.core.educational.utils import get_image_from_url
 from pcapi.core.mails import transactional as transactional_mails
@@ -434,20 +433,6 @@ def create_collective_offer_public(
     venue = educational_repository.fetch_venue_for_new_offer(body.venue_id, requested_id)
     offerers_api.can_venue_create_educational_offer(venue.managingOfferer)
 
-    if body.beginning_datetime < datetime.datetime(2023, 9, 1, tzinfo=body.beginning_datetime.tzinfo):
-        # FIXME: remove after 2023-09-01
-        new_students = []
-        for student in body.students:
-            if student not in (
-                educational_models.StudentLevels.COLLEGE5,
-                educational_models.StudentLevels.COLLEGE6,
-            ):
-                new_students.append(student)
-        if new_students:
-            body.students = new_students
-        else:
-            raise StudentsNotOpenedYet()
-
     offer_validation.check_offer_subcategory_is_valid(body.subcategory_id)
     offer_validation.check_offer_is_eligible_for_educational(body.subcategory_id)
     validation.validate_offer_venue(body.offer_venue)
@@ -532,16 +517,6 @@ def edit_collective_offer_public(
 
     if provider_id != offer.providerId:
         raise exceptions.CollectiveOfferNotEditable()
-
-    beginning = new_values.get("beginningDatetime", offer.collectiveStock.beginningDatetime)
-    students = new_values.get("students", offer.students)
-    if beginning < datetime.datetime(2023, 9, 1, tzinfo=beginning.tzinfo):
-        for student in students:
-            if student in (
-                educational_models.StudentLevels.COLLEGE5,
-                educational_models.StudentLevels.COLLEGE6,
-            ):
-                raise StudentsNotOpenedYet()
 
     offer_fields = {field for field in dir(educational_models.CollectiveOffer) if not field.startswith("_")}
     stock_fields = {field for field in dir(educational_models.CollectiveStock) if not field.startswith("_")}
