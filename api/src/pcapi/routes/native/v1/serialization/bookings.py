@@ -31,6 +31,7 @@ class BookOfferResponse(BaseModel):
 class BookingVenueResponse(BaseModel):
     id: int
     address: str | None
+    street: str | None
     postalCode: str | None
     city: str | None
     name: str
@@ -45,6 +46,7 @@ class BookingVenueResponse(BaseModel):
     @classmethod
     def from_orm(cls, venue: Venue) -> "BookingVenueResponse":
         venue.coordinates = {"latitude": venue.latitude, "longitude": venue.longitude}
+        venue.address = venue.street
         return super().from_orm(venue)
 
 

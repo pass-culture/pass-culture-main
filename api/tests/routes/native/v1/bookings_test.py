@@ -773,6 +773,7 @@ class GetBookingsTest:
                     "url": "https://demo.pass/some/path?token={token}&email={email}&offerId={offerId}",
                     "venue": {
                         "address": "1 boulevard Poissonnière",
+                        "street": "1 boulevard Poissonnière",
                         "postalCode": "75000",
                         "city": "Paris",
                         "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
