@@ -187,7 +187,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_OFFER_PRICE_LIMITATION,
     FeatureToggle.WIP_ENABLE_PRO_SIDE_NAV,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
-    FeatureToggle.WIP_GOOGLE_MAPS_VENUE_IMAGES,  # FIXME Abdelmoujib: remove when feature is ready https://passculture.atlassian.net/browse/PC-26459
     FeatureToggle.WIP_OPENING_HOURS,
     FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS,
     # Please keep alphabetic order
