@@ -2446,7 +2446,6 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
             mocked_async_index_offer_ids.assert_not_called()
 
     @override_features(ENABLE_BOOST_API_INTEGRATION=True)
-    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=True)
     def test_boost_with_get_film_showtimes_stocks_cached(
         self,
         requests_mock,

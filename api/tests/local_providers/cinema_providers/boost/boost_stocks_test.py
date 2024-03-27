@@ -72,6 +72,7 @@ class BoostStocksTest:
     def _get_product_by_allocine_id(self, allocine_id):
         return Product.query.filter(Product.extraData["allocineId"].cast(sa.Integer) == allocine_id).one()
 
+    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
     def should_return_providable_info_on_next(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider)
@@ -122,7 +123,6 @@ class BoostStocksTest:
 
         assert get_cinema_attr_adapter.call_count == 1
 
-    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=True)
     def should_return_providable_info_on_next_with_enabled_filter_ff(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider)
@@ -205,7 +205,9 @@ class BoostStocksTest:
         assert Stock.query.count() == 0
         assert PriceCategory.query.count() == 0
 
-    @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=True)
+    @override_features(
+        WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=True, WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False
+    )
     def should_fill_offer_and_and_stock_informations_for_each_movie_based_on_product(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
@@ -298,7 +300,9 @@ class BoostStocksTest:
 
         assert get_cinema_attr_adapter.call_count == 1
 
-    @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=False)
+    @override_features(
+        WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=False, WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False
+    )
     def should_fill_offer_and_and_stock_informations_for_each_movie(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
@@ -391,7 +395,6 @@ class BoostStocksTest:
         assert get_cinema_attr_adapter.call_count == 1
 
     @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=True)
-    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=True)
     def should_fill_offer_and_stock_informations_for_each_movie_based_on_product_with_enabled_filter_ff(
         self, requests_mock
     ):
@@ -489,7 +492,6 @@ class BoostStocksTest:
         assert get_cinema_attr_adapter.call_count == 1
 
     @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=False)
-    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=True)
     def should_fill_offer_and_stock_informations_for_each_movie_with_enabled_filter_ff(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
@@ -583,7 +585,9 @@ class BoostStocksTest:
 
         assert get_cinema_attr_adapter.call_count == 1
 
-    @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=True)
+    @override_features(
+        WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=True, WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False
+    )
     def should_fill_offer_and_stocks_and_price_categories_based_on_product(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
@@ -657,7 +661,9 @@ class BoostStocksTest:
 
         assert get_cinema_attr_adapter.call_count == 1
 
-    @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=False)
+    @override_features(
+        WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=False, WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False
+    )
     def should_fill_offer_and_stocks_and_price_categories(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
@@ -731,6 +737,7 @@ class BoostStocksTest:
 
         assert get_cinema_attr_adapter.call_count == 1
 
+    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
     def should_reuse_price_category(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
@@ -793,6 +800,7 @@ class BoostStocksTest:
 
         assert get_cinema_attr_adapter.call_count == 1
 
+    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
     def should_update_stock_with_the_correct_stock_quantity(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
@@ -902,6 +910,7 @@ class BoostStocksTest:
         for last_pricingOrderingDate, event in to_compare:
             assert event.pricingOrderingDate != last_pricingOrderingDate
 
+    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
     def should_create_offer_with_correct_thumb(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
@@ -942,6 +951,7 @@ class BoostStocksTest:
 
         assert get_cinema_attr_adapter.call_count == 1
 
+    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
     def should_not_update_thumbnail_more_then_once_a_day(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
@@ -973,6 +983,7 @@ class BoostStocksTest:
 
         assert get_cinema_attr_adapter.call_count == 1
 
+    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=False)
     def test_handle_error_on_movie_poster(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider)
