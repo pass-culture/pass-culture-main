@@ -80,7 +80,7 @@ describe('test renderSignupJourneyStepper', () => {
       setOfferer: () => {},
     }
   })
-  it('Should not log current tab click and disabled ones', async () => {
+  it('should not log current tab click and disabled ones', async () => {
     const { tabAuthentication, tabActivity, tabValidation } =
       renderSignupJourneyStepper(contextValue)
 

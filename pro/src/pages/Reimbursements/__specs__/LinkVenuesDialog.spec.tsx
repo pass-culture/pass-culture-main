@@ -77,7 +77,7 @@ describe('LinkVenueDialog', () => {
     }))
   })
 
-  it('Should display the dialog', () => {
+  it('should display the dialog', () => {
     renderWithProviders(<LinkVenuesDialog {...props} />, {
       storeOverrides,
     })
@@ -94,7 +94,7 @@ describe('LinkVenueDialog', () => {
     expect(screen.getByLabelText('Lieu 2')).not.toBeChecked()
   })
 
-  it('Should be able to submit the form but only close the modal if no changes were made', async () => {
+  it('should be able to submit the form but only close the modal if no changes were made', async () => {
     renderWithProviders(
       <>
         <LinkVenuesDialog {...props} />
@@ -120,7 +120,7 @@ describe('LinkVenueDialog', () => {
     expect(mockLogEvent).not.toHaveBeenCalled()
   })
 
-  it('Should be able to submit the form', async () => {
+  it('should be able to submit the form', async () => {
     renderWithProviders(
       <>
         <LinkVenuesDialog {...props} />
@@ -162,7 +162,7 @@ describe('LinkVenueDialog', () => {
     )
   })
 
-  it('Should handle update failure', async () => {
+  it('should handle update failure', async () => {
     vi.spyOn(api, 'linkVenueToBankAccount').mockRejectedValueOnce({})
 
     renderWithProviders(
@@ -194,7 +194,7 @@ describe('LinkVenueDialog', () => {
     ).toBeInTheDocument()
   })
 
-  it('Should close the dialog on cancel click', async () => {
+  it('should close the dialog on cancel click', async () => {
     renderWithProviders(<LinkVenuesDialog {...props} />, {
       storeOverrides,
     })
@@ -208,7 +208,7 @@ describe('LinkVenueDialog', () => {
     expect(mockClose).toHaveBeenCalled()
   })
 
-  it('Should show the discard dialog on cancel click', async () => {
+  it('should show the discard dialog on cancel click', async () => {
     renderWithProviders(<LinkVenuesDialog {...props} />, {
       storeOverrides,
     })
