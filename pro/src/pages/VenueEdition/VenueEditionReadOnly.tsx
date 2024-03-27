@@ -31,7 +31,11 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
         />
       </SummarySubSection>
 
-      <AccessibilitySummarySection accessibleItem={venue} />
+      <AccessibilitySummarySection
+        accessibleItem={venue}
+        accessibleWording="Votre établissement est accessible aux publics en situation de handicap :"
+      />
+
       {isOpeningHoursEnabled && venue.isPermanent && (
         <OpeningHoursReadOnly openingHours={venue.venueOpeningHours} />
       )}
