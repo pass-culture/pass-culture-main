@@ -83,8 +83,6 @@ const valuesIsOfferEducationalStockFormValuesForSerializer = (
   values: Omit<OfferEducationalStockFormValues, 'educationalOfferType'>
 ): values is OfferEducationalStockFormValuesForSerializer => {
   return (
-    values.eventDate !== null &&
-    values.eventTime !== null &&
     typeof values.numberOfPlaces === 'number' &&
     typeof values.totalPrice === 'number'
   )
