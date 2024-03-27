@@ -1,4 +1,7 @@
 describe('Update a venue', () => {
+  before(() => {
+    cy.request('http://localhost:5001/e2e/pro/update-venue')
+  })
   beforeEach(() => {
     cy.visit('/connexion')
   })
