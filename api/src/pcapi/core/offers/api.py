@@ -317,19 +317,6 @@ def update_collective_offer(
     ).first()
     educational_validation.check_if_offer_is_not_public_api(offer_to_update)
     educational_validation.check_if_offer_not_used_or_reimbursed(offer_to_update)
-    if "students" in new_values:
-        # FIXME remove after 2023-09-01
-        stock = offer_to_update.collectiveStock
-        if stock and stock.beginningDatetime < datetime.datetime(2023, 9, 1):
-            new_students = []
-            for student in new_values["students"]:
-                if student in (educational_models.StudentLevels.COLLEGE5, educational_models.StudentLevels.COLLEGE6):
-                    continue
-                new_students.append(student)
-            if new_students:
-                new_values["students"] = new_students
-            else:
-                raise educational_exceptions.StudentsNotOpenedYet()
 
     if "venueId" in new_values and new_values["venueId"] != offer_to_update.venueId:
         offerer = offerers_repository.get_by_collective_offer_id(offer_to_update.id)
