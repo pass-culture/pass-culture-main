@@ -90,7 +90,7 @@ jobs:
         uses: 'google-github-actions/setup-gcloud@v2'
       - id: 'docker-login'
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        uses: "docker/login-action@v1"
+        uses: "docker/login-action@v3"
         name: "Docker login"
         with:
           registry: "europe-west1-docker.pkg.dev"
