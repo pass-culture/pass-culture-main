@@ -1,6 +1,9 @@
 describe('Update a venue', () => {
   beforeEach(() => {
+    // cy.visit must be before cy.request to avoid the following error:
+    // CypressError: `cy.visit()` failed trying to load: http://localhost:3001/connexion
     cy.visit('/connexion')
+    cy.request('http://localhost:5001/e2e/pro/update-venue')
   })
 
   it('should update a venue', () => {
