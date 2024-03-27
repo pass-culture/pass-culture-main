@@ -127,35 +127,18 @@ describe('OpeningHoursForm', () => {
     renderOpeningHoursForm({
       venue: {
         ...defaultGetVenue,
-        venueOpeningHours: [
-          {
-            MONDAY: [
-              { open: '08:00', close: '12:37' },
-              { open: '12:59', close: '16:16' },
-            ],
-          },
-          {
-            TUESDAY: undefined,
-          },
-
-          {
-            WEDNESDAY: [{ open: '09:09', close: '10:02' }],
-          },
-
-          {
-            THURSDAY: undefined,
-          },
-
-          {
-            FRIDAY: undefined,
-          },
-          {
-            SATURDAY: undefined,
-          },
-          {
-            SUNDAY: undefined,
-          },
-        ],
+        venueOpeningHours: {
+          MONDAY: [
+            { open: '08:00', close: '12:37' },
+            { open: '12:59', close: '16:16' },
+          ],
+          TUESDAY: undefined,
+          WEDNESDAY: [{ open: '09:09', close: '10:02' }],
+          THURSDAY: undefined,
+          FRIDAY: undefined,
+          SATURDAY: undefined,
+          SUNDAY: undefined,
+        },
       },
     })
     expect(screen.getByText('Lundi')).toBeInTheDocument()
