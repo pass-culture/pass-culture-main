@@ -56,6 +56,7 @@ def create_users_offerers() -> list[offerers_models.Offerer]:
         user__email="eac_rejected@example.com",
         offerer__name="eac_rejected",
         offerer__siren="897492294",
+        offerer__allowedOnAdage=False,
     )
     offerers.append(user_offerer.offerer)
     # DMS state
@@ -69,24 +70,28 @@ def create_users_offerers() -> list[offerers_models.Offerer]:
         user__email="eac_sans_suite@example.com",
         offerer__name="eac_sans_suite",
         offerer__siren="538160656",
+        offerer__allowedOnAdage=False,
     )
     offerers.append(user_offerer.offerer)
     user_offerer = offerers_factories.UserOffererFactory(
         user__email="eac_en_construction@example.com",
         offerer__name="eac_en_construction",
         offerer__siren="843082389",
+        offerer__allowedOnAdage=False,
     )
     offerers.append(user_offerer.offerer)
     user_offerer = offerers_factories.UserOffererFactory(
         user__email="eac_refuse@example.com",
         offerer__name="eac_refuse",
         offerer__siren="524237351",
+        offerer__allowedOnAdage=False,
     )
     offerers.append(user_offerer.offerer)
     user_offerer = offerers_factories.UserOffererFactory(
         user__email="eac_en_instruction@example.com",
         offerer__name="eac_en_instruction",
         offerer__siren="538160615",
+        offerer__allowedOnAdage=False,
     )
     offerers.append(user_offerer.offerer)
     user_offerer = offerers_factories.UserOffererFactory(
