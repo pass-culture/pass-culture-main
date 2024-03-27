@@ -264,8 +264,6 @@ def edit_collective_offer(
         raise ApiErrors({"offer": "the used or refund offer can't be edited."}, 403)
     except educational_exceptions.OffererOfVenueDontMatchOfferer:
         raise ApiErrors({"venueId": "New venue needs to have the same offerer"}, 403)
-    except educational_exceptions.StudentsNotOpenedYet:
-        raise ApiErrors({"students": "You cannot have an event with these level before 2023-09-01."}, 403)
     except educational_exceptions.VenueIdDontExist:
         raise ApiErrors({"venueId": "The venue does not exist."}, 404)
     except educational_exceptions.CollectiveOfferIsPublicApi:
