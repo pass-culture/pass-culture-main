@@ -17,18 +17,22 @@ interface AccessibleItem {
 
 interface AccessibilitySummarySectionProps {
   accessibleItem: AccessibleItem
+  accessibleWording: string
 }
 
 export const AccessibilitySummarySection = ({
   accessibleItem,
+  accessibleWording,
 }: AccessibilitySummarySectionProps) => (
   <SummarySubSection title="Modalités d’accessibilité">
     {!accessibleItem.visualDisabilityCompliant &&
-      !accessibleItem.motorDisabilityCompliant &&
-      !accessibleItem.mentalDisabilityCompliant &&
-      !accessibleItem.audioDisabilityCompliant && (
-        <SummaryDescriptionList descriptions={[{ text: 'Non accessible' }]} />
-      )}
+    !accessibleItem.motorDisabilityCompliant &&
+    !accessibleItem.mentalDisabilityCompliant &&
+    !accessibleItem.audioDisabilityCompliant ? (
+      <SummaryDescriptionList descriptions={[{ text: 'Non accessible' }]} />
+    ) : (
+      <SummaryDescriptionList descriptions={[{ text: accessibleWording }]} />
+    )}
 
     {accessibleItem.visualDisabilityCompliant && (
       <AccessibilityLabel
