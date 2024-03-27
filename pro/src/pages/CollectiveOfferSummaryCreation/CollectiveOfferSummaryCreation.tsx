@@ -12,9 +12,7 @@ import {
 
 export const CollectiveOfferSummaryCreation = ({
   offer,
-  setOffer,
   isTemplate,
-  offerer,
 }: MandatoryCollectiveOfferFromParamsProps) => {
   return (
     <AppLayout layout={'sticky-actions'}>
@@ -24,11 +22,7 @@ export const CollectiveOfferSummaryCreation = ({
         isTemplate={isTemplate}
         isCreation={true}
       >
-        <CollectiveOfferSummaryCreationScreen
-          offer={offer}
-          setOffer={setOffer}
-          offerer={offerer}
-        />
+        <CollectiveOfferSummaryCreationScreen offer={offer} />
         <RouteLeavingGuardCollectiveOfferCreation />
       </CollectiveOfferLayout>
     </AppLayout>

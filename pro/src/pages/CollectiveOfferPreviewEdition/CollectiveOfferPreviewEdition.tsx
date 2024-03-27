@@ -1,6 +1,5 @@
 import { AppLayout } from 'app/AppLayout'
 import ActionsBarSticky from 'components/ActionsBarSticky'
-import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import AdagePreviewLayout from 'pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
 import {
   MandatoryCollectiveOfferFromParamsProps,
@@ -40,7 +39,6 @@ export const CollectiveOfferPreviewEdition = ({
           </ActionsBarSticky.Left>
         </ActionsBarSticky>
       </div>
-      <RouteLeavingGuardCollectiveOfferCreation />
     </AppLayout>
   )
 }
