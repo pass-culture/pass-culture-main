@@ -1,0 +1,2 @@
+class CGRAPIException(Exception):
+    pass

@@ -2,9 +2,9 @@ import json
 
 import pytest
 
-from pcapi.connectors.cgr.exceptions import CGRAPIException
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.external_bookings.cgr.client as cgr_client
+from pcapi.core.external_bookings.cgr.exceptions import CGRAPIException
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
