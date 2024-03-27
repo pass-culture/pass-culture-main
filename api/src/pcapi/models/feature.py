@@ -185,7 +185,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_ADAGE_VISUALIZATION,
     FeatureToggle.WIP_ENABLE_BOOST_SHOWTIMES_FILTER,
     FeatureToggle.WIP_ENABLE_COMPLIANCE_CALL,
-    FeatureToggle.WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API,
     FeatureToggle.WIP_ENABLE_GOOGLE_SSO,
     FeatureToggle.WIP_ENABLE_MOCK_UBBLE,
     FeatureToggle.WIP_ENABLE_NEW_NAV_AB_TEST,
@@ -208,7 +207,6 @@ if settings.IS_PROD or settings.IS_STAGING:
 if settings.IS_TESTING:
     testing_features_disabled_by_default = set(FEATURES_DISABLED_BY_DEFAULT)
     features_to_enable = {
-        FeatureToggle.WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API,
         FeatureToggle.WIP_ENABLE_OFFER_CREATION_API_V1,
         FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS,
     }
