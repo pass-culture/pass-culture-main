@@ -1,5 +1,12 @@
 import { FormikContext, useFormik } from 'formik'
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
+import {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { useInstantSearch } from 'react-instantsearch'
 
 import { AdageFrontRoles, VenueResponse } from 'apiClient/adage'
@@ -10,6 +17,7 @@ import useIsElementVisible from 'hooks/useIsElementVisible'
 import useNotification from 'hooks/useNotification'
 import { MARSEILLE_EN_GRAND } from 'pages/AdageIframe/app/constants'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
+import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { Facets, Option } from 'pages/AdageIframe/app/types'
 
 import { DEFAULT_GEO_RADIUS, MAIN_INDEX_ID } from '../OffersInstantSearch'
@@ -60,6 +68,8 @@ export const OffersSearch = ({
 
   const notification = useNotification()
 
+  const { setFilters } = useContext(AdageUserContext)
+
   const [domainsOptions, setDomainsOptions] = useState<Option<number>[]>([])
 
   const { scopedResults } = useInstantSearch()
@@ -100,6 +110,7 @@ export const OffersSearch = ({
   }, [notification])
 
   function handleSubmit() {
+    setFilters?.({ filters: formik.values, query: currentSearch || '' })
     const updatedFilters = adageFiltersToFacetFilters({
       ...formik.values,
       uai: adageUser.uai ? ['all', adageUser.uai] : ['all'],

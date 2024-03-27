@@ -1,5 +1,5 @@
 import algoliasearch from 'algoliasearch/lite'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Configure, Index, InstantSearch } from 'react-instantsearch'
 
 import { VenueResponse } from 'apiClient/adage'
@@ -17,6 +17,7 @@ import { isNumber } from 'utils/types'
 
 import { MARSEILLE_EN_GRAND } from '../../constants'
 import useAdageUser from '../../hooks/useAdageUser'
+import { AdageUserContext } from '../../providers/AdageUserContext'
 import { AnalyticsContextProvider } from '../../providers/AnalyticsContextProvider'
 import { Facets } from '../../types'
 
@@ -73,6 +74,8 @@ export const OffersInstantSearch = (): JSX.Element | null => {
   const [venueFilter, setVenueFilter] = useState<VenueResponse | null>(null)
   const [loadingVenue, setLoadingVenue] = useState<boolean>(false)
 
+  const { filters } = useContext(AdageUserContext)
+
   const notification = useNotification()
 
   useEffect(() => {
@@ -86,7 +89,7 @@ export const OffersInstantSearch = (): JSX.Element | null => {
       setFacetFilters(
         adageFiltersToFacetFilters({
           ...ADAGE_FILTERS_DEFAULT_VALUES,
-          ...filtersFromParams,
+          ...(filters.filters ?? filtersFromParams),
         }).queryFilters
       )
     }
@@ -166,13 +169,15 @@ export const OffersInstantSearch = (): JSX.Element | null => {
         <AnalyticsContextProvider>
           <OffersSearch
             setFacetFilters={setFacetFilters}
-            initialFilters={{
-              venue: venueFilter,
-              domains: domainParam ? [domainParam] : [],
-              students: filterOnMarseilleStudents
-                ? DEFAULT_MARSEILLE_STUDENTS
-                : [],
-            }}
+            initialFilters={
+              filters.filters ?? {
+                venue: venueFilter,
+                domains: domainParam ? [domainParam] : [],
+                students: filterOnMarseilleStudents
+                  ? DEFAULT_MARSEILLE_STUDENTS
+                  : [],
+              }
+            }
             setGeoRadius={setGeoRadius}
           />
         </AnalyticsContextProvider>
