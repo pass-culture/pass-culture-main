@@ -161,7 +161,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.DISPLAY_DMS_REDIRECTION,
     FeatureToggle.ENABLE_AUTO_VALIDATION_FOR_EXTERNAL_BOOKING,
     FeatureToggle.ENABLE_BEAMER,
-    FeatureToggle.ENABLE_CHARLIE_BOOKINGS_API,
     FeatureToggle.ENABLE_CODIR_OFFERERS_REPORT,  # only for production
     FeatureToggle.ENABLE_CRON_TO_UPDATE_OFFERER_STATS,  # only for production
     FeatureToggle.ENABLE_CULTURAL_SURVEY,
@@ -209,7 +208,6 @@ if settings.IS_PROD or settings.IS_STAGING:
 if settings.IS_TESTING:
     testing_features_disabled_by_default = set(FEATURES_DISABLED_BY_DEFAULT)
     features_to_enable = {
-        FeatureToggle.ENABLE_CHARLIE_BOOKINGS_API,
         FeatureToggle.WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API,
         FeatureToggle.WIP_ENABLE_OFFER_CREATION_API_V1,
         FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS,
