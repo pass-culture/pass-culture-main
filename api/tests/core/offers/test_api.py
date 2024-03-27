@@ -144,9 +144,7 @@ class CreateStockTest:
 
         # Then
         assert error.value.errors == {
-            "priceLimitationRule": [
-                "Vous ne pouvez pas modifier autant le prix, ou créer un stock avec un prix aussi différent; il faut créer une nouvelle offre pour changer le prix."
-            ]
+            "priceLimitationRule": ["Le prix indiqué est invalide, veuillez créer une nouvelle offre"]
         }
 
     @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
@@ -166,9 +164,7 @@ class CreateStockTest:
 
         # Then
         assert error.value.errors == {
-            "priceLimitationRule": [
-                "Vous ne pouvez pas modifier autant le prix, ou créer un stock avec un prix aussi différent; il faut créer une nouvelle offre pour changer le prix."
-            ]
+            "priceLimitationRule": ["Le prix indiqué est invalide, veuillez créer une nouvelle offre"]
         }
 
     @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
@@ -473,9 +469,7 @@ class EditStockTest:
 
         # Then
         assert error.value.errors == {
-            "priceLimitationRule": [
-                "Vous ne pouvez pas modifier autant le prix, ou créer un stock avec un prix aussi différent; il faut créer une nouvelle offre pour changer le prix."
-            ]
+            "priceLimitationRule": ["Le prix indiqué est invalide, veuillez créer une nouvelle offre"]
         }
 
     @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
@@ -495,9 +489,7 @@ class EditStockTest:
 
         # Then
         assert error.value.errors == {
-            "priceLimitationRule": [
-                "Vous ne pouvez pas modifier autant le prix, ou créer un stock avec un prix aussi différent; il faut créer une nouvelle offre pour changer le prix."
-            ]
+            "priceLimitationRule": ["Le prix indiqué est invalide, veuillez créer une nouvelle offre"]
         }
 
     @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
