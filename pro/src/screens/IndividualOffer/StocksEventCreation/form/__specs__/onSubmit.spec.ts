@@ -22,6 +22,15 @@ const notify = {
 }
 
 describe('onSubmit', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2010-01-01 13:15'))
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   const cases: {
     description: string
     formValues: RecurrenceFormValues

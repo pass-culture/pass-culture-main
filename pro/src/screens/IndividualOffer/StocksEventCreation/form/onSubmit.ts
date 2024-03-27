@@ -14,6 +14,7 @@ import {
 import {
   getDatesInInterval,
   getDatesWithMonthlyOption,
+  isTimeInTheFuture,
 } from './recurrenceUtils'
 import { RecurrenceFormValues, RecurrenceType } from './types'
 
@@ -180,38 +181,45 @@ const generateStocksForDates = (
   departmentCode?: string | null
 ): StocksEventWithOptionalId[] =>
   dates.flatMap((beginningDate) =>
-    values.beginningTimes.flatMap((beginningTime) =>
-      values.quantityPerPriceCategories.flatMap((quantityPerPriceCategory) => {
-        /* istanbul ignore next: should be already validated by yup */
-        if (beginningTime === '') {
-          throw new Error('Some values are empty')
-        }
+    values.beginningTimes
+      // We filter out the times that are in the past for today
+      .filter((beginningTime) =>
+        isTimeInTheFuture(beginningDate, beginningTime)
+      )
+      .flatMap((beginningTime) =>
+        values.quantityPerPriceCategories.flatMap(
+          (quantityPerPriceCategory) => {
+            /* istanbul ignore next: should be already validated by yup */
+            if (beginningTime === '') {
+              throw new Error('Some values are empty')
+            }
 
-        const beginningDatetime = serializeBeginningDateTime(
-          format(beginningDate, FORMAT_ISO_DATE_ONLY),
-          beginningTime,
-          departmentCode
+            const beginningDatetime = serializeBeginningDateTime(
+              format(beginningDate, FORMAT_ISO_DATE_ONLY),
+              beginningTime,
+              departmentCode
+            )
+            const bookingLimitDateInterval =
+              values.bookingLimitDateInterval === ''
+                ? 0
+                : values.bookingLimitDateInterval
+
+            return {
+              priceCategoryId: parseInt(quantityPerPriceCategory.priceCategory),
+              quantity:
+                quantityPerPriceCategory.quantity === ''
+                  ? null
+                  : quantityPerPriceCategory.quantity,
+              beginningDatetime,
+              bookingLimitDatetime: toISOStringWithoutMilliseconds(
+                sub(new Date(beginningDatetime), {
+                  days: bookingLimitDateInterval,
+                })
+              ),
+              bookingsQuantity: 0,
+              isEventDeletable: true,
+            }
+          }
         )
-        const bookingLimitDateInterval =
-          values.bookingLimitDateInterval === ''
-            ? 0
-            : values.bookingLimitDateInterval
-
-        return {
-          priceCategoryId: parseInt(quantityPerPriceCategory.priceCategory),
-          quantity:
-            quantityPerPriceCategory.quantity === ''
-              ? null
-              : quantityPerPriceCategory.quantity,
-          beginningDatetime,
-          bookingLimitDatetime: toISOStringWithoutMilliseconds(
-            sub(new Date(beginningDatetime), {
-              days: bookingLimitDateInterval,
-            })
-          ),
-          bookingsQuantity: 0,
-          isEventDeletable: true,
-        }
-      })
-    )
+      )
   )

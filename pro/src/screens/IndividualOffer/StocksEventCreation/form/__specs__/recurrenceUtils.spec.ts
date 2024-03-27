@@ -1,4 +1,4 @@
-import { getDatesInInterval } from '../recurrenceUtils'
+import { getDatesInInterval, isTimeInTheFuture } from '../recurrenceUtils'
 import { RecurrenceDays } from '../types'
 
 describe('getDatesInInterval', () => {
@@ -38,5 +38,44 @@ describe('getDatesInInterval', () => {
       new Date('2020-03-14'),
       new Date('2020-03-15'),
     ])
+  })
+})
+
+describe('isTimeInTheFuture', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2010-01-01 13:15'))
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('should return true for future dates', () => {
+    expect(isTimeInTheFuture(new Date('2020-03-03'), '11:00')).toBe(true)
+  })
+
+  it('should return false for past dates', () => {
+    expect(isTimeInTheFuture(new Date('2000-03-03'), '11:00')).toBe(false)
+  })
+
+  it('should return true for today and future hours', () => {
+    expect(isTimeInTheFuture(new Date('2010-01-01'), '14:00')).toBe(true)
+  })
+
+  it('should return true for today and past hours', () => {
+    expect(isTimeInTheFuture(new Date('2010-01-01'), '10:00')).toBe(false)
+  })
+
+  it('should return true for today, current hour and future minutes', () => {
+    expect(isTimeInTheFuture(new Date('2010-01-01'), '13:20')).toBe(true)
+  })
+
+  it('should return false for today, current hour and past minutes', () => {
+    expect(isTimeInTheFuture(new Date('2010-01-01'), '13:00')).toBe(false)
+  })
+
+  it('should return false for exact same time', () => {
+    expect(isTimeInTheFuture(new Date('2010-01-01'), '13:15')).toBe(false)
   })
 })

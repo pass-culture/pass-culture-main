@@ -1,4 +1,4 @@
-import { addMonths, endOfMonth } from 'date-fns'
+import { addMonths, endOfMonth, isToday } from 'date-fns'
 
 import { isDateValid } from 'utils/date'
 
@@ -96,4 +96,25 @@ export const getDatesWithMonthlyOption = (
       }
       return dates
   }
+}
+
+export const isTimeInTheFuture = (
+  beginningDate: Date,
+  beginningTime: string
+): boolean => {
+  const now = new Date()
+  if (beginningDate > now) {
+    return true
+  }
+  if (!isToday(beginningDate)) {
+    return false
+  }
+  const [hours, minutes] = beginningTime.split(':')
+  if (parseInt(hours) > now.getHours()) {
+    return true
+  }
+  if (parseInt(hours) === now.getHours()) {
+    return parseInt(minutes) > now.getMinutes()
+  }
+  return false
 }
