@@ -1123,7 +1123,6 @@ class Returns400Test:
         )
         offer = offers_factories.OfferFactory(
             isActive=False,
-            validation=OfferValidationStatus.DRAFT,
             subcategoryId=subcategories_v2.ACHAT_INSTRUMENT.id,
             lastValidationPrice=Decimal("100"),
         )
@@ -1148,7 +1147,7 @@ class Returns400Test:
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
         assert response.status_code == 400
         assert response.json["priceLimitationRule"] == [
-            "Vous ne pouvez pas modifier autant le prix, ou créer un stock avec un prix aussi différent; il faut créer une nouvelle offre pour changer le prix."
+            "Le prix indiqué est invalide, veuillez créer une nouvelle offre"
         ]
 
     def test_cannot_update_event_stock_with_price_higher_than_300_euros(self, client):
