@@ -577,7 +577,7 @@ class TrustedDeviceFeatureTest:
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")
-        @override_features(WIP_ENABLE_GOOGLE_SSO=True, WIP_ENABLE_TRUSTED_DEVICE=True)
+        @override_features(WIP_ENABLE_GOOGLE_SSO=True)
         def test_save_login_device_history_on_signin(
             self,
             mocked_google_oauth,
@@ -601,7 +601,7 @@ class TrustedDeviceFeatureTest:
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")
-        @override_features(WIP_ENABLE_GOOGLE_SSO=True, WIP_ENABLE_TRUSTED_DEVICE=True)
+        @override_features(WIP_ENABLE_GOOGLE_SSO=True)
         def should_not_save_login_device_history_on_signin_when_no_device_info(
             self, mocked_google_oauth, mocked_load_and_check_oauth_token, client, signin_route, data
         ):
@@ -629,7 +629,7 @@ class TrustedDeviceFeatureTest:
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")
-        @override_features(WIP_ENABLE_GOOGLE_SSO=True, WIP_ENABLE_TRUSTED_DEVICE=True)
+        @override_features(WIP_ENABLE_GOOGLE_SSO=True)
         def test_save_login_device_as_trusted_device_on_second_signin_with_same_device(
             self, mocked_google_oauth, mocked_load_and_check_oauth_token, client, signin_route, data
         ):
@@ -665,7 +665,7 @@ class TrustedDeviceFeatureTest:
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")
-        @override_features(WIP_ENABLE_GOOGLE_SSO=True, WIP_ENABLE_TRUSTED_DEVICE=True)
+        @override_features(WIP_ENABLE_GOOGLE_SSO=True)
         def should_not_save_login_device_as_trusted_device_on_second_signin_when_using_different_devices(
             self, mocked_google_oauth, mocked_load_and_check_oauth_token, client, signin_route, data
         ):
@@ -693,7 +693,7 @@ class TrustedDeviceFeatureTest:
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")
-        @override_features(WIP_ENABLE_GOOGLE_SSO=True, WIP_ENABLE_TRUSTED_DEVICE=True)
+        @override_features(WIP_ENABLE_GOOGLE_SSO=True)
         def should_send_email_when_login_is_suspicious(
             self, mocked_google_oauth, mocked_load_and_check_oauth_token, client, signin_route, data
         ):
@@ -714,7 +714,7 @@ class TrustedDeviceFeatureTest:
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")
-        @override_features(WIP_ENABLE_GOOGLE_SSO=True, WIP_ENABLE_TRUSTED_DEVICE=True)
+        @override_features(WIP_ENABLE_GOOGLE_SSO=True)
         def should_send_limited_number_of_emails_when_login_is_suspicious(
             self, mocked_google_oauth, mocked_load_and_check_oauth_token, client, signin_route, data
         ):
@@ -730,7 +730,7 @@ class TrustedDeviceFeatureTest:
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")
-        @override_features(WIP_ENABLE_GOOGLE_SSO=True, WIP_ENABLE_TRUSTED_DEVICE=True)
+        @override_features(WIP_ENABLE_GOOGLE_SSO=True)
         def should_send_suspicious_login_email_to_user_suspended_upon_request(
             self, mocked_google_oauth, mocked_load_and_check_oauth_token, client, signin_route, data
         ):
@@ -748,7 +748,7 @@ class TrustedDeviceFeatureTest:
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")
-        @override_features(WIP_ENABLE_GOOGLE_SSO=True, WIP_ENABLE_TRUSTED_DEVICE=True)
+        @override_features(WIP_ENABLE_GOOGLE_SSO=True)
         @pytest.mark.parametrize(
             "reason",
             [
@@ -774,7 +774,7 @@ class TrustedDeviceFeatureTest:
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")
-        @override_features(WIP_ENABLE_GOOGLE_SSO=True, WIP_ENABLE_TRUSTED_DEVICE=True)
+        @override_features(WIP_ENABLE_GOOGLE_SSO=True)
         def should_extend_refresh_token_lifetime_when_logging_in_with_a_trusted_device(
             self, mocked_google_oauth, mocked_load_and_check_oauth_token, client, signin_route, data
         ):
@@ -796,7 +796,7 @@ class TrustedDeviceFeatureTest:
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")
-        @override_features(WIP_ENABLE_GOOGLE_SSO=True, WIP_ENABLE_TRUSTED_DEVICE=True)
+        @override_features(WIP_ENABLE_GOOGLE_SSO=True)
         def should_not_extend_refresh_token_lifetime_when_logging_in_from_unknown_device(
             self, mocked_google_oauth, mocked_load_and_check_oauth_token, client, signin_route, data
         ):
@@ -815,9 +815,7 @@ class TrustedDeviceFeatureTest:
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")
-        @override_features(
-            WIP_ENABLE_GOOGLE_SSO=True, WIP_ENABLE_TRUSTED_DEVICE=True, WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=False
-        )
+        @override_features(WIP_ENABLE_GOOGLE_SSO=True, WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=False)
         def should_not_send_email_when_logging_in_from_a_trusted_device(
             self, mocked_google_oauth, mocked_load_and_check_oauth_token, client, signin_route, data
         ):
@@ -848,11 +846,7 @@ class TrustedDeviceFeatureTest:
 
         @patch("pcapi.core.token.UUIDToken.load_and_check")
         @patch("pcapi.connectors.google_oauth.get_google_user")
-        @override_features(
-            WIP_ENABLE_GOOGLE_SSO=True,
-            WIP_ENABLE_TRUSTED_DEVICE=True,
-            WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=False,
-        )
+        @override_features(WIP_ENABLE_GOOGLE_SSO=True, WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=False)
         def should_not_send_email_when_feature_flag_is_active_but_email_is_inactive(
             self, mocked_google_oauth, mocked_load_and_check_oauth_token, client, signin_route, data
         ):
@@ -865,7 +859,6 @@ class TrustedDeviceFeatureTest:
             assert len(mails_testing.outbox) == 0
 
     class TrustedDeviceEmailValidationTest:
-        @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
         def should_extend_refresh_token_lifetime_on_email_validation_when_device_is_trusted(self, client):
             device_info = {
                 "deviceId": "2E429592-2446-425F-9A62-D6983F375B3B",
@@ -892,7 +885,6 @@ class TrustedDeviceFeatureTest:
 
             assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXTENDED_EXPIRES
 
-        @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
         def should_not_extend_refresh_token_lifetime_on_email_validation_when_device_is_unknown(self, client):
             user = users_factories.UserFactory(isEmailValidated=False)
             token = token_utils.Token.create(
