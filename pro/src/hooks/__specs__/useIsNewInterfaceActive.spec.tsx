@@ -93,4 +93,22 @@ describe('useIsNewInterfaceActive', () => {
     renderUseIsNewInterfaceActive(options)
     expect(screen.getByText('Inactive')).toBeInTheDocument()
   })
+
+  it('should return false if user connected but as new nav date in future', () => {
+    const options = {
+      features: ['WIP_ENABLE_PRO_SIDE_NAV'],
+      storeOverrides: {
+        user: {
+          currentUser: {
+            isAdmin: false,
+            navState: {
+              newNavDate: '2999-01-01',
+            },
+          },
+        },
+      },
+    }
+    renderUseIsNewInterfaceActive(options)
+    expect(screen.getByText('Inactive')).toBeInTheDocument()
+  })
 })
