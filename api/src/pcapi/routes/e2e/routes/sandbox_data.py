@@ -45,6 +45,20 @@ def setup_data_for_create_thing_individual_offer_e2e_test() -> None:
     offerers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
 
 
+@app.route("/e2e/pro/create-venue", methods=["GET"])
+@spectree_serialize(on_success_status=204)
+def setup_data_for_create_venue_e2e_test() -> None:
+    clean_all_database()
+    pro_user = users_factories.ProFactory(
+        email="retention_structures@example.com",
+    )
+    offerer = offerers_factories.OffererFactory(name="Bar des amis", siren="222222233")
+    offerers_factories.VenueFactory(
+        managingOfferer=offerer,
+    )
+    offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+
+
 @app.route("/e2e/pro/tear-down", methods=["GET"])
 @spectree_serialize(on_success_status=204)
 def tear_down() -> None:
