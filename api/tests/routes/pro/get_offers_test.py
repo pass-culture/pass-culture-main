@@ -94,8 +94,8 @@ class Returns200Test:
         assert response.status_code == 200
         assert len(offers) == 1
 
-    @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
-    def should_filter_offers_by_given_venue_id(self, mocked_list_offers, client):
+    @patch("pcapi.routes.pro.offers.offers_repository.get_capped_offers_for_filters")
+    def should_filter_offers_by_given_venue_id(self, mocked_get_capped_offers, client):
         # given
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -107,10 +107,11 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        mocked_list_offers.assert_called_once_with(
+        mocked_get_capped_offers.assert_called_once_with(
             user_id=pro.id,
             user_is_admin=pro.has_admin_role,
             offerer_id=None,
+            offers_limit=501,
             venue_id=venue.id,
             category_id=None,
             name_keywords_or_ean=None,
@@ -120,8 +121,8 @@ class Returns200Test:
             creation_mode=None,
         )
 
-    @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
-    def should_filter_offers_by_given_status(self, mocked_list_offers, client):
+    @patch("pcapi.routes.pro.offers.offers_repository.get_capped_offers_for_filters")
+    def should_filter_offers_by_given_status(self, mocked_get_capped_offers, client):
         # given
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -132,10 +133,11 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        mocked_list_offers.assert_called_once_with(
+        mocked_get_capped_offers.assert_called_once_with(
             user_id=pro.id,
             user_is_admin=pro.has_admin_role,
             offerer_id=None,
+            offers_limit=501,
             venue_id=None,
             category_id=None,
             name_keywords_or_ean=None,
@@ -145,8 +147,8 @@ class Returns200Test:
             creation_mode=None,
         )
 
-    @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
-    def should_filter_offers_by_given_offerer_id(self, mocked_list_offers, client):
+    @patch("pcapi.routes.pro.offers.offers_repository.get_capped_offers_for_filters")
+    def should_filter_offers_by_given_offerer_id(self, mocked_get_capped_offers, client):
         # given
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -158,10 +160,11 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        mocked_list_offers.assert_called_once_with(
+        mocked_get_capped_offers.assert_called_once_with(
             user_id=pro.id,
             user_is_admin=pro.has_admin_role,
             offerer_id=offerer.id,
+            offers_limit=501,
             venue_id=None,
             category_id=None,
             name_keywords_or_ean=None,
@@ -171,8 +174,8 @@ class Returns200Test:
             creation_mode=None,
         )
 
-    @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
-    def should_filter_offers_by_given_creation_mode(self, mocked_list_offers, client):
+    @patch("pcapi.routes.pro.offers.offers_repository.get_capped_offers_for_filters")
+    def should_filter_offers_by_given_creation_mode(self, mocked_get_capped_offers, client):
         # given
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -183,10 +186,11 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        mocked_list_offers.assert_called_once_with(
+        mocked_get_capped_offers.assert_called_once_with(
             user_id=pro.id,
             user_is_admin=pro.has_admin_role,
             offerer_id=None,
+            offers_limit=501,
             venue_id=None,
             category_id=None,
             name_keywords_or_ean=None,
@@ -196,8 +200,8 @@ class Returns200Test:
             creation_mode="imported",
         )
 
-    @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
-    def test_results_are_filtered_by_given_period_beginning_date(self, mocked_list_offers, client):
+    @patch("pcapi.routes.pro.offers.offers_repository.get_capped_offers_for_filters")
+    def test_results_are_filtered_by_given_period_beginning_date(self, mocked_get_capped_offers, client):
         # given
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -208,10 +212,11 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        mocked_list_offers.assert_called_once_with(
+        mocked_get_capped_offers.assert_called_once_with(
             user_id=pro.id,
             user_is_admin=pro.has_admin_role,
             offerer_id=None,
+            offers_limit=501,
             venue_id=None,
             category_id=None,
             name_keywords_or_ean=None,
@@ -221,8 +226,8 @@ class Returns200Test:
             creation_mode=None,
         )
 
-    @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
-    def test_results_are_filtered_by_given_period_ending_date(self, mocked_list_offers, client):
+    @patch("pcapi.routes.pro.offers.offers_repository.get_capped_offers_for_filters")
+    def test_results_are_filtered_by_given_period_ending_date(self, mocked_get_capped_offers, client):
         # given
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -233,10 +238,11 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        mocked_list_offers.assert_called_once_with(
+        mocked_get_capped_offers.assert_called_once_with(
             user_id=pro.id,
             user_is_admin=pro.has_admin_role,
             offerer_id=None,
+            offers_limit=501,
             venue_id=None,
             category_id=None,
             name_keywords_or_ean=None,
@@ -246,8 +252,8 @@ class Returns200Test:
             creation_mode=None,
         )
 
-    @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
-    def should_filter_offers_by_given_category_id(self, mocked_list_offers, client, db_session):
+    @patch("pcapi.routes.pro.offers.offers_repository.get_capped_offers_for_filters")
+    def should_filter_offers_by_given_category_id(self, mocked_get_capped_offers, client, db_session):
         # given
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -258,10 +264,11 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        mocked_list_offers.assert_called_once_with(
+        mocked_get_capped_offers.assert_called_once_with(
             user_id=pro.id,
             user_is_admin=pro.has_admin_role,
             offerer_id=None,
+            offers_limit=501,
             venue_id=None,
             category_id="LIVRE",
             name_keywords_or_ean=None,

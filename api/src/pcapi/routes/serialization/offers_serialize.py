@@ -14,6 +14,7 @@ from pydantic.v1.utils import GetterDict
 
 from pcapi.core.categories.subcategories_v2 import SubcategoryIdEnum
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.serialize import CollectiveOfferType
@@ -231,6 +232,51 @@ class ListOffersResponseModel(BaseModel):
 
     class Config:
         json_encoders = {datetime.datetime: format_into_utc_date}
+
+
+def _serialize_offer_paginated(offer: offers_models.Offer) -> ListOffersOfferResponseModel:
+    return ListOffersOfferResponseModel(
+        hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed,
+        id=offer.id,
+        isActive=offer.isActive,
+        isEditable=offer.isEditable,
+        isEvent=offer.isEvent,
+        isThing=offer.isThing,
+        isEducational=False,
+        name=offer.name,
+        stocks=[_serialize_stock(stock) for stock in offer.stocks],
+        thumbUrl=offer.thumbUrl,
+        productIsbn=offer.extraData.get("ean") if offer.extraData else None,
+        subcategoryId=offer.subcategoryId,  # type: ignore[arg-type]
+        venue=_serialize_venue(offer.venue),
+        status=offer.status,
+        isShowcase=False,
+    )
+
+
+def _serialize_stock(stock: offers_models.Stock) -> ListOffersStockResponseModel:
+    return ListOffersStockResponseModel(
+        id=stock.id,
+        hasBookingLimitDatetimePassed=stock.hasBookingLimitDatetimePassed,
+        remainingQuantity=stock.remainingQuantity,
+        beginningDatetime=stock.beginningDatetime,
+        bookingQuantity=stock.dnBookedQuantity,
+    )
+
+
+def _serialize_venue(venue: offerers_models.Venue) -> base_serializers.ListOffersVenueResponseModel:
+    return base_serializers.ListOffersVenueResponseModel(
+        id=venue.id,
+        isVirtual=venue.isVirtual,
+        name=venue.name,
+        offererName=venue.managingOfferer.name,
+        publicName=venue.publicName,
+        departementCode=venue.departementCode,
+    )
+
+
+def serialize_capped_offers(paginated_offers: list[offers_models.Offer]) -> list[ListOffersOfferResponseModel]:
+    return [_serialize_offer_paginated(offer) for offer in paginated_offers]
 
 
 class ListOffersQueryModel(BaseModel):
