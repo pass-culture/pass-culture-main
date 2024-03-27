@@ -5,9 +5,6 @@ describe('Create a venue', () => {
   let venueNameWithSiret: string
   let venueNameWithoutSiret: string
 
-  before(() => {
-    cy.request('http://localhost:5001/e2e/pro/create-venue')
-  })
   beforeEach(() => {
     // siret of Bar des amis
     siret = '222222233' + Math.random().toString().substring(2, 7)
@@ -15,6 +12,7 @@ describe('Create a venue', () => {
     venueNameWithSiret = 'Lieu avec Siret ' + randomSeed
     venueNameWithoutSiret = 'Lieu sans Siret ' + randomSeed // just to distinguish them
 
+    cy.request('http://localhost:5001/e2e/pro/create-venue')
     cy.intercept('GET', `http://localhost:5001/sirene/siret/${siret}`, (req) =>
       req.reply({
         statusCode: 200,
