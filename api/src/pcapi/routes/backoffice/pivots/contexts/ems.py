@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import logging
 
 from flask import flash
@@ -46,7 +46,7 @@ class EMSContext(PivotContext):
         form = forms.EditEMSForm(
             venue_id=[pivot.cinemaProviderPivot.venue.id],
             cinema_id=pivot.cinemaProviderPivot.idAtProvider,
-            last_version=datetime.fromtimestamp(pivot.lastVersion).strftime("%Y-%m-%d"),
+            last_version=datetime.datetime.fromtimestamp(pivot.lastVersion).strftime("%Y-%m-%d"),
         )
         form.venue_id.readonly = True
         return form
@@ -88,7 +88,7 @@ class EMSContext(PivotContext):
     def check_if_api_call_is_ok(cls) -> None:
         connector = EMSScheduleConnector()
         try:
-            connector.get_schedules(version=int(datetime.utcnow().timestamp()))
+            connector.get_schedules(version=int(datetime.datetime.now(datetime.timezone.utc).timestamp()))
             flash("Connexion à l'API EMS OK.", "success")
         except Exception as exc:  # pylint: disable=broad-except
             logger.exception("Error while checking EMS API information", extra={"exc": exc})
@@ -110,7 +110,9 @@ class EMSContext(PivotContext):
         if not form.last_version.data:
             last_version = 0
         else:
-            last_version = int(datetime.combine(form.last_version.data, datetime.min.time()).timestamp())
+            last_version = int(
+                datetime.datetime.combine(form.last_version.data, datetime.datetime.min.time()).timestamp()
+            )
         pivot.lastVersion = last_version
         cls.check_if_api_call_is_ok()
 

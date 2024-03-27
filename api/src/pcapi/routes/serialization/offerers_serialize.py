@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import enum
 from typing import Iterable
 
@@ -21,7 +21,7 @@ from pcapi.utils.email import sanitize_email
 
 
 class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
-    adageInscriptionDate: datetime | None
+    adageInscriptionDate: datetime.datetime | None
     address: str | None
     bookingEmail: str | None
     city: str | None
@@ -53,7 +53,7 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
         venue: offerers_models.Venue,
         ids_of_venues_with_offers: Iterable[int] = (),
     ) -> "GetOffererVenueResponseModel":
-        now = datetime.utcnow()
+        now = datetime.datetime.now(datetime.timezone.utc)
         venue.hasMissingReimbursementPoint = not (
             any(
                 (
@@ -70,7 +70,7 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
 
     class Config:
         orm_mode = True
-        json_encoders = {datetime: date_utils.format_into_utc_date}
+        json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
 
 
 class OffererApiKey(BaseModel):
@@ -93,7 +93,7 @@ class GetOffererResponseModel(BaseModel):
     address: str | None
     apiKey: OffererApiKey
     city: str
-    dateCreated: datetime
+    dateCreated: datetime.datetime
     demarchesSimplifieesApplicationId: str | None
     hasAvailablePricingPoints: bool
     hasDigitalVenueAtLeastOneOffer: bool
@@ -161,7 +161,7 @@ class GetOffererResponseModel(BaseModel):
 
     class Config:
         orm_mode = True
-        json_encoders = {datetime: date_utils.format_into_utc_date}
+        json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
 
 
 class GetOffererNameResponseModel(BaseModel):
@@ -335,14 +335,14 @@ class OffererStatsDataModel(BaseModel):
 
 class GetOffererStatsResponseModel(BaseModel):
     offererId: int
-    syncDate: datetime | None
+    syncDate: datetime.datetime | None
     jsonData: OffererStatsDataModel
 
     @classmethod
     def build(
         cls,
         offerer_id: int,
-        syncDate: datetime,
+        syncDate: datetime.datetime,
         dailyViews: list[dict],  # dicts are serialized from offerers_models.OffererViewsModel
         topOffers: list[dict],  # dicts are serialized from offerers_models.TopOffersData
         total_views_last_30_days: int,

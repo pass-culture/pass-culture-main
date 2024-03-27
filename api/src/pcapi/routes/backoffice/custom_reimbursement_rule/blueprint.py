@@ -1,5 +1,4 @@
-from datetime import datetime
-from datetime import timedelta
+import datetime
 from decimal import Decimal
 
 from flask import flash
@@ -167,7 +166,7 @@ def list_custom_reimbursement_rules() -> utils.BackofficeResponse:
         "custom_reimbursement_rules/list.html",
         rows=custom_reimbursement_rules,
         form=form,
-        now=datetime.utcnow(),
+        now=datetime.datetime.now(datetime.timezone.utc),
     )
 
 
@@ -211,7 +210,7 @@ def create_custom_reimbursement_rule() -> utils.BackofficeResponse:
     if form.end_date.data:
         # upper bound is exclusive, so it should be set at 0:00 on the day after
         end_datetime = date_utils.get_day_start(
-            form.end_date.data + timedelta(days=1), finance_utils.ACCOUNTING_TIMEZONE
+            form.end_date.data + datetime.timedelta(days=1), finance_utils.ACCOUNTING_TIMEZONE
         )
     else:
         end_datetime = None
@@ -273,7 +272,7 @@ def get_edit_custom_reimbursement_rule_form(reimbursement_rule_id: int) -> utils
     # upper bound is exclusive, and we want to show the last day included in the date range
     end_datetime = custom_reimbursement_rule.timespan.upper
     if end_datetime:
-        end_datetime = pytz.utc.localize(end_datetime - timedelta(microseconds=1)).astimezone(
+        end_datetime = pytz.utc.localize(end_datetime - datetime.timedelta(microseconds=1)).astimezone(
             finance_utils.ACCOUNTING_TIMEZONE
         )
 
@@ -309,7 +308,9 @@ def edit_custom_reimbursement_rule(reimbursement_rule_id: int) -> utils.Backoffi
         return _redirect_after_reimbursement_rule_action()
 
     # upper bound is exclusive, so it should be set at 0:00 on the day after
-    end_datetime = date_utils.get_day_start(form.end_date.data + timedelta(days=1), finance_utils.ACCOUNTING_TIMEZONE)
+    end_datetime = date_utils.get_day_start(
+        form.end_date.data + datetime.timedelta(days=1), finance_utils.ACCOUNTING_TIMEZONE
+    )
 
     try:
         finance_api.edit_reimbursement_rule(custom_reimbursement_rule, end_date=end_datetime)

@@ -16,7 +16,9 @@ def import_dms_applications(procedure_number: int, ignore_previous: bool = False
     """import dms applications for eac status"""
     previous_import = _get_previous_import(procedure_number)
     if previous_import and previous_import.isProcessing:
-        if datetime.datetime.utcnow() < previous_import.latestImportDatetime + datetime.timedelta(days=1):
+        if datetime.datetime.now(datetime.timezone.utc) < previous_import.latestImportDatetime + datetime.timedelta(
+            days=1
+        ):
             logger.info(
                 "[DMS] Procedure %s is already being processed.",
                 procedure_number,
@@ -50,7 +52,7 @@ def update_dms_applications_for_procedure(procedure_number: int, since: datetime
 
     current_import = dms_models.LatestDmsImport(
         procedureId=procedure_number,
-        latestImportDatetime=datetime.datetime.utcnow(),
+        latestImportDatetime=datetime.datetime.now(datetime.timezone.utc),
         isProcessing=True,
         processedApplications=[],
     )

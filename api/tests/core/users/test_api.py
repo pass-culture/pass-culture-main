@@ -51,7 +51,11 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 def _datetime_within_last_5sec(when: datetime.datetime) -> bool:
-    return datetime.datetime.utcnow() - relativedelta(seconds=5) < when < datetime.datetime.utcnow()
+    return (
+        datetime.datetime.now(datetime.timezone.utc) - relativedelta(seconds=5)
+        < when
+        < datetime.datetime.now(datetime.timezone.utc)
+    )
 
 
 def _assert_user_action_history_as_expected(
@@ -96,8 +100,8 @@ class CancelBeneficiaryBookingsOnSuspendAccountTest:
         -----------------|------------------------------------------------->
                         now
         """
-        in_the_past = datetime.datetime.utcnow() - relativedelta(days=1)
-        in_the_future = datetime.datetime.utcnow() + relativedelta(days=1)
+        in_the_past = datetime.datetime.now(datetime.timezone.utc) - relativedelta(days=1)
+        in_the_future = datetime.datetime.now(datetime.timezone.utc) + relativedelta(days=1)
         booking_event = bookings_factories.BookingFactory(
             stock__offer__subcategoryId=subcategories_v2.SEANCE_CINE.id,
             status=BookingStatus.CONFIRMED,
@@ -121,8 +125,8 @@ class CancelBeneficiaryBookingsOnSuspendAccountTest:
         -------------------------------------------------|----------------->
                                                         now
         """
-        in_the_past = datetime.datetime.utcnow() - relativedelta(seconds=1)
-        further_in_the_past = datetime.datetime.utcnow() - relativedelta(days=3)
+        in_the_past = datetime.datetime.now(datetime.timezone.utc) - relativedelta(seconds=1)
+        further_in_the_past = datetime.datetime.now(datetime.timezone.utc) - relativedelta(days=3)
         booking_event = bookings_factories.BookingFactory(
             stock__offer__subcategoryId=subcategories_v2.SEANCE_CINE.id,
             status=BookingStatus.CONFIRMED,
@@ -168,7 +172,7 @@ class SuspendAccountTest:
     def test_suspend_beneficiary(self):
         user = users_factories.BeneficiaryGrant18Factory()
         cancellable_booking = bookings_factories.BookingFactory(user=user)
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        yesterday = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
         confirmed_booking = bookings_factories.BookingFactory(
             user=user, cancellation_limit_date=yesterday, status=BookingStatus.CONFIRMED
         )
@@ -488,7 +492,9 @@ class CreateBeneficiaryTest:
             type=fraud_models.FraudCheckType.EDUCONNECT,
             status=fraud_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
-            resultContent=fraud_factories.EduconnectContentFactory(registration_datetime=datetime.datetime.utcnow()),
+            resultContent=fraud_factories.EduconnectContentFactory(
+                registration_datetime=datetime.datetime.now(datetime.timezone.utc)
+            ),
         )
         user = subscription_api.activate_beneficiary_for_eligibility(
             user, fraud_check, users_models.EligibilityType.UNDERAGE
@@ -544,8 +550,8 @@ class CreateBeneficiaryTest:
         assert trigger_event_log["event_payload"] == {"deposit_type": "GRANT_18", "deposit_amount": 300}
 
     def test_15yo_that_started_at_14_is_activated(self):
-        fifteen_years_and_one_week_ago = datetime.datetime.utcnow() - relativedelta(years=15, weeks=1)
-        one_month_ago = datetime.datetime.utcnow() - relativedelta(months=1)
+        fifteen_years_and_one_week_ago = datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=15, weeks=1)
+        one_month_ago = datetime.datetime.now(datetime.timezone.utc) - relativedelta(months=1)
 
         fifteen_year_old = users_factories.UserFactory(validatedBirthDate=fifteen_years_and_one_week_ago)
 
@@ -650,7 +656,9 @@ class UpdateUserInfoTest:
 
     def test_update_user_info_also_updates_underage_deposit_expiration_date(self):
         # Given a user with an underage deposit
-        underaged_beneficiary_birthday = datetime.datetime.utcnow() - relativedelta(years=17, months=4)
+        underaged_beneficiary_birthday = datetime.datetime.now(datetime.timezone.utc) - relativedelta(
+            years=17, months=4
+        )
         underaged_beneficiary_expiration_date = underaged_beneficiary_birthday + relativedelta(
             years=18, hour=0, minute=0, second=0, microsecond=0
         )
@@ -730,7 +738,8 @@ class DomainsCreditTest:
         )
 
         with time_machine.travel(
-            datetime.datetime.utcnow() + relativedelta(years=finance_conf.GRANT_18_VALIDITY_IN_YEARS, days=2)
+            datetime.datetime.now(datetime.timezone.utc)
+            + relativedelta(years=finance_conf.GRANT_18_VALIDITY_IN_YEARS, days=2)
         ):
             assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
                 all=users_models.Credit(initial=Decimal(300), remaining=Decimal(0)),
@@ -1355,7 +1364,7 @@ class RecentSuspiciousLoginsTest:
     def should_ignore_old_suspicious_device_logins(self):
         user = users_factories.UserFactory()
         _untrusted_login = users_factories.LoginDeviceHistoryFactory(
-            user=user, dateCreated=datetime.datetime.utcnow() - relativedelta(hours=25)
+            user=user, dateCreated=datetime.datetime.now(datetime.timezone.utc) - relativedelta(hours=25)
         )
 
         assert not users_api.get_recent_suspicious_logins(user)
@@ -1413,8 +1422,8 @@ class CreateSuspiciousLoginEmailTokenTest:
 
 class DeleteOldTrustedDevicesTest:
     def should_delete_trusted_devices_older_than_five_years_ago(self):
-        five_years_ago = datetime.datetime.utcnow() - relativedelta(years=5)
-        six_years_ago = datetime.datetime.utcnow() - relativedelta(years=6)
+        five_years_ago = datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=5)
+        six_years_ago = datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=6)
         users_factories.TrustedDeviceFactory(dateCreated=five_years_ago)
         users_factories.TrustedDeviceFactory(dateCreated=six_years_ago)
 
@@ -1423,7 +1432,9 @@ class DeleteOldTrustedDevicesTest:
         assert users_models.TrustedDevice.query.count() == 0
 
     def should_not_delete_trusted_devices_created_less_than_five_years_ago(self):
-        less_than_five_years_ago = datetime.datetime.utcnow() - relativedelta(years=5) + datetime.timedelta(days=1)
+        less_than_five_years_ago = (
+            datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=5) + datetime.timedelta(days=1)
+        )
         users_factories.TrustedDeviceFactory(dateCreated=less_than_five_years_ago)
 
         users_api.delete_old_trusted_devices()
@@ -1433,8 +1444,8 @@ class DeleteOldTrustedDevicesTest:
 
 class DeleteOldLoginDeviceHistoryTest:
     def should_delete_device_history_older_than_thirteen_months_ago(self):
-        thirteen_months_ago = datetime.datetime.utcnow() - relativedelta(months=13)
-        fourteen_months_ago = datetime.datetime.utcnow() - relativedelta(months=14)
+        thirteen_months_ago = datetime.datetime.now(datetime.timezone.utc) - relativedelta(months=13)
+        fourteen_months_ago = datetime.datetime.now(datetime.timezone.utc) - relativedelta(months=14)
         users_factories.LoginDeviceHistoryFactory(dateCreated=thirteen_months_ago)
         users_factories.LoginDeviceHistoryFactory(dateCreated=fourteen_months_ago)
 
@@ -1444,7 +1455,7 @@ class DeleteOldLoginDeviceHistoryTest:
 
     def should_not_delete_device_history_created_less_than_thirteen_months_ago(self):
         less_than_thirteen_months_ago = (
-            datetime.datetime.utcnow() - relativedelta(months=13) + datetime.timedelta(days=1)
+            datetime.datetime.now(datetime.timezone.utc) - relativedelta(months=13) + datetime.timedelta(days=1)
         )
         users_factories.LoginDeviceHistoryFactory(dateCreated=less_than_thirteen_months_ago)
 
@@ -1535,7 +1546,7 @@ class RefreshAccessTokenTest:
 class NotifyUserBeforeDeletionUponSuspensionTest:
     def test_get_users_with_suspended_account_to_notify(self):
         delta_time = 5
-        exact_time = datetime.datetime.utcnow() - datetime.timedelta(days=delta_time)
+        exact_time = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=delta_time)
         suspension_to_be_detected = history_factories.SuspendedUserActionHistoryFactory(
             actionDate=exact_time, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
         )
@@ -1562,7 +1573,9 @@ class NotifyUserBeforeDeletionUponSuspensionTest:
         history_factories.SuspendedUserActionHistoryFactory(
             user=user, actionDate=exact_time, reason=users_constants.SuspensionReason.FRAUD_SUSPICION
         )
-        history_factories.UnsuspendedUserActionHistoryFactory(user=user, actionDate=datetime.datetime.utcnow())
+        history_factories.UnsuspendedUserActionHistoryFactory(
+            user=user, actionDate=datetime.datetime.now(datetime.timezone.utc)
+        )
 
         expected_user_ids = {suspension_to_be_detected.userId}
 
@@ -1573,7 +1586,7 @@ class NotifyUserBeforeDeletionUponSuspensionTest:
 
     def test_notify_user_before_deletion_upon_suspension(self, app):
         # given
-        exact_time = datetime.datetime.utcnow() - datetime.timedelta(
+        exact_time = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(
             days=settings.DELETE_SUSPENDED_ACCOUNTS_SINCE - settings.NOTIFY_X_DAYS_BEFORE_DELETION
         )
         suspension_to_be_detected = history_factories.SuspendedUserActionHistoryFactory(
@@ -1602,7 +1615,9 @@ class NotifyUserBeforeDeletionUponSuspensionTest:
         history_factories.SuspendedUserActionHistoryFactory(
             user=user, actionDate=exact_time, reason=users_constants.SuspensionReason.FRAUD_SUSPICION
         )
-        history_factories.UnsuspendedUserActionHistoryFactory(user=user, actionDate=datetime.datetime.utcnow())
+        history_factories.UnsuspendedUserActionHistoryFactory(
+            user=user, actionDate=datetime.datetime.now(datetime.timezone.utc)
+        )
 
         # when
         users_api.notify_users_before_deletion_of_suspended_account()
@@ -1614,7 +1629,7 @@ class NotifyUserBeforeDeletionUponSuspensionTest:
         assert mails_testing.outbox[0]["To"] == user.email
 
     def test_multiple_suspensions_different_reason(self):
-        exact_time = datetime.datetime.utcnow() - datetime.timedelta(
+        exact_time = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(
             days=settings.DELETE_SUSPENDED_ACCOUNTS_SINCE - settings.NOTIFY_X_DAYS_BEFORE_DELETION
         )
         user = users_factories.UserFactory(isActive=False)
@@ -1637,7 +1652,7 @@ class NotifyUserBeforeDeletionUponSuspensionTest:
         assert len(mails_testing.outbox) == 0
 
     def test_multiple_suspensions_different_date(self):
-        exact_time = datetime.datetime.utcnow() - datetime.timedelta(
+        exact_time = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(
             days=settings.DELETE_SUSPENDED_ACCOUNTS_SINCE - settings.NOTIFY_X_DAYS_BEFORE_DELETION
         )
         user = users_factories.UserFactory(isActive=False)
@@ -1663,7 +1678,7 @@ class NotifyUserBeforeDeletionUponSuspensionTest:
 @pytest.mark.usefixtures("db_session")
 class GetSuspendedAccountsUponUserRequestSinceTest:
     def test_get_suspended_upon_user_request_accounts_since(self) -> None:
-        one_week_ago = datetime.datetime.utcnow() - datetime.timedelta(days=7)
+        one_week_ago = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=7)
         something = history_factories.SuspendedUserActionHistoryFactory(
             actionDate=one_week_ago, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
         )
@@ -1674,7 +1689,7 @@ class GetSuspendedAccountsUponUserRequestSinceTest:
         )
 
         # suspended less than 5 days ago (see below): should be ignored
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        yesterday = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
         history_factories.SuspendedUserActionHistoryFactory(
             actionDate=yesterday, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
         )
@@ -1691,13 +1706,13 @@ class GetSuspendedAccountsUponUserRequestSinceTest:
         Test that an unsuspended account is ignored, even if the
         suspension event occurred more than N days ago.
         """
-        one_week_ago = datetime.datetime.utcnow() - datetime.timedelta(days=7)
+        one_week_ago = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=7)
         user = users_factories.UserFactory(isActive=False)
         history_factories.SuspendedUserActionHistoryFactory(
             user=user, actionDate=one_week_ago, reason=users_constants.SuspensionReason.FRAUD_SUSPICION
         )
 
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        yesterday = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
         history_factories.UnsuspendedUserActionHistoryFactory(user=user, actionDate=yesterday)
 
         with assert_num_queries(1):
@@ -1712,12 +1727,12 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
     def test_anonymize_non_pro_non_beneficiary_users(self) -> None:
         user_to_anonymize = users_factories.UserFactory(
             firstName="user_to_anonymize",
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            lastConnectionDate=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=3, days=1),
             validatedBirthDate=datetime.date.today(),
         )
         user_too_new = users_factories.UserFactory(
             firstName="user_too_new",
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=-11),
+            lastConnectionDate=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=3, days=-11),
         )
         user_never_connected = users_factories.UserFactory(firstName="user_never_connected", lastConnectionDate=None)
         user_beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -1806,7 +1821,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
     def test_anonymize_non_pro_non_beneficiary_user_force_iris_not_found(self) -> None:
         user_to_anonymize = users_factories.UserFactory(
             firstName="user_to_anonymize",
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            lastConnectionDate=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=3, days=1),
         )
 
         users_api.anonymize_non_pro_non_beneficiary_users(force=True)
@@ -1821,7 +1836,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
     def test_anonymize_non_pro_non_beneficiary_user_keep_history_on_offerer(self) -> None:
         user_to_anonymize = users_factories.UserFactory(
             firstName="user_to_anonymize",
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            lastConnectionDate=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=3, days=1),
         )
         history_factories.ActionHistoryFactory(
             authorUser=user_to_anonymize,
@@ -1845,7 +1860,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
     def test_anonymize_non_pro_non_beneficiary_user_iris_not_found(self) -> None:
         user_to_anonymize = users_factories.UserFactory(
             firstName="user_to_anonymize",
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            lastConnectionDate=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=3, days=1),
         )
 
         users_api.anonymize_non_pro_non_beneficiary_users(force=False)
@@ -1858,7 +1873,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
     def test_anonymize_non_pro_non_beneficiary_user_no_addr_api(self) -> None:
         user_to_anonymize = users_factories.UserFactory(
             firstName="user_to_anonymize",
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            lastConnectionDate=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=3, days=1),
         )
 
         users_api.anonymize_non_pro_non_beneficiary_users(force=False)
@@ -1870,7 +1885,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
     def test_anonymize_non_pro_non_beneficiary_user_keep_email_in_brevo_if_used_for_venue(self) -> None:
         user_to_anonymize = users_factories.UserFactory(
             firstName="user_to_anonymize",
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            lastConnectionDate=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=3, days=1),
         )
         offerers_factories.VenueFactory(bookingEmail=user_to_anonymize.email)
 
@@ -1891,26 +1906,26 @@ class AnonymizeBeneficiaryUsersTest:
         user_beneficiary_to_anonymize = users_factories.BeneficiaryFactory(
             firstName="user_beneficiary_to_anonymize",
             age=18,
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
-            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+            lastConnectionDate=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=3, days=1),
+            deposit__expirationDate=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=5, days=1),
         )
         user_underage_beneficiary_to_anonymize = users_factories.BeneficiaryFactory(
             firstName="user_underage_beneficiary_to_anonymize",
             age=17,
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
-            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+            lastConnectionDate=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=3, days=1),
+            deposit__expirationDate=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=5, days=1),
         )
         user_too_new = users_factories.BeneficiaryFactory(
             firstName="user_too_new",
             age=18,
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=-11),
-            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+            lastConnectionDate=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=3, days=-11),
+            deposit__expirationDate=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=5, days=1),
         )
         user_deposit_too_new = users_factories.BeneficiaryFactory(
             firstName="user_deposit_too_new",
             age=18,
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
-            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=-11),
+            lastConnectionDate=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=3, days=1),
+            deposit__expirationDate=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=5, days=-11),
         )
         user_never_connected = users_factories.UserFactory(firstName="user_never_connected", lastConnectionDate=None)
         user_no_role = users_factories.UserFactory(
@@ -2000,8 +2015,8 @@ class AnonymizeBeneficiaryUsersTest:
         user_to_anonymize = users_factories.BeneficiaryFactory(
             firstName="user_to_anonymize",
             age=18,
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
-            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+            lastConnectionDate=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=3, days=1),
+            deposit__expirationDate=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=5, days=1),
         )
 
         users_api.anonymize_beneficiary_users(force=True)
@@ -2017,8 +2032,8 @@ class AnonymizeBeneficiaryUsersTest:
         user_to_anonymize = users_factories.BeneficiaryFactory(
             firstName="user_to_anonymize",
             age=18,
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
-            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+            lastConnectionDate=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=3, days=1),
+            deposit__expirationDate=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=5, days=1),
         )
 
         users_api.anonymize_beneficiary_users(force=False)
@@ -2032,8 +2047,8 @@ class AnonymizeBeneficiaryUsersTest:
         user_to_anonymize = users_factories.BeneficiaryFactory(
             firstName="user_to_anonymize",
             age=18,
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
-            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+            lastConnectionDate=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=3, days=1),
+            deposit__expirationDate=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=5, days=1),
         )
 
         users_api.anonymize_beneficiary_users(force=False)
@@ -2045,7 +2060,7 @@ class AnonymizeBeneficiaryUsersTest:
 
 class AnonymizeUserDepositsTest:
     def test_anonymize_user_deposits(self) -> None:
-        now = datetime.datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        now = datetime.datetime.now(datetime.timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
         user_recent_deposit = users_factories.BeneficiaryFactory(
             deposit__dateCreated=now - relativedelta(years=6),
             deposit__expirationDate=now - relativedelta(years=5, days=1),
@@ -2086,7 +2101,7 @@ class EnableNewProNavTest:
 
     def test_user_eligible_in_the_future_raises(self) -> None:
         pro_new_nav_state = users_factories.UserProNewNavStateFactory(
-            eligibilityDate=datetime.datetime.utcnow() + datetime.timedelta(days=2), newNavDate=None
+            eligibilityDate=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=2), newNavDate=None
         )
 
         with pytest.raises(users_exceptions.ProUserNotYetEligibleForNewNav):
@@ -2096,7 +2111,7 @@ class EnableNewProNavTest:
 
     def test_user_eligible(self) -> None:
         pro_new_nav_state = users_factories.UserProNewNavStateFactory(
-            eligibilityDate=datetime.datetime.utcnow() - datetime.timedelta(days=1), newNavDate=None
+            eligibilityDate=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1), newNavDate=None
         )
 
         users_api.enable_new_pro_nav(pro_new_nav_state.user)
@@ -2104,7 +2119,7 @@ class EnableNewProNavTest:
         assert pro_new_nav_state.newNavDate
 
     def test_user_already_with_new_nav_should_not_update_date(self) -> None:
-        yesterday_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        yesterday_date = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
         pro_new_nav_state = users_factories.UserProNewNavStateFactory(
             eligibilityDate=yesterday_date - datetime.timedelta(days=2), newNavDate=yesterday_date
         )

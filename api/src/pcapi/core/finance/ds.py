@@ -35,7 +35,7 @@ def import_ds_bank_information_applications(procedure_number: int, ignore_previo
         .first()
     )
     if last_import and last_import.isProcessing:
-        if datetime.datetime.utcnow() < last_import.latestImportDatetime + datetime.timedelta(days=1):
+        if datetime.datetime.now(datetime.timezone.utc) < last_import.latestImportDatetime + datetime.timedelta(days=1):
             logger.info("[DS] Procedure %s is already being processed.", procedure_number)
         else:
             last_import.isProcessing = False
@@ -59,7 +59,7 @@ def update_ds_applications_for_procedure(procedure_number: int, since: datetime.
 
     current_import = ds_models.LatestDmsImport(
         procedureId=procedure_number,
-        latestImportDatetime=datetime.datetime.utcnow(),
+        latestImportDatetime=datetime.datetime.now(datetime.timezone.utc),
         isProcessing=True,
         processedApplications=[],
     )

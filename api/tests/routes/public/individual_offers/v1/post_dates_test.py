@@ -29,8 +29,12 @@ class PostDatesTest:
             offer=event_offer, price=decimal.Decimal("0"), priceCategoryLabel=free_category_label
         )
 
-        next_week = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
-        next_month = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
+        next_week = datetime.datetime.now(datetime.timezone.utc).replace(second=0, microsecond=0) + datetime.timedelta(
+            weeks=1
+        )
+        next_month = datetime.datetime.now(datetime.timezone.utc).replace(second=0, microsecond=0) + datetime.timedelta(
+            days=30
+        )
         next_month_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_month, "973")
         two_months_from_now = next_month + datetime.timedelta(days=30)
         two_months_from_now_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(two_months_from_now, "972")
@@ -96,8 +100,12 @@ class PostDatesTest:
     def test_invalid_offer_id(self, client):
         utils.create_offerer_provider_linked_to_venue()
 
-        next_week = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
-        next_month = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
+        next_week = datetime.datetime.now(datetime.timezone.utc).replace(second=0, microsecond=0) + datetime.timedelta(
+            weeks=1
+        )
+        next_month = datetime.datetime.now(datetime.timezone.utc).replace(second=0, microsecond=0) + datetime.timedelta(
+            days=30
+        )
         next_month_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_month, "973")
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/events/quinze/dates",
@@ -122,8 +130,12 @@ class PostDatesTest:
             lastProvider=api_key.provider,
         )
 
-        next_week = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
-        next_month = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
+        next_week = datetime.datetime.now(datetime.timezone.utc).replace(second=0, microsecond=0) + datetime.timedelta(
+            weeks=1
+        )
+        next_month = datetime.datetime.now(datetime.timezone.utc).replace(second=0, microsecond=0) + datetime.timedelta(
+            days=30
+        )
         next_month_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_month, "973")
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             f"/public/offers/v1/events/{event_offer.id}/dates",
@@ -145,8 +157,12 @@ class PostDatesTest:
         utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory()
 
-        next_week = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
-        next_month = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
+        next_week = datetime.datetime.now(datetime.timezone.utc).replace(second=0, microsecond=0) + datetime.timedelta(
+            weeks=1
+        )
+        next_month = datetime.datetime.now(datetime.timezone.utc).replace(second=0, microsecond=0) + datetime.timedelta(
+            days=30
+        )
         next_month_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_month, "973")
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             f"/public/offers/v1/events/{event_offer.id}/dates",
@@ -169,8 +185,12 @@ class PostDatesTest:
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(venue=venue)
 
-        next_week = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
-        next_month = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
+        next_week = datetime.datetime.now(datetime.timezone.utc).replace(second=0, microsecond=0) + datetime.timedelta(
+            weeks=1
+        )
+        next_month = datetime.datetime.now(datetime.timezone.utc).replace(second=0, microsecond=0) + datetime.timedelta(
+            days=30
+        )
         next_month_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_month, "973")
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             f"/public/offers/v1/events/{product_offer.id}/dates",
@@ -221,8 +241,12 @@ class PostDatesTest:
         )
         carre_or_price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
 
-        next_week = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
-        next_month = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
+        next_week = datetime.datetime.now(datetime.timezone.utc).replace(second=0, microsecond=0) + datetime.timedelta(
+            weeks=1
+        )
+        next_month = datetime.datetime.now(datetime.timezone.utc).replace(second=0, microsecond=0) + datetime.timedelta(
+            days=30
+        )
         next_month_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_month, "973")
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             f"/public/offers/v1/events/{event_offer.id}/dates",

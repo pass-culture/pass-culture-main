@@ -1,7 +1,6 @@
 import abc
 import dataclasses
-from datetime import datetime
-from datetime import timedelta
+import datetime
 import enum
 import json
 import logging
@@ -76,13 +75,15 @@ class AbstractToken(abc.ABC):
         return bool(app.redis_client.exists(cls.get_redis_key(type_, key_suffix)))
 
     @classmethod
-    def get_expiration_date(cls: typing.Type[T], type_: TokenType, key_suffix: int | str | None) -> datetime | None:
+    def get_expiration_date(
+        cls: typing.Type[T], type_: TokenType, key_suffix: int | str | None
+    ) -> datetime.datetime | None:
         key = cls.get_redis_key(type_, key_suffix)
         ttl = app.redis_client.ttl(key)
         if ttl < 0:
             # -2 if doesn't exist, -1 if no expiration
             return None
-        return datetime.utcnow() + timedelta(seconds=ttl)
+        return datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=ttl)
 
     @classmethod
     def delete(cls: typing.Type[T], type_: TokenType, key_suffix: int | str | None) -> None:
@@ -98,7 +99,7 @@ class AbstractToken(abc.ABC):
     def create(cls: typing.Type[T], type_: TokenType, *args: typing.Any, **kwargs: typing.Any) -> T:
         raise NotImplementedError()
 
-    def get_expiration_date_from_token(self) -> datetime | None:
+    def get_expiration_date_from_token(self) -> datetime.datetime | None:
         return self.get_expiration_date(self.type_, self.key_suffix)
 
     def check(self, type_: TokenType, key_suffix: int | str | None = None) -> None:
@@ -144,7 +145,7 @@ class Token(AbstractToken):
     def create(
         cls,
         type_: TokenType,
-        ttl: timedelta | None,
+        ttl: datetime.timedelta | None,
         user_id: int,
         data: dict | None = None,
     ) -> "Token":
@@ -154,10 +155,10 @@ class Token(AbstractToken):
             "data": data or {},
         }
         if ttl:
-            payload["exp"] = (datetime.utcnow() + ttl).timestamp()
+            payload["exp"] = (datetime.datetime.now(datetime.timezone.utc) + ttl).timestamp()
 
         encoded_token = utils.encode_jwt_payload(payload)
-        if ttl is None or ttl > timedelta(0):
+        if ttl is None or ttl > datetime.timedelta(0):
             app.redis_client.set(cls.get_redis_key(type_, user_id), encoded_token, ex=ttl)
         token = Token.load_without_checking(encoded_token)
         token._log(cls._TokenAction.CREATE)
@@ -190,7 +191,7 @@ class SixDigitsToken(AbstractToken):
 
     @classmethod
     def create(
-        cls, type_: TokenType, ttl: timedelta | None, user_id: int, data: dict | None = None
+        cls, type_: TokenType, ttl: datetime.timedelta | None, user_id: int, data: dict | None = None
     ) -> "SixDigitsToken":
         encoded_token = "{:06}".format(secrets.randbelow(1_000_000))  # 6 digits
         app.redis_client.set(cls.get_redis_key(type_, user_id), encoded_token, ex=ttl)
@@ -245,7 +246,7 @@ class UUIDToken(AbstractToken):
         return cls(type_, uuid4, encoded_token, data)
 
     @classmethod
-    def create(cls, type_: TokenType, ttl: timedelta | None, data: dict | None = None) -> "UUIDToken":
+    def create(cls, type_: TokenType, ttl: datetime.timedelta | None, data: dict | None = None) -> "UUIDToken":
         random_uuid = str(uuid.uuid4())
         payload: dict[str, typing.Any] = {
             "token_type": type_.value,
@@ -253,10 +254,10 @@ class UUIDToken(AbstractToken):
             "data": data or {},
         }
         if ttl:
-            payload["exp"] = (datetime.utcnow() + ttl).timestamp()
+            payload["exp"] = (datetime.datetime.now(datetime.timezone.utc) + ttl).timestamp()
         encoded_token = utils.encode_jwt_payload(payload)
 
-        if ttl is None or ttl > timedelta(0):
+        if ttl is None or ttl > datetime.timedelta(0):
             redis_key = cls.get_redis_key(type_, random_uuid)
             app.redis_client.set(redis_key, encoded_token, ex=ttl)
 

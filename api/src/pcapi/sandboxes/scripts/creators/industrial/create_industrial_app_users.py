@@ -1,7 +1,4 @@
-from datetime import date
-from datetime import datetime
-from datetime import time
-from datetime import timedelta
+import datetime
 import itertools
 import logging
 import re
@@ -82,7 +79,10 @@ def create_industrial_app_beneficiaries() -> dict[str, User]:
             deposit__version=deposit_version,
         )
         users_factories.DepositGrantFactory(
-            user=user, expirationDate=datetime.utcnow(), source="sandbox", type=finance_models.DepositType.GRANT_15_17
+            user=user,
+            expirationDate=datetime.datetime.now(datetime.timezone.utc),
+            source="sandbox",
+            type=finance_models.DepositType.GRANT_15_17,
         )
 
         user_key = f"jeune{departement_code} {tag} v{deposit_version}"
@@ -197,14 +197,14 @@ def create_industrial_app_general_public_users() -> dict[str, User]:
         short_age = "".join([chunk[0].upper() for chunk in age.split("-")])
         email = f"pctest.grandpublic.{age}@example.com"
         departement_code = 39
-        today = datetime.today()
-        date_of_birth = today - timedelta(18 * 366)
+        today = datetime.datetime.today()
+        date_of_birth = today - datetime.timedelta(18 * 366)
 
         if age == "age-more-than-18yo":
-            date_of_birth = today - timedelta(20 * 366)
+            date_of_birth = today - datetime.timedelta(20 * 366)
 
         if age == "age-less-than-18yo":
-            date_of_birth = today - timedelta(16 * 366)
+            date_of_birth = today - datetime.timedelta(16 * 366)
 
         user = users_factories.UserFactory(
             departementCode=str(departement_code),
@@ -245,7 +245,8 @@ def create_short_email_beneficiaries() -> dict[str, User]:
                 email=f"eli_{age}@example.com",
                 address=None,
                 city=None,
-                dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=age, months=5),
+                dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+                - relativedelta(years=age, months=5),
                 departementCode=None,
                 firstName=None,
                 lastName=None,
@@ -262,11 +263,12 @@ def create_short_email_beneficiaries() -> dict[str, User]:
             needsToFillCulturalSurvey=False,
         )
     )
-    with time_machine.travel(datetime.utcnow() - relativedelta(years=3)):
+    with time_machine.travel(datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=3)):
         users.append(
             users_factories.UnderageBeneficiaryFactory(
                 email="exunderage_18@example.com",
-                dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=15, months=5),
+                dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+                - relativedelta(years=15, months=5),
                 subscription_age=15,
                 firstName=fake.first_name(),
                 lastName=fake.last_name(),
@@ -276,7 +278,8 @@ def create_short_email_beneficiaries() -> dict[str, User]:
 
         beneficiary_and_exunderage = users_factories.UnderageBeneficiaryFactory(
             email="bene_18_exunderage@example.com",
-            dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=15, months=5),
+            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+            - relativedelta(years=15, months=5),
             subscription_age=15,
             firstName=fake.first_name(),
             lastName=fake.last_name(),
@@ -292,12 +295,13 @@ def create_short_email_beneficiaries() -> dict[str, User]:
     users.append(beneficiary_and_exunderage)
 
     with time_machine.travel(
-        datetime.utcnow() - relativedelta(years=finance_conf.GRANT_18_VALIDITY_IN_YEARS, months=5)
+        datetime.datetime.now(datetime.timezone.utc)
+        - relativedelta(years=finance_conf.GRANT_18_VALIDITY_IN_YEARS, months=5)
     ):
         users.append(
             users_factories.BeneficiaryGrant18Factory(
                 email="exbene_20@example.com",
-                dateOfBirth=datetime.combine(date.today(), time(0, 0))
+                dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
                 - relativedelta(years=ELIGIBILITY_AGE_18, months=5),
                 firstName=fake.first_name(),
                 lastName=fake.last_name(),

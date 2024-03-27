@@ -323,7 +323,9 @@ class LocalProviderEventType(enum.Enum):
 class LocalProviderEvent(PcObject, Base, Model):
     providerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=False)
     provider: sa_orm.Mapped["Provider"] = sa_orm.relationship("Provider", foreign_keys=[providerId])
-    date: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    date: datetime.datetime = sa.Column(
+        sa.DateTime, nullable=False, default=lambda: datetime.datetime.now(datetime.timezone.utc)
+    )
     type: LocalProviderEventType = sa.Column(sa.Enum(LocalProviderEventType), nullable=False)
     payload = sa.Column(sa.String(50), nullable=True)
 

@@ -1,5 +1,4 @@
-from datetime import date
-from datetime import datetime
+import datetime
 import decimal
 from decimal import Decimal
 import enum
@@ -51,6 +50,10 @@ if typing.TYPE_CHECKING:
     from pcapi.core.offers.models import OfferValidationRule
     from pcapi.core.providers.models import Provider
     from pcapi.core.users.models import User
+
+
+def utcnow() -> datetime.datetime:
+    return datetime.datetime.now(datetime.timezone.utc)
 
 
 class StudentLevels(enum.Enum):
@@ -324,11 +327,11 @@ class CollectiveOffer(
 
     durationMinutes = sa.Column(sa.Integer, nullable=True)
 
-    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=utcnow)
 
     subcategoryId: str | None = sa.Column(sa.Text, nullable=True)
 
-    dateUpdated: datetime = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
+    dateUpdated: datetime.datetime = sa.Column(sa.DateTime, nullable=True, default=utcnow, onupdate=utcnow)
 
     students: list[StudentLevels] = sa.Column(
         MutableList.as_mutable(postgresql.ARRAY(sa.Enum(StudentLevels))),
@@ -624,11 +627,11 @@ class CollectiveOfferTemplate(
 
     durationMinutes = sa.Column(sa.Integer, nullable=True)
 
-    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=utcnow)
 
     subcategoryId: str | None = sa.Column(sa.Text, nullable=True)
 
-    dateUpdated: datetime = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
+    dateUpdated: datetime.datetime = sa.Column(sa.DateTime, nullable=True, default=utcnow, onupdate=utcnow)
 
     students: list[StudentLevels] = sa.Column(
         MutableList.as_mutable(postgresql.ARRAY(sa.Enum(StudentLevels))),
@@ -745,13 +748,13 @@ class CollectiveOfferTemplate(
         return tuple(parent_args)
 
     @property
-    def start(self) -> datetime | None:
+    def start(self) -> datetime.datetime | None:
         if not self.dateRange:
             return None
         return self.dateRange.lower
 
     @property
-    def end(self) -> datetime | None:
+    def end(self) -> datetime.datetime | None:
         if not self.dateRange:
             return None
         return self.dateRange.upper
@@ -775,11 +778,11 @@ class CollectiveOfferTemplate(
     def hasEndDatePassed(self) -> bool:
         if not self.end:
             return False
-        return self.end < datetime.utcnow()
+        return self.end < utcnow()
 
     @hasEndDatePassed.expression  # type: ignore[no-redef]
     def hasEndDatePassed(cls) -> Exists:  # pylint: disable=no-self-argument
-        return cls.dateRange.contained_by(psycopg2.extras.DateTimeRange(upper=datetime.utcnow()))
+        return cls.dateRange.contained_by(psycopg2.extras.DateTimeRange(upper=utcnow()))
 
     @hybrid_property
     def hasBookingLimitDatetimesPassed(self) -> bool:
@@ -910,13 +913,13 @@ class CollectiveStock(PcObject, Base, Model):
 
     stockId = sa.Column(sa.BigInteger, nullable=True)
 
-    dateCreated: datetime = sa.Column(
-        sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now()
+    dateCreated: datetime.datetime = sa.Column(
+        sa.DateTime, nullable=False, default=utcnow, server_default=sa.func.now()
     )
 
-    dateModified: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+    dateModified: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=utcnow, onupdate=utcnow)
 
-    beginningDatetime: datetime = sa.Column(sa.DateTime, index=True, nullable=False)
+    beginningDatetime: datetime.datetime = sa.Column(sa.DateTime, index=True, nullable=False)
 
     collectiveOfferId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("collective_offer.id"), index=True, nullable=False, unique=True
@@ -935,7 +938,7 @@ class CollectiveStock(PcObject, Base, Model):
         nullable=False,
     )
 
-    bookingLimitDatetime: datetime = sa.Column(sa.DateTime, nullable=False)
+    bookingLimitDatetime: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
 
     numberOfTickets: int = sa.Column(sa.Integer, nullable=False)
 
@@ -959,7 +962,7 @@ class CollectiveStock(PcObject, Base, Model):
 
     @hybrid_property
     def hasBookingLimitDatetimePassed(self) -> bool:
-        return self.bookingLimitDatetime <= datetime.utcnow()
+        return self.bookingLimitDatetime <= utcnow()
 
     @hasBookingLimitDatetimePassed.expression  # type: ignore[no-redef]
     def hasBookingLimitDatetimePassed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
@@ -967,7 +970,7 @@ class CollectiveStock(PcObject, Base, Model):
 
     @hybrid_property
     def hasBeginningDatetimePassed(self) -> bool:
-        return self.beginningDatetime <= datetime.utcnow()
+        return self.beginningDatetime <= utcnow()
 
     @hasBeginningDatetimePassed.expression  # type: ignore[no-redef]
     def hasBeginningDatetimePassed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
@@ -975,7 +978,7 @@ class CollectiveStock(PcObject, Base, Model):
 
     @hybrid_property
     def isEventExpired(self) -> bool:  # todo rewrite
-        return self.beginningDatetime <= datetime.utcnow()
+        return self.beginningDatetime <= utcnow()
 
     @isEventExpired.expression  # type: ignore[no-redef]
     def isEventExpired(cls):  # pylint: disable=no-self-argument
@@ -987,7 +990,7 @@ class CollectiveStock(PcObject, Base, Model):
 
     @property
     def isEventDeletable(self) -> bool:
-        return self.beginningDatetime >= datetime.utcnow()
+        return self.beginningDatetime >= utcnow()
 
     @property
     def isSoldOut(self) -> bool:
@@ -1055,9 +1058,9 @@ class EducationalYear(PcObject, Base, Model):
 
     adageId: str = sa.Column(sa.String(30), unique=True, nullable=False)
 
-    beginningDate: datetime = sa.Column(sa.DateTime, nullable=False)
+    beginningDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
 
-    expirationDate: datetime = sa.Column(sa.DateTime, nullable=False)
+    expirationDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
 
 
 class EducationalDeposit(PcObject, Base, Model):
@@ -1083,7 +1086,7 @@ class EducationalDeposit(PcObject, Base, Model):
 
     amount: Decimal = sa.Column(Numeric(10, 2), nullable=False)
 
-    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
+    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=utcnow, server_default=func.now())
 
     isFinal: bool = sa.Column(Boolean, nullable=False, default=True)
 
@@ -1160,7 +1163,7 @@ class EducationalRedactor(PcObject, Base, Model):
 class CollectiveBooking(PcObject, Base, Model):
     __tablename__ = "collective_booking"
 
-    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=utcnow)
     Index("ix_collective_booking_date_created", dateCreated)
 
     dateUsed = sa.Column(sa.DateTime, nullable=True, index=True)
@@ -1181,7 +1184,7 @@ class CollectiveBooking(PcObject, Base, Model):
 
     cancellationDate = sa.Column(sa.DateTime, nullable=True)
 
-    cancellationLimitDate: datetime = sa.Column(sa.DateTime, nullable=False)
+    cancellationLimitDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
 
     cancellationReason = sa.Column(
         "cancellationReason",
@@ -1213,7 +1216,7 @@ class CollectiveBooking(PcObject, Base, Model):
     Index("ix_collective_booking_educationalYear_and_institution", educationalYearId, educationalInstitutionId)
 
     confirmationDate = sa.Column(sa.DateTime, nullable=True)
-    confirmationLimitDate: datetime = sa.Column(sa.DateTime, nullable=False)
+    confirmationLimitDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
 
     educationalRedactorId: int = sa.Column(
         sa.BigInteger,
@@ -1242,7 +1245,7 @@ class CollectiveBooking(PcObject, Base, Model):
         if self.status is CollectiveBookingStatus.USED and not cancel_even_if_used:
             raise exceptions.CollectiveBookingIsAlreadyUsed
         self.status = CollectiveBookingStatus.CANCELLED
-        self.cancellationDate = datetime.utcnow()
+        self.cancellationDate = utcnow()
         self.cancellationReason = reason
         self.dateUsed = None
 
@@ -1252,9 +1255,9 @@ class CollectiveBooking(PcObject, Base, Model):
         self.cancellationDate = None
         self.cancellationReason = None
         if self.confirmationDate:
-            if self.collectiveStock.beginningDatetime < datetime.utcnow():
+            if self.collectiveStock.beginningDatetime < utcnow():
                 self.status = CollectiveBookingStatus.USED
-                self.dateUsed = datetime.utcnow()
+                self.dateUsed = utcnow()
             else:
                 self.status = CollectiveBookingStatus.CONFIRMED
         else:
@@ -1265,15 +1268,15 @@ class CollectiveBooking(PcObject, Base, Model):
             raise booking_exceptions.ConfirmationLimitDateHasPassed()
 
         self.status = CollectiveBookingStatus.CONFIRMED
-        self.confirmationDate = datetime.utcnow()
+        self.confirmationDate = utcnow()
 
     @hybrid_property
     def isConfirmed(self) -> bool:
-        return self.cancellationLimitDate <= datetime.utcnow()
+        return self.cancellationLimitDate <= utcnow()
 
     @isConfirmed.expression  # type: ignore[no-redef]
     def isConfirmed(cls) -> bool:  # pylint: disable=no-self-argument
-        return cls.cancellationLimitDate <= datetime.utcnow()
+        return cls.cancellationLimitDate <= utcnow()
 
     @hybrid_property
     def is_used_or_reimbursed(self) -> bool:
@@ -1304,12 +1307,12 @@ class CollectiveBooking(PcObject, Base, Model):
         return f"{self.educationalRedactor.firstName} {self.educationalRedactor.lastName}"
 
     def has_confirmation_limit_date_passed(self) -> bool:
-        return self.confirmationLimitDate <= datetime.utcnow()
+        return self.confirmationLimitDate <= utcnow()
 
     def mark_as_refused(self) -> None:
         from pcapi.core.educational import exceptions
 
-        if self.status != CollectiveBookingStatus.PENDING and self.cancellationLimitDate <= datetime.utcnow():
+        if self.status != CollectiveBookingStatus.PENDING and self.cancellationLimitDate <= utcnow():
             raise exceptions.EducationalBookingNotRefusable()
         cancellation_reason = (
             CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE
@@ -1453,7 +1456,7 @@ class CollectiveDmsApplication(PcObject, Base, Model):
     procedure: int = sa.Column(sa.BigInteger, nullable=False)
     application: int = sa.Column(sa.BigInteger, nullable=False, index=True)
     siret: str = sa.Column(sa.String(14), nullable=False, index=True)
-    lastChangeDate: datetime = sa.Column(sa.DateTime, nullable=False)
+    lastChangeDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
     depositDate = sa.Column(sa.DateTime, nullable=False)
     expirationDate = sa.Column(sa.DateTime, nullable=True)
     buildDate = sa.Column(sa.DateTime, nullable=True)
@@ -1493,7 +1496,7 @@ sa.event.listen(
 class CollectiveOfferRequest(PcObject, Base, Model):
     _phoneNumber: str | None = sa.Column(sa.String(30), nullable=True, name="phoneNumber")
 
-    requestedDate: date | None = sa.Column(sa.Date, nullable=True)
+    requestedDate: datetime.date | None = sa.Column(sa.Date, nullable=True)
 
     totalStudents: int | None = sa.Column(sa.Integer, nullable=True)
 
@@ -1502,7 +1505,7 @@ class CollectiveOfferRequest(PcObject, Base, Model):
     comment: str = sa.Column(sa.Text, nullable=False)
 
     # FIXME(jeremieb): make column non-nullable (fill missing data before)
-    dateCreated: date = sa.Column(sa.Date, nullable=True, server_default=sa.func.current_date())
+    dateCreated: datetime.date = sa.Column(sa.Date, nullable=True, server_default=sa.func.current_date())
 
     educationalRedactorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("educational_redactor.id"), nullable=False)
 
@@ -1569,7 +1572,7 @@ class NationalProgram(PcObject, Base, Model):
     """
 
     name: str = sa.Column(sa.Text, unique=True)
-    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=utcnow)
     domains: sa_orm.Mapped[list["EducationalDomain"]] = sa.orm.relationship(
         "EducationalDomain", back_populates="nationalPrograms", secondary="domain_to_national_program"
     )
@@ -1582,7 +1585,7 @@ class NationalProgramOfferLinkHistory(PcObject, Base, Model):
     program or not.
     """
 
-    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=utcnow)
     collectiveOfferId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("collective_offer.id", ondelete="CASCADE"), nullable=False
     )
@@ -1598,7 +1601,7 @@ class NationalProgramOfferTemplateLinkHistory(PcObject, Base, Model):
     program or not.
     """
 
-    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=utcnow)
     collectiveOfferTemplateId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("collective_offer_template.id", ondelete="CASCADE"), nullable=False
     )
@@ -1698,7 +1701,7 @@ class CollectivePlaylist(PcObject, Base, Model):
 
 class AdageVenueAddress(PcObject, Base, Model):
     adageId: str | None = sa.Column(sa.Text, nullable=True, unique=True)
-    adageInscriptionDate: datetime | None = sa.Column(sa.DateTime, nullable=True)
+    adageInscriptionDate: datetime.datetime | None = sa.Column(sa.DateTime, nullable=True)
     venueId: int | None = sa.Column(
         sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=True
     )

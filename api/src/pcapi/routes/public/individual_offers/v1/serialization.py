@@ -389,7 +389,9 @@ else:
         pydantic_v1.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
     ]
 
-next_month = datetime.datetime.utcnow().replace(hour=12, minute=0, second=0) + relativedelta.relativedelta(months=1)
+next_month = datetime.datetime.now(datetime.timezone.utc).replace(
+    hour=12, minute=0, second=0
+) + relativedelta.relativedelta(months=1)
 paris_tz_next_month = date_utils.utc_datetime_to_department_timezone(next_month, "75")
 
 BEGINNING_DATETIME_FIELD = pydantic_v1.Field(

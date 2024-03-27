@@ -1,6 +1,5 @@
 from collections.abc import Iterable
-from datetime import date
-from datetime import datetime
+import datetime
 
 from dateutil.relativedelta import relativedelta
 import sqlalchemy as sa
@@ -19,7 +18,9 @@ YIELD_COUNT_PER_DB_QUERY = 1000
 
 def get_inactive_venues_emails() -> Iterable[str]:
     # See request conditions in pro_inactive_venues_automation() below
-    ninety_days_ago = datetime.combine(date.today() - relativedelta(days=90), datetime.min.time())
+    ninety_days_ago = datetime.datetime.combine(
+        datetime.date.today() - relativedelta(days=90), datetime.datetime.min.time()
+    )
 
     venue_has_approved_offer_subquery = offers_models.Offer.query.filter(
         offers_models.Offer.venueId == offerers_models.Venue.id,
@@ -37,7 +38,8 @@ def get_inactive_venues_emails() -> Iterable[str]:
         .join(bookings_models.Booking)
         .filter(
             bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED,
-            bookings_models.Booking.dateCreated >= datetime.utcnow() - relativedelta(days=90),
+            bookings_models.Booking.dateCreated
+            >= datetime.datetime.now(datetime.timezone.utc) - relativedelta(days=90),
         )
         .exists()
     )

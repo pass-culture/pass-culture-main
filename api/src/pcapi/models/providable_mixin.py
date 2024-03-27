@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import BigInteger
@@ -38,6 +38,8 @@ class ProvidableMixin:
         unique=True,
     )
 
-    dateModifiedAtLastProvider = Column(DateTime, nullable=True, default=datetime.utcnow)
+    dateModifiedAtLastProvider = Column(
+        DateTime, nullable=True, default=lambda: datetime.datetime.now(datetime.timezone.utc)
+    )
 
     fieldsUpdated: Mapped[list[str]] = Column(ARRAY(String(100)), nullable=False, default=[], server_default="{}")

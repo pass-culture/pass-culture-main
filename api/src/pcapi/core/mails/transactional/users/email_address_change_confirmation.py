@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 from pcapi.core import mails
 from pcapi.core import token as token_utils
@@ -14,7 +14,8 @@ def get_email_confirmation_email_data(
     user: users_models.User, token: token_utils.Token
 ) -> models.TransactionalEmailData:
     expiration_date = (
-        token.get_expiration_date_from_token() or datetime.utcnow() + constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME
+        token.get_expiration_date_from_token()
+        or datetime.datetime.now(datetime.timezone.utc) + constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME
     )
     expiration_timestamp = int(expiration_date.timestamp())
     email_confirmation_link = generate_firebase_dynamic_link(

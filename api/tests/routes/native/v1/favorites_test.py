@@ -1,5 +1,4 @@
-from datetime import datetime
-from datetime import timedelta
+import datetime
 
 import pytest
 
@@ -37,9 +36,11 @@ class GetTest:
 
         def when_user_is_logged_in_and_has_favorite_offers(self, client):
             # Given
-            today = datetime.utcnow() + timedelta(hours=3)  # offset a bit to make sure it's > now()
-            yesterday = today - timedelta(days=1)
-            tomorow = today + timedelta(days=1)
+            today = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(
+                hours=3
+            )  # offset a bit to make sure it's > now()
+            yesterday = today - datetime.timedelta(days=1)
+            tomorow = today + datetime.timedelta(days=1)
             user = users_factories.UserFactory()
             offerer = offerers_factories.OffererFactory()
             venue = offerers_factories.VenueFactory(managingOfferer=offerer, publicName="Le Petit Rintintin")
@@ -73,9 +74,11 @@ class GetTest:
             offers_factories.MediationFactory(offer=offer4)
             favorite4 = users_factories.FavoriteFactory(offer=offer4, user=user)
             stock4 = offers_factories.EventStockFactory(
-                offer=offer4, beginningDatetime=datetime.utcnow() + timedelta(minutes=30), price=50
+                offer=offer4,
+                beginningDatetime=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=30),
+                price=50,
             )
-            assert stock4.bookingLimitDatetime < datetime.utcnow()
+            assert stock4.bookingLimitDatetime < datetime.datetime.now(datetime.timezone.utc)
 
             # Event offer in the past
             offer5 = offers_factories.EventOfferFactory(venue=venue)
@@ -208,9 +211,11 @@ class GetTest:
 
         def test_expired_offer(self, client):
             # Given
-            today = datetime.utcnow() + timedelta(hours=3)  # offset a bit to make sure it's > now()
-            yesterday = today - timedelta(days=1)
-            tomorow = today + timedelta(days=1)
+            today = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(
+                hours=3
+            )  # offset a bit to make sure it's > now()
+            yesterday = today - datetime.timedelta(days=1)
+            tomorow = today + datetime.timedelta(days=1)
             user = users_factories.UserFactory()
             user.add_beneficiary_role()
             users_factories.DepositGrantFactory(user=user)

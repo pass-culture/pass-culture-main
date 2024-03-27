@@ -1,5 +1,4 @@
-from datetime import datetime
-from datetime import timezone
+import datetime
 import logging
 from typing import Any
 
@@ -36,7 +35,9 @@ def validate_price(price: float | None) -> float:
     return price
 
 
-def validate_booking_limit_datetime(booking_limit_datetime: datetime | None, values: dict[str, Any]) -> datetime | None:
+def validate_booking_limit_datetime(
+    booking_limit_datetime: datetime.datetime | None, values: dict[str, Any]
+) -> datetime.datetime | None:
     if (
         booking_limit_datetime
         and "beginning_datetime" in values
@@ -46,9 +47,10 @@ def validate_booking_limit_datetime(booking_limit_datetime: datetime | None, val
     return booking_limit_datetime
 
 
-def validate_beginning_datetime(beginning_datetime: datetime, values: dict[str, Any], field: ModelField) -> datetime:
-    # we need a datetime with timezone information which is not provided by datetime.utcnow.
-    if beginning_datetime < datetime.now(timezone.utc):  # pylint: disable=datetime-now
+def validate_beginning_datetime(
+    beginning_datetime: datetime.datetime, values: dict[str, Any], field: ModelField
+) -> datetime.datetime:
+    if beginning_datetime < datetime.datetime.now(datetime.timezone.utc):
         raise ValueError("L'évènement ne peut commencer dans le passé.")
     return beginning_datetime
 
@@ -81,8 +83,8 @@ def price_detail_validator(field_name: str) -> classmethod:
 
 class CollectiveStockCreationBodyModel(BaseModel):
     offer_id: int
-    beginning_datetime: datetime
-    booking_limit_datetime: datetime | None
+    beginning_datetime: datetime.datetime
+    booking_limit_datetime: datetime.datetime | None
     total_price: float
     number_of_tickets: int
     educational_price_detail: str | None
@@ -99,8 +101,8 @@ class CollectiveStockCreationBodyModel(BaseModel):
 
 
 class CollectiveStockEditionBodyModel(BaseModel):
-    beginningDatetime: datetime | None
-    bookingLimitDatetime: datetime | None
+    beginningDatetime: datetime.datetime | None
+    bookingLimitDatetime: datetime.datetime | None
     price: float | None = Field(alias="totalPrice")
     numberOfTickets: int | None
     educationalPriceDetail: str | None
@@ -114,8 +116,8 @@ class CollectiveStockEditionBodyModel(BaseModel):
     # we can use the same interface as for creation and thus reuse the validator defined above.
     @validator("bookingLimitDatetime")
     def validate_booking_limit_datetime(
-        cls, booking_limit_datetime: datetime | None, values: dict[str, Any]
-    ) -> datetime | None:
+        cls, booking_limit_datetime: datetime.datetime | None, values: dict[str, Any]
+    ) -> datetime.datetime | None:
         if (
             booking_limit_datetime
             and values.get("beginningDatetime", None) is not None
@@ -127,7 +129,7 @@ class CollectiveStockEditionBodyModel(BaseModel):
     # FIXME (cgaunet, 2022-04-28): Once edit_collective_stock is not used by legacy code,
     # we can use the same interface as for creation and thus reuse the validator defined above.
     @validator("beginningDatetime", pre=True)
-    def validate_beginning_limit_datetime(cls, beginningDatetime: datetime | None) -> datetime | None:
+    def validate_beginning_limit_datetime(cls, beginningDatetime: datetime.datetime | None) -> datetime.datetime | None:
         if beginningDatetime is None:
             raise ValueError("La date de début de l'évènement ne peut pas être nulle.")
         return beginningDatetime
@@ -139,8 +141,8 @@ class CollectiveStockEditionBodyModel(BaseModel):
 
 class CollectiveStockResponseModel(BaseModel):
     id: int
-    beginningDatetime: datetime | None
-    bookingLimitDatetime: datetime | None
+    beginningDatetime: datetime.datetime | None
+    bookingLimitDatetime: datetime.datetime | None
     price: float
     numberOfTickets: int | None
     priceDetail: str | None = Field(alias="educationalPriceDetail")
@@ -149,5 +151,5 @@ class CollectiveStockResponseModel(BaseModel):
     class Config:
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
-        json_encoders = {datetime: format_into_utc_date}
+        json_encoders = {datetime.datetime: format_into_utc_date}
         orm_mode = True

@@ -84,7 +84,9 @@ class PostProductTest:
     def test_product_creation_with_full_body(self, client, clear_tests_assets_bucket):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
 
-        in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
+        in_ten_minutes = datetime.datetime.now(datetime.timezone.utc).replace(
+            second=0, microsecond=0
+        ) + datetime.timedelta(minutes=10)
         in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",

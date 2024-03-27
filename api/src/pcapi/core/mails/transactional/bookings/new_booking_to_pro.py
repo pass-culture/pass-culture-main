@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 from sqlalchemy.orm import joinedload
 
@@ -23,7 +23,7 @@ def get_new_booking_to_pro_email_data(
         .options(joinedload(Venue.reimbursement_point_links))
         .one()
     )
-    now = datetime.utcnow()
+    now = datetime.datetime.now(datetime.timezone.utc)
     current_reimbursement_point = any(
         (
             reimbursement_point_link

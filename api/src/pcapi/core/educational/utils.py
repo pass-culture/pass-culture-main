@@ -1,5 +1,4 @@
-from datetime import datetime
-from datetime import timedelta
+import datetime
 import hashlib
 import logging
 
@@ -15,9 +14,9 @@ logger = logging.getLogger(__name__)
 
 
 def compute_educational_booking_cancellation_limit_date(
-    event_beginning: datetime, booking_creation_date: datetime
-) -> datetime:
-    return max(event_beginning - timedelta(days=30), booking_creation_date)
+    event_beginning: datetime.datetime, booking_creation_date: datetime.datetime
+) -> datetime.datetime:
+    return max(event_beginning - datetime.timedelta(days=30), booking_creation_date)
 
 
 def get_hashed_user_id(email: str) -> str:
@@ -58,7 +57,7 @@ def create_adage_jwt_fake_valid_token(readonly: bool) -> str:
             "nom": "TEST",
             "prenom": "COMPTE",
             "mail": "compte.test@education.gouv.fr",
-            "exp": datetime.utcnow() + timedelta(days=1),
+            "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=1),
         }
         if not readonly:
             authenticated_informations["uai"] = "0910620E"

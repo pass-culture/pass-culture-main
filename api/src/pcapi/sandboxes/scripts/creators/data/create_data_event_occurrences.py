@@ -1,6 +1,4 @@
-from datetime import datetime
-from datetime import time
-from datetime import timedelta
+import datetime
 import decimal
 import logging
 
@@ -17,11 +15,11 @@ from . import utils
 logger = logging.getLogger(__name__)
 
 
-TODAY = datetime.combine(datetime.utcnow(), time(hour=20))
+TODAY = datetime.datetime.combine(datetime.datetime.now(datetime.timezone.utc), datetime.time(hour=20))
 EVENT_OCCURRENCE_BEGINNING_DATETIMES = [
     TODAY,
-    TODAY + timedelta(days=2),
-    TODAY + timedelta(days=15),
+    TODAY + datetime.timedelta(days=2),
+    TODAY + datetime.timedelta(days=15),
 ]
 
 EVENT_OFFERS_WITH_OCCURRENCES_REMOVE_MODULO = 3

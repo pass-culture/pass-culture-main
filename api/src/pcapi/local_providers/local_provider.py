@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from collections.abc import Iterator
-from datetime import datetime
+import datetime
 import logging
 import typing
 
@@ -53,7 +53,7 @@ class LocalProvider(Iterator):
     def maybe_update_finance_event_pricing_date(
         self,
         stock: offers_models.Stock,
-        old_beginning_datetime: datetime | None,
+        old_beginning_datetime: datetime.datetime | None,
     ) -> None:
         assert stock.beginningDatetime is not None  # to make mypy happy
         if (
@@ -67,7 +67,7 @@ class LocalProvider(Iterator):
         self,
         pc_object: type[offers_models.Product | offers_models.Offer | offers_models.Stock],
         id_at_providers: str,
-        date_modified_at_provider: datetime,
+        date_modified_at_provider: datetime.datetime,
         new_id_at_provider: str,
     ) -> ProvidableInfo:
         if "|" in id_at_providers:
@@ -262,7 +262,7 @@ class LocalProvider(Iterator):
 
                 if isinstance(pc_object, HasThumbMixin) and (
                     not last_update_for_current_provider
-                    or last_update_for_current_provider.date() != datetime.today().date()
+                    or last_update_for_current_provider.date() != datetime.datetime.today().date()
                 ):
                     initial_thumb_count = pc_object.thumbCount
                     try:
@@ -302,7 +302,7 @@ class LocalProvider(Iterator):
         self.log_provider_event(providers_models.LocalProviderEventType.SyncEnd)
 
         if self.venue_provider is not None:
-            self.venue_provider.lastSyncDate = datetime.utcnow()
+            self.venue_provider.lastSyncDate = datetime.datetime.now(datetime.timezone.utc)
             repository.save(self.venue_provider)
 
     def postTreatment(self) -> None:

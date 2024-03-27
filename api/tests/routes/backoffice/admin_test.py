@@ -426,12 +426,14 @@ class GetBoUserTest(GetEndpointHelper):
 
     def test_get_suspended_bo_user_with_history(self, authenticated_client, legit_user):
         user = users_factories.AdminFactory(
-            isActive=False, roles=[], dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=180)
+            isActive=False,
+            roles=[],
+            dateCreated=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=180),
         )
 
         history_factories.ActionHistoryFactory(
             actionType=history_models.ActionType.USER_SUSPENDED,
-            actionDate=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+            actionDate=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=2),
             authorUser=legit_user,
             user=user,
             extraData={"reason": users_constants.SuspensionReason.END_OF_CONTRACT},

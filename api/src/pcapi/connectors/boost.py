@@ -70,7 +70,7 @@ def login(cinema_details: BoostCinemaDetails, ignore_device: bool = True) -> str
         "stationName": f"pcapi - {settings.ENV}",
     }
     url = cinema_details.cinemaUrl + LOGIN_ENDPOINT
-    request_date = datetime.datetime.utcnow()
+    request_date = datetime.datetime.now(datetime.timezone.utc)
     try:
         response = requests.post(url=url, json=auth_payload, params={"ignore_device": ignore_device})
     except requests.exceptions.RequestException as exc:
@@ -105,7 +105,7 @@ def headers(token: str) -> dict[str, str]:
 def get_token(cinema_details: BoostCinemaDetails) -> str:
     token = cinema_details.token
     token_expiration_date = cinema_details.tokenExpirationDate
-    if token and token_expiration_date and datetime.datetime.utcnow() < token_expiration_date:
+    if token and token_expiration_date and datetime.datetime.now(datetime.timezone.utc) < token_expiration_date:
         return token
     return login(cinema_details)
 

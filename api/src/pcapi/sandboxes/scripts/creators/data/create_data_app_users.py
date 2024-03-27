@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import logging
 from random import choice
 
@@ -53,7 +53,10 @@ def create_data_app_beneficiaries() -> dict[str, User]:
             deposit__version=deposit_version,
         )
         users_factories.DepositGrantFactory(
-            user=user, expirationDate=datetime.utcnow(), source="sandbox", type=finance_models.DepositType.GRANT_15_17
+            user=user,
+            expirationDate=datetime.datetime.now(datetime.timezone.utc),
+            source="sandbox",
+            type=finance_models.DepositType.GRANT_15_17,
         )
 
         user_key = f"jeune data {departement_code}_{index} {tag} v{deposit_version}"

@@ -19,7 +19,7 @@ from pcapi.core.users import models as users_models
 logger = logging.getLogger(__name__)
 
 
-THREE_YEARS_AGO = datetime.datetime.utcnow() - relativedelta(years=3)
+THREE_YEARS_AGO = datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=3)
 
 INCREMENT = itertools.count()
 

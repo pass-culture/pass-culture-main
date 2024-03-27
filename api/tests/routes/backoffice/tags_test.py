@@ -1,6 +1,4 @@
-from datetime import date
-from datetime import datetime
-from datetime import timedelta
+import datetime
 
 from flask import url_for
 import pytest
@@ -89,8 +87,8 @@ class UpdateTagTest(PostEndpointHelper):
 
         new_tag_name = f"{tag.name}-update"
         new_tag_description = f"{tag.description} update"
-        new_start_date = date.today()
-        new_end_date = new_start_date + timedelta(days=1)
+        new_start_date = datetime.date.today()
+        new_end_date = new_start_date + datetime.timedelta(days=1)
 
         form = {
             "name": new_tag_name,
@@ -129,7 +127,7 @@ class ListTagsTest(GetEndpointHelper):
     def test_list_tags(self, authenticated_client):
         categories = criteria_factories.CriterionCategoryFactory.create_batch(2)
 
-        now = datetime.utcnow()
+        now = datetime.datetime.now(datetime.timezone.utc)
         tag_1 = criteria_factories.CriterionFactory(
             description="tag1 description", startDateTime=now, categories=[categories[0]]
         )
@@ -164,10 +162,10 @@ class ListTagsTest(GetEndpointHelper):
     def test_search_list_tags(self, authenticated_client, q, expected_nb_results, expected_results_key):
         tags = {
             "tag1": criteria_factories.CriterionFactory(
-                description="tag1 description", startDateTime=datetime.utcnow()
+                description="tag1 description", startDateTime=datetime.datetime.now(datetime.timezone.utc)
             ),
             "tag2": criteria_factories.CriterionFactory(
-                description="tag2 description", startDateTime=datetime.utcnow()
+                description="tag2 description", startDateTime=datetime.datetime.now(datetime.timezone.utc)
             ),
         }
 

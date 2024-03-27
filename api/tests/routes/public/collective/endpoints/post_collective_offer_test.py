@@ -78,8 +78,12 @@ def payload_fixture(venue_provider, domain, institution, national_program, venue
         "isActive": True,
         "nationalProgramId": national_program.id,
         # stock part
-        "beginningDatetime": (datetime.datetime.utcnow() + datetime.timedelta(days=2)).isoformat(timespec="seconds"),
-        "bookingLimitDatetime": (datetime.datetime.utcnow() + datetime.timedelta(days=2)).isoformat(timespec="seconds"),
+        "beginningDatetime": (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=2)).isoformat(
+            timespec="seconds"
+        ),
+        "bookingLimitDatetime": (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=2)).isoformat(
+            timespec="seconds"
+        ),
         "totalPrice": 35621,
         "numberOfTickets": 30,
         "educationalPriceDetail": "Justification du prix",

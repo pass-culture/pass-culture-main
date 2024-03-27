@@ -1,5 +1,4 @@
-from datetime import datetime
-from datetime import timedelta
+import datetime
 
 from dateutil.relativedelta import relativedelta
 import pytest
@@ -20,11 +19,11 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class Returns200Test:
     def test_when_user_has_rights_and_regular_offer(self, client):
         # Given
-        past = datetime.utcnow() - timedelta(days=2)
+        past = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=2)
         booking = bookings_factories.BookingFactory(
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
-            user__dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2),
+            user__dateOfBirth=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=18, months=2),
             stock__beginningDatetime=past,
             stock__offer=offers_factories.EventOfferFactory(
                 extraData={
@@ -91,7 +90,7 @@ class Returns200Test:
     def test_when_user_has_rights_and_regular_offer_and_token_in_lower_case(self, client):
         # Given
         booking = bookings_factories.BookingFactory(
-            stock__beginningDatetime=datetime.utcnow() - timedelta(days=2),
+            stock__beginningDatetime=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=2),
         )
         user_offerer = offerers_factories.UserOffererFactory(offerer=booking.offerer)
         pro_user = user_offerer.user
@@ -149,7 +148,7 @@ class Returns403Test:
 
     def test_when_booking_not_confirmed(self, client):
         # Given
-        next_week = datetime.utcnow() + timedelta(weeks=1)
+        next_week = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(weeks=1)
         booking = bookings_factories.BookingFactory(stock__beginningDatetime=next_week)
         pro_user = offerers_factories.UserOffererFactory(offerer=booking.offerer).user
 
@@ -159,7 +158,7 @@ class Returns403Test:
 
         # Then
         assert response.status_code == 403
-        cancellation_limit_date = datetime.strftime(
+        cancellation_limit_date = datetime.datetime.strftime(
             utc_datetime_to_department_timezone(booking.cancellationLimitDate, booking.venue.departementCode),
             "%d/%m/%Y à %H:%M",
         )

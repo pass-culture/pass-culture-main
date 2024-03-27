@@ -1,6 +1,4 @@
-from datetime import date
-from datetime import datetime
-from datetime import time
+import datetime
 import random
 import string
 import typing
@@ -50,7 +48,7 @@ class BaseUserFactory(BaseFactory):
     class Params:
         age = 40
 
-    dateOfBirth = LazyAttribute(lambda o: date.today() - relativedelta(years=o.age))
+    dateOfBirth = LazyAttribute(lambda o: datetime.date.today() - relativedelta(years=o.age))
     isEmailValidated = False
 
     @classmethod
@@ -222,7 +220,9 @@ class IdentityValidatedUserFactory(ProfileCompletedUserFactory):
     - identity validation
     """
 
-    validatedBirthDate = LazyAttribute(lambda o: datetime.utcnow().date() - relativedelta(years=o.age))
+    validatedBirthDate = LazyAttribute(
+        lambda o: datetime.datetime.now(datetime.timezone.utc).date() - relativedelta(years=o.age)
+    )
 
     @classmethod
     def set_custom_attributes(cls, obj: models.User, **kwargs: typing.Any) -> None:
@@ -344,7 +344,7 @@ class Transition1718Factory(BeneficiaryFactory):
         if not create:
             return []
 
-        with time_machine.travel(datetime.today() - relativedelta(years=1)):
+        with time_machine.travel(datetime.datetime.today() - relativedelta(years=1)):
             fraud_checks = Transition1718Factory.beneficiary_fraud_checks(obj, **kwargs)
         return fraud_checks
 
@@ -358,7 +358,7 @@ class Transition1718Factory(BeneficiaryFactory):
         if not create:
             return None
 
-        with time_machine.travel(datetime.today() - relativedelta(years=1)):
+        with time_machine.travel(datetime.datetime.today() - relativedelta(years=1)):
             if "dateCreated" not in kwargs:
                 kwargs["dateCreated"] = obj.dateCreated
 
@@ -382,7 +382,7 @@ class UserFactory(BaseFactory):
     email = factory.Sequence("jean.neige{}@example.com".format)
     address: str | None = factory.Sequence("{} place des noces rouges".format)
     city: str | None = "La Rochelle"
-    dateOfBirth = LazyAttribute(lambda o: date.today() - relativedelta(years=o.age))
+    dateOfBirth = LazyAttribute(lambda o: datetime.date.today() - relativedelta(years=o.age))
     firstName = "Jean"
     lastName = "Neige"
     isEmailValidated = True
@@ -423,7 +423,7 @@ class AnonymizedUserFactory(UserFactory):
     address = None
     city = None
     postalCode = None
-    dateOfBirth = LazyAttribute(lambda o: date(day=1, month=1, year=2023 - o.age))
+    dateOfBirth = LazyAttribute(lambda o: datetime.date(day=1, month=1, year=2023 - o.age))
     factory.Sequence("Anonymous_{}".format)
     firstName = factory.Sequence("Anonymous_{}".format)
     lastName = factory.Sequence("Anonymous_{}".format)
@@ -500,10 +500,10 @@ class BeneficiaryGrant18Factory(BaseFactory):
     email = factory.LazyFunction(lambda: f"jeanne.doux_{uuid.uuid4()}@example.com")
     address = factory.Sequence("{} rue des machines".format)
     city = "Paris"
-    dateCreated = LazyAttribute(lambda _: datetime.utcnow())
-    lastConnectionDate = LazyAttribute(lambda _: datetime.utcnow() - relativedelta(days=1))
+    dateCreated = LazyAttribute(lambda _: datetime.datetime.now(datetime.timezone.utc))
+    lastConnectionDate = LazyAttribute(lambda _: datetime.datetime.now(datetime.timezone.utc) - relativedelta(days=1))
     dateOfBirth = LazyAttribute(  # LazyAttribute to allow freez_time overrides
-        lambda _: datetime.combine(date.today(), time(0, 0))
+        lambda _: datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
         - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, months=1)
     )
     firstName = "Jeanne"
@@ -642,7 +642,8 @@ class UnderageBeneficiaryFactory(BeneficiaryGrant18Factory):
 
     roles = [models.UserRole.UNDERAGE_BENEFICIARY]
     dateOfBirth = LazyAttribute(
-        lambda o: datetime.combine(date.today(), time(0, 0)) - relativedelta(years=o.subscription_age, months=5)
+        lambda o: datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+        - relativedelta(years=o.subscription_age, months=5)
     )
     dateCreated = LazyAttribute(lambda user: user.dateOfBirth + relativedelta(years=user.subscription_age, hours=12))
     ineHash = factory.Sequence(lambda _: "".join(random.choices(string.ascii_lowercase + string.digits, k=32)))
@@ -754,7 +755,8 @@ class ExUnderageBeneficiaryWithUbbleFactory(ExUnderageBeneficiaryFactory):
 
 class EligibleGrant18Factory(UserFactory):
     dateOfBirth = LazyAttribute(
-        lambda o: datetime.combine(date.today(), time(0, 0)) - relativedelta(years=18, months=5)
+        lambda o: datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+        - relativedelta(years=18, months=5)
     )
 
 
@@ -763,7 +765,8 @@ class EligibleUnderageFactory(UserFactory):
         age = 15
 
     dateOfBirth = LazyAttribute(
-        lambda o: datetime.combine(date.today(), time(0, 0)) - relativedelta(years=o.age, months=5)
+        lambda o: datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+        - relativedelta(years=o.age, months=5)
     )
 
 
@@ -916,7 +919,7 @@ class DepositGrantFactory(BaseFactory):
     class Meta:
         model = finance_models.Deposit
 
-    dateCreated = LazyAttribute(lambda _: datetime.utcnow())
+    dateCreated = LazyAttribute(lambda _: datetime.datetime.now(datetime.timezone.utc))
     user = factory.SubFactory(UserFactory)  # BeneficiaryGrant18Factory is already creating a deposit
     source = "public"
 
@@ -954,8 +957,8 @@ class EduconnectUserFactory(factory.Factory):
     class Params:
         age = 15
 
-    connection_datetime = LazyAttribute(lambda _: date.today() - relativedelta(days=1))
-    birth_date = factory.LazyAttribute(lambda o: date.today() - relativedelta(years=o.age, months=1))
+    connection_datetime = LazyAttribute(lambda _: datetime.date.today() - relativedelta(days=1))
+    birth_date = factory.LazyAttribute(lambda o: datetime.date.today() - relativedelta(years=o.age, months=1))
     educonnect_id = "e6759833fb379e0340322889f2a367a5a5150f1533f80dfe963d21e43e33f7164b76cc802766cdd33c6645e1abfd1875"
     last_name = factory.Faker("last_name")
     first_name = factory.Faker("first_name")
@@ -1043,5 +1046,5 @@ class UserProNewNavStateFactory(BaseFactory):
         model = models.UserProNewNavState
 
     user = factory.SubFactory(ProFactory)
-    eligibilityDate = LazyAttribute(lambda _: datetime.utcnow())
-    newNavDate = LazyAttribute(lambda _: datetime.utcnow())
+    eligibilityDate = LazyAttribute(lambda _: datetime.datetime.now(datetime.timezone.utc))
+    newNavDate = LazyAttribute(lambda _: datetime.datetime.now(datetime.timezone.utc))

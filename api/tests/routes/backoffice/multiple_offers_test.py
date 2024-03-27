@@ -337,7 +337,9 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
                 assert offer.lastValidationDate == initially_rejected[offer.id]["date"]
             else:
                 assert offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
-                assert datetime.datetime.utcnow() - offer.lastValidationDate < datetime.timedelta(seconds=5)
+                assert datetime.datetime.now(datetime.timezone.utc) - offer.lastValidationDate < datetime.timedelta(
+                    seconds=5
+                )
 
     def test_send_mail_when_edit_product_gcu_compatibility(self, authenticated_client):
 

@@ -101,7 +101,7 @@ def closed_incident_fixture() -> tuple:
     events_to_price.extend(
         api._create_finance_events_from_incident(
             original_finance_incident.booking_finance_incidents[0],
-            incident_validation_date=datetime.datetime.utcnow(),
+            incident_validation_date=datetime.datetime.now(datetime.timezone.utc),
         )
     )
     booking = bookings_factories.UsedBookingFactory(stock__offer__venue=venue, amount=20)
@@ -114,7 +114,7 @@ def closed_incident_fixture() -> tuple:
     for event in events_to_price:
         api.price_event(event)
 
-    cashflow_batch = api.generate_cashflows_and_payment_files(datetime.datetime.utcnow())
+    cashflow_batch = api.generate_cashflows_and_payment_files(datetime.datetime.now(datetime.timezone.utc))
     generated_cashflow = cashflow_batch.cashflows[0]
     generated_cashflow.status = finance_models.CashflowStatus.ACCEPTED
 
@@ -691,7 +691,7 @@ class CreateIncidentFinanceEventTest:
             incident__kind=incident_type,
             newTotalAmount=0,
         )
-        validation_date = datetime.datetime.utcnow()
+        validation_date = datetime.datetime.now(datetime.timezone.utc)
         finance_events = api._create_finance_events_from_incident(total_booking_incident, validation_date)
 
         assert len(finance_events) == 1
@@ -717,7 +717,7 @@ class CreateIncidentFinanceEventTest:
             incident__kind=incident_type,
         )
 
-        validation_date = datetime.datetime.utcnow()
+        validation_date = datetime.datetime.now(datetime.timezone.utc)
         finance_events = api._create_finance_events_from_incident(total_booking_incident, validation_date)
 
         assert len(finance_events) == 1
@@ -745,7 +745,7 @@ class CreateIncidentFinanceEventTest:
             newTotalAmount=600,
         )
 
-        validation_date = datetime.datetime.utcnow()
+        validation_date = datetime.datetime.now(datetime.timezone.utc)
         finance_events = api._create_finance_events_from_incident(partial_booking_incident, validation_date)
 
         assert len(finance_events) == 2
@@ -770,7 +770,7 @@ class CreateIncidentFinanceEventTest:
             incident__kind=finance_models.IncidentType.COMMERCIAL_GESTURE,
             newTotalAmount=800,
         )
-        validation_date = datetime.datetime.utcnow()
+        validation_date = datetime.datetime.now(datetime.timezone.utc)
 
         finance_events = api._create_finance_events_from_incident(booking_incident, validation_date)
 
@@ -1297,7 +1297,7 @@ class GetIncidentHistoryTest(GetEndpointHelper):
         action = history_factories.ActionHistoryFactory(
             financeIncident=finance_incident,
             actionType=history_models.ActionType.FINANCE_INCIDENT_CREATED,
-            actionDate=datetime.datetime.utcnow() + datetime.timedelta(days=-1),
+            actionDate=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=-1),
         )
         api.cancel_finance_incident(finance_incident, comment="Je décide d'annuler l'incident")
 
@@ -1484,7 +1484,7 @@ class ForceDebitNoteTest(PostEndpointHelper):
         original_pricing = api.price_event(original_event)
         original_pricing.status = finance_models.PricingStatus.INVOICED
 
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now(datetime.timezone.utc)
         finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
             booking=booking, incident__status=finance_models.IncidentStatus.VALIDATED, incident__forceDebitNote=False
         ).incident
@@ -1539,7 +1539,7 @@ class ForceDebitNoteTest(PostEndpointHelper):
         events_to_price.extend(
             api._create_finance_events_from_incident(
                 original_finance_incident.booking_finance_incidents[0],
-                incident_validation_date=datetime.datetime.utcnow(),
+                incident_validation_date=datetime.datetime.now(datetime.timezone.utc),
             )
         )
         booking = bookings_factories.UsedBookingFactory(stock__offer__venue=venue, amount=20)
@@ -1552,7 +1552,7 @@ class ForceDebitNoteTest(PostEndpointHelper):
         for event in events_to_price:
             api.price_event(event)
 
-        cashflow_batch = api.generate_cashflows_and_payment_files(datetime.datetime.utcnow())
+        cashflow_batch = api.generate_cashflows_and_payment_files(datetime.datetime.now(datetime.timezone.utc))
         generated_cashflow = cashflow_batch.cashflows[0]
         generated_cashflow.status = finance_models.CashflowStatus.ACCEPTED
 
@@ -1584,7 +1584,7 @@ class CancelDebitNoteTest(PostEndpointHelper):
         original_pricing = api.price_event(original_event)
         original_pricing.status = finance_models.PricingStatus.INVOICED
 
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now(datetime.timezone.utc)
         finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
             booking=booking,
             incident__status=finance_models.IncidentStatus.VALIDATED,
@@ -1661,7 +1661,7 @@ class CancelDebitNoteTest(PostEndpointHelper):
         events_to_price.extend(
             api._create_finance_events_from_incident(
                 original_finance_incident.booking_finance_incidents[0],
-                incident_validation_date=datetime.datetime.utcnow(),
+                incident_validation_date=datetime.datetime.now(datetime.timezone.utc),
             )
         )
         booking = bookings_factories.UsedBookingFactory(stock__offer__venue=venue, amount=20)
@@ -1674,7 +1674,7 @@ class CancelDebitNoteTest(PostEndpointHelper):
         for event in events_to_price:
             api.price_event(event)
 
-        cashflow_batch = api.generate_cashflows_and_payment_files(datetime.datetime.utcnow())
+        cashflow_batch = api.generate_cashflows_and_payment_files(datetime.datetime.now(datetime.timezone.utc))
         generated_cashflow = cashflow_batch.cashflows[0]
         generated_cashflow.status = finance_models.CashflowStatus.ACCEPTED
 

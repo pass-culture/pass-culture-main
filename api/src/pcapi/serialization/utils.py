@@ -140,7 +140,7 @@ def check_date_in_future_and_remove_timezone(value: datetime.datetime | None) ->
     if value.tzinfo is None:
         raise ValueError("The datetime must be timezone-aware.")
     no_tz_value = as_utc_without_timezone(value)
-    if no_tz_value < datetime.datetime.utcnow():
+    if no_tz_value < datetime.datetime.now(datetime.timezone.utc):
         raise ValueError("The datetime must be in the future.")
     return no_tz_value
 

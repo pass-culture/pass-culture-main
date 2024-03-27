@@ -1,6 +1,4 @@
-from datetime import date
-from datetime import datetime
-from datetime import time
+import datetime
 import random
 import string
 import typing
@@ -27,7 +25,8 @@ class UserEligibleAtIdentityCheckStepFactory(users_factories.UserFactory):
         age = 18
 
     dateOfBirth = LazyAttribute(
-        lambda o: datetime.combine(date.today(), time(0, 0)) - relativedelta(years=o.age, months=5)
+        lambda o: datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+        - relativedelta(years=o.age, months=5)
     )
     isEmailValidated = True
     phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
@@ -75,7 +74,7 @@ class DMSContentFactory(factory.Factory):
     address = factory.Faker("address")
     annotation = None
     application_number = factory.Faker("pyint")
-    birth_date = LazyAttribute(lambda _: (datetime.today() - relativedelta(years=18)).date())
+    birth_date = LazyAttribute(lambda _: (datetime.datetime.today() - relativedelta(years=18)).date())
     city = "Funky Town"
     civility = users_models.GenderEnum.F
     departement = factory.Sequence("{}".format)
@@ -86,7 +85,9 @@ class DMSContentFactory(factory.Factory):
     phone = factory.Sequence("+33612{:06}".format)
     postal_code = "75008"
     procedure_number = factory.Faker("pyint")
-    registration_datetime = LazyAttribute(lambda _: datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S"))
+    registration_datetime = LazyAttribute(
+        lambda _: datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
+    )
 
 
 class UbbleContentFactory(factory.Factory):
@@ -94,7 +95,7 @@ class UbbleContentFactory(factory.Factory):
         model = models.UbbleContent
 
     status = None
-    birth_date = (date.today() - relativedelta(years=18, months=4)).isoformat()
+    birth_date = (datetime.date.today() - relativedelta(years=18, months=4)).isoformat()
     first_name = factory.Faker("first_name")
     last_name = factory.Faker("last_name")
     document_type = None
@@ -108,7 +109,7 @@ class UbbleContentFactory(factory.Factory):
     supported = None
     identification_id = None
     identification_url = None
-    registration_datetime = factory.LazyFunction(datetime.utcnow)
+    registration_datetime = factory.LazyFunction(lambda: datetime.datetime.now(datetime.timezone.utc))
 
 
 class EduconnectContentFactory(factory.Factory):
@@ -118,12 +119,12 @@ class EduconnectContentFactory(factory.Factory):
     class Params:
         age = 15
 
-    birth_date = factory.LazyAttribute(lambda o: date.today() - relativedelta(years=o.age, months=4))
+    birth_date = factory.LazyAttribute(lambda o: datetime.date.today() - relativedelta(years=o.age, months=4))
     educonnect_id = factory.Faker("lexify", text="id-?????????????????")
     first_name = factory.Faker("first_name")
     ine_hash = factory.Sequence(lambda _: "".join(random.choices(string.ascii_lowercase + string.digits, k=32)))
     last_name = factory.Faker("last_name")
-    registration_datetime = factory.LazyFunction(datetime.utcnow)
+    registration_datetime = factory.LazyFunction(lambda: datetime.datetime.now(datetime.timezone.utc))
     civility = users_models.GenderEnum.F
 
 
@@ -268,5 +269,5 @@ class ProductWhitelistFactory(factories.BaseFactory):
     comment = factory.Sequence("OK {} !".format)
     title = factory.Sequence("Ducobu #{} !".format)
     ean = factory.fuzzy.FuzzyText(length=13)
-    dateCreated = factory.LazyFunction(datetime.utcnow)
+    dateCreated = factory.LazyFunction(lambda: datetime.datetime.now(datetime.timezone.utc))
     author = factory.SubFactory(users_factories.AdminFactory)

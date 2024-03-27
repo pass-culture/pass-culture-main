@@ -1,5 +1,4 @@
-from datetime import date
-from datetime import datetime
+import datetime
 import logging
 
 from dateutil.relativedelta import relativedelta
@@ -16,7 +15,7 @@ ALGORITHM_HS_256 = "HS256"
 ALGORITHM_RS_256 = "RS256"
 
 
-def encode_jwt_payload(token_payload: dict, expiration_date: datetime | None = None) -> str:
+def encode_jwt_payload(token_payload: dict, expiration_date: datetime.datetime | None = None) -> str:
     if expiration_date:
         # do not fill exp key if expiration_date is None or jwt.decode would fail
         token_payload["exp"] = int(expiration_date.timestamp())
@@ -38,12 +37,12 @@ def decode_jwt_token_rs256(jwt_token: str) -> dict:
     return payload
 
 
-def get_age_at_date(birth_date: date, specified_datetime: datetime) -> int:
+def get_age_at_date(birth_date: datetime.date, specified_datetime: datetime.datetime) -> int:
     return max(0, relativedelta(specified_datetime, birth_date).years)
 
 
-def get_age_from_birth_date(birth_date: date) -> int:
-    return get_age_at_date(birth_date, datetime.utcnow())
+def get_age_from_birth_date(birth_date: datetime.date) -> int:
+    return get_age_at_date(birth_date, datetime.datetime.now(datetime.timezone.utc))
 
 
 def format_login_location(country_name: str | None, city_name: str | None) -> str | None:

@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import decimal
 from typing import Iterator
 
@@ -72,7 +72,10 @@ class CDSStocks(LocalProvider):
 
         venue_movie_unique_id = _build_movie_uuid(self.movie_information.id, self.venue)
         offer_providable_info = self.create_providable_info(
-            offers_models.Offer, venue_movie_unique_id, datetime.utcnow(), venue_movie_unique_id
+            offers_models.Offer,
+            venue_movie_unique_id,
+            datetime.datetime.now(datetime.timezone.utc),
+            venue_movie_unique_id,
         )
         providable_information_list.append(offer_providable_info)
 
@@ -81,7 +84,10 @@ class CDSStocks(LocalProvider):
                 self.movie_information.id, self.venue, show["show_information"]
             )
             stock_providable_info = self.create_providable_info(
-                offers_models.Stock, stock_showtime_unique_id, datetime.utcnow(), stock_showtime_unique_id
+                offers_models.Stock,
+                stock_showtime_unique_id,
+                datetime.datetime.now(datetime.timezone.utc),
+                stock_showtime_unique_id,
             )
             providable_information_list.append(stock_providable_info)
 
@@ -143,7 +149,10 @@ class CDSStocks(LocalProvider):
             cds_offer.id = offers_repository.get_next_offer_id_from_database()
         last_update_for_current_provider = get_last_update_for_provider(self.provider.id, cds_offer)
 
-        if not last_update_for_current_provider or last_update_for_current_provider.date() != datetime.today().date():
+        if (
+            not last_update_for_current_provider
+            or last_update_for_current_provider.date() != datetime.datetime.today().date()
+        ):
             if self.movie_information.posterpath:
                 image_url = self.movie_information.posterpath
                 image = self.client_cds.get_movie_poster(image_url)

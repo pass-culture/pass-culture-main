@@ -44,7 +44,7 @@ def create_offerer_with_several_venues() -> offerers_models.Offerer:
     virtual_venue = offerers_factories.VirtualVenueFactory(
         name="Lieu virtuel de la structure avec plusieurs lieux ", managingOfferer=user_offerer.offerer
     )
-    in_two_month = datetime.datetime.utcnow() + datetime.timedelta(days=60)
+    in_two_month = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=60)
     for i in range(1, 6):
         offer = offers_factories.DigitalOfferFactory(name=f"Offre avec code d'activation {i}", venue=virtual_venue)
 

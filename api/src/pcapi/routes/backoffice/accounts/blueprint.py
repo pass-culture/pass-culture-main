@@ -123,7 +123,8 @@ def is_beneficiary_anonymizable(user: users_models.User) -> bool:
     ):
         if users_models.UserRole.ANONYMIZED not in user.roles:
             if not user.deposit_expiration_date or (
-                user.deposit_expiration_date and user.deposit_expiration_date < datetime.datetime.utcnow()
+                user.deposit_expiration_date
+                and user.deposit_expiration_date < datetime.datetime.now(datetime.timezone.utc)
             ):
                 return True
     return False
@@ -296,7 +297,9 @@ def render_public_account_details(
     history = get_public_account_history(user)
     duplicate_user_id = None
     eligibility_history = get_eligibility_history(user)
-    user_current_eligibility = users_api.get_eligibility_at_date(user.birth_date, datetime.datetime.utcnow())
+    user_current_eligibility = users_api.get_eligibility_at_date(
+        user.birth_date, datetime.datetime.now(datetime.timezone.utc)
+    )
 
     if (
         user_current_eligibility is not None and user_current_eligibility.value in eligibility_history

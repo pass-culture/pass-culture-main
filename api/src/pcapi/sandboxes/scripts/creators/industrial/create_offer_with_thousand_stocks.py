@@ -28,7 +28,7 @@ def create_offer_with_thousand_stocks(offerer: Offerer) -> None:
         EventStockFactory(
             offer=offer_event,
             quantity=1,
-            beginningDatetime=datetime.datetime.utcnow().replace(second=0, microsecond=0)
+            beginningDatetime=datetime.datetime.now(datetime.timezone.utc).replace(second=0, microsecond=0)
             - datetime.timedelta(days=100)
             + datetime.timedelta(days=i),
             priceCategory=price_category,

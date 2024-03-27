@@ -262,7 +262,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         create_transaction_body = cds_serializers.CreateTransactionBodyCDS(  # type: ignore [call-arg]
             cinema_id=self.cinema_id,
             is_cancelled=False,
-            transaction_date=datetime.datetime.utcnow().strftime(CDS_DATE_FORMAT),
+            transaction_date=datetime.datetime.now(datetime.timezone.utc).strftime(CDS_DATE_FORMAT),
             ticket_sale_collection=ticket_sale_collection,
             payement_collection=payement_collection,
         )
@@ -278,7 +278,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
                 {
                     "barcode": ticket.barcode,
                     "venue_id": booking.venueId,
-                    "timestamp": datetime.datetime.utcnow().timestamp(),
+                    "timestamp": datetime.datetime.now(datetime.timezone.utc).timestamp(),
                     "booking_type": RedisExternalBookingType.CINEMA,
                 },
             )
@@ -314,7 +314,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             ticket_sale = cds_serializers.TicketSaleCDS(  # type: ignore [call-arg]
                 id=(i + 1) * -1,
                 cinema_id=self.cinema_id,
-                operation_date=datetime.datetime.utcnow().strftime(CDS_DATE_FORMAT),
+                operation_date=datetime.datetime.now(datetime.timezone.utc).strftime(CDS_DATE_FORMAT),
                 is_cancelled=False,
                 seat_col=seats_to_book[i].seatCol if bool(seats_to_book) else None,
                 seat_row=seats_to_book[i].seatRow if bool(seats_to_book) else None,

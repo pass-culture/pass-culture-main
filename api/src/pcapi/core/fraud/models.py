@@ -524,7 +524,10 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
     __tablename__ = "beneficiary_fraud_check"
 
     dateCreated: datetime.datetime = sa.Column(
-        sa.DateTime, nullable=False, server_default=sa.func.now(), default=datetime.datetime.utcnow
+        sa.DateTime,
+        nullable=False,
+        server_default=sa.func.now(),
+        default=lambda: datetime.datetime.now(datetime.timezone.utc),
     )
     # The eligibility is null when the user is not eligible
     eligibilityType = sa.Column(
@@ -545,7 +548,7 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
     thirdPartyId: str = sa.Column(sa.TEXT(), index=True, nullable=False)
     type: FraudCheckType = sa.Column(sa.Enum(FraudCheckType, create_constraint=False), nullable=False)
     updatedAt: datetime.datetime = sa.Column(
-        sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=sa.func.now()
+        sa.DateTime, nullable=True, default=lambda: datetime.datetime.now(datetime.timezone.utc), onupdate=sa.func.now()
     )
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
     user: users_models.User = sa.orm.relationship(
@@ -600,7 +603,7 @@ class OrphanDmsApplication(PcObject, Base, Model):
     # This is mainly used for the DMS fraud check, when the user is not yet created, or in case of a failure.
     application_id: int = sa.Column(sa.BigInteger, primary_key=True)  # refers to DMS application "number"
     dateCreated = sa.Column(
-        sa.DateTime, nullable=True, default=datetime.datetime.utcnow
+        sa.DateTime, nullable=True, default=lambda: datetime.datetime.now(datetime.timezone.utc)
     )  # no sql default because the column was added after table creation
     email = sa.Column(sa.Text, nullable=True, index=True)
     latest_modification_datetime = sa.Column(
@@ -650,7 +653,10 @@ class BlacklistedDomainName(PcObject, Base, Model):
 
     domain: str = sa.Column(sa.Text, nullable=False, unique=True)
     dateCreated: datetime.datetime = sa.Column(
-        sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
+        sa.DateTime,
+        nullable=False,
+        default=lambda: datetime.datetime.now(datetime.timezone.utc),
+        server_default=sa.func.now(),
     )
 
 
@@ -662,7 +668,10 @@ class ProductWhitelist(PcObject, Base, Model):
     title: str = sa.Column(sa.Text, nullable=False)
     ean: str = sa.Column(sa.String(length=13), nullable=False, unique=True, index=True)
     dateCreated: datetime.datetime = sa.Column(
-        sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
+        sa.DateTime,
+        nullable=False,
+        default=lambda: datetime.datetime.now(datetime.timezone.utc),
+        server_default=sa.func.now(),
     )
     comment: str = sa.Column(sa.Text, nullable=False)
     authorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)

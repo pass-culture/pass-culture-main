@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import logging
 from os import path
 import random
@@ -117,7 +117,7 @@ def get_educonnect_user(saml_response: str) -> models.EduconnectUser:
 
     try:
         return models.EduconnectUser(
-            birth_date=datetime.strptime(educonnect_identity[_get_field_oid("67")][0], "%Y-%m-%d").date(),
+            birth_date=datetime.datetime.strptime(educonnect_identity[_get_field_oid("67")][0], "%Y-%m-%d").date(),
             civility=_get_civility(educonnect_identity),
             connection_datetime=_get_connexion_datetime(educonnect_identity),
             educonnect_id=educonnect_identity[_get_field_oid("57")][0],
@@ -151,7 +151,7 @@ def _get_mocked_user_for_performance_tests(user_id: str) -> models.EduconnectUse
 
     return users_factories.EduconnectUserFactory(
         birth_date=user.dateOfBirth.date(),
-        connection_datetime=datetime.utcnow(),
+        connection_datetime=datetime.datetime.now(datetime.timezone.utc),
         educonnect_id=f"educonnect-id_perf-test_{user.id}",
         first_name="".join(random.choice(string.ascii_letters) for _ in range(10)),
         ine_hash=f"inehash_perf-test_{user.id}",
@@ -160,9 +160,9 @@ def _get_mocked_user_for_performance_tests(user_id: str) -> models.EduconnectUse
     )
 
 
-def _get_connexion_datetime(educonnect_identity: dict) -> datetime | None:
+def _get_connexion_datetime(educonnect_identity: dict) -> datetime.datetime | None:
     return (
-        datetime.strptime(educonnect_identity[_get_field_oid("6")][0], "%Y-%m-%d %H:%M:%S.%f")
+        datetime.datetime.strptime(educonnect_identity[_get_field_oid("6")][0], "%Y-%m-%d %H:%M:%S.%f")
         if _get_field_oid("6") in educonnect_identity
         else None
     )

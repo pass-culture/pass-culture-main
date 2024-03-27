@@ -1,8 +1,5 @@
 import csv
-from datetime import date
-from datetime import datetime
-from datetime import time
-from datetime import timedelta
+import datetime
 from io import BytesIO
 from io import StringIO
 import math
@@ -94,9 +91,9 @@ BOOKING_EXPORT_HEADER = [
 
 def find_by_pro_user(
     user: User,
-    booking_period: tuple[date, date] | None = None,
+    booking_period: tuple[datetime.date, datetime.date] | None = None,
     status_filter: BookingStatusFilter | None = None,
-    event_date: date | None = None,
+    event_date: datetime.date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
     offer_type: OfferType | None = None,
@@ -151,7 +148,7 @@ def token_exists(token: str) -> bool:
 
 
 def find_expiring_individual_bookings_query() -> BaseQuery:
-    today_at_midnight = datetime.combine(date.today(), time(0, 0))
+    today_at_midnight = datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
     return (
         Booking.query.join(Stock)
         .join(Offer)
@@ -169,17 +166,21 @@ def find_expiring_individual_bookings_query() -> BaseQuery:
     )
 
 
-def find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: date | None = None) -> BaseQuery:
-    given_date = given_date or date.today()
-    books_expiring_date = datetime.combine(given_date, time(0, 0)) + constants.BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY
-    other_expiring_date = datetime.combine(given_date, time(0, 0)) + constants.BOOKINGS_EXPIRY_NOTIFICATION_DELAY
+def find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: datetime.date | None = None) -> BaseQuery:
+    given_date = given_date or datetime.date.today()
+    books_expiring_date = (
+        datetime.datetime.combine(given_date, datetime.time(0, 0)) + constants.BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY
+    )
+    other_expiring_date = (
+        datetime.datetime.combine(given_date, datetime.time(0, 0)) + constants.BOOKINGS_EXPIRY_NOTIFICATION_DELAY
+    )
     books_window = (
-        datetime.combine(books_expiring_date, time(0, 0)),
-        datetime.combine(books_expiring_date, time(23, 59, 59)),
+        datetime.datetime.combine(books_expiring_date, datetime.time(0, 0)),
+        datetime.datetime.combine(books_expiring_date, datetime.time(23, 59, 59)),
     )
     rest_window = (
-        datetime.combine(other_expiring_date, time(0, 0)),
-        datetime.combine(other_expiring_date, time(23, 59, 59)),
+        datetime.datetime.combine(other_expiring_date, datetime.time(0, 0)),
+        datetime.datetime.combine(other_expiring_date, datetime.time(23, 59, 59)),
     )
 
     return (
@@ -208,8 +209,8 @@ def generate_booking_token() -> str:
     raise ValueError("Could not generate new booking token")
 
 
-def find_user_ids_with_expired_individual_bookings(expired_on: date | None = None) -> list[int]:
-    expired_on = expired_on or date.today()
+def find_user_ids_with_expired_individual_bookings(expired_on: datetime.date | None = None) -> list[int]:
+    expired_on = expired_on or datetime.date.today()
     return [
         user_id
         for user_id, in (
@@ -218,7 +219,7 @@ def find_user_ids_with_expired_individual_bookings(expired_on: date | None = Non
             .filter(
                 Booking.status == BookingStatus.CANCELLED,
                 Booking.cancellationDate >= expired_on,
-                Booking.cancellationDate < (expired_on + timedelta(days=1)),
+                Booking.cancellationDate < (expired_on + datetime.timedelta(days=1)),
                 Booking.cancellationReason == BookingCancellationReasons.EXPIRED,
             )
             .all()
@@ -226,19 +227,19 @@ def find_user_ids_with_expired_individual_bookings(expired_on: date | None = Non
     ]
 
 
-def get_expired_individual_bookings_for_user(user: User, expired_on: date | None = None) -> list[Booking]:
-    expired_on = expired_on or date.today()
+def get_expired_individual_bookings_for_user(user: User, expired_on: datetime.date | None = None) -> list[Booking]:
+    expired_on = expired_on or datetime.date.today()
     return Booking.query.filter(
         Booking.user == user,
         Booking.status == BookingStatus.CANCELLED,
         Booking.cancellationDate >= expired_on,
-        Booking.cancellationDate < (expired_on + timedelta(days=1)),
+        Booking.cancellationDate < (expired_on + datetime.timedelta(days=1)),
         Booking.cancellationReason == BookingCancellationReasons.EXPIRED,
     ).all()
 
 
-def find_expired_individual_bookings_ordered_by_offerer(expired_on: date | None = None) -> list[Booking]:
-    expired_on = expired_on or date.today()
+def find_expired_individual_bookings_ordered_by_offerer(expired_on: datetime.date | None = None) -> list[Booking]:
+    expired_on = expired_on or datetime.date.today()
     return (
         Booking.query.filter(Booking.status == BookingStatus.CANCELLED)
         .filter(cast(Booking.cancellationDate, Date) == expired_on)
@@ -325,7 +326,7 @@ def get_bookings_from_deposit(deposit_id: int) -> list[Booking]:
     )
 
 
-def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery:
+def _create_export_query(offer_id: int, event_beginning_date: datetime.date) -> BaseQuery:
     return (
         Booking.query.join(Booking.offerer)
         .join(Booking.user)
@@ -368,7 +369,7 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery
 
 
 def export_validated_bookings_by_offer_id(
-    offer_id: int, event_beginning_date: date, export_type: BookingExportType
+    offer_id: int, event_beginning_date: datetime.date, export_type: BookingExportType
 ) -> str | bytes:
     offer_validated_bookings_query = _create_export_query(offer_id, event_beginning_date)
     offer_validated_bookings_query = offer_validated_bookings_query.filter(
@@ -380,7 +381,7 @@ def export_validated_bookings_by_offer_id(
 
 
 def export_bookings_by_offer_id(
-    offer_id: int, event_beginning_date: date, export_type: BookingExportType
+    offer_id: int, event_beginning_date: datetime.date, export_type: BookingExportType
 ) -> str | bytes:
     offer_bookings_query = _create_export_query(offer_id, event_beginning_date)
     if export_type == BookingExportType.EXCEL:
@@ -390,9 +391,9 @@ def export_bookings_by_offer_id(
 
 def get_export(
     user: User,
-    booking_period: tuple[date, date] | None = None,
+    booking_period: tuple[datetime.date, datetime.date] | None = None,
     status_filter: BookingStatusFilter | None = BookingStatusFilter.BOOKED,
-    event_date: date | None = None,
+    event_date: datetime.date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
     offer_type: OfferType | None = None,
@@ -420,9 +421,9 @@ def field_to_venue_timezone(field: InstrumentedAttribute) -> cast:
 
 def _get_filtered_bookings_query(
     pro_user: User,
-    period: tuple[date, date] | None = None,
+    period: tuple[datetime.date, datetime.date] | None = None,
     status_filter: BookingStatusFilter | None = None,
-    event_date: date | None = None,
+    event_date: datetime.date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
     offer_type: OfferType | None = None,
@@ -468,9 +469,9 @@ def _get_filtered_bookings_query(
 
 def _get_filtered_bookings_count(
     pro_user: User,
-    period: tuple[date, date] | None = None,
+    period: tuple[datetime.date, datetime.date] | None = None,
     status_filter: BookingStatusFilter | None = None,
-    event_date: date | None = None,
+    event_date: datetime.date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
     offer_type: OfferType | None = None,
@@ -488,9 +489,9 @@ def _get_filtered_bookings_count(
 
 def _get_filtered_booking_report(
     pro_user: User,
-    period: tuple[date, date] | None,
+    period: tuple[datetime.date, datetime.date] | None,
     status_filter: BookingStatusFilter | None,
-    event_date: date | None = None,
+    event_date: datetime.date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
     offer_type: OfferType | None = None,
@@ -544,9 +545,9 @@ def _get_filtered_booking_report(
 
 def _get_filtered_booking_pro(
     pro_user: User,
-    period: tuple[date, date] | None = None,
+    period: tuple[datetime.date, datetime.date] | None = None,
     status_filter: BookingStatusFilter | None = None,
-    event_date: date | None = None,
+    event_date: datetime.date | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,
     offer_type: OfferType | None = None,
@@ -611,7 +612,9 @@ def _serialize_booking_recap(booking: Booking) -> BookingRecap:
         booking_amount=booking.bookingAmount,
         booking_price_category_label=booking.priceCategoryLabel,
         booking_token=booking.bookingToken,
-        booking_date=typing.cast(datetime, convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)),
+        booking_date=typing.cast(
+            datetime.datetime, convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)
+        ),
         booking_is_used=booking.status in (BookingStatus.USED, BookingStatus.REIMBURSED),
         booking_is_cancelled=booking.status == BookingStatus.CANCELLED,
         booking_is_reimbursed=booking.status == BookingStatus.REIMBURSED,
@@ -623,13 +626,17 @@ def _serialize_booking_recap(booking: Booking) -> BookingRecap:
         redactor_email=None,
         redactor_firstname=None,
         redactor_lastname=None,
-        date_used=typing.cast(datetime, convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)),
-        payment_date=typing.cast(datetime, convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)),
+        date_used=typing.cast(datetime.datetime, convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)),
+        payment_date=typing.cast(
+            datetime.datetime, convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)
+        ),
         cancellation_date=typing.cast(
-            datetime, convert_booking_dates_utc_to_venue_timezone(booking.cancelledAt, booking=booking)
+            datetime.datetime, convert_booking_dates_utc_to_venue_timezone(booking.cancelledAt, booking=booking)
         ),
         cancellation_limit_date=(
-            typing.cast(datetime, convert_booking_dates_utc_to_venue_timezone(booking.cancellationLimitDate, booking))
+            typing.cast(
+                datetime.datetime, convert_booking_dates_utc_to_venue_timezone(booking.cancellationLimitDate, booking)
+            )
             if booking.cancellationLimitDate
             else None
         ),
@@ -875,10 +882,10 @@ def get_soon_expiring_bookings(expiration_days_delta: int) -> typing.Generator[B
         .yield_per(1_000)
     )
 
-    delta = timedelta(days=expiration_days_delta)
+    delta = datetime.timedelta(days=expiration_days_delta)
     for booking in query:
         expiration_date = booking.expirationDate
-        if expiration_date and expiration_date.date() == date.today() + delta:
+        if expiration_date and expiration_date.date() == datetime.date.today() + delta:
             yield booking
 
 
@@ -906,9 +913,9 @@ def offerer_has_ongoing_bookings(offerer_id: int) -> bool:
 
 
 def find_individual_bookings_event_happening_tomorrow_query() -> list[Booking]:
-    tomorrow = datetime.utcnow() + timedelta(days=1)
-    tomorrow_min = datetime.combine(tomorrow, time.min)
-    tomorrow_max = datetime.combine(tomorrow, time.max)
+    tomorrow = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=1)
+    tomorrow_min = datetime.datetime.combine(tomorrow, datetime.time.min)
+    tomorrow_max = datetime.datetime.combine(tomorrow, datetime.time.max)
 
     return (
         Booking.query.join(

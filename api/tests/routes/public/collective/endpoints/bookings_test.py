@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 from flask import url_for
 import pytest
@@ -32,7 +32,9 @@ class CancelCollectiveBookingTest:
         db.session.refresh(booking)
 
         assert booking.cancellationReason == educational_models.CollectiveBookingCancellationReasons.PUBLIC_API
-        assert booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
+        assert booking.cancellationDate.timestamp() == pytest.approx(
+            datetime.datetime.now(datetime.timezone.utc).timestamp(), rel=1
+        )
         assert booking.status == educational_models.CollectiveBookingStatus.CANCELLED
 
         assert len(educational_testing.adage_requests) == 1

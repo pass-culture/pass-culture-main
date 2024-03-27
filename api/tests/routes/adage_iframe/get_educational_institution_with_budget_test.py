@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 from dateutil.relativedelta import relativedelta
 from flask import url_for
@@ -75,9 +75,9 @@ class EducationalInstitutionTest:
 
 def _build_educational_year(delta: relativedelta | None = None):
     delta = delta if delta else relativedelta(years=0)
-    now = datetime.utcnow() - delta
+    now = datetime.datetime.now(datetime.timezone.utc) - delta
 
     return educational_factories.EducationalYearFactory(
-        beginningDate=datetime(now.year, 9, 1),
-        expirationDate=datetime(now.year + 1, 8, 31),
+        beginningDate=datetime.datetime(now.year, 9, 1),
+        expirationDate=datetime.datetime(now.year + 1, 8, 31),
     )

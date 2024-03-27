@@ -264,7 +264,7 @@ class AlgoliaBackend(base.SearchBackend):
         # there. A separate cron job looks for these (specially-named)
         # queues and adds back their items to the originating queue
         # (see `clean_processing_queues`).
-        timestamp = datetime.datetime.utcnow().timestamp()
+        timestamp = datetime.datetime.now(datetime.timezone.utc).timestamp()
         processing_queue = f"{queue}:processing:{timestamp}"
         try:
             ids = self.redis_client.srandmember(queue, count)
@@ -645,7 +645,7 @@ class AlgoliaBackend(base.SearchBackend):
                 cursor, processing_queues = redis_client.scan(cursor, pattern)
                 for processing_queue in processing_queues:
                     timestamp = float(processing_queue.rsplit(":")[-1])
-                    if timestamp > datetime.datetime.utcnow().timestamp() - 60 * 60:
+                    if timestamp > datetime.datetime.now(datetime.timezone.utc).timestamp() - 60 * 60:
                         continue  # less than 1 hour ago, too recent, could still be processing
                     self._clean_processing_queue(processing_queue, originating_queue)
                 if cursor == 0:  # back to start, we have been through the pagination

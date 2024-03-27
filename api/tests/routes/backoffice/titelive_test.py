@@ -98,7 +98,7 @@ class SearchEanTest(GetEndpointHelper):
 
         card_text = html_parser.extract_cards_text(response.data)
         assert "EAN white listé : Oui" in card_text[0]
-        assert f"Date d'ajout : {datetime.datetime.utcnow().strftime('%d/%m/%Y')}" in card_text[0]
+        assert f"Date d'ajout : {datetime.datetime.now(datetime.timezone.utc).strftime('%d/%m/%Y')}" in card_text[0]
         assert "Auteur : Frank Columbo" in card_text[0]
         assert "Commentaire : Superbe livre !" in card_text[0]
 

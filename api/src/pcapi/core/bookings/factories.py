@@ -82,16 +82,16 @@ class BookingFactory(BaseFactory):
 
 class UsedBookingFactory(BookingFactory):
     status = models.BookingStatus.USED
-    dateUsed = factory.LazyFunction(datetime.datetime.utcnow)
+    dateUsed = factory.LazyFunction(lambda: datetime.datetime.now(datetime.timezone.utc))
 
 
 class CancelledBookingFactory(BookingFactory):
     status = models.BookingStatus.CANCELLED
-    cancellationDate = factory.LazyFunction(datetime.datetime.utcnow)
+    cancellationDate = factory.LazyFunction(lambda: datetime.datetime.now(datetime.timezone.utc))
     cancellationReason = models.BookingCancellationReasons.BENEFICIARY
 
 
 class ReimbursedBookingFactory(BookingFactory):
     status = models.BookingStatus.REIMBURSED
-    dateUsed = factory.LazyFunction(datetime.datetime.utcnow)
-    reimbursementDate = factory.LazyFunction(datetime.datetime.utcnow)
+    dateUsed = factory.LazyFunction(lambda: datetime.datetime.now(datetime.timezone.utc))
+    reimbursementDate = factory.LazyFunction(lambda: datetime.datetime.now(datetime.timezone.utc))

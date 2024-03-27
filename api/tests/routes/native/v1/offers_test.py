@@ -1,5 +1,4 @@
-from datetime import datetime
-from datetime import timedelta
+import datetime
 from unittest import mock
 from unittest.mock import patch
 
@@ -90,7 +89,7 @@ class OffersTest:
         expired_stock = offers_factories.EventStockFactory(
             offer=offer,
             price=45.67,
-            beginningDatetime=datetime.utcnow() - timedelta(days=1),
+            beginningDatetime=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1),
             priceCategory__priceCategoryLabel__label="expired",
             features=[
                 cinema_providers_constants.ShowtimeFeatures.VF.value,
@@ -105,8 +104,12 @@ class OffersTest:
             features=[cinema_providers_constants.ShowtimeFeatures.VO.value],
         )
 
-        BookingFactory(stock=bookable_stock, user__deposit__expirationDate=datetime(year=2031, month=12, day=31))
-        BookingFactory(stock=exhausted_stock, user__deposit__expirationDate=datetime(year=2031, month=12, day=31))
+        BookingFactory(
+            stock=bookable_stock, user__deposit__expirationDate=datetime.datetime(year=2031, month=12, day=31)
+        )
+        BookingFactory(
+            stock=exhausted_stock, user__deposit__expirationDate=datetime.datetime(year=2031, month=12, day=31)
+        )
 
         offer_id = offer.id
         with assert_no_duplicated_queries():
@@ -293,7 +296,9 @@ class OffersTest:
 
     def test_get_digital_offer_with_available_activation_code_and_expiration_date(self, client):
         # given
-        stock = offers_factories.StockWithActivationCodesFactory(activationCodes__expirationDate=datetime(2050, 1, 1))
+        stock = offers_factories.StockWithActivationCodesFactory(
+            activationCodes__expirationDate=datetime.datetime(2050, 1, 1)
+        )
         offer_id = stock.offer.id
 
         # when
@@ -306,7 +311,9 @@ class OffersTest:
 
     def test_get_digital_offer_without_available_activation_code(self, client):
         # given
-        stock = offers_factories.StockWithActivationCodesFactory(activationCodes__expirationDate=datetime(2000, 1, 1))
+        stock = offers_factories.StockWithActivationCodesFactory(
+            activationCodes__expirationDate=datetime.datetime(2000, 1, 1)
+        )
         offer_id = stock.offer.id
 
         # when
@@ -319,7 +326,9 @@ class OffersTest:
 
     @time_machine.travel("2020-01-01")
     def test_get_expired_offer(self, client):
-        stock = offers_factories.EventStockFactory(beginningDatetime=datetime.utcnow() - timedelta(days=1))
+        stock = offers_factories.EventStockFactory(
+            beginningDatetime=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
+        )
 
         offer_id = stock.offer.id
         with assert_no_duplicated_queries():

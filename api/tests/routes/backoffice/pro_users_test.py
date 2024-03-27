@@ -251,10 +251,10 @@ class GetProUserHistoryTest(GetEndpointHelper):
 
     def test_get_history(self, authenticated_client, pro_user):
         action1 = history_factories.ActionHistoryFactory(
-            user=pro_user, actionDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
+            user=pro_user, actionDate=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(minutes=5)
         )
         action2 = history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=2),
+            actionDate=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(minutes=2),
             actionType=history_models.ActionType.USER_SUSPENDED,
             user=pro_user,
             comment="Test de suspension",

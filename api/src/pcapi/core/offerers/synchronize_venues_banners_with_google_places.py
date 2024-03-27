@@ -164,7 +164,7 @@ def synchronize_venues_banners_with_google_places(
     for venue in venues:
         try:
             if venue.googlePlacesInfo:
-                if (datetime.datetime.utcnow() - venue.googlePlacesInfo.updateDate).days > 62:
+                if (datetime.datetime.now(datetime.timezone.utc) - venue.googlePlacesInfo.updateDate).days > 62:
                     continue
             else:
                 place_id = get_place_id(venue.name, venue.address, venue.city, venue.postalCode)

@@ -155,7 +155,9 @@ class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Deactivab
     author: sa_orm.Mapped["User"] | None = sa.orm.relationship("User", backref="mediations")
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True)
     credit = sa.Column(sa.String(255), nullable=True)
-    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    dateCreated: datetime.datetime = sa.Column(
+        sa.DateTime, nullable=False, default=lambda: datetime.datetime.now(datetime.timezone.utc)
+    )
     offer: sa_orm.Mapped["Offer"] = sa.orm.relationship("Offer", backref="mediations")
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
     thumb_path_component = "mediations"
@@ -170,9 +172,14 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     beginningDatetime: datetime.datetime | None = sa.Column(sa.DateTime, nullable=True)
     bookingLimitDatetime = sa.Column(sa.DateTime, nullable=True)
     dateCreated: datetime.datetime = sa.Column(
-        sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
+        sa.DateTime,
+        nullable=False,
+        default=lambda: datetime.datetime.now(datetime.timezone.utc),
+        server_default=sa.func.now(),
     )
-    dateModified: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    dateModified: datetime.datetime = sa.Column(
+        sa.DateTime, nullable=False, default=lambda: datetime.datetime.now(datetime.timezone.utc)
+    )
     dnBookedQuantity: int = sa.Column(sa.BigInteger, nullable=False, server_default=sa.text("0"))
     offer: sa_orm.Mapped["Offer"] = sa.orm.relationship("Offer", backref="stocks")
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
@@ -226,7 +233,9 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
 
     @hybrid_property
     def hasBookingLimitDatetimePassed(self) -> bool:
-        return bool(self.bookingLimitDatetime and self.bookingLimitDatetime <= datetime.datetime.utcnow())
+        return bool(
+            self.bookingLimitDatetime and self.bookingLimitDatetime <= datetime.datetime.now(datetime.timezone.utc)
+        )
 
     @hasBookingLimitDatetimePassed.expression  # type: ignore [no-redef]
     def hasBookingLimitDatetimePassed(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
@@ -253,7 +262,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
 
     @hybrid_property
     def isEventExpired(self) -> bool:
-        return bool(self.beginningDatetime and self.beginningDatetime <= datetime.datetime.utcnow())
+        return bool(self.beginningDatetime and self.beginningDatetime <= datetime.datetime.now(datetime.timezone.utc))
 
     @isEventExpired.expression  # type: ignore [no-redef]
     def isEventExpired(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
@@ -272,14 +281,17 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
         if not self.beginningDatetime or self.offer.validation == OfferValidationStatus.DRAFT:
             return True
         limit_date_for_stock_deletion = self.beginningDatetime + bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
-        return limit_date_for_stock_deletion >= datetime.datetime.utcnow()
+        return limit_date_for_stock_deletion >= datetime.datetime.now(datetime.timezone.utc)
 
     @hybrid_property
     def isSoldOut(self) -> bool:
         # pylint: disable=comparison-with-callable
         return (
             self.isSoftDeleted
-            or (self.beginningDatetime is not None and self.beginningDatetime <= datetime.datetime.utcnow())
+            or (
+                self.beginningDatetime is not None
+                and self.beginningDatetime <= datetime.datetime.now(datetime.timezone.utc)
+            )
             or (self.remainingQuantity != "unlimited" and self.remainingQuantity <= 0)
         )
 
@@ -423,10 +435,17 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     criteria: sa_orm.Mapped["Criterion"] = sa.orm.relationship(
         "Criterion", backref=db.backref("criteria", lazy="dynamic"), secondary="offer_criterion"
     )
-    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
-    dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
+    dateCreated: datetime.datetime = sa.Column(
+        sa.DateTime, nullable=False, default=lambda: datetime.datetime.now(datetime.timezone.utc)
+    )
+    dateModifiedAtLastProvider = sa.Column(
+        sa.DateTime, nullable=True, default=lambda: datetime.datetime.now(datetime.timezone.utc)
+    )
     dateUpdated: datetime.datetime = sa.Column(
-        sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
+        sa.DateTime,
+        nullable=True,
+        default=lambda: datetime.datetime.now(datetime.timezone.utc),
+        onupdate=lambda: datetime.datetime.now(datetime.timezone.utc),
     )
     description = sa.Column(sa.Text, nullable=True)
     durationMinutes = sa.Column(sa.Integer, nullable=True)
@@ -509,7 +528,10 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         for stock in self.stocks:
             if (
                 not stock.isSoftDeleted
-                and (stock.beginningDatetime is None or stock.beginningDatetime > datetime.datetime.utcnow())
+                and (
+                    stock.beginningDatetime is None
+                    or stock.beginningDatetime > datetime.datetime.now(datetime.timezone.utc)
+                )
                 and (stock.remainingQuantity == "unlimited" or stock.remainingQuantity > 0)
             ):
                 return False

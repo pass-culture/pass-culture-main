@@ -1,6 +1,4 @@
-from datetime import date
-from datetime import datetime
-from datetime import timedelta
+import datetime
 
 from flask import url_for
 import pytest
@@ -167,8 +165,8 @@ class Returns200Test:
 
     def test_inactive_offer(self, client):
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=datetime.utcnow() + timedelta(days=125),
-            bookingLimitDatetime=datetime.utcnow() - timedelta(days=125),
+            beginningDatetime=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=125),
+            bookingLimitDatetime=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=125),
         )
         offer = educational_factories.CollectiveOfferFactory(
             collectiveStock=stock,
@@ -230,12 +228,12 @@ class GetCollectiveOfferRequestTest:
         redactor = educational_factories.EducationalRedactorFactory()
         request = educational_factories.CollectiveOfferRequestFactory(
             educationalRedactor=redactor,
-            requestedDate=date.today() + timedelta(days=7),
+            requestedDate=datetime.date.today() + datetime.timedelta(days=7),
             totalStudents=40,
             totalTeachers=2,
             comment="Some offer request with all information filled",
             phoneNumber="0102030405",
-            dateCreated=date.today(),
+            dateCreated=datetime.date.today(),
         )
 
         offerers_factories.UserOffererFactory(

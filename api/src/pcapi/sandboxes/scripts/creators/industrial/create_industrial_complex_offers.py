@@ -139,7 +139,9 @@ Ut quis egestas neque. Fusce sem nulla, luctus ac sagittis eu, mattis quis purus
             "diffusionVersion": "VO",
         },
     )
-    movie_stock = offers_factories.StockFactory(offer=movie_offer, bookingLimitDatetime=datetime.datetime.utcnow())
+    movie_stock = offers_factories.StockFactory(
+        offer=movie_offer, bookingLimitDatetime=datetime.datetime.now(datetime.timezone.utc)
+    )
     repository.save(movie_stock)
 
     book_product = offers_factories.ProductFactory(

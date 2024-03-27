@@ -68,7 +68,7 @@ def _get_online_bookings_happening_soon() -> sa.orm.query.Query:
     'Soon' means in the next hour but not in the next 30 minutes.
     This is to send the reminder at least 30 minutes before the event starts.
     """
-    now = datetime.datetime.utcnow()
+    now = datetime.datetime.now(datetime.timezone.utc)
     # We normalize the minute to 0 or 30 to get the next-next 30 minutes
     normalized_minute = 0 if now.minute < 30 else 30
     normalized_now = now.replace(minute=normalized_minute, second=0, microsecond=0)

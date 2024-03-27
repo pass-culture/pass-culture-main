@@ -141,7 +141,9 @@ class BoostCinemaDetailsFactory(BaseFactory):
     username = "pass_culture"
     password = "a great password"
     token = factory.LazyFunction(secrets.token_urlsafe)
-    tokenExpirationDate = factory.LazyAttribute(lambda _: datetime.datetime.utcnow() + datetime.timedelta(hours=24))
+    tokenExpirationDate = factory.LazyAttribute(
+        lambda _: datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=24)
+    )
 
 
 class CGRCinemaDetailsFactory(BaseFactory):
@@ -219,4 +221,4 @@ class LocalProviderEventFactory(BaseFactory):
 
     provider = factory.SubFactory(ProviderFactory)
     type = models.LocalProviderEventType.SyncStart
-    date = factory.LazyAttribute(lambda _: datetime.datetime.utcnow() - datetime.timedelta(days=30))
+    date = factory.LazyAttribute(lambda _: datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=30))

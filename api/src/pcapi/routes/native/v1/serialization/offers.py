@@ -1,5 +1,4 @@
-from datetime import date
-from datetime import datetime
+import datetime
 import logging
 from typing import Callable
 
@@ -41,14 +40,14 @@ class OfferOffererResponse(BaseModel):
 
 
 class OfferStockActivationCodeResponse(BaseModel):
-    expirationDate: datetime | None
+    expirationDate: datetime.datetime | None
 
 
 class OfferStockResponse(BaseModel):
     id: int
-    beginningDatetime: datetime | None
-    bookingLimitDatetime: datetime | None
-    cancellation_limit_datetime: datetime | None
+    beginningDatetime: datetime.datetime | None
+    bookingLimitDatetime: datetime.datetime | None
+    cancellation_limit_datetime: datetime.datetime | None
     features: list[str]
     isBookable: bool
     is_forbidden_to_underage: bool
@@ -72,9 +71,11 @@ class OfferStockResponse(BaseModel):
         allow_population_by_field_name = True
 
     @staticmethod
-    def _get_cancellation_limit_datetime(stock: Stock) -> datetime | None:
+    def _get_cancellation_limit_datetime(stock: Stock) -> datetime.datetime | None:
         # compute date as if it were booked now
-        return compute_booking_cancellation_limit_date(stock.beginningDatetime, datetime.utcnow())
+        return compute_booking_cancellation_limit_date(
+            stock.beginningDatetime, datetime.datetime.now(datetime.timezone.utc)
+        )
 
     @staticmethod
     def _get_non_scrappable_activation_code(stock: Stock) -> dict | None:
@@ -157,7 +158,7 @@ class OfferExtraData(BaseModel):
     stageDirector: str | None
     speaker: str | None
     visa: str | None
-    releaseDate: date | None
+    releaseDate: datetime.date | None
     cast: list[str] | None
     editeur: str | None
     gtlLabels: GtlLabels | None
@@ -274,7 +275,7 @@ class OfferResponse(BaseModel):
         orm_mode = True
         alias_generator = to_camel
         allow_population_by_field_name = True
-        json_encoders = {datetime: format_into_utc_date}
+        json_encoders = {datetime.datetime: format_into_utc_date}
 
 
 class OfferReportRequest(BaseModel):
@@ -304,14 +305,14 @@ class OfferReportReasons(BaseModel):
 
 class ReportedOffer(BaseModel):
     offer_id: int
-    reported_at: datetime
+    reported_at: datetime.datetime
     reason: Reason
 
     class Config:
         orm_mode = True
         alias_generator = to_camel
         allow_population_by_field_name = True
-        json_encoders = {datetime: format_into_utc_date}
+        json_encoders = {datetime.datetime: format_into_utc_date}
         use_enum_values = True
 
 

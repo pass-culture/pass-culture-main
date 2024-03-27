@@ -79,7 +79,11 @@ logger = logging.getLogger(__name__)
 def create_reset_password_token(user: models.User, expiration: datetime.datetime | None = None) -> token_utils.Token:
     return token_utils.Token.create(
         token_utils.TokenType.RESET_PASSWORD,
-        datetime.datetime.utcnow() - expiration if expiration else constants.RESET_PASSWORD_TOKEN_LIFE_TIME,
+        (
+            datetime.datetime.now(datetime.timezone.utc) - expiration
+            if expiration
+            else constants.RESET_PASSWORD_TOKEN_LIFE_TIME
+        ),
         user.id,
     )
 
@@ -127,7 +131,7 @@ def create_account(
             models.NotificationSubscriptions(marketing_email=marketing_email_subscription)
         ),
         phoneNumber=phone_number,
-        lastConnectionDate=datetime.datetime.utcnow(),
+        lastConnectionDate=datetime.datetime.now(datetime.timezone.utc),
     )
 
     if not user.age or user.age < constants.ACCOUNT_CREATION_MINIMUM_AGE:
@@ -276,7 +280,7 @@ def get_email_validation_resends_limitation_expiration_time(user: models.User) -
     ttl = app.redis_client.ttl(_email_validation_resends_key(user))
 
     if ttl > 0:
-        return datetime.datetime.utcnow() + datetime.timedelta(seconds=ttl)
+        return datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=ttl)
 
     return None
 
@@ -435,7 +439,7 @@ def _cancel_bookings_of_user_on_requested_account_suspension(
     ):
         bookings_query = bookings_query.filter(
             sa.or_(
-                datetime.datetime.utcnow() < bookings_models.Booking.cancellationLimitDate,
+                datetime.datetime.now(datetime.timezone.utc) < bookings_models.Booking.cancellationLimitDate,
                 bookings_models.Booking.cancellationLimitDate.is_(None),
             ),
         )
@@ -666,14 +670,14 @@ def _update_underage_beneficiary_deposit_expiration_date(user: users_models.User
         },
     )
 
-    if new_deposit_expiration_datetime > datetime.datetime.utcnow():
+    if new_deposit_expiration_datetime > datetime.datetime.now(datetime.timezone.utc):
         user.deposit.expirationDate = new_deposit_expiration_datetime
     else:
-        if current_deposit_expiration_datetime < datetime.datetime.utcnow():
+        if current_deposit_expiration_datetime < datetime.datetime.now(datetime.timezone.utc):
             # no need to update the deposit expirationDate because it is already passed
             return
         # Else, reduce to now and not to the theoretical new date in case there are bookings made between these dates
-        user.deposit.expirationDate = datetime.datetime.utcnow()
+        user.deposit.expirationDate = datetime.datetime.now(datetime.timezone.utc)
 
     repository.save(user.deposit)
 
@@ -787,7 +791,7 @@ def create_pro_user(pro_user: ProUserCreationBodyV2Model) -> models.User:
 
     if settings.IS_INTEGRATION:
         new_pro_user.add_beneficiary_role()
-        eighteen_years_ago = datetime.datetime.utcnow() - datetime.timedelta(days=366 * 18)
+        eighteen_years_ago = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=366 * 18)
         new_pro_user.dateOfBirth = eighteen_years_ago
         new_pro_user.validatedBirthDate = new_pro_user.dateOfBirth.date()
         deposit = finance_api.create_deposit(new_pro_user, "integration_signup", models.EligibilityType.AGE18)
@@ -816,7 +820,7 @@ def set_pro_rgs_as_seen(user: models.User) -> None:
 
 def update_last_connection_date(user: models.User) -> None:
     previous_connection_date = user.lastConnectionDate
-    last_connection_date = datetime.datetime.utcnow()
+    last_connection_date = datetime.datetime.now(datetime.timezone.utc)
 
     should_save_last_connection_date = (
         not previous_connection_date or last_connection_date - previous_connection_date > datetime.timedelta(minutes=15)
@@ -1239,7 +1243,7 @@ def is_login_device_a_trusted_device(
 
 
 def get_recent_suspicious_logins(user: users_models.User) -> list[users_models.LoginDeviceHistory]:
-    yesterday = datetime.datetime.utcnow() - relativedelta(hours=24)
+    yesterday = datetime.datetime.now(datetime.timezone.utc) - relativedelta(hours=24)
     recent_logins = users_models.LoginDeviceHistory.query.filter(
         users_models.LoginDeviceHistory.user == user,
         users_models.LoginDeviceHistory.dateCreated >= yesterday,
@@ -1273,10 +1277,10 @@ def create_suspicious_login_email_token(
             token_utils.TokenType.SUSPENSION_SUSPICIOUS_LOGIN,
             users_constants.SUSPICIOUS_LOGIN_EMAIL_TOKEN_LIFE_TIME,
             user_id,
-            {"dateCreated": datetime.datetime.utcnow().strftime(date_utils.DATE_ISO_FORMAT)},
+            {"dateCreated": datetime.datetime.now(datetime.timezone.utc).strftime(date_utils.DATE_ISO_FORMAT)},
         )
 
-    passed_ttl = datetime.datetime.utcnow() - login_info.dateCreated
+    passed_ttl = datetime.datetime.now(datetime.timezone.utc) - login_info.dateCreated
     remaining_ttl = users_constants.SUSPICIOUS_LOGIN_EMAIL_TOKEN_LIFE_TIME - passed_ttl
 
     return token_utils.Token.create(
@@ -1318,14 +1322,14 @@ def save_device_info_and_notify_user(
 
 
 def delete_old_trusted_devices() -> None:
-    five_years_ago = datetime.datetime.utcnow() - relativedelta(years=5)
+    five_years_ago = datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=5)
 
     users_models.TrustedDevice.query.filter(users_models.TrustedDevice.dateCreated <= five_years_ago).delete()
     db.session.commit()
 
 
 def delete_old_login_device_history() -> None:
-    thirteen_months_ago = datetime.datetime.utcnow() - relativedelta(months=13)
+    thirteen_months_ago = datetime.datetime.now(datetime.timezone.utc) - relativedelta(months=13)
 
     users_models.LoginDeviceHistory.query.filter(
         users_models.LoginDeviceHistory.dateCreated <= thirteen_months_ago
@@ -1520,7 +1524,8 @@ def anonymize_non_pro_non_beneficiary_users(*, force: bool = False) -> None:
             ~users_models.User.email.like("%@passculture.app"),  # people who work or worked in the company
             func.array_length(users_models.User.roles, 1).is_(None),  # no role, not already anonymized
             finance_models.Deposit.userId.is_(None),  # no deposit
-            users_models.User.lastConnectionDate < datetime.datetime.utcnow() - relativedelta(years=3),
+            users_models.User.lastConnectionDate
+            < datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=3),
         )
         .all()
     )
@@ -1542,8 +1547,10 @@ def anonymize_beneficiary_users(*, force: bool = False) -> None:
         .filter(
             users_models.User.is_beneficiary.is_(True),  # type: ignore [attr-defined]
             sa.and_(
-                users_models.User.lastConnectionDate < datetime.datetime.utcnow() - relativedelta(years=3),
-                finance_models.Deposit.expirationDate < datetime.datetime.utcnow() - relativedelta(years=5),
+                users_models.User.lastConnectionDate
+                < datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=3),
+                finance_models.Deposit.expirationDate
+                < datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=5),
             ),
         )
         .all()
@@ -1558,7 +1565,7 @@ def anonymize_user_deposits() -> None:
     Anonymize deposits that have been expired for at least 10 years.
     """
     deposits_query = finance_models.Deposit.query.filter(
-        finance_models.Deposit.expirationDate < datetime.datetime.utcnow() - relativedelta(years=10),
+        finance_models.Deposit.expirationDate < datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=10),
         ~sa.and_(  # ignore already anonymized deposits
             sa.func.extract("month", finance_models.Deposit.expirationDate) == 1,
             sa.func.extract("day", finance_models.Deposit.expirationDate) == 1,
@@ -1585,12 +1592,12 @@ def enable_new_pro_nav(user: models.User) -> None:
     if not pro_new_nav_state or not pro_new_nav_state.eligibilityDate:
         raise exceptions.ProUserNotEligibleForNewNav()
 
-    if pro_new_nav_state.eligibilityDate > datetime.datetime.utcnow():
+    if pro_new_nav_state.eligibilityDate > datetime.datetime.now(datetime.timezone.utc):
         raise exceptions.ProUserNotYetEligibleForNewNav()
 
     if pro_new_nav_state.newNavDate:
         return
 
-    pro_new_nav_state.newNavDate = datetime.datetime.utcnow()
+    pro_new_nav_state.newNavDate = datetime.datetime.now(datetime.timezone.utc)
     db.session.add(pro_new_nav_state)
     db.session.commit()

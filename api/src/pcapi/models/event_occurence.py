@@ -1,5 +1,4 @@
-from datetime import datetime
-from datetime import timedelta
+import datetime
 import decimal
 
 from pcapi.core.offers.models import Offer
@@ -12,7 +11,8 @@ class EventOccurrence:
         offer: Offer,
         price: decimal.Decimal,
         price_category: PriceCategory,
-        beginning_datetime: datetime = datetime.utcnow() + timedelta(hours=2),
+        beginning_datetime: datetime.datetime = datetime.datetime.now(datetime.timezone.utc)
+        + datetime.timedelta(hours=2),
     ) -> None:
         self.offer = offer
         self.offerId = offer.id
@@ -22,6 +22,6 @@ class EventOccurrence:
 
     offer: Offer
     offerId: int
-    beginningDatetime: datetime
+    beginningDatetime: datetime.datetime
     price: decimal.Decimal
     price_category: PriceCategory

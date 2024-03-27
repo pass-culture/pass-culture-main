@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 import pytest
 
@@ -19,10 +19,10 @@ class ZendeskWebhookTest:
         "phone_number,postal_code", [("0612345678", 55270), ("06 12 34 56 78", None), ("+33612345678", 97600)]
     )
     def test_webhook_update_user_by_email(self, client, phone_number, postal_code):
-        birth_year = datetime.utcnow().year - user_constants.ELIGIBILITY_AGE_18
+        birth_year = datetime.datetime.now(datetime.timezone.utc).year - user_constants.ELIGIBILITY_AGE_18
 
         user = users_factories.BeneficiaryGrant18Factory(
-            dateOfBirth=datetime(birth_year, 1, 2),
+            dateOfBirth=datetime.datetime(birth_year, 1, 2),
             phoneNumber=phone_number,
             postalCode=postal_code,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
@@ -70,13 +70,13 @@ class ZendeskWebhookTest:
     def test_webhook_update_user_by_phone(self, client):
         # not beneficiary, no credit, suspended
         user = users_factories.UserFactory(
-            dateOfBirth=datetime(2004, 3, 2),
+            dateOfBirth=datetime.datetime(2004, 3, 2),
             phoneNumber="0634567890",
             phoneValidationStatus=None,
             isActive=False,
         )
         history_factories.SuspendedUserActionHistoryFactory(
-            user=user, actionDate=datetime(2022, 3, 22, 15), reason=user_constants.SuspensionReason.FRAUD_HACK
+            user=user, actionDate=datetime.datetime(2022, 3, 22, 15), reason=user_constants.SuspensionReason.FRAUD_HACK
         )
 
         response = client.post(
@@ -115,11 +115,11 @@ class ZendeskWebhookTest:
         }
 
     def test_webhook_update_user_without_subscription_process(self, client):
-        birth_year = datetime.utcnow().year - user_constants.ELIGIBILITY_AGE_18
+        birth_year = datetime.datetime.now(datetime.timezone.utc).year - user_constants.ELIGIBILITY_AGE_18
 
         # first name, last name and phone number unknown
         user = users_factories.UserFactory(
-            dateOfBirth=datetime(birth_year, 1, 2),
+            dateOfBirth=datetime.datetime(birth_year, 1, 2),
             firstName=None,
             lastName=None,
             phoneNumber=None,

@@ -101,7 +101,7 @@ def _create_offers(provider: Provider) -> Venue:
             CinemaStockProviderFactory(offer=offer_with_past_stock)
             CinemaStockProviderFactory(
                 offer=offer_with_past_stock,
-                beginningDatetime=datetime.datetime.utcnow().replace(second=0, microsecond=0)
+                beginningDatetime=datetime.datetime.now(datetime.timezone.utc).replace(second=0, microsecond=0)
                 - datetime.timedelta(days=5),
             )
         if provider_name == "TiteLiveThings":

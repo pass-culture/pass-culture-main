@@ -586,7 +586,7 @@ def _is_ubble_allowed_if_subscription_overflow(user: users_models.User) -> bool:
 
     future_age = users_utils.get_age_at_date(
         user.birth_date,
-        datetime.datetime.utcnow() + datetime.timedelta(days=settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS),  # type: ignore [arg-type]
+        datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS),  # type: ignore [arg-type]
     )
     eligibility_ranges = users_constants.ELIGIBILITY_UNDERAGE_RANGE + [users_constants.ELIGIBILITY_AGE_18]
     eligibility_ranges = [age + 1 for age in eligibility_ranges]

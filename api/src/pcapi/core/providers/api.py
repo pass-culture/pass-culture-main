@@ -1,5 +1,5 @@
 from dataclasses import asdict
-from datetime import datetime
+import datetime
 import decimal
 import logging
 import typing
@@ -440,7 +440,7 @@ def _build_stock_from_stock_detail(
         bookingLimitDatetime=None,
         offerId=offers_id,
         price=stock_detail.price,
-        dateModified=datetime.utcnow(),
+        dateModified=datetime.datetime.now(datetime.timezone.utc),
         idAtProviders=stock_detail.stocks_provider_reference,
         lastProviderId=provider_id,
     )

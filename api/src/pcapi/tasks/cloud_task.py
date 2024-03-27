@@ -114,7 +114,11 @@ def enqueue_internal_task(
     # id is recommended".
     task_id = hashlib.sha1(json.dumps(payload, sort_keys=True).encode()).hexdigest() if deduplicate else None
 
-    schedule_time = datetime.datetime.utcnow() + relativedelta(seconds=delayed_seconds) if delayed_seconds else None
+    schedule_time = (
+        datetime.datetime.now(datetime.timezone.utc) + relativedelta(seconds=delayed_seconds)
+        if delayed_seconds
+        else None
+    )
 
     return enqueue_task(
         queue, http_request, task_id=task_id, schedule_time=schedule_time, task_request_timeout=task_request_timeout

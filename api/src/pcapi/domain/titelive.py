@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 from typing import Pattern
 from zipfile import ZipFile
 
@@ -7,12 +7,12 @@ TITELIVE_THINGS_DATE_FORMAT = "%d/%m/%Y"
 TITELIVE_DESCRIPTION_DATE_FORMAT = "%y%m%d"
 
 
-def read_description_date(date: str) -> datetime:
-    return datetime.strptime(date, TITELIVE_DESCRIPTION_DATE_FORMAT)
+def read_description_date(date: str) -> datetime.datetime:
+    return datetime.datetime.strptime(date, TITELIVE_DESCRIPTION_DATE_FORMAT)
 
 
-def read_things_date(date: str) -> datetime:
-    return datetime.strptime(date, TITELIVE_THINGS_DATE_FORMAT)
+def read_things_date(date: str) -> datetime.datetime:
+    return datetime.datetime.strptime(date, TITELIVE_THINGS_DATE_FORMAT)
 
 
 def parse_things_date_to_string(date: str) -> str:
@@ -20,7 +20,7 @@ def parse_things_date_to_string(date: str) -> str:
 
 
 def put_today_file_at_end_of_list(ordered_files_list: list[str], date_regexp: Pattern) -> list[str]:
-    today = datetime.utcnow().day
+    today = datetime.datetime.now(datetime.timezone.utc).day
     files_after_today = list(filter(lambda f: get_date_from_filename(f, date_regexp) > today, ordered_files_list))
     files_before_today = list(filter(lambda f: get_date_from_filename(f, date_regexp) <= today, ordered_files_list))
     return files_after_today + files_before_today

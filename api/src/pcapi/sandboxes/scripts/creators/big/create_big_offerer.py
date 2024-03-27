@@ -33,7 +33,7 @@ def create_big_offerer() -> None:
             stock = EventStockFactory(
                 offer=offer_event,
                 quantity=10,
-                beginningDatetime=datetime.datetime.utcnow().replace(second=0, microsecond=0)
+                beginningDatetime=datetime.datetime.now(datetime.timezone.utc).replace(second=0, microsecond=0)
                 + datetime.timedelta(days=20),
             )
             BookingFactory(quantity=1, stock=stock)

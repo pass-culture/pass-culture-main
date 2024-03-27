@@ -232,7 +232,7 @@ def _batch_validate_or_reject_collective_offer_templates(
         old_validation_status = collective_offer_template.validation
         new_validation_status = validation
         collective_offer_template.validation = new_validation_status
-        collective_offer_template.lastValidationDate = datetime.datetime.utcnow()
+        collective_offer_template.lastValidationDate = datetime.datetime.now(datetime.timezone.utc)
         collective_offer_template.lastValidationType = OfferValidationType.MANUAL
         collective_offer_template.lastValidationAuthorUserId = current_user.id
         if validation is OfferValidationStatus.APPROVED:

@@ -21,7 +21,7 @@ def get_booking_cancellation_by_beneficiary_email_data(
     if (
         beneficiary.deposit
         and beneficiary.deposit.expirationDate
-        and beneficiary.deposit.expirationDate > datetime.datetime.utcnow()
+        and beneficiary.deposit.expirationDate > datetime.datetime.now(datetime.timezone.utc)
     ):
         can_book_again = True
 

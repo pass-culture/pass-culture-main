@@ -20,7 +20,7 @@ blueprint = Blueprint(__name__, __name__)
 def _get_eta(end_id: int, current: int, elapsed_per_batch: list) -> str:
     left_to_do = end_id - current
     eta = left_to_do / BATCH_SIZE * statistics.mean(elapsed_per_batch)
-    eta = datetime.datetime.utcnow() + datetime.timedelta(seconds=eta)
+    eta = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=eta)
     eta = eta.astimezone(pytz.timezone("Europe/Paris"))
     eta = eta.strftime("%d/%m/%Y %H:%M:%S")
     return eta
@@ -56,7 +56,7 @@ def _fix_offers(start_id: int, end_id: int) -> None:
             AND product."jsonData"->>'gtl_id' is not null
             AND product."jsonData"->>'gtl_id' != ''
             AND (offer."jsonData"->>'csr_id' is null OR offer."jsonData"->>'csr_id' = '' OR offer."jsonData"->>'code_clil' is null OR offer."jsonData"->>'code_clil' = '' OR offer."jsonData"->>'gtl_id' is null OR offer."jsonData"->>'gtl_id' = '')
-            AND ((product."jsonData"->>'csr_id' is not null AND product."jsonData"->>'csr_id' != '') OR (product."jsonData"->>'code_clil' is not null AND product."jsonData"->>'code_clil' != ''))            
+            AND ((product."jsonData"->>'csr_id' is not null AND product."jsonData"->>'csr_id' != '') OR (product."jsonData"->>'code_clil' is not null AND product."jsonData"->>'code_clil' != ''))
             """,
             params={"start": i, "end": i + BATCH_SIZE},
         )

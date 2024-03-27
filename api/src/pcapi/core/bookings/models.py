@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import decimal
 from decimal import Decimal
 import enum
@@ -89,10 +89,12 @@ class ExternalBooking(PcObject, Base, Model):
 class Booking(PcObject, Base, Model):
     __tablename__ = "booking"
 
-    dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime.datetime = Column(
+        DateTime, nullable=False, default=lambda: datetime.datetime.now(datetime.timezone.utc)
+    )
     Index("ix_booking_date_created", dateCreated)
 
-    dateUsed: datetime | None = Column(DateTime, nullable=True, index=True)
+    dateUsed: datetime.datetime | None = Column(DateTime, nullable=True, index=True)
 
     stockId: int = Column(BigInteger, ForeignKey("stock.id"), index=True, nullable=False)
 
@@ -122,7 +124,7 @@ class Booking(PcObject, Base, Model):
 
     priceCategoryLabel: str | None = Column(Text, nullable=True)
 
-    cancellationDate: datetime | None = Column(DateTime, nullable=True)
+    cancellationDate: datetime.datetime | None = Column(DateTime, nullable=True)
 
     displayAsEnded = Column(Boolean, nullable=True)
 
@@ -158,7 +160,7 @@ class Booking(PcObject, Base, Model):
             raise exceptions.BookingHasAlreadyBeenUsed()
         if self.status is BookingStatus.CANCELLED:
             raise exceptions.BookingIsCancelled()
-        self.dateUsed = datetime.utcnow()
+        self.dateUsed = datetime.datetime.now(datetime.timezone.utc)
         self.status = BookingStatus.USED
 
     def mark_as_unused_set_confirmed(self) -> None:
@@ -178,7 +180,7 @@ class Booking(PcObject, Base, Model):
         if self.status is BookingStatus.USED and not cancel_even_if_used:
             raise exceptions.BookingIsAlreadyUsed()
         self.status = BookingStatus.CANCELLED
-        self.cancellationDate = datetime.utcnow()
+        self.cancellationDate = datetime.datetime.now(datetime.timezone.utc)
         self.cancellationReason = reason
         self.dateUsed = None
 
@@ -188,10 +190,10 @@ class Booking(PcObject, Base, Model):
         self.cancellationDate = None
         self.cancellationReason = None
         self.status = BookingStatus.USED
-        self.dateUsed = datetime.utcnow()
+        self.dateUsed = datetime.datetime.now(datetime.timezone.utc)
 
     @property
-    def expirationDate(self) -> datetime | None:
+    def expirationDate(self) -> datetime.datetime | None:
         if self.status == BookingStatus.CANCELLED or self.is_used_or_reimbursed:
             return None
         if not self.stock.offer.canExpire:
@@ -231,11 +233,16 @@ class Booking(PcObject, Base, Model):
 
     @hybrid_property
     def isConfirmed(self) -> bool:
-        return self.cancellationLimitDate is not None and self.cancellationLimitDate <= datetime.utcnow()
+        return self.cancellationLimitDate is not None and self.cancellationLimitDate <= datetime.datetime.now(
+            datetime.timezone.utc
+        )
 
     @isConfirmed.expression  # type: ignore [no-redef]
     def isConfirmed(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
-        return and_(cls.cancellationLimitDate.is_not(None), cls.cancellationLimitDate <= datetime.utcnow())
+        return and_(
+            cls.cancellationLimitDate.is_not(None),
+            cls.cancellationLimitDate <= datetime.datetime.now(datetime.timezone.utc),
+        )
 
     @hybrid_property
     def is_used_or_reimbursed(self) -> bool:

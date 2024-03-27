@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 from dateutil.relativedelta import relativedelta
 import factory
@@ -23,17 +23,19 @@ class SuspendedUserActionHistoryFactory(ActionHistoryFactory):
         reason = users_constants.SuspensionReason.FRAUD_SUSPICION
 
     user = factory.SubFactory(
-        users_factories.UserFactory, isActive=False, dateCreated=datetime.utcnow() - relativedelta(days=2)
+        users_factories.UserFactory,
+        isActive=False,
+        dateCreated=datetime.datetime.now(datetime.timezone.utc) - relativedelta(days=2),
     )
     actionType = models.ActionType.USER_SUSPENDED
-    actionDate = factory.LazyFunction(lambda: datetime.utcnow() - relativedelta(days=1))
+    actionDate = factory.LazyFunction(lambda: datetime.datetime.now(datetime.timezone.utc) - relativedelta(days=1))
     extraData = factory.LazyAttribute(lambda o: {"reason": o.reason.value})
 
 
 class UnsuspendedUserActionHistoryFactory(ActionHistoryFactory):
     user = factory.SubFactory(users_factories.UserFactory)
     actionType = models.ActionType.USER_UNSUSPENDED
-    actionDate = factory.LazyFunction(lambda: datetime.utcnow() - relativedelta(days=1))
+    actionDate = factory.LazyFunction(lambda: datetime.datetime.now(datetime.timezone.utc) - relativedelta(days=1))
 
 
 class BlacklistDomainNameFactory(ActionHistoryFactory):

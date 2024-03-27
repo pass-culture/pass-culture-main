@@ -87,7 +87,7 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
     ) -> providers_models.LocalProviderEvent:
         message = f"{self.titelive_base.value} : {message}" if message else self.titelive_base.value
         return providers_models.LocalProviderEvent(
-            date=datetime.datetime.utcnow(),
+            date=datetime.datetime.now(datetime.timezone.utc),
             payload=message,
             provider=self.provider,
             type=provider_event_type,

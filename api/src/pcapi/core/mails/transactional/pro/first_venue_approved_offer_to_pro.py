@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 from sqlalchemy.orm import joinedload
 
@@ -19,7 +19,7 @@ def get_first_venue_approved_offer_email_data(offer: Offer) -> models.Transactio
         .options(joinedload(Venue.reimbursement_point_links))
         .one()
     )
-    now = datetime.utcnow()
+    now = datetime.datetime.now(datetime.timezone.utc)
     current_reimbursement_point = any(
         reimbursement_point_link
         for reimbursement_point_link in venue.reimbursement_point_links

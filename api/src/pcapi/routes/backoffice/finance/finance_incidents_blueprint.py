@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import typing
 
 from flask import Response
@@ -84,11 +84,11 @@ def _get_incidents(
         )
 
         if form.from_date.data:
-            from_datetime = date_utils.date_to_localized_datetime(form.from_date.data, datetime.min.time())
+            from_datetime = date_utils.date_to_localized_datetime(form.from_date.data, datetime.datetime.min.time())
             query = query.filter(history_models.ActionHistory.actionDate >= from_datetime)
 
         if form.to_date.data:
-            to_datetime = date_utils.date_to_localized_datetime(form.to_date.data, datetime.max.time())
+            to_datetime = date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time())
             query = query.filter(history_models.ActionHistory.actionDate <= to_datetime)
 
     if form.q.data:
@@ -527,7 +527,7 @@ def get_finance_incident_validation_form(finance_incident_id: int) -> utils.Back
             offerer_models.VenueBankAccountLink,
             sa.and_(
                 offerer_models.Venue.id == offerer_models.VenueBankAccountLink.venueId,
-                offerer_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+                offerer_models.VenueBankAccountLink.timespan.contains(datetime.datetime.now(datetime.timezone.utc)),
             ),
         )
         .outerjoin(offerer_models.VenueBankAccountLink.bankAccount)
@@ -726,7 +726,7 @@ def _get_incident(finance_incident_id: int) -> finance_models.FinanceIncident:
             offerer_models.VenueBankAccountLink,
             sa.and_(
                 offerer_models.Venue.id == offerer_models.VenueBankAccountLink.venueId,
-                offerer_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+                offerer_models.VenueBankAccountLink.timespan.contains(datetime.datetime.now(datetime.timezone.utc)),
             ),
         )
         .outerjoin(offerer_models.VenueBankAccountLink.bankAccount)

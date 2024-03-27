@@ -50,9 +50,10 @@ def _find_users_to_remind(
             fraud_models.BeneficiaryFraudCheck.status.in_(
                 [fraud_models.FraudCheckStatus.KO, fraud_models.FraudCheckStatus.SUSPICIOUS]
             ),
-            fraud_models.BeneficiaryFraudCheck.dateCreated < datetime.datetime.utcnow() - relativedelta(days=days_ago),
             fraud_models.BeneficiaryFraudCheck.dateCreated
-            >= datetime.datetime.utcnow() - relativedelta(days=days_ago + 1),
+            < datetime.datetime.now(datetime.timezone.utc) - relativedelta(days=days_ago),
+            fraud_models.BeneficiaryFraudCheck.dateCreated
+            >= datetime.datetime.now(datetime.timezone.utc) - relativedelta(days=days_ago + 1),
         )
         .all()
     )

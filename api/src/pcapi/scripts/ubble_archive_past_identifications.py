@@ -32,7 +32,7 @@ def ubble_archive_past_identifications_automation() -> None:
     # call the archive function on the last 6 months for the statuses "None"
     # (the archive process has never been executed)
     # and "False" (the archive process has executed but failed)
-    end_date = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+    end_date = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=1)
     start_date = end_date - datetime.timedelta(days=186)
     archive_past_identification_pictures(start_date, end_date, None)
     archive_past_identification_pictures(start_date, end_date, False)

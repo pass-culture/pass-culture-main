@@ -1,5 +1,4 @@
-from datetime import date
-from datetime import datetime
+import datetime
 import decimal
 import enum
 import logging
@@ -332,7 +331,9 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
     venueLabel: sa_orm.Mapped["VenueLabel"] = relationship("VenueLabel", foreign_keys=[venueLabelId])
 
-    dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime.datetime = Column(
+        DateTime, nullable=False, default=lambda: datetime.datetime.now(datetime.timezone.utc)
+    )
 
     withdrawalDetails = Column(Text, nullable=True)
 
@@ -611,7 +612,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
     @property
     def current_pricing_point_id(self) -> int | None:
-        now = datetime.utcnow()
+        now = datetime.datetime.now(datetime.timezone.utc)
         return (
             db.session.query(VenuePricingPointLink.pricingPointId)
             .filter(
@@ -623,7 +624,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
     @hybrid_property
     def current_reimbursement_point_id(self) -> int | None:
-        now = datetime.utcnow()
+        now = datetime.datetime.now(datetime.timezone.utc)
 
         return (
             db.session.query(VenueReimbursementPointLink.reimbursementPointId)
@@ -636,7 +637,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
     @current_reimbursement_point_id.expression  # type: ignore [no-redef]
     def current_reimbursement_point_id(cls) -> int | None:  # pylint: disable=no-self-argument # type: ignore[no-redef]
-        now = datetime.utcnow()
+        now = datetime.datetime.now(datetime.timezone.utc)
 
         return (
             db.session.query(VenueReimbursementPointLink.reimbursementPointId)
@@ -651,7 +652,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     def current_pricing_point_link(self) -> "VenuePricingPointLink | None":
         # Unlike current_pricing_point_id, this property uses pricing_point_links joinedloaded with the venue, which
         # avoids additional SQL query
-        now = datetime.utcnow()
+        now = datetime.datetime.now(datetime.timezone.utc)
 
         for link in self.pricing_point_links:
             lower = link.timespan.lower
@@ -673,7 +674,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     def current_reimbursement_point_link(self) -> "VenueReimbursementPointLink | None":
         # Unlike current_reimbursement_point_id, this property uses reimbursement_point_links joinedloaded with the
         # venue, which avoids additional SQL query
-        now = datetime.utcnow()
+        now = datetime.datetime.now(datetime.timezone.utc)
 
         for link in self.reimbursement_point_links:
             lower = link.timespan.lower
@@ -693,7 +694,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
     @property
     def current_bank_account_link(self) -> "VenueBankAccountLink | None":
-        now = datetime.utcnow()
+        now = datetime.datetime.now(datetime.timezone.utc)
 
         for link in self.bankAccountLinks:
             lower = link.timespan.lower
@@ -748,7 +749,7 @@ class GooglePlacesInfo(PcObject, Base, Model):
     placeId: str | None = Column(Text, nullable=True, unique=False)
     bannerUrl: str | None = Column(Text, nullable=True, name="bannerUrl")
     bannerMeta: dict | None = Column(MutableDict.as_mutable(JSONB), nullable=True)
-    updateDate: datetime = Column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now())
+    updateDate: datetime.datetime = Column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now())
 
 
 class AccessibilityProvider(PcObject, Base, Model):
@@ -761,7 +762,9 @@ class AccessibilityProvider(PcObject, Base, Model):
         nullable=True,
     )
     externalAccessibilityData: dict | None = sa.Column(MutableDict.as_mutable(JSONB), nullable=True)
-    lastUpdateAtProvider: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
+    lastUpdateAtProvider: datetime.datetime = Column(
+        DateTime, nullable=False, default=lambda: datetime.datetime.now(datetime.timezone.utc)
+    )
 
 
 class OpeningHours(PcObject, Base, Model):
@@ -957,7 +960,9 @@ class Offerer(
     ValidationStatusMixin,
     DeactivableMixin,
 ):
-    dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime.datetime = Column(
+        DateTime, nullable=False, default=lambda: datetime.datetime.now(datetime.timezone.utc)
+    )
 
     name: str = Column(String(140), nullable=False)
     # Keep both because pg_stat_user_indexes reports idx_offerer_trgm_name has been used (but still used?)
@@ -1051,7 +1056,9 @@ class UserOfferer(PcObject, Base, Model, ValidationStatusMixin):
     )
 
     # dateCreated will remain null for all rows already in this table before this field was added
-    dateCreated: datetime = Column(DateTime, nullable=True, default=datetime.utcnow)
+    dateCreated: datetime.datetime = Column(
+        DateTime, nullable=True, default=lambda: datetime.datetime.now(datetime.timezone.utc)
+    )
 
 
 class ApiKey(PcObject, Base, Model):
@@ -1061,7 +1068,12 @@ class ApiKey(PcObject, Base, Model):
     provider: sa_orm.Mapped["providers_models.Provider"] = relationship(
         "Provider", foreign_keys=[providerId], back_populates="apiKeys"
     )
-    dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
+    dateCreated: datetime.datetime = Column(
+        DateTime,
+        nullable=False,
+        default=lambda: datetime.datetime.now(datetime.timezone.utc),
+        server_default=func.now(),
+    )
     prefix = Column(Text, nullable=True, unique=True)
     secret: bytes = Column(LargeBinary, nullable=True)
 
@@ -1142,7 +1154,9 @@ class OffererInvitation(PcObject, Base, Model):
     offererId: int = Column(BigInteger, ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False)
     offerer: Offerer = relationship("Offerer", foreign_keys=[offererId])
     email: str = Column(Text, nullable=False)
-    dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime.datetime = Column(
+        DateTime, nullable=False, default=lambda: datetime.datetime.now(datetime.timezone.utc)
+    )
     userId: int = Column(BigInteger, ForeignKey("user.id"), nullable=False, index=True)
     user: sa_orm.Mapped["users_models.User"] = relationship("User", foreign_keys=[userId], backref="OffererInvitations")
     status: InvitationStatus = Column(db_utils.MagicEnum(InvitationStatus), nullable=False)
@@ -1159,12 +1173,12 @@ class IndividualOffererSubscription(PcObject, Base, Model):
     )
 
     isEmailSent: bool = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False)
-    dateEmailSent: date | None = sa.Column(sa.Date, nullable=True)
+    dateEmailSent: datetime.date | None = sa.Column(sa.Date, nullable=True)
 
     isCriminalRecordReceived: bool = sa.Column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
     )
-    dateCriminalRecordReceived: date | None = sa.Column(sa.Date, nullable=True)
+    dateCriminalRecordReceived: datetime.date | None = sa.Column(sa.Date, nullable=True)
 
     isCertificateReceived: bool = sa.Column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
@@ -1198,7 +1212,7 @@ class OffererStats(PcObject, Base, Model):
     sa.Index("ix_offerer_stats_offererId", offererId)
     offerer: Offerer = relationship("Offerer", foreign_keys=[offererId])
 
-    syncDate: datetime = Column(DateTime, nullable=False)
+    syncDate: datetime.datetime = Column(DateTime, nullable=False)
     table: str = Column(String(120), nullable=False)
     jsonData: dict = sa.Column(  # serialized from `OffererStatsData`
         "jsonData",

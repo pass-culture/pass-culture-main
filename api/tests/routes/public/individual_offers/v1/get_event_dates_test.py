@@ -20,7 +20,9 @@ class GetEventDatesTest:
         price_category = offers_factories.PriceCategoryFactory(
             offer=event_offer, price=12.34, priceCategoryLabel__label="carre or"
         )
-        two_weeks_from_now = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=2)
+        two_weeks_from_now = datetime.datetime.now(datetime.timezone.utc).replace(
+            second=0, microsecond=0
+        ) + datetime.timedelta(weeks=2)
         bookable_stock = offers_factories.EventStockFactory(
             offer=event_offer,
             priceCategory=price_category,

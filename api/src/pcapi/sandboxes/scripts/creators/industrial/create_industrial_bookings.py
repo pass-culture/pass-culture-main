@@ -1,5 +1,4 @@
-from datetime import datetime
-from datetime import timedelta
+import datetime
 from decimal import Decimal
 import logging
 from random import choice
@@ -83,8 +82,8 @@ def _create_bookings_for_other_beneficiaries(
             is_used = offer_index % BOOKINGS_USED_REMOVE_MODULO != 0
 
             if is_used:
-                stock.beginningDatetime = datetime.utcnow() - timedelta(days=2)
-                stock.bookingLimitDatetime = datetime.utcnow() - timedelta(days=5)
+                stock.beginningDatetime = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=2)
+                stock.bookingLimitDatetime = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=5)
                 repository.save(stock)
 
             if user_should_have_no_more_money and user not in list_of_users_with_no_more_money:
@@ -100,7 +99,7 @@ def _create_bookings_for_other_beneficiaries(
                 user=user,
                 status=BookingStatus.USED if is_used else BookingStatus.CONFIRMED,
                 stock=stock,
-                dateUsed=datetime.utcnow() - timedelta(days=2) if is_used else None,
+                dateUsed=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=2) if is_used else None,
                 amount=booking_amount if booking_amount is not None else stock.price,
                 token=str(token),
                 offerer=offer.venue.managingOfferer,
@@ -137,15 +136,15 @@ def _create_has_booked_some_bookings(
         is_used = offer_index % BOOKINGS_USED_REMOVE_MODULO != 0
 
         if is_used:
-            stock.beginningDatetime = datetime.utcnow() - timedelta(days=2)
-            stock.bookingLimitDatetime = datetime.utcnow() - timedelta(days=5)
+            stock.beginningDatetime = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=2)
+            stock.bookingLimitDatetime = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=5)
             repository.save(stock)
 
         booking = BookingFactory(
             user=user,
             status=BookingStatus.USED if is_used else BookingStatus.CONFIRMED,
             stock=stock,
-            dateUsed=datetime.utcnow() - timedelta(days=2) if is_used else None,
+            dateUsed=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=2) if is_used else None,
         )
         if is_used:
             finance_factories.UsedBookingFinanceEventFactory(booking=booking)

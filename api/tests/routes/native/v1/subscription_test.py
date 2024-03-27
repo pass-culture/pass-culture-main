@@ -234,7 +234,7 @@ class NextStepTest:
     @time_machine.travel("2022-09-08 12:39:04")
     def test_underage_not_ok_turned_18(self, client):
         # User has already performed id check with Ubble for underage credit (successfully or not), 2 years ago
-        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=2)):
+        with time_machine.travel(datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=2)):
             user = users_factories.UserFactory(
                 dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
                 - relativedelta(years=16, days=5),
@@ -372,7 +372,7 @@ class NextStepTest:
     )
     def test_underage_ubble_ok_turned_18(self, client):
         # User has already performed id check with Ubble for underage credit, 2 years ago
-        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=2)):
+        with time_machine.travel(datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=2)):
             user = users_factories.UserFactory(
                 dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
                 - relativedelta(years=16, days=5),
@@ -424,7 +424,7 @@ class NextStepTest:
     @pytest.mark.parametrize("age", [15, 16, 17, 18])
     @time_machine.travel("2022-09-08 12:45:13")
     def test_ubble_subscription_limited(self, client, age):
-        birth_date = datetime.datetime.utcnow() - relativedelta(years=age + 1)
+        birth_date = datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=age + 1)
         birth_date += relativedelta(days=settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS - 1)
         # the user has:
         # 1. Email Validated
@@ -629,7 +629,7 @@ class StepperTest:
             type=fraud_models.FraudCheckType.EDUCONNECT,
             status=fraud_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
-            dateCreated=datetime.datetime.utcnow() - relativedelta(years=1),
+            dateCreated=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=1),
         )
 
         client.with_token(user.email)
@@ -744,7 +744,7 @@ class StepperTest:
 
     def should_have_subtitle_for_profile_when_autocompleted(self, client):
         # A user was activated at 17 yo and is now 18 yo
-        a_year_ago = datetime.datetime.utcnow() - relativedelta(years=1, months=1)
+        a_year_ago = datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=1, months=1)
         with time_machine.travel(a_year_ago):
             user = users_factories.BeneficiaryFactory(age=17)
 
@@ -770,7 +770,7 @@ class StepperTest:
 
     def should_not_have_subtitle_for_profile_when_done(self, client):
         # A user was activated at 17 yo and is now 18 yo
-        a_year_ago = datetime.datetime.utcnow() - relativedelta(years=1, months=1)
+        a_year_ago = datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=1, months=1)
         with time_machine.travel(a_year_ago):
             user = users_factories.BeneficiaryFactory(age=17)
 
@@ -847,7 +847,7 @@ class GetProfileTest:
             "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
         }
 
-        with time_machine.travel(datetime.datetime.utcnow() - datetime.timedelta(days=365)):
+        with time_machine.travel(datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=365)):
             client.with_token(user.email)
             client.post("/native/v1/subscription/profile", profile_data)
 
@@ -1158,7 +1158,9 @@ class HonorStatementTest:
         ],
     )
     def test_create_honor_statement_fraud_check(self, client, age, eligibility_type):
-        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=age, days=10))
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=age, days=10)
+        )
 
         client.with_token(user.email)
 

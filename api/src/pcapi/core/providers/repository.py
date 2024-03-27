@@ -210,7 +210,7 @@ def find_latest_sync_part_end_event(provider: models.Provider) -> models.LocalPr
         models.LocalProviderEvent.query.filter(
             models.LocalProviderEvent.provider == provider,
             models.LocalProviderEvent.type == models.LocalProviderEventType.SyncPartEnd,
-            models.LocalProviderEvent.date > datetime.datetime.utcnow() - datetime.timedelta(days=25),
+            models.LocalProviderEvent.date > datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=25),
         )
         .order_by(models.LocalProviderEvent.date.desc())
         .first()

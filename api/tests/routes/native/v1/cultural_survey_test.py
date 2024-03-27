@@ -314,7 +314,7 @@ class CulturalSurveyQuestionsTest:
         )
 
         assert not user.needsToFillCulturalSurvey
-        assert user.culturalSurveyFilledDate == datetime.datetime.utcnow()
+        assert user.culturalSurveyFilledDate == datetime.datetime.now(datetime.timezone.utc)
 
         assert len(testing.sendinblue_requests) == 1
         assert testing.sendinblue_requests[0]["email"] == user.email

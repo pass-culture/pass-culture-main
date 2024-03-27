@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import typing
 
 from pcapi.core.educational import models
@@ -48,7 +48,7 @@ def upsert_venues_addresses(adage_ids_venues: typing.Mapping[str, int]) -> None:
         ava.venueId = adage_ids_venues[ava.adageId]
         db.session.add(ava)
 
-    now = datetime.utcnow()
+    now = datetime.datetime.now(datetime.timezone.utc)
     missing_ids = adage_ids_venues.keys() - existing_ids
     for missing_id in missing_ids:
         db.session.add(

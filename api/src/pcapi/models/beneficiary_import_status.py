@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import enum
 import typing
 
@@ -43,12 +43,17 @@ class BeneficiaryImportStatus(PcObject, Base, Model):
 
     def __repr__(self) -> str:
         author = self.author.full_name if self.author else "import automatisé"
-        updated_at = datetime.strftime(self.date, "%d/%m/%Y")
+        updated_at = datetime.datetime.strftime(self.date, "%d/%m/%Y")
         return f"{self.status.value}, le {updated_at} par {author}"
 
     status: ImportStatus = Column(Enum(ImportStatus, create_constraint=False), nullable=False)
 
-    date: datetime = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
+    date: datetime.datetime = Column(
+        DateTime,
+        nullable=False,
+        default=lambda: datetime.datetime.now(datetime.timezone.utc),
+        server_default=func.now(),
+    )
 
     detail = Column(String(255), nullable=True)
 

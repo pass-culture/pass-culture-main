@@ -632,7 +632,7 @@ def check_stock_consistency() -> list[int]:
 
 
 def find_event_stocks_happening_in_x_days(number_of_days: int) -> flask_sqlalchemy.BaseQuery:
-    target_day = datetime.datetime.utcnow() + datetime.timedelta(days=number_of_days)
+    target_day = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=number_of_days)
     start = datetime.datetime.combine(target_day, datetime.time.min)
     end = datetime.datetime.combine(target_day, datetime.time.max)
 
@@ -705,7 +705,7 @@ def _find_today_event_stock_ids_filter_by_departments(
 
 
 def delete_past_draft_collective_offers() -> None:
-    yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+    yesterday = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
     collective_offer_ids_tuple = educational_models.CollectiveOffer.query.filter(
         educational_models.CollectiveOffer.dateCreated < yesterday,
         educational_models.CollectiveOffer.validation == models.OfferValidationStatus.DRAFT,
@@ -730,7 +730,7 @@ def get_available_activation_code(stock: models.Stock) -> models.ActivationCode 
             code
             for code in stock.activationCodes
             if code.bookingId is None
-            and (code.expirationDate is None or code.expirationDate > datetime.datetime.utcnow())
+            and (code.expirationDate is None or code.expirationDate > datetime.datetime.now(datetime.timezone.utc))
         ),
         None,
     )

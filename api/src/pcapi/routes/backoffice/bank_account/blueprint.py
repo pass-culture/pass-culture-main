@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 from io import BytesIO
 
 from flask import flash
@@ -79,7 +79,7 @@ def get_linked_venues(bank_account_id: int) -> utils.BackofficeResponse:
     linked_venues = (
         offerers_models.VenueBankAccountLink.query.filter(
             offerers_models.VenueBankAccountLink.bankAccountId == bank_account_id,
-            offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+            offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.now(datetime.timezone.utc)),
         ).options(
             sa.orm.joinedload(offerers_models.VenueBankAccountLink.venue).load_only(
                 offerers_models.Venue.id,
@@ -156,7 +156,7 @@ def download_reimbursement_details(bank_account_id: int) -> utils.BackofficeResp
         for details in finance_repository.find_all_invoices_finance_details([invoice.id for invoice in invoices])
     ]
     export_data = reimbursement_csv_serialize.generate_reimbursement_details_csv(reimbursement_details)
-    export_date = datetime.utcnow().strftime("%Y-%m-%d-%H-%M")
+    export_date = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d-%H-%M")
     return send_file(
         BytesIO(export_data.encode("utf-8-sig")),
         as_attachment=True,

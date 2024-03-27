@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import logging
 
 from flask import current_app as app
@@ -109,7 +109,8 @@ def get_email_update_status(user: users_models.User) -> serializers.EmailUpdateS
         raise api_errors.ResourceNotFoundError
     return serializers.EmailUpdateStatus(
         newEmail=latest_email_update_event.newEmail or "",
-        expired=(email_api.get_active_token_expiration(user) or datetime.min) < datetime.utcnow(),
+        expired=(email_api.get_active_token_expiration(user) or datetime.datetime.min)
+        < datetime.datetime.now(datetime.timezone.utc),
         status=latest_email_update_event.eventType,
     )
 

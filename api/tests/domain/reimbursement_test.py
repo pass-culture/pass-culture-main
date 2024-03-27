@@ -1,5 +1,4 @@
-from datetime import datetime
-from datetime import timedelta
+import datetime
 from decimal import Decimal
 
 import pytest
@@ -20,7 +19,7 @@ def create_non_digital_thing_booking(quantity=1, price=10, user=None, date_used=
     booking_kwargs = {}
     if user:
         booking_kwargs["user"] = user
-    booking_kwargs["dateUsed"] = date_used or datetime.utcnow()
+    booking_kwargs["dateUsed"] = date_used or datetime.datetime.now(datetime.timezone.utc)
     offer_kwargs = {}
     if subcategory_id:
         offer_kwargs = {"subcategoryId": subcategory_id}
@@ -40,14 +39,16 @@ def create_digital_booking(quantity=1, price=10, user=None, subcategory_id=None)
         price=price,
         offer=offers_factories.DigitalOfferFactory(**subcategory_kwargs),
     )
-    return bookings_factories.UsedBookingFactory(user=user, stock=stock, quantity=quantity, dateUsed=datetime.utcnow())
+    return bookings_factories.UsedBookingFactory(
+        user=user, stock=stock, quantity=quantity, dateUsed=datetime.datetime.now(datetime.timezone.utc)
+    )
 
 
 def create_event_booking(quantity=1, price=10, user=None, date_used=None):
     booking_kwargs = {}
     if user:
         booking_kwargs["user"] = user
-    booking_kwargs["dateUsed"] = date_used or datetime.utcnow()
+    booking_kwargs["dateUsed"] = date_used or datetime.datetime.now(datetime.timezone.utc)
     user = user or users_factories.BeneficiaryGrant18Factory()
     stock = offers_factories.StockFactory(
         price=price,
@@ -308,47 +309,50 @@ class ReimbursementRuleIsActiveTest:
         def group(self):
             return None
 
-    booking = Booking(dateCreated=datetime.utcnow() + timedelta(days=365), dateUsed=datetime.utcnow())
+    booking = Booking(
+        dateCreated=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=365),
+        dateUsed=datetime.datetime.now(datetime.timezone.utc),
+    )
 
     def test_is_active_if_rule_has_no_start_nor_end(self):
         rule = self.DummyRule(None, None)
         assert rule.is_active(self.booking)
 
     def test_is_active_if_valid_since_yesterday_without_end_date(self):
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        yesterday = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
         rule = self.DummyRule(valid_from=yesterday)
         assert rule.is_active(self.booking)
 
     def test_is_active_if_valid_since_yesterday_with_end_date(self):
-        yesterday = datetime.utcnow() - timedelta(days=1)
-        tomorrow = datetime.utcnow() + timedelta(days=1)
+        yesterday = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
+        tomorrow = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=1)
         rule = self.DummyRule(valid_from=yesterday, valid_until=tomorrow)
         assert rule.is_active(self.booking)
 
     def test_is_not_active_if_not_yet_valid_without_end_date(self):
-        future = datetime.utcnow() + timedelta(weeks=3)
+        future = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(weeks=3)
         rule = self.DummyRule(valid_from=future)
         assert not rule.is_active(self.booking)
 
     def test_is_not_active_if_not_yet_valid_with_end_date(self):
-        future = datetime.utcnow() + timedelta(weeks=3)
-        far_future = datetime.utcnow() + timedelta(weeks=5)
+        future = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(weeks=3)
+        far_future = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(weeks=5)
         rule = self.DummyRule(valid_from=future, valid_until=far_future)
         assert not rule.is_active(self.booking)
 
     def test_is_active_if_no_start_date_and_until_later(self):
-        future = datetime.utcnow() + timedelta(weeks=3)
+        future = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(weeks=3)
         rule = self.DummyRule(valid_until=future)
         assert rule.is_active(self.booking)
 
     def test_is_not_active_if_rule_is_not_valid_anymore_with_no_start_date(self):
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        yesterday = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
         rule = self.DummyRule(valid_until=yesterday)
         assert not rule.is_active(self.booking)
 
     def test_is_not_active_if_rule_is_not_valid_anymore_with_start_date(self):
-        a_month_ago = datetime.utcnow() - timedelta(days=30)
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        a_month_ago = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=30)
+        yesterday = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
         rule = self.DummyRule(valid_from=a_month_ago, valid_until=yesterday)
         assert not rule.is_active(self.booking)
 
@@ -356,8 +360,8 @@ class ReimbursementRuleIsActiveTest:
 @pytest.mark.usefixtures("db_session")
 class CustomRuleFinderTest:
     def test_offer_rule(self):
-        yesterday = datetime.utcnow() - timedelta(days=1)
-        far_in_the_past = datetime.utcnow() - timedelta(days=800)
+        yesterday = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
+        far_in_the_past = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=800)
         booking = bookings_factories.UsedBookingFactory(stock__offer__venue__pricing_point="self")
         offer = booking.stock.offer
         old_booking = bookings_factories.UsedBookingFactory(stock=booking.stock, dateUsed=far_in_the_past)
@@ -369,8 +373,8 @@ class CustomRuleFinderTest:
         assert finder.get_rule(unrelated_booking) is None  # no rule for this bookings's offer
 
     def test_venue_rule(self):
-        yesterday = datetime.utcnow() - timedelta(days=1)
-        far_in_the_past = datetime.utcnow() - timedelta(days=800)
+        yesterday = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
+        far_in_the_past = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=800)
         pricing_point = offerers_factories.VenueFactory(pricing_point="self")
         linked_venue = offerers_factories.VenueFactory(pricing_point=pricing_point)
 
@@ -387,8 +391,8 @@ class CustomRuleFinderTest:
         assert finder.get_rule(unrelated_booking) is None  # no rule for this bookings's venue
 
     def test_offerer_without_category_rule(self):
-        yesterday = datetime.utcnow() - timedelta(days=1)
-        far_in_the_past = datetime.utcnow() - timedelta(days=800)
+        yesterday = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
+        far_in_the_past = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=800)
         booking = bookings_factories.UsedBookingFactory(stock__offer__venue__pricing_point="self")
         offerer = booking.offerer
         old_booking = bookings_factories.UsedBookingFactory(
@@ -403,8 +407,8 @@ class CustomRuleFinderTest:
         assert finder.get_rule(unrelated_booking) is None  # no rule for this bookings's offerer
 
     def test_offerer_with_category_rule(self):
-        yesterday = datetime.utcnow() - timedelta(days=1)
-        far_in_the_past = datetime.utcnow() - timedelta(days=800)
+        yesterday = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
+        far_in_the_past = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=800)
         offerer_booking = bookings_factories.UsedBookingFactory(
             stock__offer__subcategoryId=subcategories.FESTIVAL_CINE.id, stock__offer__venue__pricing_point="self"
         )
@@ -432,8 +436,8 @@ class CustomRuleFinderTest:
         assert finder.get_rule(unrelated_booking) is None  # no rule for this bookings's offerer
 
     def test_rule_priorities(self):
-        yesterday = datetime.utcnow() - timedelta(days=1)
-        far_in_the_past = datetime.utcnow() - timedelta(days=800)
+        yesterday = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
+        far_in_the_past = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=800)
         pricing_point = offerers_factories.VenueFactory(pricing_point="self")
         offerer = pricing_point.managingOfferer
         yesterday_booking = bookings_factories.UsedBookingFactory(stock__offer__venue=pricing_point)

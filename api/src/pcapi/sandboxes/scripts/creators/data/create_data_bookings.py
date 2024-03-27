@@ -1,5 +1,4 @@
-from datetime import datetime
-from datetime import timedelta
+import datetime
 import logging
 from random import choice
 from random import randint
@@ -41,7 +40,7 @@ def create_data_bookings(offers_by_name: dict[str, Offer], users_by_name: dict[s
             booking = bookings_factories.UsedBookingFactory(
                 user=user,
                 stock=stock,
-                dateUsed=datetime.utcnow() - timedelta(days=2),
+                dateUsed=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=2),
                 token=str(token),
             )
             finance_factories.UsedBookingFinanceEventFactory(booking=booking)

@@ -185,7 +185,7 @@ class GetOffererTest(GetEndpointHelper):
             users_factories.UserProNewNavStateFactory(
                 user=user_with_nav_date_in_the_future,
                 eligibilityDate=None,
-                newNavDate=datetime.datetime.utcnow() + datetime.timedelta(days=5),
+                newNavDate=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=5),
             )
             offerers_factories.UserOffererFactory(user=user_with_nav_date_in_the_future, offerer=offerer)
 
@@ -195,7 +195,9 @@ class GetOffererTest(GetEndpointHelper):
 
             eligible_user_with_inactivated_new_nav = users_factories.ProFactory()
             users_factories.UserProNewNavStateFactory(
-                user=eligible_user_with_inactivated_new_nav, eligibilityDate=datetime.datetime.utcnow(), newNavDate=None
+                user=eligible_user_with_inactivated_new_nav,
+                eligibilityDate=datetime.datetime.now(datetime.timezone.utc),
+                newNavDate=None,
             )
             offerers_factories.UserOffererFactory(user=eligible_user_with_inactivated_new_nav, offerer=offerer)
 
@@ -1132,7 +1134,9 @@ class GetOffererUsersTest(GetEndpointHelper):
 
         eligible_user_with_inactivated_new_nav = users_factories.ProFactory()
         users_factories.UserProNewNavStateFactory(
-            user=eligible_user_with_inactivated_new_nav, eligibilityDate=datetime.datetime.utcnow(), newNavDate=None
+            user=eligible_user_with_inactivated_new_nav,
+            eligibilityDate=datetime.datetime.now(datetime.timezone.utc),
+            newNavDate=None,
         )
         offerers_factories.UserOffererFactory(user=eligible_user_with_inactivated_new_nav, offerer=offerer)
 
@@ -1176,7 +1180,9 @@ class GetOffererUsersTest(GetEndpointHelper):
 
         eligible_user_with_inactivated_new_nav = users_factories.ProFactory()
         users_factories.UserProNewNavStateFactory(
-            user=eligible_user_with_inactivated_new_nav, eligibilityDate=datetime.datetime.utcnow(), newNavDate=None
+            user=eligible_user_with_inactivated_new_nav,
+            eligibilityDate=datetime.datetime.now(datetime.timezone.utc),
+            newNavDate=None,
         )
         offerers_factories.UserOffererFactory(user=eligible_user_with_inactivated_new_nav, offerer=offerer)
 
@@ -1845,7 +1851,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             )
 
             history_factories.ActionHistoryFactory(
-                actionDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
+                actionDate=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(minutes=10),
                 actionType=history_models.ActionType.OFFERER_PENDING,
                 authorUser=other_instructor,
                 offerer=pending2,
@@ -1858,7 +1864,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             )
 
             history_factories.ActionHistoryFactory(
-                actionDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
+                actionDate=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(minutes=10),
                 actionType=history_models.ActionType.OFFERER_PENDING,
                 authorUser=instructor,
                 offerer=pending3,
@@ -2494,7 +2500,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         )
 
         history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
+            actionDate=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(minutes=10),
             actionType=history_models.ActionType.USER_OFFERER_PENDING,
             authorUser=other_instructor,
             user=pending2.user,
@@ -2508,7 +2514,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         )
 
         history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
+            actionDate=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(minutes=10),
             actionType=history_models.ActionType.USER_OFFERER_PENDING,
             authorUser=instructor,
             user=pending3.user,

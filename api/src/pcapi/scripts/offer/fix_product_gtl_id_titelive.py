@@ -20,7 +20,7 @@ blueprint = Blueprint(__name__, __name__)
 def _get_eta(end_id: int, current: int, elapsed_per_batch: list) -> str:
     left_to_do = end_id - current
     eta = left_to_do / BATCH_SIZE * statistics.mean(elapsed_per_batch)
-    eta = datetime.datetime.utcnow() + datetime.timedelta(seconds=eta)
+    eta = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=eta)
     eta = eta.astimezone(pytz.timezone("Europe/Paris"))
     eta = eta.strftime("%d/%m/%Y %H:%M:%S")
     return eta

@@ -1,5 +1,5 @@
 import dataclasses
-from datetime import datetime
+import datetime
 import decimal
 import enum
 import itertools
@@ -332,7 +332,7 @@ def delete_venue(venue_id: int) -> None:
             offerers_models.VenuePricingPointLink.query.filter(
                 offerers_models.VenuePricingPointLink.venueId != venue_id,
                 offerers_models.VenuePricingPointLink.pricingPointId == venue_id,
-                offerers_models.VenuePricingPointLink.timespan.contains(datetime.utcnow()),
+                offerers_models.VenuePricingPointLink.timespan.contains(datetime.datetime.now(datetime.timezone.utc)),
             ).exists()
         ).scalar()
 
@@ -498,7 +498,7 @@ def _delete_objects_linked_to_venue(venue_id: int) -> dict:
 def link_venue_to_pricing_point(
     venue: models.Venue,
     pricing_point_id: int,
-    timestamp: datetime | None = None,
+    timestamp: datetime.datetime | None = None,
     force_link: bool = False,
     commit: bool = True,
 ) -> None:
@@ -508,7 +508,7 @@ def link_venue_to_pricing_point(
     """
     validation.check_venue_can_be_linked_to_pricing_point(venue, pricing_point_id)
     if not timestamp:
-        timestamp = datetime.utcnow()
+        timestamp = datetime.datetime.now(datetime.timezone.utc)
     current_link = models.VenuePricingPointLink.query.filter(
         models.VenuePricingPointLink.venueId == venue.id,
         models.VenuePricingPointLink.timespan.contains(timestamp),
@@ -586,12 +586,12 @@ def link_venue_to_pricing_point(
 def link_venue_to_reimbursement_point(
     venue: models.Venue,
     reimbursement_point_id: int | None,
-    timestamp: datetime | None = None,
+    timestamp: datetime.datetime | None = None,
 ) -> None:
     if reimbursement_point_id:
         validation.check_venue_can_be_linked_to_reimbursement_point(venue, reimbursement_point_id)
     if not timestamp:
-        timestamp = datetime.utcnow()
+        timestamp = datetime.datetime.now(datetime.timezone.utc)
     current_link = models.VenueReimbursementPointLink.query.filter(
         models.VenueReimbursementPointLink.venueId == venue.id,
         models.VenueReimbursementPointLink.timespan.contains(timestamp),
@@ -713,7 +713,7 @@ def _fill_in_offerer(
     else:
         offerer.validationStatus = ValidationStatus.NEW
     offerer.isActive = True
-    offerer.dateCreated = datetime.utcnow()
+    offerer.dateCreated = datetime.datetime.now(datetime.timezone.utc)
 
 
 def auto_tag_new_offerer(
@@ -806,7 +806,7 @@ def create_offerer(
             comment = (comment + "\n" if comment else "") + "Nouvelle demande sur un SIREN précédemment rejeté"
         else:
             user_offerer.validationStatus = ValidationStatus.NEW
-            user_offerer.dateCreated = datetime.utcnow()
+            user_offerer.dateCreated = datetime.datetime.now(datetime.timezone.utc)
             extra_data: dict[str, typing.Any] = {}
             _add_new_onboarding_info_to_extra_data(new_onboarding_info, extra_data)
             history_api.add_action(
@@ -1040,7 +1040,7 @@ def validate_offerer(offerer: models.Offerer, author_user: users_models.User) ->
 
     applicants = users_repository.get_users_with_validated_attachment_by_offerer(offerer)
     offerer.validationStatus = ValidationStatus.VALIDATED
-    offerer.dateValidated = datetime.utcnow()
+    offerer.dateValidated = datetime.datetime.now(datetime.timezone.utc)
     offerer.isActive = True
     db.session.add(offerer)
 
@@ -1218,7 +1218,7 @@ def save_venue_banner(
     """
     rm_previous_venue_thumbs(venue)
 
-    updated_at = datetime.utcnow()
+    updated_at = datetime.datetime.now(datetime.timezone.utc)
     banner_timestamp = str(int(updated_at.timestamp()))
     storage.create_thumb(
         model_with_thumb=venue,

@@ -74,7 +74,7 @@ class PatchPriceCategoryTest:
         expired_stock = offers_factories.EventStockFactory(
             offer=offer,
             priceCategory=price_category,
-            beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=-2),
+            beginningDatetime=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=-2),
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(

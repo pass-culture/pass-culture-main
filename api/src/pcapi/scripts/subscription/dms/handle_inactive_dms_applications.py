@@ -50,7 +50,9 @@ def handle_inactive_dms_applications(procedure_number: int, with_never_eligible_
 
 
 def _has_inactivity_delay_expired(dms_application: dms_models.DmsApplicationResponse) -> bool:
-    date_with_delay = datetime.datetime.utcnow() - relativedelta(days=settings.DMS_INACTIVITY_TOLERANCE_DELAY)
+    date_with_delay = datetime.datetime.now(datetime.timezone.utc) - relativedelta(
+        days=settings.DMS_INACTIVITY_TOLERANCE_DELAY
+    )
 
     if dms_application.latest_modification_datetime >= date_with_delay:
         return False

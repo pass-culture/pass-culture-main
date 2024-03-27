@@ -2,7 +2,6 @@ import datetime
 
 import pytest
 
-from pcapi import settings
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
@@ -61,7 +60,7 @@ class PlaylistTest:
         assert response.json == []
 
     def test_unbookable_offers_are_ignored(self, client):
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        yesterday = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
         unbookable_offer = offers_factories.EventOfferFactory()
         offers_factories.EventStockFactory(offer=unbookable_offer, isSoftDeleted=True)
         offers_factories.EventStockFactory(offer=unbookable_offer, quantity=0)
@@ -75,7 +74,7 @@ class PlaylistTest:
         assert response.json == []
 
     def test_unbookable_stocks_are_ignored(self, client):
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        yesterday = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
         offer = offers_factories.EventOfferFactory()
         offers_factories.EventStockFactory(offer=offer, isSoftDeleted=True)
         offers_factories.EventStockFactory(offer=offer, quantity=0)

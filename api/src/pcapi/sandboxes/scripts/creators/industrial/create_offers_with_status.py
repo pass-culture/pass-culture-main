@@ -59,7 +59,8 @@ def create_offers_fully_booked(user_bene: User, venue: Venue) -> None:
         EventStockFactory(offer=offer_with_past_stock, priceCategory=price_category)
         stock_past = EventStockFactory(
             offer=offer_with_past_stock,
-            beginningDatetime=datetime.datetime.utcnow().replace(second=0, microsecond=0) - datetime.timedelta(days=5),
+            beginningDatetime=datetime.datetime.now(datetime.timezone.utc).replace(second=0, microsecond=0)
+            - datetime.timedelta(days=5),
             quantity=1,
             priceCategory=price_category,
         )
@@ -78,7 +79,8 @@ def create_offers_expired(venue: Venue) -> None:
         EventStockFactory(
             offer=offer_event,
             quantity=1,
-            beginningDatetime=datetime.datetime.utcnow().replace(second=0, microsecond=0) - datetime.timedelta(days=5),
+            beginningDatetime=datetime.datetime.now(datetime.timezone.utc).replace(second=0, microsecond=0)
+            - datetime.timedelta(days=5),
         )
     logger.info("create_offers_expired")
 

@@ -173,7 +173,7 @@ def _create_one_individual_incident(
     for booking in bookings:
         event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
         finance_api.price_event(event)
-    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.now(datetime.timezone.utc))
 
     finance_incident = finance_factories.FinanceIncidentFactory(
         venue=other_venue if with_other_venue else reimbursement_point_venue, forceDebitNote=force_debit_note
@@ -241,7 +241,7 @@ def _create_one_collective_incident(
     for booking in bookings:
         event = finance_models.FinanceEvent.query.filter_by(collectiveBooking=booking).one()
         finance_api.price_event(event)
-    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.now(datetime.timezone.utc))
 
     finance_incident = finance_factories.FinanceIncidentFactory(
         venue=other_venue if with_other_venue else reimbursement_point_venue, forceDebitNote=force_debit_note

@@ -722,7 +722,7 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
         if offer.validation != new_validation:
             old_validation = offer.validation
             offer.validation = new_validation
-            offer.lastValidationDate = datetime.datetime.utcnow()
+            offer.lastValidationDate = datetime.datetime.now(datetime.timezone.utc)
             offer.lastValidationType = OfferValidationType.MANUAL
             offer.lastValidationAuthorUserId = current_user.id
             offer.isActive = True
@@ -757,7 +757,7 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
         if offer.validation != new_validation:
             old_validation = offer.validation
             offer.validation = new_validation
-            offer.lastValidationDate = datetime.datetime.utcnow()
+            offer.lastValidationDate = datetime.datetime.now(datetime.timezone.utc)
             offer.lastValidationType = OfferValidationType.MANUAL
             offer.lastValidationAuthorUserId = current_user.id
             offer.isActive = False
@@ -1001,14 +1001,18 @@ def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
                 offerers_models.VenuePricingPointLink,
                 sa.and_(
                     offerers_models.VenuePricingPointLink.venueId == offerers_models.Venue.id,
-                    offerers_models.VenuePricingPointLink.timespan.contains(datetime.datetime.utcnow()),
+                    offerers_models.VenuePricingPointLink.timespan.contains(
+                        datetime.datetime.now(datetime.timezone.utc)
+                    ),
                 ),
             )
             .outerjoin(
                 offerers_models.VenueReimbursementPointLink,
                 sa.and_(
                     offerers_models.VenueReimbursementPointLink.venueId == offerers_models.Venue.id,
-                    offerers_models.VenueReimbursementPointLink.timespan.contains(datetime.datetime.utcnow()),
+                    offerers_models.VenueReimbursementPointLink.timespan.contains(
+                        datetime.datetime.now(datetime.timezone.utc)
+                    ),
                 ),
             )
             .options(

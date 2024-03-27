@@ -61,7 +61,7 @@ def create_offerer_provider(
 
 
 def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
-    now = datetime.datetime.utcnow().replace(second=0, microsecond=0)
+    now = datetime.datetime.now(datetime.timezone.utc).replace(second=0, microsecond=0)
     in_five_days = now + datetime.timedelta(days=5)
     in_ten_days = now + datetime.timedelta(days=10)
     offerer, provider = create_offerer_provider(name, provider_name="TaylorManager", with_charlie_url=True)
@@ -122,7 +122,7 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
 
     offerers_factories.OffererStatsFactory(
         offerer=offerer,
-        syncDate=datetime.datetime.utcnow(),
+        syncDate=datetime.datetime.now(datetime.timezone.utc),
         table=DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
         jsonData=offerers_models.OffererStatsData(daily_views=daily_views),
     )
@@ -133,7 +133,7 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
 
     offerers_factories.OffererStatsFactory(
         offerer=offerer,
-        syncDate=datetime.datetime.utcnow(),
+        syncDate=datetime.datetime.now(datetime.timezone.utc),
         table=TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
         jsonData=offerers_models.OffererStatsData(
             top_offers=[offerers_models.TopOffersData(offerId=random.choice(offers).id, numberOfViews=today.day)],

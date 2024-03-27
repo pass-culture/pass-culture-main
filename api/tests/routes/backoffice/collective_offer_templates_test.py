@@ -182,7 +182,7 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
         for days_ago in (2, 4, 1, 3):
             educational_factories.CollectiveOfferTemplateFactory(
                 name=f"Offre {days_ago}",
-                dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=days_ago),
+                dateCreated=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=days_ago),
                 validation=offers_models.OfferValidationStatus.PENDING,
                 venue=validated_venue,
             )

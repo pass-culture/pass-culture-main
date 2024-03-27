@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 from pcapi.core import token as token_utils
 from pcapi.core.users import api
@@ -34,7 +34,8 @@ def get_email_update_status(user: users_models.User) -> serializers.EmailUpdateS
 
     return serializers.EmailUpdateStatusResponse(
         new_email=latest_email_update_event.newEmail,
-        expired=(email_api.get_active_token_expiration(user) or datetime.min) < datetime.utcnow(),
+        expired=(email_api.get_active_token_expiration(user) or datetime.datetime.min)
+        < datetime.datetime.now(datetime.timezone.utc),
         status=latest_email_update_event.eventType,
         token=new_email_selection_token.encoded_token if new_email_selection_token else None,
     )

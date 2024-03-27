@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import enum
 
 import attrs
@@ -57,7 +57,7 @@ def young_status(user: models.User) -> YoungStatus:
         return Suspended()
 
     if user.is_beneficiary:
-        if user.deposit_expiration_date and user.deposit_expiration_date < datetime.utcnow():
+        if user.deposit_expiration_date and user.deposit_expiration_date < datetime.datetime.now(datetime.timezone.utc):
             return ExBeneficiary()
 
         return Beneficiary()

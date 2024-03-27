@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 from functools import partial
 from io import BytesIO
 import typing
@@ -396,7 +396,9 @@ def get_stats(venue_id: int) -> utils.BackofficeResponse:
                 offerers_models.VenueBankAccountLink,
                 sa.and_(
                     offerers_models.Venue.id == offerers_models.VenueBankAccountLink.venueId,
-                    offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+                    offerers_models.VenueBankAccountLink.timespan.contains(
+                        datetime.datetime.now(datetime.timezone.utc)
+                    ),
                 ),
             )
             .outerjoin(offerers_models.VenueBankAccountLink.bankAccount)
@@ -499,7 +501,7 @@ def get_invoices(venue_id: int) -> utils.BackofficeResponse:
         offerers_models.VenueReimbursementPointLink.query.filter(
             offerers_models.VenueReimbursementPointLink.venueId == venue_id,
             offerers_models.VenueReimbursementPointLink.reimbursementPointId != venue_id,
-            offerers_models.VenueReimbursementPointLink.timespan.contains(datetime.utcnow()),
+            offerers_models.VenueReimbursementPointLink.timespan.contains(datetime.datetime.now(datetime.timezone.utc)),
         )
         .options(
             sa.orm.joinedload(offerers_models.VenueReimbursementPointLink.reimbursementPoint).load_only(
@@ -544,7 +546,7 @@ def download_reimbursement_details(venue_id: int) -> utils.BackofficeResponse:
         for details in finance_repository.find_all_invoices_finance_details([invoice.id for invoice in invoices])
     ]
     export_data = reimbursement_csv_serialize.generate_reimbursement_details_csv(reimbursement_details)
-    export_date = datetime.utcnow().strftime("%Y-%m-%d-%H-%M")
+    export_date = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d-%H-%M")
     return send_file(
         BytesIO(export_data.encode("utf-8-sig")),
         as_attachment=True,

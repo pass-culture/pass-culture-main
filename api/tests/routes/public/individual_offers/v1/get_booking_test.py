@@ -24,13 +24,13 @@ class GetBookingByTokenReturns200Test:
             name="Vieux motard que jamais",
             extraData={"ean": "1234567890123"},
         )
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=2)
         product_stock = offers_factories.StockFactory(offer=product_offer, beginningDatetime=past)
         booking = bookings_factories.BookingFactory(
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2),
+            user__dateOfBirth=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=18, months=2),
             user__postalCode="75001",
             stock=product_stock,
         )
@@ -71,13 +71,13 @@ class GetBookingByTokenReturns200Test:
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
         )
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=2)
         event_stock = offers_factories.EventStockFactory(offer=event_offer, beginningDatetime=past)
         booking = bookings_factories.BookingFactory(
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2),
+            user__dateOfBirth=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=18, months=2),
             user__postalCode="69100",
             stock=event_stock,
         )
@@ -126,7 +126,7 @@ class GetBookingByTokenReturns401Test:
 class GetBookingByTokenReturns403Test:
     def test_when_booking_not_confirmed(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
-        next_week = datetime.datetime.utcnow() + datetime.timedelta(weeks=1)
+        next_week = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(weeks=1)
 
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.StockFactory(offer=offer, beginningDatetime=next_week)
@@ -173,7 +173,7 @@ class GetBookingByTokenReturns404Test:
     def test_inactive_venue_provider(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
         product_offer = offers_factories.ThingOfferFactory(venue=venue)
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=2)
         product_stock = offers_factories.StockFactory(offer=product_offer, beginningDatetime=past)
         booking = bookings_factories.BookingFactory(stock=product_stock)
 
@@ -191,13 +191,13 @@ class GetBookingByTokenReturns404Test:
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
         )
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=2)
         product_stock = offers_factories.StockFactory(offer=product_offer, beginningDatetime=past)
         booking = bookings_factories.BookingFactory(
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2),
+            user__dateOfBirth=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=18, months=2),
             stock=product_stock,
         )
 

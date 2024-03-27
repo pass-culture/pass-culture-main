@@ -1,5 +1,4 @@
-from datetime import datetime
-from datetime import timedelta
+import datetime
 import hashlib
 import hmac
 import json
@@ -137,7 +136,7 @@ class PostBookingTest:
         assert booking.userId == user.id
         assert response.json["bookingId"] == booking.id
         assert booking.status == BookingStatus.USED
-        assert booking.dateUsed.strftime("%d/%m/%Y") == datetime.today().strftime("%d/%m/%Y")
+        assert booking.dateUsed.strftime("%d/%m/%Y") == datetime.datetime.today().strftime("%d/%m/%Y")
 
     @pytest.mark.parametrize(
         "subcategory,price,status",
@@ -170,7 +169,7 @@ class PostBookingTest:
         base_url = "https://book_my_offer.com"
         external_notification_url = base_url + "/notify"
         user = users_factories.BeneficiaryGrant18Factory(
-            email=self.identifier, dateOfBirth=datetime(2007, 1, 1), phoneNumber="+33101010101"
+            email=self.identifier, dateOfBirth=datetime.datetime(2007, 1, 1), phoneNumber="+33101010101"
         )
         provider = providers_factories.ProviderFactory(
             name="Technical provider",
@@ -226,7 +225,7 @@ class PostBookingTest:
     def test_bookings_with_external_event_booking_infos(self, client, requests_mock):
         external_booking_url = "https://book_my_offer.com/confirm"
         user = users_factories.BeneficiaryGrant18Factory(
-            email=self.identifier, dateOfBirth=datetime(2007, 1, 1), phoneNumber="+33101010101"
+            email=self.identifier, dateOfBirth=datetime.datetime(2007, 1, 1), phoneNumber="+33101010101"
         )
         provider = providers_factories.ProviderFactory(
             name="Technical provider",
@@ -298,7 +297,7 @@ class PostBookingTest:
     def test_bookings_with_external_event_booking_and_remaining_quantity_unlimited(self, client, requests_mock):
         external_booking_url = "https://book_my_offer.com/confirm"
         user = users_factories.BeneficiaryGrant18Factory(
-            email=self.identifier, dateOfBirth=datetime(2007, 1, 1), phoneNumber="+33101010101"
+            email=self.identifier, dateOfBirth=datetime.datetime(2007, 1, 1), phoneNumber="+33101010101"
         )
         provider = providers_factories.ProviderFactory(
             name="Technical provider",
@@ -366,7 +365,7 @@ class PostBookingTest:
     def test_bookings_with_external_event_booking_sold_out(self, client, requests_mock):
         external_booking_url = "https://book_my_offer.com/confirm"
         users_factories.BeneficiaryGrant18Factory(
-            email=self.identifier, dateOfBirth=datetime(2007, 1, 1), phoneNumber="+33101010101"
+            email=self.identifier, dateOfBirth=datetime.datetime(2007, 1, 1), phoneNumber="+33101010101"
         )
         provider = providers_factories.ProviderFactory(
             name="Technical provider",
@@ -402,7 +401,10 @@ class PostBookingTest:
     def test_bookings_with_external_event_booking_not_enough_quantity(self, client, requests_mock):
         external_booking_url = "https://book_my_offer.com/confirm"
         users_factories.BeneficiaryGrant18Factory(
-            email=self.identifier, dateOfBirth=datetime(2007, 1, 1), phoneNumber="+33101010101", deposit__amount=500
+            email=self.identifier,
+            dateOfBirth=datetime.datetime(2007, 1, 1),
+            phoneNumber="+33101010101",
+            deposit__amount=500,
         )
         provider = providers_factories.ProviderFactory(
             name="Technical provider",
@@ -506,7 +508,10 @@ class PostBookingTest:
         external_booking_url = "https://book_my_offer.com/confirm"
         cancel_booking_url = "https://book_my_offer.com/cancel"
         users_factories.BeneficiaryGrant18Factory(
-            email=self.identifier, dateOfBirth=datetime(2007, 1, 1), phoneNumber="+33101010101", deposit__amount=500
+            email=self.identifier,
+            dateOfBirth=datetime.datetime(2007, 1, 1),
+            phoneNumber="+33101010101",
+            deposit__amount=500,
         )
         provider = providers_factories.ProviderFactory(
             name="Technical provider",
@@ -558,7 +563,10 @@ class PostBookingTest:
         external_booking_url = "https://book_my_offer.com/confirm"
         cancel_booking_url = "https://book_my_offer.com/cancel"
         users_factories.BeneficiaryGrant18Factory(
-            email=self.identifier, dateOfBirth=datetime(2007, 1, 1), phoneNumber="+33101010101", deposit__amount=500
+            email=self.identifier,
+            dateOfBirth=datetime.datetime(2007, 1, 1),
+            phoneNumber="+33101010101",
+            deposit__amount=500,
         )
         provider = providers_factories.ProviderFactory(
             name="Technical provider",
@@ -598,7 +606,10 @@ class PostBookingTest:
         external_booking_url = "https://book_my_offer.com/confirm"
         cancel_booking_url = "https://book_my_offer.com/cancel"
         users_factories.BeneficiaryGrant18Factory(
-            email=self.identifier, dateOfBirth=datetime(2007, 1, 1), phoneNumber="+33101010101", deposit__amount=500
+            email=self.identifier,
+            dateOfBirth=datetime.datetime(2007, 1, 1),
+            phoneNumber="+33101010101",
+            deposit__amount=500,
         )
         provider = providers_factories.ProviderFactory(
             name="Technical provider",
@@ -656,13 +667,13 @@ class GetBookingsTest:
         permanent_booking = booking_factories.UsedBookingFactory(
             user=user,
             stock__offer__subcategoryId=subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
-            dateUsed=datetime(2023, 2, 3),
+            dateUsed=datetime.datetime(2023, 2, 3),
         )
 
         event_booking = booking_factories.BookingFactory(
             user=user,
             stock=EventStockFactory(
-                beginningDatetime=datetime.utcnow() + timedelta(days=2),
+                beginningDatetime=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=2),
                 offer__bookingContact="contact@example.net",
             ),
         )
@@ -682,29 +693,33 @@ class GetBookingsTest:
             activationCode=second_activation_code,
         )
         expire_tomorrow = booking_factories.BookingFactory(
-            user=user, dateCreated=datetime.utcnow() - timedelta(days=29)
+            user=user, dateCreated=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=29)
         )
         used_but_in_future = booking_factories.UsedBookingFactory(
             user=user,
-            dateUsed=datetime.utcnow() - timedelta(days=1),
-            stock=StockFactory(beginningDatetime=datetime.utcnow() + timedelta(days=3)),
+            dateUsed=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1),
+            stock=StockFactory(
+                beginningDatetime=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=3)
+            ),
         )
 
         cancelled_permanent_booking = booking_factories.CancelledBookingFactory(
             user=user,
             stock__offer__subcategoryId=subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
-            cancellation_date=datetime(2023, 3, 10),
+            cancellation_date=datetime.datetime(2023, 3, 10),
         )
-        cancelled = booking_factories.CancelledBookingFactory(user=user, cancellation_date=datetime(2023, 3, 8))
-        used1 = booking_factories.UsedBookingFactory(user=user, dateUsed=datetime(2023, 3, 1))
+        cancelled = booking_factories.CancelledBookingFactory(
+            user=user, cancellation_date=datetime.datetime(2023, 3, 8)
+        )
+        used1 = booking_factories.UsedBookingFactory(user=user, dateUsed=datetime.datetime(2023, 3, 1))
         used2 = booking_factories.UsedBookingFactory(
             user=user,
             displayAsEnded=True,
-            dateUsed=datetime(2023, 3, 2),
+            dateUsed=datetime.datetime(2023, 3, 2),
             stock__offer__url=OFFER_URL,
             stock__features=["VO"],
             stock__offer__extraData=None,
-            cancellation_limit_date=datetime(2023, 3, 2),
+            cancellation_limit_date=datetime.datetime(2023, 3, 2),
         )
 
         mediation = MediationFactory(id=111, offer=used2.stock.offer, thumbCount=1, credit="street credit")
@@ -795,10 +810,10 @@ class GetBookingsTest:
             assert booking["qrCodeData"] is not None
 
     def test_get_bookings_returns_stock_price_and_price_category_label(self, client):
-        now = datetime.utcnow()
+        now = datetime.datetime.now(datetime.timezone.utc)
         stock = EventStockFactory()
         ongoing_booking = booking_factories.BookingFactory(
-            stock=stock, user__deposit__expirationDate=now + timedelta(days=180)
+            stock=stock, user__deposit__expirationDate=now + datetime.timedelta(days=180)
         )
         booking_factories.BookingFactory(stock=stock, user=ongoing_booking.user, status=BookingStatus.CANCELLED)
 
@@ -952,7 +967,7 @@ class CancelBookingTest:
     def test_cancel_confirmed_booking(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         booking = booking_factories.BookingFactory(
-            user=user, cancellation_limit_date=datetime.utcnow() - timedelta(days=1)
+            user=user, cancellation_limit_date=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
         )
 
         client = client.with_token(self.identifier)
@@ -1064,7 +1079,7 @@ class ToggleBookingVisibilityTest:
         booking = booking_factories.UsedBookingFactory(
             user=user,
             displayAsEnded=None,
-            dateUsed=datetime.utcnow(),
+            dateUsed=datetime.datetime.now(datetime.timezone.utc),
             stock=stock,
             activationCode=activation_code,
         )

@@ -382,7 +382,7 @@ def _batch_validate_or_reject_collective_offers(
         old_validation_status = collective_offer.validation
         new_validation_status = validation
         collective_offer.validation = new_validation_status
-        collective_offer.lastValidationDate = datetime.datetime.utcnow()
+        collective_offer.lastValidationDate = datetime.datetime.now(datetime.timezone.utc)
         collective_offer.lastValidationType = offer_mixin.OfferValidationType.MANUAL
         collective_offer.lastValidationAuthorUserId = current_user.id
 

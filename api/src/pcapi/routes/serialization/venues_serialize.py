@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 from decimal import Decimal
 from decimal import InvalidOperation
 import enum
@@ -47,17 +47,17 @@ class DMSApplicationForEAC(BaseModel):
     state: DMSApplicationstatus
     procedure: int
     application: int
-    lastChangeDate: datetime
-    depositDate: datetime
-    expirationDate: datetime | None
-    buildDate: datetime | None
-    instructionDate: datetime | None
-    processingDate: datetime | None
-    userDeletionDate: datetime | None
+    lastChangeDate: datetime.datetime
+    depositDate: datetime.datetime
+    expirationDate: datetime.datetime | None
+    buildDate: datetime.datetime | None
+    instructionDate: datetime.datetime | None
+    processingDate: datetime.datetime | None
+    userDeletionDate: datetime.datetime | None
 
     class Config:
         orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
+        json_encoders = {datetime.datetime: format_into_utc_date}
 
     @classmethod
     def from_orm(
@@ -140,7 +140,7 @@ class VenueStatsResponseModel(BaseModel):
 class GetVenueManagingOffererResponseModel(BaseModel):
     address: str | None
     city: str
-    dateCreated: datetime
+    dateCreated: datetime.datetime
     demarchesSimplifieesApplicationId: str | None
     id: int
     isValidated: bool
@@ -152,7 +152,7 @@ class GetVenueManagingOffererResponseModel(BaseModel):
 
     class Config:
         orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
+        json_encoders = {datetime.datetime: format_into_utc_date}
 
 
 class BannerMetaModel(BaseModel):
@@ -216,7 +216,7 @@ class AccessibilityDataModel(BaseModel):
 
 
 class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin):
-    dateCreated: datetime
+    dateCreated: datetime.datetime
     id: int
     bannerMeta: BannerMetaModel | None
     banId: str | None
@@ -248,13 +248,13 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     collectiveSubCategoryId: str | None
     collectiveDmsApplications: list[DMSApplicationForEAC]
     hasAdageId: bool
-    adageInscriptionDate: datetime | None
+    adageInscriptionDate: datetime.datetime | None
     bankAccount: BankAccountResponseModel | None
     isVisibleInApp: bool = True
 
     class Config:
         orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
+        json_encoders = {datetime.datetime: format_into_utc_date}
 
     @validator("bannerMeta")
     @classmethod
@@ -276,7 +276,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     def from_orm(cls, venue: offerers_models.Venue) -> "GetVenueResponseModel":
         # pydantic expects an enum key in order to build it, and therefore
         # does not work when passing directly an enum instance.
-        now = datetime.utcnow()
+        now = datetime.datetime.now(datetime.timezone.utc)
         venue.pricingPoint = None
         for pricing_link in venue.pricing_point_links:
             if pricing_link.timespan.lower > now:
@@ -319,7 +319,7 @@ class GetCollectiveVenueResponseModel(BaseModel):
 
     class Config:
         orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
+        json_encoders = {datetime.datetime: format_into_utc_date}
 
     @classmethod
     def from_orm(cls, venue: offerers_models.Venue) -> "GetCollectiveVenueResponseModel":
@@ -406,7 +406,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
         venue: offerers_models.Venue,
         ids_of_venues_with_offers: typing.Iterable[int] = (),
     ) -> "VenueListItemResponseModel":
-        now = datetime.utcnow()
+        now = datetime.datetime.now(datetime.timezone.utc)
         venue.offererName = venue.managingOfferer.name
         venue.hasMissingReimbursementPoint = not (
             any(
@@ -568,7 +568,7 @@ class AdageCulturalPartner(BaseModel):
     regionLibelle: str | None
     domaines: str | None
     actif: int | None
-    dateModification: datetime
+    dateModification: datetime.datetime
     synchroPass: int | None
     domaineIds: str | None
 

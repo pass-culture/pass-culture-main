@@ -1,5 +1,4 @@
-from datetime import datetime
-from datetime import timedelta
+import datetime
 import logging
 import re
 from typing import Any
@@ -181,7 +180,7 @@ class ApplicationDetail(BaseModel):
     procedure_version: int
     application_id: int
     dossier_id: str
-    modification_date: datetime
+    modification_date: datetime.datetime
     siren: str | None = None
     iban: str
     obfuscatedIban: str
@@ -206,7 +205,7 @@ class ApplicationDetail(BaseModel):
         to_representation["siret"] = obj.get("siret")
         to_representation["dms_token"] = obj.get("dms_token") if obj.get("application_type") == 4 else None
         to_representation["modification_date"] = (
-            datetime.fromisoformat(obj["updated_at"]).astimezone().replace(tzinfo=None)
+            datetime.datetime.fromisoformat(obj["updated_at"]).astimezone().replace(tzinfo=None)
         )
         to_representation["error_annotation_id"] = obj["error_annotation_id"]
         to_representation["error_annotation_value"] = obj.get("error_annotation_value")
@@ -270,11 +269,11 @@ class Annotation(BaseModel):
 
     id: str
     label: str
-    updated_at: datetime = Field(alias="updatedAt")
+    updated_at: datetime.datetime = Field(alias="updatedAt")
     string_value: str = Field(alias="stringValue")
 
     @validator("updated_at", pre=False)
-    def strip_timezone(cls, value: datetime) -> datetime:
+    def strip_timezone(cls, value: datetime.datetime) -> datetime.datetime:
         return without_timezone(value)
 
 
@@ -312,13 +311,13 @@ class MarkWithoutContinuationApplicationDetail(BaseModel):
     id: str
     number: int
     state: dms_models.GraphQLApplicationStates
-    updated_at: datetime
+    updated_at: datetime.datetime
     processing_error_pc: ProcessingErrorPassCulture | None
     waiting_for_offerer_validation: WaitingForOffererValidation | None
     waiting_for_adage_validation: WaitingForAdageValidation | None
 
     @validator("updated_at", pre=False)
-    def strip_timezone(cls, value: datetime) -> datetime:
+    def strip_timezone(cls, value: datetime.datetime) -> datetime.datetime:
         return without_timezone(value)
 
     @root_validator(pre=True)
@@ -346,10 +345,10 @@ class MarkWithoutContinuationApplicationDetail(BaseModel):
 
     @property
     def should_be_marked_without_continuation(self) -> bool:
-        dead_line_application = datetime.utcnow() - timedelta(
+        dead_line_application = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(
             days=int(settings.DS_MARK_WITHOUT_CONTINUATION_APPLICATION_DEADLINE)
         )
-        dead_line_annotation = datetime.utcnow() - timedelta(
+        dead_line_annotation = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(
             days=int(settings.DS_MARK_WITHOUT_CONTINUATION_ANNOTATION_DEADLINE)
         )
 

@@ -1,5 +1,5 @@
 from abc import ABC
-from datetime import datetime
+import datetime
 import logging
 import typing
 
@@ -469,14 +469,18 @@ class ImportBankAccountMixin:
                 finance_models.BankAccountStatusHistory,
                 sqla.and_(
                     finance_models.BankAccountStatusHistory.bankAccountId == finance_models.BankAccount.id,
-                    finance_models.BankAccountStatusHistory.timespan.contains(datetime.utcnow()),
+                    finance_models.BankAccountStatusHistory.timespan.contains(
+                        datetime.datetime.now(datetime.timezone.utc)
+                    ),
                 ),
             )
             .outerjoin(
                 offerers_models.VenueBankAccountLink,
                 sqla.and_(
                     offerers_models.VenueBankAccountLink.bankAccountId == finance_models.BankAccount.id,
-                    offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+                    offerers_models.VenueBankAccountLink.timespan.contains(
+                        datetime.datetime.now(datetime.timezone.utc)
+                    ),
                 ),
             )
             .outerjoin(offerers_models.Venue, offerers_models.Venue.id == offerers_models.VenueBankAccountLink.venueId)
@@ -533,7 +537,7 @@ class ImportBankAccountMixin:
         if venue.bankAccountLinks:
             deprecated_link = venue.bankAccountLinks[0]
             lower_bound = deprecated_link.timespan.lower
-            upper_bound = datetime.utcnow()
+            upper_bound = datetime.datetime.now(datetime.timezone.utc)
             timespan = make_timerange(start=lower_bound, end=upper_bound)
             deprecated_link.timespan = timespan
             deprecated_log = history_models.ActionHistory(
@@ -543,7 +547,7 @@ class ImportBankAccountMixin:
             )
             db.session.add(deprecated_log)
         link = offerers_models.VenueBankAccountLink(
-            bankAccount=bank_account, venue=venue, timespan=(datetime.utcnow(),)
+            bankAccount=bank_account, venue=venue, timespan=(datetime.datetime.now(datetime.timezone.utc),)
         )
         created_log = history_models.ActionHistory(
             actionType=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
@@ -555,7 +559,7 @@ class ImportBankAccountMixin:
         return link
 
     def keep_track_of_bank_account_status_changes(self, bank_account: finance_models.BankAccount) -> None:
-        now = datetime.utcnow()
+        now = datetime.datetime.now(datetime.timezone.utc)
         if bank_account.statusHistory:
             current_link = bank_account.statusHistory[0]
             if current_link.status == bank_account.status:
@@ -638,7 +642,9 @@ class ImportBankAccountMixin:
                 offerers_models.VenueBankAccountLink,
                 sqla.and_(
                     offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id,
-                    offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+                    offerers_models.VenueBankAccountLink.timespan.contains(
+                        datetime.datetime.now(datetime.timezone.utc)
+                    ),
                 ),
                 isouter=True,
             )
@@ -716,7 +722,9 @@ class ImportBankAccountV4(AbstractImportBankAccount, ImportBankAccountMixin):
                 offerers_models.VenueBankAccountLink,
                 sqla.and_(
                     offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id,
-                    offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+                    offerers_models.VenueBankAccountLink.timespan.contains(
+                        datetime.datetime.now(datetime.timezone.utc)
+                    ),
                 ),
             )
             .options(
@@ -785,7 +793,9 @@ class ImportBankAccountV5(AbstractImportBankAccount, ImportBankAccountMixin):
                 offerers_models.VenueBankAccountLink,
                 sqla.and_(
                     offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id,
-                    offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+                    offerers_models.VenueBankAccountLink.timespan.contains(
+                        datetime.datetime.now(datetime.timezone.utc)
+                    ),
                 ),
             )
             .options(

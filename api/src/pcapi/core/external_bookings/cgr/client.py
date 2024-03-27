@@ -79,7 +79,7 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             {
                 "barcode": response.QrCode,
                 "venue_id": booking.venueId,
-                "timestamp": datetime.datetime.utcnow().timestamp(),
+                "timestamp": datetime.datetime.now(datetime.timezone.utc).timestamp(),
                 "booking_type": RedisExternalBookingType.CINEMA,
             },
         )

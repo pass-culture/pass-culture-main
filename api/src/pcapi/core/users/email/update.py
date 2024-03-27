@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import enum
 import logging
 
@@ -31,7 +31,7 @@ class EmailChangeAction(enum.Enum):
 
 
 def _build_link_for_email_change_action(
-    action: EmailChangeAction, new_email: str | None, expiration_date: datetime, token: str
+    action: EmailChangeAction, new_email: str | None, expiration_date: datetime.datetime, token: str
 ) -> str:
     expiration = int(expiration_date.timestamp())
     path = action.value
@@ -335,7 +335,7 @@ def full_email_update_by_admin(user: models.User, email: str, commit: bool = Fal
         db.session.commit()
 
 
-def get_active_token_expiration(user: models.User) -> datetime | None:
+def get_active_token_expiration(user: models.User) -> datetime.datetime | None:
     """returns the expiration date of the active token (confirmation or validation) or none if no ttl or no token exists"""
     confirmation_token_expiration = token_utils.Token.get_expiration_date(
         token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION, user.id
@@ -349,8 +349,8 @@ def get_active_token_expiration(user: models.User) -> datetime | None:
     return confirmation_token_expiration or new_email_selection_token_expiration or validation_token_expiration
 
 
-def generate_email_change_token_expiration_date() -> datetime:
-    return datetime.utcnow() + constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
+def generate_email_change_token_expiration_date() -> datetime.datetime:
+    return datetime.datetime.now(datetime.timezone.utc) + constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
 
 
 def check_user_password(user: models.User, password: str) -> None:

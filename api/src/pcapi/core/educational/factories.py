@@ -35,7 +35,9 @@ class CollectiveOfferFactory(BaseFactory):
     mentalDisabilityCompliant = False
     motorDisabilityCompliant = False
     visualDisabilityCompliant = False
-    dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=5))
+    dateCreated = factory.LazyFunction(
+        lambda: datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=5)
+    )
     students = [models.StudentLevels.GENERAL2]
     contactEmail = "collectiveofferfactory+contact@example.com"
     bookingEmails = ["collectiveofferfactory+booking@example.com", "collectiveofferfactory+booking@example2.com"]
@@ -91,7 +93,9 @@ class CollectiveOfferTemplateFactory(BaseFactory):
     motorDisabilityCompliant = False
     visualDisabilityCompliant = False
 
-    dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=5))
+    dateCreated = factory.LazyFunction(
+        lambda: datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=5)
+    )
     students = [models.StudentLevels.GENERAL2]
     contactEmail = "collectiveofferfactory+contact@example.com"
     contactPhone = "+33199006328"
@@ -104,8 +108,8 @@ class CollectiveOfferTemplateFactory(BaseFactory):
     }
     interventionArea = ["2A", "2B"]
     dateRange = db_utils.make_timerange(
-        start=datetime.datetime.utcnow() + datetime.timedelta(days=1),
-        end=datetime.datetime.utcnow() + datetime.timedelta(days=7),
+        start=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=1),
+        end=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7),
     )
 
     @classmethod
@@ -156,10 +160,16 @@ class CollectiveStockFactory(BaseFactory):
         model = models.CollectiveStock
 
     collectiveOffer = factory.SubFactory(CollectiveOfferFactory)
-    beginningDatetime = factory.LazyFunction(lambda: datetime.datetime.utcnow() + datetime.timedelta(days=1))
+    beginningDatetime = factory.LazyFunction(
+        lambda: datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=1)
+    )
     bookingLimitDatetime = factory.LazyAttribute(lambda stock: stock.beginningDatetime - datetime.timedelta(minutes=60))
-    dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=3))
-    dateModified = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
+    dateCreated = factory.LazyFunction(
+        lambda: datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=3)
+    )
+    dateModified = factory.LazyFunction(
+        lambda: datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
+    )
     numberOfTickets = 25
     price = 100
 
@@ -192,7 +202,7 @@ class EducationalYearFactory(BaseFactory):
 
 
 def _get_current_educational_year() -> int:
-    current_date = datetime.datetime.utcnow()
+    current_date = datetime.datetime.now(datetime.timezone.utc)
     current_year = current_date.year
     current_month = current_date.month
     current_educational_year = current_year
@@ -238,7 +248,9 @@ class CollectiveBookingFactory(BaseFactory):
         model = models.CollectiveBooking
 
     collectiveStock = factory.SubFactory(CollectiveStockFactory)
-    dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=2))
+    dateCreated = factory.LazyFunction(
+        lambda: datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=2)
+    )
     offerer = factory.SelfAttribute("collectiveStock.collectiveOffer.venue.managingOfferer")
     venue = factory.SelfAttribute("collectiveStock.collectiveOffer.venue")
     cancellationLimitDate = factory.LazyAttribute(
@@ -246,43 +258,67 @@ class CollectiveBookingFactory(BaseFactory):
             self.collectiveStock.beginningDatetime, self.dateCreated
         )
     )
-    confirmationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
+    confirmationLimitDate = factory.LazyFunction(
+        lambda: datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
+    )
     educationalInstitution = factory.SubFactory(EducationalInstitutionFactory)
     educationalYear = factory.SubFactory(EducationalYearFactory)
     educationalRedactor = factory.SubFactory(EducationalRedactorFactory)
-    confirmationDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
+    confirmationDate = factory.LazyFunction(
+        lambda: datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
+    )
 
 
 class CancelledCollectiveBookingFactory(CollectiveBookingFactory):
     status = models.CollectiveBookingStatus.CANCELLED
-    cancellationDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(hours=1))
+    cancellationDate = factory.LazyFunction(
+        lambda: datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=1)
+    )
     cancellationReason = factory.Iterator(models.CollectiveBookingCancellationReasons)
 
 
 class PendingCollectiveBookingFactory(CollectiveBookingFactory):
-    cancellationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() + datetime.timedelta(days=10))
-    confirmationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() + datetime.timedelta(days=10))
+    cancellationLimitDate = factory.LazyFunction(
+        lambda: datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=10)
+    )
+    confirmationLimitDate = factory.LazyFunction(
+        lambda: datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=10)
+    )
     status = models.CollectiveBookingStatus.PENDING
 
 
 class UsedCollectiveBookingFactory(CollectiveBookingFactory):
     status = models.CollectiveBookingStatus.USED
-    dateUsed = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=5))
-    dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=20))
-    confirmationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=12))
-    confirmationDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=6))
+    dateUsed = factory.LazyFunction(lambda: datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=5))
+    dateCreated = factory.LazyFunction(
+        lambda: datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=20)
+    )
+    confirmationLimitDate = factory.LazyFunction(
+        lambda: datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=12)
+    )
+    confirmationDate = factory.LazyFunction(
+        lambda: datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=6)
+    )
 
 
 class ReimbursedCollectiveBookingFactory(UsedCollectiveBookingFactory):
     status = models.CollectiveBookingStatus.REIMBURSED
-    reimbursementDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
+    reimbursementDate = factory.LazyFunction(
+        lambda: datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
+    )
 
 
 class ConfirmedCollectiveBookingFactory(CollectiveBookingFactory):
     status = models.CollectiveBookingStatus.CONFIRMED
-    cancellationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
-    confirmationDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
-    confirmationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() + datetime.timedelta(days=1))
+    cancellationLimitDate = factory.LazyFunction(
+        lambda: datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
+    )
+    confirmationDate = factory.LazyFunction(
+        lambda: datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
+    )
+    confirmationLimitDate = factory.LazyFunction(
+        lambda: datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=1)
+    )
 
 
 class CollectiveDmsApplicationFactory(BaseFactory):
@@ -294,9 +330,9 @@ class CollectiveDmsApplicationFactory(BaseFactory):
     state = "en_construction"
     procedure = 1  # could be any positive integer
     application = factory.Sequence(int)
-    lastChangeDate = datetime.datetime.utcnow() - datetime.timedelta(hours=1)
-    depositDate = datetime.datetime.utcnow() - datetime.timedelta(days=10)
-    expirationDate = datetime.datetime.utcnow() + datetime.timedelta(days=365)
+    lastChangeDate = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=1)
+    depositDate = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=10)
+    expirationDate = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=365)
     buildDate = factory.SelfAttribute("lastChangeDate")
 
 

@@ -174,7 +174,7 @@ class OffererPatchBankAccountsTest:
             offerers_models.VenueBankAccountLink.query.join(finance_models.BankAccount)
             .filter(
                 finance_models.BankAccount.id == bank_account.id,
-                offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
+                offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.now(datetime.timezone.utc)),
             )
             .count()
             == 3
@@ -227,7 +227,7 @@ class OffererPatchBankAccountsTest:
             not offerers_models.VenueBankAccountLink.query.join(finance_models.BankAccount)
             .filter(
                 finance_models.BankAccount.id == bank_account.id,
-                offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
+                offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.now(datetime.timezone.utc)),
             )
             .count()
         )
@@ -279,8 +279,8 @@ class OffererPatchBankAccountsTest:
             venue=first_venue,
             bankAccount=bank_account,
             timespan=(
-                datetime.datetime.utcnow() - datetime.timedelta(days=365),
-                datetime.datetime.utcnow() - datetime.timedelta(days=10),
+                datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=365),
+                datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=10),
             ),
         )
         first_timespan = first_history_link.timespan
@@ -288,8 +288,8 @@ class OffererPatchBankAccountsTest:
             venue=second_venue,
             bankAccount=bank_account,
             timespan=(
-                datetime.datetime.utcnow() - datetime.timedelta(days=365),
-                datetime.datetime.utcnow() - datetime.timedelta(days=10),
+                datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=365),
+                datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=10),
             ),
         )
         second_timespan = second_history_link.timespan
@@ -299,7 +299,7 @@ class OffererPatchBankAccountsTest:
             not offerers_models.VenueBankAccountLink.query.join(finance_models.BankAccount)
             .filter(
                 finance_models.BankAccount.id == bank_account.id,
-                offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
+                offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.now(datetime.timezone.utc)),
             )
             .count()
             == 2
@@ -350,7 +350,7 @@ class OffererPatchBankAccountsTest:
             offerers_models.VenueBankAccountLink.query.join(finance_models.BankAccount)
             .filter(
                 finance_models.BankAccount.id == bank_account.id,
-                offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
+                offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.now(datetime.timezone.utc)),
             )
             .count()
             == 2
@@ -392,13 +392,13 @@ class OffererPatchBankAccountsTest:
         first_current_link = offerers_factories.VenueBankAccountLinkFactory(
             venue=first_venue,
             bankAccount=bank_account,
-            timespan=(datetime.datetime.utcnow() - datetime.timedelta(days=365),),
+            timespan=(datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=365),),
         )
         first_timespan = first_current_link.timespan
         second_current_link = offerers_factories.VenueBankAccountLinkFactory(
             venue=second_venue,
             bankAccount=bank_account,
-            timespan=(datetime.datetime.utcnow() - datetime.timedelta(days=365),),
+            timespan=(datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=365),),
         )
         second_timespan = second_current_link.timespan
 
@@ -407,7 +407,7 @@ class OffererPatchBankAccountsTest:
             offerers_models.VenueBankAccountLink.query.join(finance_models.BankAccount)
             .filter(
                 finance_models.BankAccount.id == bank_account.id,
-                offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
+                offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.now(datetime.timezone.utc)),
             )
             .count()
             == 2
@@ -458,7 +458,7 @@ class OffererPatchBankAccountsTest:
             offerers_models.VenueBankAccountLink.query.join(finance_models.BankAccount)
             .filter(
                 finance_models.BankAccount.id == bank_account.id,
-                offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
+                offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.now(datetime.timezone.utc)),
             )
             .count()
             == 4
@@ -497,7 +497,9 @@ class OffererPatchBankAccountsTest:
         foreign_bank_account = finance_factories.BankAccountFactory(offerer=foreign_offerer)
         foreign_venue = offerers_factories.VenueFactory(managingOfferer=foreign_offerer, pricing_point="self")
         foreign_link = offerers_factories.VenueBankAccountLinkFactory(
-            venue=foreign_venue, bankAccount=foreign_bank_account, timespan=(datetime.datetime.utcnow(),)
+            venue=foreign_venue,
+            bankAccount=foreign_bank_account,
+            timespan=(datetime.datetime.now(datetime.timezone.utc),),
         )
 
         assert not bank_account.venueLinks

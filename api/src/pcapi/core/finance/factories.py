@@ -112,7 +112,7 @@ class FinanceEventFactory(BaseFactory):
         model = models.FinanceEvent
 
     valueDate = factory.LazyAttribute(lambda o: (o.booking or o.collectiveBooking).dateUsed)
-    pricingOrderingDate = factory.LazyFunction(datetime.datetime.utcnow)
+    pricingOrderingDate = factory.LazyFunction(lambda: datetime.datetime.now(datetime.timezone.utc))
     status = models.FinanceEventStatus.PRICED
     motive = models.FinanceEventMotive.BOOKING_USED
     booking = factory.SubFactory(bookings_factories.UsedBookingFactory)
@@ -227,8 +227,8 @@ class CustomReimbursementRuleFactory(BaseFactory):
     offer = factory.SubFactory(offers_factories.OfferFactory)
     timespan = factory.LazyFunction(
         lambda: [
-            datetime.datetime.utcnow() - datetime.timedelta(days=365),
-            datetime.datetime.utcnow() + datetime.timedelta(days=365),
+            datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=365),
+            datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=365),
         ]
     )
     amount = 500
@@ -264,7 +264,7 @@ class CashflowBatchFactory(BaseFactory):
     class Meta:
         model = models.CashflowBatch
 
-    cutoff = factory.LazyFunction(datetime.datetime.utcnow)
+    cutoff = factory.LazyFunction(lambda: datetime.datetime.now(datetime.timezone.utc))
     label = factory.Sequence("VIR{}".format)
 
 
@@ -367,7 +367,7 @@ class FinanceIncidentFactory(BaseFactory):
     status = models.IncidentStatus.CREATED
     details = {
         "origin": "Demande e-mail",
-        "createdAt": datetime.datetime.utcnow().isoformat(),
+        "createdAt": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "author": "Sandy Box",
         "validator": "",
         "validatedAt": "",

@@ -1,7 +1,4 @@
-from datetime import date
-from datetime import datetime
-from datetime import time
-from datetime import timedelta
+import datetime
 from decimal import Decimal
 import typing
 
@@ -45,13 +42,15 @@ BOOKING_DATE_STATUS_MAPPING: dict[educational_models.CollectiveBookingStatusFilt
 
 
 def find_bookings_happening_in_x_days(number_of_days: int) -> list[educational_models.CollectiveBooking]:
-    target_day = datetime.utcnow() + timedelta(days=number_of_days)
-    start = datetime.combine(target_day, time.min)
-    end = datetime.combine(target_day, time.max)
+    target_day = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=number_of_days)
+    start = datetime.datetime.combine(target_day, datetime.time.min)
+    end = datetime.datetime.combine(target_day, datetime.time.max)
     return find_bookings_starting_in_interval(start, end)
 
 
-def find_bookings_starting_in_interval(start: datetime, end: datetime) -> list[educational_models.CollectiveBooking]:
+def find_bookings_starting_in_interval(
+    start: datetime.datetime, end: datetime.datetime
+) -> list[educational_models.CollectiveBooking]:
     query = educational_models.CollectiveBooking.query.join(
         educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock
     )
@@ -153,7 +152,7 @@ def find_collective_booking_by_id(booking_id: int) -> educational_models.Collect
     return query.one_or_none()
 
 
-def find_educational_year_by_date(date_searched: datetime) -> educational_models.EducationalYear | None:
+def find_educational_year_by_date(date_searched: datetime.datetime) -> educational_models.EducationalYear | None:
     return educational_models.EducationalYear.query.filter(
         date_searched >= educational_models.EducationalYear.beginningDate,
         date_searched <= educational_models.EducationalYear.expirationDate,
@@ -394,7 +393,7 @@ def get_paginated_collective_bookings_for_educational_year(
     return query.all()
 
 
-def get_expired_collective_offers(interval: tuple[datetime, datetime]) -> BaseQuery:
+def get_expired_collective_offers(interval: tuple[datetime.datetime, datetime.datetime]) -> BaseQuery:
     """Return a query of collective offers whose latest booking limit occurs within
     the given interval.
 
@@ -426,7 +425,7 @@ def get_expired_collective_offers_template() -> BaseQuery:
 
 
 def find_expiring_collective_bookings_query() -> BaseQuery:
-    today_at_midnight = datetime.combine(date.today(), time(0, 0))
+    today_at_midnight = datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
 
     return educational_models.CollectiveBooking.query.filter(
         educational_models.CollectiveBooking.status == educational_models.CollectiveBookingStatus.PENDING,
@@ -435,7 +434,7 @@ def find_expiring_collective_bookings_query() -> BaseQuery:
 
 
 def find_expired_collective_bookings() -> list[educational_models.CollectiveBooking]:
-    expired_on = date.today()
+    expired_on = datetime.date.today()
     return (
         educational_models.CollectiveBooking.query.filter(
             educational_models.CollectiveBooking.status == educational_models.CollectiveBookingStatus.CANCELLED
@@ -507,8 +506,8 @@ def get_collective_offers_for_filters(
     venue_id: int | None = None,
     category_id: str | None = None,
     name_keywords: str | None = None,
-    period_beginning_date: date | None = None,
-    period_ending_date: date | None = None,
+    period_beginning_date: datetime.date | None = None,
+    period_ending_date: datetime.date | None = None,
     formats: list[subcategories.EacFormat] | None = None,
 ) -> list[educational_models.CollectiveOffer]:
     query = offers_repository.get_collective_offers_by_filters(
@@ -552,8 +551,8 @@ def get_collective_offers_template_for_filters(
     venue_id: int | None = None,
     category_id: str | None = None,
     name_keywords: str | None = None,
-    period_beginning_date: date | None = None,
-    period_ending_date: date | None = None,
+    period_beginning_date: datetime.date | None = None,
+    period_ending_date: datetime.date | None = None,
     formats: list[subcategories.EacFormat] | None = None,
 ) -> list[educational_models.CollectiveOfferTemplate]:
     query = offers_repository.get_collective_offers_template_by_filters(
@@ -588,9 +587,9 @@ def get_collective_offers_template_for_filters(
 
 def _get_filtered_collective_bookings_query(
     pro_user: User,
-    period: tuple[date, date] | None = None,
+    period: tuple[datetime.date, datetime.date] | None = None,
     status_filter: educational_models.CollectiveBookingStatusFilter | None = None,
-    event_date: date | None = None,
+    event_date: datetime.date | None = None,
     venue_id: int | None = None,
     extra_joins: typing.Iterable[sa.Column] | None = None,
 ) -> sa.orm.Query:
@@ -694,9 +693,9 @@ def list_public_collective_offers(
 
 def _get_filtered_collective_bookings_pro(
     pro_user: User,
-    period: tuple[date, date] | None = None,
+    period: tuple[datetime.date, datetime.date] | None = None,
     status_filter: educational_models.CollectiveBookingStatusFilter | None = None,
-    event_date: datetime | None = None,
+    event_date: datetime.datetime | None = None,
     venue_id: int | None = None,
 ) -> sa.orm.Query:
     bookings_query = (
@@ -727,9 +726,9 @@ def _get_filtered_collective_bookings_pro(
 
 def find_collective_bookings_by_pro_user(
     user: User,
-    booking_period: tuple[date, date] | None = None,
+    booking_period: tuple[datetime.date, datetime.date] | None = None,
     status_filter: educational_models.CollectiveBookingStatusFilter | None = None,
-    event_date: datetime | None = None,
+    event_date: datetime.datetime | None = None,
     venue_id: int | None = None,
     page: int = 1,
     per_page_limit: int = 1000,
@@ -767,9 +766,9 @@ def find_collective_bookings_by_pro_user(
 
 def get_filtered_collective_booking_report(
     pro_user: User,
-    period: tuple[date, date] | None,
+    period: tuple[datetime.date, datetime.date] | None,
     status_filter: educational_models.CollectiveBookingStatusFilter | None,
-    event_date: datetime | None = None,
+    event_date: datetime.datetime | None = None,
     venue_id: int | None = None,
 ) -> BaseQuery:
     bookings_query = _get_filtered_collective_bookings_query(
@@ -1166,9 +1165,9 @@ def search_educational_institution(
 
 
 def find_pending_booking_confirmation_limit_date_in_3_days() -> list[educational_models.CollectiveBooking]:
-    target_day = datetime.utcnow() + timedelta(days=3)
-    start = datetime.combine(target_day, time.min)
-    end = datetime.combine(target_day, time.max)
+    target_day = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=3)
+    start = datetime.datetime.combine(target_day, datetime.time.min)
+    end = datetime.datetime.combine(target_day, datetime.time.max)
     query = (
         educational_models.CollectiveBooking.query.filter(
             educational_models.CollectiveBooking.confirmationLimitDate.between(start, end)
@@ -1215,7 +1214,7 @@ def get_booking_related_reimbursement_point(booking_id: int) -> offerers_models.
         .join(reimbursement_point, offerers_models.VenueReimbursementPointLink.reimbursementPoint)
         .join(finance_models.BankInformation, reimbursement_point.bankInformation)
         .filter(
-            offerers_models.VenueReimbursementPointLink.timespan.contains(datetime.utcnow()),
+            offerers_models.VenueReimbursementPointLink.timespan.contains(datetime.datetime.now(datetime.timezone.utc)),
             educational_models.CollectiveBooking.id == booking_id,
         )
         .with_entities(reimbursement_point)
@@ -1232,7 +1231,7 @@ def get_booking_related_bank_account(booking_id: int) -> offerers_models.VenueBa
             offerers_models.VenueBankAccountLink,
             sa.and_(
                 offerers_models.VenueBankAccountLink.bankAccountId == finance_models.BankAccount.id,
-                offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+                offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.now(datetime.timezone.utc)),
             ),
         )
         .join(offerers_models.Venue, offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id)

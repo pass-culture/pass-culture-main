@@ -1,5 +1,4 @@
-from datetime import datetime
-from datetime import timezone
+import datetime
 from typing import Any
 from typing import Sequence
 
@@ -98,7 +97,9 @@ def validate_price(price: float | None) -> float:
     return price
 
 
-def validate_booking_limit_datetime(booking_limit_datetime: datetime | None, values: dict[str, Any]) -> datetime | None:
+def validate_booking_limit_datetime(
+    booking_limit_datetime: datetime.datetime | None, values: dict[str, Any]
+) -> datetime.datetime | None:
     if (
         booking_limit_datetime
         and "beginning_datetime" in values
@@ -108,12 +109,13 @@ def validate_booking_limit_datetime(booking_limit_datetime: datetime | None, val
     return booking_limit_datetime
 
 
-def validate_beginning_datetime(beginning_datetime: datetime, values: dict[str, Any]) -> datetime:
-    # we need a datetime with timezone information which is not provided by datetime.utcnow.
+def validate_beginning_datetime(beginning_datetime: datetime.datetime, values: dict[str, Any]) -> datetime.datetime:
+    now = datetime.datetime.now(datetime.timezone.utc)
+    utcnow = now.replace(tzinfo=None)
     if beginning_datetime.tzinfo is not None:
-        if beginning_datetime < datetime.now(timezone.utc):  # pylint: disable=datetime-now
+        if beginning_datetime < now:
             raise ValueError("L'évènement ne peut commencer dans le passé.")
-    elif beginning_datetime < datetime.utcnow():
+    elif beginning_datetime < utcnow:
         raise ValueError("L'évènement ne peut commencer dans le passé.")
     return beginning_datetime
 
@@ -174,11 +176,11 @@ def image_file_validator(field_name: str) -> classmethod:
 class CollectiveBookingResponseModel(BaseModel):
     id: int
     status: CollectiveBookingStatus
-    confirmationDate: datetime | None
-    cancellationLimitDate: datetime | None
-    reimbursementDate: datetime | None
-    dateUsed: datetime | None
-    dateCreated: datetime
+    confirmationDate: datetime.datetime | None
+    cancellationLimitDate: datetime.datetime | None
+    reimbursementDate: datetime.datetime | None
+    dateUsed: datetime.datetime | None
+    dateCreated: datetime.datetime
 
     class Config:
         orm_mode = True
@@ -368,8 +370,8 @@ class PostCollectiveOfferBodyModel(BaseModel):
     image_credit: str | None
     nationalProgramId: int | None
     # stock part
-    beginning_datetime: datetime
-    booking_limit_datetime: datetime
+    beginning_datetime: datetime.datetime
+    booking_limit_datetime: datetime.datetime
     total_price: float
     number_of_tickets: int
     educational_price_detail: str | None
@@ -475,8 +477,8 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     imageFile: str | None
     nationalProgramId: int | None
     # stock part
-    beginningDatetime: datetime | None
-    bookingLimitDatetime: datetime | None
+    beginningDatetime: datetime.datetime | None
+    bookingLimitDatetime: datetime.datetime | None
     price: float | None = Field(alias="totalPrice")
     educationalPriceDetail: str | None
     numberOfTickets: int | None
@@ -522,8 +524,8 @@ class PatchCollectiveOfferBodyModel(BaseModel):
 
     @validator("bookingLimitDatetime")
     def validate_booking_limit_datetime(
-        cls, booking_limit_datetime: datetime | None, values: dict[str, Any]
-    ) -> datetime | None:
+        cls, booking_limit_datetime: datetime.datetime | None, values: dict[str, Any]
+    ) -> datetime.datetime | None:
         if (
             booking_limit_datetime
             and values.get("beginningDatetime", None) is not None
@@ -533,7 +535,7 @@ class PatchCollectiveOfferBodyModel(BaseModel):
         return booking_limit_datetime
 
     @validator("beginningDatetime", pre=True)
-    def validate_beginning_limit_datetime(cls, beginningDatetime: datetime | None) -> datetime | None:
+    def validate_beginning_limit_datetime(cls, beginningDatetime: datetime.datetime | None) -> datetime.datetime | None:
         if beginningDatetime is None:
             raise ValueError("La date de début de l'évènement ne peut pas être nulle.")
         return beginningDatetime

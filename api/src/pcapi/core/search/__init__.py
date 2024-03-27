@@ -457,7 +457,8 @@ def get_offers_booking_count_by_id(
         .filter(
             offers_models.Offer.id.in_(offer_ids),
             offers_models.Offer.isActive.is_(True),
-            bookings_models.Booking.dateCreated >= datetime.datetime.utcnow() - datetime.timedelta(days=days),
+            bookings_models.Booking.dateCreated
+            >= datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=days),
             bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED,
         )
         .group_by(offers_models.Offer.id)

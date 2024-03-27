@@ -27,7 +27,7 @@ def handle_educonnect_authentication(
         first_name=educonnect_user.first_name,
         ine_hash=educonnect_user.ine_hash,
         last_name=educonnect_user.last_name,
-        registration_datetime=datetime.datetime.utcnow(),
+        registration_datetime=datetime.datetime.now(datetime.timezone.utc),
         school_uai=educonnect_user.school_uai,
         student_level=educonnect_user.student_level,
     )

@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 from functools import wraps
 import logging
 import time
@@ -28,7 +28,7 @@ def job(queue: Queue) -> typing.Callable:
                 return
 
             start = time.perf_counter()
-            started_at = current_job.started_at or datetime.utcnow()
+            started_at = current_job.started_at or datetime.datetime.now(datetime.timezone.utc)
             enqueued_at = current_job.enqueued_at
             assert enqueued_at is not None  # help mypy
             logger.info(

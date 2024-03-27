@@ -1,6 +1,4 @@
-from datetime import date
-from datetime import datetime
-from datetime import timedelta
+import datetime
 import logging
 from typing import Iterable
 
@@ -245,7 +243,10 @@ def find_venues_of_offerers_with_no_offer_and_at_least_one_physical_venue_and_va
         sqla.select(models.Offerer.id)
         .join(models.Venue, models.Offerer.id == models.Venue.managingOffererId)
         .filter(models.Offerer.isValidated)
-        .filter(sqla.cast(models.Offerer.dateValidated, sqla.Date) == (date.today() - timedelta(days=days)))
+        .filter(
+            sqla.cast(models.Offerer.dateValidated, sqla.Date)
+            == (datetime.date.today() - datetime.timedelta(days=days))
+        )
         .filter(sqla.not_(models.Venue.isVirtual))
         .distinct()
     )
@@ -414,7 +415,7 @@ def find_offerers_validated_3_days_ago_with_no_venues() -> list[models.Offerer]:
         .filter(models.Offerer.id.not_in(subquery_get_digital_venues_with_offers))
         .filter(
             models.Offerer.isActive.is_(True),
-            sqla.cast(models.Offerer.dateValidated, sqla.Date) == (date.today() - timedelta(days=3)),
+            sqla.cast(models.Offerer.dateValidated, sqla.Date) == (datetime.date.today() - datetime.timedelta(days=3)),
         )
         .all()
     )
@@ -649,7 +650,7 @@ def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
             models.VenuePricingPointLink,
             sqla.and_(
                 models.VenuePricingPointLink.venueId == models.Venue.id,
-                models.VenuePricingPointLink.timespan.contains(datetime.utcnow()),
+                models.VenuePricingPointLink.timespan.contains(datetime.datetime.now(datetime.timezone.utc)),
             ),
         )
         .outerjoin(
@@ -657,7 +658,7 @@ def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
             sqla.and_(
                 finance_models.BankAccount.id == models.VenueBankAccountLink.bankAccountId,
                 models.Venue.id == models.VenueBankAccountLink.venueId,
-                models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+                models.VenueBankAccountLink.timespan.contains(datetime.datetime.now(datetime.timezone.utc)),
             ),
         )
         .options(
@@ -718,7 +719,7 @@ def get_venues_with_non_free_offers_without_bank_accounts(offerer_id: int) -> li
             models.VenueBankAccountLink,
             sqla.and_(
                 models.VenueBankAccountLink.venueId == models.Venue.id,
-                models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+                models.VenueBankAccountLink.timespan.contains(datetime.datetime.now(datetime.timezone.utc)),
             ),
         )
         .with_entities(models.Venue.id)

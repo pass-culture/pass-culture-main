@@ -259,7 +259,7 @@ def remove_siret(
 ) -> None:
     check_can_remove_siret(venue, comment, override_revenue_check)
     old_siret = venue.siret
-    now = datetime.datetime.utcnow()
+    now = datetime.datetime.now(datetime.timezone.utc)
 
     if new_pricing_point_id:
         new_pricing_point_venue: offerers_models.Venue = offerers_models.Venue.query.filter(
@@ -364,7 +364,7 @@ def remove_pricing_point_link(
 ) -> None:
     check_can_remove_pricing_point(venue, override_revenue_check)
 
-    now = datetime.datetime.utcnow()
+    now = datetime.datetime.now(datetime.timezone.utc)
 
     with db.session.no_autoflush:  # do not flush anything before commit
         try:

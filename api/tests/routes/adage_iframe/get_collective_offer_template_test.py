@@ -31,8 +31,8 @@ def redactor_fixture():
 @pytest.fixture(name="offer")
 def offer_fixture():
     offer_range = educational_factories.DateRangeFactory(
-        start=datetime.datetime.utcnow() - datetime.timedelta(days=7),
-        end=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        start=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=7),
+        end=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1),
     )
     return offer_range
 
@@ -138,10 +138,10 @@ class CollectiveOfferTemplateTest:
                 "otherAddress": "",
             },
             nationalProgramId=educational_factories.NationalProgramFactory().id,
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=9),
+            dateCreated=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=9),
             dateRange=db_utils.make_timerange(
-                start=datetime.datetime.utcnow() - datetime.timedelta(days=7),
-                end=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+                start=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=7),
+                end=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1),
             ),
         )
 
@@ -172,7 +172,7 @@ class CollectiveOfferTemplateTest:
                 "otherAddress": "",
             },
             nationalProgramId=educational_factories.NationalProgramFactory().id,
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=9),
+            dateCreated=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=9),
             dateRange=None,
         )
 

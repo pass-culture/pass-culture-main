@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import decimal
 import logging
 from typing import Iterator
@@ -80,13 +80,16 @@ class BoostStocks(LocalProvider):
 
         provider_movie_unique_id = _build_movie_uuid(self.showtime_details.film.id, self.venue)
         offer_providable_info = self.create_providable_info(
-            offers_models.Offer, provider_movie_unique_id, datetime.utcnow(), provider_movie_unique_id
+            offers_models.Offer,
+            provider_movie_unique_id,
+            datetime.datetime.now(datetime.timezone.utc),
+            provider_movie_unique_id,
         )
         providable_information_list.append(offer_providable_info)
 
         showtime_id = _build_stock_uuid(self.showtime_details.film.id, self.venue, self.showtime_details.id)
         stock_providable_info = self.create_providable_info(
-            offers_models.Stock, showtime_id, datetime.utcnow(), showtime_id
+            offers_models.Stock, showtime_id, datetime.datetime.now(datetime.timezone.utc), showtime_id
         )
         providable_information_list.append(stock_providable_info)
 
@@ -114,7 +117,10 @@ class BoostStocks(LocalProvider):
 
         last_update_for_current_provider = get_last_update_for_provider(self.provider.id, offer)
 
-        if not last_update_for_current_provider or last_update_for_current_provider.date() != datetime.today().date():
+        if (
+            not last_update_for_current_provider
+            or last_update_for_current_provider.date() != datetime.datetime.today().date()
+        ):
             if self.showtime_details.film.posterUrl:
                 if image := self._get_boost_movie_poster(self.showtime_details.film.posterUrl):
                     offers_api.create_mediation(

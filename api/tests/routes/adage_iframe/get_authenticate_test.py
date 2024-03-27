@@ -87,7 +87,7 @@ class AuthenticateTest:
             collectiveOffer__institution=institution,
         )
         CollectiveStockFactory(
-            beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
+            beginningDatetime=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=5),
             collectiveOffer__institution=institution,
         )
 
@@ -167,7 +167,7 @@ class AuthenticateTest:
 
     def test_should_return_error_response_when_jwt_expired(self, client, valid_user):
         # Given
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now(datetime.timezone.utc)
         expired_token = self._create_adage_valid_token_from_expiration_date(
             valid_user, expiration_date=now - datetime.timedelta(days=1)
         )

@@ -30,7 +30,7 @@ def create_180_days_view_stats(offerer: offerers_models.Offerer, has_view: int) 
             views_count += random.randint(0, 1000) * random.randint(0, 10)
             daily_views_stats.append(
                 offerers_models.OffererViewsModel(
-                    eventDate=datetime.datetime.utcnow().date() - datetime.timedelta(days=180 - i),
+                    eventDate=datetime.datetime.now(datetime.timezone.utc).date() - datetime.timedelta(days=180 - i),
                     numberOfViews=views_count,
                 )
             )

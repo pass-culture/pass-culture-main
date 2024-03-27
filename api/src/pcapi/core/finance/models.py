@@ -257,7 +257,7 @@ class BankAccount(PcObject, Base, Model, DeactivableMixin):
     @property
     def current_link(self) -> "offerers_models.VenueBankAccountLink | None":
         for link in self.venueLinks:
-            if link.timespan.upper is None and link.timespan.lower <= datetime.datetime.utcnow():
+            if link.timespan.upper is None and link.timespan.lower <= datetime.datetime.now(datetime.timezone.utc):
                 return link
         return None
 
@@ -944,7 +944,10 @@ class PaymentStatus(Base, Model):
     paymentId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("payment.id"), index=True, nullable=False)
     payment: Payment = sqla_orm.relationship("Payment", foreign_keys=[paymentId], backref="statuses")
     date: datetime.datetime = sqla.Column(
-        sqla.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sqla.func.now()
+        sqla.DateTime,
+        nullable=False,
+        default=lambda: datetime.datetime.now(datetime.timezone.utc),
+        server_default=sqla.func.now(),
     )
     status: TransactionStatus = sqla.Column(sqla.Enum(TransactionStatus), nullable=False)
     detail = sqla.Column(sqla.VARCHAR(), nullable=True)

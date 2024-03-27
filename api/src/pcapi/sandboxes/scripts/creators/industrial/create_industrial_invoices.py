@@ -1,5 +1,4 @@
-from datetime import datetime
-from datetime import timedelta
+import datetime
 import logging
 import random
 
@@ -26,7 +25,7 @@ def create_industrial_invoices() -> None:
 
     finance_api.price_events()
 
-    batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
+    batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.now(datetime.timezone.utc))
     cashflows_created = finance_models.Cashflow.query.count()
     logger.info("Created %s Cashflows", cashflows_created)
 
@@ -144,7 +143,7 @@ def create_specific_invoice() -> None:
     incident_events = []
     for booking_finance_incident in booking_incidents:
         incident_events += finance_api._create_finance_events_from_incident(
-            booking_finance_incident, incident_validation_date=datetime.utcnow()
+            booking_finance_incident, incident_validation_date=datetime.datetime.now(datetime.timezone.utc)
         )
 
     for event in incident_events:
@@ -167,7 +166,7 @@ def create_specific_invoice() -> None:
     for booking in bookings:
         event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
         finance_api.price_event(event)
-    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
+    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.now(datetime.timezone.utc))
     cashflows = finance_models.Cashflow.query.filter_by(reimbursementPoint=venue).all()
     cashflow_ids = [c.id for c in cashflows]
 
@@ -275,7 +274,7 @@ def create_specific_invoice_with_bank_account() -> None:
     incident_events = []
     for booking_finance_incident in booking_incidents:
         incident_events += finance_api._create_finance_events_from_incident(
-            booking_finance_incident, incident_validation_date=datetime.utcnow()
+            booking_finance_incident, incident_validation_date=datetime.datetime.now(datetime.timezone.utc)
         )
 
     for event in incident_events:
@@ -298,7 +297,7 @@ def create_specific_invoice_with_bank_account() -> None:
     for booking in bookings:
         event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
         finance_api.price_event(event)
-    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
+    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.now(datetime.timezone.utc))
     cashflows = finance_models.Cashflow.query.filter_by(bankAccount=bank_account).all()
     cashflow_ids = [c.id for c in cashflows]
 
@@ -344,13 +343,13 @@ def create_specific_cashflow_batch_without_invoice() -> None:
 
     number_of_views = 0
     for i in range(7 * 30, 0, -1):  # 7 months
-        date = datetime.today() - timedelta(days=i)
+        date = datetime.datetime.today() - datetime.timedelta(days=i)
         number_of_views += date.day
         daily_views.append(offerers_models.OffererViewsModel(eventDate=date, numberOfViews=number_of_views))
 
     offerers_factories.OffererStatsFactory(
         offerer=offerer,
-        syncDate=datetime.utcnow(),
+        syncDate=datetime.datetime.now(datetime.timezone.utc),
         table=DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
         jsonData=offerers_models.OffererStatsData(daily_views=daily_views),
     )
@@ -361,7 +360,7 @@ def create_specific_cashflow_batch_without_invoice() -> None:
 
     offerers_factories.OffererStatsFactory(
         offerer=offerer,
-        syncDate=datetime.utcnow(),
+        syncDate=datetime.datetime.now(datetime.timezone.utc),
         table=TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
         jsonData=offerers_models.OffererStatsData(
             top_offers=[
@@ -415,6 +414,6 @@ def create_specific_cashflow_batch_without_invoice() -> None:
     for booking in bookings:
         event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
         finance_api.price_event(event)
-    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
+    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.now(datetime.timezone.utc))
 
     logger.info("Created specific CashflowBatch")

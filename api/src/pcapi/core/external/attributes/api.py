@@ -1,6 +1,6 @@
 from collections import Counter
 from collections import defaultdict
-from datetime import datetime
+import datetime
 
 import sqlalchemy as sa
 from sqlalchemy.orm import contains_eager
@@ -59,7 +59,7 @@ def update_external_pro(email: str | None) -> None:
     from pcapi.tasks.serialization.external_pro_tasks import UpdateProAttributesRequest
 
     if email:
-        now = datetime.utcnow()
+        now = datetime.datetime.now(datetime.timezone.utc)
         update_sib_pro_attributes_task.delay(UpdateProAttributesRequest(email=email, time_id=f"{now.hour // 12}"))
         if FeatureToggle.ENABLE_BEAMER.is_active():
             update_beamer_pro_attributes_task.delay(
@@ -377,7 +377,9 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
     is_former_beneficiary = (user.has_beneficiary_role and not has_remaining_credit) or (
         user.has_underage_beneficiary_role and user.eligibility is None
     )
-    user_birth_date = datetime.combine(user.birth_date, datetime.min.time()) if user.birth_date else None
+    user_birth_date = (
+        datetime.datetime.combine(user.birth_date, datetime.datetime.min.time()) if user.birth_date else None
+    )
 
     return models.UserAttributes(
         booking_categories=bookings_attributes.booking_categories,

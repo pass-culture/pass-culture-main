@@ -192,5 +192,5 @@ def _update_educational_booking_cancellation_limit_date(
     booking: educational_models.CollectiveBooking, new_beginning_datetime: datetime.datetime
 ) -> None:
     booking.cancellationLimitDate = educational_utils.compute_educational_booking_cancellation_limit_date(
-        new_beginning_datetime, datetime.datetime.utcnow()
+        new_beginning_datetime, datetime.datetime.now(datetime.timezone.utc)
     )

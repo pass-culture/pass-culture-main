@@ -54,7 +54,6 @@ def book_collective_offer(
             raise exceptions.EducationalYearNotFound()
         validation.check_user_can_prebook_collective_stock(redactor_informations.uai, stock)
 
-        utcnow = datetime.datetime.utcnow()
         booking = educational_models.CollectiveBooking(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
@@ -64,9 +63,9 @@ def book_collective_offer(
             venueId=stock.collectiveOffer.venueId,
             offererId=stock.collectiveOffer.venue.managingOffererId,
             status=educational_models.CollectiveBookingStatus.PENDING,
-            dateCreated=utcnow,
+            dateCreated=datetime.datetime.now(datetime.timezone.utc),
             cancellationLimitDate=educational_utils.compute_educational_booking_cancellation_limit_date(
-                stock.beginningDatetime, utcnow
+                stock.beginningDatetime, datetime.datetime.now(datetime.timezone.utc)
             ),
         )
         repository.save(booking)

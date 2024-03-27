@@ -15,7 +15,7 @@ def create_industrial_offerer_with_custom_reimbursement_rule() -> None:
         offerer=offerer,
         subcategories=["FESTIVAL_LIVRE", "FESTIVAL_CINE"],
         timespan=[  # start date in the past => not editable
-            datetime.datetime.utcnow() - datetime.timedelta(days=365),
+            datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=365),
             None,
         ],
     )
@@ -23,7 +23,7 @@ def create_industrial_offerer_with_custom_reimbursement_rule() -> None:
         offerer=offerer,
         subcategories=["FESTIVAL_MUSIQUE"],
         timespan=[  # start date in the future, end date not defined => editable
-            datetime.datetime.utcnow() + datetime.timedelta(days=100),
+            datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=100),
             None,
         ],
         amount=None,
@@ -33,7 +33,7 @@ def create_industrial_offerer_with_custom_reimbursement_rule() -> None:
         offerer=offerer,
         subcategories=["FESTIVAL_SPECTACLE"],
         timespan=[  # start date in the future, end date not defined => editable
-            datetime.datetime.utcnow() + datetime.timedelta(days=150),
+            datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=150),
             None,
         ],
         amount=None,
@@ -43,8 +43,8 @@ def create_industrial_offerer_with_custom_reimbursement_rule() -> None:
         offerer=offerer,
         subcategories=["FESTIVAL_ART_VISUEL"],
         timespan=[  # start date in the future but end date defined => not editable
-            datetime.datetime.utcnow() + datetime.timedelta(days=200),
-            datetime.datetime.utcnow() + datetime.timedelta(days=250),
+            datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=200),
+            datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=250),
         ],
         amount=None,
         rate=0.9,

@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 from functools import partial
 import json
 import typing
@@ -148,7 +148,7 @@ def synchronize_adage_ids_on_venues() -> None:
                     update_external_pro(email)
                 if venue.managingOfferer.isValidated:
                     send_eac_offerer_activation_email(venue, list(emails))
-                venue.adageInscriptionDate = datetime.utcnow()
+                venue.adageInscriptionDate = datetime.datetime.now(datetime.timezone.utc)
 
             venue.adageId = str(filtered_cultural_partner_by_ids[venue.id].id)
 

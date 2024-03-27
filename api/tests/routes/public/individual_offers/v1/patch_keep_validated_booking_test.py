@@ -23,15 +23,15 @@ class PatchKeepBookingByTokenReturns204Test:
             name="Vieux motard que jamais",
             extraData={"ean": "1234567890123"},
         )
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=2)
         product_stock = offers_factories.StockFactory(offer=product_offer, beginningDatetime=past)
         booking = bookings_factories.BookingFactory(
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2),
+            user__dateOfBirth=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=18, months=2),
             stock=product_stock,
-            dateUsed=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            dateUsed=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1),
             status=BookingStatus.USED,
         )
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -62,15 +62,15 @@ class PatchKeepBookingByTokenReturns403Test:
             name="Vieux motard que jamais",
             extraData={"ean": "1234567890123"},
         )
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=2)
         product_stock = offers_factories.StockFactory(offer=product_offer, beginningDatetime=past)
         booking = bookings_factories.BookingFactory(
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2),
+            user__dateOfBirth=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=18, months=2),
             stock=product_stock,
-            dateUsed=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            dateUsed=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1),
             status=BookingStatus.REIMBURSED,
         )
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -88,15 +88,15 @@ class PatchKeepBookingByTokenReturns403Test:
             name="Vieux motard que jamais",
             extraData={"ean": "1234567890123"},
         )
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=2)
         product_stock = offers_factories.StockFactory(offer=product_offer, beginningDatetime=past)
         booking = bookings_factories.BookingFactory(
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2),
+            user__dateOfBirth=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=18, months=2),
             stock=product_stock,
-            dateUsed=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            dateUsed=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1),
             status=BookingStatus.CONFIRMED,
         )
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -110,12 +110,13 @@ class PatchKeepBookingByTokenReturns403Test:
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(venue=venue)
         event_stock = offers_factories.StockFactory(
-            offer=event_offer, bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=10)
+            offer=event_offer,
+            bookingLimitDatetime=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=10),
         )
         booking = bookings_factories.BookingFactory(
             stock=event_stock,
             status=BookingStatus.CONFIRMED,
-            dateCreated=datetime.datetime.utcnow() + datetime.timedelta(hours=10),
+            dateCreated=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=10),
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -139,13 +140,13 @@ class PatchKeepBookingByTokenReturns404Test:
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
         )
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=2)
         product_stock = offers_factories.StockFactory(offer=product_offer, beginningDatetime=past)
         booking = bookings_factories.BookingFactory(
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2),
+            user__dateOfBirth=datetime.datetime.now(datetime.timezone.utc) - relativedelta(years=18, months=2),
             stock=product_stock,
         )
 

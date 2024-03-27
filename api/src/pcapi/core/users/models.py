@@ -3,8 +3,7 @@ from __future__ import annotations  # to type models before their declaration
 from dataclasses import asdict
 from dataclasses import dataclass
 from dataclasses import field
-from datetime import date
-from datetime import datetime
+import datetime
 from decimal import Decimal
 import enum
 from operator import attrgetter
@@ -77,7 +76,7 @@ class NotificationSubscriptions:
 
 
 # calculate date of latest birthday
-def _get_latest_birthday(birth_date: date | None) -> date | None:
+def _get_latest_birthday(birth_date: datetime.date | None) -> datetime.date | None:
     """
     Calculates the latest birthday of a given person.
     :param birth_date: The person's birthday.
@@ -86,7 +85,7 @@ def _get_latest_birthday(birth_date: date | None) -> date | None:
     if not birth_date:
         return None
 
-    today = date.today()
+    today = datetime.date.today()
 
     try:
         this_year_birthday = birth_date.replace(year=today.year)
@@ -157,7 +156,9 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     culturalSurveyFilledDate = sa.Column(sa.DateTime, nullable=True)
     # culturalSurveyId is obsolete. the column is kept for backward compatibility with the existing data
     culturalSurveyId = sa.Column(postgresql.UUID(as_uuid=True), nullable=True)
-    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime.datetime = sa.Column(
+        sa.DateTime, nullable=False, default=lambda: datetime.datetime.now(datetime.timezone.utc)
+    )
     dateOfBirth = sa.Column(sa.DateTime, nullable=True)  # declared at signup
     departementCode = sa.Column(sa.String(3), nullable=True)
     email: str = sa.Column(sa.String(120), nullable=False, unique=True)
@@ -332,7 +333,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return users_utils.get_age_from_birth_date(self.birth_date) if self.birth_date else None
 
     @hybrid_property
-    def birth_date(self) -> date | None:
+    def birth_date(self) -> datetime.date | None:
         """
         Returns the birth date validated by an Identity Provider if it exists,
         otherwise the birth date declared by the user at signup.
@@ -344,7 +345,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return None
 
     @birth_date.expression  # type: ignore [no-redef]
-    def birth_date(cls) -> date | None:  # pylint: disable=no-self-argument
+    def birth_date(cls) -> datetime.date | None:  # pylint: disable=no-self-argument
         return sa.case(
             (cls.validatedBirthDate.is_not(None), cls.validatedBirthDate),
             (cls.dateOfBirth.is_not(None), sa.cast(cls.dateOfBirth, sa.Date)),
@@ -358,11 +359,11 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return sorted(self.deposits, key=attrgetter("expirationDate"), reverse=True)[0]
 
     @property
-    def deposit_activation_date(self) -> datetime | None:
+    def deposit_activation_date(self) -> datetime.datetime | None:
         return self.deposit.dateCreated if self.deposit else None
 
     @property
-    def deposit_expiration_date(self) -> datetime | None:
+    def deposit_expiration_date(self) -> datetime.datetime | None:
         return self.deposit.expirationDate if self.deposit else None
 
     @property
@@ -385,7 +386,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     def eligibility(self) -> EligibilityType | None:
         from pcapi.core.fraud import api as fraud_api
 
-        return fraud_api.decide_eligibility(self, self.birth_date, datetime.utcnow())
+        return fraud_api.decide_eligibility(self, self.birth_date, datetime.datetime.now(datetime.timezone.utc))
 
     @hybrid_property
     def full_name(self) -> str:
@@ -411,14 +412,14 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
 
     @property
     def has_active_deposit(self) -> bool:
-        return self.deposit.expirationDate > datetime.utcnow() if self.deposit else False  # type: ignore [operator]
+        return self.deposit.expirationDate > datetime.datetime.now(datetime.timezone.utc) if self.deposit else False  # type: ignore [operator]
 
     @property
     def is_eligible(self) -> bool:
         return self.eligibility is not None
 
     @property
-    def latest_birthday(self) -> date | None:
+    def latest_birthday(self) -> datetime.date | None:
         return _get_latest_birthday(self.birth_date)
 
     @property
@@ -463,7 +464,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return None
 
     @property
-    def suspension_date(self) -> datetime | None:
+    def suspension_date(self) -> datetime.datetime | None:
         """
         Date and time when the inactive account was suspended for the last time.
         """
@@ -528,7 +529,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
 
     @property
     def has_remaining_credit(self) -> bool:
-        today = datetime.combine(date.today(), datetime.min.time())
+        today = datetime.datetime.combine(datetime.date.today(), datetime.datetime.min.time())
         return (
             self.deposit is not None
             and (self.deposit.expirationDate is None or self.deposit.expirationDate > today)
@@ -687,7 +688,7 @@ class Favorite(PcObject, Base, Model):
 
     offer: orm.Mapped["Offer"] = orm.relationship("Offer", foreign_keys=[offerId], backref="favorites")
 
-    dateCreated = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow)
+    dateCreated = sa.Column(sa.DateTime, nullable=True, default=lambda: datetime.datetime.now(datetime.timezone.utc))
 
     __table_args__ = (
         sa.UniqueConstraint(
@@ -728,7 +729,7 @@ class UserEmailHistory(PcObject, Base, Model):
     newUserEmail: str | None = sa.Column(sa.String(120), nullable=True, unique=False, index=True)
     newDomainEmail: str | None = sa.Column(sa.String(120), nullable=True, unique=False, index=True)
 
-    creationDate: datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
+    creationDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
 
     eventType: EmailHistoryEventTypeEnum = sa.Column(sa.Enum(EmailHistoryEventTypeEnum), nullable=False)
 
@@ -835,7 +836,9 @@ class TrustedDevice(PcObject, Base, Model):
 
     source = sa.Column(sa.Text, nullable=True)
     os = sa.Column(sa.Text, nullable=True)
-    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime.datetime = sa.Column(
+        sa.DateTime, nullable=False, default=lambda: datetime.datetime.now(datetime.timezone.utc)
+    )
 
 
 class LoginDeviceHistory(PcObject, Base, Model):
@@ -849,7 +852,9 @@ class LoginDeviceHistory(PcObject, Base, Model):
     source = sa.Column(sa.Text, nullable=True)
     os = sa.Column(sa.Text, nullable=True)
     location = sa.Column(sa.Text, nullable=True)
-    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: datetime.datetime = sa.Column(
+        sa.DateTime, nullable=False, default=lambda: datetime.datetime.now(datetime.timezone.utc)
+    )
 
 
 class SingleSignOn(PcObject, Base, Model):
@@ -886,5 +891,5 @@ class UserProNewNavState(PcObject, Base, Model):
     )
     user: User = orm.relationship(User, foreign_keys=[userId], back_populates="pro_new_nav_state", uselist=False)
 
-    eligibilityDate: datetime = sa.Column(sa.DateTime, nullable=True)
-    newNavDate: datetime = sa.Column(sa.DateTime, nullable=True)
+    eligibilityDate: datetime.datetime = sa.Column(sa.DateTime, nullable=True)
+    newNavDate: datetime.datetime = sa.Column(sa.DateTime, nullable=True)

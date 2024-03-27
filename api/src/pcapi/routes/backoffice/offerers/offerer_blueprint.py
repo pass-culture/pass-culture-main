@@ -71,7 +71,7 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
             bank_link_class,
             sa.and_(
                 bank_link_class.venueId == offerers_models.Venue.id,
-                bank_link_class.timespan.contains(datetime.datetime.utcnow()),
+                bank_link_class.timespan.contains(datetime.datetime.now(datetime.timezone.utc)),
             ),
         )
         .filter(
@@ -116,7 +116,7 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
             users_models.UserProNewNavState,
             sa.and_(
                 users_models.UserProNewNavState.userId == offerers_models.UserOfferer.userId,
-                users_models.UserProNewNavState.newNavDate < datetime.datetime.utcnow(),
+                users_models.UserProNewNavState.newNavDate < datetime.datetime.now(datetime.timezone.utc),
             ),
         )
         .where(

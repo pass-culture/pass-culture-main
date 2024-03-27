@@ -581,7 +581,7 @@ def decide_eligibility(
     if user_age_today == 18:
         return users_models.EligibilityType.AGE18
 
-    eligibility_today = users_api.get_eligibility_at_date(birth_date, datetime.datetime.utcnow())
+    eligibility_today = users_api.get_eligibility_at_date(birth_date, datetime.datetime.now(datetime.timezone.utc))
 
     if eligibility_today == users_models.EligibilityType.AGE18:
         return users_models.EligibilityType.AGE18

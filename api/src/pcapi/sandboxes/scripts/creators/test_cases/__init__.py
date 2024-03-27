@@ -264,7 +264,7 @@ def create_venues_across_cities() -> None:
                     offers_factories.EventStockFactory(
                         quantity=random.randint(10, 100),
                         offer=offer,
-                        beginningDatetime=datetime.datetime.utcnow()
+                        beginningDatetime=datetime.datetime.now(datetime.timezone.utc)
                         + datetime.timedelta(
                             days=random.randint(30, 59),
                             hours=random.randint(1, 23),
@@ -282,7 +282,7 @@ def create_offers_for_each_subcategory() -> None:
                 offer__product=None,
                 offer__subcategoryId=subcategory.id,
                 quantity=random.randint(10, 100),
-                beginningDatetime=datetime.datetime.utcnow()
+                beginningDatetime=datetime.datetime.now(datetime.timezone.utc)
                 + datetime.timedelta(
                     days=random.randint(30, 59),
                     hours=random.randint(1, 23),

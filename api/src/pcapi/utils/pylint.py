@@ -71,33 +71,6 @@ class BaseModelImportChecker(pylint.checkers.BaseChecker):
                     return
 
 
-MSG_USE_OF_DATETIME_NOW = "datetime-now"
-DATETIME_NOW_HELP = """\
-Datetimes are stored in UTC. As such, `datetime.utcnow()` should be used
-instead of `now()`, unless you are really sure that you want a local,
-non-UTC datetime.
-"""
-
-
-class DatetimeNowChecker(pylint.checkers.BaseChecker):
-    name = "datetime-now"
-    priority = -1
-    msgs = {
-        "W4003": (
-            "Likely wrong use of `datetime.now()` instead of `utcnow()`.",
-            MSG_USE_OF_DATETIME_NOW,
-            DATETIME_NOW_HELP,
-        ),
-    }
-    options = ()
-
-    def visit_attribute(self, node: astroid.nodes.Attribute) -> None:
-        expr = node.expr
-        expr_name = getattr(expr, "attrname", None) or getattr(expr, "name", None)
-        if node.attrname == "now" and expr_name == "datetime":
-            self.add_message(MSG_USE_OF_DATETIME_NOW, node=node, line=node.lineno)
-
-
 MSG_REQUESTS_IMPORT = "wrong-requests-import"
 
 
@@ -127,6 +100,5 @@ class RequestsImportChecker(pylint.checkers.BaseChecker):
 
 def register(linter: pylint.lint.PyLinter) -> None:
     linter.register_checker(BaseModelImportChecker(linter))
-    linter.register_checker(DatetimeNowChecker(linter))
     linter.register_checker(MarkupSafeChecker(linter))
     linter.register_checker(RequestsImportChecker(linter))

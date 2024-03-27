@@ -23,7 +23,9 @@ class PatchDateTest:
             venue=venue,
             lastProvider=api_key.provider,
         )
-        next_year = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=365)
+        next_year = datetime.datetime.now(datetime.timezone.utc).replace(second=0, microsecond=0) + datetime.timedelta(
+            days=365
+        )
         event_stock = offers_factories.EventStockFactory(
             offer=event_offer,
             quantity=10,
@@ -34,8 +36,12 @@ class PatchDateTest:
         )
         price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
 
-        two_weeks_from_now = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=2)
-        next_month = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
+        two_weeks_from_now = datetime.datetime.now(datetime.timezone.utc).replace(
+            second=0, microsecond=0
+        ) + datetime.timedelta(weeks=2)
+        next_month = datetime.datetime.now(datetime.timezone.utc).replace(second=0, microsecond=0) + datetime.timedelta(
+            days=30
+        )
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             f"/public/offers/v1/events/{event_stock.offer.id}/dates/{event_stock.id}",
             json={
@@ -62,7 +68,7 @@ class PatchDateTest:
             venue=venue,
             lastProvider=api_key.provider,
         )
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now(datetime.timezone.utc)
         tomorrow = now + datetime.timedelta(days=1)
         two_days_after = now + datetime.timedelta(days=2)
         three_days_after = now + datetime.timedelta(days=3)
@@ -105,7 +111,7 @@ class PatchDateTest:
     def test_update_all_fields_on_date_with_price_category(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(venue=venue, lastProvider=api_key.provider)
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now(datetime.timezone.utc)
         tomorrow = now + datetime.timedelta(days=1)
         two_days_after = now + datetime.timedelta(days=2)
         three_days_after = now + datetime.timedelta(days=3)
@@ -144,7 +150,9 @@ class PatchDateTest:
             lastProvider=api_key.provider,
         )
         price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
-        next_year = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=365)
+        next_year = datetime.datetime.now(datetime.timezone.utc).replace(second=0, microsecond=0) + datetime.timedelta(
+            days=365
+        )
         event_stock = offers_factories.EventStockFactory(
             offer=event_offer,
             quantity=10,
@@ -153,7 +161,9 @@ class PatchDateTest:
             beginningDatetime=next_year,
         )
 
-        eight_days_from_now = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=8)
+        eight_days_from_now = datetime.datetime.now(datetime.timezone.utc).replace(
+            second=0, microsecond=0
+        ) + datetime.timedelta(days=8)
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             f"/public/offers/v1/events/{event_stock.offer.id}/dates/{event_stock.id}",
             json={

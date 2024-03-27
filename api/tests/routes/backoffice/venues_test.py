@@ -1,5 +1,4 @@
-from datetime import datetime
-from datetime import timedelta
+import datetime
 from decimal import Decimal
 import json
 from operator import attrgetter
@@ -512,7 +511,7 @@ class GetVenueTest(GetEndpointHelper):
     def test_get_venue_with_provider(self, authenticated_client, random_venue):
         venue_provider = providers_factories.AllocineVenueProviderFactory(
             venue=random_venue,
-            lastSyncDate=datetime(2024, 1, 5, 12, 0),
+            lastSyncDate=datetime.datetime(2024, 1, 5, 12, 0),
         )
         venue_id = random_venue.id
 
@@ -537,7 +536,7 @@ class GetVenueTest(GetEndpointHelper):
         provider = providers_factories.APIProviderFactory()
         providers_factories.AllocineVenueProviderFactory(
             venue=random_venue,
-            lastSyncDate=datetime.utcnow() - timedelta(hours=4),
+            lastSyncDate=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=4),
             isActive=True,
             provider=provider,
         )
@@ -554,7 +553,7 @@ class GetVenueTest(GetEndpointHelper):
         provider = providers_factories.APIProviderFactory(name="Praxiel")
         provider = providers_factories.AllocineVenueProviderFactory(
             venue=random_venue,
-            lastSyncDate=datetime.utcnow() - timedelta(hours=4),
+            lastSyncDate=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=4),
             isActive=True,
             provider=provider,
         )
@@ -749,7 +748,7 @@ class GetVenueStatsTest(GetEndpointHelper):
 
         cards_content = html_parser.extract_cards_text(response.data)
         assert (
-            f"Compte bancaire : Nouveau compte ({(datetime.utcnow() - timedelta(days=1)).strftime('%d/%m/%Y')})"
+            f"Compte bancaire : Nouveau compte ({(datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)).strftime('%d/%m/%Y')})"
             in cards_content[2]
         )
 
@@ -871,7 +870,7 @@ class GetVenueRevenueDetailsTest(GetEndpointHelper):
         collective_venue_booking,
     ):
         venue_id = venue_with_accepted_bank_info.id
-        current_year = datetime.utcnow().year
+        current_year = datetime.datetime.now(datetime.timezone.utc).year
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
@@ -902,21 +901,27 @@ class HasReimbursementPointTest:
         offerers_factories.VenueReimbursementPointLinkFactory(
             venue=venue,
             reimbursementPoint=venue,
-            timespan=[datetime.utcnow() + timedelta(days=10), datetime.utcnow() + timedelta(days=100)],
+            timespan=[
+                datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=10),
+                datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=100),
+            ],
         )
 
         # starts in 100 days and has no end
         offerers_factories.VenueReimbursementPointLinkFactory(
             venue=venue,
             reimbursementPoint=venue,
-            timespan=[datetime.utcnow() + timedelta(days=100), None],
+            timespan=[datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=100), None],
         )
 
         # started 100 days ago, ended 10 days ago
         offerers_factories.VenueReimbursementPointLinkFactory(
             venue=venue,
             reimbursementPoint=venue,
-            timespan=[datetime.utcnow() - timedelta(days=100), datetime.utcnow() - timedelta(days=10)],
+            timespan=[
+                datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=100),
+                datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=10),
+            ],
         )
 
         assert venue.current_reimbursement_point is None
@@ -936,7 +941,7 @@ class FullySyncVenueTest(PostEndpointHelper):
         provider = providers_factories.APIProviderFactory()
         providers_factories.AllocineVenueProviderFactory(
             venue=random_venue,
-            lastSyncDate=datetime.utcnow() - timedelta(hours=5),
+            lastSyncDate=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=5),
             isActive=True,
             provider=provider,
         )
@@ -950,7 +955,7 @@ class FullySyncVenueTest(PostEndpointHelper):
         provider = providers_factories.APIProviderFactory()
         providers_factories.AllocineVenueProviderFactory(
             venue=random_venue,
-            lastSyncDate=datetime.utcnow() - timedelta(hours=4),
+            lastSyncDate=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=4),
             isActive=False,
             provider=provider,
         )
@@ -1347,7 +1352,7 @@ class UpdateVenueTest(PostEndpointHelper):
         offerers_factories.VenuePricingPointLinkFactory(
             venue=venue,
             pricingPoint=offerers_factories.VenueFactory(),
-            timespan=[datetime.utcnow() - timedelta(days=60), None],
+            timespan=[datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=60), None],
         )
 
         data = self._get_current_data(venue)
@@ -1491,14 +1496,14 @@ class GetVenueHistoryTest(GetEndpointHelper):
         comment = "test comment"
         history_factories.ActionHistoryFactory(
             actionType=history_models.ActionType.COMMENT,
-            actionDate=datetime.utcnow() - timedelta(hours=3),
+            actionDate=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=3),
             authorUser=legit_user,
             venue=venue,
             comment=comment,
         )
         history_factories.ActionHistoryFactory(
             actionType=history_models.ActionType.INFO_MODIFIED,
-            actionDate=datetime.utcnow() - timedelta(hours=2),
+            actionDate=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=2),
             authorUser=legit_user,
             venue=venue,
             comment=None,
@@ -1628,8 +1633,12 @@ class GetVenueInvoicesTest(GetEndpointHelper):
     def test_venue_has_invoices(self, authenticated_client):
         venue = offerers_factories.VenueFactory(reimbursement_point="self")
         venue_id = venue.id
-        invoice1 = finance_factories.InvoiceFactory(reimbursementPoint=venue, date=datetime(2023, 4, 1), amount=-1000)
-        invoice2 = finance_factories.InvoiceFactory(reimbursementPoint=venue, date=datetime(2023, 5, 1), amount=-1250)
+        invoice1 = finance_factories.InvoiceFactory(
+            reimbursementPoint=venue, date=datetime.datetime(2023, 4, 1), amount=-1000
+        )
+        invoice2 = finance_factories.InvoiceFactory(
+            reimbursementPoint=venue, date=datetime.datetime(2023, 5, 1), amount=-1250
+        )
         finance_factories.CashflowFactory(
             invoices=[invoice1, invoice2],
             reimbursementPoint=venue,
@@ -1677,7 +1686,9 @@ class DownloadReimbursementDetailsTest(PostEndpointHelper):
         finance_factories.PricingFactory(
             status=finance_models.PricingStatus.INVOICED, booking=booking_finance_incident.booking
         )
-        incident_events = finance_api._create_finance_events_from_incident(booking_finance_incident, datetime.utcnow())
+        incident_events = finance_api._create_finance_events_from_incident(
+            booking_finance_incident, datetime.datetime.now(datetime.timezone.utc)
+        )
         incident_pricings = []
         for event in incident_events:
             pricing = finance_api.price_event(event)
@@ -1686,7 +1697,8 @@ class DownloadReimbursementDetailsTest(PostEndpointHelper):
 
         # Create total overpayment on collective booking
         collective_booking_finance_incident = finance_factories.CollectiveBookingFinanceIncidentFactory(
-            collectiveBooking__collectiveStock__beginningDatetime=datetime.utcnow() - timedelta(days=5),
+            collectiveBooking__collectiveStock__beginningDatetime=datetime.datetime.now(datetime.timezone.utc)
+            - datetime.timedelta(days=5),
             collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
             collectiveBooking__collectiveStock__price=7,
             newTotalAmount=0,
@@ -1696,7 +1708,7 @@ class DownloadReimbursementDetailsTest(PostEndpointHelper):
             collectiveBooking=collective_booking_finance_incident.collectiveBooking,
         )
         collective_incident_events = finance_api._create_finance_events_from_incident(
-            collective_booking_finance_incident, datetime.utcnow()
+            collective_booking_finance_incident, datetime.datetime.now(datetime.timezone.utc)
         )
         for event in collective_incident_events:
             pricing = finance_api.price_event(event)
@@ -1951,7 +1963,7 @@ class GetRemovePricingPointFormTest(GetEndpointHelper):
         offerers_factories.VenuePricingPointLinkFactory(
             venue=venue,
             pricingPoint=offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer),
-            timespan=[datetime.utcnow() - timedelta(days=7), None],
+            timespan=[datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=7), None],
         )
 
         response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
@@ -2001,7 +2013,7 @@ class RemovePricingPointTest(PostEndpointHelper):
         assert response.status_code == 303
 
         assert venue_with_no_siret.current_pricing_point is None
-        assert venue_with_no_siret.pricing_point_links[0].timespan.upper <= datetime.utcnow()
+        assert venue_with_no_siret.pricing_point_links[0].timespan.upper <= datetime.datetime.now(datetime.timezone.utc)
         assert len(venue_with_no_siret.reimbursement_point_links) == 0
 
         action = history_models.ActionHistory.query.one()
@@ -2033,7 +2045,7 @@ class RemovePricingPointTest(PostEndpointHelper):
 
         assert venue_with_no_siret.current_pricing_point is None
         assert venue_with_no_siret.current_reimbursement_point.id == old_reimbursement_point_id  # unchanged
-        assert venue_with_no_siret.pricing_point_links[0].timespan.upper <= datetime.utcnow()
+        assert venue_with_no_siret.pricing_point_links[0].timespan.upper <= datetime.datetime.now(datetime.timezone.utc)
 
         action = history_models.ActionHistory.query.one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
@@ -2052,7 +2064,7 @@ class RemovePricingPointTest(PostEndpointHelper):
         offerers_factories.VenuePricingPointLinkFactory(
             venue=venue,
             pricingPoint=offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer),
-            timespan=[datetime.utcnow() - timedelta(days=7), None],
+            timespan=[datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=7), None],
         )
 
         response = self.post_to_endpoint(
@@ -2120,7 +2132,7 @@ class RemovePricingPointTest(PostEndpointHelper):
 
         assert response.status_code == 303
         assert venue_with_no_siret.current_pricing_point is None
-        assert venue_with_no_siret.pricing_point_links[0].timespan.upper <= datetime.utcnow()
+        assert venue_with_no_siret.pricing_point_links[0].timespan.upper <= datetime.datetime.now(datetime.timezone.utc)
 
 
 class GetRemoveSiretFormTest(GetEndpointHelper):
@@ -2210,7 +2222,7 @@ class RemoveSiretTest(PostEndpointHelper):
 
         assert venue.siret is None
         assert venue.comment == "test"
-        assert venue.pricing_point_links[0].timespan.upper <= datetime.utcnow()
+        assert venue.pricing_point_links[0].timespan.upper <= datetime.datetime.now(datetime.timezone.utc)
         assert venue.current_pricing_point == target_venue
         assert venue.reimbursement_point_links[0].timespan.upper is None  # unchanged
         assert venue.current_reimbursement_point == venue
@@ -2226,7 +2238,7 @@ class RemoveSiretTest(PostEndpointHelper):
             "pricingPointSiret": {"old_info": old_siret, "new_info": target_venue.siret},
         }
 
-        assert other_venue.pricing_point_links[0].timespan.upper <= datetime.utcnow()
+        assert other_venue.pricing_point_links[0].timespan.upper <= datetime.datetime.now(datetime.timezone.utc)
         assert other_venue.current_pricing_point is None
         assert other_venue.reimbursement_point_links[0].timespan.upper is None  # unchanged
         assert other_venue.current_reimbursement_point == venue
