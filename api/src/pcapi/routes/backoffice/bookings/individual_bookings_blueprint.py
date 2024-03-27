@@ -18,12 +18,12 @@ from werkzeug.exceptions import NotFound
 
 from pcapi import settings
 from pcapi.connectors import ems
-from pcapi.connectors.cgr import exceptions as cgr_exceptions
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as booking_repository
 from pcapi.core.external_bookings.cds import exceptions as cds_exceptions
+from pcapi.core.external_bookings.cgr import exceptions as cgr_exceptions
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
