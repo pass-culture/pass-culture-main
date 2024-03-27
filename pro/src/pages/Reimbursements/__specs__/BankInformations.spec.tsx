@@ -9,9 +9,9 @@ import {
   BankAccountResponseModel,
   ManagedVenues,
 } from 'apiClient/v1'
-import { ReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
 import * as useAnalytics from 'hooks/useAnalytics'
 import BankInformations from 'pages/Reimbursements/BankInformations/BankInformations'
+import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
 import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -40,6 +40,19 @@ const defaultManagedVenues: ManagedVenues = {
 
 const mockLogEvent = vi.fn()
 
+const contextData: ReimbursementsContextProps = {
+  selectedOfferer: {
+    ...defaultGetOffererResponseModel,
+    name: 'toto',
+    id: 1,
+  },
+  setSelectedOfferer: function () {},
+}
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual('react-router-dom')),
+  useOutletContext: () => contextData,
+}))
+
 function renderBankInformations() {
   const storeOverrides = {
     user: {
@@ -50,23 +63,9 @@ function renderBankInformations() {
       initialized: true,
     },
   }
-  renderWithProviders(
-    <ReimbursementContext.Provider
-      value={{
-        selectedOfferer: {
-          ...defaultGetOffererResponseModel,
-          name: 'toto',
-          id: 1,
-        },
-        setSelectedOfferer: () => undefined,
-      }}
-    >
-      <BankInformations />
-    </ReimbursementContext.Provider>,
-    {
-      storeOverrides,
-    }
-  )
+  renderWithProviders(<BankInformations />, {
+    storeOverrides,
+  })
 }
 
 describe('BankInformations', () => {

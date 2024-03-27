@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useOutletContext } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import {
@@ -8,13 +8,13 @@ import {
   ManagedVenues,
 } from 'apiClient/v1'
 import ReimbursementBankAccount from 'components/ReimbursementBankAccount/ReimbursementBankAccount'
-import { useReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullMoreIcon from 'icons/full-more.svg'
 import LinkVenuesDialog from 'pages/Reimbursements/BankInformations/LinkVenuesDialog'
+import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -29,7 +29,8 @@ const BankInformations = (): JSX.Element => {
 
   const [showAddBankInformationsDialog, setShowAddBankInformationsDialog] =
     useState(false)
-  const { selectedOfferer, setSelectedOfferer } = useReimbursementContext()
+  const { selectedOfferer, setSelectedOfferer }: ReimbursementsContextProps =
+    useOutletContext()
 
   const [isOffererBankAccountsLoading, setIsOffererBankAccountsLoading] =
     useState<boolean>(false)

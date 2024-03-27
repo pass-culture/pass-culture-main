@@ -1,12 +1,13 @@
 import { format, subMonths } from 'date-fns'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useOutletContext } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { InvoiceResponseModel, InvoiceResponseV2Model } from 'apiClient/v1'
 import { BannerReimbursementsInfo } from 'components/Banner'
-import { useReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
+import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { FORMAT_ISO_DATE_ONLY, getToday } from 'utils/date'
 import { sortByLabel } from 'utils/strings'
@@ -41,7 +42,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
   const [areFiltersDefault, setAreFiltersDefault] = useState(true)
   const [filterOptions, setFilterOptions] = useState<SelectOption[]>([])
   const [hasSearchedOnce, setHasSearchedOnce] = useState(false)
-  const { selectedOfferer } = useReimbursementContext()
+  const { selectedOfferer }: ReimbursementsContextProps = useOutletContext()
 
   const hasNoSearchResult =
     (!hasError && invoices.length === 0 && hasSearchedOnce) ||

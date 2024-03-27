@@ -8,14 +8,12 @@ import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 
-export interface AddBankAccountCalloutProps {
+interface AddBankAccountCalloutProps {
   offerer?: GetOffererResponseModel | null
-  titleOnly?: boolean
 }
 
 const AddBankAccountCallout = ({
   offerer = null,
-  titleOnly = false,
 }: AddBankAccountCalloutProps): JSX.Element | null => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
@@ -34,30 +32,21 @@ const AddBankAccountCallout = ({
 
   return (
     <Callout
-      title="Ajoutez un compte bancaire pour percevoir vos remboursements"
-      links={
-        titleOnly
-          ? undefined
-          : [
-              {
-                href: '/remboursements/informations-bancaires',
-                label: 'Ajouter un compte bancaire',
-                onClick: () => {
-                  logEvent?.(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT, {
-                    from: location.pathname,
-                    offererId: offerer.id,
-                  })
-                },
-              },
-            ]
-      }
+      title="Aucun compte bancaire configuré pour percevoir vos remboursements"
+      links={[
+        {
+          href: '/remboursements/informations-bancaires',
+          label: 'Ajouter un compte bancaire',
+          onClick: () => {
+            logEvent?.(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT, {
+              from: location.pathname,
+              offererId: offerer.id,
+            })
+          },
+        },
+      ]}
       variant={CalloutVariant.ERROR}
-    >
-      <div>
-        Rendez-vous dans l’onglet Informations bancaires de votre page Gestion
-        financière.
-      </div>
-    </Callout>
+    />
   )
 }
 
