@@ -68,6 +68,18 @@ jobs:
         with:
           image: ${{ env.tests_docker_image }}
           run: mypy src
+      - name: "Run check-branches"
+        run: |
+            git ls-remote --get-url
+            python3 --version
+            python3 -m venv /tmp/venv/check-oldies
+            /tmp/venv/check-oldies/bin/pip install "check-oldies[toml]"
+            /tmp/venv/check-oldies/bin/check-branches --max-age 900
+      - name: "Run check-fixmes"
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ${{ env.tests_docker_image }}
+          run: check-fixmes --max-age 1400
       - name: "Slack Notification"
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
         uses: slackapi/slack-github-action@v1.25.0
