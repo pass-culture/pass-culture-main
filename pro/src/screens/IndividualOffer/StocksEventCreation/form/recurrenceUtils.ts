@@ -1,6 +1,6 @@
 import { addMonths, endOfMonth, isToday } from 'date-fns'
 
-import { isDateValid } from 'utils/date'
+import { getToday, isDateValid } from 'utils/date'
 
 import { MonthlyOption, RecurrenceDays } from './types'
 
@@ -102,7 +102,7 @@ export const isTimeInTheFuture = (
   beginningDate: Date,
   beginningTime: string
 ): boolean => {
-  const now = new Date()
+  const now = getToday()
   if (beginningDate > now) {
     return true
   }
