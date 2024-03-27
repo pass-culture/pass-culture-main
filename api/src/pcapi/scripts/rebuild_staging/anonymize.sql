@@ -165,8 +165,10 @@ SET
     "newDomainEmail" = 'anonymized.email'
 ;
 
+-- Keep those which doesn't contain personal data
 UPDATE action_history
 SET "jsonData" = '{}'
+WHERE "ruleId" is null and "financeIncidentId" is null
 ;
 
 -- FIXME (dbaty, 2023-05-04): we should anonymize `offer.bookingEmail`
