@@ -31,6 +31,8 @@
       Suspendu
     </span>
   {% endif %}
+  {% if venue.managingOfferer.hasNewNavUsers %}{{ build_new_navigation_badge() }}{% endif %}
+  {% if venue.managingOfferer.hasOldNavUsers %}{{ build_old_navigation_badge() }}{% endif %}
 {% endmacro %}
 {% macro build_offerer_status_badge(offerer) %}
   {{ build_status_badge(offerer, "Nouvelle", "En attente", "Validée", "Rejetée", "Supprimée") }}

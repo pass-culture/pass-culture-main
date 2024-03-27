@@ -598,6 +598,60 @@ class GetVenueTest(GetEndpointHelper):
         assert "Lieu" in badges
         assert "Suspendu" not in badges
 
+    @pytest.mark.parametrize(
+        "ff_new_nav_activated,has_new_nav,has_old_nav",
+        [
+            (True, False, False),
+            (True, True, False),
+            (True, True, True),
+            (True, False, True),
+            (False, False, False),
+            (False, True, False),
+            (False, True, True),
+            (False, False, True),
+        ],
+    )
+    def test_get_venue_with_new_nav_badges(
+        self, authenticated_client, venue, ff_new_nav_activated, has_new_nav, has_old_nav
+    ):
+        if has_new_nav:
+            user_with_new_nav = users_factories.ProFactory()
+            offerers_factories.UserOffererFactory(user=user_with_new_nav, offerer=venue.managingOfferer)
+            users_factories.UserProNewNavStateFactory(user=user_with_new_nav, newNavDate=datetime.utcnow())
+        if has_old_nav:
+            user_with_old_nav = users_factories.ProFactory()
+            offerers_factories.UserOffererFactory(user=user_with_old_nav, offerer=venue.managingOfferer)
+
+        venue.publicName = "Le grand Rantanplan 1"
+
+        url = url_for(self.endpoint, venue_id=venue.id)
+
+        # if venue is not removed from the current session, any get
+        # query won't be executed because of this specific testing
+        # environment. this would tamper the real database queries
+        # count.
+        db.session.expire(venue)
+
+        with (
+            override_features(WIP_ENABLE_PRO_SIDE_NAV=ff_new_nav_activated),
+            assert_num_queries(self.expected_num_queries),
+        ):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        badges = html_parser.extract(response.data, tag="span", class_="badge")
+        assert "Lieu" in badges
+        assert "Suspendu" not in badges
+
+        if ff_new_nav_activated:
+            if has_new_nav:
+                assert "Nouvelle interface" in badges
+            if has_old_nav:
+                assert "Ancienne interface" in badges
+        else:
+            assert "Nouvelle interface" not in badges
+            assert "Ancienne interface" not in badges
+
 
 class GetVenueStatsDataTest:
     def test_get_stats_data(
