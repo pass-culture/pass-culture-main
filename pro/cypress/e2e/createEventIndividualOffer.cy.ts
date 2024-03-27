@@ -1,9 +1,7 @@
 describe('Create an individual offer (event)', () => {
-  before(() => {
-    cy.request('http://localhost:5001/e2e/pro/create-event-individual-offer')
-  })
   it('should create an individual offer', () => {
     cy.setFeatureFlags([{ name: 'WIP_ENABLE_PRO_SIDE_NAV', isActive: false }])
+    cy.request('http://localhost:5001/e2e/pro/create-event-individual-offer')
 
     cy.login({
       email: 'pro_adage_eligible@example.com',

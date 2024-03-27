@@ -12,5 +12,8 @@ def install_routes(app: Flask) -> None:
     if settings.IS_DEV:
         from . import storage
     if settings.ENABLE_TEST_ROUTES:
+        from pcapi.routes import e2e
+
         from . import testing
-        from ..e2e.routes import sandbox_data
+
+        e2e.install_routes(app)
