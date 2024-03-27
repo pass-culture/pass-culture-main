@@ -6,6 +6,7 @@ import pcapi.connectors.big_query.queries.adage_playlists as bq_playlists
 from pcapi.connectors.big_query.queries.base import BaseQuery
 import pcapi.core.educational.models as educational_models
 from pcapi.models import db
+from pcapi.repository import transaction
 
 
 logger = logging.getLogger(__name__)
@@ -104,7 +105,8 @@ def synchronize_collective_playlist(playlist_type: educational_models.PlaylistTy
             institution = educational_models.EducationalInstitution.query.get(current_institution_id)
         if institution.id != current_institution_id:
             try:
-                synchronize_institution_playlist(playlist_type, institution, institution_rows)
+                with transaction():
+                    synchronize_institution_playlist(playlist_type, institution, institution_rows)
             except Exception:  # pylint: disable=broad-exception-caught
                 logger.exception("Failed to synchronize institution %s playlist from BigQuery", institution.id)
                 db.session.rollback()
@@ -114,7 +116,8 @@ def synchronize_collective_playlist(playlist_type: educational_models.PlaylistTy
     # Don't forget to synchronize the latest institution
     if institution and institution_rows:
         try:
-            synchronize_institution_playlist(playlist_type, institution, institution_rows)
+            with transaction():
+                synchronize_institution_playlist(playlist_type, institution, institution_rows)
         except Exception:  # pylint: disable=broad-exception-caught
             logger.exception("Failed to synchronize institution %s playlist from BigQuery", institution.id)
             db.session.rollback()
