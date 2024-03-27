@@ -38,7 +38,12 @@ export const submitToApi = async (
     })
   } catch (error) {
     if (isErrorAPIError(error)) {
-      setErrors(serializeApiErrors(error.body))
+      const serializedApiErrors = serializeApiErrors(error.body)
+      setErrors(serializedApiErrors)
+      // for this error, we want to display a custom error on the price field
+      if (serializedApiErrors.priceLimitationRule) {
+        setErrors({ price: 'Non valide' })
+      }
     }
     throw new Error(getHumanReadableApiError(error))
   }
