@@ -10,8 +10,8 @@ type OpeningHours = {
 }
 
 export function OpeningHoursReadOnly({ openingHours }: OpeningHours) {
-  const filledDays = Object.entries(openingHours ?? {}).filter(
-    (dateAndHour) => dateAndHour[1]
+  const filledDays = Object.entries(openingHours ?? {}).filter((dateAndHour) =>
+    Boolean(dateAndHour[1])
   )
 
   if (!openingHours || filledDays.length === 0) {
