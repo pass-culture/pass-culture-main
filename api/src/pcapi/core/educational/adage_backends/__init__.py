@@ -29,9 +29,9 @@ def notify_booking_cancellation_by_offerer(data: EducationalBookingResponse) -> 
     backend().notify_booking_cancellation_by_offerer(data=data)
 
 
-def get_cultural_partners() -> list[dict[str, str | int | float | None]]:
+def get_cultural_partners(timestamp: int | None = None) -> list[dict[str, str | int | float | None]]:
     backend = import_string(settings.ADAGE_BACKEND)
-    result = backend().get_cultural_partners()
+    result = backend().get_cultural_partners(timestamp)
     return result
 
 

@@ -32,7 +32,7 @@ class AdageLoggerClient(AdageClient):
             "Adage has been notified at %s, with payload: %s", f"{self.base_url}/v1/prereservation-annule", data
         )
 
-    def get_cultural_partners(self) -> list[dict[str, str | int | float | None]]:
+    def get_cultural_partners(self, timestamp: int | None = None) -> list[dict[str, str | int | float | None]]:
         logger.info("Adage has been called at %s", f"{self.base_url}/v1/partenaire-culturel")
         return [
             {
