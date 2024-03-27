@@ -7,6 +7,7 @@ import {
   defaultGetVenue,
   getCollectiveOfferTemplateFactory,
 } from 'utils/collectiveApiFactories'
+import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -34,6 +35,7 @@ const defaultProps = {
   setOffer: vi.fn(),
   reloadCollectiveOffer: vi.fn(),
   isTemplate: true,
+  offerer: defaultGetOffererResponseModel,
 }
 
 describe('CollectiveOfferConfirmation', () => {
