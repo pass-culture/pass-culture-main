@@ -126,7 +126,7 @@ jobs:
           certificate-ttl: 1h
           kubernetes-cluster: ${{ inputs.teleport_kubernetes_cluster }}
       - name: "Setup helmfile"
-        uses: mamezou-tech/setup-helmfile@v1.3.0
+        uses: mamezou-tech/setup-helmfile@v2.0.0
         with:
           helmfile-version: "v0.147.0"
       - name: "Install Teleport"
