@@ -114,6 +114,7 @@ export enum OffererLinkEvents {
 export enum BankAccountEvents {
   CLICKED_ADD_BANK_ACCOUNT = 'hasClickedAddBankAccount',
   CLICKED_ADD_VENUE_TO_BANK_ACCOUNT = 'HasClickedAddVenueToBankAccount',
+  CLICKED__BANK_ACCOUNT_HAS_PENDING_CORRECTIONS = 'HasClickedHasBankAccountWithPendingCorrections',
   CLICKED_CHANGE_VENUE_TO_BANK_ACCOUNT = 'HasClickedChangeVenueToBankAccount',
   CLICKED_CONTINUE_TO_DS = 'HasClickedContinueToDS',
   CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP = 'HasClickedBankDetailsRecordFollowUp',

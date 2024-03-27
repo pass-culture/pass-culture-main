@@ -3,14 +3,14 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
 import { BankAccountResponseModel } from 'apiClient/v1'
-import { ReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
+import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
 import {
   defaultBankAccount,
   defaultGetOffererResponseModel,
 } from 'utils/individualApiFactories'
 import {
-  RenderWithProvidersOptions,
   renderWithProviders,
+  RenderWithProvidersOptions,
 } from 'utils/renderWithProviders'
 
 import { ReimbursementsInvoices } from '../ReimbursementsInvoices'
@@ -18,6 +18,19 @@ import { ReimbursementsInvoices } from '../ReimbursementsInvoices'
 vi.mock('utils/date', async () => ({
   ...(await vi.importActual('utils/date')),
   getToday: vi.fn(() => new Date('2020-12-15T12:00:00Z')),
+}))
+
+const contextData: ReimbursementsContextProps = {
+  selectedOfferer: {
+    ...defaultGetOffererResponseModel,
+    name: 'toto',
+    id: 1,
+  },
+  setSelectedOfferer: function () {},
+}
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual('react-router-dom')),
+  useOutletContext: () => contextData,
 }))
 
 const renderReimbursementsInvoices = (options?: RenderWithProvidersOptions) => {
@@ -30,24 +43,10 @@ const renderReimbursementsInvoices = (options?: RenderWithProvidersOptions) => {
       initialized: true,
     },
   }
-  renderWithProviders(
-    <ReimbursementContext.Provider
-      value={{
-        selectedOfferer: {
-          ...defaultGetOffererResponseModel,
-          name: 'toto',
-          id: 1,
-        },
-        setSelectedOfferer: () => undefined,
-      }}
-    >
-      <ReimbursementsInvoices />
-    </ReimbursementContext.Provider>,
-    {
-      storeOverrides,
-      ...options,
-    }
-  )
+  renderWithProviders(<ReimbursementsInvoices />, {
+    storeOverrides,
+    ...options,
+  })
 }
 
 const BASE_INVOICES = [

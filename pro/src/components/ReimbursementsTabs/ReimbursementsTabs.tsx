@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { useReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
+import { GetOffererResponseModel } from 'apiClient/v1'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useActiveStep from 'hooks/useActiveStep'
 import fullErrorIcon from 'icons/full-error.svg'
@@ -18,11 +18,13 @@ import {
 } from './constants'
 import styles from './ReimbursementsTabs.module.scss'
 
-const ReimbursementsTabs = () => {
+type ReimbursementsTabsProps = {
+  selectedOfferer: GetOffererResponseModel | null
+}
+const ReimbursementsTabs = ({ selectedOfferer }: ReimbursementsTabsProps) => {
   const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
-  const { selectedOfferer } = useReimbursementContext()
 
   const activeStep = useActiveStep(
     isNewBankDetailsJourneyEnabled ? STEP_NAMES : OLD_STEP_NAMES
