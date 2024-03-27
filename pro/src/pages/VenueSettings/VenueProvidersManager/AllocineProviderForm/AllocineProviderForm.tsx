@@ -48,9 +48,7 @@ export const AllocineProviderForm = ({
   const handleSubmit = async (formValues: FormValuesProps) => {
     const { isDuo = true, price } = formValues
     const quantity =
-      formValues.quantity !== '' && formValues.quantity !== undefined
-        ? Number(formValues.quantity)
-        : undefined
+      formValues.quantity !== '' ? Number(formValues.quantity) : undefined
 
     const payload = {
       quantity,

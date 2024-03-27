@@ -160,8 +160,7 @@ export const VenueSettingsForm = ({
           </FormLayout.Row>
         </FormLayout.Section>
 
-        {(!isNewBankDetailsJourneyEnabled ||
-          (isNewBankDetailsJourneyEnabled && !venue.siret)) && (
+        {(!isNewBankDetailsJourneyEnabled || !venue.siret) && (
           <ReimbursementFields
             offerer={offerer}
             scrollToSection={Boolean(location.state) || Boolean(location.hash)}
