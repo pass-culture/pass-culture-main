@@ -413,7 +413,7 @@ describe('screens:StocksEventEdition', () => {
       screen.getByLabelText('Date de l’évènement *'),
       format(new Date(), FORMAT_ISO_DATE_ONLY)
     )
-    await userEvent.type(screen.getByLabelText('Horaire 1 *'), '12:15')
+    await userEvent.type(screen.getByLabelText('Horaire 1 *'), '14:15')
     await userEvent.selectOptions(
       screen.getAllByLabelText('Tarif *')[1],
       priceCategoryId
