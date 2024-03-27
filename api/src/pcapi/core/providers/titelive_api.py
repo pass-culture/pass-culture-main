@@ -12,6 +12,7 @@ from pcapi.connectors import titelive
 from pcapi.connectors.serialization.titelive_serializers import TiteliveProductSearchResponse
 from pcapi.connectors.serialization.titelive_serializers import TiteliveSearchResultType
 from pcapi.core.offers import models as offers_models
+import pcapi.core.offers.api as offers_api
 import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
@@ -103,6 +104,8 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
             titelive_product_page = self.deserialize_titelive_search_json(titelive_json_response)
             titlive_recent_product_page = self.filter_recent_products(titelive_product_page, from_date)
             allowed_product_page = self.filter_allowed_products(titlive_recent_product_page)
+            not_compliant_eans: list[str] = self.get_not_allowed_eans(titlive_recent_product_page)
+            offers_api.reject_inappropriate_products(not_compliant_eans, None)
             allowed_product_page.result = [oeuvre for oeuvre in allowed_product_page.result if oeuvre.article]
             yield allowed_product_page
             # sometimes titelive returns a partially filled page while having a next page in store for us
@@ -130,6 +133,11 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
         titelive_product_page: TiteliveProductSearchResponse[TiteliveSearchResultType],
     ) -> TiteliveProductSearchResponse[TiteliveSearchResultType]:
         return titelive_product_page
+
+    def get_not_allowed_eans(
+        self, titelive_product_page: TiteliveProductSearchResponse[TiteliveSearchResultType]
+    ) -> list[str]:
+        return []
 
     def upsert_titelive_page(
         self,

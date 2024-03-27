@@ -63,6 +63,49 @@ class TiteliveArticle(BaseModel):
         return gtl
 
 
+class TiteLiveBookArticle(TiteliveArticle):
+    code_clil: str | None
+    code_editeur: str | 0  # str or 0, wtf titelive
+    code_tva: str | 0  # str or 0, wtf titelive
+    collection_no: str | None
+    collection: str | None
+    distributeur: str
+    pages: str | 0
+    scolaire: str | 0
+    taux_tva: str | 0
+    traducteur: str | None
+
+    # Doute
+    id_lectorat: str | None
+    langue: str | None
+    langueiso: str | None
+    poids: str | 0
+
+    # random stuff
+
+
+#   "contenance_ml",
+#   "diametre",
+#   "diametreboite",
+#   "epaisseur",
+#   "grammage",
+#   "grammesboite",
+#   "grands_caracteres",
+#   "hauteur",
+#   "hauteurboite",
+#   "illustre",
+#   "impermeable",
+#   "largeur",
+#   "largeurboite",
+#   "lavable",
+#   "lectureEnLigne",
+#   "longueur",
+#   "longueurboite",
+#   "pilesincluses",
+#   "poids",
+#   "relie",
+
+
 class TiteliveMusicArticle(TiteliveArticle):
     artiste: str | None
     compositeur: str | None
@@ -82,6 +125,12 @@ class BaseTiteliveOeuvre(generics.GenericModel, typing.Generic[TiteliveArticleTy
         if isinstance(article, dict):
             return list(article.values())
         return article
+
+
+class TiteLiveBookOeuvre(BaseTiteliveOeuvre[TiteLiveBookArticle]):
+    article: list[TiteLiveBookArticle]  # repeated without generics so mypy understands
+    auteurs_multi: list[str]
+    titre: str
 
 
 class TiteliveMusicOeuvre(BaseTiteliveOeuvre[TiteliveMusicArticle]):

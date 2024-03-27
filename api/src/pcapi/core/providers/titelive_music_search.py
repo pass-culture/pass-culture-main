@@ -45,6 +45,16 @@ class TiteliveMusicSearch(TiteliveSearch[TiteliveMusicOeuvre]):
             ]
         return titelive_product_page
 
+    def get_not_allowed_eans(
+        self, titelive_product_page: TiteliveProductSearchResponse[TiteliveMusicOeuvre]
+    ) -> list[str]:
+        not_cgu_compliant_eans = []
+        for oeuvre in titelive_product_page.result:
+            not_cgu_compliant_eans += [
+                article.gencod for article in oeuvre.article if not is_music_codesupport_allowed(article.codesupport)
+            ]
+        return not_cgu_compliant_eans
+
     def upsert_titelive_result_in_dict(
         self, titelive_search_result: TiteliveMusicOeuvre, products_by_ean: dict[str, offers_models.Product]
     ) -> dict[str, offers_models.Product]:
