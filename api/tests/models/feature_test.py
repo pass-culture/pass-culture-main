@@ -9,6 +9,7 @@ from pcapi.models import db
 from pcapi.models.feature import FEATURES_DISABLED_BY_DEFAULT
 from pcapi.models.feature import Feature
 from pcapi.models.feature import FeatureToggle
+from pcapi.models.feature import check_feature_flags_completeness
 from pcapi.models.feature import install_feature_flags
 from pcapi.repository import repository
 
@@ -95,14 +96,8 @@ def test_install_feature_flags(app, caplog):
         description=TestingFeatureToggle.AUTO_DESTROY_AIRCRAFT_ON_WINDOW_OPENING.value,
         isActive=False,
     )
-    not_declared_but_installed = Feature(
-        name="ENABLE_TAKEOFF", isActive=False, description="Veillez à bien laisser ce feature flag désactivé"
-    )
-
     db.session.add(declared_and_installed)
-    db.session.add(not_declared_but_installed)
     db.session.flush()
-
     install_feature_flags()
 
     # already installed keeps isActive value
@@ -112,8 +107,28 @@ def test_install_feature_flags(app, caplog):
     assert Feature.query.filter_by(name=TestingFeatureToggle.ENABLE_LOOPING_INOPINE.name).one().isActive
 
     # new installed with isActive=False
-    assert not Feature.query.filter_by(name=TestingFeatureToggle.ENABLE_LANDING.name).one().isActive
 
+
+@pytest.mark.usefixtures("db_session")
+@patch("pcapi.models.feature.FeatureToggle", TestingFeatureToggle)
+def test_feature_flag_completeness(app, caplog):
+    Feature.query.delete()
+    declared_and_installed = Feature(
+        name=TestingFeatureToggle.AUTO_DESTROY_AIRCRAFT_ON_WINDOW_OPENING.name,
+        description=TestingFeatureToggle.AUTO_DESTROY_AIRCRAFT_ON_WINDOW_OPENING.value,
+        isActive=False,
+    )
+
+    not_declared_but_installed = Feature(
+        name="ENABLE_TAKEOFF", isActive=False, description="Veillez à bien laisser ce feature flag désactivé"
+    )
+
+    db.session.add(declared_and_installed)
+    db.session.add(not_declared_but_installed)
+    db.session.flush()
+
+    install_feature_flags()
+    check_feature_flags_completeness()
     assert caplog.messages == [
-        "The following feature flags are present in database but not present in code: {'ENABLE_TAKEOFF'}"
+        "The following feature flags are present in the database but not present in the code: {'ENABLE_TAKEOFF'}"
     ]

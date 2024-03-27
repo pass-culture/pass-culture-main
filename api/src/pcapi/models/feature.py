@@ -252,7 +252,6 @@ def install_feature_flags() -> None:
     defined_flag_name = {f.name for f in list(FeatureToggle)}
 
     to_install_flags = defined_flag_name - installed_flag_names
-    to_remove_flags = installed_flag_names - defined_flag_name
 
     for flag in to_install_flags:
         db.session.add(
@@ -265,5 +264,13 @@ def install_feature_flags() -> None:
 
     db.session.commit()
 
-    if to_remove_flags:
-        logger.error("The following feature flags are present in database but not present in code: %s", to_remove_flags)
+
+def check_feature_flags_completeness() -> None:
+    """Check if all feature flags are present in the database and in the code"""
+    installed_flag_names = {f[0] for f in Feature.query.with_entities(Feature.name).all()}
+    defined_flag_name = {f.name for f in FeatureToggle}
+    extra_flags = installed_flag_names - defined_flag_name
+    if extra_flags:
+        logger.error(
+            "The following feature flags are present in the database but not present in the code: %s", extra_flags
+        )
