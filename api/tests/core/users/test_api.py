@@ -1454,7 +1454,7 @@ class DeleteOldLoginDeviceHistoryTest:
 
 
 class RefreshAccessTokenTest:
-    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True, WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True)
+    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
     def should_create_access_token_with_default_lifetime_when_no_device_info(self):
         user = users_factories.UserFactory()
 
@@ -1467,7 +1467,7 @@ class RefreshAccessTokenTest:
 
         assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXPIRES
 
-    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True, WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True)
+    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
     def should_create_access_token_with_default_lifetime_when_device_is_not_a_trusted_device(self):
         user = users_factories.UserFactory()
         users_factories.TrustedDeviceFactory(user=user)
@@ -1482,7 +1482,7 @@ class RefreshAccessTokenTest:
 
         assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXPIRES
 
-    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True, WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True)
+    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
     def should_create_access_token_with_extended_lifetime_when_device_is_a_trusted_device(self):
         user = users_factories.UserFactory()
         trusted_device = users_factories.TrustedDeviceFactory(user=user)
@@ -1499,7 +1499,7 @@ class RefreshAccessTokenTest:
 
         assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXTENDED_EXPIRES
 
-    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
+    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True, WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=False)
     def should_create_access_token_with_default_lifetime_when_device_is_a_trusted_device_and_suspicious_email_feature_flag_is_disabled(
         self,
     ):
@@ -1515,7 +1515,6 @@ class RefreshAccessTokenTest:
 
         assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXPIRES
 
-    @override_features(WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True)
     def should_create_access_token_with_default_lifetime_when_device_is_a_trusted_device_and_trusted_device_feature_flag_is_disabled(
         self,
     ):
