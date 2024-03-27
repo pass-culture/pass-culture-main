@@ -111,7 +111,7 @@ const openingHoursValidationSchema = {
       schema
         .required('Veuillez renseigner une heure de fin')
         .when('afternoonStartingHour', (afternoonStartingHour, schema) => {
-          return afternoonStartingHour?.length > 0
+          return afternoonStartingHour.length > 0
             ? schema.test({
                 test: (afternoonEndingHour: string) => {
                   return compareHours(

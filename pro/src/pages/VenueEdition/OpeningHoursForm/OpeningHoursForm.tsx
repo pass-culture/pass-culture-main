@@ -30,7 +30,7 @@ export function OpeningHoursForm() {
         <legend className={styles['legend-days']}>
           Sélectionner vos jours d’ouverture :
         </legend>
-        {daysOfWeek?.map((day) => {
+        {daysOfWeek.map((day) => {
           const dayLabel = mapDayToFrench(day)
           return (
             <DayCheckbox

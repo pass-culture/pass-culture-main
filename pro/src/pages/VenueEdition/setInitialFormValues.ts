@@ -38,6 +38,10 @@ export const setInitialFormValues = (
 function buildOpeningHoursValues(
   venueOpeningHours: GetVenueResponseModel['venueOpeningHours']
 ) {
+  const filledDays = Object.entries(venueOpeningHours ?? {}).filter(
+    (dateAndHour) => Boolean(dateAndHour[1])
+  )
+
   if (!venueOpeningHours || venueOpeningHours.length === 0) {
     return {
       days: [],
@@ -50,17 +54,17 @@ function buildOpeningHoursValues(
       sunday: DEFAULT_INTITIAL_OPENING_HOURS,
     }
   }
-  const days = venueOpeningHours
-    .filter((dateAndHour) => dateAndHour && Object.values(dateAndHour)[0])
-    .map((dateAndHour) => Object.keys(dateAndHour)[0].toLowerCase()) as Day[]
+  const days = filledDays.map((dateAndHour) =>
+    dateAndHour[0].toLowerCase()
+  ) as Day[]
 
-  const monday = buildHourOfDay(venueOpeningHours[0].MONDAY)
-  const tuesday = buildHourOfDay(venueOpeningHours[1].TUESDAY)
-  const wednesday = buildHourOfDay(venueOpeningHours[2].WEDNESDAY)
-  const thursday = buildHourOfDay(venueOpeningHours[3].THURSDAY)
-  const friday = buildHourOfDay(venueOpeningHours[4].FRIDAY)
-  const saturday = buildHourOfDay(venueOpeningHours[5].SATURDAY)
-  const sunday = buildHourOfDay(venueOpeningHours[6].SUNDAY)
+  const monday = buildHourOfDay(venueOpeningHours.MONDAY)
+  const tuesday = buildHourOfDay(venueOpeningHours.TUESDAY)
+  const wednesday = buildHourOfDay(venueOpeningHours.WEDNESDAY)
+  const thursday = buildHourOfDay(venueOpeningHours.THURSDAY)
+  const friday = buildHourOfDay(venueOpeningHours.FRIDAY)
+  const saturday = buildHourOfDay(venueOpeningHours.SATURDAY)
+  const sunday = buildHourOfDay(venueOpeningHours.SUNDAY)
 
   return {
     days,
