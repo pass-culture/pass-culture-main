@@ -49,7 +49,6 @@ class PostEventTest:
         assert created_offer.withdrawalType is None
         assert created_offer.withdrawalDelay is None
 
-    @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=True)
     def test_event_creation_with_full_body(self, client, clear_tests_assets_bucket):
         venue, _ = utils.create_offerer_provider_linked_to_venue(with_charlie=True)
 
@@ -198,7 +197,6 @@ class PostEventTest:
             "performer": "Nicolas Jaar",
         }
 
-    @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=True)
     @override_features(ENABLE_TITELIVE_MUSIC_TYPES_IN_API_OUTPUT=True)
     def test_event_creation_with_titelive_type_with_active_serialization(self, client, clear_tests_assets_bucket):
         venue, _ = utils.create_offerer_provider_linked_to_venue(with_charlie=True)
@@ -298,7 +296,6 @@ class PostEventTest:
         created_offer = offers_models.Offer.query.one()
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.NO_TICKET
 
-    @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=True)
     def test_event_with_in_app_ticket(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue(with_charlie=True)
 
@@ -317,7 +314,6 @@ class PostEventTest:
         created_offer = offers_models.Offer.query.one()
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
 
-    @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=True)
     def test_error_when_withdrawable_event_but_no_booking_contact(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue(with_charlie=True)
 
@@ -371,6 +367,7 @@ class PostEventTest:
         assert response.status_code == 400
         assert response.json == {"priceCategories": ["Price categories must be unique"]}
 
+    @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=False)
     def test_cannot_create_event_with_ticket_if_FF_not_active(self, client):
         # This test can be deleted with FF WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API
         venue, _ = utils.create_offerer_provider_linked_to_venue()
