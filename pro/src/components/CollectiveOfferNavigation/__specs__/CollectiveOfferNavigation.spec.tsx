@@ -88,12 +88,13 @@ describe('CollectiveOfferNavigation', () => {
 
     const listItems = await screen.findAllByRole('listitem')
 
-    expect(listItems).toHaveLength(5)
+    expect(listItems).toHaveLength(6)
     expect(listItems[0]).toHaveTextContent('Détails de l’offre')
     expect(listItems[1]).toHaveTextContent('Date et prix')
     expect(listItems[2]).toHaveTextContent('Établissement et enseignant')
     expect(listItems[3]).toHaveTextContent('Récapitulatif')
-    expect(listItems[4]).toHaveTextContent('Confirmation')
+    expect(listItems[4]).toHaveTextContent('Aperçu')
+    expect(listItems[5]).toHaveTextContent('Confirmation')
 
     const links = screen.queryAllByRole('link')
     expect(links).toHaveLength(0)
@@ -110,7 +111,7 @@ describe('CollectiveOfferNavigation', () => {
     expect(screen.queryByText('Visibilité')).not.toBeInTheDocument()
 
     const links = screen.queryAllByRole('link')
-    expect(links).toHaveLength(3)
+    expect(links).toHaveLength(1)
     expect(links[0].getAttribute('href')).toBe(
       `/offre/collectif/vitrine/${offerId}/creation`
     )
@@ -120,7 +121,7 @@ describe('CollectiveOfferNavigation', () => {
     props.activeStep = CollectiveOfferStep.STOCKS
     renderCollectiveOfferNavigation(props)
     const links = screen.queryAllByRole('link')
-    expect(links).toHaveLength(3)
+    expect(links).toHaveLength(2)
     expect(links[0].getAttribute('href')).toBe(
       `/offre/collectif/${offerId}/creation`
     )
@@ -133,7 +134,7 @@ describe('CollectiveOfferNavigation', () => {
     props.activeStep = CollectiveOfferStep.VISIBILITY
     renderCollectiveOfferNavigation(props)
     const links = screen.queryAllByRole('link')
-    expect(links).toHaveLength(3)
+    expect(links).toHaveLength(2)
     expect(links[0].getAttribute('href')).toBe(
       `/offre/collectif/${offerId}/creation`
     )
@@ -146,7 +147,7 @@ describe('CollectiveOfferNavigation', () => {
     props.activeStep = CollectiveOfferStep.SUMMARY
     renderCollectiveOfferNavigation(props)
     const links = screen.queryAllByRole('link')
-    expect(links).toHaveLength(4)
+    expect(links).toHaveLength(3)
     expect(links[0].getAttribute('href')).toBe(
       `/offre/collectif/${offerId}/creation`
     )
@@ -158,11 +159,11 @@ describe('CollectiveOfferNavigation', () => {
     )
   })
 
-  it('should show links if summary is the active step', () => {
+  it('should show links if confirmation is the active step', () => {
     props.activeStep = CollectiveOfferStep.CONFIRMATION
     renderCollectiveOfferNavigation(props)
     const links = screen.queryAllByRole('link')
-    expect(links).toHaveLength(4)
+    expect(links).toHaveLength(5)
     expect(links[0].getAttribute('href')).toBe(
       `/offre/collectif/${offerId}/creation`
     )
@@ -175,6 +176,13 @@ describe('CollectiveOfferNavigation', () => {
     expect(links[3].getAttribute('href')).toBe(
       `/offre/${offerId}/collectif/creation/recapitulatif`
     )
+  })
+
+  it('should show links if confirmation is the active step and the offer is template', () => {
+    props.activeStep = CollectiveOfferStep.CONFIRMATION
+    renderCollectiveOfferNavigation({ ...props, isTemplate: true })
+    const links = screen.queryAllByRole('link')
+    expect(links).toHaveLength(3)
   })
 
   it('should generate link with offerId when user is editing an offer', async () => {
@@ -192,7 +200,7 @@ describe('CollectiveOfferNavigation', () => {
       `/offre/${offerId}/collectif/edition`
     )
     expect(linkItems[1].getAttribute('href')).toBe(
-      `/offre/${offerId}/collectif/preview`
+      `/offre/${offerId}/collectif/apercu`
     )
     expect(linkItems[2].getAttribute('href')).toBe(
       `/offre/${offerId}/collectif/edition`
@@ -202,24 +210,6 @@ describe('CollectiveOfferNavigation', () => {
     )
     expect(linkItems[4].getAttribute('href')).toBe(
       `/offre/${offerId}/collectif/visibilite/edition`
-    )
-  })
-
-  it('should generate link for visibility and summary if offer has a stock', async () => {
-    props.haveStock = true
-    renderCollectiveOfferNavigation(props)
-
-    const links = await screen.findAllByRole('link')
-
-    expect(links).toHaveLength(3)
-    expect(links[0].getAttribute('href')).toBe(
-      `/offre/${offerId}/collectif/stocks`
-    )
-    expect(links[1].getAttribute('href')).toBe(
-      `/offre/${offerId}/collectif/visibilite`
-    )
-    expect(links[2].getAttribute('href')).toBe(
-      `/offre/${offerId}/collectif/creation/recapitulatif`
     )
   })
 
