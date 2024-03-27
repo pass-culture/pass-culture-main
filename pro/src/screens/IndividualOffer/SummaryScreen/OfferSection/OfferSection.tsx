@@ -205,7 +205,10 @@ const OfferSummary = ({
         <SummaryDescriptionList descriptions={practicalInfoDescriptions} />
       </SummarySubSection>
 
-      <AccessibilitySummarySection accessibleItem={offer} />
+      <AccessibilitySummarySection
+        accessibleItem={offer}
+        accessibleWording="Votre offre est accessible aux publics en situation de handicap :"
+      />
 
       <SummarySubSection title="Lien pour le grand public">
         <SummaryDescriptionList

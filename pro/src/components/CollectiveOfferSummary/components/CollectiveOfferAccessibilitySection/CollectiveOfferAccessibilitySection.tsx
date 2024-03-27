@@ -15,7 +15,12 @@ interface CollectiveOfferAccessibilitySectionProps {
 const CollectiveOfferAccessibilitySection = ({
   offer,
 }: CollectiveOfferAccessibilitySectionProps) => {
-  return <AccessibilitySummarySection accessibleItem={offer} />
+  return (
+    <AccessibilitySummarySection
+      accessibleItem={offer}
+      accessibleWording="Votre offre est accessible aux publics en situation de handicap :"
+    />
+  )
 }
 
 export default CollectiveOfferAccessibilitySection
