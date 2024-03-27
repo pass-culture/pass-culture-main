@@ -6,11 +6,11 @@ import { useSearchParams } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { HTTP_STATUS, isErrorAPIError } from 'apiClient/helpers'
 import { AppLayout } from 'app/AppLayout'
+import Footer from 'components/Footer/Footer'
 import useInitReCaptcha from 'hooks/useInitReCaptcha'
 import useNotification from 'hooks/useNotification'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
-import CookiesFooter from 'pages/CookiesFooter/CookiesFooter'
 import { updateUser } from 'store/user/reducer'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { getReCaptchaToken } from 'utils/recaptcha'
@@ -115,7 +115,9 @@ export const SignIn = (): JSX.Element => {
         <FormikProvider value={formik}>
           <SigninForm />
         </FormikProvider>
-        <CookiesFooter className={styles['cookies-footer']} />
+        <div className={styles['cookies-footer']}>
+          <Footer layout="without-nav" />
+        </div>
       </section>
     </AppLayout>
   )

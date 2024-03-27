@@ -4,10 +4,10 @@ import { useNavigate } from 'react-router-dom'
 
 import { ProUserCreationBodyV2Model } from 'apiClient/v1'
 import { BannerRGS } from 'components/Banner'
+import Footer from 'components/Footer/Footer'
 import FormLayout from 'components/FormLayout'
 import LegalInfos from 'components/LegalInfos/LegalInfos'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
-import CookiesFooter from 'pages/CookiesFooter/CookiesFooter'
 import MaybeAppUserDialog from 'pages/Signup/SignupContainer/MaybeAppUserDialog'
 import {
   Button,
@@ -98,7 +98,9 @@ const SignupForm = (): JSX.Element => {
           </SubmitButton>
         </div>
         <BannerRGS />
-        <CookiesFooter className={styles['cookie-footer']} />
+        <div className={styles['cookie-footer']}>
+          <Footer layout="without-nav" />
+        </div>
       </FormLayout>
     </>
   )

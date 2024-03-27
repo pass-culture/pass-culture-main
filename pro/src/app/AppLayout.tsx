@@ -180,7 +180,10 @@ export const AppLayout = ({
               </div>
             )}
           </main>
-          <Footer layout={layout} />
+          {layout !== 'without-nav' && layout !== 'funnel' && (
+            //  In the non-connected pages (without-nav) the footer is displayed within the layout of the page directly
+            <Footer layout={layout} />
+          )}
         </div>
       </div>
     </>

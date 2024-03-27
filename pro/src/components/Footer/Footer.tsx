@@ -1,7 +1,6 @@
 import classNames from 'classnames'
 import { useSelector } from 'react-redux'
 
-import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import fullLinkIcon from 'icons/full-link.svg'
 import { selectCurrentUser } from 'store/user/selectors'
 import { Button, ButtonLink } from 'ui-kit'
@@ -15,18 +14,13 @@ type FooterProps = {
 }
 export default function Footer({ layout }: FooterProps) {
   const currentUser = useSelector(selectCurrentUser)
-  const isNewSideBarNavigation = useIsNewInterfaceActive()
-
-  if (!isNewSideBarNavigation) {
-    return
-  }
-
   return (
     <footer
       className={classNames(
         styles['footer'],
         styles[`footer-layout-${layout}`]
       )}
+      id="footer"
     >
       <ul>
         <li>
