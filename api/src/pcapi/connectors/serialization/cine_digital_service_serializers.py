@@ -85,6 +85,7 @@ class MediaCDS(BaseModel):
     posterpath: str | None
     storyline: str
     visanumber: str | None
+    allocineid: str | None = None
 
     class Config:
         allow_population_by_field_name = True

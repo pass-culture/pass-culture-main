@@ -13,6 +13,7 @@ MOVIE_1 = Movie(
     duration=120,
     description="Ca tourne mal",
     visa="123456",
+    allocineid="291483",
     posterpath="https://example.com/coupez.png",
 )
 
@@ -22,6 +23,7 @@ MOVIE_2 = Movie(
     duration=150,
     description="Film sur les avions",
     visa="333333",
+    allocineid="2133",
     posterpath="https://example.com/topgun.png",
 )
 

@@ -24,6 +24,7 @@ class Movie:
     description: str
     posterpath: str | None
     visa: str | None
+    allocineid: str | None = None
 
 
 class ExternalBookingsClientAPI:
