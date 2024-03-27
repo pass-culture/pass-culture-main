@@ -851,7 +851,6 @@ class BookOfferTest:
             assert booking.token
             assert len(booking.externalBookings) == 0
 
-        @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
         def test_sold_out_failure(self, requests_mock):
             external_booking_url = "https://api.example.com/"
             beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -878,7 +877,6 @@ class BookOfferTest:
             assert not models.Booking.query.count()
             assert stock.quantity == 10  # dnBookedQuantity + 0
 
-        @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
         def test_not_enough_seats_failure(self, requests_mock):
             external_booking_url = "https://api.example.com/"
             beneficiary = users_factories.BeneficiaryGrant18Factory()
