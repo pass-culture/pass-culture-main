@@ -182,6 +182,14 @@ const routes: RouteConfig[] = [
       import(
         'pages/CollectiveOfferPreviewCreation/CollectiveOfferPreviewCreation'
       ),
+    path: '/offre/:offerId/collectif/creation/apercu',
+    title: 'Aperçu - Créer une offre réservable',
+  },
+  {
+    lazy: () =>
+      import(
+        'pages/CollectiveOfferPreviewCreation/CollectiveOfferPreviewCreation'
+      ),
     path: '/offre/:offerId/collectif/vitrine/creation/apercu',
     title: 'Aperçu - Créer une offre vitrine',
   },
@@ -223,8 +231,16 @@ const routes: RouteConfig[] = [
       import(
         'pages/CollectiveOfferPreviewEdition/CollectiveOfferPreviewEdition'
       ),
-    path: '/offre/:offerId/collectif/preview',
+    path: '/offre/:offerId/collectif/vitrine/apercu',
     title: 'Aperçu - Prévisualisation d’une offre collective vitrine',
+  },
+  {
+    lazy: () =>
+      import(
+        'pages/CollectiveOfferPreviewEdition/CollectiveOfferPreviewEdition'
+      ),
+    path: '/offre/:offerId/collectif/apercu',
+    title: 'Aperçu - Prévisualisation d’une offre collective réservable',
   },
   {
     lazy: () =>
