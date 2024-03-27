@@ -9,7 +9,6 @@ import { AppLayout } from 'app/AppLayout'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import {
-  DEFAULT_VISIBILITY_FORM_VALUES,
   isCollectiveOffer,
   isCollectiveOfferTemplate,
   Mode,
@@ -71,9 +70,7 @@ export const CollectiveOfferVisibility = ({
     )
   }
 
-  const initialValues = offer
-    ? extractInitialVisibilityValues(offer.institution)
-    : DEFAULT_VISIBILITY_FORM_VALUES
+  const initialValues = extractInitialVisibilityValues(offer.institution)
 
   return (
     <AppLayout layout={'sticky-actions'}>

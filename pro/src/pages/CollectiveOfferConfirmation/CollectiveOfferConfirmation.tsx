@@ -22,7 +22,7 @@ const CollectiveOfferConfirmation = ({
     }
 
     return `${offer.institution.institutionType ?? ''} ${
-      offer.institution.name ?? ''
+      offer.institution.name
     }`.trim()
   }
 

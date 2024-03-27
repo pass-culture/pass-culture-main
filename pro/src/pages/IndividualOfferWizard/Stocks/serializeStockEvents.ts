@@ -6,8 +6,6 @@ export const serializeStockEvents = (
 ): StocksEvent[] =>
   stocks.map((stock): StocksEvent => {
     if (
-      stock.id === null ||
-      stock.id === undefined ||
       stock.beginningDatetime === null ||
       stock.beginningDatetime === undefined ||
       stock.bookingLimitDatetime === null ||

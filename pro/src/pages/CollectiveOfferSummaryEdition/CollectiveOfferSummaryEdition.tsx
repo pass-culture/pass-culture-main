@@ -6,28 +6,21 @@ import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
 } from 'screens/OfferEducational/useCollectiveOfferFromParams'
-import Spinner from 'ui-kit/Spinner/Spinner'
 
 const CollectiveOfferSummaryEdition = ({
   offer,
   reloadCollectiveOffer,
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps) => {
-  const isReady = offer !== null
-
   return (
     <AppLayout layout={'sticky-actions'}>
-      {!isReady ? (
-        <Spinner />
-      ) : (
-        <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
-          <CollectiveOfferSummaryEditionScreen
-            offer={offer}
-            reloadCollectiveOffer={reloadCollectiveOffer}
-            mode={Mode.EDITION}
-          />
-        </CollectiveOfferLayout>
-      )}
+      <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
+        <CollectiveOfferSummaryEditionScreen
+          offer={offer}
+          reloadCollectiveOffer={reloadCollectiveOffer}
+          mode={Mode.EDITION}
+        />
+      </CollectiveOfferLayout>
     </AppLayout>
   )
 }
