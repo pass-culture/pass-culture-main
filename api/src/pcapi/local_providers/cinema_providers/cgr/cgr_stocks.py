@@ -6,10 +6,10 @@ from typing import Iterator
 import sqlalchemy as sa
 
 from pcapi.connectors.cgr.cgr import get_movie_poster_from_api
-import pcapi.connectors.cgr.exceptions as cgr_connector_exceptions
 from pcapi.connectors.serialization import cgr_serializers
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.external_bookings.cgr.client import CGRClientAPI
+from pcapi.core.external_bookings.cgr.exceptions import CGRAPIException
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offers import api as offers_api
 import pcapi.core.offers.models as offers_models
@@ -127,7 +127,7 @@ class CGRStocks(LocalProvider):
                 image_url = self.film_infos.Affiche
                 try:
                     image = get_movie_poster_from_api(image_url)
-                except cgr_connector_exceptions.CGRAPIException:
+                except CGRAPIException:
                     image = None
                     logger.info(
                         "Could not fetch movie poster",

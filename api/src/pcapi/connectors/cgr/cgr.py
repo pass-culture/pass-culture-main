@@ -7,8 +7,8 @@ from zeep.cache import InMemoryCache
 from zeep.proxy import ServiceProxy
 
 from pcapi import settings
-from pcapi.connectors.cgr.exceptions import CGRAPIException
 from pcapi.connectors.serialization import cgr_serializers
+from pcapi.core.external_bookings.cgr.exceptions import CGRAPIException
 from pcapi.core.providers import models as providers_models
 from pcapi.utils import requests
 from pcapi.utils.crypto import decrypt

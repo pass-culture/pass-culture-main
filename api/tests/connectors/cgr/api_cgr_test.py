@@ -4,7 +4,7 @@ import pytest
 
 from pcapi.connectors.cgr.cgr import get_cgr_service_proxy
 from pcapi.connectors.cgr.cgr import get_seances_pass_culture
-import pcapi.connectors.cgr.exceptions as cgr_exceptions
+import pcapi.core.external_bookings.cgr.exceptions as cgr_exceptions
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.testing import override_settings
 from pcapi.utils.crypto import encrypt
