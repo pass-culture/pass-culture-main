@@ -39,7 +39,6 @@ export interface CollectiveOfferNavigationProps {
   offerId?: number
   className?: string
   isTemplate: boolean
-  haveStock?: boolean
   requestId?: string | null
 }
 
@@ -50,7 +49,6 @@ const CollectiveOfferNavigation = ({
   isCompletingDraft = false,
   offerId = 0,
   className,
-  haveStock = false,
   requestId = null,
 }: CollectiveOfferNavigationProps): JSX.Element => {
   const { logEvent } = useAnalytics()
@@ -67,12 +65,12 @@ const CollectiveOfferNavigation = ({
   const previewLink = `/offre/${computeURLCollectiveOfferId(
     offerId,
     isTemplate
-  )}/collectif/preview`
+  )}/collectif${isTemplate ? '/vitrine' : ''}/apercu`
 
   const stockEditionUrl = useOfferStockEditionURL(true, offerId)
   const isEditingExistingOffer = !(isCreatingOffer || isCompletingDraft)
 
-  const stepList: { [key: string]: Step } = {}
+  const stepList: { [key in CollectiveOfferStep]?: Step } = {}
 
   const requestIdUrl = requestId ? `?requete=${requestId}` : ''
 
@@ -108,36 +106,23 @@ const CollectiveOfferNavigation = ({
       stepList[CollectiveOfferStep.VISIBILITY] = {
         id: CollectiveOfferStep.VISIBILITY,
         label: 'Établissement et enseignant',
-        url:
-          offerId && haveStock
-            ? `/offre/${offerId}/collectif/visibilite${requestIdUrl}`
-            : '',
       }
     }
     stepList[CollectiveOfferStep.SUMMARY] = {
       id: CollectiveOfferStep.SUMMARY,
       label: 'Récapitulatif',
-      url:
-        offerId && haveStock
-          ? `/offre/${offerId}/collectif/creation/recapitulatif`
-          : offerId
-            ? `/offre/${offerId}/collectif/vitrine/creation/recapitulatif`
-            : ``,
     }
-    if (isTemplate) {
-      stepList[CollectiveOfferStep.PREVIEW] = {
-        id: CollectiveOfferStep.PREVIEW,
-        label: 'Aperçu',
-        url:
-          offerId && haveStock
-            ? `/offre/${offerId}/collectif/vitrine/creation/apercu`
-            : '',
-      }
+    stepList[CollectiveOfferStep.PREVIEW] = {
+      id: CollectiveOfferStep.PREVIEW,
+      label: 'Aperçu',
     }
     stepList[CollectiveOfferStep.CONFIRMATION] = {
       id: CollectiveOfferStep.CONFIRMATION,
       label: 'Confirmation',
     }
+
+    //  Steps witout url will be displayed as disabeld in the stepper,
+    //  that's why we need to add url only to the current step and the previeous steps
 
     // Add clickable urls depending on current completion
     // Switch fallthrough is intended, this is precisely the kind of use case for it
@@ -145,39 +130,35 @@ const CollectiveOfferNavigation = ({
     switch (activeStep) {
       // @ts-expect-error switch fallthrough
       case CollectiveOfferStep.CONFIRMATION:
-        stepList[CollectiveOfferStep.SUMMARY].url =
-          `/offre/${offerId}/collectif/creation/recapitulatif`
+        stepList[CollectiveOfferStep.PREVIEW].url = isTemplate
+          ? `/offre/${offerId}/collectif/vitrine/creation/apercu`
+          : `/offre/${offerId}/collectif/creation/apercu`
+
+      // @ts-expect-error switch fallthrough
+      case CollectiveOfferStep.PREVIEW:
+        stepList[CollectiveOfferStep.SUMMARY].url = isTemplate
+          ? `/offre/${offerId}/collectif/vitrine/creation/recapitulatif`
+          : `/offre/${offerId}/collectif/creation/recapitulatif`
 
       // @ts-expect-error switch fallthrough
       case CollectiveOfferStep.SUMMARY:
-        if (!isTemplate) {
+        if (!isTemplate && stepList[CollectiveOfferStep.VISIBILITY]) {
           stepList[CollectiveOfferStep.VISIBILITY].url =
             `/offre/${offerId}/collectif/visibilite`
         }
 
       // @ts-expect-error switch fallthrough
       case CollectiveOfferStep.VISIBILITY:
-        if (!isTemplate) {
+        if (!isTemplate && stepList[CollectiveOfferStep.STOCKS]) {
           stepList[CollectiveOfferStep.STOCKS].url =
             `/offre/${offerId}/collectif/stocks`
         }
 
       // @ts-expect-error switch fallthrough
-      case CollectiveOfferStep.PREVIEW:
-        if (isTemplate) {
-          stepList[CollectiveOfferStep.PREVIEW].url =
-            `/offre/${offerId}/collectif/vitrine/creation/apercu`
-        }
-
-      // @ts-expect-error switch fallthrough
       case CollectiveOfferStep.STOCKS:
-        if (isTemplate) {
-          stepList[CollectiveOfferStep.DETAILS].url =
-            `/offre/collectif/vitrine/${offerId}/creation`
-        } else {
-          stepList[CollectiveOfferStep.DETAILS].url =
-            `/offre/collectif/${offerId}/creation${requestIdUrl}`
-        }
+        stepList[CollectiveOfferStep.DETAILS].url = isTemplate
+          ? `/offre/collectif/vitrine/${offerId}/creation`
+          : `/offre/collectif/${offerId}/creation${requestIdUrl}`
 
       case CollectiveOfferStep.DETAILS:
       // Nothing to do here
