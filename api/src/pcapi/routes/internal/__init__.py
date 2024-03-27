@@ -13,3 +13,4 @@ def install_routes(app: Flask) -> None:
         from . import storage
     if settings.ENABLE_TEST_ROUTES:
         from . import testing
+        from ..e2e.routes import sandbox_data
