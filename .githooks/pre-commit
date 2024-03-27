@@ -96,13 +96,13 @@ if [[ ! -z "$STAGED_SCSS_FILES" ]]; then
 fi
 
 cd ../
-##########
+#############
 ## END PRO ##
-##########
+#############
 
-##########
+#########
 ## API ##
-##########
+#########
 cd $DIR/api
 #
 # To disable some checks, set DISABLED_API_PRE_COMMIT_CHECKS
@@ -225,6 +225,14 @@ if [[ ! -z "$STAGED_FILES" ]]; then
       counter=$((counter + 1))
     fi
   fi
+
+  if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",ruff," ]]; then
+    echo -e "\033[0;96mRunning ruff for code linting...\033[0m"
+    ruff check $LINTED_FILES
+    if [[ "$?" != 0 ]]; then
+      counter=$((counter + 1))
+    fi
+  fi
 fi
 if [[ $counter > 0 ]]; then
   echo -e "\033[0;96mIf you want to bypass these checks, add --no-verify option when committing.\033[0m"
@@ -232,9 +240,9 @@ if [[ $counter > 0 ]]; then
 fi
 
 cd ../
-##########
+#############
 ## END API ##
-##########
+#############
 
 ################
 ## BACKOFFICE ##
@@ -265,9 +273,9 @@ cd ..
 ## END BACKOFFICE ##
 ####################
 
-#######################
-## CHECK DEPENDECIES ##
-#######################
+########################
+## CHECK DEPENDENCIES ##
+########################
 cd $DIR/api
 STAGED_PYPROJECT_TOML=$(git diff --cached --name-only --diff-filter=ACMR | grep -wE 'pyproject.toml|poetry.lock' | sed 's|^api\/||g')
 if [[ ! -z "$STAGED_PYPROJECT_TOML" ]]; then

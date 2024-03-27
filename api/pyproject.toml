@@ -105,6 +105,7 @@ types-pyyaml = "^6.0.12.20240311"
 types-redis = "^4.6.0.20240311"
 types-requests = "<2.32.0"
 types-urllib3 = "^1.26.25.14"
+ruff = "^0.3.4"
 
 [tool.black]
 extend-exclude = '''
