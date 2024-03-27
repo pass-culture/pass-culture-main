@@ -81,7 +81,6 @@ export const VenueEdition = (): JSX.Element | null => {
     venueQuery.isLoading ||
     isLoadingVenueTypes ||
     isLoadingOfferer ||
-    !offerer ||
     !venue
   ) {
     return (

@@ -75,11 +75,7 @@ export const VenueSettingsFormScreen = ({
 
   const handleWithdrawalDialog = () => {
     const valueMeta = formik.getFieldMeta('withdrawalDetails')
-    if (
-      valueMeta &&
-      valueMeta.touched &&
-      valueMeta.value !== valueMeta.initialValue
-    ) {
+    if (valueMeta.touched && valueMeta.value !== valueMeta.initialValue) {
       if (isWithdrawalDialogOpen) {
         setIsWithdrawalDialogOpen(false)
       } else {

@@ -77,8 +77,7 @@ export const SiretOrCommentFields = ({
     const address = `${response.payload.values?.address} ${response.payload.values?.postalCode} ${response.payload.values?.city}`
     setIsFieldNameFrozen &&
       setIsFieldNameFrozen(
-        response !== null &&
-          response.payload.values !== undefined &&
+        response.payload.values !== undefined &&
           response.payload.values.siret.length > 0
       )
     await setFieldValue('name', response.payload.values?.name)
