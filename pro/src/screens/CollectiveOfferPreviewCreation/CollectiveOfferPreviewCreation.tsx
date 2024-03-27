@@ -1,13 +1,18 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
+  GetOffererResponseModel,
 } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import AdagePreviewLayout from 'pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
+import publishCollectiveOfferAdapter from 'screens/CollectiveOfferSummaryCreation/adapters/publishCollectiveOfferAdapter'
 import publishCollectiveOfferTemplateAdapter from 'screens/CollectiveOfferSummaryCreation/adapters/publishCollectiveOfferTemplateAdapter'
+import { RedirectToBankAccountDialog } from 'screens/Offers/RedirectToBankAccountDialog'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -20,29 +25,60 @@ export interface CollectiveOfferSummaryCreationProps {
       | GetCollectiveOfferResponseModel
       | GetCollectiveOfferTemplateResponseModel
   ) => void
+  offerer: GetOffererResponseModel | undefined
 }
 
 const CollectiveOfferPreviewCreationScreen = ({
   offer,
   setOffer,
+  offerer,
 }: CollectiveOfferSummaryCreationProps) => {
   const notify = useNotification()
   const navigate = useNavigate()
+  const [displayRedirectDialog, setDisplayRedirectDialog] = useState(false)
+  const isNewBankDetailsJourneyEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
+  )
 
-  const backRedirectionUrl = `/offre/${offer.id}/collectif/vitrine/creation/recapitulatif`
+  const backRedirectionUrl = offer.isTemplate
+    ? `/offre/${offer.id}/collectif/vitrine/creation/recapitulatif`
+    : `/offre/${offer.id}/collectif/creation/recapitulatif`
 
-  const confirmationUrl = `/offre/${offer.id}/collectif/vitrine/confirmation`
+  const confirmationUrl = offer.isTemplate
+    ? `/offre/${offer.id}/collectif/vitrine/confirmation`
+    : `/offre/${offer.id}/collectif/confirmation`
 
   const publishOffer = async () => {
-    const response = await publishCollectiveOfferTemplateAdapter(offer.id)
+    if (offer.isTemplate) {
+      const response = await publishCollectiveOfferTemplateAdapter(offer.id)
 
-    if (!response.isOk) {
-      notify.error(response.message)
-      return
+      if (!response.isOk) {
+        notify.error(response.message)
+        return
+      }
+
+      setOffer(response.payload)
+      navigate(confirmationUrl)
     }
 
+    const response = await publishCollectiveOfferAdapter(offer.id)
+    if (!response.isOk) {
+      return notify.error(response.message)
+    }
     setOffer(response.payload)
-    navigate(confirmationUrl)
+    const shouldDisplayRedirectDialog =
+      isNewBankDetailsJourneyEnabled &&
+      response.payload.isNonFreeOffer &&
+      offerer &&
+      !offerer.hasNonFreeOffer &&
+      !offerer.hasValidBankAccount &&
+      !offerer.hasPendingBankAccount
+
+    if (shouldDisplayRedirectDialog) {
+      setDisplayRedirectDialog(true)
+    } else {
+      navigate(confirmationUrl)
+    }
   }
 
   return (
@@ -68,6 +104,13 @@ const CollectiveOfferPreviewCreationScreen = ({
           <Button onClick={publishOffer}>Publier l’offre</Button>
         </ActionsBarSticky.Right>
       </ActionsBarSticky>
+      {displayRedirectDialog && offerer?.id && (
+        <RedirectToBankAccountDialog
+          cancelRedirectUrl={confirmationUrl}
+          offerId={offerer.id}
+          venueId={offer.venue.id}
+        />
+      )}
     </div>
   )
 }

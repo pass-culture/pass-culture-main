@@ -1,11 +1,18 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
 import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
 import {
   defaultGetVenue,
+  getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
 } from 'utils/collectiveApiFactories'
+import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -19,7 +26,7 @@ vi.mock('react-router-dom', async () => ({
     requestId: vi.fn(),
     requete: '1',
   }),
-  useNavigate: vi.fn(),
+  useNavigate: () => vi.fn(),
   default: vi.fn(),
 }))
 
@@ -65,5 +72,35 @@ describe('CollectiveOfferPreviewCreation', () => {
         name: defaultProps.offer.name,
       })
     ).toBeInTheDocument()
+  })
+
+  it('Should show the redirect modal', async () => {
+    vi.spyOn(api, 'patchCollectiveOfferPublication').mockResolvedValue({
+      ...getCollectiveOfferFactory(),
+      isNonFreeOffer: true,
+    })
+
+    renderCollectiveOfferPreviewCreation(
+      '/offre/A1/collectif/creation/apercu',
+      {
+        ...defaultProps,
+        offerer: {
+          ...defaultGetOffererResponseModel,
+          hasNonFreeOffer: false,
+          hasValidBankAccount: false,
+        },
+      },
+      {
+        features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
+      }
+    )
+
+    await userEvent.click(screen.getByText('Publier l’offre'))
+
+    await waitFor(() =>
+      expect(
+        screen.queryByText(/Félicitations, vous avez créé votre offre !/)
+      ).toBeInTheDocument()
+    )
   })
 })

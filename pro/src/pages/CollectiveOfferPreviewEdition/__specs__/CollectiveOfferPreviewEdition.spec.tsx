@@ -49,7 +49,7 @@ describe('CollectiveOfferPreviewCreation', () => {
 
   it('should render collective offer preview edition', async () => {
     renderCollectiveOfferPreviewCreation(
-      '/offre/T-A1/collectif/preview',
+      '/offre/T-A1/collectif/apercu',
       defaultProps
     )
 

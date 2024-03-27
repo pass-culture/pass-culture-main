@@ -1,15 +1,8 @@
-import {
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import React from 'react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 
 import { api } from 'apiClient/api'
 import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
 import { getCollectiveOfferFactory } from 'utils/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -83,35 +76,6 @@ describe('CollectiveOfferSummaryCreation', () => {
     const previousStepLink = screen.getByText('Étape précédente')
     expect(previousStepLink.getAttribute('href')).toBe(
       '/offre/1/collectif/visibilite?requete=1'
-    )
-  })
-
-  it('Should show the redirect modal', async () => {
-    vi.spyOn(api, 'patchCollectiveOfferPublication').mockResolvedValue({
-      ...getCollectiveOfferFactory(),
-      isNonFreeOffer: true,
-    })
-    await renderCollectiveOfferSummaryCreation(
-      '/offre/A1/collectif/creation/recapitulatif',
-      {
-        ...defaultProps,
-        offerer: {
-          ...defaultGetOffererResponseModel,
-          hasNonFreeOffer: false,
-          hasValidBankAccount: false,
-        },
-      },
-      {
-        features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
-      }
-    )
-
-    await userEvent.click(screen.getByText('Publier l’offre'))
-
-    await waitFor(() =>
-      expect(
-        screen.queryByText(/Félicitations, vous avez créé votre offre !/)
-      ).toBeInTheDocument()
     )
   })
 })
