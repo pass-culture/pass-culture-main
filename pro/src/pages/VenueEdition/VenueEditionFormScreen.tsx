@@ -41,12 +41,10 @@ export const VenueEditionFormScreen = ({
         </>
       )}
 
-      {!venue.isVirtual && (
-        <Routes>
-          <Route path="" element={<VenueEditionReadOnly venue={venue} />} />
-          <Route path="/edition" element={<VenueEditionForm venue={venue} />} />
-        </Routes>
-      )}
+      <Routes>
+        <Route path="" element={<VenueEditionReadOnly venue={venue} />} />
+        <Route path="/edition" element={<VenueEditionForm venue={venue} />} />
+      </Routes>
     </>
   )
 }
