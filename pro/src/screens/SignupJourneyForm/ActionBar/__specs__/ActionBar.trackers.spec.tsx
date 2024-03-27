@@ -44,7 +44,7 @@ describe('screens:SignupJourney::ActionBar', () => {
     vi.spyOn(api, 'getVenueTypes').mockResolvedValue([])
   })
 
-  it('Should log next action', async () => {
+  it('should log next action', async () => {
     props = {
       onClickNext: () => null,
       nextStepTitle: 'NEXT',
@@ -68,7 +68,7 @@ describe('screens:SignupJourney::ActionBar', () => {
     )
   })
 
-  it('Should log next action if disabled', async () => {
+  it('should log next action if disabled', async () => {
     props = {
       onClickNext: () => null,
       nextStepTitle: 'NEXT',
