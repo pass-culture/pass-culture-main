@@ -141,6 +141,7 @@ export const Desk = (): JSX.Element => {
             classNameLabel={styles['desk-form-label']}
             className={styles['desk-form-input']}
             hideFooter
+            isOptional
           />
 
           {booking && <BookingDetails booking={booking} />}
