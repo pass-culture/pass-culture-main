@@ -202,12 +202,10 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
 if settings.IS_PROD or settings.IS_STAGING:
     FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_ENABLE_FINANCE_INCIDENT,)
     FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API,)
-    FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_ENABLE_OFFER_CREATION_API_V1,)
 
 if settings.IS_TESTING:
     testing_features_disabled_by_default = set(FEATURES_DISABLED_BY_DEFAULT)
     features_to_enable = {
-        FeatureToggle.WIP_ENABLE_OFFER_CREATION_API_V1,
         FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS,
     }
 
