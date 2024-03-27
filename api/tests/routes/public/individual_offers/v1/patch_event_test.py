@@ -117,7 +117,6 @@ class PatchEventTest:
             "stageDirector": "Robert",
         }
 
-    @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=True)
     def test_patch_all_fields(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue(with_charlie=True)
         event_offer = offers_factories.EventOfferFactory(
@@ -162,6 +161,7 @@ class PatchEventTest:
             == f"{settings.OBJECT_STORAGE_URL}/thumbs/mediations/{human_ids.humanize(event_offer.activeMediation.id)}"
         )
 
+    @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=False)
     def test_cannot_edit_event_with_ticket_if_FF_not_active(self, client):
         # This test can be deleted with FF WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API
         venue, api_key = utils.create_offerer_provider_linked_to_venue()
