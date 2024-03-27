@@ -22,7 +22,6 @@ from pcapi.models import db
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
-from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailResponseModel
 from pcapi.serialization.decorator import spectree_serialize
@@ -42,20 +41,21 @@ logger = logging.getLogger(__name__)
     api=blueprint.pro_private_schema,
 )
 def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serialize.ListOffersResponseModel:
-    paginated_offers = offers_api.list_offers_for_pro_user(
+    paginated_offers = offers_repository.get_capped_offers_for_filters(
         user_id=current_user.id,
         user_is_admin=current_user.has_admin_role,
-        category_id=query.categoryId,
+        offers_limit=offers_api.OFFERS_RECAP_LIMIT,
         offerer_id=query.offerer_id,
-        venue_id=query.venue_id,
-        name_keywords_or_ean=query.name_or_ean,
         status=query.status.value if query.status else None,
+        venue_id=query.venue_id,
+        category_id=query.categoryId,
+        name_keywords_or_ean=query.name_or_ean,
         creation_mode=query.creation_mode,
         period_beginning_date=query.period_beginning_date,
         period_ending_date=query.period_ending_date,
     )
 
-    return offers_serialize.ListOffersResponseModel(__root__=serialize_offers_recap_paginated(paginated_offers))  # type: ignore [arg-type]
+    return offers_serialize.ListOffersResponseModel(__root__=offers_serialize.serialize_capped_offers(paginated_offers))
 
 
 @private_api.route("/offers/<int:offer_id>", methods=["GET"])
