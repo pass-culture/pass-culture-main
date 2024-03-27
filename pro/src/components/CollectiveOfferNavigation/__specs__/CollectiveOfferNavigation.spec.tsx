@@ -309,27 +309,4 @@ describe('CollectiveOfferNavigation', () => {
 
     expect(notifyError).toHaveBeenCalledWith('Impossible de dupliquer l’image')
   })
-
-  it('should return an error when trying to get offerer image blob', async () => {
-    const mockResponse = new Response()
-    vi.spyOn(mockResponse, 'blob').mockResolvedValue(
-      Promise.resolve(undefined) as unknown as Blob
-    )
-
-    vi.spyOn(global, 'fetch').mockResolvedValue(mockResponse)
-
-    renderCollectiveOfferNavigation({
-      ...props,
-      isTemplate: true,
-      isCreatingOffer: false,
-    })
-
-    const duplicateOffer = screen.getByRole('button', {
-      name: 'Créer une offre réservable',
-    })
-
-    await userEvent.click(duplicateOffer)
-
-    expect(notifyError).toHaveBeenCalledWith('Impossible de dupliquer l’image')
-  })
 })

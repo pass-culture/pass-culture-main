@@ -39,7 +39,7 @@ export const getValidationSchema = (
   return {
     categoryId: yup.string().required('Veuillez sélectionner une catégorie'),
     subcategoryId: yup.string().when('categoryId', {
-      is: (categoryId: string) => categoryId !== undefined,
+      is: (categoryId: string) => categoryId,
       then: (schema) =>
         schema.required('Veuillez sélectionner une sous-catégorie'),
     }),

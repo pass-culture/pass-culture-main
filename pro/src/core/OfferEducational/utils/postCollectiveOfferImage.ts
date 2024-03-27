@@ -24,9 +24,7 @@ export const postCollectiveOfferImage = async ({
     }
     const contentType = imageResponse.headers.get('content-type')
     const blob = await imageResponse.blob()
-    if (!blob) {
-      return notify.error(imageErrorMessage)
-    }
+
     /* istanbul ignore next: DEBT to fix */
     const imageFile = new File([blob], '', { type: contentType ?? '' })
     await postCollectiveOfferImageAdapter({
