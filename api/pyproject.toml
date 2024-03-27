@@ -106,6 +106,7 @@ types-redis = "^4.6.0.20240311"
 types-requests = "<2.32.0"
 types-urllib3 = "^1.26.25.14"
 ruff = "^0.3.4"
+bandit = "^1.7.8"
 
 [tool.black]
 extend-exclude = '''

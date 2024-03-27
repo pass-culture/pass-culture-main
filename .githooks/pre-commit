@@ -233,6 +233,14 @@ if [[ ! -z "$STAGED_FILES" ]]; then
       counter=$((counter + 1))
     fi
   fi
+
+  if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",bandit," ]]; then
+    echo -e "\033[0;96mRunning bandit for code linting...\033[0m"
+    bandit -r $LINTED_FILES
+    if [[ "$?" != 0 ]]; then
+      counter=$((counter + 1))
+    fi
+  fi
 fi
 if [[ $counter > 0 ]]; then
   echo -e "\033[0;96mIf you want to bypass these checks, add --no-verify option when committing.\033[0m"
