@@ -154,20 +154,22 @@ def _create_pro_user(row: dict) -> User:
     venue = offerers_api.create_venue(venue_creation_info, strict_accessibility_compliance=False)
     offerers_api.create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
 
-    bank_account = finance_models.BankAccount(
-        label=f"Compte de {user.firstName}",
-        offerer=offerer,
-        iban=schwifty.IBAN.generate("FR", bank_code="10010", account_code=f"{siret[:9]:010}").compact,
-        bic="BDFEFRPP",
-        dsApplicationId=int(siret),
-        status=finance_models.BankAccountApplicationStatus.ACCEPTED,
-    )
-    db.session.add(bank_account)
-    db.session.add(
-        offerers_models.VenueBankAccountLink(
-            venue=venue, bankAccount=bank_account, timespan=(datetime.datetime.utcnow(),)
+    for i, status in enumerate(finance_models.BankAccountApplicationStatus, start=1):
+        bank_account = finance_models.BankAccount(
+            label=f"Compte {i} de {user.firstName} - {status.value}",
+            offerer=offerer,
+            iban=schwifty.IBAN.generate("FR", bank_code="10010", account_code=f"{siret[:9]}{i:02}").compact,
+            bic="BDFEFRPP",
+            dsApplicationId=int(siret) * 100 + i,
+            status=status,
         )
-    )
+        db.session.add(bank_account)
+        if status is finance_models.BankAccountApplicationStatus.ACCEPTED:
+            db.session.add(
+                offerers_models.VenueBankAccountLink(
+                    venue=venue, bankAccount=bank_account, timespan=(datetime.datetime.utcnow(),)
+                )
+            )
 
     user.validationToken = None
     user.isEmailValidated = True

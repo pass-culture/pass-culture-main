@@ -94,11 +94,15 @@ class ReadFileTest:
         assert digital_venue.siret is None
         assert digital_venue.managingOfferer == offerer
 
-        bank_account = finance_models.BankAccount.query.one()
-        assert bank_account.offerer == offerer
-        assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
-        assert len(bank_account.venueLinks) == 1
-        assert bank_account.venueLinks[0].venue == venue
+        bank_accounts = finance_models.BankAccount.query.order_by(finance_models.BankAccount.id).all()
+        for bank_account, status in zip(bank_accounts, finance_models.BankAccountApplicationStatus):
+            assert bank_account.offerer == offerer
+            assert bank_account.status == status
+            if status is finance_models.BankAccountApplicationStatus.ACCEPTED:
+                assert len(bank_account.venueLinks) == 1
+                assert bank_account.venueLinks[0].venue == venue
+            else:
+                assert not bank_account.venueLinks
 
         assert pierre.checkPassword("PierrePro$123")
 
