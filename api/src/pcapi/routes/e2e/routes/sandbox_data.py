@@ -76,6 +76,30 @@ def setup_create_venue() -> None:
     offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
 
+@app.route("/e2e/pro/update-venue", methods=["GET"])
+@spectree_serialize(on_success_status=204)
+def setup_update_venue() -> None:
+    clean_all_database()
+    users_factories.AdminFactory(
+        lastName="PC Test Pro",
+        firstName="93 1",
+        departementCode="93",
+        postalCode="93100",
+        email="pctest.admin93.0@example.com",
+    )
+    offerer = offerers_factories.OffererFactory(name="Lieu non dit", siren="222222233")
+    offerers_factories.VenueFactory(
+        venueTypeCode=VenueTypeCode.MOVIE,
+        managingOfferer=offerer,
+    )
+    offerers_factories.VenueFactory(
+        name="Cinéma de la fin Bis",
+        venueTypeCode=VenueTypeCode.MOVIE,
+        managingOfferer=offerer,
+    )
+    offerers_factories.VenueLabelFactory(label="Musée de France")
+
+
 @app.route("/e2e/pro/tear-down", methods=["GET"])
 @spectree_serialize(on_success_status=204)
 def tear_down() -> None:
