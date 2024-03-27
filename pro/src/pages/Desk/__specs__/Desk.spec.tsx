@@ -15,7 +15,7 @@ const renderDesk = () => {
 }
 
 describe('src | components | Desk', () => {
-  describe('Should validate while user is typing', () => {
+  describe('should validate while user is typing', () => {
     it('should remove QRcode prefix', async () => {
       renderDesk()
       const contremarque = screen.getByLabelText('Contremarque *')
@@ -94,7 +94,7 @@ describe('src | components | Desk', () => {
     })
   })
 
-  describe('Should validate contremarque when the user submits the form', () => {
+  describe('should validate contremarque when the user submits the form', () => {
     beforeEach(() => {
       vi.spyOn(getBookingAdapter, 'getBooking').mockResolvedValueOnce({
         booking: defaultGetBookingResponse,
@@ -128,7 +128,7 @@ describe('src | components | Desk', () => {
     })
   })
 
-  describe('Should invalidate contremarque when the user submits the form', () => {
+  describe('should invalidate contremarque when the user submits the form', () => {
     beforeEach(() => {
       vi.spyOn(getBookingAdapter, 'getBooking').mockResolvedValueOnce({
         error: {

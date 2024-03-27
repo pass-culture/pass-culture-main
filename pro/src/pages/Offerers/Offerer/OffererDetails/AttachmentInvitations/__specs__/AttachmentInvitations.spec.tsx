@@ -55,7 +55,7 @@ describe('AttachmentInvitations', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('Should display the invite form on click', async () => {
+  it('should display the invite form on click', async () => {
     await renderAttachmentInvitations()
 
     await userEvent.click(screen.getByText('Ajouter un collaborateur'))
@@ -70,7 +70,7 @@ describe('AttachmentInvitations', () => {
     ).toBeInTheDocument()
   })
 
-  it('Should display the form error on invalid email', async () => {
+  it('should display the form error on invalid email', async () => {
     await renderAttachmentInvitations()
 
     await userEvent.click(screen.getByText('Ajouter un collaborateur'))
@@ -81,7 +81,7 @@ describe('AttachmentInvitations', () => {
     ).toBeInTheDocument()
   })
 
-  it('Should display add the email on success and trigger buttons event', async () => {
+  it('should display add the email on success and trigger buttons event', async () => {
     await renderAttachmentInvitations()
 
     await userEvent.click(screen.getByText('Ajouter un collaborateur'))
@@ -112,7 +112,7 @@ describe('AttachmentInvitations', () => {
     expect(screen.getByText('test@test.fr')).toBeInTheDocument()
   })
 
-  it('Should display email error message if user is already invited', async () => {
+  it('should display email error message if user is already invited', async () => {
     await renderAttachmentInvitations()
 
     await userEvent.click(screen.getByText('Ajouter un collaborateur'))
@@ -144,7 +144,7 @@ describe('AttachmentInvitations', () => {
     })
   })
 
-  it('Should display default error message if error with server', async () => {
+  it('should display default error message if error with server', async () => {
     await renderAttachmentInvitations()
 
     await userEvent.click(screen.getByText('Ajouter un collaborateur'))

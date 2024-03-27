@@ -21,7 +21,7 @@ describe('VenueCrationLinks', () => {
     }))
   })
 
-  it('Should not display creation links when user has no venue created', () => {
+  it('should not display creation links when user has no venue created', () => {
     const offerer = {
       ...defaultGetOffererResponseModel,
       hasDigitalVenueAtLeastOneOffer: false,
@@ -33,7 +33,7 @@ describe('VenueCrationLinks', () => {
     expect(screen.queryByText('Ajouter un lieu')).not.toBeInTheDocument()
   })
 
-  it('Should display creation links when user has a venue created', async () => {
+  it('should display creation links when user has a venue created', async () => {
     const offerer = {
       ...defaultGetOffererResponseModel,
       managedVenues: [defaultGetOffererVenueResponseModel],

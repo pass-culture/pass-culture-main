@@ -112,7 +112,7 @@ describe('ValidationScreen', () => {
     expect(screen.getByText('Activite')).toBeInTheDocument()
   })
 
-  it('Should see the data from the previous forms for validation', async () => {
+  it('should see the data from the previous forms for validation', async () => {
     renderValidationScreen({
       ...contextValue,
       activity: {
@@ -158,7 +158,7 @@ describe('ValidationScreen', () => {
       }
     })
 
-    it('Should navigate to activity page with the previous step button', async () => {
+    it('should navigate to activity page with the previous step button', async () => {
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -166,7 +166,7 @@ describe('ValidationScreen', () => {
       expect(screen.getByText('Activite')).toBeInTheDocument()
     })
 
-    it('Should navigate to authentification page when clicking the first update button', async () => {
+    it('should navigate to authentification page when clicking the first update button', async () => {
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       await userEvent.click(screen.getAllByText('Modifier')[0])
@@ -174,7 +174,7 @@ describe('ValidationScreen', () => {
       expect(screen.getByText('Authentification')).toBeInTheDocument()
     })
 
-    it('Should navigate to activite page when clicking the second update button', async () => {
+    it('should navigate to activite page when clicking the second update button', async () => {
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       await userEvent.click(screen.getAllByText('Modifier')[1])
@@ -182,7 +182,7 @@ describe('ValidationScreen', () => {
       expect(screen.getByText('Activite')).toBeInTheDocument()
     })
 
-    it('Should redirect to home after submit', async () => {
+    it('should redirect to home after submit', async () => {
       vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
         {} as PostOffererResponseModel
       )
@@ -220,7 +220,7 @@ describe('ValidationScreen', () => {
 
     const publicNames = ['nom public', '']
     it.each(publicNames)(
-      'Should send data with name %s',
+      'should send data with name %s',
       async (publicName: string) => {
         if (contextValue.offerer) {
           contextValue.offerer.publicName = publicName
@@ -255,7 +255,7 @@ describe('ValidationScreen', () => {
       }
     )
 
-    it('Should see the data from the previous forms for validation without public name', async () => {
+    it('should see the data from the previous forms for validation without public name', async () => {
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       expect(await screen.findByText('first venue label')).toBeInTheDocument()
@@ -283,7 +283,7 @@ describe('ValidationScreen', () => {
       }
     })
 
-    it('Should display error message on api error', async () => {
+    it('should display error message on api error', async () => {
       vi.spyOn(api, 'saveNewOnboardingData').mockRejectedValue({})
       vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
         remove: vi.fn(),
@@ -297,7 +297,7 @@ describe('ValidationScreen', () => {
       ).toBeInTheDocument()
     })
 
-    it('Should not render on venue types api error', async () => {
+    it('should not render on venue types api error', async () => {
       vi.spyOn(api, 'getVenueTypes').mockRejectedValue({})
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
