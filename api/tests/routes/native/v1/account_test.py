@@ -436,7 +436,6 @@ class AccountCreationTest:
         assert not push_testing.requests
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
     def test_save_trusted_device(self, mocked_check_recaptcha_token_is_valid, client):
         data = {
             "email": "John.doe@example.com",
@@ -461,7 +460,6 @@ class AccountCreationTest:
         assert trusted_device.os == "iOS"
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
     def should_not_save_trusted_device_when_no_device_info(self, mocked_check_recaptcha_token_is_valid, client):
         data = {
             "email": "John.doe@example.com",
@@ -664,7 +662,6 @@ class AccountCreationWithSSOTest:
         assert not push_testing.requests
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
     def test_save_trusted_device(self, mocked_check_recaptcha_token_is_valid, client):
         account_creation_token = token_utils.UUIDToken.create(
             token_utils.TokenType.ACCOUNT_CREATION,
@@ -696,7 +693,6 @@ class AccountCreationWithSSOTest:
         assert trusted_device.os == "iOS"
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
     def should_not_save_trusted_device_when_no_device_info(self, mocked_check_recaptcha_token_is_valid, client):
         account_creation_token = token_utils.UUIDToken.create(
             token_utils.TokenType.ACCOUNT_CREATION,
