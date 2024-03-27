@@ -101,6 +101,7 @@ export const VenueEditionHeader = ({
     await api.deleteVenueBanner(venue.id)
 
     setImageValues(buildInitialValues(null, null))
+    notify.success('Votre image a bien été supprimée')
   }
 
   const logButtonAddClick = () => {

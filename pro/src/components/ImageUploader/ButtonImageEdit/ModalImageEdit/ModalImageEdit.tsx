@@ -100,6 +100,14 @@ export const ModalImageEdit = ({
     setImage(undefined)
   }
 
+  const handleImageDelete = () => {
+    if (!initialImageUrl && !initialOriginalImageUrl) {
+      setImage(undefined)
+    } else {
+      onImageDelete()
+    }
+  }
+
   const handleOnUpload = (
     croppedRect?: CroppedRect,
     imageToUpload?: File,
@@ -157,7 +165,7 @@ export const ModalImageEdit = ({
           }
           onEditedImageSave={onEditedImageSave}
           onReplaceImage={onReplaceImage}
-          onImageDelete={onImageDelete}
+          onImageDelete={handleImageDelete}
           onSetCredit={setCredit}
           saveInitialPosition={setEditorInitialPosition}
           mode={mode}
