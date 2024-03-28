@@ -245,6 +245,36 @@ describe('IndividualOffer section: UsefulInformations', () => {
     ).not.toBeInTheDocument()
   })
 
+  it('should contain error if actor try to put a passculture mail', async () => {
+    initialValues.subcategoryId = 'CONCERT'
+    initialValues.subCategoryFields = ['withdrawalType', 'bookingContact']
+    props.offerSubCategory = subcategoryFactory({
+      id: 'CONCERT',
+      canBeWithdrawable: true,
+    })
+    renderUsefulInformations({
+      initialValues,
+      onSubmit,
+      props,
+    })
+
+    const offererSelect = screen.getByLabelText('Structure *')
+    await userEvent.selectOptions(offererSelect, offererId.toString())
+    const venueSelect = screen.getByLabelText('Lieu *')
+    await userEvent.selectOptions(venueSelect, venueList[0].id.toString())
+    const withEmail = screen.getByLabelText(
+      'Les billets seront envoyés par email'
+    )
+    await userEvent.click(withEmail)
+
+    const bookingContactField = screen.getByLabelText('Email de contact *')
+    await userEvent.type(bookingContactField, 'robertoDu36@passculture.app')
+
+    await userEvent.click(await screen.findByText('Submit'))
+
+    expect(screen.getByText('Ce mail doit vous appartenir')).toBeInTheDocument()
+  })
+
   describe('When venue is virtual', () => {
     beforeEach(() => {
       props.isVenueVirtual = true

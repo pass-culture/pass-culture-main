@@ -31,7 +31,12 @@ const validationSchema = {
         .required('Veuillez renseigner une adresse email')
         .email(
           'Veuillez renseigner un email valide, exemple : mail@exemple.com'
-        ),
+        )
+        .test({
+          name: 'organisationEmailNotPassCulture',
+          message: 'Ce mail doit vous appartenir',
+          test: (value) => !value.endsWith('@passculture.app'),
+        }),
   }),
 }
 
