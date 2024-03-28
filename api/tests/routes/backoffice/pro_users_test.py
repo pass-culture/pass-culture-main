@@ -166,6 +166,36 @@ class GetProUserTest(GetEndpointHelper):
         expected_url = url_for("backoffice_web.pro.search_pro", _external=True)
         assert response.location == expected_url
 
+    @pytest.mark.parametrize(
+        "ff_new_nav_activated,has_new_nav", [(True, True), (True, False), (False, True), (False, False)]
+    )
+    def test_get_pro_user_with_new_nav_badges(self, authenticated_client, ff_new_nav_activated, has_new_nav):
+        user = offerers_factories.UserOffererFactory(user__phoneNumber="+33638656565", user__postalCode="29000").user
+        if has_new_nav:
+            users_factories.UserProNewNavStateFactory(user=user, newNavDate=datetime.datetime.utcnow())
+        url = url_for(self.endpoint, user_id=user.id)
+
+        with (
+            override_features(WIP_ENABLE_PRO_SIDE_NAV=ff_new_nav_activated),
+            assert_num_queries(self.expected_num_queries),
+        ):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        badges = html_parser.extract(response.data, tag="span", class_="badge")
+        assert "Pro" in badges
+        assert "Validé" in badges
+        assert "Suspendu" not in badges
+
+        if ff_new_nav_activated:
+            if has_new_nav:
+                assert "Nouvelle interface" in badges
+            else:
+                assert "Ancienne interface" in badges
+        else:
+            assert "Nouvelle interface" not in badges
+            assert "Ancienne interface" not in badges
+
 
 class UpdateProUserTest(PostEndpointHelper):
     endpoint = "backoffice_web.pro_user.update_pro_user"

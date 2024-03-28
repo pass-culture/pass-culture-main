@@ -626,6 +626,14 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     def has_anonymized_role(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.ANONYMIZED])
 
+    @property
+    def has_new_nav(self) -> bool:
+        return bool(
+            self.pro_new_nav_state
+            and self.pro_new_nav_state.newNavDate
+            and self.pro_new_nav_state.newNavDate <= datetime.utcnow()
+        )
+
 
 User.trig_ensure_password_or_sso_exists_ddl = sa.DDL(
     """
