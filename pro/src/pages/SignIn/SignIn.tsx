@@ -85,7 +85,7 @@ export const SignIn = (): JSX.Element => {
       notify.error(
         'Nombre de tentatives de connexion dépassé. Veuillez réessayer dans 1 minute.'
       )
-    } else if (errors && Object.values(errors).length > 0) {
+    } else if (Object.values(errors).length > 0) {
       notify.error('Identifiant ou mot de passe incorrect.')
       formik.setStatus('apiError')
       formik.setFieldError('email', 'Identifiant ou mot de passe incorrect.')

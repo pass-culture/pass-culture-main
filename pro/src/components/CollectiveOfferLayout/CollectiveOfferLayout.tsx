@@ -73,21 +73,17 @@ const CollectiveOfferLayout = ({
         </h1>
       </div>
 
-      {
-        /* istanbul ignore next: DEBT, TO FIX */
-        navigationProps && (
-          <CollectiveOfferNavigation
-            activeStep={navigationProps.activeStep}
-            className={cn(styles['eac-layout-navigation'], {
-              [styles['stepper-navigation']]: navigationProps.isCreatingOffer,
-            })}
-            isCreatingOffer={navigationProps.isCreatingOffer}
-            offerId={navigationProps.offerId}
-            isTemplate={isTemplate}
-            requestId={requestId}
-          />
-        )
-      }
+      <CollectiveOfferNavigation
+        activeStep={navigationProps.activeStep}
+        className={cn(styles['eac-layout-navigation'], {
+          [styles['stepper-navigation']]: navigationProps.isCreatingOffer,
+        })}
+        isCreatingOffer={navigationProps.isCreatingOffer}
+        offerId={navigationProps.offerId}
+        isTemplate={isTemplate}
+        requestId={requestId}
+      />
+
       {children}
       <HelpLink />
     </div>

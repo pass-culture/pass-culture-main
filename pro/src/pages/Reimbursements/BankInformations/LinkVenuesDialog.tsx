@@ -52,9 +52,7 @@ const LinkVenuesDialog = ({
   const initialVenuesIds = selectedBankAccount.linkedVenues.map(
     (venue) => venue.id
   )
-  const [selectedVenuesIds, setSelectedVenuesIds] = useState(
-    initialVenuesIds ?? []
-  )
+  const [selectedVenuesIds, setSelectedVenuesIds] = useState(initialVenuesIds)
   const allVenuesSelected = availableManagedVenuesIds.every(
     (venueId) => selectedVenuesIds.indexOf(venueId) >= 0
   )
@@ -255,7 +253,7 @@ const LinkVenuesDialog = ({
           cancelText="Retour"
         />
       )}
-      {selectedVenue && venuesForPricingPoint && (
+      {selectedVenue && (
         <PricingPointDialog
           selectedVenue={selectedVenue}
           venues={venuesForPricingPoint}

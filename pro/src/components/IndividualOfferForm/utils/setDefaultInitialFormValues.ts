@@ -52,9 +52,7 @@ const setDefaultInitialFormValues = (
     isDuo: FORM_DEFAULT_VALUES.isDuo,
     categoryId: FORM_DEFAULT_VALUES.categoryId,
     subcategoryId: FORM_DEFAULT_VALUES.subcategoryId,
-    subCategoryFields: subcategoryFields
-      ? subcategoryFields
-      : FORM_DEFAULT_VALUES.subCategoryFields,
+    subCategoryFields: subcategoryFields,
     offererId: initialOffererId,
     venueId: venue?.id ? String(venue.id) : FORM_DEFAULT_VALUES.venueId,
     withdrawalDetails: initialWithdrawalDetails,

@@ -14,7 +14,7 @@ export interface VenueItemProps {
 }
 
 const VenueItem = ({ venue, offererId }: VenueItemProps) => {
-  const { address, city, name, postalCode, publicName, id } = venue || {}
+  const { address, city, name, postalCode, publicName, id } = venue
 
   const showPath = `/structures/${offererId}/lieux/${id}`
 

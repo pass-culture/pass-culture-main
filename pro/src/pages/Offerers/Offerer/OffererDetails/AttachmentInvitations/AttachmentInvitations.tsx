@@ -73,7 +73,7 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
   useEffect(() => {
     const fetchOffererMembers = async () => {
       const { members } = await api.getOffererMembers(offererId)
-      setMembers(members ?? [])
+      setMembers(members)
     }
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     fetchOffererMembers()
@@ -92,7 +92,7 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
     <section className={styles['section']} ref={scrollToSection}>
       <h2 className={styles['main-list-title']}>Collaborateurs</h2>
 
-      {!!members && (
+      {members.length > 0 && (
         <div className={styles['members-container']}>
           <table className={styles['members-list']}>
             <thead>

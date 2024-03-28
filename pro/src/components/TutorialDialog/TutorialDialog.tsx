@@ -15,7 +15,7 @@ const TutorialDialog = (): JSX.Element => {
   const { currentUser } = useCurrentUser()
   const dispatch = useDispatch()
   const [areTutoDisplayed, setAreTutoDisplayed] = useState(
-    currentUser && !currentUser.hasSeenProTutorials
+    !currentUser.hasSeenProTutorials
   )
   const { logEvent } = useAnalytics()
 

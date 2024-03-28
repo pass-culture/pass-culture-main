@@ -161,16 +161,12 @@ const OfferEducationalActions = ({
                 : 'réservation'}
             </ButtonLink>
           )}
-          {offer.status && (
+          {shouldDisplayStatusSeparator && (
             <>
-              {shouldDisplayStatusSeparator && (
-                <>
-                  <div className={style.separator} />{' '}
-                </>
-              )}
-              {getCollectiveStatusLabel(offer.status, lastBookingStatus || '')}
+              <div className={style.separator} />{' '}
             </>
           )}
+          {getCollectiveStatusLabel(offer.status, lastBookingStatus || '')}
         </div>
       )}
     </>

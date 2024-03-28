@@ -104,9 +104,7 @@ const VenueSettings = (): JSX.Element | null => {
     isLoadingProviders ||
     isLoadingVenueProviders ||
     isLoadingOfferer ||
-    isLoadingVenueOffers ||
-    !offerer ||
-    !venue
+    isLoadingVenueOffers
   ) {
     return (
       <AppLayout>

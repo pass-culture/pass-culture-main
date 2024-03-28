@@ -1,9 +1,6 @@
 import { OfferContactFormEnum } from 'apiClient/v1'
 import { DEFAULT_EAC_FORM_VALUES } from 'core/OfferEducational/constants'
-import {
-  getCollectiveOfferFactory,
-  getCollectiveOfferTemplateFactory,
-} from 'utils/collectiveApiFactories'
+import { getCollectiveOfferTemplateFactory } from 'utils/collectiveApiFactories'
 import { formatShortDateForInput } from 'utils/date'
 
 import { computeInitialValuesFromOffer } from '../computeInitialValuesFromOffer'
@@ -13,19 +10,6 @@ describe('computeInitialValuesFromOffer', () => {
     expect(computeInitialValuesFromOffer([], false)).toEqual(
       DEFAULT_EAC_FORM_VALUES
     )
-  })
-
-  it('should use email for notification emails if notification email not set', () => {
-    expect(
-      computeInitialValuesFromOffer(
-        [],
-        false,
-        getCollectiveOfferFactory({
-          contactEmail: 'someemail@example.com',
-          bookingEmails: undefined,
-        })
-      ).notificationEmails
-    ).toEqual(['someemail@example.com'])
   })
 
   it('should pre-set todays dates for a template offer creation initial values', () => {

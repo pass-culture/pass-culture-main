@@ -150,11 +150,6 @@ export const VenueCreationForm = ({
           <FormLayout.Section
             title="Mes informations pour les enseignants"
             id="venue-collective-data"
-            description={
-              canOffererCreateCollectiveOffer
-                ? ''
-                : 'Pour publier des offres à destination des scolaires, votre lieu doit être référencé sur ADAGE, la plateforme dédiée aux enseignants et aux chefs d’établissements.'
-            }
           >
             <p className={styles['eac-description-info']}>
               Il s’agit d’un formulaire vous permettant de renseigner vos

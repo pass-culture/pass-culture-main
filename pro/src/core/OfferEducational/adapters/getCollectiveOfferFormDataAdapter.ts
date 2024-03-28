@@ -47,7 +47,7 @@ const getCollectiveOfferFormDataApdater: GetCollectiveOfferFormDataApdater =
         getNationalProgramsAdapter(),
       ])
 
-      if (responses.some((response) => response && !response.isOk)) {
+      if (responses.some((response) => !response.isOk)) {
         return ERROR_RESPONSE
       }
       const [domains, offerers, nationalPrograms] = responses

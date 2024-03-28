@@ -180,19 +180,17 @@ const BankInformations = (): JSX.Element => {
           offererId={selectedOfferer?.id}
         />
       )}
-      {selectedBankAccount !== null &&
-        selectedOfferer !== null &&
-        bankAccountVenues && (
-          <LinkVenuesDialog
-            offererId={selectedOfferer.id}
-            selectedBankAccount={selectedBankAccount}
-            managedVenues={bankAccountVenues}
-            updateBankAccountVenuePricingPoint={
-              updateBankAccountVenuePricingPoint
-            }
-            closeDialog={closeDialog}
-          />
-        )}
+      {selectedBankAccount !== null && selectedOfferer !== null && (
+        <LinkVenuesDialog
+          offererId={selectedOfferer.id}
+          selectedBankAccount={selectedBankAccount}
+          managedVenues={bankAccountVenues}
+          updateBankAccountVenuePricingPoint={
+            updateBankAccountVenuePricingPoint
+          }
+          closeDialog={closeDialog}
+        />
+      )}
     </>
   )
 }

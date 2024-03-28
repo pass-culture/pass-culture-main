@@ -11,8 +11,6 @@ interface OfferVenueCellProps {
 
 export const OfferVenueCell = ({ venue }: OfferVenueCellProps) => {
   return (
-    <td className={styles['venue-column']}>
-      {venue && computeVenueDisplayName(venue)}
-    </td>
+    <td className={styles['venue-column']}>{computeVenueDisplayName(venue)}</td>
   )
 }

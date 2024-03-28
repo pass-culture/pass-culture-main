@@ -58,7 +58,7 @@ const Offerers = (): JSX.Element => {
   const displayToggleVenueList = permanentVenues.length > 5
 
   useEffect(() => {
-    if (venuesOfOffererError || (!isLoadingVenues && !venuesOfOfferer)) {
+    if (venuesOfOffererError) {
       navigate('/parcours-inscription/structure')
     }
   }, [isLoadingVenues])

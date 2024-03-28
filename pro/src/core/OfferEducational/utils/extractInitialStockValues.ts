@@ -55,7 +55,7 @@ export const extractInitialStockValues = (
         ),
         FORMAT_ISO_DATE_ONLY
       )
-    : ''
+    : DEFAULT_EAC_STOCK_FORM_VALUES.eventDate
   const eventTime = collectiveStock.beginningDatetime
     ? format(
         getLocalDepartementDateTimeFromUtc(
@@ -64,7 +64,7 @@ export const extractInitialStockValues = (
         ),
         FORMAT_HH_mm
       )
-    : ''
+    : DEFAULT_EAC_STOCK_FORM_VALUES.eventTime
   const bookingLimitDatetime = collectiveStock.bookingLimitDatetime
     ? format(
         getLocalDepartementDateTimeFromUtc(
@@ -72,18 +72,16 @@ export const extractInitialStockValues = (
         ),
         FORMAT_ISO_DATE_ONLY
       )
-    : ''
+    : DEFAULT_EAC_STOCK_FORM_VALUES.bookingLimitDatetime
 
   return {
-    eventDate: eventDate ?? DEFAULT_EAC_STOCK_FORM_VALUES.eventDate,
-    eventTime: eventTime ?? DEFAULT_EAC_STOCK_FORM_VALUES.eventTime,
+    eventDate,
+    eventTime,
     numberOfPlaces:
       collectiveStock.numberOfTickets ??
       DEFAULT_EAC_STOCK_FORM_VALUES.numberOfPlaces,
     totalPrice: collectiveStock.price,
-    bookingLimitDatetime:
-      bookingLimitDatetime ??
-      DEFAULT_EAC_STOCK_FORM_VALUES.bookingLimitDatetime,
+    bookingLimitDatetime,
     priceDetail:
       collectiveStock.educationalPriceDetail ??
       DEFAULT_EAC_STOCK_FORM_VALUES.priceDetail,

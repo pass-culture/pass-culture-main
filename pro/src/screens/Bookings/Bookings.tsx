@@ -159,7 +159,7 @@ const Bookings = <
             params.get('offerVenueId') ?? DEFAULT_PRE_FILTERS.offerVenueId,
           // TODO typeguard this to remove the `as`
           bookingStatusFilter:
-            (params.get('bookingStatusFilter') as BookingStatusFilter) ??
+            (params.get('bookingStatusFilter') as BookingStatusFilter | null) ??
             DEFAULT_PRE_FILTERS.bookingStatusFilter,
           bookingBeginningDate:
             params.get('bookingBeginningDate') ??
@@ -187,6 +187,7 @@ const Bookings = <
 
   const updateUrl = (filter: PreFiltersParams) => {
     const partialUrlInfo = {
+      bookingStatusFilter: filter.bookingStatusFilter,
       ...(filter.offerEventDate && filter.offerEventDate !== 'all'
         ? { offerEventDate: filter.offerEventDate }
         : {}),
@@ -197,9 +198,6 @@ const Bookings = <
         : {}),
       ...(filter.bookingEndingDate
         ? { bookingEndingDate: filter.bookingEndingDate }
-        : {}),
-      ...(filter.bookingStatusFilter
-        ? { bookingStatusFilter: filter.bookingStatusFilter }
         : {}),
       ...(filter.offerType ? { offerType: filter.offerType } : {}),
       ...(filter.offerVenueId ? { offerVenueId: filter.offerVenueId } : {}),

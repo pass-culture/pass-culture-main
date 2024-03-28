@@ -117,7 +117,7 @@ const StocksEventList = ({
         : undefined,
       priceCategoryIdFilter ? Number(priceCategoryIdFilter) : undefined,
       currentSortingColumn ?? undefined,
-      currentSortingMode ? currentSortingMode === SortingMode.DESC : undefined,
+      currentSortingMode === SortingMode.DESC,
       Number(page || 1)
     )
 
@@ -156,15 +156,14 @@ const StocksEventList = ({
     } else {
       searchParams.delete('orderBy')
     }
-    if (currentSortingMode) {
-      if (currentSortingMode === SortingMode.DESC) {
-        searchParams.set('orderByDesc', '1')
-      } else if (currentSortingMode === SortingMode.ASC) {
-        searchParams.set('orderByDesc', '0')
-      } else {
-        searchParams.delete('orderByDesc')
-      }
+    if (currentSortingMode === SortingMode.DESC) {
+      searchParams.set('orderByDesc', '1')
+    } else if (currentSortingMode === SortingMode.ASC) {
+      searchParams.set('orderByDesc', '0')
+    } else {
+      searchParams.delete('orderByDesc')
     }
+
     setSearchParams(searchParams)
 
     async function loadStocks() {
@@ -319,14 +318,13 @@ const StocksEventList = ({
       offerId: offer.id,
       deletionCount: deletionCount,
     })
+
     // When all stocks are deleted, we need to reload the offer
     // to disable the stepper
-    if (allStocksChecked) {
-      fetcher.submit(null, {
-        method: 'patch',
-        action: `/offre/individuelle/${offer.id}`,
-      })
-    }
+    fetcher.submit(null, {
+      method: 'patch',
+      action: `/offre/individuelle/${offer.id}`,
+    })
     notify.success(
       stocksIdToDelete.length === 1
         ? '1 date a été supprimée'
@@ -630,7 +628,7 @@ const StocksEventList = ({
 
                     {readonly ? (
                       <td className={styles['data']}>
-                        {stock.bookingsQuantity ?? 0}
+                        {stock.bookingsQuantity}
                       </td>
                     ) : (
                       <td className={cn(styles['data'], styles['clear-icon'])}>

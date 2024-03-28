@@ -124,7 +124,7 @@ export const CollectiveOfferStockCreation = ({
       isOk = response.isOk
       message = response.message
 
-      if (offer && response.payload !== null) {
+      if (response.payload !== null) {
         setOffer({
           ...offer,
           collectiveStock: {

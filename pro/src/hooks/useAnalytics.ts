@@ -47,16 +47,13 @@ export const useConfigureFirebase = ({
   useEffect(() => {
     if (isCookieEnabled && !app && isFirebaseSupported) {
       const initializeApp = firebase.initializeApp(firebaseConfig)
-      if (!initializeApp) {
-        return
-      }
+
       setApp(initializeApp)
-      isFirebaseSupported &&
-        initializeAnalytics(initializeApp, {
-          config: {
-            send_page_view: false,
-          },
-        })
+      initializeAnalytics(initializeApp, {
+        config: {
+          send_page_view: false,
+        },
+      })
       const remoteConfig = getRemoteConfig(initializeApp)
       fetchAndActivate(remoteConfig)
         .then(() => {

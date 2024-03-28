@@ -125,7 +125,6 @@ export const computeInitialValuesFromOffer = (
     }
   }
 
-  const eventAddress = offer.offerVenue
   const participants = {
     all: Object.values(StudentLevels).every((student) =>
       offer.students.includes(student)
@@ -141,11 +140,11 @@ export const computeInitialValuesFromOffer = (
 
   return {
     title: offer.name,
-    description: offer.description ?? DEFAULT_EAC_FORM_VALUES.description,
+    description: offer.description,
     duration: computeDurationString(offer.durationMinutes),
     // @ts-expect-error This is because we store a dehumanizedId in database.
-    eventAddress: eventAddress || DEFAULT_EAC_FORM_VALUES.eventAddress,
-    participants: participants || DEFAULT_EAC_FORM_VALUES.participants,
+    eventAddress: offer.offerVenue,
+    participants: participants,
     accessibility: {
       audio: Boolean(offer.audioDisabilityCompliant),
       mental: Boolean(offer.mentalDisabilityCompliant),
@@ -159,12 +158,9 @@ export const computeInitialValuesFromOffer = (
     },
     email: email ?? DEFAULT_EAC_FORM_VALUES.email,
     phone: phone ?? DEFAULT_EAC_FORM_VALUES.phone,
-    notificationEmails:
-      offer.bookingEmails ??
-      (email ? [email] : DEFAULT_EAC_FORM_VALUES.notificationEmails),
+    notificationEmails: offer.bookingEmails,
     domains,
-    interventionArea:
-      offer.interventionArea ?? DEFAULT_EAC_FORM_VALUES.interventionArea,
+    interventionArea: offer.interventionArea,
     venueId: initialVenueId,
     offererId: initialOffererId,
     priceDetail:

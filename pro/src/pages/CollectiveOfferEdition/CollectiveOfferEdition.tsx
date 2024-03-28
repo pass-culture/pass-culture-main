@@ -18,7 +18,7 @@ const CollectiveOfferEdition = ({
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps): JSX.Element => {
   const { isReady, ...offerEducationalFormData } = useOfferEducationalFormData(
-    offer.venue.managingOfferer.id ?? null,
+    offer.venue.managingOfferer.id,
     offer
   )
 
@@ -26,7 +26,7 @@ const CollectiveOfferEdition = ({
 
   return (
     <AppLayout>
-      {!isReady || !offer ? (
+      {!isReady ? (
         <Spinner />
       ) : (
         <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
@@ -38,7 +38,7 @@ const CollectiveOfferEdition = ({
             setOffer={setOffer}
             isOfferActive={offer.isActive}
             isOfferBooked={
-              offer && isOfferTemplate ? false : offer.collectiveStock?.isBooked
+              isOfferTemplate ? false : offer.collectiveStock?.isBooked
             }
             mode={offer.isEditable ? Mode.EDITION : Mode.READ_ONLY}
             reloadCollectiveOffer={reloadCollectiveOffer}
