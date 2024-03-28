@@ -55,8 +55,8 @@
  *   </button>
  * </div>
  *
- *  {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_user_offerer_pending_form"), "batch-pending-modal", "true") }}
- *  {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_reject_user_offerer_form"), "batch-reject-modal", "true") }}
+ *  {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_user_offerer_pending_form"), "batch-pending-modal", "eager") }}
+ *  {{ build_lazy_modal(url_for("backoffice_web.validation.get_batch_reject_user_offerer_form"), "batch-reject-modal", "eager") }}
  */
 class PcBatchActionForm extends PcAddOn {
   static BATCH_CONFIRM_BTN_GROUP_SELECTOR = '[data-toggle="pc-batch-confirm-btn-group"]'

@@ -1,7 +1,6 @@
 from datetime import datetime
 import typing
 
-from flask import Response
 from flask import flash
 from flask import redirect
 from flask import render_template
@@ -267,7 +266,7 @@ def get_history(finance_incident_id: int) -> utils.BackofficeResponse:
 def get_incident_creation_form() -> utils.BackofficeResponse:
     form = forms.BookingOverPaymentIncidentForm()
     additional_data = {}
-    information = None
+    alert = None
 
     if form.object_ids.data:
         bookings = (
@@ -280,28 +279,32 @@ def get_incident_creation_form() -> utils.BackofficeResponse:
             .filter(
                 sa.and_(
                     bookings_models.Booking.id.in_(form.object_ids_list),
-                    bookings_models.Booking.status.in_(
-                        (
-                            bookings_models.BookingStatus.REIMBURSED,
-                            bookings_models.BookingStatus.CANCELLED,
-                        ),
-                    ),
+                    bookings_models.Booking.status == bookings_models.BookingStatus.REIMBURSED,
                 )
             )
             .all()
         )
 
-        if not bookings or len({booking.venueId for booking in bookings}) > 1:
-            return Response(
-                """<div class="alert alert-info m-0">Seules les réservations ayant les statuts "remboursée" et
-                "annulée" et correspondant au même lieu peuvent faire l'objet d'un incident</div>"""
+        if not (valid := validation.check_incident_bookings(bookings)):
+            return render_template(
+                "components/turbo/modal_empty_form.html",
+                form=empty_forms.BatchForm(),
+                messages=valid.messages,
             )
 
-        form.total_amount.data = sum(booking.total_amount for booking in bookings)
+        max_amount = sum(booking.total_amount for booking in bookings)
+
+        form.total_amount.data = max_amount
         additional_data = _initialize_additional_data(bookings)
         if len(bookings) > 1:
             form.total_amount.flags.readonly = True
-            information = "Il n'est possible de créer qu'un incident trop perçu total si plusieurs réservations sont sélectionnées."
+            alert = (
+                "Le montant n'est pas modifiable parce qu'il n'est possible de créer qu'un "
+                "incident trop perçu total si plusieurs réservations sont sélectionnées."
+            )
+        else:
+            form.total_amount.flags.max = max_amount
+            form.total_amount.flags.min = 0
 
     return render_template(
         "components/turbo/modal_form.html",
@@ -311,7 +314,7 @@ def get_incident_creation_form() -> utils.BackofficeResponse:
         title="Création d'un incident",
         button_text="Créer l'incident",
         additional_data=additional_data,
-        information=information,
+        alert=alert,
     )
 
 
@@ -344,14 +347,22 @@ def get_collective_booking_incident_creation_form(collective_booking_id: int) ->
     form = forms.CollectiveOverPaymentIncidentCreationForm()
     additional_data = _initialize_collective_booking_additional_data(collective_booking)
 
+    if not (valid := validation.check_incident_collective_booking(collective_booking)):
+        return render_template(
+            "components/turbo/modal_empty_form.html",
+            form=empty_forms.BatchForm(),
+            messages=valid.messages,
+            div_id=f"incident-creation-modal-{collective_booking_id}",
+        )
+
     return render_template(
         "components/turbo/modal_form.html",
         form=form,
         dst=url_for(
             "backoffice_web.finance_incidents.create_collective_booking_incident",
-            collective_booking_id=collective_booking.id,
+            collective_booking_id=collective_booking_id,
         ),
-        div_id=f"create-incident-modal-{collective_booking.id}",
+        div_id=f"incident-creation-modal-{collective_booking_id}",
         title="Création d'un incident",
         button_text="Créer l'incident",
         additional_data=additional_data,
@@ -391,7 +402,9 @@ def create_individual_booking_incident() -> utils.BackofficeResponse:
         )
         return redirect(request.referrer or url_for("backoffice_web.individual_bookings.list_individual_bookings"), 303)
 
-    if not (validation.check_incident_bookings(bookings) and validation.check_total_amount(amount, bookings)):
+    if not (valid := validation.check_incident_bookings(bookings) and validation.check_total_amount(amount, bookings)):
+        for message in valid.messages:
+            flash(message, "warning")
         return redirect(request.referrer or url_for("backoffice_web.individual_bookings.list_individual_bookings"), 303)
 
     incident = finance_api.create_overpayment_finance_incident(
@@ -430,7 +443,9 @@ def create_collective_booking_incident(collective_booking_id: int) -> utils.Back
         bookings=[collective_booking],
     )
 
-    if not (booking_has_no_incident and is_valid_amount):
+    if not (valid := (booking_has_no_incident and is_valid_amount)):
+        for message in valid.messages:
+            flash(message, "warning")
         return redirect(redirect_url, 303)
 
     incident = finance_api.create_overpayment_finance_incident(bookings=[collective_booking], origin=form.origin.data)
@@ -439,7 +454,7 @@ def create_collective_booking_incident(collective_booking_id: int) -> utils.Back
         finance_incident_id=incident.id,
     )
 
-    flash(Markup('Le nouvel <a href="{url}">incident</a> a été créé."').format(url=incident_url), "success")
+    flash(Markup('Un nouvel <a href="{url}">incident</a> a été créé.').format(url=incident_url), "success")
     return redirect(redirect_url, 303)
 
 
