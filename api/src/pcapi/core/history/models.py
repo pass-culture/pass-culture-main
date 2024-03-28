@@ -101,6 +101,7 @@ class ActionHistory(PcObject, Base, Model):
     __tablename__ = "action_history"
 
     actionType: ActionType = sa.Column(sa.Enum(ActionType, create_constraint=False), nullable=False)
+    sa.Index("ix_action_history_actionType", actionType, postgresql_using="hash")
 
     # nullable because of old suspensions without date migrated here; but mandatory for new actions
     actionDate = sa.Column(sa.DateTime, nullable=True, server_default=sa.func.now())
