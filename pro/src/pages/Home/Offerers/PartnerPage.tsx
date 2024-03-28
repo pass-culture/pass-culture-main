@@ -65,6 +65,7 @@ export const PartnerPage = ({
         buildInitialValues(editedVenue.bannerUrl, editedVenue.bannerMeta)
       )
       // we update the offerer state to keep venue with its new image
+      // TODO replace with SWR mutation refresh instead of passing down the setSelectedOfferer function
       setSelectedOfferer({
         ...offerer,
         managedVenues: (offerer.managedVenues ?? []).map((iteratedVenue) =>
