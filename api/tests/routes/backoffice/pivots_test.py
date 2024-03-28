@@ -526,6 +526,7 @@ class UpdatePivotTest(PostEndpointHelper):
         boost_pivot = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="http://example.com/boost0/")
 
         form = {
+            "venue_id": str(boost_pivot.cinemaProviderPivot.venue.id),
             "cinema_id": "boost 1",
             "cinema_url": "http://example.com/boost1/",
             "username": "super user de boost 1",
@@ -548,6 +549,7 @@ class UpdatePivotTest(PostEndpointHelper):
         cgr_pivot = providers_factories.CGRCinemaDetailsFactory()
 
         form = {
+            "venue_id": str(cgr_pivot.cinemaProviderPivot.venue.id),
             "cinema_id": "idProvider1000",
             "cinema_url": "http://example.com/another_web_service",
             "password": "Azerty!123",
@@ -564,6 +566,7 @@ class UpdatePivotTest(PostEndpointHelper):
         cineoffice_pivot = providers_factories.CDSCinemaDetailsFactory()
 
         form = {
+            "venue_id": str(cineoffice_pivot.cinemaProviderPivot.venue.id),
             "cinema_id": "boost 1",
             "account_id": "account1er",
             "api_token": "==@/@414324rF!",
@@ -581,6 +584,7 @@ class UpdatePivotTest(PostEndpointHelper):
         ems_pivot = providers_factories.EMSCinemaDetailsFactory()
 
         expected_data = {
+            "venue_id": str(ems_pivot.cinemaProviderPivot.venue.id),
             "cinema_id": "New cinema id",
             "last_version": "2023-01-01",
         }
