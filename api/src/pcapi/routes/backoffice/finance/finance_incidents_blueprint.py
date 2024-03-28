@@ -57,6 +57,7 @@ def _get_incidents(
         finance_models.FinanceIncident.query.join(finance_models.FinanceIncident.venue)
         .outerjoin(finance_models.FinanceIncident.booking_finance_incidents)
         .outerjoin(finance_models.BookingFinanceIncident.booking)
+        .outerjoin(bookings_models.Booking.stock)
         .outerjoin(finance_models.BookingFinanceIncident.collectiveBooking)
         .outerjoin(educational_models.CollectiveBooking.collectiveStock)
     )
@@ -96,11 +97,14 @@ def _get_incidents(
         or_filters = []
 
         if search_query.isnumeric():
+            integer_query = int(search_query)
             or_filters.extend(
                 [
-                    finance_models.FinanceIncident.id == int(search_query),
-                    bookings_models.Booking.id == int(search_query),
-                    educational_models.CollectiveBooking.id == int(search_query),
+                    finance_models.FinanceIncident.id == integer_query,
+                    bookings_models.Booking.id == integer_query,
+                    offers_models.Stock.offerId == integer_query,
+                    educational_models.CollectiveBooking.id == integer_query,
+                    educational_models.CollectiveStock.collectiveOfferId == integer_query,
                 ]
             )
 

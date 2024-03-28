@@ -55,8 +55,8 @@ def invoiced_collective_pricing_fixture() -> list:
 @pytest.fixture(scope="function", name="incidents")
 def incidents_fixture() -> tuple:
     incident1 = finance_factories.IndividualBookingFinanceIncidentFactory(
-        id=36,
-        booking=bookings_factories.BookingFactory(id=20),
+        incident__id=36,
+        booking=bookings_factories.BookingFactory(id=20, stock__offer__id=40),
         incident__status=finance_models.IncidentStatus.CREATED,
     ).incident
     history_factories.ActionHistoryFactory(
@@ -66,15 +66,18 @@ def incidents_fixture() -> tuple:
     )
 
     incident2 = finance_factories.CollectiveBookingFinanceIncidentFactory(
-        id=37,
-        collectiveBooking=educational_factories.CollectiveBookingFactory(id=30),
+        incident__id=37,
+        collectiveBooking=educational_factories.CollectiveBookingFactory(
+            id=30, collectiveStock__collectiveOffer__id=50
+        ),
         incident__status=finance_models.IncidentStatus.VALIDATED,
     ).incident
 
-    incident3 = finance_factories.FinanceIncidentFactory(
-        id=38,
-        status=finance_models.IncidentStatus.CANCELLED,
-    )
+    incident3 = finance_factories.IndividualBookingFinanceIncidentFactory(
+        incident__id=38,
+        booking=bookings_factories.BookingFactory(id=40, stock__offer__id=60),
+        incident__status=finance_models.IncidentStatus.CANCELLED,
+    ).incident
 
     # TODO: créer un FinanceEvent pour chaque incident
     return incident1, incident2, incident3
@@ -193,6 +196,15 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Porteur de l'offre (lieu)"] == incidents[0].venue.name
         assert rows[0]["Origine de la demande"] == incidents[0].details["origin"]
 
+    def test_list_incident_by_offer_id(self, authenticated_client, incidents):
+        with testing.assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q="40"))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+        assert {row["ID"] for row in rows} == {str(incidents[0].id), str(incidents[2].id)}
+
     def test_list_incident_by_collective_booking_id(self, authenticated_client, incidents):
         searched_id = str(incidents[1].booking_finance_incidents[0].collectiveBookingId)
 
@@ -212,6 +224,15 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Structure"] == incidents[1].venue.managingOfferer.name
         assert rows[0]["Porteur de l'offre (lieu)"] == incidents[1].venue.name
         assert rows[0]["Origine de la demande"] == incidents[1].details["origin"]
+
+    def test_list_incident_by_collective_offer_id(self, authenticated_client, incidents):
+        with testing.assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q="50"))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(incidents[1].id)
 
     def test_list_incident_by_token(self, authenticated_client, incidents):
         searched_id = incidents[0].booking_finance_incidents[0].booking.token

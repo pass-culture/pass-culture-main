@@ -51,7 +51,7 @@ class GetIncidentsSearchForm(forms_utils.PCForm):
     class Meta:
         csrf = False
 
-    q = fields.PCOptSearchField("ID de réservation ou ID de l'incident, contremarque")
+    q = fields.PCOptSearchField("ID de l'incident, de l'offre ou de la réservation, contremarque")
 
     status = fields.PCSelectMultipleField(
         "États",
