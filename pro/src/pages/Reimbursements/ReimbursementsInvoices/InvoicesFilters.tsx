@@ -100,9 +100,10 @@ const InvoicesFilters = ({
           label={
             isNewBankDetailsJourneyEnabled
               ? 'Compte bancaire'
-              : 'Point de remboursement'
+              : 'Point de remboursement *'
           }
           name="reimbursementPoint"
+          isOptional
         >
           <SelectInput
             defaultOption={{

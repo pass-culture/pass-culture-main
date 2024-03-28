@@ -346,7 +346,7 @@ describe('reimbursementsWithFilters', () => {
       )
     ).toBeInTheDocument()
 
-    expect(screen.getByLabelText('Compte bancaire *')).toBeInTheDocument()
+    expect(screen.getByLabelText('Compte bancaire')).toBeInTheDocument()
     expect(screen.getByText('Tous les comptes bancaires')).toBeInTheDocument()
   })
 
@@ -358,7 +358,7 @@ describe('reimbursementsWithFilters', () => {
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-    expect(screen.getByLabelText('Compte bancaire *')).toBeDisabled()
+    expect(screen.getByLabelText('Compte bancaire')).toBeDisabled()
     expect(screen.getByLabelText('Début de la période')).toBeDisabled()
     expect(screen.getByLabelText('Fin de la période')).toBeDisabled()
   })
@@ -370,7 +370,7 @@ describe('reimbursementsWithFilters', () => {
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-    expect(screen.getByLabelText('Compte bancaire *')).toBeEnabled()
+    expect(screen.getByLabelText('Compte bancaire')).toBeEnabled()
     expect(screen.getByLabelText('Début de la période')).toBeEnabled()
     expect(screen.getByLabelText('Fin de la période')).toBeEnabled()
   })
