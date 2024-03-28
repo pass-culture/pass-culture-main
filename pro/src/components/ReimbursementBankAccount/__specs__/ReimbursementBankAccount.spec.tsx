@@ -80,11 +80,23 @@ describe('ReimbursementBankAccount', () => {
     expect(screen.getByText('IBAN : **** 0637')).toBeInTheDocument()
     expect(screen.getByText('BIC : BDFEFRPP')).toBeInTheDocument()
 
+    expect(screen.getByText(/en cours de validation/)).toBeInTheDocument()
+    expect(screen.getByText('Voir le dossier')).toBeInTheDocument()
     expect(
-      screen.getByText(
-        'Compte bancaire en cours de validation par nos services'
-      )
-    ).toBeInTheDocument()
+      screen.queryByText('Lieu(x) rattaché(s) à ce compte bancaire')
+    ).not.toBeInTheDocument()
+  })
+
+  it('should render with pending bank account if status is WITH_PENDING_CORRECTIONS', () => {
+    bankAccount.status = BankAccountApplicationStatus.A_CORRIGER
+    renderReimbursementBankAccount(bankAccount, managedVenues)
+
+    expect(screen.getByText('Bank account label')).toBeInTheDocument()
+    expect(screen.getByText('IBAN : **** 0637')).toBeInTheDocument()
+    expect(screen.getByText('BIC : BDFEFRPP')).toBeInTheDocument()
+
+    expect(screen.getByText(/informations manquantes/)).toBeInTheDocument()
+    expect(screen.getByText(/Compléter le dossier/)).toBeInTheDocument()
     expect(
       screen.queryByText('Lieu(x) rattaché(s) à ce compte bancaire')
     ).not.toBeInTheDocument()
@@ -98,11 +110,8 @@ describe('ReimbursementBankAccount', () => {
     expect(screen.getByText('IBAN : **** 0637')).toBeInTheDocument()
     expect(screen.getByText('BIC : BDFEFRPP')).toBeInTheDocument()
 
-    expect(
-      screen.getByText(
-        'Compte bancaire en cours de validation par nos services'
-      )
-    ).toBeInTheDocument()
+    expect(screen.getByText(/en cours de validation/)).toBeInTheDocument()
+    expect(screen.getByText('Voir le dossier')).toBeInTheDocument()
     expect(
       screen.queryByText('Lieu(x) rattaché(s) à ce compte bancaire')
     ).not.toBeInTheDocument()
