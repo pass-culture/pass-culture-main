@@ -7,7 +7,6 @@ from pcapi.core.offers import models as offers_models
 from pcapi.domain import music_types
 from pcapi.domain import show_types
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.tasks import compliance_tasks
 from pcapi.tasks.serialization.compliance_tasks import GetComplianceScoreRequest
 
@@ -16,8 +15,6 @@ logger = logging.getLogger(__name__)
 
 
 def update_offer_compliance_score(offer: offers_models.Offer, is_primary: bool) -> None:
-    if not FeatureToggle.WIP_ENABLE_COMPLIANCE_CALL.is_active():
-        return
     payload = _get_payload_for_compliance_api(offer)
     if is_primary:
         compliance_tasks.update_offer_compliance_score_primary_task.delay(payload)

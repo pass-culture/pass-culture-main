@@ -136,7 +136,6 @@ class GetShowtimesTest:
         assert not showtimes[1].showtimePricing
         assert showtimes[1].attributs == []
 
-    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=True)
     def test_should_return_showtimes_with_enabled_filter_ff(self, requests_mock):
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
@@ -187,7 +186,6 @@ class GetShowtimesTest:
         ]
         assert showtimes[2].attributs == [24, 1, 29, 40]
 
-    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=True)
     def test_should_return_a_movie_showtimes_with_enabled_filter_ff(self, requests_mock):
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider

@@ -11,7 +11,6 @@ import pcapi.core.external_bookings.factories as external_bookings_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 import pcapi.notifications.push.testing as push_testing
 
@@ -64,7 +63,6 @@ class Returns204Test:
         assert booking.status is BookingStatus.CANCELLED
 
     @pytest.mark.usefixtures("db_session")
-    @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
     def test_should_returns_204_for_external_booking(self, client, requests_mock):
         external_url = "https://book_my_offer.com"
         provider = providers_factories.ProviderFactory(
@@ -110,7 +108,6 @@ class Returns204Test:
         )
 
     @pytest.mark.usefixtures("db_session")
-    @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
     def test_should_returns_204_for_external_booking_and_remaining_quantity_is_unlimited(self, client, requests_mock):
         external_url = "https://book_my_offer.com"
         provider = providers_factories.ProviderFactory(
@@ -150,7 +147,6 @@ class Returns204Test:
         assert booking.stock.remainingQuantity == "unlimited"
 
     @pytest.mark.usefixtures("db_session")
-    @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
     def test_should_returns_204_for_booking_duo_external_booking(self, client, requests_mock):
         external_url = "https://book_my_offer.com"
         # Given
@@ -192,7 +188,6 @@ class Returns204Test:
         assert booking.stock.dnBookedQuantity == 2
 
     @pytest.mark.usefixtures("db_session")
-    @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
     def test_should_returns_204_for_external_booking_when_external_api_returns_200_without_remaining_quantity(
         self, client, requests_mock
     ):
@@ -327,7 +322,6 @@ class Returns410Test:
 
 class Returns400Test:
     @pytest.mark.usefixtures("db_session")
-    @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
     def test_should_raise_error_for_external_booking_when_external_api_returns_error_code(self, client, requests_mock):
         external_url = "https://book_my_offer.com"
         provider = providers_factories.ProviderFactory(
