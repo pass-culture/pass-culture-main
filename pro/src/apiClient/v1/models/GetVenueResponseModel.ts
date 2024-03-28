@@ -55,6 +55,7 @@ export type GetVenueResponseModel = {
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;
+  openingHours?: Record<string, any> | null;
   postalCode?: string | null;
   pricingPoint?: GetVenuePricingPointResponseModel | null;
   publicName?: string | null;
@@ -62,7 +63,6 @@ export type GetVenueResponseModel = {
   siret?: string | null;
   timezone: string;
   venueLabelId?: number | null;
-  venueOpeningHours?: Record<string, any> | null;
   venueTypeCode: VenueTypeCode;
   visualDisabilityCompliant?: boolean | null;
   withdrawalDetails?: string | null;

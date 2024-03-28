@@ -127,7 +127,7 @@ describe('OpeningHoursForm', () => {
     renderOpeningHoursForm({
       venue: {
         ...defaultGetVenue,
-        venueOpeningHours: {
+        openingHours: {
           MONDAY: [
             { open: '08:00', close: '12:37' },
             { open: '12:59', close: '16:16' },

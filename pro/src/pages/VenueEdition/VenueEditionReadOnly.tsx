@@ -37,7 +37,7 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
       />
 
       {isOpeningHoursEnabled && venue.isPermanent && (
-        <OpeningHoursReadOnly openingHours={venue.venueOpeningHours} />
+        <OpeningHoursReadOnly openingHours={venue.openingHours} />
       )}
       <SummarySubSection title="Informations de contact">
         <SummaryDescriptionList

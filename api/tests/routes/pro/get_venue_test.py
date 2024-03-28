@@ -102,7 +102,7 @@ class Returns200Test:
             "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,
             "motorDisabilityCompliant": venue.motorDisabilityCompliant,
             "name": venue.name,
-            "venueOpeningHours": venue.opening_days,
+            "openingHours": venue.opening_days,
             "postalCode": venue.postalCode,
             "publicName": venue.publicName,
             "siret": venue.siret,
@@ -389,7 +389,7 @@ class Returns200Test:
         )
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         response = auth_request.get("/venues/%s" % venue.id)
-        assert response.json["venueOpeningHours"]["THURSDAY"] == [
+        assert response.json["openingHours"]["THURSDAY"] == [
             {"open": "10:00", "close": "13:00"},
             {"open": "14:00", "close": "19:30"},
         ]

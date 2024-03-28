@@ -2,8 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { OpeningHoursModel } from './OpeningHoursModel';
 import type { VenueContactModel } from './VenueContactModel';
-import type { VenueOpeningHoursModel } from './VenueOpeningHoursModel';
 import type { VenueTypeCode } from './VenueTypeCode';
 export type EditVenueBodyModel = {
   address?: string | null;
@@ -22,13 +22,13 @@ export type EditVenueBodyModel = {
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name?: string | null;
+  openingHours?: Array<OpeningHoursModel> | null;
   postalCode?: string | null;
   publicName?: string | null;
   reimbursementPointId?: number | null;
   shouldSendMail?: boolean | null;
   siret?: string | null;
   venueLabelId?: number | null;
-  venueOpeningHours?: Array<VenueOpeningHoursModel> | null;
   venueTypeCode?: VenueTypeCode | null;
   visualDisabilityCompliant?: boolean | null;
   withdrawalDetails?: string | null;

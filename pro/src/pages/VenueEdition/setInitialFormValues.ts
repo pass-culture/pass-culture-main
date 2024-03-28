@@ -31,18 +31,18 @@ export const setInitialFormValues = (
     isAccessibilityAppliedOnAllOffers: false,
     phoneNumber: venue.contact?.phoneNumber || '',
     webSite: venue.contact?.website || '',
-    ...buildOpeningHoursValues(venue.venueOpeningHours),
+    ...buildOpeningHoursValues(venue.openingHours),
   }
 }
 
 function buildOpeningHoursValues(
-  venueOpeningHours: GetVenueResponseModel['venueOpeningHours']
+  openingHours: GetVenueResponseModel['openingHours']
 ) {
-  const filledDays = Object.entries(venueOpeningHours ?? {}).filter(
-    (dateAndHour) => Boolean(dateAndHour[1])
+  const filledDays = Object.entries(openingHours ?? {}).filter((dateAndHour) =>
+    Boolean(dateAndHour[1])
   )
 
-  if (!venueOpeningHours || venueOpeningHours.length === 0) {
+  if (!openingHours || openingHours.length === 0) {
     return {
       days: [],
       monday: DEFAULT_INTITIAL_OPENING_HOURS,
@@ -58,13 +58,13 @@ function buildOpeningHoursValues(
     dateAndHour[0].toLowerCase()
   ) as Day[]
 
-  const monday = buildHourOfDay(venueOpeningHours.MONDAY)
-  const tuesday = buildHourOfDay(venueOpeningHours.TUESDAY)
-  const wednesday = buildHourOfDay(venueOpeningHours.WEDNESDAY)
-  const thursday = buildHourOfDay(venueOpeningHours.THURSDAY)
-  const friday = buildHourOfDay(venueOpeningHours.FRIDAY)
-  const saturday = buildHourOfDay(venueOpeningHours.SATURDAY)
-  const sunday = buildHourOfDay(venueOpeningHours.SUNDAY)
+  const monday = buildHourOfDay(openingHours.MONDAY)
+  const tuesday = buildHourOfDay(openingHours.TUESDAY)
+  const wednesday = buildHourOfDay(openingHours.WEDNESDAY)
+  const thursday = buildHourOfDay(openingHours.THURSDAY)
+  const friday = buildHourOfDay(openingHours.FRIDAY)
+  const saturday = buildHourOfDay(openingHours.SATURDAY)
+  const sunday = buildHourOfDay(openingHours.SUNDAY)
 
   return {
     days,

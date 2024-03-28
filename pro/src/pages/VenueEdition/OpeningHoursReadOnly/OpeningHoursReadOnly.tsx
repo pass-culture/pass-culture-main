@@ -6,7 +6,7 @@ import styles from './OpeningHoursReadOnly.module.scss'
 import { mapDayToFrench } from './utils'
 
 type OpeningHours = {
-  openingHours: GetVenueResponseModel['venueOpeningHours']
+  openingHours: GetVenueResponseModel['openingHours']
 }
 
 export function OpeningHoursReadOnly({ openingHours }: OpeningHours) {
