@@ -3,6 +3,8 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { OfferAddressType } from 'apiClient/v1'
+import Notification from 'components/Notification/Notification'
+import * as useNotification from 'hooks/useNotification'
 import * as getInterventionAreaLabels from 'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea/OfferInterventionArea'
 import {
   getCollectiveOfferTemplateFactory,
@@ -20,10 +22,20 @@ vi.mock('apiClient/api', () => ({
 }))
 
 describe('CollectiveOfferLocationSection', () => {
-  beforeEach(() => {
+  const notifyError = vi.fn()
+
+  beforeEach(async () => {
     vi.spyOn(api, 'getVenue').mockResolvedValue({
       ...defaultGetVenue,
     })
+
+    const notifsImport = (await vi.importActual(
+      'hooks/useNotification'
+    )) as ReturnType<typeof useNotification.default>
+    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
+      ...notifsImport,
+      error: notifyError,
+    }))
   })
 
   it('should display the location details for an event at the school', async () => {
@@ -131,5 +143,23 @@ describe('CollectiveOfferLocationSection', () => {
     expect(
       screen.getByText('02 - Aisne, 03 - Allier, 04 - Alpes-de-Haute-Provence')
     ).toBeInTheDocument()
+  })
+
+  it('should show an error message if the venue could not be fetched', async () => {
+    const offer = getCollectiveOfferTemplateFactory()
+
+    vi.spyOn(api, 'getVenue').mockRejectedValueOnce({})
+
+    renderWithProviders(
+      <>
+        <CollectiveOfferLocationSection offer={offer} />
+        <Notification />
+      </>
+    )
+
+    const loadingMessage = screen.queryByText(/Chargement en cours/)
+    await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
+
+    expect(notifyError).toHaveBeenCalled()
   })
 })
