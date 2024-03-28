@@ -22,7 +22,7 @@ export const serializeEditVenueBodyModel = (
     isEmailAppliedOnAllOffers: true,
     isAccessibilityAppliedOnAllOffers:
       formValues.isAccessibilityAppliedOnAllOffers,
-    venueOpeningHours: isOpeningHoursEnabled
+    openingHours: isOpeningHoursEnabled
       ? serializeOpeningHours(formValues)
       : undefined,
   }
@@ -38,7 +38,7 @@ export const serializeEditVenueBodyModel = (
 
 function serializeOpeningHours(
   formValues: VenueEditionFormValues
-): EditVenueBodyModel['venueOpeningHours'] {
+): EditVenueBodyModel['openingHours'] {
   const returnValue = []
   const days: Day[] = [
     'monday',

@@ -38,5 +38,5 @@ def get_venue(venue_id: int) -> serializers.VenueResponse:
         },
         bannerUrl=venue.bannerUrl,
         bannerMeta=venue.bannerMeta,
-        venueOpeningHours=venue.opening_days,
+        openingHours=venue.opening_days,
     )

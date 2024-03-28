@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type VenueOpeningHoursModel = {
+export type OpeningHoursModel = {
   timespan?: Array<Array<string>> | null;
   weekday: string;
 };
