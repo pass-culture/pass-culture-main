@@ -12,6 +12,7 @@ from pcapi.utils import requests
 
 
 logger = logging.getLogger(__name__)
+DEFAULT_UAI = "0910620E"
 
 
 def compute_educational_booking_cancellation_limit_date(
@@ -61,7 +62,7 @@ def create_adage_jwt_fake_valid_token(readonly: bool) -> str:
             "exp": datetime.utcnow() + timedelta(days=1),
         }
         if not readonly:
-            authenticated_informations["uai"] = "0910620E"
+            authenticated_informations["uai"] = DEFAULT_UAI
             authenticated_informations["lat"] = 48.8566  # Paris
             authenticated_informations["lon"] = 2.3522  # Paris
 
