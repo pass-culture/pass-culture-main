@@ -1,4 +1,4 @@
-import type { Story } from '@storybook/react'
+import type { StoryFn } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
@@ -11,7 +11,7 @@ export default {
 }
 type Args = EmailSpellCheckInputProps<{ email: string }>
 
-const Template: Story<Args> = (args) => (
+const Template: StoryFn<Args> = (args) => (
   <Formik initialValues={{}} onSubmit={() => {}}>
     <EmailSpellCheckInput {...args} />
   </Formik>
