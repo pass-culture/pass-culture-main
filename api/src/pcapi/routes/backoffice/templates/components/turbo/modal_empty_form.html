@@ -1,0 +1,18 @@
+{# This template is only meant to display error messages instead of form. #}
+{# It includes one form be able to have a `object_ids` field needed in `pc-batch-action-form` #}
+<turbo-frame id="turbo-{{ div_id }}">
+{% if form %}
+  <form action="{{ dst }}"
+        name="{{ dst | action_to_name }}"
+        method="{% if form.method %}form.method{% else %}post{% endif %}"
+        target="_top"
+        data-turbo="{{ data_turbo or 'false' }}"
+        class="modal-content">
+    {% if form.meta.csrf %}{{ csrf_token }}{% endif %}
+    {% for form_field in form %}
+      {% if "Hidden" in form_field.type %}{{ form_field }}{% endif %}
+    {% endfor %}
+  </form>
+{% endif %}
+{% for message in messages %}<div class="alert alert-info m-0">{{ message }}</div>{% endfor %}
+</turbo-frame>
