@@ -222,10 +222,10 @@
             {% endfor %}
           </tbody>
         </table>
-        {{ build_lazy_modal(url_for("backoffice_web.individual_bookings.get_batch_validate_individual_bookings_form") , "batch-validate-booking-modal", "true") }}
-        {{ build_lazy_modal(url_for("backoffice_web.individual_bookings.get_batch_cancel_individual_bookings_form") , "batch-cancel-booking-modal", "true") }}
-        {% if is_feature_active("WIP_ENABLE_FINANCE_INCIDENT") %}
-          {{ build_lazy_modal(url_for("backoffice_web.finance_incidents.get_incident_creation_form") , "incident-creation-modal", "true") }}
+        {{ build_lazy_modal(url_for("backoffice_web.individual_bookings.get_batch_validate_individual_bookings_form") , "batch-validate-booking-modal", "eager") }}
+        {{ build_lazy_modal(url_for("backoffice_web.individual_bookings.get_batch_cancel_individual_bookings_form") , "batch-cancel-booking-modal", "eager") }}
+        {% if is_feature_active("WIP_ENABLE_FINANCE_INCIDENT") and has_permission("MANAGE_INCIDENTS") %}
+          {{ build_lazy_modal(url_for("backoffice_web.finance_incidents.get_incident_creation_form") , "incident-creation-modal", "eager") }}
         {% endif %}
       {% endif %}
     </div>
