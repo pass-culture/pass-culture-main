@@ -278,7 +278,7 @@ describe('Autocomplete', () => {
   })
 
   it('should display word suggestion when user start to type', async () => {
-    mockGetItems = vi.fn(() => mockKeywordSuggestions)
+    mockGetItems = vi.fn().mockImplementation(() => mockKeywordSuggestions)
     mockSourceId = 'KeywordQuerySuggestionsSource'
 
     renderAutocomplete('')
@@ -295,6 +295,9 @@ describe('Autocomplete', () => {
   })
 
   it('should display format value for suggestion word ', async () => {
+    mockGetItems = vi.fn().mockImplementation(() => mockKeywordSuggestions)
+    mockSourceId = 'KeywordQuerySuggestionsSource'
+
     renderAutocomplete('mock keyword 1')
 
     const inputElement = screen.getByPlaceholderText(
