@@ -1981,6 +1981,12 @@ WITHDRAWABLE_SUBCATEGORIES = {
     subcategory.id: subcategory for subcategory in ALL_SUBCATEGORIES if subcategory.can_be_withdrawable
 }
 
+MUSIC_SUBCATEGORIES = {
+    subcategory.id: subcategory
+    for subcategory in ALL_SUBCATEGORIES
+    if subcategory.category in [categories.MUSIQUE_LIVE, categories.MUSIQUE_ENREGISTREE]
+}
+
 
 assert set(subcategory.id for subcategory in ALL_SUBCATEGORIES) == set(
     subcategory.id for subcategory in locals().values() if isinstance(subcategory, Subcategory)
