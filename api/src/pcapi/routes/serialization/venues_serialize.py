@@ -294,7 +294,6 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
         venue.dmsToken = DMS_TOKEN_PRO_PREFIX + venue.dmsToken
         venue.hasAdageId = bool(venue.adageId)
 
-        venue.venueOpeningHours = venue.opening_days
         if venue.accessibilityProvider and venue.accessibilityProvider.externalAccessibilityData:
             venue.externalAccessibilityData = {
                 to_camel(key): value for key, value in venue.accessibilityProvider.externalAccessibilityData.items()
@@ -348,7 +347,7 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     contact: base.VenueContactModel | None
     reimbursementPointId: int | None
     shouldSendMail: bool | None
-    venueOpeningHours: list[base.VenueOpeningHoursModel] | None
+    openingHours: list[base.OpeningHoursModel] | None
 
 
 class EditVenueCollectiveDataBodyModel(BaseModel):

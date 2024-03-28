@@ -94,7 +94,7 @@ def create_digital_venue(offerer: models.Offerer) -> models.Venue:
 def update_venue(
     venue: models.Venue,
     author: users_models.User,
-    opening_days: list[serialize_base.VenueOpeningHoursModel] | None = None,
+    opening_days: list[serialize_base.OpeningHoursModel] | None = None,
     contact_data: serialize_base.VenueContactModel | None = None,
     criteria: list[criteria_models.Criterion] | T_UNCHANGED = UNCHANGED,
     admin_update: bool = False,
@@ -249,7 +249,7 @@ def upsert_venue_contact(venue: models.Venue, contact_data: serialize_base.Venue
 
 
 def upsert_venue_opening_hours(
-    venue: models.Venue, opening_hours_data: serialize_base.VenueOpeningHoursModel
+    venue: models.Venue, opening_hours_data: serialize_base.OpeningHoursModel
 ) -> models.Venue:
     """
     Create and attach OpeningHours for a given weekday to a Venue if it has none.

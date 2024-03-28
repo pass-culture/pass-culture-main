@@ -112,6 +112,13 @@ class VenueWithdrawalDetails(pydantic_v1.ConstrainedStr):
     max_length = 500
 
 
+class OpeningHoursGetterDict(pydantic_v1.utils.GetterDict):
+    def get(self, key: str, default: typing.Any = None) -> typing.Any:
+        if key == "openingHours":
+            return self._obj.opening_days
+        return super().get(key, default)
+
+
 class BaseVenueResponse(BaseModel):
     isVirtual: bool
     name: str
@@ -126,8 +133,12 @@ class BaseVenueResponse(BaseModel):
     longitude: float | None
     postalCode: str | None
     publicName: str | None
-    venueOpeningHours: list[dict] | None
+    openingHours: dict | None
     withdrawalDetails: str | None
+
+    class Config:
+        orm_mode = True
+        getter_dict = OpeningHoursGetterDict
 
 
 class ListOffersVenueResponseModel(BaseModel):
@@ -139,7 +150,7 @@ class ListOffersVenueResponseModel(BaseModel):
     departementCode: str | None
 
 
-class VenueOpeningHoursModel(BaseModel):
+class OpeningHoursModel(BaseModel):
     weekday: str
     timespan: list[list[str]] | None
 
