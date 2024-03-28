@@ -89,7 +89,7 @@ class CollectiveOffersPublicPatchOfferTest:
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -174,7 +174,7 @@ class CollectiveOffersPublicPatchOfferTest:
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -208,7 +208,7 @@ class CollectiveOffersPublicPatchOfferTest:
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -239,7 +239,7 @@ class CollectiveOffersPublicPatchOfferTest:
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -270,7 +270,7 @@ class CollectiveOffersPublicPatchOfferTest:
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -303,7 +303,7 @@ class CollectiveOffersPublicPatchOfferTest:
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -354,7 +354,7 @@ class CollectiveOffersPublicPatchOfferTest:
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -402,7 +402,7 @@ class CollectiveOffersPublicPatchOfferTest:
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -449,7 +449,7 @@ class CollectiveOffersPublicPatchOfferTest:
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -474,7 +474,7 @@ class CollectiveOffersPublicPatchOfferTest:
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -552,7 +552,7 @@ class CollectiveOffersPublicPatchOfferTest:
         payload = {"imageCredit": "a great artist", "imageFile": image_data.GOOD_IMAGE}
 
         # When
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -606,7 +606,7 @@ class CollectiveOffersPublicPatchOfferTest:
         payload = {"name": "pouet", "imageCredit": "a great artist", "imageFile": image_data.WRONG_IMAGE_TYPE}
 
         # When
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -632,7 +632,7 @@ class CollectiveOffersPublicPatchOfferTest:
 
         payload = {"imageCredit": "a great artist", "imageFile": image_data.GOOD_IMAGE}
 
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -676,7 +676,7 @@ class CollectiveOffersPublicPatchOfferTest:
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -709,7 +709,7 @@ class CollectiveOffersPublicPatchOfferTest:
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -742,7 +742,7 @@ class CollectiveOffersPublicPatchOfferTest:
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
@@ -809,7 +809,7 @@ class CollectiveOffersPublicPatchOfferTest:
         }
 
         # When
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
             )
