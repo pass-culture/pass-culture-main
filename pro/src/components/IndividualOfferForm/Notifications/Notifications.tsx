@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 
 import FormLayout from 'components/FormLayout'
 import useCurrentUser from 'hooks/useCurrentUser'
@@ -41,7 +41,6 @@ const Notifications = ({
           label="Être notifié par email des réservations"
           name="receiveNotificationEmails"
           value=""
-          hideFooter={receiveNotificationEmails}
           disabled={readOnlyFields?.includes('receiveNotificationEmails')}
         />
       </FormLayout.Row>
