@@ -32,11 +32,11 @@ export function HourLine({ day }: HourLineProps) {
 
   return (
     <>
-      <tr>
+      <tr className={styles['row-data']}>
         <th
           scope="row"
           rowSpan={isFullLineDisplayed ? 2 : 1}
-          className={styles['row-header']}
+          className={styles['day-cell']}
         >
           {mapDayToFrench(day)}
         </th>
@@ -90,7 +90,7 @@ export function HourLine({ day }: HourLineProps) {
         </td>
       </tr>
       {isFullLineDisplayed && (
-        <tr>
+        <tr className={styles['row-data']}>
           <td className={styles['hour-cell']}>
             <TimePicker
               label={'Horaire d’ouverture 2'}
@@ -113,16 +113,14 @@ export function HourLine({ day }: HourLineProps) {
             </span>
           </td>
           <td scope="row" className={styles['hour-cell']}>
-            {isFullLineDisplayed && (
-              <Button
-                variant={ButtonVariant.TERNARY}
-                icon={fullLessIcon}
-                onClick={removeAfternoon}
-                hasTooltip
-              >
-                Supprimer la plage horaire
-              </Button>
-            )}
+            <Button
+              variant={ButtonVariant.TERNARY}
+              icon={fullLessIcon}
+              onClick={removeAfternoon}
+              hasTooltip
+            >
+              Supprimer la plage horaire
+            </Button>
           </td>
         </tr>
       )}
