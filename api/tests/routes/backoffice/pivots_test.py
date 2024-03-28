@@ -631,11 +631,13 @@ class DeleteProviderTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
 
     def test_delete_pivot_allocine(self, authenticated_client):
-        allocine_pivot = providers_factories.AllocinePivotFactory()
+        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(isActive=False)
+        allocine_pivot = providers_factories.AllocinePivotFactory(internalId=allocine_venue_provider.internalId)
 
         self.post_to_endpoint(authenticated_client, name="allocine", pivot_id=allocine_pivot.id)
 
-        db.session.refresh(allocine_pivot)
+        assert not providers_models.AllocineVenueProvider.query.filter_by(id=allocine_venue_provider.id).first()
+        assert not providers_models.AllocinePivot.query.filter_by(id=allocine_pivot.id).first()
 
     def test_delete_pivot_boost(self, authenticated_client):
         boost_pivot = providers_factories.BoostCinemaDetailsFactory()

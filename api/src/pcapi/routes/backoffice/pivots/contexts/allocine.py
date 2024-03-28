@@ -1,8 +1,11 @@
 import typing
 
+from flask_login import current_user
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
+from pcapi.core.history import api as history_api
+from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.models import db
@@ -80,5 +83,33 @@ class AllocineContext(PivotContext):
 
     @classmethod
     def delete_pivot(cls, pivot_id: int) -> bool:
-        # Delete Allocine pivot is not allowed
-        return False
+        pivot = providers_models.AllocinePivot.query.filter_by(id=pivot_id).one_or_none()
+        if not pivot:
+            raise NotFound()
+
+        venue_provider = (
+            providers_models.AllocineVenueProvider.query.join(
+                providers_models.AllocinePivot,
+                providers_models.AllocineVenueProvider.internalId == pivot.internalId,
+            )
+            .options(sa.orm.joinedload(providers_models.AllocineVenueProvider.priceRules))
+            .one_or_none()
+        )
+
+        if venue_provider and venue_provider.isActive:
+            return False
+
+        if pivot.venue:
+            history_api.add_action(
+                action_type=history_models.ActionType.PIVOT_DELETED,
+                author=current_user,
+                venue=pivot.venue,
+                comment=f"Pivot {cls.pivot_name()}",
+            )
+
+        if venue_provider:
+            for price_rule in venue_provider.priceRules:
+                db.session.delete(price_rule)
+            db.session.delete(venue_provider)
+        db.session.delete(pivot)
+        return True
