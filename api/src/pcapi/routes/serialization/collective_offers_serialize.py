@@ -280,7 +280,7 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     durationMinutes: int | None
     students: list[StudentLevels]
     offerVenue: CollectiveOfferOfferVenueResponseModel
-    contactEmail: str
+    contactEmail: str | None
     contactPhone: str | None
     hasBookingLimitDatetimesPassed: bool
     offerId: int | None
@@ -319,7 +319,7 @@ class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseMode
     priceDetail: PriceDetail | None = Field(alias="educationalPriceDetail")
     dates: TemplateDatesModel | None
     isTemplate: bool = True
-    contactEmail: str | None  # type: ignore [assignment]
+    contactEmail: str | None
     contactPhone: str | None
     contactUrl: str | None
     contactForm: OfferContactFormEnum | None
@@ -448,6 +448,19 @@ class DateRangeOnCreateModel(DateRangeModel):
         return start
 
 
+from typing import Union
+
+from pydantic.v1.networks import validate_email
+
+
+class EmailStrOrEmpty(EmailStr):
+    @classmethod
+    def validate(cls, value: Union[str]) -> str | None:  # type: ignore[override]
+        if value == "":
+            return None
+        return validate_email(value)[1]
+
+
 class PostCollectiveOfferBodyModel(BaseModel):
     venue_id: int
     # TODO(jeremieb): remove subcategory_id (replaced by formats)
@@ -463,7 +476,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     visual_disability_compliant: bool = False
     students: list[StudentLevels]
     offer_venue: CollectiveOfferVenueBodyModel
-    contact_email: EmailStr
+    contact_email: EmailStrOrEmpty | None
     contact_phone: str | None
     intervention_area: list[str] | None
     template_id: int | None
@@ -530,7 +543,11 @@ class PostCollectiveOfferBodyModel(BaseModel):
         is_from_template = bool(values.get("template_id", None))
         if not booking_emails:
             if is_from_template:
-                values["booking_emails"] = [values["contact_email"]]
+                contact_email = values.get("contact_email", None)
+                if contact_email:
+                    values["booking_emails"] = [contact_email]
+                else:
+                    values["booking_emails"] = []
             else:
                 raise ValueError("Un email doit être renseigné")
         return values

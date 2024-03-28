@@ -18,7 +18,7 @@ export type GetCollectiveOfferResponseModel = {
   audioDisabilityCompliant?: boolean | null;
   bookingEmails: Array<string>;
   collectiveStock?: GetCollectiveOfferCollectiveStockResponseModel | null;
-  contactEmail: string;
+  contactEmail?: string | null;
   contactPhone?: string | null;
   dateCreated: string;
   description: string;
