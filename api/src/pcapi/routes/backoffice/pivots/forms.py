@@ -18,7 +18,12 @@ class SearchPivotForm(FlaskForm):
 
 class EditPivotForm(FlaskForm):
     venue_id = fields.PCTomSelectField(
-        "Lieu", choices=[], validate_choice=False, endpoint="backoffice_web.autocomplete_venues", coerce=int
+        "Lieu",
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_venues",
+        coerce=int,
+        validators=(wtforms.validators.DataRequired("Information obligatoire"),),
     )
 
 

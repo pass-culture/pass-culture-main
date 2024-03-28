@@ -178,7 +178,7 @@ class VenueProvider(PcObject, Base, Model, DeactivableMixin):
 class CinemaProviderPivot(PcObject, Base, Model):
     """Stores whether a Venue has requested to be synced with a Provider"""
 
-    venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=False, nullable=True, unique=True)
+    venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=False, nullable=False, unique=True)
 
     venue: sa_orm.Mapped["Venue | None"] = sa_orm.relationship(
         Venue, foreign_keys=[venueId], backref="cinemaProviderPivot", uselist=False
