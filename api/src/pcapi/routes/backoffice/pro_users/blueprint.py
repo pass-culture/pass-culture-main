@@ -24,6 +24,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users.email import update as email_update
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
+from pcapi.repository import atomic
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro import forms as pro_forms
@@ -44,6 +45,7 @@ pro_user_blueprint = utils.child_backoffice_blueprint(
 
 
 @pro_user_blueprint.route("", methods=["GET"])
+@atomic()
 def get(user_id: int) -> utils.BackofficeResponse:
     # Make sure user is pro
     user = (
@@ -95,6 +97,7 @@ def get(user_id: int) -> utils.BackofficeResponse:
 
 
 @pro_user_blueprint.route("/details", methods=["GET"])
+@atomic()
 def get_details(user_id: int) -> utils.BackofficeResponse:
     user = users_api.get_pro_account_base_query(user_id).one_or_none()
     if not user:
@@ -125,6 +128,7 @@ def get_details(user_id: int) -> utils.BackofficeResponse:
 
 
 @pro_user_blueprint.route("/update", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def update_pro_user(user_id: int) -> utils.BackofficeResponse:
     user = (
@@ -164,13 +168,14 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
         external_attributes_api.update_external_user(user)
 
     snapshot.add_action()
-    db.session.commit()
+    db.session.flush()
 
     flash("Les informations ont été mises à jour", "success")
     return redirect(url_for(".get", user_id=user_id), code=303)
 
 
 @pro_user_blueprint.route("/delete", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def delete(user_id: int) -> utils.BackofficeResponse:
     user = users_api.get_pro_account_base_query(user_id).populate_existing().with_for_update().one_or_none()
@@ -199,12 +204,13 @@ def delete(user_id: int) -> utils.BackofficeResponse:
     delete_user_attributes_task.delay(payload)
 
     users_models.User.query.filter(users_models.User.id == user_id).delete(synchronize_session=False)
-    db.session.commit()
+    db.session.flush()
     flash("Le compte a été supprimé", "success")
     return redirect(url_for("backoffice_web.pro.search_pro"), code=303)
 
 
 @pro_user_blueprint.route("/comment", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def comment_pro_user(user_id: int) -> utils.BackofficeResponse:
     user = (
@@ -228,6 +234,7 @@ def comment_pro_user(user_id: int) -> utils.BackofficeResponse:
 
 
 @pro_user_blueprint.route("/validate-email", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def validate_pro_user_email(user_id: int) -> utils.BackofficeResponse:
     user = (
@@ -258,6 +265,7 @@ def _get_delete_kwargs(user: users_models.User) -> dict:
 
 
 @pro_user_blueprint.route("/connect-as", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def connect_as(user_id: int) -> utils.BackofficeResponse:
     if not FeatureToggle.WIP_CONNECT_AS.is_active():

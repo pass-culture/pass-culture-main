@@ -20,6 +20,8 @@ from pcapi.core.providers import api as providers_api
 from pcapi.core.providers import models as providers_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
 
 from . import forms
 from .. import utils
@@ -34,6 +36,7 @@ providers_blueprint = utils.child_backoffice_blueprint(
 
 
 @providers_blueprint.route("", methods=["GET"])
+@atomic()
 def get_providers() -> utils.BackofficeResponse:
     providers = (
         providers_models.Provider.query.options(
@@ -48,6 +51,7 @@ def get_providers() -> utils.BackofficeResponse:
 
 
 @providers_blueprint.route("/new", methods=["GET"])
+@atomic()
 def get_create_provider_form() -> utils.BackofficeResponse:
     form = forms.CreateProviderForm()
 
@@ -62,6 +66,7 @@ def get_create_provider_form() -> utils.BackofficeResponse:
 
 
 @providers_blueprint.route("/", methods=["POST"])
+@atomic()
 def create_provider() -> utils.BackofficeResponse:
     form = forms.CreateProviderForm()
 
@@ -95,9 +100,9 @@ def create_provider() -> utils.BackofficeResponse:
             comment="Création automatique via création de partenaire",
         )
 
-        db.session.commit()
+        db.session.flush()
     except sa.exc.IntegrityError:
-        db.session.rollback()
+        mark_transaction_as_invalid()
         flash("Ce partenaire existe déjà", "warning")
     else:
         if is_offerer_new:
@@ -133,6 +138,7 @@ def _get_or_create_offerer(form: forms.CreateProviderForm) -> tuple[offerers_mod
 
 
 @providers_blueprint.route("/<int:provider_id>/update", methods=["GET"])
+@atomic()
 def get_update_provider_form(provider_id: int) -> utils.BackofficeResponse:
     provider = providers_models.Provider.query.filter_by(id=provider_id).one_or_none()
     if not provider:
@@ -162,6 +168,7 @@ def get_update_provider_form(provider_id: int) -> utils.BackofficeResponse:
 
 
 @providers_blueprint.route("/<int:provider_id>/update", methods=["POST"])
+@atomic()
 def update_provider(provider_id: int) -> utils.BackofficeResponse:
     provider = providers_models.Provider.query.filter_by(id=provider_id).one_or_none()
     if not provider:
@@ -182,11 +189,11 @@ def update_provider(provider_id: int) -> utils.BackofficeResponse:
 
     try:
         db.session.add(provider)
-        db.session.commit()
+        db.session.flush()
         if not form.is_active.data:
             providers_api.disable_offers_linked_to_provider(provider_id, current_user)
     except sa.exc.IntegrityError:
-        db.session.rollback()
+        mark_transaction_as_invalid()
         flash("Ce partenaire existe déjà", "warning")
     else:
         flash(Markup("Le partenaire <b>{name}</b> a été modifié.").format(name=provider.name), "success")

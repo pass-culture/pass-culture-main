@@ -15,10 +15,11 @@ from pcapi.core.fraud import models as fraud_models
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
-from pcapi.core.users.api import suspend_account
 from pcapi.models import db
+from pcapi.repository import atomic
 from pcapi.routes.backoffice import utils
 
 from . import forms
@@ -62,6 +63,7 @@ def render_domain_names_list(form: forms.BlacklistDomainNameForm | None = None) 
 
 
 @fraud_blueprint.route("", methods=["GET"])
+@atomic()
 def list_blacklisted_domain_names() -> utils.BackofficeResponse:
     return render_domain_names_list()
 
@@ -96,6 +98,7 @@ def _list_untouched_pro_accounts(domain_name: str) -> list[str]:
 
 
 @fraud_blueprint.route("/blacklist-domain-name", methods=["GET"])
+@atomic()
 def prepare_blacklist_domain_name() -> utils.BackofficeResponse:
     form = forms.PrepareBlacklistDomainNameForm(utils.get_query_params())
     if not form.validate():
@@ -123,7 +126,7 @@ def _blacklist_domain_name(domain_name: str, actor: users_models.User) -> tuple[
 
     for user in query:
         try:
-            res = suspend_account(
+            res = users_api.suspend_account(
                 user=user, reason=users_constants.SuspensionReason.BLACKLISTED_DOMAIN_NAME, actor=actor
             )
         except Exception:  # pylint: disable=broad-exception-caught
@@ -139,6 +142,7 @@ def _blacklist_domain_name(domain_name: str, actor: users_models.User) -> tuple[
 
 
 @fraud_blueprint.route("/blacklist-domain-name", methods=["POST"])
+@atomic()
 def blacklist_domain_name() -> utils.BackofficeResponse:
     form = forms.BlacklistDomainNameForm()
     if not form.validate():
@@ -162,7 +166,7 @@ def blacklist_domain_name() -> utils.BackofficeResponse:
         cancelled_bookings_count=cancelled_bookings_count,
     )
 
-    db.session.commit()
+    db.session.flush()
 
     deactivated_accounts_count = len(users)
     if deactivated_accounts_count > 1:
@@ -189,6 +193,7 @@ def blacklist_domain_name() -> utils.BackofficeResponse:
 
 
 @fraud_blueprint.route("/blacklist-domain-name/remove/<string:domain>", methods=["POST"])
+@atomic()
 def remove_blacklisted_domain_name(domain: str) -> utils.BackofficeResponse:
     query = fraud_models.BlacklistedDomainName.query.filter_by(domain=domain)
 
@@ -203,7 +208,7 @@ def remove_blacklisted_domain_name(domain: str) -> utils.BackofficeResponse:
         domain=row.domain,
     )
 
-    db.session.commit()
+    db.session.flush()
 
     flash(Markup("Le nom de domaine <b>{domain}</b> a été retiré de la liste").format(domain=domain), "success")
     return redirect(url_for(".list_blacklisted_domain_names"), code=303)

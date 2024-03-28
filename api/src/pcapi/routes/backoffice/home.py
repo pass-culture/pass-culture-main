@@ -12,6 +12,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.models import offer_mixin
+from pcapi.repository import atomic
 
 from . import blueprint
 from . import utils
@@ -82,6 +83,7 @@ def _get_fraud_stats() -> dict[str, typing.Any]:
 
 
 @blueprint.backoffice_web.route("/", methods=["GET"])
+@atomic()
 def home() -> utils.BackofficeResponse:
     if not current_user or current_user.is_anonymous:
         return render_template("home/login.html")

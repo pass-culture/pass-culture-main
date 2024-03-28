@@ -26,6 +26,8 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models import offer_mixin
+from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.collective_offers import forms
@@ -276,6 +278,7 @@ def _get_collective_offers(form: forms.InternalSearchForm) -> list[educational_m
 
 
 @blueprint.route("", methods=["GET"])
+@atomic()
 def list_collective_offers() -> utils.BackofficeResponse:
     display_form = forms.GetCollectiveOffersListForm(formdata=utils.get_query_params())
     form = forms.InternalSearchForm(formdata=utils.get_query_params())
@@ -315,6 +318,7 @@ def list_collective_offers() -> utils.BackofficeResponse:
 
 
 @blueprint.route("get-advanced-search-form", methods=["GET"])
+@atomic()
 def get_advanced_search_form() -> utils.BackofficeResponse:
     form = forms.GetCollectiveOfferAdvancedSearchForm(formdata=utils.get_query_params())
 
@@ -329,6 +333,7 @@ def get_advanced_search_form() -> utils.BackofficeResponse:
 
 
 @blueprint.route("/<int:collective_offer_id>/validate", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_validate_collective_offer_form(collective_offer_id: int) -> utils.BackofficeResponse:
     collective_offer = educational_models.CollectiveOffer.query.filter_by(id=collective_offer_id).one_or_none()
@@ -350,6 +355,7 @@ def get_validate_collective_offer_form(collective_offer_id: int) -> utils.Backof
 
 
 @blueprint.route("/<int:collective_offer_id>/validate", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def validate_collective_offer(collective_offer_id: int) -> utils.BackofficeResponse:
     _batch_validate_or_reject_collective_offers(offer_mixin.OfferValidationStatus.APPROVED, [collective_offer_id])
@@ -390,7 +396,7 @@ def _batch_validate_or_reject_collective_offers(
             collective_offer.isActive = True
 
         try:
-            db.session.commit()
+            db.session.flush()
         except Exception:  # pylint: disable=broad-except
             collective_offer_update_failed_ids.append(collective_offer.id)
             continue
@@ -442,6 +448,7 @@ def _batch_validate_or_reject_collective_offers(
 
 
 @blueprint.route("/<int:collective_offer_id>/reject", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_reject_collective_offer_form(collective_offer_id: int) -> utils.BackofficeResponse:
     collective_offer = educational_models.CollectiveOffer.query.filter_by(id=collective_offer_id).one_or_none()
@@ -461,6 +468,7 @@ def get_reject_collective_offer_form(collective_offer_id: int) -> utils.Backoffi
 
 
 @blueprint.route("/<int:collective_offer_id>/reject", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def reject_collective_offer(collective_offer_id: int) -> utils.BackofficeResponse:
     _batch_validate_or_reject_collective_offers(offer_mixin.OfferValidationStatus.REJECTED, [collective_offer_id])
@@ -468,6 +476,7 @@ def reject_collective_offer(collective_offer_id: int) -> utils.BackofficeRespons
 
 
 @blueprint.route("/batch/validate", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_batch_validate_collective_offers_form() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
@@ -482,6 +491,7 @@ def get_batch_validate_collective_offers_form() -> utils.BackofficeResponse:
 
 
 @blueprint.route("/batch/reject", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_batch_reject_collective_offers_form() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
@@ -496,6 +506,7 @@ def get_batch_reject_collective_offers_form() -> utils.BackofficeResponse:
 
 
 @blueprint.route("/batch/validate", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def batch_validate_collective_offers() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
@@ -509,6 +520,7 @@ def batch_validate_collective_offers() -> utils.BackofficeResponse:
 
 
 @blueprint.route("/batch/reject", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def batch_reject_collective_offers() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
@@ -549,6 +561,7 @@ def _is_collective_offer_price_editable(collective_offer: educational_models.Col
 
 
 @blueprint.route("/<int:collective_offer_id>/details", methods=["GET"])
+@atomic()
 def get_collective_offer_details(collective_offer_id: int) -> utils.BackofficeResponse:
     collective_offer_query = educational_models.CollectiveOffer.query.filter(
         educational_models.CollectiveOffer.id == collective_offer_id
@@ -587,6 +600,7 @@ def get_collective_offer_details(collective_offer_id: int) -> utils.BackofficeRe
 
 
 @blueprint.route("/<int:collective_offer_id>/update-price", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def edit_collective_offer_price(collective_offer_id: int) -> utils.BackofficeResponse:
     redirect_url = request.referrer or url_for(
@@ -655,21 +669,22 @@ def edit_collective_offer_price(collective_offer_id: int) -> utils.BackofficeRes
                     motive=finance_models.FinanceEventMotive.BOOKING_USED,
                     booking=collective_booking,
                 )
-            db.session.commit()
+            db.session.flush()
         except finance_exceptions.NonCancellablePricingError:
             flash("Impossible, réservation est déjà remboursée (ou en cours de remboursement)", "warning")
-            db.session.rollback()
+            mark_transaction_as_invalid()
             return redirect(redirect_url, code=303)
 
     collective_offer.collectiveStock.price = price
     collective_offer.collectiveStock.numberOfTickets = number_of_tickets
-    db.session.commit()
+    db.session.flush()
 
     flash("L'offre collective a été mise à jour", "success")
     return redirect(redirect_url, code=303)
 
 
 @blueprint.route("/<int:collective_offer_id>/update-price", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def get_collective_offer_price_form(collective_offer_id: int) -> utils.BackofficeResponse:
     collective_offer = educational_models.CollectiveOffer.query.filter_by(id=collective_offer_id).one_or_none()

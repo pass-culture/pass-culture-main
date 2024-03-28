@@ -397,8 +397,6 @@ def cancel_collective_booking(
                 finance_models.FinanceEventMotive.BOOKING_CANCELLED_AFTER_USE,
                 booking=collective_booking,
             )
-
-        db.session.commit()
     logger.info(
         "CollectiveBooking has been cancelled by %s %s",
         reason.value.lower(),
@@ -413,16 +411,15 @@ def cancel_collective_booking(
 def uncancel_collective_booking(
     collective_booking: educational_models.CollectiveBooking,
 ) -> None:
-    with transaction():
-        educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
-        db.session.refresh(collective_booking)
-        collective_booking.uncancel_booking()
-        if collective_booking.status == educational_models.CollectiveBookingStatus.USED:
-            finance_api.add_event(
-                finance_models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION,
-                booking=collective_booking,
-            )
-        db.session.commit()
+    educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
+    db.session.refresh(collective_booking)
+    collective_booking.uncancel_booking()
+    if collective_booking.status == educational_models.CollectiveBookingStatus.USED:
+        finance_api.add_event(
+            finance_models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION,
+            booking=collective_booking,
+        )
+    db.session.flush()
 
     logger.info(
         "CollectiveBooking has been uncancelled by support",
