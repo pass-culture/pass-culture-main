@@ -57,7 +57,7 @@
       <th scope="col"></th>
       <th scope="col">ID</th>
       <th scope="col">Statut</th>
-      {% if is_feature_active('WIP_ENABLE_NEW_NAV_AB_TEST') %}<th scope="col">Interface</th>{% endif %}
+      {% if is_feature_active('WIP_ENABLE_PRO_SIDE_NAV') %}<th scope="col">Interface</th>{% endif %}
       <th scope="col">Prénom / Nom</th>
       <th scope="col">Email</th>
       <th scope="col">Invitation</th>
@@ -120,7 +120,7 @@
             <span class="me-1 pb-1 badge rounded-pill text-bg-light">Invité</span>
           {% endif %}
         </td>
-        {% if is_feature_active('WIP_ENABLE_NEW_NAV_AB_TEST') %}
+        {% if is_feature_active('WIP_ENABLE_PRO_SIDE_NAV') %}
           <td>
             {% if row.hasNewNav %}
               {{ build_new_navigation_badge() }}

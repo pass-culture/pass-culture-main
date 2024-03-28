@@ -208,7 +208,7 @@ class GetOffererTest(GetEndpointHelper):
         db.session.expire(offerer)
 
         with (
-            override_features(WIP_ENABLE_NEW_NAV_AB_TEST=new_nav_ff_activated),
+            override_features(WIP_ENABLE_PRO_SIDE_NAV=new_nav_ff_activated),
             assert_num_queries(self.expected_num_queries),
         ):
             response = authenticated_client.get(url)
@@ -1120,7 +1120,7 @@ class GetOffererUsersTest(GetEndpointHelper):
         options = select.find_all("option")
         assert [option["value"] for option in options] == ["", str(user3.id), str(user2.id)]
 
-    @override_features(WIP_ENABLE_NEW_NAV_AB_TEST=False)
+    @override_features(WIP_ENABLE_PRO_SIDE_NAV=False)
     def test_user_offerer_details_tab_with_new_nav_tags_without_ff(self, authenticated_client, offerer):
         user_with_new_nav = users_factories.ProFactory()
         users_factories.UserProNewNavStateFactory(user=user_with_new_nav)
@@ -1164,7 +1164,7 @@ class GetOffererUsersTest(GetEndpointHelper):
         assert rows[2]["Prénom / Nom"] == eligible_user_with_inactivated_new_nav.full_name
         assert rows[2]["Email"] == eligible_user_with_inactivated_new_nav.email
 
-    @override_features(WIP_ENABLE_NEW_NAV_AB_TEST=True)
+    @override_features(WIP_ENABLE_PRO_SIDE_NAV=True)
     def test_user_offerer_details_tab_with_new_nav_tags(self, authenticated_client, offerer):
         user_with_new_nav = users_factories.ProFactory()
         users_factories.UserProNewNavStateFactory(user=user_with_new_nav)
