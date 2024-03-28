@@ -12,19 +12,23 @@ interface ThumbProps {
 }
 
 const Thumb = ({ url = '', className }: ThumbProps) => {
-  return url ? (
-    <img
-      className={cn(styles['offer-thumb'], className)}
-      loading="lazy"
-      src={url}
-    />
-  ) : (
-    <SvgIcon
-      alt=""
-      src={strokeOfferIcon}
-      width="40"
-      className={cn(styles['default-thumb'], className)}
-    />
+  return (
+    <div className={styles['thumb-container']}>
+      {url ? (
+        <img
+          className={cn(styles['offer-thumb'], className)}
+          loading="lazy"
+          src={url}
+        />
+      ) : (
+        <SvgIcon
+          alt=""
+          src={strokeOfferIcon}
+          width="48"
+          className={cn(styles['default-thumb'], className)}
+        />
+      )}
+    </div>
   )
 }
 
