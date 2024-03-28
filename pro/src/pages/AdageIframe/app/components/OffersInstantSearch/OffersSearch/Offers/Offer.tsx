@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 import {
   AdageFrontRoles,
@@ -43,6 +43,7 @@ export interface OfferProps {
   afterFavoriteChange?: (isFavorite: boolean) => void
   isInSuggestions?: boolean
   openDetails?: boolean
+  afterOfferPrebooked?: (id: number) => void
 }
 
 const Offer = ({
@@ -52,6 +53,7 @@ const Offer = ({
   afterFavoriteChange,
   isInSuggestions,
   openDetails = false,
+  afterOfferPrebooked,
 }: OfferProps): JSX.Element => {
   const [displayDetails, setDisplayDetails] = useState(openDetails)
   const { adageUser } = useAdageUser()
@@ -206,6 +208,7 @@ const Offer = ({
                     queryId={queryId}
                     stock={offer.stock}
                     isInSuggestions={isInSuggestions}
+                    afterOfferPrebooked={afterOfferPrebooked}
                   />
                 )}
               </div>
