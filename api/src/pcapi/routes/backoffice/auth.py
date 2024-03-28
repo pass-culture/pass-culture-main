@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 @blueprint.backoffice_web.route("/login", methods=["GET"])
 def login() -> utils.BackofficeResponse:
-    is_testing_or_dev_without_google_credentials = (settings.IS_TESTING or settings.IS_DEV) and (
+    is_testing_or_dev_without_google_credentials = settings.USE_GOOGLE_CREDENTIALS and (
         not settings.GOOGLE_CLIENT_ID or not settings.GOOGLE_CLIENT_SECRET
     )
 

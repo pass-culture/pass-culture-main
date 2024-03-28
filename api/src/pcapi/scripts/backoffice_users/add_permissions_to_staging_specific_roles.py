@@ -19,7 +19,7 @@ def _purge_role_permissions(role: perm_models.Role) -> None:
 def add_permissions_to_staging_specific_roles() -> None:
     """Add permissions to qa and global access roles"""
 
-    if settings.IS_PROD:
+    if not settings.BACKOFFICE_ENABLE_ADDING_STAGING_PERMISSIONS:
         logger.error("This function is not supposed to be run on production")
         return
 
