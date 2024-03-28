@@ -30,7 +30,8 @@
 
 .hour-cell {
   padding: rem.torem(8px);
-  padding-left: 0
+  padding-left: 0;
+  max-width: rem.torem(100px);
 }
 
 .column-header, .day-cell {
