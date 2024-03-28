@@ -158,7 +158,7 @@ class CollectiveOffersPublicPostOfferTest:
         payload["educationalInstitution"] = institution.institutionId
         del payload["educationalInstitutionId"]
 
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 200
@@ -184,7 +184,7 @@ class CollectiveOffersPublicPostOfferTest:
         payload["educationalInstitution"] = institution.institutionId
         payload["educationalInstitutionId"] = institution.id
 
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
@@ -197,7 +197,7 @@ class CollectiveOffersPublicPostOfferTest:
 
     def test_user_cannot_create_collective_offer(self, public_client, payload):
         with patch(
-            "pcapi.core.offerers.api.can_venue_create_educational_offer",
+            "pcapi.core.offerers.api.can_offerer_create_educational_offer",
             side_effect=educational_exceptions.CulturalPartnerNotFoundException,
         ):
             response = public_client.post("/v2/collective/offers/", json=payload)
@@ -207,7 +207,7 @@ class CollectiveOffersPublicPostOfferTest:
     def test_bad_educational_institution(self, public_client, payload):
         payload["educationalInstitutionId"] = -1
 
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 404
@@ -215,7 +215,7 @@ class CollectiveOffersPublicPostOfferTest:
     def test_unlinked_venue(self, public_client, payload):
         payload["venueId"] = offerers_factories.VenueFactory().id
 
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 404
@@ -229,7 +229,7 @@ class CollectiveOffersPublicPostOfferTest:
     def test_invalid_image_size(self, public_client, payload):
         payload["imageFile"] = image_data.WRONG_IMAGE_SIZE
 
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
@@ -238,7 +238,7 @@ class CollectiveOffersPublicPostOfferTest:
     def test_invalid_image_type(self, public_client, payload):
         payload["imageFile"] = image_data.WRONG_IMAGE_TYPE
 
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
@@ -248,7 +248,7 @@ class CollectiveOffersPublicPostOfferTest:
         institution = educational_factories.EducationalInstitutionFactory(isActive=False)
         payload["educationalInstitutionId"] = institution.id
 
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 403
@@ -257,7 +257,7 @@ class CollectiveOffersPublicPostOfferTest:
         payload["nationalProgramId"] = None
         payload["domains"] = [-1]
 
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 404
@@ -266,7 +266,7 @@ class CollectiveOffersPublicPostOfferTest:
     def test_national_program_not_linked_to_domains(self, public_client, payload):
         payload["nationalProgramId"] = educational_factories.NationalProgramFactory().id
 
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
@@ -279,7 +279,7 @@ class CollectiveOffersPublicPostOfferTest:
             "otherAddress": "",
         }
 
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 404
@@ -288,7 +288,7 @@ class CollectiveOffersPublicPostOfferTest:
     def test_missing_both_subcategory_and_formats(self, public_client, payload):
         del payload["formats"]
 
-        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400

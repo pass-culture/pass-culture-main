@@ -431,7 +431,8 @@ def create_collective_offer_public(
     from pcapi.core.offers.api import update_offer_fraud_information
 
     venue = educational_repository.fetch_venue_for_new_offer(body.venue_id, requested_id)
-    offerers_api.can_venue_create_educational_offer(venue.managingOfferer)
+    if not offerers_api.can_offerer_create_educational_offer(venue.managingOffererId):
+        raise exceptions.CulturalPartnerNotFoundException("No venue has been found for the selected siren")
 
     offer_validation.check_offer_subcategory_is_valid(body.subcategory_id)
     offer_validation.check_offer_is_eligible_for_educational(body.subcategory_id)
