@@ -14,6 +14,20 @@ import { LOGS_DATA } from 'utils/config'
 import { postBookingAdapater } from './adapters/postBookingAdapter'
 import PrebookingModal from './PrebookingModal'
 
+export interface PrebookingButtonProps {
+  className?: string
+  stock: OfferStockResponse
+  canPrebookOffers: boolean
+  offerId: number
+  queryId: string
+  isInSuggestions?: boolean
+  children?: React.ReactNode
+  hideLimitDate?: boolean
+  isPreview?: boolean
+  setInstitutionOfferCount?: (value: number) => void
+  institutionOfferCount?: number
+}
+
 const PrebookingButton = ({
   className,
   stock,
@@ -24,17 +38,9 @@ const PrebookingButton = ({
   children,
   hideLimitDate,
   isPreview = false,
-}: {
-  className?: string
-  stock: OfferStockResponse
-  canPrebookOffers: boolean
-  offerId: number
-  queryId: string
-  isInSuggestions?: boolean
-  children?: React.ReactNode
-  hideLimitDate?: boolean
-  isPreview?: boolean
-}): JSX.Element | null => {
+  setInstitutionOfferCount,
+  institutionOfferCount,
+}: PrebookingButtonProps): JSX.Element | null => {
   const [hasPrebookedOffer, setHasPrebookedOffer] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -68,6 +74,11 @@ const PrebookingButton = ({
     }
 
     setHasPrebookedOffer(true)
+
+    !isPreview &&
+      setInstitutionOfferCount?.(
+        institutionOfferCount ? institutionOfferCount - 1 : 0
+      )
     closeModal()
     notification.success(message)
   }, [stock.id, offerId, queryId])

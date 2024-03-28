@@ -23,7 +23,8 @@ export const AdageHeaderMenu = ({
 
   const {
     favoritesCount,
-    adageUser: { role, offersCount },
+    institutionOfferCount,
+    adageUser: { role },
   } = useAdageUser()
 
   return (
@@ -77,7 +78,7 @@ export const AdageHeaderMenu = ({
               />
               Pour mon établissement
               <div className={styles['adage-header-nb-hits']}>
-                {offersCount ?? 0}
+                {institutionOfferCount ?? 0}
               </div>
             </NavLink>
           </li>
