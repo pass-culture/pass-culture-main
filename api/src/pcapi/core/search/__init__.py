@@ -682,7 +682,7 @@ def update_products_last_30_days_booking_count(batch_size: int = 1000) -> None:
     logger.info("Starting to reindex offers with ean booked recently. Ean count: %s", len(updated_eans))
 
     offer_ids_to_reindex = set()
-    for (offer_id,) in offer_ids_to_reindex_query:
+    for (offer_id,) in offer_ids_to_reindex_query.yield_per(batch_size):
         offer_ids_to_reindex.add(offer_id)
         if len(offer_ids_to_reindex) == batch_size:
             logger.info("Reindexing offers with ean booked recently. Batch count: %s", len(offer_ids_to_reindex))
