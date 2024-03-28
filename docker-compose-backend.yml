@@ -1,33 +1,58 @@
 version: "3.7"
 
 services:
+  redis:
+    image: scalingo/redis
+    container_name: pc-redis
+    command: redis-server
+    volumes:
+      - redis_data:/data
+    ports:
+      - 6379:6379
+    networks:
+      - db_nw
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+
   postgres:
     image: postgis/postgis:15-3.4-alpine
     container_name: pc-postgres
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+    command: postgres -c logging_collector=on -c log_destination=stderr -c log_min_duration_statement=0 -c log_statement=all -c log_duration=on
     env_file:
       - env_file
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      # This port is used outside docker-compose network
+      # (E2E tests and developers launching flask api on their local machines):
+      - 5434:5432
     networks:
       - db_nw
-    ports:
-      - 5434:5432 # This port is used outside docker-compose network (E2E tests and developers launching flask api on their local machines)
-    command: postgres -c logging_collector=on -c log_destination=stderr -c log_min_duration_statement=0 -c log_statement=all -c log_duration=on
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   postgres-test:
     image: postgis/postgis:15-3.4-alpine
     container_name: pc-postgres-pytest
-    volumes:
-      - postgres_data_test:/var/lib/postgresql-test/data
+    command: postgres -c logging_collector=on -c log_destination=stderr -c log_min_duration_statement=0 -c log_statement=all -c log_duration=on
     environment:
       - POSTGRES_DB=pass_culture
       - POSTGRES_USER=pytest
       - POSTGRES_PASSWORD=pytest
-    command: postgres -c logging_collector=on -c log_destination=stderr -c log_min_duration_statement=0 -c log_statement=all -c log_duration=on
+    volumes:
+      - postgres_data_test:/var/lib/postgresql-test/data
     ports:
       - 5433:5432
     networks:
       - db_nw
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   flask:
     build:
@@ -35,23 +60,32 @@ services:
       target: api-flask
     working_dir: /usr/src/app
     container_name: pc-api
-    command: [ "./start-api-when-database-is-ready.sh" ]
-    volumes:
-      - ./api:/usr/src/app
+    command: ./start-api.sh
     env_file:
       - env_file
+    volumes:
+      - ./api:/usr/src/app
+    ports:
+      - 5001:5001
+      - 10002:10002  # debugger port
     networks:
       - db_nw
       - web_nw
-    depends_on:
-      - postgres
-      - redis
-      - postgres-test
-    ports:
-      - 5001:5001
-      - 10002:10002 # debugger port
     stdin_open: true
     tty: true
+    depends_on:
+      postgres:
+        condition: service_healthy
+      postgres-test:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "http://flask:5001/health/api", "--silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 2m
 
   backoffice:
     build:
@@ -59,49 +93,44 @@ services:
       target: api-flask
     working_dir: /usr/src/app
     container_name: pc-backoffice
-    command: [ "./start-backoffice-when-api-is-ready.sh" ]
-    volumes:
-      - ./api:/usr/src/app
+    command: python src/pcapi/backoffice_app.py
     env_file:
       - env_file
+    volumes:
+      - ./api:/usr/src/app
+    ports:
+      - 5002:5001
+      - 10004:10003  # debugger port
     networks:
       - db_nw
       - web_nw
-    depends_on:
-      - postgres
-      - redis
-      - postgres-test
-    ports:
-      - 5002:5001
-      - 10004:10003 # debugger port
     stdin_open: true
     tty: true
-
-  redis:
-    image: scalingo/redis
-    container_name: pc-redis
-    command: redis-server
-    ports:
-      - 6379:6379
-    volumes:
-      - redis_data:/data
-    networks:
-      - db_nw
+    depends_on:
+      postgres:
+        condition: service_healthy
+      postgres-test:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      flask:
+        condition: service_healthy
 
   nginx:
     build: nginx
     container_name: pc-nginx
-    ports:
-      - 80:80
-      - 443:443
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./certs:/etc/letsencrypt
       - ./certs-data:/data/letsencrypt
+    ports:
+      - 80:80
+      - 443:443
     networks:
       - web_nw
     depends_on:
-      - flask
+      flask:
+        condition: service_healthy
 
 networks:
   db_nw:
@@ -110,6 +139,6 @@ networks:
     driver: bridge
 
 volumes:
+  redis_data:
   postgres_data:
   postgres_data_test:
-  redis_data:
