@@ -159,7 +159,7 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
         )
     )
 
-    if FeatureToggle.WIP_ENABLE_NEW_NAV_AB_TEST.is_active():
+    if FeatureToggle.WIP_ENABLE_PRO_SIDE_NAV.is_active():
         offerer_query = offerer_query.options(
             sa.orm.with_expression(offerers_models.Offerer.hasNewNavUsers, has_new_nav_users_subquery),
             sa.orm.with_expression(offerers_models.Offerer.hasOldNavUsers, has_old_nav_users_subquery),
