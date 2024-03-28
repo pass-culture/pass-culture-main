@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { useFormikContext } from 'formik'
 
 import { mapDayToFrench } from 'pages/VenueEdition/OpeningHoursReadOnly/utils'
@@ -54,8 +55,14 @@ export function OpeningHoursForm() {
       {days.length > 0 && (
         <table>
           <thead>
-            <tr>
-              <th scope="col" className={styles['column-header']}></th>
+            <tr className={styles['row-header']}>
+              <th
+                scope="col"
+                className={cn(
+                  styles['column-header'],
+                  styles['column-header-first']
+                )}
+              ></th>
               <th scope="col" className={styles['column-header']}>
                 Ouvre à
               </th>

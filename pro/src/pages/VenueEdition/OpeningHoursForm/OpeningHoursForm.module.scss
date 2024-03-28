@@ -33,20 +33,33 @@
   padding-left: 0
 }
 
-.column-header, .row-header {
+.column-header, .day-cell {
   @include fonts.body;
 
-  text-align: center;
+  text-align: left;
   padding: rem.torem(8px);
   padding-left: 0
 }
 
-.row-header {
+.day-cell {
   text-align: left;
   vertical-align: top;
   min-width: rem.torem(100px);
   padding-top: rem.torem(16px);
   padding-right: rem.torem(24px);
+  flex: 1 100%;
+}
+
+.row-header {
+  display: flex;
+  align-items: center;
+  gap: rem.torem(16px);
+}
+
+.row-data {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .second-hour {
@@ -57,4 +70,32 @@
 
 .hour-cell-afternoon-displayed {
   padding-bottom: 0;
+}
+
+.column-header-first {
+  display: none;
+}
+
+@media (min-width: size.$mobile) {
+  .column-header-first {
+    display: table-cell;
+  }
+
+  .column-header, .day-cell {
+    text-align: center;
+  }
+
+  .day-cell {
+    text-align: left;
+  }
+
+  .row-header {
+    display: table-row;
+  }
+
+  .row-data {
+    display: table-row;
+    align-items: center;
+    flex-wrap: wrap;
+  }
 }
