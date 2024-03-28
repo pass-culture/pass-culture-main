@@ -59,7 +59,7 @@ export function HourLine({ day }: HourLineProps) {
           })}
         >
           <span className={styles['second-hour']}>
-            -
+            <span className={styles['top-aligned-content']}>-</span>
             <TimePicker
               label={'Horaire de fermeture 1'}
               name={`${day}.morningEndingHour`}
@@ -77,6 +77,7 @@ export function HourLine({ day }: HourLineProps) {
           {!isFullLineDisplayed && (
             <Button
               variant={ButtonVariant.TERNARY}
+              className={styles['top-aligned-button']}
               icon={fullMoreIcon}
               onClick={async () => {
                 await setFieldValue(`${day}.isAfternoonOpen`, true)
@@ -102,7 +103,7 @@ export function HourLine({ day }: HourLineProps) {
           </td>
           <td className={styles['hour-cell']}>
             <span className={styles['second-hour']}>
-              -
+              <span className={styles['top-aligned-content']}>-</span>
               <TimePicker
                 label={'Horaire de fermeture 2'}
                 name={`${day}.afternoonEndingHour`}
@@ -114,6 +115,7 @@ export function HourLine({ day }: HourLineProps) {
           </td>
           <td scope="row" className={styles['hour-cell']}>
             <Button
+              className={styles['top-aligned-button']}
               variant={ButtonVariant.TERNARY}
               icon={fullLessIcon}
               onClick={removeAfternoon}
