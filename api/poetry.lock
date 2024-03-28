@@ -702,6 +702,22 @@ files = [
 ]
 
 [[package]]
+name = "check-oldies"
+version = "0.8.10"
+description = "Warns about unattended branches and FIXME or TODO annotations"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "check_oldies-0.8.10-py2.py3-none-any.whl", hash = "sha256:0555f48fcf2655d971776a8ec34b982eb7240095a0bbb938ff9cf882c615fbf4"},
+]
+
+[package.dependencies]
+toml = {version = "*", optional = true, markers = "extra == \"toml\""}
+
+[package.extras]
+toml = ["toml"]
+
+[[package]]
 name = "cli-helpers"
 version = "2.3.0"
 description = "Helpers for building command-line apps"
@@ -5064,6 +5080,17 @@ doc = ["sphinx", "sphinx_rtd_theme"]
 test = ["flake8", "isort", "pytest"]
 
 [[package]]
+name = "toml"
+version = "0.10.2"
+description = "Python Library for Tom's Obvious, Minimal Language"
+optional = false
+python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
+files = [
+    {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},
+    {file = "toml-0.10.2.tar.gz", hash = "sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f"},
+]
+
+[[package]]
 name = "tomlkit"
 version = "0.12.1"
 description = "Style preserving TOML library"
@@ -5624,4 +5651,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "366632fa6898e3aa8490e5b2beae1790ccc28af8bdb885b609053a24865ece38"
+content-hash = "3efb935fb90cceb305ee38330ec877bd56b09d19661efbcac65e2e24f4d7fe33"
