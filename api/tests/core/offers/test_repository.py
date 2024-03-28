@@ -16,7 +16,6 @@ import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
-from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.models import db
 from pcapi.models import offer_mixin
 import pcapi.repository.repository as db_repository
@@ -44,11 +43,11 @@ class GetCappedOffersForFiltersTest:
         # 1 to get user_offerer
         # 1 to get offers
         with assert_num_queries(3):
-            offer_recap = repository.get_capped_offers_for_filters(
+            offers = repository.get_capped_offers_for_filters(
                 user_id=user_offerer.user.id, user_is_admin=user_offerer.user.has_admin_role, offers_limit=50
             )
 
-        assert len(offer_recap.offers) == 5
+        assert len(offers) == 5
 
     @pytest.mark.usefixtures("db_session")
     def should_return_offers_capped_to_max_offers_count(self):
@@ -68,8 +67,7 @@ class GetCappedOffersForFiltersTest:
         )
 
         # Then
-        assert isinstance(offers, OffersRecap)
-        assert len(offers.offers) == 1
+        assert len(offers) == 1
 
     @pytest.mark.usefixtures("db_session")
     def should_return_offers_sorted_by_id_desc(self):
@@ -88,7 +86,7 @@ class GetCappedOffersForFiltersTest:
         )
 
         # Then
-        assert offers.offers[0].id > offers.offers[1].id
+        assert offers[0].id > offers[1].id
 
     @pytest.mark.usefixtures("db_session")
     def should_include_draft_offers_when_requesting_all_offers(self, app):
@@ -108,7 +106,7 @@ class GetCappedOffersForFiltersTest:
         )
 
         # then
-        offers_id = {offer.id for offer in offers.offers}
+        offers_id = {offer.id for offer in offers}
         assert offers_id == {non_draft_offer.id, draft_offer.id}
 
     @pytest.mark.usefixtures("db_session")
@@ -117,7 +115,8 @@ class GetCappedOffersForFiltersTest:
         requested_offer = factories.OfferFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id, venue__managingOfferer=user_offerer.offerer
         )
-        other_offer = factories.OfferFactory(
+        # other offer
+        factories.OfferFactory(
             subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id, venue__managingOfferer=user_offerer.offerer
         )
 
@@ -129,10 +128,8 @@ class GetCappedOffersForFiltersTest:
         )
 
         # then
-        offers_id = [offer.id for offer in offers.offers]
-        assert requested_offer.id in offers_id
-        assert other_offer.id not in offers_id
-        assert len(offers.offers) == 1
+        assert len(offers) == 1
+        assert requested_offer.id == offers[0].id
 
     @pytest.mark.usefixtures("db_session")
     def test_filter_on_creation_mode(self):
@@ -149,8 +146,8 @@ class GetCappedOffersForFiltersTest:
             offers_limit=10,
             creation_mode="manual",
         )
-        assert len(offers.offers) == 1
-        assert offers.offers[0].id == manual_offer.id
+        assert len(offers) == 1
+        assert offers[0].id == manual_offer.id
 
         offers = repository.get_capped_offers_for_filters(
             user_id=pro_user.id,
@@ -158,8 +155,8 @@ class GetCappedOffersForFiltersTest:
             offers_limit=10,
             creation_mode="imported",
         )
-        assert len(offers.offers) == 1
-        assert offers.offers[0].id == synced_offer.id
+        assert len(offers) == 1
+        assert offers[0].id == synced_offer.id
 
     @pytest.mark.usefixtures("db_session")
     def should_not_return_event_offers_with_only_deleted_stock_if_filtering_by_time_period(self):
@@ -179,9 +176,7 @@ class GetCappedOffersForFiltersTest:
         )
 
         # then
-        offers_id = [offer.id for offer in offers.offers]
-        assert offer_in_requested_time_period.id not in offers_id
-        assert len(offers.offers) == 0
+        assert len(offers) == 0
 
     @pytest.mark.usefixtures("db_session")
     def should_consider_venue_locale_datetime_when_filtering_by_date(self):
@@ -208,10 +203,10 @@ class GetCappedOffersForFiltersTest:
         )
 
         # then
-        offers_id = [offer.id for offer in offers.offers]
+        offers_id = [offer.id for offer in offers]
         assert offer_in_cayenne.id in offers_id
         assert offer_in_mayotte.id in offers_id
-        assert len(offers.offers) == 2
+        assert len(offers) == 2
 
     class WhenUserIsAdminTest:
         @pytest.mark.usefixtures("db_session")
@@ -219,7 +214,8 @@ class GetCappedOffersForFiltersTest:
             # given
             admin = users_factories.AdminFactory()
             offer_for_requested_venue = factories.OfferFactory()
-            offer_for_other_venue = factories.OfferFactory()
+            # offer for other venue
+            factories.OfferFactory()
 
             # when
             offers = repository.get_capped_offers_for_filters(
@@ -230,10 +226,8 @@ class GetCappedOffersForFiltersTest:
             )
 
             # then
-            offers_id = [offer.id for offer in offers.offers]
-            assert offer_for_requested_venue.id in offers_id
-            assert offer_for_other_venue.id not in offers_id
-            assert len(offers.offers) == 1
+            assert len(offers) == 1
+            assert offer_for_requested_venue.id == offers[0].id
 
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_of_given_venue_when_user_is_attached_to_its_offerer(self, app):
@@ -243,7 +237,8 @@ class GetCappedOffersForFiltersTest:
             offer_for_requested_venue = factories.OfferFactory(
                 venue__managingOfferer=admin_attachment_to_offerer.offerer
             )
-            offer_for_other_venue = factories.OfferFactory(venue__managingOfferer=admin_attachment_to_offerer.offerer)
+            # offer for other venue
+            factories.OfferFactory(venue__managingOfferer=admin_attachment_to_offerer.offerer)
 
             # when
             offers = repository.get_capped_offers_for_filters(
@@ -254,17 +249,16 @@ class GetCappedOffersForFiltersTest:
             )
 
             # then
-            offers_id = [offer.id for offer in offers.offers]
-            assert offer_for_requested_venue.id in offers_id
-            assert offer_for_other_venue.id not in offers_id
-            assert len(offers.offers) == 1
+            assert len(offers) == 1
+            assert offer_for_requested_venue.id == offers[0].id
 
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_of_given_offerer_when_user_is_not_attached_to_it(self):
             # given
             admin = users_factories.AdminFactory()
             offer_for_requested_offerer = factories.OfferFactory()
-            offer_for_other_offerer = factories.OfferFactory()
+            # offer for other offerer
+            factories.OfferFactory()
 
             # When
             offers = repository.get_capped_offers_for_filters(
@@ -275,10 +269,8 @@ class GetCappedOffersForFiltersTest:
             )
 
             # then
-            offers_id = [offer.id for offer in offers.offers]
-            assert offer_for_requested_offerer.id in offers_id
-            assert offer_for_other_offerer.id not in offers_id
-            assert len(offers.offers) == 1
+            assert len(offers) == 1
+            assert offer_for_requested_offerer.id == offers[0].id
 
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_of_given_offerer_when_user_is_attached_to_it(self):
@@ -289,9 +281,8 @@ class GetCappedOffersForFiltersTest:
             offer_for_requested_offerer = factories.OfferFactory(
                 venue__managingOfferer=admin_attachment_to_requested_offerer.offerer
             )
-            offer_for_other_offerer = factories.OfferFactory(
-                venue__managingOfferer=admin_attachment_to_other_offerer.offerer
-            )
+            # offer for other offerer
+            factories.OfferFactory(venue__managingOfferer=admin_attachment_to_other_offerer.offerer)
 
             # When
             offers = repository.get_capped_offers_for_filters(
@@ -302,10 +293,8 @@ class GetCappedOffersForFiltersTest:
             )
 
             # then
-            offers_id = [offer.id for offer in offers.offers]
-            assert offer_for_requested_offerer.id in offers_id
-            assert offer_for_other_offerer.id not in offers_id
-            assert len(offers.offers) == 1
+            assert len(offers) == 1
+            assert offer_for_requested_offerer.id == offers[0].id
 
     class WhenUserIsProTest:
         @pytest.mark.usefixtures("db_session")
@@ -313,7 +302,8 @@ class GetCappedOffersForFiltersTest:
             # given
             pro = users_factories.ProFactory()
             offer_for_requested_venue = factories.OfferFactory()
-            offer_for_other_venue = factories.OfferFactory()
+            # offer for other venue
+            factories.OfferFactory()
 
             # when
             offers = repository.get_capped_offers_for_filters(
@@ -324,10 +314,7 @@ class GetCappedOffersForFiltersTest:
             )
 
             # then
-            offers_id = [offer.id for offer in offers.offers]
-            assert offer_for_requested_venue.id not in offers_id
-            assert offer_for_other_venue.id not in offers_id
-            assert len(offers.offers) == 0
+            assert len(offers) == 0
 
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_of_given_venue_when_user_is_attached_to_its_offerer(self, app):
@@ -335,7 +322,8 @@ class GetCappedOffersForFiltersTest:
             pro = users_factories.ProFactory()
             pro_attachment_to_offerer = offerers_factories.UserOffererFactory(user=pro)
             offer_for_requested_venue = factories.OfferFactory(venue__managingOfferer=pro_attachment_to_offerer.offerer)
-            offer_for_other_venue = factories.OfferFactory(venue__managingOfferer=pro_attachment_to_offerer.offerer)
+            # offer for other venue
+            factories.OfferFactory(venue__managingOfferer=pro_attachment_to_offerer.offerer)
 
             # when
             offers = repository.get_capped_offers_for_filters(
@@ -346,17 +334,16 @@ class GetCappedOffersForFiltersTest:
             )
 
             # then
-            offers_id = [offer.id for offer in offers.offers]
-            assert offer_for_requested_venue.id in offers_id
-            assert offer_for_other_venue.id not in offers_id
-            assert len(offers.offers) == 1
+            assert len(offers) == 1
+            assert offer_for_requested_venue.id == offers[0].id
 
         @pytest.mark.usefixtures("db_session")
         def should_not_return_offers_of_given_offerer_when_user_is_not_attached_to_it(self):
             # given
             pro = users_factories.ProFactory()
             offer_for_requested_offerer = factories.OfferFactory()
-            offer_for_other_offerer = factories.OfferFactory()
+            # offer for other offerer
+            factories.OfferFactory()
 
             # When
             offers = repository.get_capped_offers_for_filters(
@@ -367,10 +354,7 @@ class GetCappedOffersForFiltersTest:
             )
 
             # then
-            offers_id = [offer.id for offer in offers.offers]
-            assert offer_for_requested_offerer.id not in offers_id
-            assert offer_for_other_offerer.id not in offers_id
-            assert len(offers.offers) == 0
+            assert len(offers) == 0
 
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_of_given_offerer_when_user_is_attached_to_it(self):
@@ -381,9 +365,8 @@ class GetCappedOffersForFiltersTest:
             offer_for_requested_offerer = factories.OfferFactory(
                 venue__managingOfferer=pro_attachment_to_requested_offerer.offerer
             )
-            offer_for_other_offerer = factories.OfferFactory(
-                venue__managingOfferer=pro_attachment_to_other_offerer.offerer
-            )
+            # offer for other offerer
+            factories.OfferFactory(venue__managingOfferer=pro_attachment_to_other_offerer.offerer)
 
             # When
             offers = repository.get_capped_offers_for_filters(
@@ -394,10 +377,8 @@ class GetCappedOffersForFiltersTest:
             )
 
             # then
-            offers_id = [offer.id for offer in offers.offers]
-            assert offer_for_requested_offerer.id in offers_id
-            assert offer_for_other_offerer.id not in offers_id
-            assert len(offers.offers) == 1
+            assert len(offers) == 1
+            assert offer_for_requested_offerer.id == offers[0].id
 
     class NameOrIsbnFilterTest:
         @pytest.mark.usefixtures("db_session")
@@ -405,7 +386,8 @@ class GetCappedOffersForFiltersTest:
             # given
             user_offerer = offerers_factories.UserOffererFactory()
             expected_offer = factories.OfferFactory(name="ocs", venue__managingOfferer=user_offerer.offerer)
-            other_offer = factories.OfferFactory(name="ocsir", venue__managingOfferer=user_offerer.offerer)
+            # other offer
+            factories.OfferFactory(name="ocsir", venue__managingOfferer=user_offerer.offerer)
 
             # when
             offers = repository.get_capped_offers_for_filters(
@@ -416,10 +398,8 @@ class GetCappedOffersForFiltersTest:
             )
 
             # then
-            offers_id = [offer.id for offer in offers.offers]
-            assert expected_offer.id in offers_id
-            assert other_offer.id not in offers_id
-            assert len(offers.offers) == 1
+            assert len(offers) == 1
+            assert expected_offer.id == offers[0].id
 
         @pytest.mark.usefixtures("db_session")
         def should_return_offer_which_name_contains_keyword_when_keyword_is_more_than_3_letters(self, app):
@@ -440,11 +420,11 @@ class GetCappedOffersForFiltersTest:
             )
 
             # then
-            offers_id = [offer.id for offer in offers.offers]
+            assert len(offers) == 2
+            offers_id = [offer.id for offer in offers]
             assert expected_offer.id in offers_id
             assert another_expected_offer.id in offers_id
             assert other_offer.id not in offers_id
-            assert len(offers.offers) == 2
 
         @pytest.mark.usefixtures("db_session")
         def should_be_case_insensitive(self, app):
@@ -464,17 +444,18 @@ class GetCappedOffersForFiltersTest:
             )
 
             # then
-            offers_id = [offer.id for offer in offers.offers]
+            assert len(offers) == 2
+            offers_id = [offer.id for offer in offers]
             assert expected_offer.id in offers_id
             assert another_expected_offer.id in offers_id
-            assert len(offers.offers) == 2
 
         @pytest.mark.usefixtures("db_session")
         def should_be_accent_sensitive(self, app):
             # given
             user_offerer = offerers_factories.UserOffererFactory()
             expected_offer = factories.OfferFactory(name="ocean", venue__managingOfferer=user_offerer.offerer)
-            other_offer = factories.OfferFactory(name="océan", venue__managingOfferer=user_offerer.offerer)
+            # other offer
+            factories.OfferFactory(name="océan", venue__managingOfferer=user_offerer.offerer)
 
             # when
             offers = repository.get_capped_offers_for_filters(
@@ -485,10 +466,8 @@ class GetCappedOffersForFiltersTest:
             )
 
             # then
-            offers_id = [offer.id for offer in offers.offers]
-            assert expected_offer.id in offers_id
-            assert other_offer.id not in offers_id
-            assert len(offers.offers) == 1
+            assert len(offers) == 1
+            assert expected_offer.id == offers[0].id
 
         @pytest.mark.usefixtures("db_session")
         def should_return_offer_which_ean_is_equal_to_name_keyword_or_ean(self):
@@ -497,7 +476,8 @@ class GetCappedOffersForFiltersTest:
             expected_offer = factories.OfferFactory(
                 name="seras-tu là", venue__managingOfferer=user_offerer.offerer, extraData={"ean": "1234567891234"}
             )
-            other_offer = factories.OfferFactory(
+            # other offer
+            factories.OfferFactory(
                 name="François, seras-tu là ?",
                 venue__managingOfferer=user_offerer.offerer,
                 extraData={"ean": "1234567891235"},
@@ -512,10 +492,8 @@ class GetCappedOffersForFiltersTest:
             )
 
             # then
-            offers_id = [offer.id for offer in offers.offers]
-            assert expected_offer.id in offers_id
-            assert other_offer.id not in offers_id
-            assert len(offers.offers) == 1
+            assert len(offers) == 1
+            assert expected_offer.id == offers[0].id
 
     class StatusFiltersTest:
         def init_test_data(self):
@@ -724,7 +702,7 @@ class GetCappedOffersForFiltersTest:
             )
 
             # then
-            offer_ids = [offer.id for offer in offers.offers]
+            offer_ids = [offer.id for offer in offers]
             assert self.active_thing_offer_with_one_stock_with_remaining_quantity.id in offer_ids
             assert self.active_event_in_six_days_offer.id in offer_ids
             assert self.active_thing_offer_with_all_stocks_without_quantity.id in offer_ids
@@ -745,7 +723,7 @@ class GetCappedOffersForFiltersTest:
             assert self.expired_thing_offer_with_a_stock_expired_with_remaining_quantity.id not in offer_ids
             assert self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity.id not in offer_ids
             assert self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity.id not in offer_ids
-            assert len(offers.offers) == 5
+            assert len(offers) == 5
 
         @pytest.mark.usefixtures("db_session")
         def should_return_only_inactive_offers_when_requesting_inactive_status(self):
@@ -758,7 +736,7 @@ class GetCappedOffersForFiltersTest:
             )
 
             # then
-            offer_ids = [offer.id for offer in offers.offers]
+            offer_ids = [offer.id for offer in offers]
             assert self.active_thing_offer_with_one_stock_with_remaining_quantity.id not in offer_ids
             assert self.active_thing_offer_with_all_stocks_without_quantity.id not in offer_ids
             assert self.active_event_offer_with_stock_in_the_future_without_quantity.id not in offer_ids
@@ -779,7 +757,7 @@ class GetCappedOffersForFiltersTest:
             assert self.expired_thing_offer_with_a_stock_expired_with_zero_remaining_quantity.id not in offer_ids
             assert self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity.id not in offer_ids
             assert self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity.id not in offer_ids
-            assert len(offers.offers) == 4
+            assert len(offers) == 4
 
         @pytest.mark.usefixtures("db_session")
         def should_return_only_sold_out_offers_when_requesting_sold_out_status(self):
@@ -792,7 +770,7 @@ class GetCappedOffersForFiltersTest:
             )
 
             # then
-            offer_ids = [offer.id for offer in offers.offers]
+            offer_ids = [offer.id for offer in offers]
             assert self.active_thing_offer_with_one_stock_with_remaining_quantity.id not in offer_ids
             assert self.active_thing_offer_with_all_stocks_without_quantity.id not in offer_ids
             assert self.active_event_offer_with_stock_in_the_future_without_quantity.id not in offer_ids
@@ -812,7 +790,7 @@ class GetCappedOffersForFiltersTest:
             assert self.expired_thing_offer_with_a_stock_expired_with_zero_remaining_quantity.id not in offer_ids
             assert self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity.id not in offer_ids
             assert self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity.id not in offer_ids
-            assert len(offers.offers) == 6
+            assert len(offers) == 6
 
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_with_no_stocks_when_requesting_sold_out_status(self):
@@ -825,7 +803,7 @@ class GetCappedOffersForFiltersTest:
             )
 
             # then
-            offer_ids = [offer.id for offer in offers.offers]
+            offer_ids = [offer.id for offer in offers]
             assert self.sold_out_thing_offer_without_stock.id in offer_ids
             assert self.sold_out_event_offer_with_only_one_stock_soft_deleted.id in offer_ids
 
@@ -840,7 +818,7 @@ class GetCappedOffersForFiltersTest:
             )
 
             # then
-            offer_ids = [offer.id for offer in offers.offers]
+            offer_ids = [offer.id for offer in offers]
             assert self.sold_old_thing_offer_with_all_stocks_empty.id in offer_ids
 
         @pytest.mark.usefixtures("db_session")
@@ -854,7 +832,7 @@ class GetCappedOffersForFiltersTest:
             )
 
             # then
-            offer_ids = [offer.id for offer in offers.offers]
+            offer_ids = [offer.id for offer in offers]
             assert self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity.id in offer_ids
 
         @pytest.mark.usefixtures("db_session")
@@ -868,7 +846,7 @@ class GetCappedOffersForFiltersTest:
             )
 
             # then
-            offer_ids = [offer.id for offer in offers.offers]
+            offer_ids = [offer.id for offer in offers]
             assert self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity.id not in offer_ids
 
         @pytest.mark.usefixtures("db_session")
@@ -882,7 +860,7 @@ class GetCappedOffersForFiltersTest:
             )
 
             # then
-            offer_ids = [offer.id for offer in offers.offers]
+            offer_ids = [offer.id for offer in offers]
             assert self.active_thing_offer_with_one_stock_with_remaining_quantity.id not in offer_ids
             assert self.active_thing_offer_with_all_stocks_without_quantity.id not in offer_ids
             assert self.active_event_offer_with_stock_in_the_future_without_quantity.id not in offer_ids
@@ -903,7 +881,7 @@ class GetCappedOffersForFiltersTest:
             assert self.expired_thing_offer_with_a_stock_expired_with_zero_remaining_quantity.id in offer_ids
             assert self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity.id in offer_ids
             assert self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity.id in offer_ids
-            assert len(offers.offers) == 5
+            assert len(offers) == 5
 
         @pytest.mark.usefixtures("db_session")
         def should_return_only_pending_offers_when_requesting_pending_status(self):
@@ -926,9 +904,9 @@ class GetCappedOffersForFiltersTest:
             )
 
             # then
-            assert len(offers.offers) == 1
-            assert offers.offers[0].name == "Offre en attente"
-            assert offers.offers[0].status == offer_mixin.OfferStatus.PENDING.name
+            assert len(offers) == 1
+            assert offers[0].name == "Offre en attente"
+            assert offers[0].status == offer_mixin.OfferStatus.PENDING.name
 
         @pytest.mark.usefixtures("db_session")
         def should_return_only_rejected_offers_when_requesting_rejected_status(self):
@@ -951,9 +929,9 @@ class GetCappedOffersForFiltersTest:
             )
 
             # then
-            assert len(offers.offers) == 1
-            assert offers.offers[0].name == "Offre rejetée"
-            assert offers.offers[0].status == offer_mixin.OfferStatus.REJECTED.name
+            assert len(offers) == 1
+            assert offers[0].name == "Offre rejetée"
+            assert offers[0].status == offer_mixin.OfferStatus.REJECTED.name
 
         @pytest.mark.usefixtures("db_session")
         def should_return_only_sold_out_offers_and_requested_venue_when_requesting_sold_out_status_and_specific_venue(
@@ -972,7 +950,7 @@ class GetCappedOffersForFiltersTest:
             )
 
             # then
-            offer_ids = [offer.id for offer in offers.offers]
+            offer_ids = [offer.id for offer in offers]
             assert self.sold_out_thing_offer_without_stock.id not in offer_ids
             assert self.sold_old_thing_offer_with_all_stocks_empty.id not in offer_ids
             assert (
@@ -981,7 +959,7 @@ class GetCappedOffersForFiltersTest:
             assert self.sold_out_event_offer_with_only_one_stock_soft_deleted.id not in offer_ids
             assert self.sold_out_event_offer_without_stock.id not in offer_ids
             assert self.sold_out_offer_on_other_venue.id in offer_ids
-            assert len(offers.offers) == 1
+            assert len(offers) == 1
 
         @pytest.mark.usefixtures("db_session")
         def should_return_only_active_offer_on_specific_period_when_requesting_active_status_and_time_period(self):
@@ -1003,13 +981,13 @@ class GetCappedOffersForFiltersTest:
             )
 
             # then
-            offer_ids = [offer.id for offer in offers.offers]
+            offer_ids = [offer.id for offer in offers]
             assert self.active_event_in_six_days_offer.id in offer_ids
             assert self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity.id not in offer_ids
             assert self.active_event_offer_with_stock_in_the_future_without_quantity.id not in offer_ids
             assert self.active_thing_offer_with_all_stocks_without_quantity.id not in offer_ids
             assert self.active_thing_offer_with_one_stock_with_remaining_quantity.id not in offer_ids
-            assert len(offers.offers) == 1
+            assert len(offers) == 1
 
 
 @pytest.mark.usefixtures("db_session")

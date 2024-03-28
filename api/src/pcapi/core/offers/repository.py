@@ -17,8 +17,6 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers import models as providers_models
 from pcapi.core.users import models as users_models
-from pcapi.domain.pro_offers import offers_recap
-from pcapi.infrastructure.repository.pro_offers import offers_recap_domain_converter
 from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.utils import custom_keys
@@ -64,7 +62,7 @@ def get_capped_offers_for_filters(
     creation_mode: str | None = None,
     period_beginning_date: datetime.date | None = None,
     period_ending_date: datetime.date | None = None,
-) -> offers_recap.OffersRecap:
+) -> list[models.Offer]:
     query = get_offers_by_filters(
         user_id=user_id,
         user_is_admin=user_is_admin,
@@ -137,10 +135,7 @@ def get_capped_offers_for_filters(
     if len(offers) < offers_limit:
         offers = sorted(offers, key=operator.attrgetter("id"), reverse=True)
 
-    # FIXME (cgaunet, 2020-11-03): we should not have serialization logic in the repository
-    return offers_recap_domain_converter.to_domain(
-        offers=offers,
-    )
+    return offers
 
 
 def get_offers_by_ids(user: users_models.User, offer_ids: list[int]) -> flask_sqlalchemy.BaseQuery:

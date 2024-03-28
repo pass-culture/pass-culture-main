@@ -43,7 +43,6 @@ from pcapi.core.offers import models as offers_models
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.models as providers_models
 import pcapi.core.users.models as users_models
-from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import offer_mixin
@@ -85,33 +84,6 @@ class T_UNCHANGED(enum.Enum):
 
 
 UNCHANGED = T_UNCHANGED.TOKEN
-
-
-def list_offers_for_pro_user(
-    user_id: int,
-    user_is_admin: bool,
-    category_id: str | None,
-    offerer_id: int | None,
-    venue_id: int | None = None,
-    name_keywords_or_ean: str | None = None,
-    status: str | None = None,
-    creation_mode: str | None = None,
-    period_beginning_date: datetime.date | None = None,
-    period_ending_date: datetime.date | None = None,
-) -> OffersRecap:
-    return offers_repository.get_capped_offers_for_filters(
-        user_id=user_id,
-        user_is_admin=user_is_admin,
-        offers_limit=OFFERS_RECAP_LIMIT,
-        offerer_id=offerer_id,
-        status=status,
-        venue_id=venue_id,
-        category_id=category_id,
-        name_keywords_or_ean=name_keywords_or_ean,
-        creation_mode=creation_mode,
-        period_beginning_date=period_beginning_date,
-        period_ending_date=period_ending_date,
-    )
 
 
 def build_new_offer_from_product(
