@@ -13,6 +13,7 @@ interface SkipLinksProps {
 const SkipLinks = ({ displayMenu = false }: SkipLinksProps): JSX.Element => {
   const buttons: { anchor: string; label: string }[] = [
     { anchor: '#content', label: 'Aller au contenu' },
+    { anchor: '#footer', label: 'Aller au pied de page' },
   ].concat(displayMenu ? { anchor: '#header-navigation', label: 'Menu' } : [])
 
   return (

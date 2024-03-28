@@ -29,14 +29,14 @@
     flex-direction: column;
     width: 100%;
     margin: rem.torem(24px);
-    gap: rem.torem(16px);
     justify-content: center;
     align-items: flex-start;
 
-    @media (min-width: size.$mobile) {
+    @media (min-width: size.$tablet) {
       flex-direction: row;
       align-items: center;
       margin: 0 auto;
+      gap: rem.torem(16px);
     }
   }
 }
