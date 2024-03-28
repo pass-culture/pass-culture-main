@@ -13,6 +13,8 @@ type AdageUserContextType = {
   adageUser: AuthenticatedResponse | null
   favoritesCount?: number
   setFavoriteCount?: Dispatch<SetStateAction<number>>
+  institutionOfferCount?: number
+  setInstitutionOfferCount?: Dispatch<SetStateAction<number>>
 }
 
 export const AdageUserContext = createContext<AdageUserContextType>({
@@ -27,9 +29,11 @@ export const AdageUserContextProvider = ({
   adageUser: AdageUserContextType['adageUser']
 }): JSX.Element => {
   const [favoritesCount, setFavoriteCount] = useState<number>(0)
+  const [institutionOfferCount, setInstitutionOfferCount] = useState<number>(0)
 
   useEffect(() => {
     setFavoriteCount(adageUser?.favoritesCount ?? 0)
+    setInstitutionOfferCount(adageUser?.offersCount ?? 0)
   }, [adageUser])
 
   return (
@@ -38,6 +42,8 @@ export const AdageUserContextProvider = ({
         adageUser,
         favoritesCount,
         setFavoriteCount,
+        institutionOfferCount,
+        setInstitutionOfferCount,
       }}
     >
       {children}

@@ -5,6 +5,8 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   OfferAddressType,
 } from 'apiClient/v1'
+import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
+import { defaultAdageUser } from 'utils/adageFactories'
 import {
   defaultGetVenue,
   getCollectiveOfferFactory,
@@ -17,7 +19,11 @@ import AdagePreviewLayout from '../AdagePreviewLayout'
 function renderAdagePreviewLayout(
   offer: GetCollectiveOfferTemplateResponseModel = getCollectiveOfferTemplateFactory()
 ) {
-  renderWithProviders(<AdagePreviewLayout offer={offer} />)
+  renderWithProviders(
+    <AdageUserContextProvider adageUser={defaultAdageUser}>
+      <AdagePreviewLayout offer={offer} />
+    </AdageUserContextProvider>
+  )
 }
 
 describe('AdagePreviewLayout', () => {
