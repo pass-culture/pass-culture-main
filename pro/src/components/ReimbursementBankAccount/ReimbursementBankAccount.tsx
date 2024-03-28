@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 
@@ -51,15 +52,35 @@ const ReimbursementBankAccount = ({
         </div>
       </div>
       {bankAccount.status === BankAccountApplicationStatus.EN_CONSTRUCTION ||
-      bankAccount.status === BankAccountApplicationStatus.EN_INSTRUCTION ? (
-        <div className={styles['pending-account']}>
+      bankAccount.status === BankAccountApplicationStatus.EN_INSTRUCTION ||
+      bankAccount.status === BankAccountApplicationStatus.A_CORRIGER ? (
+        <div
+          className={cn(styles['pending-account'], {
+            [styles['needs-correction']]:
+              bankAccount.status === BankAccountApplicationStatus.A_CORRIGER,
+          })}
+        >
           <SvgIcon
-            src={fullWaitIcon}
+            src={
+              bankAccount.status === BankAccountApplicationStatus.A_CORRIGER
+                ? fullErrorIcon
+                : fullWaitIcon
+            }
             alt={''}
             width="48"
-            className={styles['wait-icon']}
+            className={cn(styles['status-icon'], {
+              [styles['error-icon']]:
+                bankAccount.status === BankAccountApplicationStatus.A_CORRIGER,
+            })}
           />
-          <div>Compte bancaire en cours de validation par nos services</div>
+          <div>
+            Status du dossier :{' '}
+            <span className={styles['account-status']}>
+              {bankAccount.status === BankAccountApplicationStatus.A_CORRIGER
+                ? 'informations manquantes'
+                : 'en cours de validation'}
+            </span>
+          </div>
           <ButtonLink
             link={{
               to: `https://www.demarches-simplifiees.fr/dossiers/${bankAccount.dsApplicationId}/messagerie`,
@@ -79,7 +100,9 @@ const ReimbursementBankAccount = ({
             icon={fullLinkIcon}
             className={styles['ds-link-button']}
           >
-            Suivre le dossier
+            {bankAccount.status === BankAccountApplicationStatus.A_CORRIGER
+              ? 'Compléter le dossier'
+              : 'Voir le dossier'}
           </ButtonLink>
         </div>
       ) : (
