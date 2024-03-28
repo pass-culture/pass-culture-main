@@ -77,7 +77,10 @@ export const Homepage = (): JSX.Element => {
       label: item['name'],
     }))
   )
+
   const selectedOffererId =
+    // TODO remove this when noUncheckedIndexedAccess is enabled in TS config
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     searchParams.get('structure') ??
     getSavedOffererId(offererOptions) ??
     offererOptions[0]?.value ??
@@ -115,7 +118,7 @@ export const Homepage = (): JSX.Element => {
             managedVenues: [],
             hasActiveOffer: false,
             name: '',
-            id: Number(offererId) ?? 0,
+            id: Number(offererId),
             postalCode: '',
             allowedOnAdage: false,
           })

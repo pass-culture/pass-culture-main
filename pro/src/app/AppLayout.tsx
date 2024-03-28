@@ -78,7 +78,7 @@ export const AppLayout = ({
       {(layout === 'basic' || layout === 'sticky-actions') && (
         <Header
           lateralPanelOpen={lateralPanelOpen}
-          isTopMenuVisible={layout === 'basic' || layout === 'sticky-actions'}
+          isTopMenuVisible
           setLateralPanelOpen={setLateralPanelOpen}
           focusCloseButton={() => {
             setTimeout(() => {

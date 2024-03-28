@@ -76,9 +76,7 @@ export const VenueCreationLinks = ({ offerer }: VenueCreationLinksProps) => {
 
   return (
     <div className={styles['container']}>
-      {!(hasPhysicalVenue || hasVirtualOffers)
-        ? renderCard()
-        : renderLinks(false)}
+      {!hasVirtualOffers ? renderCard() : renderLinks(false)}
     </div>
   )
 }
