@@ -72,7 +72,7 @@ class PivotContext:
     @classmethod
     def delete_pivot(cls, pivot_id: int) -> bool:
         """
-        Common implementation except for Allocine for which deleting a pivot is not allowed.
+        Common implementation except for Allocine which works differently.
         """
         pivot_name = cls.pivot_name()
         pivot_model = cls.pivot_class()
