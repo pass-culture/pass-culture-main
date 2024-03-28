@@ -1,4 +1,4 @@
-import type { Story } from '@storybook/react'
+import type { StoryFn } from '@storybook/react'
 import React from 'react'
 
 import { ImagePreview } from '../ImagePreview'
@@ -18,7 +18,7 @@ interface Props {
   title: string
 }
 
-const Template: Story<Props> = (props) => (
+const Template: StoryFn<Props> = (props) => (
   <ImagePreviewsWrapper>
     <ImagePreview {...props}>
       <img alt="" className={style['home-screen-shell']} src={offerHomeShell} />

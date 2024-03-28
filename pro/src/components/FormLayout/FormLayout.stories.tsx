@@ -1,4 +1,4 @@
-import type { ComponentStory } from '@storybook/react'
+import type { StoryFn } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
@@ -12,7 +12,7 @@ export default {
   component: FormLayout,
 }
 
-const Template: ComponentStory<typeof FormLayout> = (args) => (
+const Template: StoryFn<typeof FormLayout> = (args) => (
   <div style={{ width: 780 }}>
     <FormLayout {...args}>
       <FormLayout.Section
@@ -70,7 +70,7 @@ const DemoInformationBox = () => (
   </div>
 )
 
-const TemplateDesigned: ComponentStory<typeof FormLayout> = (args) => (
+const TemplateDesigned: StoryFn<typeof FormLayout> = (args) => (
   <div style={{ width: 850 }}>
     <Formik initialValues={{}} onSubmit={() => alert('Form submit !')}>
       <FormLayout {...args}>

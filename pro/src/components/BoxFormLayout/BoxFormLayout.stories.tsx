@@ -1,4 +1,4 @@
-import type { Story } from '@storybook/react'
+import type { StoryFn } from '@storybook/react'
 import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
 
@@ -11,7 +11,7 @@ import { BoxFormLayout } from '.'
 
 type Props = React.ComponentProps<typeof BoxFormLayout>
 
-const Template: Story<Props> = () => {
+const Template: StoryFn<Props> = () => {
   const [showForm, setShowForm] = useState(false)
   const formik = useFormik({
     initialValues: { email: '', password: '' },
