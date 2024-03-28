@@ -479,6 +479,12 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         extraData["musicSubType"].astext,
         postgresql_where=extraData["musicSubType"] is not None,
     )
+    sa.Index(
+        "offer_gtl_music_type_idx",
+        extraData["gtl_id"].astext,
+        postgresql_where=subcategoryId in subcategories_v2.MUSIC_SUBCATEGORIES,
+        postgresql_using="hash",
+    )
     sa.Index("offer_show_type_idx", extraData["showType"].astext, postgresql_where=extraData["showType"] is not None)
     sa.Index(
         "offer_show_sub_type_idx",
