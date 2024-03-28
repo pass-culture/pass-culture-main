@@ -1,6 +1,6 @@
 {% import "components/clipboard.html" as clipboard %}
 {% import "components/logo.html" as logo %}
-{% from "components/badges.html" import build_pro_user_status_badge %}
+{% from "components/badges.html" import build_pro_user_status_badge, build_old_navigation_badge, build_new_navigation_badge %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
 {% from "components/forms.html" import build_form_fields_group with context %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
@@ -20,6 +20,13 @@
                   <span class="badge rounded-pill text-bg-danger align-middle">{{ user.isActive | format_state }}</span>
                 {% endif %}
                 {{ build_pro_user_status_badge(user) }}
+                {% if is_feature_active('WIP_ENABLE_PRO_SIDE_NAV') %}
+                  {% if user.has_new_nav %}
+                    {{ build_new_navigation_badge() }}
+                  {% else %}
+                    {{ build_old_navigation_badge() }}
+                  {% endif %}
+                {% endif %}
               </div>
               <div class="d-flex row-reverse justify-content-end flex-grow-1">
                 {% if has_permission("MANAGE_PRO_ENTITY") %}

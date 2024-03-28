@@ -49,7 +49,10 @@ def get(user_id: int) -> utils.BackofficeResponse:
     user = (
         users_api.get_pro_account_base_query(user_id)
         .options(
-            sa.orm.joinedload(users_models.User.UserOfferers).load_only(offerers_models.UserOfferer.validationStatus)
+            sa.orm.joinedload(users_models.User.UserOfferers).load_only(offerers_models.UserOfferer.validationStatus),
+            sa.orm.joinedload(users_models.User.pro_new_nav_state).load_only(
+                users_models.UserProNewNavState.newNavDate
+            ),
         )
         .one_or_none()
     )
