@@ -92,6 +92,8 @@ export const PartnerPages = ({
         </>
       )}
 
+      {/* TODO remove this when noUncheckedIndexedAccess is enabled in TS config */}
+      {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition */}
       {selectedVenue && (
         <PartnerPage
           offerer={offerer}
