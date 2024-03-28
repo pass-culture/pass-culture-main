@@ -1,3 +1,12 @@
+import enum
+
+
+class T_UNCHANGED(enum.Enum):
+    TOKEN = 0
+
+
+UNCHANGED = T_UNCHANGED.TOKEN
+
 # "categorieJuridiqueUniteLegale"
 # See https://www.insee.fr/fr/information/2028129 for the official list.
 CODE_TO_CATEGORY_MAPPING = {

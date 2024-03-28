@@ -4,6 +4,7 @@ import typing
 import sqlalchemy.orm as sqla_orm
 
 import pcapi.core.finance.models as finance_models
+from pcapi.core.offerers import constants as offerers_constants
 from pcapi.models.api_errors import ApiErrors
 
 from . import models
@@ -56,11 +57,12 @@ def check_venue_edition(modifications: dict[str, typing.Any], venue: models.Venu
         venue.motorDisabilityCompliant,
         venue.visualDisabilityCompliant,
     ]
+
     modifications_disability_compliance = [
-        modifications.get("audioDisabilityCompliant"),
-        modifications.get("mentalDisabilityCompliant"),
-        modifications.get("motorDisabilityCompliant"),
-        modifications.get("visualDisabilityCompliant"),
+        modifications.get("audioDisabilityCompliant", offerers_constants.UNCHANGED),
+        modifications.get("mentalDisabilityCompliant", offerers_constants.UNCHANGED),
+        modifications.get("motorDisabilityCompliant", offerers_constants.UNCHANGED),
+        modifications.get("visualDisabilityCompliant", offerers_constants.UNCHANGED),
     ]
 
     allowed_virtual_venue_modifications = {
@@ -82,7 +84,12 @@ def check_venue_edition(modifications: dict[str, typing.Any], venue: models.Venu
             raise ApiErrors(errors={"siret": ["Un lieu avec le même siret existe déjà"]})
     if "name" in modifications and modifications["name"] != venue.name and (siret is None or venue.siret == siret):
         raise ApiErrors(errors={"name": ["Vous ne pouvez pas modifier la raison sociale d'un lieu"]})
-    if not venue.isVirtual and None in venue_disability_compliance and None in modifications_disability_compliance:
+    if (
+        not venue.isVirtual
+        and None in venue_disability_compliance
+        and None in modifications_disability_compliance
+        and offerers_constants.UNCHANGED not in modifications_disability_compliance
+    ):
         raise ApiErrors(errors={"global": ["L'accessibilité du lieu doit être définie."]})
 
     if reimbursement_point_id:

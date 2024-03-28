@@ -99,6 +99,45 @@ class Returns200Test:
             }
         }
 
+    def test_edit_only_activity_parameters_and_not_venue_accessibility(self, client):
+        # given
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            name="old name",
+            managingOfferer=user_offerer.offerer,
+            audioDisabilityCompliant=None,
+            mentalDisabilityCompliant=None,
+            motorDisabilityCompliant=None,
+            visualDisabilityCompliant=None,
+        )
+
+        venue_label = offerers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        venue_id = venue.id
+
+        # when
+        venue_data = populate_missing_data_from_venue(
+            {
+                "publicName": "Ma librairie",
+                "venueTypeCode": "BOOKSTORE",
+                "venueLabelId": venue_label.id,
+                "withdrawalDetails": "",  # should not appear in history with None => ""
+            },
+            venue,
+        )
+
+        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+
+        # then
+        assert response.status_code == 200
+        venue = offerers_models.Venue.query.get(venue_id)
+        assert venue.publicName == "Ma librairie"
+        assert venue.audioDisabilityCompliant == None
+        assert venue.mentalDisabilityCompliant == None
+        assert venue.motorDisabilityCompliant == None
+        assert venue.visualDisabilityCompliant == None
+
     @patch("pcapi.routes.pro.venues.update_all_venue_offers_email_job.delay")
     def test_edit_venue_booking_email_with_applied_on_all_offers(
         self, mocked_update_all_venue_offers_email_job, client
