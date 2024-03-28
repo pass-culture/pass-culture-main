@@ -51,12 +51,8 @@ describe('IndivualOfferLayout', () => {
     expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
     expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
 
-    expect(
-      screen.getByRole('heading', { name: /offer name/ })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('heading', { name: /layout title/ })
-    ).toBeInTheDocument()
+    expect(screen.getByText(/offer name/)).toBeInTheDocument()
+    expect(screen.getByText(/layout title/)).toBeInTheDocument()
   })
 
   it('should not display stepper nor status when no stepper', () => {
@@ -86,9 +82,7 @@ describe('IndivualOfferLayout', () => {
     })
 
     expect(screen.getByTestId('status')).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: 'Désactiver' })
-    ).toBeInTheDocument()
+    expect(screen.getByText('Désactiver')).toBeInTheDocument()
     expect(screen.getByText('publiée')).toBeInTheDocument()
   })
 

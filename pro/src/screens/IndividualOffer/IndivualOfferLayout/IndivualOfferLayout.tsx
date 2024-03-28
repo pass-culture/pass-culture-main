@@ -1,5 +1,4 @@
 import cn from 'classnames'
-import React from 'react'
 
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { IndividualOfferNavigation } from 'components/IndividualOfferNavigation/IndividualOfferNavigation'
@@ -32,42 +31,34 @@ const IndivualOfferLayout = ({
   return (
     <>
       <div
-        className={cn(styles['title'], {
+        className={cn({
           [styles['title-without-name']]: !offer?.name,
         })}
       >
-        <div>
-          <h1>
-            {title}{' '}
-            {offer && (
-              <span className={styles['offer-title']}>{offer.name}</span>
-            )}
-          </h1>
+        <div className={styles['title-container']}>
+          <h1 className={styles['title']}>{title}</h1>
+          {shouldDisplayActionOnStatus && (
+            <span className={styles['status']}>
+              {
+                <Status
+                  offerId={offer.id}
+                  status={offer.status}
+                  isActive={offer.isActive}
+                  canDeactivate={offer.isActivable}
+                />
+              }
+            </span>
+          )}
         </div>
-        {shouldDisplayActionOnStatus && (
-          <div className={styles['right']}>
-            {
-              <Status
-                offerId={offer.id}
-                status={offer.status}
-                isActive={offer.isActive}
-                canDeactivate={offer.isActivable}
-              />
-            }
-          </div>
-        )}
+        {offer && <p className={styles['offer-title']}>{offer.name}</p>}
       </div>
-
       {offer && withStepper && <OfferStatusBanner status={offer.status} />}
-
       {offer?.lastProvider?.name && (
         <SynchronizedProviderInformation
           providerName={offer.lastProvider.name}
         />
       )}
-
       {withStepper && <IndividualOfferNavigation />}
-
       <div className={styles['content']}>{children}</div>
     </>
   )
