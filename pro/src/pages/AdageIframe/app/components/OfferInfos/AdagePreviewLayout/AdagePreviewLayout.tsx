@@ -86,7 +86,10 @@ export default function AdagePreviewLayout({ offer }: AdagePreviewLayoutProps) {
       },
       stock: {
         ...offer.collectiveStock,
-        price: Number(offer.collectiveStock?.price),
+        //  The price is mutliplied by 100 in the back when the offer is sent
+        //  through the passculture ADAGE api.
+        //  Thus we need to send a x100 prixe in the fake ADAGE component
+        price: Number(offer.collectiveStock?.price) * 100,
         id: Number(offer.collectiveStock?.id),
         isBookable: offer.isBookable,
       },
