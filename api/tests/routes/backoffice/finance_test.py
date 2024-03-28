@@ -852,9 +852,7 @@ class GetIncidentCreationFormTest(PostEndpointHelper):
     endpoint = "backoffice_web.finance_incidents.get_incident_creation_form"
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
-    error_message = 'Seules les réservations ayant les statuts "remboursée" et "annulée" et correspondant au même lieu peuvent faire l\'objet d\'un incident'
-
-    expected_num_queries = 6
+    expected_num_queries = 7
 
     def test_get_incident_creation_for_one_booking_form(self, authenticated_client, invoiced_pricing):
         venue = offerers_factories.VenueFactory()
@@ -917,10 +915,15 @@ class GetIncidentCreationFormTest(PostEndpointHelper):
         booking = bookings_factories.UsedBookingFactory()
         object_ids = str(booking.id)
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(
+            self.expected_num_queries - 1
+        ):  # don't query the number of BookingFinanceIncident with FinanceIncident's status in (CREATED, VALIDATED)
             response = self.post_to_endpoint(authenticated_client, form={"object_ids": object_ids})
 
-        assert self.error_message in html_parser.content_as_text(response.data)
+        assert (
+            html_parser.content_as_text(response.data)
+            == """Seules les réservations ayant le statut "remboursée" peuvent faire l'objet d'un incident."""
+        )
 
     def test_display_error_if_bookings_from_different_venues_selected(self, authenticated_client):
         selected_bookings = [
@@ -929,10 +932,15 @@ class GetIncidentCreationFormTest(PostEndpointHelper):
         ]
         object_ids = ",".join(str(booking.id) for booking in selected_bookings)
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(
+            self.expected_num_queries - 1
+        ):  # don't query the number of BookingFinanceIncident with FinanceIncident's status in (CREATED, VALIDATED)
             response = self.post_to_endpoint(authenticated_client, form={"object_ids": object_ids})
 
-        assert self.error_message in html_parser.content_as_text(response.data)
+        assert (
+            html_parser.content_as_text(response.data)
+            == "Un incident ne peut être créé qu'à partir de réservations venant du même lieu."
+        )
 
 
 class GetCollectiveBookingIncidentFormTest(PostEndpointHelper):
@@ -940,7 +948,7 @@ class GetCollectiveBookingIncidentFormTest(PostEndpointHelper):
     endpoint_kwargs = {"collective_booking_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
-    expected_num_queries = 9
+    expected_num_queries = 10
 
     def test_get_form(self, authenticated_client, invoiced_collective_pricing):
         collective_booking = educational_factories.ReimbursedCollectiveBookingFactory(
