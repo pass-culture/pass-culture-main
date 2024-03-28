@@ -6,6 +6,7 @@ import { apiAdage } from 'apiClient/api'
 import useNotification from 'hooks/useNotification'
 import strokeHourglass from 'icons/stroke-hourglass.svg'
 import './PrebookingButton.scss'
+import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { logOfferConversion } from 'pages/AdageIframe/libs/initAlgoliaAnalytics'
 import { Button } from 'ui-kit'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -13,6 +14,19 @@ import { LOGS_DATA } from 'utils/config'
 
 import { postBookingAdapater } from './adapters/postBookingAdapter'
 import PrebookingModal from './PrebookingModal'
+
+export interface PrebookingButtonProps {
+  className?: string
+  stock: OfferStockResponse
+  canPrebookOffers: boolean
+  offerId: number
+  queryId: string
+  isInSuggestions?: boolean
+  children?: React.ReactNode
+  hideLimitDate?: boolean
+  isPreview?: boolean
+  afterOfferPrebooked?: (id: number) => void
+}
 
 const PrebookingButton = ({
   className,
@@ -24,21 +38,13 @@ const PrebookingButton = ({
   children,
   hideLimitDate,
   isPreview = false,
-}: {
-  className?: string
-  stock: OfferStockResponse
-  canPrebookOffers: boolean
-  offerId: number
-  queryId: string
-  isInSuggestions?: boolean
-  children?: React.ReactNode
-  hideLimitDate?: boolean
-  isPreview?: boolean
-}): JSX.Element | null => {
+  afterOfferPrebooked,
+}: PrebookingButtonProps): JSX.Element | null => {
   const [hasPrebookedOffer, setHasPrebookedOffer] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const notification = useNotification()
+  const { setInstitutionOfferCount, institutionOfferCount } = useAdageUser()
 
   const handleBookingModalButtonClick = (stockId: number) => {
     if (LOGS_DATA) {
@@ -68,6 +74,10 @@ const PrebookingButton = ({
     }
 
     setHasPrebookedOffer(true)
+    setInstitutionOfferCount?.(
+      institutionOfferCount ? institutionOfferCount - 1 : 0
+    )
+    afterOfferPrebooked?.(offerId)
     closeModal()
     notification.success(message)
   }, [stock.id, offerId, queryId])

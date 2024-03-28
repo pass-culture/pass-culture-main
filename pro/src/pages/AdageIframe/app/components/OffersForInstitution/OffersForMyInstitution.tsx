@@ -10,6 +10,7 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
+import useAdageUser from '../../hooks/useAdageUser'
 import { AnalyticsContextProvider } from '../../providers/AnalyticsContextProvider'
 import Offer from '../OffersInstantSearch/OffersSearch/Offers/Offer'
 
@@ -22,6 +23,7 @@ const OffersForMyInstitution = (): JSX.Element => {
     CollectiveOfferResponseModel[]
   >([])
   const [loadingOffers, setLoadingOffers] = useState<boolean>(false)
+  const { institutionOfferCount } = useAdageUser()
 
   useEffect(() => {
     async function getMyInstitutionOffers() {
@@ -44,7 +46,15 @@ const OffersForMyInstitution = (): JSX.Element => {
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     getMyInstitutionOffers()
-  }, [])
+  }, [institutionOfferCount])
+
+  const prebookedOfferUpdate = (id: number) => {
+    //  Remove prebooked offer from list after it was prebooked from my institution page
+
+    setMyInstitutionOffers((prevOffers) =>
+      [...prevOffers].filter((offer) => offer.id !== id)
+    )
+  }
 
   if (loadingOffers) {
     return <Spinner message="Chargement en cours" />
@@ -110,7 +120,12 @@ const OffersForMyInstitution = (): JSX.Element => {
           {myInstitutionOffers.map((offer, i) => {
             return (
               <li key={offer.id} data-testid="offer-listitem">
-                <Offer offer={offer} queryId="" position={i}></Offer>
+                <Offer
+                  offer={offer}
+                  queryId=""
+                  position={i}
+                  afterOfferPrebooked={prebookedOfferUpdate}
+                />
               </li>
             )
           })}
