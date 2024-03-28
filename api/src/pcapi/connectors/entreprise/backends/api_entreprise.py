@@ -58,7 +58,7 @@ class EntrepriseBackend(BaseBackend):
         assert rate_limit_reset  # helps mypy
 
         percent_reached = 100 - (100 * int(rate_limit_remaining)) / int(rate_limit_total)
-        seconds_before_reset = max(0, int(rate_limit_reset) - int(time.time()))
+        seconds_before_reset = int(rate_limit_reset) - int(time.time())
         if percent_reached > 80:
             logger.warning(
                 "More than 80% of rate limit reached on API Entreprise",
@@ -70,7 +70,7 @@ class EntrepriseBackend(BaseBackend):
                     "seconds_before_reset": seconds_before_reset,
                 },
             )
-            current_app.redis_client.set(self._get_lock_name(subpath), "1", ex=seconds_before_reset)
+            current_app.redis_client.set(self._get_lock_name(subpath), "1", ex=max(1, seconds_before_reset))
 
     def _ensure_rate_limit(self, subpath: str) -> None:
         """

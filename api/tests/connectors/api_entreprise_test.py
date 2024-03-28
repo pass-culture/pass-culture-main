@@ -519,10 +519,11 @@ def test_check_rate_limit_ok(mock_redis_client_ttl, mock_redis_client_set, mock_
 
 
 @override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+@pytest.mark.parametrize("seconds", [15, 0])
 @unittest.mock.patch("flask.current_app.redis_client.set")
-def test_check_rate_limit_near_limit(mock_redis_client_set, caplog):
+def test_check_rate_limit_near_limit(mock_redis_client_set, seconds, caplog):
     siren = "123456789"
-    reset_timestamp = int(time.time()) + 15
+    reset_timestamp = int(time.time()) + seconds
     with requests_mock.Mocker() as mock:
         mock_request = mock.get(
             f"https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/{siren}",
@@ -539,6 +540,7 @@ def test_check_rate_limit_near_limit(mock_redis_client_set, caplog):
     assert mock_request.call_count == 1
     assert mock_redis_client_set.call_count == 2
     assert mock_redis_client_set.mock_calls[0].args == ("cache:entreprise:/v3/insee/:lock", "1")
+    assert mock_redis_client_set.mock_calls[0].kwargs["ex"] > 0
     assert mock_redis_client_set.mock_calls[0].kwargs["ex"] >= reset_timestamp - time.time()
     assert mock_redis_client_set.mock_calls[0].kwargs["ex"] < 50
     assert mock_redis_client_set.mock_calls[1].args[0] == f"cache:entreprise:/v3/insee/sirene/unites_legales/{siren}"
