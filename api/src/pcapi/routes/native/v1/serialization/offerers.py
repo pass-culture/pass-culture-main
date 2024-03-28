@@ -21,11 +21,3 @@ class VenueResponse(base.BaseVenueResponse):
     accessibility: VenueAccessibilityModel
     venueTypeCode: offerers_models.VenueTypeCodeKey
     bannerMeta: BannerMetaModel | None
-
-    class Config:
-        orm_mode = True
-
-    @classmethod
-    def from_orm(cls, venue: offerers_models.Venue) -> "VenueResponse":
-        venue.venueOpeningHours = venue.opening_days
-        return super().from_orm(venue)

@@ -123,7 +123,7 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
         "isWithdrawalAppliedOnAllOffers",
         "contact",
         "shouldSendMail",
-        "venueOpeningHours",
+        "openingHours",
     }
     update_venue_attrs = body.dict(exclude=not_venue_fields, exclude_unset=True)
     accessibility_fields = [
@@ -138,7 +138,7 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
     )
     have_withdrawal_details_changes = body.withdrawalDetails != venue.withdrawalDetails
     venue = offerers_api.update_venue(
-        venue, author=current_user, contact_data=body.contact, opening_days=body.venueOpeningHours, **update_venue_attrs
+        venue, author=current_user, contact_data=body.contact, opening_days=body.openingHours, **update_venue_attrs
     )
 
     if have_accessibility_changes and body.isAccessibilityAppliedOnAllOffers:

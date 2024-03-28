@@ -370,7 +370,7 @@ class Returns200Test:
         # when
         venue_data = populate_missing_data_from_venue(
             {
-                "venueOpeningHours": [
+                "openingHours": [
                     # We are only changing MONDAY opening Hours, TUESDAY is already like following
                     {"weekday": "MONDAY", "timespan": [["10:00", "13:00"], ["14:00", "19:30"]]},
                     {"weekday": "TUESDAY", "timespan": [["10:00", "13:00"], ["14:00", "19:30"]]},
@@ -384,7 +384,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert len(venue.action_history) == 1
 
-        tuesday_opening_hours = response.json["venueOpeningHours"].get("TUESDAY")
+        tuesday_opening_hours = response.json["openingHours"].get("TUESDAY")
         assert tuesday_opening_hours[0] == {"open": "10:00", "close": "13:00"}
         assert tuesday_opening_hours[1] == {"open": "14:00", "close": "19:30"}
 
