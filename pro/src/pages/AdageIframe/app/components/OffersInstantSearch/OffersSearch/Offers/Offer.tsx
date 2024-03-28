@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 import {
   AdageFrontRoles,
@@ -54,7 +54,8 @@ const Offer = ({
   openDetails = false,
 }: OfferProps): JSX.Element => {
   const [displayDetails, setDisplayDetails] = useState(openDetails)
-  const { adageUser } = useAdageUser()
+  const { adageUser, setInstitutionOfferCount, institutionOfferCount } =
+    useAdageUser()
 
   const isNewOfferInfoEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN'
@@ -206,6 +207,8 @@ const Offer = ({
                     queryId={queryId}
                     stock={offer.stock}
                     isInSuggestions={isInSuggestions}
+                    setInstitutionOfferCount={setInstitutionOfferCount}
+                    institutionOfferCount={institutionOfferCount}
                   />
                 )}
               </div>
