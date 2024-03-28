@@ -368,7 +368,7 @@ GOOGLE_CLIENT_SECRET = secrets_utils.get("GOOGLE_CLIENT_SECRET")
 USE_GOOGLE_WITHOUT_CREDENTIALS = bool(int(os.environ.get("USE_GOOGLE_WITHOUT_CREDENTIALS", 0)))
 
 # JOBS
-IS_JOB_ASYNC = bool(int(os.environ.get("IS_JOB_ASYNCHRONOUS", 1)))
+IS_JOB_SYNCHRONOUS = bool(int(os.environ.get("IS_JOB_SYNCHRONOUS", 0)))
 
 # Native app Google SSO
 NATIVE_APP_GOOGLE_CLIENT_ID = secrets_utils.get("NATIVE_APP_GOOGLE_CLIENT_ID")

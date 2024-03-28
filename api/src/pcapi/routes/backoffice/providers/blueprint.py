@@ -179,7 +179,6 @@ def update_provider(provider_id: int) -> utils.BackofficeResponse:
     provider.bookingExternalUrl = form.booking_external_url.data
     provider.cancelExternalUrl = form.cancel_external_url.data
     provider.notificationExternalUrl = form.notification_external_url.data
-
     try:
         db.session.add(provider)
         db.session.commit()

@@ -21,8 +21,8 @@ from pcapi.workers.logger import job_extra_description
 blueprint = Blueprint(__name__, __name__)
 conn = redis.from_url(settings.REDIS_URL)
 
-default_queue = Queue("default", connection=conn, is_async=settings.IS_JOB_ASYNC)
-low_queue = Queue("low", connection=conn, default_timeout=3600, is_async=settings.IS_JOB_ASYNC)
+default_queue = Queue("default", connection=conn, is_async=not settings.IS_JOB_SYNCHRONOUS)
+low_queue = Queue("low", connection=conn, default_timeout=3600, is_async=not settings.IS_JOB_SYNCHRONOUS)
 
 logger = logging.getLogger(__name__)
 
