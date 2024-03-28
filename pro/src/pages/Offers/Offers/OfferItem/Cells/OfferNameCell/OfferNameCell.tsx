@@ -45,7 +45,7 @@ export const OfferNameCell = ({
     }
 
     /* istanbul ignore next: DEBT, TO FIX */
-    const stockSize = offer.stocks ? offer.stocks.length : 0
+    const stockSize = offer.stocks.length
     return stockSize === 1
       ? formatLocalTimeDateString(
           beginningDatetime,

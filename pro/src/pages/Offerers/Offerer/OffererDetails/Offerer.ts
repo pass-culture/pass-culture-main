@@ -21,8 +21,8 @@ export const transformOffererResponseModelToOfferer = (
 ): Offerer => ({
   address: offerer.address || '',
   apiKey: {
-    maxAllowed: offerer.apiKey ? offerer.apiKey.maxAllowed : 0,
-    savedApiKeys: offerer.apiKey ? offerer.apiKey.prefixes : [],
+    maxAllowed: offerer.apiKey.maxAllowed,
+    savedApiKeys: offerer.apiKey.prefixes,
   },
   city: offerer.city || '',
   name: offerer.name || '',
