@@ -1,7 +1,6 @@
 import dataclasses
 from datetime import datetime
 import decimal
-import enum
 import itertools
 import logging
 import re
@@ -37,6 +36,7 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.history.api as history_api
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
+from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
@@ -66,12 +66,6 @@ from . import validation
 
 logger = logging.getLogger(__name__)
 
-
-class T_UNCHANGED(enum.Enum):
-    TOKEN = 0
-
-
-UNCHANGED = T_UNCHANGED.TOKEN
 # List of fields of `Venue` which, when changed, must trigger a
 # reindexation of offers.
 VENUE_ALGOLIA_INDEXED_FIELDS = ["name", "publicName", "postalCode", "city", "latitude", "longitude"]
@@ -96,12 +90,12 @@ def update_venue(
     author: users_models.User,
     opening_days: list[serialize_base.VenueOpeningHoursModel] | None = None,
     contact_data: serialize_base.VenueContactModel | None = None,
-    criteria: list[criteria_models.Criterion] | T_UNCHANGED = UNCHANGED,
+    criteria: list[criteria_models.Criterion] | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     admin_update: bool = False,
     **attrs: typing.Any,
 ) -> models.Venue:
     validation.validate_coordinates(attrs.get("latitude"), attrs.get("longitude"))  # type: ignore [arg-type]
-    reimbursement_point_id = attrs.pop("reimbursementPointId", UNCHANGED)
+    reimbursement_point_id = attrs.pop("reimbursementPointId", offerers_constants.UNCHANGED)
 
     modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
 
@@ -130,17 +124,17 @@ def update_venue(
             )
             upsert_venue_opening_hours(venue, opening_hours_data)
 
-    if criteria is not UNCHANGED:
+    if criteria is not offerers_constants.UNCHANGED:
         if set(venue.criteria) != set(criteria):
             modifications["criteria"] = criteria
 
-    if not modifications and reimbursement_point_id == UNCHANGED:
+    if not modifications and reimbursement_point_id == offerers_constants.UNCHANGED:
         # avoid any contact information update loss
         venue_snapshot.add_action()
         db.session.commit()
         return venue
 
-    if reimbursement_point_id != UNCHANGED:
+    if reimbursement_point_id != offerers_constants.UNCHANGED:
         # this block makes additional db requests
         current_link = venue.current_reimbursement_point_link
         current_reimbursement_point_id = current_link.reimbursementPointId if current_link else None
@@ -875,27 +869,27 @@ def _format_tags(tags: typing.Iterable[models.OffererTag]) -> str:
 def update_offerer(
     offerer: models.Offerer,
     author: users_models.User,
-    name: str | T_UNCHANGED = UNCHANGED,
-    city: str | T_UNCHANGED = UNCHANGED,
-    postal_code: str | T_UNCHANGED = UNCHANGED,
-    address: str | T_UNCHANGED = UNCHANGED,
-    tags: list[models.OffererTag] | T_UNCHANGED = UNCHANGED,
+    name: str | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
+    city: str | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
+    postal_code: str | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
+    address: str | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
+    tags: list[models.OffererTag] | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
 ) -> None:
     modified_info: dict[str, dict[str, str | None]] = {}
 
-    if name is not UNCHANGED and offerer.name != name:
+    if name is not offerers_constants.UNCHANGED and offerer.name != name:
         modified_info["name"] = {"old_info": offerer.name, "new_info": name}
         offerer.name = name
-    if city is not UNCHANGED and offerer.city != city:
+    if city is not offerers_constants.UNCHANGED and offerer.city != city:
         modified_info["city"] = {"old_info": offerer.city, "new_info": city}
         offerer.city = city
-    if postal_code is not UNCHANGED and offerer.postalCode != postal_code:
+    if postal_code is not offerers_constants.UNCHANGED and offerer.postalCode != postal_code:
         modified_info["postalCode"] = {"old_info": offerer.postalCode, "new_info": postal_code}
         offerer.postalCode = postal_code
-    if address is not UNCHANGED and offerer.address != address:
+    if address is not offerers_constants.UNCHANGED and offerer.address != address:
         modified_info["address"] = {"old_info": offerer.address, "new_info": address}
         offerer.address = address
-    if tags is not UNCHANGED:
+    if tags is not offerers_constants.UNCHANGED:
         if set(offerer.tags) != set(tags):
             modified_info["tags"] = {
                 "old_info": _format_tags(offerer.tags) or None,
@@ -1750,18 +1744,18 @@ def count_offerers_by_validation_status() -> dict[str, int]:
 
 def update_offerer_tag(
     offerer_tag: models.OffererTag,
-    name: str | T_UNCHANGED = UNCHANGED,
-    label: str | T_UNCHANGED = UNCHANGED,
-    description: str | T_UNCHANGED = UNCHANGED,
-    categories: list[models.OffererTagCategory] | T_UNCHANGED = UNCHANGED,
+    name: str | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
+    label: str | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
+    description: str | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
+    categories: list[models.OffererTagCategory] | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
 ) -> None:
-    if name is not UNCHANGED:
+    if name is not offerers_constants.UNCHANGED:
         offerer_tag.name = name
-    if label is not UNCHANGED:
+    if label is not offerers_constants.UNCHANGED:
         offerer_tag.label = label
-    if description is not UNCHANGED:
+    if description is not offerers_constants.UNCHANGED:
         offerer_tag.description = description
-    if categories is not UNCHANGED:
+    if categories is not offerers_constants.UNCHANGED:
         if set(offerer_tag.categories) != set(categories):
             offerer_tag.categories = categories
 
