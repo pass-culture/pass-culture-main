@@ -87,7 +87,7 @@ const DetailsFilters = ({
       </div>
 
       <FormLayout.Row inline>
-        <FieldLayout label="Lieu" name="lieu">
+        <FieldLayout label="Lieu" name="lieu" isOptional>
           <SelectInput
             defaultOption={{
               label: 'Tous les lieux',

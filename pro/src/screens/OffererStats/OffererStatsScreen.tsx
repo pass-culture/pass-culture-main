@@ -92,7 +92,7 @@ const OffererStatsScreen = ({ offererOptions }: OffererStatsScreenProps) => {
         nuit.
       </p>
 
-      <FieldLayout label="Structure" name="offererId">
+      <FieldLayout label="Structure" name="offererId" isOptional>
         <SelectInput
           onChange={handleChangeOfferer}
           name="offererId"
@@ -104,7 +104,7 @@ const OffererStatsScreen = ({ offererOptions }: OffererStatsScreenProps) => {
 
       {venueOptions.length > 0 && iframeUrl ? (
         <>
-          <FieldLayout label="Lieu" name="venueId">
+          <FieldLayout label="Lieu" name="venueId" isOptional>
             <SelectInput
               onChange={handleChangeVenue}
               name="venueId"
