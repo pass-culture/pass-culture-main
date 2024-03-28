@@ -65,21 +65,21 @@ class TiteliveArticle(BaseModel):
 
 class TiteLiveBookArticle(TiteliveArticle):
     code_clil: str | None
-    code_editeur: str | 0  # str or 0, wtf titelive
+    # code_editeur: str | 0  # str or 0, wtf titelive
     code_tva: str | 0  # str or 0, wtf titelive
     collection_no: str | None
     collection: str | None
     distributeur: str
-    pages: str | 0
+    # pages: str | 0
     scolaire: str | 0
-    taux_tva: str | 0
-    traducteur: str | None
+    # taux_tva: str | 0
+    # traducteur: str | None
 
     # Doute
     id_lectorat: str | None
-    langue: str | None
-    langueiso: str | None
-    poids: str | 0
+    # langue: str | None
+    # langueiso: str | None
+    # poids: str | 0
 
     # random stuff
 
