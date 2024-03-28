@@ -72,6 +72,8 @@ class T_UNCHANGED(enum.Enum):
 
 UNCHANGED = T_UNCHANGED.TOKEN
 
+EMAIL_CONFIRMATION_TEST_EMAIL_PATTERN = "+e2e@"
+
 
 logger = logging.getLogger(__name__)
 
@@ -144,14 +146,17 @@ def create_account(
     if firebase_pseudo_id:
         user.externalIds["firebase_pseudo_id"] = firebase_pseudo_id  # type: ignore [index, call-overload]
 
-    repository.save(user)
-    logger.info("Created user account", extra={"user": user.id})
-
     if remote_updates:
         external_attributes_api.update_external_user(user)
 
-    if not user.isEmailValidated and send_activation_mail:
-        request_email_confirmation(user)
+    if send_activation_mail and not user.isEmailValidated:
+        if EMAIL_CONFIRMATION_TEST_EMAIL_PATTERN in user.email:
+            user.isEmailValidated = True
+        else:
+            request_email_confirmation(user)
+
+    repository.save(user)
+    logger.info("Created user account", extra={"user": user.id})
 
     return user
 

@@ -2112,3 +2112,45 @@ class EnableNewProNavTest:
         users_api.enable_new_pro_nav(pro_new_nav_state.user)
 
         assert pro_new_nav_state.newNavDate == yesterday_date
+
+
+class BypassEmailConfirmationTest:
+    def test_dont_send_confirmation_email_when_e2e_test(self):
+        mails_testing.outbox = []
+
+        user = users_api.create_account(
+            email="email+e2e@quinousinteresse.fr",
+            password="random123",
+            birthdate=datetime.date.today() - relativedelta(years=18),
+            is_email_validated=False,
+        )
+
+        assert len(mails_testing.outbox) == 0
+        assert user.isEmailValidated
+
+    def test_send_confirmation_with_normal_email(self):
+        mails_testing.outbox = []
+
+        user = users_api.create_account(
+            email="e2e@quinousinteresse.fr",
+            password="random123",
+            birthdate=datetime.date.today() - relativedelta(years=18),
+            is_email_validated=False,
+        )
+
+        assert len(mails_testing.outbox) == 1
+        assert not user.isEmailValidated
+
+    def test_dont_confirm_e2e_test_email_when_email_sending_is_not_required(self):
+        mails_testing.outbox = []
+
+        user = users_api.create_account(
+            email="email+e2e@quinousinteresse.fr",
+            password="random123",
+            birthdate=datetime.date.today() - relativedelta(years=18),
+            is_email_validated=False,
+            send_activation_mail=False,
+        )
+
+        assert len(mails_testing.outbox) == 0
+        assert not user.isEmailValidated
