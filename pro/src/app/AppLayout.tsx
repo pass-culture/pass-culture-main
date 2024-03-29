@@ -158,6 +158,8 @@ export const AppLayout = ({
                   isNewSideBarNavigation && layout === 'basic',
                 [styles.container]:
                   layout === 'basic' || layout === 'sticky-actions',
+                [styles['container-sticky-actions']]:
+                  layout === 'sticky-actions',
                 [styles['container-without-nav']]: layout === 'without-nav',
                 [styles[`content-layout-${layout}`]]: isNewSideBarNavigation,
               },
