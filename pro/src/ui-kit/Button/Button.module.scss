@@ -67,8 +67,9 @@
 
     &:disabled,
     &.button-disabled {
-      background-color: colors.$primary-disabled;
-      border-color: colors.$primary-disabled;
+      background-color: colors.$grey-light;
+      color: colors.$grey-dark;
+      border-color: colors.$grey-light;
     }
 
     .button-icon {
