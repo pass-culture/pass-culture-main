@@ -11,6 +11,9 @@ const config: StorybookConfig = {
     '@storybook/preset-scss',
     'storybook-addon-react-router-v6',
   ],
+  typescript: {
+    reactDocgen: 'react-docgen-typescript',
+  },
   staticDirs: ['../src/public'],
   framework: {
     name: '@storybook/react-vite',
