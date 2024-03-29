@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom'
 import RedirectDialog from 'components/Dialog/RedirectDialog'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { Events, VenueEvents } from 'core/FirebaseEvents/constants'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import fullWaitIcon from 'icons/full-wait.svg'
 import strokePartyIcon from 'icons/stroke-party.svg'
@@ -23,10 +22,6 @@ export const RedirectToBankAccountDialog = ({
   const navigate = useNavigate()
   const { logEvent } = useAnalytics()
 
-  const isNewBankDetailsJourneyEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
-  )
-
   return (
     <RedirectDialog
       icon={strokePartyIcon}
@@ -37,15 +32,9 @@ export const RedirectToBankAccountDialog = ({
         navigate(cancelRedirectUrl)
       }}
       title="Félicitations, vous avez créé votre offre !"
-      redirectText={
-        isNewBankDetailsJourneyEnabled
-          ? 'Ajouter un compte bancaire'
-          : 'Renseigner des coordonnées bancaires'
-      }
+      redirectText="Ajouter un compte bancaire"
       redirectLink={{
-        to: isNewBankDetailsJourneyEnabled
-          ? `/remboursements/informations-bancaires?structure=${offerId}`
-          : `/structures/${offerId}/lieux/${venueId}#remboursement`,
+        to: `/remboursements/informations-bancaires?structure=${offerId}`,
         isExternal: false,
       }}
       onRedirect={() =>
@@ -58,19 +47,10 @@ export const RedirectToBankAccountDialog = ({
       cancelIcon={fullWaitIcon}
       withRedirectLinkIcon={false}
     >
+      <p>Vous pouvez dès à présent ajouter un compte bancaire.</p>
       <p>
-        Vous pouvez dès à présent{' '}
-        {isNewBankDetailsJourneyEnabled
-          ? 'ajouter un compte bancaire'
-          : 'renseigner des coordonnées bancaires'}
-        .
-      </p>
-      <p>
-        Vos remboursements seront rétroactifs une fois{' '}
-        {isNewBankDetailsJourneyEnabled
-          ? 'votre compte bancaire validé'
-          : 'vos coordonnées bancaires validées'}
-        .
+        Vos remboursements seront rétroactifs une fois votre compte bancaire
+        validé.
       </p>
     </RedirectDialog>
   )

@@ -52,23 +52,6 @@ describe('venue create offer link', () => {
     )
   })
 
-  it('should track Add RIB button', async () => {
-    props.venue.isVirtual = false
-    props.venue.hasMissingReimbursementPoint = true
-    props.venue.hasCreatedOffer = true
-
-    renderVenue(props)
-    await userEvent.click(screen.getByRole('link', { name: 'Ajouter un RIB' }))
-
-    expect(mockLogEvent).toHaveBeenCalledWith(
-      VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON,
-      {
-        from: '/',
-        venue_id: props.venue.id,
-      }
-    )
-  })
-
   it('should track updating venue with new venue creation journey', () => {
     props.venue.isVirtual = false
 

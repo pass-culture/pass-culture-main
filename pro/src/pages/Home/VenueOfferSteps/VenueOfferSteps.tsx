@@ -6,7 +6,6 @@ import {
   GetOffererVenueResponseModel,
 } from 'apiClient/v1'
 import fullInfoIcon from 'icons/full-info.svg'
-import fullLinkIcon from 'icons/full-link.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -22,7 +21,6 @@ import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
 import { Card } from '../Card'
 import {
   shouldDisplayEACInformationSectionForVenue,
-  shouldDisplayPendingBankInformationApplicationForVenue,
   shouldShowVenueOfferStepsForVenue,
 } from '../venueUtils'
 
@@ -47,9 +45,6 @@ export const VenueOfferSteps = ({
 }: VenueOfferStepsProps) => {
   const { logEvent } = useAnalytics()
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
-  const isNewBankDetailsJourneyEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
-  )
 
   const venueCreationUrl = isVenueCreationAvailable
     ? `/structures/${offerer.id}/lieux/creation`
@@ -71,15 +66,7 @@ export const VenueOfferSteps = ({
 
   const shouldDisplayEACInformationSection =
     shouldDisplayEACInformationSectionForVenue(venue)
-  const shouldDisplayPendingBankInformationApplication =
-    shouldDisplayPendingBankInformationApplicationForVenue(
-      isNewBankDetailsJourneyEnabled,
-      venue
-    )
-  const shouldShowVenueOfferSteps = shouldShowVenueOfferStepsForVenue(
-    isNewBankDetailsJourneyEnabled,
-    venue
-  )
+  const shouldShowVenueOfferSteps = shouldShowVenueOfferStepsForVenue(venue)
 
   if (!shouldShowVenueOfferSteps) {
     return null
@@ -159,47 +146,25 @@ export const VenueOfferSteps = ({
               </ButtonLink>
             )}
 
-            {!isNewBankDetailsJourneyEnabled &&
-              venue?.hasMissingReimbursementPoint && (
-                <ButtonLink
-                  className={styles['step-button-width']}
-                  isDisabled={!hasVenue}
-                  variant={ButtonVariant.BOX}
-                  icon={fullNextIcon}
-                  link={{
-                    to: `/structures/${offerer.id}/lieux/${venue.id}#reimbursement`,
-                  }}
-                  onClick={() => {
-                    logEvent?.(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
-                      venue_id: venue.id || '',
-                      from: OFFER_FORM_NAVIGATION_IN.HOME,
-                    })
-                  }}
-                >
-                  Renseigner des coordonnées bancaires
-                </ButtonLink>
-              )}
-            {isNewBankDetailsJourneyEnabled &&
-              !offererHasBankAccount &&
-              displayButtonDependingVenue && (
-                <ButtonLink
-                  className={styles['step-button-width']}
-                  isDisabled={!hasVenue}
-                  variant={ButtonVariant.BOX}
-                  icon={fullNextIcon}
-                  link={{
-                    to: `remboursements/informations-bancaires?structure=${offerer.id}`,
-                  }}
-                  onClick={() => {
-                    logEvent?.(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
-                      venue_id: venue?.id ?? '',
-                      from: OFFER_FORM_NAVIGATION_IN.HOME,
-                    })
-                  }}
-                >
-                  Ajouter un compte bancaire
-                </ButtonLink>
-              )}
+            {!offererHasBankAccount && displayButtonDependingVenue && (
+              <ButtonLink
+                className={styles['step-button-width']}
+                isDisabled={!hasVenue}
+                variant={ButtonVariant.BOX}
+                icon={fullNextIcon}
+                link={{
+                  to: `remboursements/informations-bancaires?structure=${offerer.id}`,
+                }}
+                onClick={() => {
+                  logEvent?.(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
+                    venue_id: venue?.id ?? '',
+                    from: OFFER_FORM_NAVIGATION_IN.HOME,
+                  })
+                }}
+              >
+                Ajouter un compte bancaire
+              </ButtonLink>
+            )}
             {venue && shouldDisplayEACInformationSection && (
               <ButtonLink
                 className={styles['step-button-width']}
@@ -217,60 +182,29 @@ export const VenueOfferSteps = ({
         </>
       )}
 
-      {venue &&
-        (shouldDisplayEACInformationSection ||
-          shouldDisplayPendingBankInformationApplication) && (
-          <>
-            <h3 className={styles['card-title']}>Démarche en cours : </h3>
+      {venue && shouldDisplayEACInformationSection && (
+        <>
+          <h3 className={styles['card-title']}>Démarche en cours : </h3>
 
-            <div className={styles['venue-offer-steps']}>
-              {shouldDisplayEACInformationSection && (
-                <ButtonLink
-                  className={styles['step-button-width']}
-                  variant={ButtonVariant.BOX}
-                  icon={fullNextIcon}
-                  link={{
-                    to: `/structures/${offerer.id}/lieux/${venue.id}#venue-collective-data`,
-                  }}
-                  onClick={() => {
-                    logEvent?.(Events.CLICKED_EAC_DMS_TIMELINE, {
-                      from: location.pathname,
-                    })
-                  }}
-                >
-                  Suivre ma demande de référencement ADAGE
-                </ButtonLink>
-              )}
-
-              {shouldDisplayPendingBankInformationApplication && (
-                <ButtonLink
-                  className={styles['step-button-width']}
-                  variant={ButtonVariant.BOX}
-                  icon={fullLinkIcon}
-                  link={{
-                    to: `https://www.demarches-simplifiees.fr/dossiers${
-                      venue.demarchesSimplifieesApplicationId
-                        ? `/${venue.demarchesSimplifieesApplicationId}/messagerie`
-                        : ''
-                    }`,
-                    isExternal: true,
-                    target: '_blank',
-                  }}
-                  onClick={() => {
-                    logEvent?.(
-                      VenueEvents.CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP,
-                      {
-                        from: location.pathname,
-                      }
-                    )
-                  }}
-                >
-                  Suivre mon dossier de coordonnées bancaires
-                </ButtonLink>
-              )}
-            </div>
-          </>
-        )}
+          <div className={styles['venue-offer-steps']}>
+            <ButtonLink
+              className={styles['step-button-width']}
+              variant={ButtonVariant.BOX}
+              icon={fullNextIcon}
+              link={{
+                to: `/structures/${offerer.id}/lieux/${venue.id}#venue-collective-data`,
+              }}
+              onClick={() => {
+                logEvent?.(Events.CLICKED_EAC_DMS_TIMELINE, {
+                  from: location.pathname,
+                })
+              }}
+            >
+              Suivre ma demande de référencement ADAGE
+            </ButtonLink>
+          </div>
+        </>
+      )}
     </Card>
   )
 }

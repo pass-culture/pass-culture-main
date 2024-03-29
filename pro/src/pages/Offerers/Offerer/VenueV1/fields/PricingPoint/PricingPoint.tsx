@@ -8,14 +8,12 @@ import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { SENT_DATA_ERROR_MESSAGE } from 'core/shared'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import fullLinkIcon from 'icons/full-link.svg'
 import strokeValidIcon from 'icons/stroke-valid.svg'
 import { ButtonLink } from 'ui-kit/Button'
 import Button from 'ui-kit/Button/Button'
 import { Select } from 'ui-kit/form'
-import { Title } from 'ui-kit/index'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './PricingPoint.module.scss'
@@ -23,14 +21,9 @@ import styles from './PricingPoint.module.scss'
 export interface PricingPointProps {
   offerer: GetOffererResponseModel
   venue: GetVenueResponseModel
-  setVenueHasPricingPoint: (venueHasPricingPoint: boolean) => void
 }
 
-const PricingPoint = ({
-  offerer,
-  venue,
-  setVenueHasPricingPoint,
-}: PricingPointProps) => {
+const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
   const [canSubmit, setCanSubmit] = useState(true)
   const [isInputDisabled, setIsInputDisabled] = useState(false)
   const [isConfirmSiretDialogOpen, setIsConfirmSiretDialogOpen] =
@@ -39,10 +32,6 @@ const PricingPoint = ({
   const [pricingPointSelectField] = useField({ name: 'venueSiret' })
   const [isSubmitingPricingPoint, setIsSubmitingPricingPoint] = useState(false)
   const notify = useNotification()
-
-  const isNewBankDetailsJourneyEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
-  )
 
   useEffect(() => {
     setCanSubmit(!pricingPointSelectField.value)
@@ -57,7 +46,6 @@ const PricingPoint = ({
           pricingPointId: pricingPointId,
         })
         setIsInputDisabled(true)
-        setVenueHasPricingPoint(true)
         setIsBannerVisible(false)
         setIsConfirmSiretDialogOpen(false)
       } catch (error) {
@@ -82,14 +70,6 @@ const PricingPoint = ({
 
   return (
     <>
-      {!isNewBankDetailsJourneyEnabled && (
-        <div className="main-list-title">
-          <Title as="h3" className="sub-title" level={4}>
-            Barème de remboursement
-          </Title>
-        </div>
-      )}
-
       {!venue.pricingPoint && isBannerVisible && (
         <Callout
           links={[

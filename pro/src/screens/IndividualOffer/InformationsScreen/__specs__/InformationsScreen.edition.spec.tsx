@@ -170,13 +170,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
     contextOverride = individualOfferContextValuesFactory({
       offerId: offer.id,
       offer: offer,
-      venueList: [venue1, venue2],
-      offererNames: [
-        getOffererNameFactory({
-          id: offererId,
-          name: 'Offerer name',
-        }),
-      ],
       categories,
       subCategories,
     })
@@ -184,6 +177,13 @@ describe('screens:IndividualOffer::Informations:edition', () => {
     props = {
       venueId: physicalVenueId.toString(),
       offererId: offererId.toString(),
+      venueList: [venue1, venue2],
+      offererNames: [
+        getOffererNameFactory({
+          id: offererId,
+          name: 'Offerer name',
+        }),
+      ],
     }
 
     vi.spyOn(api, 'patchOffer').mockResolvedValue({
@@ -256,10 +256,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       withdrawalDelay: undefined,
       withdrawalType: null,
     }
-    props = {
-      venueId: virtualVenueId.toString(),
-      offererId: offererId.toString(),
-    }
 
     renderInformationsScreen(props, contextOverride)
     const nameField = screen.getByLabelText('Titre de l’offre *')
@@ -317,10 +313,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
         credit: 'John Do',
       },
     }
-    props = {
-      venueId: physicalVenueId.toString(),
-      offererId: offererId.toString(),
-    }
     renderInformationsScreen(props, contextOverride)
     await screen.findByRole('heading', { name: /Type d’offre/ })
     expect(
@@ -344,11 +336,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
         credit: 'John Do',
       },
     }
-    props = {
-      venueId: virtualVenueId.toString(),
-      offererId: offererId.toString(),
-    }
-
     renderInformationsScreen(props, contextOverride)
     await screen.findByRole('heading', { name: /Type d’offre/ })
     expect(
@@ -429,10 +416,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
         isEvent: false,
         bookingsCount: 1,
       }
-      props = {
-        venueId: virtualVenueId.toString(),
-        offererId: offererId.toString(),
-      }
       expectedBody.withdrawalDelay = 140
       expectedBody.withdrawalType = WithdrawalTypeEnum.ON_SITE
 
@@ -496,10 +479,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
         subcategoryId: SubcategoryIdEnum.ABO_JEU_VIDEO,
         isEvent: false,
         bookingsCount: 1,
-      }
-      props = {
-        venueId: virtualVenueId.toString(),
-        offererId: offererId.toString(),
       }
 
       renderInformationsScreen(props, contextOverride)
@@ -582,10 +561,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
           withdrawalType: null,
           bookingsCount: condition.hasBookingQuantity ? 1 : 0,
         }
-        props = {
-          venueId: virtualVenueId.toString(),
-          offererId: offererId.toString(),
-        }
+
         renderInformationsScreen(props, contextOverride)
 
         const nameField = screen.getByLabelText('Titre de l’offre *')
@@ -639,10 +615,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
         isActive: false,
       }
 
-      props = {
-        venueId: virtualVenueId.toString(),
-        offererId: offererId.toString(),
-      }
       renderInformationsScreen(props, contextOverride)
       expectedBody.withdrawalDelay = null
       expectedBody.withdrawalType = WithdrawalTypeEnum.NO_TICKET
@@ -723,10 +695,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
         expectedBody.withdrawalType = WithdrawalTypeEnum.ON_SITE
         expectedBody.shouldSendMail = true
 
-        props = {
-          venueId: virtualVenueId.toString(),
-          offererId: offererId.toString(),
-        }
         renderInformationsScreen(props, contextOverride)
 
         const nameField = screen.getByLabelText('Titre de l’offre *')

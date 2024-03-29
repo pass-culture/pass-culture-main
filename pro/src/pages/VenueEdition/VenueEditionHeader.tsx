@@ -13,7 +13,6 @@ import { ImageUploader } from 'components/ImageUploader/ImageUploader'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { Events } from 'core/FirebaseEvents/constants'
 import { SelectOption } from 'custom_types/form'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullPlusIcon from 'icons/full-more.svg'
@@ -57,9 +56,6 @@ export const VenueEditionHeader = ({
   offerer,
   venueTypes,
 }: VenueEditionHeaderProps) => {
-  const isNewBankDetailsEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
-  )
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const venueType = venueTypes.find(
@@ -136,20 +132,6 @@ export const VenueEditionHeader = ({
           <address className={styles['venue-address']}>
             {venue.address}, {venue.postalCode} {venue.city}
           </address>
-        )}
-
-        {!isNewBankDetailsEnabled && (
-          <div style={{ marginBottom: '16px' }}>
-            {/* For the screen reader to spell-out the id, we add a
-          visually hidden span with a space between each character.
-          The other span will be hidden from the screen reader. */}
-            <span className="visually-hidden">
-              Identifiant du lieu : {venue.dmsToken.split('').join(' ')}
-            </span>
-            <span aria-hidden={true}>
-              Identifiant du lieu : {venue.dmsToken}
-            </span>
-          </div>
         )}
 
         <ButtonLink

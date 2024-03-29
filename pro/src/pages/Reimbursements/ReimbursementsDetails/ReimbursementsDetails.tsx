@@ -6,7 +6,6 @@ import { VenueListItemResponseModel } from 'apiClient/v1'
 import ButtonDownloadCSV from 'components/ButtonDownloadCSV'
 import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
 import { SelectOption } from 'custom_types/form'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
 import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
 import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
@@ -51,9 +50,6 @@ const ReimbursementsDetails = (): JSX.Element => {
     !isPeriodFilterSelected || requireVenueFilterForAdmin
 
   const { selectedOfferer }: ReimbursementsContextProps = useOutletContext()
-  const isNewBankDetailsJourneyEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
-  )
 
   const buildAndSortVenueFilterOptions = (
     venues: VenueListItemResponseModel[]
@@ -71,9 +67,7 @@ const ReimbursementsDetails = (): JSX.Element => {
   useEffect(() => {
     const loadVenues = async () => {
       const venuesResponse = await getVenuesForOffererAdapter({
-        offererId: isNewBankDetailsJourneyEnabled
-          ? selectedOfferer?.id.toString()
-          : '',
+        offererId: selectedOfferer?.id.toString(),
         activeOfferersOnly: true,
       })
       const selectOptions = buildAndSortVenueFilterOptions(

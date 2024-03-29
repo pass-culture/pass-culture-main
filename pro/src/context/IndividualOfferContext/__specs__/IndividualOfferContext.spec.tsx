@@ -4,18 +4,11 @@ import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
-import {
-  getOfferManagingOffererFactory,
-  getIndividualOfferFactory,
-} from 'utils/individualApiFactories'
+import { getIndividualOfferFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import {
-  IndividualOfferContextProvider,
-  IndividualOfferContextProviderProps,
-} from '../IndividualOfferContext'
+import { IndividualOfferContextProvider } from '../IndividualOfferContext'
 
-const offerer = getOfferManagingOffererFactory()
 const apiOffer: GetIndividualOfferResponseModel = getIndividualOfferFactory()
 
 vi.mock('react-router-dom', async () => ({
@@ -23,18 +16,13 @@ vi.mock('react-router-dom', async () => ({
   useLoaderData: vi.fn(),
 }))
 
-const renderIndividualOfferContextProvider = (
-  props?: Partial<IndividualOfferContextProviderProps>
-) =>
+const renderIndividualOfferContextProvider = () =>
   renderWithProviders(
-    <IndividualOfferContextProvider isUserAdmin={false} {...props}>
-      Test
-    </IndividualOfferContextProvider>
+    <IndividualOfferContextProvider>Test</IndividualOfferContextProvider>
   )
 
 describe('IndividualOfferContextProvider', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
     vi.spyOn(api, 'getCategories').mockResolvedValue({
       categories: [],
       subcategories: [],
@@ -42,32 +30,11 @@ describe('IndividualOfferContextProvider', () => {
     vi.spyOn(router, 'useLoaderData').mockResolvedValue({ offer: apiOffer })
   })
 
-  it('should initialize context with api when a offererId is given and user is admin', async () => {
-    renderIndividualOfferContextProvider({
-      isUserAdmin: true,
-      queryOffererId: String(offerer.id),
-    })
-
-    await waitFor(() => {
-      expect(api.getVenues).toHaveBeenCalledWith(
-        null, // validated
-        true, // activeOfferersOnly,
-        offerer.id // offererId
-      )
-    })
-    expect(api.getCategories).toHaveBeenCalled()
-  })
-
-  it('should initialize context with api when a offerId is given', async () => {
+  it('should initialize context with api', async () => {
     renderIndividualOfferContextProvider()
 
     await waitFor(() => {
-      expect(api.getVenues).toHaveBeenCalledWith(
-        null, // validated
-        true, // activeOfferersOnly,
-        undefined // offererId, undefinded because we need all the venues
-      )
+      expect(api.getCategories).toHaveBeenCalled()
     })
-    expect(api.getCategories).toHaveBeenCalled()
   })
 })

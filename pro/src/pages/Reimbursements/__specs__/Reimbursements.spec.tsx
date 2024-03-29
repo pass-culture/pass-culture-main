@@ -12,10 +12,7 @@ import {
   defaultGetOffererResponseModel,
   getOffererNameFactory,
 } from 'utils/individualApiFactories'
-import {
-  renderWithProviders,
-  RenderWithProvidersOptions,
-} from 'utils/renderWithProviders'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { Reimbursements, ReimbursementsContextProps } from '../Reimbursements'
 
@@ -28,7 +25,7 @@ vi.mock('react-router-dom', async () => ({
   useOutletContext: () => contextData,
 }))
 
-const renderReimbursements = (options?: RenderWithProvidersOptions) => {
+const renderReimbursements = () => {
   const storeOverrides = {
     user: {
       currentUser: {
@@ -51,36 +48,11 @@ const renderReimbursements = (options?: RenderWithProvidersOptions) => {
     {
       initialRouterEntries: ['/remboursements'],
       storeOverrides,
-      ...options,
     }
   )
 }
 
 describe('Reimbursement page', () => {
-  beforeEach(() => {
-    vi.spyOn(api, 'getReimbursementPoints').mockResolvedValue([])
-    vi.spyOn(api, 'getBankAccounts').mockResolvedValue([])
-  })
-
-  it('should render reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY off', async () => {
-    renderReimbursements()
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-    expect(
-      screen.getByText('Justificatifs de remboursement')
-    ).toBeInTheDocument()
-    expect(screen.getByText('Détails des remboursements')).toBeInTheDocument()
-    expect(screen.queryByText('Informations bancaires')).not.toBeInTheDocument()
-
-    expect(
-      screen.getByText(
-        'Les remboursements s’effectuent tous les 15 jours, rétroactivement suite à la validation d’une contremarque dans le guichet ou à la validation automatique des contremarques d’évènements. Cette page est automatiquement mise à jour à chaque remboursement.'
-      )
-    ).toBeInTheDocument()
-  })
-})
-
-describe('Reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY enabled', () => {
   let selectedOfferer: GetOffererResponseModel
 
   beforeEach(() => {
@@ -107,7 +79,7 @@ describe('Reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY enabled
   })
 
   it('should render reimbursement page', async () => {
-    renderReimbursements({ features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'] })
+    renderReimbursements()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -127,7 +99,7 @@ describe('Reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY enabled
       venuesWithNonFreeOffersWithoutBankAccounts: [2],
     })
 
-    renderReimbursements({ features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'] })
+    renderReimbursements()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
@@ -147,7 +119,7 @@ describe('Reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY enabled
       offerersNames: [],
     })
 
-    renderReimbursements({ features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'] })
+    renderReimbursements()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
@@ -155,7 +127,7 @@ describe('Reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY enabled
 
   it('should render component on getOffererNames error', async () => {
     vi.spyOn(api, 'listOfferersNames').mockRejectedValue({})
-    renderReimbursements({ features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'] })
+    renderReimbursements()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(screen.getByText('Informations bancaires')).toBeInTheDocument()

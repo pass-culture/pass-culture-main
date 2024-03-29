@@ -3,7 +3,6 @@ import { compareAsc, format } from 'date-fns'
 
 import { InvoiceResponseV2Model } from 'apiClient/v1'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
-import useActiveFeature from 'hooks/useActiveFeature'
 import {
   SortingMode,
   giveSortingModeForAlly,
@@ -88,9 +87,6 @@ function sortInvoices(
 }
 
 const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
-  const isNewBankDetailsJourneyEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
-  )
   const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
     useColumnSorting<InvoicesOrderedBy>()
 
@@ -164,9 +160,7 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
             scope="col"
             className={cn(styles['header-cell'], styles['bank-account-column'])}
           >
-            {isNewBankDetailsJourneyEnabled
-              ? 'Compte bancaire'
-              : 'Point de remboursement'}
+            Compte bancaire
             <SortArrow
               sortingMode={
                 currentSortingColumn ===
@@ -181,10 +175,7 @@ const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
               {currentSortingColumn ===
                 InvoicesOrderedBy.REIMBURSEMENT_POINT_NAME && (
                 <span className="visually-hidden">
-                  Tri par{' '}
-                  {isNewBankDetailsJourneyEnabled
-                    ? 'compte bancaire '
-                    : 'point de remboursement '}
+                  Tri par compte bancaire
                   {giveSortingModeForAlly(currentSortingMode)} activé.
                 </span>
               )}

@@ -110,6 +110,8 @@ describe('screens:IndividualOffer::Informations', () => {
     props = {
       venueId: '',
       offererId: '',
+      offererNames: [],
+      venueList: [],
     }
 
     contextValue = individualOfferContextValuesFactory({
@@ -150,7 +152,7 @@ describe('screens:IndividualOffer::Informations', () => {
       const venue2: VenueListItemResponseModel = venueListItemFactory()
 
       props.venueId = venue1.id.toString()
-      contextValue.venueList = [venue1, venue2]
+      props.venueList = [venue1, venue2]
     })
 
     it('should not display the full form when no venue are available', async () => {

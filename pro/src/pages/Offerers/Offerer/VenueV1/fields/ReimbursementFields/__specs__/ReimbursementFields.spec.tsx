@@ -8,19 +8,13 @@ import {
   GetOffererVenueResponseModel,
 } from 'apiClient/v1'
 import { defaultGetVenue } from 'utils/collectiveApiFactories'
-import {
-  RenderWithProvidersOptions,
-  renderWithProviders,
-} from 'utils/renderWithProviders'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ReimbursementFields, {
   ReimbursementFieldsProps,
 } from '../ReimbursementFields'
 
-const renderReimbursementFields = async (
-  props: ReimbursementFieldsProps,
-  options?: RenderWithProvidersOptions
-) => {
+const renderReimbursementFields = async (props: ReimbursementFieldsProps) => {
   const rtlReturn = renderWithProviders(
     <Formik onSubmit={() => {}} initialValues={{}}>
       {({ handleSubmit }) => (
@@ -28,8 +22,7 @@ const renderReimbursementFields = async (
           <ReimbursementFields {...props} />
         </Form>
       )}
-    </Formik>,
-    options
+    </Formik>
   )
 
   const loadingMessage = screen.queryByText('Chargement en cours ...')
@@ -89,7 +82,9 @@ describe('ReimbursementFields', () => {
     await renderReimbursementFields(props)
 
     expect(
-      screen.queryByText('Barème de remboursement')
+      screen.queryByText(
+        'Lieu avec SIRET utilisé pour le calcul de votre barème de remboursement *'
+      )
     ).not.toBeInTheDocument()
   })
 
@@ -103,28 +98,10 @@ describe('ReimbursementFields', () => {
 
     await renderReimbursementFields(props)
 
-    expect(screen.getByText('Barème de remboursement')).toBeInTheDocument()
-
-    await waitFor(() => {
-      expect(api.getAvailableReimbursementPoints).toHaveBeenCalledTimes(1)
-    })
-
-    expect(screen.getByText('Coordonnées bancaires')).toBeInTheDocument()
-  })
-
-  it('should not display bank details section if ff is active', async () => {
-    const venueWithoutSiret = {
-      ...venue,
-      siret: '',
-    }
-    props.venue = venueWithoutSiret
-
-    await renderReimbursementFields(props, {
-      features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
-    })
-
-    expect(screen.getByText('Barème de remboursement')).toBeInTheDocument()
-
-    expect(screen.queryByText('Coordonnées bancaires')).not.toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'Lieu avec SIRET utilisé pour le calcul de votre barème de remboursement *'
+      )
+    ).toBeInTheDocument()
   })
 })

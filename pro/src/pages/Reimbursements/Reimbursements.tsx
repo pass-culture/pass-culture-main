@@ -5,10 +5,8 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
-import { BannerReimbursementsInfo } from 'components/Banner'
 import { ReimbursementsTabs } from 'components/ReimbursementsTabs'
 import { SAVED_OFFERER_ID_KEY } from 'core/shared'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 import { updateSelectedOffererId } from 'store/user/reducer'
@@ -22,9 +20,6 @@ export interface ReimbursementsContextProps {
 }
 
 export const Reimbursements = (): JSX.Element => {
-  const isNewBankDetailsJourneyEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
-  )
   const { selectedOffererId } = useCurrentUser()
 
   const location = useLocation()
@@ -56,13 +51,11 @@ export const Reimbursements = (): JSX.Element => {
         setIsOfferersLoading(false)
       }
     }
-    if (isNewBankDetailsJourneyEnabled) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      fetchData()
-    }
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    fetchData()
   }, [])
 
-  if (isOfferersLoading && isNewBankDetailsJourneyEnabled) {
+  if (isOfferersLoading) {
     return <Spinner />
   }
 
@@ -70,7 +63,6 @@ export const Reimbursements = (): JSX.Element => {
     <AppLayout pageName="reimbursements">
       <div className={styles['reimbursements-container']}>
         <h1 className={styles['title']}>Gestion financière</h1>
-        {!isNewBankDetailsJourneyEnabled && <BannerReimbursementsInfo />}
         <div>
           <ReimbursementsTabs selectedOfferer={selectedOfferer} />
 
