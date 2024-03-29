@@ -12,5 +12,8 @@ update:
   customfield_10060: # commit hash
     - set: "{{ .overrides.customfield_10060 }}"
   {{- end -}}
-
+  {{if .overrides.customfield_10086 }}
+  customfield_10086: # 'SafeToDeploy' flag
+    - set: "{{ .overrides.customfield_10086 }}"
+  {{- end -}}
 
