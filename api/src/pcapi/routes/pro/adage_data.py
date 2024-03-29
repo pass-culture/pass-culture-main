@@ -5,8 +5,6 @@ from flask_login import login_required
 
 from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import institution as educational_api_institution
-from pcapi.core.educational.exceptions import CulturalPartnerNotFoundException
-from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.pro import blueprint
 from pcapi.routes.serialization import educational_institutions
@@ -62,19 +60,3 @@ def get_educational_institutions(
 def get_educational_partners() -> venues_serialize.AdageCulturalPartnersResponseModel:
     venues = educational_api_adage.get_cultural_partners()
     return venues_serialize.AdageCulturalPartnersResponseModel.from_orm(venues)
-
-
-@private_api.route("/cultural-partner/<siret>", methods=["GET"])
-@login_required
-@spectree_serialize(
-    response_model=venues_serialize.AdageCulturalPartnerResponseModel,
-    on_success_status=200,
-    on_error_statuses=[401, 404],
-    api=blueprint.pro_private_schema,
-)
-def get_educational_partner(siret: str) -> venues_serialize.AdageCulturalPartnerResponseModel:
-    try:
-        data = educational_api_adage.get_cultural_partner(siret)
-    except CulturalPartnerNotFoundException:
-        raise ApiErrors({"code": "CULTURAL_PARTNER_NOT_FOUND"}, status_code=404)
-    return venues_serialize.AdageCulturalPartnerResponseModel(**data.dict())
