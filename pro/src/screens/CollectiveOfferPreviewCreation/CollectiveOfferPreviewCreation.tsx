@@ -59,6 +59,8 @@ const CollectiveOfferPreviewCreationScreen = ({
 
       setOffer(response.payload)
       navigate(confirmationUrl)
+
+      return
     }
 
     const response = await publishCollectiveOfferAdapter(offer.id)
