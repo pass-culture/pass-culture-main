@@ -24,7 +24,7 @@ describe('LinkVenueCallout', () => {
     ).not.toBeInTheDocument()
     expect(
       screen.queryByRole('link', {
-        name: 'Résoudre',
+        name: 'Voir les corrections attendues',
       })
     ).not.toBeInTheDocument()
   })
@@ -62,7 +62,7 @@ describe('LinkVenueCallout', () => {
       expect(screen.getByText(/Compte bancaire incomplet/)).toBeInTheDocument()
       expect(
         screen.getByRole('link', {
-          name: 'Résoudre',
+          name: 'Voir les corrections attendues',
         })
       ).toBeInTheDocument()
     })
@@ -87,7 +87,7 @@ describe('LinkVenueCallout', () => {
 
       await userEvent.click(
         screen.getByRole('link', {
-          name: 'Résoudre',
+          name: 'Voir les corrections attendues',
         })
       )
 
