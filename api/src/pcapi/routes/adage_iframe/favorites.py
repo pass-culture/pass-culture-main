@@ -122,7 +122,7 @@ def get_collective_favorites(
     templates = educational_repository.get_all_offer_template_by_redactor_id(redactor_id=redactor.id)
 
     if authenticated_information.uai is None:
-        raise ApiErrors({"message": "institutionId is mandatory"}, status_code=400)
+        raise ApiErrors({"message": "institutionId is mandatory"}, status_code=403)
 
     serialized_favorite_offers = [
         serialize_favorites.serialize_collective_offer(offer=offer, is_favorite=True) for offer in offers
