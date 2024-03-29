@@ -59,6 +59,8 @@ class Returns200Test:
         assert created_venue.siret == "85331845900031"
         assert created_venue.venueTypeCode == offerers_models.VenueTypeCode.MOVIE
         assert created_venue.withdrawalDetails is None
+        assert created_venue.adageId is None
+        assert created_venue.adageInscriptionDate is None
 
         assert len(created_venue.adage_addresses) == 1
         adage_addr = created_venue.adage_addresses[0]
@@ -90,6 +92,10 @@ class Returns200Test:
         assert response.status_code == 201
         created_offerer = offerers_models.Offerer.query.one()
         assert created_offerer.isValidated
+
+        created_venue = offerers_models.Venue.query.filter(offerers_models.Venue.isVirtual.is_(False)).one()
+        assert created_venue.adageId is not None
+        assert created_venue.adageInscriptionDate is not None
 
 
 class Returns400Test:
