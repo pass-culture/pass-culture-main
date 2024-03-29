@@ -9,6 +9,7 @@ import PIL
 from pcapi import repository
 from pcapi.connectors import thumb_storage
 from pcapi.connectors import titelive
+from pcapi.connectors.serialization.titelive_serializers import TiteliveArticle
 from pcapi.connectors.serialization.titelive_serializers import TiteliveProductSearchResponse
 from pcapi.connectors.serialization.titelive_serializers import TiteliveSearchResultType
 from pcapi.core.offers import models as offers_models
@@ -120,9 +121,9 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
         titelive_product_page: TiteliveProductSearchResponse[TiteliveSearchResultType],
         from_date: datetime.date,
     ) -> TiteliveProductSearchResponse[TiteliveSearchResultType]:
-        """Filters out articles that were not updated since from_date."""
+        """Filters out articles that were not updated since from_date or published at from_date."""
         for oeuvre in titelive_product_page.result:
-            oeuvre.article = [article for article in oeuvre.article if article.datemodification >= from_date]
+            oeuvre.article = [article for article in oeuvre.article if is_article_recently_updated(article, from_date)]
         return titelive_product_page
 
     def filter_allowed_products(
@@ -185,6 +186,13 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
         self, titelive_search_result: TiteliveSearchResultType, products_by_ean: dict[str, offers_models.Product]
     ) -> dict[str, offers_models.Product]:
         raise NotImplementedError()
+
+
+def is_article_recently_updated(article: TiteliveArticle, from_date: datetime.date) -> bool:
+    if article.datemodification is None:
+        return article.dateparution is not None and article.dateparution >= from_date
+
+    return article.datemodification >= from_date
 
 
 def update_product_thumbnails(

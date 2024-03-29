@@ -279,11 +279,29 @@ class TiteliveSearchTest:
         synced_product = offers_models.Product.query.one()
         assert synced_product.idAtProviders == "3700187679323"
 
+    def test_sync_skips_articles_updated_in_past(self, requests_mock):
+        self._configure_login_and_images(requests_mock)
+        partially_updated_in_past_response = copy.deepcopy(fixtures.MUSIC_SEARCH_FIXTURE)
+        del partially_updated_in_past_response["result"][0]["article"]["2"]["datemodification"]
+        del partially_updated_in_past_response["result"][1]["article"]["1"]["datemodification"]
+        partially_updated_in_past_response["result"][1]["article"]["1"]["dateparution"] = "01/12/2099"
+
+        requests_mock.get("https://catsearch.epagine.fr/v1/search?page=1", json=partially_updated_in_past_response)
+        requests_mock.get(
+            "https://catsearch.epagine.fr/v1/search?page=2",
+            json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE,
+        )
+
+        TiteliveMusicSearch().synchronize_products(datetime.date(2099, 12, 1))
+
+        synced_product = offers_models.Product.query.one()
+        assert synced_product.idAtProviders == "5054197199738"
+
     def test_titelive_music_sync_from_page(self, requests_mock):
         self._configure_login_and_images(requests_mock)
         requests_mock.get("https://catsearch.epagine.fr/v1/search?page=1", json=fixtures.MUSIC_SEARCH_FIXTURE)
         requests_mock.get("https://catsearch.epagine.fr/v1/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE)
 
-        TiteliveMusicSearch().synchronize_products(datetime.date(2022, 12, 1), 2)
+        TiteliveMusicSearch().synchronize_products(datetime.date(2022, 12, 1), from_page=2)
 
         assert offers_models.Product.query.count() == 0
