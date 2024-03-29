@@ -2,7 +2,6 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 
-
 .callout {
   position: relative;
   display: flex;
@@ -47,7 +46,7 @@
     background-color: colors.$background-error;
 
     .icon {
-      color: colors.$primary;
+      color: colors.$error;
     }
   }
 
@@ -70,7 +69,8 @@
 .content {
   flex-grow: 1;
 
-  > div, .bi-link-item:not(:last-child) {
+  > div,
+  .bi-link-item:not(:last-child) {
     margin-bottom: rem.torem(8px);
   }
 
