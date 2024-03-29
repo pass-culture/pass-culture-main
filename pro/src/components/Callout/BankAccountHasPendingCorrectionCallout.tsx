@@ -30,12 +30,11 @@ const BankAccountHasPendingCorrectionCallout = ({
 
   return (
     <Callout
-      title="Compte bancaire incomplet"
       links={[
         {
           href:
             '/remboursements/informations-bancaires?structure=' + offerer.id,
-          label: 'Résoudre',
+          label: 'Voir les corrections attendues',
           onClick: () => {
             logEvent?.(
               BankAccountEvents.CLICKED__BANK_ACCOUNT_HAS_PENDING_CORRECTIONS,
@@ -48,7 +47,9 @@ const BankAccountHasPendingCorrectionCallout = ({
         },
       ]}
       variant={CalloutVariant.ERROR}
-    />
+    >
+      Compte bancaire incomplet
+    </Callout>
   )
 }
 
