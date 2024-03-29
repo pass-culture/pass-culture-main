@@ -31,6 +31,10 @@
   &-full {
     overflow-y: scroll;
   }
+
+  &-sticky-actions {
+    padding-bottom: calc(rem.torem(32px) + size.$action-bar-sticky-height);
+  }
 }
 
 .page-content {
