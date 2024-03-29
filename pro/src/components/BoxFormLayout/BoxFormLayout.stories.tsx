@@ -1,4 +1,4 @@
-import type { Story } from '@storybook/react'
+import type { StoryObj } from '@storybook/react'
 import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
 
@@ -7,11 +7,16 @@ import { Button, SubmitButton, TextInput } from 'ui-kit'
 import { BoxRounded } from 'ui-kit/BoxRounded'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
+import { BoxFormLayoutProps } from './BoxFormLayout'
+
 import { BoxFormLayout } from '.'
 
-type Props = React.ComponentProps<typeof BoxFormLayout>
+export default {
+  title: 'components/BoxFormLayout',
+  component: BoxFormLayout,
+}
 
-const Template: Story<Props> = () => {
+const DefaultBoxFormLayout = (args: BoxFormLayoutProps) => {
   const [showForm, setShowForm] = useState(false)
   const formik = useFormik({
     initialValues: { email: '', password: '' },
@@ -22,7 +27,7 @@ const Template: Story<Props> = () => {
     validateOnChange: false,
   })
   return (
-    <BoxFormLayout>
+    <BoxFormLayout {...args}>
       <BoxRounded
         onClickModify={() => setShowForm(true)}
         showButtonModify={!showForm}
@@ -78,9 +83,6 @@ const Template: Story<Props> = () => {
   )
 }
 
-export const BasicBoxFormLayout = Template.bind({})
-BasicBoxFormLayout.storyName = 'Box Form Layout'
-
-export default {
-  title: 'components/BoxFormLayout',
+export const Default: StoryObj<typeof BoxFormLayout> = {
+  render: () => <DefaultBoxFormLayout />,
 }
