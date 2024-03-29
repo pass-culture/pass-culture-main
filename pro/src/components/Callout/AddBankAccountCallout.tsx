@@ -32,7 +32,6 @@ const AddBankAccountCallout = ({
 
   return (
     <Callout
-      title="Aucun compte bancaire configuré pour percevoir vos remboursements"
       links={[
         {
           href: '/remboursements/informations-bancaires',
@@ -46,7 +45,9 @@ const AddBankAccountCallout = ({
         },
       ]}
       variant={CalloutVariant.ERROR}
-    />
+    >
+      Aucun compte bancaire configuré pour percevoir vos remboursements
+    </Callout>
   )
 }
 

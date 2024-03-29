@@ -33,11 +33,6 @@ const LinkVenueCallout = ({
 
   return (
     <Callout
-      title={`Dernière étape pour vous faire rembourser : rattachez ${
-        offerer.venuesWithNonFreeOffersWithoutBankAccounts.length > 1
-          ? 'vos lieux'
-          : 'votre lieu'
-      } à un compte bancaire`}
       links={[
         {
           href:
@@ -52,7 +47,13 @@ const LinkVenueCallout = ({
         },
       ]}
       variant={CalloutVariant.ERROR}
-    />
+    >
+      Dernière étape pour vous faire rembourser : rattachez
+      {offerer.venuesWithNonFreeOffersWithoutBankAccounts.length > 1
+        ? ' vos lieux '
+        : ' votre lieu '}
+      à un compte bancaire
+    </Callout>
   )
 }
 

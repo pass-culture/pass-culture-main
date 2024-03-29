@@ -74,7 +74,7 @@ const ReimbursementBankAccount = ({
             })}
           />
           <div>
-            Status du dossier :{' '}
+            Statut du dossier :{' '}
             <span className={styles['account-status']}>
               {bankAccount.status === BankAccountApplicationStatus.A_CORRIGER
                 ? 'informations manquantes'
@@ -83,7 +83,10 @@ const ReimbursementBankAccount = ({
           </div>
           <ButtonLink
             link={{
-              to: `https://www.demarches-simplifiees.fr/dossiers/${bankAccount.dsApplicationId}/messagerie`,
+              to:
+                bankAccount.status === BankAccountApplicationStatus.A_CORRIGER
+                  ? `https://www.demarches-simplifiees.fr/dossiers/${bankAccount.dsApplicationId}`
+                  : `https://www.demarches-simplifiees.fr/dossiers/${bankAccount.dsApplicationId}/messagerie`,
               isExternal: true,
               'aria-label': 'Nouvelle fenêtre',
               target: '_blank',
