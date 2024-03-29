@@ -50,8 +50,9 @@ class BeneficiaryImport(PcObject, Base, Model):
         server_default=sa.text(EligibilityType.AGE18.name),  # TODO (viconnex) remove default values
     )
     beneficiary: sa_orm.Mapped["User"] = relationship(
-        "User", foreign_keys=[beneficiaryId], backref="beneficiaryImports"
+        "User", foreign_keys=[beneficiaryId], back_populates="beneficiaryImports"
     )
+    statuses: list["beneficiaryImport"] = relationship("BeneficiaryImportStatus", back_populates="beneficiaryImport")
 
     @hybrid_property
     def currentStatus(self):

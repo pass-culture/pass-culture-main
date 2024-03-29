@@ -63,7 +63,7 @@ class ValidationMixin:
 
     @declared_attr
     def lastValidationAuthor(self) -> Mapped["User | None"]:
-        return sa.orm.relationship("User", foreign_keys=[self.lastValidationAuthorUserId])
+        return sa.orm.relationship("User", foreign_keys=f"[{self.__name__}.lastValidationAuthorUserId]")
 
     @declared_attr
     def __table_args__(self):

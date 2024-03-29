@@ -47,7 +47,7 @@ class Deposit(PcObject, Base, Model):
 
     userId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("user.id"), index=True, nullable=False)
 
-    user: "users_models.User" = sqla_orm.relationship("User", foreign_keys=[userId], backref="deposits")
+    user: "users_models.User" = sqla_orm.relationship("User", foreign_keys=[userId], back_populates="deposits")
 
     bookings: list["bookings_models.Booking"] = sqla_orm.relationship("Booking", back_populates="deposit")
 
@@ -218,7 +218,7 @@ class BankAccountApplicationStatus(enum.Enum):
 class BankInformation(PcObject, Base, Model):
     offererId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("offerer.id"), index=True, nullable=True)
     offerer: sqla_orm.Mapped["offerers_models.Offerer | None"] = sqla_orm.relationship(
-        "Offerer", foreign_keys=[offererId], backref=sqla_orm.backref("bankInformation", uselist=False)
+        "Offerer", foreign_keys=[offererId], back_populates="bankInformation", uselist=False
     )
     venueId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True, unique=True)
     venue: sqla_orm.Mapped["offerers_models.Venue | None"] = sqla_orm.relationship(
@@ -254,6 +254,7 @@ class BankAccount(PcObject, Base, Model, DeactivableMixin):
         foreign_keys="BankAccountStatusHistory.bankAccountId",
         uselist=True,
     )
+    action_history: list["ActionHistory"] = sqla_orm.relationship("ActionHistory", back_populates="bankAccount")
 
     @property
     def current_link(self) -> "offerers_models.VenueBankAccountLink | None":
@@ -299,19 +300,19 @@ class FinanceEvent(Base, Model):
 
     bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=True)
     booking: sqla_orm.Mapped["bookings_models.Booking | None"] = sqla_orm.relationship(
-        "Booking", foreign_keys=[bookingId], backref="finance_events"
+        "Booking", foreign_keys=[bookingId], back_populates="finance_events"
     )
     collectiveBookingId = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("collective_booking.id"), index=True, nullable=True
     )
     collectiveBooking: sqla_orm.Mapped["educational_models.CollectiveBooking | None"] = sqla_orm.relationship(
-        "CollectiveBooking", foreign_keys=[collectiveBookingId], backref="finance_events"
+        "CollectiveBooking", foreign_keys=[collectiveBookingId], back_populates="finance_events"
     )
     bookingFinanceIncidentId = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("booking_finance_incident.id"), index=True, nullable=True
     )
     bookingFinanceIncident: sqla_orm.Mapped["BookingFinanceIncident | None"] = sqla_orm.relationship(
-        "BookingFinanceIncident", foreign_keys=[bookingFinanceIncidentId], backref="finance_events"
+        "BookingFinanceIncident", foreign_keys=[bookingFinanceIncidentId], back_populates="finance_events"
     )
 
     # `venueId` is denormalized and comes from `booking.venueId`
@@ -324,6 +325,7 @@ class FinanceEvent(Base, Model):
     pricingPoint: sqla_orm.Mapped["offerers_models.Venue | None"] = sqla_orm.relationship(
         "Venue", foreign_keys=[pricingPointId]
     )
+    pricings: list["Pricing"] = sqla_orm.relationship("Pricing", back_populates="event")
 
     __table_args__ = (
         # An event relates to an individual or a collective booking, never both.
@@ -375,17 +377,17 @@ class Pricing(Base, Model):
 
     bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=True)
     booking: sqla_orm.Mapped["bookings_models.Booking | None"] = sqla_orm.relationship(
-        "Booking", foreign_keys=[bookingId], backref="pricings"
+        "Booking", foreign_keys=[bookingId], back_populates="pricings"
     )
     collectiveBookingId = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("collective_booking.id"), index=True, nullable=True
     )
     collectiveBooking: sqla_orm.Mapped["educational_models.CollectiveBooking | None"] = sqla_orm.relationship(
-        "CollectiveBooking", foreign_keys=[collectiveBookingId], backref="pricings"
+        "CollectiveBooking", foreign_keys=[collectiveBookingId], back_populates="pricings"
     )
     eventId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("finance_event.id"), index=True, nullable=False)
     event: sqla_orm.Mapped[FinanceEvent] = sqla_orm.relationship(
-        "FinanceEvent", foreign_keys=[eventId], backref="pricings"
+        "FinanceEvent", foreign_keys=[eventId], back_populates="pricings"
     )
 
     venueId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=False)
@@ -564,19 +566,19 @@ class CustomReimbursementRule(ReimbursementRule, Base, Model):
     offerId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("offer.id"), nullable=True)
 
     offer: sqla_orm.Mapped["offers_models.Offer | None"] = sqla_orm.relationship(
-        "Offer", foreign_keys=[offerId], backref="custom_reimbursement_rules"
+        "Offer", foreign_keys=[offerId], back_populates="custom_reimbursement_rules"
     )
 
     venueId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), nullable=True)
 
     venue: sqla_orm.Mapped["offerers_models.Venue | None"] = sqla_orm.relationship(
-        "Venue", foreign_keys=[venueId], backref="custom_reimbursement_rules"
+        "Venue", foreign_keys=[venueId], back_populates="custom_reimbursement_rules"
     )
 
     offererId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("offerer.id"), nullable=True)
 
     offerer: sqla_orm.Mapped["offerers_models.Offerer | None"] = sqla_orm.relationship(
-        "Offerer", foreign_keys=[offererId], backref="custom_reimbursement_rules"
+        "Offerer", foreign_keys=[offererId], back_populates="custom_reimbursement_rules"
     )
 
     # A list of identifiers of subcategories on which the rule applies.
@@ -594,6 +596,7 @@ class CustomReimbursementRule(ReimbursementRule, Base, Model):
     # required. The upper bound is exclusive and optional. If there is
     # no upper bound, it means that the rule is still applicable.
     timespan: psycopg2.extras.DateTimeRange = sqla.Column(sqla_psql.TSRANGE)
+    payments: list["Payment"] = sqla_orm.relationship("Payment", back_populates="customReimbursementRule")
 
     __table_args__ = (
         # A rule relates to an offer, a venue, or an offerer, never more than one.
@@ -712,7 +715,7 @@ class Cashflow(Base, Model):
     )
 
     batchId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("cashflow_batch.id"), index=True, nullable=False)
-    batch: "CashflowBatch" = sqla_orm.relationship("CashflowBatch", foreign_keys=[batchId], backref="cashflows")
+    batch: "CashflowBatch" = sqla_orm.relationship("CashflowBatch", foreign_keys=[batchId], back_populates="cashflows")
 
     # See the note about `amount` at the beginning of this module.
     # The amount cannot be zero.
@@ -772,6 +775,7 @@ class CashflowBatch(Base, Model):
     creationDate: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
     cutoff: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, unique=True)
     label: str = sqla.Column(sqla.Text, nullable=False, unique=True)
+    cashflows: list["Cashflow"] = sqla_orm.relationship("Cashflow", back_populates="batch")
 
 
 class InvoiceLine(Base, Model):
@@ -868,14 +872,16 @@ class InvoiceCashflow(Base, Model):
 class Payment(Base, Model):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=True)
-    booking: "bookings_models.Booking" = sqla_orm.relationship("Booking", foreign_keys=[bookingId], backref="payments")
+    booking: "bookings_models.Booking" = sqla_orm.relationship(
+        "Booking", foreign_keys=[bookingId], back_populates="payments"
+    )
     collectiveBookingId = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("collective_booking.id"), index=True, nullable=True
     )
     collectiveBooking: "educational_models.CollectiveBooking" = sqla_orm.relationship(
         "CollectiveBooking",
         foreign_keys=[collectiveBookingId],
-        backref="payments",
+        back_populates="payments",
     )
     # Contrary to other models, this amount is in euros, not eurocents.
     amount: decimal.Decimal = sqla.Column(sqla.Numeric(10, 2), nullable=False)
@@ -886,7 +892,7 @@ class Payment(Base, Model):
         sqla.ForeignKey("custom_reimbursement_rule.id"),
     )
     customReimbursementRule: CustomReimbursementRule | None = sqla_orm.relationship(
-        "CustomReimbursementRule", foreign_keys=[customReimbursementRuleId], backref="payments"
+        "CustomReimbursementRule", foreign_keys=[customReimbursementRuleId], back_populates="payments"
     )
     recipientName: str = sqla.Column(sqla.String(140), nullable=False)
     recipientSiren: str = sqla.Column(sqla.String(9), nullable=False)
@@ -905,9 +911,10 @@ class Payment(Base, Model):
     transactionLabel = sqla.Column(sqla.String(140), nullable=True)
     paymentMessageId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("payment_message.id"), nullable=True)
     paymentMessage: "PaymentMessage" = sqla_orm.relationship(
-        "PaymentMessage", foreign_keys=[paymentMessageId], backref=sqla_orm.backref("payments")
+        "PaymentMessage", foreign_keys=[paymentMessageId], back_populates="payments"
     )
     batchDate = sqla.Column(sqla.DateTime, nullable=True, index=True)
+    statuses: list["PaymentStatus"] = sqla_orm.relationship("PaymentStatus", back_populates="payment")
 
     __table_args__ = (
         sqla.CheckConstraint(
@@ -943,7 +950,7 @@ class TransactionStatus(enum.Enum):
 class PaymentStatus(Base, Model):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     paymentId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("payment.id"), index=True, nullable=False)
-    payment: Payment = sqla_orm.relationship("Payment", foreign_keys=[paymentId], backref="statuses")
+    payment: Payment = sqla_orm.relationship("Payment", foreign_keys=[paymentId], back_populates="statuses")
     date: datetime.datetime = sqla.Column(
         sqla.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sqla.func.now()
     )
@@ -957,6 +964,7 @@ class PaymentMessage(Base, Model):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     name: str = sqla.Column(sqla.String(50), unique=True, nullable=False)
     checksum: bytes = sqla.Column(sqla.LargeBinary(32), unique=True, nullable=False)
+    payments: list["Payment"] = sqla_orm.relationship("Payment", back_populates="paymentMessage")
 
 
 ##
@@ -990,7 +998,7 @@ class FinanceIncident(Base, Model):
 
     venueId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), nullable=False)
     venue: sqla_orm.Mapped["offerers_models.Venue | None"] = sqla_orm.relationship(
-        "Venue", foreign_keys=[venueId], backref="finance_incidents"
+        "Venue", foreign_keys=[venueId], back_populates="finance_incidents"
     )
 
     details: dict | None = sqla.Column(
@@ -998,6 +1006,10 @@ class FinanceIncident(Base, Model):
     )
 
     forceDebitNote: bool = sqla.Column(sqla.Boolean, nullable=False, server_default="false", default=False)
+    booking_finance_incidents: list["BookingFinanceIncident"] = sqla_orm.relationship(
+        "BookingFinanceIncident", back_populates="incident"
+    )
+    action_history: list["ActionHistory"] = sqla_orm.relationship("ActionHistory", back_populates="financeIncident")
 
     @property
     def is_partial(self) -> bool:
@@ -1051,27 +1063,31 @@ class BookingFinanceIncident(Base, Model):
 
     bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=True)
     booking: sqla_orm.Mapped["bookings_models.Booking | None"] = sqla_orm.relationship(
-        "Booking", foreign_keys=[bookingId], backref="incidents"
+        "Booking", foreign_keys=[bookingId], back_populates="incidents"
     )
 
     collectiveBookingId = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("collective_booking.id"), index=True, nullable=True
     )
     collectiveBooking: sqla_orm.Mapped["educational_models.CollectiveBooking | None"] = sqla_orm.relationship(
-        "CollectiveBooking", foreign_keys=[collectiveBookingId], backref="incidents"
+        "CollectiveBooking", foreign_keys=[collectiveBookingId], back_populates="incidents"
     )
 
     incidentId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("finance_incident.id"), index=True, nullable=False)
     incident: sqla_orm.Mapped["FinanceIncident"] = sqla_orm.relationship(
-        "FinanceIncident", foreign_keys=[incidentId], backref="booking_finance_incidents"
+        "FinanceIncident", foreign_keys=[incidentId], back_populates="booking_finance_incidents"
     )
 
     beneficiaryId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("user.id"), index=True, nullable=True)
     beneficiary: sqla_orm.Mapped["users_models.User | None"] = sqla_orm.relationship(
-        "User", foreign_keys=[beneficiaryId], backref="incidents"
+        "User", foreign_keys=[beneficiaryId], back_populates="incidents"
     )
 
     newTotalAmount: int = sqla.Column(sqla.Integer, nullable=False)  # in cents
+
+    finance_events: list["finance_models.FinanceEvent"] = sqla_orm.relationship(
+        "FinanceEvent", back_populates="bookingFinanceIncident", uselist=False
+    )
 
     __table_args__ = (
         # - incident is either individual or collective

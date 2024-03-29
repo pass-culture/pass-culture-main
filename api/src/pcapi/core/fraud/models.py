@@ -549,7 +549,7 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
     )
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
     user: users_models.User = sa.orm.relationship(
-        "User", foreign_keys=[userId], backref="beneficiaryFraudChecks", order_by=dateCreated
+        "User", foreign_keys=[userId], back_populates="beneficiaryFraudChecks", order_by=dateCreated
     )
 
     def get_detailed_source(self) -> str:
@@ -612,7 +612,7 @@ class OrphanDmsApplication(PcObject, Base, Model):
 class BeneficiaryFraudReview(PcObject, Base, Model):
     __tablename__ = "beneficiary_fraud_review"
     authorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
-    author: users_models.User = sa.orm.relationship("User", foreign_keys=[authorId], backref="adminFraudReviews")
+    author: users_models.User = sa.orm.relationship("User", foreign_keys=[authorId], back_populates="adminFraudReviews")
     dateReviewed: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
     eligibilityType: users_models.EligibilityType | None = sa.Column(
         sa.Enum(users_models.EligibilityType, create_constraint=False), nullable=True
@@ -621,7 +621,7 @@ class BeneficiaryFraudReview(PcObject, Base, Model):
     review = sa.Column(sa.Enum(FraudReviewStatus, create_constraint=False))
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
     user: users_models.User = sa.orm.relationship(
-        "User", foreign_keys=[userId], backref=sa.orm.backref("beneficiaryFraudReviews")
+        "User", foreign_keys=[userId], back_populates="beneficiaryFraudReviews"
     )
 
 

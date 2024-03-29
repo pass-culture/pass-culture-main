@@ -14,6 +14,10 @@ class Criterion(PcObject, Base, Model):
     categories: list["CriterionCategory"] = sqla.orm.relationship(
         "CriterionCategory", secondary="criterion_category_mapping"
     )
+    venue_criteria: list["Venue"] = sqla.orm.relationship(
+        "Venue", back_populates="criteria", secondary="venue_criterion"
+    )
+    criteria: list["Offer"] = sqla.orm.relationship("Offer", back_populates="criteria", secondary="offer_criterion")
 
     def __str__(self) -> str:
         return self.name

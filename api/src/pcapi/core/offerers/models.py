@@ -33,7 +33,6 @@ from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 from sqlalchemy.sql.elements import Case
@@ -275,7 +274,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     managingOffererId: int = Column(BigInteger, ForeignKey("offerer.id"), nullable=False, index=True)
 
     managingOfferer: sa_orm.Mapped["Offerer"] = relationship(
-        "Offerer", foreign_keys=[managingOffererId], backref="managedVenues"
+        "Offerer", foreign_keys=[managingOffererId], back_populates="managedVenues"
     )
 
     bookingEmail = Column(String(120), nullable=True)
@@ -357,7 +356,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     thumb_path_component = "venues"
 
     criteria: list["criteria_models.Criterion"] = sa.orm.relationship(
-        "Criterion", backref=db.backref("venue_criteria", lazy="dynamic"), secondary="venue_criterion"
+        "Criterion", back_populates="venue_criteria", secondary="venue_criterion"
     )
 
     dmsToken: str = Column(Text, nullable=False, unique=True)
@@ -395,7 +394,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     )
     collectiveDmsApplications: Mapped[list[educational_models.CollectiveDmsApplication]] = relationship(
         educational_models.CollectiveDmsApplication,
-        backref=backref("venue"),
+        back_populates="venue",
         primaryjoin="foreign(CollectiveDmsApplication.siret) == Venue.siret",
         uselist=True,
     )
@@ -442,6 +441,17 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     openingHours: Mapped[list["OpeningHours | None"]] = relationship(
         "OpeningHours", back_populates="venue", passive_deletes=True
     )
+
+    custom_reimbursement_rules: list["CustomReimbursementRule"] = relationship(
+        "CustomReimbursementRule", back_populates="venue"
+    )
+    finance_incidents: list["FinanceIncident"] = relationship("FinanceIncident", back_populates="venue")
+    collectiveBookings: list["CollectiveBooking"] = relationship("CollectiveBooking", back_populates="venue")
+    cinemaProviderPivot: list["CinemaProviderPivot"] = relationship("CinemaProviderPivot", back_populates="venue")
+    allocinePivot: "AllocinePivot" = relationship("AllocinePivot", back_populates="venue")
+    offers: list["Offer"] = relationship("Offer", back_populates="venue")
+    bookings: list["Booking"] = relationship("Booking", back_populates="venue")
+    action_history: list["ActionHistory"] = relationship("ActionHistory", back_populates="venue")
 
     def _get_type_banner_url(self) -> str | None:
         elligible_banners: tuple[str, ...] = VENUE_TYPE_DEFAULT_BANNERS.get(self.venueTypeCode, tuple())
@@ -1001,6 +1011,18 @@ class Offerer(
     hasNewNavUsers: sa_orm.Mapped["bool | None"] = sa.orm.query_expression()
     hasOldNavUsers: sa_orm.Mapped["bool | None"] = sa.orm.query_expression()
 
+    bankInformation: list[finance_models.BankInformation] = sa.orm.relationship(
+        finance_models.BankInformation, back_populates="offerer"
+    )
+    custom_reimbursement_rules: list["CustomReimbursementRule"] = sa.orm.relationship(
+        "CustomReimbursementRule", back_populates="offerer"
+    )
+    collectiveBookings: list["CollectiveBooking"] = sa.orm.relationship("CollectiveBooking", back_populates="offerer")
+    managedVenues: list["Venue"] = sa.orm.relationship("Venue", back_populates="managingOfferer")
+    apiKeys: list["ApiKey"] = sa.orm.relationship("ApiKey", back_populates="offerer")
+    bookings: list["Booking"] = sa.orm.relationship("Booking", back_populates="offerer")
+    action_history: list["ActionHistory"] = sa.orm.relationship("ActionHistory", back_populates="offerer")
+
     @property
     def bic(self) -> str | None:
         return self.bankInformation.bic if self.bankInformation else None
@@ -1061,7 +1083,7 @@ class UserOfferer(PcObject, Base, Model, ValidationStatusMixin):
 
 class ApiKey(PcObject, Base, Model):
     offererId: int = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=False)
-    offerer: sa_orm.Mapped[Offerer] = relationship("Offerer", foreign_keys=[offererId], backref=backref("apiKeys"))
+    offerer: sa_orm.Mapped[Offerer] = relationship("Offerer", foreign_keys=[offererId], back_populates="apiKeys")
     providerId: int = Column(BigInteger, ForeignKey("provider.id", ondelete="CASCADE"), index=True)
     provider: sa_orm.Mapped["providers_models.Provider"] = relationship(
         "Provider", foreign_keys=[providerId], back_populates="apiKeys"
@@ -1149,7 +1171,9 @@ class OffererInvitation(PcObject, Base, Model):
     email: str = Column(Text, nullable=False)
     dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
     userId: int = Column(BigInteger, ForeignKey("user.id"), nullable=False, index=True)
-    user: sa_orm.Mapped["users_models.User"] = relationship("User", foreign_keys=[userId], backref="OffererInvitations")
+    user: sa_orm.Mapped["users_models.User"] = relationship(
+        "User", foreign_keys=[userId], back_populates="OffererInvitations"
+    )
     status: InvitationStatus = Column(db_utils.MagicEnum(InvitationStatus), nullable=False)
 
     __table_args__ = (UniqueConstraint("offererId", "email", name="unique_offerer_invitation"),)

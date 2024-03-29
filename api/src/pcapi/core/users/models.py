@@ -206,6 +206,29 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
     pro_flags: UserProFlags = orm.relationship("UserProFlags", back_populates="user", uselist=False)
     pro_new_nav_state: UserProNewNavState = orm.relationship("UserProNewNavState", back_populates="user", uselist=False)
 
+    deposits: list["Deposit"] = orm.relationship("Deposit", back_populates="user")
+    incidents: list["BookingFinanceIncident"] = orm.relationship("BookingFinanceIncident", back_populates="beneficiary")
+    OffererInvitations: list["OffererInvitation"] = orm.relationship("OffererInvitation", back_populates="user")
+    mediations: list["Mediation"] = orm.relationship("Mediation", back_populates="author")
+    offers: list["Offer"] = orm.relationship("Offer", foreign_keys="[Offer.authorId]", back_populates="author")
+    reported_offers: list["OfferReport"] = orm.relationship("OfferReport", back_populates="user")
+    favorites: list["Favorite"] = orm.relationship("Favorite", back_populates="user")
+    email_history: "User" = orm.relationship("UserEmailHistory", back_populates="user")
+    userBookings: list["Booking"] = orm.relationship("Booking", back_populates="user")
+    beneficiaryFraudChecks: list["BeneficiaryFraudCheck"] = orm.relationship(
+        "BeneficiaryFraudCheck", back_populates="user"
+    )
+    adminFraudReviews: list["BeneficiaryFraudReview"] = orm.relationship(
+        "BeneficiaryFraudReview", foreign_keys="[BeneficiaryFraudReview.authorId]", back_populates="author"
+    )
+    beneficiaryFraudReviews: list["BeneficiaryFraudReview"] = orm.relationship(
+        "BeneficiaryFraudReview", foreign_keys="[BeneficiaryFraudReview.userId]", back_populates="user"
+    )
+    action_history: list["ActionHistory"] = orm.relationship(
+        "ActionHistory", foreign_keys="[ActionHistory.userId]", back_populates="user"
+    )
+    beneficiaryImports: list["BeneficiaryImport"] = orm.relationship("BeneficiaryImport", back_populates="beneficiary")
+
     # unaccent is not immutable, so it can't be used for an index.
     # Searching by sa.func.unaccent(something) does not use the index and causes a sequential scan.
     # immutable_unaccent is a wrapper so that index uses an immutable function.
@@ -689,11 +712,11 @@ class Favorite(PcObject, Base, Model):
 
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
 
-    user: orm.Mapped["User"] = orm.relationship("User", foreign_keys=[userId], backref="favorites")
+    user: orm.Mapped["User"] = orm.relationship("User", foreign_keys=[userId], back_populates="favorites")
 
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
 
-    offer: orm.Mapped["Offer"] = orm.relationship("Offer", foreign_keys=[offerId], backref="favorites")
+    offer: orm.Mapped["Offer"] = orm.relationship("Offer", foreign_keys=[offerId], back_populates="favorites")
 
     dateCreated = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow)
 
@@ -727,7 +750,7 @@ class UserEmailHistory(PcObject, Base, Model):
 
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), index=True, nullable=True)
     user: sa.orm.Mapped["User"] = orm.relationship(
-        "User", foreign_keys=[userId], backref=orm.backref("email_history", passive_deletes=True)
+        "User", foreign_keys=[userId], back_populates="email_history", passive_deletes=True
     )
 
     oldUserEmail: str = sa.Column(sa.String(120), nullable=False, unique=False, index=True)
