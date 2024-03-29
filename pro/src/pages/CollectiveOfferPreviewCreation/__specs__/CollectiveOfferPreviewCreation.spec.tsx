@@ -74,7 +74,7 @@ describe('CollectiveOfferPreviewCreation', () => {
     ).toBeInTheDocument()
   })
 
-  it('Should show the redirect modal', async () => {
+  it('should show the redirect modal', async () => {
     vi.spyOn(api, 'patchCollectiveOfferPublication').mockResolvedValue({
       ...getCollectiveOfferFactory(),
       isNonFreeOffer: true,
@@ -84,6 +84,7 @@ describe('CollectiveOfferPreviewCreation', () => {
       '/offre/A1/collectif/creation/apercu',
       {
         ...defaultProps,
+        offer: getCollectiveOfferFactory(),
         offerer: {
           ...defaultGetOffererResponseModel,
           hasNonFreeOffer: false,
