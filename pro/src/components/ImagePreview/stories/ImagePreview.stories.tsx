@@ -1,7 +1,7 @@
-import type { Story } from '@storybook/react'
+import type { StoryObj } from '@storybook/react'
 import React from 'react'
 
-import { ImagePreview } from '../ImagePreview'
+import { ImagePreview, ImagePreviewScreenProps } from '../ImagePreview'
 import { ImagePreviewsWrapper } from '../ImagePreviewsWrapper'
 
 import style from './HomeScreenShell.module.scss'
@@ -14,11 +14,7 @@ export default {
   component: ImagePreview,
 }
 
-interface Props {
-  title: string
-}
-
-const Template: Story<Props> = (props) => (
+const DefaultImagePreview = (props: ImagePreviewScreenProps) => (
   <ImagePreviewsWrapper>
     <ImagePreview {...props}>
       <img alt="" className={style['home-screen-shell']} src={offerHomeShell} />
@@ -44,7 +40,6 @@ const Template: Story<Props> = (props) => (
   </ImagePreviewsWrapper>
 )
 
-export const Default = Template.bind({})
-Default.args = {
-  title: "Page d'accueil",
+export const Default: StoryObj<typeof ImagePreview> = {
+  render: () => <DefaultImagePreview title="Page d'accueil" />,
 }

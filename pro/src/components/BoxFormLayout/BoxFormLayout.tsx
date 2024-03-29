@@ -8,7 +8,7 @@ import FormHeader from './BoxFormLayoutFormHeader'
 import Header from './BoxFormLayoutHeader'
 import RequiredMessage from './BoxFormLayoutRequiredMessage'
 
-interface BoxFormLayoutProps {
+export interface BoxFormLayoutProps {
   children?: React.ReactNode | React.ReactNode[]
   className?: string
 }
