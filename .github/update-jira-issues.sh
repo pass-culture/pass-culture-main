@@ -73,14 +73,14 @@ Get_jira_previous_commit_number()
 
 Mark_issue_as_not_deployable()
 {
-  echo 'je m''apprete à update la jira avec jira edit --query=''"Numéro de commit[Number]" > '$1''' --override customfield_10044=true --noedit'
+  echo 'je m''apprete à update la jira avec jira edit --query=''"Numéro de commit[Number]" > '$1''' --override customfield_10044=true --override customfield_10086=false --noedit'
   $JIRA_BINARY edit --query='"Numéro de commit[Number]" > '$1'' --override customfield_10044=true --noedit
 
 }
 
 Push_commit_number_and_commit_hash_to_jira_issue()
 {
-  echo 'je m''apprete à update la jira avec jira edit '$1' --override customfield_10044=false --override customfield_10059='$2' --override customfield_10060='$3' --noedit'
+  echo 'je m''apprete à update la jira avec jira edit '$1' --override customfield_10044=false --override customfield_10059='$2' --override customfield_10060='$3' --override customfield_10086=true --noedit'
   $JIRA_BINARY edit $1 --override customfield_10044=false --override customfield_10059=$2 --override customfield_10060=$3 --noedit
 }
 
