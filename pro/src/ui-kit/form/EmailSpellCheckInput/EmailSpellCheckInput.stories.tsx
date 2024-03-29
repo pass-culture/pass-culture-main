@@ -1,28 +1,25 @@
-import type { Story } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
-import { EmailSpellCheckInputProps } from 'ui-kit/form/EmailSpellCheckInput/EmailSpellCheckInput'
 import { EmailSpellCheckInput } from 'ui-kit/form/index'
 
 export default {
   title: 'ui-kit/forms/EmailSpellCheckInput',
   component: EmailSpellCheckInput,
-}
-type Args = EmailSpellCheckInputProps<{ email: string }>
-
-const Template: Story<Args> = (args) => (
-  <Formik initialValues={{}} onSubmit={() => {}}>
-    <EmailSpellCheckInput {...args} />
-  </Formik>
-)
-
-const defaultProps: Args = {
-  name: 'email',
-  label: 'Adresse email',
-  placeholder: 'email@exemple.com',
-  overrideInitialTip: 'marie.dupont@gmail.com',
+  decorators: [
+    (Story: any) => (
+      <Formik initialValues={{ email: '' }} onSubmit={() => {}}>
+        <Story />
+      </Formik>
+    ),
+  ],
 }
 
-export const Default = Template.bind({})
-Default.args = defaultProps
+export const Default = {
+  args: {
+    name: 'email',
+    label: 'Adresse email',
+    placeholder: 'email@exemple.com',
+    overrideInitialTip: 'marie.dupont@gmail.com',
+  },
+}

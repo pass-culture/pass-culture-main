@@ -8,7 +8,7 @@ import RowWithInfo from './FormLayoutRowWithInfo'
 import Section from './FormLayoutSection'
 import SubSection from './FormLayoutSubSection'
 
-interface FormLayoutProps {
+export interface FormLayoutProps {
   children: React.ReactNode | React.ReactNode[]
   className?: string
   fullWidthActions?: boolean

@@ -1,63 +1,63 @@
-import type { ComponentStory } from '@storybook/react'
+import type { StoryObj } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
 import { Button, TextInput } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import FormLayout from './FormLayout'
+import FormLayout, { FormLayoutProps } from './FormLayout'
 
 export default {
   title: 'components/FormLayout',
   component: FormLayout,
 }
 
-const Template: ComponentStory<typeof FormLayout> = (args) => (
-  <div style={{ width: 780 }}>
-    <FormLayout {...args}>
-      <FormLayout.Section
-        description="Lorem ipsum dolor sit amet"
-        title="Lorem ipsum dolor sit amet"
-      >
-        <FormLayout.Row>
-          <label>
-            Hello
-            <input type="text" />
-          </label>
-        </FormLayout.Row>
-      </FormLayout.Section>
-      <FormLayout.Section
-        description="Lorem ipsum dolor sit amet"
-        title="Lorem ipsum dolor sit amet"
-      >
-        <FormLayout.Row>
-          <label>
-            Hello
-            <input type="text" />
-          </label>
-        </FormLayout.Row>
-        <FormLayout.SubSection title="Sub section title">
-          <FormLayout.Row inline>
-            <label>
-              Hello
-              <input type="text" />
-            </label>
+const DefaultFormLayout = (args: FormLayoutProps) => {
+  return (
+    <div style={{ width: 780 }}>
+      <FormLayout {...args}>
+        <FormLayout.Section
+          description="Lorem ipsum dolor sit amet"
+          title="Lorem ipsum dolor sit amet"
+        >
+          <FormLayout.Row>
             <label>
               Hello
               <input type="text" />
             </label>
           </FormLayout.Row>
-        </FormLayout.SubSection>
-      </FormLayout.Section>
-      <FormLayout.Actions>
-        <button type="button">Annuler</button>
-        <button type="button">Envoyer</button>
-      </FormLayout.Actions>
-    </FormLayout>
-  </div>
-)
-
-export const Default = Template.bind({})
+        </FormLayout.Section>
+        <FormLayout.Section
+          description="Lorem ipsum dolor sit amet"
+          title="Lorem ipsum dolor sit amet"
+        >
+          <FormLayout.Row>
+            <label>
+              Hello
+              <input type="text" />
+            </label>
+          </FormLayout.Row>
+          <FormLayout.SubSection title="Sub section title">
+            <FormLayout.Row inline>
+              <label>
+                Hello
+                <input type="text" />
+              </label>
+              <label>
+                Hello
+                <input type="text" />
+              </label>
+            </FormLayout.Row>
+          </FormLayout.SubSection>
+        </FormLayout.Section>
+        <FormLayout.Actions>
+          <button type="button">Annuler</button>
+          <button type="button">Envoyer</button>
+        </FormLayout.Actions>
+      </FormLayout>
+    </div>
+  )
+}
 
 const DemoInformationBox = () => (
   <div>
@@ -70,7 +70,7 @@ const DemoInformationBox = () => (
   </div>
 )
 
-const TemplateDesigned: ComponentStory<typeof FormLayout> = (args) => (
+const DesignedFormLayout = (args: FormLayoutProps) => (
   <div style={{ width: 850 }}>
     <Formik initialValues={{}} onSubmit={() => alert('Form submit !')}>
       <FormLayout {...args}>
@@ -116,8 +116,10 @@ const TemplateDesigned: ComponentStory<typeof FormLayout> = (args) => (
   </div>
 )
 
-export const Designed = TemplateDesigned.bind({})
+export const Default: StoryObj<typeof FormLayout> = {
+  render: () => <DefaultFormLayout>test</DefaultFormLayout>,
+}
 
-Designed.args = {
-  fullWidthActions: true,
+export const Designed = {
+  render: () => <DesignedFormLayout fullWidthActions>test</DesignedFormLayout>,
 }

@@ -10,7 +10,7 @@ import { FieldLayoutBaseProps } from 'ui-kit/form/shared/FieldLayout/FieldLayout
 
 import styles from './EmailSpellCheckInput.module.scss'
 
-export type EmailSpellCheckInputProps<FormType> = FieldLayoutBaseProps & {
+type EmailSpellCheckInputProps<FormType> = FieldLayoutBaseProps & {
   // `Extract` needed so the key is a string. See https://stackoverflow.com/a/51808262
   name: Extract<keyof FormType, string>
   placeholder: string

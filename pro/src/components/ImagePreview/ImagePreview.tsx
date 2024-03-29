@@ -3,7 +3,7 @@ import React, { FunctionComponent } from 'react'
 import mobileShell from './assets/mobile-shell.svg'
 import styles from './ImagePreview.module.scss'
 
-interface ImagePreviewScreenProps {
+export interface ImagePreviewScreenProps {
   title: string
   children?: React.ReactNode
 }
