@@ -1723,15 +1723,15 @@
   resolved "https://registry.yarnpkg.com/@fal-works/esbuild-plugin-global-externals/-/esbuild-plugin-global-externals-2.1.2.tgz#c05ed35ad82df8e6ac616c68b92c2282bd083ba4"
   integrity sha512-cEee/Z+I12mZcFJshKcCqC8tuX5hG3s+d+9nZ3LabqKF1vKdF41B92pJVCBggjAGORAeOzyyDDKrZwIkLffeOQ==
 
-"@firebase/analytics@^0.10.1":
-  version "0.10.1"
-  resolved "https://registry.yarnpkg.com/@firebase/analytics/-/analytics-0.10.1.tgz#97d750020c5b3b41fd5191074c683a7a8c8900a5"
-  integrity sha512-5mnH1aQa99J5lZMJwTNzIoRc4yGXHf+fOn+EoEWhCDA3XGPweGHcylCbqq+G1wVJmfILL57fohDMa8ftMZ+44g==
+"@firebase/analytics@^0.10.2":
+  version "0.10.2"
+  resolved "https://registry.yarnpkg.com/@firebase/analytics/-/analytics-0.10.2.tgz#80b3df6df8ed108550712204f234374c83b572af"
+  integrity sha512-6Gv/Fndih+dOEEfsBJEeKlwxw9EvCO9D/y+yJMasblvCmj78wUVtn+T96zguSrbhfZ2yBhLS1vukYiPg6hI49w==
   dependencies:
-    "@firebase/component" "0.6.5"
-    "@firebase/installations" "0.6.5"
-    "@firebase/logger" "0.4.0"
-    "@firebase/util" "1.9.4"
+    "@firebase/component" "0.6.6"
+    "@firebase/installations" "0.6.6"
+    "@firebase/logger" "0.4.1"
+    "@firebase/util" "1.9.5"
     tslib "^2.1.0"
 
 "@firebase/app@^0.10.0":
@@ -1768,6 +1768,16 @@
   dependencies:
     "@firebase/component" "0.6.5"
     "@firebase/util" "1.9.4"
+    idb "7.1.1"
+    tslib "^2.1.0"
+
+"@firebase/installations@0.6.6":
+  version "0.6.6"
+  resolved "https://registry.yarnpkg.com/@firebase/installations/-/installations-0.6.6.tgz#9c0cbe3306384363a1c8d7c27c174a4e27842dc4"
+  integrity sha512-dNGRGoHmstgEJqh9Kzk22fR2ZrVBH1JWliaL6binQ6pIzlWscreHNczzJDgOKoVT0PjWTrAmh/azztiX/e2uTw==
+  dependencies:
+    "@firebase/component" "0.6.6"
+    "@firebase/util" "1.9.5"
     idb "7.1.1"
     tslib "^2.1.0"
 
