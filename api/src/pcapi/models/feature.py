@@ -129,6 +129,7 @@ class FeatureToggle(enum.Enum):
     )
     WIP_OPENING_HOURS = "Activer les horaires d'ouverture sur la page partenaire"
     WIP_ENABLE_ADAGE_VISUALIZATION = "Activer la nouvelle manière de visualiser les offres dans la recherche d'ADAGE."
+    WIP_ACCESLIBRE = "Activer l'affichage des données Accès Libre sur les pages partenaires"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -196,6 +197,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_OPENING_HOURS,
     FeatureToggle.ENABLE_TITELIVE_MUSIC_TYPES_IN_API_OUTPUT,
     FeatureToggle.WIP_ENABLE_ADAGE_VISUALIZATION,
+    FeatureToggle.WIP_ACCESLIBRE,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
