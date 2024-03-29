@@ -57,8 +57,8 @@ const App = (): JSX.Element | null => {
         }
       })
     } else {
-      setConsentedToFirebase(true)
-      setConsentedToBeamer(true)
+      setConsentedToFirebase(false)
+      setConsentedToBeamer(false)
     }
   }, [location.pathname])
 

@@ -1,9 +1,10 @@
 import { setUser } from '@sentry/browser'
 import { screen } from '@testing-library/react'
-import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import * as useAnalytics from 'hooks/useAnalytics'
+import * as cookieConsentModal from 'utils/cookieConsentModal'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { App } from '../App'
@@ -21,6 +22,7 @@ const renderApp = (storeOverrides: any, url = '/') =>
       <Routes>
         <Route path="/" element={<App />}>
           <Route path="/" element={<p>Sub component</p>} />
+          <Route path="/adage-iframe" element={<p>ADAGE</p>} />
           <Route path="/offres" element={<p>Offres</p>} />
           <Route path="/connexion" element={<p>Login page</p>} />
           <Route
@@ -98,5 +100,36 @@ describe('App', () => {
     renderApp(noUserOffererStore, '/offres')
 
     expect(await screen.findByText('Onboarding page')).toBeInTheDocument()
+  })
+
+  it('should not initialize firebase on the adage iframe', async () => {
+    vi.spyOn(cookieConsentModal, 'initCookieConsent').mockImplementation(
+      () => ({
+        internals: {
+          manager: {
+            consents: [cookieConsentModal.Consents.FIREBASE],
+            watch: () => {},
+          },
+        },
+      })
+    )
+    const useAnalyticsSpy = vi
+      .spyOn(useAnalytics, 'useConfigureFirebase')
+      .mockImplementation(() => {})
+
+    const loggedInStore = {
+      user: {
+        currentUser: {
+          id: 12,
+        },
+      },
+    }
+    renderApp(loggedInStore, '/adage-iframe')
+
+    await screen.findByText('ADAGE')
+
+    expect(useAnalyticsSpy).not.toHaveBeenCalledWith(
+      expect.objectContaining({ isCookieEnabled: true })
+    )
   })
 })
