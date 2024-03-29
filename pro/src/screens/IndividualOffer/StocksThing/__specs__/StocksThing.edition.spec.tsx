@@ -64,7 +64,7 @@ const renderStockThingScreen = (storeOverrides: Partial<RootState> = {}) =>
             mode: OFFER_WIZARD_MODE.EDITION,
           })}
           element={
-            <IndividualOfferContextProvider isUserAdmin={false}>
+            <IndividualOfferContextProvider>
               <Stocks />
             </IndividualOfferContextProvider>
           }

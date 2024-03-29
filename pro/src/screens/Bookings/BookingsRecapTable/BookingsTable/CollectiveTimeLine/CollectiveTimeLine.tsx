@@ -10,7 +10,6 @@ import {
 import { CollectiveBookingCancellationReasons } from 'apiClient/v1/models/CollectiveBookingCancellationReasons'
 import { BOOKING_STATUS } from 'core/Bookings/constants'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import fullEditIcon from 'icons/full-edit.svg'
 import fullLinkIcon from 'icons/full-link.svg'
@@ -53,9 +52,6 @@ const CollectiveTimeLine = ({
   bookingRecap,
   bookingDetails,
 }: CollectiveTimeLineProps) => {
-  const isNewBankDetailsJourneyEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
-  )
   const bookingDate = getDateToFrenchText(bookingRecap.bookingDate)
   const confirmationDate =
     bookingRecap.bookingConfirmationDate &&
@@ -387,31 +383,6 @@ const CollectiveTimeLine = ({
       </>
     ),
   }
-  const oldWaitingMissingBankInfo = {
-    type: TimelineStepType.WAITING,
-    content: (
-      <>
-        <div className={styles['timeline-step-title']}>
-          Remboursement en attente
-        </div>
-        <div>
-          Vous devez renseigner des coordonnées bancaires pour percevoir le
-          remboursement.
-        </div>
-        <ButtonLink
-          variant={ButtonVariant.TERNARY}
-          link={{
-            to: `/structures/${bookingDetails.offererId}/lieux/${bookingDetails.venueId}#reimbursement-section`,
-            isExternal: false,
-          }}
-          icon={fullLinkIcon}
-          className={styles['button-important']}
-        >
-          Renseigner mes coordonnées bancaires
-        </ButtonLink>
-      </>
-    ),
-  }
 
   const waitingMissingBankInfo = {
     type: TimelineStepType.WAITING,
@@ -492,17 +463,10 @@ const CollectiveTimeLine = ({
     lastValidatedStep = waitingPendingBankInfo
   }
   if (
-    isNewBankDetailsJourneyEnabled &&
     bookingDetails.bankAccountStatus ===
-      CollectiveBookingBankAccountStatus.MISSING
+    CollectiveBookingBankAccountStatus.MISSING
   ) {
     lastValidatedStep = waitingMissingBankInfo
-  } else if (
-    !isNewBankDetailsJourneyEnabled &&
-    bookingDetails.bankInformationStatus ===
-      CollectiveBookingBankInformationStatus.MISSING
-  ) {
-    lastValidatedStep = oldWaitingMissingBankInfo
   }
 
   switch (bookingRecap.bookingStatus) {

@@ -111,7 +111,7 @@ const renderStockEventScreen = async (
             mode: OFFER_WIZARD_MODE.EDITION,
           })}
           element={
-            <IndividualOfferContextProvider isUserAdmin={false}>
+            <IndividualOfferContextProvider>
               <Stocks />
               <ButtonLink link={{ to: '/outside', isExternal: false }}>
                 Go outside !

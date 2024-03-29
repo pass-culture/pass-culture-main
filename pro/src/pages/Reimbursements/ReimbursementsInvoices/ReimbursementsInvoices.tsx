@@ -3,10 +3,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { InvoiceResponseModel, InvoiceResponseV2Model } from 'apiClient/v1'
+import { InvoiceResponseV2Model } from 'apiClient/v1'
 import { BannerReimbursementsInfo } from 'components/Banner'
 import { SelectOption } from 'custom_types/form'
-import useActiveFeature from 'hooks/useActiveFeature'
 import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { FORMAT_ISO_DATE_ONLY, getToday } from 'utils/date'
@@ -21,9 +20,6 @@ import InvoiceTable from './InvoiceTable/InvoiceTable'
 import NoInvoicesYet from './NoInvoicesYet'
 
 const ReimbursementsInvoices = (): JSX.Element => {
-  const isNewBankDetailsJourneyEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
-  )
   const INITIAL_FILTERS = useMemo(() => {
     const today = getToday()
     const oneMonthAgo = subMonths(today, 1)
@@ -61,33 +57,16 @@ const ReimbursementsInvoices = (): JSX.Element => {
       const periodEnd = shouldReset
         ? INITIAL_FILTERS.periodEnd
         : filters.periodEnd
-
       try {
-        if (isNewBankDetailsJourneyEnabled) {
-          const invoices = await api.getInvoicesV2(
-            periodStart,
-            periodEnd,
-            reimbursmentPoint !== DEFAULT_INVOICES_FILTERS.reimbursementPointId
-              ? parseInt(reimbursmentPoint)
-              : undefined,
-            selectedOfferer?.id
-          )
-          setInvoices(invoices)
-        } else {
-          const invoices = await api.getInvoices(
-            periodStart,
-            periodEnd,
-            reimbursmentPoint !== DEFAULT_INVOICES_FILTERS.reimbursementPointId
-              ? parseInt(reimbursmentPoint)
-              : undefined
-          )
-          setInvoices(
-            invoices.map((invoice: InvoiceResponseModel) => ({
-              ...invoice,
-              bankAccountLabel: invoice.reimbursementPointName,
-            }))
-          )
-        }
+        const invoices = await api.getInvoicesV2(
+          periodStart,
+          periodEnd,
+          reimbursmentPoint !== DEFAULT_INVOICES_FILTERS.reimbursementPointId
+            ? parseInt(reimbursmentPoint)
+            : undefined,
+          selectedOfferer?.id
+        )
+        setInvoices(invoices)
 
         setIsLoading(false)
         setHasError(false)
@@ -97,7 +76,6 @@ const ReimbursementsInvoices = (): JSX.Element => {
       }
     },
     [
-      isNewBankDetailsJourneyEnabled,
       INITIAL_FILTERS,
       filters.periodEnd,
       filters.periodStart,
@@ -132,19 +110,6 @@ const ReimbursementsInvoices = (): JSX.Element => {
   }, [selectedOfferer?.id])
 
   useEffect(() => {
-    const getReimbursementPointsResult = async () => {
-      const result = await api.getReimbursementPoints()
-
-      setFilterOptions(
-        sortByLabel(
-          result.map((item) => ({
-            value: String(item.id),
-            label: item.publicName || item.name,
-          }))
-        )
-      )
-    }
-
     const getBankAccountOptions = async () => {
       if (!selectedOfferer) {
         return
@@ -162,15 +127,9 @@ const ReimbursementsInvoices = (): JSX.Element => {
         )
       )
     }
-
-    if (isNewBankDetailsJourneyEnabled) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      getBankAccountOptions()
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      getReimbursementPointsResult()
-    }
-  }, [isNewBankDetailsJourneyEnabled, selectedOfferer])
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    getBankAccountOptions()
+  }, [selectedOfferer])
 
   if (isLoading) {
     return <Spinner />
@@ -178,7 +137,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
 
   return (
     <>
-      {isNewBankDetailsJourneyEnabled && <BannerReimbursementsInfo />}
+      <BannerReimbursementsInfo />
       <InvoicesFilters
         areFiltersDefault={areFiltersDefault}
         filters={filters}

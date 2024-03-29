@@ -28,7 +28,6 @@ describe('PricingPoint', () => {
       ],
     },
     venue: { ...defaultGetVenue, pricingPoint: null },
-    setVenueHasPricingPoint: vi.fn(),
   }
 
   it('should call api when selecting new pricing point', async () => {

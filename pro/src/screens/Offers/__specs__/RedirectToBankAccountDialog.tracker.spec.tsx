@@ -43,9 +43,7 @@ describe('screen Offers', () => {
   it('should track event on redirect', async () => {
     renderDialog(props)
 
-    await userEvent.click(
-      screen.getByText('Renseigner des coordonnées bancaires')
-    )
+    await userEvent.click(screen.getByText('Ajouter un compte bancaire'))
 
     expect(mockLogEvent).toHaveBeenCalledWith('hasClickedVenueAddRibButton', {
       from: 'recapitulatif',

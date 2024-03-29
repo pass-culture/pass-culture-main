@@ -1,7 +1,6 @@
 import React from 'react'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useActiveStep from 'hooks/useActiveStep'
 import fullErrorIcon from 'icons/full-error.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -9,8 +8,6 @@ import Tabs from 'ui-kit/Tabs'
 import { Tab } from 'ui-kit/Tabs/Tabs'
 
 import {
-  OLD_STEP_LIST,
-  OLD_STEP_NAMES,
   STEP_ID_BANK_INFORMATIONS,
   STEP_ID_DETAILS,
   STEP_ID_INVOICES,
@@ -22,13 +19,7 @@ type ReimbursementsTabsProps = {
   selectedOfferer: GetOffererResponseModel | null
 }
 const ReimbursementsTabs = ({ selectedOfferer }: ReimbursementsTabsProps) => {
-  const isNewBankDetailsJourneyEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
-  )
-
-  const activeStep = useActiveStep(
-    isNewBankDetailsJourneyEnabled ? STEP_NAMES : OLD_STEP_NAMES
-  )
+  const activeStep = useActiveStep(STEP_NAMES)
   const hasWarning =
     (selectedOfferer &&
       selectedOfferer.venuesWithNonFreeOffersWithoutBankAccounts.length > 0) ??
@@ -66,9 +57,11 @@ const ReimbursementsTabs = ({ selectedOfferer }: ReimbursementsTabsProps) => {
     ]
   }
 
-  const tabs: Tab[] = (
-    isNewBankDetailsJourneyEnabled ? getSteps() : OLD_STEP_LIST
-  ).map(({ id, label, url }) => ({ key: id, label, url }))
+  const tabs: Tab[] = getSteps().map(({ id, label, url }) => ({
+    key: id,
+    label,
+    url,
+  }))
 
   return <Tabs tabs={tabs} selectedKey={activeStep} />
 }

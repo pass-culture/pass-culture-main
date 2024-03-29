@@ -47,33 +47,6 @@ describe('venues', () => {
         screen.getByRole('link', { name: `Gérer la page de My venue` })
       ).toHaveAttribute('href', `/structures/${offererId}/lieux/${venueId}`)
     })
-
-    it('should display add bank information when venue does not have a reimbursement point', () => {
-      props.venue.hasMissingReimbursementPoint = true
-      props.venue.hasCreatedOffer = true
-
-      renderVenue(props)
-
-      expect(
-        screen.getByRole('link', { name: 'Ajouter un RIB' })
-      ).toHaveAttribute(
-        'href',
-        `/structures/${offererId}/lieux/${venueId}#remboursement`
-      )
-    })
-
-    it('should not display add bank information when for the new bank details journey is enabled', () => {
-      props.venue.hasMissingReimbursementPoint = true
-      props.venue.hasCreatedOffer = true
-
-      renderVenue(props, {
-        features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
-      })
-
-      expect(
-        screen.queryByRole('link', { name: 'Ajouter un RIB' })
-      ).not.toBeInTheDocument()
-    })
   })
 
   it('should not display dms timeline link if venue has no dms application', () => {

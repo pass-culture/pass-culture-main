@@ -7,7 +7,6 @@ import {
   GetOffererResponseModel,
 } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import AdagePreviewLayout from 'pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
 import publishCollectiveOfferAdapter from 'screens/CollectiveOfferSummaryCreation/adapters/publishCollectiveOfferAdapter'
@@ -36,9 +35,6 @@ const CollectiveOfferPreviewCreationScreen = ({
   const notify = useNotification()
   const navigate = useNavigate()
   const [displayRedirectDialog, setDisplayRedirectDialog] = useState(false)
-  const isNewBankDetailsJourneyEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
-  )
 
   const backRedirectionUrl = offer.isTemplate
     ? `/offre/${offer.id}/collectif/vitrine/creation/recapitulatif`
@@ -67,7 +63,6 @@ const CollectiveOfferPreviewCreationScreen = ({
     }
     setOffer(response.payload)
     const shouldDisplayRedirectDialog =
-      isNewBankDetailsJourneyEnabled &&
       response.payload.isNonFreeOffer &&
       offerer &&
       !offerer.hasNonFreeOffer &&

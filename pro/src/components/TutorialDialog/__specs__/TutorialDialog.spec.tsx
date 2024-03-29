@@ -111,11 +111,11 @@ describe('tutorial modal', () => {
         await userEvent.click(buttonNext)
         expect(screen.getByText(stepTitles[1])).toBeInTheDocument()
         expect(
-          screen.getByText('Renseignez vos coordonnées bancaires')
+          screen.getByText('Renseignez vos informations bancaires')
         ).toBeInTheDocument()
         expect(
           screen.getByText(
-            'Ajoutez vos informations bancaires pour percevoir les remboursements de vos offres.',
+            'Ajoutez votre ou vos comptes bancaires pour percevoir les remboursements de vos offres.',
             { exact: false }
           )
         ).toBeInTheDocument()
@@ -214,7 +214,7 @@ describe('tutorial modal', () => {
     })
   })
 
-  it('should display text in create venue step under WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY FF', async () => {
+  it('should display text in create venue step', async () => {
     const storeOverrides = {
       user: {
         currentUser: {
@@ -226,7 +226,6 @@ describe('tutorial modal', () => {
 
     renderTutorialDialog({
       storeOverrides,
-      features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
     })
 
     await userEvent.click(screen.getByText('Suivant'))

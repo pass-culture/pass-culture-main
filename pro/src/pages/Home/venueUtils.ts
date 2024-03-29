@@ -39,19 +39,7 @@ export const shouldDisplayEACInformationSectionForVenue = (
   )
 }
 
-export const shouldDisplayPendingBankInformationApplicationForVenue = (
-  isNewBankDetailsJourneyEnabled: boolean,
-  venue?: GetOffererVenueResponseModel
-) =>
-  !isNewBankDetailsJourneyEnabled && venue?.hasPendingBankInformationApplication
-
 export const shouldShowVenueOfferStepsForVenue = (
-  isNewBankDetailsJourneyEnabled: boolean,
   venue?: GetOffererVenueResponseModel
 ) =>
-  shouldDisplayEACInformationSectionForVenue(venue) ||
-  shouldDisplayPendingBankInformationApplicationForVenue(
-    isNewBankDetailsJourneyEnabled,
-    venue
-  ) ||
-  !venue?.hasCreatedOffer
+  shouldDisplayEACInformationSectionForVenue(venue) || !venue?.hasCreatedOffer

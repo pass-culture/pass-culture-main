@@ -178,12 +178,9 @@ export const individualOfferContextValuesFactory = (
   return {
     offerId: offer.id,
     offer,
-    venueList: [],
-    offererNames: [],
     categories: [],
     subCategories: [],
     setSubcategory: () => {},
-    showVenuePopin: {},
     ...customIndividualOfferContextValues,
   }
 }

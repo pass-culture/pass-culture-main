@@ -148,13 +148,6 @@ describe('screens:IndividualOffer::Informations::creation', () => {
     })
 
     contextOverride = individualOfferContextValuesFactory({
-      venueList: [venue1, venue2],
-      offererNames: [
-        getOffererNameFactory({
-          id: 1,
-          name: 'mon offerer A',
-        }),
-      ],
       categories,
       subCategories,
       offer: null,
@@ -163,6 +156,13 @@ describe('screens:IndividualOffer::Informations::creation', () => {
     props = {
       venueId: offer.venue.id.toString(),
       offererId: offer.venue.managingOfferer.id.toString(),
+      venueList: [venue1, venue2],
+      offererNames: [
+        getOffererNameFactory({
+          id: 1,
+          name: 'mon offerer A',
+        }),
+      ],
     }
 
     vi.spyOn(api, 'getOffer').mockResolvedValue(

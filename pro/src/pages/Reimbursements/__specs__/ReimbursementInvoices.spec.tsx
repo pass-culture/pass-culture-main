@@ -55,7 +55,7 @@ const BASE_INVOICES = [
     date: '2022-11-02',
     amount: 100,
     url: 'J123456789.invoice',
-    reimbursementPointName: 'First reimbursement point',
+    bankAccountLabel: 'First bank account',
     cashflowLabels: ['VIR7', 'VIR5'],
   },
   {
@@ -63,7 +63,7 @@ const BASE_INVOICES = [
     date: '2022-11-03',
     amount: -50,
     url: 'J666666666.invoice',
-    reimbursementPointName: 'Second reimbursement point',
+    bankAccountLabel: 'Second bank account',
     cashflowLabels: ['VIR4'],
   },
   {
@@ -71,21 +71,8 @@ const BASE_INVOICES = [
     date: '2023-10-02',
     amount: 75,
     url: 'J987654321.invoice',
-    reimbursementPointName: 'First reimbursement point',
+    bankAccountLabel: 'First bank account',
     cashflowLabels: ['VIR9, VIR12'],
-  },
-]
-
-const BASE_REIMBURSEMENT_POINTS = [
-  {
-    id: 1,
-    name: 'First reimbursement point',
-    publicName: 'My first Reimbursement Point',
-  },
-  {
-    id: 2,
-    name: 'Second reimbursement point',
-    publicName: 'My second Reimbursement Point',
   },
 ]
 
@@ -104,10 +91,7 @@ const BASE_BANK_ACCOUNTS: Array<BankAccountResponseModel> = [
 
 describe('reimbursementsWithFilters', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'getInvoices').mockResolvedValueOnce(BASE_INVOICES)
-    vi.spyOn(api, 'getReimbursementPoints').mockResolvedValueOnce(
-      BASE_REIMBURSEMENT_POINTS
-    )
+    vi.spyOn(api, 'getInvoicesV2').mockResolvedValueOnce(BASE_INVOICES)
     vi.spyOn(
       api,
       'getOffererBankAccountsAndAttachedVenues'
@@ -124,11 +108,12 @@ describe('reimbursementsWithFilters', () => {
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-    expect(api.getInvoices).toHaveBeenNthCalledWith(
+    expect(api.getInvoicesV2).toHaveBeenNthCalledWith(
       1,
       '2020-11-15',
       '2020-12-15',
-      undefined
+      undefined,
+      1
     )
     expect(screen.queryAllByRole('row').length).toEqual(4)
     expect(screen.queryAllByRole('columnheader').length).toEqual(5)
@@ -136,21 +121,21 @@ describe('reimbursementsWithFilters', () => {
     const firstLine = [
       '02/11/2022',
       '<span class="document-type-content"><svg class="more-icon" viewBox="0 0 48 48" aria-hidden="true" width="16"><use xlink:href="/icons/stroke-more.svg#icon"></use></svg>Remboursement</span>',
-      'First reimbursement point',
+      'First bank account',
       'VIR7',
       '+100,00&nbsp;€',
     ]
     const secondLine = [
       '03/11/2022',
       '<span class="document-type-content"><svg class="less-icon" viewBox="0 0 48 48" aria-hidden="true" width="16"><use xlink:href="/icons/stroke-less.svg#icon"></use></svg>Trop&nbsp;perçu</span>',
-      'Second reimbursement point',
+      'Second bank account',
       'N/A',
       '-50,00&nbsp;€',
     ]
     const thirdLine = [
       '02/10/2023',
       '<span class="document-type-content"><svg class="more-icon" viewBox="0 0 48 48" aria-hidden="true" width="16"><use xlink:href="/icons/stroke-more.svg#icon"></use></svg>Remboursement</span>',
-      'First reimbursement point',
+      'First bank account',
       'VIR9, VIR12',
       '+75,00&nbsp;€',
     ]
@@ -167,13 +152,13 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should display new invoice table if FF WIP_ENABLE_FINANCE_INCIDENT is enable', async () => {
-    vi.spyOn(api, 'getInvoices').mockResolvedValueOnce([
+    vi.spyOn(api, 'getInvoicesV2').mockResolvedValueOnce([
       {
         reference: 'J123456789',
         date: '2022-11-02',
         amount: 100,
         url: 'J123456789.invoice',
-        reimbursementPointName: 'First reimbursement point',
+        bankAccountLabel: 'First reimbursement point',
         cashflowLabels: ['VIR7', 'VIR5'],
       },
       {
@@ -181,7 +166,7 @@ describe('reimbursementsWithFilters', () => {
         date: '2022-11-03',
         amount: -50,
         url: 'J666666666.invoice',
-        reimbursementPointName: 'Second reimbursement point',
+        bankAccountLabel: 'Second reimbursement point',
         cashflowLabels: ['VIR4'],
       },
     ])
@@ -221,21 +206,12 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('shoud render error block', async () => {
-    vi.spyOn(api, 'getInvoices').mockRejectedValueOnce([])
+    vi.spyOn(api, 'getInvoicesV2').mockRejectedValueOnce([])
     renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(screen.getByText('Une erreur est survenue')).toBeInTheDocument()
-  })
-
-  it('should display reimbursement points', async () => {
-    renderReimbursementsInvoices()
-
-    expect(
-      (await screen.findByLabelText(/Point de remboursement/)).childElementCount
-    ).toEqual(BASE_REIMBURSEMENT_POINTS.length + 1)
-    expect(api.getReimbursementPoints).toHaveBeenCalledTimes(1)
   })
 
   it('should reorder invoices on order buttons click', async () => {
@@ -316,28 +292,8 @@ describe('reimbursementsWithFilters', () => {
     )
   })
 
-  it('should not display invoice banner if FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is off', async () => {
+  it('should display invoice banner', async () => {
     renderReimbursementsInvoices()
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-    expect(
-      screen.queryByText(
-        'Les remboursements s’effectuent tous les 15 jours, rétroactivement suite à la validation d’une contremarque dans le guichet ou à la validation automatique des contremarques d’évènements. Cette page est automatiquement mise à jour à chaque remboursement.'
-      )
-    ).not.toBeInTheDocument()
-
-    expect(
-      screen.getByLabelText('Point de remboursement *')
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText('Tous les points de remboursement')
-    ).toBeInTheDocument()
-  })
-
-  it('should display invoice banner if FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is enable', async () => {
-    renderReimbursementsInvoices({
-      features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
-    })
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(
@@ -352,9 +308,7 @@ describe('reimbursementsWithFilters', () => {
 
   it('should disable filter if no invoices', async () => {
     vi.spyOn(api, 'hasInvoice').mockResolvedValueOnce({ hasInvoice: false })
-    renderReimbursementsInvoices({
-      features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
-    })
+    renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -364,9 +318,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should not disable filter if has invoices', async () => {
-    renderReimbursementsInvoices({
-      features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
-    })
+    renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
