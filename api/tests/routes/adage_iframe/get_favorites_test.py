@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from flask import url_for
 import pytest
 import time_machine
 
@@ -13,7 +14,15 @@ from pcapi.utils.date import format_into_utc_date
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+def get_test_client(client, redactor, institution):
+    if not institution:
+        return client.with_adage_token(email=redactor.email, uai=None)
+    return client.with_adage_token(email=redactor.email, uai=institution.institutionId)
+
+
 class GetFavoriteOfferTest:
+    endpoint = "adage_iframe.get_collective_favorites"
+
     @time_machine.travel("2020-11-17 15:00:00")
     def test_get_favorite_test(self, client):
         educational_institution = educational_factories.EducationalInstitutionFactory()
@@ -39,9 +48,7 @@ class GetFavoriteOfferTest:
             favoriteCollectiveOfferTemplates=[collective_offer_template],
         )
 
-        test_client = client.with_adage_token(
-            email=educational_redactor.email, uai=educational_institution.institutionId
-        )
+        test_client = get_test_client(client, educational_redactor, educational_institution)
 
         # fetch redactor (1 query)
         # fetch collective offer (1 query)
@@ -49,9 +56,7 @@ class GetFavoriteOfferTest:
         # fetch collective offer template (1 query)
         # fetch collective offer template images data (1 query)
         with assert_num_queries(5):
-            response = test_client.get(
-                "/adage-iframe/collective/favorites",
-            )
+            response = test_client.get(url_for(self.endpoint))
         assert response.status_code == 200
         assert response.json == {
             "favoritesOffer": [
@@ -236,9 +241,8 @@ class GetFavoriteOfferTest:
         # fetch collective offer template (1 query)
         # fetch images data (1 query)
         with assert_num_queries(4):
-            response = test_client.get(
-                "/adage-iframe/collective/favorites",
-            )
+            test_client = get_test_client(client, educational_redactor, educational_institution)
+            response = test_client.get(url_for(self.endpoint))
 
         assert response.status_code == 200
         assert response.json["favoritesOffer"]
@@ -260,9 +264,17 @@ class GetFavoriteOfferTest:
         # fetch collective offer template (1 query)
         # fetch images data (1 query)
         with assert_num_queries(4):
-            response = test_client.get(
-                "/adage-iframe/collective/favorites",
-            )
+            test_client = get_test_client(client, educational_redactor, educational_institution)
+            response = test_client.get(url_for(self.endpoint))
             assert response.status_code == 200
             assert not response.json["favoritesOffer"]
             assert response.json["favoritesTemplate"]
+
+    def test_missing_institution_id(self, client):
+        educational_redactor = educational_factories.EducationalRedactorFactory()
+
+        test_client = get_test_client(client, educational_redactor, None)
+        response = test_client.get(url_for(self.endpoint))
+
+        assert response.status_code == 403
+        assert "institution" in response.json["message"]
