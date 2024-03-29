@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AdageCulturalPartnerResponseModel } from '../models/AdageCulturalPartnerResponseModel';
 import type { AdageCulturalPartnersResponseModel } from '../models/AdageCulturalPartnersResponseModel';
 import type { AttachImageFormModel } from '../models/AttachImageFormModel';
 import type { AttachImageResponseModel } from '../models/AttachImageResponseModel';
@@ -41,7 +40,6 @@ import type { GenerateOffererApiKeyResponse } from '../models/GenerateOffererApi
 import type { GetCollectiveOfferRequestResponseModel } from '../models/GetCollectiveOfferRequestResponseModel';
 import type { GetCollectiveOfferResponseModel } from '../models/GetCollectiveOfferResponseModel';
 import type { GetCollectiveOfferTemplateResponseModel } from '../models/GetCollectiveOfferTemplateResponseModel';
-import type { GetCollectiveVenueResponseModel } from '../models/GetCollectiveVenueResponseModel';
 import type { GetEducationalOfferersResponseModel } from '../models/GetEducationalOfferersResponseModel';
 import type { GetIndividualOfferResponseModel } from '../models/GetIndividualOfferResponseModel';
 import type { GetMusicTypesResponse } from '../models/GetMusicTypesResponse';
@@ -883,29 +881,6 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         400: `Bad Request`,
-        401: `Unauthorized`,
-        403: `Forbidden`,
-        404: `Not Found`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * get_educational_partner <GET>
-   * @param siret
-   * @returns AdageCulturalPartnerResponseModel OK
-   * @throws ApiError
-   */
-  public getEducationalPartner(
-    siret: string,
-  ): CancelablePromise<AdageCulturalPartnerResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/cultural-partner/{siret}',
-      path: {
-        'siret': siret,
-      },
-      errors: {
         401: `Unauthorized`,
         403: `Forbidden`,
         404: `Not Found`,
@@ -2564,27 +2539,6 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'DELETE',
       url: '/venues/{venue_id}/banner',
-      path: {
-        'venue_id': venueId,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * get_venue_collective_data <GET>
-   * @param venueId
-   * @returns GetCollectiveVenueResponseModel OK
-   * @throws ApiError
-   */
-  public getVenueCollectiveData(
-    venueId: number,
-  ): CancelablePromise<GetCollectiveVenueResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/venues/{venue_id}/collective-data',
       path: {
         'venue_id': venueId,
       },

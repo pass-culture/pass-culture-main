@@ -48,22 +48,6 @@ def get_venue(venue_id: int) -> venues_serialize.GetVenueResponseModel:
     return venues_serialize.GetVenueResponseModel.from_orm(venue)
 
 
-@private_api.route("/venues/<int:venue_id>/collective-data", methods=["GET"])
-@login_required
-@spectree_serialize(response_model=venues_serialize.GetCollectiveVenueResponseModel, api=blueprint.pro_private_schema)
-def get_venue_collective_data(venue_id: int) -> venues_serialize.GetCollectiveVenueResponseModel:
-    venue = (
-        models.Venue.query.filter(models.Venue.id == venue_id)
-        .options(sqla_orm.joinedload(models.Venue.venueEducationalStatus))
-        .options(sqla_orm.joinedload(models.Venue.collectiveDomains))
-    ).one_or_none()
-    if not venue:
-        raise ApiErrors({"offerer": ["Aucun lieu trouvée pour cet id"]}, status_code=404)
-
-    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
-    return venues_serialize.GetCollectiveVenueResponseModel.from_orm(venue)
-
-
 @private_api.route("/venues", methods=["GET"])
 @login_required
 @spectree_serialize(response_model=venues_serialize.GetVenueListResponseModel, api=blueprint.pro_private_schema)

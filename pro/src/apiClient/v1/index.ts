@@ -10,7 +10,6 @@ export { CancelablePromise, CancelError } from './core/CancelablePromise';
 export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
-export type { AdageCulturalPartnerResponseModel } from './models/AdageCulturalPartnerResponseModel';
 export type { AdageCulturalPartnersResponseModel } from './models/AdageCulturalPartnersResponseModel';
 export type { Address } from './models/Address';
 export type { AttachImageFormModel } from './models/AttachImageFormModel';
@@ -98,7 +97,6 @@ export type { GetCollectiveOfferRequestResponseModel } from './models/GetCollect
 export type { GetCollectiveOfferResponseModel } from './models/GetCollectiveOfferResponseModel';
 export type { GetCollectiveOfferTemplateResponseModel } from './models/GetCollectiveOfferTemplateResponseModel';
 export type { GetCollectiveOfferVenueResponseModel } from './models/GetCollectiveOfferVenueResponseModel';
-export type { GetCollectiveVenueResponseModel } from './models/GetCollectiveVenueResponseModel';
 export type { GetEducationalOffererResponseModel } from './models/GetEducationalOffererResponseModel';
 export type { GetEducationalOfferersQueryModel } from './models/GetEducationalOfferersQueryModel';
 export type { GetEducationalOfferersResponseModel } from './models/GetEducationalOfferersResponseModel';
