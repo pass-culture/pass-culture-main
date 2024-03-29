@@ -263,6 +263,9 @@ describe('Summary', () => {
       })
 
       it('should link to creation confirmation page', async () => {
+        vi.spyOn(api, 'getOfferer').mockResolvedValue(
+          defaultGetOffererResponseModel
+        )
         // when
         renderSummary(
           customContext,
@@ -314,6 +317,9 @@ describe('Summary', () => {
         )
       vi.spyOn(api, 'patchPublishOffer').mockImplementationOnce(
         () => mockResponse
+      )
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(
+        defaultGetOffererResponseModel
       )
       await userEvent.click(buttonPublish)
       expect(api.patchPublishOffer).toHaveBeenCalled()
@@ -394,9 +400,12 @@ describe('Summary', () => {
       ).toBeInTheDocument()
       expect(
         screen.getByRole('link', {
-          name: 'Renseigner des coordonnées bancaires',
+          name: 'Ajouter un compte bancaire',
         })
-      ).toHaveAttribute('href', '/structures/1/lieux/1#remboursement')
+      ).toHaveAttribute(
+        'href',
+        '/remboursements/informations-bancaires?structure=1'
+      )
     })
 
     it('should display redirect modal if first non free offer', async () => {
@@ -430,10 +439,7 @@ describe('Summary', () => {
           { offerId: 'AA' }
         ),
         {
-          features: [
-            'WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY',
-            'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY',
-          ],
+          features: ['WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY'],
         }
       )
 
@@ -482,10 +488,7 @@ describe('Summary', () => {
           { offerId: 'AA' }
         ),
         {
-          features: [
-            'WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY',
-            'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY',
-          ],
+          features: ['WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY'],
         }
       )
 
@@ -514,10 +517,7 @@ describe('Summary', () => {
           { offerId: 'AA' }
         ),
         {
-          features: [
-            'WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY',
-            'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY',
-          ],
+          features: ['WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY'],
         }
       )
 
@@ -546,10 +546,7 @@ describe('Summary', () => {
           { offerId: 'AA' }
         ),
         {
-          features: [
-            'WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY',
-            'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY',
-          ],
+          features: ['WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY'],
         }
       )
 

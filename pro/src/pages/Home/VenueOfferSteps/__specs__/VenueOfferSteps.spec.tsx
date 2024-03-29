@@ -65,37 +65,13 @@ describe('VenueOfferSteps', () => {
     expect(screen.getByText('Créer une offre')).toBeInTheDocument()
   })
 
-  it('should display reimbursement link if user has no ReimbursementPoint on venue', () => {
-    props.venue = {
-      ...defaultGetOffererVenueResponseModel,
-      hasMissingReimbursementPoint: true,
-    }
-    renderVenueOfferSteps(props)
-    expect(
-      screen.getByText('Renseigner des coordonnées bancaires')
-    ).toBeInTheDocument()
-  })
-
-  it('should not display reimbursement link if user has ReimbursementPoint on venue', () => {
-    props.venue = {
-      ...defaultGetOffererVenueResponseModel,
-      hasMissingReimbursementPoint: false,
-    }
-    renderVenueOfferSteps(props)
-    expect(
-      screen.queryByText('Renseigner des coordonnées bancaires')
-    ).not.toBeInTheDocument()
-  })
-
   it('should display bank account link on first venue if user has no bank account and no offer on offerer', () => {
     props.offerer = offererWithoutBankAccount
     props.offerer.managedVenues = [
       { ...defaultGetOffererVenueResponseModel, hasCreatedOffer: false },
     ]
     props.isFirstVenue = true
-    renderVenueOfferSteps(props, {
-      features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
-    })
+    renderVenueOfferSteps(props)
     expect(screen.getByText('Ajouter un compte bancaire')).toBeInTheDocument()
     expect(
       screen.queryByText('Renseigner des coordonnées bancaires')
@@ -108,9 +84,7 @@ describe('VenueOfferSteps', () => {
       { ...defaultGetOffererVenueResponseModel, hasCreatedOffer: false },
     ]
     props.isFirstVenue = false
-    renderVenueOfferSteps(props, {
-      features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
-    })
+    renderVenueOfferSteps(props)
     expect(screen.getByText('Ajouter un compte bancaire')).toBeInTheDocument()
     expect(
       screen.queryByText('Renseigner des coordonnées bancaires')
@@ -124,9 +98,7 @@ describe('VenueOfferSteps', () => {
       { ...defaultGetOffererVenueResponseModel, hasCreatedOffer: false },
     ]
     props.isFirstVenue = false
-    renderVenueOfferSteps(props, {
-      features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
-    })
+    renderVenueOfferSteps(props)
     expect(
       screen.queryByText('Ajouter un compte bancaire')
     ).not.toBeInTheDocument()
@@ -138,9 +110,7 @@ describe('VenueOfferSteps', () => {
       { ...defaultGetOffererVenueResponseModel, hasCreatedOffer: true },
     ]
     props.isFirstVenue = true
-    renderVenueOfferSteps(props, {
-      features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
-    })
+    renderVenueOfferSteps(props)
     expect(
       screen.queryByText('Ajouter un compte bancaire')
     ).not.toBeInTheDocument()
@@ -151,9 +121,7 @@ describe('VenueOfferSteps', () => {
       ...defaultGetOffererResponseModel,
       hasValidBankAccount: true,
     }
-    renderVenueOfferSteps(props, {
-      features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
-    })
+    renderVenueOfferSteps(props)
     expect(
       screen.queryByText('Ajouter un compte bancaire')
     ).not.toBeInTheDocument()
@@ -174,48 +142,14 @@ describe('VenueOfferSteps', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display bank information status follow link when condition to display it is true', () => {
-    props.venue = {
-      ...defaultGetOffererVenueResponseModel,
-      hasPendingBankInformationApplication: true,
-      demarchesSimplifieesApplicationId: 1232799,
-    }
-    renderVenueOfferSteps(props)
-    expect(screen.getByText('Démarche en cours :')).toBeInTheDocument()
-    expect(
-      screen.getByRole('link', {
-        name: 'Suivre mon dossier de coordonnées bancaires',
-      })
-    ).toHaveAttribute(
-      'href',
-      'https://www.demarches-simplifiees.fr/dossiers/1232799/messagerie'
-    )
-  })
-
   it('should not display ds application link when the FF is enabled', () => {
-    renderVenueOfferSteps(props, {
-      features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
-    })
+    renderVenueOfferSteps(props)
     expect(screen.queryByText('Démarche en cours :')).not.toBeInTheDocument()
     expect(
       screen.queryByRole('link', {
         name: 'Suivre mon dossier de coordonnées bancaires',
       })
     ).not.toBeInTheDocument()
-  })
-
-  it('redirect to dms even if there is no dms application id', () => {
-    props.venue = {
-      ...defaultGetOffererVenueResponseModel,
-      hasPendingBankInformationApplication: true,
-      demarchesSimplifieesApplicationId: null,
-    }
-    renderVenueOfferSteps(props)
-    expect(
-      screen.getByRole('link', {
-        name: 'Suivre mon dossier de coordonnées bancaires',
-      })
-    ).toHaveAttribute('href', 'https://www.demarches-simplifiees.fr/dossiers')
   })
 
   it('should display link for eac informations if has adage id and already created offer', () => {
@@ -302,9 +236,7 @@ describe('VenueOfferSteps', () => {
       hasPendingBankInformationApplication: true,
     }
 
-    renderVenueOfferSteps(props, {
-      features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
-    })
+    renderVenueOfferSteps(props)
 
     expect(screen.queryByText('Prochaines étapes :')).not.toBeInTheDocument()
   })

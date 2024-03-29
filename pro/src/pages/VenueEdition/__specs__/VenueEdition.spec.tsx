@@ -179,9 +179,7 @@ describe('route VenueEdition', () => {
       siret: '11111111111111',
     })
 
-    renderVenueEdition(venue.id, offerer.id, {
-      features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
-    })
+    renderVenueEdition(venue.id, offerer.id)
 
     await screen.findByRole('heading', {
       name: 'Cinéma des iles',

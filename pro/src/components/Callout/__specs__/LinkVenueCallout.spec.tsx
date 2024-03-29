@@ -54,9 +54,7 @@ describe('LinkVenueCallout', () => {
           hasValidBankAccount,
           venuesWithNonFreeOffersWithoutBankAccounts,
         }
-        renderWithProviders(<LinkVenueCallout {...props} />, {
-          features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
-        })
+        renderWithProviders(<LinkVenueCallout {...props} />)
 
         expect(
           screen.queryByText(/Dernière étape pour vous faire rembourser/)
@@ -70,9 +68,7 @@ describe('LinkVenueCallout', () => {
         hasValidBankAccount: true,
         venuesWithNonFreeOffersWithoutBankAccounts: [1],
       }
-      renderWithProviders(<LinkVenueCallout {...props} />, {
-        features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
-      })
+      renderWithProviders(<LinkVenueCallout {...props} />)
 
       expect(
         screen.getByText(/Dernière étape pour vous faire rembourser/)
@@ -91,9 +87,7 @@ describe('LinkVenueCallout', () => {
         hasValidBankAccount: true,
         venuesWithNonFreeOffersWithoutBankAccounts: [1],
       }
-      renderWithProviders(<LinkVenueCallout {...props} />, {
-        features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
-      })
+      renderWithProviders(<LinkVenueCallout {...props} />)
 
       expect(
         screen.getByText(
@@ -111,9 +105,7 @@ describe('LinkVenueCallout', () => {
         hasValidBankAccount: true,
         venuesWithNonFreeOffersWithoutBankAccounts: [1, 2],
       }
-      renderWithProviders(<LinkVenueCallout {...props} />, {
-        features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
-      })
+      renderWithProviders(<LinkVenueCallout {...props} />)
 
       expect(
         screen.getByText(
@@ -134,7 +126,6 @@ describe('LinkVenueCallout', () => {
       }
 
       renderWithProviders(<LinkVenueCallout {...props} />, {
-        features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
         initialRouterEntries: ['/accueil'],
       })
 

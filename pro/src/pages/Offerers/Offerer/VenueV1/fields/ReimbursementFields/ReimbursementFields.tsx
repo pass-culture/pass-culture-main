@@ -1,9 +1,7 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback } from 'react'
 
 import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
-import useActiveFeature from 'hooks/useActiveFeature'
-import ReimbursementPoint from 'pages/VenueCreation/ReimbursementPoint/ReimbursementPoint'
 import { Banner } from 'ui-kit'
 
 import PricingPoint from '../PricingPoint'
@@ -19,14 +17,8 @@ const ReimbursementFields = ({
   scrollToSection,
   venue,
 }: ReimbursementFieldsProps) => {
-  const isNewBankDetailsJourneyEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
-  )
   const venueHaveSiret = !!venue.siret
   const offererHaveVenueWithSiret = offerer.hasAvailablePricingPoints
-  const [venueHasPricingPoint, setVenueHasPricingPoint] = useState<boolean>(
-    !!venue.pricingPoint
-  )
 
   const scrollToReimbursementSection = useCallback((node: any) => {
     if (node !== null && scrollToSection) {
@@ -39,13 +31,7 @@ const ReimbursementFields = ({
   return (
     <>
       <div ref={scrollToReimbursementSection} id="reimbursement-section">
-        <FormLayout.Section
-          title={
-            isNewBankDetailsJourneyEnabled
-              ? 'Barème de remboursement'
-              : 'Remboursement'
-          }
-        >
+        <FormLayout.Section title="Barème de remboursement">
           {!venueHaveSiret && !offererHaveVenueWithSiret ? (
             <Banner
               links={[
@@ -61,19 +47,7 @@ const ReimbursementFields = ({
           ) : (
             <>
               {!venueHaveSiret && (
-                <PricingPoint
-                  offerer={offerer}
-                  venue={venue}
-                  setVenueHasPricingPoint={setVenueHasPricingPoint}
-                />
-              )}
-
-              {!isNewBankDetailsJourneyEnabled && (
-                <ReimbursementPoint
-                  offerer={offerer}
-                  initialVenue={venue}
-                  venueHasPricingPoint={venueHasPricingPoint}
-                />
+                <PricingPoint offerer={offerer} venue={venue} />
               )}
             </>
           )}

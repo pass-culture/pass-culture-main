@@ -16,8 +16,6 @@ export const ENVIRONMENT_NAME = import.meta.env.MODE
 export const ENV_WORDING = import.meta.env.VITE_ENV_WORDING
 export const SENTRY_SAMPLE_RATE = import.meta.env.VITE_SENTRY_SAMPLE_RATE ?? '0'
 export const SENTRY_SERVER_URL = import.meta.env.VITE_SENTRY_SERVER_URL
-export const DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID_V4 = import.meta.env
-  .VITE_DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID_V4
 export const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY ?? ''
 export const WEBAPP_URL = import.meta.env.VITE_WEBAPP_URL
 export const URL_FOR_MAINTENANCE =

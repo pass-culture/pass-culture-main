@@ -90,9 +90,6 @@ describe('CollectiveOfferPreviewCreation', () => {
           hasNonFreeOffer: false,
           hasValidBankAccount: false,
         },
-      },
-      {
-        features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
       }
     )
 

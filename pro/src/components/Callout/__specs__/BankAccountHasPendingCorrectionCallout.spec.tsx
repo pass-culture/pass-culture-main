@@ -35,12 +35,7 @@ describe('LinkVenueCallout', () => {
         ...defaultGetOffererResponseModel,
         hasBankAccountWithPendingCorrections: false,
       }
-      renderWithProviders(
-        <BankAccountHasPendingCorrectionCallout {...props} />,
-        {
-          features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
-        }
-      )
+      renderWithProviders(<BankAccountHasPendingCorrectionCallout {...props} />)
 
       expect(
         screen.queryByText(/Compte bancaire incomplet/)
@@ -52,12 +47,7 @@ describe('LinkVenueCallout', () => {
         ...defaultGetOffererResponseModel,
         hasBankAccountWithPendingCorrections: true,
       }
-      renderWithProviders(
-        <BankAccountHasPendingCorrectionCallout {...props} />,
-        {
-          features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
-        }
-      )
+      renderWithProviders(<BankAccountHasPendingCorrectionCallout {...props} />)
 
       expect(screen.getByText(/Compte bancaire incomplet/)).toBeInTheDocument()
       expect(
@@ -80,7 +70,6 @@ describe('LinkVenueCallout', () => {
       renderWithProviders(
         <BankAccountHasPendingCorrectionCallout {...props} />,
         {
-          features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
           initialRouterEntries: ['/accueil'],
         }
       )

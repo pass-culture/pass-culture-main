@@ -136,13 +136,6 @@ describe('screens:IndividualOffer::Informations::creation', () => {
     })
 
     contextOverride = individualOfferContextValuesFactory({
-      venueList: [venue1, venue2],
-      offererNames: [
-        getOffererNameFactory({
-          id: offererId,
-          name: 'mon offerer A',
-        }),
-      ],
       categories,
       subCategories,
       offer: null,
@@ -151,6 +144,13 @@ describe('screens:IndividualOffer::Informations::creation', () => {
     props = {
       offererId: offererId.toString(),
       venueId: venue1.id.toString(),
+      venueList: [venue1, venue2],
+      offererNames: [
+        getOffererNameFactory({
+          id: offererId,
+          name: 'mon offerer A',
+        }),
+      ],
     }
 
     vi.spyOn(api, 'postOffer').mockResolvedValue({
@@ -319,6 +319,13 @@ describe('screens:IndividualOffer::Informations::creation', () => {
     })
 
     const contextOverride = individualOfferContextValuesFactory({
+      categories,
+      subCategories,
+      offer: null,
+    })
+    props = {
+      offererId: offererId1.toString(),
+      venueId: '',
       venueList: [
         venue1Offerer1,
         venue2Offerer1,
@@ -335,13 +342,6 @@ describe('screens:IndividualOffer::Informations::creation', () => {
           name: 'mon offerer B',
         }),
       ],
-      categories,
-      subCategories,
-      offer: null,
-    })
-    props = {
-      offererId: offererId1.toString(),
-      venueId: '',
     }
     const searchParam = '?offer-type=VIRTUAL_GOOD'
     renderInformationsScreen(props, contextOverride, searchParam)

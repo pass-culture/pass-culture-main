@@ -18,7 +18,6 @@ import {
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'hooks'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
@@ -36,16 +35,12 @@ import StockSection from './StockSection/StockSection'
 import styles from './SummaryScreen.module.scss'
 
 const SummaryScreen = () => {
-  const isNewBankDetailsJourneyEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
-  )
   const [isDisabled, setIsDisabled] = useState(false)
   const [displayRedirectDialog, setDisplayRedirectDialog] = useState(false)
   const notification = useNotification()
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
-  const { offerOfferer, showVenuePopin, offer, subCategories } =
-    useIndividualOfferContext()
+  const { offerOfferer, offer, subCategories } = useIndividualOfferContext()
   const { logEvent } = useAnalytics()
 
   if (offer === null) {
@@ -69,24 +64,20 @@ const SummaryScreen = () => {
     }
 
     setIsDisabled(true)
-    const offererResponse = isNewBankDetailsJourneyEnabled
-      ? await api.getOfferer(offer.venue.managingOfferer.id)
-      : null
 
     try {
+      const offererResponse = await api.getOfferer(
+        offer.venue.managingOfferer.id
+      )
       const publishIndividualOfferResponse = await api.patchPublishOffer({
         id: offer.id,
       })
 
       const shouldDisplayRedirectDialog =
-        (isNewBankDetailsJourneyEnabled &&
-          publishIndividualOfferResponse.isNonFreeOffer &&
-          offererResponse &&
-          !offererResponse.hasNonFreeOffer &&
-          !offererResponse.hasValidBankAccount &&
-          !offererResponse.hasPendingBankAccount) ||
-        (!isNewBankDetailsJourneyEnabled &&
-          showVenuePopin[offer.venue.id || ''])
+        publishIndividualOfferResponse.isNonFreeOffer &&
+        !offererResponse.hasNonFreeOffer &&
+        !offererResponse.hasValidBankAccount &&
+        !offererResponse.hasPendingBankAccount
 
       if (shouldDisplayRedirectDialog) {
         setDisplayRedirectDialog(true)

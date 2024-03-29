@@ -11,7 +11,6 @@ import FormLayout from 'components/FormLayout'
 import { Providers } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
-import useActiveFeature from 'hooks/useActiveFeature'
 import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
 import BankAccountInfos from 'pages/VenueCreation/BankAccountInfos/BankAccountInfos'
 import { SiretOrCommentFields } from 'pages/VenueCreation/SiretOrCommentFields/SiretOrCommentFields'
@@ -42,9 +41,6 @@ export const VenueSettingsForm = ({
   venue,
 }: VenueFormProps) => {
   const { initialValues } = useFormikContext<VenueSettingsFormValues>()
-  const isNewBankDetailsJourneyEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
-  )
   useScrollToFirstErrorAfterSubmit()
   const location = useLocation()
 
@@ -160,17 +156,14 @@ export const VenueSettingsForm = ({
           </FormLayout.Row>
         </FormLayout.Section>
 
-        {(!isNewBankDetailsJourneyEnabled || !venue.siret) && (
+        {!venue.siret && (
           <ReimbursementFields
             offerer={offerer}
             scrollToSection={Boolean(location.state) || Boolean(location.hash)}
             venue={venue}
           />
         )}
-
-        {isNewBankDetailsJourneyEnabled && (
-          <BankAccountInfos venueBankAccount={venue.bankAccount} />
-        )}
+        <BankAccountInfos venueBankAccount={venue.bankAccount} />
       </FormLayout>
 
       <VenueFormActionBar venue={venue} />

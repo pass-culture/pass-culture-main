@@ -78,32 +78,9 @@ describe('VenueOfferSteps', () => {
 
   it('should track ReimbursementPoint', async () => {
     renderVenueOfferSteps({
-      venue: { ...venue, hasMissingReimbursementPoint: true },
+      venue: { ...venue, hasMissingReimbursementPoint: false },
       hasVenue: true,
     })
-
-    await userEvent.click(
-      screen.getByText(/Renseigner des coordonnées bancaires/)
-    )
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenCalledWith(
-      VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON,
-      {
-        venue_id: venueId,
-        from: 'Home',
-      }
-    )
-  })
-
-  it('should track ReimbursementPoint', async () => {
-    renderVenueOfferSteps(
-      {
-        venue: { ...venue, hasMissingReimbursementPoint: false },
-        hasVenue: true,
-      },
-      { features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'] }
-    )
 
     await userEvent.click(screen.getByText(/Ajouter un compte bancaire/))
 
@@ -146,28 +123,5 @@ describe('VenueOfferSteps', () => {
     expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_EAC_DMS_TIMELINE, {
       from: location.pathname,
     })
-  })
-
-  it('should track click on dms redirect link', async () => {
-    renderVenueOfferSteps({
-      venue: {
-        ...venue,
-        hasPendingBankInformationApplication: true,
-        hasMissingReimbursementPoint: false,
-        demarchesSimplifieesApplicationId: 123456,
-      },
-    })
-
-    await userEvent.click(
-      screen.getByText('Suivre mon dossier de coordonnées bancaires')
-    )
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenCalledWith(
-      VenueEvents.CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP,
-      {
-        from: location.pathname,
-      }
-    )
   })
 })

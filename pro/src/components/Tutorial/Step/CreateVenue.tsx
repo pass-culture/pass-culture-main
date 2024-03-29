@@ -1,6 +1,5 @@
 import React from 'react'
 
-import useActiveFeature from 'hooks/useActiveFeature'
 import strokeBuildingIcon from 'icons/stroke-building.svg'
 import strokeRepaymentIcon from 'icons/stroke-repayment.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -13,25 +12,16 @@ const CreateVenue = ({
   titleId,
   contentClassName,
 }: StepComponentProps): JSX.Element => {
-  const isNewBankDetailsEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
-  )
-
   return (
     <>
       <h1 id={titleId}>Paramétrez votre espace PRO</h1>
       <section className={contentClassName}>
         <div className={styles['two-columns-section-block']}>
           <SvgIcon src={strokeRepaymentIcon} alt="" />
-          <h2>
-            {isNewBankDetailsEnabled
-              ? 'Renseignez vos informations bancaires'
-              : 'Renseignez vos coordonnées bancaires'}
-          </h2>
+          <h2>Renseignez vos informations bancaires</h2>
           <p>
-            {isNewBankDetailsEnabled
-              ? 'Ajoutez votre ou vos comptes bancaires pour percevoir les remboursements de vos offres.'
-              : 'Ajoutez vos informations bancaires pour percevoir les remboursements de vos offres.'}
+            Ajoutez votre ou vos comptes bancaires pour percevoir les
+            remboursements de vos offres.
             <br />
             Tous les remboursements sont rétroactifs.
           </p>

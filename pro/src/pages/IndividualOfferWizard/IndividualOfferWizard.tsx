@@ -1,23 +1,15 @@
 /* istanbul ignore file */
-import { Outlet, RouteObject, useLocation } from 'react-router-dom'
+import { Outlet, RouteObject } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import { IndividualOfferContextProvider } from 'context/IndividualOfferContext'
-import useCurrentUser from 'hooks/useCurrentUser'
-import { parse } from 'utils/query-string'
 
 const IndividualOfferWizard = () => {
-  const { currentUser } = useCurrentUser()
-  const { search } = useLocation()
-  const { structure: offererId } = parse(search)
   return (
     <AppLayout layout={'sticky-actions'}>
-      <IndividualOfferContextProvider
-        isUserAdmin={currentUser.isAdmin}
-        queryOffererId={offererId}
-      >
+      <IndividualOfferContextProvider>
         <Outlet />
       </IndividualOfferContextProvider>
     </AppLayout>

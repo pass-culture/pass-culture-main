@@ -13,10 +13,7 @@ const renderBankAccountInfos = (
   renderWithProviders(
     <Formik initialValues={{}} onSubmit={() => {}}>
       <BankAccountInfos venueBankAccount={bankAccount} />
-    </Formik>,
-    {
-      features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
-    }
+    </Formik>
   )
 }
 

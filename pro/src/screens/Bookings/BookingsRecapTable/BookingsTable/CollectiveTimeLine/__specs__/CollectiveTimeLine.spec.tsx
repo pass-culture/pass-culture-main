@@ -199,33 +199,11 @@ describe('collective timeline', () => {
         bookingStatus: BOOKING_STATUS.VALIDATED,
       })
       bookingDetails = collectiveBookingByIdFactory({
-        bankInformationStatus: CollectiveBookingBankInformationStatus.MISSING,
-      })
-      renderCollectiveTimeLine(bookingRecap, bookingDetails)
-      expect(
-        screen.getByText(
-          'Vous devez renseigner des coordonnées bancaires pour percevoir le remboursement.'
-        )
-      ).toBeInTheDocument()
-      expect(
-        screen.getByRole('link', {
-          name: 'Renseigner mes coordonnées bancaires',
-        })
-      ).toHaveAttribute('href', '/structures/1/lieux/1#reimbursement-section')
-    })
-
-    it('should render steps for validated booking and missing bankInformation when FF bank details enable', () => {
-      const bookingRecap = collectiveBookingFactory({
-        bookingStatus: BOOKING_STATUS.VALIDATED,
-      })
-      bookingDetails = collectiveBookingByIdFactory({
         bankInformationStatus: null,
         bankAccountStatus: CollectiveBookingBankAccountStatus.MISSING,
       })
 
-      renderCollectiveTimeLine(bookingRecap, bookingDetails, {
-        features: ['WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'],
-      })
+      renderCollectiveTimeLine(bookingRecap, bookingDetails)
       expect(
         screen.getByText(
           'Complétez vos informations bancaires pour débloquer le remboursement.'

@@ -2,6 +2,10 @@ import { FormikProvider, useFormik } from 'formik'
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
+import {
+  GetOffererNameResponseModel,
+  VenueListItemResponseModel,
+} from 'apiClient/v1'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import FormLayout from 'components/FormLayout'
 import {
@@ -49,11 +53,15 @@ import {
 export interface InformationsScreenProps {
   offererId: string
   venueId: string
+  offererNames: GetOffererNameResponseModel[]
+  venueList: VenueListItemResponseModel[]
 }
 
 const InformationsScreen = ({
   offererId,
   venueId,
+  offererNames,
+  venueList,
 }: InformationsScreenProps): JSX.Element => {
   const notify = useNotification()
   const { logEvent } = useAnalytics()
@@ -61,8 +69,7 @@ const InformationsScreen = ({
   const { currentUser } = useCurrentUser()
   const navigate = useNavigate()
   const mode = useOfferWizardMode()
-  const { offer, categories, subCategories, offererNames, venueList } =
-    useIndividualOfferContext()
+  const { offer, categories, subCategories } = useIndividualOfferContext()
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
     useIndividualOfferImageUpload()
 

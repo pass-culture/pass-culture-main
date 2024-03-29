@@ -30,6 +30,5 @@ export const routesReimbursements: RouteConfig[] = [
     element: <BankInformations />,
     path: '/remboursements/informations-bancaires',
     title: 'Informations bancaires',
-    featureName: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY',
   },
 ]

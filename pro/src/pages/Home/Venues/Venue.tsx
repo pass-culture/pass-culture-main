@@ -6,12 +6,10 @@ import {
   GetOffererVenueResponseModel,
 } from 'apiClient/v1'
 import { VenueEvents } from 'core/FirebaseEvents/constants'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import fullDisclosureClose from 'icons/full-disclosure-close.svg'
 import fullDisclosureOpen from 'icons/full-disclosure-open.svg'
 import fullErrorIcon from 'icons/full-error.svg'
-import fullMoreIcon from 'icons/full-more.svg'
 import strokeConnectIcon from 'icons/stroke-connect.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -31,13 +29,7 @@ export interface VenueProps {
 }
 
 export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
-  const isNewBankDetailsJourneyEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
-  )
-  const shouldShowVenueOfferSteps = shouldShowVenueOfferStepsForVenue(
-    isNewBankDetailsJourneyEnabled,
-    venue
-  )
+  const shouldShowVenueOfferSteps = shouldShowVenueOfferStepsForVenue(venue)
 
   const [prevInitialOpenState, setPrevInitialOpenState] = useState(
     shouldShowVenueOfferSteps
@@ -60,7 +52,6 @@ export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
   }
 
   const editVenueLink = `/structures/${offerer?.id}/lieux/${venue.id}`
-  const reimbursementSectionLink = `/structures/${offerer?.id}/lieux/${venue.id}#remboursement`
   const venueDisplayName = venue.isVirtual
     ? 'Offres numériques'
     : venue.publicName || venue.name
@@ -125,33 +116,6 @@ export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
         </h3>
 
         <div className={styles['button-group']}>
-          {/*Delete when WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is deleted*/}
-          {!isNewBankDetailsJourneyEnabled &&
-            venue.hasMissingReimbursementPoint &&
-            !venue.isVirtual &&
-            venue.hasCreatedOffer && (
-              <>
-                <ButtonLink
-                  variant={ButtonVariant.TERNARYPINK}
-                  link={{
-                    to: reimbursementSectionLink,
-                    isExternal: false,
-                  }}
-                  onClick={() => {
-                    logEvent?.(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
-                      from: location.pathname,
-                      ...venueIdTrackParam,
-                    })
-                  }}
-                  icon={fullMoreIcon}
-                >
-                  Ajouter un RIB
-                </ButtonLink>
-
-                <span className={styles['button-group-separator']} />
-              </>
-            )}
-
           <ButtonLink
             variant={ButtonVariant.SECONDARY}
             link={{

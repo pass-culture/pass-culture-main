@@ -10,7 +10,6 @@ import {
 import { extractOfferIdAndOfferTypeFromRouteParams } from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
-import useActiveFeature from 'hooks/useActiveFeature'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 export type MandatoryCollectiveOfferFromParamsProps = {
@@ -37,10 +36,6 @@ const useCollectiveOfferFromParams = (
   isOfferMandatory: boolean,
   offerIdFromParams?: string
 ) => {
-  const isNewBankDetailsJourneyEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
-  )
-
   const location = useLocation()
   const pathNameIncludesTemplate = location.pathname.includes('vitrine')
 
@@ -63,10 +58,8 @@ const useCollectiveOfferFromParams = (
     const response = await adapter(offerId)
     if (response.isOk) {
       setOffer(response.payload)
-      if (isNewBankDetailsJourneyEnabled) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        loadOfferer(response.payload.venue.managingOfferer.id)
-      }
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      loadOfferer(response.payload.venue.managingOfferer.id)
     }
   }, [offerId, isTemplate])
 

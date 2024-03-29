@@ -64,12 +64,6 @@
     flex-direction: row;
     align-items: stretch;
     gap: rem.torem(16px);
-
-    // Delete when WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is deleted
-    &-separator {
-      margin: rem.torem(-16px) 0;
-      border-left: solid rem.torem(1px) colors.$grey-medium;
-    }
   }
 }
 
