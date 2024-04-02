@@ -124,7 +124,7 @@ export const OffererDetails = () => {
               <div className={styles['op-detail']}>
                 <span>{'Siège social : '}</span>
                 <span>
-                  {`${offerer.address} - ${offerer.postalCode} ${offerer.city}`}
+                  {`${offerer.street} - ${offerer.postalCode} ${offerer.city}`}
                 </span>
               </div>
             </div>

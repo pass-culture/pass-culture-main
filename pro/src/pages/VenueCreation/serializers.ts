@@ -8,7 +8,6 @@ export const serializePostVenueBodyModel = (
   hideSiret: boolean
 ): PostVenueBodyModel => {
   const payload: PostVenueBodyModel = {
-    address: formValues.address,
     audioDisabilityCompliant: formValues.accessibility.audio,
     banId: formValues.banId,
     bookingEmail: formValues.bookingEmail,
@@ -21,6 +20,7 @@ export const serializePostVenueBodyModel = (
     name: formValues.name,
     postalCode: formValues.postalCode,
     publicName: formValues.publicName,
+    street: formValues.street,
     siret: unhumanizeSiret(formValues.siret),
     venueTypeCode: formValues.venueType,
     visualDisabilityCompliant: formValues.accessibility.visual,

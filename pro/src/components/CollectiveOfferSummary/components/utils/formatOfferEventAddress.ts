@@ -19,7 +19,7 @@ export const formatOfferEventAddress = (
 
   return [
     venue.publicName || venue.name,
-    venue.address,
+    venue.street,
     venue.postalCode,
     venue.city,
   ].join(', ')

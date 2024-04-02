@@ -3,7 +3,6 @@ import { AccessibiltyFormValues } from 'core/shared'
 
 export interface VenueCreationFormValues {
   accessibility: AccessibiltyFormValues
-  address: string
   addressAutocomplete: string
   bannerMeta?: BannerMetaModel | null
   bannerUrl: string | undefined
@@ -18,5 +17,6 @@ export interface VenueCreationFormValues {
   publicName: string
   siret: string
   'search-addressAutocomplete': string
+  street: string
   venueType: string
 }

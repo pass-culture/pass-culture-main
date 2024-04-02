@@ -29,7 +29,7 @@ const formValues: VenueCreationFormValues = {
   publicName: 'Melodie Sims',
   siret: '88145723823022',
   venueType: 'GAMES',
-  address: 'PARIS',
+  street: 'PARIS',
   banId: '35288_7283_00001',
   addressAutocomplete: 'Allee Rene Omnes 35400 Saint-Malo',
   'search-addressAutocomplete': 'PARIS',

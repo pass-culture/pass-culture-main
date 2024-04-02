@@ -93,7 +93,7 @@ export const handleAddressSelect = (
   selectedItem?: AutocompleteItemProps,
   searchField?: any
 ) => {
-  setFieldValue('address', selectedItem?.extraData.address)
+  setFieldValue('street', selectedItem?.extraData.address)
   if (searchField) {
     setFieldValue('addressAutocomplete', searchField?.value)
   }

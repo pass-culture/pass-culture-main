@@ -19,7 +19,7 @@ describe('formatOfferEventAddress', () => {
           publicName: '',
           postalCode: '75000',
           city: 'Paris',
-          address: '12 rue Duhesme',
+          street: '12 rue Duhesme',
         }
       )
     ).toBe('Offerer venue, 12 rue Duhesme, 75000, Paris')
@@ -39,7 +39,7 @@ describe('formatOfferEventAddress', () => {
           publicName: '',
           postalCode: '75000',
           city: 'Paris',
-          address: '12 rue Duhesme',
+          street: '12 rue Duhesme',
         }
       )
     ).toBe(EVENT_ADDRESS_SCHOOL_LABEL)
@@ -59,7 +59,7 @@ describe('formatOfferEventAddress', () => {
           publicName: '',
           postalCode: '75000',
           city: 'Paris',
-          address: '12 rue Duhesme',
+          street: '12 rue Duhesme',
         }
       )
     ).toBe('A la mairie')

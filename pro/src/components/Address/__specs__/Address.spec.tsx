@@ -77,13 +77,13 @@ describe('AddressSelect', () => {
 
   beforeEach(() => {
     initialValues = {
-      address: '',
       addressAutocomplete: '',
       'search-addressAutocomplete': '',
       city: '',
       postalCode: '',
       latitude: 0,
       longitude: 0,
+      street: '',
     }
     vi.spyOn(apiAdresse, 'getDataFromAddress').mockResolvedValue(mockAdressData)
   })
@@ -103,7 +103,6 @@ describe('AddressSelect', () => {
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith(
         {
-          address: '12 rue des tournesols',
           addressAutocomplete: '12 rue des tournesols 75003 Paris',
           city: 'Paris',
           banId: '2',
@@ -111,6 +110,7 @@ describe('AddressSelect', () => {
           longitude: -2.22,
           postalCode: '75003',
           'search-addressAutocomplete': '12 rue des tournesols 75003 Paris',
+          street: '12 rue des tournesols',
         },
         expect.anything()
       )

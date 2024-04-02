@@ -137,7 +137,6 @@ describe('screens:StocksThing', () => {
       externalTicketOfficeUrl: null,
       url: null,
       venue: {
-        address: '1 boulevard Poissonnière',
         bookingEmail: 'venue29@example.net',
         city: 'Paris',
         departementCode: '75',
@@ -151,6 +150,7 @@ describe('screens:StocksThing', () => {
         name: 'Cinéma synchro avec booking provider',
         postalCode: '75000',
         publicName: 'Cinéma synchro avec booking provider',
+        street: '1 boulevard Poissonnière',
         audioDisabilityCompliant: false,
         mentalDisabilityCompliant: false,
         motorDisabilityCompliant: false,

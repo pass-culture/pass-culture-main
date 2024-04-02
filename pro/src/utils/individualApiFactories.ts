@@ -141,7 +141,7 @@ export const getOfferVenueFactory = (
 
   return {
     id: currentVenueId,
-    address: 'Ma Rue',
+    street: 'Ma Rue',
     city: 'Ma Ville',
     isVirtual: false,
     name: `Le nom du lieu ${currentVenueId}`,
@@ -339,7 +339,6 @@ export function getOffererNameFactory(
 }
 
 export const defaultGetOffererResponseModel: GetOffererResponseModel = {
-  address: 'Fake Address',
   apiKey: {
     maxAllowed: 10,
     prefixes: [],
@@ -360,6 +359,7 @@ export const defaultGetOffererResponseModel: GetOffererResponseModel = {
   name: 'Ma super structure',
   id: 1,
   postalCode: '00000',
+  street: 'Fake Address',
   allowedOnAdage: true,
 }
 
