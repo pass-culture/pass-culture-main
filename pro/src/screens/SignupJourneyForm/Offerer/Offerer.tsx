@@ -74,7 +74,7 @@ const Offerer = (): JSX.Element => {
     setOfferer({
       ...formValues,
       name: response.payload.values.name,
-      address: response.payload.values.address,
+      street: response.payload.values.address,
       city: response.payload.values.city,
       latitude: response.payload.values.latitude,
       longitude: response.payload.values.longitude,

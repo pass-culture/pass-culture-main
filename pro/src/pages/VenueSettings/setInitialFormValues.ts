@@ -7,10 +7,10 @@ export const setInitialFormValues = (
   venue: GetVenueResponseModel
 ): VenueSettingsFormValues => {
   return {
-    address: venue.address || '',
+    street: venue.street || '',
     banId: venue.banId || '',
-    addressAutocomplete: `${venue.address} ${venue.postalCode} ${venue.city}`,
-    'search-addressAutocomplete': `${venue.address} ${venue.postalCode} ${venue.city}`,
+    addressAutocomplete: `${venue.street} ${venue.postalCode} ${venue.city}`,
+    'search-addressAutocomplete': `${venue.street} ${venue.postalCode} ${venue.city}`,
     city: venue.city || '',
     comment: venue.comment || '',
     latitude: venue.latitude || 0,

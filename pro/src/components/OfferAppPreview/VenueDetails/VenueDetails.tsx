@@ -17,7 +17,7 @@ const VenueDetails = ({
   const venueName = venue.publicName || venue.name
   const venueAddressString = [
     venueName,
-    venue.address,
+    venue.street,
     venue.postalCode,
     venue.city,
   ]

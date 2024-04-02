@@ -186,7 +186,7 @@ describe('screens:StocksEventEdition', () => {
       externalTicketOfficeUrl: '',
       url: '',
       venue: {
-        address: '1 boulevard Poissonnière',
+        street: '1 boulevard Poissonnière',
         bookingEmail: 'venue29@example.net',
         city: 'Paris',
         departementCode: '75',

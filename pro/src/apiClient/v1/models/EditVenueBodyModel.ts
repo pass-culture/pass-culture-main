@@ -6,7 +6,6 @@ import type { OpeningHoursModel } from './OpeningHoursModel';
 import type { VenueContactModel } from './VenueContactModel';
 import type { VenueTypeCode } from './VenueTypeCode';
 export type EditVenueBodyModel = {
-  address?: string | null;
   audioDisabilityCompliant?: boolean | null;
   banId?: string | null;
   bookingEmail?: string | null;
@@ -27,6 +26,7 @@ export type EditVenueBodyModel = {
   publicName?: string | null;
   shouldSendMail?: boolean | null;
   siret?: string | null;
+  street?: string | null;
   venueLabelId?: number | null;
   venueTypeCode?: VenueTypeCode | null;
   visualDisabilityCompliant?: boolean | null;

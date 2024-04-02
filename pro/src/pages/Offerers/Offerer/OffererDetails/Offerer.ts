@@ -6,12 +6,12 @@ interface ApiKeyType {
 }
 
 export interface Offerer {
-  address: string
   apiKey: ApiKeyType
   city: string
   name: string
   postalCode: string
   siren: string
+  street: string
   id: number
   demarchesSimplifieesApplicationId: string
 }
@@ -19,7 +19,6 @@ export interface Offerer {
 export const transformOffererResponseModelToOfferer = (
   offerer: GetOffererResponseModel
 ): Offerer => ({
-  address: offerer.address || '',
   apiKey: {
     maxAllowed: offerer.apiKey.maxAllowed,
     savedApiKeys: offerer.apiKey.prefixes,
@@ -28,6 +27,7 @@ export const transformOffererResponseModelToOfferer = (
   name: offerer.name || '',
   postalCode: offerer.postalCode || '',
   siren: offerer.siren || '',
+  street: offerer.street || '',
   id: offerer.id || 0,
   demarchesSimplifieesApplicationId:
     offerer.demarchesSimplifieesApplicationId || '',

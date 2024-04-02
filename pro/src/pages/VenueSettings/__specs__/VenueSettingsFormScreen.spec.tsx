@@ -193,7 +193,6 @@ const venueResponse: GetVenueResponseModel = {
   audioDisabilityCompliant: false,
   motorDisabilityCompliant: false,
   mentalDisabilityCompliant: false,
-  address: 'Address',
   bannerMeta: null,
   bannerUrl: '',
   city: 'city',
@@ -216,6 +215,7 @@ const venueResponse: GetVenueResponseModel = {
   postalCode: '75008',
   publicName: 'name',
   siret: '88145723823022',
+  street: 'Address',
   timezone: 'Europe/Paris',
   venueTypeCode: VenueTypeCode.COURS_ET_PRATIQUE_ARTISTIQUES,
   venueLabelId: 1,
@@ -233,7 +233,6 @@ const venueResponse: GetVenueResponseModel = {
   hasAdageId: false,
   collectiveDmsApplications: [],
   managingOfferer: {
-    address: null,
     city: 'string',
     dateCreated: 'string',
     demarchesSimplifieesApplicationId: null,
@@ -242,6 +241,7 @@ const venueResponse: GetVenueResponseModel = {
     name: 'name',
     postalCode: 'string',
     siren: null,
+    street: null,
     allowedOnAdage: true,
   },
 }
@@ -259,7 +259,7 @@ describe('VenueFormScreen', () => {
       publicName: 'Melodie Sims',
       siret: '88145723823022',
       venueType: VenueTypeCode.JEUX_JEUX_VID_OS,
-      address: 'PARIS',
+      street: 'PARIS',
       banId: '35288_7283_00001',
       addressAutocomplete: 'Allee Rene Omnes 35400 Saint-Malo',
       'search-addressAutocomplete': 'PARIS',
@@ -279,7 +279,7 @@ describe('VenueFormScreen', () => {
       collectiveDomains: [],
       dateCreated: '2022-02-02',
       isVirtual: false,
-      address: 'Address',
+      street: 'Address',
       banId: 'ban_id',
       bannerMeta: null,
       bannerUrl: '',
@@ -313,7 +313,6 @@ describe('VenueFormScreen', () => {
       collectiveStudents: [],
       collectiveWebsite: 'string',
       managingOfferer: {
-        address: null,
         city: 'string',
         dateCreated: 'string',
         demarchesSimplifieesApplicationId: null,
@@ -322,6 +321,7 @@ describe('VenueFormScreen', () => {
         name: 'name',
         postalCode: 'string',
         siren: null,
+        street: null,
         allowedOnAdage: true,
       },
       hasAdageId: false,
@@ -376,7 +376,7 @@ describe('VenueFormScreen', () => {
 
   it('should display error on submit for non virtual venues when adress is not selected from suggestions', async () => {
     formValues.addressAutocomplete = ''
-    formValues.address = ''
+    formValues.street = ''
     formValues.postalCode = ''
 
     renderForm(formValues, venue)
@@ -458,7 +458,7 @@ describe('VenueFormScreen', () => {
   describe('Withdrawal dialog to send mail', () => {
     beforeEach(() => {
       expectedEditVenue = {
-        address: 'PARIS',
+        street: 'PARIS',
         banId: '35288_7283_00001',
         bookingEmail: 'em@ail.fr',
         city: 'Saint-Malo',

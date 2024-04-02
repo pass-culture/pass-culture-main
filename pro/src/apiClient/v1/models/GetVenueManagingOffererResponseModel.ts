@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type GetVenueManagingOffererResponseModel = {
-  address?: string | null;
   allowedOnAdage: boolean;
   city: string;
   dateCreated: string;
@@ -13,5 +12,6 @@ export type GetVenueManagingOffererResponseModel = {
   name: string;
   postalCode: string;
   siren?: string | null;
+  street?: string | null;
 };
 

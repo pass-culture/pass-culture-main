@@ -117,7 +117,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
         ...DEFAULT_OFFERER_FORM_VALUES,
         siret: '123 456 789 33333',
         name: 'Test name',
-        address: '3 Rue de Valois',
+        street: '3 Rue de Valois',
         city: 'Paris',
         latitude: 0,
         longitude: 0,

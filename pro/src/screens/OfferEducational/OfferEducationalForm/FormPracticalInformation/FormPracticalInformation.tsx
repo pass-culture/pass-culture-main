@@ -166,7 +166,7 @@ const FormPracticalInformation = ({
             >
               {currentVenue.name}
               <br />
-              {currentVenue.address}, {currentVenue.postalCode}{' '}
+              {currentVenue.street}, {currentVenue.postalCode}{' '}
               {currentVenue.city}
             </Banner>
           )}

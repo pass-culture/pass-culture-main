@@ -10,7 +10,6 @@ export const serializeEditVenueBodyModel = (
   shouldSendMail?: boolean
 ): EditVenueBodyModel => {
   const payload: EditVenueBodyModel = {
-    address: formValues.address,
     banId: formValues.banId,
     bookingEmail: formValues.bookingEmail,
     city: formValues.city,
@@ -20,6 +19,7 @@ export const serializeEditVenueBodyModel = (
     name: formValues.name,
     postalCode: formValues.postalCode,
     publicName: formValues.publicName,
+    street: formValues.street,
     siret: unhumanizeSiret(formValues.siret),
     withdrawalDetails: formValues.withdrawalDetails,
     isEmailAppliedOnAllOffers: true,
