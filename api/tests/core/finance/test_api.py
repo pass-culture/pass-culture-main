@@ -143,7 +143,7 @@ class PriceEventTest:
             booking_kwargs["stock"] = individual_stock_factory(**stock_kwargs)
         booking = bookings_factories.BookingFactory(**booking_kwargs)
         with time_machine.travel(used_date or datetime.datetime.utcnow()):
-            bookings_api.mark_as_used(booking)
+            bookings_api.mark_as_used(booking, bookings_models.BookingValidationAuthorType.AUTO)
         return models.FinanceEvent.query.filter_by(booking=booking).one()
 
     def _make_collective_event(self, price=None, user=None, stock=None, venue=None):
@@ -385,7 +385,7 @@ class PriceEventTest:
         assert event.status == models.FinanceEventStatus.CANCELLED
         assert models.FinanceEvent.query.filter_by(status=models.FinanceEventStatus.READY).count() == 0
 
-        bookings_api.mark_as_used(event.booking)
+        bookings_api.mark_as_used(event.booking, bookings_models.BookingValidationAuthorType.AUTO)
         event = models.FinanceEvent.query.filter_by(status=models.FinanceEventStatus.READY).one()
         api.price_event(event)
         assert models.Pricing.query.count() == 2

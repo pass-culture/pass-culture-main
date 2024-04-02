@@ -14,6 +14,7 @@ from pcapi.core import search
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.bookings.models import BookingValidationAuthorType
 from pcapi.core.bookings.models import ExternalBooking
 from pcapi.core.bookings.repository import generate_booking_token
 from pcapi.core.educational import utils as educational_utils
@@ -259,9 +260,9 @@ def _book_offer(
 
         if is_activation_code_applicable:
             booking.activationCode = offers_repository.get_available_activation_code(stock)
-            booking.mark_as_used()
+            booking.mark_as_used(BookingValidationAuthorType.AUTO)
         if stock.is_automatically_used:
-            booking.mark_as_used()
+            booking.mark_as_used(BookingValidationAuthorType.AUTO)
 
         is_cinema_external_ticket_applicable = providers_repository.is_cinema_external_ticket_applicable(stock.offer)
 
@@ -680,9 +681,9 @@ def cancel_booking_on_user_requested_account_suspension(booking: Booking) -> Non
     transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
 
 
-def mark_as_used(booking: Booking) -> None:
+def mark_as_used(booking: Booking, validation_author_type: BookingValidationAuthorType) -> None:
     validation.check_is_usable(booking)
-    booking.mark_as_used()
+    booking.mark_as_used(validation_author_type)
     finance_api.add_event(
         finance_models.FinanceEventMotive.BOOKING_USED,
         booking=booking,
@@ -699,7 +700,7 @@ def mark_as_used(booking: Booking) -> None:
     update_external_user(booking.user)
 
 
-def mark_as_used_with_uncancelling(booking: Booking) -> None:
+def mark_as_used_with_uncancelling(booking: Booking, validation_author_type: BookingValidationAuthorType) -> None:
     """Mark a booking as used from cancelled status.
 
     This function should be called only if the booking
@@ -719,11 +720,13 @@ def mark_as_used_with_uncancelling(booking: Booking) -> None:
             stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
             stock.dnBookedQuantity += booking.quantity
             db.session.add(stock)
+    booking.validationAuthorType = validation_author_type
     db.session.add(booking)
     finance_api.add_event(
         finance_models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION,
         booking=booking,
     )
+
     db.session.commit()
     logger.info("Booking was uncancelled and marked as used", extra={"bookingId": booking.id})
 
@@ -925,7 +928,7 @@ def auto_mark_as_used_after_event() -> None:
             Booking.stockId == offers_models.Stock.id,
             offers_models.Stock.beginningDatetime < threshold,
         )
-        .values(dateUsed=now, status=BookingStatus.USED),
+        .values(dateUsed=now, status=BookingStatus.USED, validationAuthorType=BookingValidationAuthorType.AUTO),
         execution_options={"synchronize_session": False},
     )
     # `dateUsed` is precise enough that it's very unlikely to get a

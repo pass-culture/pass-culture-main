@@ -61,6 +61,7 @@ def bookings_fixture() -> tuple:
         stock__offer__name="Guide du Routard Sainte-Hélène",
         stock__offer__subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=4),
+        validationAuthorType=bookings_models.BookingValidationAuthorType.BACKOFFICE,
     )
     offerers_factories.UserOffererFactory(offerer=used.offerer)
     cancelled = bookings_factories.CancelledBookingFactory(
@@ -144,6 +145,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert rows[0]["Stock"] == "212"
         assert rows[0]["Montant"] == "30,40 €"
         assert rows[0]["Statut"] == "Validée"
+        assert rows[0]["Auteur de la validation"] == "Backoffice"
         assert rows[0]["Date de réservation"].startswith(
             (datetime.date.today() - datetime.timedelta(days=4)).strftime("%d/%m/%Y")
         )
@@ -490,6 +492,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
 
         db.session.refresh(cancelled)
         assert cancelled.status is bookings_models.BookingStatus.USED
+        assert cancelled.validationAuthorType == bookings_models.BookingValidationAuthorType.BACKOFFICE
 
         redirected_response = authenticated_client.get(response.headers["location"])
         assert html_parser.extract_alert(redirected_response.data) == f"La réservation {cancelled.token} a été validée"
@@ -817,6 +820,7 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
         for booking in bookings:
             db.session.refresh(booking)
             assert booking.status is bookings_models.BookingStatus.USED
+            assert booking.validationAuthorType == bookings_models.BookingValidationAuthorType.BACKOFFICE
 
     def test_batch_mark_as_used_cancelled_bookings(self, legit_user, authenticated_client):
         bookings = bookings_factories.BookingFactory.create_batch(3, status=bookings_models.BookingStatus.CANCELLED)
@@ -827,6 +831,7 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
         for booking in bookings:
             db.session.refresh(booking)
             assert booking.status is bookings_models.BookingStatus.USED
+            assert booking.validationAuthorType == bookings_models.BookingValidationAuthorType.BACKOFFICE
 
 
 class GetBatchCancelIndividualBookingsFormTest(GetEndpointHelper):
