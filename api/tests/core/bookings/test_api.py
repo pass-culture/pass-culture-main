@@ -255,6 +255,7 @@ class BookOfferTest:
         booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
         assert booking.status is BookingStatus.USED
+        assert booking.validationAuthorType == models.BookingValidationAuthorType.AUTO
         event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
         assert event.motive == finance_models.FinanceEventMotive.BOOKING_USED
 
@@ -1506,12 +1507,13 @@ def test_mark_as_cancelled():
     booking = bookings_factories.BookingFactory(
         stock__offer__venue__pricing_point="self",
     )
-    api.mark_as_used(booking)
+    api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
 
     event = finance_models.FinanceEvent.query.one()
     finance_api.price_event(event)
     pricing = finance_models.Pricing.query.one()
     assert booking.status == BookingStatus.USED
+    assert booking.validationAuthorType == models.BookingValidationAuthorType.OFFERER
     assert pricing.status == finance_models.PricingStatus.VALIDATED
 
     api.mark_as_cancelled(booking, BookingCancellationReasons.FRAUD)
@@ -1529,9 +1531,10 @@ class MarkAsUsedTest:
     def test_mark_as_used(self):
         booking = bookings_factories.BookingFactory()
 
-        api.mark_as_used(booking)
+        api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
 
         assert booking.status is BookingStatus.USED
+        assert booking.validationAuthorType == models.BookingValidationAuthorType.OFFERER
         assert len(push_testing.requests) == 2
         event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
         assert event.motive == finance_models.FinanceEventMotive.BOOKING_USED
@@ -1539,9 +1542,10 @@ class MarkAsUsedTest:
     def test_mark_as_used_with_uncancel(self):
         booking = bookings_factories.CancelledBookingFactory()
 
-        api.mark_as_used_with_uncancelling(booking)
+        api.mark_as_used_with_uncancelling(booking, models.BookingValidationAuthorType.BACKOFFICE)
 
         assert booking.status is BookingStatus.USED
+        assert booking.validationAuthorType == models.BookingValidationAuthorType.BACKOFFICE
         assert booking.dateUsed is not None
         assert not booking.cancellationReason
         event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
@@ -1549,34 +1553,35 @@ class MarkAsUsedTest:
 
     def test_mark_as_used_when_stock_starts_soon(self):
         booking = bookings_factories.BookingFactory(stock__beginningDatetime=datetime.utcnow() + timedelta(days=1))
-        api.mark_as_used(booking)
+        api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
         assert booking.status is BookingStatus.USED
+        assert booking.validationAuthorType == models.BookingValidationAuthorType.OFFERER
 
     def test_raise_if_already_used(self):
         booking = bookings_factories.UsedBookingFactory()
         with pytest.raises(exceptions.BookingIsAlreadyUsed):
-            api.mark_as_used(booking)
+            api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
 
     def test_raise_if_cancelled(self):
         booking = bookings_factories.CancelledBookingFactory()
         with pytest.raises(exceptions.BookingIsAlreadyCancelled):
-            api.mark_as_used(booking)
+            api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
         assert booking.status is not BookingStatus.USED
 
     def test_raise_if_already_reimbursed(self):
         booking = bookings_factories.ReimbursedBookingFactory()
         with pytest.raises(exceptions.BookingIsAlreadyRefunded):
-            api.mark_as_used(booking)
+            api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
 
     def test_raise_if_too_soon_to_mark_as_used(self):
         booking = bookings_factories.BookingFactory(stock__beginningDatetime=datetime.utcnow() + timedelta(days=4))
         with pytest.raises(exceptions.BookingIsNotConfirmed):
-            api.mark_as_used(booking)
+            api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
         assert booking.status is not BookingStatus.USED
 
     def test_mark_as_used_tracked_to_amplitude(self):
         booking = bookings_factories.BookingFactory()
-        api.mark_as_used(booking)
+        api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
         assert len(amplitude_testing.requests) == 1
         assert amplitude_testing.requests[0] == {
             "event_name": "BOOKING_USED",
@@ -1632,11 +1637,12 @@ class MarkAsUnusedTest:
             stock__offer__venue__pricing_point="self",
         )
 
-        api.mark_as_used(booking)
+        api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
         event = finance_models.FinanceEvent.query.one()
         finance_api.price_event(event)
         pricing = finance_models.Pricing.query.one()
         assert booking.status == BookingStatus.USED
+        assert booking.validationAuthorType == models.BookingValidationAuthorType.OFFERER
         assert pricing.status == finance_models.PricingStatus.VALIDATED
 
         api.mark_as_unused(booking)
@@ -1762,6 +1768,7 @@ class AutoMarkAsUsedAfterEventTest:
 
         booking = Booking.query.first()
         assert booking.status is BookingStatus.USED
+        assert booking.validationAuthorType == models.BookingValidationAuthorType.AUTO
         assert booking.dateUsed is not None
 
     def test_create_finance_event_for_individual_booking(self):

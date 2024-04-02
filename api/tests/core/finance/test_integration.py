@@ -29,7 +29,7 @@ def test_integration_full_workflow(css_font_http_request_mock):
     booking = bookings_factories.BookingFactory(stock__offer__venue=venue)
 
     with time_machine.travel(initial_dt, tick=False) as frozen_time:
-        bookings_api.mark_as_used(booking)
+        bookings_api.mark_as_used(booking, bookings_models.BookingValidationAuthorType.AUTO)
         assert booking.status == bookings_models.BookingStatus.USED
         event = models.FinanceEvent.query.one()
         assert event.booking == booking
@@ -107,7 +107,7 @@ def test_integration_partial_used_then_cancelled():
 
     with time_machine.travel(initial_dt, tick=False):
         # Mark as used and price.
-        bookings_api.mark_as_used(booking)
+        bookings_api.mark_as_used(booking, bookings_models.BookingValidationAuthorType.AUTO)
         assert booking.status == bookings_models.BookingStatus.USED
 
     # `price_events()` ignores recently created events (< 1 minute).
