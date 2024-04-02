@@ -290,8 +290,14 @@ def serialize_extra_data(offer: offers_models.Offer) -> CategoryRelatedFields:
     if show_sub_type:
         serialized_data["showType"] = ShowTypeEnum(show_types.SHOW_SUB_TYPES_BY_CODE[int(show_sub_type)].slug)
 
-    if gtl_id and music_type and FeatureToggle.ENABLE_TITELIVE_MUSIC_TYPES_IN_API_OUTPUT.is_active():
-        serialized_data["musicType"] = TiteliveMusicTypeEnum(constants.TITELIVE_MUSIC_GENRES_BY_GTL_ID[gtl_id])
+    if (
+        gtl_id
+        and offer.subcategoryId in subcategories.MUSIC_SUBCATEGORIES
+        and FeatureToggle.ENABLE_TITELIVE_MUSIC_TYPES_IN_API_OUTPUT.is_active()
+    ):
+        serialized_data["musicType"] = TiteliveMusicTypeEnum(
+            constants.TITELIVE_MUSIC_GENRES_BY_GTL_ID[gtl_id[:2] + "0" * 6]
+        )  # Only take the first level of the GTL ID
 
     return category_fields_model(**serialized_data, subcategory_id=offer.subcategory.id)  # type: ignore [misc, call-arg]
 
