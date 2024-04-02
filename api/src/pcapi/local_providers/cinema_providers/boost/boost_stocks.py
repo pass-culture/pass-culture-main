@@ -174,7 +174,7 @@ class BoostStocks(LocalProvider):
 
     def get_movie_product(self, film: boost_serializers.Film2) -> offers_models.Product | None:
         product = offers_models.Product.query.filter(
-            offers_models.Product.extraData["allocineId"].cast(sa.Integer) == film.idFilmAllocine
+            offers_models.Product.extraData["allocineId"] == str(film.idFilmAllocine)
         ).one_or_none()
         return product
 
