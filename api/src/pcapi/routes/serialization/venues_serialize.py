@@ -469,6 +469,7 @@ class VenueBannerContentModel(BaseModel):
             image = Image.open(BytesIO(values["content"]))
         except Exception:
             raise ValueError("Format de l'image invalide")
+        assert image.format is not None  # helps mypy
 
         content_type = image.format.lower()
 
