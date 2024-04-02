@@ -3,7 +3,7 @@ kind: Job
 metadata:
   name: post-upgrade-${DATE}
 spec:
-  backoffLimit: 3
+  backoffLimit: 0
   ttlSecondsAfterFinished: 604800
   template:
     spec:
