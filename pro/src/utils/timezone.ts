@@ -6,6 +6,8 @@ import {
   zonedTimeToUtc,
 } from 'date-fns-tz'
 
+import { getToday } from './date'
+
 export const formatLocalTimeDateString = (
   dateIsoString: string | number | Date,
   departementCode?: string | null,
@@ -85,7 +87,7 @@ export function convertTimeFromVenueTimezoneToUtc(
   const [hours, minutes] = departementTime.split(':')
 
   // create a fake date to compute time offset for us
-  const userDate = new Date()
+  const userDate = getToday()
   userDate.setHours(parseInt(hours))
   userDate.setMinutes(parseInt(minutes))
 
