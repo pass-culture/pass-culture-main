@@ -91,22 +91,23 @@ class CGRStocks(LocalProvider):
             self.fill_stock_attributes(pc_object)
 
     def update_from_movie_information(self, offer: offers_models.Offer) -> None:
-        offer.name = self.film_infos.Titre
-        offer.description = self.film_infos.Synopsis
-        offer.durationMinutes = self.film_infos.Duree
-        if offer.extraData is None:
-            offer.extraData = offers_models.OfferExtraData()
-        if self.film_infos.NumVisa:
-            offer.extraData["visa"] = str(self.film_infos.NumVisa)
-
-        if FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS.is_active():
-            assert self.product and self.product.extraData
+        if self.product:
+            offer.product = self.product
             offer.name = self.product.name
             offer.description = self.product.description
             offer.durationMinutes = self.product.durationMinutes
-            offer.extraData = offers_models.OfferExtraData()
-            offer.extraData.update(self.product.extraData)
-            offer.product = self.product
+            if self.product.extraData:
+                offer.extraData = offers_models.OfferExtraData()
+                offer.extraData.update(self.product.extraData)
+                offer.extraData["visa"] = self.product.extraData.get("visa") or str(self.film_infos.NumVisa)
+        else:
+            offer.name = self.film_infos.Titre
+            offer.description = self.film_infos.Synopsis
+            offer.durationMinutes = self.film_infos.Duree
+            if offer.extraData is None:
+                offer.extraData = offers_models.OfferExtraData()
+            if self.film_infos.NumVisa:
+                offer.extraData["visa"] = str(self.film_infos.NumVisa)
 
     def fill_offer_attributes(self, offer: offers_models.Offer) -> None:
         self.update_from_movie_information(offer)

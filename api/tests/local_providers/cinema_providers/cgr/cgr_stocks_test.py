@@ -117,6 +117,10 @@ class CGRStocksTest:
             cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
         )
 
+        offers_models.Product.query.filter(offers_models.Product.extraData["allocineId"] == "234099").delete(
+            synchronize_session=False
+        )
+
         cgr_stocks = CGRStocks(venue_provider=venue_provider)
         cgr_stocks.updateObjects()
 
@@ -131,16 +135,14 @@ class CGRStocksTest:
         assert len(created_price_categories) == 2
         assert len(created_price_categories_labels) == 2
 
-        assert created_offers[0].name == "Venom"
+        # Information fetched from existing product
+        assert created_offers[0].name == "Produit allociné 1"
         assert created_offers[0].venue == venue_provider.venue
-        assert (
-            created_offers[0].description
-            == "Possédé par un symbiote qui agit de manière autonome, le journaliste Eddie Brock devient le protecteur létal Venom."
-        )
-        assert created_offers[0].durationMinutes == 112
+        assert created_offers[0].description == "Description du produit allociné 1"
+        assert created_offers[0].durationMinutes == 111
         assert created_offers[0].isDuo
         assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offers[0].extraData == {"visa": "149341"}
+        assert created_offers[0].extraData == {"allocineId": 138473, "visa": "149341"}
 
         assert created_stocks[0].quantity == 99
         assert created_stocks[0].price == Decimal("6.9")
@@ -152,6 +154,7 @@ class CGRStocksTest:
         assert created_stocks[0].priceCategory.priceCategoryLabel.label == "Tarif Standard ICE"
         assert created_stocks[0].features == ["VF", "ICE"]
 
+        # Product does not exist
         assert created_offers[1].name == "Super Mario Bros, Le Film"
         assert created_offers[1].venue == venue_provider.venue
         assert created_offers[1].description == "Un film basé sur l'univers du célèbre jeu : Super Mario Bros."
@@ -209,7 +212,7 @@ class CGRStocksTest:
         assert created_offers[0].durationMinutes == 111
         assert created_offers[0].isDuo
         assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offers[0].extraData == {"allocineId": 138473}
+        assert created_offers[0].extraData == {"allocineId": 138473, "visa": "149341"}
 
         assert created_stocks[0].quantity == 99
         assert created_stocks[0].price == Decimal("6.9")
@@ -227,7 +230,7 @@ class CGRStocksTest:
         assert created_offers[1].durationMinutes == 222
         assert created_offers[1].isDuo
         assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offers[1].extraData == {"allocineId": 234099}
+        assert created_offers[1].extraData == {"allocineId": 234099, "visa": "82382"}
 
         assert created_stocks[1].quantity == 168
         assert created_stocks[1].price == Decimal(11.00)
@@ -272,10 +275,10 @@ class CGRStocksTest:
         assert len(created_price_categories) == 3
         assert len(created_price_category_labels) == 3
 
-        assert created_offer.name == "Super Mario Bros, Le Film"
+        assert created_offer.name == "Produit allociné 2"
         assert created_offer.venue == venue_provider.venue
-        assert created_offer.description == "Un film basé sur l'univers du célèbre jeu : Super Mario Bros."
-        assert created_offer.durationMinutes == 92
+        assert created_offer.description == "Description du produit allociné 2"
+        assert created_offer.durationMinutes == 222
         assert created_offer.isDuo
         assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
 
