@@ -32,6 +32,12 @@ vi.mock('react-router-dom', async () => ({
   }),
 }))
 
+// Mock the date to prevent failed tests going from CET to CEST
+vi.mock('utils/date', async () => ({
+  ...(await vi.importActual('utils/date')),
+  getToday: vi.fn(() => new Date('2024-01-01')),
+}))
+
 const offerId = 1
 const filteredPriceCategoryId = 3
 const stock1 = getOfferStockFactory({
