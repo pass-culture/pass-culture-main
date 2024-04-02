@@ -1567,12 +1567,15 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
         "Identifiant des coordonnées bancaires",
         "SIREN de la structure",
         "Nom de la structure - Libellé des coordonnées bancaires",
+        "Type de réservation",
+        "Ministère",
         "Montant net offreur",
     ]
 
     def get_individual_data(query: BaseQuery) -> BaseQuery:
         return (
             query.filter(bookings_models.Booking.amount != 0)
+            .join(bookings_models.Booking.deposit)
             .join(models.Pricing.cashflows)
             .join(
                 models.BankAccount,
@@ -1583,12 +1586,14 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
             .group_by(
                 models.BankAccount.id,
                 offerers_models.Offerer.id,
+                models.Deposit.type,
             )
             .with_entities(
                 models.BankAccount.id.label("bank_account_id"),
                 models.BankAccount.label.label("bank_account_label"),
                 offerers_models.Offerer.name.label("offerer_name"),
                 offerers_models.Offerer.siren.label("offerer_siren"),
+                models.Deposit.type.label("deposit_type"),
                 sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
             )
         )
@@ -1602,16 +1607,28 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
                 models.BankAccount.id == models.Cashflow.bankAccountId,
             )
             .join(models.BankAccount.offerer)
+            .join(educational_models.CollectiveBooking.educationalInstitution)
+            .join(
+                educational_models.EducationalDeposit,
+                sqla.and_(
+                    educational_models.EducationalDeposit.educationalYearId
+                    == educational_models.CollectiveBooking.educationalYearId,
+                    educational_models.EducationalDeposit.educationalInstitutionId
+                    == educational_models.EducationalInstitution.id,
+                ),
+            )
             .filter(models.Cashflow.batchId == batch_id)
             .group_by(
                 models.BankAccount.id,
                 offerers_models.Offerer.id,
+                educational_models.EducationalDeposit.ministry,
             )
             .with_entities(
                 models.BankAccount.id.label("bank_account_id"),
                 models.BankAccount.label.label("bank_account_label"),
                 offerers_models.Offerer.name.label("offerer_name"),
                 offerers_models.Offerer.siren.label("offerer_siren"),
+                educational_models.EducationalDeposit.ministry.label("ministry"),
                 sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
             )
         )
@@ -1627,6 +1644,26 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
         .join(models.BookingFinanceIncident.booking)
     )
 
+    indiv_data = (
+        indiv_query.union_all(indiv_incident_query)
+        .group_by(
+            sqla.column("bank_account_id"),
+            sqla.column("bank_account_label"),
+            sqla.column("offerer_name"),
+            sqla.column("offerer_siren"),
+            sqla.column("deposit_type"),
+        )
+        .with_entities(
+            sqla.column("bank_account_id"),
+            sqla.column("bank_account_label"),
+            sqla.column("offerer_name"),
+            sqla.column("offerer_siren"),
+            sqla.column("deposit_type"),
+            sqla_func.sum(sqla.column("pricing_amount")).label("pricing_amount"),
+        )
+        .all()
+    )
+
     collective_query = get_collective_data(
         models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED).join(models.Pricing.collectiveBooking)
     )
@@ -1638,19 +1675,21 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
         .join(models.BookingFinanceIncident.collectiveBooking)
     )
 
-    rows = (
-        indiv_query.union_all(indiv_incident_query, collective_query, collective_incident_query)
+    collective_data = (
+        collective_query.union_all(collective_incident_query)
         .group_by(
             sqla.column("bank_account_id"),
             sqla.column("bank_account_label"),
             sqla.column("offerer_name"),
             sqla.column("offerer_siren"),
+            sqla.column("ministry"),
         )
         .with_entities(
             sqla.column("bank_account_id"),
             sqla.column("bank_account_label"),
             sqla.column("offerer_name"),
             sqla.column("offerer_siren"),
+            sqla.column("ministry"),
             sqla_func.sum(sqla.column("pricing_amount")).label("pricing_amount"),
         )
         .all()
@@ -1659,7 +1698,7 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
     return _write_csv(
         "down_payment",
         header,
-        rows=rows,
+        rows=itertools.chain(indiv_data, collective_data),
         row_formatter=_payment_details_row_formatter,
     )
 
@@ -1774,6 +1813,17 @@ def _generate_payments_file_legacy(batch_id: int) -> pathlib.Path:
 
 
 def _payment_details_row_formatter(sql_row: typing.Any) -> tuple:
+    if FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
+        if hasattr(sql_row, "ministry"):
+            booking_type = "EACC"
+        elif sql_row.deposit_type == models.DepositType.GRANT_15_17.value:
+            booking_type = "EACI"
+        elif sql_row.deposit_type == models.DepositType.GRANT_18.value:
+            booking_type = "PC"
+        else:
+            raise ValueError("Unknown booking type (not educational nor individual)")
+
+        ministry = getattr(sql_row, "ministry", "")
     net_amount = utils.to_euros(-sql_row.pricing_amount)
 
     if FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
@@ -1781,6 +1831,8 @@ def _payment_details_row_formatter(sql_row: typing.Any) -> tuple:
             human_ids.humanize(sql_row.bank_account_id),
             _clean_for_accounting(sql_row.offerer_siren),
             _clean_for_accounting(f"{sql_row.offerer_name} - {sql_row.bank_account_label}"),
+            booking_type,
+            ministry,
             net_amount,
         )
     return (
