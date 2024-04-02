@@ -1,5 +1,6 @@
 import datetime
 import decimal
+import logging
 from unittest import mock
 
 import pytest
@@ -243,14 +244,14 @@ class PostProductByEanTest:
         assert stock.quantity == 2
         assert stock.price == decimal.Decimal("12.34")
 
-    def test_update_multiple_stocks_with_one_rejected(self, client):
+    def test_update_multiple_stocks_with_one_rejected(self, client, caplog):
         venue_data = {
             "audioDisabilityCompliant": True,
             "mentalDisabilityCompliant": False,
             "motorDisabilityCompliant": True,
             "visualDisabilityCompliant": False,
         }
-        venue, _ = utils.create_offerer_provider_linked_to_venue(venue_data)
+        venue, api_key = utils.create_offerer_provider_linked_to_venue(venue_data)
         cd_product = offers_factories.ThingProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"ean": "1234567890123"}
         )
@@ -271,31 +272,40 @@ class PostProductByEanTest:
 
         in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
         in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/products/ean",
-            json={
-                "location": {"type": "physical", "venueId": venue.id},
-                "products": [
-                    {
-                        "ean": cd_product.extraData["ean"],
-                        "stock": {
-                            "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
-                            "price": 1234,
-                            "quantity": 0,
+        with caplog.at_level(logging.INFO):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+                "/public/offers/v1/products/ean",
+                json={
+                    "location": {"type": "physical", "venueId": venue.id},
+                    "products": [
+                        {
+                            "ean": cd_product.extraData["ean"],
+                            "stock": {
+                                "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
+                                "price": 1234,
+                                "quantity": 0,
+                            },
                         },
-                    },
-                    {
-                        "ean": book_product.extraData["ean"],
-                        "stock": {
-                            "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
-                            "price": 2345,
-                            "quantity": 25,
+                        {
+                            "ean": book_product.extraData["ean"],
+                            "stock": {
+                                "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
+                                "price": 2345,
+                                "quantity": 25,
+                            },
                         },
-                    },
-                ],
-            },
-        )
+                    ],
+                },
+            )
 
+        log = next(record for record in caplog.records if "Error while creating offer by ean" == record.message)
+
+        assert log.extra == {
+            "ean": book_product.extraData["ean"],
+            "venue_id": venue.id,
+            "provider_id": api_key.provider.id,
+            "exc": "RejectedOrPendingOfferNotEditable",
+        }
         assert response.status_code == 204
         assert cd_stock.quantity == 0
         assert cd_stock.price == decimal.Decimal("12.34")
