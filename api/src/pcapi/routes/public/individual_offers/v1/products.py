@@ -327,7 +327,13 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
                     offers_exceptions.OfferEditionBaseException,
                 ) as exc:
                     logger.info(
-                        "Error while creating offer by ean", extra={"ean": ean, "venue_id": venue_id, "exc": exc}
+                        "Error while creating offer by ean",
+                        extra={
+                            "ean": ean,
+                            "venue_id": venue_id,
+                            "provider_id": provider_id,
+                            "exc": exc.__class__.__name__,
+                        },
                     )
 
             db.session.bulk_save_objects(created_offers)
@@ -352,7 +358,13 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
                     offers_exceptions.OfferEditionBaseException,
                 ) as exc:
                     logger.info(
-                        "Error while creating offer by ean", extra={"ean": ean, "venue_id": venue_id, "exc": exc}
+                        "Error while creating offer by ean",
+                        extra={
+                            "ean": ean,
+                            "venue_id": venue_id,
+                            "provider_id": provider_id,
+                            "exc": exc.__class__.__name__,
+                        },
                     )
 
         for offer in offers_to_update:
@@ -378,7 +390,10 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
                 )
                 offers_to_index.append(offer_to_update_by_ean[ean].id)
             except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as exc:
-                logger.info("Error while creating offer by ean", extra={"exc": exc})
+                logger.info(
+                    "Error while creating offer by ean",
+                    extra={"ean": ean, "venue_id": venue_id, "provider_id": provider_id, "exc": exc.__class__.__name__},
+                )
 
     search.async_index_offer_ids(
         offers_to_index,
