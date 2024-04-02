@@ -209,15 +209,15 @@ class BoostStocks(LocalProvider):
         return price_category_label
 
     def update_from_movie_information(self, offer: offers_models.Offer, movie_information: Movie) -> None:
-        if FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS.is_active():
-            assert self.product and self.product.extraData
+        if self.product:
+            offer.product = self.product
             offer.name = self.product.name
             offer.description = self.product.description
             offer.durationMinutes = self.product.durationMinutes
-            offer.extraData = offers_models.OfferExtraData()
-            offer.extraData.update(self.product.extraData)
-            offer.extraData["visa"] = self.product.extraData.get("visa") or movie_information.visa
-            offer.product = self.product
+            if self.product.extraData:
+                offer.extraData = offers_models.OfferExtraData()
+                offer.extraData.update(self.product.extraData)
+                offer.extraData["visa"] = self.product.extraData.get("visa") or movie_information.visa
         else:
             offer.name = self.showtime_details.film.titleCnc
             if movie_information.description:
