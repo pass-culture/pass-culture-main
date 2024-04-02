@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react'
-import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Link, Outlet, useLocation } from 'react-router-dom'
 
 import { AppLayout } from 'app/AppLayout'
 import { SignupJourneyFormLayout } from 'components/SignupJourneyFormLayout'
@@ -43,7 +43,7 @@ export const SignupJourneyRoutes = () => {
               src={logoPassCultureProIcon}
               viewBox="0 0 119 40"
             />
-            <NavLink
+            <Link
               onClick={() =>
                 logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
               }
@@ -57,7 +57,7 @@ export const SignupJourneyRoutes = () => {
                 width="20"
               />
               Se déconnecter
-            </NavLink>
+            </Link>
           </div>
         </header>
         <SignupJourneyContextProvider>

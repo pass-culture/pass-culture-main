@@ -1,5 +1,4 @@
-import React from 'react'
-import { NavLink, useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 
 import { LocalOfferersPlaylistOffer } from 'apiClient/adage'
 import strokeInstitutionIcon from 'icons/stroke-institution.svg'
@@ -20,7 +19,7 @@ const VenueCard = ({
   const adageAuthToken = searchParams.get('token')
 
   return (
-    <NavLink
+    <Link
       data-testid="card-venue-link"
       className={styles.container}
       to={`/adage-iframe/recherche?token=${adageAuthToken}&venue=${venue.id}`}
@@ -48,7 +47,7 @@ const VenueCard = ({
           className={styles['venue-infos-distance']}
         >{`à ${venue.distance} km - ${venue.city}`}</div>
       </div>
-    </NavLink>
+    </Link>
   )
 }
 
