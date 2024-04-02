@@ -297,6 +297,7 @@ def check_image(
         raise exceptions.UnidentifiedImage()
     except Exception:
         raise exceptions.ImageValidationError()
+    assert image.format is not None  # helps mypy
 
     if image.format.lower() not in accepted_types:
         raise exceptions.UnacceptedFileType(accepted_types, image.format)

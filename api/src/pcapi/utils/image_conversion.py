@@ -12,10 +12,10 @@ import io
 import math
 from typing import TYPE_CHECKING
 
-from PIL import Image
 from PIL import ImageFile
 from PIL import ImageOps
 from PIL import UnidentifiedImageError
+import PIL.Image
 from pydantic.v1 import confloat
 
 
@@ -41,8 +41,8 @@ class CropParams:
 
 @dataclass
 class Coordinates:
-    x: float
-    y: float
+    x: int
+    y: int
 
 
 class ImageRatio(enum.Enum):
@@ -103,7 +103,7 @@ def standardize_image(content: bytes, ratio: ImageRatio, crop_params: CropParams
     return _post_process_image(resized_image)
 
 
-def process_original_image(content: bytes, resize: bool = True) -> Image:
+def process_original_image(content: bytes, resize: bool = True) -> bytes:
     """
     Process steps are:
         * transpose image
@@ -117,8 +117,8 @@ def process_original_image(content: bytes, resize: bool = True) -> Image:
     return _post_process_image(image)
 
 
-def _pre_process_image(content: bytes) -> Image:
-    raw_image = Image.open(io.BytesIO(content))
+def _pre_process_image(content: bytes) -> PIL.Image.Image:
+    raw_image = PIL.Image.open(io.BytesIO(content))
 
     # Remove exif orientation so that it doesnt rotate after upload
     try:
@@ -128,20 +128,21 @@ def _pre_process_image(content: bytes) -> Image:
         # similar message, depending on the expected type of file. In
         # that case, re-reraise as a more specific, PIL-related error.
         raise UnidentifiedImageError() from exc
+    assert transposed_image is not None  # helps mypy
 
     if transposed_image.mode == "RGBA":
-        background = Image.new("RGB", transposed_image.size, (255, 255, 255))
+        background = PIL.Image.new("RGB", transposed_image.size, (255, 255, 255))
         background.paste(transposed_image, mask=transposed_image.split()[3])
         transposed_image = background
 
     return transposed_image.convert("RGB")
 
 
-def _post_process_image(image: Image) -> bytes:
+def _post_process_image(image: PIL.Image.Image) -> bytes:
     return _convert_to_jpeg(image)
 
 
-def _check_ratio(image: Image, ratio: ImageRatio) -> Image:
+def _check_ratio(image: PIL.Image.Image, ratio: ImageRatio) -> PIL.Image.Image:
     image_ratio = image.width / image.height
     if not math.isclose(image_ratio, ratio.value, abs_tol=0.04):
         raise ImageRatioError(expected=ratio.value, found=image_ratio)
@@ -153,8 +154,8 @@ def _crop_image(
     y_crop_percent: CropParam,
     height_crop_percent: CropParam,
     width_crop_percent: CropParam,
-    image: Image,
-) -> Image:
+    image: PIL.Image.Image,
+) -> PIL.Image.Image:
     """
     x_crop_percent and y_crop_percent will be used to compute new top left
     corner coordinates.
@@ -167,13 +168,17 @@ def _crop_image(
     width = image.size[0]
     height = image.size[1]
 
-    top_left_corner = Coordinates(x=width * x_crop_percent, y=height * y_crop_percent)
+    top_left_corner = Coordinates(
+        x=int(width * x_crop_percent),
+        y=int(height * y_crop_percent),
+    )
 
-    updated_height = height * height_crop_percent
-    updated_width = width * width_crop_percent
+    updated_height = int(height * height_crop_percent)
+    updated_width = int(width * width_crop_percent)
 
     bottom_right_corner = Coordinates(
-        x=min(top_left_corner.x + updated_width, width), y=min(top_left_corner.y + updated_height, height)
+        x=min(top_left_corner.x + updated_width, width),
+        y=min(top_left_corner.y + updated_height, height),
     )
 
     cropped_img = image.crop((top_left_corner.x, top_left_corner.y, bottom_right_corner.x, bottom_right_corner.y))
@@ -181,7 +186,7 @@ def _crop_image(
     return cropped_img
 
 
-def _resize_image(image: Image, ratio: ImageRatio) -> Image:
+def _resize_image(image: PIL.Image.Image, ratio: ImageRatio) -> PIL.Image.Image:
     """
     Resize image, adapt ratio if image is too wide
     """
@@ -193,7 +198,7 @@ def _resize_image(image: Image, ratio: ImageRatio) -> Image:
     return image.resize([MAX_THUMB_WIDTH, new_height])
 
 
-def _shrink_image(image: Image) -> Image:
+def _shrink_image(image: PIL.Image.Image) -> PIL.Image.Image:
     """
     Resize image, keep its original ratio
     """
@@ -205,7 +210,7 @@ def _shrink_image(image: Image) -> Image:
     return image.resize([MAX_THUMB_WIDTH, height])
 
 
-def _convert_to_jpeg(image: Image) -> bytes:
+def _convert_to_jpeg(image: PIL.Image.Image) -> bytes:
     new_bytes = io.BytesIO()
 
     image.save(new_bytes, format="JPEG", quality=CONVERSION_QUALITY, optimize=True, progressive=True)
