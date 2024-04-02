@@ -1,5 +1,5 @@
 import classnames from 'classnames'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { NavLink, useLocation } from 'react-router-dom'
 
@@ -75,7 +75,7 @@ const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
         </li>
         <li>
           <NavLink
-            to={'/accueil'}
+            to="/accueil"
             className={({ isActive }) =>
               classnames(styles['nav-links-item'], {
                 [styles['nav-links-item-active']]: isActive,

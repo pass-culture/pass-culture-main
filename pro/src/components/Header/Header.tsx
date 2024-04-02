@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import { ForwardedRef, forwardRef } from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -65,7 +65,7 @@ const Header = forwardRef(
           <div className={styles['nav-brand']}>
             <NavLink
               className={styles['logo']}
-              to={'/accueil'}
+              to="/accueil"
               onClick={() => {
                 logEvent?.(Events.CLICKED_PRO, { from: location.pathname })
               }}
@@ -83,7 +83,7 @@ const Header = forwardRef(
             The first one is displayed only on tablet and smaller to get rid of the right margin (and has an alt)
             The second one is displayed on larger screen sizes
         */}
-          <NavLink
+          <Link
             onClick={() =>
               logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
             }
@@ -96,8 +96,8 @@ const Header = forwardRef(
               alt="Se déconnecter"
               width="24"
             />
-          </NavLink>
-          <NavLink
+          </Link>
+          <Link
             onClick={() =>
               logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
             }
@@ -111,7 +111,7 @@ const Header = forwardRef(
               width="20"
             />
             Se déconnecter
-          </NavLink>
+          </Link>
         </header>
       )
     }
@@ -122,7 +122,7 @@ const Header = forwardRef(
           <div className={styles['nav-brand']}>
             <NavLink
               className={cn('logo', 'nav-item')}
-              to={'/accueil'}
+              to="/accueil"
               onClick={() => {
                 logEvent?.(Events.CLICKED_PRO, { from: location.pathname })
               }}
@@ -274,7 +274,7 @@ const Header = forwardRef(
             <li>
               <div className={styles['separator']} />
 
-              <NavLink
+              <Link
                 className={cn(styles['nav-item'], styles['icon-only'])}
                 onClick={() =>
                   logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
@@ -292,7 +292,7 @@ const Header = forwardRef(
                   )}
                   width={NAV_ITEM_ICON_SIZE}
                 />
-              </NavLink>
+              </Link>
             </li>
           </ul>
         </nav>
