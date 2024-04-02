@@ -1858,7 +1858,8 @@ def test_generate_payments_file_legacy_journey():
 @clean_temporary_files
 @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
 def test_generate_payments_file_new_journey():
-    used_date = datetime.datetime(2020, 1, 2)
+    actual_year = datetime.date.today().year
+    used_date = datetime.datetime(actual_year, 2, 5)
     venue1 = offerers_factories.VenueFactory(
         name='Le Petit Rintintin "test"\n',
         siret='123456 "test"\n',
@@ -1866,17 +1867,50 @@ def test_generate_payments_file_new_journey():
     )
     bank_account_1 = factories.BankAccountFactory(offerer=venue1.managingOfferer)
     offerers_factories.VenueBankAccountLinkFactory(
-        venue=venue1, bankAccount=bank_account_1, timespan=(datetime.datetime.utcnow(),)
+        venue=venue1, bankAccount=bank_account_1, timespan=(datetime.datetime(actual_year, 1, 29),)
     )
+
+    # Individual pricing
     factories.PricingFactory(
         amount=-1000,  # rate = 100 %
         booking__amount=10,
         booking__dateUsed=used_date,
-        booking__stock__offer__name="Une histoire formidable",
+        booking__stock__offer__name="Une histoire classique",
         booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         booking__stock__offer__venue=venue1,
     )
-    # A free booking that should not appear in the CSV file.
+
+    ## Individual incident
+    # Individual booking, with an incident later
+    incident_booking = bookings_factories.ReimbursedBookingFactory(
+        amount=10,
+        dateUsed=datetime.datetime(actual_year, 1, 30),
+        stock__offer__name="Une histoire formidable",
+        stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+        stock__offer__venue=venue1,
+    )
+    used_event = factories.UsedBookingFinanceEventFactory(booking=incident_booking)
+
+    # Original pricing
+    factories.PricingFactory(
+        booking=incident_booking,
+        event=used_event,
+        status=models.PricingStatus.INVOICED,
+        venue=incident_booking.venue,
+        valueDate=datetime.datetime(actual_year, 1, 31),
+    )
+
+    # Create finance incident on the booking above (incident amount: 1€)
+    booking_finance_incident = factories.IndividualBookingFinanceIncidentFactory(
+        booking=incident_booking, newTotalAmount=900
+    )
+    incident_events = api._create_finance_events_from_incident(
+        booking_finance_incident, used_date + datetime.timedelta(days=2)
+    )
+    for event in incident_events:
+        api.price_event(event)
+
+    # A free booking that should not appear in the CSV file
     factories.PricingFactory(
         amount=0,
         booking__amount=0,
@@ -1886,40 +1920,7 @@ def test_generate_payments_file_new_journey():
         booking__stock__offer__venue=venue1,
     )
 
-    venue2 = offerers_factories.VenueFactory(
-        name="Le Gigantesque Cubitus\n",
-        siret="99999999999999",
-        pricing_point="self",
-    )
-    bank_account_2 = factories.BankAccountFactory(offerer=venue2.managingOfferer)
-    offerers_factories.VenueBankAccountLinkFactory(
-        venue=venue2, bankAccount=bank_account_2, timespan=(datetime.datetime.utcnow(),)
-    )
-    factories.PricingFactory(
-        amount=-600,  # rate = 50 %
-        booking__amount=12,
-        booking__dateUsed=used_date,
-        booking__stock__offer__name="Une histoire plutôt bien",
-        booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
-        booking__stock__offer__venue=venue2,
-        standardRule="",
-        customRule=factories.CustomReimbursementRuleFactory(amount=600),
-    )
-    # pricing for an underage individual booking
-    underage_user = users_factories.UnderageBeneficiaryFactory()
-    factories.PricingFactory(
-        amount=-600,  # rate = 50 %
-        booking__amount=12,
-        booking__user=underage_user,
-        booking__dateUsed=used_date,
-        booking__stock__offer__name="Une histoire plutôt bien",
-        booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
-        booking__stock__offer__venue=venue2,
-        standardRule="",
-        customRule=factories.CustomReimbursementRuleFactory(amount=600),
-    )
-    # pricing for educational booking
-    # check that the right deposit is used for csv
+    # Pricings for educational booking
     year1 = EducationalYearFactory()
     year2 = EducationalYearFactory()
     year3 = EducationalYearFactory()
@@ -1927,15 +1928,15 @@ def test_generate_payments_file_new_journey():
     EducationalDepositFactory(
         educationalInstitution=educational_institution, educationalYear=year1, ministry=Ministry.AGRICULTURE.name
     )
-    deposit2 = EducationalDepositFactory(
+    deposit_menjs = EducationalDepositFactory(
         educationalInstitution=educational_institution,
         educationalYear=year2,
         ministry=Ministry.EDUCATION_NATIONALE.name,
     )
-    EducationalDepositFactory(
+    deposit_ma = EducationalDepositFactory(
         educationalInstitution=educational_institution, educationalYear=year3, ministry=Ministry.ARMEES.name
     )
-    # the 2 following pricing should be merged together in the csv file
+    # The first and second pricings should be merged together in the csv file
     factories.CollectivePricingFactory(
         amount=-300,  # rate = 100 %
         collectiveBooking__collectiveStock__price=3,
@@ -1943,9 +1944,9 @@ def test_generate_payments_file_new_journey():
         collectiveBooking__collectiveStock__beginningDatetime=used_date,
         collectiveBooking__collectiveStock__collectiveOffer__name="Une histoire plutôt bien",
         collectiveBooking__collectiveStock__collectiveOffer__subcategoryId=subcategories.CINE_PLEIN_AIR.id,
-        collectiveBooking__collectiveStock__collectiveOffer__venue=venue2,
-        collectiveBooking__educationalInstitution=deposit2.educationalInstitution,
-        collectiveBooking__educationalYear=deposit2.educationalYear,
+        collectiveBooking__collectiveStock__collectiveOffer__venue=venue1,
+        collectiveBooking__educationalInstitution=deposit_menjs.educationalInstitution,
+        collectiveBooking__educationalYear=deposit_menjs.educationalYear,
     )
     factories.CollectivePricingFactory(
         amount=-700,  # rate = 100 %
@@ -1954,42 +1955,119 @@ def test_generate_payments_file_new_journey():
         collectiveBooking__collectiveStock__beginningDatetime=used_date,
         collectiveBooking__collectiveStock__collectiveOffer__name="Une histoire plutôt bien 2",
         collectiveBooking__collectiveStock__collectiveOffer__subcategoryId=subcategories.CINE_PLEIN_AIR.id,
-        collectiveBooking__collectiveStock__collectiveOffer__venue=venue2,
-        collectiveBooking__educationalInstitution=deposit2.educationalInstitution,
-        collectiveBooking__educationalYear=deposit2.educationalYear,
+        collectiveBooking__collectiveStock__collectiveOffer__venue=venue1,
+        collectiveBooking__educationalInstitution=deposit_menjs.educationalInstitution,
+        collectiveBooking__educationalYear=deposit_menjs.educationalYear,
+    )
+    factories.CollectivePricingFactory(
+        amount=-300,  # rate = 100 %
+        collectiveBooking__collectiveStock__price=3,
+        collectiveBooking__dateUsed=used_date,
+        collectiveBooking__collectiveStock__beginningDatetime=used_date,
+        collectiveBooking__collectiveStock__collectiveOffer__name="Une histoire militaire plutôt bien",
+        collectiveBooking__collectiveStock__collectiveOffer__subcategoryId=subcategories.CINE_PLEIN_AIR.id,
+        collectiveBooking__collectiveStock__collectiveOffer__venue=venue1,
+        collectiveBooking__educationalInstitution=deposit_ma.educationalInstitution,
+        collectiveBooking__educationalYear=deposit_ma.educationalYear,
     )
 
-    # Create booking for overpayment finance incident
-    incident_booking = bookings_factories.ReimbursedBookingFactory(
-        amount=12,
-        dateUsed=used_date,
-        stock__offer__name="Une histoire plutôt bien",
-        stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
-        stock__offer__venue=venue2,
+    venue2 = offerers_factories.VenueFactory(
+        name="Le Gigantesque Cubitus\n",
+        siret="99999999999999",
+        pricing_point="self",
+    )
+    bank_account_2 = factories.BankAccountFactory(offerer=venue2.managingOfferer)
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue2,
+        bankAccount=bank_account_2,
+        timespan=(datetime.datetime(actual_year, 1, 29), datetime.datetime(actual_year, 2, 8)),
+    )
+    bank_account_3 = factories.BankAccountFactory(offerer=venue2.managingOfferer)
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue2, bankAccount=bank_account_3, timespan=(datetime.datetime(actual_year, 2, 8),)
     )
 
-    used_event = factories.UsedBookingFinanceEventFactory(booking=incident_booking)
+    # Individual pricing 18
     factories.PricingFactory(
-        booking=incident_booking,
-        event=used_event,
+        amount=-700,  # rate = 100 %
+        booking__amount=7,
+        booking__dateUsed=used_date,
+        booking__stock__offer__name="Une histoire plutôt bien",
+        booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+        booking__stock__offer__venue=venue2,
+    )
+
+    # Double pricings for an underage individual booking
+    underage_user = users_factories.UnderageBeneficiaryFactory()
+    factories.PricingFactory(
+        amount=-400,  # rate = 50 %
+        booking__amount=8,
+        booking__user=underage_user,
+        booking__dateUsed=used_date,
+        booking__stock__offer__name="Une histoire plutôt bien",
+        booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+        booking__stock__offer__venue=venue2,
+        standardRule="",
+        customRule=factories.CustomReimbursementRuleFactory(rate=Decimal(0.5)),
+    )
+    factories.PricingFactory(
+        amount=-400,  # rate = 50 %
+        booking__amount=8,
+        booking__user=underage_user,
+        booking__dateUsed=used_date,
+        booking__stock__offer__name="Une histoire plutôt bien en doublon",
+        booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+        booking__stock__offer__venue=venue2,
+        standardRule="",
+        customRule=factories.CustomReimbursementRuleFactory(rate=Decimal(0.5)),
+    )
+
+    # Pricings on different bank account but same venue
+    factories.PricingFactory(
+        amount=-700,  # rate = 100 %
+        booking__amount=7,
+        booking__dateUsed=used_date + datetime.timedelta(days=5),
+        booking__stock__offer__name="Une histoire plutôt bien sur un autre compte bancaire",
+        booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+        booking__stock__offer__venue=venue2,
+    )
+
+    ## Collective incident
+    # Collective booking, with an incident later
+    collective_booking = educational_factories.ReimbursedCollectiveBookingFactory(
+        collectiveStock__price=12,
+        dateUsed=datetime.datetime(actual_year, 1, 30),
+        collectiveStock__beginningDatetime=used_date,
+        collectiveStock__collectiveOffer__name="Une histoire militaire plutôt bien sur un autre compte bancaire",
+        collectiveStock__collectiveOffer__subcategoryId=subcategories.CINE_PLEIN_AIR.id,
+        collectiveStock__collectiveOffer__venue=venue2,
+        educationalInstitution=deposit_ma.educationalInstitution,
+        educationalYear=deposit_ma.educationalYear,
+    )
+    collective_used_event = factories.UsedCollectiveBookingFinanceEventFactory(collectiveBooking=collective_booking)
+
+    factories.CollectivePricingFactory(
+        collectiveBooking=collective_booking,
+        event=collective_used_event,
         status=models.PricingStatus.INVOICED,
-        venue=incident_booking.venue,
-        valueDate=datetime.datetime.utcnow(),
+        venue=collective_booking.venue,
+        valueDate=datetime.datetime(actual_year, 1, 31),
     )
 
-    # Create finance incident on the booking above (incident amount: 2€)
-    booking_finance_incident = factories.IndividualBookingFinanceIncidentFactory(
-        booking=incident_booking, newTotalAmount=1000
+    # Create finance incident on the booking above
+    collective_booking_finance_incident = factories.CollectiveBookingFinanceIncidentFactory(
+        collectiveBooking=collective_booking, newTotalAmount=0
     )
-    incident_events = api._create_finance_events_from_incident(booking_finance_incident, datetime.datetime.utcnow())
-
-    for event in incident_events:
+    collective_incident_events = api._create_finance_events_from_incident(
+        collective_booking_finance_incident, used_date + datetime.timedelta(days=7)
+    )
+    for event in collective_incident_events:
         api.price_event(event)
 
-    cutoff = datetime.datetime.utcnow()
+    cutoff = datetime.datetime(actual_year, 2, 15)
     batch_id = api.generate_cashflows(cutoff).id
 
-    n_queries = 1  # select pricings
+    n_queries = 2  # select pricings
     with assert_num_queries(n_queries):
         path = api._generate_payments_file(batch_id)
 
@@ -1997,19 +2075,55 @@ def test_generate_payments_file_new_journey():
         reader = csv.DictReader(fp, quoting=csv.QUOTE_NONNUMERIC)
         rows = list(reader)
 
-    assert len(rows) == 2
-    assert rows[0] == {
+    assert len(rows) == 6
+    assert {
         "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "SIREN de la structure": bank_account_1.offerer.siren,
         "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account_1.offerer.name} - {bank_account_1.label}",
-        "Montant net offreur": 10,
-    }
-    assert rows[1] == {
-        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_2.id),
-        "SIREN de la structure": bank_account_2.offerer.siren,
-        "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account_2.offerer.name} - {bank_account_2.label}",
-        "Montant net offreur": 6 + 6 + 10 - 2,
-    }
+        "Type de réservation": "PC",
+        "Ministère": "",
+        "Montant net offreur": 10 - 1,  # 10 from pricing + [9 - 10 = -1] from incident
+    } in rows
+    assert {
+        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
+        "SIREN de la structure": bank_account_1.offerer.siren,
+        "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account_1.offerer.name} - {bank_account_1.label}",
+        "Type de réservation": "EACC",
+        "Ministère": "EDUCATION_NATIONALE",
+        "Montant net offreur": 3 + 7,
+    } in rows
+    assert {
+        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
+        "SIREN de la structure": bank_account_1.offerer.siren,
+        "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account_1.offerer.name} - {bank_account_1.label}",
+        "Type de réservation": "EACC",
+        "Ministère": "ARMEES",
+        "Montant net offreur": 3,
+    } in rows
+    assert {
+        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_3.id),
+        "SIREN de la structure": bank_account_3.offerer.siren,
+        "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account_3.offerer.name} - {bank_account_3.label}",
+        "Type de réservation": "PC",
+        "Ministère": "",
+        "Montant net offreur": 7 + 7,
+    } in rows
+    assert {
+        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_3.id),
+        "SIREN de la structure": bank_account_3.offerer.siren,
+        "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account_3.offerer.name} - {bank_account_3.label}",
+        "Type de réservation": "EACI",
+        "Ministère": "",
+        "Montant net offreur": 4 + 4,
+    } in rows
+    assert {
+        "Identifiant des coordonnées bancaires": human_ids.humanize(bank_account_3.id),
+        "SIREN de la structure": bank_account_3.offerer.siren,
+        "Nom de la structure - Libellé des coordonnées bancaires": f"{bank_account_3.offerer.name} - {bank_account_3.label}",
+        "Type de réservation": "EACC",
+        "Ministère": "ARMEES",
+        "Montant net offreur": -12,  # [0 - 12 = -12] from collective incident
+    } in rows
 
 
 @clean_temporary_files
