@@ -34,6 +34,13 @@ export const initializeSentry = () => {
       }),
     ],
     tracesSampleRate: parseFloat(SENTRY_SAMPLE_RATE),
+    beforeSend: (event, hint) => {
+      // To ignore a google recaptcha issue
+      if (hint.originalException === 'Timeout') {
+        return null
+      }
+      return event
+    },
     // List of common errors to ignore
     // https://docs.sentry.io/platforms/javascript/configuration/filtering/#decluttering-sentry
     ignoreErrors: [
