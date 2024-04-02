@@ -69,7 +69,7 @@ export default function AdagePreviewLayout({ offer }: AdagePreviewLayoutProps) {
       publicName: venue.publicName,
       postalCode: venue.postalCode,
       city: venue.city,
-      address: venue.address,
+      address: venue.street,
     },
   }
 
@@ -103,7 +103,7 @@ export default function AdagePreviewLayout({ offer }: AdagePreviewLayoutProps) {
       publicName: venue.publicName,
       postalCode: venue.postalCode,
       city: venue.city,
-      address: venue.address,
+      address: venue.street,
     }
   }
 

@@ -15,7 +15,6 @@ import type { VenueContactModel } from './VenueContactModel';
 import type { VenueTypeCode } from './VenueTypeCode';
 export type GetVenueResponseModel = {
   adageInscriptionDate?: string | null;
-  address?: string | null;
   audioDisabilityCompliant?: boolean | null;
   banId?: string | null;
   bankAccount?: BankAccountResponseModel | null;
@@ -62,6 +61,7 @@ export type GetVenueResponseModel = {
   publicName?: string | null;
   reimbursementPointId?: number | null;
   siret?: string | null;
+  street?: string | null;
   timezone: string;
   venueLabelId?: number | null;
   venueTypeCode: VenueTypeCode;

@@ -23,7 +23,7 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
       name: 'fake offerer name',
       city: 'Paris',
       postalCode: '75000',
-      address: 'fake address',
+      street: 'fake address',
       dateCreated: '2020-01-01T00:00:00.000Z',
       apiKey: {
         maxAllowed: 100,

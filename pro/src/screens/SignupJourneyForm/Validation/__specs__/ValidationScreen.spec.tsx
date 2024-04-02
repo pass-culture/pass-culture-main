@@ -28,7 +28,7 @@ vi.mock('apiClient/api', () => ({
 }))
 
 const addressInformations: Address = {
-  address: '3 Rue de Valois',
+  street: '3 Rue de Valois',
   city: 'Paris',
   latitude: 1.23,
   longitude: 2.9887,
@@ -244,7 +244,7 @@ describe('ValidationScreen', () => {
           webPresence: 'url1, url2',
           target: Target.EDUCATIONAL,
           createVenueWithoutSiret: false,
-          address: '3 Rue de Valois',
+          street: '3 Rue de Valois',
           banId: '75118_5995_00043',
           city: 'Paris',
           latitude: 0,

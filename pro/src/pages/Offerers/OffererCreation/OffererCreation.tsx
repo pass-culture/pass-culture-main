@@ -100,7 +100,7 @@ export const OffererCreation = (): JSX.Element => {
                   <span>Siège social : </span>
                   {offerer?.postalCode && (
                     <span>
-                      {`${offerer.address} - ${offerer.postalCode} ${offerer.city}`}
+                      {`${offerer.street} - ${offerer.postalCode} ${offerer.city}`}
                     </span>
                   )}
                 </div>

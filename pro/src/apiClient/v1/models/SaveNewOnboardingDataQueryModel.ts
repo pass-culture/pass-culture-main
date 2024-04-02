@@ -4,7 +4,6 @@
 /* eslint-disable */
 import type { Target } from './Target';
 export type SaveNewOnboardingDataQueryModel = {
-  address?: string | null;
   banId?: string | null;
   city: string;
   createVenueWithoutSiret?: boolean;
@@ -13,6 +12,7 @@ export type SaveNewOnboardingDataQueryModel = {
   postalCode: string;
   publicName?: string | null;
   siret: string;
+  street?: string | null;
   target: Target;
   token: string;
   venueTypeCode: string;

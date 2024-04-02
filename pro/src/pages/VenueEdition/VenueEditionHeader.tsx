@@ -128,9 +128,9 @@ export const VenueEditionHeader = ({
             : venue.publicName || venue.name}
         </h1>
 
-        {venue.address && (
+        {venue.street && (
           <address className={styles['venue-address']}>
-            {venue.address}, {venue.postalCode} {venue.city}
+            {venue.street}, {venue.postalCode} {venue.city}
           </address>
         )}
 

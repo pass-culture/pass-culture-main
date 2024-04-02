@@ -99,9 +99,9 @@ export const PartnerPage = ({ offerer, venue }: PartnerPageProps) => {
             {venue.publicName || venue.name}
           </div>
 
-          {venue.address && (
+          {venue.street && (
             <address className={styles['venue-address']}>
-              {venue.address}, {venue.postalCode} {venue.city}
+              {venue.street}, {venue.postalCode} {venue.city}
             </address>
           )}
 
