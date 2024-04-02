@@ -74,6 +74,10 @@ describe('getDepartmentTimezone', () => {
 // if it was possible we would have prefered to test with TZ=Europe/Paris, TZ=America/Cayenne, etc.
 describe('convertFromLocalTimeToVenueTimezoneInUtc', () => {
   it('should convert from my locale to departement timezone and give result in utc', () => {
+    // Fix the date to avoid the test failing when changing from CET to CEST for Paris
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2024-01-01'))
+
     const timeInVersailles = convertTimeFromVenueTimezoneToUtc('12:00', '78')
     const timeInTahiti = convertTimeFromVenueTimezoneToUtc('12:00', '987')
     const timeInGuadeloupe = convertTimeFromVenueTimezoneToUtc('12:00', '971')
@@ -81,11 +85,13 @@ describe('convertFromLocalTimeToVenueTimezoneInUtc', () => {
     expect(timeInVersailles).toBe('11:00')
     expect(timeInTahiti).toBe('22:00')
     expect(timeInGuadeloupe).toBe('16:00')
+
+    vi.useRealTimers()
   })
 
   it('should convert from my locale to departement timezone and give result in utc with a different local time', () => {
     //  We change the reference date of the test to make sure it does not influence the time conversion
-    const timezoneOffsetDate = new Date()
+    const timezoneOffsetDate = new Date('2024-01-01')
     timezoneOffsetDate.setHours(timezoneOffsetDate.getHours() - 2)
     vi.useFakeTimers()
     vi.setSystemTime(timezoneOffsetDate)
