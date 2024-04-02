@@ -107,7 +107,7 @@ def patch_booking_use_by_token(token: str) -> None:
         # We should not end up here, thanks to the `login_or_api_key_required` decorator.
         raise ForbiddenError()
 
-    bookings_api.mark_as_used(booking)
+    bookings_api.mark_as_used(booking, bookings_models.BookingValidationAuthorType.OFFERER)
 
 
 @blueprints.v2_prefixed_public_api.route("/bookings/cancel/token/<token>", methods=["PATCH"])

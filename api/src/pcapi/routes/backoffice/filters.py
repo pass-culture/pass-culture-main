@@ -256,6 +256,20 @@ def format_booking_status_long(booking: bookings_models.Booking | educational_mo
     return '<span class="badge text-bg-success">Le jeune a réservé l\'offre</span>'
 
 
+def format_booking_validation_author_type(
+    validationAuthorType: bookings_models.BookingValidationAuthorType | None,
+) -> str:
+    match validationAuthorType:
+        case bookings_models.BookingValidationAuthorType.OFFERER:
+            return "Partenaire culturel"
+        case bookings_models.BookingValidationAuthorType.BACKOFFICE:
+            return "Backoffice"
+        case bookings_models.BookingValidationAuthorType.AUTO:
+            return "Automatique"
+        case _:
+            return ""
+
+
 def format_booking_status(
     booking: bookings_models.Booking | educational_models.CollectiveBooking, with_badge: bool = False
 ) -> str:
@@ -1062,6 +1076,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_booking_cancellation_reason"] = format_booking_cancellation_reason
     app.jinja_env.filters["format_booking_status"] = format_booking_status
     app.jinja_env.filters["format_booking_status_long"] = format_booking_status_long
+    app.jinja_env.filters["format_booking_validation_author_type"] = format_booking_validation_author_type
     app.jinja_env.filters["format_bool"] = format_bool
     app.jinja_env.filters["format_bool_badge"] = format_bool_badge
     app.jinja_env.filters["format_cents"] = format_cents
