@@ -973,7 +973,7 @@ class ValidationRuleOfferLink(PcObject, Base, Model):
     ruleId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("offer_validation_rule.id", ondelete="CASCADE"), nullable=False
     )
-    offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=False)
+    offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False)
 
 
 class OfferPriceLimitationRule(PcObject, Base, Model):
