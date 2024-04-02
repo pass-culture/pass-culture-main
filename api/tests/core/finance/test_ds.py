@@ -28,7 +28,6 @@ from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.offerers.factories import VenueReimbursementPointLinkFactory
 from pcapi.core.offerers.models import VenueReimbursementPointLink
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 
 from tests.connector_creators import demarches_simplifiees_creators as ds_creators
 
@@ -38,47 +37,6 @@ ActionOccurred = namedtuple("ActionOccurred", ["type", "authorUserId", "venueId"
 
 @pytest.mark.usefixtures("db_session")
 class ImportDSBankInformationApplicationsTest:
-    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.get_pro_bank_nodes_states")
-    @patch("pcapi.use_cases.save_venue_bank_informations.SaveVenueBankInformationsV4.execute")
-    def test_import_empty_db(self, mocked_save_venue_bank_informations_execute, mocked_get_pro_bank_nodes):
-        mocked_get_pro_bank_nodes.return_value = [
-            ds_creators.get_bank_info_response_procedure_v4(),
-            ds_creators.get_bank_info_response_procedure_v4(
-                dms_token="987654321fedcba", dossier_id="AbLQmfezdf", application_id=10
-            ),
-        ]
-
-        import_ds_bank_information_applications(procedure_number=settings.DMS_VENUE_PROCEDURE_ID_V4)
-
-        assert mocked_save_venue_bank_informations_execute.call_count == 2
-        application_detail_first_call_arg = mocked_save_venue_bank_informations_execute.mock_calls[0].kwargs[
-            "application_details"
-        ]
-        assert application_detail_first_call_arg.status == BankInformationStatus.ACCEPTED
-        assert application_detail_first_call_arg.application_id == 9
-        assert application_detail_first_call_arg.modification_date == datetime.datetime(2020, 1, 3)
-        assert application_detail_first_call_arg.iban == "FR7630007000111234567890144"
-        assert application_detail_first_call_arg.bic == "SOGEFRPP"
-        assert application_detail_first_call_arg.dms_token == "1234567890abcdef"
-        assert application_detail_first_call_arg.dossier_id == "Q2zzbXAtNzgyODAw"
-
-        application_detail_second_call_arg = mocked_save_venue_bank_informations_execute.mock_calls[1].kwargs[
-            "application_details"
-        ]
-        assert application_detail_second_call_arg.status == BankInformationStatus.ACCEPTED
-        assert application_detail_second_call_arg.application_id == 10
-        assert application_detail_second_call_arg.modification_date == datetime.datetime(2020, 1, 3)
-        assert application_detail_second_call_arg.iban == "FR7630007000111234567890144"
-        assert application_detail_second_call_arg.bic == "SOGEFRPP"
-        assert application_detail_second_call_arg.dms_token == "987654321fedcba"
-        assert application_detail_second_call_arg.dossier_id == "AbLQmfezdf"
-
-        latest_import = ds_models.LatestDmsImport.query.one()
-        assert latest_import.procedureId == int(settings.DMS_VENUE_PROCEDURE_ID_V4)
-        assert latest_import.latestImportDatetime
-        assert not latest_import.isProcessing
-        assert latest_import.processedApplications == [9, 10]
-
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.get_pro_bank_nodes_states")
     def test_only_call_from_last_update(self, mocked_get_pro_bank_nodes):
         mocked_get_pro_bank_nodes.return_value = []
@@ -113,7 +71,6 @@ class ImportDSBankInformationApplicationsTest:
 
         assert not latest_import.isProcessing
 
-    @override_features(WIP_ENABLE_DOUBLE_MODEL_WRITING=True)
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.execute_query")
     @patch("pcapi.use_cases.save_venue_bank_informations.update_demarches_simplifiees_text_annotations")
     @patch("pcapi.use_cases.save_venue_bank_informations.archive_dossier")

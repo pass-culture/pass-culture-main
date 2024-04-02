@@ -5,21 +5,12 @@ from pcapi import settings
 from pcapi.connectors.dms import api as ds_api
 from pcapi.connectors.dms import models as ds_models
 from pcapi.connectors.dms.models import GraphQLApplicationStates
-from pcapi.connectors.dms.serializer import ApplicationDetailNewJourney
-from pcapi.connectors.dms.serializer import ApplicationDetailOldJourney
+from pcapi.connectors.dms.serializer import ApplicationDetail
 from pcapi.connectors.dms.serializer import MarkWithoutContinuationApplicationDetail
 from pcapi.domain.demarches_simplifiees import parse_raw_bank_info_data
-from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_repository import (
-    BankInformationsSQLRepository,
-)
-from pcapi.infrastructure.repository.venue.venue_with_basic_information.venue_with_basic_information_sql_repository import (
-    VenueWithBasicInformationSQLRepository,
-)
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.use_cases.save_venue_bank_informations import ImportBankAccountFactory
 from pcapi.use_cases.save_venue_bank_informations import PROCEDURE_ID_VERSION_MAP
-from pcapi.use_cases.save_venue_bank_informations import SaveVenueBankInformationsFactory
 
 
 logger = logging.getLogger(__name__)
@@ -72,18 +63,9 @@ def update_ds_applications_for_procedure(procedure_number: int, since: datetime.
     for node in ds_client.get_pro_bank_nodes_states(procedure_number=procedure_number, since=since):
         data = parse_raw_bank_info_data(node, procedure_version)
         try:
-            SaveVenueBankInformations = SaveVenueBankInformationsFactory.get(procedure_id=str(procedure_number))
-            save_venue_bank_informations = SaveVenueBankInformations(
-                venue_repository=VenueWithBasicInformationSQLRepository(),
-                bank_informations_repository=BankInformationsSQLRepository(),
-            )
-            save_venue_bank_informations.execute(
-                application_details=ApplicationDetailOldJourney(**{"application_type": procedure_version, **data})
-            )
-            if FeatureToggle.WIP_ENABLE_DOUBLE_MODEL_WRITING.is_active():
-                ImportBankAccount = ImportBankAccountFactory.get(procedure_version)
-                application_details = ApplicationDetailNewJourney(**{"application_type": procedure_version, **data})
-                ImportBankAccount(application_details).execute()
+            ImportBankAccount = ImportBankAccountFactory.get(procedure_version)
+            application_details = ApplicationDetail(**{"application_type": procedure_version, **data})
+            ImportBankAccount(application_details).execute()
         except Exception as exc:  # pylint: disable=broad-exception-caught
             logger.exception(
                 "[DS] Application parsing failed with error %s",
