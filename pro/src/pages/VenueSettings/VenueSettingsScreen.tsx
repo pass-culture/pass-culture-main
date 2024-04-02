@@ -94,11 +94,17 @@ export const VenueSettingsFormScreen = ({
     ) {
       return
     }
-
+    const accessibilityVenueValues = {
+      visualDisabilityCompliant: venue.visualDisabilityCompliant || false,
+      audioDisabilityCompliant: venue.audioDisabilityCompliant || false,
+      motorDisabilityCompliant: venue.motorDisabilityCompliant || false,
+      mentalDisabilityCompliant: venue.mentalDisabilityCompliant || false,
+    }
     try {
       await api.editVenue(
         venue.id,
         serializeEditVenueBodyModel(
+          accessibilityVenueValues,
           values,
           !venue.siret,
           venue.isVirtual,

@@ -451,6 +451,47 @@ describe('VenueFormScreen', () => {
     ).not.toBeInTheDocument()
   })
 
+  it('should let update venue settings without accessibility', async () => {
+    renderForm(formValues, {
+      ...venue,
+      audioDisabilityCompliant: null,
+      motorDisabilityCompliant: null,
+      mentalDisabilityCompliant: null,
+      visualDisabilityCompliant: null,
+    })
+
+    const editVenue = vi
+      .spyOn(api, 'editVenue')
+      .mockResolvedValue(venueResponse)
+
+    await userEvent.click(screen.getByText(/Enregistrer/))
+
+    expect(editVenue).toHaveBeenCalledWith(15, {
+      address: 'PARIS',
+      audioDisabilityCompliant: false,
+      banId: '35288_7283_00001',
+      bookingEmail: 'em@ail.fr',
+      city: 'Saint-Malo',
+      comment: '',
+      isEmailAppliedOnAllOffers: true,
+      isWithdrawalAppliedOnAllOffers: false,
+      latitude: 48.635699,
+      longitude: -2.006961,
+      mentalDisabilityCompliant: false,
+      motorDisabilityCompliant: false,
+      name: 'MINISTERE DE LA CULTURE',
+      postalCode: '35400',
+      publicName: 'Melodie Sims',
+      reimbursementPointId: 91,
+      shouldSendMail: false,
+      siret: '88145723823022',
+      venueLabelId: 13,
+      venueTypeCode: 'Jeux / Jeux vidéos',
+      visualDisabilityCompliant: false,
+      withdrawalDetails: 'withdrawal details field',
+    })
+  })
+
   describe('Displaying with new onboarding', () => {
     it('should display new onboarding wording labels', async () => {
       venue.isVirtual = false

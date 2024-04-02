@@ -3,7 +3,15 @@ import { unhumanizeSiret } from 'core/Venue/utils'
 
 import { VenueSettingsFormValues } from './types'
 
+type VenueAccessibility = {
+  audioDisabilityCompliant: boolean
+  mentalDisabilityCompliant: boolean
+  motorDisabilityCompliant: boolean
+  visualDisabilityCompliant: boolean
+}
+
 export const serializeEditVenueBodyModel = (
+  venueAccessibilityValues: VenueAccessibility,
   formValues: VenueSettingsFormValues,
   hideSiret: boolean,
   isVenueVirtual: boolean,
@@ -39,6 +47,9 @@ export const serializeEditVenueBodyModel = (
     shouldSendMail: shouldSendMail,
     venueLabelId: !formValues.venueLabel ? null : Number(formValues.venueLabel),
     venueTypeCode: formValues.venueType as VenueTypeCode,
+    ...(Object.values(venueAccessibilityValues).every((value) => !value)
+      ? venueAccessibilityValues
+      : {}),
   }
 
   if (hideSiret) {
