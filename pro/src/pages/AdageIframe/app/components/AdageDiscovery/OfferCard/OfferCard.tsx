@@ -1,5 +1,4 @@
-import React from 'react'
-import { NavLink, useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 
 import { CollectiveOfferTemplateResponseModel } from 'apiClient/adage'
 import { OfferAddressType } from 'apiClient/v1'
@@ -50,7 +49,7 @@ const OfferCardComponent = ({
 
   return (
     <div className={styles['container']}>
-      <NavLink
+      <Link
         className={styles['offer-link']}
         data-testid="card-offer-link"
         to={`/adage-iframe/decouverte/offre/${offer.id}?token=${adageAuthToken}`}
@@ -127,7 +126,7 @@ const OfferCardComponent = ({
               )} - ${offer.venue.city}`}</div>
             )}
         </div>
-      </NavLink>
+      </Link>
       <OfferFavoriteButton
         offer={{ ...offer, isTemplate: true }}
         className={styles['offer-favorite-button']}

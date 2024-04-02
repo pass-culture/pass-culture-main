@@ -1,6 +1,5 @@
-import React from 'react'
 import { useSelector } from 'react-redux'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import { AppLayout } from 'app/AppLayout'
 import { selectCurrentOffererId } from 'store/user/selectors'
@@ -15,54 +14,51 @@ export const Sitemap = () => {
       <h1>Plan du site</h1>
       <ul className={styles['sitemap-list']}>
         <li className={styles['sitemap-list-item']}>
-          <NavLink to="/accueil" className={styles['sitemap-link']}>
+          <Link to="/accueil" className={styles['sitemap-link']}>
             Accueil
-          </NavLink>
+          </Link>
           <ul className={styles['sitemap-sub-list']}>
             <li className={styles['sitemap-list-item']}>
-              <NavLink
+              <Link
                 to={`/structures/${selectedOffererId}`}
                 className={styles['sitemap-link']}
               >
                 Structure
-              </NavLink>
+              </Link>
             </li>
             <li className={styles['sitemap-list-item']}>
-              <NavLink
+              <Link
                 to={`/offre/creation?structure=${selectedOffererId}`}
                 className={styles['sitemap-link']}
               >
                 Créer une offre
-              </NavLink>
+              </Link>
             </li>
             <li className={styles['sitemap-list-item']}>
-              <NavLink to="/profil" className={styles['sitemap-link']}>
+              <Link to="/profil" className={styles['sitemap-link']}>
                 Profil
-              </NavLink>
+              </Link>
             </li>
           </ul>
         </li>
         <li className={styles['sitemap-list-item']}>
-          <NavLink to="/guichet" className={styles['sitemap-link']}>
+          <Link to="/guichet" className={styles['sitemap-link']}>
             Guichet
-          </NavLink>
+          </Link>
         </li>
 
         <li className={styles['sitemap-list-item']}>
           <span className={styles['sitemap-list-title']}>Offres</span>
           <ul className={styles['sitemap-sub-list']}>
             <li className={styles['sitemap-list-item']}>
-              <NavLink to="/offres" className={styles['sitemap-link']}>
+              <Link to="/offres" className={styles['sitemap-link']}>
                 Offres individuelles
-              </NavLink>
+              </Link>
             </li>
             <li className={styles['sitemap-list-item']}>
-              <NavLink
-                to="/offres/collectives"
-                className={styles['sitemap-link']}
-              >
+              <Link to="/offres/collectives" className={styles['sitemap-link']}>
                 Offres collectives
-              </NavLink>
+              </Link>
             </li>
           </ul>
         </li>
@@ -70,17 +66,17 @@ export const Sitemap = () => {
           <span className={styles['sitemap-list-title']}>Réservations</span>
           <ul className={styles['sitemap-sub-list']}>
             <li className={styles['sitemap-list-item']}>
-              <NavLink to="/reservations" className={styles['sitemap-link']}>
+              <Link to="/reservations" className={styles['sitemap-link']}>
                 Réservations individuelles
-              </NavLink>
+              </Link>
             </li>
             <li className={styles['sitemap-list-item']}>
-              <NavLink
+              <Link
                 to="/reservations/collectives"
                 className={styles['sitemap-link']}
               >
                 Réservations collectives
-              </NavLink>
+              </Link>
             </li>
           </ul>
         </li>
@@ -90,32 +86,32 @@ export const Sitemap = () => {
           </span>
           <ul className={styles['sitemap-sub-list']}>
             <li className={styles['sitemap-list-item']}>
-              <NavLink to="/remboursements" className={styles['sitemap-link']}>
+              <Link to="/remboursements" className={styles['sitemap-link']}>
                 Justificatifs
-              </NavLink>
+              </Link>
             </li>
             <li className={styles['sitemap-list-item']}>
-              <NavLink
+              <Link
                 to="/remboursements/details"
                 className={styles['sitemap-link']}
               >
                 Détails
-              </NavLink>
+              </Link>
             </li>
             <li className={styles['sitemap-list-item']}>
-              <NavLink
+              <Link
                 to="/remboursements/informations-bancaires"
                 className={styles['sitemap-link']}
               >
                 Informations bancaires
-              </NavLink>
+              </Link>
             </li>
           </ul>
         </li>
         <li className={styles['sitemap-list-item']}>
-          <NavLink to="/statistiques" className={styles['sitemap-link']}>
+          <Link to="/statistiques" className={styles['sitemap-link']}>
             Statistiques
-          </NavLink>
+          </Link>
         </li>
       </ul>
     </AppLayout>
