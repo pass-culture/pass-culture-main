@@ -104,7 +104,7 @@
     "indexLanguages": [
         "fr"
     ],
-    "enableReRanking": true,
+    "enableReRanking": false,
     "reRankingApplyFilter": [
         [
             "offer.searchGroupNamev2:SPECTACLES",
