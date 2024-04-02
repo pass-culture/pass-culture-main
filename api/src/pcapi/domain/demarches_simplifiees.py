@@ -3,8 +3,6 @@ import logging
 from pcapi import settings
 from pcapi.connectors.dms import api as api_dms
 from pcapi.connectors.dms import models as dms_models
-from pcapi.core.finance.models import BankInformationStatus
-from pcapi.domain.bank_information import CannotRegisterBankInformation
 
 
 logger = logging.getLogger(__name__)
@@ -87,18 +85,6 @@ def _remove_dms_pro_prefix(dms_token: str) -> str:
     return dms_token
 
 
-def get_status_from_demarches_simplifiees_application_state(
-    state: dms_models.GraphQLApplicationStates,
-) -> BankInformationStatus:
-    return {
-        dms_models.GraphQLApplicationStates.draft: BankInformationStatus.DRAFT,
-        dms_models.GraphQLApplicationStates.on_going: BankInformationStatus.DRAFT,
-        dms_models.GraphQLApplicationStates.accepted: BankInformationStatus.ACCEPTED,
-        dms_models.GraphQLApplicationStates.refused: BankInformationStatus.REJECTED,
-        dms_models.GraphQLApplicationStates.without_continuation: BankInformationStatus.REJECTED,
-    }[state]
-
-
 def update_demarches_simplifiees_text_annotations(dossier_id: str, annotation_id: str, message: str) -> None:
     client = api_dms.DMSGraphQLClient()
     result = client.update_text_annotation(dossier_id, settings.DMS_INSTRUCTOR_ID, annotation_id, message)
@@ -116,10 +102,3 @@ def update_demarches_simplifiees_text_annotations(dossier_id: str, annotation_id
 def archive_dossier(dossier_id: str) -> None:
     client = api_dms.DMSGraphQLClient()
     client.archive_application(dossier_id, settings.DMS_INSTRUCTOR_ID)
-
-
-def format_error_to_demarches_simplifiees_text(api_error: CannotRegisterBankInformation) -> str:
-    error_fields = []
-    for key, value in api_error.errors.items():
-        error_fields.append("%s: %s" % (key, ", ".join(value)))
-    return "; ".join(error_fields)

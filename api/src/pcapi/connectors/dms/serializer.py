@@ -20,7 +20,6 @@ from pcapi.core.finance.utils import format_raw_iban_and_bic
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import models as users_models
-from pcapi.domain.demarches_simplifiees import get_status_from_demarches_simplifiees_application_state
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import without_timezone
 from pcapi.utils.date import FrenchParserInfo
@@ -193,6 +192,20 @@ class ApplicationDetail(BaseModel):
     error_annotation_value: str | None = None
     venue_url_annotation_id: str | None = None
     venue_url_annotation_value: str | None = None
+    status: finance_models.BankAccountApplicationStatus
+    label: str | None = None
+
+    @validator("label")
+    def truncate_label(cls: "ApplicationDetail", label: str) -> str:
+        return shorten(label, width=100, placeholder="...")
+
+    @property
+    def is_accepted(self) -> bool:
+        return self.status == finance_models.BankAccountApplicationStatus.ACCEPTED
+
+    @property
+    def is_refused(self) -> bool:
+        return self.status == finance_models.BankAccountApplicationStatus.REFUSED
 
     @root_validator(pre=True)
     def to_representation(cls: "ApplicationDetail", obj: dict) -> dict:
@@ -204,7 +217,6 @@ class ApplicationDetail(BaseModel):
         to_representation["iban"] = format_raw_iban_and_bic(obj["iban"])
         to_representation["obfuscatedIban"] = f"""XXXX XXXX XXXX {to_representation["iban"][-4:]}"""
         to_representation["bic"] = format_raw_iban_and_bic(obj["bic"])
-        to_representation["siret"] = obj.get("siret")
         to_representation["dms_token"] = obj.get("dms_token") if obj.get("application_type") == 4 else None
         to_representation["modification_date"] = (
             datetime.fromisoformat(obj["updated_at"]).astimezone().replace(tzinfo=None)
@@ -213,41 +225,6 @@ class ApplicationDetail(BaseModel):
         to_representation["error_annotation_value"] = obj.get("error_annotation_value")
         to_representation["venue_url_annotation_id"] = obj["venue_url_annotation_id"]
         to_representation["venue_url_annotation_value"] = obj.get("venue_url_annotation_value")
-
-        return to_representation
-
-
-class ApplicationDetailOldJourney(ApplicationDetail):
-    status: finance_models.BankInformationStatus
-
-    @root_validator(pre=True)
-    def to_representation(cls: "ApplicationDetailOldJourney", obj: dict) -> dict:
-        to_representation = super().to_representation(obj)
-        to_representation["status"] = get_status_from_demarches_simplifiees_application_state(
-            dms_models.GraphQLApplicationStates(obj["status"])
-        )
-        return to_representation
-
-    @property
-    def is_accepted(self) -> bool:
-        return self.status == finance_models.BankInformationStatus.ACCEPTED
-
-    @property
-    def is_refused(self) -> bool:
-        return self.status == finance_models.BankInformationStatus.REJECTED
-
-
-class ApplicationDetailNewJourney(ApplicationDetail):
-    status: finance_models.BankAccountApplicationStatus
-    label: str | None = None
-
-    @validator("label")
-    def truncate_label(cls: "ApplicationDetailNewJourney", label: str) -> str:
-        return shorten(label, width=100, placeholder="...")
-
-    @root_validator(pre=True)
-    def to_representation(cls: "ApplicationDetailNewJourney", obj: dict) -> dict:
-        to_representation = super().to_representation(obj)
         to_representation["status"] = finance_models.BankAccountApplicationStatus(obj["status"])
         if (
             to_representation["status"] == finance_models.BankAccountApplicationStatus.DRAFT
@@ -255,17 +232,11 @@ class ApplicationDetailNewJourney(ApplicationDetail):
         ):
             to_representation["status"] = finance_models.BankAccountApplicationStatus.WITH_PENDING_CORRECTIONS
         if to_representation["procedure_version"] == 5:
+            to_representation["siret"] = obj["siret"]
             to_representation["siren"] = to_representation["siret"][:9]
             to_representation["label"] = obj["label"]
+
         return to_representation
-
-    @property
-    def is_accepted(self) -> bool:
-        return self.status == finance_models.BankAccountApplicationStatus.ACCEPTED
-
-    @property
-    def is_refused(self) -> bool:
-        return self.status == finance_models.BankAccountApplicationStatus.REFUSED
 
 
 class Annotation(BaseModel):
