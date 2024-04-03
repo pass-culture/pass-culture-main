@@ -402,7 +402,7 @@ def create_booking_base_list(
             finance_factories.UsedBookingFinanceEventFactory(collectiveBooking=booking)
     if reimbursed_booking:
         for _i in range(5):
-            educational_factories.CollectiveBookingFactory(
+            booking = educational_factories.CollectiveBookingFactory(
                 collectiveStock__collectiveOffer__name=f"REIMBURSED offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
                 collectiveStock__collectiveOffer__educational_domains=[next(domains_iterator)],
@@ -417,7 +417,10 @@ def create_booking_base_list(
                 cancellationLimitDate=datetime.utcnow() - timedelta(days=16),
                 confirmationLimitDate=datetime.utcnow() - timedelta(days=18),
                 reimbursementDate=datetime.utcnow() - timedelta(days=12),
-                pricings=[finance_factories.CollectivePricingFactory(status=finance_models.PricingStatus.INVOICED)],
+            )
+
+            finance_factories.CollectivePricingFactory(
+                status=finance_models.PricingStatus.INVOICED, collectiveBooking=booking
             )
     if cancelled_ac:
         for _i in range(5):

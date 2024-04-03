@@ -60,28 +60,6 @@ def create_institutions() -> list[educational_models.EducationalInstitution]:
             city="MARSEILLE",
             postalCode="13013",
         ),
-        educational_factories.EducationalInstitutionFactory(institutionId="0780032L"),
-        educational_factories.EducationalInstitutionFactory(institutionId="0921545E"),
-        educational_factories.EducationalInstitutionFactory(institutionId="0752525M"),
-        educational_factories.EducationalInstitutionFactory(institutionId="0752902X"),
-        educational_factories.EducationalInstitutionFactory(institutionId="0781537X"),
-        educational_factories.EducationalInstitutionFactory(institutionId="0922256C"),
-        educational_factories.EducationalInstitutionFactory(institutionId="0761337R"),
-        educational_factories.EducationalInstitutionFactory(institutionId="0781845G"),
-        educational_factories.EducationalInstitutionFactory(institutionId="0920150N"),
-        educational_factories.EducationalInstitutionFactory(institutionId="0750652B"),
-        educational_factories.EducationalInstitutionFactory(institutionId="0760142S"),
-        educational_factories.EducationalInstitutionFactory(institutionId="0780004F"),
-        educational_factories.EducationalInstitutionFactory(institutionId="0762735K"),
-        educational_factories.EducationalInstitutionFactory(institutionId="0780015T"),
-        educational_factories.EducationalInstitutionFactory(institutionId="0783283V"),
-        educational_factories.EducationalInstitutionFactory(institutionId="0920889S"),
-        educational_factories.EducationalInstitutionFactory(institutionId="0753820V"),
-        educational_factories.EducationalInstitutionFactory(institutionId="0761341V"),
-        educational_factories.EducationalInstitutionFactory(institutionId="0762634A"),
-        educational_factories.EducationalInstitutionFactory(
-            name="LYC METIER FREDERIC ET IRENE JOLIOT CURIE", institutionId="0760100W"
-        ),
     ]
     create_deposits(institutions)
     return institutions

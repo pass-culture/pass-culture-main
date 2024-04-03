@@ -1,4 +1,5 @@
 import datetime
+import re
 import typing
 
 from dateutil.relativedelta import relativedelta
@@ -164,6 +165,15 @@ class CollectiveStockFactory(BaseFactory):
     price = 100
 
 
+def _institution_email_builder(institution: models.EducationalInstitution) -> str:
+    name = institution.name if institution.name else institution.institutionType
+    name = re.sub(r"\W", "-", name.lower().strip())
+
+    city = re.sub(r"\W", "-", institution.city.lower().strip())
+
+    return f"{name}@{city}.fr"
+
+
 class EducationalInstitutionFactory(BaseFactory):
     class Meta:
         model = models.EducationalInstitution
@@ -172,7 +182,7 @@ class EducationalInstitutionFactory(BaseFactory):
     name = factory.Sequence("DE LA TOUR{}".format)
     city = "PARIS"
     postalCode = "75000"
-    email = "contact+collegelatour@example.com"
+    email = factory.LazyAttribute(_institution_email_builder)
     phoneNumber = "0600000000"
     institutionType = "COLLEGE"
 
