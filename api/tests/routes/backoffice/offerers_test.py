@@ -103,7 +103,7 @@ class GetOffererTest(GetEndpointHelper):
         assert "Région : Occitanie " in content
         assert f"Ville : {offerer.city} " in content
         assert f"Code postal : {offerer.postalCode} " in content
-        assert f"Adresse : {offerer.address} " in content
+        assert f"Adresse : {offerer.street} " in content
         assert "Présence CB dans les lieux : 0 OK / 0 KO " in content
         assert "Tags structure : Collectivité Top acteur " in content
 
@@ -424,14 +424,14 @@ class UpdateOffererTest(PostEndpointHelper):
         old_postal_code = offerer_to_edit.postalCode
         new_postal_code = "29000"
         expected_new_region = "Bretagne"
-        old_address = offerer_to_edit.address
-        new_address = "1 Rue de Siam"
+        old_street = offerer_to_edit.street
+        new_street = "1 Rue de Siam"
 
         base_form = {
             "name": new_name,
             "city": new_city,
             "postal_code": new_postal_code,
-            "address": new_address,
+            "street": new_street,
             "tags": [tag.id for tag in offerer_to_edit.tags],
         }
 
@@ -454,7 +454,7 @@ class UpdateOffererTest(PostEndpointHelper):
         assert offerer_to_edit.name == new_name
         assert offerer_to_edit.city == new_city
         assert offerer_to_edit.postalCode == new_postal_code
-        assert offerer_to_edit.address == new_address
+        assert offerer_to_edit.street == new_street
 
         assert len(offerer_to_edit.action_history) == 1
         assert offerer_to_edit.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
@@ -463,7 +463,7 @@ class UpdateOffererTest(PostEndpointHelper):
             "name",
             "city",
             "postalCode",
-            "address",
+            "street",
         }
 
         history_rows = html_parser.extract_table_rows(history_response.data)
@@ -472,11 +472,11 @@ class UpdateOffererTest(PostEndpointHelper):
         assert f"Nom juridique : {old_name} => {offerer_to_edit.name}" in history_rows[0]["Commentaire"]
         assert f"Ville : {old_city} => {offerer_to_edit.city}" in history_rows[0]["Commentaire"]
         assert f"Code postal : {old_postal_code} => {offerer_to_edit.postalCode}" in history_rows[0]["Commentaire"]
-        assert f"Adresse : {old_address} => {offerer_to_edit.address}" in history_rows[0]["Commentaire"]
+        assert f"Adresse : {old_street} => {offerer_to_edit.street}" in history_rows[0]["Commentaire"]
 
     def test_update_offerer_tags(self, legit_user, authenticated_client):
         offerer_to_edit = offerers_factories.OffererFactory(
-            address="Place de la Liberté", postalCode="29200", city="Brest"
+            street="Place de la Liberté", postalCode="29200", city="Brest"
         )
         tag1 = offerers_factories.OffererTagFactory(label="Premier tag")
         tag2 = offerers_factories.OffererTagFactory(label="Deuxième tag")
@@ -487,7 +487,7 @@ class UpdateOffererTest(PostEndpointHelper):
             "name": offerer_to_edit.name,
             "city": offerer_to_edit.city,
             "postal_code": offerer_to_edit.postalCode,
-            "address": offerer_to_edit.address,
+            "street": offerer_to_edit.street,
             "tags": [tag2.id, tag3.id],
         }
 
@@ -501,7 +501,7 @@ class UpdateOffererTest(PostEndpointHelper):
         updated_offerer = offerers_models.Offerer.query.filter_by(id=offerer_to_edit.id).one()
         assert updated_offerer.city == "Brest"
         assert updated_offerer.postalCode == "29200"
-        assert updated_offerer.address == "Place de la Liberté"
+        assert updated_offerer.street == "Place de la Liberté"
 
         history_rows = html_parser.extract_table_rows(history_response.data)
         assert len(history_rows) == 1
@@ -518,7 +518,7 @@ class UpdateOffererTest(PostEndpointHelper):
             "name": "",
             "city": offerer.city,
             "postal_code": offerer.postalCode,
-            "address": offerer.address,
+            "street": offerer.street,
             "tags": [],
         }
 

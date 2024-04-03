@@ -37,7 +37,7 @@ class EditAccountForm(utils.PCForm):
     id_piece_number = fields.PCOptStringField("N° pièce d'identité")
     postal_address_autocomplete = fields.PcPostalAddressAutocomplete(
         "Adresse",
-        address="address",
+        street="address",
         ban_id="ban_id",
         city="city",
         postal_code="postal_code",

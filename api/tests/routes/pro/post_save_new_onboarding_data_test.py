@@ -13,7 +13,6 @@ from tests.connectors import sirene_test_data
 pytestmark = pytest.mark.usefixtures("db_session")
 
 REQUEST_BODY = {
-    "address": "3 RUE DE VALOIS",
     "city": "Paris",
     "banId": "75101_9575_00003",
     "createVenueWithoutSiret": False,
@@ -22,6 +21,7 @@ REQUEST_BODY = {
     "postalCode": "75001",
     "publicName": "Pass Culture",
     "siret": "85331845900031",
+    "street": "3 RUE DE VALOIS",
     "target": "INDIVIDUAL",
     "venueTypeCode": "MOVIE",
     "webPresence": "https://www.example.com, https://instagram.com/example, https://mastodon.social/@example",
@@ -38,7 +38,7 @@ class Returns200Test:
 
         assert response.status_code == 201
         created_offerer = offerers_models.Offerer.query.one()
-        assert created_offerer.address == "3 RUE DE VALOIS"
+        assert created_offerer.street == "3 RUE DE VALOIS"
         assert created_offerer.city == "Paris"
         assert created_offerer.name == "MINISTERE DE LA CULTURE"
         assert not created_offerer.isValidated

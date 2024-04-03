@@ -131,7 +131,6 @@ class Returns200Test:
             "latitude": float(venue.latitude),
             "longitude": float(venue.longitude),
             "managingOfferer": {
-                "address": venue.managingOfferer.address,
                 "city": venue.managingOfferer.city,
                 "dateCreated": format_into_utc_date(venue.managingOfferer.dateCreated),
                 "demarchesSimplifieesApplicationId": venue.managingOfferer.demarchesSimplifieesApplicationId,
@@ -140,6 +139,7 @@ class Returns200Test:
                 "name": venue.managingOfferer.name,
                 "postalCode": venue.managingOfferer.postalCode,
                 "siren": venue.managingOfferer.siren,
+                "street": venue.managingOfferer.street,
                 "allowedOnAdage": venue.managingOfferer.allowedOnAdage,
             },
             "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,

@@ -205,7 +205,7 @@ def create_offerer() -> utils.BackofficeResponse:
     offerer_creation_info = offerers_serialize.CreateOffererQueryModel(
         siren=form.siret_info.siret[:9],
         name=form.public_name.data,
-        address=address.street,  # [ND]
+        street=address.street,  # [ND]
         postalCode=postal_code,
         city=address.city,
         latitude=city_info.latitude,

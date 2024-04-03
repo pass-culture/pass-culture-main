@@ -31,7 +31,7 @@ def test_create_offerer():
     posted_json = posted.last_request.json()
     assert posted_json["data"]["is_organization"] is True
     assert posted_json["data"]["address"] == {
-        "line1": offerer.address,
+        "line1": offerer.street,
         "city": offerer.city,
         "postal_code": offerer.postalCode,
     }
@@ -61,7 +61,7 @@ def test_update_offerer():
     put_json = put.last_request.json()
     assert put_json["data"]["is_organization"] is True
     assert put_json["data"]["address"] == {
-        "line1": offerer.address,
+        "line1": offerer.street,
         "city": offerer.city,
         "postal_code": offerer.postalCode,
     }
@@ -240,7 +240,7 @@ def test_create_venue_and_parent_offerer():
     posted_offerer_json = posted.request_history[0].json()
     assert posted_offerer_json["data"]["is_organization"] is True
     assert posted_offerer_json["data"]["address"] == {
-        "line1": offerer.address,
+        "line1": offerer.street,
         "city": offerer.city,
         "postal_code": offerer.postalCode,
     }

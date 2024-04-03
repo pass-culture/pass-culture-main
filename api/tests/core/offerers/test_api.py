@@ -815,7 +815,7 @@ class CreateOffererTest:
         created_offerer = created_user_offerer.offerer
         assert created_offerer.name == offerer_informations.name
         assert created_offerer.siren == offerer_informations.siren
-        assert created_offerer.address == offerer_informations.address
+        assert created_offerer.street == offerer_informations.street
         assert created_offerer.postalCode == offerer_informations.postalCode
         assert created_offerer.city == offerer_informations.city
         assert created_offerer.validationStatus == ValidationStatus.NEW
@@ -923,7 +923,7 @@ class CreateOffererTest:
         assert created_offerer.id == offerer.id
         assert created_offerer.name == offerer_informations.name
         assert created_offerer.siren == offerer_informations.siren
-        assert created_offerer.address == offerer_informations.address
+        assert created_offerer.street == offerer_informations.street
         assert created_offerer.postalCode == offerer_informations.postalCode
         assert created_offerer.city == offerer_informations.city
         assert created_offerer.validationStatus == ValidationStatus.NEW
@@ -1142,28 +1142,26 @@ class CreateOffererTest:
 
 class UpdateOffererTest:
     def test_update_offerer(self):
-        offerer = offerers_factories.OffererFactory(city="Portus Namnetum", address="1 rue d'Armorique")
+        offerer = offerers_factories.OffererFactory(city="Portus Namnetum", street="1 rue d'Armorique")
         author = users_factories.UserFactory()
 
-        offerers_api.update_offerer(
-            offerer, author, city="Nantes", postal_code="44000", address="29 avenue de Bretagne"
-        )
+        offerers_api.update_offerer(offerer, author, city="Nantes", postal_code="44000", street="29 avenue de Bretagne")
         offerer = offerers_models.Offerer.query.one()
         assert offerer.city == "Nantes"
         assert offerer.postalCode == "44000"
-        assert offerer.address == "29 avenue de Bretagne"
+        assert offerer.street == "29 avenue de Bretagne"
 
         offerers_api.update_offerer(offerer, author, city="Naoned")
         offerer = offerers_models.Offerer.query.one()
         assert offerer.city == "Naoned"
         assert offerer.postalCode == "44000"
-        assert offerer.address == "29 avenue de Bretagne"
+        assert offerer.street == "29 avenue de Bretagne"
 
     def test_update_offerer_logs_action(self):
-        offerer = offerers_factories.OffererFactory(city="Portus Namnetum", address="1 rue d'Armorique")
+        offerer = offerers_factories.OffererFactory(city="Portus Namnetum", street="1 rue d'Armorique")
         author = users_factories.UserFactory()
 
-        offerers_api.update_offerer(offerer, author, city="Nantes", address="29 avenue de Bretagne")
+        offerers_api.update_offerer(offerer, author, city="Nantes", street="29 avenue de Bretagne")
 
         action = history_models.ActionHistory.query.one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
@@ -1174,7 +1172,7 @@ class UpdateOffererTest:
         assert action.venueId is None
         assert action.extraData["modified_info"] == {
             "city": {"new_info": "Nantes", "old_info": "Portus Namnetum"},
-            "address": {"new_info": "29 avenue de Bretagne", "old_info": "1 rue d'Armorique"},
+            "street": {"new_info": "29 avenue de Bretagne", "old_info": "1 rue d'Armorique"},
         }
 
 
@@ -2252,7 +2250,6 @@ class CreateFromOnboardingDataTest:
         self, create_venue_without_siret: bool
     ) -> offerers_serialize.SaveNewOnboardingDataQueryModel:
         return offerers_serialize.SaveNewOnboardingDataQueryModel(
-            address="3 RUE DE VALOIS",
             banId="75101_9575_00003",
             city="Paris",
             createVenueWithoutSiret=create_venue_without_siret,
@@ -2261,6 +2258,7 @@ class CreateFromOnboardingDataTest:
             postalCode="75001",
             publicName="Nom public de mon lieu",
             siret="85331845900031",
+            street="3 RUE DE VALOIS",
             target=offerers_models.Target.INDIVIDUAL,
             venueTypeCode=offerers_models.VenueTypeCode.MOVIE.name,
             webPresence="https://www.example.com, https://instagram.com/example, https://mastodon.social/@example",
@@ -2278,7 +2276,7 @@ class CreateFromOnboardingDataTest:
         created_offerer = created_user_offerer.offerer
         assert created_offerer.name == "MINISTERE DE LA CULTURE"
         assert created_offerer.siren == "853318459"
-        assert created_offerer.address == "3 RUE DE VALOIS"
+        assert created_offerer.street == "3 RUE DE VALOIS"
         assert created_offerer.postalCode == "75001"
         assert created_offerer.city == "Paris"
         assert created_offerer.validationStatus == ValidationStatus.NEW
@@ -2419,7 +2417,7 @@ class CreateFromOnboardingDataTest:
         user = users_factories.UserFactory(email="pro@example.com")
         user.add_non_attached_pro_role()
         onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
-        onboarding_data.address = None
+        onboarding_data.street = None
 
         created_user_offerer = offerers_api.create_from_onboarding_data(user, onboarding_data)
 
@@ -2427,7 +2425,7 @@ class CreateFromOnboardingDataTest:
         created_offerer = created_user_offerer.offerer
         assert created_offerer.name == "MINISTERE DE LA CULTURE"
         assert created_offerer.siren == "853318459"
-        assert created_offerer.address is None
+        assert created_offerer.street is None
         assert created_offerer.city == "Paris"
         assert created_offerer.postalCode == "75001"
         # 1 virtual Venue + 1 Venue with siret have been created
@@ -2451,7 +2449,7 @@ class CreateFromOnboardingDataTest:
         created_offerer = created_user_offerer.offerer
         assert created_offerer.name == "MINISTERE DE LA CULTURE"
         assert created_offerer.siren == "853318459"
-        assert created_offerer.address == "3 RUE DE VALOIS"
+        assert created_offerer.street == "3 RUE DE VALOIS"
         assert created_offerer.city == "Paris"
         assert created_offerer.postalCode == "75001"
         # 1 virtual Venue + 1 Venue with siret have been created

@@ -650,7 +650,7 @@ def delete_api_key_by_user(user: users_models.User, api_key_prefix: str) -> None
 def _fill_in_offerer(
     offerer: offerers_models.Offerer, offerer_informations: offerers_serialize.CreateOffererQueryModel
 ) -> None:
-    offerer.address = offerer_informations.address
+    offerer.street = offerer_informations.street  # type: ignore [method-assign]
     offerer.city = offerer_informations.city
     offerer.name = offerer_informations.name
     offerer.postalCode = offerer_informations.postalCode
@@ -826,7 +826,7 @@ def update_offerer(
     name: str | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     city: str | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     postal_code: str | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
-    address: str | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
+    street: str | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     tags: list[models.OffererTag] | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
 ) -> None:
     modified_info: dict[str, dict[str, str | None]] = {}
@@ -840,9 +840,9 @@ def update_offerer(
     if postal_code is not offerers_constants.UNCHANGED and offerer.postalCode != postal_code:
         modified_info["postalCode"] = {"old_info": offerer.postalCode, "new_info": postal_code}
         offerer.postalCode = postal_code
-    if address is not offerers_constants.UNCHANGED and offerer.address != address:
-        modified_info["address"] = {"old_info": offerer.address, "new_info": address}
-        offerer.address = address
+    if street is not offerers_constants.UNCHANGED and offerer.street != street:
+        modified_info["street"] = {"old_info": offerer.street, "new_info": street}
+        offerer.street = street  # type: ignore [method-assign]
     if tags is not offerers_constants.UNCHANGED:
         if set(offerer.tags) != set(tags):
             modified_info["tags"] = {
@@ -1733,7 +1733,7 @@ def create_from_onboarding_data(
 
     # Create Offerer or attach user to existing Offerer
     offerer_creation_info = offerers_serialize.CreateOffererQueryModel(
-        address=onboarding_data.address,
+        street=onboarding_data.street,
         city=onboarding_data.city,
         latitude=onboarding_data.latitude,
         longitude=onboarding_data.longitude,
@@ -1752,7 +1752,7 @@ def create_from_onboarding_data(
     venue = offerers_repository.find_venue_by_siret(onboarding_data.siret)
     if not venue or onboarding_data.createVenueWithoutSiret:
         common_kwargs = dict(
-            street=onboarding_data.address or "n/d",  # handle empty VoieEtablissement from Sirene API
+            street=onboarding_data.street or "n/d",  # handle empty VoieEtablissement from Sirene API
             banId=onboarding_data.banId,
             bookingEmail=user.email,
             city=onboarding_data.city,

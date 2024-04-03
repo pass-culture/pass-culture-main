@@ -715,7 +715,7 @@ class CreateOffererTest(PostEndpointHelper):
         new_offerer: offerers_models.Offerer = offerers_models.Offerer.query.one()
         assert new_offerer.siren == "900000001"
         assert new_offerer.name == form_data["public_name"]
-        assert new_offerer.address == "[ND]"
+        assert new_offerer.street == "[ND]"
         assert new_offerer.postalCode == "06400"
         assert new_offerer.city == "CANNES"
         assert new_offerer.isActive

@@ -624,7 +624,7 @@ def format_modified_info_name(info_name: str) -> str:
             return "Téléphone"
         case "city":
             return "Ville"
-        case "address":
+        case "street":
             return "Adresse"
         case "banId":
             return "Identifiant Base Adresse Nationale"
