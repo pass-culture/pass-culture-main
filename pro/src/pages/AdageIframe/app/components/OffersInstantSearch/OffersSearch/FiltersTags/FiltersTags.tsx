@@ -66,6 +66,7 @@ const FiltersTags = ({
     return createTag(label, () => {
       void setFieldValue('eventAddressType', OfferAddressType.OTHER)
       setLocalisationFilterState(LocalisationFilterStates.NONE)
+      handleSubmit()
     })
   }
   const getGeoLocalisationTag = () => {
@@ -77,6 +78,7 @@ const FiltersTags = ({
       () => {
         void setFieldValue('geolocRadius', 50)
         setLocalisationFilterState(LocalisationFilterStates.NONE)
+        handleSubmit()
       }
     )
   }
