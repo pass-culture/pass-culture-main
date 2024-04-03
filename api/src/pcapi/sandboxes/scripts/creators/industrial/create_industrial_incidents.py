@@ -7,6 +7,7 @@ import factory
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
@@ -113,8 +114,14 @@ def _add_nearly_over_revenue_threshold_booking(
     db.session.commit()
 
     if is_collective:
+        # TODO(jeremieb): find a better solution to avoid institution creation
+        # from UsedCollectiveBookingFactory
+        institution = educational_models.EducationalInstitution.query.first()
+
         special_stock = educational_factories.CollectiveStockFactory(collectiveOffer__venue=venue, price=19990)
-        special_booking = educational_factories.UsedCollectiveBookingFactory(collectiveStock=special_stock)
+        special_booking = educational_factories.UsedCollectiveBookingFactory(
+            collectiveStock=special_stock, educationalInstitution=institution
+        )
     else:
         special_stock = offers_factories.StockFactory(offer__venue=venue, price=19990)
         special_booking = bookings_factories.UsedBookingFactory(
@@ -230,9 +237,16 @@ def _create_one_collective_incident(
         collectiveOffer__venue=other_venue if with_other_venue else reimbursement_point_venue,
         price=30,
     )
+
+    # TODO(jeremieb): find a better solution to avoid institution creation
+    # from UsedCollectiveBookingFactory
+    institution = educational_models.EducationalInstitution.query.first()
+
     incident_bookings = []
     for stock in stocks:
-        booking = educational_factories.UsedCollectiveBookingFactory(collectiveStock=stock)
+        booking = educational_factories.UsedCollectiveBookingFactory(
+            collectiveStock=stock, educationalInstitution=institution
+        )
         incident_bookings.append(booking)
 
     bookings = ([special_booking] if with_over_revenue_threshold_booking else []) + incident_bookings
