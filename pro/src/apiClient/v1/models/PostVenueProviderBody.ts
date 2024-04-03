@@ -3,12 +3,12 @@
 /* tslint:disable */
 /* eslint-disable */
 export type PostVenueProviderBody = {
-  isActive?: boolean;
-  isDuo?: boolean;
-  price?: number;
+  isActive?: boolean | null;
+  isDuo?: boolean | null;
+  price?: number | null;
   providerId: number;
-  quantity?: number;
+  quantity?: number | null;
   venueId: number;
-  venueIdAtOfferProvider?: string;
+  venueIdAtOfferProvider?: string | null;
 };
 

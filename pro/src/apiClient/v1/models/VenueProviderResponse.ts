@@ -6,13 +6,13 @@ import type { ProviderResponse } from './ProviderResponse';
 export type VenueProviderResponse = {
   id: number;
   isActive: boolean;
-  isDuo?: boolean;
+  isDuo?: boolean | null;
   isFromAllocineProvider: boolean;
-  lastSyncDate?: string;
-  price?: number;
+  lastSyncDate?: string | null;
+  price?: number | null;
   provider: ProviderResponse;
-  quantity?: number;
+  quantity?: number | null;
   venueId: number;
-  venueIdAtOfferProvider?: string;
+  venueIdAtOfferProvider?: string | null;
 };
 
