@@ -25,12 +25,12 @@
 
 .time-picker {
   margin-bottom: 0;
+  width: rem.torem(100px);
 }
 
 .hour-cell {
   padding: rem.torem(8px);
   padding-left: 0;
-  max-width: rem.torem(100px);
   vertical-align: top;
 }
 
