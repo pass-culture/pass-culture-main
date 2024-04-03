@@ -72,12 +72,6 @@ class ReservationPassCultureRequest(BaseModel):
     total_price: float
     email: str
     num_pass_culture: str  # User.id
-    num_cmde: str
-
-
-class GetTicketRequest(BaseModel):
-    num_cine: str
-    num_cmde: str
 
 
 class AnnulationPassCultureRequest(BaseModel):
