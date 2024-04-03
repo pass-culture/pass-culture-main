@@ -59,7 +59,7 @@ const CollectiveOfferStockEdition = ({
       return notify.error(offerResponse.message)
     }
 
-    reloadCollectiveOffer()
+    await reloadCollectiveOffer()
     navigate(
       `/offre/${computeURLCollectiveOfferId(
         offer.id,
