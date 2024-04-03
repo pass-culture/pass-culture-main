@@ -238,9 +238,17 @@ const Offers = ({
     )
     return !selectedOffers.some((offer) => offer.status !== OFFER_STATUS_DRAFT)
   }
+
+  const isNewInterfaceActive = useIsNewInterfaceActive()
+  const title = isNewInterfaceActive
+    ? audience === Audience.COLLECTIVE
+      ? 'Offres collectives'
+      : 'Offres individuelles'
+    : 'Offres'
+
   return (
     <div className="offers-page">
-      <Titles action={actionLink} title="Offres" />
+      <Titles action={actionLink} title={title} />
       {!isNewSideBarNavigation && (
         <Tabs
           nav="Offres individuelles et collectives"
