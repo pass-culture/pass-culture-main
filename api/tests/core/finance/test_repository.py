@@ -1,11 +1,9 @@
 import datetime
-import decimal
 
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.educational.factories import UsedCollectiveBookingFactory
-from pcapi.core.finance import api
 from pcapi.core.finance import factories
 from pcapi.core.finance import models
 from pcapi.core.finance import repository
@@ -13,7 +11,6 @@ from pcapi.core.finance.models import BankInformationStatus
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 
@@ -58,106 +55,6 @@ class GetReimbursementPointsTest:
         reimbursement_points = list(reimbursement_points.order_by(offerers_models.Venue.id))
 
         assert reimbursement_points == [reimbursement_point1]
-
-
-class GetInvoicesQueryLegacyTest:
-    def test_basics(self):
-        offerer = offerers_factories.OffererFactory()
-        pro = users_factories.ProFactory()
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        reimbursement_point1 = offerers_factories.VenueFactory(managingOfferer=offerer, reimbursement_point="self")
-        invoice1 = factories.InvoiceFactory(reimbursementPoint=reimbursement_point1)
-        reimbursement_point2 = offerers_factories.VenueFactory(managingOfferer=offerer, reimbursement_point="self")
-        invoice2 = factories.InvoiceFactory(reimbursementPoint=reimbursement_point2)
-        _other_reimbursement_point = offerers_factories.VenueFactory(reimbursement_point="self")
-        _other_invoice = factories.InvoiceFactory(reimbursementPoint=_other_reimbursement_point)
-
-        reimbursement_point3 = offerers_factories.VenueFactory(reimbursement_point="self")
-        factories.InvoiceFactory(reimbursementPoint=reimbursement_point3, amount=-15000000)
-        offerer2 = reimbursement_point3.managingOfferer
-        offerers_factories.NotValidatedUserOffererFactory(user=pro, offerer=offerer2)
-
-        invoices = repository.get_invoices_query_legacy(pro).order_by(models.Invoice.id)
-        assert list(invoices) == [invoice1, invoice2]
-
-    def test_filter_on_date(self):
-        offerer = offerers_factories.OffererFactory()
-        pro = users_factories.ProFactory()
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        reimbursement_point = offerers_factories.VenueFactory(managingOfferer=offerer, reimbursement_point="self")
-        _invoice_before = factories.InvoiceFactory(
-            reimbursementPoint=reimbursement_point,
-            date=datetime.date(2021, 6, 15),
-        )
-        invoice_within = factories.InvoiceFactory(
-            reimbursementPoint=reimbursement_point,
-            date=datetime.date(2021, 7, 1),
-        )
-        _invoice_after = factories.InvoiceFactory(
-            reimbursementPoint=reimbursement_point,
-            date=datetime.date(2021, 8, 1),
-        )
-
-        invoices = repository.get_invoices_query_legacy(
-            pro,
-            date_from=datetime.date(2021, 7, 1),
-            date_until=datetime.date(2021, 8, 1),
-        )
-        assert list(invoices) == [invoice_within]
-
-    def test_filter_on_reimbursement_point(self):
-        offerer = offerers_factories.OffererFactory()
-        pro = users_factories.ProFactory()
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        reimbursement_point1 = offerers_factories.VenueFactory(managingOfferer=offerer, reimbursement_point="self")
-        invoice1 = factories.InvoiceFactory(reimbursementPoint=reimbursement_point1)
-        reimbursement_point2 = offerers_factories.VenueFactory(managingOfferer=offerer, reimbursement_point="self")
-        _invoice2 = factories.InvoiceFactory(reimbursementPoint=reimbursement_point2)
-
-        invoices = repository.get_invoices_query_legacy(
-            pro,
-            reimbursement_point_id=reimbursement_point1.id,
-        )
-        assert list(invoices) == [invoice1]
-
-    def test_wrong_reimbursement_point(self):
-        # Make sure that specifying a reimbursement point id that belongs to
-        # another offerer does not return anything.
-        offerer = offerers_factories.OffererFactory()
-        pro1 = users_factories.ProFactory()
-        offerers_factories.UserOffererFactory(user=pro1, offerer=offerer)
-        reimbursement_point = offerers_factories.VenueFactory(managingOfferer=offerer, reimbursement_point="self")
-        _invoice1 = factories.InvoiceFactory(reimbursementPoint=reimbursement_point)
-
-        other_reimbursement_point = offerers_factories.VenueFactory(reimbursement_point="self")
-        _invoice2 = factories.InvoiceFactory(reimbursementPoint=other_reimbursement_point)
-
-        invoices = repository.get_invoices_query_legacy(
-            pro1,
-            reimbursement_point_id=other_reimbursement_point.id,
-        )
-        assert invoices.count() == 0
-
-    def test_admin_filter_on_reimbursement_point(self):
-        reimbursement_point1 = offerers_factories.VenueFactory(reimbursement_point="self")
-        invoice1 = factories.InvoiceFactory(reimbursementPoint=reimbursement_point1)
-        reimbursement_point2 = offerers_factories.VenueFactory(reimbursement_point="self")
-        _invoice2 = factories.InvoiceFactory(reimbursementPoint=reimbursement_point2)
-
-        admin = users_factories.AdminFactory()
-
-        invoices = repository.get_invoices_query_legacy(
-            admin,
-            reimbursement_point_id=reimbursement_point1.id,
-        )
-        assert list(invoices) == [invoice1]
-
-    def test_admin_without_filter(self):
-        factories.InvoiceFactory()
-        admin = users_factories.AdminFactory()
-
-        invoices = repository.get_invoices_query_legacy(admin)
-        assert invoices.count() == 0
 
 
 class GetInvoicesQueryTest:
@@ -538,132 +435,3 @@ class FindAllOffererPaymentsTest:
         assert len(payments) == 1
         assert payment_1.booking.token in payments[0]
         assert venue_1.name in payments[0]
-
-    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
-    def test_with_new_models(self, css_font_http_request_mock):
-        stock = offers_factories.ThingStockFactory(
-            offer__name="Test Book",
-            offer__venue__managingOfferer__address="7 rue du livre",
-            offer__venue__name="La petite librairie",
-            offer__venue__address="123 rue de Paris",
-            offer__venue__postalCode="75000",
-            offer__venue__city="Paris",
-            offer__venue__siret=12345678912345,
-            offer__venue__reimbursement_point="self",
-            price=10,
-        )
-        # FIXME (dbaty, 2022-09-14): the BankInformation object should
-        # automatically be created by the Venue factory when linking a
-        # reimbursement point.
-        factories.BankInformationFactory(venue=stock.offer.venue, iban="CF13QSDFGH456789")
-        booking = bookings_factories.UsedBookingFactory(stock=stock, token="ABCDEF", priceCategoryLabel="Tarif unique")
-
-        # Create an old-style payment
-        payment = factories.PaymentFactory(
-            amount=9.5,
-            reimbursementRate=0.95,
-            booking=booking,
-            iban="CF13QSDFGH456789",
-            transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
-        )
-        factories.PaymentStatusFactory(
-            payment=payment,
-            status=models.TransactionStatus.SENT,
-            date=datetime.datetime(2022, 1, 1),
-        )
-
-        # Create a new-style pricing on the same booking. In real life
-        # we cannot have a booking linked to both sets of models, but
-        # here it's useful because we can test that the data is the
-        # same.
-        factories.PricingFactory(
-            booking=booking,
-            amount=-9500,
-            standardRule="Remboursement à 95% au dessus de 20 000 € pour les livres",
-            status=models.PricingStatus.VALIDATED,
-        )
-        batch = api.generate_cashflows_and_payment_files(datetime.datetime.utcnow())
-        api.generate_invoices(batch)
-        cashflow = models.Cashflow.query.one()
-        invoice = models.Invoice.query.one()
-
-        reimbursement_period = (datetime.date(2022, 1, 1), datetime.date.today() + datetime.timedelta(days=1))
-        payments = repository.find_all_offerer_payments(booking.offerer.id, reimbursement_period)
-
-        expected_in_both = {
-            "booking_token": "ABCDEF",
-            "booking_used_date": booking.dateUsed.replace(microsecond=0),
-            "booking_quantity": 1,
-            "booking_price_category_label": booking.priceCategoryLabel,
-            "booking_amount": decimal.Decimal("10.00"),
-            "offer_name": "Test Book",
-            "collective_booking_id": None,
-            "venue_name": "La petite librairie",
-            "venue_common_name": "La petite librairie",
-            "venue_address": "123 rue de Paris",
-            "venue_postal_code": "75000",
-            "venue_city": "Paris",
-            "venue_siret": "12345678912345",
-            "iban": "CF13QSDFGH456789",
-        }
-        specific_for_payment = {
-            "amount": decimal.Decimal("9.50"),
-            "reimbursement_rate": decimal.Decimal("0.95"),
-            "transaction_label": "pass Culture Pro - remboursement 1ère quinzaine 07-2019",
-        }
-        specific_for_pricing = {
-            "amount": decimal.Decimal("9500"),
-            "rule_name": "Remboursement à 95% au dessus de 20 000 € pour les livres",
-            "rule_id": None,
-            "reimbursement_point_address": "123 rue de Paris",
-            "reimbursement_point_common_name": "La petite librairie",
-            "reimbursement_point_postal_code": "75000",
-            "reimbursement_point_city": "Paris",
-            "reimbursement_point_siret": "12345678912345",
-            "cashflow_batch_cutoff": cashflow.batch.cutoff,
-            "cashflow_batch_label": cashflow.batch.label,
-            "invoice_date": invoice.date.date(),
-            "invoice_reference": invoice.reference,
-        }
-
-        missing_for_payment = (set(expected_in_both.keys()) | set(specific_for_payment.keys())).symmetric_difference(
-            set(payments[1]._asdict())
-        )
-        assert missing_for_payment == set()
-        for attr, expected in expected_in_both.items():
-            assert getattr(payments[1], attr) == expected, f"wrong {attr}"
-        for attr, expected in specific_for_payment.items():
-            assert getattr(payments[1], attr) == expected, f"wrong {attr}"
-
-        missing_for_pricing = (set(expected_in_both.keys()) | set(specific_for_pricing.keys())).symmetric_difference(
-            set(payments[0]._asdict())
-        )
-        assert missing_for_pricing == set()
-        for attr, expected in expected_in_both.items():
-            assert getattr(payments[0], attr) == expected, f"wrong {attr}"
-        for attr, expected in specific_for_pricing.items():
-            assert getattr(payments[0], attr) == expected, f"wrong {attr}"
-
-    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
-    def test_ignore_complementary_invoices(self):
-        booking = bookings_factories.UsedBookingFactory(stock__offer__venue__reimbursement_point="self")
-        rpoint = booking.venue
-        factories.BankInformationFactory(venue=rpoint)
-        pricing = factories.PricingFactory(
-            booking=booking,
-            status=models.PricingStatus.INVOICED,
-        )
-        cashflow = factories.CashflowFactory(
-            reimbursementPoint=rpoint,
-            pricings=[pricing],
-        )
-        invoice_original = factories.InvoiceFactory(cashflows=[cashflow])
-        factories.InvoiceFactory(
-            cashflows=[cashflow],
-            reference=invoice_original.reference + ".2",
-        )
-
-        reimbursement_period = (datetime.date.today(), datetime.date.today())
-        payments = repository.find_all_offerer_payments(rpoint.managingOffererId, reimbursement_period)
-
-        assert len(payments) == 1
