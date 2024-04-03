@@ -1,4 +1,5 @@
 from datetime import datetime
+import decimal
 from typing import Any
 
 from pydantic.v1.main import BaseModel
@@ -12,7 +13,7 @@ class PostVenueProviderBody(BaseModel):
     venueId: int
     providerId: int
     venueIdAtOfferProvider: str | None
-    price: str | None
+    price: decimal.Decimal | None
     # absent/ignored for regular providers, required for cinema-related providers
     isDuo: bool | None
     quantity: int | None

@@ -46,14 +46,14 @@ export const AllocineProviderForm = ({
   const { logEvent } = useAnalytics()
 
   const handleSubmit = async (formValues: FormValuesProps) => {
-    const { isDuo = true, price } = formValues
+    const { isDuo = true } = formValues
     const quantity =
       formValues.quantity !== '' ? Number(formValues.quantity) : undefined
 
     const payload = {
       quantity,
       isDuo,
-      price: String(price),
+      price: Number(formValues.price),
       providerId,
       venueId,
       isActive: initialValues.isActive,

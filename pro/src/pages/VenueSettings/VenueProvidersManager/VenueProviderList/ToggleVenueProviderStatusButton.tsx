@@ -29,9 +29,6 @@ export const ToggleVenueProviderStatusButton = ({
     setIsLoading(true)
     const payload = {
       ...venueProvider,
-      // Price is a number in VenueProviderResponse but PostVenueProviderBody expects a string
-      // We should probably fix this at some point
-      price: venueProvider.price?.toString(),
       providerId: venueProvider.provider.id,
       isActive: !venueProvider.isActive,
     }
