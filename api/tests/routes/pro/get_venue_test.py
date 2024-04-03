@@ -450,16 +450,16 @@ class Returns200Test:
             name="L'encre et la plume", managingOfferer=user_offerer.offerer, venueTypeCode=VenueTypeCode.LIBRARY
         )
         venue_accessibility_data = {
-            "access_modality": ["Chemin rendu accessible (ascenseur)", "Accès à l'entrée par ascenseur"],
+            "access_modality": [acceslibre_enum.EXTERIOR_ACCESS_ELEVATOR, acceslibre_enum.ENTRANCE_ELEVATOR],
             "audio_description": [],
             "deaf_and_hard_of_hearing_amenities": [
-                "boucle à induction magnétique portative",
-                "sous-titrage ou transcription simultanée",
+                acceslibre_enum.DEAF_AND_HARD_OF_HEARING_PORTABLE_INDUCTION_LOOP,
+                acceslibre_enum.DEAF_AND_HARD_OF_HEARING_SUBTITLE,
             ],
-            "facilities": ["Sanitaire non adapté"],
-            "sound_beacon": ["Balise sonore"],
-            "trained_personnel": ["Personnel non formé"],
-            "transport_modality": ["Stationnement adapté à proximité"],
+            "facilities": [acceslibre_enum.FACILITIES_UNADAPTED],
+            "sound_beacon": [acceslibre_enum.SOUND_BEACON],
+            "trained_personnel": [acceslibre_enum.PERSONNEL_UNTRAINED],
+            "transport_modality": [acceslibre_enum.PARKING_UNAVAILABLE],
         }
         offerers_factories.AccessibilityProviderFactory(venue=venue, externalAccessibilityData=venue_accessibility_data)
         auth_request = client.with_session_auth(email=user_offerer.user.email)
@@ -474,7 +474,7 @@ class Returns200Test:
                 "facilities": "Sanitaire non adapté",
                 "exterior": "Chemin rendu accessible (ascenseur)",
                 "entrance": "Accès à l'entrée par ascenseur",
-                "parking": "Stationnement adapté à proximité",
+                "parking": "Pas de stationnement adapté à proximité",
             },
             "audioDisability": {
                 "deafAndHardOfHearing": "boucle à induction magnétique portative, sous-titrage ou transcription simultanée",
