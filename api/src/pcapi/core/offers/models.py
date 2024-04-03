@@ -194,6 +194,7 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     offererAddress: sa.orm.Mapped["OffererAddress"] = sa.orm.relationship(
         "OffererAddress", foreign_keys=[offererAddressId], uselist=False
     )
+    sa.Index("ix_stock_offererAddressId", offererAddressId, postgresql_where=offererAddressId.is_not(None))
 
     __table_args__ = (
         sa.Index(
