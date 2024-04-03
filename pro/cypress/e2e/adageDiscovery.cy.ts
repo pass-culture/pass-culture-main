@@ -1,6 +1,7 @@
 describe('Adage discovery', () => {
   beforeEach(() => {
     cy.request('http://localhost:5001/e2e/adage/discovery')
+    cy.request('http://localhost:3001/connexion')
     cy.visit('/connexion')
     cy.getFakeAdageToken()
 
