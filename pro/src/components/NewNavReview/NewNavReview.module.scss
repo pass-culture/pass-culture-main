@@ -10,8 +10,9 @@
     justify-content: center;
     align-items: flex-start;
     padding: rem.torem(16px) rem.torem(24px);
-    border: solid rem.torem(1px) colors.$grey-medium;
+    border-bottom: solid rem.torem(1px) colors.$grey-medium;
     margin-top: size.$top-menu-height;
+    background-color: colors.$white;
 
     @media (min-width: size.$tablet) {
       margin-left: size.$side-nav-width;
