@@ -20,9 +20,10 @@
       background-color: colors.$grey-light;
     }
 
-    &:focus {
+    &:focus-visible {
+      border-radius: rem.torem(16px);
+      outline: rem.torem(1px) solid colors.$black;
       outline-offset: rem.torem(-8px);
-      outline-color: colors.$black;
     }
   }
 
@@ -43,6 +44,7 @@
   justify-content: space-between;
   padding-top: rem.torem(24px);
   height: 100%;
+  border-right: rem.torem(1px) solid colors.$grey-medium;
 
   &-open {
     min-height: calc(100% - #{size.$top-menu-height});
@@ -91,13 +93,14 @@
       background-color: colors.$grey-light;
     }
 
-    &:focus {
+    &:focus-visible {
+      border-radius: rem.torem(16px);
+      outline: rem.torem(1px) solid colors.$black;
       outline-offset: rem.torem(-8px);
-      outline-color: colors.$black;
     }
 
     &-active {
-      background-color: colors.$background-error;
+      background-color: colors.$grey-light;
       position: relative;
 
       &::after {

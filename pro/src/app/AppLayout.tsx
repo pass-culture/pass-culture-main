@@ -145,7 +145,12 @@ export const AppLayout = ({
             </div>
           </nav>
         )}
-        <div className={styles['main-wrapper']}>
+        <div
+          className={classnames({
+            [styles['main-wrapper']]: true,
+            [styles['main-wrapper-old']]: !isNewSideBarNavigation,
+          })}
+        >
           {isNewSideBarNavigation &&
             Boolean(currentUser?.navState?.eligibilityDate) && <NewNavReview />}
           <main
@@ -161,6 +166,7 @@ export const AppLayout = ({
                 [styles['container-sticky-actions']]:
                   layout === 'sticky-actions',
                 [styles['container-without-nav']]: layout === 'without-nav',
+                [styles[`content-layout`]]: isNewSideBarNavigation,
                 [styles[`content-layout-${layout}`]]: isNewSideBarNavigation,
               },
               className
@@ -172,6 +178,9 @@ export const AppLayout = ({
               <div
                 className={classnames({
                   [styles['page-content']]: true,
+                  [styles['page-content-with-review-banner']]: Boolean(
+                    currentUser?.navState?.eligibilityDate
+                  ),
                   [styles['page-content-old']]: !isNewSideBarNavigation,
                 })}
               >
