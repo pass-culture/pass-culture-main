@@ -142,7 +142,7 @@ jobs:
 
   test-pro-e2e:
     name: "Tests pro E2E"
-    needs: [check-api, check-pro, build-api]
+    needs: [check-api, check-pro]
     if: |
       needs.check-api.outputs.folder_changed == 'true' ||
       needs.check-pro.outputs.folder_changed == 'true' ||
