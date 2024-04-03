@@ -21,6 +21,7 @@ import { Banner, Select } from 'ui-kit'
 
 import { OFFERER_LABEL, VENUE_LABEL } from '../../constants/labels'
 
+import styles from './FormVenue.module.scss'
 interface FormVenueProps {
   userOfferers: GetEducationalOffererResponseModel[]
   venuesOptions: SelectOption[]
@@ -139,17 +140,19 @@ const FormVenue = ({
         venuesOptions.length > 0 &&
         values.venueId.length === 0 &&
         values.offererId.length !== 0 && (
-          <Banner
+          <Callout
             links={[
               {
                 href: `/structures/${values.offererId}/lieux/creation`,
                 label: 'Renseigner un lieu',
               },
             ]}
+            className={styles['banner-place-adress-info']}
+            variant={CalloutVariant.ERROR}
           >
             Pour proposer des offres à destination d’un groupe scolaire, vous
             devez renseigner un lieu pour pouvoir être remboursé.
-          </Banner>
+          </Callout>
         )}
     </FormLayout.Section>
   )
