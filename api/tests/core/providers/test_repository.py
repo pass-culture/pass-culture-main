@@ -104,3 +104,12 @@ class IsEventExternalTicketApplicableTest:
         )
         with pytest.raises(external_bookings_exceptions.ExternalBookingException):
             repository.is_event_external_ticket_applicable(offer)
+
+
+def test_get_allocine_theater():
+    venue_with_theater = offerers_factories.VenueFactory()
+    theater = factories.AllocineTheaterFactory(siret=venue_with_theater.siret)
+    assert repository.get_allocine_theater(venue_with_theater) == theater
+
+    venue_without_theater = offerers_factories.VenueFactory()
+    assert repository.get_allocine_theater(venue_without_theater) is None
