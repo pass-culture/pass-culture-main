@@ -478,6 +478,7 @@ class PriceCategoryBody(BaseModel):
 class MusicTypeResponse(BaseModel):
     gtl_id: str
     label: str
+    canBeEvent: bool
 
 
 class GetMusicTypesResponse(BaseModel):

@@ -454,33 +454,19 @@ def get_categories() -> offers_serialize.CategoriesResponseModel:
     )
 
 
-@private_api.route("/offers/music-types/all", methods=["GET"])
+@private_api.route("/offers/music-types", methods=["GET"])
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.GetMusicTypesResponse,
     api=blueprint.pro_private_schema,
 )
-def get_all_music_types() -> offers_serialize.GetMusicTypesResponse:
+def get_music_types() -> offers_serialize.GetMusicTypesResponse:
     return offers_serialize.GetMusicTypesResponse(
         __root__=[
-            offers_serialize.MusicTypeResponse(gtl_id=music_type.gtl_id, label=music_type.label)
+            offers_serialize.MusicTypeResponse(
+                gtl_id=music_type.gtl_id, label=music_type.label, canBeEvent=music_type.can_be_event
+            )
             for music_type in TITELIVE_MUSIC_TYPES
-        ]
-    )
-
-
-@private_api.route("/offers/music-types/event", methods=["GET"])
-@login_required
-@spectree_serialize(
-    response_model=offers_serialize.GetMusicTypesResponse,
-    api=blueprint.pro_private_schema,
-)
-def get_event_music_types() -> offers_serialize.GetMusicTypesResponse:
-    return offers_serialize.GetMusicTypesResponse(
-        __root__=[
-            offers_serialize.MusicTypeResponse(gtl_id=music_type.gtl_id, label=music_type.label)
-            for music_type in TITELIVE_MUSIC_TYPES
-            if music_type.can_be_event
         ]
     )
 
