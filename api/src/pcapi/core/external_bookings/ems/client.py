@@ -1,8 +1,5 @@
-import datetime
 import json
 import logging
-
-from flask import current_app
 
 from pcapi.connectors.ems import EMSBookingConnector
 from pcapi.connectors.serialization import ems_serializers
@@ -11,7 +8,6 @@ from pcapi.core.bookings import repository as bookings_repository
 from pcapi.core.external_bookings import models as external_bookings_models
 from pcapi.core.external_bookings.exceptions import ExternalBookingSoldOutError
 from pcapi.core.users import models as users_models
-from pcapi.utils.requests import exceptions as requests_exception
 
 from . import constants
 
@@ -26,25 +22,6 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         super().__init__(cinema_id=cinema_id)
         self.connector = EMSBookingConnector()
 
-    def get_ticket(self, token: str) -> list[external_bookings_models.Ticket]:
-        payload = ems_serializers.GetTicketRequest(num_cine=self.cinema_id, num_cmde=token)
-        response = self.connector.do_request(self.connector.get_ticket_endpoint, payload=payload.dict())
-        self.connector.raise_for_status(response)
-        content = ems_serializers.ReservationPassCultureResponse(**response.json())
-        return [
-            external_bookings_models.Ticket(
-                barcode=ticket.code_barre,
-                seat_number=ticket.num_place,
-                additional_information={
-                    "num_cine": content.num_cine,
-                    "num_caisse": ticket.num_caisse,
-                    "num_trans": ticket.num_trans,
-                    "num_ope": ticket.num_ope,
-                },
-            )
-            for ticket in content.billets
-        ]
-
     def book_ticket(
         self, show_id: int, booking: booking_models.Booking, beneficiary: users_models.User
     ) -> list[external_bookings_models.Ticket]:
@@ -56,22 +33,8 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             total_price=float(booking.total_amount),
             email=beneficiary.email,
             num_pass_culture=str(beneficiary.id),
-            num_cmde=booking.token,
         )
-        try:
-            response = self.connector.do_request(self.connector.booking_endpoint, payload=payload.dict())
-        except (requests_exception.ReadTimeout, requests_exception.Timeout):
-            booking_to_cancel = json.dumps(
-                {
-                    "cinema_id": self.cinema_id,
-                    "token": booking.token,
-                    "timestamp": datetime.datetime.utcnow().timestamp(),
-                }
-            )
-
-            current_app.redis_client.lpush(constants.EMS_EXTERNAL_BOOKINGS_TO_CANCEL, booking_to_cancel)
-            raise
-
+        response = self.connector.do_request(self.connector.booking_endpoint, payload=payload.dict())
         self.connector.raise_for_status(response)
 
         content = ems_serializers.ReservationPassCultureResponse(**response.json())
@@ -109,24 +72,6 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         logger.info(
             "Successfully canceled an EMS external bookings",
             extra={"barcodes": [external_booking.barcode for external_booking in external_bookings]},
-        )
-
-    def cancel_booking_with_tickets(self, tickets: list[external_bookings_models.Ticket]) -> None:
-        # There's no partial cancelling and only one ticket is enough to cancel a duo booking
-        ticket = tickets[0]
-        assert ticket.additional_information  # helps mypy, additional_information shouldn't be None at this point
-        payload = ems_serializers.AnnulationPassCultureRequest(
-            num_cine=self.cinema_id,
-            num_caisse=ticket.additional_information["num_caisse"],
-            num_trans=ticket.additional_information["num_trans"],
-            num_ope=ticket.additional_information["num_ope"],
-        )
-        response = self.connector.do_request(self.connector.cancelation_endpoint, payload=payload.dict())
-        self.connector.raise_for_status(response)
-
-        logger.info(
-            "Successfully canceled an EMS external bookings after failing booking",
-            extra={"barcodes": [ticket.barcode for ticket in tickets]},
         )
 
     def get_shows_remaining_places(self, shows_id: list[int]) -> dict[str, int]:
