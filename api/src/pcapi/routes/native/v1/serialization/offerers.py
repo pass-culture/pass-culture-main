@@ -21,3 +21,14 @@ class VenueResponse(base.BaseVenueResponse):
     accessibility: VenueAccessibilityModel
     venueTypeCode: offerers_models.VenueTypeCodeKey
     bannerMeta: BannerMetaModel | None
+
+    @classmethod
+    def from_orm(cls, venue: offerers_models.Venue) -> "VenueResponse":
+        venue.venueTypeCode = venue.venueTypeCode.name
+        venue.accessibility = VenueAccessibilityModel(
+            audioDisability=venue.audioDisabilityCompliant,
+            mentalDisability=venue.mentalDisabilityCompliant,
+            motorDisability=venue.motorDisabilityCompliant,
+            visualDisability=venue.visualDisabilityCompliant,
+        )
+        return super().from_orm(venue)
