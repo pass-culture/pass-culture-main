@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 
-import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
@@ -33,7 +32,7 @@ const OfferSummary = ({
   offer,
 }: OfferSummaryProps): JSX.Element => {
   const mode = useOfferWizardMode()
-  const { categories, subCategories } = useIndividualOfferContext()
+  const { categories, subCategories, musicTypes } = useIndividualOfferContext()
   const isBookingContactEnabled = useActiveFeature(
     'WIP_MANDATORY_BOOKING_CONTACT'
   )
@@ -43,11 +42,7 @@ const OfferSummary = ({
 
   const [offerData, setOfferData] = useState<OfferSectionData>()
   useEffect(() => {
-    const updateOfferData = async () => {
-      let musicTypes
-      if (offer.extraData?.gtl_id) {
-        musicTypes = await api.getAllMusicTypes()
-      }
+    const updateOfferData = () => {
       const data = serializeOfferSectionData(
         offer,
         categories,
