@@ -559,27 +559,30 @@ ACCESLIBRE_WIDGET_RESULT = {
         {
             "title": "stationnement",
             "labels": ["Stationnement adapté dans l'établissement"],
-            "icon": "https://recette.acceslibre.info/static/img/car.png",
         },
         {
             "title": "accès",
             "labels": ["Chemin d'accès de plain pied", "Entrée de plain pied"],
-            "icon": "https://recette.acceslibre.info/static/img/path.png",
         },
         {
             "title": "personnel",
             "labels": ["Personnel sensibilisé / formé"],
-            "icon": "https://recette.acceslibre.info/static/img/people.png",
         },
         {
             "title": "audiodescription",
-            "labels": ["avec équipement occasionnel selon la programmation"],
-            "icon": "https://recette.acceslibre.info/static/img/audiodescription.png",
+            "labels": [
+                "sans équipement, audiodescription audible par toute la salle (selon la programmation), avec équipement permanent nécessitant le téléchargement d'une application sur smartphone"
+            ],
         },
         {
             "title": "sanitaire",
             "labels": ["Sanitaire adapté"],
-            "icon": "https://recette.acceslibre.info/static/img/wc.png",
+        },
+        {
+            "title": "équipements sourd et malentendant",
+            "labels": [
+                "sous-titrage ou transcription simultanée, langue française parlée complétée (LFPC), langue des signes française (LSF)"
+            ],
         },
     ],
 }

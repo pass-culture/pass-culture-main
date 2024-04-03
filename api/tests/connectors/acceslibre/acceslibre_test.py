@@ -1,6 +1,8 @@
 from dateutil import parser
 
 from pcapi.connectors import acceslibre
+from pcapi.connectors.acceslibre import AcceslibreData
+from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.core.testing import override_settings
 
 from tests.connectors.acceslibre import fixtures
@@ -73,6 +75,45 @@ class AcceslibreTest:
         last_update = acceslibre.get_last_update_at_provider(slug=slug)
         assert last_update == parser.isoparse("2023-04-13T15:10:25.612731+02:00")
 
+    def test_get_accessibility_infos(self):
+        accesslibre_data_list = [
+            {
+                "title": "stationnement",
+                "labels": ["Stationnement adapté dans l'établissement"],
+            },
+            {
+                "title": "accès",
+                "labels": ["Chemin d'accès de plain pied", "Entrée de plain pied"],
+            },
+            {
+                "title": "personnel",
+                "labels": ["Personnel sensibilisé / formé"],
+            },
+            {
+                "title": "audiodescription",
+                "labels": ["avec équipement occasionnel selon la programmation"],
+            },
+            {
+                "title": "sanitaire",
+                "labels": ["Sanitaire adapté"],
+            },
+        ]
+        acceslibre_data = [
+            AcceslibreData(title=str(item["title"]), labels=[str(label) for label in item["labels"]])
+            for item in accesslibre_data_list
+        ]
+        accessibility_infos = acceslibre.acceslibre_to_accessibility_infos(acceslibre_data)
+
+        assert accessibility_infos == acceslibre.AccessibilityInfo(
+            access_modality=[acceslibre_enum.EXTERIOR_ONE_LEVEL, acceslibre_enum.ENTRANCE_ONE_LEVEL],
+            audio_description=[acceslibre_enum.AUDIODESCRIPTION_OCCASIONAL],
+            deaf_and_hard_of_hearing_amenities=[],
+            facilities=[acceslibre_enum.FACILITIES_ADAPTED],
+            sound_beacon=[],
+            trained_personnel=[acceslibre_enum.PERSONNEL_TRAINED],
+            transport_modality=[acceslibre_enum.PARKING_ADAPTED],
+        )
+
     def test_get_accessibility_infos_from_widget(self, requests_mock):
         slug = "mon-super-slug"
         requests_mock.get(
@@ -80,5 +121,17 @@ class AcceslibreTest:
             json=fixtures.ACCESLIBRE_WIDGET_RESULT,
         )
         accessibility_infos = acceslibre.get_accessibility_infos(slug)
-        assert accessibility_infos.trained_personnel == ["Personnel sensibilisé / formé"]
-        assert accessibility_infos.access_modality == ["Chemin d'accès de plain pied", "Entrée de plain pied"]
+        assert accessibility_infos.trained_personnel == [acceslibre_enum.PERSONNEL_TRAINED]
+        assert accessibility_infos.access_modality == [
+            acceslibre_enum.EXTERIOR_ONE_LEVEL,
+            acceslibre_enum.ENTRANCE_ONE_LEVEL,
+        ]
+        assert accessibility_infos.audio_description == [
+            acceslibre_enum.AUDIODESCRIPTION_NO_DEVICE,
+            acceslibre_enum.AUDIODESCRIPTION_PERMANENT_SMARTPHONE,
+        ]
+        assert accessibility_infos.deaf_and_hard_of_hearing_amenities == [
+            acceslibre_enum.DEAF_AND_HARD_OF_HEARING_SUBTITLE,
+            acceslibre_enum.DEAF_AND_HARD_OF_HEARING_CUED_SPEECH,
+            acceslibre_enum.DEAF_AND_HARD_OF_HEARING_SIGN_LANGUAGE,
+        ]

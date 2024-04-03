@@ -8,6 +8,7 @@ from datetime import datetime
 import enum
 import json
 import logging
+from typing import TypedDict
 import uuid
 
 from dateutil import parser
@@ -69,6 +70,64 @@ class AcceslibreActivity(enum.Enum):
     THEATRE = "theatre"
 
 
+class ExpectedFieldsEnum(enum.Enum):
+    UNKNOWN = "Non renseigné"
+    PARKING_ADAPTED = "Stationnement adapté dans l'établissement"
+    PARKING_NEARBY = "Stationnement adapté à proximité"
+    PARKING_UNAVAILABLE = "Pas de stationnement adapté à proximité"
+    EXTERIOR_ONE_LEVEL = "Chemin d'accès de plain pied"
+    EXTERIOR_ACCESS_RAMP = "Chemin rendu accessible (rampe)"
+    EXTERIOR_ACCESS_ELEVATOR = "Chemin rendu accessible (ascenseur)"
+    EXTERIOR_ACCESS_HAS_DIFFICULTIES = "Difficulté sur le chemin d'accès"
+    ENTRANCE_ONE_LEVEL = "Entrée de plain pied"
+    ENTRANCE_ONE_LEVEL_NARROW = "Entrée de plain pied mais étroite"
+    ENTRANCE_NOT_ONE_LEVEL = "L’entrée n’est pas de plain-pied"
+    ENTRANCE_HUMAN_HELP = "L’entrée n’est pas de plain-pied\n Aide humaine possible"
+    ENTRANCE_ELEVATOR = "Accès à l'entrée par ascenseur"
+    ENTRANCE_ELEVATOR_NARROW = "Entrée rendue accessible par ascenseur mais étroite"
+    ENTRANCE_RAMP = "Accès à l’entrée par une rampe"
+    ENTRANCE_RAMP_NARROW = "Entrée rendue accessible par rampe mais étroite"
+    ENTRANCE_PRM = "Entrée spécifique PMR"
+    PERSONNEL_MISSING = "Aucun personnel"
+    PERSONNEL_UNTRAINED = "Personnel non formé"
+    PERSONNEL_TRAINED = "Personnel sensibilisé / formé"
+    SOUND_BEACON = "Balise sonore"
+    DEAF_AND_HARD_OF_HEARING_FIXED_INDUCTION_LOOP = "boucle à induction magnétique fixe"
+    DEAF_AND_HARD_OF_HEARING_PORTABLE_INDUCTION_LOOP = "boucle à induction magnétique portative"
+    DEAF_AND_HARD_OF_HEARING_SIGN_LANGUAGE = "langue des signes française (LSF)"
+    DEAF_AND_HARD_OF_HEARING_CUED_SPEECH = "langue française parlée complétée (LFPC)"
+    DEAF_AND_HARD_OF_HEARING_SUBTITLE = "sous-titrage ou transcription simultanée"
+    DEAF_AND_HARD_OF_HEARING_OTHER = "autres"
+    FACILITIES_ADAPTED = "Sanitaire adapté"
+    FACILITIES_UNADAPTED = "Sanitaire non adapté"
+    AUDIODESCRIPTION_PERMANENT = "avec équipement permanent, casques et boîtiers disponibles à l’accueil"
+    AUDIODESCRIPTION_PERMANENT_SMARTPHONE = (
+        "avec équipement permanent nécessitant le téléchargement d'une application sur smartphone"
+    )
+    AUDIODESCRIPTION_OCCASIONAL = "avec équipement occasionnel selon la programmation"
+    AUDIODESCRIPTION_NO_DEVICE = "sans équipement, audiodescription audible par toute la salle (selon la programmation)"
+
+    @classmethod
+    def find_enum_from_string(cls, input_string: str) -> list:
+        """
+        Acceslibre may return a combinaison of several fields, comma separated
+        """
+        # FIXME: ogeber 03.04.2024 I've ask acceslibre to return fields in a list instead of a comma separated string
+        # When done, we can delete this method and use `if label not in [item.value for item in ExpectedFieldsEnum]` instead
+        enum_list: list[ExpectedFieldsEnum] = []
+        for enum_option in cls:
+            if enum_option.value in input_string:
+                enum_list.append(enum_option)
+        # Reorder enum_list according to its order in the input_string
+        enum_indexes = {
+            enum_option: input_string.index(enum_option.value)
+            for enum_option in enum_list
+            if enum_option.value in input_string
+        }
+        sorted_enum_list = sorted(enum_list, key=lambda x: enum_indexes[x])
+        return sorted_enum_list
+
+
 class AccesLibreApiException(Exception):
     pass
 
@@ -78,13 +137,13 @@ class AccessibilityParsingException(Exception):
 
 
 class AccessibilityInfo(pydantic_v1.BaseModel):
-    access_modality: list[str] = pydantic_v1.Field(default_factory=list)
-    audio_description: list[str] = pydantic_v1.Field(default_factory=list)
-    deaf_and_hard_of_hearing_amenities: list[str] = pydantic_v1.Field(default_factory=list)
-    facilities: list[str] = pydantic_v1.Field(default_factory=list)
-    sound_beacon: list[str] = pydantic_v1.Field(default_factory=list)
-    trained_personnel: list[str] = pydantic_v1.Field(default_factory=list)
-    transport_modality: list[str] = pydantic_v1.Field(default_factory=list)
+    access_modality: list[ExpectedFieldsEnum] = pydantic_v1.Field(default_factory=list)
+    audio_description: list[ExpectedFieldsEnum] = pydantic_v1.Field(default_factory=list)
+    deaf_and_hard_of_hearing_amenities: list[ExpectedFieldsEnum] = pydantic_v1.Field(default_factory=list)
+    facilities: list[ExpectedFieldsEnum] = pydantic_v1.Field(default_factory=list)
+    sound_beacon: list[ExpectedFieldsEnum] = pydantic_v1.Field(default_factory=list)
+    trained_personnel: list[ExpectedFieldsEnum] = pydantic_v1.Field(default_factory=list)
+    transport_modality: list[ExpectedFieldsEnum] = pydantic_v1.Field(default_factory=list)
 
     @pydantic_v1.root_validator(pre=True)
     def set_default_to_empty_list(cls, values: dict) -> dict:
@@ -92,6 +151,11 @@ class AccessibilityInfo(pydantic_v1.BaseModel):
             if field_value is None:
                 values[field_name] = []
         return values
+
+
+class AcceslibreData(TypedDict):
+    title: str
+    labels: list[str]
 
 
 def _get_backend() -> "BaseBackend":
@@ -214,7 +278,7 @@ def match_venue_with_acceslibre(
     return None
 
 
-def acceslibre_to_accessibility_infos(acceslibre_data: dict) -> AccessibilityInfo:
+def acceslibre_to_accessibility_infos(acceslibre_data: list[AcceslibreData]) -> AccessibilityInfo:
     accessibility_infos = AccessibilityInfo()
     acceslibre_mapping = {
         "accès": "access_modality",
@@ -235,8 +299,14 @@ def acceslibre_to_accessibility_infos(acceslibre_data: dict) -> AccessibilityInf
                 "'title' or 'labels' key is missing in one of the sections. Check API response or contact Acceslibre"
             )
         attribute_name = acceslibre_mapping.get(title)
-        if attribute_name:
-            setattr(accessibility_infos, attribute_name, labels)
+        if not attribute_name:
+            continue
+        labels_enum = []
+        for label in labels:
+            if not (labels_enum_list := ExpectedFieldsEnum.find_enum_from_string(label)):
+                raise AccesLibreApiException(f"Acceslibre API returned an unexpected value: {label} for {title}")
+            labels_enum.extend(labels_enum_list)
+        setattr(accessibility_infos, attribute_name, labels_enum)
     return accessibility_infos
 
 
@@ -309,7 +379,33 @@ class TestingBackend(BaseBackend):
         return datetime(2024, 3, 1, 0, 0)
 
     def get_accessibility_infos(self, slug: str) -> AccessibilityInfo | None:
-        return AccessibilityInfo(sound_beacon=["Balise sonore"])
+        accesslibre_data_list = [
+            {
+                "title": "stationnement",
+                "labels": ["Stationnement adapté dans l'établissement"],
+            },
+            {
+                "title": "accès",
+                "labels": ["Chemin d'accès de plain pied", "Entrée de plain pied"],
+            },
+            {
+                "title": "personnel",
+                "labels": ["Personnel sensibilisé / formé"],
+            },
+            {
+                "title": "audiodescription",
+                "labels": ["avec équipement occasionnel selon la programmation"],
+            },
+            {
+                "title": "sanitaire",
+                "labels": ["Sanitaire adapté"],
+            },
+        ]
+        acceslibre_data = [
+            AcceslibreData(title=str(item["title"]), labels=[str(label) for label in item["labels"]])
+            for item in accesslibre_data_list
+        ]
+        return acceslibre_to_accessibility_infos(acceslibre_data)
 
 
 class AcceslibreBackend(BaseBackend):
@@ -438,10 +534,14 @@ class AcceslibreBackend(BaseBackend):
     def get_accessibility_infos(self, slug: str) -> AccessibilityInfo | None:
         if response := self._send_request_with_slug(slug=slug, request_widget_infos=True):
             try:
-                acceslibre_data = response["sections"]
+                response_list = response["sections"]
             except KeyError:
                 raise AccesLibreApiException(
                     "'sections' key is missing in the response from acceslibre. Check API response or contact Acceslibre"
                 )
+            acceslibre_data = [
+                AcceslibreData(title=str(item["title"]), labels=[str(label) for label in item["labels"]])
+                for item in response_list
+            ]
             return acceslibre_to_accessibility_infos(acceslibre_data)
         return None
