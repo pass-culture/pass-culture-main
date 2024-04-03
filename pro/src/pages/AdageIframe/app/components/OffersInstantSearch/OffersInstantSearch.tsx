@@ -1,12 +1,14 @@
 import algoliasearch from 'algoliasearch/lite'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Configure, Index, InstantSearch } from 'react-instantsearch'
+import { useSelector } from 'react-redux'
 
 import { VenueResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { StudentLevels } from 'apiClient/v1'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
+import { adageFilterSelector } from 'store/adageFilter/selectors'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import {
   ALGOLIA_API_KEY,
@@ -63,29 +65,44 @@ export const OffersInstantSearch = (): JSX.Element | null => {
   const isUserInMarseilleProgram = (adageUser.programs ?? []).some(
     (prog) => prog.name === MARSEILLE_EN_GRAND
   )
+
+  const adageFilterFromSelector = useSelector(adageFilterSelector)
+
+  const notification = useNotification()
+
   const filterOnMarseilleStudents =
     isMarseilleEnabled && isUserInMarseilleProgram && programParam
 
   const [facetFilters, setFacetFilters] = useState<Facets | null>(null)
 
-  const [geoRadius, setGeoRadius] = useState<number>(DEFAULT_GEO_RADIUS)
+  const [geoRadius, setGeoRadius] = useState<number>(
+    adageFilterFromSelector.geolocRadius ===
+      ADAGE_FILTERS_DEFAULT_VALUES.geolocRadius
+      ? DEFAULT_GEO_RADIUS
+      : adageFilterFromSelector.geolocRadius * 1000
+  )
 
   const [venueFilter, setVenueFilter] = useState<VenueResponse | null>(null)
   const [loadingVenue, setLoadingVenue] = useState<boolean>(false)
 
-  const notification = useNotification()
+  const hasQueryParams = venueFilter || domainParam || filterOnMarseilleStudents
 
   useEffect(() => {
     function setFacetFiltersFromParams(venue?: VenueResponse | null) {
       const filtersFromParams = {
         uai: adageUser.uai ? [adageUser.uai, 'all'] : ['all'],
-        domains: domainParam ? [domainParam] : [],
-        students: filterOnMarseilleStudents ? DEFAULT_MARSEILLE_STUDENTS : [],
+        domains: domainParam ? [domainParam] : adageFilterFromSelector.domains,
+        students:
+          adageFilterFromSelector.students.length > 0
+            ? adageFilterFromSelector.students
+            : filterOnMarseilleStudents
+              ? DEFAULT_MARSEILLE_STUDENTS
+              : [],
         venue: venue ?? null,
       }
       setFacetFilters(
         adageFiltersToFacetFilters({
-          ...ADAGE_FILTERS_DEFAULT_VALUES,
+          ...adageFilterFromSelector,
           ...filtersFromParams,
         }).queryFilters
       )
@@ -131,6 +148,7 @@ export const OffersInstantSearch = (): JSX.Element | null => {
     adageUser,
     domainParam,
     filterOnMarseilleStudents,
+    adageFilterFromSelector,
   ])
 
   return loadingVenue ? (
@@ -166,13 +184,17 @@ export const OffersInstantSearch = (): JSX.Element | null => {
         <AnalyticsContextProvider>
           <OffersSearch
             setFacetFilters={setFacetFilters}
-            initialFilters={{
-              venue: venueFilter,
-              domains: domainParam ? [domainParam] : [],
-              students: filterOnMarseilleStudents
-                ? DEFAULT_MARSEILLE_STUDENTS
-                : [],
-            }}
+            initialFilters={
+              hasQueryParams
+                ? {
+                    venue: venueFilter,
+                    domains: domainParam ? [domainParam] : [],
+                    students: filterOnMarseilleStudents
+                      ? DEFAULT_MARSEILLE_STUDENTS
+                      : [],
+                  }
+                : adageFilterFromSelector
+            }
             setGeoRadius={setGeoRadius}
           />
         </AnalyticsContextProvider>
