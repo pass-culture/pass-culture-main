@@ -532,7 +532,7 @@ def offerers_to_be_validated_fixture(offerer_tags):
     top_tag, collec_tag, public_tag, festival_tag = offerer_tags
 
     no_tag = offerers_factories.NotValidatedOffererFactory(
-        name="A", siren="123001000", address=None, postalCode="35000", city="Rennes"
+        name="A", siren="123001000", street=None, postalCode="35000", city="Rennes"
     )
     top = offerers_factories.NotValidatedOffererFactory(
         name="B", siren="123002008", validationStatus=ValidationStatus.PENDING, postalCode="29000", city="Quimper"

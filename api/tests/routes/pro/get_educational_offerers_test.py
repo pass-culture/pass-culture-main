@@ -37,7 +37,6 @@ class GetEducationalOfferersTest:
                     "allowedOnAdage": offerer_1.allowedOnAdage,
                     "managedVenues": [
                         {
-                            "address": venue_offerer_1.address,
                             "audioDisabilityCompliant": venue_offerer_1.audioDisabilityCompliant,
                             "city": venue_offerer_1.city,
                             "id": venue_offerer_1.id,
@@ -46,6 +45,7 @@ class GetEducationalOfferersTest:
                             "motorDisabilityCompliant": venue_offerer_1.motorDisabilityCompliant,
                             "publicName": venue_offerer_1.publicName,
                             "postalCode": venue_offerer_1.postalCode,
+                            "street": venue_offerer_1.street,
                             "visualDisabilityCompliant": venue_offerer_1.visualDisabilityCompliant,
                             "name": venue_offerer_1.name,
                             "collectiveInterventionArea": None,
@@ -61,7 +61,6 @@ class GetEducationalOfferersTest:
                     "allowedOnAdage": offerer_2.allowedOnAdage,
                     "managedVenues": [
                         {
-                            "address": venue_offerer_2.address,
                             "audioDisabilityCompliant": venue_offerer_2.audioDisabilityCompliant,
                             "city": venue_offerer_2.city,
                             "id": venue_offerer_2.id,
@@ -70,6 +69,7 @@ class GetEducationalOfferersTest:
                             "motorDisabilityCompliant": venue_offerer_2.motorDisabilityCompliant,
                             "publicName": venue_offerer_2.publicName,
                             "postalCode": venue_offerer_2.postalCode,
+                            "street": venue_offerer_2.street,
                             "visualDisabilityCompliant": venue_offerer_2.visualDisabilityCompliant,
                             "name": venue_offerer_2.name,
                             "collectiveInterventionArea": ["75", "92"],
@@ -121,7 +121,6 @@ class GetEducationalOfferersTest:
                     "allowedOnAdage": offerer_2.allowedOnAdage,
                     "managedVenues": [
                         {
-                            "address": venue_offerer_2.street,
                             "audioDisabilityCompliant": venue_offerer_2.audioDisabilityCompliant,
                             "city": venue_offerer_2.city,
                             "id": venue_offerer_2.id,
@@ -130,6 +129,7 @@ class GetEducationalOfferersTest:
                             "motorDisabilityCompliant": venue_offerer_2.motorDisabilityCompliant,
                             "publicName": venue_offerer_2.publicName,
                             "postalCode": venue_offerer_2.postalCode,
+                            "street": venue_offerer_2.street,
                             "visualDisabilityCompliant": venue_offerer_2.visualDisabilityCompliant,
                             "name": venue_offerer_2.name,
                             "collectiveInterventionArea": ["75", "92"],

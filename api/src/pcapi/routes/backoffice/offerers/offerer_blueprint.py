@@ -182,13 +182,13 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
         edit_offerer_form = offerer_forms.EditOffererForm(
             name=offerer.name,
             postal_address_autocomplete=(
-                f"{offerer.address}, {offerer.postalCode} {offerer.city}"
-                if offerer.address is not None and offerer.city is not None and offerer.postalCode is not None
+                f"{offerer.street}, {offerer.postalCode} {offerer.city}"
+                if offerer.street is not None and offerer.city is not None and offerer.postalCode is not None
                 else None
             ),
             city=offerer.city,
             postal_code=offerer.postalCode,
-            address=offerer.address,
+            address=offerer.street,
             tags=offerer.tags,
         )
 
@@ -440,7 +440,7 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
         name=form.name.data,
         city=form.city.data,
         postal_code=form.postal_code.data,
-        address=form.address.data,
+        street=form.street.data,
         tags=form.tags.data,
     )
 

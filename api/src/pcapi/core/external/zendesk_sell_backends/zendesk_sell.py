@@ -367,7 +367,7 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
                 # "name" is not updated because sometimes the name in the product is not the same in Zendesk Sell,
                 "last_name": "",
                 "address": {
-                    "line1": offerer.address,
+                    "line1": offerer.street,
                     "city": offerer.city,
                     "postal_code": offerer.postalCode,
                 },

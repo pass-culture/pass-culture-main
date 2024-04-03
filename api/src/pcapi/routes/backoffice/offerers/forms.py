@@ -52,7 +52,7 @@ class EditOffererForm(FlaskForm):
     )
     postal_address_autocomplete = fields.PcPostalAddressAutocomplete(
         "Adresse",
-        address="address",
+        street="street",
         city="city",
         ban_id="ban_id",
         postal_code="postal_code",
@@ -63,7 +63,7 @@ class EditOffererForm(FlaskForm):
         has_manual_editing=True,
         limit=10,
     )
-    address = fields.PCOptHiddenField(
+    street = fields.PCOptHiddenField(
         "Adresse",
         validators=(wtforms.validators.Length(max=200, message="doit contenir moins de %(max)d caractères"),),
     )

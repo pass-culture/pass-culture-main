@@ -139,7 +139,6 @@ class VenueStatsResponseModel(BaseModel):
 
 
 class GetVenueManagingOffererResponseModel(BaseModel):
-    address: str | None
     city: str
     dateCreated: datetime
     demarchesSimplifieesApplicationId: str | None
@@ -149,6 +148,7 @@ class GetVenueManagingOffererResponseModel(BaseModel):
     postalCode: str
     # FIXME (dbaty, 2020-11-09): optional until we populate the database (PC-5693)
     siren: str | None
+    street: str | None
     allowedOnAdage: bool
 
     class Config:
