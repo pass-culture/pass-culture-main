@@ -2,7 +2,6 @@ import { addDays, isBefore, max } from 'date-fns'
 import React from 'react'
 
 import {
-  CollectiveBookingBankInformationStatus,
   CollectiveBookingBankAccountStatus,
   CollectiveBookingByIdResponseModel,
   CollectiveBookingResponseModel,
@@ -457,8 +456,8 @@ const CollectiveTimeLine = ({
 
   let lastValidatedStep = waitingReimbursedStep
   if (
-    bookingDetails.bankInformationStatus ===
-    CollectiveBookingBankInformationStatus.DRAFT
+    bookingDetails.bankAccountStatus ===
+    CollectiveBookingBankAccountStatus.DRAFT
   ) {
     lastValidatedStep = waitingPendingBankInfo
   }

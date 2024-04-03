@@ -3,7 +3,7 @@ import { addDays } from 'date-fns'
 
 import { EacFormat } from 'apiClient/adage'
 import {
-  CollectiveBookingBankInformationStatus,
+  CollectiveBookingBankAccountStatus,
   CollectiveBookingByIdResponseModel,
   CollectiveBookingCollectiveStockResponseModel,
   CollectiveBookingResponseModel,
@@ -220,8 +220,7 @@ export const collectiveBookingByIdFactory = (
 ): CollectiveBookingByIdResponseModel => {
   const currentBookingDetailsId = bookingDetailsId++
   return {
-    bankInformationStatus: CollectiveBookingBankInformationStatus.ACCEPTED,
-    bankAccountStatus: null,
+    bankAccountStatus: CollectiveBookingBankAccountStatus.ACCEPTED,
     beginningDatetime: new Date().toISOString(),
     educationalInstitution: {
       city: 'Paris',

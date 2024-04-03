@@ -3,7 +3,10 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { InvoiceResponseModel, VenueListItemResponseModel } from 'apiClient/v1'
+import {
+  InvoiceResponseV2Model,
+  VenueListItemResponseModel,
+} from 'apiClient/v1'
 import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
 import {
   defaultGetOffererResponseModel,
@@ -41,7 +44,7 @@ const BASE_VENUES: VenueListItemResponseModel[] = [
   }),
 ]
 
-const BASE_INVOICES: InvoiceResponseModel[] = [
+const BASE_INVOICES: InvoiceResponseV2Model[] = [
   {
     date: '13-01-2022',
     reference: 'ABC',
@@ -71,7 +74,7 @@ describe('reimbursementsWithFilters', () => {
 
   beforeEach(() => {
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: BASE_VENUES })
-    vi.spyOn(api, 'getInvoices').mockResolvedValue(BASE_INVOICES)
+    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
   })
 
   it('should not disable buttons when the period dates are filled', async () => {

@@ -186,7 +186,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('shoud render no invoice yet information block', async () => {
-    vi.spyOn(api, 'getInvoices').mockResolvedValueOnce([])
+    vi.spyOn(api, 'getInvoicesV2').mockResolvedValueOnce([])
     vi.spyOn(api, 'hasInvoice').mockResolvedValueOnce({ hasInvoice: false })
     renderReimbursementsInvoices()
 

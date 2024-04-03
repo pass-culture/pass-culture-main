@@ -11,57 +11,13 @@ from pcapi.core.finance import factories
 from pcapi.core.finance import models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.testing import override_features
 from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-@override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
-def test_integration_full_workflow_legacy_journey(css_font_http_request_mock):
-    # A booking is manually marked as used. Check the whole workflow
-    # until the invoice is generated.
-    initial_dt = datetime.datetime.utcnow()
-    venue = offerers_factories.VenueFactory(pricing_point="self", reimbursement_point="self")
-    factories.BankInformationFactory(venue=venue)
-    booking = bookings_factories.BookingFactory(stock__offer__venue=venue)
-
-    with time_machine.travel(initial_dt, tick=False):
-        bookings_api.mark_as_used(booking)
-        assert booking.status == bookings_models.BookingStatus.USED
-        event = models.FinanceEvent.query.one()
-        assert event.booking == booking
-        assert event.status == models.FinanceEventStatus.READY
-
-    # `price_events()` ignores recently created events (< 1 minute).
-    with time_machine.travel(initial_dt + datetime.timedelta(minutes=1), tick=False):
-        api.price_events()
-        assert event.status == models.FinanceEventStatus.PRICED
-        pricing = models.Pricing.query.one()
-        assert pricing.event == event
-        assert pricing.booking == booking
-        assert pricing.status == models.PricingStatus.VALIDATED
-
-    cutoff = datetime.datetime.utcnow()
-    batch = api.generate_cashflows_and_payment_files(cutoff)
-    assert len(pricing.cashflows) == 1
-    cashflow = pricing.cashflows[0]
-    assert cashflow.status == models.CashflowStatus.UNDER_REVIEW
-    db.session.refresh(pricing)
-    assert pricing.status == models.PricingStatus.PROCESSED
-
-    api.generate_invoices(batch)
-    db.session.refresh(cashflow)
-    assert cashflow.status == models.CashflowStatus.ACCEPTED
-    db.session.refresh(pricing)
-    assert pricing.status == models.PricingStatus.INVOICED
-    assert booking.status == bookings_models.BookingStatus.REIMBURSED
-    assert booking.reimbursementDate is not None
-
-
-@override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
-def test_integration_full_workflow_new_journey(css_font_http_request_mock):
+def test_integration_full_workflow(css_font_http_request_mock):
     # A booking is manually marked as used. Check the whole workflow
     # until the invoice is generated.
     initial_dt = datetime.datetime.utcnow()

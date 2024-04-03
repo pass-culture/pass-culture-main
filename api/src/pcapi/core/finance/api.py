@@ -62,7 +62,6 @@ from pcapi.core.mails.transactional import send_booking_cancellation_by_pro_to_b
 from pcapi.core.mails.transactional.finance_incidents.finance_incident_notification import send_commercial_gesture_email
 from pcapi.core.mails.transactional.finance_incidents.finance_incident_notification import send_finance_incident_emails
 from pcapi.core.object_storage import store_public_object
-from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.reference.models as reference_models
@@ -70,7 +69,6 @@ import pcapi.core.users.constants as users_constants
 import pcapi.core.users.models as users_models
 from pcapi.domain import reimbursement
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
 from pcapi.tasks import finance_tasks
 from pcapi.utils import human_ids
@@ -828,279 +826,10 @@ def generate_cashflows(cutoff: datetime.datetime) -> models.CashflowBatch:
     batch = models.CashflowBatch(cutoff=cutoff, label=_get_next_cashflow_batch_label())
     db.session.add(batch)
     db.session.commit()
-    if FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
-        _generate_cashflows(batch)
-    else:
-        _generate_cashflows_legacy(batch)
+    _generate_cashflows(batch)
     # if the script fail we want to keep the lock to forbid backoffice to modify the data
     app.redis_client.delete(conf.REDIS_GENERATE_CASHFLOW_LOCK)
     return batch
-
-
-def _generate_cashflows_legacy(batch: models.CashflowBatch) -> None:
-    """Given an existing CashflowBatch and corresponding cutoff, generate
-    a new cashflow for each reimbursement point for which there is
-    money to transfer.
-
-    This is a private function that you should never call directly,
-    unless the cashflow generation stopped before its end and you want
-    to proceed with an **existing** CashflowBatch.
-    """
-    # Store now otherwise SQLAlchemy will make a SELECT to fetch the
-    # id again after each COMMIT.
-    batch_id = batch.id
-    logger.info("Started to generate cashflows for batch %d", batch_id)
-    filters = (
-        models.Pricing.status == models.PricingStatus.VALIDATED,
-        models.Pricing.valueDate < batch.cutoff,
-        # We should not have any validated pricing with a cashflow,
-        # this is a safety belt.
-        models.CashflowPricing.pricingId.is_(None),
-        # Bookings can now be priced even if BankInformation is not ACCEPTED,
-        # but to generate cashflows we definitely need it.
-        models.BankInformation.status == models.BankInformationStatus.ACCEPTED,
-        # Even if a booking is marked as used prematurely, we should
-        # wait for the event to happen.
-        sqla.or_(
-            sqla.and_(
-                models.Pricing.bookingId.is_not(None),
-                sqla.or_(
-                    offers_models.Stock.beginningDatetime.is_(None),
-                    offers_models.Stock.beginningDatetime < batch.cutoff,
-                ),
-            ),
-            sqla.and_(
-                models.Pricing.collectiveBookingId.is_not(None),
-                educational_models.CollectiveStock.beginningDatetime < batch.cutoff,
-            ),
-            models.FinanceEvent.bookingFinanceIncidentId.is_not(None),
-        ),
-    )
-
-    def _mark_as_processed(pricing_ids: sqla_orm.Query) -> None:
-        pricings_to_update = models.Pricing.query.filter(models.Pricing.id.in_(pricing_ids))
-        pricings_to_update.update(
-            {"status": models.PricingStatus.PROCESSED},
-            synchronize_session=False,
-        )
-
-    reimbursement_point_infos = (
-        models.Pricing.query.filter(*filters)
-        .outerjoin(models.Pricing.booking)
-        .outerjoin(bookings_models.Booking.stock)
-        .outerjoin(models.Pricing.collectiveBooking)
-        .outerjoin(educational_models.CollectiveBooking.collectiveStock)
-        .join(models.Pricing.event)
-        .join(
-            offerers_models.VenueReimbursementPointLink,
-            offerers_models.VenueReimbursementPointLink.venueId == models.Pricing.venueId,
-        )
-        .filter(offerers_models.VenueReimbursementPointLink.timespan.contains(batch.cutoff))
-        .join(
-            models.BankInformation,
-            models.BankInformation.venueId == offerers_models.VenueReimbursementPointLink.reimbursementPointId,
-        )
-        .outerjoin(models.CashflowPricing)
-        .with_entities(
-            offerers_models.VenueReimbursementPointLink.reimbursementPointId,
-            models.BankInformation.id,
-            sqla_func.array_agg(models.Pricing.venueId.distinct()),
-        )
-        .group_by(
-            offerers_models.VenueReimbursementPointLink.reimbursementPointId,
-            models.BankInformation.id,
-        )
-    )
-
-    for reimbursement_point_id, bank_account_id, venue_ids in reimbursement_point_infos:
-        log_extra = {
-            "batch": batch_id,
-            "reimbursement_point": reimbursement_point_id,
-        }
-        start = time.perf_counter()
-        logger.info("Generating cashflow", extra=log_extra)
-        try:
-            with transaction():
-                pricings = (
-                    models.Pricing.query.outerjoin(models.Pricing.booking)
-                    .outerjoin(bookings_models.Booking.stock)
-                    .outerjoin(models.Pricing.collectiveBooking)
-                    .outerjoin(educational_models.CollectiveBooking.collectiveStock)
-                    .join(models.Pricing.event)
-                    .join(
-                        models.BankInformation,
-                        models.BankInformation.venueId == reimbursement_point_id,
-                    )
-                    .outerjoin(models.CashflowPricing)
-                    .filter(
-                        models.Pricing.venueId.in_(venue_ids),
-                        *filters,
-                    )
-                )
-
-                # Check integrity by looking for bookings whose amount
-                # has been changed after they have been priced.
-                diff = (
-                    pricings.join(models.Pricing.lines)
-                    .filter(
-                        models.PricingLine.category == models.PricingLineCategory.OFFERER_REVENUE,
-                        models.PricingLine.amount
-                        != -100
-                        * sqla.case(
-                            (
-                                bookings_models.Booking.id.is_not(None),
-                                bookings_models.Booking.amount * bookings_models.Booking.quantity,
-                            ),
-                            else_=educational_models.CollectiveStock.price,
-                        ),
-                    )
-                    .with_entities(models.Pricing.id)
-                )
-                diff = {_pricing_id for _pricing_id, in diff.all()}
-                if diff:
-                    logger.error(
-                        "Found integrity error on booking prices vs. pricing lines",
-                        extra={
-                            "pricing_lines": diff,
-                            "reimbursement_point": reimbursement_point_id,
-                        },
-                    )
-                    continue
-
-                total = pricings.with_entities(sqla.func.sum(models.Pricing.amount)).scalar() or 0
-
-                # The total is positive if the pro owes us more than we do.
-                if total >= 0:
-                    if total == 0:
-                        # TODO: Manage invoices for transaction with amount equal to zero
-
-                        # We should not call `_mark_as_processed` with
-                        # `pricings` (see comment below about the next
-                        # call to `_mark_as_processed`), but we don't
-                        # really have a simpler way here. We can live
-                        # with that, because it is very unlikely that
-                        # a new pricing appeared since we calculated
-                        # the total, and it's even more unlikely that
-                        # the total is also zero.
-                        _mark_as_processed(pricings.with_entities(models.Pricing.id))
-                        continue
-
-                    all_current_incidents = (
-                        models.FinanceIncident.query.join(models.FinanceIncident.booking_finance_incidents)
-                        .join(models.BookingFinanceIncident.finance_events)
-                        .join(models.FinanceEvent.pricings)
-                        .outerjoin(models.Pricing.cashflows)
-                        .filter(
-                            models.FinanceIncident.venueId.in_(venue_ids),
-                            models.FinanceIncident.status == models.IncidentStatus.VALIDATED,
-                            models.Cashflow.id.is_(None),  # exclude incidents that already have a cashflow
-                            models.Pricing.status == models.PricingStatus.VALIDATED,
-                            models.Pricing.valueDate < batch.cutoff,
-                        )
-                        .all()
-                    )
-
-                    override_incident_debit_note = any(incident.forceDebitNote for incident in all_current_incidents)
-                    # Last cashflow where we effectively paid (successfully or not) the pro
-                    last_cashflow = (
-                        models.Cashflow.query.filter(
-                            models.Cashflow.reimbursementPointId == reimbursement_point_id,
-                            models.Cashflow.status == models.CashflowStatus.ACCEPTED,
-                        )
-                        .order_by(models.Cashflow.creationDate.desc())
-                        .first()
-                    )
-                    if last_cashflow:
-                        last_cashflow_age = (datetime.datetime.utcnow() - last_cashflow.creationDate).days
-                    else:
-                        last_cashflow_age = 0
-
-                    if (
-                        last_cashflow_age < conf.DEBIT_NOTE_AGE_THRESHOLD_FOR_CASHFLOW
-                        and not override_incident_debit_note
-                    ):
-                        for incident in all_current_incidents:
-                            history_api.add_action(
-                                history_models.ActionType.FINANCE_INCIDENT_WAIT_FOR_PAYMENT,
-                                author=None,
-                                finance_incident=incident,
-                                comment="Le montant de l’incident est supérieur au montant total des réservations validées. Donc aucun justificatif n’est généré, on attend la prochaine échéance",
-                            )
-
-                        continue
-                    for incident in all_current_incidents:
-                        history_api.add_action(
-                            history_models.ActionType.FINANCE_INCIDENT_GENERATE_DEBIT_NOTE,
-                            author=None,
-                            finance_incident=incident,
-                            comment="Une note de débit sera générée dans quelques jours",
-                        )
-
-                cashflow = models.Cashflow(
-                    batchId=batch_id,
-                    reimbursementPointId=reimbursement_point_id,
-                    bankInformationId=bank_account_id,
-                    status=models.CashflowStatus.PENDING,
-                    amount=total,
-                )
-                db.session.add(cashflow)
-                db.session.flush()
-                links = [
-                    models.CashflowPricing(
-                        cashflowId=cashflow.id,
-                        pricingId=pricing.id,
-                    )
-                    for pricing in pricings
-                ]
-                db.session.bulk_save_objects(links)
-                # It's possible (but unlikely) that new pricings have
-                # been added (1) between the calculation of `total`
-                # and the creation of the `CashflowPricing`s; or (2)
-                # between the creation of `CashflowPricing` and now.
-                # If (1): the cashflow amount will be wrong, which is
-                # why we check it below.
-                # If (2): calling `mark_as_processed()` on `pricings`
-                # would be wrong because it would include pricings
-                # that are not linked to any `CashflowPricing`. These
-                # pricings would then stay "processed" and never move
-                # to "invoiced".
-                cashflowed_pricings = models.CashflowPricing.query.filter_by(cashflowId=cashflow.id)
-                _mark_as_processed(cashflowed_pricings.with_entities(models.CashflowPricing.pricingId))
-                total_from_pricings = (
-                    cashflowed_pricings.join(models.Pricing)
-                    .with_entities(sqla.func.sum(models.Pricing.amount))
-                    .scalar()
-                    or 0
-                )
-                if cashflow.amount != total_from_pricings:
-                    # We rollback (because we would not want such an
-                    # inconsistency in the database) so there is
-                    # nothing to fix... but the error is quite
-                    # unlikely to happen (see comment above), so it
-                    # warrants an analysis (hence the ERROR log level
-                    # and not INFO).
-                    logger.error(
-                        "Cashflow amount is different from the sum of its pricings, changes have been rolled back",
-                        extra={
-                            "cashflow_id": cashflow.id,
-                            "cashflow_amount": cashflow.amount,
-                            "total_from_pricings": total_from_pricings,
-                        }
-                        | log_extra,
-                    )
-                    db.session.rollback()
-                    continue
-                db.session.commit()
-                elapsed = time.perf_counter() - start
-                logger.info("Generated cashflow", extra=log_extra | {"elapsed": elapsed})
-        except Exception:  # pylint: disable=broad-except
-            if settings.IS_RUNNING_TESTS:
-                raise
-            logger.exception(
-                "Could not generate cashflow for reimbursement point %d",
-                reimbursement_point_id,
-                extra=log_extra,
-            )
 
 
 def _generate_cashflows(batch: models.CashflowBatch) -> None:
@@ -1361,18 +1090,11 @@ def generate_payment_files(batch: models.CashflowBatch) -> None:
         )
 
     file_paths = {}
-    if FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
-        logger.info("Generating bank accounts file")
-        file_paths["bank_accounts"] = _generate_bank_accounts_file(batch.cutoff)
+    logger.info("Generating bank accounts file")
+    file_paths["bank_accounts"] = _generate_bank_accounts_file(batch.cutoff)
 
-        logger.info("Generating payments file")
-        file_paths["payments"] = _generate_payments_file(batch.id)
-    else:
-        logger.info("Generating reimbursement points file")
-        file_paths["reimbursement_points"] = _generate_reimbursement_points_file(batch.cutoff)
-
-        logger.info("Generating payments file")
-        file_paths["payments"] = _generate_payments_file_legacy(batch.id)
+    logger.info("Generating payments file")
+    file_paths["payments"] = _generate_payments_file(batch.id)
 
     logger.info(
         "Finance files have been generated",
@@ -1703,142 +1425,25 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
     )
 
 
-def _generate_payments_file_legacy(batch_id: int) -> pathlib.Path:
-    header = [
-        "Identifiant du point de remboursement",
-        "SIRET du point de remboursement",
-        "Libellé du point de remboursement",  # commercial name
-        "Montant net offreur",
-    ]
-
-    def get_individual_data(query: BaseQuery) -> BaseQuery:
-        return (
-            query.filter(bookings_models.Booking.amount != 0)
-            .join(models.Pricing.cashflows)
-            .join(
-                offerers_models.Venue,
-                offerers_models.Venue.id == models.Cashflow.reimbursementPointId,
-            )
-            .join(bookings_models.Booking.deposit)
-            .filter(models.Cashflow.batchId == batch_id)
-            .group_by(
-                offerers_models.Venue.id,
-                offerers_models.Venue.siret,
-                models.Deposit.type,
-            )
-            .with_entities(
-                offerers_models.Venue.id.label("reimbursement_point_id"),
-                offerers_models.Venue.siret.label("reimbursement_point_siret"),
-                offerers_models.Venue.common_name.label("reimbursement_point_name"),  # type: ignore[attr-defined]
-                sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
-            )
-        )
-
-    def get_collective_data(query: BaseQuery) -> BaseQuery:
-        return (
-            query.join(educational_models.CollectiveBooking.collectiveStock)
-            .join(models.Pricing.cashflows)
-            .join(
-                offerers_models.Venue,
-                offerers_models.Venue.id == models.Cashflow.reimbursementPointId,
-            )
-            .join(educational_models.CollectiveBooking.educationalInstitution)
-            .join(
-                educational_models.EducationalDeposit,
-                sqla.and_(
-                    educational_models.EducationalDeposit.educationalYearId
-                    == educational_models.CollectiveBooking.educationalYearId,
-                    educational_models.EducationalDeposit.educationalInstitutionId
-                    == educational_models.EducationalInstitution.id,
-                ),
-            )
-            .filter(models.Cashflow.batchId == batch_id)
-            .group_by(
-                offerers_models.Venue.id,
-                offerers_models.Venue.siret,
-                educational_models.EducationalDeposit.ministry,
-            )
-            .with_entities(
-                offerers_models.Venue.id.label("reimbursement_point_id"),
-                offerers_models.Venue.siret.label("reimbursement_point_siret"),
-                offerers_models.Venue.common_name.label("reimbursement_point_name"),  # type: ignore[attr-defined]
-                sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
-            )
-        )
-
-    indiv_query = get_individual_data(
-        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED).join(models.Pricing.booking)
-    )
-
-    indiv_incident_query = get_individual_data(
-        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
-        .join(models.Pricing.event)
-        .join(models.FinanceEvent.bookingFinanceIncident)
-        .join(models.BookingFinanceIncident.booking)
-    )
-
-    collective_query = get_collective_data(
-        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED).join(models.Pricing.collectiveBooking)
-    )
-
-    collective_incident_query = get_collective_data(
-        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
-        .join(models.Pricing.event)
-        .join(models.FinanceEvent.bookingFinanceIncident)
-        .join(models.BookingFinanceIncident.collectiveBooking)
-    )
-
-    rows = (
-        indiv_query.union(indiv_incident_query, collective_query, collective_incident_query)
-        .group_by(
-            sqla.column("reimbursement_point_id"),
-            sqla.column("reimbursement_point_siret"),
-            sqla.column("reimbursement_point_name"),
-        )
-        .with_entities(
-            sqla.column("reimbursement_point_id"),
-            sqla.column("reimbursement_point_siret"),
-            sqla.column("reimbursement_point_name"),
-            sqla_func.sum(sqla.column("pricing_amount")).label("pricing_amount"),
-        )
-        .all()
-    )
-
-    return _write_csv(
-        "down_payment",
-        header,
-        rows=rows,
-        row_formatter=_payment_details_row_formatter,
-    )
-
-
 def _payment_details_row_formatter(sql_row: typing.Any) -> tuple:
-    if FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
-        if hasattr(sql_row, "ministry"):
-            booking_type = "EACC"
-        elif sql_row.deposit_type == models.DepositType.GRANT_15_17.value:
-            booking_type = "EACI"
-        elif sql_row.deposit_type == models.DepositType.GRANT_18.value:
-            booking_type = "PC"
-        else:
-            raise ValueError("Unknown booking type (not educational nor individual)")
+    if hasattr(sql_row, "ministry"):
+        booking_type = "EACC"
+    elif sql_row.deposit_type == models.DepositType.GRANT_15_17.value:
+        booking_type = "EACI"
+    elif sql_row.deposit_type == models.DepositType.GRANT_18.value:
+        booking_type = "PC"
+    else:
+        raise ValueError("Unknown booking type (not educational nor individual)")
 
-        ministry = getattr(sql_row, "ministry", "")
+    ministry = getattr(sql_row, "ministry", "")
     net_amount = utils.to_euros(-sql_row.pricing_amount)
 
-    if FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
-        return (
-            human_ids.humanize(sql_row.bank_account_id),
-            _clean_for_accounting(sql_row.offerer_siren),
-            _clean_for_accounting(f"{sql_row.offerer_name} - {sql_row.bank_account_label}"),
-            booking_type,
-            ministry,
-            net_amount,
-        )
     return (
-        human_ids.humanize(sql_row.reimbursement_point_id),
-        _clean_for_accounting(sql_row.reimbursement_point_siret),
-        _clean_for_accounting(sql_row.reimbursement_point_name),
+        human_ids.humanize(sql_row.bank_account_id),
+        _clean_for_accounting(sql_row.offerer_siren),
+        _clean_for_accounting(f"{sql_row.offerer_name} - {sql_row.bank_account_label}"),
+        booking_type,
+        ministry,
         net_amount,
     )
 
@@ -1921,74 +1526,8 @@ def _get_cashflows_by_reimbursement_points(batch: models.CashflowBatch, only_deb
     return rows
 
 
-def _generate_invoices_legacy(batch: models.CashflowBatch) -> None:
-    """Generate (and store) all invoices."""
-
-    invoiceable_rows = _get_cashflows_by_reimbursement_points(batch, only_debit_notes=False)
-
-    for row in invoiceable_rows:
-        try:
-            with transaction():
-                extra = {"reimbursement_point_id": row.reimbursement_point_id}
-                with log_elapsed(logger, "Generated and sent invoice", extra):
-                    generate_and_store_invoice_legacy(
-                        reimbursement_point_id=row.reimbursement_point_id,
-                        cashflow_ids=row.cashflow_ids,
-                        is_debit_note=False,
-                    )
-        except Exception as exc:  # pylint: disable=broad-except
-            if settings.IS_RUNNING_TESTS:
-                raise
-            logger.exception(
-                "Could not generate invoice",
-                extra={
-                    "reimbursement_point_id": row.reimbursement_point_id,
-                    "cashflow_ids": row.cashflow_ids,
-                    "exc": str(exc),
-                },
-            )
-    with log_elapsed(logger, "Generated CSV invoices file"):
-        path = generate_invoice_file_legacy(batch)
-    drive_folder_name = _get_drive_folder_name(batch)
-    with log_elapsed(logger, "Uploaded CSV invoices file to Google Drive"):
-        _upload_files_to_google_drive(drive_folder_name, [path])
-
-
-def _generate_debit_notes_legacy(batch: models.CashflowBatch) -> None:
-    """Generate (and store) all debit notes."""
-    if FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
-        raise ValueError("This function should not be called when WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is enabled.")
-
-    debit_note_rows = _get_cashflows_by_reimbursement_points(batch, only_debit_notes=True)
-
-    for row in debit_note_rows:
-        try:
-            with transaction():
-                extra = {"reimbursement_point_id": row.reimbursement_point_id}
-                with log_elapsed(logger, "Generated and sent debit note", extra):
-                    generate_and_store_invoice_legacy(
-                        reimbursement_point_id=row.reimbursement_point_id,
-                        cashflow_ids=row.cashflow_ids,
-                        is_debit_note=True,
-                    )
-        except Exception as exc:  # pylint: disable=broad-except
-            if settings.IS_RUNNING_TESTS:
-                raise
-            logger.exception(
-                "Could not generate debit note",
-                extra={
-                    "reimbursement_point_id": row.reimbursement_point_id,
-                    "cashflow_ids": row.cashflow_ids,
-                    "exc": str(exc),
-                },
-            )
-
-
 def generate_debit_notes(batch: models.CashflowBatch) -> None:
     """Generate (and store) all invoices."""
-    if not FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
-        _generate_debit_notes_legacy(batch)
-        return
 
     debit_note_rows = _get_cashflows_by_bank_accounts(batch, only_debit_notes=True)
 
@@ -2035,10 +1574,6 @@ def _get_cashflows_by_bank_accounts(batch: models.CashflowBatch, only_debit_note
 
 def generate_invoices(batch: models.CashflowBatch) -> None:
     """Generate (and store) all invoices."""
-    if not FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
-        _generate_invoices_legacy(batch)
-        return
-
     rows = _get_cashflows_by_bank_accounts(batch)
 
     for row in rows:
@@ -2069,10 +1604,6 @@ def generate_invoices(batch: models.CashflowBatch) -> None:
 
 
 def async_generate_invoices(batch: models.CashflowBatch) -> None:
-    if not FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
-        _async_generate_invoices_legacy(batch)
-        return
-
     rows = _get_cashflows_by_bank_accounts(batch)
 
     app.redis_client.set(
@@ -2084,174 +1615,6 @@ def async_generate_invoices(batch: models.CashflowBatch) -> None:
             bank_account_id=row.bank_account_id, cashflow_ids=row.cashflow_ids, batch_id=batch.id
         )
         finance_tasks.generate_and_store_invoice_task.delay(row_payload)
-
-
-def _async_generate_invoices_legacy(batch: models.CashflowBatch) -> None:
-    rows = _get_cashflows_by_reimbursement_points(batch)
-
-    app.redis_client.set(
-        conf.REDIS_INVOICES_LEFT_TO_GENERATE, len(rows), ex=conf.REDIS_GENERATE_INVOICES_COUNTER_TIMEOUT
-    )
-    app.redis_client.set(conf.REDIS_GENERATE_INVOICES_LENGTH, len(rows), ex=conf.REDIS_GENERATE_INVOICES_LENGTH_TIMEOUT)
-    for row in rows:
-        row_payload = finance_tasks.GenerateInvoicePayloadLegacy(
-            reimbursement_point_id=row.reimbursement_point_id, cashflow_ids=row.cashflow_ids, batch_id=batch.id
-        )
-        finance_tasks.generate_and_store_invoice_task_legacy.delay(row_payload)
-
-
-def generate_invoice_file_legacy(batch: models.CashflowBatch) -> pathlib.Path:
-    header = [
-        "Identifiant du point de remboursement",
-        "Date du justificatif",
-        "Référence du justificatif",
-        "Type de ticket de facturation",
-        "Type de réservation",
-        "Ministère",
-        "Somme des tickets de facturation",
-    ]
-
-    def get_data(query: BaseQuery) -> BaseQuery:
-        return (
-            query.join(models.Pricing.lines)
-            .join(bookings_models.Booking.deposit)
-            .filter(models.Cashflow.batchId == batch.id)
-            .group_by(
-                models.Invoice.id,
-                models.Invoice.date,
-                models.Invoice.reference,
-                models.Invoice.reimbursementPointId,
-                models.PricingLine.category,
-                models.Deposit.type,
-            )
-            .with_entities(
-                models.Invoice.id,
-                models.Invoice.date.label("invoice_date"),
-                models.Invoice.reference.label("invoice_reference"),
-                models.Invoice.reimbursementPointId.label("reimbursement_point_id"),
-                models.PricingLine.category.label("pricing_line_category"),
-                models.Deposit.type.label("deposit_type"),
-                sqla_func.sum(models.PricingLine.amount).label("pricing_line_amount"),
-            )
-        )
-
-    def get_collective_data(query: BaseQuery) -> BaseQuery:
-        return (
-            query.join(models.Pricing.lines)
-            .join(educational_models.CollectiveBooking.educationalInstitution)
-            .join(
-                educational_models.EducationalDeposit,
-                sqla.and_(
-                    educational_models.EducationalDeposit.educationalYearId
-                    == educational_models.CollectiveBooking.educationalYearId,
-                    educational_models.EducationalDeposit.educationalInstitutionId
-                    == educational_models.EducationalInstitution.id,
-                ),
-            )
-            # max 1 program because of unique constraint on EducationalInstitutionProgramAssociation.institutionId
-            .outerjoin(educational_models.EducationalInstitution.programs)
-            .filter(models.Cashflow.batchId == batch.id)
-            .group_by(
-                models.Invoice.id,
-                models.Invoice.date,
-                models.Invoice.reference,
-                models.Invoice.reimbursementPointId,
-                models.PricingLine.category,
-                educational_models.EducationalDeposit.ministry,
-                educational_models.EducationalInstitutionProgram.id,
-            )
-            .with_entities(
-                models.Invoice.id,
-                models.Invoice.date.label("invoice_date"),
-                models.Invoice.reference.label("invoice_reference"),
-                models.Invoice.reimbursementPointId.label("reimbursement_point_id"),
-                models.PricingLine.category.label("pricing_line_category"),
-                sqla.func.coalesce(
-                    educational_models.EducationalInstitutionProgram.label,
-                    educational_models.EducationalDeposit.ministry.cast(sqla.String),
-                ).label("ministry"),
-                sqla_func.sum(models.PricingLine.amount).label("pricing_line_amount"),
-            )
-        )
-
-    indiv_query = get_data(
-        models.Invoice.query.join(models.Invoice.cashflows).join(models.Cashflow.pricings).join(models.Pricing.booking)
-    )
-    indiv_incident_query = get_data(
-        models.Invoice.query.join(models.Invoice.cashflows)
-        .join(models.Cashflow.pricings)
-        .join(models.Pricing.event)
-        .join(models.FinanceEvent.bookingFinanceIncident)
-        .join(models.BookingFinanceIncident.booking)
-    )
-
-    indiv_data = (
-        indiv_query.union(indiv_incident_query)
-        .group_by(
-            sqla.column("invoice_date"),
-            sqla.column("invoice_reference"),
-            sqla.column("reimbursement_point_id"),
-            sqla.column("pricing_line_category"),
-            sqla.column("deposit_type"),
-        )
-        .with_entities(
-            sqla.column("invoice_date"),
-            sqla.column("invoice_reference"),
-            sqla.column("reimbursement_point_id"),
-            sqla.column("pricing_line_category"),
-            sqla.column("deposit_type"),
-            sqla_func.sum(sqla.column("pricing_line_amount")).label("pricing_line_amount"),
-        )
-        .order_by(
-            sqla.column("invoice_reference"), sqla.column("deposit_type"), sqla.column("pricing_line_category").desc()
-        )
-        .all()
-    )
-
-    collective_query = get_collective_data(
-        models.Invoice.query.join(models.Invoice.cashflows)
-        .join(models.Cashflow.pricings)
-        .join(models.Pricing.collectiveBooking)
-    )
-
-    collective_incident_query = get_collective_data(
-        models.Invoice.query.join(models.Invoice.cashflows)
-        .join(models.Cashflow.pricings)
-        .join(models.Pricing.event)
-        .join(models.FinanceEvent.bookingFinanceIncident)
-        .join(models.BookingFinanceIncident.collectiveBooking)
-    )
-
-    collective_data = (
-        collective_query.union(collective_incident_query)
-        .group_by(
-            sqla.column("invoice_date"),
-            sqla.column("invoice_reference"),
-            sqla.column("reimbursement_point_id"),
-            sqla.column("pricing_line_category"),
-            sqla.column("ministry"),
-        )
-        .with_entities(
-            sqla.column("invoice_date"),
-            sqla.column("invoice_reference"),
-            sqla.column("reimbursement_point_id"),
-            sqla.column("pricing_line_category"),
-            sqla.column("ministry"),
-            sqla_func.sum(sqla.column("pricing_line_amount")).label("pricing_line_amount"),
-        )
-        .order_by(
-            sqla.column("invoice_reference"), sqla.column("ministry"), sqla.column("pricing_line_category").desc()
-        )
-        .all()
-    )
-
-    return _write_csv(
-        "invoices",
-        header,
-        rows=itertools.chain(indiv_data, collective_data),
-        row_formatter=_invoice_row_formatter,
-        compress=True,
-    )
 
 
 def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
@@ -2420,10 +1783,7 @@ def _invoice_row_formatter(sql_row: typing.Any) -> tuple:
 
     ministry = getattr(sql_row, "ministry", "")
 
-    if FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
-        accounting_humanized_id = human_ids.humanize(sql_row.bank_account_id)
-    else:
-        accounting_humanized_id = human_ids.humanize(sql_row.reimbursement_point_id)
+    accounting_humanized_id = human_ids.humanize(sql_row.bank_account_id)
 
     return (
         accounting_humanized_id,
@@ -2434,36 +1794,6 @@ def _invoice_row_formatter(sql_row: typing.Any) -> tuple:
         ministry,
         sql_row.pricing_line_amount,
     )
-
-
-def generate_and_store_invoice_legacy(
-    reimbursement_point_id: int, cashflow_ids: list[int], is_debit_note: bool = False
-) -> None:
-    log_extra = {"reimbursement_point": reimbursement_point_id}
-    with log_elapsed(logger, "Generated invoice model instance", log_extra):
-        invoice = _generate_invoice_legacy(
-            reimbursement_point_id=reimbursement_point_id, cashflow_ids=cashflow_ids, is_debit_note=is_debit_note
-        )
-        if not invoice:
-            return
-
-    # The cashflows all come from the same cashflow batch,
-    # so batch_id should be the same for every cashflow
-    batch = (
-        models.CashflowBatch.query.join(models.Cashflow.batch)
-        .join(models.Cashflow.invoices)
-        .filter(models.Invoice.id == invoice.id)
-    ).one()
-
-    with log_elapsed(logger, "Generated invoice HTML", log_extra):
-        if is_debit_note:
-            invoice_html = _generate_debit_note_html_legacy(invoice, batch)
-        else:
-            invoice_html = _generate_invoice_html_legacy(invoice, batch)
-    with log_elapsed(logger, "Generated and stored PDF file", log_extra):
-        _store_invoice_pdf(invoice_storage_id=invoice.storage_object_id, invoice_html=invoice_html)
-    with log_elapsed(logger, "Sent invoice", log_extra):
-        transactional_mails.send_invoice_available_to_pro_email(invoice, batch)
 
 
 def generate_and_store_invoice(bank_account_id: int, cashflow_ids: list[int], is_debit_note: bool = False) -> None:
@@ -2492,194 +1822,6 @@ def generate_and_store_invoice(bank_account_id: int, cashflow_ids: list[int], is
         _store_invoice_pdf(invoice_storage_id=invoice.storage_object_id, invoice_html=invoice_html)
     with log_elapsed(logger, "Sent invoice", log_extra):
         transactional_mails.send_invoice_available_to_pro_email(invoice, batch)
-
-
-def _generate_invoice_legacy(
-    reimbursement_point_id: int, cashflow_ids: list[int], is_debit_note: bool = False
-) -> models.Invoice | None:
-    # Acquire lock to avoid 2 simultaneous calls to this function (on
-    # the same reimbursement point) generating 2 duplicate invoices.
-    # This is also why we call `_filter_invoiceable_cashflows()` again
-    # below : the function will process the requested cashflows only
-    # in the first call
-    lock_reimbursement_point(reimbursement_point_id)
-    invoice = models.Invoice(
-        reimbursementPointId=reimbursement_point_id,
-    )
-    total_reimbursed_amount = 0
-    cashflows = _filter_invoiceable_cashflows(
-        models.Cashflow.query.filter(models.Cashflow.id.in_(cashflow_ids)).options(
-            sqla_orm.joinedload(models.Cashflow.pricings)
-            .options(sqla_orm.joinedload(models.Pricing.lines))
-            .options(sqla_orm.joinedload(models.Pricing.customRule))
-            .options(
-                sqla_orm.joinedload(models.Pricing.event, innerjoin=True).joinedload(
-                    models.FinanceEvent.bookingFinanceIncident
-                )
-            )
-        )
-    ).all()
-    if not cashflows:
-        # We should not end up here unless another instance of the
-        # `generate_invoices` command is being executed simultaneously
-        # and it has already processed this reimbursement point.
-        return None
-    pricings_and_rates_by_rule_group = defaultdict(list)
-    pricings_by_custom_rule = defaultdict(list)
-
-    cashflows_pricings = [cf.pricings for cf in cashflows]
-    flat_pricings = list(itertools.chain.from_iterable(cashflows_pricings))
-    for pricing in flat_pricings:
-        rule_reference = pricing.standardRule or pricing.customRuleId
-        rule = find_reimbursement_rule(rule_reference)
-        if isinstance(rule, models.CustomReimbursementRule):
-            pricings_by_custom_rule[rule].append(pricing)
-        else:
-            pricings_and_rates_by_rule_group[rule.group].append((pricing, rule.rate))  # type: ignore [attr-defined]
-
-    invoice_lines = []
-    for rule_group, pricings_and_rates in pricings_and_rates_by_rule_group.items():
-        rates = defaultdict(list)
-        for pricing, rate in pricings_and_rates:
-            rates[rate].append(pricing)
-        for rate, pricings in rates.items():
-            incident_pricings = []
-            other_pricings = []
-            for pricing in pricings:
-                if pricing.event.bookingFinanceIncidentId:
-                    incident_pricings.append(pricing)
-                else:
-                    other_pricings.append(pricing)
-
-            if other_pricings:
-                invoice_line, reimbursed_amount = _make_invoice_line(rule_group, other_pricings, rate)
-                invoice_lines.append(invoice_line)
-                total_reimbursed_amount += reimbursed_amount
-
-            if incident_pricings:
-                invoice_line, reimbursed_amount = _make_invoice_line(
-                    rule_group, incident_pricings, is_incident_line=True
-                )
-                invoice_lines.append(invoice_line)
-                total_reimbursed_amount += reimbursed_amount
-
-    for custom_rule, pricings in pricings_by_custom_rule.items():
-        incident_pricings = []
-        other_pricings = []
-        for pricing in pricings:
-            if pricing.eventId and pricing.event.bookingFinanceIncidentId:
-                incident_pricings.append(pricing)
-            else:
-                other_pricings.append(pricing)
-        # An InvoiceLine rate will be calculated for a CustomRule with a set reimbursed amount
-        if other_pricings:
-            invoice_line, reimbursed_amount = _make_invoice_line(custom_rule.group, other_pricings, custom_rule.rate)
-            invoice_lines.append(invoice_line)
-            total_reimbursed_amount += reimbursed_amount
-
-        if incident_pricings:
-            invoice_line, reimbursed_amount = _make_invoice_line(
-                custom_rule.group, incident_pricings, is_incident_line=True
-            )
-            invoice_lines.append(invoice_line)
-            total_reimbursed_amount += reimbursed_amount
-
-    invoice.amount = total_reimbursed_amount
-    # As of Python 3.9, DEFAULT_ENTROPY is 32 bytes
-    invoice.token = secrets.token_urlsafe()
-    scheme_name = "invoice.reference" if not is_debit_note else "debit_note.reference"
-    scheme = reference_models.ReferenceScheme.get_and_lock(name=scheme_name, year=datetime.date.today().year)
-    invoice.reference = scheme.formatted_reference
-    scheme.increment_after_use()
-    db.session.add(scheme)
-    db.session.add(invoice)
-    db.session.flush()
-    for line in invoice_lines:
-        line.invoiceId = invoice.id
-    db.session.bulk_save_objects(invoice_lines)
-    cf_links = [models.InvoiceCashflow(invoiceId=invoice.id, cashflowId=cashflow.id) for cashflow in cashflows]
-    db.session.bulk_save_objects(cf_links)
-    # Cashflow.status: UNDER_REVIEW -> ACCEPTED
-    models.Cashflow.query.filter(models.Cashflow.id.in_(cashflow_ids)).update(
-        {"status": models.CashflowStatus.ACCEPTED},
-        synchronize_session=False,
-    )
-
-    # Pricing.status: PROCESSED -> INVOICED
-    # SQLAlchemy ORM cannot call `update()` if a query has been JOINed.
-    with log_elapsed(logger, "Updating status of pricings"):
-        db.session.execute(
-            text(
-                """
-            UPDATE pricing
-            SET status = :status
-            FROM cashflow_pricing
-            WHERE
-              cashflow_pricing."pricingId" = pricing.id
-              AND cashflow_pricing."cashflowId" IN :cashflow_ids
-            """
-            ),
-            {"status": models.PricingStatus.INVOICED.value, "cashflow_ids": tuple(cashflow_ids)},
-        )
-
-    # Booking.status: USED -> REIMBURSED (but keep CANCELLED as is)
-    with log_elapsed(logger, "Updating status of individual bookings"):
-        db.session.execute(
-            text(
-                """
-            UPDATE booking
-            SET
-              status =
-                CASE WHEN booking.status = CAST(:cancelled AS booking_status)
-                THEN CAST(:cancelled AS booking_status)
-                ELSE CAST(:reimbursed AS booking_status)
-                END,
-              "reimbursementDate" = now()
-            FROM pricing, cashflow_pricing
-            WHERE
-              booking.id = pricing."bookingId"
-              AND pricing.id = cashflow_pricing."pricingId"
-              AND cashflow_pricing."cashflowId" IN :cashflow_ids
-            """
-            ),
-            {
-                "cancelled": bookings_models.BookingStatus.CANCELLED.value,
-                "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
-                "cashflow_ids": tuple(cashflow_ids),
-                "reimbursement_date": datetime.datetime.utcnow(),
-            },
-        )
-
-    # CollectiveBooking.status: USED -> REIMBURSED (but keep CANCELLED as is)
-    with log_elapsed(logger, "Updating status of collective bookings"):
-        db.session.execute(
-            text(
-                """
-            UPDATE collective_booking
-            SET
-            status =
-                CASE WHEN collective_booking.status = CAST(:cancelled AS bookingstatus)
-                THEN CAST(:cancelled AS bookingstatus)
-                ELSE CAST(:reimbursed AS bookingstatus)
-                END,
-            "reimbursementDate" = now()
-            FROM pricing, cashflow_pricing
-            WHERE
-                collective_booking.id = pricing."collectiveBookingId"
-            AND pricing.id = cashflow_pricing."pricingId"
-            AND cashflow_pricing."cashflowId" IN :cashflow_ids
-            """
-            ),
-            {
-                "cancelled": bookings_models.BookingStatus.CANCELLED.value,
-                "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
-                "cashflow_ids": tuple(cashflow_ids),
-                "reimbursement_date": datetime.datetime.utcnow(),
-            },
-        )
-
-    db.session.commit()
-    return invoice
 
 
 def _generate_invoice(
@@ -2880,75 +2022,6 @@ def get_invoice_period(
     end_date = batch_cutoff_date
 
     return start_date.date(), end_date.date()
-
-
-def _prepare_invoice_context_legacy(invoice: models.Invoice, batch: models.CashflowBatch) -> dict:
-    # Easier to sort here and not in PostgreSQL, and not much slower
-    # because there are very few cashflows (and usually only 1).
-    cashflows = sorted(invoice.cashflows, key=lambda c: (c.creationDate, c.id))
-
-    invoice_lines = sorted(invoice.lines, key=lambda k: (k.group["position"], -k.rate))
-    total_used_bookings_amount = 0
-    total_contribution_amount = 0
-    total_reimbursed_amount = 0
-    invoice_groups: dict[str, tuple[dict, list[models.InvoiceLine]]] = {}
-    for line in invoice_lines:
-        group = line.group
-        if line.group["label"] in invoice_groups:
-            invoice_groups[line.group["label"]][1].append(line)
-        else:
-            invoice_groups[line.group["label"]] = (group, [line])
-
-    groups = []
-    for group, lines in invoice_groups.values():
-        contribution_subtotal = sum(line.contributionAmount for line in lines)
-        total_contribution_amount += contribution_subtotal
-        reimbursed_amount_subtotal = sum(line.reimbursedAmount for line in lines)
-        total_reimbursed_amount += reimbursed_amount_subtotal
-        used_bookings_subtotal = sum(line.bookings_amount for line in lines if line.bookings_amount)
-        total_used_bookings_amount += used_bookings_subtotal
-
-        invoice_group = models.InvoiceLineGroup(
-            position=group["position"],
-            label=group["label"],
-            contribution_subtotal=contribution_subtotal,
-            reimbursed_amount_subtotal=reimbursed_amount_subtotal,
-            used_bookings_subtotal=used_bookings_subtotal,
-            lines=lines,
-        )
-        groups.append(invoice_group)
-    reimbursements_by_venue = get_reimbursements_by_venue(invoice)
-
-    reimbursement_point = invoice.reimbursementPoint
-    if reimbursement_point is None:
-        raise ValueError("Could not generate invoice without reimbursement point")
-    reimbursement_point_name = reimbursement_point.publicName or reimbursement_point.name
-    bank_information = offerers_repository.BankInformation.query.filter(
-        offerers_repository.BankInformation.venueId == reimbursement_point.id
-    ).one()
-    reimbursement_point_iban = bank_information.iban if bank_information else None
-
-    period_start, period_end = get_invoice_period(batch.cutoff)
-
-    return dict(
-        invoice=invoice,
-        cashflows=cashflows,
-        groups=groups,
-        reimbursement_point=reimbursement_point,
-        reimbursement_point_name=reimbursement_point_name,
-        reimbursement_point_iban=reimbursement_point_iban,
-        total_used_bookings_amount=total_used_bookings_amount,
-        total_contribution_amount=total_contribution_amount,
-        total_reimbursed_amount=total_reimbursed_amount,
-        period_start=period_start,
-        period_end=period_end,
-        reimbursements_by_venue=reimbursements_by_venue,
-        including_finance_incident=any(
-            cashflow
-            for cashflow in cashflows
-            if any(pricing.event.bookingFinanceIncidentId for pricing in cashflow.pricings)
-        ),
-    )
 
 
 def _prepare_invoice_context(invoice: models.Invoice, batch: models.CashflowBatch) -> dict:
@@ -3174,19 +2247,9 @@ def get_reimbursements_by_venue(
     return reimbursements_by_venue.values()
 
 
-def _generate_invoice_html_legacy(invoice: models.Invoice, batch: models.CashflowBatch) -> str:
-    context = _prepare_invoice_context_legacy(invoice, batch)
-    return render_template("invoices/invoice_legacy.html", **context)
-
-
 def _generate_invoice_html(invoice: models.Invoice, batch: models.CashflowBatch) -> str:
     context = _prepare_invoice_context(invoice, batch)
     return render_template("invoices/invoice.html", **context)
-
-
-def _generate_debit_note_html_legacy(invoice: models.Invoice, batch: models.CashflowBatch) -> str:
-    context = _prepare_invoice_context_legacy(invoice, batch)
-    return render_template("invoices/debit_note_legacy.html", **context)
 
 
 def _generate_debit_note_html(invoice: models.Invoice, batch: models.CashflowBatch) -> str:
@@ -3214,134 +2277,16 @@ def merge_cashflow_batches(
     wrong). The target batch must hence be the one with the right
     cutoff.
     """
-    if not FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
-        _merge_cashflow_batches_old_journey(batches_to_remove, target_batch)
-    else:
-        _merge_cashflow_batches_new_journey(batches_to_remove, target_batch)
-
-
-def _merge_cashflow_batches_old_journey(
-    batches_to_remove: list[models.CashflowBatch],
-    target_batch: models.CashflowBatch,
-) -> None:
     assert len(batches_to_remove) >= 1
     assert target_batch not in batches_to_remove
 
     batch_ids_to_remove = [batch.id for batch in batches_to_remove]
-    all_reimbursement_point_ids_of_batch_to_remove = [
-        id_
-        for id_, in (
-            models.Cashflow.query.filter(models.Cashflow.batchId.in_(batch_ids_to_remove)).with_entities(
-                models.Cashflow.reimbursementPointId
-            )
-        )
-    ]
-
-    # Ensure we only process batches from the old journey (i.e. we can't have any reimbursementPointId None)
-    assert all(all_reimbursement_point_ids_of_batch_to_remove), "Can't merge batches from both bank journeys"
-    assert all(
-        id_
-        for id_, in models.Cashflow.query.filter(models.Cashflow.batchId == target_batch.id).with_entities(
-            models.Cashflow.reimbursementPointId
-        )
-    ), "Can't merge batches from both bank journeys"
-
-    reimbursement_point_ids = set(all_reimbursement_point_ids_of_batch_to_remove)
-
-    with transaction():
-        initial_sum = (
-            models.Cashflow.query.filter(
-                models.Cashflow.batchId.in_([b.id for b in batches_to_remove + [target_batch]]),
-            )
-            .with_entities(sqla_func.sum(models.Cashflow.amount))
-            .scalar()
-        )
-        for reimbursement_point_id in reimbursement_point_ids:
-            cashflows = models.Cashflow.query.filter(
-                models.Cashflow.reimbursementPointId == reimbursement_point_id,
-                models.Cashflow.batchId.in_(
-                    batch_ids_to_remove + [target_batch.id],
-                ),
-            ).all()
-            # One cashflow, wrong batch. Just change the batchId.
-            if len(cashflows) == 1:
-                models.Cashflow.query.filter_by(id=cashflows[0].id).update(
-                    {
-                        "batchId": target_batch.id,
-                        "creationDate": target_batch.creationDate,
-                    },
-                    synchronize_session=False,
-                )
-                continue
-
-            # Multiple cashflows, possibly including the target batch.
-            # Update "right" cashflow amount if there is one (or any
-            # cashflow otherwise), delete other cashflows.
-            try:
-                cashflow_to_keep = [cf for cf in cashflows if cf.batchId == target_batch.id][0]
-            except IndexError:
-                cashflow_to_keep = cashflows[0]
-            cashflow_ids_to_remove = [cf.id for cf in cashflows if cf != cashflow_to_keep]
-            sum_to_add = (
-                models.Cashflow.query.filter(models.Cashflow.id.in_(cashflow_ids_to_remove))
-                .with_entities(sqla_func.sum(models.Cashflow.amount))
-                .scalar()
-            )
-            models.CashflowPricing.query.filter(models.CashflowPricing.cashflowId.in_(cashflow_ids_to_remove)).update(
-                {"cashflowId": cashflow_to_keep.id},
-                synchronize_session=False,
-            )
-            models.Cashflow.query.filter_by(id=cashflow_to_keep.id).update(
-                {
-                    "batchId": target_batch.id,
-                    "amount": cashflow_to_keep.amount + sum_to_add,
-                },
-                synchronize_session=False,
-            )
-            models.CashflowLog.query.filter(
-                models.CashflowLog.cashflowId.in_(cashflow_ids_to_remove),
-            ).delete(synchronize_session=False)
-            models.Cashflow.query.filter(
-                models.Cashflow.id.in_(cashflow_ids_to_remove),
-            ).delete(synchronize_session=False)
-        models.CashflowBatch.query.filter(models.CashflowBatch.id.in_(batch_ids_to_remove)).delete(
-            synchronize_session=False,
-        )
-        final_sum = (
-            models.Cashflow.query.filter(
-                models.Cashflow.batchId.in_(batch_ids_to_remove + [target_batch.id]),
-            )
-            .with_entities(sqla_func.sum(models.Cashflow.amount))
-            .scalar()
-        )
-        assert final_sum == initial_sum
-        db.session.commit()
-
-
-def _merge_cashflow_batches_new_journey(
-    batches_to_remove: list[models.CashflowBatch],
-    target_batch: models.CashflowBatch,
-) -> None:
-    assert len(batches_to_remove) >= 1
-    assert target_batch not in batches_to_remove
-
-    batch_ids_to_remove = [batch.id for batch in batches_to_remove]
-    all_bank_account_ids_of_batches_to_remove = [
+    bank_account_ids = [
         id_
         for id_, in models.Cashflow.query.filter(models.Cashflow.batchId.in_(batch_ids_to_remove))
         .with_entities(models.Cashflow.bankAccountId)
         .distinct()
     ]
-    # Ensure we only process Cashflow from the new journey (i.e. we can't have any bankAccount None)
-    assert all(all_bank_account_ids_of_batches_to_remove), "Can't merge batches from both bank journeys"
-    assert all(
-        id_
-        for id_, in models.Cashflow.query.filter(models.Cashflow.batchId == target_batch.id).with_entities(
-            models.Cashflow.bankAccountId
-        )
-    ), "Can't merge batches from both bank journeys"
-
-    bank_account_ids = set(all_bank_account_ids_of_batches_to_remove)
 
     with transaction():
         initial_sum = (

@@ -57,7 +57,6 @@ import type { GetVenueResponseModel } from '../models/GetVenueResponseModel';
 import type { GetVenuesOfOffererFromSiretResponseModel } from '../models/GetVenuesOfOffererFromSiretResponseModel';
 import type { HasInvoiceResponseModel } from '../models/HasInvoiceResponseModel';
 import type { InviteMemberQueryModel } from '../models/InviteMemberQueryModel';
-import type { InvoiceListResponseModel } from '../models/InvoiceListResponseModel';
 import type { InvoiceListV2ResponseModel } from '../models/InvoiceListV2ResponseModel';
 import type { LinkVenueToBankAccountBodyModel } from '../models/LinkVenueToBankAccountBodyModel';
 import type { LinkVenueToPricingPointBodyModel } from '../models/LinkVenueToPricingPointBodyModel';
@@ -979,33 +978,6 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/finance/bank-accounts',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * get_invoices <GET>
-   * @param periodBeginningDate
-   * @param periodEndingDate
-   * @param reimbursementPointId
-   * @returns InvoiceListResponseModel OK
-   * @throws ApiError
-   */
-  public getInvoices(
-    periodBeginningDate?: string | null,
-    periodEndingDate?: string | null,
-    reimbursementPointId?: number | null,
-  ): CancelablePromise<InvoiceListResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/finance/invoices',
-      query: {
-        'periodBeginningDate': periodBeginningDate,
-        'periodEndingDate': periodEndingDate,
-        'reimbursementPointId': reimbursementPointId,
-      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,

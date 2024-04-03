@@ -3,14 +3,12 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { CollectiveBookingBankAccountStatus } from './CollectiveBookingBankAccountStatus';
-import type { CollectiveBookingBankInformationStatus } from './CollectiveBookingBankInformationStatus';
 import type { CollectiveBookingEducationalRedactorResponseModel } from './CollectiveBookingEducationalRedactorResponseModel';
 import type { CollectiveOfferOfferVenueResponseModel } from './CollectiveOfferOfferVenueResponseModel';
 import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
 import type { StudentLevels } from './StudentLevels';
 export type CollectiveBookingByIdResponseModel = {
-  bankAccountStatus?: CollectiveBookingBankAccountStatus | null;
-  bankInformationStatus?: CollectiveBookingBankInformationStatus | null;
+  bankAccountStatus: CollectiveBookingBankAccountStatus;
   beginningDatetime: string;
   educationalInstitution: EducationalInstitutionResponseModel;
   educationalRedactor: CollectiveBookingEducationalRedactorResponseModel;
