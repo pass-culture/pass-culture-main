@@ -125,7 +125,6 @@ const renderAutocomplete = (
             placeholder={
               'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
             }
-            setCurrentSearch={vi.fn()}
           />
           <a href="#">Second element</a>
         </div>

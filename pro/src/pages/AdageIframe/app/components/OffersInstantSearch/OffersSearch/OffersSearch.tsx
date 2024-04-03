@@ -1,6 +1,7 @@
 import { FormikContext, useFormik } from 'formik'
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 import { useInstantSearch } from 'react-instantsearch'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { AdageFrontRoles, VenueResponse } from 'apiClient/adage'
 import { api, apiAdage } from 'apiClient/api'
@@ -11,6 +12,8 @@ import useNotification from 'hooks/useNotification'
 import { MARSEILLE_EN_GRAND } from 'pages/AdageIframe/app/constants'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { Facets, Option } from 'pages/AdageIframe/app/types'
+import { setAdageFilter } from 'store/adageFilter/reducer'
+import { adageQuerySelector } from 'store/adageFilter/selectors'
 
 import { DEFAULT_GEO_RADIUS, MAIN_INDEX_ID } from '../OffersInstantSearch'
 import {
@@ -55,10 +58,13 @@ export const OffersSearch = ({
   setGeoRadius,
   initialFilters,
 }: SearchProps): JSX.Element => {
+  const dispatch = useDispatch()
+
   const { adageUser } = useAdageUser()
   const isUserAdmin = adageUser.role === AdageFrontRoles.READONLY
 
   const notification = useNotification()
+  const adageQueryFromSelector = useSelector(adageQuerySelector)
 
   const [domainsOptions, setDomainsOptions] = useState<Option<number>[]>([])
 
@@ -100,6 +106,7 @@ export const OffersSearch = ({
   }, [notification])
 
   function handleSubmit() {
+    dispatch(setAdageFilter(formik.values))
     const updatedFilters = adageFiltersToFacetFilters({
       ...formik.values,
       uai: adageUser.uai ? ['all', adageUser.uai] : ['all'],
@@ -124,21 +131,18 @@ export const OffersSearch = ({
     formik.handleSubmit()
   }
 
-  const [currentSearch, setCurrentSearch] = useState<string | null>(null)
   const logFiltersOnSearch = async (nbHits: number, queryId?: string) => {
     /* istanbul ignore next: TO FIX the current structure make it hard to test, we probably should not mock Offers in OfferSearch tests */
-    if (formik.submitCount > 0 || currentSearch !== null) {
+    if (formik.submitCount > 0 || adageQueryFromSelector !== null) {
       await apiAdage.logTrackingFilter({
         iframeFrom: location.pathname,
         resultNumber: nbHits,
         queryId: queryId ?? null,
-        filterValues: formik
-          ? serializeFiltersForData(
-              formik.values,
-              currentSearch,
-              domainsOptions
-            )
-          : {},
+        filterValues: serializeFiltersForData(
+          formik.values,
+          adageQueryFromSelector,
+          domainsOptions
+        ),
       })
     }
   }
@@ -149,6 +153,11 @@ export const OffersSearch = ({
     }
     if (formik.values.academies.length > 0) {
       return LocalisationFilterStates.ACADEMIES
+    }
+    if (
+      formik.values.geolocRadius !== ADAGE_FILTERS_DEFAULT_VALUES.geolocRadius
+    ) {
+      return LocalisationFilterStates.GEOLOCATION
     }
     return LocalisationFilterStates.NONE
   }
@@ -161,11 +170,10 @@ export const OffersSearch = ({
     <>
       <FormikContext.Provider value={formik}>
         <Autocomplete
-          initialQuery={''}
+          initialQuery={adageQueryFromSelector ?? ''}
           placeholder={
             'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
           }
-          setCurrentSearch={setCurrentSearch}
         />
         <div className={styles['separator']} />
         <div ref={offerFilterRef}>

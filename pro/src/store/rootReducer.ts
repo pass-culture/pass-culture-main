@@ -4,6 +4,7 @@ import { featuresReducer } from 'store/features/reducer'
 import { notificationsReducer } from 'store/notifications/reducer'
 import { userReducer } from 'store/user/reducer'
 
+import { adageFilterReducer } from './adageFilter/reducer'
 import { navReducer } from './nav/reducer'
 
 const rootReducer = combineReducers({
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
   notification: notificationsReducer,
   user: userReducer,
   nav: navReducer,
+  adageFilter: adageFilterReducer,
 })
 
 export default rootReducer
