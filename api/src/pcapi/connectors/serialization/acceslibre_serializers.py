@@ -67,14 +67,14 @@ class ExternalAccessibilityDataModel(pydantic_v1.BaseModel):
                         elif item in ENTRANCE_FIELDS:
                             accessibility_data.motorDisability.entrance = item
                         accessibility_data.isAccessibleMotorDisability = (
-                            item not in IS_NOT_MOTOR_COMPLIANT or not accessibility_data.isAccessibleMotorDisability
+                            item not in IS_NOT_MOTOR_COMPLIANT or accessibility_data.isAccessibleMotorDisability
                         )
 
                 case "facilities":
                     for item in value:
                         accessibility_data.motorDisability.facilities = item
                         accessibility_data.isAccessibleMotorDisability = (
-                            item not in IS_NOT_MOTOR_COMPLIANT or not accessibility_data.isAccessibleMotorDisability
+                            item not in IS_NOT_MOTOR_COMPLIANT or accessibility_data.isAccessibleMotorDisability
                         )
 
                 case "deaf_and_hard_of_hearing_amenities":
@@ -105,7 +105,7 @@ class ExternalAccessibilityDataModel(pydantic_v1.BaseModel):
                     for item in value:
                         accessibility_data.motorDisability.parking = item
                         accessibility_data.isAccessibleMotorDisability = (
-                            item not in IS_NOT_MOTOR_COMPLIANT or not accessibility_data.isAccessibleMotorDisability
+                            item not in IS_NOT_MOTOR_COMPLIANT or accessibility_data.isAccessibleMotorDisability
                         )
 
         return accessibility_data
