@@ -10,13 +10,10 @@ import strokeEuroIcon from 'icons/stroke-euro.svg'
 import strokeLocationIcon from 'icons/stroke-location.svg'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
+import { getFormattedDatesForTemplateOffer } from 'pages/AdageIframe/app/components/OfferInfos/AdageOffer/utils/adageOfferDates'
 import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types/offers'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { getRangeToFrenchText } from 'utils/date'
-import {
-  formatLocalTimeDateString,
-  getLocalDepartementDateTimeFromUtc,
-} from 'utils/timezone'
+import { formatLocalTimeDateString } from 'utils/timezone'
 
 import styles from './OfferSummary.module.scss'
 
@@ -38,20 +35,7 @@ const OfferSummary = ({ offer }: OfferSummaryProps): JSX.Element => {
   let offerVenueLabel = `${venue.postalCode}, ${venue.city}`
 
   const formattedDates =
-    isCollectiveOfferTemplate(offer) &&
-    ((offer.dates?.start &&
-      offer.dates.end &&
-      getRangeToFrenchText(
-        getLocalDepartementDateTimeFromUtc(
-          offer.dates.start,
-          venue.departmentCode
-        ),
-        getLocalDepartementDateTimeFromUtc(
-          offer.dates.end,
-          venue.departmentCode
-        )
-      )) ||
-      'Tout au long de l’année scolaire (l’offre est permanente)')
+    isOfferTemplate && getFormattedDatesForTemplateOffer(offer)
 
   if (offerVenue) {
     if (offerVenue.addressType === OfferAddressType.OTHER) {
