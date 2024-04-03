@@ -22,7 +22,7 @@ from . import blueprint
 
 @private_api.route("/venueProviders", methods=["GET"])
 @login_required
-@spectree_serialize(on_success_status=200, response_model=ListVenueProviderResponse, api=blueprint.pro_private_schema)  # type: ignore [arg-type]
+@spectree_serialize(on_success_status=200, response_model=ListVenueProviderResponse, api=blueprint.pro_private_schema)
 def list_venue_providers(query: ListVenueProviderQuery) -> ListVenueProviderResponse:
     check_user_can_alter_venue(current_user, query.venue_id)
 
@@ -37,7 +37,7 @@ def list_venue_providers(query: ListVenueProviderQuery) -> ListVenueProviderResp
 
 @private_api.route("/venueProviders", methods=["POST"])
 @login_required
-@spectree_serialize(on_success_status=201, response_model=VenueProviderResponse, api=blueprint.pro_private_schema)  # type: ignore [arg-type]
+@spectree_serialize(on_success_status=201, response_model=VenueProviderResponse, api=blueprint.pro_private_schema)
 def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
     body.venueIdAtOfferProvider = None
     if body.venueId is None:
@@ -108,7 +108,7 @@ def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
 
 @private_api.route("/venueProviders", methods=["PUT"])
 @login_required
-@spectree_serialize(on_success_status=200, response_model=VenueProviderResponse, api=blueprint.pro_private_schema)  # type: ignore [arg-type]
+@spectree_serialize(on_success_status=200, response_model=VenueProviderResponse, api=blueprint.pro_private_schema)
 def update_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
     assert body.venueId is not None, "a not None venue_id is required"
     assert body.providerId is not None, "a not None provider_id is required"

@@ -3,9 +3,9 @@ import decimal
 from typing import Any
 
 import pydantic.v1
-from pydantic.v1.main import BaseModel
 
 from pcapi.core.providers.models import VenueProvider
+from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 
