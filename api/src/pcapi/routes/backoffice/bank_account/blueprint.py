@@ -21,7 +21,6 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro import forms as pro_forms
@@ -150,9 +149,8 @@ def download_reimbursement_details(bank_account_id: int) -> utils.BackofficeResp
         )
 
     invoices = finance_models.Invoice.query.filter(finance_models.Invoice.id.in_(form.object_ids_list)).all()
-    is_new_journey_active = FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active()
     reimbursement_details = [
-        reimbursement_csv_serialize.ReimbursementDetails(details, is_new_journey_active)
+        reimbursement_csv_serialize.ReimbursementDetails(details)
         for details in finance_repository.find_all_invoices_finance_details([invoice.id for invoice in invoices])
     ]
     export_data = reimbursement_csv_serialize.generate_reimbursement_details_csv(reimbursement_details)

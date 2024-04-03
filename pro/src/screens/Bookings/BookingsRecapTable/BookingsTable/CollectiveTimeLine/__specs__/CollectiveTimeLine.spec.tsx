@@ -4,7 +4,6 @@ import { addDays } from 'date-fns'
 import React from 'react'
 
 import {
-  CollectiveBookingBankInformationStatus,
   CollectiveBookingBankAccountStatus,
   CollectiveBookingByIdResponseModel,
   CollectiveBookingResponseModel,
@@ -178,7 +177,7 @@ describe('collective timeline', () => {
         bookingStatus: BOOKING_STATUS.VALIDATED,
       })
       bookingDetails = collectiveBookingByIdFactory({
-        bankInformationStatus: CollectiveBookingBankInformationStatus.DRAFT,
+        bankAccountStatus: CollectiveBookingBankAccountStatus.DRAFT,
       })
       renderCollectiveTimeLine(bookingRecap, bookingDetails)
       expect(
@@ -199,7 +198,6 @@ describe('collective timeline', () => {
         bookingStatus: BOOKING_STATUS.VALIDATED,
       })
       bookingDetails = collectiveBookingByIdFactory({
-        bankInformationStatus: null,
         bankAccountStatus: CollectiveBookingBankAccountStatus.MISSING,
       })
 

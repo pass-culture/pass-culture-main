@@ -169,13 +169,8 @@ def create_specific_invoice() -> None:
         finance_api.price_event(event)
     finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
     cashflows = finance_models.Cashflow.query.filter_by(reimbursementPoint=venue).all()
-    cashflow_ids = [c.id for c in cashflows]
+    _cashflow_ids = [c.id for c in cashflows]
 
-    finance_api.generate_and_store_invoice_legacy(
-        reimbursement_point_id=venue.id,
-        cashflow_ids=cashflow_ids,
-    )
-    logger.info("Created specific Invoice")
     feature.Feature.query.filter(feature.Feature.name == "WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY").update(
         {"isActive": True}, synchronize_session=False
     )

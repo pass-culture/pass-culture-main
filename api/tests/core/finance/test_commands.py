@@ -87,42 +87,8 @@ class AddCustomOfferReimbursementRuleTest:
 
 
 @override_settings(SLACK_GENERATE_INVOICES_FINISHED_CHANNEL="channel")
-@override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
 @clean_database
-def test_generate_invoices_internal_notification_in_old_journey(app, css_font_http_request_mock):
-    venue = offerers_factories.VenueFactory()
-    batch = finance_factories.CashflowBatchFactory()
-    finance_factories.CashflowFactory.create_batch(
-        size=3,
-        batch=batch,
-        reimbursementPoint=venue,
-        status=finance_models.CashflowStatus.UNDER_REVIEW,
-    )
-    finance_factories.BankInformationFactory(venue=venue)
-
-    with patch("pcapi.core.finance.commands.send_internal_message") as mock_send_internal_message:
-        run_command(
-            app,
-            "generate_invoices",
-            "--batch-id",
-            str(batch.id),
-        )
-
-    assert mock_send_internal_message.call_count == 1
-    call_kwargs = mock_send_internal_message.call_args.kwargs
-    assert len(call_kwargs["blocks"]) == 1
-    call_block = call_kwargs["blocks"][0]
-    assert call_block["text"]["text"] == f"La Génération de factures ({batch.label}) est terminée avec succès"
-    assert call_block["text"]["type"] == "mrkdwn"
-    assert call_block["type"] == "section"
-
-    assert call_kwargs["channel"] == "channel"
-    assert call_kwargs["icon_emoji"] == ":large_green_circle:"
-
-@override_settings(SLACK_GENERATE_INVOICES_FINISHED_CHANNEL="channel")
-@override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
-@clean_database
-def test_generate_invoices_internal_notification_in_new_journey(app, css_font_http_request_mock):
+def test_generate_invoices_internal_notification(app, css_font_http_request_mock):
     venue = offerers_factories.VenueFactory()
     batch = finance_factories.CashflowBatchFactory()
     bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
@@ -154,7 +120,7 @@ def test_generate_invoices_internal_notification_in_new_journey(app, css_font_ht
     assert call_kwargs["icon_emoji"] == ":large_green_circle:"
 
 
-@override_features(WIP_ENABLE_FINANCE_INCIDENT=True, WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
+@override_features(WIP_ENABLE_FINANCE_INCIDENT=True)
 @clean_database
 def test_when_there_is_a_debit_note_to_generate_on_total_incident(app, css_font_http_request_mock):
     sixteen_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=16)
@@ -244,7 +210,7 @@ def test_when_there_is_a_debit_note_to_generate_on_total_incident(app, css_font_
     assert invoices[1].amount == -invoices[0].amount
 
 
-@override_features(WIP_ENABLE_FINANCE_INCIDENT=True, WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
+@override_features(WIP_ENABLE_FINANCE_INCIDENT=True)
 @clean_database
 def test_when_there_is_a_debit_note_to_generate_on_partial_incident(app, css_font_http_request_mock):
     sixteen_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=16)

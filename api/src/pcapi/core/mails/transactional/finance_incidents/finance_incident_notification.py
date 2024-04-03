@@ -5,20 +5,14 @@ from pcapi.core.finance import utils as finance_utils
 from pcapi.core.mails import models as mails_models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers import models as offers_models
-from pcapi.models.feature import FeatureToggle
 
 
 def send_finance_incident_emails(finance_incident: finance_models.FinanceIncident) -> None:
     venue = finance_incident.venue
 
-    if not FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
-        if not venue.current_reimbursement_point or not venue.current_reimbursement_point.bookingEmail:
-            return
-        booking_email = venue.current_reimbursement_point.bookingEmail
-    else:
-        if not venue.current_bank_account_link or not venue.bookingEmail:
-            return
-        booking_email = venue.bookingEmail
+    if not venue.current_bank_account_link or not venue.bookingEmail:
+        return
+    booking_email = venue.bookingEmail
 
     if finance_incident.forceDebitNote or finance_incident.kind != finance_models.IncidentType.OVERPAYMENT:
         return
@@ -60,14 +54,9 @@ def send_commercial_gesture_email(finance_incident: finance_models.FinanceIncide
 
     venue = finance_incident.venue
 
-    if not FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
-        if not venue.current_reimbursement_point or not venue.current_reimbursement_point.bookingEmail:
-            return
-        booking_email = venue.current_reimbursement_point.bookingEmail
-    else:
-        if not venue.current_bank_account_link or not venue.bookingEmail:
-            return
-        booking_email = venue.bookingEmail
+    if not venue.current_bank_account_link or not venue.bookingEmail:
+        return
+    booking_email = venue.bookingEmail
 
     offers_incidents: dict[tuple, list[finance_models.BookingFinanceIncident]] = {}
     for booking_finance_incident in finance_incident.booking_finance_incidents:
