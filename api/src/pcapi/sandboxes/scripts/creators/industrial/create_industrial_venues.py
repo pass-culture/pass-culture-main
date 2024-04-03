@@ -108,9 +108,7 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
                 pricing_point="self" if siret else None,
                 bank_account=bank_account,
             )
-            venue_accessibility = offerers_factories.AccessibilityProviderFactory(
-                venue=venue, externalAccessibilityData=venue_accessibility
-            )
+            offerers_factories.AccessibilityProviderFactory(venue=venue, externalAccessibilityData=venue_accessibility)
 
             if offerer.validationStatus == ValidationStatus.NEW:
                 offerers_factories.VenueRegistrationFactory(venue=venue)

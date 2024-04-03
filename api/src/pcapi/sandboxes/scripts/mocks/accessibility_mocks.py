@@ -1,64 +1,76 @@
+from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
+
+
 ACCESSIBILITY_MOCK = [
     {
         "access_modality": [],
-        "audio_description": ["audiodescription"],
-        "deaf_and_hard_of_hearing_amenities": ["boucle à induction magnétique fixe"],
-        "facilities": ["Sanitaire adapté"],
+        "audio_description": [acceslibre_enum.AUDIODESCRIPTION_PERMANENT.value],
+        "deaf_and_hard_of_hearing_amenities": [acceslibre_enum.DEAF_AND_HARD_OF_HEARING_FIXED_INDUCTION_LOOP.value],
+        "facilities": [acceslibre_enum.FACILITIES_ADAPTED.value],
         "sound_beacon": [],
-        "trained_personnel": ["Personnel sensibilisé / formé"],
-        "transport_modality": ["Stationnement adapté dans l'établissement"],
+        "trained_personnel": [acceslibre_enum.PERSONNEL_TRAINED.value],
+        "transport_modality": [acceslibre_enum.PARKING_ADAPTED.value],
     },
     {
         "access_modality": [],
         "audio_description": [],
         "deaf_and_hard_of_hearing_amenities": [],
-        "facilities": ["Sanitaire non adapté"],
+        "facilities": [acceslibre_enum.FACILITIES_UNADAPTED.value],
         "sound_beacon": [],
-        "trained_personnel": ["Personnel non formé"],
-        "transport_modality": ["Pas de stationnement adapté à proximité"],
+        "trained_personnel": [acceslibre_enum.PERSONNEL_UNTRAINED.value],
+        "transport_modality": [acceslibre_enum.PARKING_UNAVAILABLE.value],
     },
     {
-        "access_modality": ["Chemin rendu accessible (ascenseur)", "Accès à l'entrée par ascenseur"],
-        "audio_description": [""],
+        "access_modality": [acceslibre_enum.EXTERIOR_ACCESS_ELEVATOR.value, acceslibre_enum.ENTRANCE_ELEVATOR.value],
+        "audio_description": [acceslibre_enum.AUDIODESCRIPTION_OCCASIONAL.value],
         "deaf_and_hard_of_hearing_amenities": [
-            "boucle à induction magnétique portative, sous-titrage ou transcription simultanée"
+            f"{acceslibre_enum.DEAF_AND_HARD_OF_HEARING_PORTABLE_INDUCTION_LOOP.value}, "
+            f"{acceslibre_enum.DEAF_AND_HARD_OF_HEARING_SUBTITLE.value}"
         ],
-        "facilities": ["Sanitaire non adapté"],
-        "sound_beacon": ["Balise sonore"],
+        "facilities": [acceslibre_enum.FACILITIES_UNADAPTED.value],
+        "sound_beacon": [acceslibre_enum.SOUND_BEACON.value],
         "trained_personnel": [],
-        "transport_modality": ["Stationnement adapté adapté à proximité"],
+        "transport_modality": [acceslibre_enum.PARKING_NEARBY.value],
     },
     {
-        "access_modality": ["Chemin d’accès de plain pied", "Entrée spécifique PMR"],
-        "audio_description": ["audiodescription"],
+        "access_modality": [acceslibre_enum.EXTERIOR_ONE_LEVEL.value, acceslibre_enum.ENTRANCE_PRM.value],
+        "audio_description": [acceslibre_enum.AUDIODESCRIPTION_PERMANENT_SMARTPHONE.value],
         "deaf_and_hard_of_hearing_amenities": [
-            "boucle à induction magnétique fixe, boucle à induction magnétique portative, langue des signes française (LSF), langue française parlée complétée (LFPC), sous-titrage ou transcription simultanée, autres"
+            f"{acceslibre_enum.DEAF_AND_HARD_OF_HEARING_FIXED_INDUCTION_LOOP.value}, "
+            f"{acceslibre_enum.DEAF_AND_HARD_OF_HEARING_PORTABLE_INDUCTION_LOOP.value}, "
+            f"{acceslibre_enum.DEAF_AND_HARD_OF_HEARING_SIGN_LANGUAGE.value}, "
+            f"{acceslibre_enum.DEAF_AND_HARD_OF_HEARING_CUED_SPEECH.value}, "
+            f"{acceslibre_enum.DEAF_AND_HARD_OF_HEARING_SUBTITLE.value}, "
+            f"{acceslibre_enum.DEAF_AND_HARD_OF_HEARING_OTHER.value}"
         ],
-        "facilities": ["Sanitaire adapté"],
-        "sound_beacon": ["Balise sonore"],
-        "trained_personnel": ["Personnel sensibilisé / formé"],
-        "transport_modality": ["Stationnement adapté dans l'établissement"],
+        "facilities": [acceslibre_enum.FACILITIES_ADAPTED.value],
+        "sound_beacon": [acceslibre_enum.SOUND_BEACON.value],
+        "trained_personnel": [acceslibre_enum.PERSONNEL_TRAINED.value],
+        "transport_modality": [acceslibre_enum.PARKING_ADAPTED.value],
     },
     {
         "access_modality": [
-            "Chemin rendu accessible (rampe)",
-            "L’entrée n’est pas de plain-pied Aide humaine possible",
+            acceslibre_enum.EXTERIOR_ACCESS_RAMP.value,
+            acceslibre_enum.ENTRANCE_HUMAN_HELP.value,
         ],
-        "audio_description": [],
-        "deaf_and_hard_of_hearing_amenities": ["autres"],
+        "audio_description": [acceslibre_enum.AUDIODESCRIPTION_NO_DEVICE.value],
+        "deaf_and_hard_of_hearing_amenities": [acceslibre_enum.DEAF_AND_HARD_OF_HEARING_OTHER.value],
         "facilities": [],
         "sound_beacon": [""],
         "trained_personnel": [],
-        "transport_modality": ["Pas de stationnement adapté à proximité"],
+        "transport_modality": [acceslibre_enum.PARKING_UNAVAILABLE.value],
     },
     {
-        "access_modality": ["Difficulté sur le chemin d'accès", "Entrée rendue accessible par rampe mais étroite"],
+        "access_modality": [
+            acceslibre_enum.EXTERIOR_ACCESS_HAS_DIFFICULTIES.value,
+            acceslibre_enum.ENTRANCE_RAMP_NARROW.value,
+        ],
         "audio_description": [],
-        "deaf_and_hard_of_hearing_amenities": ["langue des signes française (LSF)"],
+        "deaf_and_hard_of_hearing_amenities": [acceslibre_enum.DEAF_AND_HARD_OF_HEARING_SIGN_LANGUAGE.value],
         "facilities": [],
-        "sound_beacon": ["Balise sonore"],
+        "sound_beacon": [acceslibre_enum.SOUND_BEACON.value],
         "trained_personnel": [],
-        "transport_modality": ["Pas de stationnement adapté à proximité"],
+        "transport_modality": [acceslibre_enum.PARKING_UNAVAILABLE.value],
     },
     {
         "access_modality": [],

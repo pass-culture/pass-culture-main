@@ -10,6 +10,7 @@ import pytest
 import sqlalchemy as sa
 import time_machine
 
+from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.connectors.entreprise import models as sirene_models
 from pcapi.core import search
 from pcapi.core.bookings import factories as bookings_factories
@@ -2796,4 +2797,7 @@ class AccessibilityProviderTest:
         )
         offerers_factories.AccessibilityProviderFactory(venue=venue)
         offerers_api.set_accessibility_infos_from_provider_id(venue)
-        assert venue.accessibilityProvider.externalAccessibilityData["sound_beacon"] == ["Balise sonore"]
+        assert venue.accessibilityProvider.externalAccessibilityData["access_modality"] == [
+            acceslibre_enum.EXTERIOR_ONE_LEVEL,
+            acceslibre_enum.ENTRANCE_ONE_LEVEL,
+        ]

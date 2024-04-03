@@ -3,6 +3,7 @@ import typing
 
 import factory
 
+from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.core.factories import BaseFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.models.validation_status_mixin import ValidationStatus
@@ -424,12 +425,15 @@ class AccessibilityProviderFactory(BaseFactory):
     venue = factory.SubFactory(VenueFactory)
     externalAccessibilityId = factory.Sequence("le-petit-rintintin-{}".format)
     externalAccessibilityData = {
-        "access_modality": ["Chemin d'accès de plain pied", "Entrée de plain pied"],
+        "access_modality": [acceslibre_enum.EXTERIOR_ACCESS_ELEVATOR, acceslibre_enum.ENTRANCE_ELEVATOR],
         "audio_description": [],
-        "deaf_and_hard_of_hearing_amenities": [],
-        "facilities": ["Sanitaire adapté"],
-        "sound_beacon": [],
-        "trained_personnel": [],
-        "transport_modality": ["Stationnement adapté dans l'établissement"],
+        "deaf_and_hard_of_hearing_amenities": [
+            acceslibre_enum.DEAF_AND_HARD_OF_HEARING_PORTABLE_INDUCTION_LOOP,
+            acceslibre_enum.DEAF_AND_HARD_OF_HEARING_SUBTITLE,
+        ],
+        "facilities": [acceslibre_enum.FACILITIES_UNADAPTED],
+        "sound_beacon": [acceslibre_enum.SOUND_BEACON],
+        "trained_personnel": [acceslibre_enum.PERSONNEL_UNTRAINED],
+        "transport_modality": [acceslibre_enum.PARKING_NEARBY],
     }
     lastUpdateAtProvider = datetime.datetime(2024, 3, 1, 0, 0)
