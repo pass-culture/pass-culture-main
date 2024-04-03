@@ -5,6 +5,7 @@ from psycopg2.extras import NumericRange
 import pydantic.v1 as pydantic_v1
 from pydantic.v1 import validator
 
+from pcapi.connectors.serialization import acceslibre_serializers
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import phone_number as phone_number_utils
@@ -112,10 +113,15 @@ class VenueWithdrawalDetails(pydantic_v1.ConstrainedStr):
     max_length = 500
 
 
-class OpeningHoursGetterDict(pydantic_v1.utils.GetterDict):
+class VenueResponseGetterDict(pydantic_v1.utils.GetterDict):
     def get(self, key: str, default: typing.Any = None) -> typing.Any:
         if key == "openingHours":
             return self._obj.opening_days
+        if key == "externalAccessibilityData":
+            if not self._obj.accessibilityProvider:
+                return None
+            accessibility_infos = self._obj.accessibilityProvider.externalAccessibilityData
+            return acceslibre_serializers.ExternalAccessibilityDataModel.from_orm(accessibility_infos)
         return super().get(key, default)
 
 
@@ -128,6 +134,7 @@ class BaseVenueResponse(BaseModel):
     contact: VenueContactModel | None
     city: str | None
     description: VenueDescription | None
+    externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModel | None
     isPermanent: bool | None
     latitude: float | None
     longitude: float | None
@@ -138,7 +145,7 @@ class BaseVenueResponse(BaseModel):
 
     class Config:
         orm_mode = True
-        getter_dict = OpeningHoursGetterDict
+        getter_dict = VenueResponseGetterDict
 
 
 class ListOffersVenueResponseModel(BaseModel):
