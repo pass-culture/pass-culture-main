@@ -40,8 +40,6 @@ def list_venue_providers(query: ListVenueProviderQuery) -> ListVenueProviderResp
 @spectree_serialize(on_success_status=201, response_model=VenueProviderResponse, api=blueprint.pro_private_schema)
 def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
     body.venueIdAtOfferProvider = None
-    if body.venueId is None:
-        raise ApiErrors({"venue": ["Lieu introuvable."]}, 404)
     check_user_can_alter_venue(current_user, body.venueId)
 
     try:
@@ -110,9 +108,6 @@ def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
 @login_required
 @spectree_serialize(on_success_status=200, response_model=VenueProviderResponse, api=blueprint.pro_private_schema)
 def update_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
-    assert body.venueId is not None, "a not None venue_id is required"
-    assert body.providerId is not None, "a not None provider_id is required"
-
     check_user_can_alter_venue(current_user, body.venueId)
 
     venue_provider = get_venue_provider_by_venue_and_provider_ids(body.venueId, body.providerId)
@@ -128,9 +123,7 @@ def update_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def delete_venue_provider(venue_provider_id: int) -> None:
-    assert venue_provider_id is not None, "a not None provider_id is required"
-
-    venue_provider = repository.get_venue_provider_by_id(int(venue_provider_id))
+    venue_provider = repository.get_venue_provider_by_id(venue_provider_id)
 
     check_user_can_alter_venue(current_user, venue_provider.venueId)
 
