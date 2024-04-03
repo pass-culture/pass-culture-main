@@ -678,6 +678,60 @@ def test_public_api(client):
                     "enum": ["all", "digital", "physical"],
                     "title": "ExpenseDomain",
                 },
+                "ExternalAccessibilityDataModel": {
+                    "properties": {
+                        "audioDisability": {
+                            "allOf": [{"$ref": "#/components/schemas/AudioDisabilityModel"}],
+                            "default": {"deafAndHardOfHearing": "Non renseign\u00e9"},
+                            "title": "Audiodisability",
+                        },
+                        "isAccessibleAudioDisability": {
+                            "default": False,
+                            "title": "Isaccessibleaudiodisability",
+                            "type": "boolean",
+                        },
+                        "mentalDisability": {
+                            "allOf": [{"$ref": "#/components/schemas/MentalDisabilityModel"}],
+                            "default": {"trainedPersonnel": "Non renseign\u00e9"},
+                            "title": "Mentaldisability",
+                        },
+                        "isAccessibleMentalDisability": {
+                            "default": False,
+                            "title": "Isaccessiblementaldisability",
+                            "type": "boolean",
+                        },
+                        "motorDisability": {
+                            "allOf": [{"$ref": "#/components/schemas/MotorDisabilityModel"}],
+                            "default": {
+                                "entrance": "Non renseign\u00e9",
+                                "exterior": "Non renseign\u00e9",
+                                "facilities": "Non renseign\u00e9",
+                                "parking": "Non renseign\u00e9",
+                            },
+                            "title": "Motordisability",
+                        },
+                        "isAccessibleMotorDisability": {
+                            "default": False,
+                            "title": "Isaccessiblemotordisability",
+                            "type": "boolean",
+                        },
+                        "visualDisability": {
+                            "allOf": [{"$ref": "#/components/schemas/VisualDisabilityModel"}],
+                            "default": {
+                                "audioDescription": "Non renseign\u00e9",
+                                "soundBeacon": "Non renseign\u00e9",
+                            },
+                            "title": "Visualdisability",
+                        },
+                        "isAccessibleVisualDisability": {
+                            "default": False,
+                            "title": "Isaccessiblevisualdisability",
+                            "type": "boolean",
+                        },
+                    },
+                    "title": "ExternalAccessibilityDataModel",
+                    "type": "object",
+                },
                 "ExternalBookingResponse": {
                     "properties": {
                         "barcode": {"title": "Barcode", "type": "string"},
@@ -2167,6 +2221,11 @@ def test_public_api(client):
                             "title": "VenueContactModel",
                         },
                         "description": {"maxLength": 1000, "nullable": True, "title": "Description", "type": "string"},
+                        "externalAccessibilityData": {
+                            "anyOf": [{"$ref": "#/components/schemas/ExternalAccessibilityDataModel"}],
+                            "nullable": True,
+                            "title": "ExternalAccessibilityDataModel",
+                        },
                         "id": {"title": "Id", "type": "integer"},
                         "isPermanent": {"nullable": True, "title": "Ispermanent", "type": "boolean"},
                         "isVirtual": {"title": "Isvirtual", "type": "boolean"},
@@ -2255,6 +2314,50 @@ def test_public_api(client):
                         "VISITES",
                     ],
                     "title": "(HomepageLabelNameEnumv2",
+                },
+                "AudioDisabilityModel": {
+                    "properties": {
+                        "deafAndHardOfHearing": {
+                            "default": "Non renseign\u00e9",
+                            "title": "Deafandhardofhearing",
+                            "type": "string",
+                        }
+                    },
+                    "title": "AudioDisabilityModel",
+                    "type": "object",
+                },
+                "MentalDisabilityModel": {
+                    "properties": {
+                        "trainedPersonnel": {
+                            "default": "Non renseign\u00e9",
+                            "title": "Trainedpersonnel",
+                            "type": "string",
+                        }
+                    },
+                    "title": "MentalDisabilityModel",
+                    "type": "object",
+                },
+                "MotorDisabilityModel": {
+                    "properties": {
+                        "entrance": {"default": "Non renseign\u00e9", "title": "Entrance", "type": "string"},
+                        "exterior": {"default": "Non renseign\u00e9", "title": "Exterior", "type": "string"},
+                        "facilities": {"default": "Non renseign\u00e9", "title": "Facilities", "type": "string"},
+                        "parking": {"default": "Non renseign\u00e9", "title": "Parking", "type": "string"},
+                    },
+                    "title": "MotorDisabilityModel",
+                    "type": "object",
+                },
+                "VisualDisabilityModel": {
+                    "properties": {
+                        "audioDescription": {
+                            "default": "Non renseign\u00e9",
+                            "title": "Audiodescription",
+                            "type": "string",
+                        },
+                        "soundBeacon": {"default": "Non renseign\u00e9", "title": "Soundbeacon", "type": "string"},
+                    },
+                    "title": "VisualDisabilityModel",
+                    "type": "object",
                 },
                 "GtlLabels": {
                     "properties": {

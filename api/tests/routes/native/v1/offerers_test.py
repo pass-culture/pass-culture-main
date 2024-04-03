@@ -1,5 +1,6 @@
 import pytest
 
+from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 import pcapi.core.offerers.factories as offerer_factories
 
 
@@ -17,7 +18,24 @@ class VenuesTest:
                 "image_credit": "Wikimedia Commons CC By",
             },
         )
-
+        offerer_factories.AccessibilityProviderFactory(
+            venue=venue,
+            externalAccessibilityData={
+                "access_modality": [acceslibre_enum.EXTERIOR_ACCESS_ELEVATOR, acceslibre_enum.ENTRANCE_ELEVATOR],
+                "audio_description": [
+                    acceslibre_enum.AUDIODESCRIPTION_NO_DEVICE,
+                    acceslibre_enum.AUDIODESCRIPTION_OCCASIONAL,
+                ],
+                "deaf_and_hard_of_hearing_amenities": [
+                    acceslibre_enum.DEAF_AND_HARD_OF_HEARING_PORTABLE_INDUCTION_LOOP,
+                    acceslibre_enum.DEAF_AND_HARD_OF_HEARING_SUBTITLE,
+                ],
+                "facilities": [acceslibre_enum.FACILITIES_UNADAPTED],
+                "sound_beacon": [],
+                "trained_personnel": [acceslibre_enum.PERSONNEL_UNTRAINED],
+                "transport_modality": [acceslibre_enum.PARKING_NEARBY],
+            },
+        )
         response = client.get(f"/native/v1/venue/{venue.id}")
 
         assert response.status_code == 200
@@ -40,6 +58,28 @@ class VenuesTest:
                 "phoneNumber": venue.contact.phone_number,
                 "website": venue.contact.website,
                 "socialMedias": venue.contact.social_medias,
+            },
+            "externalAccessibilityData": {
+                "isAccessibleMotorDisability": True,
+                "isAccessibleAudioDisability": True,
+                "isAccessibleVisualDisability": True,
+                "isAccessibleMentalDisability": False,
+                "motorDisability": {
+                    "facilities": acceslibre_enum.FACILITIES_UNADAPTED.value,
+                    "exterior": acceslibre_enum.EXTERIOR_ACCESS_ELEVATOR.value,
+                    "entrance": acceslibre_enum.ENTRANCE_ELEVATOR.value,
+                    "parking": acceslibre_enum.PARKING_NEARBY.value,
+                },
+                "audioDisability": {
+                    "deafAndHardOfHearing": f"{acceslibre_enum.DEAF_AND_HARD_OF_HEARING_PORTABLE_INDUCTION_LOOP.value}, "
+                    f"{acceslibre_enum.DEAF_AND_HARD_OF_HEARING_SUBTITLE.value}"
+                },
+                "visualDisability": {
+                    "soundBeacon": acceslibre_enum.UNKNOWN.value,
+                    "audioDescription": f"{acceslibre_enum.AUDIODESCRIPTION_NO_DEVICE.value}, "
+                    f"{acceslibre_enum.AUDIODESCRIPTION_OCCASIONAL.value}",
+                },
+                "mentalDisability": {"trainedPersonnel": acceslibre_enum.PERSONNEL_UNTRAINED.value},
             },
             "accessibility": {
                 "audioDisability": venue.audioDisabilityCompliant,
