@@ -39,13 +39,23 @@
 
 .page-content {
   background: colors.$white;
-  box-shadow: 0 0 rem.torem(60px) colors.$large-shadow;
   border-radius: rem.torem(10px);
-  margin: rem.torem(calc(26px + size.$top-menu-height) auto 0 auto);
+  margin: rem.torem(calc(size.$top-menu-height + rem.torem(32px)) auto 0 auto);
   max-width: rem.torem(size.$main-content-width);
+  border: rem.torem(1px) solid colors.$grey-medium;
+
+  @media (min-width: size.$tablet) {
+    margin-left: calc(size.$side-nav-width + rem.torem(32px));
+  }
 
   &-old {
     margin: rem.torem(-88px) auto 0 auto;
+    box-shadow: 0 0 rem.torem(60px) colors.$large-shadow;
+    border: none;
+  }
+
+  &-with-review-banner {
+    margin-top: rem.torem(32px);
   }
 
   .after-notification-content {
@@ -135,8 +145,6 @@
       position: initial;
       height: 100%;
       width: 100%;
-      box-shadow: rem.torem(0) rem.torem(6px) rem.torem(16px)
-        colors.$large-shadow;
     }
 
     &-nav {
@@ -173,4 +181,9 @@
 
 .main-wrapper {
   width: 100%;
+  background-color: colors.$background-content;
+
+  &-old {
+    background-color: transparent;
+  }
 }

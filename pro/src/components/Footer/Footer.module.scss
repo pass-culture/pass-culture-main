@@ -3,6 +3,8 @@
 @use "styles/variables/size.scss" as size;
 
 .footer {
+  margin-left: calc(size.$side-nav-width);
+
   @media (min-width: size.$mobile) {
     height: size.$footer-height;
   }
@@ -15,6 +17,7 @@
   &-layout-funnel {
     height: size.$footer-height + size.$action-bar-sticky-height;
     padding-bottom: size.$action-bar-sticky-height;
+    margin-left: 0;
   }
 
   @media (min-width: size.$tablet) {
