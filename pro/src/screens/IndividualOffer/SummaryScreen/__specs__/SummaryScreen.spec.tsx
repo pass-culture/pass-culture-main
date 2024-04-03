@@ -97,31 +97,23 @@ const subCategories = [
 
 describe('Summary', () => {
   let customContext: Partial<IndividualOfferContextValues>
-  let eventMusicTypes: GetMusicTypesResponse
-  let allMusicTypes: GetMusicTypesResponse
+  let musicTypes: GetMusicTypesResponse
   beforeEach(() => {
-    eventMusicTypes = [
+    musicTypes = [
       {
         gtl_id: '07000000',
         label: 'Metal',
+        canBeEvent: true,
       },
       {
         gtl_id: '02000000',
         label: 'JAZZ / BLUES',
-      },
-    ]
-    allMusicTypes = [
-      {
-        gtl_id: '07000000',
-        label: 'Metal',
-      },
-      {
-        gtl_id: '02000000',
-        label: 'JAZZ / BLUES',
+        canBeEvent: true,
       },
       {
         gtl_id: '03000000',
         label: 'Bandes Originales',
+        canBeEvent: false,
       },
     ]
     customContext = {
@@ -160,8 +152,7 @@ describe('Summary', () => {
     vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
       getIndividualOfferFactory()
     )
-    vi.spyOn(api, 'getEventMusicTypes').mockResolvedValue(eventMusicTypes)
-    vi.spyOn(api, 'getAllMusicTypes').mockResolvedValue(allMusicTypes)
+    vi.spyOn(api, 'getMusicTypes').mockResolvedValue(musicTypes)
   })
 
   const expectOfferFields = () => {

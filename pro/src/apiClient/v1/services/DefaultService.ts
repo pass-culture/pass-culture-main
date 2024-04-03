@@ -1513,29 +1513,14 @@ export class DefaultService {
     });
   }
   /**
-   * get_all_music_types <GET>
+   * get_music_types <GET>
    * @returns GetMusicTypesResponse OK
    * @throws ApiError
    */
-  public getAllMusicTypes(): CancelablePromise<GetMusicTypesResponse> {
+  public getMusicTypes(): CancelablePromise<GetMusicTypesResponse> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/offers/music-types/all',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * get_event_music_types <GET>
-   * @returns GetMusicTypesResponse OK
-   * @throws ApiError
-   */
-  public getEventMusicTypes(): CancelablePromise<GetMusicTypesResponse> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/offers/music-types/event',
+      url: '/offers/music-types',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
