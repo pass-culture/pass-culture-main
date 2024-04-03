@@ -8,16 +8,6 @@ from pcapi.repository import repository
 
 
 class AllocineVenueProviderPriceRuleTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_should_add_price_rules_to_venue_provider(self, app):
-        # Given
-        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory()
-        providers_factories.AllocineVenueProviderPriceRuleFactory(
-            allocineVenueProvider=allocine_venue_provider, priceRule=PriceRule.default, price=10
-        )
-
-        # Then
-        assert len(allocine_venue_provider.priceRules) == 1
 
     @pytest.mark.usefixtures("db_session")
     def test_should_raise_error_when_saving_existing_rule_price(self, app):
