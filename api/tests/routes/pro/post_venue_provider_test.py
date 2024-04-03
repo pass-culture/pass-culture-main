@@ -417,6 +417,8 @@ class Returns404Test:
         venue_provider_data = {
             "providerId": provider.id,
             "venueId": "1234",
+            "isDuo": False,
+            "price": "9.99",
         }
 
         auth_request = client.with_session_auth(email=user.email)
@@ -437,6 +439,8 @@ class Returns404Test:
         venue_provider_data = {
             "providerId": provider.id,
             "venueId": venue.id,
+            "isDuo": False,
+            "price": "9.99",
         }
 
         auth_request = client.with_session_auth(email=user.email)
