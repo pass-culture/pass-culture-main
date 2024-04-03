@@ -1,3 +1,6 @@
+import json
+import urllib.parse
+
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.utils import requests
@@ -20,7 +23,18 @@ class SimilarOffersTest:
 
     @override_settings(
         RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
-        RECOMMENDATION_API_AUTHENTICATION_TOKEN="secret token",
+        RECOMMENDATION_API_URL="https://example.com/recommendation/",
+    )
+    def test_forward_params_to_recommendation_api(self, requests_mock, client):
+        mocked = requests_mock.get("https://example.com/recommendation/similar_offers/2")
+
+        response = client.get("/native/v1/recommendation/similar_offers/2", params={"longitude": 12.23})
+        assert response.status_code == 200
+        query = dict(urllib.parse.parse_qsl(mocked.last_request.query))
+        assert query["longitude"] == "12.23"
+
+    @override_settings(
+        RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
         RECOMMENDATION_API_URL="https://example.com/recommendation/",
     )
     def test_failure(self, requests_mock, client):
@@ -51,10 +65,25 @@ class PlaylistTest:
 
     @override_settings(
         RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
-        RECOMMENDATION_API_AUTHENTICATION_TOKEN="secret token",
         RECOMMENDATION_API_URL="https://example.com/recommendation/",
     )
-    def test_failure(self, requests_mock, client):
+    def test_forward_params_to_recommendation_api(self, requests_mock, client, db_session):
+        user = users_factories.UserFactory(id=3)
+        mocked = requests_mock.post("https://example.com/recommendation/playlist_recommendation/3")
+
+        client = client.with_token(user.email)
+        response = client.post("/native/v1/recommendation/playlist?modelEndpoint=dummy", json={"isEvent": True})
+        assert response.status_code == 200
+        query = dict(urllib.parse.parse_qsl(mocked.last_request.query))
+        assert query["modelEndpoint"] == "dummy"
+        body = json.loads(mocked.last_request.body)
+        assert body["isEvent"] is True
+
+    @override_settings(
+        RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
+        RECOMMENDATION_API_URL="https://example.com/recommendation/",
+    )
+    def test_failure(self, requests_mock, client, db_session):
         user = users_factories.UserFactory(id=3)
         requests_mock.post(
             "https://example.com/recommendation/playlist_recommendation/3",
