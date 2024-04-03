@@ -16,10 +16,9 @@ import React, {
   useEffect,
   useRef,
   useContext,
-  Dispatch,
-  SetStateAction,
 } from 'react'
 import { useSearchBox } from 'react-instantsearch'
+import { useDispatch } from 'react-redux'
 
 import { SuggestionType } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
@@ -28,6 +27,7 @@ import strokeBuildingIcon from 'icons/stroke-building.svg'
 import strokeClockIcon from 'icons/stroke-clock.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
+import { setAdageQuery } from 'store/adageFilter/reducer'
 import { Button, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -45,7 +45,6 @@ import { Highlight } from './Highlight'
 type AutocompleteProps = {
   initialQuery: string
   placeholder: string
-  setCurrentSearch: Dispatch<SetStateAction<string | null>>
 }
 
 export type SuggestionItem = AutocompleteQuerySuggestionsHit & {
@@ -87,8 +86,9 @@ const addSuggestionToHistory = (suggestion: string) => {
 export const Autocomplete = ({
   initialQuery,
   placeholder,
-  setCurrentSearch,
 }: AutocompleteProps) => {
+  const dispatch = useDispatch()
+
   const { refine } = useSearchBox()
   const [instantSearchUiState, setInstantSearchUiState] = useState<
     AutocompleteState<SuggestionItem>
@@ -178,7 +178,7 @@ export const Autocomplete = ({
           const venueDisplayName = item.venue.publicName || item.venue.name
           autocomplete.setQuery('')
           refine('')
-          setCurrentSearch('')
+          dispatch(setAdageQuery(''))
           await formik.setFieldValue('venue', { ...item.venue, relative: [] })
           await formik.submitForm()
 
@@ -275,7 +275,7 @@ export const Autocomplete = ({
         },
         onSubmit: ({ state }) => {
           refine(state.query)
-          setCurrentSearch(state.query)
+          dispatch(setAdageQuery(state.query))
         },
         placeholder,
         plugins: [
