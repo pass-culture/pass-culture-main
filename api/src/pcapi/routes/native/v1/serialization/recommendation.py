@@ -21,16 +21,16 @@ class PlaylistRequestQuery(BaseModel):
 
 
 class PlaylistRequestBody(BaseModel):
-    start_date: str | None
-    end_date: str | None
-    is_event: bool | None
+    startDate: str | None
+    endDate: str | None
+    isEvent: bool | None
     categories: list[str] | None
-    price_min: float | None
-    price_max: float | None
+    priceMin: float | None
+    priceMax: float | None
     subcategories: list[str] | None
-    is_duo: bool | None
-    is_reco_shuffled: bool | None
-    offer_type_list: list[dict[str, str]] | None
+    isDuo: bool | None
+    isRecoShuffled: bool | None
+    offerTypeList: list[dict[str, str]] | None
 
     class Config:
         extra = "forbid"
