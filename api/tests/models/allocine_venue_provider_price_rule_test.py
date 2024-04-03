@@ -56,39 +56,3 @@ class AllocineVenueProviderPriceRuleTest:
 
         # Then
         assert error.value.errors["global"] == ["Vous ne pouvez avoir qu''un seul prix par catégorie"]
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_raise_error_when_saving_wrong_format_price(self, app):
-        # Given
-        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory()
-
-        allocine_venue_provider_price_rule = AllocineVenueProviderPriceRule()
-        allocine_venue_provider_price_rule.allocineVenueProvider = allocine_venue_provider
-        allocine_venue_provider_price_rule.priceRule = PriceRule.default
-        allocine_venue_provider_price_rule.price = "wrong_price_format"
-
-        # When
-        with pytest.raises(ApiErrors) as error:
-            repository.save(allocine_venue_provider_price_rule)
-
-        # Then
-        assert error.value.errors == {"global": ["Le prix doit être un nombre décimal"]}
-
-
-class SaveAllocineVenueProviderPriceRuleTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_should_not_save_new_venue_provider_price_rule(self, app):
-        # Given
-        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory()
-
-        venue_provider_price_rule = AllocineVenueProviderPriceRule()
-        venue_provider_price_rule.allocineVenueProvider = allocine_venue_provider
-        venue_provider_price_rule.priceRule = PriceRule.default
-        venue_provider_price_rule.price = "wrong_price_format"
-
-        # When
-        with pytest.raises(ApiErrors):
-            repository.save(venue_provider_price_rule)
-
-        # Then
-        assert AllocineVenueProviderPriceRule.query.count() == 0

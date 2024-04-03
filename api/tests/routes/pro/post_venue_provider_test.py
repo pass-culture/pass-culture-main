@@ -359,7 +359,7 @@ class Returns400Test:
             "providerId": provider.id,
             "venueId": venue.id,
             "isDuo": True,
-            "price": "wrong_price",
+            "price": "not a price",
         }
 
         auth_request = client.with_session_auth(email=user.email)
@@ -369,7 +369,7 @@ class Returns400Test:
 
         # Then
         assert response.status_code == 400
-        assert response.json["global"] == ["Le prix doit être un nombre décimal"]
+        assert response.json == {"price": ["Saisissez un nombre valide"]}
         assert VenueProvider.query.count() == 0
 
     @pytest.mark.usefixtures("db_session")

@@ -225,8 +225,7 @@ def connect_venue_to_allocine(
     price_rule = providers_models.AllocineVenueProviderPriceRule(
         allocineVenueProvider=venue_provider,
         priceRule=PriceRule.default,
-        # FIXME (dbaty, 2024-03-03): the serialization model field should be a Decimal, not a string.
-        price=payload.price,  # type: ignore [arg-type]
+        price=payload.price,
     )
     repository.save(venue_provider, price_rule)
 

@@ -112,7 +112,7 @@ describe('AllocineProviderForm', () => {
     await userEvent.click(offerImportButton)
 
     expect(props.saveVenueProvider).toHaveBeenCalledWith({
-      price: '10',
+      price: 10,
       quantity: 5,
       isDuo: false,
       providerId: provider.id,
@@ -134,7 +134,7 @@ describe('AllocineProviderForm', () => {
     await userEvent.click(offerImportButton)
 
     expect(props.saveVenueProvider).toHaveBeenCalledWith({
-      price: '0',
+      price: 0,
       quantity: undefined,
       isDuo: true,
       providerId: provider.id,
@@ -156,7 +156,7 @@ describe('AllocineProviderForm', () => {
     await userEvent.click(offerImportButton)
 
     expect(props.saveVenueProvider).toHaveBeenCalledWith({
-      price: '0.42',
+      price: 0.42,
       quantity: undefined,
       isDuo: true,
       providerId: provider.id,
@@ -316,7 +316,7 @@ describe('AllocineProviderForm', () => {
     await userEvent.click(saveEditionProviderButton)
 
     expect(props.saveVenueProvider).toHaveBeenCalledWith({
-      price: '5',
+      price: 5,
       quantity: 17,
       isDuo: true,
       providerId: provider.id,

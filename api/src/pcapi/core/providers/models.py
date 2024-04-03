@@ -267,17 +267,11 @@ class AllocineVenueProviderPriceRule(PcObject, Base, Model):
             return ("global", "Vous ne pouvez renseigner un prix négatif")
         return PcObject.restize_integrity_error(error)
 
-    @staticmethod
-    def restize_data_error(data_error: sa_exc.DataError) -> tuple[str, str]:
-        if "wrong_price" in str(data_error):
-            return ("global", "Le prix doit être un nombre décimal")
-        return PcObject.restize_data_error(data_error)
-
 
 @dataclass
 class VenueProviderCreationPayload:
     isDuo: bool | None = None
-    price: str | None = None
+    price: decimal.Decimal | None = None
     quantity: int | None = None
     venueIdAtOfferProvider: str | None = None
 
