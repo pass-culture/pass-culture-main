@@ -229,9 +229,16 @@ const Bookings = <
     fetchVenues()
   }, [setIsLocalLoading, setVenues, notify, getVenuesAdapter])
 
+  const isNewInterfaceActive = useIsNewInterfaceActive()
+  const title = isNewInterfaceActive
+    ? audience === Audience.COLLECTIVE
+      ? 'Réservations collectives'
+      : 'Réservations individuelles'
+    : 'Réservations'
+
   return (
     <div className="bookings-page">
-      <Titles title="Réservations" />
+      <Titles title={title} />
       {!isNewSideNavActive && (
         <Tabs
           nav="Réservations individuelles et collectives"
