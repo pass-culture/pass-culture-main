@@ -16,16 +16,23 @@ const CsvTable = ({ getCsvData }: CsvTableProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
   useEffect(() => {
-    const searchParams = new URLSearchParams(search)
+    const loadData = async () => {
+      const searchParams = new URLSearchParams(search)
 
-    getCsvData(`${API_URL}/reimbursements/csv?${searchParams}`)
-      .then((res: ITableData | null) => {
-        setDataFromCsv(res)
-      })
-      .catch(() => {
+      try {
+        const response = await getCsvData(
+          `${API_URL}/reimbursements/csv?${searchParams}`
+        )
+        setDataFromCsv(response)
+      } catch {
         setDataFromCsv(null)
-      })
-      .finally(() => setIsLoading(false))
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    loadData()
   }, [getCsvData, search])
 
   return isLoading ? (

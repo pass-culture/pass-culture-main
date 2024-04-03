@@ -29,25 +29,25 @@ const UserPhoneForm = ({
   const { currentUser } = useCurrentUser()
   const dispatch = useDispatch()
 
-  const onSubmit = (values: UserPhoneBodyModel) => {
+  const onSubmit = async (values: UserPhoneBodyModel) => {
     values.phoneNumber = parseAndValidateFrenchPhoneNumber(
       values.phoneNumber
     ).number
-    patchPhoneAdapter(values).then((response) => {
-      if (response.isOk) {
-        dispatch(
-          updateUser({
-            ...currentUser,
-            ...response.payload,
-          })
-        )
-        closeForm()
-      } else {
-        for (const field in response.payload) {
-          formik.setFieldError(field, response.payload[field])
-        }
+
+    const response = await patchPhoneAdapter(values)
+    if (response.isOk) {
+      dispatch(
+        updateUser({
+          ...currentUser,
+          ...response.payload,
+        })
+      )
+      closeForm()
+    } else {
+      for (const field in response.payload) {
+        formik.setFieldError(field, response.payload[field])
       }
-    })
+    }
     formik.setSubmitting(false)
   }
 

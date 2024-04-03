@@ -25,27 +25,25 @@ export const ToggleVenueProviderStatusButton = ({
   const [isLoading, setIsLoading] = useState(false)
   const notification = useNotification()
 
-  const updateVenueProviderStatus = useCallback(() => {
+  const updateVenueProviderStatus = useCallback(async () => {
     setIsLoading(true)
     const payload = {
       ...venueProvider,
       providerId: venueProvider.provider.id,
       isActive: !venueProvider.isActive,
     }
-    api
-      .updateVenueProvider(payload)
-      .then((editedVenueProvider) => {
-        afterEdit(editedVenueProvider)
-      })
-      .catch(() => {
-        notification.error(
-          'Une erreur est survenue. Merci de réessayer plus tard'
-        )
-      })
-      .finally(() => {
-        setIsModalOpen(false)
-        setIsLoading(false)
-      })
+
+    try {
+      const editedVenueProvider = await api.updateVenueProvider(payload)
+      afterEdit(editedVenueProvider)
+    } catch {
+      notification.error(
+        'Une erreur est survenue. Merci de réessayer plus tard'
+      )
+    } finally {
+      setIsModalOpen(false)
+      setIsLoading(false)
+    }
   }, [notification, venueProvider])
 
   return (

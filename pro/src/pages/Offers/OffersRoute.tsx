@@ -81,17 +81,17 @@ export const OffersRoute = (): JSX.Element => {
   )
 
   useEffect(() => {
-    const loadCategories = () =>
-      api.getCategories().then((categoriesAndSubcategories) => {
-        const categoriesOptions = categoriesAndSubcategories.categories
-          .filter((category) => category.isSelectable)
-          .map((category) => ({
-            value: category.id,
-            label: category.proLabel,
-          }))
+    const loadCategories = async () => {
+      const categoriesAndSubcategories = await api.getCategories()
+      const categoriesOptions = categoriesAndSubcategories.categories
+        .filter((category) => category.isSelectable)
+        .map((category) => ({
+          value: category.id,
+          label: category.proLabel,
+        }))
 
-        setCategories(sortByLabel(categoriesOptions))
-      })
+      setCategories(sortByLabel(categoriesOptions))
+    }
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadCategories()

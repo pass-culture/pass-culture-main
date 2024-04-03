@@ -7,14 +7,17 @@ export const useGetImageBitmap = (file: File) => {
   const [height, setHeight] = useState<number>(0)
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    getImageBitmap(file).then((data) => {
+    const updateImageSize = async () => {
+      const data = await getImageBitmap(file)
       /* istanbul ignore next: DEBT, TO FIX */
       if (data) {
         setWidth(data.width)
         setHeight(data.height)
       }
-    })
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    updateImageSize()
   }, [])
 
   return { width, height }
