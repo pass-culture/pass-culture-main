@@ -24,7 +24,6 @@ from pcapi.domain.price_rule import PriceRule
 from pcapi.models import db
 from pcapi.repository import repository
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
-from pcapi.use_cases.connect_venue_to_allocine import connect_venue_to_allocine
 from pcapi.validation.models.entity_validator import validate
 from pcapi.workers.update_all_offers_active_status_job import update_all_collective_offers_active_status_job
 from pcapi.workers.update_all_offers_active_status_job import update_venue_synchronized_offers_active_status_job
@@ -190,6 +189,47 @@ def connect_venue_to_provider(
     venue_provider.venueIdAtOfferProvider = id_at_provider
 
     repository.save(venue_provider)
+    return venue_provider
+
+
+def connect_venue_to_allocine(
+    venue: offerers_models.Venue,
+    provider_id: int,
+    payload: providers_models.VenueProviderCreationPayload,
+) -> providers_models.AllocineVenueProvider:
+    if not payload.price:
+        raise providers_exceptions.NoPriceSpecified()
+    if payload.isDuo is None:  # see PostVenueProviderBody
+        raise ValueError("`isDuo` is required")
+
+    pivot = providers_repository.get_allocine_pivot(venue)
+    if not pivot:
+        theater = providers_repository.get_allocine_theater(venue)
+        if not theater:
+            raise providers_exceptions.UnknownVenueToAlloCine()
+        pivot = providers_models.AllocinePivot(
+            venue=venue,
+            theaterId=theater.theaterId,
+            internalId=theater.internalId,
+        )
+        repository.save(pivot)
+
+    venue_provider = providers_models.AllocineVenueProvider(
+        venue=venue,
+        providerId=provider_id,
+        venueIdAtOfferProvider=pivot.theaterId,
+        isDuo=payload.isDuo,
+        quantity=payload.quantity,
+        internalId=pivot.internalId,
+    )
+    price_rule = providers_models.AllocineVenueProviderPriceRule(
+        allocineVenueProvider=venue_provider,
+        priceRule=PriceRule.default,
+        # FIXME (dbaty, 2024-03-03): the serialization model field should be a Decimal, not a string.
+        price=payload.price,  # type: ignore [arg-type]
+    )
+    repository.save(venue_provider, price_rule)
+
     return venue_provider
 
 

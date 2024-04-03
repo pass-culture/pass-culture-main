@@ -1,8 +1,6 @@
-from dataclasses import dataclass
 import datetime
 from typing import Iterable
 from typing import Sequence
-from typing import cast
 
 from flask_sqlalchemy import BaseQuery
 from sqlalchemy import func
@@ -15,7 +13,6 @@ import pcapi.core.offers.models as offers_models
 from pcapi.models import db
 
 from . import constants
-from . import exceptions
 from . import models
 
 
@@ -63,9 +60,7 @@ def get_available_providers(venue: Venue) -> BaseQuery:
         if pivot.provider.localClass is not None:
             local_classes_to_exclude.remove(pivot.provider.localClass)
 
-    try:
-        AllocineVenue(venue)
-    except exceptions.UnknownVenueToAlloCine:
+    if not get_allocine_pivot(venue) and not get_allocine_theater(venue):
         local_classes_to_exclude.add(AllocineStocks.__name__)
 
     if local_classes_to_exclude:
@@ -168,41 +163,6 @@ def get_ems_oldest_sync_version() -> int:
         .scalar()
     )
     return version
-
-
-# Each venue is known to allocine by its siret (AllocineTheater) or by its id (AllocinePivot).
-# This class is used to handle this logic when a venue wants to sync with Allocine.
-@dataclass
-class AllocineVenue:
-    def __init__(self, venue: Venue):
-        self.venue = venue
-        self.allocine_pivot = get_allocine_pivot(venue)
-        if not self.has_pivot():
-            self.allocine_theater = get_allocine_theater(venue)
-
-        if not self.has_pivot() and not self.has_theater():
-            raise exceptions.UnknownVenueToAlloCine()
-
-    allocine_pivot: models.AllocinePivot | None
-    allocine_theater: models.AllocineTheater | None
-
-    def has_pivot(self) -> bool:
-        return self.allocine_pivot is not None
-
-    def has_theater(self) -> bool:
-        return self.allocine_theater is not None
-
-    def get_pivot(self) -> models.AllocinePivot:
-        if not self.has_pivot():
-            raise exceptions.NoAllocinePivot
-        return cast(models.AllocinePivot, self.allocine_pivot)
-
-    def get_theater(self) -> models.AllocineTheater:
-        if self.has_pivot():
-            self.allocine_theater = get_allocine_theater(self.venue)
-        if not self.has_theater():
-            raise exceptions.NoAllocineTheater
-        return cast(models.AllocineTheater, self.allocine_theater)
 
 
 def find_latest_sync_part_end_event(provider: models.Provider) -> models.LocalProviderEvent:

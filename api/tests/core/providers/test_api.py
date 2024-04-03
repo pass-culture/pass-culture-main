@@ -20,23 +20,25 @@ from pcapi.core.offers.factories import StockFactory
 import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import Offer
 from pcapi.core.providers import api
+from pcapi.core.providers import exceptions
 from pcapi.core.providers import models as providers_models
-from pcapi.core.providers.exceptions import ProviderNotFound
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.local_providers.provider_api import synchronize_provider_api
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 
 
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
 class CreateVenueProviderTest:
-    @pytest.mark.usefixtures("db_session")
     def test_prevent_creation_for_non_existing_provider(self):
         # Given
         providerId = 1
         venueId = 2
 
         # When
-        with pytest.raises(ProviderNotFound):
+        with pytest.raises(exceptions.ProviderNotFound):
             api.create_venue_provider(providerId, venueId)
 
         # Then
@@ -61,7 +63,6 @@ class CreateVenueProviderTest:
         _unused_mock,
         venue_type,
         is_permanent,
-        db_session,
     ):
         # Given
         venue = offerers_factories.VenueFactory(venueTypeCode=venue_type, isPermanent=False)
@@ -76,7 +77,6 @@ class CreateVenueProviderTest:
         api.create_venue_provider(provider.id, venue.id)
 
         # Then
-        db_session.refresh(venue)
         assert venue.isPermanent == is_permanent
         if is_permanent:
             mocked_async_index_venue_ids.assert_called_with(
@@ -102,7 +102,6 @@ def create_stock(ean, siret, venue: offerers_models.Venue, **kwargs):
     return offers_factories.StockFactory(offer=create_offer(ean, venue), idAtProviders=f"{ean}@{siret}", **kwargs)
 
 
-@pytest.mark.usefixtures("db_session")
 def test_reset_stock_quantity():
     offer = OfferFactory(idAtProvider="1")
     venue = offer.venue
@@ -127,7 +126,7 @@ def test_reset_stock_quantity():
 
 class SynchronizeStocksTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_execution(self, mock_async_index_offer_ids, db_session):
+    def test_execution(self, mock_async_index_offer_ids):
         # Given
         spec = [
             {"ref": "3010000101789", "available": 6, "price": 12},
@@ -191,7 +190,6 @@ class SynchronizeStocksTest:
         # Test soft deleted stocks are recovered
         offer_with_soft_deleted_stock = Offer.query.filter_by(idAtProvider=spec[8]["ref"]).one_or_none()
         assert offer_with_soft_deleted_stock is not None
-        db_session.refresh(soft_deleted_stock)
         assert soft_deleted_stock.isSoftDeleted is False
 
         # Test doesn't create offer if product does not exist or not gcu compatible
@@ -234,7 +232,7 @@ class SynchronizeStocksTest:
             log_extra={"provider_id": provider.id},
         )
 
-    def test_build_new_offers_from_stock_details(self, db_session):
+    def test_build_new_offers_from_stock_details(self):
         # Given
         spec = [
             providers_models.StockDetail(  # known offer, must be ignored
@@ -404,7 +402,6 @@ class SynchronizeStocksTest:
 
 
 class DeleteVenueProviderTest:
-    @pytest.mark.usefixtures("db_session")
     @mock.patch("pcapi.core.providers.api.update_venue_synchronized_offers_active_status_job.delay")
     def test_delete_venue_provider(self, mocked_update_all_offers_active_status_job):
         user = users_factories.UserFactory()
@@ -430,7 +427,6 @@ class DeleteVenueProviderTest:
 
 
 class DisableVenueProviderTest:
-    @pytest.mark.usefixtures("db_session")
     @mock.patch("pcapi.core.providers.api.update_venue_synchronized_offers_active_status_job.delay")
     def test_disable_venue_provider(self, mocked_update_all_offers_active_status_job):
         venue_provider = providers_factories.VenueProviderFactory()
@@ -442,3 +438,66 @@ class DisableVenueProviderTest:
         assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0]["To"] == venue.bookingEmail
         assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.VENUE_SYNC_DISABLED.value)
+
+
+class ConnectVenueToAllocineTest:
+    def test_connect_venue_with_siret_to_allocine_provider(self):
+        allocine_provider = providers_factories.AllocineProviderFactory()
+        venue = offerers_factories.VenueFactory()
+        providers_factories.AllocineTheaterFactory(
+            siret=venue.siret,
+            internalId="PXXXXXX",
+            theaterId="123VHJ==",
+        )
+
+        payload = providers_models.VenueProviderCreationPayload(
+            price="9.99",
+            isDuo=True,
+            quantity=50,
+        )
+        api.connect_venue_to_allocine(venue, allocine_provider.id, payload)
+
+        venue_provider = providers_models.AllocineVenueProvider.query.one()
+        pivot = providers_models.AllocinePivot.query.one()
+        price_rule = providers_models.AllocineVenueProviderPriceRule.query.one()
+        assert venue_provider.venue == venue
+        assert venue_provider.isDuo
+        assert venue_provider.quantity == 50
+        assert venue_provider.internalId == "PXXXXXX"
+        assert venue_provider.venueIdAtOfferProvider == "123VHJ=="
+        assert price_rule.price == Decimal("9.99")
+        assert pivot.venueId == venue.id
+
+    def test_connect_venue_without_siret_to_allocine_provider(self):
+        allocine_provider = providers_factories.AllocineProviderFactory()
+        venue = offerers_factories.VenueWithoutSiretFactory()
+        pivot = providers_factories.AllocinePivotFactory(venue=venue)
+
+        payload = providers_models.VenueProviderCreationPayload(
+            price="9.99",
+            isDuo=True,
+            quantity=50,
+        )
+        api.connect_venue_to_allocine(venue, allocine_provider.id, payload)
+
+        venue_provider = providers_models.AllocineVenueProvider.query.one()
+        price_rule = providers_models.AllocineVenueProviderPriceRule.query.one()
+        assert venue_provider.venue == venue
+        assert venue_provider.isDuo
+        assert venue_provider.quantity == 50
+        assert venue_provider.internalId == pivot.internalId
+        assert venue_provider.venueIdAtOfferProvider == pivot.theaterId
+        assert price_rule.price == Decimal("9.99")
+
+    def test_should_throw_when_venue_is_unknown_by_allocine(self):
+        venue = offerers_factories.VenueFactory()
+        allocine_provider = providers_factories.AllocineProviderFactory()
+        # No AllocineTheaterFactory nor AllocinePivotFactory
+
+        payload = providers_models.VenueProviderCreationPayload(
+            price="9.99",
+            isDuo=True,
+            quantity=50,
+        )
+        with pytest.raises(exceptions.UnknownVenueToAlloCine):
+            api.connect_venue_to_allocine(venue, allocine_provider.id, payload)
