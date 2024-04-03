@@ -7,6 +7,8 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
+import Callout from 'components/Callout/Callout'
+import { CalloutVariant } from 'components/Callout/types'
 import FormLayout from 'components/FormLayout'
 import {
   applyVenueDefaultsToFormValues,
@@ -85,7 +87,7 @@ const FormVenue = ({
         </FormLayout.Row>
       )}
       {isEligible === false && offerersOptions.length !== 0 && (
-        <Banner
+        <Callout
           links={[
             {
               href: 'https://www.demarches-simplifiees.fr/commencer/demande-de-referencement-sur-adage',
@@ -99,11 +101,12 @@ const FormVenue = ({
               isExternal: true,
             },
           ]}
+          variant={CalloutVariant.WARNING}
         >
           Pour proposer des offres à destination d’un groupe scolaire, vous
           devez être référencé auprès du ministère de l’Éducation Nationale et
           du ministère de la Culture.
-        </Banner>
+        </Callout>
       )}
       {offerersOptions.length === 0 && (
         <Banner>
