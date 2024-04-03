@@ -14,7 +14,6 @@ import pcapi.core.providers.models as providers_models
 from pcapi.domain.allocine import get_movie_poster
 from pcapi.domain.allocine import get_movies_showtimes
 from pcapi.domain.price_rule import AllocineStocksPriceRule
-from pcapi.domain.price_rule import PriceRule
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
@@ -47,16 +46,9 @@ class AllocineStocks(LocalProvider):
         self.isDuo = allocine_venue_provider.isDuo
         self.quantity = allocine_venue_provider.quantity
         self.room_internal_id = allocine_venue_provider.internalId
-        self.price_and_price_rule_tuples: list[tuple[decimal.Decimal, PriceRule]] = (
-            providers_models.AllocineVenueProviderPriceRule.query.filter(
-                providers_models.AllocineVenueProviderPriceRule.allocineVenueProvider == allocine_venue_provider
-            )
-            .with_entities(
-                providers_models.AllocineVenueProviderPriceRule.price,
-                providers_models.AllocineVenueProviderPriceRule.priceRule,
-            )
-            .all()
-        )
+        self.price_rule = providers_models.AllocineVenueProviderPriceRule.query.filter_by(
+            allocineVenueProvider=allocine_venue_provider
+        ).one_or_none()
 
         self.movie: allocine_serializers.AllocineMovie
         self.showtimes: list[allocine_serializers.AllocineShowtime]
@@ -184,7 +176,7 @@ class AllocineStocks(LocalProvider):
             allocine_stock.quantity = self.quantity
 
         if "price" not in allocine_stock.fieldsUpdated:
-            price = self.apply_allocine_price_rule(allocine_stock)
+            price = self.get_price_from_price_rule()
             if allocine_stock.priceCategory is None:
                 allocine_stock.price = price
                 allocine_stock.priceCategory = self.get_or_create_allocine_price_category(price, allocine_stock)
@@ -233,11 +225,10 @@ class AllocineStocks(LocalProvider):
 
         return product
 
-    def apply_allocine_price_rule(self, allocine_stock: offers_models.Stock) -> decimal.Decimal:
-        for price, price_rule in self.price_and_price_rule_tuples:
-            if price_rule(allocine_stock):
-                return price
-        raise AllocineStocksPriceRule("Aucun prix par défaut n'a été trouvé")
+    def get_price_from_price_rule(self) -> decimal.Decimal:
+        if not self.price_rule:
+            raise AllocineStocksPriceRule("Aucun prix par défaut n'a été trouvé")
+        return self.price_rule.price
 
     def get_object_thumb(self) -> bytes:
         if self.movie and self.movie.poster:

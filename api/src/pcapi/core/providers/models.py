@@ -239,8 +239,6 @@ class AllocineVenueProvider(VenueProvider):
 
 
 class AllocineVenueProviderPriceRule(PcObject, Base, Model):
-    priceRule: PriceRule = sa.Column(sa.Enum(PriceRule), nullable=False)
-
     allocineVenueProviderId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("allocine_venue_provider.id"), index=True, nullable=False
     )
@@ -253,16 +251,8 @@ class AllocineVenueProviderPriceRule(PcObject, Base, Model):
         sa.Numeric(10, 2), sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False
     )
 
-    sa.UniqueConstraint(
-        allocineVenueProviderId,
-        priceRule,
-        name="unique_allocine_venue_provider_price_rule",
-    )
-
     @staticmethod
     def restize_integrity_error(error: sa_exc.IntegrityError) -> tuple[str, str]:
-        if "unique_allocine_venue_provider_price_rule" in str(error.orig):
-            return ("global", "Vous ne pouvez avoir qu''un seul prix par catégorie")
         if "check_price_is_not_negative" in str(error.orig):
             return ("global", "Vous ne pouvez renseigner un prix négatif")
         return PcObject.restize_integrity_error(error)

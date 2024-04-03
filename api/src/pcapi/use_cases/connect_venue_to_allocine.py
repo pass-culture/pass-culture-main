@@ -41,7 +41,6 @@ def _create_allocine_venue_provider_price_rule(
 ) -> AllocineVenueProviderPriceRule:
     venue_provider_price_rule = AllocineVenueProviderPriceRule()
     venue_provider_price_rule.allocineVenueProvider = allocine_venue_provider
-    venue_provider_price_rule.priceRule = PriceRule.default
     venue_provider_price_rule.price = price
 
     return venue_provider_price_rule

@@ -139,6 +139,5 @@ def delete_venue_provider(venue_provider_id: int) -> None:
 
 def _allocine_venue_provider_price(venue_provider: AllocineVenueProvider) -> float | None:
     for price_rule in venue_provider.priceRules:
-        if price_rule.priceRule():
-            return price_rule.price
+        return price_rule.price
     return None
