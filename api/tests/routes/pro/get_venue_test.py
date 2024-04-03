@@ -2,6 +2,7 @@ import datetime
 
 import pytest
 
+from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.core import testing
 from pcapi.core.educational import factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
@@ -44,6 +45,24 @@ class Returns200Test:
             publicName="Le Palais de Midas",
             managingOfferer=user_offerer.offerer,
         )
+        offerers_factories.AccessibilityProviderFactory(
+            venue=venue,
+            externalAccessibilityData={
+                "access_modality": [acceslibre_enum.EXTERIOR_ACCESS_ELEVATOR, acceslibre_enum.ENTRANCE_ELEVATOR],
+                "audio_description": [
+                    acceslibre_enum.AUDIODESCRIPTION_OCCASIONAL,
+                    acceslibre_enum.AUDIODESCRIPTION_PERMANENT_SMARTPHONE,
+                ],
+                "deaf_and_hard_of_hearing_amenities": [
+                    acceslibre_enum.DEAF_AND_HARD_OF_HEARING_PORTABLE_INDUCTION_LOOP,
+                    acceslibre_enum.DEAF_AND_HARD_OF_HEARING_SUBTITLE,
+                ],
+                "facilities": [acceslibre_enum.FACILITIES_UNADAPTED],
+                "sound_beacon": [],
+                "trained_personnel": [acceslibre_enum.PERSONNEL_UNTRAINED],
+                "transport_modality": [acceslibre_enum.PARKING_NEARBY],
+            },
+        )
         offerers_factories.VenueReimbursementPointLinkFactory(
             reimbursementPoint=venue_currently_used_for_reimbursement,
             venue=venue,
@@ -82,7 +101,26 @@ class Returns200Test:
             "departementCode": venue.departementCode,
             "description": venue.description,
             "dmsToken": "PRO-" + venue.dmsToken,
-            "externalAccessibilityData": None,
+            "externalAccessibilityData": {
+                "isAccessibleMotorDisability": True,
+                "isAccessibleAudioDisability": True,
+                "isAccessibleVisualDisability": True,
+                "isAccessibleMentalDisability": False,
+                "motorDisability": {
+                    "facilities": "Sanitaire non adapté",
+                    "exterior": "Chemin rendu accessible (ascenseur)",
+                    "entrance": "Accès à l'entrée par ascenseur",
+                    "parking": "Stationnement adapté à proximité",
+                },
+                "audioDisability": {
+                    "deafAndHardOfHearing": "boucle à induction magnétique portative, sous-titrage ou transcription simultanée",
+                },
+                "visualDisability": {
+                    "soundBeacon": "Non renseigné",
+                    "audioDescription": "avec équipement occasionnel selon la programmation, avec équipement permanent nécessitant le téléchargement d'une application sur smartphone",
+                },
+                "mentalDisability": {"trainedPersonnel": "Personnel non formé"},
+            },
             "isPermanent": venue.isPermanent,
             "isVirtual": venue.isVirtual,
             "latitude": float(venue.latitude),
@@ -397,7 +435,9 @@ class Returns200Test:
     def should_return_none_when_venue_has_no_accessibility_provider(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
         venue = offerers_factories.VenueFactory(
-            name="L'encre et la plume", managingOfferer=user_offerer.offerer, venueTypeCode=VenueTypeCode.LIBRARY
+            name="Festival du pain au chocolat",
+            managingOfferer=user_offerer.offerer,
+            venueTypeCode=VenueTypeCode.FESTIVAL,
         )
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         response = auth_request.get("/venues/%s" % venue.id)
@@ -409,18 +449,41 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(
             name="L'encre et la plume", managingOfferer=user_offerer.offerer, venueTypeCode=VenueTypeCode.LIBRARY
         )
-        offerers_factories.AccessibilityProviderFactory(venue=venue)
+        venue_accessibility_data = {
+            "access_modality": ["Chemin rendu accessible (ascenseur)", "Accès à l'entrée par ascenseur"],
+            "audio_description": [],
+            "deaf_and_hard_of_hearing_amenities": [
+                "boucle à induction magnétique portative",
+                "sous-titrage ou transcription simultanée",
+            ],
+            "facilities": ["Sanitaire non adapté"],
+            "sound_beacon": ["Balise sonore"],
+            "trained_personnel": ["Personnel non formé"],
+            "transport_modality": ["Stationnement adapté à proximité"],
+        }
+        offerers_factories.AccessibilityProviderFactory(venue=venue, externalAccessibilityData=venue_accessibility_data)
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         response = auth_request.get("/venues/%s" % venue.id)
         assert venue.accessibilityProvider is not None
         assert response.json["externalAccessibilityData"] == {
-            "accessModality": ["Chemin d'accès de plain pied", "Entrée de plain pied"],
-            "audioDescription": [],
-            "deafAndHardOfHearingAmenities": [],
-            "facilities": ["Sanitaire adapté"],
-            "soundBeacon": [],
-            "trainedPersonnel": [],
-            "transportModality": ["Stationnement adapté dans l'établissement"],
+            "isAccessibleMotorDisability": True,
+            "isAccessibleAudioDisability": True,
+            "isAccessibleVisualDisability": True,
+            "isAccessibleMentalDisability": False,
+            "motorDisability": {
+                "facilities": "Sanitaire non adapté",
+                "exterior": "Chemin rendu accessible (ascenseur)",
+                "entrance": "Accès à l'entrée par ascenseur",
+                "parking": "Stationnement adapté à proximité",
+            },
+            "audioDisability": {
+                "deafAndHardOfHearing": "boucle à induction magnétique portative, sous-titrage ou transcription simultanée",
+            },
+            "visualDisability": {
+                "soundBeacon": "Balise sonore",
+                "audioDescription": "Non renseigné",
+            },
+            "mentalDisability": {"trainedPersonnel": "Personnel non formé"},
         }
 
 
