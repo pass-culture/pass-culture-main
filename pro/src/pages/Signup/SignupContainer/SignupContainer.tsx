@@ -29,12 +29,15 @@ const SignupContainer = (): JSX.Element => {
   const onSubmit = async (values: ProUserCreationBodyV2Model) => {
     /* istanbul ignore next : ENV dependant */
     values.token = await getReCaptchaToken('signup')
-    api
-      .signupProV2({
-        ...values,
-      })
-      .then(() => onHandleSuccess())
-      .catch((response) => onHandleFail(response.body ? response.body : {}))
+
+    try {
+      await api.signupProV2({ ...values })
+      onHandleSuccess()
+    } catch (response) {
+      // TODO type this
+      // @ts-expect-error
+      onHandleFail(response.body ? response.body : {})
+    }
   }
 
   const onHandleSuccess = () => {

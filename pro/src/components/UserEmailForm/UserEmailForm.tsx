@@ -17,29 +17,38 @@ export interface UserEmailFormProps {
   getPendingEmailRequest: () => void
 }
 
+type UserEmailFormValues = {
+  email: string
+  password: string
+}
+
 const UserEmailForm = ({
   closeForm,
   postEmailAdapter,
   getPendingEmailRequest,
 }: UserEmailFormProps): JSX.Element => {
   const { currentUser } = useCurrentUser()
-  const onSubmit = (values: any) => {
-    postEmailAdapter(values).then((response) => {
-      if (response.isOk) {
-        getPendingEmailRequest()
-        closeForm()
-      } else {
-        for (const field in response.payload) {
-          formik.setFieldError(field, response.payload[field])
-        }
+  const onSubmit = async (values: UserEmailFormValues) => {
+    const response = await postEmailAdapter(values)
+    if (response.isOk) {
+      getPendingEmailRequest()
+      closeForm()
+    } else {
+      for (const field in response.payload) {
+        formik.setFieldError(field, response.payload[field])
       }
-    })
+    }
     formik.setSubmitting(false)
   }
 
+  const initialValues: UserEmailFormValues = {
+    email: '',
+    password: '',
+  }
+
   const formik = useFormik({
-    initialValues: { email: '', password: '' },
-    onSubmit: onSubmit,
+    initialValues,
+    onSubmit,
     validationSchema,
     validateOnChange: false,
   })

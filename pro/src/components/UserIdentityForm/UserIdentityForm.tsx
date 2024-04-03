@@ -28,28 +28,27 @@ const UserIdentityForm = ({
   const { currentUser } = useCurrentUser()
   const dispatch = useDispatch()
 
-  const onSubmit = (values: any) => {
-    patchIdentityAdapter(values).then((response) => {
-      if (response.isOk) {
-        dispatch(
-          updateUser({
-            ...currentUser,
-            ...response.payload,
-          })
-        )
-        closeForm()
-      } else {
-        for (const field in response.payload) {
-          formik.setFieldError(field, response.payload[field])
-        }
+  const onSubmit = async (values: UserIdentityFormValues) => {
+    const response = await patchIdentityAdapter(values)
+    if (response.isOk) {
+      dispatch(
+        updateUser({
+          ...currentUser,
+          ...response.payload,
+        })
+      )
+      closeForm()
+    } else {
+      for (const field in response.payload) {
+        formik.setFieldError(field, response.payload[field])
       }
-    })
+    }
     formik.setSubmitting(false)
   }
 
   const formik = useFormik({
-    initialValues: initialValues,
-    onSubmit: onSubmit,
+    initialValues,
+    onSubmit,
     validationSchema,
     validateOnChange: false,
   })
