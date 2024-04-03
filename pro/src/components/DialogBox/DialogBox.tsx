@@ -14,6 +14,7 @@ interface DialogProps {
   onDismiss?: () => void
   children?: React.ReactNode
   fullContentWidth?: boolean
+  dangerouslyBypassFocusLock?: boolean
 }
 
 const DialogBox: FunctionComponent<DialogProps> = ({
@@ -23,8 +24,17 @@ const DialogBox: FunctionComponent<DialogProps> = ({
   labelledBy,
   onDismiss,
   fullContentWidth,
+  dangerouslyBypassFocusLock = false,
 }) => (
-  <DialogOverlay className={styles['dialog-box-overlay']} onDismiss={onDismiss}>
+  <DialogOverlay
+    className={styles['dialog-box-overlay']}
+    onDismiss={onDismiss}
+    //  The focus lock can be bypassed here to avoid a bug on firefox with the react-focus-lock library used by reach/dialog
+    //  https://github.com/reach/reach-ui/issues/615 https://github.com/reach/reach-ui/issues/536
+    //  When a new page is opened within an iframe on firefox and the focus is not reset, the focus lock prevents any
+    //  input within the dialog to be focused with a mouse click
+    dangerouslyBypassFocusLock={dangerouslyBypassFocusLock}
+  >
     <DialogContent
       aria-labelledby={labelledBy}
       className={cn(styles['dialog-box-content'], {
