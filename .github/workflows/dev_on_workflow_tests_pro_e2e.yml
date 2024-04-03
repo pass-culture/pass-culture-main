@@ -93,6 +93,7 @@ jobs:
             --workdir /usr/src/app \
             --volume ./../api:/usr/src/app \
             --env-file ./../env_file \
+            --env ENABLE_TEST_ROUTES=1 \
             --tty \
             --detach \
             --network pass-culture-main_db_nw \
