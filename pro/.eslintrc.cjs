@@ -85,10 +85,10 @@ module.exports = {
         '@typescript-eslint/switch-exhaustiveness-check': 'error',
         '@typescript-eslint/no-unnecessary-type-arguments': 'error',
         '@typescript-eslint/no-unnecessary-boolean-literal-compare': 'error',
+        '@typescript-eslint/no-floating-promises': 'error',
 
         // TODO turn into errors
         '@typescript-eslint/no-unnecessary-condition': 'warn',
-        '@typescript-eslint/no-floating-promises': 'warn',
         'react-hooks/exhaustive-deps': 'warn',
       },
     },
