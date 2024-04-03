@@ -54,7 +54,6 @@ class GetOffererTest:
             response = client.get(f"/offerers/{offerer_id}")
 
         expected_serialized_offerer = {
-            "address": offerer.address,
             "apiKey": {"maxAllowed": 5, "prefixes": ["testenv_prefix", "testenv_prefix2"]},
             "city": offerer.city,
             "dateCreated": format_into_utc_date(offerer.dateCreated),
@@ -124,6 +123,7 @@ class GetOffererTest:
             "id": offerer.id,
             "postalCode": offerer.postalCode,
             "siren": offerer.siren,
+            "street": offerer.street,
             "allowedOnAdage": offerer.allowedOnAdage,
         }
         assert response.status_code == 200

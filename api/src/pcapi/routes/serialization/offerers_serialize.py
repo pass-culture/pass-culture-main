@@ -78,7 +78,6 @@ class PostOffererResponseModel(BaseModel):
 # GetOffererResponseModel includes sensitive information and can be returned only if authenticated user has a validated
 # access to the offerer. During subscription process, use PostOffererResponseModel
 class GetOffererResponseModel(BaseModel):
-    address: str | None
     apiKey: OffererApiKey
     city: str
     dateCreated: datetime
@@ -94,6 +93,7 @@ class GetOffererResponseModel(BaseModel):
     postalCode: str
     # FIXME (dbaty, 2020-11-09): optional until we populate the database (PC-5693)
     siren: str | None
+    street: str | None
     # FIXME (mageoffray, 2023-09-14): optional until we populate the database
     hasValidBankAccount: bool
     hasPendingBankAccount: bool
@@ -238,17 +238,16 @@ class GenerateOffererApiKeyResponse(BaseModel):
 
 
 class CreateOffererQueryModel(BaseModel):
-    address: str | None
     city: str
     latitude: float | None
     longitude: float | None
     name: str
     postalCode: str
     siren: str
+    street: str | None
 
 
 class SaveNewOnboardingDataQueryModel(BaseModel):
-    address: str | None
     banId: str | None
     city: str
     createVenueWithoutSiret: bool = False
@@ -257,6 +256,7 @@ class SaveNewOnboardingDataQueryModel(BaseModel):
     postalCode: str
     publicName: str | None
     siret: str
+    street: str | None
     target: Target
     venueTypeCode: str
     webPresence: str

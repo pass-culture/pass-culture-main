@@ -394,7 +394,7 @@ class PcPostalAddressAutocomplete(wtforms.StringField):
     def __init__(
         self,
         label: str,
-        address: str | None,
+        street: str | None,
         ban_id: str | None,
         city: str | None,
         postal_code: str | None,
@@ -407,7 +407,7 @@ class PcPostalAddressAutocomplete(wtforms.StringField):
         **kwargs: typing.Any,
     ):
         super().__init__(label, **kwargs)
-        self.address = address
+        self.street = street
         self.ban_id = ban_id
         self.city = city
         self.postal_code = postal_code

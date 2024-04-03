@@ -97,13 +97,13 @@ def _create_pro_user(row: dict) -> User:
 
     siret = _get_siret(row["SIREN"])
     offerer_creation_info = offerers_serialize.CreateOffererQueryModel(
-        address="1 avenue de la Culture",
         city="MA VILLE",
         latitude=46.126,
         longitude=-3.033,
         name=f'Structure {row["Nom"]}',
         postalCode=row["Code postal"],
         siren=siret[:9],
+        street="1 avenue de la Culture",
     )
     new_onboarding_info = offerers_api.NewOnboardingInfo(
         target=offerers_models.Target.INDIVIDUAL_AND_EDUCATIONAL,
@@ -129,7 +129,7 @@ def _create_pro_user(row: dict) -> User:
     )
 
     venue_creation_info = venues_serialize.PostVenueBodyModel(
-        street=base_serialize.VenueAddress(offerer_creation_info.address),
+        street=base_serialize.VenueAddress(offerer_creation_info.street),
         banId=None,
         bookingEmail=base_serialize.VenueBookingEmail(user.email),
         city=base_serialize.VenueCity(offerer_creation_info.city),

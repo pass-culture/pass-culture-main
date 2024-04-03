@@ -180,7 +180,7 @@ def _get_sent_pricings_for_collective_bookings(
         offerers_models.Venue.common_name.label("venue_common_name"),  # type: ignore[attr-defined]
         sqla_func.coalesce(
             offerers_models.Venue.street,
-            offerers_models.Offerer.address,
+            offerers_models.Offerer.street,
         ).label("venue_address"),
         sqla_func.coalesce(
             offerers_models.Venue.postalCode,
@@ -263,7 +263,7 @@ def _get_sent_pricings_for_individual_bookings(
         offerers_models.Venue.common_name.label("venue_common_name"),  # type: ignore[attr-defined]
         sqla_func.coalesce(
             offerers_models.Venue.street,
-            offerers_models.Offerer.address,
+            offerers_models.Offerer.street,
         ).label("venue_address"),
         sqla_func.coalesce(
             offerers_models.Venue.postalCode,
@@ -372,7 +372,7 @@ def _get_collective_booking_reimbursement_data(query: BaseQuery) -> list[tuple]:
             # or the offerer's one
             sqla.case(
                 (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.street),
-                else_=offerers_models.Offerer.address,
+                else_=offerers_models.Offerer.street,
             ).label("venue_address"),
             sqla.case(
                 (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.postalCode),
@@ -440,7 +440,7 @@ def _get_individual_booking_reimbursement_data(query: BaseQuery) -> list[tuple]:
             # or the offerer's one
             sqla.case(
                 (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.street),
-                else_=offerers_models.Offerer.address,
+                else_=offerers_models.Offerer.street,
             ).label("venue_address"),
             sqla.case(
                 (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.postalCode),
@@ -520,7 +520,7 @@ def _get_legacy_payments_for_individual_bookings(
             offerers_models.Venue.common_name.label("venue_common_name"),  # type: ignore[attr-defined]
             sqla_func.coalesce(
                 offerers_models.Venue.street,
-                offerers_models.Offerer.address,
+                offerers_models.Offerer.street,
             ).label("venue_address"),
             sqla_func.coalesce(
                 offerers_models.Venue.postalCode,
@@ -576,7 +576,7 @@ def _get_legacy_payments_for_collective_bookings(
             offerers_models.Venue.common_name.label("venue_common_name"),  # type: ignore[attr-defined]
             sqla_func.coalesce(
                 offerers_models.Venue.street,
-                offerers_models.Offerer.address,
+                offerers_models.Offerer.street,
             ).label("venue_address"),
             sqla_func.coalesce(
                 offerers_models.Venue.postalCode,

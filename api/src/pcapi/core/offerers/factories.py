@@ -29,7 +29,7 @@ class OffererFactory(BaseFactory):
         model = models.Offerer
 
     name = factory.Sequence("Le Petit Rintintin Management {}".format)
-    address = "1 boulevard Poissonnière"
+    street = "1 boulevard Poissonnière"
     postalCode = "75000"
     city = "Paris"
     siren = factory.Sequence(lambda n: siren_utils.complete_siren_or_siret(f"{n + 1:08}"))  # ensures valid format
