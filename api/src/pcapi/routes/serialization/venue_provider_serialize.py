@@ -2,6 +2,7 @@ from datetime import datetime
 import decimal
 from typing import Any
 
+import pydantic.v1
 from pydantic.v1.main import BaseModel
 
 from pcapi.core.providers.models import VenueProvider
@@ -18,6 +19,14 @@ class PostVenueProviderBody(BaseModel):
     isDuo: bool | None
     quantity: int | None
     isActive: bool | None
+
+    @pydantic.v1.validator("price")
+    def price_must_be_positive(cls, value: decimal.Decimal | None) -> decimal.Decimal | None:
+        if not value:
+            return value
+        if value < 0:
+            raise ValueError("Le prix doit être positif.")
+        return value
 
 
 class ProviderResponse(BaseModel):

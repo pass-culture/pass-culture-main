@@ -20,23 +20,6 @@ class AllocineVenueProviderPriceRuleTest:
         assert len(allocine_venue_provider.priceRules) == 1
 
     @pytest.mark.usefixtures("db_session")
-    def test_should_raise_error_when_price_is_negative(self, app):
-        # Given
-        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory()
-
-        allocine_venue_provider_price_rule = AllocineVenueProviderPriceRule()
-        allocine_venue_provider_price_rule.allocineVenueProvider = allocine_venue_provider
-        allocine_venue_provider_price_rule.priceRule = PriceRule.default
-        allocine_venue_provider_price_rule.price = -4
-
-        # When
-        with pytest.raises(ApiErrors) as error:
-            repository.save(allocine_venue_provider_price_rule)
-
-        # Then
-        assert error.value.errors["global"] == ["Vous ne pouvez renseigner un prix négatif"]
-
-    @pytest.mark.usefixtures("db_session")
     def test_should_raise_error_when_saving_existing_rule_price(self, app):
         # Given
         allocine_venue_provider = providers_factories.AllocineVenueProviderFactory()

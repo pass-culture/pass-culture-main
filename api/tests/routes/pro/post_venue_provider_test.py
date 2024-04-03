@@ -395,6 +395,30 @@ class Returns400Test:
         assert response.json["price"] == ["Il est obligatoire de saisir un prix."]
         assert VenueProvider.query.count() == 0
 
+    @pytest.mark.usefixtures("db_session")
+    def test_when_add_allocine_stocks_provider_with_negative_price(self, client):
+        # Given
+        venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464")
+        user = user_factories.AdminFactory()
+        providers_factories.AllocineTheaterFactory(siret=venue.siret)
+        provider = providers_factories.AllocineProviderFactory()
+
+        venue_provider_data = {
+            "providerId": provider.id,
+            "venueId": venue.id,
+            "price": -20,
+        }
+
+        auth_request = client.with_session_auth(email=user.email)
+
+        # When
+        response = auth_request.post("/venueProviders", json=venue_provider_data)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json["price"] == ["Le prix doit être positif."]
+        assert VenueProvider.query.count() == 0
+
 
 class Returns401Test:
     @pytest.mark.usefixtures("db_session")
