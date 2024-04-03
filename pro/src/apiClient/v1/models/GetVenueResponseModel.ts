@@ -2,10 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AccessibilityDataModel } from './AccessibilityDataModel';
 import type { BankAccountResponseModel } from './BankAccountResponseModel';
 import type { BannerMetaModel } from './BannerMetaModel';
 import type { DMSApplicationForEAC } from './DMSApplicationForEAC';
+import type { ExternalAccessibilityDataModel } from './ExternalAccessibilityDataModel';
 import type { GetVenueDomainResponseModel } from './GetVenueDomainResponseModel';
 import type { GetVenueManagingOffererResponseModel } from './GetVenueManagingOffererResponseModel';
 import type { GetVenuePricingPointResponseModel } from './GetVenuePricingPointResponseModel';
@@ -42,7 +42,7 @@ export type GetVenueResponseModel = {
   departementCode?: string | null;
   description?: string | null;
   dmsToken: string;
-  externalAccessibilityData?: AccessibilityDataModel | null;
+  externalAccessibilityData?: ExternalAccessibilityDataModel | null;
   hasAdageId: boolean;
   hasPendingBankInformationApplication?: boolean | null;
   id: number;
