@@ -1716,11 +1716,11 @@ class DownloadReimbursementDetailsTest(PostEndpointHelper):
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_download_reimbursement_details(self, authenticated_client):
         venue = offerers_factories.VenueFactory(pricing_point="self", reimbursement_point="self")
         booking = bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
-        finance_factories.BankInformationFactory(venue=venue)
+        bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
+        offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
 
         # Create partial overpayment on booking
         booking_finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
@@ -1762,7 +1762,7 @@ class DownloadReimbursementDetailsTest(PostEndpointHelper):
             status=finance_models.PricingStatus.INVOICED,
         )
         cashflow = finance_factories.CashflowFactory(
-            reimbursementPoint=venue, pricings=[pricing, *incident_pricings], amount=-210
+            bankAccount=bank_account, pricings=[pricing, *incident_pricings], amount=-210
         )
         invoice = finance_factories.InvoiceFactory(cashflows=[cashflow])
 
@@ -1772,7 +1772,7 @@ class DownloadReimbursementDetailsTest(PostEndpointHelper):
             status=finance_models.PricingStatus.INVOICED,
         )
         second_cashflow = finance_factories.CashflowFactory(
-            reimbursementPoint=venue, pricings=[second_pricing], amount=-1010
+            bankAccount=bank_account, pricings=[second_pricing], amount=-1010
         )
         second_invoice = finance_factories.InvoiceFactory(cashflows=[second_cashflow])
 
