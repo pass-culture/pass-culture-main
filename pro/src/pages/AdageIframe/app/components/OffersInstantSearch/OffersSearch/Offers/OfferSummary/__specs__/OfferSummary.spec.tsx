@@ -21,11 +21,11 @@ describe('offer summary', () => {
   it('should show the dates range of a template offers', () => {
     const offer: CollectiveOfferTemplateResponseModel = {
       ...defaultCollectiveTemplateOffer,
-      dates: { start: '2023-10-23T22:00:00Z', end: '2023-10-24T21:59:00Z' },
+      dates: { start: '2023-10-24T00:00:00Z', end: '2023-10-24T23:59:00Z' },
       isTemplate: true,
     }
     renderOfferSummary({ offer })
-    expect(screen.queryByText('Le mardi 24 octobre 2023')).toBeInTheDocument()
+    expect(screen.getByText('Le mardi 24 octobre 2023')).toBeInTheDocument()
   })
 
   it('should not show the dates range on template offers if the dates are not defined', () => {
