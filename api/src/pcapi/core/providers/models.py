@@ -263,8 +263,6 @@ class AllocineVenueProviderPriceRule(PcObject, Base, Model):
     def restize_integrity_error(error: sa_exc.IntegrityError) -> tuple[str, str]:
         if "unique_allocine_venue_provider_price_rule" in str(error.orig):
             return ("global", "Vous ne pouvez avoir qu''un seul prix par catégorie")
-        if "check_price_is_not_negative" in str(error.orig):
-            return ("global", "Vous ne pouvez renseigner un prix négatif")
         return PcObject.restize_integrity_error(error)
 
 
