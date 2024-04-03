@@ -7,6 +7,7 @@ import {
   CategoryResponseModel,
   GetIndividualOfferResponseModel,
   GetOffererNameResponseModel,
+  MusicTypeResponse,
   SubcategoryResponseModel,
 } from 'apiClient/v1'
 import { IndividualOfferWizardLoaderData } from 'pages/IndividualOfferWizard/IndividualOfferWizard'
@@ -20,6 +21,7 @@ export interface IndividualOfferContextValues {
   subcategory?: SubcategoryResponseModel
   setSubcategory: (p?: SubcategoryResponseModel) => void
   offerOfferer?: GetOffererNameResponseModel | null
+  musicTypes: MusicTypeResponse[]
 }
 
 export const IndividualOfferContext =
@@ -29,6 +31,7 @@ export const IndividualOfferContext =
     categories: [],
     subCategories: [],
     setSubcategory: () => {},
+    musicTypes: [],
   })
 
 export const useIndividualOfferContext = () => {
@@ -40,6 +43,7 @@ interface IndividualOfferContextProviderProps {
 }
 
 const GET_CATEGORIES_QUERY_KEY = 'getCategories'
+const GET_MUSIC_TYPES_QUERY_KEY = 'getMusicTypes'
 
 export function IndividualOfferContextProvider({
   children,
@@ -52,6 +56,14 @@ export function IndividualOfferContextProvider({
     [GET_CATEGORIES_QUERY_KEY],
     () => api.getCategories(),
     { fallbackData: { categories: [], subcategories: [] } }
+  )
+
+  const musicTypesQuery = useSWR(
+    GET_MUSIC_TYPES_QUERY_KEY,
+    () => api.getMusicTypes(),
+    {
+      fallbackData: [],
+    }
   )
 
   const [subcategory, setSubcategory] = useState<SubcategoryResponseModel>()
@@ -67,6 +79,7 @@ export function IndividualOfferContextProvider({
         offer,
         categories: categoriesQuery.data.categories,
         subCategories: categoriesQuery.data.subcategories,
+        musicTypes: musicTypesQuery.data,
         offerOfferer: offerer,
         subcategory,
         setSubcategory,

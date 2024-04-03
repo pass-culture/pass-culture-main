@@ -6,10 +6,15 @@ import * as yup from 'yup'
 
 import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
+import {
+  IndividualOfferContext,
+  IndividualOfferContextValues,
+} from 'context/IndividualOfferContext'
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
 import { SubmitButton } from 'ui-kit'
 import {
   categoryFactory,
+  individualOfferContextValuesFactory,
   subcategoryFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -26,38 +31,25 @@ const renderCategories = ({
   initialValues: Partial<IndividualOfferFormValues>
   onSubmit: () => void
   props: CategoriesProps
+  contextOverride?: Partial<IndividualOfferContextValues>
 }) => {
+  const contextValues = individualOfferContextValuesFactory()
   renderWithProviders(
-    <Formik
-      initialValues={initialValues}
-      onSubmit={onSubmit}
-      validationSchema={yup.object().shape(getValidationSchema(true))}
-    >
-      <Form>
-        <Categories {...props} />
-        <SubmitButton isLoading={false}>Submit</SubmitButton>
-      </Form>
-    </Formik>,
+    <IndividualOfferContext.Provider value={contextValues}>
+      <Formik
+        initialValues={initialValues}
+        onSubmit={onSubmit}
+        validationSchema={yup.object().shape(getValidationSchema(true))}
+      >
+        <Form>
+          <Categories {...props} />
+          <SubmitButton isLoading={false}>Submit</SubmitButton>
+        </Form>
+      </Formik>
+    </IndividualOfferContext.Provider>,
     { features: ['ENABLE_PRO_TITELIVE_MUSIC_GENRES'] }
   )
 }
-
-vi.mock('apiClient/api', () => ({
-  api: {
-    getEventMusicTypes: vi.fn(() =>
-      Promise.resolve([
-        {
-          gtl_id: '07000000',
-          label: 'Metal',
-        },
-        {
-          gtl_id: '02000000',
-          label: 'JAZZ / BLUES',
-        },
-      ])
-    ),
-  },
-}))
 
 describe('IndividualOffer section: Categories', () => {
   let initialValues: Partial<IndividualOfferFormValues>
