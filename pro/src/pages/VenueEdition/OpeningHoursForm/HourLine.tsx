@@ -46,7 +46,7 @@ export function HourLine({ day }: HourLineProps) {
           })}
         >
           <TimePicker
-            label={'Horaire d’ouverture 1'}
+            label="Horaire d’ouverture 1"
             name={`${day}.morningStartingHour`}
             isLabelHidden
             hideFooter
@@ -61,11 +61,12 @@ export function HourLine({ day }: HourLineProps) {
           <span className={styles['second-hour']}>
             <span className={styles['top-aligned-content']}>-</span>
             <TimePicker
-              label={'Horaire de fermeture 1'}
+              label="Horaire de fermeture 1"
               name={`${day}.morningEndingHour`}
               isLabelHidden
               hideFooter
               className={styles['time-picker']}
+              min={values[day].morningStartingHour}
             />
           </span>
         </td>
@@ -94,22 +95,24 @@ export function HourLine({ day }: HourLineProps) {
         <tr className={styles['row-data']}>
           <td className={styles['hour-cell']}>
             <TimePicker
-              label={'Horaire d’ouverture 2'}
+              label="Horaire d’ouverture 2"
               name={`${day}.afternoonStartingHour`}
               isLabelHidden
               hideFooter
               className={styles['time-picker']}
+              min={values[day].morningEndingHour}
             />
           </td>
           <td className={styles['hour-cell']}>
             <span className={styles['second-hour']}>
               <span className={styles['top-aligned-content']}>-</span>
               <TimePicker
-                label={'Horaire de fermeture 2'}
+                label="Horaire de fermeture 2"
                 name={`${day}.afternoonEndingHour`}
                 isLabelHidden
                 hideFooter
                 className={styles['time-picker']}
+                min={values[day].afternoonStartingHour}
               />
             </span>
           </td>

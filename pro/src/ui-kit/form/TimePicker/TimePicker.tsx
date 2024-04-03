@@ -10,6 +10,7 @@ type TimePickerProps = FieldLayoutBaseProps & {
   disabled?: boolean
   dateTime?: Date
   value?: Date | null | ''
+  min?: string
 }
 
 const TimePicker = ({
@@ -25,6 +26,7 @@ const TimePicker = ({
   clearButtonProps,
   filterVariant,
   isOptional = false,
+  min,
 }: TimePickerProps): JSX.Element => {
   const [field, meta] = useField({ name, type: 'text' })
   const showError = meta.touched && !!meta.error
@@ -50,6 +52,7 @@ const TimePicker = ({
         filterVariant={filterVariant}
         disabled={disabled}
         aria-required={!isOptional}
+        min={min}
       />
     </FieldLayout>
   )
