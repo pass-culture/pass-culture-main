@@ -87,9 +87,9 @@ const OfferEducationalActions = ({
     reloadCollectiveOffer && reloadCollectiveOffer()
   }
 
-  const activateOffer = () => {
+  const activateOffer = async () => {
     if (isCollectiveOfferTemplate(offer) || offer.isActive) {
-      setIsOfferActive(!offer.isActive)
+      await setIsOfferActive(!offer.isActive)
       return
     }
 
@@ -98,7 +98,7 @@ const OfferEducationalActions = ({
       toDateStrippedOfTimezone(offer.collectiveStock.bookingLimitDatetime) >
         new Date()
     ) {
-      setIsOfferActive(true)
+      await setIsOfferActive(true)
       return
     }
     notify.error(
