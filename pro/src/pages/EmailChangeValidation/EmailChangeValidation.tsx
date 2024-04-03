@@ -15,20 +15,26 @@ const EmailChangeValidation = (): JSX.Element => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    const { expiration_timestamp, token } = parse(location.search)
-    const expiration_date = new Date(expiration_timestamp)
-    const now = new Date(Date.now() / 1000)
-    if (expiration_date > now) {
-      setIsSuccess(false)
-      return
-    }
-    api
-      .patchValidateEmail({ token: token })
-      .then(() => {
+    const changeEmail = async () => {
+      const { expiration_timestamp, token } = parse(location.search)
+      const expiration_date = new Date(expiration_timestamp)
+      const now = new Date(Date.now() / 1000)
+      if (expiration_date > now) {
+        setIsSuccess(false)
+        return
+      }
+
+      try {
+        await api.patchValidateEmail({ token: token })
         setIsSuccess(true)
         dispatch(updateUser(null))
-      })
-      .catch(() => setIsSuccess(false))
+      } catch {
+        setIsSuccess(false)
+      }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    changeEmail()
   }, [])
 
   if (isSuccess === undefined) {

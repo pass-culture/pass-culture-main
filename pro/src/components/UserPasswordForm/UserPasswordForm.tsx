@@ -15,30 +15,37 @@ export interface UserPasswordFormProps {
   postPasswordAdapter: PostPasswordAdapter
 }
 
+type UserPasswordFormValues = {
+  oldPassword: string
+  newPassword: string
+  newConfirmationPassword: string
+}
+
 const UserPasswordForm = ({
   closeForm,
   postPasswordAdapter,
 }: UserPasswordFormProps): JSX.Element => {
-  const onSubmit = (values: any) => {
-    postPasswordAdapter(values).then((response) => {
-      if (response.isOk) {
-        closeForm()
-      } else {
-        for (const field in response.payload) {
-          formik.setFieldError(field, response.payload[field])
-        }
+  const onSubmit = async (values: UserPasswordFormValues) => {
+    const response = await postPasswordAdapter(values)
+    if (response.isOk) {
+      closeForm()
+    } else {
+      for (const field in response.payload) {
+        formik.setFieldError(field, response.payload[field])
       }
-    })
+    }
     formik.setSubmitting(false)
   }
 
+  const initialValues: UserPasswordFormValues = {
+    oldPassword: '',
+    newPassword: '',
+    newConfirmationPassword: '',
+  }
+
   const formik = useFormik({
-    initialValues: {
-      oldPassword: '',
-      newPassword: '',
-      newConfirmationPassword: '',
-    },
-    onSubmit: onSubmit,
+    initialValues,
+    onSubmit,
     validationSchema,
     validateOnChange: false,
   })

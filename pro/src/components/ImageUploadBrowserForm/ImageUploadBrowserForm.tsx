@@ -36,18 +36,23 @@ const ImageUploadBrowserForm = ({
   const validationSchema = getValidationSchema({ constraints })
 
   /* istanbul ignore next: DEBT, TO FIX */
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const newFile: File | null =
       (event.currentTarget.files && event.currentTarget.files[0]) || null
     if (newFile) {
-      validationSchema
-        .validate({ image: newFile }, { abortEarly: false })
-        .then(() => onSubmit({ image: newFile }))
-        .catch((validationErrors: ValidationError) =>
-          setErrors(
-            validationErrors.inner.map((error) => error.path || 'unknown')
+      try {
+        await validationSchema.validate(
+          { image: newFile },
+          { abortEarly: false }
+        )
+        onSubmit({ image: newFile })
+      } catch (validationErrors) {
+        setErrors(
+          (validationErrors as ValidationError).inner.map(
+            (error) => error.path || 'unknown'
           )
         )
+      }
     }
   }
 

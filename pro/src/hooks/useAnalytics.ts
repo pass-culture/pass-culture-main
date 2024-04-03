@@ -45,50 +45,47 @@ export const useConfigureFirebase = ({
   }, [isCookieEnabled])
 
   useEffect(() => {
-    if (isCookieEnabled && !app && isFirebaseSupported) {
+    const loadAnalytics = async () => {
       const initializeApp = firebase.initializeApp(firebaseConfig)
 
       setApp(initializeApp)
       initializeAnalytics(initializeApp, {
-        config: {
-          send_page_view: false,
-        },
+        config: { send_page_view: false },
       })
       const remoteConfig = getRemoteConfig(initializeApp)
-      fetchAndActivate(remoteConfig)
-        .then(() => {
-          setRemoteConfig && setRemoteConfig(remoteConfig)
-          setLogEvent &&
-            setLogEvent(
-              () =>
-                (
-                  event: string,
-                  params:
-                    | { [key: string]: string | boolean | string[] | undefined }
-                    | Record<string, never> = {}
-                ) => {
-                  const remoteConfigValues = getAll(remoteConfig)
-                  const remoteConfigParams: Record<string, string> = {}
-                  Object.keys(remoteConfigValues).forEach((k) => {
-                    remoteConfigParams[k] = remoteConfigValues[k].asString()
-                  })
-                  setRemoteConfigData &&
-                    setRemoteConfigData({
-                      ...remoteConfigParams,
-                      REMOTE_CONFIG_LOADED: 'true',
-                    })
-                  analyticsLogEvent(getAnalytics(app), event, {
-                    ...params,
-                    ...utmParameters,
-                    ...remoteConfigParams,
-                  })
-                }
-            )
-        })
-        .catch(() => {
-          // eslint-disable-next-line
-          console.error("Impossible d'activer Remote Config")
-        })
+      await fetchAndActivate(remoteConfig)
+      setRemoteConfig && setRemoteConfig(remoteConfig)
+      setLogEvent &&
+        setLogEvent(
+          () =>
+            (
+              event: string,
+              params:
+                | { [key: string]: string | boolean | string[] | undefined }
+                | Record<string, never> = {}
+            ) => {
+              const remoteConfigValues = getAll(remoteConfig)
+              const remoteConfigParams: Record<string, string> = {}
+              Object.keys(remoteConfigValues).forEach((k) => {
+                remoteConfigParams[k] = remoteConfigValues[k].asString()
+              })
+              setRemoteConfigData &&
+                setRemoteConfigData({
+                  ...remoteConfigParams,
+                  REMOTE_CONFIG_LOADED: 'true',
+                })
+              analyticsLogEvent(getAnalytics(app), event, {
+                ...params,
+                ...utmParameters,
+                ...remoteConfigParams,
+              })
+            }
+        )
+    }
+
+    if (isCookieEnabled && !app && isFirebaseSupported) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      loadAnalytics()
     }
   }, [isCookieEnabled, app, isFirebaseSupported])
 
