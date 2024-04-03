@@ -41,6 +41,7 @@ import sqlalchemy.sql.functions as sqla_func
 from sqlalchemy.sql.sqltypes import LargeBinary
 
 from pcapi import settings
+from pcapi.connectors.acceslibre import AccessibilityInfo
 from pcapi.connectors.big_query.queries.offerer_stats import OffererViewsModel
 from pcapi.connectors.big_query.queries.offerer_stats import TopOffersData
 from pcapi.core.educational import models as educational_models
@@ -760,7 +761,7 @@ class AccessibilityProvider(PcObject, Base, Model):
         Text,
         nullable=True,
     )
-    externalAccessibilityData: dict | None = sa.Column(MutableDict.as_mutable(JSONB), nullable=True)
+    externalAccessibilityData: AccessibilityInfo | None = sa.Column(MutableDict.as_mutable(JSONB), nullable=True)
     lastUpdateAtProvider: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
 
 
