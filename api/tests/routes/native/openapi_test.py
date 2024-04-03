@@ -1328,27 +1328,27 @@ def test_public_api(client):
                             "title": "Categories",
                             "type": "array",
                         },
-                        "end_date": {
+                        "endDate": {
                             "nullable": True,
-                            "title": "End Date",
+                            "title": "Enddate",
                             "type": "string",
                         },
-                        "is_duo": {
+                        "isDuo": {
                             "nullable": True,
-                            "title": "Is Duo",
+                            "title": "Isduo",
                             "type": "boolean",
                         },
-                        "is_event": {
+                        "isEvent": {
                             "nullable": True,
-                            "title": "Is Event",
+                            "title": "Isevent",
                             "type": "boolean",
                         },
-                        "is_reco_shuffled": {
+                        "isRecoShuffled": {
                             "nullable": True,
-                            "title": "Is Reco Shuffled",
+                            "title": "Isrecoshuffled",
                             "type": "boolean",
                         },
-                        "offer_type_list": {
+                        "offerTypeList": {
                             "items": {
                                 "additionalProperties": {
                                     "type": "string",
@@ -1356,22 +1356,22 @@ def test_public_api(client):
                                 "type": "object",
                             },
                             "nullable": True,
-                            "title": "Offer Type List",
+                            "title": "Offertypelist",
                             "type": "array",
                         },
-                        "price_max": {
+                        "priceMax": {
                             "nullable": True,
-                            "title": "Price Max",
+                            "title": "Pricemax",
                             "type": "number",
                         },
-                        "price_min": {
+                        "priceMin": {
                             "nullable": True,
-                            "title": "Price Min",
+                            "title": "Pricemin",
                             "type": "number",
                         },
-                        "start_date": {
+                        "startDate": {
                             "nullable": True,
-                            "title": "Start Date",
+                            "title": "Startdate",
                             "type": "string",
                         },
                         "subcategories": {
