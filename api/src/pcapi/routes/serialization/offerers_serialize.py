@@ -27,7 +27,6 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     city: str | None
     comment: str | None
     departementCode: str | None
-    hasMissingReimbursementPoint: bool
     hasPendingBankInformationApplication: bool | None
     demarchesSimplifieesApplicationId: int | None
     hasCreatedOffer: bool
@@ -53,16 +52,6 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
         venue: offerers_models.Venue,
         ids_of_venues_with_offers: Iterable[int] = (),
     ) -> "GetOffererVenueResponseModel":
-        now = datetime.utcnow()
-        venue.hasMissingReimbursementPoint = not (
-            any(
-                (
-                    now > link.timespan.lower and (link.timespan.upper is None or now < link.timespan.upper)
-                    for link in venue.reimbursement_point_links
-                )
-            )
-            or venue.hasPendingBankInformationApplication
-        )
         venue.hasCreatedOffer = venue.id in ids_of_venues_with_offers
         venue.hasAdageId = bool(venue.adageId)
         venue.hasVenueProviders = bool(venue.venueProviders)
