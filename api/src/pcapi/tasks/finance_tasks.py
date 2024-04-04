@@ -21,12 +21,6 @@ class GenerateInvoicePayload(BaseModel):
     batch_id: int
 
 
-class GenerateInvoicePayloadLegacy(BaseModel):
-    reimbursement_point_id: int
-    cashflow_ids: list[int]
-    batch_id: int
-
-
 def is_generate_invoices_queue_empty() -> bool:
     results = list_tasks(settings.GENERATE_INVOICES_QUEUE_NAME)
     return len(results) == 0
