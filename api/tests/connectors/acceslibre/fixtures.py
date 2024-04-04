@@ -562,7 +562,7 @@ ACCESLIBRE_WIDGET_RESULT = {
         },
         {
             "title": "accès",
-            "labels": ["Chemin d'accès de plain pied", "Entrée de plain pied"],
+            "labels": ["Chemin d'accès de plain pied", "Accès à l'entrée par une rampe"],
         },
         {
             "title": "personnel",
