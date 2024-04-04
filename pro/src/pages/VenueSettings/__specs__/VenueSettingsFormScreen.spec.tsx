@@ -185,7 +185,6 @@ vi.mock('core/Venue/siretApiValidate', () => ({
 }))
 
 const venueResponse: GetVenueResponseModel = {
-  hasPendingBankInformationApplication: false,
   demarchesSimplifieesApplicationId: '',
   collectiveDomains: [],
   dateCreated: '2022-02-02',
@@ -276,7 +275,6 @@ describe('VenueFormScreen', () => {
 
     venue = {
       ...defaultGetVenue,
-      hasPendingBankInformationApplication: false,
       demarchesSimplifieesApplicationId: '',
       collectiveDomains: [],
       dateCreated: '2022-02-02',

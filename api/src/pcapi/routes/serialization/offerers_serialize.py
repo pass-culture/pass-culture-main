@@ -27,7 +27,6 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     city: str | None
     comment: str | None
     departementCode: str | None
-    hasPendingBankInformationApplication: bool | None
     demarchesSimplifieesApplicationId: int | None
     hasCreatedOffer: bool
     hasAdageId: bool

@@ -204,7 +204,6 @@ describe('VenueOfferSteps', () => {
     props.venue = {
       ...defaultGetOffererVenueResponseModel,
       hasCreatedOffer: true,
-      hasPendingBankInformationApplication: false,
     }
 
     renderVenueOfferSteps(props)
@@ -233,7 +232,6 @@ describe('VenueOfferSteps', () => {
     props.venue = {
       ...defaultGetOffererVenueResponseModel,
       hasCreatedOffer: true,
-      hasPendingBankInformationApplication: true,
     }
 
     renderVenueOfferSteps(props)

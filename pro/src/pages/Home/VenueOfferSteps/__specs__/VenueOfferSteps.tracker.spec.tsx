@@ -111,7 +111,7 @@ describe('VenueOfferSteps', () => {
 
   it('should track click on dms timeline link', async () => {
     renderVenueOfferSteps({
-      venue: { ...venue, hasPendingBankInformationApplication: true },
+      venue: { ...venue },
       hasVenue: true,
     })
 

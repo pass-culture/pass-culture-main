@@ -172,7 +172,6 @@ class Returns200Test:
             "collectiveStudents": [],
             "collectiveWebsite": None,
             "collectiveSubCategoryId": None,
-            "hasPendingBankInformationApplication": False,
             "collectiveDmsApplications": [
                 {
                     "venueId": dmsapplication.venue.id,
