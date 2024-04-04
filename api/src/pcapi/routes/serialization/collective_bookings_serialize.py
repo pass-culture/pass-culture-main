@@ -33,13 +33,6 @@ class CollectiveBookingRecapStatus(Enum):
     pending = "pending"
 
 
-class CollectiveBookingBankInformationStatus(Enum):
-    ACCEPTED = "ACCEPTED"
-    DRAFT = "DRAFT"
-    MISSING = "MISSING"
-    REJECTED = "REJECTED"
-
-
 class CollectiveBookingBankAccountStatus(Enum):
     ACCEPTED = "ACCEPTED"
     DRAFT = "DRAFT"
