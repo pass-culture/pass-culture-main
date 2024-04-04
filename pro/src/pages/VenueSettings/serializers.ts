@@ -9,17 +9,6 @@ export const serializeEditVenueBodyModel = (
   isVenueVirtual: boolean,
   shouldSendMail?: boolean
 ): EditVenueBodyModel => {
-  const reimbursementPointId =
-    !formValues.reimbursementPointId || formValues.reimbursementPointId === ''
-      ? null
-      : Number(formValues.reimbursementPointId)
-
-  if (isVenueVirtual) {
-    return {
-      reimbursementPointId: reimbursementPointId,
-    }
-  }
-
   const payload: EditVenueBodyModel = {
     address: formValues.address,
     banId: formValues.banId,
@@ -35,7 +24,6 @@ export const serializeEditVenueBodyModel = (
     withdrawalDetails: formValues.withdrawalDetails,
     isEmailAppliedOnAllOffers: true,
     isWithdrawalAppliedOnAllOffers: formValues.isWithdrawalAppliedOnAllOffers,
-    reimbursementPointId: reimbursementPointId,
     shouldSendMail: shouldSendMail,
     venueLabelId: !formValues.venueLabel ? null : Number(formValues.venueLabel),
     venueTypeCode: formValues.venueType as VenueTypeCode,

@@ -3,7 +3,6 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core.external.zendesk_sell_backends import testing as zendesk_testing
-import pcapi.core.finance.factories as finance_factories
 from pcapi.core.history import models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
@@ -400,24 +399,6 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert key in response.json
-
-    def test_raises_if_different_offerer(self, client) -> None:
-        user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, pricing_point="self")
-        another_offerer = offerers_factories.OffererFactory()
-        new_reimbursement_point = offerers_factories.VenueFactory(managingOfferer=another_offerer)
-        finance_factories.BankInformationFactory(venue=new_reimbursement_point)
-
-        venue_data = populate_missing_data_from_venue(
-            {"reimbursementPointId": new_reimbursement_point.id},
-            venue,
-        )
-        response = client.with_session_auth(email=user_offerer.user.email).patch(f"/venues/{venue.id}", json=venue_data)
-
-        assert response.status_code == 400
-        assert response.json["reimbursementPointId"] == [
-            f"Le lieu {new_reimbursement_point.name} ne peut pas être utilisé pour les remboursements car il n'appartient pas à la même structure."
-        ]
 
     def test_raises_if_comment_too_long(self, client) -> None:
         venue = offerers_factories.VenueWithoutSiretFactory()

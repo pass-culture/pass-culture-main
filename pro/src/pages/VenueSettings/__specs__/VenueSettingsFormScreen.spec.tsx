@@ -220,7 +220,6 @@ const venueResponse: GetVenueResponseModel = {
   timezone: 'Europe/Paris',
   venueTypeCode: VenueTypeCode.COURS_ET_PRATIQUE_ARTISTIQUES,
   venueLabelId: 1,
-  reimbursementPointId: 0,
   withdrawalDetails: 'string',
   collectiveAccessInformation: 'string',
   collectiveDescription: 'string',
@@ -273,7 +272,6 @@ describe('VenueFormScreen', () => {
       venueSiret: null,
       venueLabel: '13',
       isWithdrawalAppliedOnAllOffers: false,
-      reimbursementPointId: 91,
     }
 
     venue = {
@@ -306,7 +304,6 @@ describe('VenueFormScreen', () => {
       postalCode: '75008',
       publicName: 'name',
       siret: '88145723823022',
-      reimbursementPointId: 0,
       withdrawalDetails: 'string',
       collectiveAccessInformation: 'string',
       collectiveDescription: 'string',
@@ -357,20 +354,6 @@ describe('VenueFormScreen', () => {
         screen.getByText('ensure this value has at least 14 characters')
       ).toBeInTheDocument()
     })
-  })
-
-  it('should let update the virtual venue with limited fields', async () => {
-    renderForm(formValues, venue)
-
-    const editVenue = vi
-      .spyOn(api, 'editVenue')
-      .mockResolvedValue(venueResponse)
-
-    await userEvent.click(screen.getByText(/Enregistrer/))
-    expect(editVenue).toHaveBeenCalledWith(
-      15,
-      expect.objectContaining({ reimbursementPointId: 91 })
-    )
   })
 
   it('should let update venue without siret', async () => {
@@ -488,7 +471,6 @@ describe('VenueFormScreen', () => {
         name: 'MINISTERE DE LA CULTURE',
         postalCode: '35400',
         publicName: 'Melodie Sims',
-        reimbursementPointId: 91,
         shouldSendMail: false,
         siret: '88145723823022',
         venueTypeCode: VenueTypeCode.JEUX_JEUX_VID_OS,
