@@ -567,7 +567,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return self.phoneValidationStatus == PhoneValidationStatusType.SKIPPED_BY_SUPPORT
 
     @is_phone_validation_skipped.expression  # type: ignore [no-redef]
-    def is_phone_validation_skipped(cls):  # pylint: disable=no-self-argument
+    def is_phone_validation_skipped(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.phoneValidationStatus == PhoneValidationStatusType.SKIPPED_BY_SUPPORT
 
     @hybrid_property
@@ -575,7 +575,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return UserRole.ADMIN in self.roles
 
     @has_admin_role.expression  # type: ignore [no-redef]
-    def has_admin_role(cls) -> bool:  # pylint: disable=no-self-argument
+    def has_admin_role(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.ADMIN])
 
     @hybrid_property
@@ -583,7 +583,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return UserRole.BENEFICIARY in self.roles
 
     @has_beneficiary_role.expression  # type: ignore [no-redef]
-    def has_beneficiary_role(cls) -> bool:  # pylint: disable=no-self-argument
+    def has_beneficiary_role(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.BENEFICIARY])
 
     @hybrid_property
@@ -591,7 +591,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return UserRole.PRO in self.roles
 
     @has_pro_role.expression  # type: ignore [no-redef]
-    def has_pro_role(cls) -> bool:  # pylint: disable=no-self-argument
+    def has_pro_role(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.PRO])
 
     @hybrid_property
@@ -599,7 +599,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return UserRole.NON_ATTACHED_PRO in self.roles
 
     @has_non_attached_pro_role.expression  # type: ignore [no-redef]
-    def has_non_attached_pro_role(cls) -> bool:  # pylint: disable=no-self-argument
+    def has_non_attached_pro_role(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.NON_ATTACHED_PRO])
 
     @hybrid_property
@@ -607,7 +607,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return UserRole.UNDERAGE_BENEFICIARY in self.roles
 
     @has_underage_beneficiary_role.expression  # type: ignore [no-redef]
-    def has_underage_beneficiary_role(cls) -> bool:  # pylint: disable=no-self-argument
+    def has_underage_beneficiary_role(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.UNDERAGE_BENEFICIARY])
 
     @hybrid_property
@@ -615,7 +615,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return UserRole.TEST in self.roles
 
     @has_test_role.expression  # type: ignore [no-redef]
-    def has_test_role(cls) -> bool:  # pylint: disable=no-self-argument
+    def has_test_role(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.TEST])
 
     @hybrid_property
@@ -623,7 +623,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return UserRole.ANONYMIZED in self.roles
 
     @has_anonymized_role.expression  # type: ignore [no-redef]
-    def has_anonymized_role(cls) -> bool:  # pylint: disable=no-self-argument
+    def has_anonymized_role(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.ANONYMIZED])
 
     @property

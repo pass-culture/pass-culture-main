@@ -6,6 +6,8 @@ fix this issue.
 
 import sys
 
+import sqlalchemy as sa
+
 from pcapi.core.external import batch
 from pcapi.core.external import sendinblue
 from pcapi.core.external.attributes.api import get_user_attributes
@@ -53,8 +55,10 @@ def run(
     print("%s started" % message)
     chunk = (
         User.query.filter(User.id.in_(user_ids))
-        .filter(User.has_pro_role.is_(False))  # type: ignore [attr-defined]
-        .filter(User.has_admin_role.is_(False))  # type: ignore [attr-defined]
+        .filter(
+            sa.not_(User.has_pro_role),
+            sa.not_(User.has_admin_role),
+        )
         .all()
     )
     if synchronize_batch:

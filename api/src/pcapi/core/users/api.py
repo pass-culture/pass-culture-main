@@ -1097,13 +1097,13 @@ def get_public_account_base_query() -> BaseQuery:
     # using the same email as their personal account. So let's include "pro" users who are beneficiaries (doesn't
     # include those who are only in the subscription process).
     public_accounts = models.User.query.outerjoin(users_models.User.backoffice_profile).filter(
-        sa.or_(
+        sa.or_(  # type: ignore [type-var]
             sa.and_(
-                models.User.has_pro_role.is_(False),  # type: ignore [attr-defined]
-                models.User.has_non_attached_pro_role.is_(False),  # type: ignore [attr-defined]
+                sa.not_(models.User.has_pro_role),
+                sa.not_(models.User.has_non_attached_pro_role),
                 perm_models.BackOfficeUserProfile.id.is_(None),
             ),
-            models.User.is_beneficiary.is_(True),  # type: ignore [attr-defined]
+            models.User.is_beneficiary,
         ),
     )
     return public_accounts
@@ -1112,7 +1112,10 @@ def get_public_account_base_query() -> BaseQuery:
 # TODO (prouzet, 2023-11-02) This function should be moved in backoffice and use common _join_suspension_history()
 def search_pro_account(search_query: str, *_: typing.Any) -> BaseQuery:
     pro_accounts = models.User.query.filter(
-        models.User.has_non_attached_pro_role.is_(True) | models.User.has_pro_role.is_(True)  # type: ignore [attr-defined]
+        sa.or_(  # type: ignore [type-var]
+            models.User.has_non_attached_pro_role,
+            models.User.has_pro_role,
+        )
     )
 
     return (
@@ -1137,9 +1140,9 @@ def search_pro_account(search_query: str, *_: typing.Any) -> BaseQuery:
 def get_pro_account_base_query(pro_id: int) -> BaseQuery:
     return models.User.query.filter(
         models.User.id == pro_id,
-        sa.or_(
-            models.User.has_non_attached_pro_role.is_(True),  # type: ignore [attr-defined]
-            models.User.has_pro_role.is_(True),  # type: ignore [attr-defined]
+        sa.or_(  # type: ignore [type-var]
+            models.User.has_non_attached_pro_role,
+            models.User.has_pro_role,
         ),
     )
 
@@ -1566,11 +1569,9 @@ def anonymize_beneficiary_users(*, force: bool = False) -> None:
             users_models.User.deposits,
         )
         .filter(
-            users_models.User.is_beneficiary.is_(True),  # type: ignore [attr-defined]
-            sa.and_(
-                users_models.User.lastConnectionDate < datetime.datetime.utcnow() - relativedelta(years=3),
-                finance_models.Deposit.expirationDate < datetime.datetime.utcnow() - relativedelta(years=5),
-            ),
+            users_models.User.is_beneficiary,
+            users_models.User.lastConnectionDate < datetime.datetime.utcnow() - relativedelta(years=3),
+            finance_models.Deposit.expirationDate < datetime.datetime.utcnow() - relativedelta(years=5),
         )
         .all()
     )

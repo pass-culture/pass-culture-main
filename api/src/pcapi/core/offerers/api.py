@@ -1556,7 +1556,7 @@ def get_offerer_offers_stats(offerer_id: int, max_offer_count: int = 0) -> dict:
         return sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
             sa.select(
                 sa.case(
-                    (sa.and_(offer_class.isActive.is_(True), offer_class.is_expired.is_(False)), "active"),  # type: ignore [attr-defined]
+                    (sa.and_(offer_class.isActive, sa.not_(offer_class.is_expired)), "active"),  # type: ignore [type-var]
                     else_="inactive",
                 ).label("status"),
                 sa.func.count(offer_class.id).label("number"),
@@ -1568,11 +1568,11 @@ def get_offerer_offers_stats(offerer_id: int, max_offer_count: int = 0) -> dict:
                 # TODO: remove filter on isActive when all DRAFT and PENDING collective_offers are effectively at isActive = False
                 sa.or_(
                     sa.and_(
-                        offer_class.isActive.is_(True),  # type: ignore [attr-defined]
+                        offer_class.isActive,
                         offer_class.validation == offers_models.OfferValidationStatus.APPROVED.value,
                     ),
                     sa.and_(
-                        offer_class.isActive.is_(False),  # type: ignore [attr-defined]
+                        sa.not_(offer_class.isActive),
                         offer_class.validation.in_(  # type: ignore [attr-defined]
                             [
                                 offers_models.OfferValidationStatus.APPROVED.value,
@@ -1652,8 +1652,8 @@ def get_venue_offers_stats(venue_id: int, max_offer_count: int = 0) -> dict:
         return sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
             sa.select(
                 sa.case(
-                    (offer_class.isActive.is_(True), "active"),  # type: ignore [attr-defined]
-                    (offer_class.isActive.is_(False), "inactive"),  # type: ignore [attr-defined]
+                    (offer_class.isActive, "active"),
+                    else_="inactive",
                 ).label("status"),
                 sa.func.count(offer_class.id).label("number"),
             )
@@ -1663,12 +1663,12 @@ def get_venue_offers_stats(venue_id: int, max_offer_count: int = 0) -> dict:
                 # TODO: remove filter on isActive when all DRAFT and PENDING collective_offers are effectively at isActive = False
                 sa.or_(
                     sa.and_(
-                        offer_class.isActive.is_(True),  # type: ignore [attr-defined]
+                        offer_class.isActive,
                         offer_class.venueId == venue_id,
                         offer_class.validation == offers_models.OfferValidationStatus.APPROVED.value,
                     ),
                     sa.and_(
-                        offer_class.isActive.is_(False),  # type: ignore [attr-defined]
+                        sa.not_(offer_class.isActive),
                         offer_class.venueId == venue_id,
                         offer_class.validation.in_(  # type: ignore [attr-defined]
                             [
