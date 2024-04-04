@@ -10,7 +10,7 @@
       {% if rows %}
         <div class="d-flex flex-column">
           <p class="lead num-results">
-            {{ rows | length }}{{ "+" if rows | length > 100 else "" }}
+            {{ rows | length }}
             résultat{{ "s" if rows | length > 1 else "" }}
           </p>
           <table class="table mb-4"
