@@ -168,34 +168,6 @@ def create_offerer(body: offerers_serialize.CreateOffererQueryModel) -> offerers
     return offerers_serialize.PostOffererResponseModel.from_orm(user_offerer.offerer)
 
 
-@private_api.route("/offerers/<int:offerer_id>/reimbursement-points", methods=["GET"])
-@login_required
-@spectree_serialize(
-    response_model=offerers_serialize.OffererReimbursementPointListResponseModel,
-    api=blueprint.pro_private_schema,
-)
-def get_available_reimbursement_points(
-    offerer_id: int,
-) -> offerers_serialize.OffererReimbursementPointListResponseModel:
-    offerers_models.Offerer.query.get_or_404(offerer_id)
-    check_user_has_access_to_offerer(current_user, offerer_id)
-
-    reimbursement_points = repository.find_available_reimbursement_points_for_offerer(offerer_id)
-    # TODO(fseguin, 2023-03-01): cleanup when WIP_ENABLE_NEW_ONBOARDING FF is removed
-    return offerers_serialize.OffererReimbursementPointListResponseModel(
-        __root__=[
-            offerers_serialize.OffererReimbursementPointResponseModel(  # type: ignore [call-arg]
-                venueId=reimbursement_point.id,
-                venueName=reimbursement_point.common_name,
-                siret=reimbursement_point.siret,
-                iban=reimbursement_point.iban,  # type: ignore [arg-type]
-                bic=reimbursement_point.bic,
-            )
-            for reimbursement_point in reimbursement_points
-        ],
-    )
-
-
 @private_api.route("/offerers/<int:offerer_id>/dashboard", methods=["GET"])
 @login_required
 @spectree_serialize(
