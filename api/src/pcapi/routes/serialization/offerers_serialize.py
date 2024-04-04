@@ -268,16 +268,6 @@ class SaveNewOnboardingDataQueryModel(BaseModel):
         anystr_strip_whitespace = True
 
 
-class OffererReimbursementPointResponseModel(BaseModel):
-    venueId: int
-    venueName: str
-    iban: str
-
-
-class OffererReimbursementPointListResponseModel(BaseModel):
-    __root__: list[OffererReimbursementPointResponseModel]
-
-
 class OffererStatsResponseModel(BaseModel):
     dashboardUrl: str
 
