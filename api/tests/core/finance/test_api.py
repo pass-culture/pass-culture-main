@@ -1247,48 +1247,6 @@ def test_generate_payment_files(mocked_gdrive_create_file):
 
 
 @clean_temporary_files
-def test_generate_reimbursement_points_file():
-    now = datetime.datetime.utcnow()
-    point1 = offerers_factories.VenueFactory()
-    point2 = offerers_factories.VenueFactory(
-        name='Name1\n "with double quotes"   ',
-        siret='siret 1 "t"',
-    )
-    point3 = offerers_factories.VenueFactory()
-    factories.BankInformationFactory(venue=point1, iban="older-iban", bic="older-bic")
-    factories.BankInformationFactory(venue=point2, iban="some-iban", bic="some-bic")
-    factories.BankInformationFactory(venue=point3, iban="newer-iban", bic="newer-bic")
-    offerers_factories.VenueReimbursementPointLinkFactory(
-        reimbursementPoint=point1, timespan=[now - datetime.timedelta(days=30), now - datetime.timedelta(days=3)]
-    )
-    offerers_factories.VenueReimbursementPointLinkFactory(
-        reimbursementPoint=point2, timespan=[now - datetime.timedelta(days=3), now - datetime.timedelta(days=1)]
-    )
-    offerers_factories.VenueReimbursementPointLinkFactory(
-        reimbursementPoint=point3,
-        timespan=[
-            now - datetime.timedelta(days=1),
-        ],
-    )
-
-    n_queries = 1  # select reimbursement point data
-    with assert_num_queries(n_queries):
-        path = api._generate_reimbursement_points_file(datetime.datetime.utcnow() - datetime.timedelta(days=2))
-
-    with path.open(encoding="utf-8") as fp:
-        reader = csv.DictReader(fp, quoting=csv.QUOTE_NONNUMERIC)
-        rows = list(reader)
-    assert len(rows) == 1
-    assert rows[0] == {
-        "Identifiant du point de remboursement": human_ids.humanize(point2.id),
-        "SIRET": "siret 1 t",
-        "Raison sociale du point de remboursement": "Name1 with double quotes",
-        "IBAN": "some-iban",
-        "BIC": "some-bic",
-    }
-
-
-@clean_temporary_files
 def test_generate_bank_accounts_file():
     now = datetime.datetime.utcnow()
     offerer = offerers_factories.OffererFactory(name="Nom de la structure")
