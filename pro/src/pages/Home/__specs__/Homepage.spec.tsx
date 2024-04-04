@@ -12,11 +12,15 @@ import { GetOffererResponseModel } from 'apiClient/v1'
 import { RemoteContextProvider } from 'context/remoteConfigContext'
 import { SAVED_OFFERER_ID_KEY } from 'core/shared'
 import * as useAnalytics from 'hooks/useAnalytics'
+import { formatBrowserTimezonedDateAsUTC } from 'utils/date'
 import {
-  defaultGetOffererVenueResponseModel,
   defaultGetOffererResponseModel,
+  defaultGetOffererVenueResponseModel,
 } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  renderWithProviders,
+  RenderWithProvidersOptions,
+} from 'utils/renderWithProviders'
 
 import { Homepage } from '../Homepage'
 
@@ -37,12 +41,22 @@ vi.mock('react-router-dom', async () => ({
   useLoaderData: vi.fn(),
 }))
 
-const renderHomePage = (storeOverrides: any) => {
+const reloadFn = vi.fn()
+global.window = Object.create(window)
+Object.defineProperty(window, 'location', {
+  value: {
+    reload: reloadFn,
+    href: '',
+  },
+  writable: true,
+})
+
+const renderHomePage = (storeOverrides?: RenderWithProvidersOptions) => {
   renderWithProviders(
     <RemoteContextProvider>
       <Homepage />
     </RemoteContextProvider>,
-    { storeOverrides }
+    { storeOverrides, features: storeOverrides?.features }
   )
 }
 
@@ -97,10 +111,14 @@ describe('Homepage', () => {
         email: 'john.do@dummy.xyz',
         phoneNumber: '01 00 00 00 00',
         hasSeenProTutorials: true,
+        navState: {
+          eligibilityDate: '',
+          newNavDate: '',
+        },
       },
       initialized: true,
     },
-    features: {},
+    features: [''],
   }
 
   beforeEach(() => {
@@ -279,5 +297,113 @@ describe('Homepage', () => {
         'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
       )
     ).toBeInTheDocument()
+  })
+
+  describe('beta banner', () => {
+    beforeEach(() => {
+      store.features = ['WIP_ENABLE_PRO_SIDE_NAV']
+    })
+
+    it('should not display the banner without de FF', async () => {
+      renderHomePage({
+        ...store,
+        ...{
+          features: [],
+        },
+      })
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+      expect(
+        screen.queryByText(/Une nouvelle interface sera bientôt disponible/)
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not display the banner if the user is eligible but is already a beta tester', async () => {
+      renderHomePage({
+        ...store,
+        ...{
+          user: {
+            currentUser: {
+              navState: {
+                eligibilityDate: '2020-04-03T12:00:00+04:00',
+                newNavDate: '2020-04-03T12:00:00+04:00',
+              },
+            },
+          },
+        },
+      })
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+      expect(
+        screen.queryByText(/Une nouvelle interface sera bientôt disponible/)
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not display the banner if the user has an eligiblity date in the future', async () => {
+      const now = new Date()
+      const later = now.setDate(now.getDate() + 14)
+      renderHomePage({
+        ...store,
+        ...{
+          user: {
+            currentUser: {
+              navState: {
+                eligibilityDate: formatBrowserTimezonedDateAsUTC(later),
+              },
+            },
+          },
+        },
+      })
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+      expect(
+        screen.queryByText(/Une nouvelle interface sera bientôt disponible/)
+      ).not.toBeInTheDocument()
+    })
+
+    it('should display the banner if the user is eligible', async () => {
+      vi.spyOn(api, 'postNewProNav').mockResolvedValue()
+
+      renderHomePage({
+        ...store,
+        ...{
+          user: {
+            currentUser: {
+              navState: {
+                eligibilityDate: '2020-04-03T12:00:00+04:00',
+              },
+            },
+          },
+        },
+      })
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+      expect(
+        screen.getByText(/Une nouvelle interface sera bientôt disponible/)
+      ).toBeInTheDocument()
+
+      await userEvent.click(screen.getByText(/Activer dès maintenant/))
+      expect(api.postNewProNav).toHaveBeenCalledTimes(1)
+      expect(reloadFn).toHaveBeenCalledTimes(1)
+      expect(
+        await screen.findByText('Bienvenue dans votre nouvelle interface')
+      ).toBeInTheDocument()
+    })
+
+    it('should not display the banner if the user already closed the banner', async () => {
+      localStorage.setItem('HAS_CLOSED_BETA_TEST_BANNER', 'true')
+      renderHomePage({
+        ...store,
+        ...{
+          user: {
+            currentUser: {
+              navState: {
+                eligibilityDate: '2020-04-03T12:00:00+04:00',
+              },
+            },
+          },
+        },
+      })
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+      expect(
+        screen.queryByText(/Une nouvelle interface sera bientôt disponible/)
+      ).not.toBeInTheDocument()
+    })
   })
 })
