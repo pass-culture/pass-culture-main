@@ -450,7 +450,7 @@ class Returns200Test:
             name="L'encre et la plume", managingOfferer=user_offerer.offerer, venueTypeCode=VenueTypeCode.LIBRARY
         )
         venue_accessibility_data = {
-            "access_modality": [acceslibre_enum.EXTERIOR_ACCESS_ELEVATOR, acceslibre_enum.ENTRANCE_ELEVATOR],
+            "access_modality": [acceslibre_enum.EXTERIOR_ACCESS_ELEVATOR, acceslibre_enum.ENTRANCE_RAMP],
             "audio_description": [],
             "deaf_and_hard_of_hearing_amenities": [
                 acceslibre_enum.DEAF_AND_HARD_OF_HEARING_PORTABLE_INDUCTION_LOOP,
@@ -473,7 +473,7 @@ class Returns200Test:
             "motorDisability": {
                 "facilities": "Sanitaire non adapté",
                 "exterior": "Chemin rendu accessible (ascenseur)",
-                "entrance": "Accès à l'entrée par ascenseur",
+                "entrance": "Accès à l'entrée par une rampe",
                 "parking": "Pas de stationnement adapté à proximité",
             },
             "audioDisability": {
