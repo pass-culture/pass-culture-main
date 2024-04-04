@@ -1458,26 +1458,6 @@ def _filter_invoiceable_cashflows(query: BaseQuery) -> BaseQuery:
     )
 
 
-def _get_cashflows_by_reimbursement_points(batch: models.CashflowBatch, only_debit_notes: bool = False) -> list:
-    """Legacy"""
-    query = _filter_invoiceable_cashflows(
-        db.session.query(
-            models.Cashflow.reimbursementPointId.label("reimbursement_point_id"),
-            sqla_func.array_agg(models.Cashflow.id).label("cashflow_ids"),
-        )
-    ).filter(models.Cashflow.batchId == batch.id)
-
-    query = query.filter(models.Cashflow.amount > 0) if only_debit_notes else query.filter(models.Cashflow.amount < 0)
-
-    rows = query.group_by(models.Cashflow.reimbursementPointId).all()
-
-    if not rows and not only_debit_notes:
-        # Probably a mistake in the batch id input
-        raise exceptions.NoInvoiceToGenerate()
-
-    return rows
-
-
 def generate_debit_notes(batch: models.CashflowBatch) -> None:
     """Generate (and store) all invoices."""
 
