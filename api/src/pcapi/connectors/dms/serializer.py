@@ -15,7 +15,6 @@ from pcapi import settings
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.api import mark_bank_account_without_continuation
-from pcapi.core.finance.api import mark_bank_information_rejected
 from pcapi.core.finance.utils import format_raw_iban_and_bic
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
@@ -375,14 +374,5 @@ class MarkWithoutContinuationApplicationDetail(BaseModel):
         return False
 
     def mark_without_continuation(self) -> None:
-        """Mark without continuation our internal representation of the DS application (BankInformation and/or BankAccount)"""
-        # FIXME (dramelet, 22-02-2024)
-        # Remove the handling of the old journey
-        # when it will be deprecated
-        # For a given DS application, we can't know:
-        # - if only a bankInformation exists
-        # - if both bankInformation & bankAccount exists
-        # - if only a bankAccount exists
-        # Hence handling both cases
-        mark_bank_information_rejected(self.number)
+        """Mark without continuation our internal representation of the DS application (BankAccount)"""
         mark_bank_account_without_continuation(self.number)
