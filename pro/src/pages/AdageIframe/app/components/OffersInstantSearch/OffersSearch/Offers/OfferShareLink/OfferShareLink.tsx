@@ -1,4 +1,4 @@
-import classNames from 'classnames'
+import { MouseEvent } from 'react'
 
 import {
   CollectiveOfferResponseModel,
@@ -7,9 +7,8 @@ import {
 import { apiAdage } from 'apiClient/api'
 import strokeShareIcon from 'icons/stroke-share.svg'
 import ListIconButton from 'ui-kit/ListIconButton'
+import { ListIconButtonVariant } from 'ui-kit/ListIconButton/ListIconButton'
 import { LOGS_DATA } from 'utils/config'
-
-import styles from './OfferShareLink.module.scss'
 
 export interface OfferShareLinkProps {
   offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
@@ -30,7 +29,7 @@ Bonjour,
 %0D%0A%0D%0ACordialement
   `
 
-  function handleShareButtonClicked() {
+  function handleShareButtonClicked(event: MouseEvent) {
     if (LOGS_DATA) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       apiAdage.logTrackingCtaShare({
@@ -39,15 +38,17 @@ Bonjour,
         source: '',
       })
     }
+    event.stopPropagation()
   }
 
   return (
     <ListIconButton
-      className={classNames(styles['share-link'], className)}
+      className={className}
       url={`mailto:?subject=Partage d’offre sur ADAGE - ${offer.name}&body=${mailBody}`}
       icon={strokeShareIcon}
       onClick={handleShareButtonClicked}
       tooltipContentClassName={tooltipContentClassName}
+      variant={ListIconButtonVariant.PRIMARY}
     >
       Partager l’offre par email
     </ListIconButton>
