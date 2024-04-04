@@ -51,8 +51,8 @@ import {
 } from './utils/filterCategories/filterCategories'
 
 export interface InformationsScreenProps {
-  offererId: string
-  venueId: string
+  offererId: string | null
+  venueId: string | null
   offererNames: GetOffererNameResponseModel[]
   venueList: VenueListItemResponseModel[]
 }
