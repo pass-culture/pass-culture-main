@@ -211,7 +211,6 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     demarchesSimplifieesApplicationId: str | None
     departementCode: str | None
     dmsToken: str
-    hasPendingBankInformationApplication: bool | None
     managingOfferer: GetVenueManagingOffererResponseModel
     pricingPoint: GetVenuePricingPointResponseModel | None
     reimbursementPointId: int | None

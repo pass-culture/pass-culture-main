@@ -19,7 +19,6 @@ export type GetOffererVenueResponseModel = {
   departementCode?: string | null;
   hasAdageId: boolean;
   hasCreatedOffer: boolean;
-  hasPendingBankInformationApplication?: boolean | null;
   hasVenueProviders: boolean;
   id: number;
   isPermanent: boolean;

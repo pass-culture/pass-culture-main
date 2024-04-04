@@ -44,7 +44,6 @@ export type GetVenueResponseModel = {
   dmsToken: string;
   externalAccessibilityData?: ExternalAccessibilityDataModel | null;
   hasAdageId: boolean;
-  hasPendingBankInformationApplication?: boolean | null;
   id: number;
   isPermanent?: boolean | null;
   isVirtual: boolean;

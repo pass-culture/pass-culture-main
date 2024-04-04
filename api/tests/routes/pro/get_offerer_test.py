@@ -46,9 +46,6 @@ class GetOffererTest:
         )
         offerers_factories.ApiKeyFactory(offerer=offerer, prefix="testenv_prefix")
         offerers_factories.ApiKeyFactory(offerer=offerer, prefix="testenv_prefix2")
-        finance_factories.BankInformationFactory(venue=venue_1, applicationId=2, status="REJECTED")
-        finance_factories.BankInformationFactory(venue=venue_1, applicationId=3)
-        finance_factories.BankInformationFactory(venue=venue_2, applicationId=4)
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro.email)
@@ -105,7 +102,6 @@ class GetOffererTest:
                     "demarchesSimplifieesApplicationId": venue.demarchesSimplifieesApplicationId,
                     "departementCode": venue.departementCode,
                     "hasAdageId": bool(venue.adageId),
-                    "hasPendingBankInformationApplication": venue.hasPendingBankInformationApplication,
                     "hasCreatedOffer": venue.has_individual_offers or venue.has_collective_offers,
                     "isVirtual": venue.isVirtual,
                     "isVisibleInApp": venue.isVisibleInApp,
@@ -164,12 +160,6 @@ class GetOffererTest:
         offerers_factories.VenueFactory(
             managingOfferer=offerer, reimbursement_point=None, name="A - Venue without reimbursement point"
         )
-        venue_with_pending_application = offerers_factories.VenueFactory(
-            managingOfferer=offerer,
-            reimbursement_point=None,
-            name="B - Venue without reimbursement point with pending application",
-        )
-        finance_factories.BankInformationFactory(venue=venue_with_pending_application, applicationId=4, status="DRAFT")
         offerers_factories.VenueFactory(
             managingOfferer=offerer, name="C - Venue with reimbursement point", reimbursement_point="self"
         )
