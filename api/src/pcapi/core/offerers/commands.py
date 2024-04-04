@@ -3,6 +3,7 @@ import logging
 from math import ceil
 
 import click
+import pytz
 import sqlalchemy as sa
 
 import pcapi.connectors.acceslibre as accessibility_provider
@@ -135,19 +136,29 @@ def synchronize_accessibility_with_acceslibre(dry_run: bool = False, force_sync:
         for venue in venues_list:
             slug = venue.accessibilityProvider.externalAccessibilityId
             last_update = accessibility_provider.get_last_update_at_provider(slug=slug)
-            if last_update or not venue.accessibilityProvider.externalAccessibilityData:
-                if force_sync or venue.accessibilityProvider.lastUpdateAtProvider < last_update:
-                    venue.accessibilityProvider.lastUpdateAtProvider = last_update
-                    accessibility_data = accessibility_provider.get_accessibility_infos(
-                        slug=venue.accessibilityProvider.externalAccessibilityId
-                    )
-                    venue.accessibilityProvider.externalAccessibilityData = (
-                        accessibility_data.dict() if accessibility_data else None
-                    )
-                    db.session.add(venue.accessibilityProvider)
+            # if last_update is not None: match still exist
+            # Then we update accessibility data if :
+            # 1. accessibility data is None
+            # 2. we have forced the synchronization
+            # 3. accessibility data has been updated on acceslibre side
+            if last_update and (
+                not venue.accessibilityProvider.externalAccessibilityData
+                or force_sync
+                or venue.accessibilityProvider.lastUpdateAtProvider.astimezone(pytz.utc)
+                < last_update.astimezone(pytz.utc)
+            ):
+                venue.accessibilityProvider.lastUpdateAtProvider = last_update
+                accessibility_data = accessibility_provider.get_accessibility_infos(
+                    slug=venue.accessibilityProvider.externalAccessibilityId
+                )
+                venue.accessibilityProvider.externalAccessibilityData = (
+                    accessibility_data.dict() if accessibility_data else None
+                )
+                db.session.add(venue.accessibilityProvider)
 
-            # If slug has not been found at acceslibre, we try to find a new match
-            else:
+            # if last_update is None, the slug has been removed from acceslibre, we try a new match
+            # and save accessibility data to DB
+            elif not last_update:
                 new_slug = accessibility_provider.get_id_at_accessibility_provider(
                     name=venue.name,
                     public_name=venue.publicName,
@@ -157,17 +168,21 @@ def synchronize_accessibility_with_acceslibre(dry_run: bool = False, force_sync:
                     postal_code=venue.postalCode,
                     address=venue.address,
                 )
-                if new_slug:
-                    venue.accessibilityProvider.lastUpdateAtProvider = (
-                        accessibility_provider.get_last_update_at_provider(slug=new_slug)
-                    )
+                if new_slug and (last_update := accessibility_provider.get_last_update_at_provider(slug=new_slug)):
                     accessibility_data = accessibility_provider.get_accessibility_infos(slug=new_slug)
+                    venue.accessibilityProvider.externalAccessibilityId = new_slug
+                    venue.accessibilityProvider.lastUpdateAtProvider = last_update
                     venue.accessibilityProvider.externalAccessibilityData = (
                         accessibility_data.dict() if accessibility_data else None
                     )
                     db.session.add(venue.accessibilityProvider)
                 else:
-                    db.session.delete(venue.accessibilityProvider)
+                    logger.info(
+                        "Slug %s has not been found at acceslibre. Removing AccessibilityProvider %d",
+                        slug,
+                        venue.accessibilityProvider.id,
+                    )
+                db.session.delete(venue.accessibilityProvider)
         if not dry_run:
             try:
                 db.session.commit()

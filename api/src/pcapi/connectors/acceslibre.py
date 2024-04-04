@@ -81,11 +81,11 @@ class ExpectedFieldsEnum(enum.Enum):
     EXTERIOR_ACCESS_HAS_DIFFICULTIES = "Difficulté sur le chemin d'accès"
     ENTRANCE_ONE_LEVEL = "Entrée de plain pied"
     ENTRANCE_ONE_LEVEL_NARROW = "Entrée de plain pied mais étroite"
-    ENTRANCE_NOT_ONE_LEVEL = "L’entrée n’est pas de plain-pied"
-    ENTRANCE_HUMAN_HELP = "L’entrée n’est pas de plain-pied\n Aide humaine possible"
+    ENTRANCE_NOT_ONE_LEVEL = "L'entrée n'est pas de plain-pied"
+    ENTRANCE_HUMAN_HELP = "L'entrée n'est pas de plain-pied\n Aide humaine possible"
     ENTRANCE_ELEVATOR = "Accès à l'entrée par ascenseur"
     ENTRANCE_ELEVATOR_NARROW = "Entrée rendue accessible par ascenseur mais étroite"
-    ENTRANCE_RAMP = "Accès à l’entrée par une rampe"
+    ENTRANCE_RAMP = "Accès à l'entrée par une rampe"
     ENTRANCE_RAMP_NARROW = "Entrée rendue accessible par rampe mais étroite"
     ENTRANCE_PRM = "Entrée spécifique PMR"
     PERSONNEL_MISSING = "Aucun personnel"
@@ -304,6 +304,8 @@ def acceslibre_to_accessibility_infos(acceslibre_data: list[AcceslibreData]) -> 
         labels_enum = []
         for label in labels:
             if not (labels_enum_list := ExpectedFieldsEnum.find_enum_from_string(label)):
+                # If this exception is raised, you should probably set the ExpectedFieldsEnum for the given label
+                # according to acceslibre API schema, at https://github.com/MTES-MCT/acceslibre/blob/master/erp/views.py
                 raise AccesLibreApiException(f"Acceslibre API returned an unexpected value: {label} for {title}")
             labels_enum.extend(labels_enum_list)
         setattr(accessibility_infos, attribute_name, labels_enum)

@@ -124,7 +124,7 @@ class AcceslibreTest:
         assert accessibility_infos.trained_personnel == [acceslibre_enum.PERSONNEL_TRAINED]
         assert accessibility_infos.access_modality == [
             acceslibre_enum.EXTERIOR_ONE_LEVEL,
-            acceslibre_enum.ENTRANCE_ONE_LEVEL,
+            acceslibre_enum.ENTRANCE_RAMP,
         ]
         assert accessibility_infos.audio_description == [
             acceslibre_enum.AUDIODESCRIPTION_NO_DEVICE,
