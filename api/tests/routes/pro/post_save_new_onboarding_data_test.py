@@ -123,7 +123,7 @@ class Returns400Test:
         siret = REQUEST_BODY["siret"]
 
         requests_mock.get(
-            f"https://api.insee.fr/entreprises/sirene/V3/siret/{siret}",
+            f"https://api.insee.fr/entreprises/sirene/V3.11/siret/{siret}",
             json=sirene_test_data.RESPONSE_SIRET_INACTIVE_COMPANY,
         )
 
