@@ -1192,42 +1192,6 @@ def _write_csv(
     return path
 
 
-def _generate_reimbursement_points_file(cutoff: datetime.datetime) -> pathlib.Path:
-    header = (
-        "Identifiant du point de remboursement",
-        "SIRET",
-        "Raison sociale du point de remboursement",
-        "IBAN",
-        "BIC",
-    )
-    query = (
-        offerers_models.Venue.query.join(offerers_models.Venue.bankInformation)
-        .filter(
-            offerers_models.Venue.id.in_(
-                offerers_models.VenueReimbursementPointLink.query.with_entities(
-                    offerers_models.VenueReimbursementPointLink.reimbursementPointId
-                ).filter(offerers_models.VenueReimbursementPointLink.timespan.contains(cutoff))
-            )
-        )
-        .order_by(offerers_models.Venue.id)
-        .with_entities(
-            offerers_models.Venue.id,
-            offerers_models.Venue.siret,
-            offerers_models.Venue.name,
-            models.BankInformation.iban.label("iban"),
-            models.BankInformation.bic.label("bic"),
-        )
-    )
-    row_formatter = lambda row: (
-        human_ids.humanize(row.id),
-        _clean_for_accounting(row.siret),
-        _clean_for_accounting(row.name),
-        _clean_for_accounting(row.iban),
-        _clean_for_accounting(row.bic),
-    )
-    return _write_csv("reimbursement_points", header, rows=query, row_formatter=row_formatter)
-
-
 def _generate_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
     header = (
         "Identifiant des coordonnées bancaires",
