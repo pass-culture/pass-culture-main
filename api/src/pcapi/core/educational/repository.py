@@ -1206,28 +1206,6 @@ def get_paginated_active_collective_offer_template_ids(batch_size: int, page: in
     return [offer_id for offer_id, in query]
 
 
-def get_booking_related_reimbursement_point(booking_id: int) -> offerers_models.Venue | None:
-    reimbursement_point = sa.orm.aliased(offerers_models.Venue)
-
-    query = (
-        educational_models.CollectiveBooking.query.join(
-            offerers_models.Venue, educational_models.CollectiveBooking.venue
-        )
-        .join(offerers_models.VenueReimbursementPointLink, offerers_models.Venue.reimbursement_point_links)
-        .join(reimbursement_point, offerers_models.VenueReimbursementPointLink.reimbursementPoint)
-        .join(finance_models.BankInformation, reimbursement_point.bankInformation)
-        .filter(
-            offerers_models.VenueReimbursementPointLink.timespan.contains(datetime.utcnow()),
-            educational_models.CollectiveBooking.id == booking_id,
-        )
-        .with_entities(reimbursement_point)
-        .options(
-            sa.orm.joinedload(reimbursement_point.bankInformation).load_only(finance_models.BankInformation.status)
-        )
-    )
-    return query.one_or_none()
-
-
 def get_booking_related_bank_account(booking_id: int) -> offerers_models.VenueBankAccountLink | None:
     return (
         finance_models.BankAccount.query.join(
