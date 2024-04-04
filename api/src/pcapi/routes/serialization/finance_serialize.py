@@ -16,19 +16,6 @@ if TYPE_CHECKING:
     import pcapi.core.offerers.models as offerers_models
 
 
-class FinanceReimbursementPointResponseModel(BaseModel):
-    class Config:
-        orm_mode = True
-
-    id: int
-    name: str
-    publicName: str | None
-
-
-class FinanceReimbursementPointListResponseModel(BaseModel):
-    __root__: list[FinanceReimbursementPointResponseModel]
-
-
 class FinanceBankAccountResponseModel(BaseModel):
     class Config:
         orm_mode = True
