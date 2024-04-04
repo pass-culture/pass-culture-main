@@ -56,6 +56,8 @@ class ExternalAccessibilityDataModel(pydantic_v1.BaseModel):
 
     @classmethod
     def from_orm(cls, accessibility_infos: AccessibilityInfo) -> "ExternalAccessibilityDataModel":
+        if not accessibility_infos:
+            return ExternalAccessibilityDataModel()
         accessibility_data = super().from_orm(accessibility_infos)
         for key, value in accessibility_infos.items():  # type: ignore[attr-defined]
             match key:

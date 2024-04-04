@@ -444,6 +444,38 @@ class Returns200Test:
         assert venue.accessibilityProvider == None
         assert response.json["externalAccessibilityData"] == None
 
+    def should_return_unknown_when_venue_has_no_external_accessibility_data(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
+        venue = offerers_factories.VenueFactory(
+            name="L'encre et la plume", managingOfferer=user_offerer.offerer, venueTypeCode=VenueTypeCode.LIBRARY
+        )
+        accessibility_provider = offerers_factories.AccessibilityProviderFactory(
+            venue=venue, externalAccessibilityData=None
+        )
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        response = auth_request.get("/venues/%s" % venue.id)
+        assert venue.accessibilityProvider == accessibility_provider
+        assert response.json["externalAccessibilityData"] == {
+            "isAccessibleMotorDisability": False,
+            "isAccessibleAudioDisability": False,
+            "isAccessibleVisualDisability": False,
+            "isAccessibleMentalDisability": False,
+            "motorDisability": {
+                "facilities": "Non renseigné",
+                "exterior": "Non renseigné",
+                "entrance": "Non renseigné",
+                "parking": "Non renseigné",
+            },
+            "audioDisability": {
+                "deafAndHardOfHearing": "Non renseigné",
+            },
+            "visualDisability": {
+                "soundBeacon": "Non renseigné",
+                "audioDescription": "Non renseigné",
+            },
+            "mentalDisability": {"trainedPersonnel": "Non renseigné"},
+        }
+
     def should_return_accessibility_data_when_venue_has_accessibility_provider(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
         venue = offerers_factories.VenueFactory(
