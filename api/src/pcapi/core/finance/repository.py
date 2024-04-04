@@ -33,22 +33,6 @@ def deposit_exists_for_beneficiary_and_type(beneficiary: users_models.User, depo
     ).scalar()
 
 
-def get_reimbursement_points_query(user: users_models.User) -> sqla_orm.Query:
-    query = offerers_models.Venue.query.join(models.BankInformation).filter(
-        models.BankInformation.status == models.BankInformationStatus.ACCEPTED
-    )
-    venue_subquery = offerers_models.Venue.query
-    if not user.has_admin_role:
-        venue_subquery = venue_subquery.join(
-            offerers_models.UserOfferer,
-            offerers_models.Venue.managingOffererId == offerers_models.UserOfferer.offererId,
-        ).filter(offerers_models.UserOfferer.user == user, offerers_models.UserOfferer.isValidated)
-    if venue_subquery.whereclause is not None:
-        venue_subquery = venue_subquery.with_entities(offerers_models.Venue.id)
-        query = query.filter(offerers_models.Venue.id.in_(venue_subquery))
-    return query
-
-
 def has_reimbursement(booking: bookings_models.Booking | educational_models.CollectiveBooking) -> bool:
     """Return whether the requested booking has been reimbursed."""
     if booking.status in (
