@@ -7,7 +7,6 @@ export const setInitialFormValues = (
   venue: GetVenueResponseModel
 ): VenueSettingsFormValues => {
   return {
-    reimbursementPointId: venue.reimbursementPointId || '',
     address: venue.address || '',
     banId: venue.banId || '',
     addressAutocomplete: `${venue.address} ${venue.postalCode} ${venue.city}`,

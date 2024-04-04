@@ -1,9 +1,6 @@
 import decimal
 import typing
 
-import sqlalchemy.orm as sqla_orm
-
-import pcapi.core.finance.models as finance_models
 from pcapi.core.offerers import constants as offerers_constants
 from pcapi.models.api_errors import ApiErrors
 
@@ -49,7 +46,6 @@ def check_venue_creation(data: dict[str, typing.Any], strict_accessibility_compl
 def check_venue_edition(modifications: dict[str, typing.Any], venue: models.Venue) -> None:
     managing_offerer_id = modifications.get("managingOffererId")
     siret = modifications.get("siret")
-    reimbursement_point_id = modifications.get("reimbursementPointId")
 
     venue_disability_compliance = [
         venue.audioDisabilityCompliant,
@@ -65,13 +61,8 @@ def check_venue_edition(modifications: dict[str, typing.Any], venue: models.Venu
         modifications.get("visualDisabilityCompliant", offerers_constants.UNCHANGED),
     ]
 
-    allowed_virtual_venue_modifications = {
-        "reimbursementPointId",
-    }
-    if venue.isVirtual and modifications.keys() - allowed_virtual_venue_modifications:
-        raise ApiErrors(
-            errors={"venue": ["Vous ne pouvez modifier que le point de remboursement du lieu Offre Numérique."]}
-        )
+    if venue.isVirtual:
+        raise ApiErrors(errors={"venue": ["Vous ne pouvez pas modifier un lieu Offre Numérique."]})
 
     if managing_offerer_id:
         raise ApiErrors(errors={"managingOffererId": ["Vous ne pouvez pas changer la structure d'un lieu"]})
@@ -91,9 +82,6 @@ def check_venue_edition(modifications: dict[str, typing.Any], venue: models.Venu
         and offerers_constants.UNCHANGED not in modifications_disability_compliance
     ):
         raise ApiErrors(errors={"global": ["L'accessibilité du lieu doit être définie."]})
-
-    if reimbursement_point_id:
-        check_venue_can_be_linked_to_reimbursement_point(venue, reimbursement_point_id)
 
 
 def _validate_longitude(api_errors: ApiErrors, raw_longitude: float | str) -> None:
@@ -147,26 +135,3 @@ def check_venue_can_be_linked_to_pricing_point(venue: models.Venue, pricing_poin
                 ]
             }
         )
-
-
-def check_venue_can_be_linked_to_reimbursement_point(venue: models.Venue, reimbursement_point_id: int) -> None:
-    reimbursement_point = (
-        models.Venue.query.filter_by(id=reimbursement_point_id)
-        .options(sqla_orm.joinedload(models.Venue.bankInformation))
-        .one_or_none()
-    )
-    if not venue.current_pricing_point_id:
-        raise ApiErrors(
-            errors={"pricingPoint": ["Vous devez d'abord choisir un lieu pour le calcul du barème de remboursement."]}
-        )
-    if not reimbursement_point:
-        raise ApiErrors(errors={"reimbursementPointId": ["Ce lieu n'existe pas."]})
-    if (
-        not reimbursement_point.bankInformation
-        or reimbursement_point.bankInformation.status != finance_models.BankInformationStatus.ACCEPTED
-    ):
-        error = f"Le lieu {reimbursement_point.name} ne peut pas être utilisé pour les remboursements car il n'a pas de coordonnées bancaires validées."
-        raise ApiErrors(errors={"reimbursementPointId": [error]})
-    if reimbursement_point.managingOffererId != venue.managingOffererId:
-        error = f"Le lieu {reimbursement_point.name} ne peut pas être utilisé pour les remboursements car il n'appartient pas à la même structure."
-        raise ApiErrors(errors={"reimbursementPointId": [error]})

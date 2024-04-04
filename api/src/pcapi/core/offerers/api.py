@@ -95,7 +95,6 @@ def update_venue(
     **attrs: typing.Any,
 ) -> models.Venue:
     validation.validate_coordinates(attrs.get("latitude"), attrs.get("longitude"))  # type: ignore [arg-type]
-    reimbursement_point_id = attrs.pop("reimbursementPointId", offerers_constants.UNCHANGED)
 
     modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
     if not admin_update:
@@ -127,24 +126,11 @@ def update_venue(
         if set(venue.criteria) != set(criteria):
             modifications["criteria"] = criteria
 
-    if not modifications and reimbursement_point_id == offerers_constants.UNCHANGED:
+    if not modifications:
         # avoid any contact information update loss
         venue_snapshot.add_action()
         db.session.commit()
         return venue
-
-    if reimbursement_point_id != offerers_constants.UNCHANGED:
-        # this block makes additional db requests
-        current_link = venue.current_reimbursement_point_link
-        current_reimbursement_point_id = current_link.reimbursementPointId if current_link else None
-        if reimbursement_point_id != current_reimbursement_point_id:
-            link_venue_to_reimbursement_point(venue, reimbursement_point_id)
-            new_link = venue.current_reimbursement_point_link
-            venue_snapshot.set(
-                "reimbursementPointSiret",
-                current_link.reimbursementPoint.siret if current_link else None,
-                new_link.reimbursementPoint.siret if new_link else None,
-            )
 
     old_booking_email = venue.bookingEmail if modifications.get("bookingEmail") else None
 
@@ -579,43 +565,6 @@ def link_venue_to_pricing_point(
             "commit": commit,
         },
     )
-
-
-def link_venue_to_reimbursement_point(
-    venue: models.Venue,
-    reimbursement_point_id: int | None,
-    timestamp: datetime | None = None,
-) -> None:
-    if reimbursement_point_id:
-        validation.check_venue_can_be_linked_to_reimbursement_point(venue, reimbursement_point_id)
-    if not timestamp:
-        timestamp = datetime.utcnow()
-    current_link = models.VenueReimbursementPointLink.query.filter(
-        models.VenueReimbursementPointLink.venueId == venue.id,
-        models.VenueReimbursementPointLink.timespan.contains(timestamp),
-    ).one_or_none()
-    if current_link:
-        if current_link.reimbursementPointId == reimbursement_point_id:
-            return
-        current_link.timespan = db_utils.make_timerange(
-            current_link.timespan.lower,
-            timestamp,
-        )
-        db.session.add(current_link)
-        logger.info(
-            "VenueReimbursementPointLink has ended",
-            extra={"venue_id:": venue.id, "former_reimbursement_point_id": current_link.reimbursementPointId},
-        )
-    if reimbursement_point_id:
-        new_link = models.VenueReimbursementPointLink(
-            reimbursementPointId=reimbursement_point_id, venueId=venue.id, timespan=(timestamp, None)
-        )
-        db.session.add(new_link)
-        logger.info(
-            "VenueReimbursementPointLink has been created",
-            extra={"venue_id:": venue.id, "new_reimbursement_point_id": new_link.reimbursementPointId},
-        )
-    db.session.commit()
 
 
 def generate_and_save_api_key(offerer_id: int) -> str:
