@@ -2,7 +2,6 @@ import { screen, waitFor } from '@testing-library/react'
 import { Form, Formik } from 'formik'
 import React from 'react'
 
-import { api } from 'apiClient/api'
 import {
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
@@ -31,12 +30,6 @@ const renderReimbursementFields = async (props: ReimbursementFieldsProps) => {
   return rtlReturn
 }
 
-vi.mock('apiClient/api', () => ({
-  api: {
-    getAvailableReimbursementPoints: vi.fn(),
-  },
-}))
-
 describe('ReimbursementFields', () => {
   const venue = {
     ...defaultGetVenue,
@@ -57,7 +50,6 @@ describe('ReimbursementFields', () => {
   let props: ReimbursementFieldsProps
   beforeEach(() => {
     props = { venue, offerer }
-    vi.spyOn(api, 'getAvailableReimbursementPoints').mockResolvedValue([])
   })
 
   it('should display banner if offerer has no pricing point and venue has no siret', async () => {
