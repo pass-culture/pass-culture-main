@@ -11,7 +11,6 @@ export interface VenueSettingsFormValues {
   name: string
   postalCode: string
   publicName: string
-  reimbursementPointId: number | string | null
   'search-addressAutocomplete': string
   siret: string
   venueSiret: number | null

@@ -7,7 +7,6 @@ from unittest.mock import patch
 
 import jwt
 import pytest
-import sqlalchemy as sa
 import time_machine
 
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
@@ -673,23 +672,8 @@ class EditVenueTest:
         with pytest.raises(api_errors.ApiErrors) as error:
             offerers_api.update_venue(virtual_venue, author=user, **venue_data)
 
-        msg = "Vous ne pouvez modifier que le point de remboursement du lieu Offre Numérique."
+        msg = "Vous ne pouvez pas modifier un lieu Offre Numérique."
         assert error.value.errors == {"venue": [msg]}
-
-    def test_edit_venue_with_pending_bank_info(self):
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory(
-            pricing_point="self", reimbursement_point="self", publicName="Nom actuel"
-        )
-        finance_factories.BankInformationFactory(venue=venue, status=finance_models.BankInformationStatus.DRAFT)
-        venue_data = {
-            "publicName": "Nouveau nom",
-            "reimbursementPointId": venue.current_reimbursement_point_id,
-            # all the other venue attributes should be in this dict
-        }
-        offerers_api.update_venue(venue, author=user, **venue_data)
-
-        assert venue.publicName == "Nouveau nom"
 
     def test_no_venue_contact_no_modification(self, app) -> None:
         # given
@@ -741,18 +725,6 @@ class EditVenueTest:
             "contact.email": {"new_info": contact_data.email, "old_info": None},
             "contact.website": {"new_info": contact_data.website, "old_info": None},
         }
-
-    def test_edit_reimbursement_point_id(self):
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory(pricing_point="self")
-        reimbursement_point = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
-        finance_factories.BankInformationFactory(venue=reimbursement_point)
-        venue_data = {
-            "reimbursementPointId": reimbursement_point.id,
-        }
-        offerers_api.update_venue(venue, author=user, **venue_data)
-
-        assert venue.current_reimbursement_point_id == reimbursement_point.id
 
 
 class EditVenueContactTest:
@@ -2089,89 +2061,6 @@ class LinkVenueToPricingPointTest:
         db.session.rollback()  # test after commit() is not called
 
         assert offerers_models.VenuePricingPointLink.query.count() == 0
-
-
-class LinkVenueToReimbursementPointTest:
-    def test_no_pre_existing_link(self):
-        venue = offerers_factories.VenueFactory(pricing_point="self")
-        reimbursement_point = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
-        finance_factories.BankInformationFactory(venue=reimbursement_point)
-        assert offerers_models.VenueReimbursementPointLink.query.count() == 0
-
-        offerers_api.link_venue_to_reimbursement_point(venue, reimbursement_point.id)
-
-        new_link = offerers_models.VenueReimbursementPointLink.query.one()
-        assert new_link.venue == venue
-        assert new_link.reimbursementPoint == reimbursement_point
-        assert new_link.timespan.upper is None
-
-    @time_machine.travel(datetime.datetime.utcnow(), tick=False)
-    def test_end_pre_existing_link(self):
-        now = datetime.datetime.utcnow()
-        venue = offerers_factories.VenueFactory(reimbursement_point="self", pricing_point="self")
-        offerers_api.link_venue_to_reimbursement_point(venue, None)
-
-        former_link = offerers_models.VenueReimbursementPointLink.query.one()
-        assert former_link.venue == venue
-        assert former_link.reimbursementPoint == venue
-        assert former_link.timespan.upper == now
-
-    def test_pre_existing_links(self):
-        now = datetime.datetime.utcnow()
-        venue = offerers_factories.VenueFactory(pricing_point="self")
-        reimbursement_point_1 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
-        finance_factories.BankInformationFactory(venue=reimbursement_point_1)
-        offerers_factories.VenueReimbursementPointLinkFactory(
-            venue=venue,
-            reimbursementPoint=reimbursement_point_1,
-            timespan=[
-                now - datetime.timedelta(days=10),
-                now - datetime.timedelta(days=3),
-            ],
-        )
-        reimbursement_point_2 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
-        finance_factories.BankInformationFactory(venue=reimbursement_point_2)
-        offerers_factories.VenueReimbursementPointLinkFactory(
-            venue=venue,
-            reimbursementPoint=reimbursement_point_2,
-            timespan=[
-                now - datetime.timedelta(days=1),
-                None,
-            ],
-        )
-        current_link = offerers_models.VenueReimbursementPointLink.query.order_by(sa.desc("id")).first()
-        reimbursement_point_3 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
-        finance_factories.BankInformationFactory(venue=reimbursement_point_3)
-
-        offerers_api.link_venue_to_reimbursement_point(venue, reimbursement_point_3.id)
-
-        assert offerers_models.VenueReimbursementPointLink.query.count() == 3
-        new_link = offerers_models.VenueReimbursementPointLink.query.order_by(sa.desc("id")).first()
-        assert new_link.venue == venue
-        assert new_link.reimbursementPoint == reimbursement_point_3
-        assert new_link.timespan.lower == current_link.timespan.upper
-        assert new_link.timespan.upper is None
-
-    def test_fails_if_reimbursement_point_has_no_bank_information(self):
-        reimbursement_point = offerers_factories.VenueFactory()
-        offerer = reimbursement_point.managingOfferer
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
-
-        with pytest.raises(api_errors.ApiErrors) as error:
-            offerers_api.link_venue_to_reimbursement_point(venue, reimbursement_point.id)
-        msg = f"Le lieu {reimbursement_point.name} ne peut pas être utilisé pour les remboursements car il n'a pas de coordonnées bancaires validées."
-        assert error.value.errors == {"reimbursementPointId": [msg]}
-
-    def test_to_same_existing_link(self):
-        venue = offerers_factories.VenueFactory(reimbursement_point="self", pricing_point="self")
-        finance_factories.BankInformationFactory(venue=venue)
-
-        offerers_api.link_venue_to_reimbursement_point(venue, venue.id)
-
-        former_link = offerers_models.VenueReimbursementPointLink.query.one()
-        assert former_link.venue == venue
-        assert former_link.reimbursementPoint == venue
-        assert former_link.timespan.upper is None
 
 
 class HasVenueAtLeastOneBookableOfferTest:

@@ -326,7 +326,6 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     isEmailAppliedOnAllOffers: bool | None
     description: base.VenueDescription | None
     contact: base.VenueContactModel | None
-    reimbursementPointId: int | None
     shouldSendMail: bool | None
     openingHours: list[base.OpeningHoursModel] | None
 
