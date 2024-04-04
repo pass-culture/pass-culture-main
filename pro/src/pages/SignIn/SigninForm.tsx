@@ -4,8 +4,8 @@ import { useLocation } from 'react-router-dom'
 
 import { BannerRGS } from 'components/Banner'
 import FormLayout from 'components/FormLayout'
+import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Events } from 'core/FirebaseEvents/constants'
-import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import fullKeyIcon from 'icons/full-key.svg'
@@ -19,7 +19,6 @@ const SigninForm = (): JSX.Element => {
   const location = useLocation()
   const { logEvent } = useAnalytics()
   const isAccountCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
-  useScrollToFirstErrorAfterSubmit()
 
   const accountCreationUrl = isAccountCreationAvailable
     ? '/inscription'
@@ -29,6 +28,7 @@ const SigninForm = (): JSX.Element => {
 
   return (
     <Form>
+      <ScrollToFirstErrorAfterSubmit />
       <FormLayout>
         <FormLayout.Row>
           <TextInput

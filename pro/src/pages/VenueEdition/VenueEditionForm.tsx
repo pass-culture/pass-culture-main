@@ -6,6 +6,7 @@ import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { GetVenueResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
+import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Events } from 'core/FirebaseEvents/constants'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -104,6 +105,8 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
       validationSchema={getValidationSchema(venue.isVirtual)}
     >
       <Form>
+        <ScrollToFirstErrorAfterSubmit />
+
         <FormLayout fullWidthActions>
           <FormLayout.Section title="Vos informations pour le grand public">
             <FormLayout.SubSection

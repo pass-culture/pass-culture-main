@@ -7,8 +7,8 @@ import {
 } from 'apiClient/v1'
 import { AddressSelect } from 'components/Address'
 import FormLayout from 'components/FormLayout'
+import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { SelectOption } from 'custom_types/form'
-import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import { TextInput, InfoBox, Select, Banner } from 'ui-kit'
 
 import RouteLeavingGuard, {
@@ -53,7 +53,6 @@ export const VenueCreationForm = ({
   venueTypes,
 }: VenueFormProps) => {
   const { initialValues } = useFormikContext<VenueCreationFormValues>()
-  useScrollToFirstErrorAfterSubmit()
   const user = useCurrentUser()
 
   const [isFieldNameFrozen, setIsFieldNameFrozen] = useState(false)
@@ -62,6 +61,8 @@ export const VenueCreationForm = ({
 
   return (
     <div>
+      <ScrollToFirstErrorAfterSubmit />
+
       <FormLayout fullWidthActions>
         <FormLayout.MandatoryInfo />
 

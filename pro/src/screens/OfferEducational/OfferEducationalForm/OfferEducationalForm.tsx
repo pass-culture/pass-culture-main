@@ -9,6 +9,7 @@ import {
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import BannerPublicApi from 'components/Banner/BannerPublicApi'
 import FormLayout from 'components/FormLayout'
+import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import {
   Mode,
   OfferEducationalFormValues,
@@ -16,7 +17,6 @@ import {
 } from 'core/OfferEducational'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils'
 import { SelectOption } from 'custom_types/form'
-import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import { ButtonLink, SubmitButton } from 'ui-kit'
@@ -85,8 +85,6 @@ const OfferEducationalForm = ({
     'WIP_ENABLE_COLLECTIVE_CUSTOM_CONTACT'
   )
 
-  useScrollToFirstErrorAfterSubmit()
-
   const onOffererChange = useCallback(
     async (newOffererId: string) => {
       const selectedOfferer = userOfferers.find(
@@ -133,6 +131,8 @@ const OfferEducationalForm = ({
 
   return (
     <>
+      <ScrollToFirstErrorAfterSubmit />
+
       <FormLayout className={styles['educational-form']} fullWidthActions>
         {isCollectiveOffer(offer) && offer.isPublicApi && (
           <BannerPublicApi className={styles['banner-space']}>
