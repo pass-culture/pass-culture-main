@@ -1817,15 +1817,9 @@ class IndexOfferTest(PostEndpointHelper):
 @pytest.fixture(scope="function", name="venues_in_same_offerer")
 def venues_in_same_offerer_fixture() -> tuple[offerers_models.Venue]:
     offerer = offerers_factories.OffererFactory()
-    source_venue = offerers_factories.VenueFactory(
-        managingOfferer=offerer, pricing_point="self", reimbursement_point="self"
-    )
-    venue_with_same_pricing_point = offerers_factories.VenueFactory(
-        managingOfferer=offerer, pricing_point=source_venue, reimbursement_point=source_venue
-    )
-    venue_with_own_pricing_point = offerers_factories.VenueFactory(
-        managingOfferer=offerer, pricing_point="self", reimbursement_point="self"
-    )
+    source_venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
+    venue_with_same_pricing_point = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point=source_venue)
+    venue_with_own_pricing_point = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
     venue_without_pricing_point = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point=None)
     return source_venue, venue_with_same_pricing_point, venue_with_own_pricing_point, venue_without_pricing_point
 

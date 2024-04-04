@@ -13,7 +13,6 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.utils.human_ids import humanize
 
 from .helpers import button as button_helpers
@@ -36,8 +35,7 @@ class GetBankAccountTest(GetEndpointHelper):
     # get session (1 query)
     # get user with profile and permissions (1 query)
     # get bank_account (1 query)
-    # get feature flag: WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY (1 query)
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     @mock.patch("pcapi.routes.backoffice.bank_account.blueprint.dms_api.get_dms_stats", lambda x: None)
     def test_get_bank_account(self, authenticated_client):
@@ -83,7 +81,7 @@ class GetBankAccountTest(GetEndpointHelper):
         assert "Date de validation du dossier DMS CB" not in response_text
         assert "ACCÉDER AU DOSSIER DMS CB" in response_text
 
-    def test_get_venue_dms_stats_for_accepted_file(self, authenticated_client, venue_with_draft_bank_info):
+    def test_get_venue_dms_stats_for_accepted_file(self, authenticated_client):
         with mock.patch("pcapi.connectors.dms.api.DMSGraphQLClient.get_bank_info_status") as bank_info_mock:
             bank_info_mock.return_value = {
                 "dossier": {
@@ -316,7 +314,6 @@ class DownloadReimbursementDetailsTest(PostEndpointHelper):
     endpoint_kwargs = {"bank_account_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
     def test_download_reimbursement_details(self, authenticated_client):
         venue = offerers_factories.VenueFactory(pricing_point="self")
         booking = bookings_factories.UsedBookingFactory(stock__offer__venue=venue)

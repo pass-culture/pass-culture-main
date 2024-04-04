@@ -496,7 +496,7 @@ class GetUpdatePivotFormTest(GetEndpointHelper):
         ems_pivot = providers_factories.EMSCinemaDetailsFactory()
         ems_pivot_id = ems_pivot.id
         db.session.expire(ems_pivot)
-        with assert_num_queries(6):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, name="ems", pivot_id=ems_pivot_id))
             assert response.status_code == 200
 

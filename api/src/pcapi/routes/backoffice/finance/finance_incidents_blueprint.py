@@ -26,7 +26,6 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.models import feature
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice import utils
@@ -35,7 +34,6 @@ from pcapi.routes.backoffice.finance import validation
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.offerers import forms as offerer_forms
 from pcapi.utils import date as date_utils
-from pcapi.utils.human_ids import humanize
 
 
 TOKEN_LENGTH = 6
@@ -155,10 +153,6 @@ def list_incidents() -> utils.BackofficeResponse:
 
 
 def render_finance_incident(incident: finance_models.FinanceIncident) -> utils.BackofficeResponse:
-    current_reimbursement_point = None
-    if not feature.FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
-        current_reimbursement_point = incident.venue.current_reimbursement_point or incident.venue
-
     booking_incidents = incident.booking_finance_incidents
 
     total_amount = (
@@ -186,10 +180,6 @@ def render_finance_incident(incident: finance_models.FinanceIncident) -> utils.B
         booking_finance_incidents=incident.booking_finance_incidents,
         total_amount=total_amount,
         incident=incident,
-        reimbursement_point=current_reimbursement_point,
-        reimbursement_point_humanized_id=(
-            humanize(current_reimbursement_point.id) if current_reimbursement_point else None
-        ),
         active_tab=request.args.get("active_tab", "bookings"),
     )
 
@@ -562,12 +552,6 @@ def get_finance_incident_validation_form(finance_incident_id: int) -> utils.Back
             .joinedload(finance_models.BookingFinanceIncident.booking)
             .load_only(bookings_models.Booking.quantity, bookings_models.Booking.amount),
             sa.orm.joinedload(finance_models.FinanceIncident.venue)
-            .load_only(offerer_models.Venue.name, offerer_models.Venue.publicName)
-            .joinedload(offerer_models.Venue.reimbursement_point_links)
-            .load_only(offerer_models.VenueReimbursementPointLink.timespan)
-            .joinedload(offerer_models.VenueReimbursementPointLink.reimbursementPoint)
-            .load_only(offerer_models.Venue.name, offerer_models.Venue.publicName),
-            sa.orm.joinedload(finance_models.FinanceIncident.venue)
             .contains_eager(offerer_models.Venue.bankAccountLinks)
             .load_only(offerer_models.VenueBankAccountLink.timespan)
             .contains_eager(offerer_models.VenueBankAccountLink.bankAccount)
@@ -579,16 +563,9 @@ def get_finance_incident_validation_form(finance_incident_id: int) -> utils.Back
     if not finance_incident:
         raise NotFound()
 
-    is_new_bank_details_active = feature.FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active()
     incident_total_amount_euros = finance_utils.to_euros(finance_incident.due_amount_by_offerer)
-
-    current_reimbursement_point = finance_incident.venue.current_reimbursement_point or finance_incident.venue
     bank_account_link = finance_incident.venue.current_bank_account_link
-
-    reimbursement_point_details_str = f"le point de remboursement {current_reimbursement_point.name}"
-    bank_account_details_str = (
-        f"le compte bancaire {'du lieu' if not bank_account_link else bank_account_link.bankAccount.label}"
-    )
+    bank_account_details_str = f"{'du lieu' if not bank_account_link else bank_account_link.bankAccount.label}"
 
     return render_template(
         "components/turbo/modal_form.html",
@@ -600,10 +577,10 @@ def get_finance_incident_validation_form(finance_incident_id: int) -> utils.Back
         title="Valider l'incident",
         button_text="Confirmer",
         information=escape(
-            "Vous allez valider un incident de {incident_amount} sur {details}."
+            "Vous allez valider un incident de {incident_amount} sur le compte bancaire {details}."
             "Voulez-vous continuer ?".format(
                 incident_amount=filters.format_amount(incident_total_amount_euros),
-                details=bank_account_details_str if is_new_bank_details_active else reimbursement_point_details_str,
+                details=bank_account_details_str,
             )
         ),
     )
@@ -751,11 +728,6 @@ def _get_incident(finance_incident_id: int) -> finance_models.FinanceIncident:
         .outerjoin(offerer_models.VenueBankAccountLink.bankAccount)
         .options(
             # Venue info
-            sa.orm.joinedload(offerer_models.Venue, finance_models.FinanceIncident.venue)
-            .load_only(offerer_models.Venue.id, offerer_models.Venue.name, offerer_models.Venue.publicName)
-            .joinedload(offerer_models.Venue.reimbursement_point_links)
-            .joinedload(offerer_models.VenueReimbursementPointLink.reimbursementPoint)
-            .load_only(offerer_models.Venue.name),
             sa.orm.joinedload(offerer_models.Venue, finance_models.FinanceIncident.venue)
             .load_only(offerer_models.Venue.id, offerer_models.Venue.name, offerer_models.Venue.publicName)
             .contains_eager(offerer_models.Venue.bankAccountLinks)

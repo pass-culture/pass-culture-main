@@ -23,7 +23,6 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.routes.backoffice import filters
@@ -332,9 +331,7 @@ class GetIncidentValidationFormTest(GetEndpointHelper):
 
     expected_num_queries = 2
     expected_num_queries += 1  # get incident info
-    expected_num_queries += 1  # check new bank details journey FF
 
-    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_get_incident_validation_form(self, authenticated_client):
         booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory()
         url = url_for(self.endpoint, finance_incident_id=booking_incident.incident.id)
@@ -346,12 +343,12 @@ class GetIncidentValidationFormTest(GetEndpointHelper):
         text_content = html_parser.content_as_text(response.data)
         assert (
             f"Vous allez valider un incident de {filters.format_amount(finance_utils.to_euros(booking_incident.incident.due_amount_by_offerer))} "
-            f"sur le point de remboursement {booking_incident.incident.venue.name}." in text_content
+            f"sur le compte bancaire du lieu." in text_content
         )
 
-    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_no_script_injection_in_venue_name(self, authenticated_client):
-        venue = offerers_factories.VenueFactory(name="<script>alert('coucou')</script>")
+        bank_account = finance_factories.BankAccountFactory()
+        venue = offerers_factories.VenueFactory(name="<script>alert('coucou')</script>", bank_account=bank_account)
         booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(incident__venue=venue)
         url = url_for(self.endpoint, finance_incident_id=booking_incident.incident.id)
 
@@ -362,7 +359,7 @@ class GetIncidentValidationFormTest(GetEndpointHelper):
         text_content = html_parser.content_as_text(response.data)
         assert (
             f"Vous allez valider un incident de {filters.format_amount(finance_utils.to_euros(booking_incident.incident.due_amount_by_offerer))} "
-            f"sur le point de remboursement {venue.name}." in text_content
+            f"sur le compte bancaire {bank_account.label}." in text_content
         )
 
 
@@ -812,29 +809,9 @@ class GetIncidentTest(GetEndpointHelper):
     expected_num_queries += 1  # Fetch Session
     expected_num_queries += 1  # Fetch User
     expected_num_queries += 1  # Fetch Incidents infos
-    expected_num_queries += 1  # Check new bank details journey FF
 
-    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
-    def test_get_incident(self, authenticated_client, finance_incident):
-        url = url_for(self.endpoint, finance_incident_id=finance_incident.id)
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url)
-            assert response.status_code == 200
-
-        badges = html_parser.extract(response.data, tag="span", class_="badge")
-        assert badges == ["Créé", "Trop Perçu", "Total"]
-
-        content = html_parser.content_as_text(response.data)
-        assert f"ID : {finance_incident.id}" in content
-        assert f"Lieu porteur de l'offre : {finance_incident.venue.name}" in content
-        assert f"Incident créé par : {finance_incident.details['author']}" in content
-        reimbursement_point = finance_incident.venue.current_reimbursement_point
-        assert f"Lieu point de remboursement : {reimbursement_point.name}" in content
-
-    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
-    def test_get_incident_with_bank_account(self, authenticated_client):
-        finance_incident = finance_factories.FinanceIncidentFactory(venue__reimbursement_point="self")
+    def test_get_incident(self, authenticated_client):
+        finance_incident = finance_factories.FinanceIncidentFactory()
         bank_account = finance_factories.BankAccountFactory(offerer=finance_incident.venue.managingOfferer)
         offerers_factories.VenueBankAccountLinkFactory(venue=finance_incident.venue, bankAccount=bank_account)
         url = url_for(self.endpoint, finance_incident_id=finance_incident.id)
@@ -1400,32 +1377,27 @@ class GetInvoiceGenerationTest(GetEndpointHelper):
             ),
         ],
     )
-    # with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
     def test_get_invoices_generation(
         self, authenticated_client, last_cashflow_status, is_queue_empty, expected_texts, unexpected_texts
     ):
-        user_offerer = offerers_factories.UserOffererFactory()
-        pro_reimbursement_point1 = offerers_factories.VenueFactory(
-            managingOfferer=user_offerer.offerer, reimbursement_point="self"
+        bank_account_1 = finance_factories.BankAccountFactory()
+        offerers_factories.VenueFactory(
+            managingOfferer=offerers_factories.UserOffererFactory().offerer, bank_account=bank_account_1
         )
-        finance_factories.BankInformationFactory(venue=pro_reimbursement_point1)
         finance_factories.CashflowFactory(
             status=finance_models.CashflowStatus.ACCEPTED,
-            reimbursementPoint=pro_reimbursement_point1,
-            bankInformation=pro_reimbursement_point1.bankInformation,
+            bankAccount=bank_account_1,
             amount=-2500,
             batch=finance_factories.CashflowBatchFactory(label="VIR1", cutoff=datetime.datetime(2023, 1, 15)),
         )
 
-        user_offerer = offerers_factories.UserOffererFactory()
-        pro_reimbursement_point1 = offerers_factories.VenueFactory(
-            managingOfferer=user_offerer.offerer, reimbursement_point="self"
+        bank_account_2 = finance_factories.BankAccountFactory()
+        offerers_factories.VenueFactory(
+            managingOfferer=offerers_factories.UserOffererFactory().offerer, bank_account=bank_account_2
         )
-        finance_factories.BankInformationFactory(venue=pro_reimbursement_point1)
         finance_factories.CashflowFactory(
             status=last_cashflow_status,
-            reimbursementPoint=pro_reimbursement_point1,
-            bankInformation=pro_reimbursement_point1.bankInformation,
+            bankAccount=bank_account_2,
             amount=-1500,
             batch=finance_factories.CashflowBatchFactory(label="VIR2", cutoff=datetime.datetime(2023, 1, 31)),
         )
@@ -1458,7 +1430,7 @@ class GetIncidentGenerationFormTest(GetEndpointHelper):
     # Fetch CashflowBatches
     expected_num_queries = 3
 
-    def test_get_incident_validation_form(self, authenticated_client):
+    def test_get_incident_generation_form(self, authenticated_client):
         finance_factories.CashflowBatchFactory()
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint))
