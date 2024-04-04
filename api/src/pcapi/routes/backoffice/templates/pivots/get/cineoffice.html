@@ -15,7 +15,7 @@
   <tbody>
     {% for pivot in rows %}
       <tr>
-        <th scope="row">{{ common.build_pivot_row_menu("cineoffice", pivot, true) }}</th>
+        <th scope="row">{{ common.build_pivot_row_menu("cineoffice", pivot) }}</th>
         <td class="fw-bolder">{{ pivot.cinemaProviderPivot.venue.id }}</td>
         <td>{{ links.build_venue_name_to_details_link(pivot.cinemaProviderPivot.venue, text_attr="name") }}</td>
         <td>{{ pivot.cinemaProviderPivot.idAtProvider }}</td>
