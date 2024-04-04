@@ -1,4 +1,5 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
 import useSWR from 'swr'
 
@@ -11,6 +12,7 @@ import useCurrentUser from 'hooks/useCurrentUser'
 import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
 import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getTitle'
 import InformationsScreen from 'screens/IndividualOffer/InformationsScreen/InformationsScreen'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 const GET_VENUES_QUERY_KEY = 'getVenues'
@@ -22,25 +24,23 @@ export const Offer = (): JSX.Element | null => {
   const { offer } = useIndividualOfferContext()
   const [searchParams] = useSearchParams()
 
-  const offererId = searchParams.get('structure')
   const venueId = searchParams.get('lieu')
+  const offererIdFromQueryParam = searchParams.get('structure')
+    ? Number(searchParams.get('structure'))
+    : undefined
+  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const offererId = offererIdFromQueryParam ?? selectedOffererId
 
   const shouldNotFetchVenues = currentUser.isAdmin && !offererId
 
   const venuesQuery = useSWR(
     () => (shouldNotFetchVenues ? null : [GET_VENUES_QUERY_KEY, offererId]),
-    ([, offererId]) =>
-      api.getVenues(null, true, offererId ? Number(offererId) : undefined),
+    ([, offererIdParam]) => api.getVenues(null, true, offererIdParam),
     { fallbackData: { venues: [] } }
   )
   const offererNamesQuery = useSWR(
     [GET_OFFERER_NAMES_QUERY_KEY, offererId],
-    ([, offererId]) =>
-      api.listOfferersNames(
-        null,
-        null,
-        offererId ? Number(offererId) : undefined
-      ),
+    ([, offererIdParam]) => api.listOfferersNames(null, null, offererIdParam),
     { fallbackData: { offerersNames: [] } }
   )
 
@@ -60,7 +60,7 @@ export const Offer = (): JSX.Element | null => {
         <BannerCreateOfferAdmin />
       ) : (
         <InformationsScreen
-          offererId={offererId}
+          offererId={String(offererId)}
           venueId={venueId}
           venueList={venuesQuery.data.venues}
           offererNames={offererNamesQuery.data.offerersNames}
