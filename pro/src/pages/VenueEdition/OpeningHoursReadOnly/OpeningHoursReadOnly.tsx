@@ -17,7 +17,10 @@ export function OpeningHoursReadOnly({ openingHours }: OpeningHours) {
   if (!openingHours || filledDays.length === 0) {
     return (
       <SummarySubSection title={'Horaires d’ouverture'}>
-        <p>Vous n’avez pas renseigné d’horaires d’ouverture.</p>
+        <p>
+          Vous n’avez pas renseigné d’horaire d’ouverture. Votre établissement
+          est indiqué comme fermé sur l’application.
+        </p>
       </SummarySubSection>
     )
   }
