@@ -160,11 +160,20 @@ class VenueProvider(PcObject, Base, Model, DeactivableMixin):
     }
 
     __table_args__ = (
+        # FIXME (ghaliela, 2024-04-05): after migrating to postgres 15, we can use the following constraint
+        # with `NULLS NOT DISTINCT` to replace the index below 'unique_venue_provider_index_null_venue_id_at_provider'
         sa.UniqueConstraint(
             "venueId",
             "providerId",
             "venueIdAtOfferProvider",
             name="unique_venue_provider",
+        ),
+        sa.Index(
+            "unique_venue_provider_index_null_venue_id_at_provider",
+            "venueId",
+            "providerId",
+            unique=True,
+            postgresql_where=venueIdAtOfferProvider.is_(None),
         ),
     )
 
