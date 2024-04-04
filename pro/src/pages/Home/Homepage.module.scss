@@ -1,4 +1,5 @@
 @use "styles/variables/_colors.scss" as colors;
+@use "styles/variables/_size.scss" as size;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 
@@ -19,4 +20,58 @@
   flex-direction: column;
   gap: 1rem;
   margin-top: rem.torem(16px);
+}
+
+.beta-banner {
+  position: relative;
+  background: linear-gradient(258deg, colors.$secondary-light 11.7%, #280078 113.36%);
+  border-radius: rem.torem(8px);
+  display: flex;
+  padding: rem.torem(32px) rem.torem(16px);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: rem.torem(32px);
+  flex-shrink: 0;
+  align-self: stretch;
+  margin-top: rem.torem(32px);
+
+  &-titles {
+    color: colors.$white;
+  }
+
+  @media (min-width: size.$tablet) {
+    background: url('./assets/background.svg');
+    height: rem.torem(181px);
+
+    &-titles {
+      width: 70%;
+      color: colors.$white;
+    }
+  }
+
+  &-title {
+    @include fonts.title4;
+
+    margin-bottom: rem.torem(8px);
+  }
+
+  &-close {
+    position: absolute;
+    top: rem.torem(16px);
+    right: rem.torem(16px);
+    color: colors.$white;
+  }
+
+  &-activate {
+    background: colors.$white;
+    color: colors.$secondary-light;
+    border: colors.$white;
+
+    &:hover, &:focus-visible{
+      background: colors.$secondary-light;
+      color: colors.$white;
+      border: colors.$white;
+      outline-color: colors.$white;
+    }
+  }
 }
