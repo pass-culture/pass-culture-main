@@ -9,7 +9,6 @@ from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository
 import pcapi.core.educational.api.favorites as favorites_api
-import pcapi.core.offerers.api as offerers_api
 from pcapi.core.offerers.repository import get_venue_by_id
 from pcapi.models import Model
 from pcapi.models.api_errors import ApiErrors
@@ -198,19 +197,16 @@ def get_local_offerers_playlist(
     )
     # TODO: add some more items if the playlist is too empty
 
-    distances = {item.venueId: item.distanceInKm for item in playlist_items}
-    venues = offerers_api.get_venues_by_ids(distances.keys())
-
     return playlists_serializers.LocalOfferersPlaylist(
         venues=[
             playlists_serializers.LocalOfferersPlaylistOffer(
-                imgUrl=venue.bannerUrl,
-                publicName=venue.publicName,
-                name=venue.name,
-                distance=format_distance(distances[venue.id]),
-                city=venue.city,
-                id=venue.id,
+                imgUrl=item.venue.bannerUrl,
+                publicName=item.venue.publicName,
+                name=item.venue.name,
+                distance=format_distance(item.distanceInKm),
+                city=item.venue.city,
+                id=item.venue.id,
             )
-            for venue in venues
+            for item in playlist_items
         ]
     )
