@@ -36,7 +36,6 @@ import type { EducationalDomainsResponseModel } from '../models/EducationalDomai
 import type { EducationalInstitutionsResponseModel } from '../models/EducationalInstitutionsResponseModel';
 import type { EducationalRedactors } from '../models/EducationalRedactors';
 import type { FinanceBankAccountListResponseModel } from '../models/FinanceBankAccountListResponseModel';
-import type { FinanceReimbursementPointListResponseModel } from '../models/FinanceReimbursementPointListResponseModel';
 import type { GenerateOffererApiKeyResponse } from '../models/GenerateOffererApiKeyResponse';
 import type { GetCollectiveOfferRequestResponseModel } from '../models/GetCollectiveOfferRequestResponseModel';
 import type { GetCollectiveOfferResponseModel } from '../models/GetCollectiveOfferResponseModel';
@@ -978,21 +977,6 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/finance/bank-accounts',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * get_reimbursement_points <GET>
-   * @returns FinanceReimbursementPointListResponseModel OK
-   * @throws ApiError
-   */
-  public getReimbursementPoints(): CancelablePromise<FinanceReimbursementPointListResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/finance/reimbursement-points',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,

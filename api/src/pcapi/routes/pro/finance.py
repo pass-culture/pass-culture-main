@@ -6,7 +6,6 @@ import sqlalchemy.orm as sqla_orm
 
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
-import pcapi.core.offerers.models as offerers_models
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import finance_serialize
 from pcapi.serialization.decorator import spectree_serialize
@@ -48,27 +47,6 @@ def has_invoice(query: finance_serialize.HasInvoiceQueryModel) -> finance_serial
     offerer_has_invoice = finance_repository.has_invoice(query.offererId)
 
     return finance_serialize.HasInvoiceResponseModel(hasInvoice=offerer_has_invoice)
-
-
-@private_api.route("/finance/reimbursement-points", methods=["GET"])
-@login_required
-@spectree_serialize(
-    response_model=finance_serialize.FinanceReimbursementPointListResponseModel, api=blueprint.pro_private_schema
-)
-def get_reimbursement_points() -> finance_serialize.FinanceReimbursementPointListResponseModel:
-    reimbursement_points = finance_repository.get_reimbursement_points_query(
-        user=current_user,
-    )
-    reimbursement_points = reimbursement_points.options(
-        sqla_orm.contains_eager(offerers_models.Venue.bankInformation),
-    )
-    reimbursement_points = reimbursement_points.order_by(offerers_models.Venue.name)
-    return finance_serialize.FinanceReimbursementPointListResponseModel(
-        __root__=[
-            finance_serialize.FinanceReimbursementPointResponseModel.from_orm(reimbursement_point)
-            for reimbursement_point in reimbursement_points
-        ],
-    )
 
 
 @private_api.route("/finance/bank-accounts", methods=["GET"])

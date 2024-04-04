@@ -70,7 +70,6 @@ describe('Reimbursement page', () => {
     })
 
     vi.spyOn(api, 'getOfferer').mockResolvedValue(selectedOfferer)
-    vi.spyOn(api, 'getReimbursementPoints').mockResolvedValue([])
     vi.spyOn(api, 'getOffererBankAccountsAndAttachedVenues').mockResolvedValue({
       bankAccounts: [],
       id: 1,
