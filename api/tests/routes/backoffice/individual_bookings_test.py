@@ -305,7 +305,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
     def test_list_bookings_by_cashflow_batch(self, authenticated_client):
         cashflows = finance_factories.CashflowFactory.create_batch(
             3,
-            reimbursementPoint=finance_factories.BankInformationFactory(venue=offerers_factories.VenueFactory()).venue,
+            bankAccount=finance_factories.BankAccountFactory(),
         )
 
         finance_factories.PricingFactory(booking=bookings_factories.UsedBookingFactory())
@@ -452,14 +452,15 @@ class ListIndividualBookingsTest(GetEndpointHelper):
 
     def test_additional_data_when_reimbursed(self, authenticated_client, bookings):
         reimbursed = bookings[3]
-        reimbursement_and_pricing_venue = offerers_factories.VenueFactory()
+        pricing_venue = offerers_factories.VenueFactory()
+        bank_account = finance_factories.BankAccountFactory()
+        offerers_factories.VenueBankAccountLinkFactory(venue=pricing_venue, bankAccount=bank_account)
         pricing = finance_factories.PricingFactory(
-            booking=reimbursed, status=finance_models.PricingStatus.INVOICED, venue=reimbursement_and_pricing_venue
+            booking=reimbursed,
+            status=finance_models.PricingStatus.INVOICED,
+            venue=pricing_venue,
         )
-        bank_info = finance_factories.BankInformationFactory(venue=reimbursement_and_pricing_venue)
-        cashflow = finance_factories.CashflowFactory(
-            reimbursementPoint=reimbursement_and_pricing_venue, bankInformation=bank_info, pricings=[pricing]
-        )
+        cashflow = finance_factories.CashflowFactory(bankAccount=bank_account, pricings=[pricing])
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(

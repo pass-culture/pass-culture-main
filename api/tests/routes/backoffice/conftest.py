@@ -7,7 +7,6 @@ from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.finance import factories as finance_factories
-from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
@@ -231,115 +230,11 @@ def pro_user_fixture():
     return user
 
 
-@pytest.fixture(name="venue_with_accepted_bank_info")
-def venue_with_accepted_bank_info_fixture(offerer):
+@pytest.fixture(name="venue_with_accepted_bank_account")
+def venue_with_accepted_bank_account_fixture(offerer):
     venue = offerers_factories.VenueFactory(managingOfferer=offerer)
     offerers_factories.VenuePricingPointLinkFactory(venue=venue, pricingPoint=venue)
-    finance_factories.BankInformationFactory(
-        venue=venue,
-        status=finance_models.BankInformationStatus.ACCEPTED,
-    )
-    return venue
-
-
-@pytest.fixture(name="venue_with_draft_bank_info")
-def venue_with_draft_bank_info_fixture(offerer):
-    venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-    finance_factories.BankInformationFactory(
-        venue=venue,
-        status=finance_models.BankInformationStatus.DRAFT,
-        applicationId=77,
-    )
-    return venue
-
-
-@pytest.fixture(name="venue_with_rejected_bank_info")
-def venue_with_rejected_bank_info_fixture(offerer):
-    venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-    finance_factories.BankInformationFactory(
-        venue=venue,
-        status=finance_models.BankInformationStatus.REJECTED,
-    )
-    return venue
-
-
-@pytest.fixture(name="venue_with_no_bank_info")
-def venue_with_no_bank_info_fixture(offerer):
-    venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-    offerers_factories.VenuePricingPointLinkFactory(venue=venue, pricingPoint=venue)
-    return venue
-
-
-@pytest.fixture(name="venue_with_accepted_self_reimbursement_point")
-def venue_with_accepted_self_reimbursement_point_fixture(venue_with_accepted_bank_info):
-    offerers_factories.VenueReimbursementPointLinkFactory(
-        venue=venue_with_accepted_bank_info,
-        reimbursementPoint=venue_with_accepted_bank_info,
-    )
-    return venue_with_accepted_bank_info
-
-
-@pytest.fixture(name="venue_with_accepted_reimbursement_point")
-def venue_with_accepted_reimbursement_point_fixture(
-    venue_with_accepted_bank_info,
-    venue_with_no_bank_info,
-):
-    offerers_factories.VenueReimbursementPointLinkFactory(
-        venue=venue_with_no_bank_info,
-        timespan=[
-            datetime.datetime.utcnow() - datetime.timedelta(days=365),
-            datetime.datetime.utcnow() - datetime.timedelta(days=1),
-        ],
-        reimbursementPoint=venue_with_accepted_bank_info,
-    )
-    offerers_factories.VenueReimbursementPointLinkFactory(
-        venue=venue_with_no_bank_info,
-        timespan=[datetime.datetime.utcnow() - datetime.timedelta(days=1), None],
-        reimbursementPoint=venue_with_accepted_bank_info,
-    )
-    offerers_factories.VenueBankAccountLinkFactory(
-        venue=venue_with_no_bank_info,
-        timespan=[
-            datetime.datetime.utcnow() - datetime.timedelta(days=365),
-            datetime.datetime.utcnow() - datetime.timedelta(days=1),
-        ],
-        bankAccount=finance_factories.BankAccountFactory(
-            label="Ancien compte", offererId=venue_with_no_bank_info.managingOffererId
-        ),
-    )
-    offerers_factories.VenueBankAccountLinkFactory(
-        venue=venue_with_no_bank_info,
-        timespan=[datetime.datetime.utcnow() - datetime.timedelta(days=1), None],
-        bankAccount=finance_factories.BankAccountFactory(
-            label="Nouveau compte", offererId=venue_with_no_bank_info.managingOffererId
-        ),
-    )
-    return venue_with_no_bank_info
-
-
-@pytest.fixture(name="venue_with_expired_reimbursement_point")
-def venue_with_expired_reimbursement_point_fixture(
-    offerer,
-    venue_with_accepted_bank_info,
-):
-    venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-    offerers_factories.VenuePricingPointLinkFactory(venue=venue, pricingPoint=venue)
-    offerers_factories.VenueReimbursementPointLinkFactory(
-        venue=venue,
-        reimbursementPoint=venue_with_accepted_bank_info,
-        timespan=[
-            datetime.datetime.utcnow() - datetime.timedelta(days=365),
-            datetime.datetime.utcnow() - datetime.timedelta(days=1),
-        ],
-    )
-    offerers_factories.VenueBankAccountLinkFactory(
-        venue=venue,
-        timespan=[
-            datetime.datetime.utcnow() - datetime.timedelta(days=365),
-            datetime.datetime.utcnow() - datetime.timedelta(days=1),
-        ],
-        bankAccount=finance_factories.BankAccountFactory(label="Ancien compte", offererId=venue.managingOffererId),
-    )
+    offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=finance_factories.BankAccountFactory())
     return venue
 
 
@@ -353,20 +248,6 @@ def venue_with_educational_status_fixture(offerer):
     return venue
 
 
-@pytest.fixture(name="venue_with_adage_id")
-def venue_with_adage_id(offerer):
-    venue = offerers_factories.CollectiveVenueFactory(
-        managingOfferer=offerer,
-    )
-    return venue
-
-
-@pytest.fixture(name="venue_with_no_contact")
-def venue_with_no_contact_fixture():
-    venue = offerers_factories.VenueFactory(contact=None)
-    return venue
-
-
 @pytest.fixture(name="venue_with_nor_contact_or_booking_email")
 def venue_with_nor_contact_or_booking_email_fixture():
     venue = offerers_factories.VenueFactory(contact=None, bookingEmail=None)
@@ -374,9 +255,9 @@ def venue_with_nor_contact_or_booking_email_fixture():
 
 
 @pytest.fixture(name="venue_provider_with_last_sync")
-def venue_provider_with_last_sync_fixture(venue_with_accepted_bank_info):
+def venue_provider_with_last_sync_fixture(venue_with_accepted_bank_account):
     venue_provider = providers_factories.VenueProviderFactory(
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
         lastSyncDate=datetime.datetime.utcnow(),
     )
     return venue_provider
@@ -389,60 +270,48 @@ def random_venue_fixture():
     return venue
 
 
-@pytest.fixture(name="offerer_bank_info_with_application_id")
-def offerer_bank_info_with_application_id_fixture(offerer):
-    bank_info = finance_factories.BankInformationFactory(offerer=offerer, applicationId="42")
-    return bank_info
-
-
-@pytest.fixture(name="offerer_bank_info_with_no_application_id")
-def offerer_bank_info_with_no_application_id_fixture(offerer):
-    bank_info = finance_factories.BankInformationFactory(offerer=offerer, applicationId=None)
-    return bank_info
-
-
 @pytest.fixture(name="offerer_active_individual_offers")
-def offerer_active_individual_offers_fixture(offerer, venue_with_accepted_bank_info):
+def offerer_active_individual_offers_fixture(offerer, venue_with_accepted_bank_account):
     approved_offers = offers_factories.OfferFactory.create_batch(
         2,
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
         validation=offers_models.OfferValidationStatus.APPROVED.value,
     )
     rejected_offer = offers_factories.OfferFactory(
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
         validation=offers_models.OfferValidationStatus.REJECTED.value,
     )
     pending_offer = offers_factories.OfferFactory(
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
         validation=offers_models.OfferValidationStatus.PENDING.value,
     )
     draft_offer = offers_factories.OfferFactory(
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
         validation=offers_models.OfferValidationStatus.DRAFT.value,
     )
     return approved_offers + [rejected_offer, pending_offer, draft_offer]
 
 
 @pytest.fixture(name="offerer_inactive_individual_offers")
-def offerer_inactive_individual_offers_fixture(offerer, venue_with_accepted_bank_info):
+def offerer_inactive_individual_offers_fixture(offerer, venue_with_accepted_bank_account):
     approved_offers = offers_factories.OfferFactory.create_batch(
         3,
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
         isActive=False,
         validation=offers_models.OfferValidationStatus.APPROVED.value,
     )
     rejected_offer = offers_factories.OfferFactory(
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
         isActive=False,
         validation=offers_models.OfferValidationStatus.REJECTED.value,
     )
     pending_offer = offers_factories.OfferFactory(
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
         isActive=False,
         validation=offers_models.OfferValidationStatus.PENDING.value,
     )
     draft_offer = offers_factories.OfferFactory(
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
         isActive=False,
         validation=offers_models.OfferValidationStatus.DRAFT.value,
     )
@@ -450,32 +319,32 @@ def offerer_inactive_individual_offers_fixture(offerer, venue_with_accepted_bank
 
 
 @pytest.fixture(name="offerer_active_collective_offers")
-def offerer_active_collective_offers_fixture(offerer, venue_with_accepted_bank_info):
+def offerer_active_collective_offers_fixture(offerer, venue_with_accepted_bank_account):
     approved_offers = educational_factories.CollectiveOfferFactory.create_batch(
         4,
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
         validation=offers_models.OfferValidationStatus.APPROVED.value,
     )
     rejected_offer = educational_factories.CollectiveOfferFactory(
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
         validation=offers_models.OfferValidationStatus.REJECTED.value,
     )
     pending_offer = educational_factories.CollectiveOfferFactory(
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
         validation=offers_models.OfferValidationStatus.PENDING.value,
     )
     draft_offer = educational_factories.CollectiveOfferFactory(
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
         validation=offers_models.OfferValidationStatus.DRAFT.value,
     )
     return approved_offers + [rejected_offer, pending_offer, draft_offer]
 
 
 @pytest.fixture
-def offerer_expired_offers(offerer, venue_with_accepted_bank_info):
+def offerer_expired_offers(offerer, venue_with_accepted_bank_account):
     offers = offers_factories.OfferFactory.create_batch(
         size=4,
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
         validation=offers_models.OfferValidationStatus.APPROVED.value,
     )
     offers_factories.StockFactory.create_batch(
@@ -488,7 +357,7 @@ def offerer_expired_offers(offerer, venue_with_accepted_bank_info):
 
 
 @pytest.fixture
-def offerer_expired_collective_offers(offerer, venue_with_accepted_bank_info):
+def offerer_expired_collective_offers(offerer, venue_with_accepted_bank_account):
     stocks = educational_factories.CollectiveStockFactory.create_batch(
         size=4,
         price=1337,
@@ -496,31 +365,31 @@ def offerer_expired_collective_offers(offerer, venue_with_accepted_bank_info):
     )
     return educational_factories.CollectiveOfferFactory.create_batch(
         size=4,
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
         collectiveStock=factory.Iterator(stocks),
     )
 
 
 @pytest.fixture(name="offerer_inactive_collective_offers")
-def offerer_inactive_collective_offers_fixture(offerer, venue_with_accepted_bank_info):
+def offerer_inactive_collective_offers_fixture(offerer, venue_with_accepted_bank_account):
     approved_offers = educational_factories.CollectiveOfferFactory.create_batch(
         5,
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
         isActive=False,
         validation=offers_models.OfferValidationStatus.APPROVED.value,
     )
     rejected_offer = educational_factories.CollectiveOfferFactory(
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
         isActive=False,
         validation=offers_models.OfferValidationStatus.REJECTED.value,
     )
     pending_offer = educational_factories.CollectiveOfferFactory(
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
         isActive=False,
         validation=offers_models.OfferValidationStatus.PENDING.value,
     )
     draft_offer = educational_factories.CollectiveOfferFactory(
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
         isActive=False,
         validation=offers_models.OfferValidationStatus.DRAFT.value,
     )
@@ -528,52 +397,52 @@ def offerer_inactive_collective_offers_fixture(offerer, venue_with_accepted_bank
 
 
 @pytest.fixture(name="offerer_active_collective_offer_templates")
-def offerer_active_collective_offer_templates_fixture(offerer, venue_with_accepted_bank_info):
+def offerer_active_collective_offer_templates_fixture(offerer, venue_with_accepted_bank_account):
     approved_offers = educational_factories.CollectiveOfferTemplateFactory(
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
         validation=offers_models.OfferValidationStatus.APPROVED.value,
     )
 
     rejected_offer = educational_factories.CollectiveOfferTemplateFactory(
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
         validation=offers_models.OfferValidationStatus.REJECTED.value,
     )
 
     pending_offer = educational_factories.CollectiveOfferTemplateFactory(
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
         validation=offers_models.OfferValidationStatus.PENDING.value,
     )
 
     draft_offer = educational_factories.CollectiveOfferTemplateFactory(
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
         validation=offers_models.OfferValidationStatus.DRAFT.value,
     )
     return [approved_offers, rejected_offer, pending_offer, draft_offer]
 
 
 @pytest.fixture(name="offerer_inactive_collective_offer_templates")
-def offerer_inactive_collective_offer_templates_fixture(offerer, venue_with_accepted_bank_info):
+def offerer_inactive_collective_offer_templates_fixture(offerer, venue_with_accepted_bank_account):
     approved_offers = educational_factories.CollectiveOfferTemplateFactory.create_batch(
         2,
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
         isActive=False,
         validation=offers_models.OfferValidationStatus.APPROVED.value,
     )
 
     rejected_offer = educational_factories.CollectiveOfferTemplateFactory(
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
         isActive=False,
         validation=offers_models.OfferValidationStatus.REJECTED.value,
     )
 
     pending_offer = educational_factories.CollectiveOfferTemplateFactory(
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
         isActive=False,
         validation=offers_models.OfferValidationStatus.PENDING.value,
     )
 
     draft_offer = educational_factories.CollectiveOfferTemplateFactory(
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
         isActive=False,
         validation=offers_models.OfferValidationStatus.DRAFT.value,
     )
@@ -619,17 +488,17 @@ def collective_offerer_booking_fixture(venue_with_educational_status):
 
 
 @pytest.fixture(name="collective_venue_booking")
-def collective_venue_booking_fixture(venue_with_accepted_bank_info):
+def collective_venue_booking_fixture(venue_with_accepted_bank_account):
     educational_status = offerers_factories.VenueEducationalStatusFactory()
-    venue_with_accepted_bank_info.venueEducationalStatusId = educational_status.id
+    venue_with_accepted_bank_account.venueEducationalStatusId = educational_status.id
     stock = educational_factories.CollectiveStockFactory(price=42)
     used = educational_factories.UsedCollectiveBookingFactory(
         collectiveStock=stock,
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
     )
     cancelled = educational_factories.CancelledCollectiveBookingFactory(
         collectiveStock=stock,
-        venue=venue_with_accepted_bank_info,
+        venue=venue_with_accepted_bank_account,
     )
     return used, cancelled
 

@@ -1013,13 +1013,6 @@ def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
                     offerers_models.VenuePricingPointLink.timespan.contains(datetime.datetime.utcnow()),
                 ),
             )
-            .outerjoin(
-                offerers_models.VenueReimbursementPointLink,
-                sa.and_(
-                    offerers_models.VenueReimbursementPointLink.venueId == offerers_models.Venue.id,
-                    offerers_models.VenueReimbursementPointLink.timespan.contains(datetime.datetime.utcnow()),
-                ),
-            )
             .options(
                 sa.orm.contains_eager(offerers_models.Venue.pricing_point_links).load_only(
                     offerers_models.VenuePricingPointLink.pricingPointId, offerers_models.VenuePricingPointLink.timespan

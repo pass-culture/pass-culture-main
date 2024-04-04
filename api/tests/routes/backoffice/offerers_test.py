@@ -9,7 +9,6 @@ from pcapi.connectors.entreprise.backends.testing import TestingBackend
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import factories as educational_factories
-from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import factories as history_factories
@@ -42,51 +41,6 @@ pytestmark = [
 ]
 
 
-@pytest.fixture(scope="function", name="venue")
-def venue_fixture(offerer) -> offerers_models.Venue:
-    venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-    finance_factories.BankInformationFactory(
-        venue=venue,
-        status=finance_models.BankInformationStatus.ACCEPTED,
-    )
-    return venue
-
-
-@pytest.fixture(scope="function", name="offer")
-def offer_fixture(venue) -> offers_models.Offer:
-    return offers_factories.OfferFactory(
-        venue=venue,
-        validation=offers_models.OfferValidationStatus.APPROVED.value,
-    )
-
-
-@pytest.fixture(scope="function", name="collective_offer")
-def collective_offer_fixture(venue) -> educational_models.CollectiveOffer:
-    return educational_factories.CollectiveOfferFactory(
-        venue=venue,
-        validation=offers_models.OfferValidationStatus.APPROVED.value,
-    )
-
-
-@pytest.fixture(scope="function", name="collective_offer_template")
-def collective_offer_template_fixture(venue) -> educational_models.CollectiveOfferTemplate:
-    return educational_factories.CollectiveOfferTemplateFactory(
-        venue=venue,
-        validation=offers_models.OfferValidationStatus.APPROVED.value,
-    )
-
-
-@pytest.fixture(scope="function", name="booking")
-def booking_fixture(offer) -> bookings_models.Booking:
-    stock = offers_factories.StockFactory(offer=offer)
-    return bookings_factories.BookingFactory(
-        status=bookings_models.BookingStatus.USED,
-        quantity=1,
-        amount=10,
-        stock=stock,
-    )
-
-
 class GetOffererTest(GetEndpointHelper):
     endpoint = "backoffice_web.offerer.get"
     endpoint_kwargs = {"offerer_id": 1}
@@ -96,7 +50,7 @@ class GetOffererTest(GetEndpointHelper):
     # - offerer with joined data except tags (1 query)
     # - get offerer tags (1 query)
     # - get all tags for edit form (1 query)
-    # - get feature flag WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY (1 query)
+    # - get feature flag: WIP_ENABLE_PRO_SIDE_NAV (1 query)
     expected_num_queries = 6
 
     def test_keep_search_parameters_on_top(self, authenticated_client, offerer):
@@ -228,54 +182,64 @@ class GetOffererTest(GetEndpointHelper):
             assert "Nouvelle interface" not in badges
             assert "Ancienne interface" not in badges
 
-    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
-    def test_offerer_detail_contains_venue_bank_information_stats_legacy(
-        self,
-        authenticated_client,
-        offerer,
-        venue_with_accepted_self_reimbursement_point,
-        venue_with_accepted_reimbursement_point,
-        venue_with_expired_reimbursement_point,
-        venue_with_rejected_bank_info,
-        random_venue,
-    ):
-        offerer_id = offerer.id
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer_id))
-            assert response.status_code == 200
-
-        assert "Présence CB dans les lieux : 2 OK / 2 KO " in html_parser.content_as_text(response.data)
-
-    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
     def test_offerer_detail_contains_venue_bank_information_stats(
         self,
         authenticated_client,
         offerer,
-        venue_with_accepted_self_reimbursement_point,
-        venue_with_accepted_reimbursement_point,  # and accepted bank account
-        venue_with_expired_reimbursement_point,  # and expired bank account
-        random_venue,
     ):
-        offerer_id = offerer.id
+        venue_with_accepted_bank_account = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_factories.VenueBankAccountLinkFactory(
+            venue=venue_with_accepted_bank_account,
+            timespan=[
+                datetime.datetime.utcnow() - datetime.timedelta(days=365),
+                None,
+            ],
+            bankAccount=finance_factories.BankAccountFactory(label="Nouveau compte", offererId=offerer.id),
+        )
+        venue_with_two_bank_accounts = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_factories.VenueBankAccountLinkFactory(
+            venue=venue_with_two_bank_accounts,
+            timespan=[
+                datetime.datetime.utcnow() - datetime.timedelta(days=365),
+                datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            ],
+            bankAccount=finance_factories.BankAccountFactory(label="Ancien compte", offererId=offerer.id),
+        )
+        offerers_factories.VenueBankAccountLinkFactory(
+            venue=venue_with_two_bank_accounts,
+            timespan=[datetime.datetime.utcnow() - datetime.timedelta(days=1), None],
+            bankAccount=finance_factories.BankAccountFactory(label="Nouveau compte", offererId=offerer.id),
+        )
 
+        venue_with_expired_bank_account = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_factories.VenueBankAccountLinkFactory(
+            venue=venue_with_expired_bank_account,
+            timespan=[
+                datetime.datetime.utcnow() - datetime.timedelta(days=365),
+                datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            ],
+            bankAccount=finance_factories.BankAccountFactory(label="Ancien compte", offererId=offerer.id),
+        )
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer_id))
+            response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        assert "Présence CB dans les lieux : 1 OK / 2 KO " in html_parser.content_as_text(response.data)
+        assert "Présence CB dans les lieux : 2 OK / 1 KO " in html_parser.content_as_text(response.data)
 
-    def test_offerer_with_educational_venue_has_adage_data(self, authenticated_client, offerer, venue_with_adage_id):
-        offerer_id = offerer.id
+    def test_offerer_with_educational_venue_has_adage_data(self, authenticated_client, offerer):
+        offerers_factories.CollectiveVenueFactory(managingOfferer=offerer)
 
+        url = url_for(self.endpoint, offerer_id=offerer.id)
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer_id))
+            response = authenticated_client.get(url)
             assert response.status_code == 200
 
         assert "Référencement Adage : 1/1" in html_parser.content_as_text(response.data)
 
     def test_offerer_with_no_educational_venue_has_adage_data(
-        self, authenticated_client, offerer, venue_with_accepted_bank_info
+        self, authenticated_client, offerer, venue_with_accepted_bank_account
     ):
         offerer_id = offerer.id
 
@@ -571,9 +535,26 @@ class GetOffererStatsTest(GetEndpointHelper):
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    def test_get_stats(
-        self, authenticated_client, offerer, offer, collective_offer, collective_offer_template, booking
-    ):
+    def test_get_stats(self, authenticated_client, offerer):
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offer = offers_factories.OfferFactory(
+            venue=venue,
+            validation=offers_models.OfferValidationStatus.APPROVED.value,
+        )
+        educational_factories.CollectiveOfferFactory(
+            venue=venue,
+            validation=offers_models.OfferValidationStatus.APPROVED.value,
+        )
+        educational_factories.CollectiveOfferTemplateFactory(
+            venue=venue,
+            validation=offers_models.OfferValidationStatus.APPROVED.value,
+        )
+        booking = bookings_factories.BookingFactory(
+            status=bookings_models.BookingStatus.USED,
+            quantity=1,
+            amount=10,
+            stock=offers_factories.StockFactory(offer=offer),
+        )
         url = url_for(self.endpoint, offerer_id=offerer.id)
 
         # get session (1 query)
