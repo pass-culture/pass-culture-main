@@ -226,8 +226,7 @@ class GetLocalOfferersPlaylistTest(SharedPlaylistsErrorTests):
 
         # fetch the institution (1 query)
         # fetch playlist items (1 query)
-        # fetch venues (1 query)
-        with assert_num_queries(3):
+        with assert_num_queries(2):
             response = iframe_client.get(url_for(self.endpoint))
 
         assert response.status_code == 200
@@ -251,7 +250,7 @@ class GetLocalOfferersPlaylistTest(SharedPlaylistsErrorTests):
         assert response.status_code == 200
         assert response.json == {"venues": []}
 
-    def test_get_classroom_playlist_random_order(self, client):
+    def test_get_local_offerers_playlist_random_order(self, client):
         playlist_venues = offerers_factories.VenueFactory.create_batch(15)
         offerers_factories.VenueFactory()
 

@@ -988,6 +988,7 @@ def get_collective_offer_templates_for_playlist_query(
             innerjoin=True,
         )
         .selectinload(offerers_models.Venue.googlePlacesInfo),
+        sa.orm.joinedload(educational_models.CollectivePlaylist.venue),
     )
     return query
 
