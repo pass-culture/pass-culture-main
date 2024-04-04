@@ -26,7 +26,7 @@
     {{ build_lazy_modal(url_for("backoffice_web.pivots.get_create_pivot_form", name=pivot_name) , "create-" + pivot_name) }}
   </div>
 {% endmacro %}
-{% macro build_pivot_row_menu(pivot_name, row, can_delete) %}
+{% macro build_pivot_row_menu(pivot_name, row) %}
   <div class="dropdown">
     <button type="button"
             data-bs-toggle="dropdown"
@@ -40,13 +40,11 @@
            data-bs-toggle="modal"
            data-bs-target="#update-{{ pivot_name }}-{{ row.id }}">Modifier le pivot</a>
       </li>
-      {% if can_delete %}
-        <li class="dropdown-item p-0">
-          <a class="btn btn-sm d-block w-100 text-start px-3"
-             data-bs-toggle="modal"
-             data-bs-target="#delete-{{ pivot_name }}-{{ row.id }}">Supprimer le pivot</a>
-        </li>
-      {% endif %}
+      <li class="dropdown-item p-0">
+        <a class="btn btn-sm d-block w-100 text-start px-3"
+           data-bs-toggle="modal"
+           data-bs-target="#delete-{{ pivot_name }}-{{ row.id }}">Supprimer le pivot</a>
+      </li>
     </ul>
     {{ build_lazy_modal(url_for("backoffice_web.pivots.get_update_pivot_form", name=pivot_name, pivot_id=row.id) , "update-" + pivot_name + "-" + row.id | string) }}
     {{ build_lazy_modal(url_for("backoffice_web.pivots.get_delete_pivot_form", name=pivot_name, pivot_id=row.id) , "delete-" + pivot_name + "-" + row.id | string) }}
