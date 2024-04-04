@@ -1,8 +1,9 @@
+import argparse
 import logging
 import os
-import argparse
 
 from pcapi import settings
+
 
 logger = logging.getLogger(__name__)
 
@@ -21,9 +22,9 @@ def run_this_script() -> None:
     print(args.opt_arg)
     print(f"test display settings.ENABLE_COMMAND_CLEAN_DATABASE:{settings.ENABLE_COMMAND_CLEAN_DATABASE}")
     logger.info("test:pcapi-console-job")
-    f = open(f"{os.environ.get('OUTPUT_DIRECTORY')}/hello_python_world.txt", "w")
-    f.write("hello python!")
-    f.close()
+    with open(f"{os.environ.get('OUTPUT_DIRECTORY')}/hello_python_world.txt", "w", encoding="utf-8") as f:
+        f.write("hello python!")
+        f.close()
 
 
 run_this_script()
