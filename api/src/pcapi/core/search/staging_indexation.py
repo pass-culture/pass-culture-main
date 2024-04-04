@@ -21,7 +21,7 @@ def get_offers_for_each_subcategory(size_per_subcategory: int) -> set[int]:
             .join(offerer_models.Venue)
             .join(offerer_models.Offerer)
             .filter(
-                offers_models.Offer.is_eligible_for_search.is_(True),  # type: ignore [attr-defined]
+                offers_models.Offer.is_eligible_for_search,
                 offers_models.Offer.subcategoryId == subcategory.id,
             )
             .with_entities(offers_models.Offer.id)
@@ -35,7 +35,7 @@ def get_offers_with_gtl(size: int) -> set[int]:
         offers_models.Offer.query.join(offers_models.Stock)
         .filter(
             offers_models.Offer.extraData["gtl_id"].is_not(None),
-            offers_models.Offer.is_eligible_for_search.is_(True),  # type: ignore [attr-defined]
+            offers_models.Offer.is_eligible_for_search,
         )
         .with_entities(offers_models.Offer.id)
         .limit(size)
@@ -50,7 +50,7 @@ def get_offers_for_each_gtl_level_1(size_per_gtl: int) -> set[int]:
             offers_models.Offer.query.join(offers_models.Stock)
             .filter(
                 offers_models.Offer.extraData["gtl_id"].astext.startswith(str(i).zfill(2)),
-                offers_models.Offer.is_eligible_for_search.is_(True),  # type: ignore [attr-defined]
+                offers_models.Offer.is_eligible_for_search,
             )
             .with_entities(offers_models.Offer.id)
             .limit(size_per_gtl)
@@ -63,7 +63,7 @@ def get_offers_with_visa_number(size: int) -> set[int]:
         offers_models.Offer.query.join(offers_models.Stock)
         .filter(
             offers_models.Offer.extraData["visa_number"].is_not(None),
-            offers_models.Offer.is_eligible_for_search.is_(True),  # type: ignore [attr-defined]
+            offers_models.Offer.is_eligible_for_search,
         )
         .with_entities(offers_models.Offer.id)
         .limit(size)
@@ -75,7 +75,7 @@ def get_random_offers(size: int, excluded_offer_ids: set[int]) -> set[int]:
     query = (
         offers_models.Offer.query.join(offers_models.Stock)
         .filter(
-            offers_models.Offer.is_eligible_for_search.is_(True),  # type: ignore [attr-defined]
+            offers_models.Offer.is_eligible_for_search,
             offers_models.Offer.id.not_in(excluded_offer_ids),
         )
         .with_entities(offers_models.Offer.id)

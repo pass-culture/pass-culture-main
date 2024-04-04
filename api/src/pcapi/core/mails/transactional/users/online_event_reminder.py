@@ -87,8 +87,8 @@ def _get_online_bookings_happening_soon() -> sa.orm.query.Query:
             booking_models.Booking.status == booking_models.BookingStatus.CONFIRMED,
             Stock.beginningDatetime >= in_30_minutes,
             Stock.beginningDatetime < in_1_hour,
-            Offer.isEvent.is_(True),  # type: ignore [attr-defined]
-            Offer.isDigital.is_(True),  # type: ignore [attr-defined]
+            Offer.isEvent,
+            Offer.isDigital,
         )
     )
 

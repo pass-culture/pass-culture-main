@@ -103,7 +103,7 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
         return self.isActive and self.apiUrl != None and "praxiel" not in self.name.lower()
 
     @allow_bo_sync.expression  # type: ignore [no-redef]
-    def allow_bo_sync(cls) -> bool:  # pylint: disable=no-self-argument
+    def allow_bo_sync(cls) -> sa_sql.elements.BooleanClauseList:  # pylint: disable=no-self-argument
         # Praxiel API is very slow (with response times up to 30 seconds) and unstable (with frequent 50x
         # error responses). Full synchronization very rarely succeeds, don't bother trying.
         return sa.and_(cls.isActive.is_(True), cls.apiUrl.is_not(None), cls.name.not_ilike("%praxiel%"))

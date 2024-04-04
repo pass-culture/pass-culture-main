@@ -18,6 +18,7 @@ from sqlalchemy.orm import declared_attr
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import False_
+from sqlalchemy.sql.elements import UnaryExpression
 from sqlalchemy.sql.functions import func
 from sqlalchemy.sql.schema import Index
 from sqlalchemy.sql.selectable import Exists
@@ -167,7 +168,7 @@ class HasImageMixin:
         return self.imageId is not None
 
     @hasImage.expression  # type: ignore[no-redef]
-    def hasImage(cls) -> bool:  # pylint: disable=no-self-argument
+    def hasImage(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.imageId is not None
 
     def _get_image_storage_id(self, original: bool = False) -> str:
@@ -573,7 +574,7 @@ class CollectiveOffer(
         return self.subcategory.is_event
 
     @isEvent.expression  # type: ignore [no-redef]
-    def isEvent(cls) -> bool:  # pylint: disable=no-self-argument
+    def isEvent(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.subcategoryId.in_(subcategories.EVENT_SUBCATEGORIES)
 
     @property
@@ -606,7 +607,7 @@ class CollectiveOffer(
         return self.hasBeginningDatetimePassed
 
     @is_expired.expression  # type: ignore [no-redef]
-    def is_expired(cls) -> bool:  # pylint: disable=no-self-argument
+    def is_expired(cls) -> UnaryExpression:  # pylint: disable=no-self-argument
         return cls.hasBeginningDatetimePassed
 
 
@@ -863,7 +864,7 @@ class CollectiveOfferTemplate(
         return self.subcategory.is_event
 
     @isEvent.expression  # type: ignore [no-redef]
-    def isEvent(cls) -> bool:  # pylint: disable=no-self-argument
+    def isEvent(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.subcategoryId.in_(subcategories.EVENT_SUBCATEGORIES)
 
     @property
@@ -912,7 +913,7 @@ class CollectiveOfferTemplate(
         return self.hasBeginningDatetimePassed
 
     @is_expired.expression  # type: ignore [no-redef]
-    def is_expired(cls) -> bool:  # pylint: disable=no-self-argument
+    def is_expired(cls) -> UnaryExpression:  # pylint: disable=no-self-argument
         return cls.hasBeginningDatetimePassed
 
 
@@ -1283,7 +1284,7 @@ class CollectiveBooking(PcObject, Base, Model):
         return self.cancellationLimitDate <= datetime.utcnow()
 
     @isConfirmed.expression  # type: ignore[no-redef]
-    def isConfirmed(cls) -> bool:  # pylint: disable=no-self-argument
+    def isConfirmed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.cancellationLimitDate <= datetime.utcnow()
 
     @hybrid_property
@@ -1291,7 +1292,7 @@ class CollectiveBooking(PcObject, Base, Model):
         return self.status in [CollectiveBookingStatus.USED, CollectiveBookingStatus.REIMBURSED]
 
     @is_used_or_reimbursed.expression  # type: ignore[no-redef]
-    def is_used_or_reimbursed(cls) -> bool:  # pylint: disable=no-self-argument
+    def is_used_or_reimbursed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.status.in_([CollectiveBookingStatus.USED, CollectiveBookingStatus.REIMBURSED])
 
     @hybrid_property
@@ -1299,7 +1300,7 @@ class CollectiveBooking(PcObject, Base, Model):
         return self.status == CollectiveBookingStatus.REIMBURSED
 
     @isReimbursed.expression  # type: ignore [no-redef]
-    def isReimbursed(cls) -> bool:  # pylint: disable=no-self-argument
+    def isReimbursed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.status == CollectiveBookingStatus.REIMBURSED
 
     @hybrid_property
@@ -1307,7 +1308,7 @@ class CollectiveBooking(PcObject, Base, Model):
         return self.status == CollectiveBookingStatus.CANCELLED
 
     @isCancelled.expression  # type: ignore [no-redef]
-    def isCancelled(cls) -> bool:  # pylint: disable=no-self-argument
+    def isCancelled(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.status == CollectiveBookingStatus.CANCELLED
 
     @property
