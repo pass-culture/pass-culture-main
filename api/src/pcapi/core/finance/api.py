@@ -364,18 +364,6 @@ def lock_pricing_point(pricing_point_id: int) -> None:
     return db_utils.acquire_lock(f"pricing-point-{pricing_point_id}")
 
 
-def lock_reimbursement_point(reimbursement_point_id: int) -> None:
-    """Lock a reimbursement point (a venue) while we are doing some
-    work that cannot be done while there are other running operations
-    on the same reimbursement point.
-
-    IMPORTANT: This must only be used within a transaction.
-
-    The lock is automatically released at the end of the transaction.
-    """
-    return db_utils.acquire_lock(f"reimbursement-point-{reimbursement_point_id}")
-
-
 def lock_bank_account(bank_account_id: int) -> None:
     """Lock a bank account while we are doing some
     work that cannot be done while there are other running operations
