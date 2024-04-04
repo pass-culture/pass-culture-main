@@ -15,8 +15,6 @@ from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.finance import models as finance_models
-from pcapi.core.finance.models import BankInformation
-from pcapi.core.finance.models import BankInformationStatus
 import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import Offer
 import pcapi.core.offers.repository as offers_repository
@@ -372,23 +370,6 @@ def dms_token_exists(dms_token: str) -> bool:
 
 def get_venues_educational_statuses() -> list[models.VenueEducationalStatus]:
     return db.session.query(models.VenueEducationalStatus).order_by(models.VenueEducationalStatus.name).all()
-
-
-def find_available_reimbursement_points_for_offerer(offerer_id: int) -> list[models.Venue]:
-    """
-    Returns a list of Venues whose SIRETs can be used to reimburse bookings, and their bank info,
-    ordered by common_name
-    """
-    return (
-        models.Venue.query.join(BankInformation)
-        .filter(
-            BankInformation.status == BankInformationStatus.ACCEPTED,
-            models.Venue.managingOffererId == offerer_id,
-        )
-        .options(sqla_orm.joinedload(models.Venue.bankInformation))
-        .order_by(models.Venue.common_name)
-        .all()
-    )
 
 
 def get_venue_by_id(venue_id: int) -> models.Venue:
