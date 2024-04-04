@@ -1,4 +1,3 @@
-from pcapi.core.finance.models import BankInformation
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
@@ -7,7 +6,6 @@ from pcapi.core.users.models import User
 from pcapi.models import Model
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.has_address_mixin import HasAddressMixin
-from pcapi.validation.models import bank_information
 from pcapi.validation.models import has_address_mixin
 from pcapi.validation.models import offer
 from pcapi.validation.models import offerer
@@ -26,9 +24,7 @@ def validate(model: Model) -> ApiErrors:
     if isinstance(model, HasAddressMixin):
         api_errors = has_address_mixin.validate(model, api_errors)
 
-    if isinstance(model, BankInformation):
-        api_errors = bank_information.validate(model, api_errors)
-    elif isinstance(model, Offer):
+    if isinstance(model, Offer):
         api_errors = offer.validate(model, api_errors)
     elif isinstance(model, Offerer):
         api_errors = offerer.validate(model, api_errors)

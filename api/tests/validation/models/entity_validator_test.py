@@ -1,8 +1,6 @@
 import pytest
 
 from pcapi.core.categories import subcategories_v2 as subcategories
-import pcapi.core.finance.factories as finance_factories
-from pcapi.core.finance.models import BankInformationStatus
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.validation.models.entity_validator import validate
@@ -64,36 +62,6 @@ class VenueValidationTest:
         api_errors = validate(venue)
         assert api_errors.errors == {
             "siren": ["Ce lieu ne peut enregistrer de SIRET car la structure associée n’a pas de SIREN renseigné"]
-        }
-
-
-class BankInformationValidationTest:
-    def test_invalid_iban_and_bic(self):
-        bank_information = finance_factories.BankInformationFactory.build(bic="1234", iban="1234")
-        api_errors = validate(bank_information)
-        assert api_errors.errors == {
-            "bic": ['Le BIC renseigné ("1234") est invalide'],
-            "iban": ['L’IBAN renseigné ("1234") est invalide'],
-        }
-
-    def test_valid_iban_and_bic(self):
-        bank_information = finance_factories.BankInformationFactory.build(
-            bic="AGFBFRCC",
-            iban="FR7014508000301971798194B82",
-        )
-        api_errors = validate(bank_information)
-        assert not api_errors.errors
-
-    def test_non_empty_iban_and_bic_with_draft_status(self):
-        bank_information = finance_factories.BankInformationFactory.build(
-            bic="AGFBFRCC",
-            iban="FR7014508000301971798194B82",
-            status=BankInformationStatus.DRAFT,
-        )
-        api_errors = validate(bank_information)
-        assert api_errors.errors == {
-            "bic": ["Le BIC doit être vide pour le statut DRAFT"],
-            "iban": ["L’IBAN doit être vide pour le statut DRAFT"],
         }
 
 
