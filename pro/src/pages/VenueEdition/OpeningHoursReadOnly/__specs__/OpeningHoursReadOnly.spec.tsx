@@ -45,7 +45,9 @@ describe('OpeningHoursReadOnly', () => {
     render(<OpeningHoursReadOnly openingHours={openingHours} />)
 
     expect(
-      screen.getByText(/Vous n’avez pas renseigné d’horaires d’ouverture./)
+      screen.getByText(
+        /Vous n’avez pas renseigné d’horaire d’ouverture. Votre établissement est indiqué comme fermé sur l’application./
+      )
     ).toBeInTheDocument()
   })
 })
