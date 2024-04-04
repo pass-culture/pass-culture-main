@@ -21,7 +21,7 @@ const scrollToFirstError = () => {
   }, 0)
 }
 
-const useScrollToFirstErrorAfterSubmit = (): void => {
+export const ScrollToFirstErrorAfterSubmit = () => {
   const { isSubmitting, isValid, status } = useFormikContext()
 
   useEffect(() => {
@@ -29,6 +29,6 @@ const useScrollToFirstErrorAfterSubmit = (): void => {
       scrollToFirstError()
     }
   }, [isValid, isSubmitting, status])
-}
 
-export default useScrollToFirstErrorAfterSubmit
+  return null
+}

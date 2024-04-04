@@ -3,25 +3,15 @@ import { userEvent } from '@testing-library/user-event'
 import { Formik, Form } from 'formik'
 import * as yup from 'yup'
 
-import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import { SubmitButton, TextInput } from 'ui-kit'
+
+import { ScrollToFirstErrorAfterSubmit } from '../ScrollToFirstErrorAfterSubmit'
 
 const scrollIntoViewMock = vi.fn()
 
 vi.mock('utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
 }))
-
-const TestForm = () => {
-  useScrollToFirstErrorAfterSubmit()
-
-  return (
-    <Form>
-      <TextInput name="test" label="test" />
-      <SubmitButton />
-    </Form>
-  )
-}
 
 const TestComponent = () => {
   return (
@@ -34,20 +24,25 @@ const TestComponent = () => {
       })}
       onSubmit={vi.fn()}
     >
-      <TestForm />
+      <Form>
+        <TextInput name="test" label="test" />
+        <SubmitButton />
+
+        <ScrollToFirstErrorAfterSubmit />
+      </Form>
     </Formik>
   )
 }
 
-const renderUseScrollToFirstErrorAfterSubmit = () => {
+const renderScrollToFirstErrorAfterSubmit = () => {
   return render(<TestComponent />)
 }
 
-describe('useScrollToFirstErrorAfterSubmit', () => {
+describe('ScrollToFirstErrorAfterSubmit', () => {
   it('should scroll into view and give focus', async () => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
 
-    renderUseScrollToFirstErrorAfterSubmit()
+    renderScrollToFirstErrorAfterSubmit()
     await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
     await waitFor(() => {
       expect(screen.getByText('Veuillez remplir le champ')).toBeInTheDocument()
