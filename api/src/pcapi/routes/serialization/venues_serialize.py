@@ -374,7 +374,6 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     bookingEmail: str | None
     withdrawalDetails: str | None
     siret: str | None
-    hasMissingReimbursementPoint: bool
     hasCreatedOffer: bool
     collectiveSubCategoryId: str | None
     venueTypeCode: offerers_models.VenueTypeCode
@@ -385,17 +384,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
         venue: offerers_models.Venue,
         ids_of_venues_with_offers: typing.Iterable[int] = (),
     ) -> "VenueListItemResponseModel":
-        now = datetime.utcnow()
         venue.offererName = venue.managingOfferer.name
-        venue.hasMissingReimbursementPoint = not (
-            any(
-                (
-                    now > link.timespan.lower and (link.timespan.upper is None or now < link.timespan.upper)
-                    for link in venue.reimbursement_point_links
-                )
-            )
-            or venue.hasPendingBankInformationApplication
-        )
         venue.hasCreatedOffer = venue.id in ids_of_venues_with_offers
         return super().from_orm(venue)
 

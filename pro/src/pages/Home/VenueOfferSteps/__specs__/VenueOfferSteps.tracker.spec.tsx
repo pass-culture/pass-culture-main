@@ -78,7 +78,7 @@ describe('VenueOfferSteps', () => {
 
   it('should track ReimbursementPoint', async () => {
     renderVenueOfferSteps({
-      venue: { ...venue, hasMissingReimbursementPoint: false },
+      venue: { ...venue },
       hasVenue: true,
     })
 

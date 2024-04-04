@@ -105,7 +105,6 @@ class GetOffererTest:
                     "demarchesSimplifieesApplicationId": venue.demarchesSimplifieesApplicationId,
                     "departementCode": venue.departementCode,
                     "hasAdageId": bool(venue.adageId),
-                    "hasMissingReimbursementPoint": venue.hasMissingReimbursementPoint,
                     "hasPendingBankInformationApplication": venue.hasPendingBankInformationApplication,
                     "hasCreatedOffer": venue.has_individual_offers or venue.has_collective_offers,
                     "isVirtual": venue.isVirtual,
@@ -180,9 +179,6 @@ class GetOffererTest:
 
         response = client.get(f"/offerers/{offerer_id}")
         assert response.status_code == 200
-        assert response.json["managedVenues"][0]["hasMissingReimbursementPoint"] is True
-        assert response.json["managedVenues"][1]["hasMissingReimbursementPoint"] is False
-        assert response.json["managedVenues"][2]["hasMissingReimbursementPoint"] is False
         assert response.json["hasValidBankAccount"] is False
         assert response.json["hasPendingBankAccount"] is False
         assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == []
