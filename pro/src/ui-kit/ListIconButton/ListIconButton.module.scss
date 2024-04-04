@@ -7,7 +7,7 @@
   border: none;
   width: rem.torem(32px);
   height: rem.torem(32px);
-  border-radius: rem.torem(16px);
+  border-radius: 100%;
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -50,4 +50,24 @@
 
 .tooltip {
   border-radius: rem.torem(16px);
+}
+
+.variant-primary {
+  width: rem.torem(40px);
+  height: rem.torem(40px);
+  background-color: rgba(colors.$primary, 0.05);
+  color: colors.$primary;
+
+  &:hover:not(:disabled),
+  &:focus-visible {
+    background-color: transparent;
+  }
+
+  &:hover:not(:disabled) {
+    border: rem.torem(1px) solid colors.$grey-dark;
+  }
+
+  &:disabled {
+    background-color: colors.$grey-light;
+  }
 }
