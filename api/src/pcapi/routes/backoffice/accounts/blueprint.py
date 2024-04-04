@@ -77,12 +77,12 @@ def _join_suspension_history(query: BaseQuery) -> BaseQuery:
 
 
 def _apply_search_filters(query: BaseQuery, search_filters: list[str]) -> BaseQuery:
-    or_filters: list[sa.sql.elements.ClauseElement] = []
+    or_filters: list = []
 
     if account_forms.AccountSearchFilter.UNDERAGE.name in search_filters:
         or_filters.append(
             sa.and_(
-                users_models.User.has_underage_beneficiary_role.is_(True),  # type: ignore [attr-defined]
+                users_models.User.has_underage_beneficiary_role,
                 users_models.User.isActive.is_(True),
             )
         )
@@ -90,7 +90,7 @@ def _apply_search_filters(query: BaseQuery, search_filters: list[str]) -> BaseQu
     if account_forms.AccountSearchFilter.BENEFICIARY.name in search_filters:
         or_filters.append(
             sa.and_(
-                users_models.User.has_beneficiary_role.is_(True),  # type: ignore [attr-defined]
+                users_models.User.has_beneficiary_role,
                 users_models.User.isActive.is_(True),
             )
         )
@@ -98,7 +98,7 @@ def _apply_search_filters(query: BaseQuery, search_filters: list[str]) -> BaseQu
     if account_forms.AccountSearchFilter.PUBLIC.name in search_filters:
         or_filters.append(
             sa.and_(
-                users_models.User.is_beneficiary.is_(False),  # type: ignore [attr-defined]
+                sa.not_(users_models.User.is_beneficiary),
                 users_models.User.isActive.is_(True),
             )
         )

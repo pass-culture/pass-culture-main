@@ -1004,7 +1004,7 @@ def archive_old_bookings() -> None:
         Booking.query.join(Booking.stock, Stock.offer, Booking.activationCode)
         .filter(date_condition)
         .filter(
-            offers_models.Offer.isDigital.is_(True),  # type: ignore [attr-defined]
+            offers_models.Offer.isDigital,
             offers_models.ActivationCode.id.is_not(None),
         )
         .with_entities(Booking.id)

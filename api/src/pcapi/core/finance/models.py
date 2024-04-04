@@ -19,6 +19,7 @@ import sqlalchemy.dialects.postgresql as sqla_psql
 from sqlalchemy.ext.hybrid import hybrid_property
 import sqlalchemy.ext.mutable as sqla_mutable
 import sqlalchemy.orm as sqla_orm
+from sqlalchemy.sql.selectable import Exists
 
 from pcapi import settings
 from pcapi.models import Base
@@ -1033,7 +1034,7 @@ class FinanceIncident(Base, Model):
         )
 
     @isClosed.expression  # type: ignore [no-redef]
-    def isClosed(cls) -> bool:  # pylint: disable=no-self-argument
+    def isClosed(cls) -> Exists:  # pylint: disable=no-self-argument
         return (
             sqla.exists()
             .where(BookingFinanceIncident.incidentId == cls.id)

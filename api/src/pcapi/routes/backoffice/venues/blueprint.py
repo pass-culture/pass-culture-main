@@ -631,7 +631,7 @@ def fully_sync_venue(venue_id: int) -> utils.BackofficeResponse:
     venue_exists = db.session.query(
         offerers_models.Venue.query.join(providers_models.VenueProvider)
         .join(providers_models.Provider)
-        .filter(providers_models.Provider.allow_bo_sync.is_(True))  # type: ignore[attr-defined]
+        .filter(providers_models.Provider.allow_bo_sync)
         .filter(offerers_models.Venue.id == venue_id)
         .filter(providers_models.VenueProvider.isActive.is_(True))
         .exists()

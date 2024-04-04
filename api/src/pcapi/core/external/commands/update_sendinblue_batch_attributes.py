@@ -6,6 +6,7 @@ fix this issue.
 
 import time
 
+import sqlalchemy as sa
 import urllib3.exceptions
 
 from pcapi.core.external import batch
@@ -50,8 +51,8 @@ def _run_iteration(min_user_id: int, max_user_id: int, synchronize_batch: bool, 
         User.query.filter(User.id.in_(user_ids))
         .filter(
             User.isActive.is_(True),
-            User.has_pro_role.is_(False),  # type: ignore [attr-defined]
-            User.has_admin_role.is_(False),  # type: ignore [attr-defined]
+            sa.not_(User.has_pro_role),
+            sa.not_(User.has_admin_role),
         )
         .all()
     )

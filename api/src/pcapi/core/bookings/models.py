@@ -26,6 +26,7 @@ import sqlalchemy.exc as sa_exc
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import BooleanClauseList
 from sqlalchemy.sql.elements import Label
 
@@ -242,7 +243,7 @@ class Booking(PcObject, Base, Model):
         return self.status in [BookingStatus.USED, BookingStatus.REIMBURSED]
 
     @is_used_or_reimbursed.expression  # type: ignore [no-redef]
-    def is_used_or_reimbursed(cls) -> bool:  # pylint: disable=no-self-argument
+    def is_used_or_reimbursed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.status.in_([BookingStatus.USED, BookingStatus.REIMBURSED])
 
     @hybrid_property
@@ -250,7 +251,7 @@ class Booking(PcObject, Base, Model):
         return self.status == BookingStatus.REIMBURSED
 
     @isReimbursed.expression  # type: ignore [no-redef]
-    def isReimbursed(cls) -> bool:  # pylint: disable=no-self-argument
+    def isReimbursed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.status == BookingStatus.REIMBURSED
 
     @hybrid_property
@@ -258,7 +259,7 @@ class Booking(PcObject, Base, Model):
         return self.status == BookingStatus.CANCELLED
 
     @isCancelled.expression  # type: ignore [no-redef]
-    def isCancelled(cls) -> bool:  # pylint: disable=no-self-argument
+    def isCancelled(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.status == BookingStatus.CANCELLED
 
     @property

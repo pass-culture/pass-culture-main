@@ -14,6 +14,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import BooleanClauseList
 from sqlalchemy.sql.elements import Case
 from sqlalchemy.sql.elements import UnaryExpression
@@ -531,7 +532,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return self.subcategoryId in subcategories_v2.EXPIRABLE_SUBCATEGORIES
 
     @canExpire.expression  # type: ignore [no-redef]
-    def canExpire(cls) -> bool:  # pylint: disable=no-self-argument
+    def canExpire(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.subcategoryId.in_(subcategories_v2.EXPIRABLE_SUBCATEGORIES)
 
     @property
@@ -544,7 +545,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return self.isActive and self.validation == OfferValidationStatus.APPROVED
 
     @_released.expression  # type: ignore [no-redef]
-    def _released(cls) -> bool:  # pylint: disable=no-self-argument
+    def _released(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.and_(cls.isActive, cls.validation == OfferValidationStatus.APPROVED)
 
     @hybrid_property
@@ -552,7 +553,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return self.subcategoryId in subcategories_v2.PERMANENT_SUBCATEGORIES
 
     @isPermanent.expression  # type: ignore [no-redef]
-    def isPermanent(cls) -> bool:  # pylint: disable=no-self-argument
+    def isPermanent(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.subcategoryId.in_(subcategories_v2.PERMANENT_SUBCATEGORIES)
 
     @hybrid_property
@@ -560,7 +561,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return self.subcategory.is_event
 
     @isEvent.expression  # type: ignore [no-redef]
-    def isEvent(cls) -> bool:  # pylint: disable=no-self-argument
+    def isEvent(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.subcategoryId.in_(subcategories_v2.EVENT_SUBCATEGORIES)
 
     @property
@@ -572,7 +573,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return self.url is not None and self.url != ""
 
     @isDigital.expression  # type: ignore [no-redef]
-    def isDigital(cls) -> bool:  # pylint: disable=no-self-argument
+    def isDigital(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.and_(cls.url.is_not(None), cls.url != "")
 
     @property
@@ -734,7 +735,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return self.hasBookingLimitDatetimesPassed
 
     @is_expired.expression  # type: ignore [no-redef]
-    def is_expired(cls) -> bool:  # pylint: disable=no-self-argument
+    def is_expired(cls) -> UnaryExpression:  # pylint: disable=no-self-argument
         return cls.hasBookingLimitDatetimesPassed
 
     @hybrid_property

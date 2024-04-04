@@ -244,7 +244,7 @@ def get_active_bookings_quantity_for_venue(venue_id: int) -> int:
     active_bookings_query = Booking.query.join(Stock, Booking.stock).filter(
         Booking.venueId == venue_id,
         Booking.status == BookingStatus.CONFIRMED,
-        Booking.isConfirmed.is_(False),  # type: ignore [attr-defined]
+        not_(Booking.isConfirmed),
     )
 
     n_active_bookings = active_bookings_query.with_entities(coalesce(func.sum(Booking.quantity), 0)).one()[0]
@@ -262,7 +262,7 @@ def get_active_bookings_quantity_for_venue(venue_id: int) -> int:
                 ),
                 and_(
                     educational_models.CollectiveBooking.status == educational_models.CollectiveBookingStatus.CONFIRMED,
-                    educational_models.CollectiveBooking.isConfirmed.is_(False),  # type: ignore [attr-defined]
+                    not_(educational_models.CollectiveBooking.isConfirmed),
                 ),
             ),
         )
@@ -277,7 +277,7 @@ def get_validated_bookings_quantity_for_venue(venue_id: int) -> int:
     validated_bookings_quantity_query = Booking.query.filter(
         Booking.venueId == venue_id,
         Booking.status != BookingStatus.CANCELLED,
-        or_(Booking.is_used_or_reimbursed.is_(True), Booking.isConfirmed.is_(True)),  # type: ignore [attr-defined]
+        or_(Booking.is_used_or_reimbursed, Booking.isConfirmed),  # type: ignore [type-var]
     )
 
     n_validated_bookings_quantity = validated_bookings_quantity_query.with_entities(
@@ -289,7 +289,10 @@ def get_validated_bookings_quantity_for_venue(venue_id: int) -> int:
             educational_models.CollectiveBooking.venueId == venue_id,
             educational_models.CollectiveBooking.status != educational_models.CollectiveBookingStatus.CANCELLED,
             educational_models.CollectiveBooking.status != educational_models.CollectiveBookingStatus.PENDING,
-            or_(educational_models.CollectiveBooking.is_used_or_reimbursed.is_(True), educational_models.CollectiveBooking.isConfirmed.is_(True)),  # type: ignore [attr-defined]
+            or_(  # type: ignore [type-var]
+                educational_models.CollectiveBooking.is_used_or_reimbursed,
+                educational_models.CollectiveBooking.isConfirmed,
+            ),
         )
         .with_entities(coalesce(func.sum(1), 0))
         .one()[0]
@@ -363,7 +366,10 @@ def export_validated_bookings_by_offer_id(
 ) -> str | bytes:
     offer_validated_bookings_query = _create_export_query(offer_id, event_beginning_date)
     offer_validated_bookings_query = offer_validated_bookings_query.filter(
-        or_(Booking.isConfirmed.is_(True), Booking.status == BookingStatus.USED)  # type: ignore [attr-defined]
+        or_(  # type: ignore [type-var]
+            Booking.isConfirmed,
+            Booking.status == BookingStatus.USED,
+        )
     )
     if export_type == BookingExportType.EXCEL:
         return _write_bookings_to_excel(offer_validated_bookings_query)

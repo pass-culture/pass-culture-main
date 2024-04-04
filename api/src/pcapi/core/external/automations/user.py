@@ -25,8 +25,10 @@ def get_young_users_emails_query() -> BaseQuery:
     return (
         db.session.query(User.email)
         .yield_per(YIELD_COUNT_PER_DB_QUERY)
-        .filter(User.has_pro_role.is_(False))  # type: ignore [attr-defined]
-        .filter(User.has_admin_role.is_(False))  # type: ignore [attr-defined]
+        .filter(
+            sa.not_(User.has_pro_role),
+            sa.not_(User.has_admin_role),
+        )
     )
 
 
@@ -59,12 +61,12 @@ def get_users_beneficiary_credit_expiration_within_next_3_months() -> list[User]
         db.session.query(User.email)
         .yield_per(YIELD_COUNT_PER_DB_QUERY)
         .join(User.deposits)
-        .filter(User.is_beneficiary.is_(True))  # type: ignore [attr-defined]
         .filter(
+            User.is_beneficiary,
             finance_models.Deposit.expirationDate.between(
                 datetime.combine(date.today(), datetime.min.time()),
                 datetime.combine(date.today() + relativedelta(days=90), datetime.max.time()),
-            )
+            ),
         )
     )
 
@@ -86,15 +88,15 @@ def get_users_ex_beneficiary() -> list[User]:
     return (
         db.session.query(User.email)
         .join(User.deposits)
-        .filter(User.is_beneficiary.is_(True))  # type: ignore [attr-defined]
         .filter(
+            User.is_beneficiary,
             sa.or_(
                 finance_models.Deposit.expirationDate <= datetime.combine(date.today(), datetime.min.time()),
                 sa.and_(
                     finance_models.Deposit.expirationDate > datetime.combine(date.today(), datetime.min.time()),
                     sa.func.get_wallet_balance(User.id, False) <= 0,
                 ),
-            )
+            ),
         )
         .yield_per(YIELD_COUNT_PER_DB_QUERY)
     )
@@ -174,13 +176,11 @@ def get_users_whose_credit_expired_today() -> list[User]:
     return (
         db.session.query(User)
         .join(User.deposits)
-        .filter(User.is_beneficiary.is_(True))  # type: ignore [attr-defined]
         .filter(
-            sa.and_(
-                finance_models.Deposit.expirationDate
-                > datetime.combine(date.today() - relativedelta(days=1), datetime.min.time()),
-                finance_models.Deposit.expirationDate <= datetime.combine(date.today(), datetime.min.time()),
-            )
+            User.is_beneficiary,
+            finance_models.Deposit.expirationDate
+            > datetime.combine(date.today() - relativedelta(days=1), datetime.min.time()),
+            finance_models.Deposit.expirationDate <= datetime.combine(date.today(), datetime.min.time()),
         )
         .yield_per(YIELD_COUNT_PER_DB_QUERY)
     )
@@ -191,13 +191,10 @@ def get_ex_underage_beneficiaries_who_can_no_longer_recredit() -> list[User]:
     days_19y = ceil(365.25 * 19)
     return (
         db.session.query(User)
-        .filter(User.has_underage_beneficiary_role.is_(True))  # type: ignore [attr-defined]
         .filter(
-            sa.and_(
-                User.dateOfBirth
-                > datetime.combine(date.today() - relativedelta(days=days_19y + 1), datetime.min.time()),
-                User.dateOfBirth <= datetime.combine(date.today() - relativedelta(days=days_19y), datetime.min.time()),
-            )
+            User.has_underage_beneficiary_role,
+            User.dateOfBirth > datetime.combine(date.today() - relativedelta(days=days_19y + 1), datetime.min.time()),
+            User.dateOfBirth <= datetime.combine(date.today() - relativedelta(days=days_19y), datetime.min.time()),
         )
         .yield_per(YIELD_COUNT_PER_DB_QUERY)
     )
