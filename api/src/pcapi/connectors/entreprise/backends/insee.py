@@ -24,7 +24,7 @@ CACHE_DURATION = datetime.timedelta(minutes=15)
 
 # pylint: disable=abstract-method
 class InseeBackend(BaseBackend):
-    base_url = "https://api.insee.fr/entreprises/sirene/V3"
+    base_url = settings.INSEE_SIRENE_API_URL
     timeout = 3
 
     @property

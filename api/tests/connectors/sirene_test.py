@@ -13,11 +13,11 @@ def test_get_siren():
     siren = "123456789"
     with requests_mock.Mocker() as mock:
         mock.get(
-            f"https://api.insee.fr/entreprises/sirene/V3/siren/{siren}",
+            f"https://api.insee.fr/entreprises/sirene/V3.11/siren/{siren}",
             json=sirene_test_data.RESPONSE_SIREN_COMPANY,
         )
         mock.get(
-            f"https://api.insee.fr/entreprises/sirene/V3/siret/{siren}00017",
+            f"https://api.insee.fr/entreprises/sirene/V3.11/siret/{siren}00017",
             json=sirene_test_data.RESPONSE_SIRET_COMPANY,
         )
         siren_info = sirene.get_siren(siren)
@@ -42,11 +42,11 @@ def test_get_siren_of_entreprise_individuelle():
     siren = "123456789"
     with requests_mock.Mocker() as mock:
         mock.get(
-            f"https://api.insee.fr/entreprises/sirene/V3/siren/{siren}",
+            f"https://api.insee.fr/entreprises/sirene/V3.11/siren/{siren}",
             json=sirene_test_data.RESPONSE_SIREN_ENTREPRISE_INDIVIDUELLE,
         )
         mock.get(
-            f"https://api.insee.fr/entreprises/sirene/V3/siret/{siren}00045",
+            f"https://api.insee.fr/entreprises/sirene/V3.11/siret/{siren}00045",
             json=sirene_test_data.RESPONSE_SIRET_COMPANY,
         )
         siren_info = sirene.get_siren(siren)
@@ -60,7 +60,7 @@ def test_get_siren_without_address():
     siren = "123456789"
     with requests_mock.Mocker() as mock:
         mock.get(
-            f"https://api.insee.fr/entreprises/sirene/V3/siren/{siren}",
+            f"https://api.insee.fr/entreprises/sirene/V3.11/siren/{siren}",
             json=sirene_test_data.RESPONSE_SIREN_COMPANY,
         )
         siren_info = sirene.get_siren(siren, with_address=False)
@@ -74,11 +74,11 @@ def test_get_siren_with_non_public_data():
     siren = "123456789"
     with requests_mock.Mocker() as mock:
         mock.get(
-            f"https://api.insee.fr/entreprises/sirene/V3/siren/{siren}",
+            f"https://api.insee.fr/entreprises/sirene/V3.11/siren/{siren}",
             json=sirene_test_data.RESPONSE_SIREN_COMPANY_WITH_NON_PUBLIC_DATA,
         )
         mock.get(
-            f"https://api.insee.fr/entreprises/sirene/V3/siret/{siren}00001",
+            f"https://api.insee.fr/entreprises/sirene/V3.11/siret/{siren}00001",
             json=sirene_test_data.RESPONSE_SIRET_COMPANY_WITH_NON_PUBLIC_DATA,
         )
         with pytest.raises(exceptions.NonPublicDataException):
@@ -90,11 +90,11 @@ def test_get_siren_with_non_public_data_do_not_raise():
     siren = "123456789"
     with requests_mock.Mocker() as mock:
         mock.get(
-            f"https://api.insee.fr/entreprises/sirene/V3/siren/{siren}",
+            f"https://api.insee.fr/entreprises/sirene/V3.11/siren/{siren}",
             json=sirene_test_data.RESPONSE_SIREN_COMPANY_WITH_NON_PUBLIC_DATA,
         )
         mock.get(
-            f"https://api.insee.fr/entreprises/sirene/V3/siret/{siren}00001",
+            f"https://api.insee.fr/entreprises/sirene/V3.11/siret/{siren}00001",
             json=sirene_test_data.RESPONSE_SIRET_COMPANY_WITH_NON_PUBLIC_DATA,
         )
         siren_info = sirene.get_siren(siren, raise_if_non_public=False)
@@ -109,7 +109,7 @@ def test_get_siren_without_ape():
     siren = "194700936"
     with requests_mock.Mocker() as mock:
         mock.get(
-            f"https://api.insee.fr/entreprises/sirene/V3/siren/{siren}",
+            f"https://api.insee.fr/entreprises/sirene/V3.11/siren/{siren}",
             json=sirene_test_data.RESPONSE_SIREN_WITHOUT_APE,
         )
         siren_info = sirene.get_siren(siren, with_address=False, raise_if_non_public=False)
@@ -123,7 +123,7 @@ def test_get_siret():
     siret = "12345678900017"
     with requests_mock.Mocker() as mock:
         mock.get(
-            f"https://api.insee.fr/entreprises/sirene/V3/siret/{siret}",
+            f"https://api.insee.fr/entreprises/sirene/V3.11/siret/{siret}",
             json=sirene_test_data.RESPONSE_SIRET_COMPANY,
         )
         siret_info = sirene.get_siret(siret)
@@ -145,7 +145,7 @@ def test_get_siret_of_entreprise_individuelle():
     siret = "12345678900045"
     with requests_mock.Mocker() as mock:
         mock.get(
-            f"https://api.insee.fr/entreprises/sirene/V3/siret/{siret}",
+            f"https://api.insee.fr/entreprises/sirene/V3.11/siret/{siret}",
             json=sirene_test_data.RESPONSE_SIRET_ENTREPRISE_INDIVIDUELLE,
         )
         siret_info = sirene.get_siret(siret)
@@ -160,7 +160,7 @@ def test_get_siret_with_non_public_data():
     siret = "12345678900017"
     with requests_mock.Mocker() as mock:
         mock.get(
-            f"https://api.insee.fr/entreprises/sirene/V3/siret/{siret}",
+            f"https://api.insee.fr/entreprises/sirene/V3.11/siret/{siret}",
             json=sirene_test_data.RESPONSE_SIRET_COMPANY_WITH_NON_PUBLIC_DATA,
         )
         with pytest.raises(exceptions.NonPublicDataException):
@@ -172,7 +172,7 @@ def test_get_siret_with_non_public_data_do_not_raise():
     siret = "12345678900017"
     with requests_mock.Mocker() as mock:
         mock.get(
-            f"https://api.insee.fr/entreprises/sirene/V3/siret/{siret}",
+            f"https://api.insee.fr/entreprises/sirene/V3.11/siret/{siret}",
             json=sirene_test_data.RESPONSE_SIRET_COMPANY_WITH_NON_PUBLIC_DATA,
         )
         siret_info = sirene.get_siret(siret, raise_if_non_public=False)
@@ -187,7 +187,7 @@ def test_siret_is_active():
     siret = "12345678900017"
     with requests_mock.Mocker() as mock:
         mock.get(
-            f"https://api.insee.fr/entreprises/sirene/V3/siret/{siret}",
+            f"https://api.insee.fr/entreprises/sirene/V3.11/siret/{siret}",
             json=sirene_test_data.RESPONSE_SIRET_COMPANY,
         )
         active = sirene.siret_is_active(siret)
@@ -210,7 +210,7 @@ def test_error_handling(status_code, expected_exception):
     siret = "invalid"
     with requests_mock.Mocker() as mock:
         mock.get(
-            f"https://api.insee.fr/entreprises/sirene/V3/siret/{siret}",
+            f"https://api.insee.fr/entreprises/sirene/V3.11/siret/{siret}",
             status_code=status_code,
         )
         with pytest.raises(expected_exception):
@@ -222,7 +222,7 @@ def test_error_handling_on_non_json_response():
     siret = "anything"
     with requests_mock.Mocker() as mock:
         mock.get(
-            f"https://api.insee.fr/entreprises/sirene/V3/siret/{siret}",
+            f"https://api.insee.fr/entreprises/sirene/V3.11/siret/{siret}",
             status_code=200,
             text="non-JSON content",
         )

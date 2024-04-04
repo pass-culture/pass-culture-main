@@ -218,11 +218,11 @@ def test_create_offerer_action_is_logged(client):
 def test_with_inactive_siren(requests_mock, client):
     siren = "123456789"
     requests_mock.get(
-        f"https://api.insee.fr/entreprises/sirene/V3/siren/{siren}",
+        f"https://api.insee.fr/entreprises/sirene/V3.11/siren/{siren}",
         json=sirene_test_data.RESPONSE_SIREN_INACTIVE_COMPANY,
     )
     requests_mock.get(
-        f"https://api.insee.fr/entreprises/sirene/V3/siret/{siren}00018",
+        f"https://api.insee.fr/entreprises/sirene/V3.11/siret/{siren}00018",
         json=sirene_test_data.RESPONSE_SIRET_INACTIVE_COMPANY,
     )
     user = users_factories.UserFactory()

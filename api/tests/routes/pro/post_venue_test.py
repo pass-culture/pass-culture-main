@@ -227,7 +227,7 @@ class Returns400Test:
     def test_with_inactive_siret(self, requests_mock, client):
         siret = "30255917810045"
         requests_mock.get(
-            f"https://api.insee.fr/entreprises/sirene/V3/siret/{siret}",
+            f"https://api.insee.fr/entreprises/sirene/V3.11/siret/{siret}",
             json=sirene_test_data.RESPONSE_SIRET_INACTIVE_COMPANY,
         )
 
