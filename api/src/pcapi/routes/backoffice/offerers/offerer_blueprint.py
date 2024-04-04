@@ -56,22 +56,17 @@ def _self_redirect(
 
 
 def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
-    bank_link_class: typing.Type[offerers_models.VenueBankAccountLink | offerers_models.VenueReimbursementPointLink] = (
-        offerers_models.VenueBankAccountLink
-        if FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active()
-        else offerers_models.VenueReimbursementPointLink
-    )
-    bank_informations_query = sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
+    bank_information_query = sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
         sa.select(
-            sa.case((bank_link_class.id.is_(None), "ko"), else_="ok").label("status"),  # type: ignore [attr-defined]
+            sa.case((offerers_models.VenueBankAccountLink.id.is_(None), "ko"), else_="ok").label("status"),
             sa.func.count(offerers_models.Venue.id).label("number"),
         )
         .select_from(offerers_models.Venue)
         .outerjoin(
-            bank_link_class,
+            offerers_models.VenueBankAccountLink,
             sa.and_(
-                bank_link_class.venueId == offerers_models.Venue.id,
-                bank_link_class.timespan.contains(datetime.datetime.utcnow()),
+                offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id,
+                offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
             ),
         )
         .filter(
@@ -144,7 +139,7 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
     offerer_query = (
         db.session.query(
             offerers_models.Offerer,
-            bank_informations_query.scalar_subquery().label("bank_informations"),
+            bank_information_query.scalar_subquery().label("bank_information"),
             has_non_virtual_venues_query.label("has_non_virtual_venues"),
             adage_query.label("adage_information"),
             users_models.User.phoneNumber.label("creator_phone_number"),  # type: ignore[attr-defined]
@@ -179,9 +174,9 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
     if not row:
         raise NotFound()
 
-    bank_informations = row.bank_informations or {}
+    bank_information = row.bank_information or {}
     bank_information_status = serialization.OffererBankInformationStatus(
-        ok=bank_informations.get("ok", 0), ko=bank_informations.get("ko", 0)
+        ok=bank_information.get("ok", 0), ko=bank_information.get("ko", 0)
     )
     if not edit_offerer_form:
         edit_offerer_form = offerer_forms.EditOffererForm(

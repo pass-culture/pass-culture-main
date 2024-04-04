@@ -3,7 +3,6 @@ from datetime import timedelta
 from decimal import Decimal
 import json
 from operator import attrgetter
-from unittest import mock
 from unittest.mock import patch
 
 from flask import url_for
@@ -14,9 +13,7 @@ from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
-from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import factories as finance_factories
-from pcapi.core.finance import models as finance_models
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
@@ -61,11 +58,6 @@ def criteria_fixture() -> list[criteria_models.Criterion]:
 def venue_fixture(offerer) -> offerers_models.Venue:
     venue = offerers_factories.VenueFactory(
         venueLabel=offerers_factories.VenueLabelFactory(label="Lieu test"), contact__website="www.example.com"
-    )
-    offerers_factories.VenueReimbursementPointLinkFactory(venue=venue)
-    finance_factories.BankInformationFactory(
-        venue=venue,
-        status=finance_models.BankInformationStatus.ACCEPTED,
     )
     return venue
 
@@ -287,7 +279,7 @@ class GetVenueTest(GetEndpointHelper):
     # get session (1 query)
     # get user with profile and permissions (1 query)
     # get venue (1 query)
-    # get feature flag: WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY (1 query)
+    # get feature flag: WIP_ENABLE_PRO_SIDE_NAV (1 query)
     expected_num_queries = 4
 
     def test_keep_search_parameters_on_top(self, authenticated_client, venue):
@@ -317,17 +309,13 @@ class GetVenueTest(GetEndpointHelper):
         selected_departments = html_parser.extract_select_options(response.data, "departments", selected_only=True)
         assert set(selected_departments.keys()) == {"04", "05", "06"}
 
-    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
-    def test_get_venue(self, authenticated_client, venue):
-        venue.publicName = "Le grand Rantanplan 1"
-
+    def test_get_venue(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(
+            venueLabel=offerers_factories.VenueLabelFactory(label="Lieu test"),
+            contact__website="www.example.com",
+            publicName="Le grand Rantanplan 1",
+        )
         url = url_for(self.endpoint, venue_id=venue.id)
-
-        # if venue is not removed from the current session, any get
-        # query won't be executed because of this specific testing
-        # environment. this would tamper the real database queries
-        # count.
-        db.session.expire(venue)
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
@@ -347,7 +335,6 @@ class GetVenueTest(GetEndpointHelper):
         assert "Statut dossier DMS Adage :" not in response_text
         assert "ID Adage" not in response_text
         assert "Site web : https://www.example.com" in response_text
-        assert "Pas de dossier DMS CB" in response_text
         assert f"Activité principale : {venue.venueTypeCode.value}" in response_text
         assert f"Label : {venue.venueLabel.label} " in response_text
         assert "Type de lieu" not in response_text
@@ -367,111 +354,16 @@ class GetVenueTest(GetEndpointHelper):
         assert "Peut créer une offre EAC : Oui" in response_text
         assert "ID Adage : 7122022" in response_text
 
-    def test_get_venue_with_no_contact(self, authenticated_client, venue_with_no_contact):
-        venue_id = venue_with_no_contact.id
+    def test_get_venue_with_no_contact(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(contact=None)
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
             assert response.status_code == 200
 
         response_text = html_parser.content_as_text(response.data)
-        assert f"Email : {venue_with_no_contact.bookingEmail}" in response_text
+        assert f"Email : {venue.bookingEmail}" in response_text
         assert "Numéro de téléphone :" not in response_text
-
-    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
-    def test_get_venue_with_self_reimbursement_point(
-        self, authenticated_client, venue_with_accepted_self_reimbursement_point
-    ):
-        venue_id = venue_with_accepted_self_reimbursement_point.id
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
-            assert response.status_code == 200
-
-        assert "Relié à un point de remboursement : Oui" in html_parser.content_as_text(response.data)
-
-    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
-    def test_get_venue_with_accepted_reimbursement_point(
-        self, authenticated_client, venue_with_accepted_reimbursement_point
-    ):
-        venue_id = venue_with_accepted_reimbursement_point.id
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
-            assert response.status_code == 200
-
-        assert "Relié à un point de remboursement : Oui" in html_parser.content_as_text(response.data)
-
-    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
-    def test_get_venue_with_expired_reimbursement_point(
-        self, authenticated_client, venue_with_expired_reimbursement_point
-    ):
-        venue_id = venue_with_expired_reimbursement_point.id
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
-            assert response.status_code == 200
-
-        assert "Relié à un point de remboursement : Non" in html_parser.content_as_text(response.data)
-
-    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
-    def test_get_venue_dms_stats(self, authenticated_client, venue_with_draft_bank_info):
-        with mock.patch("pcapi.connectors.dms.api.DMSGraphQLClient.get_bank_info_status") as bank_info_mock:
-            bank_info_mock.return_value = {
-                "dossier": {
-                    "state": "en_construction",
-                    "dateDepot": "2022-09-21T16:30:22+02:00",
-                    "dateDerniereModification": "2022-09-23T16:30:22+02:00",
-                    "datePassageEnConstruction": "2022-09-22T16:30:22+02:00",
-                }
-            }
-            venue_id = venue_with_draft_bank_info.id
-
-            with assert_num_queries(self.expected_num_queries):
-                response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
-                assert response.status_code == 200
-
-        assert response.status_code == 200
-        response_text = html_parser.content_as_text(response.data)
-        assert "Statut DMS CB : En construction" in response_text
-        assert "Date de dépôt du dossier DMS CB : 21/09/2022" in response_text
-        assert "Date de validation du dossier DMS CB" not in response_text
-        assert "ACCÉDER AU DOSSIER DMS CB" in response_text
-
-    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
-    def test_get_venue_dms_stats_for_accepted_file(self, authenticated_client, venue_with_draft_bank_info):
-        with mock.patch("pcapi.connectors.dms.api.DMSGraphQLClient.get_bank_info_status") as bank_info_mock:
-            bank_info_mock.return_value = {
-                "dossier": {
-                    "state": "accepte",
-                    "dateDepot": "2022-09-21T16:30:22+02:00",
-                    "dateDerniereModification": "2022-09-25T16:30:22+02:00",
-                    "datePassageEnConstruction": "2022-09-22T16:30:22+02:00",
-                    "datePassageEnInstruction": "2022-09-23T16:30:22+02:00",
-                    "dateTraitement": "2022-09-24T16:30:22+02:00",
-                }
-            }
-            venue_id = venue_with_draft_bank_info.id
-
-            with assert_num_queries(self.expected_num_queries):
-                response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
-                assert response.status_code == 200
-
-        response_text = html_parser.content_as_text(response.data)
-        assert "Statut DMS CB : Accepté" in response_text
-        assert "Date de validation du dossier DMS CB : 24/09/2022" in response_text
-        assert "Date de dépôt du dossier DMS CB" not in response_text
-        assert "ACCÉDER AU DOSSIER DMS CB" in response_text
-
-    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
-    def test_get_venue_none_dms_stats_when_no_application_id(self, authenticated_client, venue_with_accepted_bank_info):
-        venue_id = venue_with_accepted_bank_info.id
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
-            assert response.status_code == 200
-
-        assert "Pas de dossier DMS CB" in html_parser.content_as_text(response.data)
 
     def test_get_venue_with_no_dms_adage_application(self, authenticated_client, random_venue):
         venue_id = random_venue.id
@@ -566,7 +458,6 @@ class GetVenueTest(GetEndpointHelper):
         buttons = html_parser.extract(response.data, tag="button")
         assert "Resynchroniser les offres" not in buttons
 
-    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
     def test_get_virtual_venue(self, authenticated_client):
         venue = offerers_factories.VirtualVenueFactory()
 
@@ -592,7 +483,6 @@ class GetVenueTest(GetEndpointHelper):
         assert "Statut dossier DMS Adage :" not in response_text
         assert "ID Adage" not in response_text
         assert "Site web : https://my.website.com" in response_text
-        assert "Pas de dossier DMS CB" in response_text
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
         assert "Lieu" in badges
@@ -656,13 +546,13 @@ class GetVenueTest(GetEndpointHelper):
 class GetVenueStatsDataTest:
     def test_get_stats_data(
         self,
-        venue_with_accepted_bank_info,
+        venue_with_accepted_bank_account,
         offerer_active_individual_offers,
         offerer_inactive_individual_offers,
         offerer_active_collective_offers,
         offerer_inactive_collective_offers,
     ):
-        venue_id = venue_with_accepted_bank_info.id
+        venue_id = venue_with_accepted_bank_account.id
 
         with assert_num_queries(7):
             stats = venues_blueprint.get_stats_data(venue_id)
@@ -691,87 +581,12 @@ class GetVenueStatsTest(GetEndpointHelper):
 
     # get session (1 query)
     # get user with profile and permissions (1 query)
-    # get venue with reimbursement and pricing points (1 query)
+    # get venue with pricing point (1 query)
     # get total revenue (1 query)
     # get venue stats (6 query)
-    # get feature flag: WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY (1 query)
-    expected_num_queries = 11
+    expected_num_queries = 10
 
-    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
-    def test_get_venue_with_no_reimbursement_point_bank_information(
-        self, authenticated_client, venue_with_accepted_bank_info
-    ):
-        venue_id = venue_with_accepted_bank_info.id
-        url = url_for(self.endpoint, venue_id=venue_id)
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url)
-            assert response.status_code == 200
-
-        cards_content = html_parser.extract_cards_text(response.data)
-
-        assert venue_with_accepted_bank_info.name is not None
-        assert len(venue_with_accepted_bank_info.reimbursement_point_links) == 0
-        assert f"Point de remboursement : {venue_with_accepted_bank_info.common_name} " not in cards_content[2]
-        assert f"Siret de valorisation : {venue_with_accepted_bank_info.common_name} " in cards_content[2]
-
-    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
-    def test_get_venue_with_no_bank_info_bank_information(self, authenticated_client, venue_with_no_bank_info):
-        venue_id = venue_with_no_bank_info.id
-        url = url_for(self.endpoint, venue_id=venue_id)
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url)
-            assert response.status_code == 200
-
-        cards_content = html_parser.extract_cards_text(response.data)
-
-        assert len(venue_with_no_bank_info.reimbursement_point_links) == 0
-        assert f"Point de remboursement : {venue_with_no_bank_info.common_name}" not in cards_content[2]
-        assert f"Siret de valorisation : {venue_with_no_bank_info.common_name}" in cards_content[2]
-
-    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
-    def test_get_venue_with_accepted_reimbursement_point_bank_information(
-        self, authenticated_client, venue_with_accepted_reimbursement_point
-    ):
-        venue_id = venue_with_accepted_reimbursement_point.id
-        url = url_for(self.endpoint, venue_id=venue_id)
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url)
-            assert response.status_code == 200
-
-        cards_content = html_parser.extract_cards_text(response.data)
-        expected_reimbursement_point: offerers_models.Venue = (
-            venue_with_accepted_reimbursement_point.reimbursement_point_links[0].reimbursementPoint
-        )
-
-        assert f"Point de remboursement : {expected_reimbursement_point.common_name}" in cards_content[2]
-        assert f"Siret de valorisation : {venue_with_accepted_reimbursement_point.common_name}" in cards_content[2]
-        assert f"BIC : {expected_reimbursement_point.bic}" in cards_content[2]
-        assert f"IBAN : {expected_reimbursement_point.iban}" in cards_content[2]
-
-    def test_get_venue_with_expired_reimbursement_point_bank_information(
-        self, authenticated_client, venue_with_expired_reimbursement_point
-    ):
-        venue_id = venue_with_expired_reimbursement_point.id
-        url = url_for(self.endpoint, venue_id=venue_id)
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url)
-            assert response.status_code == 200
-
-        cards_content = html_parser.extract_cards_text(response.data)
-        expired_reimbursement_point = venue_with_expired_reimbursement_point.reimbursement_point_links[
-            0
-        ].reimbursementPoint
-
-        assert f"Point de remboursement : {expired_reimbursement_point.common_name}" not in cards_content[2]
-        assert f"Siret de valorisation : {venue_with_expired_reimbursement_point.common_name}" in cards_content[2]
-        assert f"BIC : {expired_reimbursement_point.bic}" not in cards_content[2]
-        assert f"IBAN : {expired_reimbursement_point.iban}" not in cards_content[2]
-
-    def test_get_venue_with_no_siret_bank_information(self, authenticated_client, venue_with_no_siret):
+    def test_get_venue_with_no_siret(self, authenticated_client, venue_with_no_siret):
         venue_id = venue_with_no_siret.id
         url = url_for(self.endpoint, venue_id=venue_id)
 
@@ -784,41 +599,32 @@ class GetVenueStatsTest(GetEndpointHelper):
         assert venue_with_no_siret.siret is None
         assert f"Siret de valorisation : {pricing_point.name}" in cards_content[2]
 
-    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
-    def test_get_venue_with_no_bank_account(self, authenticated_client, venue_with_no_bank_info):
-        venue_id = venue_with_no_bank_info.id
+    def test_get_venue_with_no_bank_account(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(pricing_point="self")
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
             assert response.status_code == 200
 
         cards_content = html_parser.extract_cards_text(response.data)
         assert cards_content[2].endswith("Compte bancaire :")
 
-    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=True)
-    def test_get_venue_with_bank_accounts(self, authenticated_client, venue_with_accepted_reimbursement_point):
-        venue_id = venue_with_accepted_reimbursement_point.id
+    def test_get_venue_with_bank_account(self, authenticated_client):
+        bank_account = finance_factories.BankAccountFactory()
+        venue = offerers_factories.VenueFactory(pricing_point="self")
+        offerers_factories.VenueBankAccountLinkFactory(
+            venue=venue, bankAccount=bank_account, timespan=(datetime.utcnow() - timedelta(days=1),)
+        )
+        url = url_for(self.endpoint, venue_id=venue.id)
+
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            response = authenticated_client.get(url)
             assert response.status_code == 200
 
         cards_content = html_parser.extract_cards_text(response.data)
         assert (
-            f"Compte bancaire : Nouveau compte ({(datetime.utcnow() - timedelta(days=1)).strftime('%d/%m/%Y')})"
+            f"Compte bancaire : {bank_account.label} ({(datetime.utcnow() - timedelta(days=1)).strftime('%d/%m/%Y')})"
             in cards_content[2]
         )
-
-    # Remove test when WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is removed
-    @override_features(WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY=False)
-    def test_get_venue_without_bank_account_feature_flag(
-        self, authenticated_client, venue_with_accepted_reimbursement_point
-    ):
-        venue_id = venue_with_accepted_reimbursement_point.id
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
-            assert response.status_code == 200
-
-        cards_content = html_parser.extract_cards_text(response.data)
-        assert "Compte bancaire :" not in cards_content[2]
 
     def test_get_stats(self, authenticated_client, venue):
         booking = bookings_factories.BookingFactory(stock__offer__venue=venue)
@@ -832,9 +638,13 @@ class GetVenueStatsTest(GetEndpointHelper):
         assert str(int(booking.amount)) in response.data.decode("utf-8")
 
     def test_venue_total_revenue(
-        self, authenticated_client, venue_with_accepted_bank_info, individual_offerer_bookings, collective_venue_booking
+        self,
+        authenticated_client,
+        venue_with_accepted_bank_account,
+        individual_offerer_bookings,
+        collective_venue_booking,
     ):
-        venue_id = venue_with_accepted_bank_info.id
+        venue_id = venue_with_accepted_bank_account.id
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
             assert response.status_code == 200
@@ -844,10 +654,10 @@ class GetVenueStatsTest(GetEndpointHelper):
     def test_venue_total_revenue_individual_bookings_only(
         self,
         authenticated_client,
-        venue_with_accepted_bank_info,
+        venue_with_accepted_bank_account,
         individual_offerer_bookings,
     ):
-        venue_id = venue_with_accepted_bank_info.id
+        venue_id = venue_with_accepted_bank_account.id
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
             assert response.status_code == 200
@@ -855,17 +665,17 @@ class GetVenueStatsTest(GetEndpointHelper):
         assert "30,00 € de CA" in html_parser.extract_cards_text(response.data)[0]
 
     def test_venue_total_revenue_collective_bookings_only(
-        self, authenticated_client, venue_with_accepted_bank_info, collective_venue_booking
+        self, authenticated_client, venue_with_accepted_bank_account, collective_venue_booking
     ):
-        venue_id = venue_with_accepted_bank_info.id
+        venue_id = venue_with_accepted_bank_account.id
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
             assert response.status_code == 200
 
         assert "42,00 € de CA" in html_parser.extract_cards_text(response.data)[0]
 
-    def test_venue_total_revenue_no_booking(self, authenticated_client, venue_with_accepted_bank_info):
-        venue_id = venue_with_accepted_bank_info.id
+    def test_venue_total_revenue_no_booking(self, authenticated_client, venue_with_accepted_bank_account):
+        venue_id = venue_with_accepted_bank_account.id
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
             assert response.status_code == 200
@@ -875,7 +685,7 @@ class GetVenueStatsTest(GetEndpointHelper):
     def test_venue_offers_stats(
         self,
         authenticated_client,
-        venue_with_accepted_bank_info,
+        venue_with_accepted_bank_account,
         offerer_active_individual_offers,
         offerer_inactive_individual_offers,
         offerer_active_collective_offers,
@@ -883,7 +693,7 @@ class GetVenueStatsTest(GetEndpointHelper):
         offerer_active_collective_offer_templates,
         offerer_inactive_collective_offer_templates,
     ):
-        venue_id = venue_with_accepted_bank_info.id
+        venue_id = venue_with_accepted_bank_account.id
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
             assert response.status_code == 200
@@ -891,8 +701,8 @@ class GetVenueStatsTest(GetEndpointHelper):
         cards_text = html_parser.extract_cards_text(response.data)
         assert "7 offres actives ( 2 IND / 5 EAC ) 16 offres inactives ( 5 IND / 11 EAC )" in cards_text
 
-    def test_venue_offers_stats_0_if_no_offer(self, authenticated_client, venue_with_accepted_bank_info):
-        venue_id = venue_with_accepted_bank_info.id
+    def test_venue_offers_stats_0_if_no_offer(self, authenticated_client, venue_with_accepted_bank_account):
+        venue_id = venue_with_accepted_bank_account.id
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
             assert response.status_code == 200
@@ -920,11 +730,11 @@ class GetVenueRevenueDetailsTest(GetEndpointHelper):
         self,
         db_session,
         authenticated_client,
-        venue_with_accepted_bank_info,
+        venue_with_accepted_bank_account,
         individual_offerer_bookings,
         collective_venue_booking,
     ):
-        venue_id = venue_with_accepted_bank_info.id
+        venue_id = venue_with_accepted_bank_account.id
         current_year = datetime.utcnow().year
 
         with assert_num_queries(self.expected_num_queries):
@@ -943,41 +753,6 @@ class GetVenueRevenueDetailsTest(GetEndpointHelper):
         current_revenues = [row for row in table_rows if row["Année"] == "En cours"][0]
         assert current_revenues["CA offres IND"] == "20,00 €"
         assert current_revenues["CA offres EAC"] == "0,00 €"
-
-
-class HasReimbursementPointTest:
-    def test_venue_with_reimbursement_point_links(self, venue):
-        assert venue.current_reimbursement_point
-
-    def test_venue_with_no_current_reimbursement_point_links(self):
-        venue = offerers_factories.VenueFactory()
-
-        # starts in 10 days, ends in 100
-        offerers_factories.VenueReimbursementPointLinkFactory(
-            venue=venue,
-            reimbursementPoint=venue,
-            timespan=[datetime.utcnow() + timedelta(days=10), datetime.utcnow() + timedelta(days=100)],
-        )
-
-        # starts in 100 days and has no end
-        offerers_factories.VenueReimbursementPointLinkFactory(
-            venue=venue,
-            reimbursementPoint=venue,
-            timespan=[datetime.utcnow() + timedelta(days=100), None],
-        )
-
-        # started 100 days ago, ended 10 days ago
-        offerers_factories.VenueReimbursementPointLinkFactory(
-            venue=venue,
-            reimbursementPoint=venue,
-            timespan=[datetime.utcnow() - timedelta(days=100), datetime.utcnow() - timedelta(days=10)],
-        )
-
-        assert venue.current_reimbursement_point is None
-
-    def test_venue_with_no_reimbursement_point_links(self):
-        venue = offerers_factories.VenueFactory()
-        assert venue.current_reimbursement_point is None
 
 
 class FullySyncVenueTest(PostEndpointHelper):
@@ -1647,154 +1422,6 @@ class CommentVenueTest(PostEndpointHelper):
         assert "Les données envoyées comportent des erreurs" in redirected_response.data.decode("utf8")
 
 
-class GetVenueInvoicesTest(GetEndpointHelper):
-    endpoint = "backoffice_web.venue.get_invoices"
-    endpoint_kwargs = {"venue_id": 1}
-    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
-
-    # get session (1 query)
-    # get user with profile and permissions (1 query)
-    # get venue reimbursement point (1 query)
-    # get invoices (1 query)
-    expected_num_queries = 4
-
-    def test_venue_has_no_reimbursement_point(self, authenticated_client):
-        venue = offerers_factories.VenueFactory(reimbursement_point=None)
-        venue_id = venue.id
-        finance_factories.InvoiceFactory(reimbursementPoint=offerers_factories.VenueFactory(reimbursement_point="self"))
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
-            assert response.status_code == 200
-
-        assert "Aucun remboursement à ce jour" in html_parser.content_as_text(response.data)
-
-    def test_venue_has_different_reimbursement_point(self, authenticated_client):
-        venue = offerers_factories.VenueFactory(reimbursement_point=offerers_factories.VenueFactory(name="PDR"))
-        venue_id = venue.id
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
-            assert response.status_code == 200
-
-        assert "Le point de remboursement du lieu est actuellement : PDR" in html_parser.content_as_text(response.data)
-
-    def test_venue_has_invoices(self, authenticated_client):
-        venue = offerers_factories.VenueFactory(reimbursement_point="self")
-        venue_id = venue.id
-        invoice1 = finance_factories.InvoiceFactory(reimbursementPoint=venue, date=datetime(2023, 4, 1), amount=-1000)
-        invoice2 = finance_factories.InvoiceFactory(reimbursementPoint=venue, date=datetime(2023, 5, 1), amount=-1250)
-        finance_factories.CashflowFactory(
-            invoices=[invoice1, invoice2],
-            reimbursementPoint=venue,
-            bankInformation=finance_factories.BankInformationFactory(venue=venue),
-            amount=-2250,
-            batch=finance_factories.CashflowBatchFactory(label="TEST123"),
-        )
-        finance_factories.InvoiceFactory(reimbursementPoint=offerers_factories.VenueFactory(reimbursement_point="self"))
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
-            assert response.status_code == 200
-
-        rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == 2
-
-        assert rows[0]["Date du justificatif"] == "01/05/2023"
-        assert rows[0]["N° du justificatif"] == invoice2.reference
-        assert rows[0]["N° de virement"] == "TEST123"
-        assert rows[0]["Montant remboursé"] == "12,50 €"
-
-        assert rows[1]["Date du justificatif"] == "01/04/2023"
-        assert rows[1]["N° du justificatif"] == invoice1.reference
-        assert rows[1]["N° de virement"] == "TEST123"
-        assert rows[1]["Montant remboursé"] == "10,00 €"
-
-
-class DownloadReimbursementDetailsTest(PostEndpointHelper):
-    endpoint = "backoffice_web.venue.download_reimbursement_details"
-    endpoint_kwargs = {"venue_id": 1}
-    needed_permission = perm_models.Permissions.READ_PRO_ENTITY
-
-    def test_download_reimbursement_details(self, authenticated_client):
-        venue = offerers_factories.VenueFactory(pricing_point="self", reimbursement_point="self")
-        booking = bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
-        bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
-        offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
-
-        # Create partial overpayment on booking
-        booking_finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
-            booking__stock__offer__venue=venue,
-            booking__amount=3,
-            newTotalAmount=200,
-        )
-        finance_factories.PricingFactory(
-            status=finance_models.PricingStatus.INVOICED, booking=booking_finance_incident.booking
-        )
-        incident_events = finance_api._create_finance_events_from_incident(booking_finance_incident, datetime.utcnow())
-        incident_pricings = []
-        for event in incident_events:
-            pricing = finance_api.price_event(event)
-            pricing.status = finance_models.PricingStatus.INVOICED
-            incident_pricings.append(pricing)
-
-        # Create total overpayment on collective booking
-        collective_booking_finance_incident = finance_factories.CollectiveBookingFinanceIncidentFactory(
-            collectiveBooking__collectiveStock__beginningDatetime=datetime.utcnow() - timedelta(days=5),
-            collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
-            collectiveBooking__collectiveStock__price=7,
-            newTotalAmount=0,
-        )
-        finance_factories.CollectivePricingFactory(
-            status=finance_models.PricingStatus.INVOICED,
-            collectiveBooking=collective_booking_finance_incident.collectiveBooking,
-        )
-        collective_incident_events = finance_api._create_finance_events_from_incident(
-            collective_booking_finance_incident, datetime.utcnow()
-        )
-        for event in collective_incident_events:
-            pricing = finance_api.price_event(event)
-            pricing.status = finance_models.PricingStatus.INVOICED
-            incident_pricings.append(pricing)
-
-        pricing = finance_factories.PricingFactory(
-            booking=booking,
-            status=finance_models.PricingStatus.INVOICED,
-        )
-        cashflow = finance_factories.CashflowFactory(
-            bankAccount=bank_account, pricings=[pricing, *incident_pricings], amount=-210
-        )
-        invoice = finance_factories.InvoiceFactory(cashflows=[cashflow])
-
-        second_booking = bookings_factories.UsedBookingFactory(stock__offer__venue__reimbursement_point=venue)
-        second_pricing = finance_factories.PricingFactory(
-            booking=second_booking,
-            status=finance_models.PricingStatus.INVOICED,
-        )
-        second_cashflow = finance_factories.CashflowFactory(
-            bankAccount=bank_account, pricings=[second_pricing], amount=-1010
-        )
-        second_invoice = finance_factories.InvoiceFactory(cashflows=[second_cashflow])
-
-        response = self.post_to_endpoint(
-            authenticated_client,
-            venue_id=venue.id,
-            form={"object_ids": f"{invoice.id}, {second_invoice.id}"},
-        )
-        assert response.status_code == 200
-
-        expected_length = 1  # headers
-        expected_length += 1  # first invoice booking
-        expected_length += 1  # first invoice booking price reversal (incident)
-        expected_length += 1  # first invoice booking new price (incident)
-        expected_length += 1  # first invoice collective booking reversal (incident)
-        expected_length += 1  # second_invoice
-        expected_length += 1  # empty line
-
-        assert len(response.data.split(b"\n")) == expected_length
-        assert str(response.data).count("Incident") == 3
-
-
 class GetBatchEditVenuesFormTest(PostEndpointHelper):
     endpoint = "backoffice_web.venue.get_batch_edit_venues_form"
     endpoint_kwargs = {"object_ids": "1,2"}
@@ -1997,8 +1624,6 @@ class GetRemovePricingPointFormTest(GetEndpointHelper):
         assert "CA de l'année : 123,40 €" in content
         assert f"Point de valorisation : {venue_with_no_siret.current_pricing_point.name}" in content
         assert f"SIRET de valorisation : {venue_with_no_siret.current_pricing_point.siret}" in content
-        assert "Point de remboursement : Aucun" in content
-        assert "SIRET de remboursement : Aucun" in content
 
     def test_venue_with_siret(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
@@ -2056,7 +1681,6 @@ class RemovePricingPointTest(PostEndpointHelper):
 
         assert venue_with_no_siret.current_pricing_point is None
         assert venue_with_no_siret.pricing_point_links[0].timespan.upper <= datetime.utcnow()
-        assert len(venue_with_no_siret.reimbursement_point_links) == 0
 
         action = history_models.ActionHistory.query.one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
@@ -2071,9 +1695,10 @@ class RemovePricingPointTest(PostEndpointHelper):
         }
 
     def test_remove_pricing_point_and_reimbursement_point(self, legit_user, authenticated_client, venue_with_no_siret):
-        offerers_factories.VenueReimbursementPointLinkFactory(venue=venue_with_no_siret)
+        offerers_factories.VenueBankAccountLinkFactory(
+            venue=venue_with_no_siret, bankAccount=finance_factories.BankAccountFactory()
+        )
         old_pricing_siret = venue_with_no_siret.current_pricing_point.siret
-        old_reimbursement_point_id = venue_with_no_siret.current_reimbursement_point.id
 
         response = self.post_to_endpoint(
             authenticated_client,
@@ -2086,7 +1711,6 @@ class RemovePricingPointTest(PostEndpointHelper):
         assert response.status_code == 303
 
         assert venue_with_no_siret.current_pricing_point is None
-        assert venue_with_no_siret.current_reimbursement_point.id == old_reimbursement_point_id  # unchanged
         assert venue_with_no_siret.pricing_point_links[0].timespan.upper <= datetime.utcnow()
 
         action = history_models.ActionHistory.query.one()
@@ -2247,10 +1871,8 @@ class RemoveSiretTest(PostEndpointHelper):
     def test_remove_siret(self, legit_user, authenticated_client):
         venue = offerers_factories.VenueFactory()
         offerers_factories.VenuePricingPointLinkFactory(venue=venue, pricingPoint=venue)
-        offerers_factories.VenueReimbursementPointLinkFactory(venue=venue, reimbursementPoint=venue)
         other_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
         offerers_factories.VenuePricingPointLinkFactory(venue=other_venue, pricingPoint=venue)
-        offerers_factories.VenueReimbursementPointLinkFactory(venue=other_venue, reimbursementPoint=venue)
         target_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
 
         old_siret = venue.siret
@@ -2266,8 +1888,6 @@ class RemoveSiretTest(PostEndpointHelper):
         assert venue.comment == "test"
         assert venue.pricing_point_links[0].timespan.upper <= datetime.utcnow()
         assert venue.current_pricing_point == target_venue
-        assert venue.reimbursement_point_links[0].timespan.upper is None  # unchanged
-        assert venue.current_reimbursement_point == venue
 
         action = history_models.ActionHistory.query.filter_by(venueId=venue.id).one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
@@ -2282,8 +1902,6 @@ class RemoveSiretTest(PostEndpointHelper):
 
         assert other_venue.pricing_point_links[0].timespan.upper <= datetime.utcnow()
         assert other_venue.current_pricing_point is None
-        assert other_venue.reimbursement_point_links[0].timespan.upper is None  # unchanged
-        assert other_venue.current_reimbursement_point == venue
 
         other_action = history_models.ActionHistory.query.filter_by(venueId=other_venue.id).one()
         assert other_action.actionType == history_models.ActionType.INFO_MODIFIED

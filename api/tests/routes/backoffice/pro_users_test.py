@@ -40,7 +40,7 @@ class GetProUserTest(GetEndpointHelper):
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # session + current user + pro user data + WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY
+    # session + current user + pro user data + WIP_ENABLE_PRO_SIDE_NAV
     expected_num_queries = 4
     expected_num_queries_without_ff_checked = expected_num_queries - 1
 

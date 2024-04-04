@@ -1,20 +1,17 @@
 from datetime import datetime
 from functools import partial
-from io import BytesIO
 import typing
 
 from flask import flash
 from flask import redirect
 from flask import render_template
 from flask import request
-from flask import send_file
 from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
-from pcapi.connectors.dms import api as dms_api
 from pcapi.connectors.entreprise import api as entreprise_api
 from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
 from pcapi.connectors.entreprise import sirene
@@ -23,7 +20,6 @@ from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.finance import models as finance_models
-from pcapi.core.finance import repository as finance_repository
 from pcapi.core.finance import siret_api
 from pcapi.core.history import models as history_models
 from pcapi.core.history.api import add_action
@@ -47,7 +43,6 @@ from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.routes.serialization import base as serialize_base
-from pcapi.routes.serialization import reimbursement_csv_serialize
 from pcapi.utils import regions as regions_utils
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.siren import is_valid_siret
@@ -55,7 +50,6 @@ from pcapi.utils.string import to_camelcase
 from pcapi.workers.fully_sync_venue_job import fully_sync_venue_job
 
 from . import forms
-from . import serialization
 
 
 venue_blueprint = utils.child_backoffice_blueprint(
@@ -177,10 +171,6 @@ def get_venue(venue_id: int) -> offerers_models.Venue:
 
     venue_query = venue_query.options(
         sa.orm.joinedload(offerers_models.Venue.contact),
-        sa.orm.joinedload(offerers_models.Venue.bankInformation),
-        sa.orm.joinedload(offerers_models.Venue.reimbursement_point_links)
-        .joinedload(offerers_models.VenueReimbursementPointLink.reimbursementPoint)
-        .load_only(offerers_models.Venue.id),
         sa.orm.joinedload(offerers_models.Venue.venueLabel),
         sa.orm.joinedload(offerers_models.Venue.criteria).load_only(criteria_models.Criterion.name),
         sa.orm.joinedload(offerers_models.Venue.collectiveDmsApplications).load_only(
@@ -217,8 +207,6 @@ def get_venue(venue_id: int) -> offerers_models.Venue:
 def render_venue_details(
     venue: offerers_models.Venue, edit_venue_form: forms.EditVirtualVenueForm | None = None
 ) -> str:
-    dms_application_id = venue.bankInformation.applicationId if venue.bankInformation else None
-    dms_stats = dms_api.get_dms_stats(dms_application_id, api_v4=True)
     region = regions_utils.get_region_name_from_postal_code(venue.postalCode) if venue.postalCode else ""
 
     if not edit_venue_form:
@@ -272,12 +260,10 @@ def render_venue_details(
         venue=venue,
         edit_venue_form=edit_venue_form,
         region=region,
-        has_reimbursement_point=bool(venue.current_reimbursement_point),
         has_active_provider=any(
             (venue_provider.isActive and venue_provider.provider.allow_bo_sync)
             for venue_provider in venue.venueProviders
         ),
-        dms_stats=dms_stats,
         delete_form=delete_form,
         fully_sync_venue_form=fully_sync_venue_form,
         active_tab=request.args.get("active_tab", "history"),
@@ -380,84 +366,42 @@ def get_stats_data(venue_id: int) -> dict:
     return stats
 
 
-def get_venue_bank_information(venue: offerers_models.Venue) -> serialization.VenueBankInformation:
-    reimbursement_point_name = None
-    pricing_point_name = None
-    bic = None
-    iban = None
-    reimbursement_point_url = None
-    pricing_point_url = None
-    current_pricing_point = venue.current_pricing_point
-    current_reimbursement_point = venue.current_reimbursement_point
-
-    if current_reimbursement_point:
-        bic = current_reimbursement_point.bic
-        iban = current_reimbursement_point.iban
-        reimbursement_point_name = current_reimbursement_point.common_name
-
-        if current_reimbursement_point.id != venue.id:
-            reimbursement_point_url = url_for("backoffice_web.venue.get", venue_id=current_reimbursement_point.id)
-
-    if current_pricing_point is not None:
-        pricing_point_name = current_pricing_point.common_name
-        if current_pricing_point.id != venue.id:
-            pricing_point_url = url_for("backoffice_web.venue.get", venue_id=current_pricing_point.id)
-
-    return serialization.VenueBankInformation(
-        reimbursement_point_name=reimbursement_point_name,
-        reimbursement_point_url=reimbursement_point_url,
-        pricing_point_name=pricing_point_name,
-        pricing_point_url=pricing_point_url,
-        bic=bic,
-        iban=iban,
-    )
-
-
 @venue_blueprint.route("/<int:venue_id>/stats", methods=["GET"])
 def get_stats(venue_id: int) -> utils.BackofficeResponse:
-    venue_query = offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id).options(
-        sa.orm.joinedload(offerers_models.Venue.pricing_point_links).joinedload(
-            offerers_models.VenuePricingPointLink.pricingPoint
-        ),
-        sa.orm.joinedload(offerers_models.Venue.reimbursement_point_links)
-        .joinedload(offerers_models.VenueReimbursementPointLink.reimbursementPoint)
-        .load_only(offerers_models.Venue.name, offerers_models.Venue.publicName)
-        .joinedload(offerers_models.Venue.bankInformation)
-        .load_only(finance_models.BankInformation.bic, finance_models.BankInformation.iban),
-        sa.orm.joinedload(offerers_models.Venue.bankInformation).load_only(
-            finance_models.BankInformation.bic, finance_models.BankInformation.iban
-        ),
-    )
-
-    if FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY.is_active():
-        venue_query = (
-            venue_query.outerjoin(
-                offerers_models.VenueBankAccountLink,
-                sa.and_(
-                    offerers_models.Venue.id == offerers_models.VenueBankAccountLink.venueId,
-                    offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
-                ),
-            )
-            .outerjoin(offerers_models.VenueBankAccountLink.bankAccount)
-            .options(
-                sa.orm.contains_eager(offerers_models.Venue.bankAccountLinks)
-                .load_only(offerers_models.VenueBankAccountLink.timespan)
-                .contains_eager(offerers_models.VenueBankAccountLink.bankAccount)
-                .load_only(finance_models.BankAccount.id, finance_models.BankAccount.label)
+    venue_query = (
+        offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
+        .options(
+            sa.orm.joinedload(offerers_models.Venue.pricing_point_links).joinedload(
+                offerers_models.VenuePricingPointLink.pricingPoint
             )
         )
+        .outerjoin(
+            offerers_models.VenueBankAccountLink,
+            sa.and_(
+                offerers_models.Venue.id == offerers_models.VenueBankAccountLink.venueId,
+                offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+            ),
+        )
+        .outerjoin(offerers_models.VenueBankAccountLink.bankAccount)
+        .options(
+            sa.orm.contains_eager(offerers_models.Venue.bankAccountLinks)
+            .load_only(offerers_models.VenueBankAccountLink.timespan)
+            .contains_eager(offerers_models.VenueBankAccountLink.bankAccount)
+            .load_only(finance_models.BankAccount.id, finance_models.BankAccount.label)
+        )
+    )
 
     venue = venue_query.one_or_none()
     if not venue:
         raise NotFound()
 
     data = get_stats_data(venue.id)
-    bank_information = get_venue_bank_information(venue)
+
     return render_template(
         "venue/get/stats.html",
         venue=venue,
         stats=data,
-        bank_information=bank_information,
+        pricing_point=venue.current_pricing_point,
     )
 
 
@@ -528,67 +472,6 @@ def get_history(venue_id: int) -> utils.BackofficeResponse:
         actions=actions,
         dst=dst,
         form=form,
-    )
-
-
-@venue_blueprint.route("/<int:venue_id>/invoices", methods=["GET"])
-def get_invoices(venue_id: int) -> utils.BackofficeResponse:
-    # Find current reimbursement point for the current venue, if different from itself
-    current_link = (
-        offerers_models.VenueReimbursementPointLink.query.filter(
-            offerers_models.VenueReimbursementPointLink.venueId == venue_id,
-            offerers_models.VenueReimbursementPointLink.reimbursementPointId != venue_id,
-            offerers_models.VenueReimbursementPointLink.timespan.contains(datetime.utcnow()),
-        )
-        .options(
-            sa.orm.joinedload(offerers_models.VenueReimbursementPointLink.reimbursementPoint).load_only(
-                offerers_models.Venue.id, offerers_models.Venue.name, offerers_models.Venue.publicName
-            )
-        )
-        .one_or_none()
-    )
-
-    # Get invoices for the current venue as a reimbursement point
-    # We may have results even if the venue is no longer a reimbursement point
-    invoices = (
-        finance_models.Invoice.query.filter(finance_models.Invoice.reimbursementPointId == venue_id)
-        .options(
-            sa.orm.joinedload(finance_models.Invoice.cashflows)
-            .load_only(finance_models.Cashflow.batchId)
-            .joinedload(finance_models.Cashflow.batch)
-            .load_only(finance_models.CashflowBatch.label),
-        )
-        .order_by(finance_models.Invoice.date.desc())
-    ).all()
-
-    return render_template(
-        "venue/get/invoices.html",
-        reimbursement_point=current_link.reimbursementPoint if current_link else None,
-        invoices=invoices,
-        venue_id=venue_id,
-    )
-
-
-@venue_blueprint.route("/<int:venue_id>/reimbursement-details", methods=["POST"])
-def download_reimbursement_details(venue_id: int) -> utils.BackofficeResponse:
-    form = empty_forms.BatchForm()
-    if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
-        return redirect(request.referrer or url_for(".list_venues"), code=303)
-
-    invoices = finance_models.Invoice.query.filter(finance_models.Invoice.id.in_(form.object_ids_list)).all()
-
-    reimbursement_details = [
-        reimbursement_csv_serialize.ReimbursementDetails(details)
-        for details in finance_repository.find_all_invoices_finance_details([invoice.id for invoice in invoices])
-    ]
-    export_data = reimbursement_csv_serialize.generate_reimbursement_details_csv(reimbursement_details)
-    export_date = datetime.utcnow().strftime("%Y-%m-%d-%H-%M")
-    return send_file(
-        BytesIO(export_data.encode("utf-8-sig")),
-        as_attachment=True,
-        download_name=f"details_remboursements_{venue_id}_{export_date}.csv",
-        mimetype="text/csv",
     )
 
 
@@ -891,9 +774,6 @@ def _update_permanent_venues(venues: list[offerers_models.Venue], is_permanent: 
     return venues_to_update
 
 
-REMOVE_PRICING_POINT_TITLE = "Détacher les points de valorisation et remboursement"
-
-
 def _load_venue_for_removing_pricing_point(venue_id: int) -> offerers_models.Venue:
     venue = (
         offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
@@ -901,9 +781,6 @@ def _load_venue_for_removing_pricing_point(venue_id: int) -> offerers_models.Ven
             sa.orm.load_only(offerers_models.Venue.name, offerers_models.Venue.publicName, offerers_models.Venue.siret),
             sa.orm.joinedload(offerers_models.Venue.pricing_point_links)
             .joinedload(offerers_models.VenuePricingPointLink.pricingPoint)
-            .load_only(offerers_models.Venue.name, offerers_models.Venue.publicName, offerers_models.Venue.siret),
-            sa.orm.joinedload(offerers_models.Venue.reimbursement_point_links)
-            .joinedload(offerers_models.VenueReimbursementPointLink.reimbursementPoint)
             .load_only(offerers_models.Venue.name, offerers_models.Venue.publicName, offerers_models.Venue.siret),
         )
         .one_or_none()
@@ -919,7 +796,6 @@ def _render_remove_pricing_point_content(
     venue: offerers_models.Venue, form: forms.RemovePricingPointForm | None = None, error: str | None = None
 ) -> utils.BackofficeResponse:
     current_pricing_point = venue.current_pricing_point
-    current_reimbursement_point = venue.current_reimbursement_point
 
     kwargs = {}
     if form:
@@ -934,7 +810,7 @@ def _render_remove_pricing_point_content(
         render_template(
             "components/turbo/modal_form.html",
             div_id="remove-venue-pricing-point",  # must be consistent with parameter passed to build_lazy_modal
-            title=REMOVE_PRICING_POINT_TITLE,
+            title="Détacher le point de valorisation",
             additional_data={
                 "Lieu": venue.name,
                 "Venue ID": venue.id,
@@ -942,8 +818,6 @@ def _render_remove_pricing_point_content(
                 "CA de l'année": filters.format_amount(siret_api.get_yearly_revenue(venue.id)),
                 "Point de valorisation": current_pricing_point.name if current_pricing_point else "Aucun",
                 "SIRET de valorisation": current_pricing_point.siret if current_pricing_point else "Aucun",
-                "Point de remboursement": current_reimbursement_point.name if current_reimbursement_point else "Aucun",
-                "SIRET de remboursement": current_reimbursement_point.siret if current_reimbursement_point else "Aucun",
             },
             alert=error,
             **kwargs,

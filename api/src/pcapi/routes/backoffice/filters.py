@@ -634,8 +634,6 @@ def format_modified_info_name(info_name: str) -> str:
             return "Tags"
         case "pricingPointSiret":
             return "Siret de valorisation"
-        case "reimbursementPointSiret":
-            return "Siret de remboursement"
         case "audioDisabilityCompliant":
             return "Accessibilité handicap auditif"
         case "motorDisabilityCompliant":
