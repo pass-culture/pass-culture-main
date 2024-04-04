@@ -68,7 +68,6 @@ import type { ListOffersResponseModel } from '../models/ListOffersResponseModel'
 import type { ListVenueProviderResponse } from '../models/ListVenueProviderResponse';
 import type { LoginUserBodyModel } from '../models/LoginUserBodyModel';
 import type { NewPasswordBodyModel } from '../models/NewPasswordBodyModel';
-import type { OffererReimbursementPointListResponseModel } from '../models/OffererReimbursementPointListResponseModel';
 import type { OffererStatsResponseModel } from '../models/OffererStatsResponseModel';
 import type { OfferStatus } from '../models/OfferStatus';
 import type { OfferType } from '../models/OfferType';
@@ -1256,27 +1255,6 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offerers/{offerer_id}/members',
-      path: {
-        'offerer_id': offererId,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * get_available_reimbursement_points <GET>
-   * @param offererId
-   * @returns OffererReimbursementPointListResponseModel OK
-   * @throws ApiError
-   */
-  public getAvailableReimbursementPoints(
-    offererId: number,
-  ): CancelablePromise<OffererReimbursementPointListResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/offerers/{offerer_id}/reimbursement-points',
       path: {
         'offerer_id': offererId,
       },
