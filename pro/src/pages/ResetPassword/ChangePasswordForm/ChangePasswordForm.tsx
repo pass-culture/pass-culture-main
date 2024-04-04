@@ -2,17 +2,18 @@ import { Form, useFormikContext } from 'formik'
 import React from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { useScrollToFirstErrorAfterSubmit } from 'hooks'
+import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { PasswordInput, SubmitButton } from 'ui-kit'
 
 import styles from './ChangePasswordForm.module.scss'
 
 const ChangePasswordForm = (): JSX.Element => {
   const { handleSubmit, isSubmitting } = useFormikContext()
-  useScrollToFirstErrorAfterSubmit()
 
   return (
     <Form onSubmit={handleSubmit} className={styles['change-password-form']}>
+      <ScrollToFirstErrorAfterSubmit />
+
       <FormLayout>
         <FormLayout.Row>
           <PasswordInput

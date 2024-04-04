@@ -2,7 +2,7 @@ import { Form, useField } from 'formik'
 import React from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { useScrollToFirstErrorAfterSubmit } from 'hooks'
+import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import EmailSpellCheckInput from 'ui-kit/form/EmailSpellCheckInput'
@@ -10,7 +10,6 @@ import EmailSpellCheckInput from 'ui-kit/form/EmailSpellCheckInput'
 import styles from './ChangePasswordRequestForm.module.scss'
 
 const ChangePasswordRequestForm = (): JSX.Element => {
-  useScrollToFirstErrorAfterSubmit()
   const [field] = useField('email')
 
   return (
@@ -21,6 +20,7 @@ const ChangePasswordRequestForm = (): JSX.Element => {
         compte.
       </p>
       <Form>
+        <ScrollToFirstErrorAfterSubmit />
         <FormLayout>
           <FormLayout.Row>
             <EmailSpellCheckInput

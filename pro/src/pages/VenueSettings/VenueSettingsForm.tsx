@@ -8,9 +8,9 @@ import {
 } from 'apiClient/v1'
 import { AddressSelect } from 'components/Address'
 import FormLayout from 'components/FormLayout'
+import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Providers } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
-import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
 import BankAccountInfos from 'pages/VenueCreation/BankAccountInfos/BankAccountInfos'
 import { SiretOrCommentFields } from 'pages/VenueCreation/SiretOrCommentFields/SiretOrCommentFields'
@@ -41,11 +41,12 @@ export const VenueSettingsForm = ({
   venue,
 }: VenueFormProps) => {
   const { initialValues } = useFormikContext<VenueSettingsFormValues>()
-  useScrollToFirstErrorAfterSubmit()
   const location = useLocation()
 
   return (
     <>
+      <ScrollToFirstErrorAfterSubmit />
+
       {!venue.isVirtual && provider && venueProvider && (
         <OffersSynchronization
           provider={provider}

@@ -6,7 +6,7 @@ import { ProUserCreationBodyV2Model } from 'apiClient/v1'
 import { BannerRGS } from 'components/Banner'
 import FormLayout from 'components/FormLayout'
 import LegalInfos from 'components/LegalInfos/LegalInfos'
-import { useScrollToFirstErrorAfterSubmit } from 'hooks'
+import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import CookiesFooter from 'pages/CookiesFooter/CookiesFooter'
 import MaybeAppUserDialog from 'pages/Signup/SignupContainer/MaybeAppUserDialog'
 import {
@@ -23,13 +23,14 @@ import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 import styles from './SignupContainer.module.scss'
 
 const SignupForm = (): JSX.Element => {
-  useScrollToFirstErrorAfterSubmit()
   const navigate = useNavigate()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { isSubmitting } = useFormikContext<ProUserCreationBodyV2Model>()
 
   return (
     <>
+      <ScrollToFirstErrorAfterSubmit />
+
       {isModalOpen && (
         <MaybeAppUserDialog onCancel={() => setIsModalOpen(false)} />
       )}

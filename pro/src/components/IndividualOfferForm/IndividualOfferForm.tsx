@@ -10,12 +10,12 @@ import {
 import FormLayout from 'components/FormLayout'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
+import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import {
   CATEGORY_STATUS,
   INDIVIDUAL_OFFER_SUBTYPE,
 } from 'core/Offers/constants'
 import { IndividualOfferImage } from 'core/Offers/types'
-import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useCurrentUser from 'hooks/useCurrentUser'
 
 import { Accessibility } from './Accessibility'
@@ -59,8 +59,6 @@ const IndividualOfferForm = ({
     values: { offererId, subcategoryId, venueId },
   } = useFormikContext<IndividualOfferFormValues>()
 
-  useScrollToFirstErrorAfterSubmit()
-
   const offerSubCategory = subCategories.find((s) => s.id === subcategoryId)
   const filteredVenueList = getFilteredVenueListBySubcategory(
     venueList,
@@ -92,6 +90,8 @@ const IndividualOfferForm = ({
 
   return (
     <>
+      <ScrollToFirstErrorAfterSubmit />
+
       <FormLayout.MandatoryInfo />
 
       <Categories
