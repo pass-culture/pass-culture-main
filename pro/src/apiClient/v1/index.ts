@@ -88,8 +88,6 @@ export type { ExternalAccessibilityDataModel } from './models/ExternalAccessibil
 export type { FeatureResponseModel } from './models/FeatureResponseModel';
 export type { FinanceBankAccountListResponseModel } from './models/FinanceBankAccountListResponseModel';
 export type { FinanceBankAccountResponseModel } from './models/FinanceBankAccountResponseModel';
-export type { FinanceReimbursementPointListResponseModel } from './models/FinanceReimbursementPointListResponseModel';
-export type { FinanceReimbursementPointResponseModel } from './models/FinanceReimbursementPointResponseModel';
 export { GenderEnum } from './models/GenderEnum';
 export type { GenerateOffererApiKeyResponse } from './models/GenerateOffererApiKeyResponse';
 export type { GetCollectiveOfferCollectiveStockResponseModel } from './models/GetCollectiveOfferCollectiveStockResponseModel';
