@@ -1,6 +1,6 @@
 /* istanbul ignore file : no need to test styled html tag  */
 import cn from 'classnames'
-import React from 'react'
+import React, { MouseEvent } from 'react'
 import { Link } from 'react-router-dom'
 
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -9,12 +9,18 @@ import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
 
 import styles from './ListIconButton.module.scss'
 
+export enum ListIconButtonVariant {
+  DEFAULT = 'default',
+  PRIMARY = 'primary',
+}
+
 interface ListIconButtonProps extends React.HTMLProps<HTMLButtonElement> {
   icon: string
+  variant?: ListIconButtonVariant
   innerRef?: React.RefObject<HTMLButtonElement>
   className?: string
   tooltipContentClassName?: string
-  onClick?: () => void
+  onClick?: (event: MouseEvent) => void
   url?: string
   isExternal?: boolean
   dataTestid?: string
@@ -25,6 +31,7 @@ const LIST_ICON_SIZE = '16'
 const ListIconButton = ({
   children,
   className,
+  variant = ListIconButtonVariant.DEFAULT,
   tooltipContentClassName,
   icon,
   innerRef,
@@ -59,7 +66,7 @@ const ListIconButton = ({
 
   const button = (
     <button
-      className={cn(styles['button'], className)}
+      className={cn(styles['button'], styles[`variant-${variant}`], className)}
       ref={innerRef}
       {...buttonAttrs}
       onClick={onClick}
@@ -73,7 +80,7 @@ const ListIconButton = ({
 
   const link = isExternal ? (
     <a
-      className={cn(styles['button'], className)}
+      className={cn(styles['button'], styles[`variant-${variant}`], className)}
       href={url}
       onClick={onClick}
       {...tooltipProps}
@@ -82,7 +89,7 @@ const ListIconButton = ({
     </a>
   ) : (
     <Link
-      className={cn(styles['button'], className)}
+      className={cn(styles['button'], styles[`variant-${variant}`], className)}
       onClick={onClick}
       to={`${url}`}
       {...tooltipProps}

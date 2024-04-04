@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useState } from 'react'
+import { MouseEvent, useState } from 'react'
 
 import {
   CollectiveOfferResponseModel,
@@ -11,6 +11,7 @@ import fullStarIcon from 'icons/full-star.svg'
 import strokeStarIcon from 'icons/stroke-star.svg'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import ListIconButton from 'ui-kit/ListIconButton'
+import { ListIconButtonVariant } from 'ui-kit/ListIconButton/ListIconButton'
 
 import styles from './OfferFavoriteButton.module.scss'
 
@@ -90,7 +91,9 @@ const OfferFavoriteButton = ({
     setIsLoading(false)
   }
 
-  const handleFavoriteClick = function () {
+  const handleFavoriteClick = function (event: MouseEvent) {
+    event.stopPropagation()
+    event.preventDefault()
     if (isLoading) {
       return
     }
@@ -113,12 +116,13 @@ const OfferFavoriteButton = ({
   return (
     <ListIconButton
       icon={isFavorite ? fullStarIcon : strokeStarIcon}
-      className={cn(styles['favorite-button'], className, {
+      className={cn(className, {
         [styles['favorite-button-loading']]: isLoading,
         [styles['favorite-button-active']]: isFavorite,
       })}
       dataTestid={`favorite-${isFavorite ? 'active' : 'inactive'}`}
       onClick={handleFavoriteClick}
+      variant={ListIconButtonVariant.PRIMARY}
     >
       {buttonText}
     </ListIconButton>

@@ -1,27 +1,15 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
 
-.favorite-button {
-  color: colors.$black;
-
+.faorite-button-loading {
   svg {
-    margin-right: 0;
-    width: rem.torem(32px);
-    height: rem.torem(32px);
+    width: rem.torem(20px);
+    height: rem.torem(20px);
   }
+}
 
-  &-loading {
-    svg {
-      width: rem.torem(20px);
-      height: rem.torem(20px);
-    }
-  }
-
-  &-active {
-    color: colors.$primary;
-    
-    svg {
-      fill: colors.$primary;
-    }
+.faorite-button-active {
+  svg {
+    fill: colors.$primary;
   }
 }
