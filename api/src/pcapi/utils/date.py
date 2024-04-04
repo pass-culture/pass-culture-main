@@ -190,7 +190,7 @@ def time_to_int(time_as_str: str) -> int:
 
 def timespan_str_to_numrange(timespan_list: list[tuple[str, str]]) -> list[NumericRange]:
     """
-    Convert a list of tuples (start, end) in the the format [("HH:MM", "HH:MM"), ("HH:MM), "HH:MM")] to a list of NumericRange
+    Convert a list of tuples (start, end) in the format [("HH:MM", "HH:MM"), ("HH:MM"), "HH:MM")] to a list of NumericRange
     """
     return [NumericRange(time_to_int(start), time_to_int(end), bounds="[]") for start, end in timespan_list]
 
