@@ -38,6 +38,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
   const isOpeningHoursEnabled = useActiveFeature('WIP_OPENING_HOURS')
+  const isAccesLibreEnabled = useActiveFeature('WIP_ACCESLIBRE')
 
   const { currentUser } = useCurrentUser()
 
@@ -98,11 +99,16 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
     }
   }
 
+  const showAccessibilitySection = !(
+    isAccesLibreEnabled && venue.externalAccessibilityData
+  )
+  const validateAccessibility = !venue.isVirtual && showAccessibilitySection
+
   return (
     <Formik
       initialValues={setInitialFormValues(venue)}
       onSubmit={onSubmit}
-      validationSchema={getValidationSchema(venue.isVirtual)}
+      validationSchema={getValidationSchema(validateAccessibility)}
     >
       <Form>
         <ScrollToFirstErrorAfterSubmit />
@@ -129,7 +135,9 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
               </FormLayout.Row>
             </FormLayout.SubSection>
 
-            <Accessibility isCreatingVenue={false} />
+            {showAccessibilitySection && (
+              <Accessibility isCreatingVenue={false} />
+            )}
 
             {isOpeningHoursEnabled && venue.isPermanent && (
               <FormLayout.SubSection title="Horaires d'ouverture">

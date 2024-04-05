@@ -244,4 +244,45 @@ describe('VenueFormScreen', () => {
       )
     ).not.toBeInTheDocument()
   })
+
+  it('should display the acceslibre section in readonly if the feature is enabled and data is present', () => {
+    venue.externalAccessibilityData = {
+      isAccessibleAudioDisability: true,
+      isAccessibleMentalDisability: false,
+      isAccessibleMotorDisability: true,
+      isAccessibleVisualDisability: true,
+    }
+
+    renderForm(venue, {
+      features: ['WIP_ACCESLIBRE'],
+      initialRouterEntries: ['/'],
+    })
+
+    expect(
+      screen.queryByText(
+        /Votre établissement est accessible aux publics en situation de handicap/
+      )
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByText('Modalités d’accessibilité via acceslibre')
+    ).toBeInTheDocument()
+  })
+
+  it('should display the acceslibre section under the form if the feature is enabled and data is present', () => {
+    venue.externalAccessibilityData = {
+      isAccessibleAudioDisability: true,
+      isAccessibleMentalDisability: false,
+      isAccessibleMotorDisability: true,
+      isAccessibleVisualDisability: true,
+    }
+
+    renderForm(venue, { features: ['WIP_ACCESLIBRE'] })
+
+    expect(
+      screen.queryByText(/Critères d’accessibilité/)
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByText('Modalités d’accessibilité via acceslibre')
+    ).toBeInTheDocument()
+  })
 })
