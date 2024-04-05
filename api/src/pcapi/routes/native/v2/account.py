@@ -36,12 +36,15 @@ def get_email_update_status(user: users_models.User) -> serializers.EmailUpdateS
         if user.password is None:
             reset_password_token = token_utils.Token.get_token(token_utils.TokenType.RESET_PASSWORD, user.id)
 
+    has_recently_reset_password = token_utils.Token.token_exists(token_utils.TokenType.RECENTLY_RESET_PASSWORD, user.id)
+
     return serializers.EmailUpdateStatusResponse(
         new_email=latest_email_update_event.newEmail,
         expired=(email_api.get_active_token_expiration(user) or datetime.min) < datetime.utcnow(),
         status=latest_email_update_event.eventType,
         token=new_email_selection_token.encoded_token if new_email_selection_token else None,
         reset_password_token=reset_password_token.encoded_token if reset_password_token else None,
+        has_recently_reset_password=has_recently_reset_password,
     )
 
 
@@ -95,7 +98,8 @@ def confirm_email_update(
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @atomic()
 def select_new_password(body: authentication_serializers.ResetPasswordRequest) -> None:
-    api.reset_password_with_token(body.new_password, body.reset_password_token)
+    user = api.reset_password_with_token(body.new_password, body.reset_password_token)
+    api.create_recently_reset_password_token(user)
 
 
 @blueprint.native_route("/profile/email_update/new_email", version="v2", methods=["POST"])
