@@ -1,0 +1,153 @@
+import React from 'react'
+
+import { GetVenueResponseModel } from 'apiClient/v1'
+import { SummarySection } from 'components/SummaryLayout/SummarySection'
+import strokeAccessibilityBrain from 'icons/stroke-accessibility-brain.svg'
+import strokeAccessibilityEar from 'icons/stroke-accessibility-ear.svg'
+import strokeAccessibilityEye from 'icons/stroke-accessibility-eye.svg'
+import strokeAccessibilityLeg from 'icons/stroke-accessibility-leg.svg'
+import { ButtonLink } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
+
+import { AccesLibreCollapse } from './AccesLibreCollapse'
+import styles from './AccesLibreSection.module.scss'
+
+export interface AccesLibreSectionProps {
+  venue: GetVenueResponseModel
+}
+
+export const AccesLibreSection = ({ venue }: AccesLibreSectionProps) => {
+  if (!venue.externalAccessibilityData) {
+    return
+  }
+
+  return (
+    <SummarySection
+      title="Modalités d’accessibilité via acceslibre"
+      editLink={`TODO`}
+    >
+      <p>
+        Les modalités ci-dessous sont issues de la plateforme{' '}
+        <ButtonLink
+          variant={ButtonVariant.TERNARY}
+          link={{ isExternal: true, to: 'TODO' }}
+        >
+          acceslibre.gouv.fr
+        </ButtonLink>
+        . Vous pouvez les modifier directement depuis cette plateforme.
+      </p>
+
+      <div className={styles['sections-container']}>
+        <div className={styles['sections-column']}>
+          <AccesLibreCollapse
+            title="Handicap moteur"
+            isAccessible={Boolean(
+              venue.externalAccessibilityData.isAccessibleMotorDisability
+            )}
+            icon={strokeAccessibilityLeg}
+          >
+            <ul className={styles['details']}>
+              <li>
+                <span className={styles['details-label']}>Stationnement</span>
+                <span className={styles['details-item']}>
+                  {venue.externalAccessibilityData.motorDisability?.parking ??
+                    'Non renseigné'}
+                </span>
+              </li>
+              <li>
+                <span className={styles['details-label']}>Accès exterieur</span>
+                <span className={styles['details-item']}>
+                  {venue.externalAccessibilityData.motorDisability?.exterior ??
+                    'Non renseigné'}
+                </span>
+              </li>
+              <li>
+                <span className={styles['details-label']}>
+                  Entrée du bâtiment
+                </span>
+                <span className={styles['details-item']}>
+                  {venue.externalAccessibilityData.motorDisability?.entrance ??
+                    'Non renseigné'}
+                </span>
+              </li>
+              <li>
+                <span className={styles['details-label']}>Sanitaire</span>
+                <span className={styles['details-item']}>
+                  {venue.externalAccessibilityData.motorDisability
+                    ?.facilities ?? 'Non renseigné'}
+                </span>
+              </li>
+            </ul>
+          </AccesLibreCollapse>
+
+          <AccesLibreCollapse
+            title="Handicap cognitif"
+            isAccessible={Boolean(
+              venue.externalAccessibilityData.isAccessibleMentalDisability
+            )}
+            icon={strokeAccessibilityBrain}
+          >
+            <div className={styles['details']}>
+              <div>
+                <span className={styles['details-label']}>Personnel</span>
+                <span className={styles['details-item']}>
+                  {venue.externalAccessibilityData.mentalDisability
+                    ?.trainedPersonnel ?? 'Non renseigné'}
+                </span>
+              </div>
+            </div>
+          </AccesLibreCollapse>
+        </div>
+
+        <div className={styles['sections-column']}>
+          <AccesLibreCollapse
+            title="Handicap auditif"
+            isAccessible={Boolean(
+              venue.externalAccessibilityData.isAccessibleAudioDisability
+            )}
+            icon={strokeAccessibilityEar}
+          >
+            <div className={styles['details']}>
+              <div>
+                <span className={styles['details-label']}>
+                  Équipement sourd & malentendant
+                </span>
+                <span className={styles['details-item']}>
+                  {venue.externalAccessibilityData.audioDisability
+                    ?.deafAndHardOfHearing ?? 'Non renseigné'}
+                </span>
+              </div>
+            </div>
+          </AccesLibreCollapse>
+
+          <AccesLibreCollapse
+            title="Handicap visuel"
+            isAccessible={Boolean(
+              venue.externalAccessibilityData.isAccessibleVisualDisability
+            )}
+            icon={strokeAccessibilityEye}
+          >
+            <ul className={styles['details']}>
+              <li>
+                <span className={styles['details-label']}>
+                  Audiodescription
+                </span>
+                <span className={styles['details-item']}>
+                  {venue.externalAccessibilityData.visualDisability
+                    ?.audioDescription ?? 'Non renseigné'}
+                </span>
+              </li>
+              <li>
+                <span className={styles['details-label']}>Balise sonore</span>
+                <span className={styles['details-item']}>
+                  {venue.externalAccessibilityData.visualDisability
+                    ?.soundBeacon ?? 'Non renseigné'}
+                </span>
+              </li>
+            </ul>
+          </AccesLibreCollapse>
+        </div>
+      </div>
+    </SummarySection>
+  )
+}
