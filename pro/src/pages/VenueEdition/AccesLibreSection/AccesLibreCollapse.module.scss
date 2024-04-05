@@ -1,0 +1,77 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_colors.scss" as colors;
+
+.section {
+  padding: rem.torem(8px);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: rem.torem(16px);
+}
+
+.main-icon-container {
+  position: relative;
+}
+
+.accessibility-icon {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: colors.$white;
+  width: rem.torem(16px);
+  height: rem.torem(16px);
+  border-radius: 50%;
+
+  &.accessible {
+    color: colors.$valid;
+  }
+
+  &.non-accessible {
+    color: colors.$error;
+  }
+}
+
+.title-container {
+  display: flex;
+  flex-direction: column;
+  gap: rem.torem(8px);
+  flex-grow: 1;
+}
+
+.title {
+  @include fonts.body-important;
+}
+
+.accessibility-label {
+  @include fonts.mini-highlight;
+}
+
+.collapse-button {
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+  color: colors.$grey-semi-dark;
+}
+
+.collapse-icon {
+  transition: transform 0.3s;
+
+  &.open {
+    transform: rotate(180deg);
+  }
+}
+
+.content {
+  display: none;
+  margin-top: rem.torem(16px);
+  padding-left: rem.torem(16px);
+
+  &.open {
+    display: block;
+  }
+}
