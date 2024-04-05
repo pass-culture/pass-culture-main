@@ -434,13 +434,21 @@ def get_base_query_for_collective_template_offer_indexation() -> BaseQuery:
 
 def get_base_query_for_offer_indexation() -> BaseQuery:
     return (
-        offers_models.Offer.query.options(
-            sa.orm.joinedload(offers_models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer)
+        # We are only interested in bookable stocks, which means that
+        # we can exclude past stocks (which are numerous for recurrent
+        # offers and use too much memory). However, we do want to
+        # return offers that don't have future stocks, which is why
+        # the condition is in the _outer_ join, and not in a "where"
+        # clause through `filter()`.
+        offers_models.Offer.query.outerjoin(
+            offers_models.Stock,
+            (offers_models.Stock.offerId == offers_models.Offer.id) & offers_models.Stock._bookable,
         )
+        .options(sa.orm.contains_eager(offers_models.Offer.stocks))
+        .options(sa.orm.joinedload(offers_models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer))
         .options(sa.orm.joinedload(offers_models.Offer.criteria))
         .options(sa.orm.joinedload(offers_models.Offer.mediations))
         .options(sa.orm.joinedload(offers_models.Offer.product))
-        .options(sa.orm.joinedload(offers_models.Offer.stocks))
     )
 
 

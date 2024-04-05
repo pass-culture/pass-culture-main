@@ -150,6 +150,27 @@ class ReindexOfferIdsTest:
         # then
         assert search_testing.search_store["offers"] == {}
 
+    def test_that_base_query_is_correct(self, app):
+        # Make sure that `get_base_query_for_offer_indexation` loads
+        # all offers and related data that is expected by
+        # `reindex_offer_ids()`.
+        unbookable = make_unbookable_offer()
+        bookable = make_bookable_offer()
+        past = datetime.datetime.utcnow() - datetime.timedelta(days=10)
+        future = datetime.datetime.utcnow() + datetime.timedelta(days=10)
+        multi_dates_unbookable = offers_factories.EventStockFactory(beginningDatetime=past).offer
+        multi_dates_bookable = offers_factories.EventStockFactory(beginningDatetime=past).offer
+        offers_factories.EventStockFactory(offer=multi_dates_bookable, beginningDatetime=future)
+        offer_ids = {unbookable.id, bookable.id, multi_dates_unbookable.id, multi_dates_bookable.id}
+        for offer_id in offer_ids:
+            search_testing.search_store["offers"][offer_id] = "dummy"
+            app.redis_client.hset(algolia.REDIS_HASHMAP_INDEXED_OFFERS_NAME, offer_id, "")
+
+        with assert_no_duplicated_queries():
+            search.reindex_offer_ids(offer_ids)
+
+        assert set(search_testing.search_store["offers"]) == {bookable.id, multi_dates_bookable.id}
+
     @mock.patch("pcapi.core.search.backends.testing.FakeClient.save_objects", fail)
     def test_handle_indexation_error(self, app):
         offer = make_bookable_offer()
