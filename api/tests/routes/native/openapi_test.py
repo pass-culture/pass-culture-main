@@ -2226,6 +2226,16 @@ def test_public_api(client):
                             "nullable": True,
                             "title": "ExternalAccessibilityDataModel",
                         },
+                        "externalAccessibilityId": {
+                            "nullable": True,
+                            "title": "Externalaccessibilityid",
+                            "type": "string",
+                        },
+                        "externalAccessibilityUrl": {
+                            "nullable": True,
+                            "title": "Externalaccessibilityurl",
+                            "type": "string",
+                        },
                         "id": {"title": "Id", "type": "integer"},
                         "isPermanent": {"nullable": True, "title": "Ispermanent", "type": "boolean"},
                         "isVirtual": {"title": "Isvirtual", "type": "boolean"},

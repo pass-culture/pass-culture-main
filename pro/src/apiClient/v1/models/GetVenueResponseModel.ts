@@ -43,6 +43,8 @@ export type GetVenueResponseModel = {
   description?: string | null;
   dmsToken: string;
   externalAccessibilityData?: ExternalAccessibilityDataModel | null;
+  externalAccessibilityId?: string | null;
+  externalAccessibilityUrl?: string | null;
   hasAdageId: boolean;
   id: number;
   isPermanent?: boolean | null;
