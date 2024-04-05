@@ -20,6 +20,7 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.feature import FeatureToggle
+from pcapi.repository import atomic
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.native.security import authenticated_and_active_user_required
@@ -104,29 +105,9 @@ def request_password_reset(body: RequestPasswordResetRequest) -> None:
 @spectree_serialize(
     response_model=ResetPasswordResponse, on_success_status=200, api=blueprint.api, on_error_statuses=[400]
 )
+@atomic()
 def reset_password(body: ResetPasswordRequest) -> ResetPasswordResponse:
-    check_password_strength("newPassword", body.new_password)
-    token = None
-    try:
-        token = token_utils.Token.load_and_check(body.reset_password_token, token_utils.TokenType.RESET_PASSWORD)
-        user = user_models.User.query.get(token.user_id)
-    except users_exceptions.InvalidToken:
-        raise ApiErrors({"token": ["Le token de changement de mot de passe est invalide."]})
-
-    user.setPassword(body.new_password)
-
-    if not user.isEmailValidated:
-        user.isEmailValidated = True
-        try:
-            dms_subscription_api.try_dms_orphan_adoption(user)
-        except Exception:  # pylint: disable=broad-except
-            logger.exception(
-                "An unexpected error occurred while trying to link dms orphan to user", extra={"user_id": user.id}
-            )
-
-    repository.save(user)
-    if token:
-        token.expire()
+    user = users_api.reset_password_with_token(body.new_password, body.reset_password_token)
     return ResetPasswordResponse(
         access_token=users_api.create_user_access_token(user),
         refresh_token=users_api.create_user_refresh_token(user, body.device_info),

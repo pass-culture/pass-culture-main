@@ -12,6 +12,7 @@ from pcapi.repository import atomic
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.v1.api_errors import account as account_errors
 from pcapi.routes.native.v1.serialization import account as v1_serializers
+from pcapi.routes.native.v1.serialization import authentication as authentication_serializers
 from pcapi.serialization.decorator import spectree_serialize
 
 from .. import blueprint
@@ -26,17 +27,21 @@ def get_email_update_status(user: users_models.User) -> serializers.EmailUpdateS
     if not latest_email_update_event:
         raise api_errors.ResourceNotFoundError
 
-    new_email_selection_token = None
+    new_email_selection_token: token_utils.Token | None = None
+    reset_password_token: token_utils.Token | None = None
     if latest_email_update_event.eventType == users_models.EmailHistoryEventTypeEnum.CONFIRMATION:
         new_email_selection_token = token_utils.Token.get_token(
             token_utils.TokenType.EMAIL_CHANGE_NEW_EMAIL_SELECTION, user.id
         )
+        if user.password is None:
+            reset_password_token = token_utils.Token.get_token(token_utils.TokenType.RESET_PASSWORD, user.id)
 
     return serializers.EmailUpdateStatusResponse(
         new_email=latest_email_update_event.newEmail,
         expired=(email_api.get_active_token_expiration(user) or datetime.min) < datetime.utcnow(),
         status=latest_email_update_event.eventType,
         token=new_email_selection_token.encoded_token if new_email_selection_token else None,
+        reset_password_token=reset_password_token.encoded_token if reset_password_token else None,
     )
 
 
@@ -69,6 +74,10 @@ def confirm_email_update(
             status_code=401,
         ) from e
 
+    reset_password_token = None
+    if user.password is None:
+        reset_password_token = api.create_reset_password_token(user).encoded_token
+
     new_email_selection_token = token_utils.Token.create(
         token_utils.TokenType.EMAIL_CHANGE_NEW_EMAIL_SELECTION,
         constants.EMAIL_CHANGE_TOKEN_LIFE_TIME,
@@ -78,7 +87,15 @@ def confirm_email_update(
         access_token=api.create_user_access_token(user),
         refresh_token=api.create_user_refresh_token(user, body.device_info),
         new_email_selection_token=new_email_selection_token,
+        reset_password_token=reset_password_token,
     )
+
+
+@blueprint.native_route("/profile/email_update/new_password", version="v2", methods=["POST"])
+@spectree_serialize(on_success_status=204, api=blueprint.api)
+@atomic()
+def select_new_password(body: authentication_serializers.ResetPasswordRequest) -> None:
+    api.reset_password_with_token(body.new_password, body.reset_password_token)
 
 
 @blueprint.native_route("/profile/email_update/new_email", version="v2", methods=["POST"])
@@ -86,6 +103,11 @@ def confirm_email_update(
 @authenticated_and_active_user_required
 @atomic()
 def select_new_email(user: users_models.User, body: serializers.NewEmailSelectionRequest) -> None:
+    if user.password is None:
+        raise api_errors.ApiErrors(
+            {"code": "PASSWORD_NEEDED", "message": "Un mot de passe doit être défini pour changer d'email"},
+            status_code=403,
+        )
     try:
         email_api.confirm_new_email_selection_and_send_mail(user, body.token, body.new_email)
     except exceptions.InvalidToken as e:
