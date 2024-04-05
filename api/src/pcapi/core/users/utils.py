@@ -32,10 +32,19 @@ def decode_jwt_token(jwt_token: str) -> dict:
     return jwt.decode(jwt_token, settings.JWT_SECRET_KEY, algorithms=[ALGORITHM_HS_256])
 
 
-def decode_jwt_token_rs256(jwt_token: str) -> dict:
-    with open(JWT_ADAGE_PUBLIC_KEY_PATH, "rb") as reader:
-        payload = jwt.decode(jwt_token, key=reader.read(), algorithms=[ALGORITHM_RS_256])
-    return payload
+# HOWTO generate a key (skip passphrase)
+# ssh-keygen -t rsa -b 4096 -m PEM -f jwtRS256.key
+# openssl rsa -in jwtRS256.key -pubout -outform PEM -out jwtRS256.key.pub
+def decode_adage_jwt_token(jwt_token: str) -> dict:
+    try:
+        with open(JWT_ADAGE_PUBLIC_KEY_PATH, "rb") as reader:
+            payload = jwt.decode(jwt_token, key=reader.read(), algorithms=[ALGORITHM_RS_256])
+        return payload
+    except jwt.InvalidSignatureError:
+        if not settings.JWT_ATERNATIVE_ADAGE_PUBLIC_KEY:
+            raise
+        payload = jwt.decode(jwt_token, key=settings.JWT_ATERNATIVE_ADAGE_PUBLIC_KEY, algorithms=[ALGORITHM_RS_256])
+        return payload
 
 
 def get_age_at_date(birth_date: date, specified_datetime: datetime) -> int:

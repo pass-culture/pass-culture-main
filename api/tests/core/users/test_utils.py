@@ -6,7 +6,7 @@ import pytest
 from pcapi import settings
 from pcapi.core.users.utils import ALGORITHM_HS_256
 from pcapi.core.users.utils import ALGORITHM_RS_256
-from pcapi.core.users.utils import decode_jwt_token_rs256
+from pcapi.core.users.utils import decode_adage_jwt_token
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.core.users.utils import format_login_location
 
@@ -37,23 +37,27 @@ class EncodeJWTPayloadTest:
 
 
 class DecodeJWTPayloadRS256Test:
-    def test_decode_jwt_payload_rs256_algorithm(self):
+    def test_decode_jwt_payload_rs256_algorithm_as_non_adage(self):
+        payload = dict(data="value")
+        valid_encoded_token = jwt.encode(
+            payload, key=settings.JWT_ATERNATIVE_ADAGE_PRIVATE_KEY, algorithm=ALGORITHM_RS_256
+        )
+        decoded = decode_adage_jwt_token(valid_encoded_token)
+        assert decoded["data"] == "value"
+
+    def test_decode_jwt_payload_rs256_algorithm_as_adage(self):
         payload = dict(data="value")
         with open(VALID_RSA_PRIVATE_KEY_PATH, "rb") as reader:
             valid_encoded_token = jwt.encode(payload, key=reader.read(), algorithm=ALGORITHM_RS_256)
-
-        decoded = decode_jwt_token_rs256(valid_encoded_token)
-
+        decoded = decode_adage_jwt_token(valid_encoded_token)
         assert decoded["data"] == "value"
 
     def test_decode_jwt_payload_rs256_algorithm_corrupted(self):
         payload = dict(data="value")
         with open(INVALID_RSA_PRIVATE_KEY_PATH, "rb") as reader:
             corrupted_token = jwt.encode(payload, key=reader.read(), algorithm=ALGORITHM_RS_256)
-
         with pytest.raises(jwt.InvalidSignatureError) as error:
-            decode_jwt_token_rs256(corrupted_token)
-
+            decode_adage_jwt_token(corrupted_token)
         assert "Signature verification failed" in str(error.value)
 
 

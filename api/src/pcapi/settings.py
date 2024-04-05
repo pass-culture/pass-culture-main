@@ -379,6 +379,8 @@ ADAGE_API_KEY = secrets_utils.get("ADAGE_API_KEY", None)
 ADAGE_API_URL = os.environ.get("ADAGE_API_URL", None)
 EAC_API_KEY = secrets_utils.get("EAC_API_KEY", None)
 JWT_ADAGE_PUBLIC_KEY_FILENAME = os.environ.get("JWT_ADAGE_PUBLIC_KEY_FILENAME", "public_key.production")
+JWT_ATERNATIVE_ADAGE_PUBLIC_KEY = os.environ.get("JWT_ATERNATIVE_ADAGE_PUBLIC_KEY")
+JWT_ATERNATIVE_ADAGE_PRIVATE_KEY = os.environ.get("JWT_ATERNATIVE_ADAGE_PRIVATE_KEY")
 ADAGE_BACKEND = os.environ.get("ADAGE_BACKEND", "pcapi.core.educational.adage_backends.adage.AdageHttpClient")
 CAN_COLLECTIVE_OFFERER_IGNORE_ADAGE = bool(int(os.environ.get("CAN_COLLECTIVE_OFFERER_IGNORE_ADAGE", "0")))
 
