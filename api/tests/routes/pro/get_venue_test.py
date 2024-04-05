@@ -7,9 +7,11 @@ from pcapi.core import testing
 from pcapi.core.educational import factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import VenueTypeCode
+from pcapi.core.offerers.models import Weekday
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
+from pcapi.utils.date import timespan_str_to_numrange
 from pcapi.utils.image_conversion import DO_NOT_CROP
 
 
@@ -430,6 +432,23 @@ class Returns200Test:
         assert response.json["openingHours"]["THURSDAY"] == [
             {"open": "10:00", "close": "13:00"},
             {"open": "14:00", "close": "19:30"},
+        ]
+
+    def should_sort_opening_hours(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
+        venue = offerers_factories.VenueFactory(
+            name="L'encre et la plume", managingOfferer=user_offerer.offerer, venueTypeCode=VenueTypeCode.LIBRARY
+        )
+        offerers_factories.OpeningHoursFactory(
+            venue=venue,
+            weekday=Weekday.SATURDAY,
+            timespan=timespan_str_to_numrange([("14:00", "19:00"), ("10:00", "13:00")]),
+        )
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        response = auth_request.get("/venues/%s" % venue.id)
+        assert response.json["openingHours"]["SATURDAY"] == [
+            {"open": "10:00", "close": "13:00"},
+            {"open": "14:00", "close": "19:00"},
         ]
 
     def should_return_none_when_venue_has_no_accessibility_provider(self, client):
