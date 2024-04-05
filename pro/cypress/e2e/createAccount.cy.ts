@@ -3,18 +3,17 @@ describe('Account creation', () => {
     cy.visit('/inscription')
 
     // Fill in form
-    cy.get('#lastName').type('LEMOINE')
-    cy.get('#firstName').type('Jean')
-    cy.get('#email').type(`jean${Math.random()}@example.com`)
-    cy.get('#password').type('ValidPassword12!')
-    cy.get('#countryCode').select('FR')
-    cy.get('#phoneNumber').type('612345678')
+    cy.findByLabelText('Nom *').type('LEMOINE')
+    cy.findByLabelText('Prénom *').type('Jean')
+    cy.findByLabelText('Adresse email *').type(`jean${Math.random()}@example.com`)
+    cy.findByLabelText('Mot de passe *').type('ValidPassword12!')
+    cy.findByPlaceholderText('6 12 34 56 78').type('612345678')
 
     // Submit form
     cy.intercept({ method: 'POST', url: '/v2/users/signup/pro' }).as(
       'signupUser'
     )
-    cy.get('button[type=submit]').click()
+    cy.findByText('Créer mon compte').click()
     cy.wait('@signupUser')
     cy.url().should('contain', '/inscription/confirmation')
   })
