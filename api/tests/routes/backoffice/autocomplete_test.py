@@ -19,25 +19,36 @@ pytestmark = [
 ]
 
 
-def _test_autocomplete(
-    authenticated_client, endpoint: str, search_query: str, expected_texts: list[str], expected_num_queries: int = 0
-):
-    # user + session + data requested
-    if not expected_num_queries:
-        expected_num_queries = 3 if search_query.isnumeric() or len(search_query) >= 2 else 2
+class AutocompleteTestBase:
+    def _test_autocomplete(
+        self,
+        authenticated_client,
+        search_query: str,
+        expected_texts: list[str],
+        expected_num_queries: int = 0,
+    ):
+        # user + session + data requested
+        if not expected_num_queries:
+            expected_num_queries = 3 if search_query.isnumeric() or len(search_query) >= 2 else 2
 
-    with assert_num_queries(expected_num_queries):
-        response = authenticated_client.get(url_for(endpoint, q=search_query))
-        assert response.status_code == 200
+        with assert_num_queries(expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=search_query))
+            assert response.status_code == 200
 
-    items = response.json["items"]
-    for item in items:
-        assert isinstance(item["id"], int)
-        assert isinstance(item["text"], str)
-    assert {re.sub(r"^\d+ - ", "", item["text"]) for item in items} == expected_texts
+        items = response.json["items"]
+        for item in items:
+            assert isinstance(item["id"], int)
+            assert isinstance(item["text"], str)
+        assert {re.sub(r"^\d+ - ", "", item["text"]) for item in items} == expected_texts
+
+    def test_autocomplete_as_anonymous(self, client):
+        response = client.get(url_for(self.endpoint, q="123"))
+        assert response.status_code == 401
 
 
-class AutocompleteOffererTest:
+class AutocompleteOffererTest(AutocompleteTestBase):
+    endpoint = "backoffice_web.autocomplete_offerers"
+
     @pytest.mark.parametrize(
         "search_query, expected_texts",
         [
@@ -64,10 +75,12 @@ class AutocompleteOffererTest:
         offerers_factories.OffererFactory(id=666666003, siren="123444556", name="La Librairie")
         offerers_factories.OffererFactory(id=12344, siren="561234789", name="Cinéma concurrent")
 
-        _test_autocomplete(authenticated_client, "backoffice_web.autocomplete_offerers", search_query, expected_texts)
+        self._test_autocomplete(authenticated_client, search_query, expected_texts)
 
 
-class AutocompleteInstitutionTest:
+class AutocompleteInstitutionTest(AutocompleteTestBase):
+    endpoint = "backoffice_web.autocomplete_institutions"
+
     @pytest.mark.parametrize(
         "search_query, expected_texts",
         [
@@ -90,12 +103,12 @@ class AutocompleteInstitutionTest:
             id=2000, name="Georges de la Tour", institutionType="Collège", city="Metz"
         )
 
-        _test_autocomplete(
-            authenticated_client, "backoffice_web.autocomplete_institutions", search_query, expected_texts
-        )
+        self._test_autocomplete(authenticated_client, search_query, expected_texts)
 
 
-class AutocompleteVenueTest:
+class AutocompleteVenueTest(AutocompleteTestBase):
+    endpoint = "backoffice_web.autocomplete_venues"
+
     @pytest.mark.parametrize(
         "search_query, expected_texts",
         [
@@ -127,10 +140,12 @@ class AutocompleteVenueTest:
         offerers_factories.VenueFactory(id=666666004, siret="12345678900011", name="La Médiathèque")
         offerers_factories.VenueFactory(id=12344, siret="56123478900023", name="Cinéma concurrent")
 
-        _test_autocomplete(authenticated_client, "backoffice_web.autocomplete_venues", search_query, expected_texts)
+        self._test_autocomplete(authenticated_client, search_query, expected_texts)
 
 
-class AutocompletePricingPointTest:
+class AutocompletePricingPointTest(AutocompleteTestBase):
+    endpoint = "backoffice_web.autocomplete_pricing_points"
+
     @pytest.mark.parametrize(
         "search_query, expected_texts",
         [
@@ -146,12 +161,12 @@ class AutocompletePricingPointTest:
         offerers_factories.VenueWithoutSiretFactory(id=12345, name="Cinéma magique")
         offerers_factories.VenueFactory(id=123, siret="56123478900023", name="Cinéma fabuleux")
 
-        _test_autocomplete(
-            authenticated_client, "backoffice_web.autocomplete_pricing_points", search_query, expected_texts
-        )
+        self._test_autocomplete(authenticated_client, search_query, expected_texts)
 
 
-class AutocompleteCriteriaTest:
+class AutocompleteCriteriaTest(AutocompleteTestBase):
+    endpoint = "backoffice_web.autocomplete_criteria"
+
     @pytest.mark.parametrize(
         "search_query, expected_texts",
         [
@@ -176,10 +191,12 @@ class AutocompleteCriteriaTest:
         criteria_factories.CriterionFactory(name="Playlist cinéma", endDateTime=datetime.datetime(2023, 2, 28, 22, 59))
         criteria_factories.CriterionFactory(id=10534, name="Un bon id")
 
-        _test_autocomplete(authenticated_client, "backoffice_web.autocomplete_criteria", search_query, expected_texts)
+        self._test_autocomplete(authenticated_client, search_query, expected_texts)
 
 
-class AutocompleteBoUserTest:
+class AutocompleteBoUserTest(AutocompleteTestBase):
+    endpoint = "backoffice_web.autocomplete_bo_users"
+
     @pytest.mark.parametrize(
         "search_query, expected_texts",
         [
@@ -203,10 +220,12 @@ class AutocompleteBoUserTest:
         users_factories.UserFactory(id=1234, firstName="Léo", lastName="Hugo")
         users_factories.ProFactory(firstName="Léa", lastName="Pro")
 
-        _test_autocomplete(authenticated_client, "backoffice_web.autocomplete_bo_users", search_query, expected_texts)
+        self._test_autocomplete(authenticated_client, search_query, expected_texts)
 
 
-class AutocompleteProvidersTest:
+class AutocompleteProvidersTest(AutocompleteTestBase):
+    endpoint = "backoffice_web.autocomplete_providers"
+
     @pytest.mark.parametrize(
         "search_query, expected_texts, expected_queries",
         [
@@ -236,10 +255,6 @@ class AutocompleteProvidersTest:
         providers_factories.ProviderFactory(id=5, name="provider with number 12")
         providers_factories.ProviderFactory(id=912, name="A good id")
 
-        _test_autocomplete(
-            authenticated_client,
-            "backoffice_web.autocomplete_providers",
-            search_query,
-            expected_texts,
-            expected_num_queries=expected_queries,
+        self._test_autocomplete(
+            authenticated_client, search_query, expected_texts, expected_num_queries=expected_queries
         )
