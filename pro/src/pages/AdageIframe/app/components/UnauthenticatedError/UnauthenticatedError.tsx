@@ -1,5 +1,4 @@
 import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
-import { ButtonLink } from 'ui-kit'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './UnauthenticatedError.module.scss'
@@ -21,18 +20,6 @@ export default function UnauthenticatedError(): JSX.Element {
         <h1 className={styles['error-content-title']}>
           Une erreur s’est produite
         </h1>
-        <p>
-          Contactez{' '}
-          <ButtonLink
-            link={{
-              isExternal: true,
-              to: 'mailto:adage-pass-culture@education.gouv.fr',
-            }}
-          >
-            adage-pass-culture@education.gouv.fr
-          </ButtonLink>{' '}
-          pour obtenir de l’aide.
-        </p>
       </div>
     </main>
   )
