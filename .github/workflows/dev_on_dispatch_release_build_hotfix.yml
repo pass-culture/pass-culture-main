@@ -101,6 +101,7 @@ jobs:
   slack-notification:
     runs-on: ubuntu-latest
     needs:
+      - find-hotfix-tag-number
       - build-and-tag-version
       - create-pro-staging-release
       - create-pro-integration-release
