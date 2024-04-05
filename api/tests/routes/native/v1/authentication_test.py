@@ -955,6 +955,8 @@ class RequestResetPasswordTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["params"]["RESET_PASSWORD_LINK"]
 
+
+class ResetPasswordTest:
     def test_reset_password_with_not_valid_token(self, client):
         data = {"reset_password_token": "unknown_token", "new_password": "new_password"}
         user = users_factories.UserFactory()

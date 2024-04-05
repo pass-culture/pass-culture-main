@@ -199,6 +199,7 @@ class EmailUpdateStatusTest:
             "status": users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST.value,
             "token": None,
             "resetPasswordToken": None,
+            "hasRecentlyResetPassword": False,
         }
         token.expire()
 
@@ -224,6 +225,7 @@ class EmailUpdateStatusTest:
             "status": users_models.EmailHistoryEventTypeEnum.CONFIRMATION.value,
             "token": token.encoded_token,
             "resetPasswordToken": None,
+            "hasRecentlyResetPassword": False,
         }
         token.expire()
 
@@ -249,8 +251,34 @@ class EmailUpdateStatusTest:
             "status": users_models.EmailHistoryEventTypeEnum.CONFIRMATION.value,
             "token": None,
             "resetPasswordToken": reset_password_token.encoded_token,
+            "hasRecentlyResetPassword": False,
         }
         reset_password_token.expire()
+
+    def test_status_returns_recently_reset_password(self, client):
+        yesterday = datetime.utcnow() + timedelta(days=-1)
+        user = users_factories.UserFactory(password=None)
+        users_factories.EmailUpdateEntryFactory(
+            user=user, creationDate=yesterday, newUserEmail=None, newDomainEmail=None
+        )
+        recently_reset_password_token = token_utils.Token.create(
+            type_=token_utils.TokenType.RECENTLY_RESET_PASSWORD,
+            ttl=users_constants.RESET_PASSWORD_TOKEN_LIFE_TIME,
+            user_id=user.id,
+        )
+
+        response = client.with_token(user.email).get("/native/v2/profile/email_update/status")
+
+        assert response.status_code == 200, response.json
+        assert response.json == {
+            "newEmail": None,
+            "expired": True,
+            "status": users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST.value,
+            "token": None,
+            "resetPasswordToken": None,
+            "hasRecentlyResetPassword": True,
+        }
+        recently_reset_password_token.expire()
 
     def test_new_email_selection_status(self, client):
         yesterday = datetime.utcnow() + timedelta(days=-1)
@@ -279,6 +307,7 @@ class EmailUpdateStatusTest:
             "status": users_models.EmailHistoryEventTypeEnum.NEW_EMAIL_SELECTION.value,
             "token": None,
             "resetPasswordToken": None,
+            "hasRecentlyResetPassword": False,
         }
         token.expire()
 

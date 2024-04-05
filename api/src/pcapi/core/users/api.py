@@ -86,6 +86,15 @@ def create_reset_password_token(user: models.User, expiration: datetime.datetime
     )
 
 
+def create_recently_reset_password_token(user: models.User) -> token_utils.Token:
+    """Used to display a specific step during email change, in the mobile app"""
+    return token_utils.Token.create(
+        token_utils.TokenType.RECENTLY_RESET_PASSWORD,
+        constants.RESET_PASSWORD_TOKEN_LIFE_TIME,
+        user.id,
+    )
+
+
 def create_phone_validation_token(
     user: models.User,
     phone_number: str,
