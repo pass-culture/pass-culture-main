@@ -5,14 +5,11 @@ import {
   AdageFrontRoles,
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-  OfferAddressType,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import useActiveFeature from 'hooks/useActiveFeature'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullUpIcon from 'icons/full-up.svg'
-import strokeFranceIcon from 'icons/stroke-france.svg'
-import strokeLocalisationIcon from 'icons/stroke-localisation.svg'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import {
@@ -24,7 +21,6 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 import { LOGS_DATA } from 'utils/config'
-import { getHumanizeRelativeDistance } from 'utils/getDistance'
 
 import ContactButton from './ContactButton'
 import style from './Offer.module.scss'
@@ -54,8 +50,8 @@ const Offer = ({
   openDetails = false,
 }: OfferProps): JSX.Element => {
   const [displayDetails, setDisplayDetails] = useState(openDetails)
-  const { adageUser, setInstitutionOfferCount, institutionOfferCount } =
-    useAdageUser()
+  const [offerPrebooked, setOfferPrebooked] = useState(false)
+  const { adageUser } = useAdageUser()
 
   const isNewOfferInfoEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_ADAGE_OFFER_DESIGN'
@@ -110,47 +106,36 @@ const Offer = ({
 
   return (
     <div className={style['offer']}>
-      {offer.venue.coordinates.latitude &&
-        offer.venue.coordinates.longitude &&
-        (adageUser.lat || adageUser.lat === 0) &&
-        (adageUser.lon || adageUser.lon === 0) && (
-          <div className={style['offer-geoloc']}>
-            <SvgIcon
-              alt=""
-              src={strokeLocalisationIcon}
-              width="16"
-              className={style['offer-geoloc-icon']}
-            />
-            <div>
-              basé à{' '}
-              {getHumanizeRelativeDistance(
-                {
-                  latitude: offer.venue.coordinates.latitude,
-                  longitude: offer.venue.coordinates.longitude,
-                },
-                {
-                  latitude: adageUser.lat,
-                  longitude: adageUser.lon,
-                }
-              )}{' '}
-              de votre établissement
-            </div>
-            {offer.offerVenue.addressType !== OfferAddressType.OFFERER_VENUE &&
-              adageUser.departmentCode &&
-              offer.interventionArea.includes(adageUser.departmentCode) && (
-                <>
-                  <div className={style['offer-geoloc-separator']} />
-                  <SvgIcon
-                    alt=""
-                    src={strokeFranceIcon}
-                    width="16"
-                    className={style['offer-geoloc-icon']}
-                  />
-                  <div>peut se déplacer dans votre département</div>
-                </>
-              )}
+      {isCollectiveOfferBookable(offer) && (
+        <div
+          className={cn(style['offer-headband'], {
+            [style['offer-headband-prebooked']]: offerPrebooked,
+          })}
+        >
+          <div className={style['offer-headband-text']}>
+            <span className={style['intended-for']}>Offre destinée à :</span>
+            {offer.teacher && (
+              <span
+                className={style['infos']}
+              >{`${offer.teacher.civility} ${offer.teacher.lastName} ${offer.teacher.firstName}`}</span>
+            )}
+            <span className={style['infos']}>
+              {offer.educationalInstitution?.institutionType}{' '}
+              {offer.educationalInstitution?.name}
+            </span>
           </div>
-        )}
+
+          <PrebookingButton
+            canPrebookOffers={adageUser.role === AdageFrontRoles.REDACTOR}
+            className={style['offer-prebooking-button']}
+            offerId={offer.id}
+            queryId={queryId}
+            stock={offer.stock}
+            isInSuggestions={isInSuggestions}
+            setOfferPrebooked={(value: boolean) => setOfferPrebooked(value)}
+          />
+        </div>
+      )}
       <div className={style['offer-container']}>
         <div className={style['offer-image-container']}>
           {offer.imageUrl ? (
@@ -178,7 +163,7 @@ const Offer = ({
                     queryId={queryId}
                   />
                 )}
-                {isCollectiveOfferTemplate(offer) ? (
+                {isCollectiveOfferTemplate(offer) && (
                   <>
                     <OfferShareLink offer={offer} />
                     {!isNewOfferInfoEnabled && (
@@ -197,19 +182,6 @@ const Offer = ({
                       />
                     )}
                   </>
-                ) : (
-                  <PrebookingButton
-                    canPrebookOffers={
-                      adageUser.role === AdageFrontRoles.REDACTOR
-                    }
-                    className={style['offer-prebooking-button']}
-                    offerId={offer.id}
-                    queryId={queryId}
-                    stock={offer.stock}
-                    isInSuggestions={isInSuggestions}
-                    setInstitutionOfferCount={setInstitutionOfferCount}
-                    institutionOfferCount={institutionOfferCount}
-                  />
                 )}
               </div>
             </div>
