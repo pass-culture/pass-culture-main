@@ -36,11 +36,13 @@ import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.subscription.dms import api as dms_subscription_api
 import pcapi.core.subscription.phone_validation.exceptions as phone_validation_exceptions
 import pcapi.core.users.constants as users_constants
 import pcapi.core.users.models as users_models
 import pcapi.core.users.repository as users_repository
 import pcapi.core.users.utils as users_utils
+from pcapi.domain.password import check_password_strength
 from pcapi.domain.password import random_password
 from pcapi.models import db
 from pcapi.models import feature
@@ -310,6 +312,30 @@ def request_password_reset(user: models.User | None, reason: constants.Suspensio
 
     token = create_reset_password_token(user)
     transactional_mails.send_reset_password_email_to_user(token, reason)
+
+
+def reset_password_with_token(new_password: str, encoded_reset_password_token: str) -> models.User:
+    check_password_strength("newPassword", new_password)
+    token = None
+    try:
+        token = token_utils.Token.load_and_check(encoded_reset_password_token, token_utils.TokenType.RESET_PASSWORD)
+        user = models.User.query.get(token.user_id)
+    except exceptions.InvalidToken:
+        raise ApiErrors({"token": ["Le token de changement de mot de passe est invalide."]})
+
+    user.setPassword(new_password)
+
+    if not user.isEmailValidated:
+        user.isEmailValidated = True
+        try:
+            dms_subscription_api.try_dms_orphan_adoption(user)
+        except Exception:  # pylint: disable=broad-except
+            logger.exception(
+                "An unexpected error occurred while trying to link dms orphan to user", extra={"user_id": user.id}
+            )
+    if token:
+        token.expire()
+    return user
 
 
 def handle_create_account_with_existing_email(user: models.User) -> None:

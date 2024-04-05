@@ -9,12 +9,14 @@ class EmailUpdateStatusResponse(ConfiguredBaseModel):
     expired: bool
     status: users_models.EmailHistoryEventTypeEnum
     token: str | None
+    reset_password_token: str | None
 
 
 class EmailChangeConfirmationResponse(ConfiguredBaseModel):
     access_token: str
     refresh_token: str
     new_email_selection_token: str
+    reset_password_token: str | None
 
 
 class NewEmailSelectionRequest(ConfiguredBaseModel):
