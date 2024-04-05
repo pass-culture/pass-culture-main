@@ -916,22 +916,34 @@ class SubcategoriesTest:
                         "children": [
                             {
                                 "label": "Romances",
-                                "gtls": [{"code": "92000000", "label": "Romance", "level": 1}],
+                                "gtls": [
+                                    {"code": "01020600", "label": "Roman sentimental", "level": 3},
+                                    {"code": "92000000", "label": "Romance", "level": 1},
+                                ],
                                 "position": 1,
                             },
                             {
                                 "label": "Thriller",
-                                "gtls": [{"code": "90020000", "label": "Thriller", "level": 2}],
+                                "gtls": [
+                                    {"code": "01020500", "label": "Thriller", "level": 3},
+                                    {"code": "90020000", "label": "Thriller", "level": 2},
+                                ],
                                 "position": 2,
                             },
                             {
                                 "label": "Fantasy",
-                                "gtls": [{"code": "91030000", "label": "Fantasy", "level": 2}],
+                                "gtls": [
+                                    {"code": "01020900", "label": "Fantasy", "level": 3},
+                                    {"code": "91030000", "label": "Fantasy", "level": 2},
+                                ],
                                 "position": 3,
                             },
                             {
                                 "label": "Policier",
-                                "gtls": [{"code": "90010000", "label": "Policier", "level": 2}],
+                                "gtls": [
+                                    {"code": "01020400", "label": "Policier", "level": 3},
+                                    {"code": "90010000", "label": "Policier", "level": 2},
+                                ],
                                 "position": 4,
                             },
                             {
@@ -941,12 +953,18 @@ class SubcategoriesTest:
                             },
                             {
                                 "label": "Science-fiction",
-                                "gtls": [{"code": "91010000", "label": "Science-fiction", "level": 2}],
+                                "gtls": [
+                                    {"code": "01020700", "label": "Science-fiction", "level": 3},
+                                    {"code": "91010000", "label": "Science-fiction", "level": 2},
+                                ],
                                 "position": 6,
                             },
                             {
                                 "label": "Horreur",
-                                "gtls": [{"code": "91020200", "label": "Horreur / Terreur", "level": 3}],
+                                "gtls": [
+                                    {"code": "01020802", "label": "Horreur / Terreur", "level": 4},
+                                    {"code": "91020200", "label": "Horreur / Terreur", "level": 3},
+                                ],
                                 "position": 7,
                             },
                             {
