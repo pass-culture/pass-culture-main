@@ -26,10 +26,10 @@ HASHED_PLACEHOLDER = crypto.hash_password("placeholder")
 def check_user_and_credentials(user: models.User | None, password: str, allow_inactive: bool = False) -> None:
     # Order is important to prevent end-user to guess user emails
     # We need to check email and password before checking email validation
-    if not user:
+    if not user or not user.password:
         # Hash the given password, just like we would do if the user
-        # existed. This avoids user enumeration by comparing server
-        # response time.
+        # or the password existed. This avoids user enumeration by comparing
+        # server response time.
         crypto.check_password(password, HASHED_PLACEHOLDER)
         raise exceptions.InvalidIdentifier()
     if not (user.checkPassword(password) and (user.isActive or allow_inactive)):

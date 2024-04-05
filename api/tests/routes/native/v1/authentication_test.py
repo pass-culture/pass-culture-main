@@ -161,6 +161,17 @@ class SigninTest:
         assert response.json == {"general": ["Identifiant ou Mot de passe incorrect"]}
         assert "Failed authentication attempt" in caplog.messages
 
+    def test_user_without_password_logs_in(self, client, caplog):
+        user = users_factories.UserFactory(password=None, isActive=True)
+
+        response = client.post(
+            "/native/v1/signin", json={"identifier": user.email, "password": settings.TEST_DEFAULT_PASSWORD}
+        )
+
+        assert response.status_code == 400
+        # generic message to prevent enumeration attack
+        assert response.json == {"general": ["Identifiant ou Mot de passe incorrect"]}
+
     def test_user_logs_in_with_missing_fields(self, client):
         response = client.post("/native/v1/signin", json={})
         assert response.status_code == 400
