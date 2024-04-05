@@ -728,11 +728,11 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
         opening_days = {}
         for opening_hours in self.openingHours:
-            timespan_list = (
-                [{"open": start, "close": end} for start, end in numranges_to_timespan_str(opening_hours.timespan)]
-                if opening_hours.timespan
-                else None
-            )
+            if not opening_hours.timespan:
+                timespan_list = None
+            else:
+                timespan_str = numranges_to_timespan_str(sorted(opening_hours.timespan, key=lambda x: x.lower))
+                timespan_list = [{"open": start, "close": end} for start, end in timespan_str]
             opening_days[opening_hours.weekday.value] = timespan_list
 
         return opening_days
