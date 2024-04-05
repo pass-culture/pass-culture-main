@@ -251,45 +251,6 @@ def test_save_user_offerer_raise_api_error_when_not_unique(app):
     assert error.value.errors["global"] == ["Une entrée avec cet identifiant existe déjà dans notre base de données"]
 
 
-class OffererBankInformationTest:
-    def test_bic_property_returns_bank_information_bic_when_offerer_has_bank_information(self):
-        offerer = factories.OffererFactory()
-        finance_factories.BankInformationFactory(offerer=offerer, bic="BDFEFR2LCCB")
-        assert offerer.bic == "BDFEFR2LCCB"
-
-    def test_bic_property_returns_none_when_offerer_does_not_have_bank_information(self):
-        offerer = factories.OffererFactory()
-        assert offerer.bic is None
-
-    def test_iban_property_returns_bank_information_iban_when_offerer_has_bank_information(self):
-        offerer = factories.OffererFactory()
-        finance_factories.BankInformationFactory(offerer=offerer, iban="FR7630007000111234567890144")
-        assert offerer.iban == "FR7630007000111234567890144"
-
-    def test_iban_property_returns_none_when_offerer_does_not_have_bank_information(self):
-        offerer = factories.OffererFactory()
-        assert offerer.iban is None
-
-    def test_demarchesSimplifieesApplicationId_returns_id_if_status_is_draft(self):
-        offerer = factories.OffererFactory()
-        finance_factories.BankInformationFactory(
-            offerer=offerer,
-            applicationId=12345,
-            status=finance_models.BankInformationStatus.DRAFT,
-        )
-        assert offerer.demarchesSimplifieesApplicationId == 12345
-
-    def test_demarchesSimplifieesApplicationId_returns_none_if_status_is_rejected(self):
-        offerer = factories.OffererFactory()
-        info = finance_factories.BankInformationFactory(
-            offerer=offerer,
-            applicationId=12345,
-            status=finance_models.BankInformationStatus.REJECTED,
-        )
-        offerer = info.offerer
-        assert offerer.demarchesSimplifieesApplicationId is None
-
-
 class IsValidatedTest:
     def test_is_validated_property(self):
         offerer = factories.OffererFactory()
