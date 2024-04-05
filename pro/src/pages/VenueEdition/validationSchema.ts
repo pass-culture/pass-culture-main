@@ -8,11 +8,10 @@ import { Day } from './types'
 const isOneTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)
 
-export const getValidationSchema = (isVenueVirtual: boolean) =>
+export const getValidationSchema = (validateAccessibility: boolean) =>
   yup.object().shape({
-    accessibility: isVenueVirtual
-      ? yup.object()
-      : yup
+    accessibility: validateAccessibility
+      ? yup
           .object()
           .test({
             name: 'is-one-true',
@@ -26,7 +25,8 @@ export const getValidationSchema = (isVenueVirtual: boolean) =>
             visual: yup.boolean(),
             motor: yup.boolean(),
             none: yup.boolean(),
-          }),
+          })
+      : yup.object(),
     email: yup
       .string()
       .nullable()

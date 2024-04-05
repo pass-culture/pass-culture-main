@@ -14,6 +14,7 @@ interface VenueEditionReadOnlyProps {
 
 export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
   const isOpeningHoursEnabled = useActiveFeature('WIP_OPENING_HOURS')
+  const isAccesLibreEnabled = useActiveFeature('WIP_ACCESLIBRE')
 
   return (
     <SummarySection
@@ -31,14 +32,17 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
         />
       </SummarySubSection>
 
-      <AccessibilitySummarySection
-        accessibleItem={venue}
-        accessibleWording="Votre établissement est accessible aux publics en situation de handicap :"
-      />
+      {!(isAccesLibreEnabled && venue.externalAccessibilityData) && (
+        <AccessibilitySummarySection
+          accessibleItem={venue}
+          accessibleWording="Votre établissement est accessible aux publics en situation de handicap :"
+        />
+      )}
 
       {isOpeningHoursEnabled && venue.isPermanent && (
         <OpeningHoursReadOnly openingHours={venue.openingHours} />
       )}
+
       <SummarySubSection title="Informations de contact">
         <SummaryDescriptionList
           descriptions={[
