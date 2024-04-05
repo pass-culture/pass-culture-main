@@ -125,12 +125,12 @@ jobs:
       - name: "Slack output"
         id: "slack-text"
         run: |
-          if [ "${{ env.WORKFLOW_CONCLUSION }}" == "failure" ]; then
-            echo text="La pose du tag *${{ env.TAG_NAME }}* a échoué :x: Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>" | tee -a $GITHUB_OUTPUT
+          if [ "${{ env.WORKFLOW_CONCLUSION }}" == "success" ]; then
+            echo text="La pose du tag *${{ env.TAG_NAME }}* a réussi. rdv sur <https://github.com/pass-culture/pass-culture-main/actions/workflows/dev_on_dispatch_release_deploy.yml|cette action github> pour le déployer :rocket:" | tee -a $GITHUB_OUTPUT
           elif [ "${{ env.WORKFLOW_CONCLUSION }}" == "cancelled" ]; then
             echo text="La pose du tag a été annulée. Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>" | tee -a $GITHUB_OUTPUT
           else
-            echo text="La pose du tag *${{ env.TAG_NAME }}* a réussi. rdv sur <https://github.com/pass-culture/pass-culture-main/actions/workflows/dev_on_dispatch_release_deploy.yml|cette action github> pour le déployer :rocket:" | tee -a $GITHUB_OUTPUT
+            echo text="La pose du tag *${{ env.TAG_NAME }}* a échoué :x: Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>" | tee -a $GITHUB_OUTPUT
           fi
       - name: "Post to a Slack channel"
         if: always()
