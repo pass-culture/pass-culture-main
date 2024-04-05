@@ -10,6 +10,7 @@ class EmailUpdateStatusResponse(ConfiguredBaseModel):
     status: users_models.EmailHistoryEventTypeEnum
     token: str | None
     reset_password_token: str | None
+    has_recently_reset_password: bool
 
 
 class EmailChangeConfirmationResponse(ConfiguredBaseModel):

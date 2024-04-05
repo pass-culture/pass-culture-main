@@ -29,6 +29,7 @@ class TokenType(enum.Enum):
     PHONE_VALIDATION = "phone_validation"
     SUSPENSION_SUSPICIOUS_LOGIN = "suspension_suspicious_login"
     RESET_PASSWORD = "reset_password"
+    RECENTLY_RESET_PASSWORD = "recently_reset_password"
     ACCOUNT_CREATION = "account_creation"
     OAUTH_STATE = "oauth_state"
 

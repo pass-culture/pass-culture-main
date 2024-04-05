@@ -652,12 +652,13 @@ def test_public_api(client):
                 "EmailUpdateStatusResponse": {
                     "properties": {
                         "expired": {"title": "Expired", "type": "boolean"},
+                        "hasRecentlyResetPassword": {"title": "Hasrecentlyresetpassword", "type": "boolean"},
                         "newEmail": {"nullable": True, "title": "Newemail", "type": "string"},
                         "status": {"$ref": "#/components/schemas/EmailHistoryEventTypeEnum"},
                         "token": {"nullable": True, "title": "Token", "type": "string"},
                         "resetPasswordToken": {"nullable": True, "title": "Resetpasswordtoken", "type": "string"},
                     },
-                    "required": ["expired", "status"],
+                    "required": ["expired", "status", "hasRecentlyResetPassword"],
                     "title": "EmailUpdateStatusResponse",
                     "type": "object",
                 },

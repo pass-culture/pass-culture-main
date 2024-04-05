@@ -175,9 +175,11 @@ def confirm_email_update_request_and_send_mail(encoded_token: str) -> None:
         )
 
 
-def confirm_new_email_selection_and_send_mail(user: models.User, encoded_token: str, new_email: str) -> None:
-    token = token_utils.Token.load_and_check(encoded_token, token_utils.TokenType.EMAIL_CHANGE_NEW_EMAIL_SELECTION)
-    if user.id != token.user_id:
+def confirm_new_email_selection_and_send_mail(user: models.User, encoded_new_mail_token: str, new_email: str) -> None:
+    new_mail_token = token_utils.Token.load_and_check(
+        encoded_new_mail_token, token_utils.TokenType.EMAIL_CHANGE_NEW_EMAIL_SELECTION
+    )
+    if user.id != new_mail_token.user_id:
         raise exceptions.InvalidToken()
 
     check_email_address_does_not_exist(new_email)
@@ -185,7 +187,8 @@ def confirm_new_email_selection_and_send_mail(user: models.User, encoded_token: 
 
     email_history = models.UserEmailHistory.build_new_email_selection(user, new_email)
     db.session.add(email_history)
-    token.expire()
+
+    new_mail_token.expire()
 
 
 def confirm_email_update_request(encoded_token: str) -> models.User:
@@ -219,7 +222,7 @@ def cancel_email_update_request(encoded_token: str) -> None:
 
 
 def validate_email_update_request(
-    encoded_token: str,
+    encoded_email_validation_token: str,
 ) -> models.User:
     """
     Change a user's email and add a new (validation) entry to its email
@@ -232,20 +235,29 @@ def validate_email_update_request(
     Therefore this function can be called multiple times with the same
     inputs safely.
     """
-    token = token_utils.Token.load_without_checking(encoded_token)
-    user = models.User.query.get(token.user_id)
+    email_update_validation_token = token_utils.Token.load_without_checking(encoded_email_validation_token)
+    user = models.User.query.get(email_update_validation_token.user_id)
     if not user:
         raise exceptions.UserDoesNotExist()
+
     old_email = user.email
-    new_email = token.data["new_email"]
+    new_email = email_update_validation_token.data["new_email"]
     if old_email == new_email:
         return user
-    token.check(token_utils.TokenType.EMAIL_CHANGE_VALIDATION)
+
+    email_update_validation_token.check(token_utils.TokenType.EMAIL_CHANGE_VALIDATION)
+
     check_email_address_does_not_exist(new_email)
     api.change_email(user, new_email)
+
     external_contacts.update_contact_email(user=user, old_email=old_email, new_email=new_email)
     transactional_mails.send_email_change_information_email(user)
-    token.expire()
+
+    email_update_validation_token.expire()
+    recent_password_reset_token = token_utils.Token.get_token(token_utils.TokenType.RECENTLY_RESET_PASSWORD, user.id)
+    if recent_password_reset_token:
+        recent_password_reset_token.expire()
+
     return models.User.query.get(user.id)
 
 
