@@ -20,6 +20,8 @@ class VenuesTest:
         )
         offerer_factories.AccessibilityProviderFactory(
             venue=venue,
+            externalAccessibilityId="ma-venue",
+            externalAccessibilityUrl="https://ra.te",
             externalAccessibilityData={
                 "access_modality": [acceslibre_enum.EXTERIOR_ACCESS_ELEVATOR, acceslibre_enum.ENTRANCE_ELEVATOR],
                 "audio_description": [
@@ -81,6 +83,8 @@ class VenuesTest:
                 },
                 "mentalDisability": {"trainedPersonnel": acceslibre_enum.PERSONNEL_UNTRAINED.value},
             },
+            "externalAccessibilityId": venue.accessibilityProvider.externalAccessibilityId,
+            "externalAccessibilityUrl": venue.accessibilityProvider.externalAccessibilityUrl,
             "accessibility": {
                 "audioDisability": venue.audioDisabilityCompliant,
                 "mentalDisability": venue.mentalDisabilityCompliant,

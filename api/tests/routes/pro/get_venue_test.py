@@ -49,6 +49,7 @@ class Returns200Test:
         )
         offerers_factories.AccessibilityProviderFactory(
             venue=venue,
+            externalAccessibilityId="accessibility-slug",
             externalAccessibilityData={
                 "access_modality": [acceslibre_enum.EXTERIOR_ACCESS_ELEVATOR, acceslibre_enum.ENTRANCE_ELEVATOR],
                 "audio_description": [
@@ -123,6 +124,8 @@ class Returns200Test:
                 },
                 "mentalDisability": {"trainedPersonnel": "Personnel non formé"},
             },
+            "externalAccessibilityId": "accessibility-slug",
+            "externalAccessibilityUrl": "https://site-d-accessibilite.com/erps/accessibility-slug/",
             "isPermanent": venue.isPermanent,
             "isVirtual": venue.isVirtual,
             "latitude": float(venue.latitude),
@@ -461,6 +464,21 @@ class Returns200Test:
         response = auth_request.get("/venues/%s" % venue.id)
         assert venue.accessibilityProvider == None
         assert response.json["externalAccessibilityData"] == None
+
+    def should_return_accessibility_provider_id_and_url(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
+        venue = offerers_factories.VenueFactory(
+            name="L'encre et la plume", managingOfferer=user_offerer.offerer, venueTypeCode=VenueTypeCode.LIBRARY
+        )
+        offerers_factories.AccessibilityProviderFactory(
+            venue=venue,
+            externalAccessibilityId="lencre-et-la-plume",
+            externalAccessibilityUrl="https://site-d-accessibilite.com/erps/lencre-et-la-plume",
+        )
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        response = auth_request.get("/venues/%s" % venue.id)
+        assert response.json["externalAccessibilityId"] == "lencre-et-la-plume"
+        assert response.json["externalAccessibilityUrl"] == "https://site-d-accessibilite.com/erps/lencre-et-la-plume"
 
     def should_return_unknown_when_venue_has_no_external_accessibility_data(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
