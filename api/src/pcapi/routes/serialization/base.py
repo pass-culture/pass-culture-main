@@ -122,6 +122,14 @@ class VenueResponseGetterDict(pydantic_v1.utils.GetterDict):
                 return None
             accessibility_infos = self._obj.accessibilityProvider.externalAccessibilityData
             return acceslibre_serializers.ExternalAccessibilityDataModel.from_orm(accessibility_infos)
+        if key == "externalAccessibilityUrl":
+            if not self._obj.accessibilityProvider:
+                return None
+            return self._obj.accessibilityProvider.externalAccessibilityUrl
+        if key == "externalAccessibilityId":
+            if not self._obj.accessibilityProvider:
+                return None
+            return self._obj.accessibilityProvider.externalAccessibilityId
         return super().get(key, default)
 
 
@@ -135,6 +143,8 @@ class BaseVenueResponse(BaseModel):
     city: str | None
     description: VenueDescription | None
     externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModel | None
+    externalAccessibilityUrl: str | None
+    externalAccessibilityId: str | None
     isPermanent: bool | None
     latitude: float | None
     longitude: float | None
