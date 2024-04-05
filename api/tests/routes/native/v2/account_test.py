@@ -93,6 +93,26 @@ class ConfirmUserEmailUpdateTest:
         )
         assert refresh_response.status_code == 200
 
+        # no password token because the user already has a password
+        assert response.json["resetPasswordToken"] is None
+
+    def test_email_update_confirmation_without_password(self, client):
+        user = users_factories.UserFactory(password=None)
+        token = token_utils.Token.create(
+            type_=token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION,
+            ttl=users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME,
+            user_id=user.id,
+        )
+
+        response = client.post("/native/v2/profile/email_update/confirm", json={"token": token.encoded_token})
+
+        assert response.status_code == 200, response.json
+
+        encoded_token = response.json["resetPasswordToken"]
+        assert encoded_token is not None
+        assert token_utils.Token.load_and_check(encoded_token, token_utils.TokenType.RESET_PASSWORD, user.id)
+        token.expire()
+
     def test_email_update_confirmation_with_invalid_token(self, client):
         response = client.post("/native/v2/profile/email_update/confirm", json={"token": "invalid token"})
 
@@ -123,6 +143,22 @@ class NewEmailSelectionTest:
         base_url_params = _get_last_sent_email_url_params()
         assert {"new_email", "token", "expiration_timestamp"} <= base_url_params.keys()
         assert base_url_params["new_email"] == [new_email]
+
+    def test_email_selection_without_password(self, client):
+        user = users_factories.UserFactory(password=None)
+        token = token_utils.Token.create(
+            type_=token_utils.TokenType.EMAIL_CHANGE_NEW_EMAIL_SELECTION,
+            ttl=users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME,
+            user_id=user.id,
+        ).encoded_token
+
+        response = client.with_token(user.email).post(
+            "/native/v2/profile/email_update/new_email",
+            json={"token": token, "newEmail": "alice@example.com"},
+        )
+
+        assert response.status_code == 403, response.json
+        assert response.json["code"] == "PASSWORD_NEEDED"
 
     def test_email_selection_with_invalid_token(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
@@ -162,6 +198,7 @@ class EmailUpdateStatusTest:
             "expired": False,
             "status": users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST.value,
             "token": None,
+            "resetPasswordToken": None,
         }
         token.expire()
 
@@ -186,8 +223,34 @@ class EmailUpdateStatusTest:
             "expired": False,
             "status": users_models.EmailHistoryEventTypeEnum.CONFIRMATION.value,
             "token": token.encoded_token,
+            "resetPasswordToken": None,
         }
         token.expire()
+
+    def test_status_returns_reset_password_token(self, client):
+        yesterday = datetime.utcnow() + timedelta(days=-1)
+        user = users_factories.UserFactory(password=None)
+        users_factories.EmailUpdateEntryFactory(
+            user=user, creationDate=yesterday, newUserEmail=None, newDomainEmail=None
+        )
+        users_factories.EmailConfirmationEntryFactory(user=user, newUserEmail=None, newDomainEmail=None)
+        reset_password_token = token_utils.Token.create(
+            type_=token_utils.TokenType.RESET_PASSWORD,
+            ttl=users_constants.RESET_PASSWORD_TOKEN_LIFE_TIME,
+            user_id=user.id,
+        )
+
+        response = client.with_token(user.email).get("/native/v2/profile/email_update/status")
+
+        assert response.status_code == 200, response.json
+        assert response.json == {
+            "newEmail": None,
+            "expired": True,
+            "status": users_models.EmailHistoryEventTypeEnum.CONFIRMATION.value,
+            "token": None,
+            "resetPasswordToken": reset_password_token.encoded_token,
+        }
+        reset_password_token.expire()
 
     def test_new_email_selection_status(self, client):
         yesterday = datetime.utcnow() + timedelta(days=-1)
@@ -215,6 +278,7 @@ class EmailUpdateStatusTest:
             "expired": False,
             "status": users_models.EmailHistoryEventTypeEnum.NEW_EMAIL_SELECTION.value,
             "token": None,
+            "resetPasswordToken": None,
         }
         token.expire()
 
@@ -243,6 +307,42 @@ class UpdateUserEmailIntegrationTest:
             "/native/v2/profile/email_update/confirm", json={"token": email_update_confirmation_token}
         )
         assert email_update_confirmation_response == 200, email_update_confirmation_response.json
+
+        new_email = "alice@example.com"
+        new_email_selection_token = email_update_confirmation_response.json["newEmailSelectionToken"]
+        new_email_selection_response = client.with_token(user.email).post(
+            "/native/v2/profile/email_update/new_email",
+            json={"token": new_email_selection_token, "newEmail": new_email},
+        )
+        assert new_email_selection_response == 204, new_email_selection_response
+
+        [email_update_confirmation_token] = _get_last_sent_email_url_params()["token"]
+        email_update_confirmation_response = client.with_token(user.email).put(
+            "/native/v1/profile/email_update/validate",
+            json={"token": email_update_confirmation_token},
+        )
+        assert email_update_confirmation_response == 200, email_update_confirmation_response
+
+        assert user.email == new_email
+
+    def test_user_email_update_flow_without_password(self, client):
+        user = users_factories.UserFactory(password=None)
+
+        email_update_start_response = client.with_token(user.email).post("/native/v2/profile/update_email")
+        assert email_update_start_response == 204, email_update_start_response.json
+
+        [email_update_confirmation_token] = _get_last_sent_email_url_params()["token"]
+        email_update_confirmation_response = client.post(
+            "/native/v2/profile/email_update/confirm", json={"token": email_update_confirmation_token}
+        )
+        assert email_update_confirmation_response == 200, email_update_confirmation_response.json
+
+        reset_password_token = email_update_confirmation_response.json["resetPasswordToken"]
+        reset_password_response = client.with_token(user.email).post(
+            "/native/v2/profile/email_update/new_password",
+            json={"reset_password_token": reset_password_token, "newPassword": "user@AZERTY123"},
+        )
+        assert reset_password_response == 204, reset_password_response.json
 
         new_email = "alice@example.com"
         new_email_selection_token = email_update_confirmation_response.json["newEmailSelectionToken"]

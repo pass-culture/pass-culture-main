@@ -614,6 +614,7 @@ def test_public_api(client):
                         "accessToken": {"title": "Accesstoken", "type": "string"},
                         "newEmailSelectionToken": {"title": "Newemailselectiontoken", "type": "string"},
                         "refreshToken": {"title": "Refreshtoken", "type": "string"},
+                        "resetPasswordToken": {"nullable": True, "title": "Resetpasswordtoken", "type": "string"},
                     },
                     "required": ["accessToken", "refreshToken", "newEmailSelectionToken"],
                     "title": "EmailChangeConfirmationResponse",
@@ -654,6 +655,7 @@ def test_public_api(client):
                         "newEmail": {"nullable": True, "title": "Newemail", "type": "string"},
                         "status": {"$ref": "#/components/schemas/EmailHistoryEventTypeEnum"},
                         "token": {"nullable": True, "title": "Token", "type": "string"},
+                        "resetPasswordToken": {"nullable": True, "title": "Resetpasswordtoken", "type": "string"},
                     },
                     "required": ["expired", "status"],
                     "title": "EmailUpdateStatusResponse",
@@ -4179,6 +4181,30 @@ def test_public_api(client):
                     },
                     "security": [{"JWTAuth": []}],
                     "summary": "select_new_email <POST>",
+                    "tags": [],
+                }
+            },
+            "/native/v2/profile/email_update/new_password": {
+                "post": {
+                    "description": "",
+                    "operationId": "post__native_v2_profile_email_update_new_password",
+                    "parameters": [],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {"schema": {"$ref": "#/components/schemas/ResetPasswordRequest"}}
+                        }
+                    },
+                    "responses": {
+                        "204": {"description": "No Content"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "select_new_password <POST>",
                     "tags": [],
                 }
             },
