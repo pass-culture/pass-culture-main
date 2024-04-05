@@ -66,7 +66,8 @@ def test_integration_partial_auto_mark_as_used():
     # generation of the pricing.
     now = datetime.datetime.utcnow()
     venue = offerers_factories.VenueFactory(pricing_point="self", reimbursement_point="self")
-    factories.BankInformationFactory(venue=venue)
+    bank_account = factories.BankAccountFactory(offerer=venue.managingOfferer)
+    offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
     booking = bookings_factories.BookingFactory(
         stock=offers_factories.EventStockFactory(
             beginningDatetime=now,
@@ -100,7 +101,8 @@ def test_integration_partial_used_then_cancelled():
     # A booking is manually marked as used, then cancelled.
     initial_dt = datetime.datetime.utcnow()
     venue = offerers_factories.VenueFactory(pricing_point="self", reimbursement_point="self")
-    factories.BankInformationFactory(venue=venue)
+    bank_account = factories.BankAccountFactory(offerer=venue.managingOfferer)
+    offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
     booking = bookings_factories.BookingFactory(stock__offer__venue=venue)
 
     with time_machine.travel(initial_dt, tick=False):
