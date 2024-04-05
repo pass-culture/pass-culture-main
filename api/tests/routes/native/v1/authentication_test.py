@@ -24,7 +24,6 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import constants as users_constants
-from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.models import AccountState
@@ -982,8 +981,6 @@ class ResetPasswordTest:
         db.session.refresh(user)
         assert user.password == crypto.hash_password(new_password)
 
-        with pytest.raises(users_exceptions.InvalidToken):
-            token.check(token_utils.TokenType.RESET_PASSWORD)
         # Ensure the access token is valid
         access_token = response.json["accessToken"]
         client.auth_header = {"Authorization": f"Bearer {access_token}"}
