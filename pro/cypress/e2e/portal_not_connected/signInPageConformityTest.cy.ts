@@ -6,9 +6,9 @@ describe('signin page', () => {
 
     cy.url().should('include', CONSTANTS.signIn)
 
-    cy.get(CONSTANTS.emailId).should('exist')
+    cy.get(CONSTANTS.emailField).should('exist')
 
-    cy.get(CONSTANTS.passwordId).should('exist')
+    cy.get(CONSTANTS.passwordField).should('exist')
 
     cy.contains(CONSTANTS.forgotPasswordText)
       .should('have.attr', 'href')
