@@ -1,7 +1,10 @@
 import datetime
 import enum
+from functools import partial
+import json
 import typing
 
+from flask import url_for
 from flask_wtf import FlaskForm
 import wtforms
 
@@ -13,6 +16,9 @@ from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils
 from pcapi.routes.backoffice.forms.empty import BatchForm
+
+
+operator_no_require_value = ["NOT_EXIST"]
 
 
 class BookingStatus(enum.Enum):
@@ -30,6 +36,95 @@ class CollectiveBookingStatus(enum.Enum):
     USED = "Validée"
     CANCELLED = "Annulée"
     REIMBURSED = "Remboursée"
+
+
+form_field_configuration = {
+    "CREATION_DATE": {
+        "field": "date",
+        "operator": [
+            "GREATER_THAN_OR_EQUAL_TO",
+            "LESS_THAN",
+        ],
+    },
+    "DEPARTMENT": {"field": "department", "operator": ["IN", "NOT_IN"]},
+    "FORMATS": {"field": "formats", "operator": ["INTERSECTS", "NOT_INTERSECTS"]},
+    "REGION": {"field": "region", "operator": ["IN", "NOT_IN"]},
+    "EVENT_DATE": {
+        "field": "date",
+        "operator": [
+            "GREATER_THAN_OR_EQUAL_TO",
+            "LESS_THAN",
+        ],
+    },
+    "BOOKING_LIMIT_DATE": {
+        "field": "date",
+        "operator": [
+            "GREATER_THAN_OR_EQUAL_TO",
+            "LESS_THAN",
+        ],
+    },
+    "ID": {"field": "integer", "operator": ["EQUALS", "NOT_EQUALS"]},
+    "INSTITUTION": {"field": "institution", "operator": ["IN", "NOT_IN"]},
+    "NAME": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "NAME_EQUALS", "NAME_NOT_EQUALS"]},
+    "OFFERER": {"field": "offerer", "operator": ["IN", "NOT_IN"]},
+    "STATUS": {"field": "status", "operator": ["IN", "NOT_IN"]},
+    "VENUE": {"field": "venue", "operator": ["IN", "NOT_IN"]},
+    "VALIDATION": {"field": "validation", "operator": ["IN", "NOT_IN"]},
+    "PRICE": {"field": "price", "operator": ["EQUALS", "LESS_THAN", "GREATER_THAN_OR_EQUAL_TO"]},
+}
+
+
+class CollectiveBookingAdvancedSearchSubForm(utils.PCForm):
+    class Meta:
+        csrf = False
+
+    json_data = json.dumps(
+        {
+            "display_configuration": form_field_configuration,
+            "all_available_fields": [
+                "date",  # datecreated
+                "department",  # departement de l'offre via offer -> venue, booking -> venue mettre
+                "formats",  # format de l'offre, a retirer
+                "region",  # probablement departement code offre -> venue, booking -> venue mettre
+                "institution",  # institution de l'offre offre _institution, booking?
+                "integer",  # id du booking
+                "offerer",  # offerer via offre -> venue, booking -> venue mettre
+                "string",  # ???
+                "status",  # status de l'offre -> booking status à mettre
+                "venue",  # offre -> venue, booking? mettre booking -> venue
+                "validation",  # a retirer
+                "price",  # booking -> total_amount
+            ],
+            "sub_rule_type_field_name": "search_field",
+            "operator_field_name": "operator",
+        }
+    )
+
+
+class GetCollectiveBookingsBaseFields(utils.PCForm):
+    sort = wtforms.HiddenField(
+        "sort", validators=(wtforms.validators.Optional(), wtforms.validators.AnyOf(("id", "dateCreated")))
+    )
+    order = wtforms.HiddenField(
+        "order", default="asc", validators=(wtforms.validators.Optional(), wtforms.validators.AnyOf(("asc", "desc")))
+    )
+    limit = fields.PCSelectField(
+        "Nombre maximum de résultats",
+        choices=((100, "100"), (500, "500"), (1000, "1000"), (3000, "3000")),
+        default="100",
+        coerce=int,
+        validators=(wtforms.validators.Optional(),),
+    )
+
+    def get_sort_link(self, endpoint: str) -> str:
+        form_url = partial(url_for, endpoint, **self.raw_data)
+        return form_url(
+            sort="dateCreated", order="asc" if self.sort.data == "dateCreated" and self.order.data == "desc" else "desc"
+        )
+
+    def is_empty(self) -> bool:
+        # needed to clean multiple inheritances
+        return True
 
 
 class BaseBookingListForm(FlaskForm):
@@ -111,6 +206,45 @@ class BaseBookingListForm(FlaskForm):
                 f"&offerType=all&offerVenueId={self.venue.data[0]}"
             )
         return output
+
+
+class GetCollectiveBookingAdvancedSearchForm(GetCollectiveBookingsBaseFields):
+    class Meta:
+        csrf = False
+
+    method = "GET"
+    only_validated_offerers = fields.PCSwitchBooleanField(
+        "Uniquement les offres des structures validées", full_row=True
+    )
+    search = fields.PCFieldListField(
+        fields.PCFormField(CollectiveBookingAdvancedSearchSubForm),
+        label="recherches",
+        min_entries=1,
+    )
+
+    def is_empty(self) -> bool:
+        empty = GetCollectiveBookingAdvancedSearchForm.is_search_empty(self.search.data)
+        return empty and super().is_empty()
+
+    @staticmethod
+    def is_sub_search_empty(sub_search: dict[str, typing.Any]) -> bool:
+        field_name = sub_search.get("search_field")
+        operator = sub_search.get("operator")
+        if field_name:
+            field_attribute_name = form_field_configuration.get(field_name, {}).get("field", "")
+            field_data = sub_search.get(field_attribute_name)  # type: ignore [call-overload]
+            if field_data:
+                return False
+            if operator in operator_no_require_value:
+                return False
+        return True
+
+    @staticmethod
+    def is_search_empty(search_data: list[dict[str, typing.Any]]) -> bool:
+        for sub_search in search_data:
+            if not GetCollectiveBookingAdvancedSearchForm.is_sub_search_empty(sub_search):
+                return False
+        return True
 
 
 class GetDownloadBookingsForm(FlaskForm):
@@ -203,3 +337,11 @@ class CancelIndividualBookingForm(FlaskForm):
 
 class BatchCancelIndividualBookingsForm(BatchForm, CancelIndividualBookingForm):
     pass
+
+
+class InternalSearchForm(GetCollectiveBookingListForm, GetCollectiveBookingAdvancedSearchForm):
+    """concat of GetOffersSearchForm and GetOfferAdvancedSearchForm. this form is never displayed but it is the one
+    used to display the list of individual offers"""
+
+    class Meta:
+        csrf = False
