@@ -1,6 +1,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_size.scss" as size;
 
 .offer-card-link {
   display: block;
@@ -24,13 +25,9 @@
   }
 }
 
-.offer-card-right {
-  display: flex;
-  flex: 1;
-}
-
 .offer-card {
   display: flex;
+  flex-direction: column;
   gap: rem.torem(16px);
   padding: rem.torem(16px);
   border: 2px solid colors.$grey-light;
@@ -38,6 +35,7 @@
   transition: box-shadow 0.1s ease-out;
   position: relative;
   z-index: 0;
+  align-items: center;
 
   &:hover {
     box-shadow: 0 2px 16px 0 colors.$large-shadow;
@@ -49,6 +47,13 @@
         transform: none;
       }
     }
+  }
+
+  &-right {
+    display: flex;
+    flex: 1;
+    flex-direction: column-reverse;
+    gap: rem.torem(16px);
   }
 
   &-image {
@@ -89,6 +94,7 @@
 
   &-actions {
     display: flex;
+    justify-content: center;
     gap: rem.torem(16px);
     position: relative;
     z-index: 2;
@@ -97,4 +103,19 @@
 
 .offer-title {
   @include fonts.title3;
+}
+
+@container adage (min-width: #{size.$tablet}) {
+  .offer-card {
+    flex-direction: row;
+    align-items: flex-start;
+
+    &-right {
+      flex-direction: row;
+    }
+
+    &-actions {
+      justify-content: flex-start;
+    }
+  }
 }
