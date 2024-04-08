@@ -100,51 +100,52 @@ export const AppLayout = ({
           }
         }}
       >
-        {isNewSideBarNavigation && layout === 'basic' && (
-          <nav
-            id="lateral-panel"
-            className={classnames({
-              [styles['lateral-panel-wrapper']]: true,
-              [styles['lateral-panel-wrapper-open']]: lateralPanelOpen,
-            })}
-            ref={navPanel}
-            aria-label="Menu principal"
-          >
-            <div className={styles['lateral-panel-menu']}>
-              {lateralPanelOpen && (
-                <div
-                  className={classnames({
-                    [styles['lateral-panel-nav']]: true,
-                    [styles['lateral-panel-nav-open']]: lateralPanelOpen,
-                  })}
-                >
-                  <Button
-                    aria-expanded={lateralPanelOpen}
-                    variant={ButtonVariant.TERNARY}
-                    onClick={() => {
-                      setLateralPanelOpen(!lateralPanelOpen)
-                      openButtonRef.current?.focus()
-                    }}
-                    aria-label="Fermer"
-                    aria-controls="lateral-panel"
-                    ref={closeButtonRef}
-                    className={styles['lateral-panel-nav-button']}
+        {isNewSideBarNavigation &&
+          (layout === 'basic' || layout === 'sticky-actions') && (
+            <nav
+              id="lateral-panel"
+              className={classnames({
+                [styles['lateral-panel-wrapper']]: true,
+                [styles['lateral-panel-wrapper-open']]: lateralPanelOpen,
+              })}
+              ref={navPanel}
+              aria-label="Menu principal"
+            >
+              <div className={styles['lateral-panel-menu']}>
+                {lateralPanelOpen && (
+                  <div
+                    className={classnames({
+                      [styles['lateral-panel-nav']]: true,
+                      [styles['lateral-panel-nav-open']]: lateralPanelOpen,
+                    })}
                   >
-                    <SvgIcon src={strokeCloseIcon} alt="" width="24" />
-                  </Button>
-                  <SvgIcon
-                    alt="Pass Culture pro, l’espace des acteurs culturels"
-                    src={logoPassCultureProIcon}
-                    viewBox="0 0 119 40"
-                    width="119"
-                    className="logo"
-                  />
-                </div>
-              )}
-              <SideNavLinks isLateralPanelOpen={lateralPanelOpen} />
-            </div>
-          </nav>
-        )}
+                    <Button
+                      aria-expanded={lateralPanelOpen}
+                      variant={ButtonVariant.TERNARY}
+                      onClick={() => {
+                        setLateralPanelOpen(!lateralPanelOpen)
+                        openButtonRef.current?.focus()
+                      }}
+                      aria-label="Fermer"
+                      aria-controls="lateral-panel"
+                      ref={closeButtonRef}
+                      className={styles['lateral-panel-nav-button']}
+                    >
+                      <SvgIcon src={strokeCloseIcon} alt="" width="24" />
+                    </Button>
+                    <SvgIcon
+                      alt="Pass Culture pro, l’espace des acteurs culturels"
+                      src={logoPassCultureProIcon}
+                      viewBox="0 0 119 40"
+                      width="119"
+                      className="logo"
+                    />
+                  </div>
+                )}
+                <SideNavLinks isLateralPanelOpen={lateralPanelOpen} />
+              </div>
+            </nav>
+          )}
         <div
           className={classnames({
             [styles['main-wrapper']]: true,

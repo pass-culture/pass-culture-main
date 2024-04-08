@@ -32,7 +32,7 @@
   }
 
   &-sticky-actions {
-    padding-bottom: calc(rem.torem(32px) + size.$action-bar-sticky-height);
+    padding-bottom: rem.torem(32px);
   }
 }
 
