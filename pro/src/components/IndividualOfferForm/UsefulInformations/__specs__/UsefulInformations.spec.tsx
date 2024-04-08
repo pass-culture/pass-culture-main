@@ -268,7 +268,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
     await userEvent.click(withEmail)
 
     const bookingContactField = screen.getByLabelText('Email de contact *')
-    await userEvent.type(bookingContactField, 'robertoDu36@passculture.app')
+    await userEvent.type(bookingContactField, 'robertoDu36@PASSculture.app')
 
     await userEvent.click(await screen.findByText('Submit'))
 
