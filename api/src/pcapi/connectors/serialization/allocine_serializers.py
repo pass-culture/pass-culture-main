@@ -209,7 +209,7 @@ class AllocineBacklink(pydantic.BaseModel):
 
 class AllocineMovieData(pydantic.BaseModel):
     eidr: str | None
-    productionYear: int
+    productionYear: int | None
 
 
 class AllocineMoviePoster(pydantic.BaseModel):
@@ -318,6 +318,10 @@ class AllocineMovie(pydantic.BaseModel):
 
         hours, minutes = map(int, match.groups())
         return hours * 60 + minutes
+
+    @pydantic.field_validator("releases", "countries", "genres", "companies", mode="before")
+    def convert_none_to_empty_list(cls, nullable_field: list | None) -> list:
+        return [] if not nullable_field else nullable_field
 
 
 class AllocinePageInfo(pydantic.BaseModel):

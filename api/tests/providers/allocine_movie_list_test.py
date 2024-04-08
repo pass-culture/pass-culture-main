@@ -28,7 +28,7 @@ class AllocineMovieListTest:
 
         # Then
         catalogue = Product.query.order_by(Product.id).all()
-        assert len(catalogue) == 4
+        assert len(catalogue) == 5
 
         allocine_products_provider = Provider.query.filter(
             Provider.name == providers_constants.ALLOCINE_PRODUCTS_PROVIDER_NAME
