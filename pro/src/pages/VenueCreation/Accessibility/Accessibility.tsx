@@ -2,12 +2,16 @@ import { useFormikContext } from 'formik'
 import isEqual from 'lodash.isequal'
 import React, { useMemo } from 'react'
 
+import Callout from 'components/Callout/Callout'
+import { CalloutVariant } from 'components/Callout/types'
 import FormLayout from 'components/FormLayout'
 import { useAccessibilityOptions } from 'hooks'
 import { VenueEditionFormValues } from 'pages/VenueEdition/types'
-import { Checkbox, CheckboxGroup, InfoBox } from 'ui-kit'
+import { Checkbox, CheckboxGroup } from 'ui-kit'
 
 import { VenueCreationFormValues } from '../types'
+
+import styles from './Accessibility.module.scss'
 
 interface AccessiblityProps {
   isCreatingVenue: boolean
@@ -29,22 +33,24 @@ export const Accessibility = ({ isCreatingVenue }: AccessiblityProps) => {
 
   return (
     <FormSectionComponent title="Critères d’accessibilité">
-      <FormLayout.Row
-        sideComponent={
-          <InfoBox
-            link={{
-              text: 'En savoir plus',
-              to: 'https://aide.passculture.app/hc/fr/articles/4412007286289--Acteurs-Culturels-Comment-indiquer-les-conditions-d-accessibilit%C3%A9-d-une-offre-sur-le-pass-Culture-',
-              isExternal: true,
-              'aria-label': 'en savoir plus sur les modalités d’accessibilité',
-            }}
-          >
-            Les modalités d’accessibilité s’appliqueront par défaut à la
-            création de vos offres. Vous pourrez modifier cette information à
-            l’échelle de chaque offre.
-          </InfoBox>
-        }
+      <Callout
+        title="Détaillez les modalités d’accessibilité de votre établissement sur la plateforme collaborative acceslibre.gouv.fr"
+        links={[
+          {
+            href: 'https://acceslibre.beta.gouv.fr/',
+            label:
+              'Rendez-vous sur acceslibre.beta.gouv.fr pour ajouter les modalités d’accès de votre établissement',
+            isExternal: true,
+          },
+        ]}
+        variant={CalloutVariant.INFO}
+        className={styles['callout']}
       >
+        La mise à jour de ces informations peut mettre quelques jours à
+        apparaître.
+      </Callout>
+
+      <FormLayout.Row>
         <CheckboxGroup
           group={useAccessibilityOptions(setFieldValue)}
           groupName="accessibility"

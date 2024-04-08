@@ -2,6 +2,8 @@ import React from 'react'
 
 import { GetVenueResponseModel } from 'apiClient/v1'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
+import Callout from 'components/Callout/Callout'
+import { CalloutVariant } from 'components/Callout/types'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
@@ -32,13 +34,6 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
         />
       </SummarySubSection>
 
-      {!(isAccesLibreEnabled && venue.externalAccessibilityData) && (
-        <AccessibilitySummarySection
-          accessibleItem={venue}
-          accessibleWording="Votre établissement est accessible aux publics en situation de handicap :"
-        />
-      )}
-
       {isOpeningHoursEnabled && venue.isPermanent && (
         <OpeningHoursReadOnly openingHours={venue.openingHours} />
       )}
@@ -61,6 +56,30 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
           ]}
         />
       </SummarySubSection>
+
+      {!(isAccesLibreEnabled && venue.externalAccessibilityData) && (
+        <AccessibilitySummarySection
+          callout={
+            <Callout
+              title="Détaillez les modalités d’accessibilité de votre établissement sur la plateforme collaborative acceslibre.gouv.fr"
+              links={[
+                {
+                  href: 'https://acceslibre.beta.gouv.fr/',
+                  label:
+                    'Rendez-vous sur acceslibre.beta.gouv.fr pour ajouter les modalités d’accès de votre établissement',
+                  isExternal: true,
+                },
+              ]}
+              variant={CalloutVariant.INFO}
+            >
+              La mise à jour de ces informations peut mettre quelques jours à
+              apparaître.
+            </Callout>
+          }
+          accessibleItem={venue}
+          accessibleWording="Votre établissement est accessible aux publics en situation de handicap :"
+        />
+      )}
     </SummarySection>
   )
 }
