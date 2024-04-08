@@ -1,6 +1,7 @@
 import sys
 import typing
 
+from pydantic.v1 import ValidationError
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
@@ -15,9 +16,12 @@ if typing.TYPE_CHECKING:
     from sentry_sdk.types import Event
 
 
-def ignore_flask_shell_event(event: "Event", _hint: dict[str, typing.Any]) -> "Event | None":
-    if len(sys.argv) >= 2 and "flask" in sys.argv[0] and sys.argv[1] == "shell":
+def before_send(event: "Event", _hint: dict[str, typing.Any]) -> "Event | None":
+    if _is_flask_shell_event():
         return None
+
+    if custom_fingerprint := get_custom_fingerprint(_hint):
+        event["fingerprint"] = ["{{ default }}", custom_fingerprint]
     return event
 
 
@@ -30,6 +34,21 @@ def init_sentry_sdk() -> None:
         release=read_version_from_file(),
         environment=settings.ENV,
         traces_sample_rate=settings.SENTRY_SAMPLE_RATE,
-        before_send=ignore_flask_shell_event,
+        before_send=before_send,
         max_value_length=8192,
     )
+
+
+def get_custom_fingerprint(hint: dict[str, typing.Any]) -> str | None:
+    if "exc_info" not in hint:
+        return None
+
+    _exc_type, exc_value, _traceback = hint["exc_info"]
+
+    if isinstance(exc_value, ValidationError):
+        return str(exc_value.errors())
+    return None
+
+
+def _is_flask_shell_event() -> bool:
+    return bool(len(sys.argv) >= 2 and "flask" in sys.argv[0] and sys.argv[1] == "shell")
