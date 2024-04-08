@@ -35,7 +35,7 @@ const validationSchema = {
         .test({
           name: 'organisationEmailNotPassCulture',
           message: 'Ce mail doit vous appartenir',
-          test: (value) => !value.endsWith('@passculture.app'),
+          test: (value) => !value.toLowerCase().endsWith('@passculture.app'),
         }),
   }),
 }
