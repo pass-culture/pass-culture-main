@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { CollectiveOfferResponseModel } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import Callout from 'components/Callout/Callout'
+import useActiveFeature from 'hooks/useActiveFeature'
 import strokeMyInstitution from 'icons/stroke-my-institution.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -11,6 +12,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
 import { AnalyticsContextProvider } from '../../providers/AnalyticsContextProvider'
+import { AdageOfferListCard } from '../OffersInstantSearch/OffersSearch/Offers/AdageOfferListCard/AdageOfferListCard'
 import Offer from '../OffersInstantSearch/OffersSearch/Offers/Offer'
 
 import styles from './OffersForMyInstitution.module.scss'
@@ -22,6 +24,10 @@ const OffersForMyInstitution = (): JSX.Element => {
     CollectiveOfferResponseModel[]
   >([])
   const [loadingOffers, setLoadingOffers] = useState<boolean>(false)
+
+  const isNewOfferCardEnabled = useActiveFeature(
+    'WIP_ENABLE_ADAGE_VISUALIZATION'
+  )
 
   useEffect(() => {
     async function getMyInstitutionOffers() {
@@ -110,7 +116,11 @@ const OffersForMyInstitution = (): JSX.Element => {
           {myInstitutionOffers.map((offer, i) => {
             return (
               <li key={offer.id} data-testid="offer-listitem">
-                <Offer offer={offer} queryId="" position={i}></Offer>
+                {isNewOfferCardEnabled ? (
+                  <AdageOfferListCard offer={offer} />
+                ) : (
+                  <Offer offer={offer} queryId="" position={i} />
+                )}
               </li>
             )
           })}

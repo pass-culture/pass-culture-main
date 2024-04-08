@@ -5,7 +5,6 @@ import {
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
-import React from 'react'
 import * as instantSearch from 'react-instantsearch'
 
 import {
@@ -764,5 +763,24 @@ describe('offers', () => {
         source: 'homepage',
       })
     })
+  })
+
+  it('should show the new offer cards if the ff is enabled', async () => {
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(offerInParis)
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+      offerInCayenne
+    )
+    renderOffers({ ...offersProps, isBackToTopVisibile: true }, adageUser, {
+      features: ['WIP_ENABLE_ADAGE_VISUALIZATION'],
+    })
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(
+      screen.getByRole('link', { name: offerInParis.name })
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('link', { name: offerInCayenne.name })
+    ).toBeInTheDocument()
   })
 })
