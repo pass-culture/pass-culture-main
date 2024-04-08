@@ -60,7 +60,9 @@ describe('OfferCard component', () => {
     }
     renderOfferCardComponent({ offer, handlePlaylistElementTracking: vi.fn() })
 
-    expect(screen.getByText('En classe')).toBeInTheDocument()
+    expect(
+      screen.getByText(/Dans l’établissement scolaire/)
+    ).toBeInTheDocument()
   })
 
   it('should render offer venue tag when offer will happens in pro venue', () => {
@@ -73,8 +75,8 @@ describe('OfferCard component', () => {
     }
     renderOfferCardComponent({ offer, handlePlaylistElementTracking: vi.fn() })
 
-    expect(screen.getByText('Sortie')).toBeInTheDocument()
-    expect(screen.getByText('À 10 km')).toBeInTheDocument()
+    expect(screen.getByText(/Sortie/)).toBeInTheDocument()
+    expect(screen.getByText(/À 10 km/)).toBeInTheDocument()
   })
 
   it('should render other venue tag when offer will happens in other venue than pro one', () => {
@@ -87,8 +89,8 @@ describe('OfferCard component', () => {
     }
     renderOfferCardComponent({ offer, handlePlaylistElementTracking: vi.fn() })
 
-    expect(screen.getByText('Sortie')).toBeInTheDocument()
-    expect(screen.getByText('Lieu à définir')).toBeInTheDocument()
+    expect(screen.getByText(/Sortie/)).toBeInTheDocument()
+    expect(screen.getByText(/Lieu à définir/)).toBeInTheDocument()
   })
 
   it('should display the distance when it is available', () => {

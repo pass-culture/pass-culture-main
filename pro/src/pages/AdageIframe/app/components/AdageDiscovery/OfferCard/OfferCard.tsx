@@ -1,20 +1,15 @@
 import { Link, useSearchParams } from 'react-router-dom'
 
 import { CollectiveOfferTemplateResponseModel } from 'apiClient/adage'
-import { OfferAddressType } from 'apiClient/v1'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
-import {
-  humanizeDistance,
-  getHumanizeRelativeDistance,
-} from 'utils/getDistance'
+import { getHumanizeRelativeDistance } from 'utils/getDistance'
 
 import OfferFavoriteButton from '../../OffersInstantSearch/OffersSearch/Offers/OfferFavoriteButton/OfferFavoriteButton'
+import { getOfferTags } from '../../OffersInstantSearch/OffersSearch/Offers/utils/getOfferTags'
 
-import logoSchoolTrip from './assets/icon-school-trip.svg'
-import logoSchool from './assets/icon-school.svg'
 import styles from './OfferCard.module.scss'
 
 export interface CardComponentProps {
@@ -29,23 +24,6 @@ const OfferCardComponent = ({
   const [searchParams] = useSearchParams()
   const adageAuthToken = searchParams.get('token')
   const { adageUser } = useAdageUser()
-
-  const tagInfos = {
-    [OfferAddressType.SCHOOL]: [{ logo: logoSchool, text: 'En classe' }],
-    [OfferAddressType.OFFERER_VENUE]: [
-      { logo: logoSchoolTrip, text: 'Sortie' },
-      {
-        text:
-          offer.offerVenue.distance || offer.offerVenue.distance === 0
-            ? `À ${humanizeDistance(offer.offerVenue.distance * 1000)}`
-            : null,
-      },
-    ],
-    [OfferAddressType.OTHER]: [
-      { logo: logoSchoolTrip, text: 'Sortie' },
-      { text: 'Lieu à définir' },
-    ],
-  }
 
   return (
     <div className={styles['container']}>
@@ -76,24 +54,15 @@ const OfferCardComponent = ({
         </div>
 
         <div className={styles['offer-tag-container']}>
-          {tagInfos[offer.offerVenue.addressType].map((elm, index) => {
+          {getOfferTags(offer, adageUser, true).map((tag) => {
             return (
-              elm.text && (
-                <Tag
-                  key={`tag-${index}`}
-                  variant={TagVariant.LIGHT_GREY}
-                  className={styles['offer-tag']}
-                >
-                  {elm.logo && (
-                    <img
-                      alt=""
-                      src={elm.logo}
-                      className={styles['offer-tag-image']}
-                    />
-                  )}
-                  <span>{elm.text}</span>
-                </Tag>
-              )
+              <Tag
+                key={tag.text}
+                variant={TagVariant.LIGHT_GREY}
+                className={styles['offer-tag']}
+              >
+                <span aria-hidden="true">{tag.icon}</span> {tag.text}
+              </Tag>
             )
           })}
         </div>
