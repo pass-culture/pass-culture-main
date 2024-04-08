@@ -761,6 +761,7 @@ def get_product_categories() -> serialization.GetProductCategoriesResponse:
 
 
 @blueprint.v1_offers_blueprint.route("/<int:offer_id>/image", methods=["POST"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[documentation_constants.IMAGE_TAG],
@@ -774,7 +775,6 @@ def get_product_categories() -> serialization.GetProductCategoriesResponse:
         ),
     ),
 )
-@api_key_required
 def upload_image(offer_id: int, form: serialization.ImageUploadFile) -> None:
     """
     Upload an image
