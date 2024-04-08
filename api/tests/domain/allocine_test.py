@@ -25,11 +25,12 @@ class GetMovieListFromAllocineTest:
     def test_get_all_pages(self, requests_mock):
         self._configure_api_responses(requests_mock)
         movies = get_movie_list()
-        assert len(movies) == 4
+        assert len(movies) == 5
         assert movies[0].internalId == 131136
         assert movies[1].internalId == 41324
         assert movies[2].internalId == 2161
         assert movies[3].internalId == 4076
+        assert movies[4].internalId == 325691
 
     @patch("pcapi.connectors.api_allocine.get_movie_list_page")
     def test_handles_api_exception(self, mock_get_movie_list_page, caplog):

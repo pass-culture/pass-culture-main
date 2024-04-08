@@ -3,7 +3,7 @@ import copy
 
 ALLOCINE_MOVIE_LIST_PAGE_1 = {
     "movieList": {
-        "totalCount": 4,
+        "totalCount": 5,
         "pageInfo": {"hasNextPage": True, "endCursor": "YXJyYXljb25uZWN0aW9uOjQ5"},
         "edges": [
             {
@@ -143,7 +143,7 @@ ALLOCINE_MOVIE_LIST_PAGE_1_UPDATED["movieList"]["edges"][0]["node"]["title"] = "
 
 ALLOCINE_MOVIE_LIST_PAGE_2 = {
     "movieList": {
-        "totalCount": 4,
+        "totalCount": 5,
         "pageInfo": {"hasNextPage": False, "endCursor": "YXJyYXljb25uZWN0aW9uOjQ6"},
         "edges": [
             {
@@ -284,6 +284,66 @@ ALLOCINE_MOVIE_LIST_PAGE_2 = {
                         {"activity": "Distribution", "company": {"name": "Les Acacias"}},
                         {"activity": "Production", "company": {"name": "Cineas"}},
                     ],
+                }
+            },
+            {
+                "node": {
+                    "id": "TW92aWU6MzI1Njkx",
+                    "internalId": 325691,
+                    "backlink": {
+                        "url": "https://www.allocine.fr/film/fichefilm_gen_cfilm=325691.html",
+                        "label": "Tous les détails du film sur AlloCiné",
+                    },
+                    "data": {"eidr": None, "productionYear": None},
+                    "title": "Moon le panda with null fields",
+                    "originalTitle": "Moon le panda",
+                    "type": "FEATURE_FILM",
+                    "runtime": None,
+                    "poster": None,
+                    "synopsis": "L'amitié entre un petit chinois et un panda.",
+                    "releases": None,
+                    "credits": {
+                        "edges": [
+                            {
+                                "node": {
+                                    "person": {
+                                        "firstName": "Gilles",
+                                        "lastName": "de Maistre",
+                                    },
+                                    "position": {"name": "DIRECTOR"},
+                                }
+                            }
+                        ]
+                    },
+                    "cast": {
+                        "backlink": {
+                            "url": "https://www.allocine.fr/film/fichefilm-325691/casting/",
+                            "label": "Casting complet du film sur AlloCiné",
+                        },
+                        "edges": [
+                            {
+                                "node": {
+                                    "actor": {"firstName": "Liu", "lastName": "Ye"},
+                                    "role": None,
+                                }
+                            },
+                            {
+                                "node": {
+                                    "actor": {"firstName": "Noé", "lastName": "Yé"},
+                                    "role": None,
+                                }
+                            },
+                            {
+                                "node": {
+                                    "actor": {"firstName": "Nina", "lastName": "Ye"},
+                                    "role": None,
+                                }
+                            },
+                        ],
+                    },
+                    "countries": None,
+                    "genres": None,
+                    "companies": None,
                 }
             },
         ],
