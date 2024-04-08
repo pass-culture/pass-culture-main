@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React from 'react'
+import React, { ReactNode } from 'react'
 
 import fullEditIcon from 'icons/full-edit.svg'
 import { ButtonLink } from 'ui-kit'
@@ -10,7 +10,7 @@ interface SummaryLayoutSectionProps {
   title: string
   children: React.ReactNode | React.ReactNode[]
   className?: string
-  editLink?: string // FIXME(MathildeDuboille - 18/10/22): make this props mandatory when we can modify collective offer during its creation
+  editLink?: string | ReactNode
   'aria-label'?: string
 }
 
@@ -25,7 +25,7 @@ export const SummarySection = ({
     <div className={style['summary-layout-section-header']}>
       <h2 className={style['section-title']}>{title}</h2>
 
-      {editLink && (
+      {typeof editLink === 'string' ? (
         <ButtonLink
           link={{
             to: editLink,
@@ -37,6 +37,8 @@ export const SummarySection = ({
         >
           Modifier
         </ButtonLink>
+      ) : (
+        editLink
       )}
     </div>
     {children}

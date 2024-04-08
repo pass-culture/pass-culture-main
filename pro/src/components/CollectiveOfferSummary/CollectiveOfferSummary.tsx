@@ -58,7 +58,7 @@ const CollectiveOfferSummary = ({
           <SummarySection
             title="Détails de l’offre"
             editLink={
-              offerManuallyCreated || offer.isTemplate ? offerEditLink : ''
+              offerManuallyCreated || offer.isTemplate ? offerEditLink : null
             }
           >
             <CollectiveOfferVenueSection venue={offer.venue} />
@@ -81,7 +81,7 @@ const CollectiveOfferSummary = ({
             <SummarySection
               title="Date & Prix"
               editLink={
-                offerManuallyCreated || offer.isTemplate ? stockEditLink : ''
+                offerManuallyCreated || offer.isTemplate ? stockEditLink : null
               }
             >
               <CollectiveOfferStockSection
@@ -97,7 +97,7 @@ const CollectiveOfferSummary = ({
               editLink={
                 offerManuallyCreated || offer.isTemplate
                   ? visibilityEditLink
-                  : ''
+                  : null
               }
             >
               <CollectiveOfferVisibilitySection

@@ -2,6 +2,7 @@ import React from 'react'
 
 import { GetVenueResponseModel } from 'apiClient/v1'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
+import fullLinkIcon from 'icons/full-link.svg'
 import strokeAccessibilityBrain from 'icons/stroke-accessibility-brain.svg'
 import strokeAccessibilityEar from 'icons/stroke-accessibility-ear.svg'
 import strokeAccessibilityEye from 'icons/stroke-accessibility-eye.svg'
@@ -24,7 +25,17 @@ export const AccesLibreSection = ({ venue }: AccesLibreSectionProps) => {
   return (
     <SummarySection
       title="Modalités d’accessibilité via acceslibre"
-      editLink={`TODO`}
+      editLink={
+        <ButtonLink
+          link={{
+            to: '',
+            isExternal: true,
+          }}
+          icon={fullLinkIcon}
+        >
+          Éditer sur acceslibre
+        </ButtonLink>
+      }
     >
       <p>
         Les modalités ci-dessous sont issues de la plateforme{' '}
