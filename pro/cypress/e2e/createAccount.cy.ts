@@ -1,20 +1,21 @@
+import * as signup from '../page-objects/signupPage';
+
 describe('Account creation', () => {
   it('should create an account', () => {
     cy.visit('/inscription')
 
     // Fill in form
-    cy.get('#lastName').type('LEMOINE')
-    cy.get('#firstName').type('Jean')
-    cy.get('#email').type(`jean${Math.random()}@example.com`)
-    cy.get('#password').type('ValidPassword12!')
-    cy.get('#countryCode').select('FR')
-    cy.get('#phoneNumber').type('612345678')
+    signup.typeLastName('LEMOINE')
+    signup.typeFirstName('Jean')
+    signup.typeRandomisedEmail()
+    signup.typePassword('ValidPassword12!')
+    signup.typePhoneNumber('612345678')
 
     // Submit form
     cy.intercept({ method: 'POST', url: '/v2/users/signup/pro' }).as(
       'signupUser'
     )
-    cy.get('button[type=submit]').click()
+    signup.clickOnSubmit()
     cy.wait('@signupUser')
     cy.url().should('contain', '/inscription/confirmation')
   })
