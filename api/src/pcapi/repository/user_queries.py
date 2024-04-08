@@ -16,10 +16,6 @@ def find_pro_users_by_email_provider(email_provider: str) -> list[User]:
     )
 
 
-def find_by_validation_token(token: str) -> User:
-    return User.query.filter_by(validationToken=token).one_or_none()
-
-
 def matching(column: str, search_value: str) -> ColumnElement[Boolean]:
     return _sanitized_string(column) == _sanitized_string(search_value)
 
