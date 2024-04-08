@@ -325,7 +325,6 @@ class ValidateCollectiveOfferTemplateTest(PostEndpointHelper):
         assert collective_offer_template_to_validate.isActive is True
         assert collective_offer_template_to_validate.lastValidationType == OfferValidationType.MANUAL
 
-    # TODO (vroullier) 2023-03-24 : remove when we allow validation of rejected collective offer templates
     def test_cant_validate_non_pending_offer(self, legit_user, authenticated_client):
         collective_offer_to_validate = educational_factories.CollectiveOfferTemplateFactory(
             validation=OfferValidationStatus.REJECTED
@@ -405,7 +404,6 @@ class RejectCollectiveOfferTemplateTest(PostEndpointHelper):
         assert collective_offer_template_to_reject.isActive is False
         assert collective_offer_template_to_reject.lastValidationType == OfferValidationType.MANUAL
 
-    # TODO (vroullier) 2023-03-24 : remove when we allow validation of validated collective offer templates
     def test_cant_reject_non_pending_offer_template(self, legit_user, authenticated_client):
         collective_offer_template_to_reject = educational_factories.CollectiveOfferTemplateFactory(
             validation=OfferValidationStatus.APPROVED

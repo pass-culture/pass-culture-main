@@ -809,7 +809,6 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
         assert collective_offer_to_validate.isActive is True
         assert collective_offer_to_validate.lastValidationType == OfferValidationType.MANUAL
 
-    # TODO (vroullier) 2023-03-24 : remove when we allow validation of rejected collective offers
     def test_cant_validate_non_pending_offer(self, legit_user, authenticated_client):
         collective_offer_to_validate = educational_factories.CollectiveOfferFactory(
             validation=OfferValidationStatus.REJECTED
@@ -879,7 +878,6 @@ class RejectCollectiveOfferTest(PostEndpointHelper):
         assert collective_offer_to_reject.isActive is False
         assert collective_offer_to_reject.lastValidationType == OfferValidationType.MANUAL
 
-    # TODO (vroullier) 2023-03-24 : remove when we allow validation of validated collective offers
     def test_cant_reject_non_pending_offer(self, legit_user, authenticated_client):
         collective_offer_to_reject = educational_factories.CollectiveOfferFactory(
             validation=OfferValidationStatus.APPROVED
