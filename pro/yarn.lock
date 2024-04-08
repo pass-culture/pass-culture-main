@@ -2257,12 +2257,12 @@
   resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.27.8.tgz#6667fac16c436b5434a387a34dedb013198f6e6e"
   integrity sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==
 
-"@storybook/addon-a11y@^8.0.5":
-  version "8.0.5"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-a11y/-/addon-a11y-8.0.5.tgz#53a49e2518a24e40d89472ae0fd75fb7ef86f7bf"
-  integrity sha512-QWMbFyZ3Cs859OZ4hoidfZBVHpQ+BAsyu88g/o+AKh5hP3/SRu8g+D/ZVtt2vkwN4jvIQzNDpzjIYKp1zRDczQ==
+"@storybook/addon-a11y@^8.0.6":
+  version "8.0.6"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-a11y/-/addon-a11y-8.0.6.tgz#737978f4100fe4bbe7021e5495d00c22aaee9d4f"
+  integrity sha512-p84GRmEU4f9uro71et4X4elnCFReq16UC44h8neLhcZHlMLkPop5oSRslcvF7MlKrM+mJepO1tsKmBmoTaq2PQ==
   dependencies:
-    "@storybook/addon-highlight" "8.0.5"
+    "@storybook/addon-highlight" "8.0.6"
     axe-core "^4.2.0"
 
 "@storybook/addon-controls@^8.0.5":
@@ -2274,10 +2274,10 @@
     lodash "^4.17.21"
     ts-dedent "^2.0.0"
 
-"@storybook/addon-highlight@8.0.5":
-  version "8.0.5"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-highlight/-/addon-highlight-8.0.5.tgz#896ad48d7402e8bc95e45e1e678045dde1cbd92b"
-  integrity sha512-z4Aad6Dcf9gQIEPkR8WVIdRj/5RARI6SeIX3JRJoZ4l6fu7AvTZKDWPRpwLXSpEQqdeOb7l7FrZHISmXdrPoiQ==
+"@storybook/addon-highlight@8.0.6":
+  version "8.0.6"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-highlight/-/addon-highlight-8.0.6.tgz#113576081c36ab0d2ba3437670e1be43a90fef1d"
+  integrity sha512-CxXzzgIK5sXy2RNIkwU5JXZNq+PNGhUptRm/5M5ylcB7rk0pdwnE0TLXsMU+lzD0ji+cj61LWVLdeXQa+/whSw==
   dependencies:
     "@storybook/global" "^5.0.0"
 
