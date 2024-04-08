@@ -70,9 +70,6 @@ logger = logging.getLogger(__name__)
 AnyOffer = educational_api_offer.AnyCollectiveOffer | models.Offer
 
 OFFERS_RECAP_LIMIT = 501
-STOCK_LIMIT_TO_DELETE = 50
-
-
 OFFER_LIKE_MODELS = {
     "Offer",
     "CollectiveOffer",
@@ -141,10 +138,11 @@ def _format_extra_data(subcategory_id: str, extra_data: dict[str, typing.Any] | 
 
     formatted_extra_data: models.OfferExtraData = {}
 
-    for field_name in subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].conditional_fields.keys():
-        if extra_data.get(field_name):
+    for field_name in subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].conditional_fields:
+        value = extra_data.get(field_name)
+        if value:
             # FIXME (2023-03-16): Currently not supported by mypy https://github.com/python/mypy/issues/7178
-            formatted_extra_data[field_name] = extra_data.get(field_name)  # type: ignore[literal-required]
+            formatted_extra_data[field_name] = value  # type: ignore[literal-required]
 
     return formatted_extra_data
 
@@ -261,25 +259,19 @@ def update_offer(
     if isDuo is not UNCHANGED:
         validation.check_is_duo_compliance(isDuo, offer.subcategory)
 
-    withdrawal_updated = not (
-        withdrawalType is UNCHANGED
-        and withdrawalDelay is UNCHANGED
-        and withdrawalDetails is UNCHANGED
-        and bookingContact is UNCHANGED
-    )
+    withdrawal_params = (withdrawalType, withdrawalDelay, bookingContact)
+    withdrawal_updated = any(param is not UNCHANGED for param in withdrawal_params)
     if withdrawal_updated:
         changed_withdrawalType = offer.withdrawalType if withdrawalType is UNCHANGED else withdrawalType
         changed_withdrawalDelay = offer.withdrawalDelay if withdrawalDelay is UNCHANGED else withdrawalDelay
         changed_bookingContact = offer.bookingContact if bookingContact is UNCHANGED else bookingContact
-
-        if not (withdrawalType is UNCHANGED and withdrawalDelay is UNCHANGED and changed_bookingContact is UNCHANGED):
-            validation.check_offer_withdrawal(
-                changed_withdrawalType,
-                changed_withdrawalDelay,
-                offer.subcategoryId,
-                changed_bookingContact,
-                offer.lastProvider,
-            )
+        validation.check_offer_withdrawal(
+            changed_withdrawalType,
+            changed_withdrawalDelay,
+            offer.subcategoryId,
+            changed_bookingContact,
+            offer.lastProvider,
+        )
 
     if offer.lastProvider is not None:
         validation.check_update_only_allowed_fields_for_offer_from_provider(set(modifications), offer.lastProvider)
@@ -296,7 +288,9 @@ def update_offer(
 
     logger.info("Offer has been updated", extra={"offer_id": offer.id}, technical_message_id="offer.updated")
 
-    if shouldSendMail and withdrawal_updated:
+    withdrawal_extra_params = (withdrawalDetails,)
+    withdrawal_extra_updated = any(param is not UNCHANGED for param in withdrawal_extra_params)
+    if shouldSendMail and (withdrawal_updated or withdrawal_extra_updated):
         transactional_mails.send_email_for_each_ongoing_booking(offer)
 
     search.async_index_offer_ids(
@@ -308,10 +302,7 @@ def update_offer(
     return offer
 
 
-def update_collective_offer(
-    offer_id: int,
-    new_values: dict,
-) -> None:
+def update_collective_offer(offer_id: int, new_values: dict) -> None:
     offer_to_update = educational_models.CollectiveOffer.query.filter(
         educational_models.CollectiveOffer.id == offer_id
     ).first()
@@ -404,12 +395,12 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
     if raw_results:
         offer_ids, venue_ids = zip(*raw_results)
     venue_ids = sorted(set(venue_ids))
-    number_of_offers_to_update = len(offer_ids)
+    n_offers = len(offer_ids)
     logger.info(
         "Batch update of offers",
-        extra={"updated_fields": update_fields, "nb_offers": number_of_offers_to_update, "venue_ids": venue_ids},
+        extra={"updated_fields": update_fields, "nb_offers": n_offers, "venue_ids": venue_ids},
     )
-    if "isActive" in update_fields.keys():
+    if "isActive" in update_fields:
         message = "Offers has been activated" if update_fields["isActive"] else "Offers has been deactivated"
         technical_message_id = "offers.activated" if update_fields["isActive"] else "offers.deactivated"
         logger.info(
@@ -419,11 +410,8 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
         )
 
     batch_size = 1000
-    for current_start_index in range(0, number_of_offers_to_update, batch_size):
-        offer_ids_batch = offer_ids[
-            current_start_index : min(current_start_index + batch_size, number_of_offers_to_update)
-        ]
-
+    for current_start_index in range(0, n_offers, batch_size):
+        offer_ids_batch = offer_ids[current_start_index : current_start_index + batch_size]
         query_to_update = models.Offer.query.filter(models.Offer.id.in_(offer_ids_batch))
         query_to_update.update(update_fields, synchronize_session=False)
         db.session.commit()
@@ -434,9 +422,8 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
             log_extra={"changes": set(update_fields.keys())},
         )
 
-        withdrawal_updated = {"withdrawalDetails", "withdrawalType", "withdrawalDelay"}.intersection(
-            update_fields.keys()
-        )
+        withdrawal_params = {"withdrawalDetails", "withdrawalType", "withdrawalDelay"}
+        withdrawal_updated = withdrawal_params.intersection(update_fields.keys())
         if send_email_notification and withdrawal_updated:
             for offer in query_to_update.all():
                 transactional_mails.send_email_for_each_ongoing_booking(offer)
@@ -448,14 +435,11 @@ def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> Non
     ).with_entities(educational_models.CollectiveOffer.id)
 
     collective_offer_ids = [offer_id for offer_id, in collective_offer_ids_tuples]
-    number_of_collective_offers_to_update = len(collective_offer_ids)
+    n_collective_offers = len(collective_offer_ids)
     batch_size = 1000
 
-    for current_start_index in range(0, number_of_collective_offers_to_update, batch_size):
-        collective_offer_ids_batch = collective_offer_ids[
-            current_start_index : min(current_start_index + batch_size, number_of_collective_offers_to_update)
-        ]
-
+    for current_start_index in range(0, n_collective_offers, batch_size):
+        collective_offer_ids_batch = collective_offer_ids[current_start_index : current_start_index + batch_size]
         query_to_update = educational_models.CollectiveOffer.query.filter(
             educational_models.CollectiveOffer.id.in_(collective_offer_ids_batch)
         )
@@ -469,14 +453,13 @@ def batch_update_collective_offers_template(query: BaseQuery, update_fields: dic
     ).with_entities(educational_models.CollectiveOfferTemplate.id)
 
     collective_offer_template_ids = [offer_id for offer_id, in collective_offer_ids_tuples]
-    number_of_collective_offers_template_to_update = len(collective_offer_template_ids)
+    n_collective_offers_template = len(collective_offer_template_ids)
     batch_size = 1000
 
-    for current_start_index in range(0, number_of_collective_offers_template_to_update, batch_size):
+    for current_start_index in range(0, n_collective_offers_template, batch_size):
         collective_offer_template_ids_batch = collective_offer_template_ids[
-            current_start_index : min(current_start_index + batch_size, number_of_collective_offers_template_to_update)
+            current_start_index : current_start_index + batch_size
         ]
-
         query_to_update = educational_models.CollectiveOfferTemplate.query.filter(
             educational_models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids_batch)
         )
@@ -522,15 +505,14 @@ def create_stock(
     price: decimal.Decimal | None = None,
     price_category: models.PriceCategory | None = None,
 ) -> models.Stock:
+    expiration_datetime = activation_codes_expiration_datetime
+
     validation.check_booking_limit_datetime(None, beginning_datetime, booking_limit_datetime)
 
     activation_codes = activation_codes or []
     if activation_codes:
         validation.check_offer_is_digital(offer)
-        validation.check_activation_codes_expiration_datetime(
-            activation_codes_expiration_datetime,
-            booking_limit_datetime,
-        )
+        validation.check_activation_codes_expiration_datetime(expiration_datetime, booking_limit_datetime)
         quantity = len(activation_codes)
 
     if beginning_datetime and booking_limit_datetime and beginning_datetime < booking_limit_datetime:
@@ -557,16 +539,11 @@ def create_stock(
         bookingLimitDatetime=booking_limit_datetime,
         priceCategory=price_category,  # type: ignore [arg-type]
     )
-    created_activation_codes = []
+    created_activation_codes = [
+        models.ActivationCode(code=activation_code, expirationDate=expiration_datetime, stock=created_stock)
+        for activation_code in activation_codes
+    ]
 
-    for activation_code in activation_codes:
-        created_activation_codes.append(
-            models.ActivationCode(
-                code=activation_code,
-                expirationDate=activation_codes_expiration_datetime,
-                stock=created_stock,
-            )
-        )
     # offers can be created without stock in API, so we fill the lastValidationPrice at the first stock creation
     if offer.lastValidationPrice is None and offer.validation == offer_mixin.OfferValidationStatus.APPROVED:
         offer.lastValidationPrice = price
@@ -1004,6 +981,7 @@ def deactivate_permanently_unavailable_products(ean: str) -> bool:
             extra={"ean": ean, "products": [p.id for p in products], "exc": str(exception)},
         )
         return False
+
     logger.info(
         "Deactivated permanently unavailable products",
         extra={"ean": ean, "products": [p.id for p in products], "offers": offer_ids},
@@ -1018,7 +996,7 @@ def deactivate_permanently_unavailable_products(ean: str) -> bool:
     return True
 
 
-def resolve_offer_validation_sub_rule(sub_rule: models.OfferValidationSubRule, offer: AnyOffer) -> bool:
+def _resolve_offer_validation_sub_rule(sub_rule: models.OfferValidationSubRule, offer: AnyOffer) -> bool:
     if sub_rule.model:
         if sub_rule.model.value in OFFER_LIKE_MODELS and type(offer).__name__ == sub_rule.model.value:
             object_to_compare = offer
@@ -1038,11 +1016,11 @@ def resolve_offer_validation_sub_rule(sub_rule: models.OfferValidationSubRule, o
     return OPERATIONS[sub_rule.operator.value](target_attribute, sub_rule.comparated["comparated"])  # type: ignore[operator]
 
 
-def rule_flags_offer(rule: models.OfferValidationRule, offer: AnyOffer) -> bool:
+def _rule_flags_offer(rule: models.OfferValidationRule, offer: AnyOffer) -> bool:
     sub_rule_flags_offer = []
     for sub_rule in rule.subRules:
         try:
-            sub_rule_flags_offer.append(resolve_offer_validation_sub_rule(sub_rule, offer))
+            sub_rule_flags_offer.append(_resolve_offer_validation_sub_rule(sub_rule, offer))
         except exceptions.UnapplicableModel:
             sub_rule_flags_offer.append(False)
             break
@@ -1061,19 +1039,19 @@ def set_offer_status_based_on_fraud_criteria(offer: AnyOffer) -> models.OfferVal
 
     flagging_rules = []
     for rule in offer_validation_rules:
-        if rule_flags_offer(rule, offer):
+        if _rule_flags_offer(rule, offer):
             flagging_rules.append(rule)
 
     if flagging_rules:
         status = models.OfferValidationStatus.PENDING
         offer.flaggingValidationRules = flagging_rules
-        if isinstance(offer, models.Offer):
-            compliance.update_offer_compliance_score(offer, is_primary=True)
-
+        is_primary = True
     else:
         status = models.OfferValidationStatus.APPROVED
-        if isinstance(offer, models.Offer):
-            compliance.update_offer_compliance_score(offer, is_primary=False)
+        is_primary = False
+
+    if isinstance(offer, models.Offer):
+        compliance.update_offer_compliance_score(offer, is_primary=is_primary)
 
     logger.info("Computed offer validation", extra={"offer": offer.id, "status": status.value})
     return status
@@ -1252,17 +1230,14 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
 
 def whitelist_product(idAtProviders: str) -> models.Product | None:
     titelive_product = get_new_product_from_ean13(idAtProviders)
-
-    product = fetch_or_update_product_with_titelive_data(titelive_product)
-
+    product = _fetch_or_update_product_with_titelive_data(titelive_product)
     product.isGcuCompatible = True
-
     db.session.add(product)
     db.session.commit()
     return product
 
 
-def fetch_or_update_product_with_titelive_data(titelive_product: models.Product) -> models.Product:
+def _fetch_or_update_product_with_titelive_data(titelive_product: models.Product) -> models.Product:
     product = models.Product.query.filter_by(idAtProviders=titelive_product.idAtProviders).one_or_none()
     if not product:
         return titelive_product
@@ -1346,9 +1321,9 @@ def edit_price_category(
 
     repository.add_to_session(price_category)
 
-    stocks_to_edit = [stock for stock in offer.stocks if stock.priceCategoryId == price_category.id]
-    for stock in stocks_to_edit:
-        edit_stock(stock, price=price_category.price, editing_provider=editing_provider)
+    for stock in offer.stocks:
+        if stock.priceCategoryId == price_category.id:
+            edit_stock(stock, price=price_category.price, editing_provider=editing_provider)
 
     return price_category
 
