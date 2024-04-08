@@ -107,8 +107,6 @@ jobs:
         with:
           resource: http://localhost:5001/health/api
           timeout: 120000
-      - name: "Load sandbox"
-        run: ../pc sandbox -n industrial
       - name: "Build vite application"
         run: yarn build:development
       - name: "Serve vite preview"
