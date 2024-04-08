@@ -84,6 +84,11 @@ class T_UNCHANGED(enum.Enum):
 UNCHANGED = T_UNCHANGED.TOKEN
 
 
+# *********
+# * Offer *
+# *********
+
+
 def list_offers_for_pro_user(
     user_id: int,
     user_is_admin: bool,
@@ -302,6 +307,31 @@ def update_offer(
     return offer
 
 
+def _update_collective_offer(offer: educational_api_offer.AnyCollectiveOffer, new_values: dict) -> list[str]:
+    validation.check_validation_status(offer)
+    validation.check_contact_request(offer, new_values)
+    # This variable is meant for Adage mailing
+    updated_fields = []
+    for key, value in new_values.items():
+        updated_fields.append(key)
+
+        if key == "subcategoryId":
+            validation.check_offer_is_eligible_for_educational(value.name)
+            offer.subcategoryId = value.name
+            continue
+
+        if key == "domains":
+            domains = educational_api_offer.get_educational_domains_from_ids(value)
+            offer.domains = domains
+            continue
+
+        setattr(offer, key, value)
+
+    db.session.add(offer)
+    db.session.commit()
+    return updated_fields
+
+
 def update_collective_offer(offer_id: int, new_values: dict) -> None:
     offer_to_update = educational_models.CollectiveOffer.query.filter(
         educational_models.CollectiveOffer.id == offer_id
@@ -360,31 +390,6 @@ def update_collective_offer_template(offer_id: int, new_values: dict) -> None:
         [offer_to_update.id],
         reason=search.IndexationReason.OFFER_UPDATE,
     )
-
-
-def _update_collective_offer(offer: educational_api_offer.AnyCollectiveOffer, new_values: dict) -> list[str]:
-    validation.check_validation_status(offer)
-    validation.check_contact_request(offer, new_values)
-    # This variable is meant for Adage mailing
-    updated_fields = []
-    for key, value in new_values.items():
-        updated_fields.append(key)
-
-        if key == "subcategoryId":
-            validation.check_offer_is_eligible_for_educational(value.name)
-            offer.subcategoryId = value.name
-            continue
-
-        if key == "domains":
-            domains = educational_api_offer.get_educational_domains_from_ids(value)
-            offer.domains = domains
-            continue
-
-        setattr(offer, key, value)
-
-    db.session.add(offer)
-    db.session.commit()
-    return updated_fields
 
 
 def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notification: bool = False) -> None:
@@ -473,25 +478,260 @@ def batch_update_collective_offers_template(query: BaseQuery, update_fields: dic
         )
 
 
-def _notify_pro_upon_stock_edit_for_event_offer(stock: models.Stock, bookings: list[bookings_models.Booking]) -> None:
-    if stock.offer.isEvent:
-        transactional_mails.send_event_offer_postponement_confirmation_email_to_pro(stock, len(bookings))
+def _resolve_offer_validation_sub_rule(sub_rule: models.OfferValidationSubRule, offer: AnyOffer) -> bool:
+    if sub_rule.model:
+        if sub_rule.model.value in OFFER_LIKE_MODELS and type(offer).__name__ == sub_rule.model.value:
+            object_to_compare = offer
+        elif sub_rule.model.value == "CollectiveStock" and isinstance(offer, educational_models.CollectiveOffer):
+            object_to_compare = offer.collectiveStock
+        elif sub_rule.model.value == "Venue":
+            object_to_compare = offer.venue
+        elif sub_rule.model.value == "Offerer":
+            object_to_compare = offer.venue.managingOfferer
+        else:
+            raise exceptions.UnapplicableModel()
+
+        target_attribute = getattr(object_to_compare, sub_rule.attribute.value)
+    else:
+        target_attribute = type(offer).__name__
+
+    return OPERATIONS[sub_rule.operator.value](target_attribute, sub_rule.comparated["comparated"])  # type: ignore[operator]
 
 
-def _notify_beneficiaries_upon_stock_edit(stock: models.Stock, bookings: list[bookings_models.Booking]) -> None:
-    if bookings:
-        if stock.beginningDatetime is None:
-            logger.error(
-                "Could not notify beneficiaries about update of stock. No beginningDatetime in stock.",
-                extra={"stock": stock.id},
-            )
-            return
-        bookings = bookings_api.update_cancellation_limit_dates(bookings, stock.beginningDatetime)
-        date_in_two_days = datetime.datetime.utcnow() + datetime.timedelta(days=2)
-        check_event_is_in_more_than_48_hours = stock.beginningDatetime > date_in_two_days
-        if check_event_is_in_more_than_48_hours:
-            bookings = _invalidate_bookings(bookings)
-        transactional_mails.send_batch_booking_postponement_email_to_users(bookings)
+def _rule_flags_offer(rule: models.OfferValidationRule, offer: AnyOffer) -> bool:
+    sub_rule_flags_offer = []
+    for sub_rule in rule.subRules:
+        try:
+            sub_rule_flags_offer.append(_resolve_offer_validation_sub_rule(sub_rule, offer))
+        except exceptions.UnapplicableModel:
+            sub_rule_flags_offer.append(False)
+            break
+    is_offer_flagged = all(sub_rule_flags_offer)
+    return is_offer_flagged
+
+
+def set_offer_status_based_on_fraud_criteria(offer: AnyOffer) -> models.OfferValidationStatus:
+    offer_validation_rules = (
+        models.OfferValidationRule.query.options(
+            sa.orm.joinedload(models.OfferValidationSubRule, models.OfferValidationRule.subRules)
+        )
+        .filter(models.OfferValidationRule.isActive.is_(True))
+        .all()
+    )
+
+    flagging_rules = []
+    for rule in offer_validation_rules:
+        if _rule_flags_offer(rule, offer):
+            flagging_rules.append(rule)
+
+    if flagging_rules:
+        status = models.OfferValidationStatus.PENDING
+        offer.flaggingValidationRules = flagging_rules
+        is_primary = True
+    else:
+        status = models.OfferValidationStatus.APPROVED
+        is_primary = False
+
+    if isinstance(offer, models.Offer):
+        compliance.update_offer_compliance_score(offer, is_primary=is_primary)
+
+    logger.info("Computed offer validation", extra={"offer": offer.id, "status": status.value})
+    return status
+
+
+def update_offer_fraud_information(offer: AnyOffer, user: users_models.User | None) -> None:
+    venue_already_has_validated_offer = offers_repository.venue_already_has_validated_offer(offer)
+
+    offer.validation = set_offer_status_based_on_fraud_criteria(offer)
+
+    if user is not None:
+        offer.author = user
+    offer.lastValidationDate = datetime.datetime.utcnow()
+    offer.lastValidationType = OfferValidationType.AUTO
+    offer.lastValidationAuthorUserId = None
+
+    if offer.validation in (models.OfferValidationStatus.PENDING, models.OfferValidationStatus.REJECTED):
+        offer.isActive = False
+    else:
+        offer.isActive = True
+        if (
+            isinstance(offer, models.Offer) and offer.isThing and offer.activeStocks
+        ):  # public API may create offers without stocks
+            offer.lastValidationPrice = offer.max_price
+
+    if (
+        offer.validation == models.OfferValidationStatus.APPROVED
+        and not venue_already_has_validated_offer
+        and isinstance(offer, models.Offer)
+    ):
+        transactional_mails.send_first_venue_approved_offer_email_to_pro(offer)
+
+
+def publish_offer(offer: models.Offer, user: users_models.User | None) -> models.Offer:
+    update_offer_fraud_information(offer, user)
+    search.async_index_offer_ids(
+        [offer.id],
+        reason=search.IndexationReason.OFFER_PUBLICATION,
+    )
+    logger.info(
+        "Offer has been published",
+        extra={"offer_id": offer.id, "venue_id": offer.venueId, "offer_status": offer.status},
+        technical_message_id="offer.published",
+    )
+    return offer
+
+
+def add_criteria_to_offers(
+    criterion_ids: list[int],
+    ean: str | None = None,
+    visa: str | None = None,
+) -> bool:
+    if not ean and not visa:
+        return False
+
+    query = models.Product.query
+    if ean:
+        ean = ean.replace("-", "").replace(" ", "")
+        query = query.filter(models.Product.extraData["ean"].astext == ean)
+    if visa:
+        query = query.filter(models.Product.extraData["visa"].astext == visa)
+
+    products = query.all()
+    if not products:
+        return False
+
+    offer_ids_query = models.Offer.query.filter(
+        models.Offer.productId.in_(p.id for p in products), models.Offer.isActive.is_(True)
+    ).with_entities(models.Offer.id)
+    offer_ids = {offer_id for offer_id, in offer_ids_query.all()}
+
+    if not offer_ids:
+        return False
+
+    # check existing tags on selected offers to avoid duplicate association which would violate Unique constraint
+    existing_criteria_on_offers = (
+        criteria_models.OfferCriterion.query.filter(criteria_models.OfferCriterion.offerId.in_(offer_ids))
+        .with_entities(criteria_models.OfferCriterion.offerId, criteria_models.OfferCriterion.criterionId)
+        .all()
+    )
+
+    offer_criteria: list[criteria_models.OfferCriterion] = []
+    for criterion_id in criterion_ids:
+        logger.info("Adding criterion %s to %d offers", criterion_id, len(offer_ids))
+        for offer_id in offer_ids:
+            if not (offer_id, criterion_id) in existing_criteria_on_offers:
+                offer_criteria.append(
+                    criteria_models.OfferCriterion(
+                        offerId=offer_id,
+                        criterionId=criterion_id,
+                    )
+                )
+
+    db.session.bulk_save_objects(offer_criteria)
+    db.session.commit()
+
+    search.async_index_offer_ids(
+        offer_ids,
+        reason=search.IndexationReason.CRITERIA_LINK,
+        log_extra={"criterion_ids": criterion_ids},
+    )
+
+    return True
+
+
+def batch_delete_draft_offers(query: BaseQuery) -> None:
+    offer_ids = [id_ for id_, in query.with_entities(models.Offer.id)]
+    filters = (models.Offer.validation == models.OfferValidationStatus.DRAFT, models.Offer.id.in_(offer_ids))
+    models.Mediation.query.filter(models.Mediation.offerId == models.Offer.id).filter(*filters).delete(
+        synchronize_session=False
+    )
+    criteria_models.OfferCriterion.query.filter(
+        criteria_models.OfferCriterion.offerId == models.Offer.id,
+        *filters,
+    ).delete(synchronize_session=False)
+    models.ActivationCode.query.filter(
+        models.ActivationCode.stockId == models.Stock.id,
+        models.Stock.offerId == models.Offer.id,
+        *filters,
+    ).delete(synchronize_session=False)
+    models.Stock.query.filter(models.Stock.offerId == models.Offer.id).filter(*filters).delete(
+        synchronize_session=False
+    )
+    models.Offer.query.filter(*filters).delete(synchronize_session=False)
+    db.session.commit()
+
+
+def report_offer(
+    user: users_models.User, offer: models.Offer, reason: models.Reason, custom_reason: str | None
+) -> None:
+    try:
+        # transaction() handles the commit/rollback operations
+        #
+        # UNIQUE_VIOLATION, CHECK_VIOLATION and STRING_DATA_RIGHT_TRUNCATION
+        # errors are specific ones:
+        # either the user tried to report the same error twice, which is not
+        # allowed, or the client sent a invalid report (eg. OTHER without
+        # custom reason / custom reason too long).
+        #
+        # Other errors are unexpected and are therefore re-raised as is.
+        with transaction():
+            report = models.OfferReport(user=user, offer=offer, reason=reason, customReasonContent=custom_reason)
+            db.session.add(report)
+    except sqla_exc.IntegrityError as error:
+        if error.orig.pgcode == UNIQUE_VIOLATION:
+            raise exceptions.OfferAlreadyReportedError() from error
+        if error.orig.pgcode == CHECK_VIOLATION:
+            raise exceptions.ReportMalformed() from error
+        raise
+
+    transactional_mails.send_email_reported_offer_by_user(user, offer, reason, custom_reason)
+
+
+def unindex_expired_offers(process_all_expired: bool = False) -> None:
+    """Unindex offers that have expired.
+
+    By default, process offers that have expired within the last 2
+    days. For example, if run on Thursday (whatever the time), this
+    function handles offers that have expired between Tuesday 00:00
+    and Wednesday 23:59 (included).
+
+    If ``process_all_expired`` is true, process... well all expired
+    offers.
+    """
+    start_of_day = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
+    interval = [start_of_day - datetime.timedelta(days=2), start_of_day]
+    if process_all_expired:
+        interval[0] = datetime.datetime(2000, 1, 1)  # arbitrary old date
+
+    page = 0
+    limit = settings.ALGOLIA_DELETING_OFFERS_CHUNK_SIZE
+    while True:
+        offers = offers_repository.get_expired_offers(interval)
+        offers = offers.offset(page * limit).limit(limit)
+        offer_ids = [offer_id for offer_id, in offers.with_entities(models.Offer.id)]
+
+        if not offer_ids:
+            break
+
+        logger.info("[ALGOLIA] Found %d expired offers to unindex", len(offer_ids))
+        search.unindex_offer_ids(offer_ids)
+        page += 1
+
+
+def get_expense_domains(offer: models.Offer) -> list[users_models.ExpenseDomain]:
+    domains = {users_models.ExpenseDomain.ALL}
+
+    if finance_conf.digital_cap_applies_to_offer(offer):
+        domains.add(users_models.ExpenseDomain.DIGITAL)
+    if finance_conf.physical_cap_applies_to_offer(offer):
+        domains.add(users_models.ExpenseDomain.PHYSICAL)
+
+    return list(domains)
+
+
+# *********
+# * Stock *
+# *********
 
 
 def create_stock(
@@ -650,470 +890,6 @@ def edit_stock(
     return stock, "beginningDatetime" in modifications
 
 
-def handle_stocks_edition(edited_stocks: list[tuple[models.Stock, bool]]) -> None:
-    for stock, is_beginning_datetime_updated in edited_stocks:
-        if is_beginning_datetime_updated:
-            bookings = bookings_repository.find_not_cancelled_bookings_by_stock(stock)
-            _notify_pro_upon_stock_edit_for_event_offer(stock, bookings)
-            _notify_beneficiaries_upon_stock_edit(stock, bookings)
-
-
-def publish_offer(offer: models.Offer, user: users_models.User | None) -> models.Offer:
-    update_offer_fraud_information(offer, user)
-    search.async_index_offer_ids(
-        [offer.id],
-        reason=search.IndexationReason.OFFER_PUBLICATION,
-    )
-    logger.info(
-        "Offer has been published",
-        extra={"offer_id": offer.id, "venue_id": offer.venueId, "offer_status": offer.status},
-        technical_message_id="offer.published",
-    )
-    return offer
-
-
-def update_offer_fraud_information(offer: AnyOffer, user: users_models.User | None) -> None:
-    venue_already_has_validated_offer = offers_repository.venue_already_has_validated_offer(offer)
-
-    offer.validation = set_offer_status_based_on_fraud_criteria(offer)
-
-    if user is not None:
-        offer.author = user
-    offer.lastValidationDate = datetime.datetime.utcnow()
-    offer.lastValidationType = OfferValidationType.AUTO
-    offer.lastValidationAuthorUserId = None
-
-    if offer.validation in (models.OfferValidationStatus.PENDING, models.OfferValidationStatus.REJECTED):
-        offer.isActive = False
-    else:
-        offer.isActive = True
-        if (
-            isinstance(offer, models.Offer) and offer.isThing and offer.activeStocks
-        ):  # public API may create offers without stocks
-            offer.lastValidationPrice = offer.max_price
-
-    if (
-        offer.validation == models.OfferValidationStatus.APPROVED
-        and not venue_already_has_validated_offer
-        and isinstance(offer, models.Offer)
-    ):
-        transactional_mails.send_first_venue_approved_offer_email_to_pro(offer)
-
-
-def _invalidate_bookings(bookings: list[bookings_models.Booking]) -> list[bookings_models.Booking]:
-    for booking in bookings:
-        if booking.status is bookings_models.BookingStatus.USED:
-            bookings_api.mark_as_unused(booking)
-    return bookings
-
-
-def _delete_stock(stock: models.Stock) -> None:
-    stock.isSoftDeleted = True
-    repository.save(stock)
-
-    # the algolia sync for the stock will happen within this function
-    cancelled_bookings = bookings_api.cancel_bookings_from_stock_by_offerer(stock)
-
-    logger.info(
-        "Deleted stock and cancelled its bookings",
-        extra={"stock": stock.id, "bookings": [b.id for b in cancelled_bookings]},
-    )
-    if cancelled_bookings:
-        for booking in cancelled_bookings:
-            transactional_mails.send_booking_cancellation_by_pro_to_beneficiary_email(booking)
-        transactional_mails.send_booking_cancellation_confirmation_by_pro_email(cancelled_bookings)
-
-        push_notification_job.send_cancel_booking_notification.delay([booking.id for booking in cancelled_bookings])
-    search.async_index_offer_ids(
-        [stock.offerId],
-        reason=search.IndexationReason.STOCK_DELETION,
-    )
-
-
-def delete_stock(stock: models.Stock) -> None:
-    validation.check_stock_is_deletable(stock)
-    _delete_stock(stock)
-
-
-def create_mediation(
-    user: users_models.User | None,
-    offer: models.Offer,
-    credit: str | None,
-    image_as_bytes: bytes,
-    crop_params: image_conversion.CropParams | None = None,
-    keep_ratio: bool = False,
-    min_width: int = validation.MIN_THUMBNAIL_WIDTH,
-    min_height: int = validation.MIN_THUMBNAIL_HEIGHT,
-    max_width: int | None = None,
-    max_height: int | None = None,
-    aspect_ratio: image_conversion.ImageRatio = image_conversion.ImageRatio.PORTRAIT,
-    check_image_validity: bool = True,
-) -> models.Mediation:
-    # checks image type, min dimensions
-    if check_image_validity:
-        validation.check_image(
-            image_as_bytes, min_width=min_width, min_height=min_height, max_width=max_width, max_height=max_height
-        )
-
-    mediation = models.Mediation(author=user, offer=offer, credit=credit)
-
-    repository.add_to_session(mediation)
-    db.session.flush()  # `create_thumb()` requires the object to have an id, so we must flush now.
-
-    try:
-        create_thumb(
-            mediation,
-            image_as_bytes,
-            storage_id_suffix_str="",
-            crop_params=crop_params,
-            ratio=aspect_ratio,
-            keep_ratio=keep_ratio,
-        )
-    except image_conversion.ImageRatioError:
-        raise
-    except Exception as exception:
-        logger.exception("An unexpected error was encountered during the thumbnail creation: %s", exception)
-        raise exceptions.ThumbnailStorageError
-
-    # cleanup former thumbnails and mediations
-    previous_mediations = (
-        models.Mediation.query.filter(models.Mediation.offerId == offer.id)
-        .filter(models.Mediation.id != mediation.id)
-        .all()
-    )
-    _delete_mediations_and_thumbs(previous_mediations)
-
-    search.async_index_offer_ids(
-        [offer.id],
-        reason=search.IndexationReason.MEDIATION_CREATION,
-    )
-
-    return mediation
-
-
-def delete_mediation(offer: models.Offer) -> None:
-    mediations = models.Mediation.query.filter(models.Mediation.offerId == offer.id).all()
-
-    _delete_mediations_and_thumbs(mediations)
-
-    search.async_index_offer_ids(
-        [offer.id],
-        reason=search.IndexationReason.MEDIATION_DELETION,
-    )
-
-
-def _delete_mediations_and_thumbs(mediations: list[models.Mediation]) -> None:
-    for mediation in mediations:
-        try:
-            for thumb_index in range(1, mediation.thumbCount + 1):
-                suffix = str(thumb_index - 1) if thumb_index > 1 else ""
-                remove_thumb(mediation, storage_id_suffix=suffix)
-        except Exception as exception:  # pylint: disable=broad-except
-            logger.exception(
-                "An unexpected error was encountered during the thumbnails deletion for %s: %s",
-                mediation,
-                exception,
-            )
-        else:
-            db.session.delete(mediation)
-
-
-def get_expense_domains(offer: models.Offer) -> list[users_models.ExpenseDomain]:
-    domains = {users_models.ExpenseDomain.ALL}
-
-    if finance_conf.digital_cap_applies_to_offer(offer):
-        domains.add(users_models.ExpenseDomain.DIGITAL)
-    if finance_conf.physical_cap_applies_to_offer(offer):
-        domains.add(users_models.ExpenseDomain.PHYSICAL)
-
-    return list(domains)
-
-
-def add_criteria_to_offers(
-    criterion_ids: list[int],
-    ean: str | None = None,
-    visa: str | None = None,
-) -> bool:
-    if not ean and not visa:
-        return False
-
-    query = models.Product.query
-    if ean:
-        ean = ean.replace("-", "").replace(" ", "")
-        query = query.filter(models.Product.extraData["ean"].astext == ean)
-    if visa:
-        query = query.filter(models.Product.extraData["visa"].astext == visa)
-
-    products = query.all()
-    if not products:
-        return False
-
-    offer_ids_query = models.Offer.query.filter(
-        models.Offer.productId.in_(p.id for p in products), models.Offer.isActive.is_(True)
-    ).with_entities(models.Offer.id)
-    offer_ids = {offer_id for offer_id, in offer_ids_query.all()}
-
-    if not offer_ids:
-        return False
-
-    # check existing tags on selected offers to avoid duplicate association which would violate Unique constraint
-    existing_criteria_on_offers = (
-        criteria_models.OfferCriterion.query.filter(criteria_models.OfferCriterion.offerId.in_(offer_ids))
-        .with_entities(criteria_models.OfferCriterion.offerId, criteria_models.OfferCriterion.criterionId)
-        .all()
-    )
-
-    offer_criteria: list[criteria_models.OfferCriterion] = []
-    for criterion_id in criterion_ids:
-        logger.info("Adding criterion %s to %d offers", criterion_id, len(offer_ids))
-        for offer_id in offer_ids:
-            if not (offer_id, criterion_id) in existing_criteria_on_offers:
-                offer_criteria.append(
-                    criteria_models.OfferCriterion(
-                        offerId=offer_id,
-                        criterionId=criterion_id,
-                    )
-                )
-
-    db.session.bulk_save_objects(offer_criteria)
-    db.session.commit()
-
-    search.async_index_offer_ids(
-        offer_ids,
-        reason=search.IndexationReason.CRITERIA_LINK,
-        log_extra={"criterion_ids": criterion_ids},
-    )
-
-    return True
-
-
-def reject_inappropriate_product(
-    ean: str,
-    author: users_models.User | None,
-    is_gcu_incompatible: bool = False,
-    send_booking_cancellation_emails: bool = True,
-) -> bool:
-    product = models.Product.query.filter(
-        models.Product.extraData["ean"].astext == ean, models.Product.idAtProviders.is_not(None)
-    ).one_or_none()
-
-    if not product:
-        return False
-
-    offers_query = models.Offer.query.filter(
-        sa.or_(models.Offer.productId == product.id, models.Offer.extraData["ean"].astext == ean),
-        models.Offer.validation != models.OfferValidationStatus.REJECTED,
-    )
-
-    offers = offers_query.options(sa.orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings)).all()
-
-    offer_updated_counts = offers_query.update(
-        values={
-            "validation": models.OfferValidationStatus.REJECTED,
-            "lastValidationDate": datetime.datetime.utcnow(),
-            "lastValidationType": OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
-            "lastValidationAuthorUserId": author.id if author else None,
-        },
-        synchronize_session=False,
-    )
-
-    product.isGcuCompatible = False
-    db.session.add(product)
-
-    try:
-        db.session.commit()
-    except Exception as exception:  # pylint: disable=broad-except
-        logger.exception(
-            "Could not mark product and offers as inappropriate: %s",
-            extra={"ean": ean, "product": product.id, "exc": str(exception)},
-        )
-        return False
-
-    offer_ids = []
-    for offer in offers:
-        offer_ids.append(offer.id)
-        bookings = bookings_api.cancel_bookings_from_rejected_offer(offer)
-
-        if send_booking_cancellation_emails:
-            for booking in bookings:
-                transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(
-                    booking, reason=BookingCancellationReasons.FRAUD, is_gcu_incompatible=is_gcu_incompatible
-                )
-
-    logger.info(
-        "Rejected inappropriate products",
-        extra={"ean": ean, "product": product.id, "offers": offer_ids, "offer_updated_counts": offer_updated_counts},
-    )
-
-    if offer_ids:
-        users_models.Favorite.query.filter(users_models.Favorite.offerId.in_(offer_ids)).delete(
-            synchronize_session=False
-        )
-        search.async_index_offer_ids(
-            offer_ids,
-            reason=search.IndexationReason.PRODUCT_REJECTION,
-            log_extra={"ean": ean},
-        )
-
-    return True
-
-
-def deactivate_permanently_unavailable_products(ean: str) -> bool:
-    products = models.Product.query.filter(models.Product.extraData["ean"].astext == ean).all()
-    if not products:
-        return False
-
-    for product in products:
-        product.name = "xxx"
-        db.session.add(product)
-
-    offers = models.Offer.query.filter(models.Offer.productId.in_(p.id for p in products)).filter(
-        models.Offer.isActive.is_(True)
-    )
-    offer_ids = [offer_id for offer_id, in offers.with_entities(models.Offer.id).all()]
-    offers.update(values={"isActive": False, "name": "xxx"}, synchronize_session="fetch")
-
-    try:
-        db.session.commit()
-    except Exception as exception:  # pylint: disable=broad-except
-        logger.exception(
-            "Could not mark product and offers as permanently unavailable: %s",
-            extra={"ean": ean, "products": [p.id for p in products], "exc": str(exception)},
-        )
-        return False
-
-    logger.info(
-        "Deactivated permanently unavailable products",
-        extra={"ean": ean, "products": [p.id for p in products], "offers": offer_ids},
-    )
-
-    search.async_index_offer_ids(
-        offer_ids,
-        reason=search.IndexationReason.PRODUCT_DEACTIVATION,
-        log_extra={"ean": ean},
-    )
-
-    return True
-
-
-def _resolve_offer_validation_sub_rule(sub_rule: models.OfferValidationSubRule, offer: AnyOffer) -> bool:
-    if sub_rule.model:
-        if sub_rule.model.value in OFFER_LIKE_MODELS and type(offer).__name__ == sub_rule.model.value:
-            object_to_compare = offer
-        elif sub_rule.model.value == "CollectiveStock" and isinstance(offer, educational_models.CollectiveOffer):
-            object_to_compare = offer.collectiveStock
-        elif sub_rule.model.value == "Venue":
-            object_to_compare = offer.venue
-        elif sub_rule.model.value == "Offerer":
-            object_to_compare = offer.venue.managingOfferer
-        else:
-            raise exceptions.UnapplicableModel()
-
-        target_attribute = getattr(object_to_compare, sub_rule.attribute.value)
-    else:
-        target_attribute = type(offer).__name__
-
-    return OPERATIONS[sub_rule.operator.value](target_attribute, sub_rule.comparated["comparated"])  # type: ignore[operator]
-
-
-def _rule_flags_offer(rule: models.OfferValidationRule, offer: AnyOffer) -> bool:
-    sub_rule_flags_offer = []
-    for sub_rule in rule.subRules:
-        try:
-            sub_rule_flags_offer.append(_resolve_offer_validation_sub_rule(sub_rule, offer))
-        except exceptions.UnapplicableModel:
-            sub_rule_flags_offer.append(False)
-            break
-    is_offer_flagged = all(sub_rule_flags_offer)
-    return is_offer_flagged
-
-
-def set_offer_status_based_on_fraud_criteria(offer: AnyOffer) -> models.OfferValidationStatus:
-    offer_validation_rules = (
-        models.OfferValidationRule.query.options(
-            sa.orm.joinedload(models.OfferValidationSubRule, models.OfferValidationRule.subRules)
-        )
-        .filter(models.OfferValidationRule.isActive.is_(True))
-        .all()
-    )
-
-    flagging_rules = []
-    for rule in offer_validation_rules:
-        if _rule_flags_offer(rule, offer):
-            flagging_rules.append(rule)
-
-    if flagging_rules:
-        status = models.OfferValidationStatus.PENDING
-        offer.flaggingValidationRules = flagging_rules
-        is_primary = True
-    else:
-        status = models.OfferValidationStatus.APPROVED
-        is_primary = False
-
-    if isinstance(offer, models.Offer):
-        compliance.update_offer_compliance_score(offer, is_primary=is_primary)
-
-    logger.info("Computed offer validation", extra={"offer": offer.id, "status": status.value})
-    return status
-
-
-def unindex_expired_offers(process_all_expired: bool = False) -> None:
-    """Unindex offers that have expired.
-
-    By default, process offers that have expired within the last 2
-    days. For example, if run on Thursday (whatever the time), this
-    function handles offers that have expired between Tuesday 00:00
-    and Wednesday 23:59 (included).
-
-    If ``process_all_expired`` is true, process... well all expired
-    offers.
-    """
-    start_of_day = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
-    interval = [start_of_day - datetime.timedelta(days=2), start_of_day]
-    if process_all_expired:
-        interval[0] = datetime.datetime(2000, 1, 1)  # arbitrary old date
-
-    page = 0
-    limit = settings.ALGOLIA_DELETING_OFFERS_CHUNK_SIZE
-    while True:
-        offers = offers_repository.get_expired_offers(interval)
-        offers = offers.offset(page * limit).limit(limit)
-        offer_ids = [offer_id for offer_id, in offers.with_entities(models.Offer.id)]
-
-        if not offer_ids:
-            break
-
-        logger.info("[ALGOLIA] Found %d expired offers to unindex", len(offer_ids))
-        search.unindex_offer_ids(offer_ids)
-        page += 1
-
-
-def report_offer(
-    user: users_models.User, offer: models.Offer, reason: models.Reason, custom_reason: str | None
-) -> None:
-    try:
-        # transaction() handles the commit/rollback operations
-        #
-        # UNIQUE_VIOLATION, CHECK_VIOLATION and STRING_DATA_RIGHT_TRUNCATION
-        # errors are specific ones:
-        # either the user tried to report the same error twice, which is not
-        # allowed, or the client sent a invalid report (eg. OTHER without
-        # custom reason / custom reason too long).
-        #
-        # Other errors are unexpected and are therefore re-raised as is.
-        with transaction():
-            report = models.OfferReport(user=user, offer=offer, reason=reason, customReasonContent=custom_reason)
-            db.session.add(report)
-    except sqla_exc.IntegrityError as error:
-        if error.orig.pgcode == UNIQUE_VIOLATION:
-            raise exceptions.OfferAlreadyReportedError() from error
-        if error.orig.pgcode == CHECK_VIOLATION:
-            raise exceptions.ReportMalformed() from error
-        raise
-
-    transactional_mails.send_email_reported_offer_by_user(user, offer, reason, custom_reason)
-
-
 def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer: models.Offer) -> None:
     try:
         venue_provider = external_bookings_api.get_active_cinema_venue_provider(offer.venueId)
@@ -1228,54 +1004,100 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
         )
 
 
-def whitelist_product(idAtProviders: str) -> models.Product | None:
-    titelive_product = get_new_product_from_ean13(idAtProviders)
-    product = _fetch_or_update_product_with_titelive_data(titelive_product)
-    product.isGcuCompatible = True
-    db.session.add(product)
-    db.session.commit()
-    return product
+def update_used_stock_price(stock: models.Stock, new_price: float) -> None:
+    if not stock.offer.isEvent:
+        raise ValueError("Only stocks associated with an event offer can be edited with used bookings")
 
+    stock.price = new_price
+    bookings_models.Booking.query.filter(
+        bookings_models.Booking.stockId == stock.id,
+    ).update({bookings_models.Booking.amount: new_price})
 
-def _fetch_or_update_product_with_titelive_data(titelive_product: models.Product) -> models.Product:
-    product = models.Product.query.filter_by(idAtProviders=titelive_product.idAtProviders).one_or_none()
-    if not product:
-        return titelive_product
-
-    product.name = titelive_product.name
-    product.description = titelive_product.description
-    product.subcategoryId = titelive_product.subcategoryId
-    product.thumbCount = titelive_product.thumbCount
-    old_extra_data = product.extraData
-    if old_extra_data is None:
-        old_extra_data = {}
-
-    if titelive_product.extraData:
-        product.extraData = {**old_extra_data, **titelive_product.extraData}
-
-    return product
-
-
-def batch_delete_draft_offers(query: BaseQuery) -> None:
-    offer_ids = [id_ for id_, in query.with_entities(models.Offer.id)]
-    filters = (models.Offer.validation == models.OfferValidationStatus.DRAFT, models.Offer.id.in_(offer_ids))
-    models.Mediation.query.filter(models.Mediation.offerId == models.Offer.id).filter(*filters).delete(
-        synchronize_session=False
+    first_finance_event = (
+        finance_models.FinanceEvent.query.join(bookings_models.Booking, finance_models.FinanceEvent.booking)
+        .filter(
+            finance_models.FinanceEvent.status != finance_models.FinanceEventStatus.CANCELLED,
+            bookings_models.Booking.stockId == stock.id,
+        )
+        .order_by(
+            finance_models.FinanceEvent.pricingOrderingDate,
+            finance_models.FinanceEvent.id,
+        )
+        .options(
+            sa.orm.joinedload(finance_models.FinanceEvent.booking),
+        )
+        .first()
     )
-    criteria_models.OfferCriterion.query.filter(
-        criteria_models.OfferCriterion.offerId == models.Offer.id,
-        *filters,
-    ).delete(synchronize_session=False)
-    models.ActivationCode.query.filter(
-        models.ActivationCode.stockId == models.Stock.id,
-        models.Stock.offerId == models.Offer.id,
-        *filters,
-    ).delete(synchronize_session=False)
-    models.Stock.query.filter(models.Stock.offerId == models.Offer.id).filter(*filters).delete(
-        synchronize_session=False
+
+    if first_finance_event:
+        finance_api.force_event_repricing(
+            event=first_finance_event,
+            reason=finance_models.PricingLogReason.CHANGE_AMOUNT,
+        )
+
+
+def _invalidate_bookings(bookings: list[bookings_models.Booking]) -> list[bookings_models.Booking]:
+    for booking in bookings:
+        if booking.status is bookings_models.BookingStatus.USED:
+            bookings_api.mark_as_unused(booking)
+    return bookings
+
+
+def _notify_pro_upon_stock_edit_for_event_offer(stock: models.Stock, bookings: list[bookings_models.Booking]) -> None:
+    if stock.offer.isEvent:
+        transactional_mails.send_event_offer_postponement_confirmation_email_to_pro(stock, len(bookings))
+
+
+def _notify_beneficiaries_upon_stock_edit(stock: models.Stock, bookings: list[bookings_models.Booking]) -> None:
+    if bookings:
+        if stock.beginningDatetime is None:
+            logger.error(
+                "Could not notify beneficiaries about update of stock. No beginningDatetime in stock.",
+                extra={"stock": stock.id},
+            )
+            return
+        bookings = bookings_api.update_cancellation_limit_dates(bookings, stock.beginningDatetime)
+        date_in_two_days = datetime.datetime.utcnow() + datetime.timedelta(days=2)
+        check_event_is_in_more_than_48_hours = stock.beginningDatetime > date_in_two_days
+        if check_event_is_in_more_than_48_hours:
+            bookings = _invalidate_bookings(bookings)
+        transactional_mails.send_batch_booking_postponement_email_to_users(bookings)
+
+
+def handle_stocks_edition(edited_stocks: list[tuple[models.Stock, bool]]) -> None:
+    for stock, is_beginning_datetime_updated in edited_stocks:
+        if is_beginning_datetime_updated:
+            bookings = bookings_repository.find_not_cancelled_bookings_by_stock(stock)
+            _notify_pro_upon_stock_edit_for_event_offer(stock, bookings)
+            _notify_beneficiaries_upon_stock_edit(stock, bookings)
+
+
+def _delete_stock(stock: models.Stock) -> None:
+    stock.isSoftDeleted = True
+    repository.save(stock)
+
+    # the algolia sync for the stock will happen within this function
+    cancelled_bookings = bookings_api.cancel_bookings_from_stock_by_offerer(stock)
+
+    logger.info(
+        "Deleted stock and cancelled its bookings",
+        extra={"stock": stock.id, "bookings": [b.id for b in cancelled_bookings]},
     )
-    models.Offer.query.filter(*filters).delete(synchronize_session=False)
-    db.session.commit()
+    if cancelled_bookings:
+        for booking in cancelled_bookings:
+            transactional_mails.send_booking_cancellation_by_pro_to_beneficiary_email(booking)
+        transactional_mails.send_booking_cancellation_confirmation_by_pro_email(cancelled_bookings)
+
+        push_notification_job.send_cancel_booking_notification.delay([booking.id for booking in cancelled_bookings])
+    search.async_index_offer_ids(
+        [stock.offerId],
+        reason=search.IndexationReason.STOCK_DELETION,
+    )
+
+
+def delete_stock(stock: models.Stock) -> None:
+    validation.check_stock_is_deletable(stock)
+    _delete_stock(stock)
 
 
 def batch_delete_stocks(stocks_to_delete: list[models.Stock]) -> None:
@@ -1285,6 +1107,44 @@ def batch_delete_stocks(stocks_to_delete: list[models.Stock]) -> None:
 
     for stock in stocks_to_delete:
         _delete_stock(stock)
+
+
+def get_stocks_stats(offer_id: int) -> offers_serialize.StocksStats:
+    data = (
+        models.Stock.query.with_entities(
+            sa.func.min(models.Stock.beginningDatetime),
+            sa.func.max(models.Stock.beginningDatetime),
+            sa.func.count(models.Stock.id),
+            sa.case(
+                (
+                    models.Stock.query.filter(
+                        models.Stock.quantity == None,
+                        models.Stock.isSoftDeleted.is_(False),
+                        models.Stock.offerId == offer_id,
+                    ).exists(),
+                    None,
+                ),
+                else_=sa.cast(sa.func.sum(models.Stock.quantity - models.Stock.dnBookedQuantity), sa.Integer),
+            ),
+        )
+        .filter(models.Stock.offerId == offer_id, models.Stock.isSoftDeleted.is_(False))
+        .group_by(models.Stock.offerId)
+        .one_or_none()
+    )
+    try:
+        return offers_serialize.StocksStats(*data)
+    except TypeError:
+        raise ApiErrors(
+            errors={
+                "global": ["L'offre en cours de création ne possède aucun Stock"],
+            },
+            status_code=404,
+        )
+
+
+# ******************
+# * Price Category *
+# ******************
 
 
 def get_or_create_label(label: str, venue: offerers_models.Venue) -> models.PriceCategoryLabel:
@@ -1300,6 +1160,21 @@ def create_price_category(offer: models.Offer, label: str, price: decimal.Decima
     created_price_category = models.PriceCategory(offer=offer, price=price, priceCategoryLabel=price_category_label)
     repository.add_to_session(created_price_category)
     return created_price_category
+
+
+def _get_or_create_same_price_category_label(
+    venue: offerers_models.Venue, source_price_category_label: offers_models.PriceCategoryLabel
+) -> offers_models.PriceCategoryLabel:
+    try:
+        # Use label which already exists when found, otherwise unique_label_venue constraint would cause exception
+        return next(filter(lambda pcl: pcl.label == source_price_category_label.label, venue.priceCategoriesLabel))
+    except StopIteration:
+        # Copy price category label from source to destination venue
+        new_price_category_label = offers_models.PriceCategoryLabel(
+            venue=venue, label=source_price_category_label.label
+        )
+        db.session.add(new_price_category_label)
+        return new_price_category_label
 
 
 def edit_price_category(
@@ -1336,6 +1211,236 @@ def delete_price_category(offer: models.Offer, price_category: models.PriceCateg
     validation.check_price_categories_deletable(offer)
     db.session.delete(price_category)
     db.session.commit()
+
+
+# *************
+# * Mediation *
+# *************
+
+
+def _delete_mediations_and_thumbs(mediations: list[models.Mediation]) -> None:
+    for mediation in mediations:
+        try:
+            for thumb_index in range(1, mediation.thumbCount + 1):
+                suffix = str(thumb_index - 1) if thumb_index > 1 else ""
+                remove_thumb(mediation, storage_id_suffix=suffix)
+        except Exception as exception:  # pylint: disable=broad-except
+            logger.exception(
+                "An unexpected error was encountered during the thumbnails deletion for %s: %s",
+                mediation,
+                exception,
+            )
+        else:
+            db.session.delete(mediation)
+
+
+def create_mediation(
+    user: users_models.User | None,
+    offer: models.Offer,
+    credit: str | None,
+    image_as_bytes: bytes,
+    crop_params: image_conversion.CropParams | None = None,
+    keep_ratio: bool = False,
+    min_width: int = validation.MIN_THUMBNAIL_WIDTH,
+    min_height: int = validation.MIN_THUMBNAIL_HEIGHT,
+    max_width: int | None = None,
+    max_height: int | None = None,
+    aspect_ratio: image_conversion.ImageRatio = image_conversion.ImageRatio.PORTRAIT,
+    check_image_validity: bool = True,
+) -> models.Mediation:
+    # checks image type, min dimensions
+    if check_image_validity:
+        validation.check_image(
+            image_as_bytes, min_width=min_width, min_height=min_height, max_width=max_width, max_height=max_height
+        )
+
+    mediation = models.Mediation(author=user, offer=offer, credit=credit)
+
+    repository.add_to_session(mediation)
+    db.session.flush()  # `create_thumb()` requires the object to have an id, so we must flush now.
+
+    try:
+        create_thumb(
+            mediation,
+            image_as_bytes,
+            storage_id_suffix_str="",
+            crop_params=crop_params,
+            ratio=aspect_ratio,
+            keep_ratio=keep_ratio,
+        )
+    except image_conversion.ImageRatioError:
+        raise
+    except Exception as exception:
+        logger.exception("An unexpected error was encountered during the thumbnail creation: %s", exception)
+        raise exceptions.ThumbnailStorageError
+
+    # cleanup former thumbnails and mediations
+    previous_mediations = (
+        models.Mediation.query.filter(models.Mediation.offerId == offer.id)
+        .filter(models.Mediation.id != mediation.id)
+        .all()
+    )
+    _delete_mediations_and_thumbs(previous_mediations)
+
+    search.async_index_offer_ids(
+        [offer.id],
+        reason=search.IndexationReason.MEDIATION_CREATION,
+    )
+
+    return mediation
+
+
+def delete_mediation(offer: models.Offer) -> None:
+    mediations = models.Mediation.query.filter(models.Mediation.offerId == offer.id).all()
+
+    _delete_mediations_and_thumbs(mediations)
+
+    search.async_index_offer_ids(
+        [offer.id],
+        reason=search.IndexationReason.MEDIATION_DELETION,
+    )
+
+
+# ***********
+# * Product *
+# ***********
+
+
+def reject_inappropriate_product(
+    ean: str,
+    author: users_models.User | None,
+    is_gcu_incompatible: bool = False,
+    send_booking_cancellation_emails: bool = True,
+) -> bool:
+    product = models.Product.query.filter(
+        models.Product.extraData["ean"].astext == ean, models.Product.idAtProviders.is_not(None)
+    ).one_or_none()
+
+    if not product:
+        return False
+
+    offers_query = models.Offer.query.filter(
+        sa.or_(models.Offer.productId == product.id, models.Offer.extraData["ean"].astext == ean),
+        models.Offer.validation != models.OfferValidationStatus.REJECTED,
+    )
+
+    offers = offers_query.options(sa.orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings)).all()
+
+    offer_updated_counts = offers_query.update(
+        values={
+            "validation": models.OfferValidationStatus.REJECTED,
+            "lastValidationDate": datetime.datetime.utcnow(),
+            "lastValidationType": OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
+            "lastValidationAuthorUserId": author.id if author else None,
+        },
+        synchronize_session=False,
+    )
+
+    product.isGcuCompatible = False
+    db.session.add(product)
+
+    try:
+        db.session.commit()
+    except Exception as exception:  # pylint: disable=broad-except
+        logger.exception(
+            "Could not mark product and offers as inappropriate: %s",
+            extra={"ean": ean, "product": product.id, "exc": str(exception)},
+        )
+        return False
+
+    offer_ids = []
+    for offer in offers:
+        offer_ids.append(offer.id)
+        bookings = bookings_api.cancel_bookings_from_rejected_offer(offer)
+
+        if send_booking_cancellation_emails:
+            for booking in bookings:
+                transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(
+                    booking, reason=BookingCancellationReasons.FRAUD, is_gcu_incompatible=is_gcu_incompatible
+                )
+
+    logger.info(
+        "Rejected inappropriate products",
+        extra={"ean": ean, "product": product.id, "offers": offer_ids, "offer_updated_counts": offer_updated_counts},
+    )
+
+    if offer_ids:
+        users_models.Favorite.query.filter(users_models.Favorite.offerId.in_(offer_ids)).delete(
+            synchronize_session=False
+        )
+        search.async_index_offer_ids(
+            offer_ids,
+            reason=search.IndexationReason.PRODUCT_REJECTION,
+            log_extra={"ean": ean},
+        )
+
+    return True
+
+
+def deactivate_permanently_unavailable_products(ean: str) -> bool:
+    products = models.Product.query.filter(models.Product.extraData["ean"].astext == ean).all()
+    if not products:
+        return False
+
+    for product in products:
+        product.name = "xxx"
+        db.session.add(product)
+
+    offers = models.Offer.query.filter(models.Offer.productId.in_(p.id for p in products)).filter(
+        models.Offer.isActive.is_(True)
+    )
+    offer_ids = [offer_id for offer_id, in offers.with_entities(models.Offer.id).all()]
+    offers.update(values={"isActive": False, "name": "xxx"}, synchronize_session="fetch")
+
+    try:
+        db.session.commit()
+    except Exception as exception:  # pylint: disable=broad-except
+        logger.exception(
+            "Could not mark product and offers as permanently unavailable: %s",
+            extra={"ean": ean, "products": [p.id for p in products], "exc": str(exception)},
+        )
+        return False
+
+    logger.info(
+        "Deactivated permanently unavailable products",
+        extra={"ean": ean, "products": [p.id for p in products], "offers": offer_ids},
+    )
+
+    search.async_index_offer_ids(
+        offer_ids,
+        reason=search.IndexationReason.PRODUCT_DEACTIVATION,
+        log_extra={"ean": ean},
+    )
+
+    return True
+
+
+def _fetch_or_update_product_with_titelive_data(titelive_product: models.Product) -> models.Product:
+    product = models.Product.query.filter_by(idAtProviders=titelive_product.idAtProviders).one_or_none()
+    if not product:
+        return titelive_product
+
+    product.name = titelive_product.name
+    product.description = titelive_product.description
+    product.subcategoryId = titelive_product.subcategoryId
+    product.thumbCount = titelive_product.thumbCount
+    old_extra_data = product.extraData
+    if old_extra_data is None:
+        old_extra_data = {}
+
+    if titelive_product.extraData:
+        product.extraData = {**old_extra_data, **titelive_product.extraData}
+
+    return product
+
+
+def whitelist_product(idAtProviders: str) -> models.Product | None:
+    titelive_product = get_new_product_from_ean13(idAtProviders)
+    product = _fetch_or_update_product_with_titelive_data(titelive_product)
+    product.isGcuCompatible = True
+    db.session.add(product)
+    db.session.commit()
+    return product
 
 
 def approves_provider_product_and_rejected_offers(ean: str) -> None:
@@ -1395,39 +1500,6 @@ def approves_provider_product_and_rejected_offers(ean: str) -> None:
             extra={"ean": ean, "product": product.id, "offers": offer_ids, "exc": str(exception)},
         )
         raise exceptions.NotUpdateProductOrOffers(exception)
-
-
-def get_stocks_stats(offer_id: int) -> offers_serialize.StocksStats:
-    data = (
-        models.Stock.query.with_entities(
-            sa.func.min(models.Stock.beginningDatetime),
-            sa.func.max(models.Stock.beginningDatetime),
-            sa.func.count(models.Stock.id),
-            sa.case(
-                (
-                    models.Stock.query.filter(
-                        models.Stock.quantity == None,
-                        models.Stock.isSoftDeleted.is_(False),
-                        models.Stock.offerId == offer_id,
-                    ).exists(),
-                    None,
-                ),
-                else_=sa.cast(sa.func.sum(models.Stock.quantity - models.Stock.dnBookedQuantity), sa.Integer),
-            ),
-        )
-        .filter(models.Stock.offerId == offer_id, models.Stock.isSoftDeleted.is_(False))
-        .group_by(models.Stock.offerId)
-        .one_or_none()
-    )
-    try:
-        return offers_serialize.StocksStats(*data)
-    except TypeError:
-        raise ApiErrors(
-            errors={
-                "global": ["L'offre en cours de création ne possède aucun Stock"],
-            },
-            status_code=404,
-        )
 
 
 def fill_offer_extra_data_from_product_data(product_id: int) -> None:
@@ -1506,6 +1578,11 @@ def update_offers_description_from_product_description(product_id: int) -> None:
         raise exceptions.NotUpdateProductOrOffers(exception)
 
 
+# *********
+# * Venue *
+# *********
+
+
 def check_can_move_event_offer(offer: models.Offer) -> list[offerers_models.Venue]:
     if not offer.isEvent:
         raise exceptions.OfferIsNotEvent()
@@ -1557,21 +1634,6 @@ def check_can_move_event_offer(offer: models.Offer) -> list[offerers_models.Venu
         raise exceptions.NoDestinationVenue()
 
     return venues_choices
-
-
-def _get_or_create_same_price_category_label(
-    venue: offerers_models.Venue, source_price_category_label: offers_models.PriceCategoryLabel
-) -> offers_models.PriceCategoryLabel:
-    try:
-        # Use label which already exists when found, otherwise unique_label_venue constraint would cause exception
-        return next(filter(lambda pcl: pcl.label == source_price_category_label.label, venue.priceCategoriesLabel))
-    except StopIteration:
-        # Copy price category label from source to destination venue
-        new_price_category_label = offers_models.PriceCategoryLabel(
-            venue=venue, label=source_price_category_label.label
-        )
-        db.session.add(new_price_category_label)
-        return new_price_category_label
 
 
 def move_event_offer(
@@ -1662,35 +1724,3 @@ def move_event_offer(
 
     if notify_beneficiary:
         transactional_mails.send_email_for_each_ongoing_booking(offer)
-
-
-def update_used_stock_price(stock: models.Stock, new_price: float) -> None:
-    if not stock.offer.isEvent:
-        raise ValueError("Only stocks associated with an event offer can be edited with used bookings")
-
-    stock.price = new_price
-    bookings_models.Booking.query.filter(
-        bookings_models.Booking.stockId == stock.id,
-    ).update({bookings_models.Booking.amount: new_price})
-
-    first_finance_event = (
-        finance_models.FinanceEvent.query.join(bookings_models.Booking, finance_models.FinanceEvent.booking)
-        .filter(
-            finance_models.FinanceEvent.status != finance_models.FinanceEventStatus.CANCELLED,
-            bookings_models.Booking.stockId == stock.id,
-        )
-        .order_by(
-            finance_models.FinanceEvent.pricingOrderingDate,
-            finance_models.FinanceEvent.id,
-        )
-        .options(
-            sa.orm.joinedload(finance_models.FinanceEvent.booking),
-        )
-        .first()
-    )
-
-    if first_finance_event:
-        finance_api.force_event_repricing(
-            event=first_finance_event,
-            reason=finance_models.PricingLogReason.CHANGE_AMOUNT,
-        )
