@@ -1155,7 +1155,6 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["pc_pro_venue_bookings_link"] = urls.build_pc_pro_venue_bookings_link
     app.jinja_env.filters["pc_pro_venue_offers_link"] = urls.build_pc_pro_venue_offers_link
     app.jinja_env.filters["pc_pro_venue_link"] = urls.build_pc_pro_venue_link
-    app.jinja_env.filters["pc_pro_user_email_validation_link"] = urls.build_pc_pro_user_email_validation_link
     app.jinja_env.filters["pc_backoffice_public_account_link"] = urls.build_backoffice_public_account_link
     app.jinja_env.filters["pc_backoffice_public_account_link_in_comment"] = (
         urls.build_backoffice_public_account_link_in_comment

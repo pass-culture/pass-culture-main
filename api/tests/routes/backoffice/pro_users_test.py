@@ -63,9 +63,7 @@ class GetProUserTest(GetEndpointHelper):
             assert url in response.data.decode("utf-8")
 
         def test_no_button_if_validated_email(self, authenticated_client):
-            user = offerers_factories.UserOffererFactory(
-                user__isEmailValidated=True, user__validationToken="AZERTY1234"
-            ).user
+            user = offerers_factories.UserOffererFactory(user__isEmailValidated=True).user
             response = authenticated_client.get(url_for("backoffice_web.pro_user.get", user_id=user.id))
             assert response.status_code == 200
 
@@ -412,9 +410,7 @@ class ValidateProEmailTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
     def test_validate_pro_user_email_ff_on(self, authenticated_client):
-        pro_user = offerers_factories.NotValidatedUserOffererFactory(
-            user__validationToken=False, user__isEmailValidated=False
-        ).user
+        pro_user = offerers_factories.NotValidatedUserOffererFactory(user__isEmailValidated=False).user
         assert not pro_user.isEmailValidated
 
         response = self.post_to_endpoint(authenticated_client, user_id=pro_user.id)
@@ -426,7 +422,7 @@ class ValidateProEmailTest(PostEndpointHelper):
         assert len(mails_testing.outbox) == 0
 
     def test_validate_non_pro_user_email(self, authenticated_client):
-        user = users_factories.UserFactory(validationToken=False, isEmailValidated=False)
+        user = users_factories.UserFactory(isEmailValidated=False)
         assert not user.isEmailValidated
 
         response = self.post_to_endpoint(authenticated_client, user_id=user.id)

@@ -232,8 +232,7 @@ class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def when_account_is_not_validated(self, client):
         # Given
-        user = users_factories.UserFactory.build()
-        user.generate_validation_token()
+        user = users_factories.UserFactory(isEmailValidated=False)
         repository.save(user)
         data = {"identifier": user.email, "password": user.clearTextPassword, "captchaToken": "token"}
 
