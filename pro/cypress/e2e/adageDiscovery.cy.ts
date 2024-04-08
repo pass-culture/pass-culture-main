@@ -1,7 +1,8 @@
 describe('Adage discovery', () => {
   beforeEach(() => {
-    cy.request('http://localhost:5001/e2e/adage/discovery')
-    cy.request('http://localhost:3001/connexion')
+    const xhr = new XMLHttpRequest()
+    xhr.open('GET', 'http://localhost:5001/e2e/adage/discovery', false)
+    xhr.send() // now your `cy.route` will trigger
     cy.visit('/connexion')
     cy.getFakeAdageToken()
 

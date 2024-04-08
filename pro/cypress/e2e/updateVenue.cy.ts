@@ -1,6 +1,8 @@
 describe('Update a venue', () => {
   beforeEach(() => {
-    cy.request('http://localhost:5001/e2e/pro/update-venue')
+    const xhr = new XMLHttpRequest()
+    xhr.open('GET', 'http://localhost:5001/e2e/pro/update-venue', false)
+    xhr.send() // now your `cy.route` will trigger
     cy.visit('/connexion')
   })
 
