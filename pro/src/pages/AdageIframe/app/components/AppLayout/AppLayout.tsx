@@ -45,7 +45,7 @@ export const AppLayout = (): JSX.Element => {
     <div>
       <AdageHeader />
       <main
-        className={classNames({
+        className={classNames(styles['app-layout'], {
           [styles['app-layout-content']]: !isFullWidthPage,
         })}
         id="content"
