@@ -9,7 +9,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_activation_token_exists(self, client):
         # given
-        user_offerer = offerers_factories.UserOffererFactory(user__validationToken=None)
+        user_offerer = offerers_factories.UserOffererFactory()
         token = token_utils.Token.create(
             token_utils.TokenType.RESET_PASSWORD,
             constants.RESET_PASSWORD_TOKEN_LIFE_TIME,

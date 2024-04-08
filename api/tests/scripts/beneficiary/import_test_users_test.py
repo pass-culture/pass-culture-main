@@ -49,7 +49,6 @@ class ReadFileTest:
         assert jeanne.postalCode == "86140"
         assert jeanne.comment == "interne:test"
         assert jeanne.isEmailValidated
-        assert jeanne.validationToken is None
         assert jeanne.has_beneficiary_role
         assert jeanne.has_test_role
         assert len(jeanne.deposits) == 1
@@ -71,7 +70,6 @@ class ReadFileTest:
         assert pierre.postalCode == "06000"
         assert pierre.comment == "interne:test"
         assert pierre.isEmailValidated
-        assert pierre.validationToken is None
         assert pierre.has_pro_role
         assert not pierre.has_beneficiary_role
         assert pierre.has_test_role

@@ -249,7 +249,7 @@ def google_auth(body: authentication.GoogleSigninRequest) -> authentication.Sign
     if user.account_state == user_models.AccountState.ANONYMIZED:
         raise ApiErrors({"code": "SSO_ACCOUNT_ANONYMIZED", "general": ["Le compte a été anonymisé"]})
 
-    if not user.isValidated or not google_user.email_verified:
+    if not google_user.email_verified:
         raise ApiErrors({"code": "SSO_EMAIL_NOT_VALIDATED", "general": ["L'email n'a pas été validé."]})
 
     with transaction():

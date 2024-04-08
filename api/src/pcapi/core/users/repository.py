@@ -40,7 +40,7 @@ def check_user_and_credentials(user: models.User | None, password: str, allow_in
             technical_message_id="users.login",
         )
         raise exceptions.InvalidIdentifier()
-    if not user.isValidated or not user.isEmailValidated:
+    if not user.isEmailValidated:
         raise exceptions.UnvalidatedAccount()
 
 
