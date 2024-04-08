@@ -2085,8 +2085,7 @@ def _prepare_invoice_context(invoice: models.Invoice, batch: models.CashflowBatc
         including_finance_incident=any(
             cashflow
             for cashflow in cashflows
-            # TODO: remove condition on eventId when it becomes non-nullable
-            if any(pricing.event.bookingFinanceIncidentId for pricing in cashflow.pricings if pricing.eventId)
+            if any(pricing.event.bookingFinanceIncidentId for pricing in cashflow.pricings)
         ),
     )
 
