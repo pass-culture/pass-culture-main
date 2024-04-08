@@ -986,22 +986,17 @@ class GetEligibilityTest:
 
 class UserEmailValidationTest:
     def test_validate_pro_user_email_from_pro_ff_on(self):
-        user_offerer = offerers_factories.UserOffererFactory(
-            user__validationToken="token", user__isEmailValidated=False
-        )
+        user_offerer = offerers_factories.UserOffererFactory(user__isEmailValidated=False)
 
         users_api.validate_pro_user_email(user_offerer.user)
 
         assert history_models.ActionHistory.query.count() == 0
-        assert user_offerer.user.validationToken is None
         assert user_offerer.user.isEmailValidated is True
         assert len(mails_testing.outbox) == 0
 
     def test_validate_pro_user_email_from_backoffice_ff_on(self):
         backoffice_user = users_factories.AdminFactory()
-        user_offerer = offerers_factories.UserOffererFactory(
-            user__validationToken="token", user__isEmailValidated=False
-        )
+        user_offerer = offerers_factories.UserOffererFactory(user__isEmailValidated=False)
 
         users_api.validate_pro_user_email(user_offerer.user, backoffice_user)
 
@@ -1011,7 +1006,6 @@ class UserEmailValidationTest:
         assert action.user == user_offerer.user
         assert action.authorUser == backoffice_user
 
-        assert user_offerer.user.validationToken is None
         assert user_offerer.user.isEmailValidated is True
         assert len(mails_testing.outbox) == 0
 

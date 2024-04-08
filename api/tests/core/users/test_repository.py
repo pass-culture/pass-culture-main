@@ -27,12 +27,12 @@ class CheckUserAndCredentialsTest:
             repository.check_user_and_credentials(user, "123")
 
     def test_inactive_user_with_invalid_password(self):
-        user = users_factories.UserFactory.build(isActive=False)
+        user = users_factories.UserFactory.build(isActive=False, isEmailValidated=False)
         with pytest.raises(exceptions.InvalidIdentifier):
             repository.check_user_and_credentials(user, "123")
 
     def test_user_pending_validation_wrong_password(self):
-        user = users_factories.UserFactory.build(isActive=True, validationToken="123")
+        user = users_factories.UserFactory.build(isActive=True)
         with pytest.raises(exceptions.InvalidIdentifier):
             repository.check_user_and_credentials(user, "doe")
 
@@ -47,7 +47,7 @@ class CheckUserAndCredentialsTest:
             repository.check_user_and_credentials(user, settings.TEST_DEFAULT_PASSWORD)
 
     def test_user_pending_validation(self):
-        user = users_factories.UserFactory.build(isActive=True, validationToken="123")
+        user = users_factories.UserFactory.build(isActive=True, isEmailValidated=False)
         with pytest.raises(exceptions.UnvalidatedAccount):
             repository.check_user_and_credentials(user, settings.TEST_DEFAULT_PASSWORD)
 

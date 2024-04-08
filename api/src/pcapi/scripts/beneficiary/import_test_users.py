@@ -171,7 +171,6 @@ def _create_pro_user(row: dict) -> User:
                 )
             )
 
-    user.validationToken = None
     user.isEmailValidated = True
     user.add_pro_role()
 

@@ -142,8 +142,7 @@ SET
     "dateOfBirth" = '01/01/2001',
     "validatedBirthDate" = case when "validatedBirthDate" is null then null else '2001-01-01'::timestamp end,
     "idPieceNumber" = case when "idPieceNumber" is null then null else pg_temp.fake_id_piece_number_from_id(id) end,
-    "phoneNumber" = pg_temp.fake_phone_number_from_id(id),
-    "validationToken" = NULL
+    "phoneNumber" = pg_temp.fake_phone_number_from_id(id)
 WHERE email NOT LIKE '%@passculture.app';
 ;
 
@@ -152,8 +151,7 @@ SET
     "password" = 'fake-hashed-password'::bytea,
     "dateOfBirth" = '01/01/2001',
     "validatedBirthDate" = case when "validatedBirthDate" is null then null else '2001-01-01'::timestamp end,
-    "phoneNumber" = pg_temp.fake_phone_number_from_id(id),
-    "validationToken" = NULL
+    "phoneNumber" = pg_temp.fake_phone_number_from_id(id)
 WHERE email LIKE '%@passculture.app';
 ;
 

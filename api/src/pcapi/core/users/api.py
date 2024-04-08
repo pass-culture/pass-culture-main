@@ -595,7 +595,6 @@ def update_password_and_external_user(user: users_models.User, new_password: str
     user.setPassword(new_password)
     if not user.isEmailValidated:
         user.isEmailValidated = True
-        user.validationToken = None
         external_attributes_api.update_external_user(user)
     repository.save(user)
 
