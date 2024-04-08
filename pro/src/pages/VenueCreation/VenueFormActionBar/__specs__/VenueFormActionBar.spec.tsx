@@ -10,7 +10,9 @@ import {
   VenueFormActionBarProps,
 } from '../VenueFormActionBar'
 
-const renderVenueFormActionBar = (props: Partial<VenueFormActionBarProps>) => {
+const renderVenueFormActionBar = (
+  props: Partial<VenueFormActionBarProps> = {}
+) => {
   const storeOverrides = {
     user: {
       initialized: true,
@@ -30,18 +32,12 @@ const renderVenueFormActionBar = (props: Partial<VenueFormActionBarProps>) => {
 
 describe('VenueFormActionBar', () => {
   it('should display right message on edition', () => {
-    renderVenueFormActionBar({ isCreatingVenue: false })
+    renderVenueFormActionBar()
     expect(screen.getByText('Enregistrer et quitter')).toBeInTheDocument()
-  })
-
-  it('should display right message on creation', () => {
-    renderVenueFormActionBar({ isCreatingVenue: true })
-    expect(screen.getByText('Enregistrer et créer le lieu')).toBeInTheDocument()
   })
 
   it('should display venue cancel link when not creating', () => {
     renderVenueFormActionBar({
-      isCreatingVenue: false,
       venue: { ...defaultGetVenue },
     })
 

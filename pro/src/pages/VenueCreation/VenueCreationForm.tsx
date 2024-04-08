@@ -5,11 +5,20 @@ import {
   GetOffererResponseModel,
   SharedCurrentUserResponseModel,
 } from 'apiClient/v1'
+import ActionsBarSticky from 'components/ActionsBarSticky'
 import { AddressSelect } from 'components/Address'
 import FormLayout from 'components/FormLayout'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { SelectOption } from 'custom_types/form'
-import { TextInput, InfoBox, Select, Banner } from 'ui-kit'
+import {
+  TextInput,
+  InfoBox,
+  Select,
+  Banner,
+  ButtonLink,
+  SubmitButton,
+} from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import RouteLeavingGuard, {
   BlockerFunction,
@@ -20,7 +29,6 @@ import { Accessibility } from './Accessibility/Accessibility'
 import { SiretOrCommentFields } from './SiretOrCommentFields/SiretOrCommentFields'
 import { VenueCreationFormValues } from './types'
 import styles from './VenueCreationForm.module.scss'
-import { VenueFormActionBar } from './VenueFormActionBar/VenueFormActionBar'
 import { venueSubmitRedirectUrl } from './venueSubmitRedirectUrl'
 
 type VenueFormProps = {
@@ -52,7 +60,8 @@ export const VenueCreationForm = ({
   updateIsSiretValued,
   venueTypes,
 }: VenueFormProps) => {
-  const { initialValues } = useFormikContext<VenueCreationFormValues>()
+  const { initialValues, isSubmitting } =
+    useFormikContext<VenueCreationFormValues>()
   const user = useCurrentUser()
 
   const [isFieldNameFrozen, setIsFieldNameFrozen] = useState(false)
@@ -177,7 +186,24 @@ export const VenueCreationForm = ({
         </RouteLeavingGuard>
       </FormLayout>
 
-      <VenueFormActionBar isCreatingVenue />
+      <ActionsBarSticky>
+        <ActionsBarSticky.Left>
+          <ButtonLink
+            variant={ButtonVariant.SECONDARY}
+            link={{
+              to: '/accueil',
+              isExternal: false,
+            }}
+          >
+            Annuler et quitter
+          </ButtonLink>
+        </ActionsBarSticky.Left>
+        <ActionsBarSticky.Right>
+          <SubmitButton isLoading={isSubmitting}>
+            Enregistrer et créer le lieu
+          </SubmitButton>
+        </ActionsBarSticky.Right>
+      </ActionsBarSticky>
     </div>
   )
 }
