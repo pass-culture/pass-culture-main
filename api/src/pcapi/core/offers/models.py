@@ -170,6 +170,9 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     activationCodes: sa_orm.Mapped["ActivationCode"] = sa.orm.relationship("ActivationCode", back_populates="stock")
     beginningDatetime: datetime.datetime | None = sa.Column(sa.DateTime, nullable=True)
     bookingLimitDatetime = sa.Column(sa.DateTime, nullable=True)
+    __table_args__ = sa.CheckConstraint(
+        "bookingLimitDatetime < beginningDatetime", name="check_bookingLimitDatetime_not_too_late"
+    )
     dateCreated: datetime.datetime = sa.Column(
         sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
     )
@@ -305,11 +308,6 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
         if "check_stock" in str(internal_error.orig):
             if "quantity_too_low" in str(internal_error.orig):
                 return ("quantity", "Le stock total ne peut être inférieur au nombre de réservations")
-            if "bookingLimitDatetime_too_late" in str(internal_error.orig):
-                return (
-                    "bookingLimitDatetime",
-                    "La date limite de réservation pour cette offre est postérieure à la date de début de l'évènement",
-                )
             logger.error("Unexpected error in patch stocks: %s", internal_error)
         return PcObject.restize_internal_error(internal_error)
 
@@ -354,14 +352,6 @@ Stock.trig_ddl = """
       THEN
        RAISE EXCEPTION 'quantity_too_low'
        USING HINT = 'stock.quantity cannot be lower than number of bookings';
-      END IF;
-
-      IF NEW."bookingLimitDatetime" IS NOT NULL AND
-        NEW."beginningDatetime" IS NOT NULL AND
-         NEW."bookingLimitDatetime" > NEW."beginningDatetime" THEN
-
-      RAISE EXCEPTION 'bookingLimitDatetime_too_late'
-      USING HINT = 'bookingLimitDatetime after beginningDatetime';
       END IF;
 
       RETURN NEW;

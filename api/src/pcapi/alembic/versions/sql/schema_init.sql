@@ -544,13 +544,6 @@ CREATE FUNCTION public.check_stock() RETURNS trigger
        USING HINT = 'stock.quantity cannot be lower than number of bookings';
       END IF;
 
-      IF NEW."bookingLimitDatetime" IS NOT NULL AND
-        NEW."beginningDatetime" IS NOT NULL AND
-         NEW."bookingLimitDatetime" > NEW."beginningDatetime" THEN
-
-      RAISE EXCEPTION 'bookingLimitDatetime_too_late'
-      USING HINT = 'bookingLimitDatetime after beginningDatetime';
-      END IF;
 
       RETURN NEW;
     END;
@@ -4257,7 +4250,8 @@ CREATE TABLE public.stock (
     "priceCategoryId" bigint,
     features text[] DEFAULT '{}'::text[] NOT NULL,
     CONSTRAINT check_price_is_not_negative CHECK ((price >= (0)::numeric)),
-    CONSTRAINT check_providable_with_provider_has_idatproviders CHECK ((("lastProviderId" IS NULL) OR ("idAtProviders" IS NOT NULL)))
+    CONSTRAINT check_providable_with_provider_has_idatproviders CHECK ((("lastProviderId" IS NULL) OR ("idAtProviders" IS NOT NULL))),
+    CONSTRAINT check_bookingLimitDatetime_not_too_late CHECK ((("bookingLimitDatetime" < "beginningDatetime")))
 );
 
 
