@@ -14,11 +14,15 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-const renderOffersForMyInstitution = (user = defaultAdageUser) => {
+const renderOffersForMyInstitution = (
+  user = defaultAdageUser,
+  features?: string[]
+) => {
   renderWithProviders(
     <AdageUserContextProvider adageUser={user}>
       <OffersForMyInstitution />
-    </AdageUserContextProvider>
+    </AdageUserContextProvider>,
+    { features: features }
   )
 }
 
@@ -62,5 +66,21 @@ describe('OffersInstitutionList', () => {
         name: /Voir la page “Suivi pass Culture”/i,
       })
     ).toHaveAttribute('href', 'adage/passculture/index')
+  })
+
+  it('should show the new offer card if the ff is enabled', async () => {
+    vi.spyOn(
+      apiAdage,
+      'getCollectiveOffersForMyInstitution'
+    ).mockResolvedValueOnce({ collectiveOffers: [defaultCollectiveOffer] })
+
+    renderOffersForMyInstitution(defaultAdageUser, [
+      'WIP_ENABLE_ADAGE_VISUALIZATION',
+    ])
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+    expect(
+      screen.getByRole('link', { name: defaultCollectiveOffer.name })
+    ).toBeInTheDocument()
   })
 })

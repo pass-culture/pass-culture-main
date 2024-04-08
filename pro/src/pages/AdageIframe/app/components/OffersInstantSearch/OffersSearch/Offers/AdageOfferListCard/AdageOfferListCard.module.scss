@@ -1,0 +1,100 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.offer-card-link {
+  display: block;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    cursor: pointer;
+  }
+
+  &:focus-visible {
+    outline: none;
+
+    &::before {
+      outline: rem.torem(1px) solid colors.$input-text-color;
+      outline-offset: rem.torem(2px);
+      border-radius: rem.torem(16px);
+    }
+  }
+}
+
+.offer-card-right {
+  display: flex;
+  flex: 1;
+}
+
+.offer-card {
+  display: flex;
+  gap: rem.torem(16px);
+  padding: rem.torem(16px);
+  border: 2px solid colors.$grey-light;
+  border-radius: rem.torem(16px);
+  transition: box-shadow 0.1s ease-out;
+  position: relative;
+  z-index: 0;
+
+  &:hover {
+    box-shadow: 0 2px 16px 0 colors.$large-shadow;
+
+    .offer-card-image-img {
+      transform: translateX(0) translateY(0) scale(1.1);
+
+      @media screen and (prefers-reduced-motion: reduce) {
+        transform: none;
+      }
+    }
+  }
+
+  &-image {
+    width: rem.torem(216px);
+    min-width: rem.torem(216px);
+    height: rem.torem(273px);
+    border-radius: rem.torem(16px);
+    overflow: hidden;
+    border: 1px solid colors.$grey-light;
+
+    &-img {
+      object-fit: cover;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.15s ease-in-out;
+    }
+
+    &-fallback {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: colors.$grey-light;
+      color: colors.$grey-semi-dark;
+      width: 100%;
+      height: 100%;
+
+      svg {
+        height: rem.torem(80px);
+        width: rem.torem(80px);
+      }
+    }
+  }
+
+  &-content {
+    flex: 1;
+    word-break: break-word;
+  }
+
+  &-actions {
+    display: flex;
+    gap: rem.torem(16px);
+    position: relative;
+    z-index: 2;
+  }
+}
+
+.offer-title {
+  @include fonts.title3;
+}

@@ -13,6 +13,7 @@ import {
   VenueResponse,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import useActiveFeature from 'hooks/useActiveFeature'
 import fullGoTop from 'icons/full-go-top.svg'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { Button } from 'ui-kit'
@@ -24,6 +25,7 @@ import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 import { DiffuseHelp } from '../../../DiffuseHelp/DiffuseHelp'
 import { SurveySatisfaction } from '../../../SurveySatisfaction/SurveySatisfaction'
 
+import { AdageOfferListCard } from './AdageOfferListCard/AdageOfferListCard'
 import { NoResultsPage } from './NoResultsPage/NoResultsPage'
 import Offer from './Offer'
 import styles from './Offers.module.scss'
@@ -62,6 +64,10 @@ export const Offers = ({
     siret: string
     venueId: string
   }>()
+
+  const isNewOfferCardEnabled = useActiveFeature(
+    'WIP_ENABLE_ADAGE_VISUALIZATION'
+  )
 
   const results = indexId
     ? scopedResults.find((res) => res.indexId === indexId)?.results
@@ -186,12 +192,20 @@ export const Offers = ({
             key={`${offer.isTemplate ? 'T' : ''}${offer.id}`}
             data-testid="offer-listitem"
           >
-            <Offer
-              offer={offer}
-              position={index}
-              queryId={results.queryID ?? ''}
-              isInSuggestions={indexId?.startsWith('no_results_offers')}
-            />
+            {isNewOfferCardEnabled ? (
+              <AdageOfferListCard
+                offer={offer}
+                queryId={results.queryID ?? ''}
+                isInSuggestions={indexId?.startsWith('no_results_offers')}
+              />
+            ) : (
+              <Offer
+                offer={offer}
+                position={index}
+                queryId={results.queryID ?? ''}
+                isInSuggestions={indexId?.startsWith('no_results_offers')}
+              />
+            )}
             {index === 0 && showDiffuseHelp && (
               <DiffuseHelp
                 description={

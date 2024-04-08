@@ -10,7 +10,8 @@ import {
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 export function getFormattedDatesForTemplateOffer(
-  offer: CollectiveOfferTemplateResponseModel
+  offer: CollectiveOfferTemplateResponseModel,
+  reducedNoDatesFormat: boolean = false
 ) {
   // Template offer start & end dates timezone is to be ignored. A date entered in pro UI as "2024-01-25" at "15:15"
   //  is saved as "2024-01-25T15:15:00Z" and thus should be displayed as "Le 25 janvier 2024 à 15h15"
@@ -21,7 +22,9 @@ export function getFormattedDatesForTemplateOffer(
         toDateStrippedOfTimezone(offer.dates.start),
         toDateStrippedOfTimezone(offer.dates.end)
       )) ||
-    'Tout au long de l’année scolaire (l’offre est permanente)'
+    (reducedNoDatesFormat
+      ? 'Disponible toute l’année'
+      : 'Tout au long de l’année scolaire (l’offre est permanente)')
   )
 }
 

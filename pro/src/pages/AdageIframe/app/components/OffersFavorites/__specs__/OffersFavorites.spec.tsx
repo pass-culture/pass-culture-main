@@ -18,7 +18,10 @@ const mockOffer: CollectiveOfferTemplateResponseModel = {
   ...defaultCollectiveTemplateOffer,
 }
 
-const renderAdageFavoritesOffers = (user: AuthenticatedResponse) => {
+const renderAdageFavoritesOffers = (
+  user: AuthenticatedResponse,
+  features?: string[]
+) => {
   renderWithProviders(
     <Routes>
       <Route path="/adage-iframe/recherche" element={<h1>Accueil</h1>} />
@@ -31,7 +34,7 @@ const renderAdageFavoritesOffers = (user: AuthenticatedResponse) => {
         }
       />
     </Routes>,
-    { initialRouterEntries: ['/adage-iframe/mes-favoris'] }
+    { initialRouterEntries: ['/adage-iframe/mes-favoris'], features: features }
   )
 }
 
@@ -99,5 +102,22 @@ describe('OffersFavorites', () => {
     await userEvent.click(screen.getByText('Explorer le catalogue'))
 
     expect(screen.getByRole('heading', { name: 'Accueil' })).toBeInTheDocument()
+  })
+
+  it('should show the new offer card if the ff is enabled', async () => {
+    vi.spyOn(apiAdage, 'getCollectiveFavorites').mockResolvedValueOnce({
+      favoritesOffer: [],
+      favoritesTemplate: [mockOffer],
+    })
+
+    renderAdageFavoritesOffers(user, ['WIP_ENABLE_ADAGE_VISUALIZATION'])
+
+    await waitFor(() =>
+      expect(screen.queryByText(/Chargement en cours/)).not.toBeInTheDocument()
+    )
+
+    expect(
+      screen.getByRole('link', { name: mockOffer.name })
+    ).toBeInTheDocument()
   })
 })
