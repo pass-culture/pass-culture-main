@@ -3,6 +3,7 @@ from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
+import logging
 from unittest import mock
 from unittest.mock import patch
 from urllib.parse import parse_qs
@@ -837,6 +838,42 @@ class UserProfileUpdateTest:
         assert ios_batch_attributes.get("u.marketing_push_subscription") is False
         assert ios_batch_attributes.get("u.marketing_email_subscription") is False
         assert ios_batch_attributes.get("ut.permanent_theme_preference") is None
+
+    def test_log_data(self, client, caplog):
+        users_factories.UserFactory(
+            email=self.identifier,
+            notificationSubscriptions={
+                "marketing_push": True,
+                "marketing_email": True,
+                "subscribed_themes": ["musique", "visites"],
+            },
+        )
+
+        with caplog.at_level(logging.INFO):
+            client.with_token(email=self.identifier)
+            response = client.post(
+                "/native/v1/profile",
+                json={
+                    "subscriptions": {
+                        "marketingPush": True,
+                        "marketingEmail": False,
+                        "subscribedThemes": ["visites", "cinema"],
+                    }
+                },
+            )
+
+        assert response.status_code == 200
+        assert caplog.records[0].extra == {
+            "newlySubscribedTo": {"email": False, "push": False, "themes": {"cinema"}},
+            "newlyUnsubscribedFrom": {"email": True, "push": False, "themes": {"musique"}},
+            "subscriptions": {
+                "marketing_push": True,
+                "marketing_email": False,
+                "subscribed_themes": ["visites", "cinema"],
+            },
+            "analyticsSource": "app-native",
+        }
+        assert caplog.records[0].technical_message_id == "subscription_update"
 
     def test_update_user_profile_reset_recredit_amount_to_show(self, client, app):
         user = users_factories.UnderageBeneficiaryFactory(email=self.identifier, recreditAmountToShow=30)
