@@ -18,6 +18,7 @@ from pcapi.core.users import constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
+from pcapi.models.api_errors import UnauthorizedError
 from pcapi.routes.native.security import authenticated_and_active_user_required
 import pcapi.routes.serialization.educonnect as educonnect_serializers
 from pcapi.serialization.decorator import spectree_serialize
@@ -88,8 +89,11 @@ def login_educonnect_e2e(user: users_models.User, body: educonnect_serializers.E
 
 @blueprint.saml_blueprint.route("acs", methods=["POST"])
 def on_educonnect_authentication_response() -> Response:
+    saml_response = request.form.get("SAMLResponse")
+    if saml_response is None:
+        raise UnauthorizedError()
     try:
-        educonnect_user = educonnect_connector.get_educonnect_user(request.form["SAMLResponse"])
+        educonnect_user = educonnect_connector.get_educonnect_user(saml_response)
 
     except educonnect_exceptions.ResponseTooOld:
         logger.warning("Educonnect saml_response too old")

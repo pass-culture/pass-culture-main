@@ -9,6 +9,7 @@ import pydantic.v1 as pydantic_v1
 from pcapi import settings
 from pcapi.connectors.dms import models as dms_models
 from pcapi.models.api_errors import ForbiddenError
+from pcapi.models.api_errors import UnauthorizedError
 
 
 class DMSWebhookRequest(pydantic_v1.BaseModel):
@@ -25,7 +26,11 @@ class DMSWebhookRequest(pydantic_v1.BaseModel):
 def require_dms_token(route_function: Callable[..., Any]) -> Callable:
     @functools.wraps(route_function)
     def validate_dms_token(*args: Any, **kwargs: Any) -> flask.Response:
-        if flask.request.args.get("token") != settings.DMS_WEBHOOK_TOKEN:
+        token = flask.request.args.get("token")
+        if not token:
+            raise UnauthorizedError()
+
+        if token != settings.DMS_WEBHOOK_TOKEN:
             errors = ForbiddenError()
             errors.add_error("token", "Invalid token")
             raise errors
