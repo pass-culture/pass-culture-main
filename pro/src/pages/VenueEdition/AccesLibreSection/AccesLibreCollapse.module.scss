@@ -56,6 +56,12 @@
   margin: 0;
   padding: 0;
   color: colors.$grey-semi-dark;
+
+  &:focus-visible {
+    outline: rem.torem(1px) solid colors.$input-text-color;
+    outline-offset: rem.torem(2px);
+    border-radius: rem.torem(4px);
+  }
 }
 
 .collapse-icon {
