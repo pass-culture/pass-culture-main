@@ -940,11 +940,31 @@ def update_notification_subscription(
     if subscriptions is None:
         return
 
+    old_subscriptions = user.get_notification_subscriptions()
     user.notificationSubscriptions = {
         "marketing_push": subscriptions.marketing_push,
         "marketing_email": subscriptions.marketing_email,
         "subscribed_themes": subscriptions.subscribed_themes,
     }
+
+    logger.info(
+        "Notification subscription update",
+        extra={
+            "analyticsSource": "app-native",
+            "newlySubscribedTo": {
+                "email": subscriptions.marketing_email and not old_subscriptions.marketing_email,
+                "push": subscriptions.marketing_push and not old_subscriptions.marketing_push,
+                "themes": set(subscriptions.subscribed_themes) - set(old_subscriptions.subscribed_themes),
+            },
+            "newlyUnsubscribedFrom": {
+                "email": not subscriptions.marketing_email and old_subscriptions.marketing_email,
+                "push": not subscriptions.marketing_push and old_subscriptions.marketing_push,
+                "themes": set(old_subscriptions.subscribed_themes) - set(subscriptions.subscribed_themes),
+            },
+            "subscriptions": user.notificationSubscriptions,
+        },
+        technical_message_id="subscription_update",
+    )
 
     repository.save(user)
 
