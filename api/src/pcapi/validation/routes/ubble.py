@@ -11,6 +11,7 @@ import flask
 from pcapi import settings
 from pcapi.connectors.serialization import ubble_serializers
 from pcapi.models.api_errors import ForbiddenError
+from pcapi.models.api_errors import UnauthorizedError
 
 
 def require_ubble_v2_signature(route_function: Callable[..., Any]) -> Callable:
@@ -18,7 +19,7 @@ def require_ubble_v2_signature(route_function: Callable[..., Any]) -> Callable:
     def validate_ubble_signature(*args: Any, **kwargs: Any) -> flask.Response:
         signature = flask.request.headers.get("Cko-Signature", "")
         if not signature:
-            raise ForbiddenError(errors={"signature": ["Missing signature"]})
+            raise UnauthorizedError(errors={"signature": ["Missing signature"]})
 
         try:
             (timestamp, _ubble_signature_version, ubble_signature) = signature.split(":")
@@ -66,16 +67,20 @@ def require_ubble_signature(route_function: Callable[..., Any]) -> Callable:
     @functools.wraps(route_function)
     def validate_ubble_signature(*args: Any, **kwargs: Any) -> flask.Response:
         error = ForbiddenError(errors={"signature": ["Invalid signature"]})
-        signature = getattr(
-            ubble_serializers.UBBLE_SIGNATURE_RE.match(flask.request.headers.get("Ubble-Signature", "")),
-            "groupdict",
-            lambda: None,
-        )()
-        if not (signature and signature.get("ts") and signature.get("v1")):
+        raw_signature = flask.request.headers.get("Ubble-Signature", "")
+        if not raw_signature:
+            raise UnauthorizedError()
+
+        signature = ubble_serializers.UBBLE_SIGNATURE_RE.match(raw_signature)
+        if not signature:
             raise error
 
-        expected_signature = compute_signature(signature["ts"].encode("utf-8"), flask.request.data)
-        if signature["v1"] != expected_signature:
+        credentials = signature.groupdict()
+        if not credentials.get("ts") or not credentials.get("v1"):
+            raise error
+
+        expected_signature = compute_signature(credentials["ts"].encode("utf-8"), flask.request.data)
+        if credentials["v1"] != expected_signature:
             raise error
 
         return route_function(*args, **kwargs)

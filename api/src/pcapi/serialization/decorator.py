@@ -186,7 +186,12 @@ def spectree_serialize(
                     content = request.args.to_dict(flat=False) if flatten else query_params
                 kwargs["query"] = query_in_kwargs(**content)
             if form_in_kwargs:
-                kwargs["form"] = form_in_kwargs(**form)
+                try:
+                    kwargs["form"] = form_in_kwargs(**form)
+                except pydantic.v1.ValidationError:
+                    return make_response(
+                        'Please send a "Content-Type: application/x-www-form-urlencoded" HTTP header', 400
+                    )
 
             result = route(*args, **kwargs)
             if raw_response:
