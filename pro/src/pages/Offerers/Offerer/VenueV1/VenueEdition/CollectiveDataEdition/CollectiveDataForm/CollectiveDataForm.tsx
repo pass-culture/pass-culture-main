@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
 import { GetVenueResponseModel, StudentLevels } from 'apiClient/v1'
-import ActionsBarSticky from 'components/ActionsBarSticky'
 import FormLayout from 'components/FormLayout'
 import { handleAllFranceDepartmentOptions } from 'core/shared'
 import { venueInterventionOptions } from 'core/shared/interventionOptions'
@@ -19,6 +18,7 @@ import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 
 import editVenueCollectiveDataAdapter from '../adapters/editVenueCollectiveDataAdapter'
 
+import styles from './CollectiveDataForm.module.scss'
 import { CollectiveDataFormValues } from './type'
 import { extractInitialValuesFromVenue } from './utils/extractInitialValuesFromVenue'
 import { validationSchema } from './validationSchema'
@@ -57,11 +57,9 @@ export const CollectiveDataForm = ({
   const [previousInterventionValues, setPreviousInterventionValues] = useState<
     string[] | null
   >(null)
-  const [isLoading, setIsLoading] = useState(false)
   const initialValues = extractInitialValuesFromVenue(venue)
 
   const onSubmit = async (values: CollectiveDataFormValues) => {
-    setIsLoading(true)
     const response = await editVenueCollectiveDataAdapter({
       venueId: venue.id,
       values,
@@ -69,7 +67,6 @@ export const CollectiveDataForm = ({
 
     if (!response.isOk) {
       notify.error(response.message)
-      return setIsLoading(false)
     }
 
     await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
@@ -211,25 +208,20 @@ export const CollectiveDataForm = ({
             </FormLayout.Section>
           </FormLayout>
 
-          <ActionsBarSticky>
-            <ActionsBarSticky.Left>
-              <ButtonLink
-                variant={ButtonVariant.SECONDARY}
-                link={{
-                  isExternal: false,
-                  to: `/structures/${venue.managingOfferer.id}/lieux/${venue.id}/eac`,
-                }}
-              >
-                Annuler et quitter
-              </ButtonLink>
-            </ActionsBarSticky.Left>
-
-            <ActionsBarSticky.Right>
-              <SubmitButton isLoading={isLoading}>
-                Enregistrer et quitter
-              </SubmitButton>
-            </ActionsBarSticky.Right>
-          </ActionsBarSticky>
+          <div className={styles['action-bar']}>
+            <ButtonLink
+              variant={ButtonVariant.SECONDARY}
+              link={{
+                to: `/structures/${venue.managingOfferer.id}/lieux/${venue.id}/eac`,
+                isExternal: false,
+              }}
+            >
+              Annuler et quitter
+            </ButtonLink>
+            <SubmitButton isLoading={formik.isSubmitting}>
+              Enregistrer et quitter
+            </SubmitButton>
+          </div>
         </form>
       </FormikProvider>
 
