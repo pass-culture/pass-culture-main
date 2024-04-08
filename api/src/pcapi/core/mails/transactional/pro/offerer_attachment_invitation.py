@@ -1,8 +1,10 @@
 from pcapi import settings
 from pcapi.core import mails
+from pcapi.core import token as token_utils
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offerers.models as offerers_models
+from pcapi.core.users import constants as users_constants
 import pcapi.core.users.models as users_models
 
 
@@ -26,11 +28,21 @@ def retrieve_data_for_offerer_attachment_invitation_existing_user_with_validated
 def retrieve_data_for_offerer_attachment_invitation_existing_user_with_not_validated_email(
     offerer: offerers_models.Offerer, user: users_models.User
 ) -> models.TransactionalEmailData:
+    token = token_utils.Token.get_token(token_utils.TokenType.EMAIL_VALIDATION, user.id)
+    if not token:
+        token = token_utils.Token.create(
+            token_utils.TokenType.EMAIL_VALIDATION,
+            # FIXME (yacine, 2024-04-08): for now, the pro user cannot re-send the token themselves.
+            # The default (30 minutes) TTL could thus be too low, so we use an augmented TTL. Once
+            # pro users can re-send tokens, we can use the default TTL (EMAIL_VALIDATION_TOKEN_LIFE_TIME).
+            ttl=users_constants.EMAIL_VALIDATION_TOKEN_FOR_PRO_LIFE_TIME,
+            user_id=user.id,
+        )
     return models.TransactionalEmailData(
         template=TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_EXISTING_NOT_VALIDATED_USER_EMAIL.value,
         params={
             "OFFERER_NAME": offerer.name,
-            "EMAIL_VALIDATION_LINK": f"{settings.PRO_URL}/inscription/validation/{user.validationToken}",
+            "EMAIL_VALIDATION_LINK": f"{settings.PRO_URL}/inscription/validation/{token.encoded_token}",
         },
     )
 

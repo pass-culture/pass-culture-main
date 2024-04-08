@@ -1216,7 +1216,6 @@ def search_backoffice_accounts(search_query: str) -> BaseQuery:
 
 
 def validate_pro_user_email(user: users_models.User, author_user: users_models.User | None = None) -> None:
-    user.validationToken = None
     user.isEmailValidated = True
 
     if author_user:
