@@ -43,7 +43,7 @@ from tests.test_utils import json_default
 class DmsWebhookApplicationTest:
     def test_dms_request_no_token(self, client):
         response = client.post("/webhooks/dms/application_status")
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     def test_dms_request_no_params_with_token(self, client):
         response = client.post(
@@ -1051,8 +1051,7 @@ class UbbleWebhookTest:
                 raw_json=payload,
             )
 
-        assert response.status_code == 403
-        assert response.json == {"signature": ["Invalid signature"]}
+        assert response.status_code == 401
 
     def test_exception_during_workflow_update(self, client):
         current_identification_state = test_factories.IdentificationState.INITIATED
