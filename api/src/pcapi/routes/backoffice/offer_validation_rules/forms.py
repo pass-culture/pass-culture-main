@@ -64,6 +64,7 @@ OFFER_VALIDATION_SUB_RULE_FORM_FIELD_CONFIGURATION = {
     "FORMATS_COLLECTIVE_OFFER": {"field": "formats", "operator": ["INTERSECTS", "NOT_INTERSECTS"]},
     "FORMATS_COLLECTIVE_OFFER_TEMPLATE": {"field": "formats", "operator": ["INTERSECTS", "NOT_INTERSECTS"]},
     "SHOW_SUB_TYPE_OFFER": {"field": "show_sub_type", "operator": ["IN", "NOT_IN"]},
+    "ID_VENUE": {"field": "venue", "operator": ["IN", "NOT_IN"]},
     "ID_OFFERER": {"field": "offerer", "operator": ["IN", "NOT_IN"]},
 }
 
@@ -80,6 +81,13 @@ class SearchRuleForm(FlaskForm):
         validate_choice=False,
         endpoint="backoffice_web.autocomplete_offerers",
     )
+    venue = fields.PCTomSelectField(
+        "Lieux",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_venues",
+    )
     category = fields.PCSelectMultipleField(
         "Catégories", choices=utils.choices_from_enum(categories.CategoryIdLabelEnum)
     )
@@ -88,11 +96,12 @@ class SearchRuleForm(FlaskForm):
     )
 
     def is_empty(self) -> bool:
-        return not any((self.q.data, self.offerer.data, self.category.data, self.subcategory.data))
+        return not any((self.q.data, self.offerer.data, self.venue.data, self.category.data, self.subcategory.data))
 
     def __init__(self, *args: list, **kwargs: dict):
         super().__init__(*args, **kwargs)
         autocomplete.prefill_offerers_choices(self.offerer)
+        autocomplete.prefill_venues_choices(self.venue)
 
 
 class OfferType(enum.Enum):
@@ -130,6 +139,14 @@ class OfferValidationSubRuleForm(FlaskForm):
     offer_type = fields.PCSelectMultipleField(
         "Type de l'offre", choices=utils.choices_from_enum(OfferType), field_list_compatibility=True
     )
+    venue = fields.PCTomSelectField(
+        "Lieu",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_venues",
+        field_list_compatibility=True,
+    )
     offerer = fields.PCTomSelectField(
         "Structure",
         multiple=True,
@@ -164,6 +181,7 @@ class OfferValidationSubRuleForm(FlaskForm):
                 "decimal_field",
                 "list_field",
                 "offer_type",
+                "venue",
                 "offerer",
                 "categories",
                 "subcategories",
@@ -207,6 +225,13 @@ class OfferValidationSubRuleForm(FlaskForm):
             else []
         )
         return offer_type
+
+    def validate_venue(self, venue: fields.PCTomSelectField) -> fields.PCSelectMultipleField:
+        venue.data = (
+            venue.data if self.form_field_configuration.get(self.sub_rule_type.data, {}).get("field") == "venue" else []
+        )
+        venue.data = [int(venue_id) for venue_id in venue.data]
+        return venue
 
     def validate_offerer(self, offerer: fields.PCTomSelectField) -> fields.PCSelectMultipleField:
         offerer.data = (

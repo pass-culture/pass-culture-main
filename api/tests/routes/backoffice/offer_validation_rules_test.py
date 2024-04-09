@@ -45,6 +45,8 @@ class ListRulesTest(GetEndpointHelper):
     expected_num_queries = 3
     # offerer names and siren
     expected_num_queries_when_using_offerer = expected_num_queries + 1
+    # venue names and siret
+    expected_num_queries_when_using_venue = expected_num_queries + 1
 
     def test_list_rules(self, authenticated_client):
         rule = offers_factories.OfferValidationRuleFactory(name="Règles de fraude")
@@ -169,6 +171,46 @@ class ListRulesTest(GetEndpointHelper):
             assert response.status_code == 200
 
         assert "La structure proposant l'offre est parmi Offerer ID : 42" in html_parser.content_as_text(response.data)
+
+    def test_search_rule_by_venue(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(publicName="Your flowers are beautiful")
+        other_venue = offerers_factories.VenueFactory(publicName="Your flowers are not beautiful")
+        rule = offers_factories.OfferValidationRuleFactory(name="Ma règle de conformité")
+        offers_factories.OfferValidationSubRuleFactory(
+            validationRule=rule,
+            model=offers_models.OfferValidationModel.VENUE,
+            attribute=offers_models.OfferValidationAttribute.ID,
+            operator=offers_models.OfferValidationRuleOperator.IN,
+            comparated={"comparated": [venue.id, other_venue.id]},
+        )
+
+        venue_id = venue.id
+        with assert_num_queries(self.expected_num_queries_when_using_venue + 1):  # +1 to prefill venues filter
+            response = authenticated_client.get(url_for(self.endpoint, venue=venue_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(rule.id)
+
+    def test_search_rule_by_venue_which_does_no_longer_exist(
+        self,
+        authenticated_client,
+    ):
+        rule = offers_factories.OfferValidationRuleFactory(name="Ma règle de conformité")
+        offers_factories.OfferValidationSubRuleFactory(
+            validationRule=rule,
+            model=offers_models.OfferValidationModel.VENUE,
+            attribute=offers_models.OfferValidationAttribute.ID,
+            operator=offers_models.OfferValidationRuleOperator.IN,
+            comparated={"comparated": [42]},
+        )
+
+        with assert_num_queries(self.expected_num_queries_when_using_venue + 1):  # +1 to prefill venues filter
+            response = authenticated_client.get(url_for(self.endpoint, venue=42))
+            assert response.status_code == 200
+
+        assert "Le lieu proposant l'offre est parmi Venue ID : 42" in html_parser.content_as_text(response.data)
 
     def test_search_rule_by_category(self, authenticated_client):
         rule = offers_factories.OfferValidationRuleFactory(name="Ma règle de conformité")
@@ -500,6 +542,32 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
         assert rule.subRules[0].attribute == offers_models.OfferValidationAttribute.ID
         assert rule.subRules[0].operator == offers_models.OfferValidationRuleOperator.IN
         assert rule.subRules[0].comparated == {"comparated": [offerers[0].id, offerers[1].id]}
+
+    def test_create_offer_validation_rule_with_venue_id(self, legit_user, authenticated_client):
+        venues = offerers_factories.VenueFactory.create_batch(2)
+        sub_rule_data = get_empty_sub_rule_data() | {
+            "sub_rules-0-sub_rule_type": "ID_VENUE",
+            "sub_rules-0-operator": "IN",
+            "sub_rules-0-venue": [venues[0].id, venues[1].id],
+        }
+        form = {"name": "First rule of robotics"} | sub_rule_data
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form,
+        )
+        assert response.status_code == 303
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "La nouvelle règle a été créée"
+        )
+
+        rule = offers_models.OfferValidationRule.query.one()
+        assert rule.name == "First rule of robotics"
+        assert rule.subRules[0].model == offers_models.OfferValidationModel.VENUE
+        assert rule.subRules[0].attribute == offers_models.OfferValidationAttribute.ID
+        assert rule.subRules[0].operator == offers_models.OfferValidationRuleOperator.IN
+        assert rule.subRules[0].comparated == {"comparated": [venues[0].id, venues[1].id]}
 
     def test_create_offer_validation_rule_with_multiple_rules(self, legit_user, authenticated_client):
         sub_rule_data_0 = get_empty_sub_rule_data(0) | {
