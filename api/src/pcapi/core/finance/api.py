@@ -675,7 +675,6 @@ def _delete_dependent_pricings(event: models.FinanceEvent, log_message: str) -> 
     See note in the module docstring for further details.
     """
     revenue_period_start, revenue_period_end = _get_revenue_period(event.valueDate)
-
     pricings = (
         models.Pricing.query.filter(
             models.Pricing.pricingPoint == event.pricingPoint,
