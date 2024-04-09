@@ -119,6 +119,7 @@ def synchronize_accessibility_with_acceslibre(dry_run: bool = False, force_sync:
         .scalar()
     )
     num_batches = ceil(venues_count / BATCH_SIZE)
+    # pylint: disable=too-many-nested-blocks
     for i in range(num_batches):
         venues_list = (
             offerers_models.Venue.query.join(offerers_models.Venue.accessibilityProvider)
@@ -133,9 +134,15 @@ def synchronize_accessibility_with_acceslibre(dry_run: bool = False, force_sync:
             .offset(i * BATCH_SIZE)
             .all()
         )
+
         for venue in venues_list:
             slug = venue.accessibilityProvider.externalAccessibilityId
-            last_update = accessibility_provider.get_last_update_at_provider(slug=slug)
+            try:
+                last_update = accessibility_provider.get_last_update_at_provider(slug=slug)
+            except accessibility_provider.AccesLibreApiException as e:
+                logger.exception("An error occurred while processing venue: %s, Error: %s", venue, e)
+                continue
+
             # if last_update is not None: match still exist
             # Then we update accessibility data if :
             # 1. accessibility data is None
@@ -148,9 +155,13 @@ def synchronize_accessibility_with_acceslibre(dry_run: bool = False, force_sync:
                 < last_update.astimezone(pytz.utc)
             ):
                 venue.accessibilityProvider.lastUpdateAtProvider = last_update
-                accessibility_data = accessibility_provider.get_accessibility_infos(
-                    slug=venue.accessibilityProvider.externalAccessibilityId
-                )
+                try:
+                    accessibility_data = accessibility_provider.get_accessibility_infos(
+                        slug=venue.accessibilityProvider.externalAccessibilityId
+                    )
+                except accessibility_provider.AccesLibreApiException as e:
+                    logger.exception("An error occurred while processing venue: %s, Error: %s", venue, e)
+                    continue
                 venue.accessibilityProvider.externalAccessibilityData = (
                     accessibility_data.dict() if accessibility_data else None
                 )
@@ -159,19 +170,28 @@ def synchronize_accessibility_with_acceslibre(dry_run: bool = False, force_sync:
             # if last_update is None, the slug has been removed from acceslibre, we try a new match
             # and save accessibility data to DB
             elif not last_update:
-                if id_and_url_at_provider := accessibility_provider.get_id_at_accessibility_provider(
-                    name=venue.name,
-                    public_name=venue.publicName,
-                    siret=venue.siret,
-                    ban_id=venue.banId,
-                    city=venue.city,
-                    postal_code=venue.postalCode,
-                    address=venue.address,
-                ):
+                try:
+                    id_and_url_at_provider = accessibility_provider.get_id_at_accessibility_provider(
+                        name=venue.name,
+                        public_name=venue.publicName,
+                        siret=venue.siret,
+                        ban_id=venue.banId,
+                        city=venue.city,
+                        postal_code=venue.postalCode,
+                        address=venue.address,
+                    )
+                except accessibility_provider.AccesLibreApiException as e:
+                    logger.exception("An error occurred while processing venue: %s, Error: %s", venue, e)
+                    continue
+                if id_and_url_at_provider:
                     new_slug = id_and_url_at_provider["slug"]
                     new_url = id_and_url_at_provider["url"]
                     if last_update := accessibility_provider.get_last_update_at_provider(slug=new_slug):
-                        accessibility_data = accessibility_provider.get_accessibility_infos(slug=new_slug)
+                        try:
+                            accessibility_data = accessibility_provider.get_accessibility_infos(slug=new_slug)
+                        except accessibility_provider.AccesLibreApiException as e:
+                            logger.exception("An error occurred while processing venue: %s, Error: %s", venue, e)
+                            continue
                         venue.accessibilityProvider.externalAccessibilityId = new_slug
                         venue.accessibilityProvider.externalAccessibilityUrl = new_url
                         venue.accessibilityProvider.lastUpdateAtProvider = last_update
@@ -185,7 +205,7 @@ def synchronize_accessibility_with_acceslibre(dry_run: bool = False, force_sync:
                         slug,
                         venue.accessibilityProvider.id,
                     )
-                db.session.delete(venue.accessibilityProvider)
+                    db.session.delete(venue.accessibilityProvider)
         if not dry_run:
             try:
                 db.session.commit()

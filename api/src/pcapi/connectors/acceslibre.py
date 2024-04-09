@@ -21,7 +21,7 @@ from pcapi.utils import requests
 
 logger = logging.getLogger(__name__)
 
-ACCESLIBRE_REQUEST_TIMEOUT = 3
+ACCESLIBRE_REQUEST_TIMEOUT = 6
 REQUEST_PAGE_SIZE = 50
 ADDRESS_MATCHING_RATIO = 80
 NAME_MATCHING_RATIO = 45
@@ -128,10 +128,6 @@ class ExpectedFieldsEnum(enum.Enum):
 
 
 class AccesLibreApiException(Exception):
-    pass
-
-
-class AccessibilityParsingException(Exception):
     pass
 
 
@@ -429,31 +425,23 @@ class TestingBackend(BaseBackend):
 
 
 class AcceslibreBackend(BaseBackend):
+    @staticmethod
+    def _build_url(slug: str | None = None, request_widget_infos: bool | None = False) -> str:
+        base_url = settings.ACCESLIBRE_API_URL
+        if slug:
+            return base_url + slug + "/widget/" if request_widget_infos else base_url + slug + "/"
+        return base_url
+
+    @staticmethod
+    def _fetch_request(
+        url: str, headers: dict | None = None, params: dict[str, str] | None = None
+    ) -> requests.Response:
+        return requests.get(url, headers=headers, params=params, timeout=ACCESLIBRE_REQUEST_TIMEOUT)
+
     def _send_request(
         self,
-        query_params: dict[str, str],
-    ) -> dict:
-        api_key = settings.ACCESLIBRE_API_KEY
-        url = settings.ACCESLIBRE_API_URL
-        headers = {"Authorization": f"Api-Key {api_key}"}
-        try:
-            response = requests.get(url, headers=headers, params=query_params, timeout=ACCESLIBRE_REQUEST_TIMEOUT)
-        except requests.exceptions.RequestException:
-            raise AccesLibreApiException(
-                f"Error connecting AccesLibre API for {url} and query parameters: {query_params}"
-            )
-        try:
-            return response.json()
-        except json.JSONDecodeError:
-            logger.error(
-                "Got non-JSON or malformed JSON response from AccesLibre",
-                extra={"url": response.url, "response": response.content},
-            )
-            raise AccesLibreApiException(f"Non-JSON response from AccesLibre API for {response.url}")
-
-    def _send_request_with_slug(
-        self,
-        slug: str,
+        query_params: dict[str, str] | None = None,
+        slug: str | None = None,
         request_widget_infos: bool | None = False,
     ) -> dict | None:
         """
@@ -462,14 +450,14 @@ class AcceslibreBackend(BaseBackend):
         Venue.accessibilityProvider.externalAccessibilityId field on our side.
         """
         api_key = settings.ACCESLIBRE_API_KEY
-        url = settings.ACCESLIBRE_API_URL + slug
-        if request_widget_infos:
-            url += "/widget"
+        url = self._build_url(slug=slug, request_widget_infos=request_widget_infos)
         headers = {"Authorization": f"Api-Key {api_key}"}
         try:
-            response = requests.get(url, headers=headers, timeout=ACCESLIBRE_REQUEST_TIMEOUT)
+            response = self._fetch_request(url, headers, query_params)
         except requests.exceptions.RequestException:
-            raise AccesLibreApiException(f"Error connecting AccesLibre API for {url}")
+            raise AccesLibreApiException(
+                f"Error connecting AccesLibre API for {url} and query parameters: {query_params}"
+            )
         if response.status_code == 200:
             try:
                 return response.json()
@@ -511,7 +499,7 @@ class AcceslibreBackend(BaseBackend):
         for criterion in search_criteria:
             if all(v is not None for v in criterion.values()):
                 response = self._send_request(query_params=criterion)
-                if response["count"]:
+                if response and response.get("count"):
                     try:
                         results = [
                             AcceslibreResult(
@@ -558,7 +546,7 @@ class AcceslibreBackend(BaseBackend):
         return None
 
     def get_last_update_at_provider(self, slug: str) -> datetime | None:
-        if response := self._send_request_with_slug(slug=slug):
+        if response := self._send_request(slug=slug):
             created_at = parser.isoparse(response["created_at"])
             updated_at = parser.isoparse(response["updated_at"])
             if updated_at > created_at:
@@ -568,7 +556,7 @@ class AcceslibreBackend(BaseBackend):
         return None
 
     def get_accessibility_infos(self, slug: str) -> AccessibilityInfo | None:
-        if response := self._send_request_with_slug(slug=slug, request_widget_infos=True):
+        if response := self._send_request(slug=slug, request_widget_infos=True):
             try:
                 response_list = response["sections"]
             except KeyError:
