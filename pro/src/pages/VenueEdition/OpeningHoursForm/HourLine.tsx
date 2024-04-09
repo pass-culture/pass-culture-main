@@ -17,7 +17,8 @@ type HourLineProps = {
 }
 
 export function HourLine({ day }: HourLineProps) {
-  const { setFieldValue, values } = useFormikContext<VenueEditionFormValues>()
+  const { setFieldValue, values, setFieldTouched } =
+    useFormikContext<VenueEditionFormValues>()
   const [isFullLineDisplayed, setIsFullLineDisplayed] = useState(
     Boolean(values[day].afternoonStartingHour)
   )
@@ -28,6 +29,8 @@ export function HourLine({ day }: HourLineProps) {
     await setFieldValue(`${day}.afternoonStartingHour`, '')
     await setFieldValue(`${day}.afternoonEndingHour`, '')
     await setFieldValue(`${day}.isAfternoonOpen`, false)
+    await setFieldTouched(`${day}.afternoonStartingHour`, false)
+    await setFieldTouched(`${day}.afternoonEndingHour`, false)
   }
 
   return (
