@@ -128,7 +128,7 @@
     "@babel/traverse": ">=7.23.2"
   },
   "engines": {
-    "node": ">=18 <19"
+    "node": ">=20 <21"
   },
   "browserslist": [
     ">0.2%",
