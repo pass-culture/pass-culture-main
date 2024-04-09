@@ -18,6 +18,8 @@ from sqlalchemy.orm import Query
 
 from pcapi import settings
 from pcapi.connectors import api_adresse
+from pcapi.connectors.beamer import BeamerException
+from pcapi.connectors.beamer import delete_beamer_user
 from pcapi.core import mails as mails_api
 from pcapi.core import token as token_utils
 import pcapi.core.bookings.models as bookings_models
@@ -45,6 +47,7 @@ from pcapi.domain.password import random_password
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications import push as push_api
 from pcapi.repository import repository
 from pcapi.repository import transaction
@@ -1578,6 +1581,106 @@ def anonymize_beneficiary_users(*, force: bool = False) -> None:
     for user in users:
         anonymize_user(user, force=force)
     db.session.commit()
+
+
+def anonymize_pro_users() -> None:
+    """
+    Anonymize pro accounts which have not connected for at least 3 years and are either:
+    - not validated on an offerer
+    - validated on an offerer but at least one user would remain on this offerer
+    """
+    three_years_ago = datetime.datetime.utcnow() - datetime.timedelta(days=365 * 3)
+
+    exclude_non_pro_filters = [
+        ~users_models.User.roles.contains([users_models.UserRole.ADMIN]),
+        ~users_models.User.roles.contains([users_models.UserRole.ANONYMIZED]),
+        ~users_models.User.roles.contains([users_models.UserRole.BENEFICIARY]),
+        ~users_models.User.roles.contains([users_models.UserRole.UNDERAGE_BENEFICIARY]),
+    ]
+
+    aliased_offerer = sa.orm.aliased(offerers_models.Offerer)
+    aliased_user_offerer = sa.orm.aliased(offerers_models.UserOfferer)
+    aliased_user = sa.orm.aliased(users_models.User)
+
+    offerers = (
+        db.session.query(aliased_offerer.id)
+        .join(aliased_user_offerer, aliased_offerer.UserOfferers)
+        .join(aliased_user, aliased_user_offerer.user)
+        .filter(
+            aliased_user.lastConnectionDate >= three_years_ago,
+            aliased_user_offerer.validationStatus == ValidationStatus.VALIDATED,
+            aliased_offerer.id == offerers_models.Offerer.id,
+        )
+    )
+    validated_users = (
+        db.session.query(users_models.User.id)
+        .join(offerers_models.UserOfferer, users_models.User.UserOfferers)
+        .join(offerers_models.Offerer, offerers_models.UserOfferer.offerer)
+        .filter(
+            offerers_models.UserOfferer.validationStatus == ValidationStatus.VALIDATED,
+            offerers_models.Offerer.isActive,
+            users_models.User.lastConnectionDate < three_years_ago,
+            *exclude_non_pro_filters,
+            offerers.exists(),
+        )
+    )
+
+    non_validated_users = (
+        db.session.query(users_models.User.id)
+        .join(offerers_models.UserOfferer, users_models.User.UserOfferers)
+        .filter(
+            offerers_models.UserOfferer.validationStatus != ValidationStatus.VALIDATED,
+            users_models.User.lastConnectionDate < three_years_ago,
+            users_models.User.roles.contains([users_models.UserRole.PRO]),
+            *exclude_non_pro_filters,
+        )
+    )
+    non_attached_users = db.session.query(users_models.User.id).filter(
+        users_models.User.lastConnectionDate < three_years_ago,
+        users_models.User.roles.contains([users_models.UserRole.NON_ATTACHED_PRO]),
+        *exclude_non_pro_filters,
+    )
+    never_connected_users = db.session.query(users_models.User.id).filter(
+        users_models.User.lastConnectionDate.is_(None),
+        users_models.User.dateCreated < three_years_ago,
+        sa.or_(
+            users_models.User.roles.contains([users_models.UserRole.PRO]),
+            users_models.User.roles.contains([users_models.UserRole.NON_ATTACHED_PRO]),
+        ),
+        *exclude_non_pro_filters,
+    )
+
+    users = users_models.User.query.filter(
+        users_models.User.id.in_(
+            sa.union(validated_users, non_validated_users, non_attached_users, never_connected_users).subquery(),
+        ),
+    )
+    for user in users:
+        gdpr_delete_pro_user(user)
+
+    db.session.commit()
+
+
+def gdpr_delete_pro_user(user: users_models.User) -> None:
+    try:
+        delete_beamer_user(user.id)
+    except BeamerException:
+        pass
+    _remove_external_user(user)
+
+    history_models.ActionHistory.query.filter(
+        history_models.ActionHistory.userId != user.id,
+        history_models.ActionHistory.authorUserId == user.id,
+    ).update(
+        {
+            "authorUserId": None,
+        },
+        synchronize_session=False,
+    )
+    offerers_models.UserOfferer.query.filter(offerers_models.UserOfferer.userId == user.id).delete(
+        synchronize_session=False,
+    )
+    users_models.User.query.filter(users_models.User.id == user.id).delete(synchronize_session=False)
 
 
 def anonymize_user_deposits() -> None:
