@@ -20,7 +20,6 @@ import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { useOfferWizardMode } from 'hooks'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import fullCodeIcon from 'icons/full-code.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
@@ -58,10 +57,6 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const [isActivationCodeFormVisible, setIsActivationCodeFormVisible] =
     useState(false)
   const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false)
-
-  const isTiteliveMusicGenreEnabled = useActiveFeature(
-    'ENABLE_PRO_TITELIVE_MUSIC_GENRES'
-  )
 
   useEffect(() => {
     async function loadStocks() {
@@ -116,13 +111,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
 
     // Submit
     try {
-      await submitToApi(
-        values,
-        offer,
-        formik.resetForm,
-        formik.setErrors,
-        isTiteliveMusicGenreEnabled
-      )
+      await submitToApi(values, offer, formik.resetForm, formik.setErrors)
     } catch (error) {
       if (error instanceof Error) {
         notify.error(error.message)
