@@ -4,6 +4,8 @@ import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { DMSApplicationForEAC } from 'apiClient/v1'
+import Callout from 'components/Callout/Callout'
+import { CalloutVariant } from 'components/Callout/types'
 import FormLayout from 'components/FormLayout'
 import {
   COLLECTIVE_OFFER_SUBTYPE,
@@ -211,7 +213,7 @@ const CollectiveOfferType = ({
             Vous avez une demande de référencement en cours de traitement
           </Banner>
         ) : (
-          <Banner
+          <Callout
             links={[
               {
                 href: 'https://www.demarches-simplifiees.fr/commencer/demande-de-referencement-sur-adage',
@@ -225,11 +227,12 @@ const CollectiveOfferType = ({
                 isExternal: true,
               },
             ]}
+            variant={CalloutVariant.ERROR}
           >
             Pour proposer des offres à destination d’un groupe scolaire, vous
             devez être référencé auprès du ministère de l’Éducation Nationale et
             du ministère de la Culture.
-          </Banner>
+          </Callout>
         ))}
     </>
   )
