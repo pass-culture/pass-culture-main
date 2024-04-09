@@ -11,6 +11,7 @@ import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { isOfferAllocineSynchronized, isOfferDisabled } from 'core/Offers/utils'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'hooks'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 
 import ActionBar from '../ActionBar/ActionBar'
@@ -89,6 +90,10 @@ export const PriceCategoriesScreen = ({
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] =
     useState<boolean>(false)
 
+  const isTiteliveMusicGenreEnabled = useActiveFeature(
+    'ENABLE_PRO_TITELIVE_MUSIC_GENRES'
+  )
+
   const isDisabledBySynchronization =
     Boolean(offer.lastProvider) && !isOfferAllocineSynchronized(offer)
   const isDisabled =
@@ -126,7 +131,12 @@ export const PriceCategoriesScreen = ({
 
     // Submit
     try {
-      await submitToApi(values, offer, formik.resetForm)
+      await submitToApi(
+        values,
+        offer,
+        formik.resetForm,
+        isTiteliveMusicGenreEnabled
+      )
     } catch (error) {
       if (error instanceof Error) {
         notify.error(error.message)

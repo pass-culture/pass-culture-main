@@ -16,11 +16,13 @@ export const submitToApi = async (
   values: StockThingFormValues,
   offer: GetIndividualOfferResponseModel,
   resetForm: StockThingFormik['resetForm'],
-  setErrors: StockThingFormik['setErrors']
+  setErrors: StockThingFormik['setErrors'],
+  isTiteliveMusicGenreEnabled: boolean
 ) => {
   const serializedOffer = serializePatchOffer({
     offer: offer,
     formValues: { isDuo: values.isDuo },
+    isTiteliveMusicGenreEnabled,
   })
   const { isOk: isOfferOk, message: offerMessage } =
     await updateIndividualOffer({

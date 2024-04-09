@@ -10,14 +10,17 @@ import { isAllocineOffer } from 'core/Providers/utils/localProvider'
 import { AccessiblityEnum } from 'core/shared'
 
 export const serializeExtraData = (
-  formValues: Partial<IndividualOfferFormValues>
+  formValues: Partial<IndividualOfferFormValues>,
+  isTiteliveMusicGenreEnabled: boolean
 ): OfferExtraData | undefined => {
   // TODO: change api create and update offer in order not to save
   // extra data fields that's aren't link to offer subCategory
 
   const extraData: OfferExtraData = {}
   extraData.author = formValues.author
-  extraData.gtl_id = formValues.gtl_id
+  if (isTiteliveMusicGenreEnabled) {
+    extraData.gtl_id = formValues.gtl_id
+  }
   extraData.musicType = formValues.musicType
   extraData.musicSubType = formValues.musicSubType
   extraData.performer = formValues.performer
@@ -49,12 +52,14 @@ interface SerializePatchOffer {
   offer: GetIndividualOfferResponseModel
   formValues: Partial<IndividualOfferFormValues>
   shouldSendMail?: boolean
+  isTiteliveMusicGenreEnabled: boolean
 }
 
 export const serializePatchOffer = ({
   offer,
   formValues,
   shouldSendMail = false,
+  isTiteliveMusicGenreEnabled,
 }: SerializePatchOffer): PatchOfferBodyModel => {
   let sentValues: Partial<IndividualOfferFormValues> = formValues
   if (offer.lastProvider) {
@@ -80,7 +85,7 @@ export const serializePatchOffer = ({
       sentValues.accessibility &&
       sentValues.accessibility[AccessiblityEnum.AUDIO],
     description: sentValues.description,
-    extraData: serializeExtraData(sentValues),
+    extraData: serializeExtraData(sentValues, isTiteliveMusicGenreEnabled),
     isNational: sentValues.isNational,
     isDuo: sentValues.isDuo,
     mentalDisabilityCompliant:
