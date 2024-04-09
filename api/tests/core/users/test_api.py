@@ -39,6 +39,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.email import update as email_update
 from pcapi.models import db
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications.push import testing as batch_testing
 from pcapi.routes.native.v1.serialization import account as account_serialization
 from pcapi.routes.serialization.users import ProUserCreationBodyV2Model
@@ -1877,6 +1878,100 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
         assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
         assert user_to_anonymize.email == f"anonymous_{user_to_anonymize.id}@anonymized.passculture"
         assert sendinblue_testing.sendinblue_requests[0]["attributes"]["FIRSTNAME"] == ""
+
+
+class AnonymizeProUserTest:
+    @mock.patch("pcapi.core.users.api.delete_beamer_user")
+    def test_anonymize_pro_user(self, delete_beamer_user_mock):
+        user_offerer_to_delete = offerers_factories.UserOffererFactory(
+            user__lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=(365 * 3 + 1)),
+        )
+        user_offerer_to_keep = offerers_factories.UserOffererFactory(
+            offerer=user_offerer_to_delete.offerer,
+            user__lastConnectionDate=datetime.datetime.utcnow(),
+        )
+        user_id = user_offerer_to_delete.user.id
+        users_api.anonymize_pro_users()
+
+        assert users_models.User.query.filter_by(id=user_id).count() == 0
+        assert users_models.User.query.filter_by(id=user_offerer_to_keep.user.id).count() == 1
+        delete_beamer_user_mock.assert_called_once_with(user_id)
+
+    @mock.patch("pcapi.core.users.api.delete_beamer_user")
+    def test_keep_pro_users_with_activity_less_than_three_years(self, delete_beamer_user_mock):
+        users_factories.ProFactory(
+            lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=(365 * 3 - 1)),
+            roles=[users_models.UserRole.NON_ATTACHED_PRO],
+        )
+        users_factories.ProFactory(
+            lastConnectionDate=datetime.datetime.utcnow(), roles=[users_models.UserRole.NON_ATTACHED_PRO]
+        )
+
+        users_api.anonymize_pro_users()
+
+        assert users_models.User.query.count() == 2
+        delete_beamer_user_mock.assert_not_called()
+
+    @mock.patch("pcapi.core.users.api.delete_beamer_user")
+    def test_keep_last_user_in_offerer(self, delete_beamer_user_mock):
+        user_offerer_to_delete = offerers_factories.UserOffererFactory(
+            user__lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=(365 * 3 + 1)),
+        )
+        user_id = user_offerer_to_delete.user.id
+        users_api.anonymize_pro_users()
+
+        assert users_models.User.query.filter_by(id=user_id).count() == 1
+        delete_beamer_user_mock.assert_not_called()
+
+    @mock.patch("pcapi.core.users.api.delete_beamer_user")
+    def test_anonymize_non_attached_pro_user(self, delete_beamer_user_mock):
+        user_to_delete = users_factories.ProFactory(
+            lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=(365 * 3 + 1)),
+            roles=[users_models.UserRole.NON_ATTACHED_PRO],
+        )
+        user_to_keep1 = users_factories.ProFactory(
+            lastConnectionDate=datetime.datetime.utcnow(), roles=[users_models.UserRole.NON_ATTACHED_PRO]
+        )
+        user_to_keep2 = users_factories.ProFactory(
+            roles=[users_models.UserRole.NON_ATTACHED_PRO],
+        )
+        user_id = user_to_delete.id
+        users_api.anonymize_pro_users()
+
+        assert users_models.User.query.filter_by(id=user_id).count() == 0
+        assert users_models.User.query.filter_by(id=user_to_keep1.id).count() == 1
+        assert users_models.User.query.filter_by(id=user_to_keep2.id).count() == 1
+        delete_beamer_user_mock.assert_called_once_with(user_id)
+
+    @mock.patch("pcapi.core.users.api.delete_beamer_user")
+    def test_anonymize_invalid_attachement_pro_user(self, delete_beamer_user_mock):
+        user_offerer_to_delete = offerers_factories.UserOffererFactory(
+            validationStatus=ValidationStatus.PENDING,
+            user__lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=(365 * 3 + 1)),
+        )
+        user_offerer_to_keep = offerers_factories.UserOffererFactory(
+            validationStatus=ValidationStatus.PENDING,
+            user__lastConnectionDate=datetime.datetime.utcnow(),
+        )
+        user_id = user_offerer_to_delete.user.id
+        users_api.anonymize_pro_users()
+
+        assert users_models.User.query.filter_by(id=user_id).count() == 0
+        assert users_models.User.query.filter_by(id=user_offerer_to_keep.userId).count() == 1
+        delete_beamer_user_mock.assert_called_once_with(user_id)
+
+    @mock.patch("pcapi.core.users.api.delete_beamer_user")
+    def test_anonymize_non_attached_never_connected_pro(self, delete_beamer_user_mock):
+        user_to_delete = users_factories.ProFactory(
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=(365 * 3 + 1))
+        )
+        user_to_keep = users_factories.ProFactory()
+        user_id = user_to_delete.id
+        users_api.anonymize_pro_users()
+
+        assert users_models.User.query.filter_by(id=user_id).count() == 0
+        assert users_models.User.query.filter_by(id=user_to_keep.id).count() == 1
+        delete_beamer_user_mock.assert_called_once_with(user_id)
 
 
 class AnonymizeBeneficiaryUsersTest:

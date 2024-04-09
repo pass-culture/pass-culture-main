@@ -14,6 +14,10 @@ def update_beamer_user(pro_attributes: attributes_models.ProAttributes) -> None:
     _get_backend().update_pro_user(pro_attributes)
 
 
+def delete_beamer_user(user_id: int) -> None:
+    _get_backend().delete_pro_user(user_id)
+
+
 def _get_backend() -> "BaseBackend":
     backend_class = import_string(settings.BEAMER_BACKEND)
     return backend_class()
@@ -22,6 +26,10 @@ def _get_backend() -> "BaseBackend":
 class BaseBackend:
     def update_pro_user(self, pro_attributes: attributes_models.ProAttributes) -> None:
         """Upserts the user into the Beamer database"""
+        raise NotImplementedError()
+
+    def delete_pro_user(self, user_id: int) -> None:
+        """delete the user from the Beamer database"""
         raise NotImplementedError()
 
 
@@ -54,6 +62,23 @@ class BeamerBackend(BaseBackend):
                 f"Unexpected {response.status_code} response from Beamer for user {pro_attributes.user_id}"
             )
 
+    def delete_pro_user(self, user_id: int) -> None:
+        """delete the user from the Beamer database"""
+        del_user_url = f"{self.url}/users"
+        try:
+            response = requests.delete(
+                del_user_url, headers={"Beamer-Api-Key": self.api_key}, params={"userId": user_id}
+            )
+        except requests.exceptions.RequestException as exc:
+            logger.exception(
+                "Network error on Beamer API",
+                extra={"exc": exc, "url": del_user_url, "userId": user_id},
+            )
+            raise BeamerException("Network error on Beamer API") from exc
+
+        if not response.ok:
+            raise BeamerException(f"Unexpected {response.status_code} response from Beamer for user {user_id}")
+
 
 class LoggerBackend(BaseBackend):
     def update_pro_user(self, pro_attributes: attributes_models.ProAttributes) -> None:
@@ -64,6 +89,9 @@ class LoggerBackend(BaseBackend):
             return
 
         logger.info("Updated pro user data on Beamer: %s", request_data)
+
+    def delete_pro_user(self, user_id: int) -> None:
+        logger.info("Updated pro user data on Beamer: %s", user_id)
 
 
 def format_pro_attributes(pro_attributes: attributes_models.ProAttributes) -> dict:
