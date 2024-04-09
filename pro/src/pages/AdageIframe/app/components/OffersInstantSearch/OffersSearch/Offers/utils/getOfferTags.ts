@@ -29,7 +29,7 @@ function getFormattedPrice(price: number) {
 export function getOfferTags(
   offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel,
   adageUser: AuthenticatedResponse,
-  reducedSetOfTags: boolean = false
+  showAllTags: boolean = true
 ) {
   const isTemplate = isCollectiveOfferTemplate(offer)
 
@@ -52,7 +52,7 @@ export function getOfferTags(
             longitude: adageUser.lon,
           }
         )
-      if (distanceToOfferer && !reducedSetOfTags) {
+      if (distanceToOfferer && showAllTags) {
         tags.push({
           icon: '👩‍🎨',
           text: `Partenaire situé à ${distanceToOfferer}`,
@@ -80,14 +80,14 @@ export function getOfferTags(
     default:
   }
 
-  if (reducedSetOfTags) {
+  if (!showAllTags) {
     return tags
   }
 
   if (isTemplate) {
     tags.push({
       icon: '🕐',
-      text: `${getFormattedDatesForTemplateOffer(offer, true)}`,
+      text: `${getFormattedDatesForTemplateOffer(offer, 'Disponible toute l’année')}`,
     })
   } else if (offer.stock.beginningDatetime) {
     tags.push({

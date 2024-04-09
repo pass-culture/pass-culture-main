@@ -46,23 +46,13 @@ export function AdageOfferListCard({
       return
     }
 
-    if (!isCollectiveOfferTemplate(offer)) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      apiAdage.logOfferDetailsButtonClick({
-        iframeFrom: location.pathname,
-        stockId: offer.stock.id,
-        queryId: queryId,
-        isFromNoResult: isInSuggestions,
-      })
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      apiAdage.logOfferTemplateDetailsButtonClick({
-        iframeFrom: location.pathname,
-        offerId: offer.id,
-        queryId: queryId,
-        isFromNoResult: isInSuggestions,
-      })
-    }
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    apiAdage.logOfferTemplateDetailsButtonClick({
+      iframeFrom: location.pathname,
+      offerId: isCollectiveOfferTemplate(offer) ? offer.id : offer.stock.id,
+      queryId: queryId,
+      isFromNoResult: isInSuggestions,
+    })
   }
 
   return (
