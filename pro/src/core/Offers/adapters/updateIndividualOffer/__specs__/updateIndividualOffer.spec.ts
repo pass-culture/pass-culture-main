@@ -91,7 +91,11 @@ describe('updateIndividualOffer', () => {
     )
 
     await updateIndividualOffer({
-      serializedOffer: serializePatchOffer({ offer, formValues }),
+      serializedOffer: serializePatchOffer({
+        offer,
+        formValues,
+        isTiteliveMusicGenreEnabled: true,
+      }),
       offerId: offer.id,
     })
     expect(api.patchOffer).toHaveBeenCalledWith(
@@ -170,7 +174,11 @@ describe('updateIndividualOffer', () => {
     )
 
     await updateIndividualOffer({
-      serializedOffer: serializePatchOffer({ offer, formValues }),
+      serializedOffer: serializePatchOffer({
+        offer,
+        formValues,
+        isTiteliveMusicGenreEnabled: false,
+      }),
       offerId: offer.id,
     })
     expect(api.patchOffer).toHaveBeenCalledWith(

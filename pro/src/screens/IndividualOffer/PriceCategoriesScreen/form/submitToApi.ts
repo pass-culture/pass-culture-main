@@ -12,11 +12,13 @@ import { PriceCategoriesFormValues, PriceCategoryFormik } from './types'
 export const submitToApi = async (
   values: PriceCategoriesFormValues,
   offer: GetIndividualOfferResponseModel,
-  resetForm: PriceCategoryFormik['resetForm']
+  resetForm: PriceCategoryFormik['resetForm'],
+  isTiteliveMusicGenreEnabled: boolean
 ) => {
   const serializedOffer = serializePatchOffer({
     offer: offer,
     formValues: { isDuo: values.isDuo },
+    isTiteliveMusicGenreEnabled,
   })
   const { isOk: isOfferOk, message: offerMessage } =
     await updateIndividualOffer({
