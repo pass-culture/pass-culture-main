@@ -14,6 +14,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
@@ -43,7 +44,32 @@ class EMSStocksTest:
         credentials = history_api_call.headers["Authorization"].split("Basic ")[1]
         assert b64decode(credentials).decode() == f"{settings.EMS_API_USER}:{settings.EMS_API_PASSWORD}"
 
-    def should_fill_and_create_offer_and_stock_information_for_each_movie(self, requests_mock):
+    @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=True)
+    def should_not_create_offers_and_stocks_if_product_doesnt_exist(self, requests_mock):
+        requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
+        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
+        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
+
+        venue = offerers_factories.VenueFactory(
+            bookingEmail="seyne-sur-mer-booking@example.com", withdrawalDetails="Modalité de retrait"
+        )
+        ems_provider = get_provider_by_local_class("EMSStocks")
+        providers_factories.VenueProviderFactory(
+            venue=venue, provider=ems_provider, venueIdAtOfferProvider="9997", isDuoOffers=True
+        )
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue, provider=ems_provider, idAtProvider="9997"
+        )
+        providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+
+        assert offers_models.Product.query.count() == 0
+
+        synchronize_ems_venue_providers()
+
+        assert offers_models.Offer.query.count() == 0
+
+    @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=False)
+    def should_fill_and_create_offer_and_stock_information_for_each_movie_if_product_doesnt_exist(self, requests_mock):
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
         requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
         requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
@@ -60,9 +86,45 @@ class EMSStocksTest:
         )
         cinema_detail = providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
 
+        offers_models.Product.query.delete()
+
         synchronize_ems_venue_providers()
 
         self._assert_seyne_sur_mer_initial_sync(venue, venue_provider, cinema_detail, 86400)
+
+    def should_fill_and_create_offer_and_stock_information_for_each_movie_based_on_product(self, requests_mock):
+        requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
+        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
+        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
+
+        offers_factories.ProductFactory(
+            name="Produit allociné 1",
+            description="Description du produit allociné 1",
+            durationMinutes=111,
+            extraData={"allocineId": 269975},
+        )
+        offers_factories.ProductFactory(
+            name="Produit allociné 2",
+            description="Description du produit allociné 2",
+            durationMinutes=222,
+            extraData={"allocineId": 241065},
+        )
+
+        venue = offerers_factories.VenueFactory(
+            bookingEmail="seyne-sur-mer-booking@example.com", withdrawalDetails="Modalité de retrait"
+        )
+        ems_provider = get_provider_by_local_class("EMSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(
+            venue=venue, provider=ems_provider, venueIdAtOfferProvider="9997", isDuoOffers=True
+        )
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue, provider=ems_provider, idAtProvider="9997"
+        )
+        cinema_detail = providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+
+        synchronize_ems_venue_providers()
+
+        self._assert_seyne_sur_mer_initial_sync_based_on_product(venue, venue_provider, cinema_detail, 86400)
 
     def should_update_finance_event_when_stock_beginning_datetime_is_updated(self, requests_mock):
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
@@ -390,6 +452,55 @@ class EMSStocksTest:
 
         # Ensuring we are keeping tracks of current version of our stocks
         assert cinema_detail.lastVersion == version
+
+    def _assert_seyne_sur_mer_initial_sync_based_on_product(
+        self,
+        venue: Venue,
+        venue_provider: providers_models.VenueProvider,
+        cinema_detail: providers_models.EMSCinemaDetails,
+        version: int,
+    ):
+        created_offers = offers_models.Offer.query.filter_by(venueId=venue.id).order_by(offers_models.Offer.id).all()
+        created_stocks = (
+            offers_models.Stock.query.filter(offers_models.Stock.offerId.in_(offer.id for offer in created_offers))
+            .order_by(offers_models.Stock.id)
+            .all()
+        )
+        created_price_categories = (
+            offers_models.PriceCategory.query.filter(
+                offers_models.PriceCategory.offerId.in_(offer.id for offer in created_offers)
+            )
+            .order_by(offers_models.PriceCategory.id)
+            .all()
+        )
+        created_price_categories_labels = (
+            offers_models.PriceCategoryLabel.query.filter_by(venueId=venue.id)
+            .order_by(offers_models.PriceCategoryLabel.id)
+            .all()
+        )
+
+        assert len(created_offers) == 2
+        assert len(created_stocks) == 3
+        assert len(created_price_categories) == 2
+        assert len(created_price_categories_labels) == 2
+
+        assert created_offers[0].name == "Produit allociné 1"
+        assert created_offers[0].venue == venue_provider.venue
+        assert created_offers[0].description == "Description du produit allociné 1"
+        assert created_offers[0].durationMinutes == 111
+        assert (
+            created_offers[0].product
+            == offers_models.Product.query.filter(offers_models.Product.extraData["allocineId"] == "269975").one()
+        )
+
+        assert created_offers[1].name == "Produit allociné 2"
+        assert created_offers[1].venue == venue_provider.venue
+        assert created_offers[1].description == "Description du produit allociné 2"
+        assert created_offers[1].durationMinutes == 222
+        assert (
+            created_offers[1].product
+            == offers_models.Product.query.filter(offers_models.Product.extraData["allocineId"] == "241065").one()
+        )
 
     def _assert_ormeaux_version_sync(
         self,
