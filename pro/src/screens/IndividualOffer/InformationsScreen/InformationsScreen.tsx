@@ -146,6 +146,7 @@ const InformationsScreen = ({
             offer,
             formValues,
             shouldSendMail: sendWithdrawalMail,
+            isTiteliveMusicGenreEnabled,
           }),
           offerId: offer.id,
         })

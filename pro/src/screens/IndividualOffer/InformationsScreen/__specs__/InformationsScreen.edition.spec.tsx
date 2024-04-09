@@ -98,10 +98,10 @@ const renderInformationsScreen = (
           mode: OFFER_WIZARD_MODE.EDITION,
         }),
       ],
+      features: ['ENABLE_PRO_TITELIVE_MUSIC_GENRES'],
     }
   )
 }
-
 const scrollIntoViewMock = vi.fn()
 
 describe('screens:IndividualOffer::Informations:edition', () => {
