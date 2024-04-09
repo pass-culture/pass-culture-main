@@ -12,8 +12,24 @@ export const applyVenueDefaultsToFormValues = (
     .find(({ id }) => id.toString() === values.offererId)
     ?.managedVenues.find(({ id }) => id.toString() === values.venueId)
 
-  if (isOfferCreated || venue === undefined) {
-    return { ...values }
+  if (!venue) {
+    return values
+  }
+
+  if (isOfferCreated) {
+    //  In this case we are re-opening the first step during creation
+    //  If there are venue email and phone and no form email and phone yet, we pre-fill the form inputs
+    return {
+      ...values,
+      email:
+        venue.collectiveEmail && !values.email
+          ? venue.collectiveEmail
+          : values.email,
+      phone:
+        venue.collectivePhone && !values.phone
+          ? venue.collectivePhone
+          : values.phone,
+    }
   }
 
   const valuesWithNewVenueFields = {
