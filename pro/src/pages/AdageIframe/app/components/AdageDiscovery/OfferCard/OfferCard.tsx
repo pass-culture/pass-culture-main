@@ -54,7 +54,7 @@ const OfferCardComponent = ({
         </div>
 
         <div className={styles['offer-tag-container']}>
-          {getOfferTags(offer, adageUser, true).map((tag) => {
+          {getOfferTags(offer, adageUser, false).map((tag) => {
             return (
               <Tag
                 key={tag.text}
