@@ -40,7 +40,7 @@ describe('getOfferTags', () => {
     const tagsReduced = getOfferTags(
       offer,
       { ...adageUser, lat: 0, lon: 0 },
-      true
+      false
     ).map((tag) => tag.text)
 
     expect(tags).toEqual(
@@ -74,7 +74,7 @@ describe('getOfferTags', () => {
     const tagsReduced = getOfferTags(
       offer,
       { ...adageUser, lat: 0, lon: 0 },
-      true
+      false
     ).map((tag) => tag.text)
 
     expect(tags).toEqual(
@@ -100,7 +100,7 @@ describe('getOfferTags', () => {
     const tagsReduced = getOfferTags(
       offer,
       { ...adageUser, lat: 0, lon: 0 },
-      true
+      false
     ).map((tag) => tag.text)
 
     expect(tags).toEqual(
@@ -117,7 +117,7 @@ describe('getOfferTags', () => {
     expect(tagsReduced).toHaveLength(2)
   })
 
-  it('should return a multi level tag is there are multiple student levels', () => {
+  it('should return a multi level tag if there are multiple student levels', () => {
     const offer: CollectiveOfferTemplateResponseModel = {
       ...templateOffer,
       students: [StudentLevels.COLL_GE_3E, StudentLevels.COLL_GE_4E],
