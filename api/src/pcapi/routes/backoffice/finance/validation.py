@@ -1,10 +1,9 @@
 import decimal
 
-import sqlalchemy as sa
-
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
+from pcapi.models import db
 
 
 class Valid:
@@ -27,6 +26,44 @@ class Valid:
         return new_valid
 
 
+def _collective_booking_has_pending_incident(collective_booking: educational_models.CollectiveBooking) -> bool:
+    return db.session.query(
+        finance_models.BookingFinanceIncident.query.join(finance_models.FinanceIncident)
+        .filter(
+            finance_models.BookingFinanceIncident.collectiveBookingId == collective_booking.id,
+            finance_models.FinanceIncident.status.in_(
+                [finance_models.IncidentStatus.CREATED, finance_models.IncidentStatus.VALIDATED]
+            ),
+        )
+        .exists()
+    ).scalar()
+
+
+def _bookings_have_pending_incident(bookings: list[bookings_models.Booking]) -> bool:
+    return db.session.query(
+        finance_models.BookingFinanceIncident.query.join(finance_models.FinanceIncident)
+        .filter(
+            finance_models.BookingFinanceIncident.bookingId.in_([booking.id for booking in bookings]),
+            finance_models.FinanceIncident.status.in_(
+                [finance_models.IncidentStatus.CREATED, finance_models.IncidentStatus.VALIDATED]
+            ),
+        )
+        .exists()
+    ).scalar()
+
+
+def get_overpayment_incident_amount_interval(
+    bookings: list[bookings_models.Booking],
+) -> tuple[decimal.Decimal, decimal.Decimal]:
+    return decimal.Decimal(0), sum(booking.total_amount for booking in bookings)
+
+
+def get_commercial_gesture_amount_interval(
+    bookings: list[bookings_models.Booking],
+) -> tuple[decimal.Decimal, decimal.Decimal]:
+    return decimal.Decimal(0), sum(booking.total_amount for booking in bookings)
+
+
 def check_incident_bookings(bookings: list[bookings_models.Booking]) -> Valid:
     if not bookings:
         return Valid(
@@ -45,54 +82,65 @@ def check_incident_bookings(bookings: list[bookings_models.Booking]) -> Valid:
             message="Impossible de créer un incident d'un montant de 0 €.",
         )
 
-    booking_incident_already_created_or_validated = (
-        finance_models.BookingFinanceIncident.query.join(finance_models.FinanceIncident)
-        .filter(
-            sa.and_(
-                finance_models.BookingFinanceIncident.bookingId.in_([booking.id for booking in bookings]),
-                finance_models.FinanceIncident.status.in_(
-                    [finance_models.IncidentStatus.CREATED, finance_models.IncidentStatus.VALIDATED]
-                ),
-            )
-        )
-        .count()
-    )
-
-    if booking_incident_already_created_or_validated:
+    if _bookings_have_pending_incident(bookings):
         return Valid(
             is_valid=False,
-            message="Au moins une des réservations fait déjà l'objet d'un incident non annulé.",
+            message="Au moins une des réservations fait déjà l'objet d'un incident ou geste commercial non annulé.",
+        )
+
+    return Valid(True)
+
+
+def check_commercial_gesture_bookings(bookings: list[bookings_models.Booking]) -> Valid:
+    if not bookings:
+        return Valid(
+            is_valid=False,
+            message="""Seules les réservations ayant le statut "annulée" peuvent faire l'objet d'un incident.""",
+        )
+
+    if _bookings_have_pending_incident(bookings):
+        return Valid(
+            is_valid=False,
+            message="Au moins une des réservations fait déjà l'objet d'un incident ou geste commercial non annulé.",
+        )
+
+    if len({booking.stockId for booking in bookings}) > 1:
+        return Valid(
+            is_valid=False,
+            message="Un geste commercial ne peut concerner que des réservations faites sur un même stock.",
+        )
+
+    if len({booking.venueId for booking in bookings}) > 1:
+        return Valid(
+            is_valid=False,
+            message="Un geste commercial ne peut être créé qu'à partir de réservations venant du même lieu.",
+        )
+
+    return Valid(True)
+
+
+def check_commercial_gesture_collective_booking(collective_booking: educational_models.CollectiveBooking) -> Valid:
+    if _collective_booking_has_pending_incident(collective_booking):
+        return Valid(
+            is_valid=False,
+            message="""Cette réservation fait déjà l'objet d'un geste commercial au statut "créé" ou "validé".""",
         )
 
     return Valid(True)
 
 
 def check_incident_collective_booking(collective_booking: educational_models.CollectiveBooking) -> Valid:
-    pending_incident_on_same_booking = (
-        finance_models.BookingFinanceIncident.query.join(finance_models.FinanceIncident)
-        .filter(
-            sa.and_(
-                finance_models.BookingFinanceIncident.collectiveBookingId == collective_booking.id,
-                finance_models.FinanceIncident.status.in_(
-                    [finance_models.IncidentStatus.CREATED, finance_models.IncidentStatus.VALIDATED]
-                ),
-            )
+    if _collective_booking_has_pending_incident(collective_booking):
+        return Valid(
+            is_valid=False,
+            message="""Cette réservation fait déjà l'objet d'un incident au statut "créé" ou "validé".""",
         )
-        .count()
-    )
-    if pending_incident_on_same_booking:
-        return Valid(False, """Cette réservation fait déjà l'objet d'un incident au statut "créé" ou "validé".""")
 
     return Valid(True)
 
 
-def check_total_amount(
-    input_amount: decimal.Decimal | None,
-    bookings: list[bookings_models.Booking | educational_models.CollectiveBooking],
-) -> Valid:
-    # Temporary: The total_amount field is optional only for multiple bookings incident (no need for total overpayment)
-    if len(bookings) == 1 and not input_amount:
-        return Valid(True)
+def check_total_amount(input_amount: decimal.Decimal, bookings: list[bookings_models.Booking]) -> Valid:
+    _, max_amount = get_overpayment_incident_amount_interval(bookings)
 
     if not input_amount:
         return Valid(False, "Impossible de créer un incident d'un montant de 0 €.")
@@ -100,10 +148,35 @@ def check_total_amount(
     if input_amount < 0:
         return Valid(False, "Le montant d'un incident ne peut être négatif.")
 
-    max_incident_amount = sum(booking.total_amount for booking in bookings)
-    if input_amount > max_incident_amount:
+    if input_amount > max_amount:
         return Valid(
             is_valid=False,
             message="Le montant de l'incident ne peut pas être supérieur au montant total des réservations sélectionnées.",
         )
+    return Valid(True)
+
+
+def check_commercial_gesture_total_amount(
+    input_amount: decimal.Decimal, bookings: list[bookings_models.Booking]
+) -> Valid:
+    amount_per_booking = input_amount / sum(booking.quantity for booking in bookings)
+
+    for booking in bookings:
+        if booking.quantity * amount_per_booking > decimal.Decimal(1.20) * booking.total_amount:
+            return Valid(
+                is_valid=False,
+                message="Le montant du geste commercial ne peut pas être supérieur à 120% du montant d'une réservation sélectionnée.",
+            )
+
+        if booking.quantity * amount_per_booking > decimal.Decimal(300) * len(bookings):
+            return Valid(
+                is_valid=False,
+                message="Le montant du geste commercial ne peut JAMAIS être supérieur à 300€ par réservation.",
+            )
+
+        if booking.deposit and booking.deposit.user.wallet_balance > amount_per_booking:
+            return Valid(
+                is_valid=False,
+                message="Au moins un des jeunes ayant fait une réservation a encore du crédit pour payer la réservation.",
+            )
     return Valid(True)

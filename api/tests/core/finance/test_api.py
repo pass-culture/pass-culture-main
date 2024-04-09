@@ -296,7 +296,8 @@ class PriceEventTest:
             newTotalAmount=0, incident__venue=venue, booking=booking
         )
 
-        api.validate_finance_incident(total_booking_incident.incident, force_debit_note=False)
+        author = users_factories.UserFactory()
+        api.validate_finance_incident(total_booking_incident.incident, force_debit_note=False, author=author)
 
         assert total_booking_incident.booking.status == bookings_models.BookingStatus.CANCELLED
 
@@ -3591,7 +3592,10 @@ class ValidateFinanceIncidentTest:
                 booking.educationalInstitution.id, booking.educationalYearId, Decimal(7800.00), deposit
             )
 
-        api.validate_finance_incident(collective_booking_finance_incident.incident, force_debit_note=False)
+        author = users_factories.UserFactory()
+        api.validate_finance_incident(
+            collective_booking_finance_incident.incident, force_debit_note=False, author=author
+        )
 
         assert booking.status == educational_models.CollectiveBookingStatus.CANCELLED
 
