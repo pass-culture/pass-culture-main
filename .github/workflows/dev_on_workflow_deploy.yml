@@ -78,7 +78,7 @@ jobs:
         run: echo "secrets_file_base64=$(cat ${{ github.workspace }}/helm_secrets_file_base64)" | tee -a $GITHUB_OUTPUT
 
   deploy-api:
-    name: "Deploy api"
+    name: "Pre deployment tasks"
     needs: generate-pcapi-helm-secrets-file
     if: ${{ inputs.deploy_api }}
     runs-on: ubuntu-latest
@@ -86,6 +86,8 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    outputs:
+      PASSCULTURE_SA_ACCESS_TOKEN: ${{ steps.secrets.outputs.PASSCULTURE_SA_ACCESS_TOKEN }}
     steps:
       - uses: actions/checkout@v4.1.2
       - name: "Authentification to Google"
@@ -101,11 +103,6 @@ jobs:
             PASSCULTURE_SA_ACCESS_TOKEN:passculture-metier-ehp/passculture-main-sa-access-token
             ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
-      - uses: actions/checkout@v4.1.2
-        with:
-          repository: pass-culture/pass-culture-deployment
-          token: ${{ steps.secrets.outputs.PASSCULTURE_SA_ACCESS_TOKEN }}
-          path: ./pass-culture-deployment
       - name: "OpenID Connect Authentication"
         id: "openid-auth-infra"
         uses: 'google-github-actions/auth@v2'
@@ -155,13 +152,38 @@ jobs:
           kubectl logs -n ${{ inputs.environment }} -f jobs/pre-upgrade-${DATE} && break
           done
           kubectl wait --for=condition=complete --timeout=10900s -n ${{ inputs.environment }} jobs/pre-upgrade-${DATE}
-      - name: "Deploy pcapi"
-        run: |
-          PASSCULTURE_USERNAME="oauth2accesstoken" \
-          PASSCULTURE_PASSWORD=${{ steps.openid-auth-infra.outputs.access_token }} \
-          PCAPI_VALUES_FILE=./pass-culture-deployment/helm/pcapi/values.${{ inputs.environment }}.yaml \
-          PCAPI_SECRETS_FILE=<(echo '${{ needs.generate-pcapi-helm-secrets-file.outputs.pcapi_helm_secrets_file_base64 }}' | base64 -d) \
-          helmfile -e ${{ inputs.environment }} sync --set image.tag=${{ inputs.app_version }}
+
+  deploy_argocd:
+    if: ${{ inputs.deploy_api }}
+    uses: ./.github/workflows/deploy_argocd.yml
+    with: 
+      environment: ${{ inputs.environment }}
+      dockerRegistryUrl: "europe-west1-docker.pkg.dev"
+      dockerRepository: "passculture-infra-prod/pass-culture-artifact-registry"
+      dockerImageName: "pcapi"
+      dockerImageTag: ${{ inputs.app_version }}
+      chartRepository: "passculture-infra-prod/pass-culture-helm-registry"
+      chartName: "pcapi"
+      applicationName: "test_pcapi"
+      helmValueFile: ./pass-culture-deployment/helm/pcapi/values.${{ inputs.environment }}.yaml
+      namespace: test_pcapi
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+  post_deployment:
+    name: "Post deployment tasks"
+    if: ${{ inputs.deploy_api }}
+    needs: deploy_argocd
+    runs-on: ubuntu-latest
+    steps:
+      #- name: "Deploy pcapi"
+      #  run: |
+      #    PASSCULTURE_USERNAME="oauth2accesstoken" \
+      #    PASSCULTURE_PASSWORD=${{ steps.openid-auth-infra.outputs.access_token }} \
+      #    PCAPI_VALUES_FILE=./pass-culture-deployment/helm/pcapi/values.${{ inputs.environment }}.yaml \
+      #    PCAPI_SECRETS_FILE=<(echo '${{ needs.generate-pcapi-helm-secrets-file.outputs.pcapi_helm_secrets_file_base64 }}' | base64 -d) \
+      #    helmfile -e ${{ inputs.environment }} sync --set image.tag=${{ inputs.app_version }}
       - name: "Play post-migrations"
         run: |
           set -e
