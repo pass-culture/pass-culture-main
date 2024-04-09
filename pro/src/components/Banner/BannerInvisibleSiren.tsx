@@ -1,6 +1,7 @@
 import React from 'react'
 
-import { Banner } from 'ui-kit'
+import Callout from 'components/Callout/Callout'
+import { CalloutVariant } from 'components/Callout/types'
 
 interface BannerInvisibleSirenProps {
   isNewOnboarding?: boolean
@@ -9,7 +10,7 @@ interface BannerInvisibleSirenProps {
 const BannerInvisibleSiren = ({
   isNewOnboarding = false,
 }: BannerInvisibleSirenProps): JSX.Element => (
-  <Banner
+  <Callout
     links={[
       {
         href: 'https://statut-diffusion-sirene.insee.fr/',
@@ -19,12 +20,12 @@ const BannerInvisibleSiren = ({
         isExternal: true,
       },
     ]}
-    type="attention"
+    variant={CalloutVariant.ERROR}
   >
     Le {isNewOnboarding ? 'SIRET' : 'SIREN'} doit être rendu visible pour
     valider votre inscription. Vous pouvez effectuer cette démarche sur le site
     de l’INSEE.
-  </Banner>
+  </Callout>
 )
 
 export default BannerInvisibleSiren
