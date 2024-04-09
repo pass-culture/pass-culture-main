@@ -24,7 +24,6 @@ def export_match_as_csv(match: list, filename: pathlib.Path) -> None:
     with open(output_file, "a", newline="", encoding="utf-8") as csv_file:
         headers = [
             "Venue ID",
-            "uuid AccesLibre",
             "slug AccesLibre",
             "Nom PassCulture",
             "Nom Publique PassCulture",
@@ -36,7 +35,6 @@ def export_match_as_csv(match: list, filename: pathlib.Path) -> None:
             "Activite AccesLibre",
             "Siret PassCulture",
             "Siret AccesLibre",
-            "Last Update AccesLibre",
         ]
         writer = csv.DictWriter(csv_file, fieldnames=headers)
         if not output_exists:
@@ -154,7 +152,6 @@ def run_matching(export_not_matching_venues: bool = False) -> None:
                 match_list.append(
                     {
                         "Venue ID": venue["Venue ID"],
-                        "uuid AccesLibre": acceslibre_venue["uuid"],
                         "slug AccesLibre": acceslibre_venue["slug"],
                         "Nom PassCulture": venue["Venue Name"],
                         "Nom Publique PassCulture": venue["Venue Public Name"],
@@ -166,9 +163,6 @@ def run_matching(export_not_matching_venues: bool = False) -> None:
                         "Activite AccesLibre": acceslibre_venue["activite"]["nom"],
                         "Siret PassCulture": venue["Venue Siret"],
                         "Siret AccesLibre": acceslibre_venue["siret"],
-                        "Last Update AccesLibre": datetime.strptime(
-                            acceslibre_venue["updated_at"], "%Y-%m-%dT%H:%M:%S.%f%z"
-                        ),
                     }
                 )
                 matching_venue_ids.add(venue["Venue ID"])

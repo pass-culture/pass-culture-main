@@ -56,7 +56,7 @@ ACCESSIBILITY_MOCK = [
         "audio_description": [acceslibre_enum.AUDIODESCRIPTION_NO_DEVICE.value],
         "deaf_and_hard_of_hearing_amenities": [acceslibre_enum.DEAF_AND_HARD_OF_HEARING_OTHER.value],
         "facilities": [],
-        "sound_beacon": [""],
+        "sound_beacon": [],
         "trained_personnel": [],
         "transport_modality": [acceslibre_enum.PARKING_UNAVAILABLE.value],
     },
