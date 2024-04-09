@@ -61,6 +61,35 @@ def _get_offerers_data_for_rules(rules: list[offers_models.OfferValidationRule])
     return offerer_dict
 
 
+def _get_venues_data_for_rules(rules: list[offers_models.OfferValidationRule]) -> dict:
+    all_venue_ids: set = set()
+    for rule in rules:
+        for sub_rule in rule.subRules:
+            if (
+                sub_rule.model == offers_models.OfferValidationModel.VENUE
+                and sub_rule.attribute == offers_models.OfferValidationAttribute.ID
+            ):
+                all_venue_ids |= set(sub_rule.comparated["comparated"])
+
+    if not all_venue_ids:
+        return {}
+
+    venues_from_rules = (
+        offerers_models.Venue.query.options(
+            sa.orm.load_only(
+                offerers_models.Venue.id,
+                offerers_models.Venue.name,
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.siret,
+            )
+        )
+        .filter(offerers_models.Venue.id.in_(all_venue_ids))
+        .all()
+    )
+    venue_dict = {venue.id: f"{venue.common_name} ({venue.siret or 'Pas de SIRET'})" for venue in venues_from_rules}
+    return venue_dict
+
+
 @offer_validation_rules_blueprint.route("", methods=["GET"])
 def list_rules() -> utils.BackofficeResponse:
     form = forms.SearchRuleForm(formdata=utils.get_query_params())
@@ -109,6 +138,20 @@ def list_rules() -> utils.BackofficeResponse:
                 )
             )
 
+        if form.venue.data:
+            venue_ids = [int(id_str) for id_str in form.venue.data]
+            query = query.filter(
+                sa.and_(
+                    offers_models.OfferValidationRule.subRules.any(
+                        offers_models.OfferValidationSubRule.model == offers_models.OfferValidationModel.VENUE
+                    ),
+                    offers_models.OfferValidationRule.subRules.any(
+                        # operator @> checks if `comparated` includes all filtered venue ids
+                        offers_models.OfferValidationSubRule.comparated["comparated"].op("@>")(venue_ids)
+                    ),
+                )
+            )
+
         if form.category.data:
             query = query.filter(
                 sa.and_(
@@ -140,11 +183,13 @@ def list_rules() -> utils.BackofficeResponse:
     rules = query.all()
 
     offerer_dict = _get_offerers_data_for_rules(rules)
+    venue_dict = _get_venues_data_for_rules(rules)
 
     return render_template(
         "offer_validation_rules/list_rules.html",
         rows=rules,
         offerer_dict=offerer_dict,
+        venue_dict=venue_dict,
         form=form,
         dst=url_for(".list_rules"),
         active_tab=request.args.get("active_tab", "rules"),
@@ -188,24 +233,32 @@ def get_rules_history() -> utils.BackofficeResponse:
         actions=actions_history,
         sub_rule_info_serializer=sub_rule_info_serializer,
         offerer_dict=_get_offerers_data_for_rule_history(actions_history),
+        venue_dict=_get_venues_data_for_rule_history(actions_history),
     )
 
 
-def _get_offerers_data_for_rule_history(rules_history: list[history_models.ActionHistory]) -> dict:
-    all_offerer_ids: set = set()
+def _get_ids_for_rule_history(
+    rules_history: list[history_models.ActionHistory], rule_model: offers_models.OfferValidationModel
+) -> set:
+    all_model_ids: set = set()
     for history in rules_history:
         assert history.extraData is not None  # if it's None, then the history is faulty
         for sub_rules_keys in history.extraData["sub_rules_info"]:
             for sub_rule_data in history.extraData["sub_rules_info"][sub_rules_keys]:
                 if (
-                    sub_rule_data["model"] == offers_models.OfferValidationModel.OFFERER.name
+                    sub_rule_data["model"] == rule_model.name
                     and sub_rule_data["attribute"] == offers_models.OfferValidationAttribute.ID.name
                 ):
-                    all_offerer_ids |= (
+                    all_model_ids |= (
                         set(sub_rule_data["comparated"]["added"]) | set(sub_rule_data["comparated"]["removed"])
                         if sub_rules_keys == "sub_rules_modified"
                         else set(sub_rule_data["comparated"])
                     )
+    return all_model_ids
+
+
+def _get_offerers_data_for_rule_history(rules_history: list[history_models.ActionHistory]) -> dict:
+    all_offerer_ids = _get_ids_for_rule_history(rules_history, offers_models.OfferValidationModel.OFFERER)
 
     if not all_offerer_ids:
         return {}
@@ -223,6 +276,28 @@ def _get_offerers_data_for_rule_history(rules_history: list[history_models.Actio
     )
     offerer_dict = {offerer.id: f"{offerer.name} ({offerer.siren})" for offerer in offerers_from_history}
     return offerer_dict
+
+
+def _get_venues_data_for_rule_history(rules_history: list[history_models.ActionHistory]) -> dict:
+    all_venue_ids = _get_ids_for_rule_history(rules_history, offers_models.OfferValidationModel.VENUE)
+
+    if not all_venue_ids:
+        return {}
+
+    venues_from_history = (
+        offerers_models.Venue.query.options(
+            sa.orm.load_only(
+                offerers_models.Venue.id,
+                offerers_models.Venue.name,
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.siret,
+            )
+        )
+        .filter(offerers_models.Venue.id.in_(all_venue_ids))
+        .all()
+    )
+    venue_dict = {venue.id: f"{venue.common_name} ({venue.siret or 'Pas de SIRET'})" for venue in venues_from_history}
+    return venue_dict
 
 
 @offer_validation_rules_blueprint.route("/create", methods=["GET"])
@@ -256,6 +331,7 @@ def create_rule() -> utils.BackofficeResponse:
                 sub_rule_data["decimal_field"]
                 or sub_rule_data["list_field"]
                 or sub_rule_data["offer_type"]
+                or sub_rule_data["venue"]
                 or sub_rule_data["offerer"]
                 or sub_rule_data["subcategories"]
                 or sub_rule_data["categories"]
@@ -373,6 +449,8 @@ def get_edit_offer_validation_rule_form(rule_id: int) -> utils.BackofficeRespons
         sub_rules=list(sub_rule_data.values()),
     )
     for sub_rule in form.sub_rules:
+        if sub_rule.sub_rule_type.data == "ID_VENUE":
+            autocomplete.prefill_venues_choices(sub_rule.venue)
         if sub_rule.sub_rule_type.data == "ID_OFFERER":
             autocomplete.prefill_offerers_choices(sub_rule.offerer)
 
@@ -412,6 +490,7 @@ def edit_rule(rule_id: int) -> utils.BackofficeResponse:
                 sub_rule_data["decimal_field"]
                 or sub_rule_data["list_field"]
                 or sub_rule_data["offer_type"]
+                or sub_rule_data["venue"]
                 or sub_rule_data["offerer"]
                 or sub_rule_data["subcategories"]
                 or sub_rule_data["categories"]

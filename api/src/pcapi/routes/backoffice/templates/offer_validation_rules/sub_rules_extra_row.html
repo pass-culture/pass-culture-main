@@ -57,7 +57,7 @@
       <li>{{ label }}</li>
       <ul class="card-columns"
           style="column-count: {{ column_count }}">
-        {% set element_filter = sub_rule | get_comparated_format_function(offerer_dict) %}
+        {% set element_filter = sub_rule | get_comparated_format_function(offerer_dict, venue_dict) %}
         {% for element in comparated %}<li>{{ element_filter(element) }}</li>{% endfor %}
       </ul>
     {% endif %}
