@@ -25,9 +25,12 @@ class EMSBookTicketTest:
         return urljoin(base_url, digest)
 
     def test_we_can_book_one_ticket(self, requests_mock):
+        token = "AAAAAA"
         beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiary@example.com")
         showtime_stock = offers_factories.EventStockFactory()
-        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=1, amount=7.15, stock=showtime_stock)
+        booking = bookings_factories.BookingFactory(
+            user=beneficiary, quantity=1, amount=7.15, stock=showtime_stock, token="AAAAAA"
+        )
         cinema_pivot = providers_factories.EMSCinemaProviderPivotFactory(idAtProvider="9997")
         cinema_details = providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_pivot)
         cinema_id = cinema_details.cinemaProviderPivot.idAtProvider
@@ -40,6 +43,7 @@ class EMSBookTicketTest:
             "total_price": 7.15,
             "email": beneficiary.email,
             "num_pass_culture": str(beneficiary.id),
+            "num_cmde": token,
         }
         url = self._build_url("VENTE/", payload_reservation)
 
@@ -52,6 +56,7 @@ class EMSBookTicketTest:
             "total_price": 7.15,
             "email": beneficiary.email,
             "num_pass_culture": beneficiary.id,
+            "num_cmde": token,
             "billets": [
                 {
                     "num_caisse": "255",
@@ -77,9 +82,12 @@ class EMSBookTicketTest:
         assert ticket.seat_number == ""
 
     def test_we_can_book_two_tickets_at_once(self, requests_mock):
+        token = "AAAAAA"
         beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiary@example.com")
         showtime_stock = offers_factories.EventStockFactory()
-        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=2, amount=7.15, stock=showtime_stock)
+        booking = bookings_factories.BookingFactory(
+            user=beneficiary, quantity=2, amount=7.15, stock=showtime_stock, token=token
+        )
         cinema_pivot = providers_factories.EMSCinemaProviderPivotFactory(idAtProvider="9997")
         cinema_details = providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_pivot)
         cinema_id = cinema_details.cinemaProviderPivot.idAtProvider
@@ -92,6 +100,7 @@ class EMSBookTicketTest:
             "total_price": 14.30,
             "email": beneficiary.email,
             "num_pass_culture": str(beneficiary.id),
+            "num_cmde": token,
         }
         url = self._build_url("VENTE/", payload_reservation)
 
@@ -104,6 +113,7 @@ class EMSBookTicketTest:
             "total_price": 14.30,
             "email": beneficiary.email,
             "num_pass_culture": beneficiary.id,
+            "num_cmde": token,
             "billets": [
                 {
                     "num_caisse": "255",
@@ -140,9 +150,12 @@ class EMSBookTicketTest:
         assert tickets[1].seat_number == ""
 
     def test_we_handle_no_session_left_case(self, requests_mock):
+        token = "AAAAAA"
         beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiary@example.com")
         showtime_stock = offers_factories.EventStockFactory()
-        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=1, amount=7.15, stock=showtime_stock)
+        booking = bookings_factories.BookingFactory(
+            user=beneficiary, quantity=1, amount=7.15, stock=showtime_stock, token=token
+        )
         cinema_pivot = providers_factories.EMSCinemaProviderPivotFactory(idAtProvider="9997")
         cinema_details = providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_pivot)
         cinema_id = cinema_details.cinemaProviderPivot.idAtProvider
@@ -155,6 +168,7 @@ class EMSBookTicketTest:
             "total_price": 7.15,
             "email": beneficiary.email,
             "num_pass_culture": str(beneficiary.id),
+            "num_cmde": token,
         }
         url = self._build_url("VENTE/", payload_reservation)
 
