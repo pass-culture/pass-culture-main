@@ -6,6 +6,7 @@ import Callout from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import FormLayout from 'components/FormLayout'
 import { useAccessibilityOptions } from 'hooks'
+import useActiveFeature from 'hooks/useActiveFeature'
 import { VenueEditionFormValues } from 'pages/VenueEdition/types'
 import { Checkbox, CheckboxGroup } from 'ui-kit'
 
@@ -18,6 +19,7 @@ interface AccessiblityProps {
 }
 
 export const Accessibility = ({ isCreatingVenue }: AccessiblityProps) => {
+  const isAccesLibreEnabled = useActiveFeature('WIP_ACCESLIBRE')
   const { values, setFieldValue, initialValues } = useFormikContext<
     VenueCreationFormValues | VenueEditionFormValues
   >()
@@ -33,22 +35,20 @@ export const Accessibility = ({ isCreatingVenue }: AccessiblityProps) => {
 
   return (
     <FormSectionComponent title="Critères d’accessibilité">
-      <Callout
-        title="Détaillez les modalités d’accessibilité de votre établissement sur la plateforme collaborative acceslibre.gouv.fr"
-        links={[
-          {
-            href: 'https://acceslibre.beta.gouv.fr/',
-            label:
-              'Rendez-vous sur acceslibre.beta.gouv.fr pour ajouter les modalités d’accès de votre établissement',
-            isExternal: true,
-          },
-        ]}
-        variant={CalloutVariant.INFO}
-        className={styles['callout']}
-      >
-        La mise à jour de ces informations peut mettre quelques jours à
-        apparaître.
-      </Callout>
+      {isAccesLibreEnabled && (
+        <Callout
+          title="Renseignez facilement les modalités d’accessibilité de votre établissement sur la plateforme collaborative acceslibre.beta.gouv.fr"
+          links={[
+            {
+              href: 'https://acceslibre.beta.gouv.fr/',
+              label: 'Aller sur acceslibre.beta.gouv.fr ',
+              isExternal: true,
+            },
+          ]}
+          variant={CalloutVariant.INFO}
+          className={styles['callout']}
+        />
+      )}
 
       <FormLayout.Row>
         <CheckboxGroup

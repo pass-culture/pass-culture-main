@@ -60,21 +60,19 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
       {!(isAccesLibreEnabled && venue.externalAccessibilityData) && (
         <AccessibilitySummarySection
           callout={
-            <Callout
-              title="Détaillez les modalités d’accessibilité de votre établissement sur la plateforme collaborative acceslibre.gouv.fr"
-              links={[
-                {
-                  href: 'https://acceslibre.beta.gouv.fr/',
-                  label:
-                    'Rendez-vous sur acceslibre.beta.gouv.fr pour ajouter les modalités d’accès de votre établissement',
-                  isExternal: true,
-                },
-              ]}
-              variant={CalloutVariant.INFO}
-            >
-              La mise à jour de ces informations peut mettre quelques jours à
-              apparaître.
-            </Callout>
+            isAccesLibreEnabled ? (
+              <Callout
+                title="Renseignez facilement les modalités d’accessibilité de votre établissement sur la plateforme collaborative acceslibre.beta.gouv.fr"
+                links={[
+                  {
+                    href: 'https://acceslibre.beta.gouv.fr/',
+                    label: 'Aller sur acceslibre.beta.gouv.fr ',
+                    isExternal: true,
+                  },
+                ]}
+                variant={CalloutVariant.INFO}
+              />
+            ) : null
           }
           accessibleItem={venue}
           accessibleWording="Votre établissement est accessible aux publics en situation de handicap :"
