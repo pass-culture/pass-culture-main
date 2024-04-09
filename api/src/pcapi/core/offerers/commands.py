@@ -159,7 +159,7 @@ def synchronize_accessibility_with_acceslibre(dry_run: bool = False, force_sync:
             # if last_update is None, the slug has been removed from acceslibre, we try a new match
             # and save accessibility data to DB
             elif not last_update:
-                new_slug = accessibility_provider.get_id_at_accessibility_provider(
+                if id_and_url_at_provider := accessibility_provider.get_id_at_accessibility_provider(
                     name=venue.name,
                     public_name=venue.publicName,
                     siret=venue.siret,
@@ -167,15 +167,18 @@ def synchronize_accessibility_with_acceslibre(dry_run: bool = False, force_sync:
                     city=venue.city,
                     postal_code=venue.postalCode,
                     address=venue.address,
-                )
-                if new_slug and (last_update := accessibility_provider.get_last_update_at_provider(slug=new_slug)):
-                    accessibility_data = accessibility_provider.get_accessibility_infos(slug=new_slug)
-                    venue.accessibilityProvider.externalAccessibilityId = new_slug
-                    venue.accessibilityProvider.lastUpdateAtProvider = last_update
-                    venue.accessibilityProvider.externalAccessibilityData = (
-                        accessibility_data.dict() if accessibility_data else None
-                    )
-                    db.session.add(venue.accessibilityProvider)
+                ):
+                    new_slug = id_and_url_at_provider["slug"]
+                    new_url = id_and_url_at_provider["url"]
+                    if last_update := accessibility_provider.get_last_update_at_provider(slug=new_slug):
+                        accessibility_data = accessibility_provider.get_accessibility_infos(slug=new_slug)
+                        venue.accessibilityProvider.externalAccessibilityId = new_slug
+                        venue.accessibilityProvider.externalAccessibilityUrl = new_url
+                        venue.accessibilityProvider.lastUpdateAtProvider = last_update
+                        venue.accessibilityProvider.externalAccessibilityData = (
+                            accessibility_data.dict() if accessibility_data else None
+                        )
+                        db.session.add(venue.accessibilityProvider)
                 else:
                     logger.info(
                         "Slug %s has not been found at acceslibre. Removing AccessibilityProvider %d",
@@ -196,7 +199,7 @@ def synchronize_accessibility_with_acceslibre(dry_run: bool = False, force_sync:
 @blueprint.cli.command("synchronize_venue_with_acceslibre")
 @click.argument("venue_id", type=int, required=True, default=None)
 def synchronize_venue_with_acceslibre(venue_id: int) -> None:
-    venue = offerers_models.Venue.filter_by(id=venue_id).one_or_none()
+    venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
     offerers_api.set_accessibility_provider_id(venue)
     if not venue.accessibilityProvider.externalAccessibilityId:
         logger.info("No match found at acceslibre for Venue %s ", venue_id)
