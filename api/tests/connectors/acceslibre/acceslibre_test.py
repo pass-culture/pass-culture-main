@@ -1,9 +1,13 @@
+from unittest.mock import patch
+
 from dateutil import parser
+import pytest
 
 from pcapi.connectors import acceslibre
 from pcapi.connectors.acceslibre import AcceslibreWidgetData
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.core.testing import override_settings
+from pcapi.utils import requests
 
 from tests.connectors.acceslibre import fixtures
 
@@ -82,13 +86,24 @@ class AcceslibreTest:
         )
 
     def test_check_last_update(self, requests_mock):
-        slug = "0850bc16-b240-47dc-93b6-efc7d8de2037"
+        slug = "office-du-tourisme-4"
         requests_mock.get(
-            f"https://acceslibre.beta.gouv.fr/api/erps/{slug}",
+            f"https://acceslibre.beta.gouv.fr/api/erps/{slug}/",
             json=fixtures.ACCESLIBRE_RESULTS_BY_SLUG,
         )
         last_update = acceslibre.get_last_update_at_provider(slug=slug)
         assert last_update == parser.isoparse("2023-04-13T15:10:25.612731+02:00")
+
+    @patch("pcapi.connectors.acceslibre.AcceslibreBackend._fetch_request")
+    def test_catch_connection_error(self, requests_mock):
+        slug = "office-du-tourisme-4"
+        requests_mock.side_effect = [requests.exceptions.ConnectionError]
+        with pytest.raises(acceslibre.AccesLibreApiException) as exception:
+            acceslibre.get_last_update_at_provider(slug=slug)
+        assert (
+            str(exception.value)
+            == f"Error connecting AccesLibre API for https://acceslibre.beta.gouv.fr/api/erps/{slug}/ and query parameters: None"
+        )
 
     def test_get_accessibility_infos(self):
         accesslibre_data_list = [
@@ -132,7 +147,7 @@ class AcceslibreTest:
     def test_get_accessibility_infos_from_widget(self, requests_mock):
         slug = "mon-super-slug"
         requests_mock.get(
-            f"https://acceslibre.beta.gouv.fr/api/erps/{slug}/widget",
+            f"https://acceslibre.beta.gouv.fr/api/erps/{slug}/widget/",
             json=fixtures.ACCESLIBRE_WIDGET_RESULT,
         )
         accessibility_infos = acceslibre.get_accessibility_infos(slug)
