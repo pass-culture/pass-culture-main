@@ -28,6 +28,19 @@ class BaseIncidentCreationForm(FlaskForm):
     origin = fields.PCStringField("Origine de la demande")
 
 
+class CommercialGestureCreationForm(empty_forms.BatchForm, BaseIncidentCreationForm):
+    class Meta:
+        locales = ["fr_FR", "fr"]
+
+    total_amount = fields.PCDecimalField(
+        "Montant total dû à l'acteur culturel (sans le calcul de barème)", use_locale=True, validators=[Optional()]
+    )
+
+
+class CollectiveCommercialGestureCreationForm(BaseIncidentCreationForm):
+    pass
+
+
 class CollectiveOverPaymentIncidentCreationForm(BaseIncidentCreationForm):
     pass
 
