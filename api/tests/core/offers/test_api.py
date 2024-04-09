@@ -125,7 +125,7 @@ class CreateStockTest:
 
     @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
     @pytest.mark.parametrize("new_price", [49, 151])
-    def test_does_not_allow_price_outside_of_price_limitation(self, new_price):
+    def test_does_not_allow_price_outside_of_price_limitation(self, new_price, caplog):
         # Given
         factories.OfferPriceLimitationRuleFactory(
             subcategoryId=subcategories.ACHAT_INSTRUMENT.id, rate=decimal.Decimal("0.5")
@@ -140,16 +140,27 @@ class CreateStockTest:
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.create_stock(offer=offer_with_no_stock, price=new_price, quantity=12)
+            with caplog.at_level(logging.INFO):
+                api.create_stock(offer=offer_with_no_stock, price=new_price, quantity=12)
 
         # Then
         assert error.value.errors == {
             "priceLimitationRule": ["Le prix indiqué est invalide, veuillez créer une nouvelle offre"]
         }
 
+        assert len(caplog.records) == 1
+        assert caplog.records[0].message == "Stock update blocked because of price limitation"
+        assert caplog.records[0].technical_message_id == "stock.price.forbidden"
+        assert caplog.records[0].extra == {
+            "offer_id": offer_with_no_stock.id,
+            "reference_price": 100,
+            "old_price": None,
+            "stock_price": new_price,
+        }
+
     @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
     @pytest.mark.parametrize("new_price", [49, 151])
-    def test_does_not_allow_price_while_no_last_validation_price(self, new_price):
+    def test_does_not_allow_price_while_no_last_validation_price(self, new_price, caplog):
         # Given
         factories.OfferPriceLimitationRuleFactory(
             subcategoryId=subcategories.ACHAT_INSTRUMENT.id, rate=decimal.Decimal("0.5")
@@ -160,11 +171,22 @@ class CreateStockTest:
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.create_stock(offer=offer, price=new_price, quantity=12)
+            with caplog.at_level(logging.INFO):
+                api.create_stock(offer=offer, price=new_price, quantity=12)
 
         # Then
         assert error.value.errors == {
             "priceLimitationRule": ["Le prix indiqué est invalide, veuillez créer une nouvelle offre"]
+        }
+
+        assert len(caplog.records) == 1
+        assert caplog.records[0].message == "Stock update blocked because of price limitation"
+        assert caplog.records[0].technical_message_id == "stock.price.forbidden"
+        assert caplog.records[0].extra == {
+            "offer_id": offer.id,
+            "reference_price": 100,
+            "old_price": None,
+            "stock_price": new_price,
         }
 
     @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
@@ -452,7 +474,7 @@ class EditStockTest:
 
     @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
     @pytest.mark.parametrize("new_price", [49, 151])
-    def test_does_not_allow_price_outside_of_price_limitation(self, new_price):
+    def test_does_not_allow_price_outside_of_price_limitation(self, new_price, caplog):
         # Given
         factories.OfferPriceLimitationRuleFactory(
             subcategoryId=subcategories.ACHAT_INSTRUMENT.id, rate=decimal.Decimal("0.5")
@@ -465,16 +487,27 @@ class EditStockTest:
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.edit_stock(stock=existing_stock, price=new_price, quantity=existing_stock.quantity)
+            with caplog.at_level(logging.INFO):
+                api.edit_stock(stock=existing_stock, price=new_price, quantity=existing_stock.quantity)
 
         # Then
         assert error.value.errors == {
             "priceLimitationRule": ["Le prix indiqué est invalide, veuillez créer une nouvelle offre"]
         }
 
+        assert len(caplog.records) == 1
+        assert caplog.records[0].message == "Stock update blocked because of price limitation"
+        assert caplog.records[0].technical_message_id == "stock.price.forbidden"
+        assert caplog.records[0].extra == {
+            "offer_id": existing_stock.offerId,
+            "reference_price": 100,
+            "old_price": 110,
+            "stock_price": new_price,
+        }
+
     @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
     @pytest.mark.parametrize("new_price", [49, 151])
-    def test_does_not_allow_price_while_no_last_validation_price(self, new_price):
+    def test_does_not_allow_price_while_no_last_validation_price(self, new_price, caplog):
         # Given
         factories.OfferPriceLimitationRuleFactory(
             subcategoryId=subcategories.ACHAT_INSTRUMENT.id, rate=decimal.Decimal("0.5")
@@ -485,11 +518,22 @@ class EditStockTest:
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.edit_stock(stock=existing_stock, price=new_price, quantity=existing_stock.quantity)
+            with caplog.at_level(logging.INFO):
+                api.edit_stock(stock=existing_stock, price=new_price, quantity=existing_stock.quantity)
 
         # Then
         assert error.value.errors == {
             "priceLimitationRule": ["Le prix indiqué est invalide, veuillez créer une nouvelle offre"]
+        }
+
+        assert len(caplog.records) == 1
+        assert caplog.records[0].message == "Stock update blocked because of price limitation"
+        assert caplog.records[0].technical_message_id == "stock.price.forbidden"
+        assert caplog.records[0].extra == {
+            "offer_id": offer.id,
+            "reference_price": 100,
+            "old_price": 100,
+            "stock_price": new_price,
         }
 
     @override_features(WIP_ENABLE_OFFER_PRICE_LIMITATION=True)
