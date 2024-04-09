@@ -12,10 +12,13 @@ from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import PriceCategory
 from pcapi.core.offers.models import PriceCategoryLabel
+from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as providers_models
+from pcapi.core.testing import override_features
 from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
+from pcapi.repository import transaction
 from pcapi.utils.human_ids import humanize
 
 import tests
@@ -46,6 +49,24 @@ def setup_cinema() -> tuple[providers_models.CDSCinemaDetails, providers_models.
 
 @pytest.mark.usefixtures("db_session")
 class CDSStocksTest:
+    def setup_method(self):
+        offers_factories.ProductFactory(
+            name="Coupez !",
+            description="Description du produit allociné 1",
+            durationMinutes=111,
+            extraData={"allocineId": 291483},
+        )
+        offers_factories.ProductFactory(
+            name="Top Gun",
+            description="Description du produit allociné 2",
+            durationMinutes=222,
+            extraData={"allocineId": 2133},
+        )
+
+    def teardown_method(self):
+        with transaction():
+            Product.query.delete()
+
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
@@ -71,6 +92,7 @@ class CDSStocksTest:
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
+    @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=False)
     def should_return_providable_info_on_next(self, mock_get_venue_movies, mock_get_shows, requests_mock):
         # Given
         cds_details, venue_provider = setup_cinema()
@@ -106,6 +128,36 @@ class CDSStocksTest:
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
+    @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=True)
+    def should_return_empty_providable_info_on_next_if_product_doesnt_exist(
+        self, mock_get_venue_movies, mock_get_shows, requests_mock
+    ):
+        # Given
+        cds_details, venue_provider = setup_cinema()
+        mocked_movies = [fixtures.MOVIE_1]
+        mock_get_venue_movies.return_value = mocked_movies
+        mocked_shows = [
+            {"show_information": fixtures.MOVIE_1_SHOW_1, "price": 5},
+            {"show_information": fixtures.MOVIE_2_SHOW_1, "price": 5},
+        ]
+        mock_get_shows.return_value = mocked_shows
+        requests_mock.get(
+            f"https://{cds_details.accountId}.fakeurl/mediaoptions?api_token={cds_details.cinemaApiToken}",
+            json=fixtures.MEDIA_OPTIONS,
+        )
+        Product.query.delete()
+
+        # When
+        cds_stocks = CDSStocks(venue_provider=venue_provider)
+        providable_infos = next(cds_stocks)
+
+        # Then
+        assert len(providable_infos) == 0
+
+    @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
+    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
+    @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=False)
     def should_not_return_providable_info_on_next_when_no_stocks_for_movies(
         self, mock_get_venue_movies, mock_get_shows, requests_mock
     ):
@@ -129,7 +181,7 @@ class CDSStocksTest:
         providable_infos = next(cds_stocks)
 
         # Then
-        assert len(providable_infos) == 0
+        assert providable_infos == []
 
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
@@ -163,7 +215,97 @@ class CDSStocksTest:
 
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
+    @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=False)
     def should_fill_offer_and_stock_informations_for_each_movie(self, mock_get_venue_movies, requests_mock):
+        # Given
+        _cds_details, venue_provider = setup_cinema()
+        get_cinemas_adapter = requests_mock.get(
+            "https://account_id.fakeurl/cinemas?api_token=token",
+            json=[fixtures.CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_FALSE],
+        )
+        requests_mock.get("https://account_id.fakeurl/mediaoptions?api_token=token", json=fixtures.MEDIA_OPTIONS)
+        mocked_movies = [fixtures.MOVIE_1, fixtures.MOVIE_2]
+        mock_get_venue_movies.return_value = mocked_movies
+
+        requests_mock.get("https://example.com/coupez.png", content=bytes())
+        requests_mock.get("https://example.com/topgun.png", content=bytes())
+
+        requests_mock.get("https://account_id.fakeurl/shows?api_token=token", json=[fixtures.SHOW_1, fixtures.SHOW_2])
+        get_voucher_types_adapter = requests_mock.get(
+            "https://account_id.fakeurl/vouchertype?api_token=token",
+            json=[fixtures.VOUCHER_TYPE_PC_1, fixtures.VOUCHER_TYPE_PC_2],
+        )
+
+        Product.query.filter(Product.extraData["allocineId"] == "2133").delete(synchronize_session=False)
+
+        cds_stocks = CDSStocks(venue_provider=venue_provider)
+
+        # When
+        cds_stocks.updateObjects()
+
+        # Then
+        created_offers = Offer.query.order_by(Offer.id).all()
+        created_stocks = Stock.query.order_by(Stock.id).all()
+        created_price_categories = PriceCategory.query.order_by(PriceCategory.id).all()
+        created_price_category_label = PriceCategoryLabel.query.one()
+        assert len(created_stocks) == 2
+        assert len(created_price_categories) == 2
+
+        # Information fetched from exisiting product
+        assert created_offers[0].name == "Coupez !"
+        assert created_offers[0].product
+        assert created_offers[0].venue == venue_provider.venue
+        assert created_offers[0].description == "Description du produit allociné 1"
+        assert created_offers[0].durationMinutes == 111
+        assert created_offers[0].isDuo
+        assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
+        assert created_offers[0].extraData == {"allocineId": 291483, "visa": "123456"}
+
+        assert created_stocks[0].quantity == 77
+        assert created_stocks[0].price == 5.0
+        assert created_stocks[0].priceCategory == created_price_categories[0]
+        assert created_stocks[0].dateCreated is not None
+        assert created_stocks[0].offer == created_offers[0]
+        assert created_stocks[0].bookingLimitDatetime == datetime(2022, 6, 20, 9)
+        assert created_stocks[0].beginningDatetime == datetime(2022, 6, 20, 9)
+        assert created_stocks[0].features == ["VF", "3D"]
+
+        # Product does not exist
+        assert created_offers[1].name == "Top Gun"
+        assert not created_offers[1].product
+        assert created_offers[1].venue == venue_provider.venue
+        assert created_offers[1].description == "Film sur les avions"
+        assert created_offers[1].durationMinutes == 150
+        assert created_offers[1].isDuo
+        assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
+        assert created_offers[1].extraData == {"visa": "333333"}
+
+        assert created_stocks[1].quantity == 78
+        assert created_stocks[1].price == 6.5
+        assert created_stocks[1].priceCategory == created_price_categories[1]
+        assert created_stocks[1].dateCreated is not None
+        assert created_stocks[1].offer == created_offers[1]
+        assert created_stocks[1].bookingLimitDatetime == datetime(2022, 7, 1, 10)
+        assert created_stocks[1].beginningDatetime == datetime(2022, 7, 1, 10)
+        assert created_stocks[1].features == []
+
+        assert all(
+            (category.priceCategoryLabel == created_price_category_label for category in created_price_categories)
+        )
+        assert created_price_category_label.label == "pass Culture"
+
+        assert cds_stocks.erroredObjects == 0
+        assert cds_stocks.erroredThumbs == 0
+
+        assert get_cinemas_adapter.call_count == 1
+        assert get_voucher_types_adapter.call_count == 1
+
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
+    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
+    @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=True)
+    def should_fill_offer_and_stock_informations_for_each_movie_based_on_product(
+        self, mock_get_venue_movies, requests_mock
+    ):
         # Given
         _cds_details, venue_provider = setup_cinema()
         get_cinemas_adapter = requests_mock.get(
@@ -197,13 +339,13 @@ class CDSStocksTest:
         assert len(created_price_categories) == 2
 
         assert created_offers[0].name == "Coupez !"
-        assert not created_offers[0].product
+        assert created_offers[0].product
         assert created_offers[0].venue == venue_provider.venue
-        assert created_offers[0].description == "Ca tourne mal"
-        assert created_offers[0].durationMinutes == 120
+        assert created_offers[0].description == "Description du produit allociné 1"
+        assert created_offers[0].durationMinutes == 111
         assert created_offers[0].isDuo
         assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offers[0].extraData == {"visa": "123456"}
+        assert created_offers[0].extraData == {"allocineId": 291483, "visa": "123456"}
 
         assert created_stocks[0].quantity == 77
         assert created_stocks[0].price == 5.0
@@ -215,13 +357,13 @@ class CDSStocksTest:
         assert created_stocks[0].features == ["VF", "3D"]
 
         assert created_offers[1].name == "Top Gun"
-        assert not created_offers[1].product
+        assert created_offers[1].product
         assert created_offers[1].venue == venue_provider.venue
-        assert created_offers[1].description == "Film sur les avions"
-        assert created_offers[1].durationMinutes == 150
+        assert created_offers[1].description == "Description du produit allociné 2"
+        assert created_offers[1].durationMinutes == 222
         assert created_offers[1].isDuo
         assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offers[1].extraData == {"visa": "333333"}
+        assert created_offers[1].extraData == {"allocineId": 2133, "visa": "333333"}
 
         assert created_stocks[1].quantity == 78
         assert created_stocks[1].price == 6.5
@@ -436,6 +578,7 @@ class CDSStocksTest:
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
+    @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=False)
     def should_fill_stocks_and_price_categories_for_a_movie(self, mock_get_venue_movies, mock_get_shows, requests_mock):
         # Given
         _cds_details, venue_provider = setup_cinema()
@@ -470,13 +613,13 @@ class CDSStocksTest:
         assert len(created_price_category_labels) == 2
 
         assert created_offer.name == "Coupez !"
-        assert not created_offer.product
+        assert created_offer.product
         assert created_offer.venue == venue_provider.venue
-        assert created_offer.description == "Ca tourne mal"
-        assert created_offer.durationMinutes == 120
+        assert created_offer.description == "Description du produit allociné 1"
+        assert created_offer.durationMinutes == 111
         assert created_offer.isDuo
         assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offer.extraData == {"visa": "123456"}
+        assert created_offer.extraData == {"allocineId": 291483, "visa": "123456"}
 
         assert created_stocks[0].quantity == 77
         assert created_stocks[0].price == 5.0
