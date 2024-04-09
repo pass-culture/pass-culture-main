@@ -1124,7 +1124,14 @@ class ApiKey(PcObject, Base, Model):
     secret: bytes = Column(LargeBinary, nullable=True)
 
     def check_secret(self, clear_text: str) -> bool:
-        return crypto.check_password(clear_text, self.secret)
+        if self.secret.decode("utf-8").startswith("$sha3_512$"):
+            return crypto.check_public_api_key(clear_text, self.secret)
+        if crypto.check_password(clear_text, self.secret):
+            self.secret = crypto.hash_public_api_key(clear_text)
+            db.session.flush()  # it may not be commited but the hash recompute cost is low
+            logger.info("Switched hash of API key from bcrypt to SHA3-512", extra={"key_id": self.id})
+            return True
+        return False
 
 
 class OffererTag(PcObject, Base, Model):

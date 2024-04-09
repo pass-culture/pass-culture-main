@@ -347,7 +347,7 @@ class ApiKeyFactory(BaseFactory):
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.ApiKey:
-        kwargs["secret"] = crypto.hash_password(kwargs.get("secret", DEFAULT_SECRET))
+        kwargs["secret"] = crypto.hash_public_api_key(kwargs.get("secret", DEFAULT_SECRET))
         return super()._create(model_class, *args, **kwargs)
 
 
