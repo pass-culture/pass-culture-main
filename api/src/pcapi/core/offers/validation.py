@@ -120,10 +120,12 @@ def check_stocks_price(
         else:
             error_key = "price"
             price = stock.price
-        check_stock_price(price, offer, error_key)
+        check_stock_price(price, offer, error_key=error_key)
 
 
-def check_stock_price(price: decimal.Decimal, offer: models.Offer, error_key: str = "price") -> None:
+def check_stock_price(
+    price: decimal.Decimal, offer: models.Offer, old_price: decimal.Decimal | None = None, error_key: str = "price"
+) -> None:
     if price < 0:
         errors = api_errors.ApiErrors()
         errors.add_error(error_key, "Le prix doit être positif")
@@ -156,6 +158,17 @@ def check_stock_price(price: decimal.Decimal, offer: models.Offer, error_key: st
                 price < (1 - offer_price_limitation_rule.rate) * reference_price
                 or price > (1 + offer_price_limitation_rule.rate) * reference_price
             ):
+                logger.info(
+                    "Stock update blocked because of price limitation",
+                    extra={
+                        "offer_id": offer.id,
+                        "reference_price": reference_price,
+                        "old_price": old_price,
+                        "stock_price": price,
+                    },
+                    technical_message_id="stock.price.forbidden",
+                )
+
                 if error_key == "price":
                     error_key += "LimitationRule"
                 errors = api_errors.ApiErrors()

@@ -580,12 +580,16 @@ def edit_stock(
 
     if price is not UNCHANGED and price is not None and price != stock.price:
         modifications["price"] = price
-        validation.check_stock_price(price, stock.offer)
+        validation.check_stock_price(price, stock.offer, old_price=stock.price)
 
     if price_category is not UNCHANGED and price_category is not None and price_category is not stock.priceCategory:
         modifications["priceCategory"] = price_category
         modifications["price"] = price_category.price
-        validation.check_stock_price(price_category.price, stock.offer)
+        validation.check_stock_price(
+            price_category.price,
+            stock.offer,
+            old_price=stock.priceCategory.price if stock.priceCategory else stock.price,
+        )
 
     if quantity is not UNCHANGED and quantity != stock.quantity:
         modifications["quantity"] = quantity
@@ -1309,7 +1313,7 @@ def edit_price_category(
     validation.check_price_category_is_updatable(price_category, editing_provider)
 
     if price is not UNCHANGED and price != price_category.price:
-        validation.check_stock_price(price, offer)
+        validation.check_stock_price(price, offer, old_price=price_category.price)
         price_category.price = price
 
     if label is not UNCHANGED and label != price_category.label:
