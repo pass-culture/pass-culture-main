@@ -9,7 +9,6 @@ import enum
 import json
 import logging
 from typing import TypedDict
-import uuid
 
 from dateutil import parser
 import pydantic.v1 as pydantic_v1
@@ -153,7 +152,24 @@ class AccessibilityInfo(pydantic_v1.BaseModel):
         return values
 
 
-class AcceslibreData(TypedDict):
+class AcceslibreInfos(TypedDict):
+    slug: str
+    url: str
+
+
+class AcceslibreResult(TypedDict):
+    activite: dict[str, str]
+    nom: str
+    adresse: str
+    commune: str
+    code_postal: str
+    ban_id: str
+    siret: str
+    slug: str
+    web_url: str
+
+
+class AcceslibreWidgetData(TypedDict):
     title: str
     labels: list[str]
 
@@ -171,7 +187,7 @@ def find_venue_at_accessibility_provider(
     city: str | None = None,
     postal_code: str | None = None,
     address: str | None = None,
-) -> dict | None:
+) -> AcceslibreResult | None:
     """Try to find the entry at acceslibre that matches our venue
     Returns acceslibre venue
     """
@@ -194,9 +210,9 @@ def get_id_at_accessibility_provider(
     city: str | None = None,
     postal_code: str | None = None,
     address: str | None = None,
-) -> str | None:
+) -> AcceslibreInfos | None:
     """
-    Returns the slug (unique ID at acceslibre) of the venue at acceslibre
+    Returns the slug (unique ID at acceslibre) of the venue at acceslibre and its web url
     """
     return _get_backend().get_id_at_accessibility_provider(
         name=name,
@@ -227,13 +243,13 @@ def extract_street_name(address: str | None = None, city: str | None = None, pos
 
 
 def match_venue_with_acceslibre(
-    acceslibre_results: list[dict],
+    acceslibre_results: list[AcceslibreResult],
     venue_name: str,
     venue_public_name: str | None,
     venue_address: str | None,
     venue_ban_id: str | None,
     venue_siret: str | None,
-) -> dict[str, str] | None:
+) -> AcceslibreResult | None:
     """
     From the results we get from requesting acceslibre API, we try a match with our venue
     by comparing the name and address using a fuzzy matching algorithm.
@@ -278,7 +294,7 @@ def match_venue_with_acceslibre(
     return None
 
 
-def acceslibre_to_accessibility_infos(acceslibre_data: list[AcceslibreData]) -> AccessibilityInfo:
+def acceslibre_to_accessibility_infos(acceslibre_data: list[AcceslibreWidgetData]) -> AccessibilityInfo:
     accessibility_infos = AccessibilityInfo()
     acceslibre_mapping = {
         "accès": "access_modality",
@@ -322,7 +338,7 @@ class BaseBackend:
         city: str | None = None,
         postal_code: str | None = None,
         address: str | None = None,
-    ) -> dict | None:
+    ) -> AcceslibreResult | None:
         raise NotImplementedError()
 
     def get_id_at_accessibility_provider(
@@ -334,7 +350,7 @@ class BaseBackend:
         city: str | None = None,
         postal_code: str | None = None,
         address: str | None = None,
-    ) -> str | None:
+    ) -> AcceslibreInfos | None:
         raise NotImplementedError()
 
     def get_last_update_at_provider(self, slug: str) -> datetime | None:
@@ -354,16 +370,18 @@ class TestingBackend(BaseBackend):
         city: str | None = None,
         postal_code: str | None = None,
         address: str | None = None,
-    ) -> dict | None:
-        return {
-            "slug": "mon-lieu-chez-acceslibre",
-            "uuid": str(uuid.uuid4()),
-            "nom": "Un lieu",
-            "adresse": "3 Rue de Valois 75001 Paris",
-            "activite": {"nom": "Bibliothèque Médiathèque", "slug": "bibliotheque-mediatheque"},
-            "siret": "",
-            "updated_at": "2023-04-13T15:10:25.612731+02:00",
-        }
+    ) -> AcceslibreResult | None:
+        return AcceslibreResult(
+            slug="mon-lieu-chez-acceslibre",
+            web_url="https://une-fausse-url.com",
+            nom="Un lieu",
+            adresse="3 Rue de Valois 75001 Paris",
+            code_postal="75001",
+            commune="Paris",
+            ban_id="75001_1234_abcde",
+            activite={"nom": "Bibliothèque Médiathèque", "slug": "bibliotheque-mediatheque"},
+            siret="",
+        )
 
     def get_id_at_accessibility_provider(
         self,
@@ -374,8 +392,8 @@ class TestingBackend(BaseBackend):
         city: str | None = None,
         postal_code: str | None = None,
         address: str | None = None,
-    ) -> str | None:
-        return "mon-lieu-chez-acceslibre"
+    ) -> AcceslibreInfos | None:
+        return AcceslibreInfos(slug="mon-lieu-chez-acceslibre", url="https://une-fausse-url.com")
 
     def get_last_update_at_provider(self, slug: str) -> datetime | None:
         return datetime(2024, 3, 1, 0, 0)
@@ -404,7 +422,7 @@ class TestingBackend(BaseBackend):
             },
         ]
         acceslibre_data = [
-            AcceslibreData(title=str(item["title"]), labels=[str(label) for label in item["labels"]])
+            AcceslibreWidgetData(title=str(item["title"]), labels=[str(label) for label in item["labels"]])
             for item in accesslibre_data_list
         ]
         return acceslibre_to_accessibility_infos(acceslibre_data)
@@ -472,7 +490,7 @@ class AcceslibreBackend(BaseBackend):
         city: str | None = None,
         postal_code: str | None = None,
         address: str | None = None,
-    ) -> dict | None:
+    ) -> AcceslibreResult | None:
         search_criteria: list[dict] = [
             {"siret": siret},
             {"ban_id": ban_id},
@@ -493,17 +511,33 @@ class AcceslibreBackend(BaseBackend):
         for criterion in search_criteria:
             if all(v is not None for v in criterion.values()):
                 response = self._send_request(query_params=criterion)
-                if response["count"] and (
-                    matching_venue := match_venue_with_acceslibre(
-                        acceslibre_results=response["results"],
+                if response["count"]:
+                    try:
+                        results = [
+                            AcceslibreResult(
+                                activite=item["activite"],
+                                nom=str(item["nom"]),
+                                adresse=str(item["adresse"]),
+                                commune=str(item["commune"]),
+                                code_postal=str(item["code_postal"]),
+                                ban_id=str(item["ban_id"]),
+                                siret=str(item["siret"]),
+                                slug=str(item["slug"]),
+                                web_url=str(item["web_url"]),
+                            )
+                            for item in response["results"]
+                        ]
+                    except:
+                        raise AccesLibreApiException("Could not find required informations")
+                    if matching_venue := match_venue_with_acceslibre(
+                        acceslibre_results=results,
                         venue_name=name,
                         venue_public_name=public_name,
                         venue_address=address,
                         venue_ban_id=ban_id,
                         venue_siret=siret,
-                    )
-                ):
-                    return matching_venue
+                    ):
+                        return matching_venue
         return None
 
     def get_id_at_accessibility_provider(
@@ -515,12 +549,12 @@ class AcceslibreBackend(BaseBackend):
         city: str | None = None,
         postal_code: str | None = None,
         address: str | None = None,
-    ) -> str | None:
+    ) -> AcceslibreInfos | None:
         matching_venue = find_venue_at_accessibility_provider(
             name, public_name, siret, ban_id, city, postal_code, address
         )
         if matching_venue:
-            return matching_venue["slug"]
+            return AcceslibreInfos(slug=matching_venue["slug"], url=matching_venue["web_url"])
         return None
 
     def get_last_update_at_provider(self, slug: str) -> datetime | None:
@@ -542,7 +576,7 @@ class AcceslibreBackend(BaseBackend):
                     "'sections' key is missing in the response from acceslibre. Check API response or contact Acceslibre"
                 )
             acceslibre_data = [
-                AcceslibreData(title=str(item["title"]), labels=[str(label) for label in item["labels"]])
+                AcceslibreWidgetData(title=str(item["title"]), labels=[str(label) for label in item["labels"]])
                 for item in response_list
             ]
             return acceslibre_to_accessibility_infos(acceslibre_data)

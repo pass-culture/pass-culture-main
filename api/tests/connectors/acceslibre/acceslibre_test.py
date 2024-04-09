@@ -1,7 +1,7 @@
 from dateutil import parser
 
 from pcapi.connectors import acceslibre
-from pcapi.connectors.acceslibre import AcceslibreData
+from pcapi.connectors.acceslibre import AcceslibreWidgetData
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.core.testing import override_settings
 
@@ -18,8 +18,13 @@ class AcceslibreTest:
             f"https://acceslibre.beta.gouv.fr/api/erps/?ban_id={ban_id}",
             json=fixtures.ACCESLIBRE_RESULTS,
         )
-        slug = acceslibre.get_id_at_accessibility_provider(name=name, public_name=public_name, ban_id=ban_id)
-        assert slug == "le-bateau-livre"
+        acceslibre_infos = acceslibre.get_id_at_accessibility_provider(
+            name=name, public_name=public_name, ban_id=ban_id
+        )
+        assert acceslibre_infos["slug"] == "le-livre-bateau"
+        assert (
+            acceslibre_infos["url"] == "https://acceslibre.beta.gouv.fr/app/59-lille/a/librairie/erp/le-livre-bateau/"
+        )
 
     def test_venue_has_siret_at_provider(self, requests_mock):
         siret = "23456789012345"
@@ -29,8 +34,12 @@ class AcceslibreTest:
             f"https://acceslibre.beta.gouv.fr/api/erps/?siret={siret}",
             json=fixtures.ACCESLIBRE_RESULTS,
         )
-        slug = acceslibre.get_id_at_accessibility_provider(name=name, public_name=public_name, siret=siret)
-        assert slug == "la-librairie-chouette"
+        acceslibre_infos = acceslibre.get_id_at_accessibility_provider(name=name, public_name=public_name, siret=siret)
+        assert acceslibre_infos["slug"] == "la-librairie-chouette"
+        assert (
+            acceslibre_infos["url"]
+            == "https://acceslibre.beta.gouv.fr/app/59-lille/a/librairie/erp/la-librairie-chouette/"
+        )
 
     def test_find_venue_based_on_name_and_address(self, requests_mock):
         name = "La Belette Du Nord"
@@ -42,10 +51,13 @@ class AcceslibreTest:
             "https://acceslibre.beta.gouv.fr/api/erps/?q=La+Belette+Du+Nord&commune=Lille&code_postal=59800&page_size=50",
             json=fixtures.ACCESLIBRE_RESULTS_BY_NAME,
         )
-        slug = acceslibre.get_id_at_accessibility_provider(
+        acceslibre_infos = acceslibre.get_id_at_accessibility_provider(
             name=name, public_name=public_name, city=city, postal_code=postal_code, address=address
         )
-        assert slug == "belette-du-nord"
+        assert acceslibre_infos["slug"] == "belette-du-nord"
+        assert (
+            acceslibre_infos["url"] == "https://acceslibre.beta.gouv.fr/app/59-lille/a/librairie/erp/belette-du-nord/"
+        )
 
     def test_find_venue_based_on_public_name_and_address(self, requests_mock):
         name = "Un truc random qui échoue"
@@ -61,10 +73,13 @@ class AcceslibreTest:
             "https://acceslibre.beta.gouv.fr/api/erps/?q=LA+BELETTE+DU+NORD+-+LILLE&commune=Lille&code_postal=59800&page_size=50",
             json=fixtures.ACCESLIBRE_RESULTS_BY_NAME,
         )
-        slug = acceslibre.get_id_at_accessibility_provider(
+        acceslibre_infos = acceslibre.get_id_at_accessibility_provider(
             name=name, public_name=public_name, city=city, postal_code=postal_code, address=address
         )
-        assert slug == "belette-du-nord"
+        assert acceslibre_infos["slug"] == "belette-du-nord"
+        assert (
+            acceslibre_infos["url"] == "https://acceslibre.beta.gouv.fr/app/59-lille/a/librairie/erp/belette-du-nord/"
+        )
 
     def test_check_last_update(self, requests_mock):
         slug = "0850bc16-b240-47dc-93b6-efc7d8de2037"
@@ -99,7 +114,7 @@ class AcceslibreTest:
             },
         ]
         acceslibre_data = [
-            AcceslibreData(title=str(item["title"]), labels=[str(label) for label in item["labels"]])
+            AcceslibreWidgetData(title=str(item["title"]), labels=[str(label) for label in item["labels"]])
             for item in accesslibre_data_list
         ]
         accessibility_infos = acceslibre.acceslibre_to_accessibility_infos(acceslibre_data)

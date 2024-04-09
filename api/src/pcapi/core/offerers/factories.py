@@ -423,7 +423,7 @@ class AccessibilityProviderFactory(BaseFactory):
         model = models.AccessibilityProvider
 
     venue = factory.SubFactory(VenueFactory)
-    externalAccessibilityId = factory.Sequence("le-petit-rintintin-{}".format)
+    externalAccessibilityId = factory.Sequence("slug-d-accessibilite-{}".format)
     externalAccessibilityData = {
         "access_modality": [acceslibre_enum.EXTERIOR_ACCESS_ELEVATOR, acceslibre_enum.ENTRANCE_ELEVATOR],
         "audio_description": [],
@@ -436,4 +436,7 @@ class AccessibilityProviderFactory(BaseFactory):
         "trained_personnel": [acceslibre_enum.PERSONNEL_UNTRAINED],
         "transport_modality": [acceslibre_enum.PARKING_NEARBY],
     }
+    externalAccessibilityUrl = factory.LazyAttribute(
+        lambda p: f"https://site-d-accessibilite.com/erps/{p.externalAccessibilityId}/"
+    )
     lastUpdateAtProvider = datetime.datetime(2024, 3, 1, 0, 0)

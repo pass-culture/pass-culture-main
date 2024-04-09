@@ -761,6 +761,10 @@ class AccessibilityProvider(PcObject, Base, Model):
         Text,
         nullable=True,
     )
+    externalAccessibilityUrl: str | None = Column(
+        Text,
+        nullable=True,
+    )
     externalAccessibilityData: AccessibilityInfo | None = sa.Column(MutableDict.as_mutable(JSONB), nullable=True)
     lastUpdateAtProvider: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
 
