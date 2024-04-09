@@ -12,13 +12,13 @@ import"./config-yp2pWrHW.js";import{r as O,t as Y,a as k,f as v,F as P,g as M}fr
   args: {
     offer: getIndividualOfferFactory(baseOfferData)
   }
-}`,...(Q=(g=c.parameters)==null?void 0:g.docs)==null?void 0:Q.source}}};var j,F,b;I.parameters={...I.parameters,docs:{...(j=I.parameters)==null?void 0:j.docs,source:{originalSource:`{
+}`,...(Q=(g=c.parameters)==null?void 0:g.docs)==null?void 0:Q.source}}};var j,F,q;I.parameters={...I.parameters,docs:{...(j=I.parameters)==null?void 0:j.docs,source:{originalSource:`{
   args: {
     offer: getIndividualOfferFactory({
       ...baseOfferData
     })
   }
-}`,...(b=(F=I.parameters)==null?void 0:F.docs)==null?void 0:b.source}}};var q,B,G;N.parameters={...N.parameters,docs:{...(q=N.parameters)==null?void 0:q.docs,source:{originalSource:`{
+}`,...(q=(F=I.parameters)==null?void 0:F.docs)==null?void 0:q.source}}};var b,B,G;N.parameters={...N.parameters,docs:{...(b=N.parameters)==null?void 0:b.docs,source:{originalSource:`{
   args: {
     offer: getIndividualOfferFactory({
       ...baseOfferData,
