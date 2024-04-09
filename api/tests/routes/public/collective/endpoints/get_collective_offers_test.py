@@ -28,7 +28,8 @@ class CollectiveOffersPublicGetOfferTest:
         # When
         # 1. fetch api key
         # 2. fetch data
-        with assert_num_queries(2):
+        # 3. fetch FF
+        with assert_num_queries(3):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
                 "/v2/collective/offers/"
             )
@@ -240,7 +241,8 @@ class CollectiveOffersPublicGetOfferTest:
 
         # 1. fetch api key
         # 2. fetch data
-        with assert_num_queries(2):
+        # 3. fetch FF
+        with assert_num_queries(3):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
                 f"/v2/collective/offers/{offer.id}"
             )
