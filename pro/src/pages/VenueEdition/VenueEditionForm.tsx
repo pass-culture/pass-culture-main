@@ -135,10 +135,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
               </FormLayout.Row>
             </FormLayout.SubSection>
 
-            {showAccessibilitySection && (
-              <Accessibility isCreatingVenue={false} />
-            )}
-
             {isOpeningHoursEnabled && venue.isPermanent && (
               <FormLayout.SubSection title="Horaires d'ouverture">
                 <OpeningHoursForm />
@@ -178,6 +174,10 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                 />
               </FormLayout.Row>
             </FormLayout.SubSection>
+
+            {showAccessibilitySection && (
+              <Accessibility isCreatingVenue={false} />
+            )}
           </FormLayout.Section>
         </FormLayout>
 

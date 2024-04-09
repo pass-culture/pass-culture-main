@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
 import React from 'react'
@@ -6,6 +6,7 @@ import React from 'react'
 import { AccessiblityEnum } from 'core/shared'
 import { VenueCreationFormValues } from 'pages/VenueCreation/types'
 import { SubmitButton } from 'ui-kit'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { Accessibility } from '../Accessibility'
 
@@ -18,7 +19,7 @@ const renderAccessibility = ({
   isCreatingVenue: boolean
   onSubmit: () => void
 }) => {
-  return render(
+  return renderWithProviders(
     <Formik initialValues={initialValues} onSubmit={onSubmit}>
       <Form>
         <Accessibility isCreatingVenue={isCreatingVenue} />
