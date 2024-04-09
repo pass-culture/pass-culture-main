@@ -1765,6 +1765,24 @@ class ResolveOfferValidationRuleTest:
         assert models.ValidationRuleOfferLink.query.count() == 0
         assert educational_models.ValidationRuleCollectiveOfferLink.query.count() == 1
 
+    def test_offer_validation_rule_with_venue_id(self):
+        venue = offerers_factories.VenueFactory()
+
+        offer = factories.OfferFactory(venue=venue)
+        collective_offer = educational_factories.CollectiveOfferFactory(venue=venue)
+        offer_validation_rule = factories.OfferValidationRuleFactory(name="Règle sur les lieux")
+        factories.OfferValidationSubRuleFactory(
+            validationRule=offer_validation_rule,
+            model=models.OfferValidationModel.VENUE,
+            attribute=models.OfferValidationAttribute.ID,
+            operator=models.OfferValidationRuleOperator.IN,
+            comparated={"comparated": [venue.id]},
+        )
+        assert api.set_offer_status_based_on_fraud_criteria(offer) == models.OfferValidationStatus.PENDING
+        assert api.set_offer_status_based_on_fraud_criteria(collective_offer) == models.OfferValidationStatus.PENDING
+        assert models.ValidationRuleOfferLink.query.count() == 1
+        assert educational_models.ValidationRuleCollectiveOfferLink.query.count() == 1
+
     def test_offer_validation_rule_with_offerer_id(self):
         offerer = offerers_factories.OffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)

@@ -931,6 +931,10 @@ class OfferValidationSubRuleField(enum.Enum):
         "model": OfferValidationModel.OFFER,
         "attribute": OfferValidationAttribute.SHOW_SUB_TYPE,
     }
+    ID_VENUE = {
+        "model": OfferValidationModel.VENUE,
+        "attribute": OfferValidationAttribute.ID,
+    }
     ID_OFFERER = {
         "model": OfferValidationModel.OFFERER,
         "attribute": OfferValidationAttribute.ID,

@@ -701,6 +701,8 @@ def format_offer_validation_sub_rule_field(sub_rule_field: offers_models.OfferVa
             return "La catégorie de l'offre individuelle"
         case offers_models.OfferValidationSubRuleField.SHOW_SUB_TYPE_OFFER:
             return "Le sous-type de spectacle de l'offre individuelle"
+        case offers_models.OfferValidationSubRuleField.ID_VENUE:
+            return "Le lieu proposant l'offre"
         case offers_models.OfferValidationSubRuleField.ID_OFFERER:
             return "La structure proposant l'offre"
         case offers_models.OfferValidationSubRuleField.FORMATS_COLLECTIVE_OFFER:
@@ -776,6 +778,7 @@ def format_sub_rules_info_type(info: str) -> str:
 def get_comparated_format_function(
     sub_rule: offers_models.OfferValidationSubRule,
     offerer_dict: dict,
+    venue_dict: dict,
 ) -> typing.Callable[[typing.Any], typing.Any]:
     try:
         if (
@@ -783,6 +786,11 @@ def get_comparated_format_function(
             and sub_rule.model == offers_models.OfferValidationModel.OFFERER
         ):
             return lambda offerer_id: offerer_dict.get(offerer_id, str(f"Offerer ID : {offerer_id}"))
+        if (
+            sub_rule.attribute == offers_models.OfferValidationAttribute.ID
+            and sub_rule.model == offers_models.OfferValidationModel.VENUE
+        ):
+            return lambda venue_id: venue_dict.get(venue_id, str(f"Venue ID : {venue_id}"))
         if sub_rule.attribute == offers_models.OfferValidationAttribute.CATEGORY_ID:
             return lambda category_id: categories.ALL_CATEGORIES_DICT[category_id].pro_label
         if sub_rule.attribute == offers_models.OfferValidationAttribute.SUBCATEGORY_ID:
