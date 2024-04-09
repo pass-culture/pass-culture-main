@@ -1,4 +1,3 @@
-import React from 'react'
 import { useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
 import useSWR from 'swr'
@@ -29,7 +28,14 @@ export const Offer = (): JSX.Element | null => {
     ? Number(searchParams.get('structure'))
     : undefined
   const selectedOffererId = useSelector(selectCurrentOffererId)
-  const offererId = offererIdFromQueryParam ?? selectedOffererId
+
+  // At first we look for the offerer id in the offer,
+  // then in the query params
+  // after all we look for the selected offerer id in the redux store
+  const offererId =
+    offer?.venue.managingOfferer.id ??
+    offererIdFromQueryParam ??
+    selectedOffererId
 
   const shouldNotFetchVenues = currentUser.isAdmin && !offererId
 
