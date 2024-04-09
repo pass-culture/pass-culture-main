@@ -211,7 +211,11 @@ def cancel_finance_incident(finance_incident_id: int) -> utils.BackofficeRespons
         return render_finance_incident(incident)
 
     try:
-        finance_api.cancel_finance_incident(incident, form.comment.data)
+        finance_api.cancel_finance_incident(
+            incident=incident,
+            comment=form.comment.data,
+            author=current_user,
+        )
     except finance_exceptions.FinanceIncidentAlreadyCancelled:
         flash("L'incident a déjà été annulé", "warning")
         return render_finance_incident(incident)
@@ -255,9 +259,9 @@ def get_history(finance_incident_id: int) -> utils.BackofficeResponse:
     )
 
 
-@finance_incidents_blueprint.route("get-incident-creation-form", methods=["GET", "POST"])
+@finance_incidents_blueprint.route("/individual-bookings/overpayment-creation-form", methods=["GET", "POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
-def get_incident_creation_form() -> utils.BackofficeResponse:
+def get_individual_bookings_overpayment_creation_form() -> utils.BackofficeResponse:
     form = forms.BookingOverPaymentIncidentForm()
     additional_data = {}
     alert = None
@@ -265,16 +269,23 @@ def get_incident_creation_form() -> utils.BackofficeResponse:
     if form.object_ids.data:
         bookings = (
             bookings_models.Booking.query.options(
-                sa.orm.joinedload(bookings_models.Booking.user),
-                sa.orm.joinedload(bookings_models.Booking.pricings),
-                sa.orm.joinedload(bookings_models.Booking.stock).joinedload(offers_models.Stock.offer),
-                sa.orm.joinedload(bookings_models.Booking.venue),
+                sa.orm.joinedload(bookings_models.Booking.user).load_only(
+                    users_models.User.firstName, users_models.User.lastName, users_models.User.email
+                ),
+                sa.orm.joinedload(bookings_models.Booking.pricings).load_only(
+                    finance_models.Pricing.status, finance_models.Pricing.amount, finance_models.Pricing.creationDate
+                ),
+                sa.orm.joinedload(bookings_models.Booking.stock)
+                .load_only(offers_models.Stock.id)
+                .joinedload(offers_models.Stock.offer)
+                .load_only(offers_models.Offer.name),
+                sa.orm.joinedload(bookings_models.Booking.venue).load_only(
+                    offerer_models.Venue.publicName, offerer_models.Venue.name
+                ),
             )
             .filter(
-                sa.and_(
-                    bookings_models.Booking.id.in_(form.object_ids_list),
-                    bookings_models.Booking.status == bookings_models.BookingStatus.REIMBURSED,
-                )
+                bookings_models.Booking.id.in_(form.object_ids_list),
+                bookings_models.Booking.status == bookings_models.BookingStatus.REIMBURSED,
             )
             .all()
         )
@@ -286,7 +297,7 @@ def get_incident_creation_form() -> utils.BackofficeResponse:
                 messages=valid.messages,
             )
 
-        max_amount = sum(booking.total_amount for booking in bookings)
+        min_amount, max_amount = validation.get_overpayment_incident_amount_interval(bookings)
 
         form.total_amount.data = max_amount
         additional_data = _initialize_additional_data(bookings)
@@ -298,13 +309,13 @@ def get_incident_creation_form() -> utils.BackofficeResponse:
             )
         else:
             form.total_amount.flags.max = max_amount
-            form.total_amount.flags.min = 0
+            form.total_amount.flags.min = min_amount
 
     return render_template(
         "components/turbo/modal_form.html",
         form=form,
-        dst=url_for("backoffice_web.finance_incidents.create_individual_booking_incident"),
-        div_id="incident-creation-modal",
+        dst=url_for("backoffice_web.finance_incidents.create_individual_booking_overpayment"),
+        div_id="overpayment-creation-modal",
         title="Création d'un incident",
         button_text="Créer l'incident",
         additional_data=additional_data,
@@ -312,11 +323,66 @@ def get_incident_creation_form() -> utils.BackofficeResponse:
     )
 
 
+@finance_incidents_blueprint.route("/individual-bookings/commercial-gesture-creation-form", methods=["GET", "POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
+def get_individual_bookings_commercial_gesture_creation_form() -> utils.BackofficeResponse:
+    form = forms.CommercialGestureCreationForm()
+    additional_data = {}
+
+    if form.object_ids.data:
+        bookings = (
+            bookings_models.Booking.query.options(
+                sa.orm.joinedload(bookings_models.Booking.user).load_only(
+                    users_models.User.firstName, users_models.User.lastName, users_models.User.email
+                ),
+                sa.orm.joinedload(bookings_models.Booking.pricings).load_only(
+                    finance_models.Pricing.status, finance_models.Pricing.amount, finance_models.Pricing.creationDate
+                ),
+                sa.orm.joinedload(bookings_models.Booking.stock)
+                .load_only(offers_models.Stock.id)
+                .joinedload(offers_models.Stock.offer)
+                .load_only(offers_models.Offer.name),
+                sa.orm.joinedload(bookings_models.Booking.venue).load_only(
+                    offerer_models.Venue.publicName, offerer_models.Venue.name
+                ),
+            )
+            .filter(
+                bookings_models.Booking.id.in_(form.object_ids_list),
+                bookings_models.Booking.status == bookings_models.BookingStatus.CANCELLED,
+            )
+            .all()
+        )
+
+        if not (valid := validation.check_commercial_gesture_bookings(bookings)):
+            return render_template(
+                "components/turbo/modal_empty_form.html",
+                form=empty_forms.BatchForm(),
+                messages=valid.messages,
+            )
+
+        min_amount, max_amount = validation.get_commercial_gesture_amount_interval(bookings)
+        form.total_amount.data = max_amount
+        form.total_amount.flags.max = max_amount
+        form.total_amount.flags.min = min_amount
+
+        additional_data = _initialize_additional_data(bookings)
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_web.finance_incidents.create_individual_booking_commercial_gesture"),
+        div_id="commercial-gesture-creation-modal",
+        title="Création d'un geste commercial",
+        button_text="Créer le geste commercial",
+        additional_data=additional_data,
+    )
+
+
 @finance_incidents_blueprint.route(
-    "collective-booking-incident-creation-form/<int:collective_booking_id>/", methods=["GET", "POST"]
+    "/collective-bookings/<int:collective_booking_id>/overpayment-creation-form", methods=["GET", "POST"]
 )
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
-def get_collective_booking_incident_creation_form(collective_booking_id: int) -> utils.BackofficeResponse:
+def get_collective_booking_overpayment_creation_form(collective_booking_id: int) -> utils.BackofficeResponse:
     collective_booking: educational_models.CollectiveBooking = (
         educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id)
         .options(
@@ -346,26 +412,78 @@ def get_collective_booking_incident_creation_form(collective_booking_id: int) ->
             "components/turbo/modal_empty_form.html",
             form=empty_forms.BatchForm(),
             messages=valid.messages,
-            div_id=f"incident-creation-modal-{collective_booking_id}",
+            div_id=f"overpayment-creation-modal-{collective_booking_id}",
         )
 
     return render_template(
         "components/turbo/modal_form.html",
         form=form,
         dst=url_for(
-            "backoffice_web.finance_incidents.create_collective_booking_incident",
+            "backoffice_web.finance_incidents.create_collective_booking_overpayment",
             collective_booking_id=collective_booking_id,
         ),
-        div_id=f"incident-creation-modal-{collective_booking_id}",
+        div_id=f"overpayment-creation-modal-{collective_booking_id}",
         title="Création d'un incident",
         button_text="Créer l'incident",
         additional_data=additional_data,
     )
 
 
-@finance_incidents_blueprint.route("/create-from-individual-booking", methods=["POST"])
+@finance_incidents_blueprint.route(
+    "/collective-bookings/<int:collective_booking_id>/commercial-gesture-creation-form",
+    methods=["GET", "POST"],
+)
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
-def create_individual_booking_incident() -> utils.BackofficeResponse:
+def get_collective_booking_commercial_gesture_creation_form(collective_booking_id: int) -> utils.BackofficeResponse:
+    collective_booking: educational_models.CollectiveBooking = (
+        educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id)
+        .options(
+            sa.orm.joinedload(educational_models.CollectiveBooking.educationalInstitution).load_only(
+                educational_models.EducationalInstitution.name
+            ),
+            sa.orm.joinedload(educational_models.CollectiveBooking.pricings).load_only(
+                finance_models.Pricing.amount,
+            ),
+            sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock)
+            .load_only(
+                educational_models.CollectiveStock.beginningDatetime, educational_models.CollectiveStock.numberOfTickets
+            )
+            .joinedload(educational_models.CollectiveStock.collectiveOffer)
+            .load_only(educational_models.CollectiveOffer.name),
+        )
+        .one_or_none()
+    )
+    if not collective_booking:
+        raise NotFound()
+
+    form = forms.CollectiveCommercialGestureCreationForm()
+    additional_data = _initialize_collective_booking_additional_data(collective_booking)
+
+    if not (valid := validation.check_commercial_gesture_collective_booking(collective_booking)):
+        return render_template(
+            "components/turbo/modal_empty_form.html",
+            form=empty_forms.BatchForm(),
+            messages=valid.messages,
+            div_id=f"commercial-gesture-creation-modal-{collective_booking_id}",
+        )
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for(
+            "backoffice_web.finance_incidents.create_collective_booking_commercial_gesture",
+            collective_booking_id=collective_booking_id,
+        ),
+        div_id=f"commercial-gesture-creation-modal-{collective_booking_id}",
+        title="Création d'un geste commercial",
+        button_text="Créer le geste commercial",
+        additional_data=additional_data,
+    )
+
+
+@finance_incidents_blueprint.route("/individual-bookings/create-overpayment", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
+def create_individual_booking_overpayment() -> utils.BackofficeResponse:
     form = forms.BookingOverPaymentIncidentForm()
 
     if not form.validate():
@@ -391,7 +509,7 @@ def create_individual_booking_incident() -> utils.BackofficeResponse:
 
     if len(bookings) != len(form.object_ids_list):
         flash(
-            "Au moins une des réservations sélectionnées est dans un état non compatible avec ce type d'incident",
+            'Au moins une des réservations sélectionnées est dans un état différent de "remboursé".',
             "warning",
         )
         return redirect(request.referrer or url_for("backoffice_web.individual_bookings.list_individual_bookings"), 303)
@@ -403,13 +521,14 @@ def create_individual_booking_incident() -> utils.BackofficeResponse:
 
     incident = finance_api.create_overpayment_finance_incident(
         bookings=bookings,
-        amount=amount,
+        author=current_user,
         origin=form.origin.data,
+        amount=amount,
     )
     incident_url = url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=incident.id)
 
     flash(
-        Markup('Un nouvel <a href="{url}">incident</a> a été créé pour {count} réservation{s}').format(
+        Markup('Un nouvel <a href="{url}">incident</a> a été créé pour {count} réservation{s}.').format(
             url=incident_url, count=len(bookings), s="" if len(bookings) == 1 else "s"
         ),
         "success",
@@ -417,9 +536,70 @@ def create_individual_booking_incident() -> utils.BackofficeResponse:
     return redirect(request.referrer or url_for("backoffice_web.individual_bookings.list_individual_bookings"), 303)
 
 
-@finance_incidents_blueprint.route("/create-from-collective-booking/<int:collective_booking_id>/", methods=["POST"])
+@finance_incidents_blueprint.route("/individual-bookings/create-commercial-gesture", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
-def create_collective_booking_incident(collective_booking_id: int) -> utils.BackofficeResponse:
+def create_individual_booking_commercial_gesture() -> utils.BackofficeResponse:
+    form = forms.CommercialGestureCreationForm()
+
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(request.referrer, 303)
+
+    amount = form.total_amount.data
+
+    bookings = (
+        bookings_models.Booking.query.options(
+            sa.orm.joinedload(bookings_models.Booking.pricings).load_only(finance_models.Pricing.amount),
+            sa.orm.joinedload(bookings_models.Booking.deposit)
+            .load_only(finance_models.Deposit.amount)
+            .joinedload(finance_models.Deposit.user)
+            .load_only(users_models.User.id),
+        )
+        .filter(
+            bookings_models.Booking.id.in_(form.object_ids_list),
+            bookings_models.Booking.status == bookings_models.BookingStatus.CANCELLED,
+        )
+        .all()
+    )
+
+    if len(bookings) != len(form.object_ids_list):
+        flash(
+            'Au moins une des réservations sélectionnées est dans un état différent de "annulée".',
+            "warning",
+        )
+        return redirect(request.referrer or url_for("backoffice_web.individual_bookings.list_individual_bookings"), 303)
+
+    if not (
+        valid := validation.check_commercial_gesture_bookings(bookings)
+        and validation.check_commercial_gesture_total_amount(amount, bookings)
+    ):
+        for message in valid.messages:
+            flash(message, "warning")
+        return redirect(request.referrer or url_for("backoffice_web.individual_bookings.list_individual_bookings"), 303)
+
+    commercial_gesture = finance_api.create_finance_commercial_gesture(
+        bookings=bookings,
+        amount=amount,
+        author=current_user,
+        origin=form.origin.data,
+    )
+    incident_url = url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=commercial_gesture.id)
+
+    flash(
+        Markup('Un nouveau <a href="{url}">geste commercial</a> a été créé pour {count} réservation{s}.').format(
+            url=incident_url, count=len(bookings), s="" if len(bookings) == 1 else "s"
+        ),
+        "success",
+    )
+
+    return redirect(request.referrer or url_for("backoffice_web.collective_bookings.list_collective_bookings"), 303)
+
+
+@finance_incidents_blueprint.route(
+    "/collective-bookings/<int:collective_booking_id>/create-overpayment", methods=["POST"]
+)
+@utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
+def create_collective_booking_overpayment(collective_booking_id: int) -> utils.BackofficeResponse:
     collective_booking = educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id).one_or_none()
     if not collective_booking:
         raise NotFound()
@@ -431,18 +611,51 @@ def create_collective_booking_incident(collective_booking_id: int) -> utils.Back
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer, 303)
 
-    booking_has_no_incident = validation.check_incident_collective_booking(collective_booking)
-    is_valid_amount = validation.check_total_amount(
-        input_amount=collective_booking.total_amount,
-        bookings=[collective_booking],
-    )
-
-    if not (valid := (booking_has_no_incident and is_valid_amount)):
+    if not (valid := validation.check_incident_collective_booking(collective_booking)):
         for message in valid.messages:
             flash(message, "warning")
         return redirect(redirect_url, 303)
 
-    incident = finance_api.create_overpayment_finance_incident(bookings=[collective_booking], origin=form.origin.data)
+    incident = finance_api.create_overpayment_finance_incident_collective_booking(
+        collective_booking,
+        author=current_user,
+        origin=form.origin.data,
+    )
+    incident_url = url_for(
+        "backoffice_web.finance_incidents.get_incident",
+        finance_incident_id=incident.id,
+    )
+
+    flash(Markup('Un nouvel <a href="{url}">incident</a> a été créé.').format(url=incident_url), "success")
+    return redirect(redirect_url, 303)
+
+
+@finance_incidents_blueprint.route(
+    "/collective-bookings/<int:collective_booking_id>/create-commercial-gesture", methods=["POST"]
+)
+@utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
+def create_collective_booking_commercial_gesture(collective_booking_id: int) -> utils.BackofficeResponse:
+    collective_booking = educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id).one_or_none()
+    if not collective_booking:
+        raise NotFound()
+
+    redirect_url = request.referrer or url_for("backoffice_web.collective_bookings.list_collective_bookings")
+    form = forms.CollectiveCommercialGestureCreationForm()
+
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(redirect_url, 303)
+
+    if not (valid := validation.check_commercial_gesture_collective_booking(collective_booking)):
+        for message in valid.messages:
+            flash(message, "warning")
+        return redirect(redirect_url, 303)
+
+    incident = finance_api.create_finance_commercial_gesture_collective_booking(
+        collective_booking,
+        author=current_user,
+        origin=form.origin.data,
+    )
     incident_url = url_for(
         "backoffice_web.finance_incidents.get_incident",
         finance_incident_id=incident.id,
@@ -605,7 +818,9 @@ def validate_finance_incident(finance_incident_id: int) -> utils.BackofficeRespo
         )
 
     finance_api.validate_finance_incident(
-        finance_incident, form.compensation_mode.data == forms.IncidentCompensationModes.FORCE_DEBIT_NOTE.name
+        finance_incident=finance_incident,
+        force_debit_note=form.compensation_mode.data == forms.IncidentCompensationModes.FORCE_DEBIT_NOTE.name,
+        author=current_user,
     )
 
     flash("L'incident a été validé", "success")
