@@ -178,9 +178,9 @@ export const AppLayout = ({
               <div
                 className={classnames({
                   [styles['page-content']]: true,
-                  [styles['page-content-with-review-banner']]: Boolean(
-                    currentUser?.navState?.eligibilityDate
-                  ),
+                  [styles['page-content-with-review-banner']]:
+                    isNewSideBarNavigation &&
+                    Boolean(currentUser?.navState?.eligibilityDate),
                   [styles['page-content-old']]: !isNewSideBarNavigation,
                 })}
               >
