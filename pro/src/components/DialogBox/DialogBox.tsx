@@ -9,6 +9,7 @@ import styles from './DialogBox.module.scss'
 
 interface DialogProps {
   extraClassNames?: string
+  closeButtonClassName?: string
   hasCloseButton?: boolean
   labelledBy: string
   onDismiss?: () => void
@@ -20,6 +21,7 @@ interface DialogProps {
 const DialogBox: FunctionComponent<DialogProps> = ({
   children,
   extraClassNames,
+  closeButtonClassName,
   hasCloseButton = false,
   labelledBy,
   onDismiss,
@@ -43,7 +45,10 @@ const DialogBox: FunctionComponent<DialogProps> = ({
     >
       {hasCloseButton && (
         <div className={styles['dialog-box-close-container']}>
-          <CloseButton onCloseClick={onDismiss} />
+          <CloseButton
+            onCloseClick={onDismiss}
+            className={closeButtonClassName}
+          />
         </div>
       )}
       <section className={extraClassNames}>{children}</section>

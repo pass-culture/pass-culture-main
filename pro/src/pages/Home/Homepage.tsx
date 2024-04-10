@@ -17,7 +17,6 @@ import { AppLayout } from 'app/AppLayout'
 import AddBankAccountCallout from 'components/Callout/AddBankAccountCallout'
 import BankAccountHasPendingCorrectionCallout from 'components/Callout/BankAccountHasPendingCorrectionCallout'
 import LinkVenueCallout from 'components/Callout/LinkVenueCallout'
-import DialogBox from 'components/DialogBox'
 import { Newsletter } from 'components/Newsletter'
 import TutorialDialog from 'components/TutorialDialog'
 import { hasStatusCode } from 'core/OfferEducational'
@@ -29,6 +28,7 @@ import useIsNewInterfaceActive from 'hooks/useIsNewInterfaceActive'
 import useNotification from 'hooks/useNotification'
 import useRemoteConfig from 'hooks/useRemoteConfig'
 import strokeCloseIcon from 'icons/stroke-close.svg'
+import { WelcomeToTheNewBetaBanner } from 'pages/Home/WelcomeToTheNewBetaBanner/WelcomeToTheNewBetaBanner'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 import { updateSelectedOffererId } from 'store/user/reducer'
 import { Button } from 'ui-kit'
@@ -296,13 +296,7 @@ export const Homepage = (): JSX.Element => {
 
       <TutorialDialog />
       {isNewNavEnabled && (
-        <DialogBox
-          labelledBy=""
-          hasCloseButton={true}
-          onDismiss={() => setIsNewNavEnabled(false)}
-        >
-          <h2>Bienvenue dans votre nouvelle interface</h2>
-        </DialogBox>
+        <WelcomeToTheNewBetaBanner setIsNewNavEnabled={setIsNewNavEnabled} />
       )}
     </AppLayout>
   )

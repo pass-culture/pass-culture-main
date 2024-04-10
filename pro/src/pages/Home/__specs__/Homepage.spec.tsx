@@ -382,7 +382,7 @@ describe('Homepage', () => {
       expect(api.postNewProNav).toHaveBeenCalledTimes(1)
       expect(reloadFn).toHaveBeenCalledTimes(1)
       expect(
-        await screen.findByText('Bienvenue dans votre nouvelle interface')
+        await screen.findByText(/Bienvenue sur la nouvelle interface/)
       ).toBeInTheDocument()
     })
 
