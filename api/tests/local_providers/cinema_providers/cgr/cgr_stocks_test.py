@@ -25,7 +25,7 @@ from tests.local_providers.provider_test_utils import create_finance_event_to_up
 
 @pytest.mark.usefixtures("db_session")
 class CGRStocksTest:
-    def setup_method(self):
+    def _create_products(self):
         offers_factories.ProductFactory(
             name="Produit allociné 1",
             description="Description du produit allociné 1",
@@ -38,10 +38,6 @@ class CGRStocksTest:
             durationMinutes=222,
             extraData={"allocineId": 234099},
         )
-
-    def teardown_method(self):
-        with transaction():
-            offers_models.Product.query.delete()
 
     def should_return_providable_info_on_next(self, requests_mock):
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
@@ -89,7 +85,7 @@ class CGRStocksTest:
             cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
         )
 
-        offers_models.Product.query.delete()
+        assert offers_models.Product.query.count() == 0
 
         cgr_stocks = CGRStocks(venue_provider=venue_provider)
         providable_infos = next(cgr_stocks)
@@ -99,7 +95,7 @@ class CGRStocksTest:
         assert offers_models.Stock.query.count() == 0
 
     @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=False)
-    def should_fill_offer_and_stock_informations_for_each_movie(self, requests_mock):
+    def should_create_offers_with_allocine_id_and_visa_if_products_dont_exist(self, requests_mock):
         requests_mock.get("https://example.com/149341.jpg", content=bytes())
         requests_mock.get("https://example.com/82382.jpg", content=bytes())
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
@@ -117,19 +113,14 @@ class CGRStocksTest:
             cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
         )
 
+        assert offers_models.Product.query.count() == 0
+
         cgr_stocks = CGRStocks(venue_provider=venue_provider)
         cgr_stocks.updateObjects()
 
         created_offers = offers_models.Offer.query.order_by(offers_models.Offer.id).all()
-        created_stocks = offers_models.Stock.query.order_by(offers_models.Stock.id).all()
-        created_price_categories = offers_models.PriceCategory.query.order_by(offers_models.PriceCategory.id).all()
-        created_price_categories_labels = offers_models.PriceCategoryLabel.query.order_by(
-            offers_models.PriceCategoryLabel.id
-        ).all()
+
         assert len(created_offers) == 2
-        assert len(created_stocks) == 2
-        assert len(created_price_categories) == 2
-        assert len(created_price_categories_labels) == 2
 
         assert created_offers[0].name == "Venom"
         assert created_offers[0].venue == venue_provider.venue
@@ -140,17 +131,7 @@ class CGRStocksTest:
         assert created_offers[0].durationMinutes == 112
         assert created_offers[0].isDuo
         assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offers[0].extraData == {"visa": "149341"}
-
-        assert created_stocks[0].quantity == 99
-        assert created_stocks[0].price == Decimal("6.9")
-        assert created_stocks[0].dateCreated is not None
-        assert created_stocks[0].bookingLimitDatetime == datetime.datetime(2023, 1, 29, 13)
-        assert created_stocks[0].offer == created_offers[0]
-        assert created_stocks[0].beginningDatetime == datetime.datetime(2023, 1, 29, 13)
-        assert created_stocks[0].priceCategory.price == Decimal("6.9")
-        assert created_stocks[0].priceCategory.priceCategoryLabel.label == "Tarif Standard ICE"
-        assert created_stocks[0].features == ["VF", "ICE"]
+        assert created_offers[0].extraData == {"allocineId": 138473, "visa": "149341"}
 
         assert created_offers[1].name == "Super Mario Bros, Le Film"
         assert created_offers[1].venue == venue_provider.venue
@@ -158,20 +139,10 @@ class CGRStocksTest:
         assert created_offers[1].durationMinutes == 92
         assert created_offers[1].isDuo
         assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offers[1].extraData == {"visa": "82382"}
+        assert created_offers[1].extraData == {"allocineId": 234099, "visa": "82382"}
 
-        assert created_stocks[1].quantity == 168
-        assert created_stocks[1].price == Decimal(11.00)
-        assert created_stocks[1].dateCreated is not None
-        assert created_stocks[1].bookingLimitDatetime == datetime.datetime(2023, 3, 4, 15)
-        assert created_stocks[1].offer == created_offers[1]
-        assert created_stocks[1].beginningDatetime == datetime.datetime(2023, 3, 4, 15)
-        assert created_stocks[1].priceCategory.price == Decimal(11.00)
-        assert created_stocks[1].priceCategory.priceCategoryLabel.label == "Tarif standard 3D"
-        assert created_stocks[1].features == ["VF", "3D", "ICE"]
-
-    @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=True)
     def should_fill_offer_and_stock_informations_for_each_movie_based_on_product(self, requests_mock):
+        self._create_products()
         requests_mock.get("https://example.com/149341.jpg", content=bytes())
         requests_mock.get("https://example.com/82382.jpg", content=bytes())
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
@@ -209,7 +180,7 @@ class CGRStocksTest:
         assert created_offers[0].durationMinutes == 111
         assert created_offers[0].isDuo
         assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offers[0].extraData == {"allocineId": 138473}
+        assert created_offers[0].extraData == {"allocineId": 138473, "visa": "149341"}
 
         assert created_stocks[0].quantity == 99
         assert created_stocks[0].price == Decimal("6.9")
@@ -227,7 +198,7 @@ class CGRStocksTest:
         assert created_offers[1].durationMinutes == 222
         assert created_offers[1].isDuo
         assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offers[1].extraData == {"allocineId": 234099}
+        assert created_offers[1].extraData == {"allocineId": 234099, "visa": "82382"}
 
         assert created_stocks[1].quantity == 168
         assert created_stocks[1].price == Decimal(11.00)
@@ -239,48 +210,8 @@ class CGRStocksTest:
         assert created_stocks[1].priceCategory.priceCategoryLabel.label == "Tarif standard 3D"
         assert created_stocks[1].features == ["VF", "3D", "ICE"]
 
-    @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=False)
-    def should_fill_stocks_and_price_categories_for_a_movie(self, requests_mock):
-        requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
-        requests_mock.get("https://example.com/82382.jpg", content=bytes())
-
-        cgr_provider = get_provider_by_local_class("CGRStocks")
-        venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider, isDuoOffers=True)
-        cinema_provider_pivot = providers_factories.CGRCinemaProviderPivotFactory(
-            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
-        )
-        providers_factories.CGRCinemaDetailsFactory(
-            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
-        )
-
-        requests_mock.post(
-            "https://cgr-cinema-0.example.com/web_service",
-            text=fixtures.cgr_response_template([fixtures.FILM_234099_WITH_THREE_SEANCES]),
-        )
-
-        cgr_stocks = CGRStocks(venue_provider=venue_provider)
-        cgr_stocks.updateObjects()
-
-        created_offer = offers_models.Offer.query.one()
-        created_stocks = offers_models.Stock.query.order_by(offers_models.Stock.id).all()
-        created_price_categories = offers_models.PriceCategory.query.order_by(offers_models.PriceCategory.id).all()
-        created_price_category_labels = offers_models.PriceCategoryLabel.query.order_by(
-            offers_models.PriceCategoryLabel.id
-        ).all()
-
-        assert len(created_stocks) == 3
-        assert len(created_price_categories) == 3
-        assert len(created_price_category_labels) == 3
-
-        assert created_offer.name == "Super Mario Bros, Le Film"
-        assert created_offer.venue == venue_provider.venue
-        assert created_offer.description == "Un film basé sur l'univers du célèbre jeu : Super Mario Bros."
-        assert created_offer.durationMinutes == 92
-        assert created_offer.isDuo
-        assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
-
-    @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=True)
     def should_fill_stocks_and_price_categories_for_a_movie_based_on_product(self, requests_mock):
+        self._create_products()
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
         requests_mock.get("https://example.com/82382.jpg", content=bytes())
 
