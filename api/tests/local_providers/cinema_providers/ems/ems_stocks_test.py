@@ -86,7 +86,7 @@ class EMSStocksTest:
         )
         cinema_detail = providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
 
-        offers_models.Product.query.delete()
+        assert offers_models.Product.query.count() == 0
 
         synchronize_ems_venue_providers()
 
