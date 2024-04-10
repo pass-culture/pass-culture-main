@@ -2,8 +2,6 @@ from datetime import datetime
 import decimal
 import logging
 
-import sqlalchemy as sa
-
 from pcapi.connectors.serialization import allocine_serializers
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers.models import Venue
@@ -216,7 +214,7 @@ class AllocineStocks(LocalProvider):
 
     def get_or_create_movie_product(self, movie: allocine_serializers.AllocineMovie) -> offers_models.Product:
         product = offers_models.Product.query.filter(
-            offers_models.Product.extraData["allocineId"].cast(sa.Integer) == movie.internalId
+            offers_models.Product.extraData["allocineId"] == str(movie.internalId)
         ).one_or_none()
 
         if not product:
