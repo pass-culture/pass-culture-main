@@ -1,0 +1,139 @@
+#Should be moved to a central repo
+name: Deploy with ArgoCD
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      dockerImageName:
+        required: true
+        type: string
+      dockerImageTag:
+        required: true
+        type: string
+      dockerRegistryUrl:
+        required: true
+        type: string
+      dockerRepository:
+        required: true
+        type: string
+      namespace:
+        required: false
+        type: string
+        default: "test_namespace"
+      applicationName:
+        required: true
+        type: string
+      chartRepository:
+        required: true
+        type: string
+      chartName:
+        required: true
+        type: string
+      clusterDestination:
+        required: false
+        type: string
+        default: https://kubernetes.default.svc
+      argocdProject:
+        required: false
+        type: string
+        default: default
+      helmValueFile:
+        required: false
+        type: string
+        default: value.yaml
+      targetRevision:
+        required: false
+        type: string
+        default: main
+      argocdNamespace:
+        required: false
+        type: string
+        default: argocd
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
+        required: true
+      GCP_EHP_SERVICE_ACCOUNT:
+        required: true
+
+jobs:
+  deploy_argocd:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v4.1.2
+      - name: "Authentification to Google"
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: "Get Secrets"
+        id: 'secrets'
+        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        with:
+          secrets: |-
+            PASSCULTURE_SA_ACCESS_TOKEN:passculture-metier-ehp/passculture-main-sa-access-token
+            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+            ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
+      - name: "OpenID Connect Authentication"
+        id: "openid-auth-infra"
+        uses: 'google-github-actions/auth@v2'
+        with:
+          create_credentials_file: false
+          token_format: 'access_token'
+          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+      - uses: actions/checkout@v4.1.2
+        with:
+          repository: pass-culture/pass-culture-deployment
+          token: ${{ steps.secrets.outputs.PASSCULTURE_SA_ACCESS_TOKEN }}
+          path: ./pass-culture-deployment
+      - name: "Generate ArgoCD application manifest"
+        run: |
+          cat << EOF > $HOME/${{ inputs.applicationName }}.yaml
+          name: ${{ inputs.applicationName }}
+          namespace: ${{ inputs.argocdNamespace }}
+          project: ${{ inputs.argocdProject }}
+          labels:
+            applicationName: ${{ inputs.applicationName }}
+            environment: ${{ inputs.environment }}
+          syncPolicy:
+            syncOptions:
+              - CreateNamespace=true
+  
+          destination:
+            namespace: ${{ inputs.namespace }}
+            name: ${{ inputs.clusterDestination }}
+  
+          source:
+            chart: ${{ inputs.chartName }}
+            repoUrl: https://${{ inputs.dockerRegistryUrl }}/${{ inputs.chartRepository }}
+            targetRevision: ${{ inputs.targetRevision }}
+  
+            helm:
+              releaseName: ${{ inputs.applicationName }}
+              valueFiles:
+                - ${{ inputs.helmValueFile }}
+              inputs:
+                - name: environment
+                  value: ${{ inputs.environment }}
+                - name: image.repository
+                  value: ${{ inputs.registryUrl }}/${{ inputs.dockerRepository }}
+  
+          info:
+            - name: "github runid"
+              value: ${{ github.run_id }}
+            - name: "github run attempt"
+              value: ${{ github.run_attempt }}
+          EOF
+
+          cat "$HOME/${{ inputs.applicationName }}.yaml"
+      - name: "Create argocd application"
+        run: |
+          PASSCULTURE_USERNAME="oauth2accesstoken" \
+          PASSCULTURE_PASSWORD=${{ steps.openid-auth-infra.outputs.access_token }} \
+          PCAPI_VALUES_FILE=./pass-culture-deployment/helm/pcapi/values.${{ inputs.environment }}.yaml \
+          PCAPI_SECRETS_FILE=<(echo '${{ needs.generate-pcapi-helm-secrets-file.outputs.pcapi_helm_secrets_file_base64 }}' | base64 -d) \
+          kubectl apply -f "$HOME/${{ inputs.applicationName }}.yaml" -n ${{ inputs.argocdNamespace }}

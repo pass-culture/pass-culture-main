@@ -184,7 +184,6 @@ jobs:
     needs: [test-api, test-pro]
     if: |
       always() &&
-      github.ref == 'refs/heads/master' &&
       contains(fromJSON('["success", "skipped"]'), needs.test-api.result) &&
       contains(fromJSON('["success", "skipped"]'), needs.test-pro.result)
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
