@@ -833,21 +833,21 @@ def create_pro_user(pro_user: ProUserCreationBodyV2Model) -> models.User:
         deposit = finance_api.create_deposit(new_pro_user, "integration_signup", models.EligibilityType.AGE18)
         new_pro_user.deposits = [deposit]
 
-    if feature.FeatureToggle.WIP_ENABLE_NEW_NAV_AB_TEST.is_active():
-        db.session.add(new_pro_user)
-        db.session.flush()
-        invitation = offerers_models.OffererInvitation.query.filter_by(email=new_pro_user.email).first()
-        if invitation:
-            inviter_pro_new_nav_state = users_models.UserProNewNavState.query.filter_by(
-                userId=invitation.userId
-            ).one_or_none()
-            if inviter_pro_new_nav_state and inviter_pro_new_nav_state.newNavDate is not None:
-                new_nav_pro = users_models.UserProNewNavState(
-                    userId=new_pro_user.id,
-                    newNavDate=datetime.datetime.utcnow(),
-                )
-                db.session.add(new_nav_pro)
-        elif new_pro_user.id % 2 == 0:
+    db.session.add(new_pro_user)
+    db.session.flush()
+    invitation = offerers_models.OffererInvitation.query.filter_by(email=new_pro_user.email).first()
+    if invitation:
+        inviter_pro_new_nav_state = users_models.UserProNewNavState.query.filter_by(
+            userId=invitation.userId
+        ).one_or_none()
+        if inviter_pro_new_nav_state and inviter_pro_new_nav_state.newNavDate is not None:
+            new_nav_pro = users_models.UserProNewNavState(
+                userId=new_pro_user.id,
+                newNavDate=datetime.datetime.utcnow(),
+            )
+            db.session.add(new_nav_pro)
+    elif feature.FeatureToggle.WIP_ENABLE_NEW_NAV_AB_TEST.is_active():
+        if new_pro_user.id % 2 == 0:
             new_nav_pro = users_models.UserProNewNavState(
                 userId=new_pro_user.id,
                 newNavDate=datetime.datetime.utcnow(),
