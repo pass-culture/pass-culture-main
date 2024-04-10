@@ -139,31 +139,34 @@ class CDSStocks(LocalProvider):
         if isinstance(pc_object, offers_models.Stock):
             self.fill_stock_attributes(pc_object)
 
-    def update_from_movie_information(self, offer: offers_models.Offer, movie_information: Movie) -> None:
+    def update_from_movie_information(self, offer: offers_models.Offer) -> None:
+        offer.extraData = offer.extraData or offers_models.OfferExtraData()
         if self.product:
-            offer.product = self.product
             offer.name = self.product.name
             offer.description = self.product.description
             offer.durationMinutes = self.product.durationMinutes
             if self.product.extraData:
-                offer.extraData = offers_models.OfferExtraData()
                 offer.extraData.update(self.product.extraData)
-                offer.extraData["visa"] = self.product.extraData.get("visa") or movie_information.visa
         else:
-            offer.name = movie_information.title
-            if movie_information.description:
-                offer.description = movie_information.description
-            if movie_information.duration:
-                offer.durationMinutes = movie_information.duration
-            offer.extraData = {"visa": movie_information.visa}
+            offer.name = self.movie_information.title
+            if self.movie_information.description:
+                offer.description = self.movie_information.description
+            if self.movie_information.duration:
+                offer.durationMinutes = self.movie_information.duration
+
+        if self.movie_information.allocineid:
+            offer.extraData["allocineId"] = offer.extraData.get("allocineId") or int(self.movie_information.allocineid)
+
+        offer.extraData["visa"] = offer.extraData.get("visa") or self.movie_information.visa
 
     def fill_offer_attributes(self, offer: offers_models.Offer) -> None:
-        self.update_from_movie_information(offer, self.movie_information)
-
         offer.venueId = self.venue.id
         offer.bookingEmail = self.venue.bookingEmail
         offer.withdrawalDetails = self.venue.withdrawalDetails
+        offer.product = self.product
         offer.subcategoryId = subcategories.SEANCE_CINE.id
+
+        self.update_from_movie_information(offer)
 
         is_new_offer_to_insert = offer.id is None
         if is_new_offer_to_insert:
