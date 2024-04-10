@@ -39,7 +39,7 @@
     "@firebase/remote-config": "0.4.6",
     "@reach/dialog": "^0.18.0",
     "@reach/menu-button": "^0.18.0",
-    "@reduxjs/toolkit": "^2.2.2",
+    "@reduxjs/toolkit": "^2.2.3",
     "@sentry/browser": "^7.109.0",
     "@sentry/react": "^7.109.0",
     "@sentry/tracing": "^7.109.0",
