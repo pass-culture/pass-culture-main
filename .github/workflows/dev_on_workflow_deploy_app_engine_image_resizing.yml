@@ -28,29 +28,9 @@ on:
         required: true
 
 jobs:
-  check-image-resizing-deployed-version:
-    runs-on: ubuntu-latest
-    outputs:
-      image_resizing_deployed_version: ${{ steps.curl_version.outputs.version }}
-    steps:
-      - name: "Check image resizing ${{ inputs.environment }} deployed version"
-        id: "curl_version"
-        # add prefix v to version if contains dot (otherwise it is sha)
-        run: echo "version=$(curl -Ss ${{ inputs.image_resizing_url }}/version | sed 's/.*\./v&/')" | tee -a $GITHUB_OUTPUT
-
-  check-image-resizing-folder-changes:
-    name: "Check if folder changed"
-    uses: ./.github/workflows/dev_on_workflow_check_folder_changes.yml
-    needs: check-image-resizing-deployed-version
-    with:
-      base_sha: ${{ needs.check-image-resizing-deployed-version.outputs.image_resizing_deployed_version }}
-      folder: app-engine/image-resizing/**
-      fetch-tags: true
-
   deploy-image-resizing:
     name: "Deploy image resizing"
-    needs: check-image-resizing-folder-changes
-    if: ${{ needs.check-image-resizing-folder-changes.outputs.folder_changed == 'true' }}
+    if: always()
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     steps:
@@ -83,7 +63,7 @@ jobs:
       - name: "Add sha to image-resizing"
         if: inputs.environment == 'testing'
         working-directory: app-engine/image-resizing
-        run: echo "${{ github.sha }}" > version.txt
+        run: echo "303df96e4de78355668efea96c5eccf3f6b73d76" > version.txt
       - name: 'Deploy the image-resizing service to ${{ inputs.environment }} environment'
         working-directory: app-engine/image-resizing
         run: |
