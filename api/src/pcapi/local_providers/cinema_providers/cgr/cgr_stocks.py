@@ -234,10 +234,9 @@ class CGRStocks(LocalProvider):
         return price_category_label
 
     def get_movie_product(self, film: cgr_serializers.Film) -> offers_models.Product | None:
-        product = offers_models.Product.query.filter(
-            offers_models.Product.extraData["allocineId"].cast(sa.Integer) == film.IDFilmAlloCine
+        return offers_models.Product.query.filter(
+            offers_models.Product.extraData["allocineId"] == str(film.IDFilmAlloCine)
         ).one_or_none()
-        return product
 
     def get_object_thumb(self) -> bytes:
         if self.film_infos.Affiche:

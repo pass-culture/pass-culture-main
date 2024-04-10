@@ -173,10 +173,9 @@ class BoostStocks(LocalProvider):
             stock.priceCategory = price_category
 
     def get_movie_product(self, film: boost_serializers.Film2) -> offers_models.Product | None:
-        product = offers_models.Product.query.filter(
-            offers_models.Product.extraData["allocineId"].cast(sa.Integer) == film.idFilmAllocine
+        return offers_models.Product.query.filter(
+            offers_models.Product.extraData["allocineId"] == str(film.idFilmAllocine)
         ).one_or_none()
-        return product
 
     def get_or_create_price_category(self, price: decimal.Decimal, price_label: str) -> offers_models.PriceCategory:
         if self.last_offer not in self.price_category_lists_by_offer:
