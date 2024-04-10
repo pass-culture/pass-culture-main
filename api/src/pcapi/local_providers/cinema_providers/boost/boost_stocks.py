@@ -3,13 +3,10 @@ import decimal
 import logging
 from typing import Iterator
 
-import sqlalchemy as sa
-
 from pcapi.connectors.serialization import boost_serializers
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.external_bookings.boost.client import BoostClientAPI
 from pcapi.core.external_bookings.boost.client import get_pcu_pricing_if_exists
-from pcapi.core.external_bookings.models import Movie
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models as offers_models
@@ -99,13 +96,33 @@ class BoostStocks(LocalProvider):
         if isinstance(pc_object, offers_models.Stock):
             self.fill_stock_attributes(pc_object)
 
+    def update_from_movie_information(
+        self, offer: offers_models.Offer, movie_information: boost_serializers.Film2
+    ) -> None:
+        offer.extraData = offer.extraData or offers_models.OfferExtraData()
+        if self.product:
+            offer.name = self.product.name
+            offer.description = self.product.description
+            offer.durationMinutes = self.product.durationMinutes
+            if self.product.extraData:
+                offer.extraData.update(self.product.extraData)
+        else:
+            offer.name = self.showtime_details.film.titleCnc
+            if movie_information.duration:
+                offer.durationMinutes = movie_information.duration
+
+        offer.extraData["allocineId"] = offer.extraData.get("allocineId") or movie_information.idFilmAllocine
+        if movie_information.numVisa:
+            offer.extraData["visa"] = offer.extraData.get("visa") or str(movie_information.numVisa)
+
     def fill_offer_attributes(self, offer: offers_models.Offer) -> None:
         offer.venueId = self.venue.id
         offer.bookingEmail = self.venue.bookingEmail
         offer.withdrawalDetails = self.venue.withdrawalDetails
-
-        self.update_from_movie_information(offer, self.showtime_details.film.to_generic_movie())
+        offer.product = self.product
         offer.subcategoryId = subcategories.SEANCE_CINE.id
+
+        self.update_from_movie_information(offer, self.showtime_details.film)
 
         is_new_offer_to_insert = offer.id is None
         if is_new_offer_to_insert:
@@ -206,24 +223,6 @@ class BoostStocks(LocalProvider):
             self.price_category_labels.append(price_category_label)
 
         return price_category_label
-
-    def update_from_movie_information(self, offer: offers_models.Offer, movie_information: Movie) -> None:
-        if FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS.is_active():
-            assert self.product and self.product.extraData
-            offer.name = self.product.name
-            offer.description = self.product.description
-            offer.durationMinutes = self.product.durationMinutes
-            offer.extraData = offers_models.OfferExtraData()
-            offer.extraData.update(self.product.extraData)
-            offer.extraData["visa"] = self.product.extraData.get("visa") or movie_information.visa
-            offer.product = self.product
-        else:
-            offer.name = self.showtime_details.film.titleCnc
-            if movie_information.description:
-                offer.description = movie_information.description
-            if movie_information.duration:
-                offer.durationMinutes = movie_information.duration
-            offer.extraData = {"visa": movie_information.visa}
 
     def get_object_thumb(self) -> bytes:
         image_url = self.showtime_details.film.posterUrl
