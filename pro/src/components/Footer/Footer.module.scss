@@ -3,7 +3,11 @@
 @use "styles/variables/size.scss" as size;
 
 .footer {
-  margin-left: calc(size.$side-nav-width);
+  margin-left: rem.torem(32px);
+
+  @media (min-width: size.$tablet) {
+    margin-left: calc(size.$side-nav-width + rem.torem(32px));
+  }
 
   @media (min-width: size.$mobile) {
     height: size.$footer-height;
@@ -33,7 +37,7 @@
     width: 100%;
     margin: rem.torem(24px);
     gap: rem.torem(16px);
-    justify-content: center;
+    justify-content: flex-start;
     align-items: flex-start;
 
     @media (min-width: size.$mobile) {
