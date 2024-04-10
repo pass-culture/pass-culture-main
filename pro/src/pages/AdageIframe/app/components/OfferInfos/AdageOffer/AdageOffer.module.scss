@@ -74,7 +74,10 @@
         margin-bottom: rem.torem(8px);
       }
 
-      white-space: pre-line;
+      &-description {
+        white-space: pre-line;
+        line-height: rem.torem(24px);
+      }
     }
 
     &-list {
