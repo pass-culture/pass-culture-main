@@ -161,7 +161,7 @@ def serialize_bookings(booking: Booking) -> BookingRecapResponseModel:
         bookingDate=isoformat(
             typing.cast(datetime, convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking))
         ),
-        bookingStatus=build_booking_status(booking.status),
+        bookingStatus=build_booking_status(booking),
         bookingIsDuo=booking.quantity == 2,
         bookingAmount=booking.bookingAmount,
         bookingPriceCategoryLabel=booking.priceCategoryLabel,
@@ -216,13 +216,13 @@ class ListBookingsQueryModel(BaseModel):
         return values
 
 
-def build_booking_status(booking_status: BookingStatus) -> BookingRecapStatus:
-    if booking_status == BookingStatus.REIMBURSED:
+def build_booking_status(booking: Booking) -> BookingRecapStatus:
+    if booking.status == BookingStatus.REIMBURSED:
         return BookingRecapStatus.reimbursed
-    if booking_status == BookingStatus.CANCELLED:
+    if booking.status == BookingStatus.CANCELLED:
         return BookingRecapStatus.cancelled
-    if booking_status == BookingStatus.USED:
+    if booking.status == BookingStatus.USED:
         return BookingRecapStatus.validated
-    if booking_status == BookingStatus.CONFIRMED:
+    if booking.isConfirmed:
         return BookingRecapStatus.confirmed
     return BookingRecapStatus.booked
