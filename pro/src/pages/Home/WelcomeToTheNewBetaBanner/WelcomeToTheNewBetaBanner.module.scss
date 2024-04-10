@@ -21,14 +21,24 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: calc(100% + (32px * 2));
-    height: calc(100% + (32px * 2));
-    margin: rem.torem(-32px);
-    padding: rem.torem(32px);
+    height: calc(100% + rem.torem((32px * 2)));
+    width: calc(100% + rem.torem((16px * 2)));
+    margin: rem.torem(-16px);
+    padding: rem.torem(16px);
     background: linear-gradient(258deg, var(--color-secondary-light) 11.7%, #280078 113.36%), var(--color-white);
 
     img {
-      max-width: rem.torem(364.823px);
+      max-width: 100%;
+    }
+
+    @media (min-width: size.$mobile) {
+      width: calc(100% + rem.torem((32px * 2)));
+      margin: rem.torem(-32px);
+      padding: rem.torem(32px);
+
+      img {
+        max-width: rem.torem(364.823px);
+      }
     }
   }
 
