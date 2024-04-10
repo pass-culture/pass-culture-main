@@ -93,6 +93,9 @@ export const AppLayout = ({
           [styles['page-layout']]: true,
           [styles['page-layout-full']]: layout === 'without-nav',
           [styles[`content-layout-${layout}`]]: isNewSideBarNavigation,
+          [styles[`content-layout-${layout}-with-review-banner`]]:
+            isNewSideBarNavigation &&
+            Boolean(currentUser?.navState?.eligibilityDate),
         })}
         onKeyDown={(e) => {
           if (e.key === 'Escape' && lateralPanelOpen) {
@@ -149,11 +152,14 @@ export const AppLayout = ({
         <div
           className={classnames({
             [styles['main-wrapper']]: true,
-            [styles['main-wrapper-old']]: !isNewSideBarNavigation,
+            [styles['main-wrapper-old']]:
+              !isNewSideBarNavigation || layout === 'funnel',
           })}
         >
           {isNewSideBarNavigation &&
-            Boolean(currentUser?.navState?.eligibilityDate) && <NewNavReview />}
+            Boolean(currentUser?.navState?.eligibilityDate) &&
+            layout !== 'funnel' &&
+            layout !== 'without-nav' && <NewNavReview />}
           <main
             id="content"
             className={classnames(
@@ -192,7 +198,7 @@ export const AppLayout = ({
               </div>
             )}
           </main>
-          <Footer layout={layout} />
+          {layout !== 'funnel' && <Footer layout={layout} />}
         </div>
       </div>
     </>
