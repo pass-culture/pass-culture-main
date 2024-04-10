@@ -29,11 +29,6 @@ describe('AccesLibreCollapse', () => {
     renderAccesLibreCollapse()
 
     expect(screen.getByText('Handicap moteur')).toBeInTheDocument()
-    expect(screen.queryByText('Content')).not.toBeInTheDocument()
-
-    await userEvent.click(
-      screen.getByLabelText('Voir les détails pour Handicap moteur')
-    )
     expect(screen.getByText('Content')).toBeVisible()
 
     await userEvent.click(

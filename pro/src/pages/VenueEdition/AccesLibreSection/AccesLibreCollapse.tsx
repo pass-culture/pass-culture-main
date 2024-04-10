@@ -21,7 +21,7 @@ export const AccesLibreCollapse = ({
   icon,
   children,
 }: AccesLibreCollapseProps) => {
-  const [isOpen, setIsOpen] = React.useState(false)
+  const [isOpen, setIsOpen] = React.useState(true)
   const contentId = useId()
 
   const toggleCollapse = () => {
