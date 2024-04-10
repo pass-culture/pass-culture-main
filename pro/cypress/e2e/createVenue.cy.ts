@@ -12,6 +12,7 @@ describe('Create a venue', () => {
     venueNameWithSiret = 'Lieu avec Siret ' + randomSeed
     venueNameWithoutSiret = 'Lieu sans Siret ' + randomSeed // just to distinguish them
 
+    cy.request('http://localhost:5001/e2e/pro/create-venue')
     cy.intercept('GET', `http://localhost:5001/sirene/siret/${siret}`, (req) =>
       req.reply({
         statusCode: 200,

@@ -1,6 +1,10 @@
 describe('Adage discovery', () => {
   beforeEach(() => {
+    // cy.visit must be before cy.request to avoid the following error:
+    // CypressError: `cy.visit()` failed trying to load: http://localhost:3001/connexion
     cy.visit('/connexion')
+    cy.request('http://localhost:5001/e2e/adage/discovery')
+
     cy.getFakeAdageToken()
 
     cy.intercept({
@@ -24,7 +28,7 @@ describe('Adage discovery', () => {
 
   it('should redirect to adage search page with filtered venue', () => {
     const adageToken = Cypress.env('adageToken')
-    cy.visit(`/adage-iframe?token=${adageToken}&venue=1`)
+    cy.visit(`/adage-iframe?token=${adageToken}&venue=1234567890`)
     cy.url().should('include', '/recherche')
     cy.findByRole('link', { name: 'Rechercher' }).should(
       'have.attr',
