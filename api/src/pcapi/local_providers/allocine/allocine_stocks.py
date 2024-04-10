@@ -106,39 +106,36 @@ class AllocineStocks(LocalProvider):
         if isinstance(pc_object, offers_models.Stock):
             self.fill_stock_attributes(pc_object)
 
-    def fill_offer_data_from_product(self, offer: offers_models.Offer) -> None:
-        if not offer.extraData:
-            offer.extraData = offers_models.OfferExtraData()
-
-        assert self.product
-
+    def update_from_movie_information(self, offer: offers_models.Offer) -> None:
+        offer.name = self.product.name
+        offer.extraData = offer.extraData or offers_models.OfferExtraData()
+        offer.description = self.product.description
+        offer.durationMinutes = self.product.durationMinutes
+        offer.product = self.product
         if self.product.extraData:
             offer.extraData.update(self.product.extraData)
+
         offer.extraData["theater"] = {
             "allocine_movie_id": self.movie.internalId,
             "allocine_room_id": self.room_internal_id,
         }
-        offer.description = self.product.description
-        offer.durationMinutes = self.product.durationMinutes
-        offer.name = self.product.name
-        offer.product = self.product
 
-    def fill_offer_attributes(self, allocine_offer: offers_models.Offer) -> None:
-        allocine_offer.venueId = self.venue.id
-        allocine_offer.bookingEmail = self.venue.bookingEmail
-        allocine_offer.withdrawalDetails = self.venue.withdrawalDetails
-        allocine_offer.subcategoryId = subcategories.SEANCE_CINE.id
-        if allocine_offer.id is None:  # Newly created offer
-            allocine_offer.isDuo = self.isDuo
+    def fill_offer_attributes(self, offer: offers_models.Offer) -> None:
+        offer.venueId = self.venue.id
+        offer.bookingEmail = self.venue.bookingEmail
+        offer.withdrawalDetails = self.venue.withdrawalDetails
+        offer.subcategoryId = subcategories.SEANCE_CINE.id
+        self.update_from_movie_information(offer)
 
-        self.fill_offer_data_from_product(allocine_offer)
+        if offer.id is None:  # Newly created offer
+            offer.isDuo = self.isDuo
 
-        last_update_for_current_provider = get_last_update_for_provider(self.provider.id, allocine_offer)
+        last_update_for_current_provider = get_last_update_for_provider(self.provider.id, offer)
         if not last_update_for_current_provider or last_update_for_current_provider.date() != datetime.today().date():
             if image := self.get_object_thumb():
                 offers_api.create_mediation(
                     user=None,
-                    offer=allocine_offer,
+                    offer=offer,
                     credit=None,
                     image_as_bytes=image,
                     keep_ratio=True,
@@ -146,7 +143,7 @@ class AllocineStocks(LocalProvider):
                 )
                 self.createdThumbs += 1
 
-        self.last_offer = allocine_offer
+        self.last_offer = offer
 
     def fill_stock_attributes(self, allocine_stock: offers_models.Stock) -> None:
         showtime_uuid = _get_showtimes_uuid_by_idAtProvider(allocine_stock.idAtProviders)  # type: ignore [arg-type]
