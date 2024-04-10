@@ -66,6 +66,7 @@
     &-description {
       word-break: break-word;
       white-space: pre-line;
+      line-height: rem.torem(24px);
     }
 
     &:last-child {
