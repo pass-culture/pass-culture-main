@@ -51,11 +51,11 @@ describe('Accessibility', () => {
     renderAccessibility({ initialValues, isCreatingVenue, onSubmit })
 
     expect(
-      await screen.findByRole('heading', { name: 'Critères d’accessibilité' })
+      await screen.findByRole('heading', { name: 'Modalités d’accessibilité' })
     ).toBeInTheDocument()
     expect(
       screen.getByText(
-        'Ce lieu est accessible au public en situation de handicap : *'
+        'Votre établissement est accessible au public en situation de handicap : *'
       )
     ).toBeInTheDocument()
 
