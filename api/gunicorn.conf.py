@@ -42,7 +42,7 @@ def post_fork(server, worker):
     """Called when a Gunicorn worker is started."""
     if ENABLE_FLASK_PROMETHEUS_EXPORTER:
         registry = prometheus_client.registry.CollectorRegistry()
-        metric_name = f"gunicorn_available_threads_{KUBERNETES_DEPLOYMENT}"
+        metric_name = "gunicorn_available_threads_" + KUBERNETES_DEPLOYMENT.replace("-", "_")
         worker.available_threads = prometheus_client.Gauge(
             metric_name,
             "number of available Gunicorn threads",
