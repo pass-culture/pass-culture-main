@@ -82,8 +82,8 @@
   &.nav-step-active {
     background: var(--color-primary);
     border-radius: 50%;
-    /* stylelint-disable-next-line color-function-notation */
-    box-shadow: 0 0 rem.torem(3px) 0 rgba(var(--color-secondary), 0.21);
+    box-shadow: 0 0 rem.torem(3px) 0
+      color-mix(in srgb, var(--color-secondary) 21%, transparent);
     height: rem.torem(16px);
     width: rem.torem(16px);
   }
