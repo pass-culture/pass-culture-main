@@ -8,6 +8,7 @@ from datetime import datetime
 import enum
 import json
 import logging
+import time
 from typing import TypedDict
 
 from dateutil import parser
@@ -458,6 +459,7 @@ class AcceslibreBackend(BaseBackend):
             raise AccesLibreApiException(
                 f"Error connecting AccesLibre API for {url} and query parameters: {query_params}"
             )
+        time.sleep(0.3)  # request limit on acceslibre side is 3 per seconds
         if response.status_code == 200:
             try:
                 return response.json()
