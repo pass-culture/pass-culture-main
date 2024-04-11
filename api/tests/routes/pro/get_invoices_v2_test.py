@@ -140,9 +140,6 @@ class GetInvoicesTest:
         pro = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         other_bank_account = finance_factories.BankAccountFactory()
-        _other_reimbursement_point_invoice = finance_factories.InvoiceFactory(
-            bankAccount=other_bank_account, amount=-1000
-        )
 
         client = client.with_session_auth(pro.email)
         params = {"bankAccountId": other_bank_account.id}

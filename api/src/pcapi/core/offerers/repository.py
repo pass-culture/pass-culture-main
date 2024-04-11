@@ -671,7 +671,7 @@ def get_venues_with_non_free_offers_without_bank_accounts(offerer_id: int) -> li
         models.Venue.query.filter(
             models.Venue.managingOffererId == offerer_id,
             models.VenueBankAccountLink.timespan
-            == None,  # Because as we LEFT OUTER JOIN on VenueReimbursementPointLink, timespan column can be NULL
+            == None,  # Because as we LEFT OUTER JOIN on VenueBankAccountLink, timespan column can be NULL
             # i.e. only Venue without any VenueBankAccountLink or only deprecated ones.
             sqla.or_(
                 offers_models.Stock.query.join(
