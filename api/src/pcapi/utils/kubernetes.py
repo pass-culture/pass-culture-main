@@ -1,7 +1,7 @@
 import socket
 
 
-def get_deployment():
+def get_deployment() -> str:
     """Return the name of the Kubernetes deployment, based on the
     hostname of the pod.
 
