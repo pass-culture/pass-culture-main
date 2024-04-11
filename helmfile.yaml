@@ -1,20 +1,3 @@
-helmDefaults:
-  wait: true
-
-repositories:
-  - name: passCulture
-    url: europe-west1-docker.pkg.dev/passculture-infra-prod
-    oci: true
-
-releases:
-  - name: {{ .Environment.Name }}
-    namespace: {{ .Environment.Name }}
-    chart: passCulture/pass-culture-helm-registry/pcapi
-    version: {{ .Values.chartVersion }}
-    values:
-      - {{ requiredEnv "PCAPI_VALUES_FILE" }}
-      - {{ requiredEnv "PCAPI_SECRETS_FILE" }}
-
 environments:
   testing:
     values:
@@ -34,3 +17,20 @@ environments:
   perf:
     values:
       - chartVersion: 0.25.0
+---
+helmDefaults:
+  wait: true
+
+repositories:
+  - name: passCulture
+    url: europe-west1-docker.pkg.dev/passculture-infra-prod
+    oci: true
+
+releases:
+  - name: {{ .Environment.Name }}
+    namespace: {{ .Environment.Name }}
+    chart: passCulture/pass-culture-helm-registry/pcapi
+    version: {{ .Values.chartVersion }}
+    values:
+      - {{ requiredEnv "PCAPI_VALUES_FILE" }}
+      - {{ requiredEnv "PCAPI_SECRETS_FILE" }}

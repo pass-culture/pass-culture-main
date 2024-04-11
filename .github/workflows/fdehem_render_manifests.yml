@@ -1,0 +1,83 @@
+name: "1 [on_push] Render manifests"
+
+on:
+  push:
+
+permissions: write-all
+
+concurrency:
+  # cancel previous workflow of the same branch except on master
+  group: main-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref == 'refs/heads/master' && false || true }}
+
+jobs:
+  render-manifests:
+    environment: testing
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4.1.2
+      - name: "Authentification to Google"
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: "Get Secret"
+        id: 'secrets'
+        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        with:
+          secrets: |-
+            PASSCULTURE_SA_ACCESS_TOKEN:passculture-metier-ehp/passculture-main-sa-access-token
+            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+            ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
+      - uses: actions/checkout@v4.1.2
+        with:
+          repository: pass-culture/pass-culture-deployment
+          token: ${{ steps.secrets.outputs.PASSCULTURE_SA_ACCESS_TOKEN }}
+          path: ./pass-culture-deployment
+      - name: "OpenID Connect Authentication"
+        id: "openid-auth-infra"
+        uses: 'google-github-actions/auth@v2'
+        with:
+          create_credentials_file: false
+          token_format: 'access_token'
+          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+      - name: "Install Teleport"
+        uses: teleport-actions/setup@v1
+        with:
+          version: 11.1.1
+      - name: "Teleport Authentication"
+        uses: teleport-actions/auth-k8s@v1
+        with:
+          proxy: teleport.ehp.passculture.team:443
+          token: github-token
+          certificate-ttl: 1h
+          kubernetes-cluster: passculture-metier-ehp
+      - name: "Setup helmfile"
+        uses: mamezou-tech/setup-helmfile@v1.3.0
+        with:
+          helmfile-version: "v0.147.0"
+      - name: "Render manifests"
+        run: |
+          PASSCULTURE_USERNAME="oauth2accesstoken" \
+          PASSCULTURE_PASSWORD=${{ steps.openid-auth-infra.outputs.access_token }} \
+          PCAPI_VALUES_FILE=./pass-culture-deployment/helm/pcapi/values.testing.yaml \
+          PCAPI_SECRETS_FILE=<(echo '${{ needs.generate-pcapi-helm-secrets-file.outputs.pcapi_helm_secrets_file_base64 }}' | base64 -d) \
+          helmfile -e testing template --set image.tag=xxx.xxx --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name}}"
+      - name: "Push manifests to rendered-manifests repository"
+        id: push_manifests
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ steps.secrets.outputs.PASSCULTURE_SA_ACCESS_TOKEN }}
+        with:
+          source-directory: ./rendered-manifests/helmfile-testing/
+          destination-github-username: 'pass-culture'
+          destination-repository-name: 'rendered-manifests'
+          commit-message: pushed from $GITHUB_REF
+          target-branch: fdehem
+          create-target-branch-if-needed: true
+
+
