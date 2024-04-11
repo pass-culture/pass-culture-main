@@ -118,9 +118,16 @@ def import_deposit_csv(path: str, year: int, ministry: str, conflict: str, final
 
 
 @blueprint.cli.command("synchronize_venues_from_adage_cultural_partners")
+@click.option(
+    "--debug",
+    type=bool,
+    is_flag=True,
+    default=False,
+    help="Activate debugging (add logs)",
+)
 @log_cron_with_transaction
-def synchronize_venues_from_adage_cultural_partners() -> None:
-    adage_api.synchronize_adage_ids_on_venues()
+def synchronize_venues_from_adage_cultural_partners(debug: bool = False) -> None:
+    adage_api.synchronize_adage_ids_on_venues(debug)
 
 
 @blueprint.cli.command("synchronize_offerers_from_adage_cultural_partners")
