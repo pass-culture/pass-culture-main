@@ -1,3 +1,4 @@
+import sqlalchemy as sa
 from sqlalchemy.orm import joinedload
 
 from pcapi.core.categories import subcategories_v2
@@ -11,6 +12,7 @@ from pcapi.core.offers.models import PriceCategory
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Reason
 from pcapi.core.offers.models import Stock
+from pcapi.core.providers.models import Provider
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
@@ -40,6 +42,8 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
         )
         .options(joinedload(Offer.mediations))
         .options(joinedload(Offer.product).load_only(Product.id, Product.thumbCount))
+        .outerjoin(Offer.lastProvider)
+        .options(sa.orm.contains_eager(Offer.lastProvider).load_only(Provider.localClass))
         .filter(Offer.id == offer_id, Offer.validation == OfferValidationStatus.APPROVED)
         .first_or_404()
     )
