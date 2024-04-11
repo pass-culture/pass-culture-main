@@ -31,4 +31,7 @@
   margin-top: rem.torem(16px);
   white-space: pre-line;
   line-height: rem.torem(24px);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
 }

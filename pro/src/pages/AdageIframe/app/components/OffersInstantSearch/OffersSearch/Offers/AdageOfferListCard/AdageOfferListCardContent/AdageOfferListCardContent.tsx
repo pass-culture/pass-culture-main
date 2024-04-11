@@ -45,11 +45,7 @@ export function AdageOfferListCardContent({
       )}
       {description && (
         <p className={styles['offer-description']}>
-          {formatDescription(
-            description.length > 400
-              ? `${description.substring(0, 400)}...`
-              : description
-          )}
+          {formatDescription(description)}
         </p>
       )}
     </>
