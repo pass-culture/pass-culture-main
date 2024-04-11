@@ -136,11 +136,7 @@
   z-index: 1;
   position: fixed;
   inset: 0;
-  background-color: color-mix(
-    in srgb,
-    var(--color-input-text-color) 16%,
-    transparent
-  );
+  background-color: rgb(from var(--color-input-text-color) r g b / 16%);
 }
 
 .panel-footer {

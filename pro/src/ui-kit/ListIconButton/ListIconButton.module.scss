@@ -54,7 +54,7 @@
 .variant-primary {
   width: rem.torem(40px);
   height: rem.torem(40px);
-  background-color: color-mix(in srgb, var(--color-primary) 5%, transparent);
+  background-color: rgb(from var(--color-primary) r g b / 5%);
   color: var(--color-primary);
 
   &:hover:not(:disabled),
