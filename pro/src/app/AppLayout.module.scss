@@ -83,7 +83,11 @@
       display: block;
       position: fixed;
       inset: 0;
-      background: rgb(var(--color-input-text-color) 0.48);
+      background: color-mix(
+        in srgb,
+        var(--color-input-text-color) 48%,
+        transparent
+      );
     }
 
     &-open {

@@ -4,6 +4,7 @@
 .container {
   border: rem.torem(1px) solid var(--color-grey-medium);
   border-radius: rem.torem(8px);
-  box-shadow: 0 rem.torem(2px) rem.torem(6px) 0 rgb(var(--color-black) 0.15);
+  box-shadow: 0 rem.torem(2px) rem.torem(6px) 0
+    color-mix(in srgb, var(--color-black) 15%, transparent);
   padding: rem.torem(16px);
 }
