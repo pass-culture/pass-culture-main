@@ -367,28 +367,6 @@ class PostEventTest:
         assert response.status_code == 400
         assert response.json == {"priceCategories": ["Price categories must be unique"]}
 
-    @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=False)
-    def test_cannot_create_event_with_ticket_if_FF_not_active(self, client):
-        # This test can be deleted with FF WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/events",
-            json={
-                "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue.id},
-                "name": "Le champ des possibles",
-                "hasTicket": True,
-            },
-        )
-
-        assert response.status_code == 400
-        assert offers_models.Offer.query.count() == 0
-        assert response.json == {
-            "global": "During this API Beta, it is only possible to create events without tickets."
-        }
-
     def test_returns_404_for_inactive_venue_provider(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
 

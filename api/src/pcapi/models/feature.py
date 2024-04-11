@@ -43,7 +43,6 @@ class FeatureToggle(enum.Enum):
     )
     ENABLE_BEAMER = "Active Beamer, le système de notifs du portail pro"
     ENABLE_CDS_IMPLEMENTATION = "Permet la réservation de place de cinéma avec l'API CDS"
-    ENABLE_CHARLIE_BOOKINGS_API = "Active la réservation via l'API Charlie"
     ENABLE_CODIR_OFFERERS_REPORT = "Active le rapport sur les structures actives pour le CODIR (tourne la nuit)"
     ENABLE_CRON_TO_UPDATE_OFFERER_STATS = "Active la mise à jour des statistiques des offrers avec un cron"
     ENABLE_CULTURAL_SURVEY = "Activer l'affichage du questionnaire des pratiques initiales pour les bénéficiaires"
@@ -97,13 +96,11 @@ class FeatureToggle(enum.Enum):
     ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC = "Activer le passage automatique des synchronisations Allociné à EMS"
     LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC = "Stocker dans Google Drive les cinémas EMS activables"
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
-    WIP_ENABLE_OFFER_CREATION_API_V1 = "Active la création d'offres via l'API v1"
     WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY = "Changer le template d'email de confirmation de réservation"
     WIP_ENABLE_TRUSTED_DEVICE = "Active la fonctionnalité d'appareil de confiance"
     WIP_ENABLE_SUSPICIOUS_EMAIL_SEND = "Active l'envoie d'email lors de la détection d'une connexion suspicieuse"
     WIP_MANDATORY_BOOKING_CONTACT = "Rend obligatoire offer.bookingContact pour les offres retirables"
     WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING = "Active les réservations externes boost avec préfixe"
-    WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API = "Activer la création d'évènements avec tickets dans l'API publique"
     WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY = "Activer le nouveau parcours de dépôt de coordonnées bancaires"
     WIP_ENABLE_MOCK_UBBLE = "Utiliser le mock Ubble à la place du vrai Ubble"
     WIP_ENABLE_OFFER_PRICE_LIMITATION = "Activer les règles de limitation de modification de prix des offres"
