@@ -354,3 +354,30 @@ class GetOffererV2StatsResponseModel(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class GetOffererAddressResponseModel(BaseModel):
+    id: int
+    label: str
+    street: str
+    postalCode: str
+    city: str
+    isEditable: bool
+
+    @classmethod
+    def from_orm(cls, offerer_address: offerers_models.OffererAddress) -> "GetOffererAddressResponseModel":
+        offerer_address.street = offerer_address.address.street
+        offerer_address.postalCode = offerer_address.address.postalCode
+        offerer_address.city = offerer_address.address.city
+        offerer_address.isEditable = (
+            False  # TODO (yacine) default value until the relation between Venue and OffererAddress be added
+        )
+
+        return super().from_orm(offerer_address)
+
+    class Config:
+        orm_mode = True
+
+
+class GetOffererAddressesResponseModel(BaseModel):
+    __root__: list[GetOffererAddressResponseModel]
