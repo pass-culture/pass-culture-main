@@ -120,6 +120,7 @@ jobs:
           version: ${{ inputs.teleport_version }}
       - name: "Teleport Authentication"
         uses: teleport-actions/auth-k8s@v1
+        id: "teleport-auth"
         with:
           proxy: ${{ inputs.teleport_proxy }}
           token: github-token
@@ -129,18 +130,6 @@ jobs:
         uses: mamezou-tech/setup-helmfile@v1.3.0
         with:
           helmfile-version: "v0.147.0"
-      - name: "Install Teleport"
-        uses: teleport-actions/setup@v1
-        with:
-          version: ${{ inputs.teleport_version }}
-      - name: "Teleport Authentication"
-        id: "teleport-auth"
-        uses: teleport-actions/auth-k8s@v1
-        with:
-          proxy: ${{ inputs.teleport_proxy }}
-          token: github-token
-          certificate-ttl: 1h
-          kubernetes-cluster: ${{ inputs.teleport_kubernetes_cluster }}
       - name: "Play pre-migrations"
         run: |
           set -e
@@ -171,7 +160,7 @@ jobs:
           source-directory: ./rendered-manifests/helmfile-${{ inputs.environment }}/
           destination-github-username: 'pass-culture'
           destination-repository-name: 'rendered-manifests'
-          commit-message: [${{ inputs.environment }}] pcapi : pushed rendered manifests for app_version=${{ inputs.app_version }}
+          commit-message: "pcapi(${{ inputs.environment }}) : pushed rendered manifests for app_version=${{ inputs.app_version }}"
           target-branch: ${{ inputs.environment }}
           create-target-branch-if-needed: true
       - name: "Play post-migrations"
