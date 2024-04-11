@@ -20,7 +20,7 @@ depends_on: list[str] | None = None
 def upgrade() -> None:
     booking_author_type = postgresql.ENUM(BookingValidationAuthorType, name="validationAuthorType")
     booking_author_type.create(op.get_bind(), checkfirst=True)
-    op.add_column("booking", sa.Column("validationAuthorType", booking_author_type, nullable=True, if_not_exists=True))
+    op.add_column("booking", sa.Column("validationAuthorType", booking_author_type, nullable=True))
 
 
 def downgrade() -> None:
