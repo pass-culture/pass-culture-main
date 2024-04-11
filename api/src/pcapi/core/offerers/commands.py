@@ -217,14 +217,20 @@ def synchronize_accessibility_with_acceslibre(dry_run: bool = False, force_sync:
 
 
 @blueprint.cli.command("synchronize_venue_with_acceslibre")
-@click.argument("venue_id", type=int, required=True, default=None)
-def synchronize_venue_with_acceslibre(venue_id: int) -> None:
-    venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
-    offerers_api.set_accessibility_provider_id(venue)
-    if not venue.accessibilityProvider.externalAccessibilityId:
-        logger.info("No match found at acceslibre for Venue %s ", venue_id)
-        return
-    offerers_api.set_accessibility_last_update_at_provider(venue)
-    offerers_api.set_accessibility_infos_from_provider_id(venue)
-    db.session.add(venue)
+@click.argument("venue_ids", type=int, nargs=-1, required=True)
+def synchronize_venue_with_acceslibre(venue_ids: list[int]) -> None:
+    for venue_id in venue_ids:
+        venue = offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
+        if venue is None:
+            logger.warning("Venue with id %s not found", venue_id)
+            continue
+
+        offerers_api.set_accessibility_provider_id(venue)
+        if not venue.accessibilityProvider.externalAccessibilityId:
+            logger.info("No match found at acceslibre for Venue %s ", venue_id)
+            continue
+
+        offerers_api.set_accessibility_last_update_at_provider(venue)
+        offerers_api.set_accessibility_infos_from_provider_id(venue)
+        db.session.add(venue)
     db.session.commit()
