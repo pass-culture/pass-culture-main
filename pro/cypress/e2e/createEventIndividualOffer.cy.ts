@@ -68,16 +68,16 @@ describe('Create an individual offer (event)', () => {
     // manque un data-testid
     cy.get('[name="priceCategories[2].free"]').click()
 
-    cy.contains('Accepter les réservations “Duo“').should('exist')
+    cy.findByText('Accepter les réservations “Duo“').should('exist')
 
     cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
     cy.intercept({ method: 'GET', url: '/offers/*/stocks/*' }).as('getStocks')
-    cy.contains('Enregistrer et continuer').click()
+    cy.findByText('Enregistrer et continuer').click()
     // pourquoi on attend tellement ici?
     cy.wait(['@patchOffer', '@getOffer', '@getStocks'])
 
     // Fill in third step: recurrence
-    cy.contains('Ajouter une ou plusieurs dates').click()
+    cy.findByText('Ajouter une ou plusieurs dates').click()
 
     cy.findByText('Toutes les semaines').click()
     cy.findByLabelText('Vendredi').click()
@@ -123,7 +123,7 @@ describe('Create an individual offer (event)', () => {
     cy.findByText('Enregistrer et continuer').click()
 
     // Publish offer
-    cy.contains('Accepter les réservations "Duo" : Oui').should('exist')
+    cy.findByText('Accepter les réservations "Duo" : Oui').should('exist')
     cy.intercept({ method: 'PATCH', url: '/offers/publish' }).as('publishOffer')
     cy.findByText('Publier l’offre').click()
     cy.wait(['@publishOffer', '@getOffer'])
@@ -133,7 +133,7 @@ describe('Create an individual offer (event)', () => {
     cy.findByText('Voir la liste des offres').click()
     cy.wait('@getOffers')
     cy.url().should('contain', '/offres')
-    cy.contains('Le Diner de Devs').should('exist')
-    cy.contains('396 dates').should('exist')
+    cy.findByText('Le Diner de Devs').should('exist')
+    cy.findByText('396 dates').should('exist')
   })
 })
