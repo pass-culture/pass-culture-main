@@ -42,10 +42,10 @@ export const AppLayout = (): JSX.Element => {
     redirectToMarseilleSearch ||
     adageUser.role === AdageFrontRoles.READONLY
   return (
-    <div>
+    <div className={styles['app-layout']}>
       <AdageHeader />
       <main
-        className={classNames(styles['app-layout'], {
+        className={classNames({
           [styles['app-layout-content']]: !isFullWidthPage,
         })}
         id="content"

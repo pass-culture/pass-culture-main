@@ -4,8 +4,8 @@
 .offers-status-filters {
   background: var(--color-white);
   border-radius: rem.torem(4px);
-  /* stylelint-disable-next-line color-function-notation */
-  box-shadow: 0 rem.torem(2px) rem.torem(10px) 0 rgba(var(--color-black), 0.3);
+  box-shadow: 0 rem.torem(2px) rem.torem(10px) 0
+    color-mix(in srgb, var(--color-black) 30%, transparent);
   display: flex;
   flex-direction: column;
   padding: rem.torem(16px);
