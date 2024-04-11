@@ -155,13 +155,25 @@ jobs:
           kubectl logs -n ${{ inputs.environment }} -f jobs/pre-upgrade-${DATE} && break
           done
           kubectl wait --for=condition=complete --timeout=10900s -n ${{ inputs.environment }} jobs/pre-upgrade-${DATE}
-      - name: "Deploy pcapi"
+      - name: "Render manifests"
         run: |
           PASSCULTURE_USERNAME="oauth2accesstoken" \
           PASSCULTURE_PASSWORD=${{ steps.openid-auth-infra.outputs.access_token }} \
           PCAPI_VALUES_FILE=./pass-culture-deployment/helm/pcapi/values.${{ inputs.environment }}.yaml \
           PCAPI_SECRETS_FILE=<(echo '${{ needs.generate-pcapi-helm-secrets-file.outputs.pcapi_helm_secrets_file_base64 }}' | base64 -d) \
-          helmfile -e ${{ inputs.environment }} sync --set image.tag=${{ inputs.app_version }}
+          helmfile -e ${{ inputs.environment }} template --set image.tag=${{ inputs.app_version }} --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name  }}"
+      - name: "Push manifests to rendered-manifests repository"
+        id: push_manifests
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ steps.secrets.outputs.PASSCULTURE_SA_ACCESS_TOKEN }}
+        with:
+          source-directory: ./rendered-manifests/helmfile-${{ inputs.environment }}/
+          destination-github-username: 'pass-culture'
+          destination-repository-name: 'rendered-manifests'
+          commit-message: pushed from $GITHUB_REF
+          target-branch: ${{ inputs.environment }}
+          create-target-branch-if-needed: true
       - name: "Play post-migrations"
         run: |
           set -e
