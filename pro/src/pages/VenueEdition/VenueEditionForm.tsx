@@ -120,7 +120,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
               description={
                 venue.isVirtual
                   ? undefined
-                  : 'Cet espace vous permet de présenter votre activité culturelle aux utilisateurs de l’application pass Culture. Vous pouvez décrire les différentes actions que vous menez, votre histoire ou préciser des informations sur votre activité.'
+                  : 'Vous pouvez décrire les différentes actions que vous menez, votre histoire ou préciser des informations sur votre activité.'
               }
             >
               <FormLayout.Row>
@@ -143,10 +143,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
 
             <FormLayout.SubSection
               title="Contact"
-              description={
-                'Ces informations seront affichées dans votre page partenaire, sur l’application pass Culture. ' +
-                'Elles permettront aux bénéficiaires de vous contacter en cas de besoin.'
-              }
+              description="Ces informations permettront aux bénéficiaires de vous contacter en cas de besoin."
             >
               <FormLayout.Row>
                 <PhoneNumberInput

@@ -34,10 +34,9 @@ export const Accessibility = ({ isCreatingVenue }: AccessiblityProps) => {
     : FormLayout.SubSection
 
   return (
-    <FormSectionComponent title="Critères d’accessibilité">
+    <FormSectionComponent title="Modalités d’accessibilité">
       {isAccesLibreEnabled && (
         <Callout
-          title="Renseignez facilement les modalités d’accessibilité de votre établissement sur la plateforme collaborative acceslibre.beta.gouv.fr"
           links={[
             {
               href: 'https://acceslibre.beta.gouv.fr/',
@@ -47,14 +46,17 @@ export const Accessibility = ({ isCreatingVenue }: AccessiblityProps) => {
           ]}
           variant={CalloutVariant.INFO}
           className={styles['callout']}
-        />
+        >
+          Renseignez facilement les modalités d’accessibilité de votre
+          établissement sur la plateforme collaborative acceslibre.beta.gouv.fr
+        </Callout>
       )}
 
       <FormLayout.Row>
         <CheckboxGroup
           group={useAccessibilityOptions(setFieldValue)}
           groupName="accessibility"
-          legend="Ce lieu est accessible au public en situation de handicap :"
+          legend="Votre établissement est accessible au public en situation de handicap :"
         />
       </FormLayout.Row>
 

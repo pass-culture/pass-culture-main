@@ -102,7 +102,7 @@ export const CollectiveDataForm = ({
                 description={
                   venue.isVirtual
                     ? undefined
-                    : 'Cet espace vous permet de présenter votre activité culturelle aux utilisateurs de l’application pass Culture. Vous pouvez décrire les différentes actions que vous menez, votre histoire ou préciser des informations sur votre activité.'
+                    : 'Vous pouvez décrire les différentes actions que vous menez, votre histoire ou préciser des informations sur votre activité.'
                 }
               >
                 <FormLayout.Row>

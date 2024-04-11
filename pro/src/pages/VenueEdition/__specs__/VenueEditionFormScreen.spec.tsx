@@ -279,9 +279,6 @@ describe('VenueFormScreen', () => {
     renderForm(venue, { features: ['WIP_ACCESLIBRE'] })
 
     expect(
-      screen.queryByText(/Critères d’accessibilité/)
-    ).not.toBeInTheDocument()
-    expect(
       screen.getByText('Modalités d’accessibilité via acceslibre')
     ).toBeInTheDocument()
   })
