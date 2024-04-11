@@ -2043,12 +2043,12 @@ class LinkVenueToPricingPointTest:
         assert link.pricingPoint == pricing_point_2
 
     def test_fails_if_venue_has_siret(self):
-        reimbursement_point = offerers_factories.VenueFactory()
-        offerer = reimbursement_point.managingOfferer
+        pricing_point = offerers_factories.VenueFactory()
+        offerer = pricing_point.managingOfferer
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, siret="1234")
 
         with pytest.raises(api_errors.ApiErrors) as error:
-            offerers_api.link_venue_to_pricing_point(venue, reimbursement_point.id)
+            offerers_api.link_venue_to_pricing_point(venue, pricing_point.id)
         msg = "Ce lieu a un SIRET, vous ne pouvez donc pas choisir un autre lieu pour le calcul du barème de remboursement."
         assert error.value.errors == {"pricingPointId": [msg]}
 
@@ -2216,7 +2216,6 @@ class CreateFromOnboardingDataTest:
         assert venue.banId == "75101_9575_00003"
         assert venue.bookingEmail == "pro@example.com"
         assert venue.city == "Paris"
-        assert not venue.current_reimbursement_point_id
         assert venue.dmsToken
         assert venue.latitude == decimal.Decimal("2.30829")
         assert venue.longitude == decimal.Decimal("48.87171")
