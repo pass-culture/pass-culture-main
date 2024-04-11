@@ -12,7 +12,6 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
 from pcapi.models import api_errors
 from pcapi.models import db
-from pcapi.models import feature
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import api_key_required
@@ -32,11 +31,6 @@ def _deserialize_has_ticket(
         if subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].can_be_withdrawable:
             return offers_models.WithdrawalTypeEnum.NO_TICKET
         return None
-
-    if not feature.FeatureToggle.WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API.is_active():
-        raise api_errors.ApiErrors(
-            {"global": "During this API Beta, it is only possible to create events without tickets."}, status_code=400
-        )
 
     if not (current_api_key.provider.hasProviderEnableCharlie):
         raise api_errors.ApiErrors(

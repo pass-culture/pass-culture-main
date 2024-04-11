@@ -7,7 +7,6 @@ from unittest import mock
 import pytest
 
 from pcapi import settings
-from pcapi.core import testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.models import offer_mixin
@@ -308,25 +307,6 @@ class PostProductTest:
         assert response.status_code == 400
         assert offers_models.Offer.query.one_or_none() is None
         assert response.json == {"enableDoubleBookings": ["the category chosen does not allow double bookings"]}
-
-    @pytest.mark.usefixtures("db_session")
-    @testing.override_features(WIP_ENABLE_OFFER_CREATION_API_V1=False)
-    def test_api_disabled(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/products",
-            json={
-                "location": {"type": "physical", "venueId": venue.id},
-                "categoryRelatedFields": {"category": "SPECTACLE_ENREGISTRE"},
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
-                "name": "Le champ des possibles",
-            },
-        )
-
-        assert response.status_code == 400
-        assert offers_models.Offer.query.first() is None
-        assert response.json == {"global": ["This API is not enabled"]}
 
     @pytest.mark.usefixtures("db_session")
     def test_extra_data_deserialization(self, client):
