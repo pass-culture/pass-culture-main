@@ -83,7 +83,7 @@
     background: var(--color-primary);
     border-radius: 50%;
     box-shadow: 0 0 rem.torem(3px) 0
-      color-mix(in srgb, var(--color-secondary) 21%, transparent);
+      rgb(from var(--color-secondary) r g b / 21%);
     height: rem.torem(16px);
     width: rem.torem(16px);
   }

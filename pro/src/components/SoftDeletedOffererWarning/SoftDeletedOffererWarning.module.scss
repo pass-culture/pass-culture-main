@@ -5,7 +5,7 @@
   border: rem.torem(1px) solid var(--color-grey-medium);
   border-radius: rem.torem(8px);
   box-shadow: 0 rem.torem(2px) rem.torem(6px) 0
-    color-mix(in srgb, var(--color-black) 15%, transparent);
+    rgb(from var(--color-black) r g b / 15%);
   overflow: hidden;
   margin-top: rem.torem(16px);
 
