@@ -62,7 +62,6 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
           callout={
             isAccesLibreEnabled ? (
               <Callout
-                title="Renseignez facilement les modalités d’accessibilité de votre établissement sur la plateforme collaborative acceslibre.beta.gouv.fr"
                 links={[
                   {
                     href: 'https://acceslibre.beta.gouv.fr/',
@@ -71,7 +70,11 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
                   },
                 ]}
                 variant={CalloutVariant.INFO}
-              />
+              >
+                Renseignez facilement les modalités d’accessibilité de votre
+                établissement sur la plateforme collaborative
+                acceslibre.beta.gouv.fr
+              </Callout>
             ) : null
           }
           accessibleItem={venue}
