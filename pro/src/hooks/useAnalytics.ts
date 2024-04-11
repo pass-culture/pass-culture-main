@@ -100,7 +100,7 @@ export const useConfigureFirebase = ({
   }, [isCookieEnabled, app, currentUserId])
 
   useEffect(() => {
-    if (selectedOffererId) {
+    if (app && isFirebaseSupported && selectedOffererId) {
       setUserProperties(getAnalytics(app), {
         offerer_id: selectedOffererId.toString(),
       })
