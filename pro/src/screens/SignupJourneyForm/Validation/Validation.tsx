@@ -52,12 +52,18 @@ const Validation = (): JSX.Element => {
   }[activity?.targetCustomer ?? Target.INDIVIDUAL]
 
   useEffect(() => {
-    if (offerer === null || offerer === DEFAULT_OFFERER_FORM_VALUES) {
-      navigate('/parcours-inscription/identification')
-      return
-    }
-    if (activity === null || activity === DEFAULT_ACTIVITY_VALUES) {
-      navigate('/parcours-inscription/activite')
+    // This is needed because `ReactRouter` is reloaded because of useIsNewInterfaceActive()
+    // Remove this when WIP_ENABLE_PRO_SIDE_NAV is disabled
+    if (currentUser.hasUserOfferer) {
+      navigate('/accueil')
+    } else {
+      if (offerer === null || offerer === DEFAULT_OFFERER_FORM_VALUES) {
+        navigate('/parcours-inscription/identification')
+        return
+      }
+      if (activity === null || activity === DEFAULT_ACTIVITY_VALUES) {
+        navigate('/parcours-inscription/activite')
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activity, offerer])
