@@ -7,6 +7,29 @@ import { DayValues, VenueEditionFormValues, Day } from './types'
 export const buildAccessibilityFormValues = (
   venue: GetVenueResponseModel | VenueListItemResponseModel
 ) => {
+  if (venue.externalAccessibilityData) {
+    return {
+      [AccessiblityEnum.VISUAL]: Boolean(
+        venue.externalAccessibilityData.isAccessibleVisualDisability
+      ),
+      [AccessiblityEnum.MENTAL]: Boolean(
+        venue.externalAccessibilityData.isAccessibleMentalDisability
+      ),
+      [AccessiblityEnum.AUDIO]: Boolean(
+        venue.externalAccessibilityData.isAccessibleAudioDisability
+      ),
+      [AccessiblityEnum.MOTOR]: Boolean(
+        venue.externalAccessibilityData.isAccessibleMotorDisability
+      ),
+      [AccessiblityEnum.NONE]: [
+        venue.externalAccessibilityData.isAccessibleVisualDisability,
+        venue.externalAccessibilityData.isAccessibleMentalDisability,
+        venue.externalAccessibilityData.isAccessibleAudioDisability,
+        venue.externalAccessibilityData.isAccessibleMotorDisability,
+      ].every((accessibility) => accessibility === false),
+    }
+  }
+
   return {
     [AccessiblityEnum.VISUAL]: venue.visualDisabilityCompliant || false,
     [AccessiblityEnum.MENTAL]: venue.mentalDisabilityCompliant || false,
