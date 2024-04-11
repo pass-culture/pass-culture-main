@@ -2,11 +2,13 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { ExternalAccessibilityDataModel } from './ExternalAccessibilityDataModel';
 import type { VenueTypeCode } from './VenueTypeCode';
 export type VenueListItemResponseModel = {
   audioDisabilityCompliant?: boolean | null;
   bookingEmail?: string | null;
   collectiveSubCategoryId?: string | null;
+  externalAccessibilityData?: ExternalAccessibilityDataModel | null;
   hasCreatedOffer: boolean;
   id: number;
   isVirtual: boolean;
