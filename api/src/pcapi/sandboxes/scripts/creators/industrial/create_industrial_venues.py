@@ -132,8 +132,9 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
                     siret=f"{offerer.siren}22222",
                     venueTypeCode=random.choice(offerers_models.PERMENANT_VENUE_TYPES),
                     pricing_point="self",
-                    reimbursement_point="self",
                 )
+                second_bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
+                offerers_factories.VenueBankAccountLinkFactory(bankAccount=second_bank_account, venue=second_venue)
                 venue_by_name[second_venue_name] = second_venue
             mock_accessibility_index += 1
 
@@ -145,7 +146,6 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
             managingOfferer=offerer,
             name=virtual_venue_name.format(venue_name),
             pricing_point=venue,
-            reimbursement_point=venue,
         )
 
     # Venue Allocine
@@ -156,10 +156,11 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
         name="Lieu synchro allociné",
         siret="21070034000016",
         pricing_point="self",
-        reimbursement_point="self",
         managingOfferer=allocine_offerer,
         venueTypeCode=offerers_models.VenueTypeCode.MOVIE,
     )
+    bank_account = finance_factories.BankAccountFactory(offerer=venue_synchronized_with_allocine.managingOfferer)
+    offerers_factories.VenueBankAccountLinkFactory(bankAccount=bank_account, venue=venue_synchronized_with_allocine)
     allocine_provider = providers_factories.AllocineProviderFactory(isActive=True)
     theater = providers_factories.AllocineTheaterFactory(siret=venue_synchronized_with_allocine.siret)
     pivot = providers_factories.AllocinePivotFactory(

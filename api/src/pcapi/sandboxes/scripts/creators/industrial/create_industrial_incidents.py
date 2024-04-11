@@ -142,28 +142,25 @@ def _create_one_individual_incident(
     is_partial: bool,
     comment: str,
 ) -> None:
-    reimbursement_point_venue = offerers_factories.VenueFactory(
-        name=f"{iteration} - Point de remboursement avec beaucoup d'incidents",
+    venue = offerers_factories.VenueFactory(
+        name=f"{iteration} - Lieu avec beaucoup d'incidents",
         managingOfferer=offerer,
         pricing_point="self",
-        reimbursement_point="self",
     )
-    finance_factories.BankInformationFactory(venue=reimbursement_point_venue)
+    bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
+    offerers_factories.VenueBankAccountLinkFactory(bankAccount=bank_account, venue=venue)
     if with_other_venue:
         other_venue = offerers_factories.VenueFactory(
-            name=f"{iteration} - Autre lieu avec beaucoup d'incidents",
-            managingOfferer=offerer,
-            pricing_point=reimbursement_point_venue,
-            reimbursement_point=reimbursement_point_venue,
+            name=f"{iteration} - Autre lieu avec beaucoup d'incidents", managingOfferer=offerer, pricing_point=venue
         )
 
     if with_over_revenue_threshold_booking:
         # This is a quick way to have a Venue reach the revenue threshold to reach the next ReimbursementRule
-        special_booking = _add_nearly_over_revenue_threshold_booking(reimbursement_point_venue)
+        special_booking = _add_nearly_over_revenue_threshold_booking(venue)
 
     stocks = offers_factories.StockFactory.create_batch(
         2 if multiple_bookings else 1,
-        offer__venue=other_venue if with_other_venue else reimbursement_point_venue,
+        offer__venue=other_venue if with_other_venue else venue,
         price=30,
     )
     incident_bookings = []
@@ -183,7 +180,7 @@ def _create_one_individual_incident(
     finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
 
     finance_incident = finance_factories.FinanceIncidentFactory(
-        venue=other_venue if with_other_venue else reimbursement_point_venue, forceDebitNote=force_debit_note
+        venue=other_venue if with_other_venue else venue, forceDebitNote=force_debit_note
     )
     if is_partial and not multiple_bookings:
         new_total_amount = (incident_bookings[0].amount * incident_bookings[0].quantity) * 100 - 1000
@@ -213,28 +210,27 @@ def _create_one_collective_incident(
     force_debit_note: bool,
     comment: str,
 ) -> None:
-    reimbursement_point_venue = offerers_factories.VenueFactory(
-        name=f"{iteration} - Point de remboursement avec beaucoup d'incidents collectifs",
+    venue = offerers_factories.VenueFactory(
+        name=f"{iteration} - Lieu avec beaucoup d'incidents collectifs",
         managingOfferer=offerer,
         pricing_point="self",
-        reimbursement_point="self",
     )
-    finance_factories.BankInformationFactory(venue=reimbursement_point_venue)
+    bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
+    offerers_factories.VenueBankAccountLinkFactory(bankAccount=bank_account, venue=venue)
     if with_other_venue:
         other_venue = offerers_factories.VenueFactory(
             name=f"{iteration} - Autre lieu avec beaucoup d'incidents collectifs",
             managingOfferer=offerer,
-            pricing_point=reimbursement_point_venue,
-            reimbursement_point=reimbursement_point_venue,
+            pricing_point=venue,
         )
 
     if with_over_revenue_threshold_booking:
         # This is a quick way to have a Venue reach the revenue threshold to reach the next ReimbursementRule
-        special_booking = _add_nearly_over_revenue_threshold_booking(reimbursement_point_venue, True)
+        special_booking = _add_nearly_over_revenue_threshold_booking(venue, True)
 
     stocks = educational_factories.CollectiveStockFactory.create_batch(
         2 if multiple_bookings else 1,
-        collectiveOffer__venue=other_venue if with_other_venue else reimbursement_point_venue,
+        collectiveOffer__venue=other_venue if with_other_venue else venue,
         price=30,
     )
 
@@ -258,7 +254,7 @@ def _create_one_collective_incident(
     finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
 
     finance_incident = finance_factories.FinanceIncidentFactory(
-        venue=other_venue if with_other_venue else reimbursement_point_venue, forceDebitNote=force_debit_note
+        venue=other_venue if with_other_venue else venue, forceDebitNote=force_debit_note
     )
     for booking in incident_bookings:
         finance_factories.CollectiveBookingFinanceIncidentFactory(
