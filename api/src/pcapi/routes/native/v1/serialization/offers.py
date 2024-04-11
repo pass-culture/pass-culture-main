@@ -16,6 +16,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Reason
 from pcapi.core.offers.models import ReasonMeta
 from pcapi.core.offers.models import Stock
+from pcapi.core.providers import constants as provider_constants
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.domain.movie_types import get_movie_label
@@ -232,6 +233,11 @@ class OfferResponse(BaseModel):
         offer.expense_domains = get_expense_domains(offer)
         offer.isExpired = offer.hasBookingLimitDatetimesPassed
         offer.metadata = offer_metadata.get_metadata_from_offer(offer)
+        offer.isExternalBookingsDisabled = False
+        if offer.lastProvider and offer.lastProvider.localClass in provider_constants.PROVIDER_LOCAL_CLASS_TO_FF:
+            offer.isExternalBookingsDisabled = provider_constants.PROVIDER_LOCAL_CLASS_TO_FF[
+                offer.lastProvider.localClass
+            ].is_active()
 
         result = super().from_orm(offer)
 
@@ -256,6 +262,7 @@ class OfferResponse(BaseModel):
     externalTicketOfficeUrl: str | None
     extraData: OfferExtraData | None
     isExpired: bool
+    isExternalBookingsDisabled: bool
     is_forbidden_to_underage: bool
     isReleased: bool
     isSoldOut: bool

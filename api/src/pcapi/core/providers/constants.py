@@ -1,5 +1,7 @@
 import typing
 
+from pcapi.models.feature import FeatureToggle
+
 
 CINEMA_PROVIDER_NAMES = [
     "CDSStocks",
@@ -7,6 +9,13 @@ CINEMA_PROVIDER_NAMES = [
     "CGRStocks",
     "EMSStocks",
 ]
+
+PROVIDER_LOCAL_CLASS_TO_FF = {
+    "BoostStocks": FeatureToggle.DISABLE_BOOST_EXTERNAL_BOOKINGS,
+    "CGRStocks": FeatureToggle.DISABLE_CGR_EXTERNAL_BOOKINGS,
+    "CDSStocks": FeatureToggle.DISABLE_CDS_EXTERNAL_BOOKINGS,
+    "EMSStocks": FeatureToggle.DISABLE_EMS_EXTERNAL_BOOKINGS,
+}
 
 ALLOCINE_PRODUCTS_PROVIDER_NAME = "Allocine Products"
 
