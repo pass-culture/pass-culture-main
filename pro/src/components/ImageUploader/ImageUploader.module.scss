@@ -30,7 +30,7 @@
   border: rem.torem(1px) solid var(--color-grey-medium);
   border-radius: rem.torem(4px);
   box-shadow: 0 rem.torem(1px) rem.torem(8px)
-    rgb(var(--color-large-shadow) 0.15);
+    color-mix(in srgb, var(--color-large-shadow) 15%, transparent);
 
   &.preview-venue {
     width: 100%;
