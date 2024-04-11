@@ -433,9 +433,6 @@ def _book_cinema_external_ticket(booking: Booking, stock: Stock, beneficiary: Us
 
 
 def _book_event_external_ticket(booking: Booking, stock: Stock, beneficiary: User) -> int | None:
-    if not FeatureToggle.ENABLE_CHARLIE_BOOKINGS_API.is_active():
-        raise feature.DisabledFeatureError("ENABLE_CHARLIE_BOOKINGS_API is inactive")
-
     provider = providers_repository.get_provider_enabled_for_pro_by_id(stock.offer.lastProviderId)
     if not provider:
         raise providers_exceptions.InactiveProvider()

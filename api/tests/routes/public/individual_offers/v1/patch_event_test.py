@@ -4,7 +4,6 @@ from pcapi import settings
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
-from pcapi.core.testing import override_features
 from pcapi.utils import human_ids
 
 from tests.routes import image_data
@@ -160,36 +159,6 @@ class PatchEventTest:
             event_offer.image.url
             == f"{settings.OBJECT_STORAGE_URL}/thumbs/mediations/{human_ids.humanize(event_offer.activeMediation.id)}"
         )
-
-    @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=False)
-    def test_cannot_edit_event_with_ticket_if_FF_not_active(self, client):
-        # This test can be deleted with FF WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
-        event_offer = offers_factories.EventOfferFactory(
-            venue=venue,
-            bookingContact="contact@example.com",
-            bookingEmail="notify@passq.com",
-            subcategoryId="CONCERT",
-            durationMinutes=20,
-            isDuo=False,
-            lastProvider=api_key.provider,
-            withdrawalType=offers_models.WithdrawalTypeEnum.BY_EMAIL,
-            withdrawalDelay=86400,
-            withdrawalDetails="Around there",
-        )
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            f"/public/offers/v1/events/{event_offer.id}",
-            json={
-                "bookingContact": "test@myemail.com",
-                "bookingEmail": "test@myemail.com",
-                "eventDuration": 40,
-                "enableDoubleBookings": "true",
-                "itemCollectionDetails": "Here !",
-                "hasTicket": True,
-            },
-        )
-        assert response.status_code == 400
 
 
 @pytest.mark.usefixtures("db_session")

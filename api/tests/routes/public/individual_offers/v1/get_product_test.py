@@ -95,8 +95,7 @@ class GetProductTest:
         mediation = offers_factories.MediationFactory(offer=product_offer, credit="Ph. Oto")
         product_offer_id = product_offer.id
 
-        num_query = 1  # feature flag WIP_ENABLE_OFFER_CREATION_API_V1
-        num_query += 1  # retrieve API key
+        num_query = 1  # retrieve API key
         num_query += 1  # retrieve offer
 
         with testing.assert_num_queries(num_query):
