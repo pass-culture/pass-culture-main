@@ -1,6 +1,7 @@
 from datetime import datetime
 from functools import partial
 import json
+import logging
 import typing
 
 from pydantic.v1 import parse_obj_as
@@ -18,6 +19,9 @@ from pcapi.repository import atomic
 from pcapi.routes.serialization import venues_serialize
 from pcapi.utils.cache import get_from_cache
 from pcapi.utils.clean_accents import clean_accents
+
+
+logger = logging.getLogger(__name__)
 
 
 def find_collective_bookings_for_adage(
@@ -109,7 +113,7 @@ def synchronize_adage_ids_on_offerers(partners_from_adage: list[venues_serialize
     )
 
 
-def synchronize_adage_ids_on_venues() -> None:
+def synchronize_adage_ids_on_venues(debug: bool = False) -> None:
     from pcapi.core.external.attributes.api import update_external_pro
 
     adage_cultural_partners = get_cultural_partners(force_update=True)
@@ -131,13 +135,33 @@ def synchronize_adage_ids_on_venues() -> None:
         .all()
     )
 
+    deactivated_venue_ids = {venue.id for venue in deactivated_venues}
+
+    if debug:
+        logger.info(
+            "%d deactivated venues",
+            len(deactivated_venue_ids),
+            extra={"deactivated_venues": deactivated_venue_ids},
+        )
+
+    venues: list[offerers_models.Venue] = offerers_models.Venue.query.filter(
+        offerers_models.Venue.id.in_(filtered_cultural_partner_by_ids.keys())
+    ).all()
+
+    to_update_venue_ids = {venue.id for venue in venues}
+
+    if debug:
+        logger.info(
+            "%d venues to update",
+            len(to_update_venue_ids),
+            extra={"to_update_venues": to_update_venue_ids},
+        )
+
+    adage_id_updates = {}
+
     with atomic():
         for venue in deactivated_venues:
             _remove_venue_from_eac(venue)
-
-        venues: list[offerers_models.Venue] = offerers_models.Venue.query.filter(
-            offerers_models.Venue.id.in_(filtered_cultural_partner_by_ids.keys())
-        ).all()
 
         for venue in venues:
             if not venue.adageId:
@@ -150,7 +174,11 @@ def synchronize_adage_ids_on_venues() -> None:
                     send_eac_offerer_activation_email(venue, list(emails))
                 venue.adageInscriptionDate = datetime.utcnow()
 
-            venue.adageId = str(filtered_cultural_partner_by_ids[venue.id].id)
+            adage_id = str(filtered_cultural_partner_by_ids[venue.id].id)
+            if venue.adageId != adage_id:
+                adage_id_updates[venue.id] = adage_id
+
+            venue.adageId = adage_id
 
         # filter adage_ids_venues rows that are linked to an unexisting
         # venue. This can happen since the base data comes from an
@@ -161,7 +189,12 @@ def synchronize_adage_ids_on_venues() -> None:
         }
 
         address_api.upsert_venues_addresses(adage_ids_venues)
-        address_api.unlink_unknown_venue_addresses(adage_ids_venues.keys())
+        unlink_count = address_api.unlink_unknown_venue_addresses(adage_ids_venues.keys())
+
+    if debug:
+        logger.info("%d adage ids updates", len(adage_id_updates), extra=adage_id_updates)  # type: ignore
+        logger.info("%d adage venue addresses updates", len(adage_ids_venues), extra=adage_ids_venues)
+        logger.info("%d unknown adage venue addresses unlinked", unlink_count)
 
 
 def _remove_venue_from_eac(venue: offerers_models.Venue) -> None:
