@@ -40,14 +40,12 @@ describe('ActionsBar', () => {
     props = {
       getUpdateOffersStatusMessage: mockGetUpdateOffersStatusMessage,
       canDeleteOffers: mockCanDeleteOffers,
-      refreshOffers: vi.fn(),
       selectedOfferIds: offerIds,
       clearSelectedOfferIds: vi.fn(),
       toggleSelectAllCheckboxes: vi.fn(),
       nbSelectedOffers: 2,
       areAllOffersSelected: false,
       audience: Audience.INDIVIDUAL,
-      urlSearchFilters: {},
     }
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
@@ -106,7 +104,6 @@ describe('ActionsBar', () => {
       isActive: true,
     })
     expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
-    expect(props.refreshOffers).toHaveBeenCalled()
     expect(
       screen.getByText('2 offres ont bien été publiées')
     ).toBeInTheDocument()
@@ -123,7 +120,6 @@ describe('ActionsBar', () => {
 
     expect(api.patchOffersActiveStatus).not.toHaveBeenCalled()
     expect(props.clearSelectedOfferIds).not.toHaveBeenCalled()
-    expect(props.refreshOffers).not.toHaveBeenCalled()
     expect(
       screen.getByText(
         'Vous ne pouvez pas publier des brouillons depuis cette liste'
@@ -144,7 +140,6 @@ describe('ActionsBar', () => {
     expect(api.deleteDraftOffers).toHaveBeenNthCalledWith(1, {
       ids: offerIds,
     })
-    expect(props.refreshOffers).toHaveBeenCalledTimes(1)
     expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
     expect(
       screen.getByText('2 brouillons ont bien été supprimés')
@@ -160,7 +155,6 @@ describe('ActionsBar', () => {
 
     expect(api.patchOffersActiveStatus).not.toHaveBeenCalled()
     expect(props.clearSelectedOfferIds).not.toHaveBeenCalled()
-    expect(props.refreshOffers).not.toHaveBeenCalled()
     expect(
       screen.getByText('Seuls les brouillons peuvent être supprimés')
     ).toBeInTheDocument()
@@ -188,7 +182,6 @@ describe('ActionsBar', () => {
       isActive: false,
     })
     expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
-    expect(props.refreshOffers).toHaveBeenCalledWith()
 
     expect(
       screen.getByText('2 offres ont bien été désactivées')
@@ -205,18 +198,10 @@ describe('ActionsBar', () => {
 
   it('should activate all offers on click on "Publier" button when all offers are selected', async () => {
     props.areAllOffersSelected = true
-    props.urlSearchFilters = {
-      nameOrIsbn: 'keyword',
-      venueId: 'E3',
-      offererId: 'A4',
-    }
     renderActionsBar(props)
 
     const expectedBody = {
       isActive: true,
-      nameOrIsbn: 'keyword',
-      offererId: 'A4',
-      venueId: 'E3',
     }
 
     const activateButton = screen.getByText('Publier')
@@ -226,22 +211,14 @@ describe('ActionsBar', () => {
       expectedBody
     )
     expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
-    expect(props.refreshOffers).toHaveBeenCalledWith()
   })
 
   it('should deactivate all offers on click on "Désactiver" button when all offers are selected', async () => {
     props.areAllOffersSelected = true
-    props.urlSearchFilters = {
-      nameOrIsbn: 'keyword',
-      venueId: 'E3',
-      offererId: 'A4',
-    }
     renderActionsBar(props)
+
     const expectedBody = {
       isActive: false,
-      nameOrIsbn: 'keyword',
-      offererId: 'A4',
-      venueId: 'E3',
     }
 
     const deactivateButton = screen.getByText('Désactiver')
@@ -262,7 +239,6 @@ describe('ActionsBar', () => {
       expectedBody
     )
     expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
-    expect(props.refreshOffers).toHaveBeenCalledWith()
   })
 
   it('should track cancel all offers on click on "Annuler" button', async () => {

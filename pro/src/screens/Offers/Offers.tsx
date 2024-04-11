@@ -43,7 +43,6 @@ export interface OffersProps {
     isAdmin: boolean
   }
   isLoading: boolean
-  loadAndUpdateOffers: (filters: SearchFiltersParams) => Promise<void>
   offerer: GetOffererResponseModel | null
   offers: CollectiveOfferResponseModel[] | ListOffersOfferResponseModel[]
   setOfferer: (offerer: GetOffererResponseModel | null) => void
@@ -64,7 +63,6 @@ const Offers = ({
   currentPageNumber,
   currentUser,
   isLoading,
-  loadAndUpdateOffers,
   offerer,
   offers,
   setOfferer,
@@ -77,7 +75,6 @@ const Offers = ({
 }: OffersProps): JSX.Element => {
   const [searchFilters, setSearchFilters] =
     useState<SearchFiltersParams>(initialSearchFilters)
-  const [isRefreshingOffers, setIsRefreshingOffers] = useState(true)
 
   const [areAllOffersSelected, setAreAllOffersSelected] = useState(false)
   const [selectedOfferIds, setSelectedOfferIds] = useState<string[]>([])
@@ -92,27 +89,6 @@ const Offers = ({
 
   const userHasNoOffers =
     !isLoading && !hasOffers && !hasSearchFilters(urlSearchFilters)
-
-  const hasDifferentFiltersFromLastSearch = useCallback(
-    (
-      searchFilters: SearchFiltersParams,
-      filterNames: (keyof SearchFiltersParams)[] = Object.keys(
-        searchFilters
-      ) as (keyof SearchFiltersParams)[]
-    ) => {
-      const lastSearchFilters = {
-        ...DEFAULT_SEARCH_FILTERS,
-        ...urlSearchFilters,
-      }
-      return filterNames
-        .map(
-          (filterName) =>
-            searchFilters[filterName] !== lastSearchFilters[filterName]
-        )
-        .includes(true)
-    },
-    [urlSearchFilters]
-  )
 
   const [isOffererValidated, setIsOffererValidated] = useState<boolean>(false)
   const displayCreateOfferButton =
@@ -153,11 +129,6 @@ const Offers = ({
     setSelectedOfferIds([])
   }, [])
 
-  const refreshOffers = useCallback(
-    () => loadAndUpdateOffers(initialSearchFilters),
-    [loadAndUpdateOffers, initialSearchFilters]
-  )
-
   const toggleSelectAllCheckboxes = useCallback(() => {
     setAreAllOffersSelected((currentValue) => !currentValue)
   }, [])
@@ -165,38 +136,21 @@ const Offers = ({
   const resetFilters = () => {
     setOfferer(null)
     setSearchFilters(DEFAULT_SEARCH_FILTERS)
-    applyUrlFiltersAndRedirect(DEFAULT_SEARCH_FILTERS)
+    applyUrlFiltersAndRedirect({
+      ...DEFAULT_SEARCH_FILTERS,
+    })
   }
 
   const numberOfPages = Math.ceil(offers.length / NUMBER_OF_OFFERS_PER_PAGE)
   const pageCount = Math.min(numberOfPages, MAX_TOTAL_PAGES)
 
-  useEffect(() => {
-    if (isRefreshingOffers) {
-      setSearchFilters(initialSearchFilters)
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      loadAndUpdateOffers(initialSearchFilters)
-    }
-  }, [
-    isRefreshingOffers,
-    loadAndUpdateOffers,
-    setSearchFilters,
-    initialSearchFilters,
-  ])
-
   const applyUrlFiltersAndRedirect = (
-    filters: SearchFiltersParams & { audience?: Audience },
-    isRefreshing = true
+    filters: SearchFiltersParams & { audience?: Audience }
   ) => {
-    setIsRefreshingOffers(isRefreshing)
     redirectWithUrlFilters(filters)
   }
 
-  const applyFilters = async () => {
-    // FIXME : this code's part seems to be useless
-    if (!hasDifferentFiltersFromLastSearch(searchFilters)) {
-      await refreshOffers()
-    }
+  const applyFilters = () => {
     applyUrlFiltersAndRedirect({ ...searchFilters, page: DEFAULT_PAGE })
   }
 
@@ -312,17 +266,14 @@ const Offers = ({
           setSelectedOfferIds={setSelectedOfferIds}
           toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
           urlSearchFilters={urlSearchFilters}
-          refreshOffers={refreshOffers}
           isAtLeastOneOfferChecked={selectedOfferIds.length > 0}
         />
       )}
       {nbSelectedOffers > 0 && (
         <ActionsBar
-          urlSearchFilters={urlSearchFilters}
           areAllOffersSelected={areAllOffersSelected}
           clearSelectedOfferIds={clearSelectedOfferIds}
           nbSelectedOffers={nbSelectedOffers}
-          refreshOffers={refreshOffers}
           selectedOfferIds={selectedOfferIds}
           toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
           audience={audience}

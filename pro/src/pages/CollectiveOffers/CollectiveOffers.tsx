@@ -1,8 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import useSWR from 'swr'
 
+import { api } from 'apiClient/api'
 import {
-  CollectiveOfferResponseModel,
+  CollectiveOfferDisplayedStatus,
   GetOffererResponseModel,
 } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
@@ -10,7 +12,11 @@ import { getOffererAdapter } from 'core/Offers/adapters'
 import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'core/Offers/types'
-import { hasSearchFilters, computeCollectiveOffersUrl } from 'core/Offers/utils'
+import {
+  hasSearchFilters,
+  computeCollectiveOffersUrl,
+  serializeApiFilters,
+} from 'core/Offers/utils'
 import { Audience } from 'core/shared/types'
 import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
 import { SelectOption } from 'custom_types/form'
@@ -20,7 +26,7 @@ import { formatAndOrderVenues } from 'repository/venuesService'
 import OffersScreen from 'screens/Offers'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
-import { getFilteredCollectiveOffersAdapter } from './adapters'
+export const GET_COLLECTIVE_OFFERS_QUERY_KEY = 'getCollectiveOffers'
 
 export const CollectiveOffers = (): JSX.Element => {
   const urlSearchFilters = useQuerySearchFilters()
@@ -30,8 +36,6 @@ export const CollectiveOffers = (): JSX.Element => {
   const { currentUser } = useCurrentUser()
 
   const [offerer, setOfferer] = useState<GetOffererResponseModel | null>(null)
-  const [offers, setOffers] = useState<CollectiveOfferResponseModel[]>([])
-  const [isLoading, setIsLoading] = useState(true)
   const [initialSearchFilters, setInitialSearchFilters] =
     useState<SearchFiltersParams | null>(null)
   const [venues, setVenues] = useState<SelectOption[]>([])
@@ -70,27 +74,6 @@ export const CollectiveOffers = (): JSX.Element => {
     loadAllVenuesByProUser()
   }, [offerer?.id])
 
-  const loadAndUpdateOffers = useCallback(
-    async (filters: SearchFiltersParams) => {
-      setIsLoading(true)
-      const apiFilters = {
-        ...DEFAULT_SEARCH_FILTERS,
-        ...filters,
-      }
-      const { isOk, message, payload } =
-        await getFilteredCollectiveOffersAdapter(apiFilters)
-
-      if (!isOk) {
-        setIsLoading(false)
-        return notify.error(message)
-      }
-
-      setIsLoading(false)
-      setOffers(payload.offers)
-    },
-    [notify]
-  )
-
   const redirectWithUrlFilters = (
     filters: SearchFiltersParams & { audience?: Audience }
   ) => {
@@ -112,9 +95,47 @@ export const CollectiveOffers = (): JSX.Element => {
     setInitialSearchFilters(filters)
   }, [setInitialSearchFilters, urlSearchFilters, currentUser.isAdmin])
 
+  const apiFilters = {
+    ...DEFAULT_SEARCH_FILTERS,
+    ...urlSearchFilters,
+  }
+  delete apiFilters.page
+
+  const offersQuery = useSWR(
+    [GET_COLLECTIVE_OFFERS_QUERY_KEY, apiFilters],
+    () => {
+      const {
+        nameOrIsbn,
+        offererId,
+        venueId,
+        categoryId,
+        status,
+        creationMode,
+        periodBeginningDate,
+        periodEndingDate,
+        collectiveOfferType,
+        format,
+      } = serializeApiFilters(apiFilters)
+
+      return api.getCollectiveOffers(
+        nameOrIsbn,
+        offererId,
+        status as CollectiveOfferDisplayedStatus,
+        venueId,
+        categoryId,
+        creationMode,
+        periodBeginningDate,
+        periodEndingDate,
+        collectiveOfferType,
+        format
+      )
+    },
+    { fallbackData: [] }
+  )
+
   return (
     <AppLayout>
-      {!initialSearchFilters ? (
+      {!initialSearchFilters || offersQuery.isLoading ? (
         <Spinner />
       ) : (
         <OffersScreen
@@ -122,10 +143,9 @@ export const CollectiveOffers = (): JSX.Element => {
           currentPageNumber={currentPageNumber}
           currentUser={currentUser}
           initialSearchFilters={initialSearchFilters}
-          isLoading={isLoading}
-          loadAndUpdateOffers={loadAndUpdateOffers}
+          isLoading={offersQuery.isLoading}
           offerer={offerer}
-          offers={offers}
+          offers={offersQuery.data}
           redirectWithUrlFilters={redirectWithUrlFilters}
           setOfferer={setOfferer}
           urlSearchFilters={urlSearchFilters}

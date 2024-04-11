@@ -1,17 +1,19 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import {
-  GetOffererResponseModel,
-  ListOffersOfferResponseModel,
-} from 'apiClient/v1'
+import { GetOffererResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import { getOffererAdapter } from 'core/Offers/adapters'
 import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'core/Offers/types'
-import { hasSearchFilters, computeOffersUrl } from 'core/Offers/utils'
+import {
+  hasSearchFilters,
+  computeOffersUrl,
+  serializeApiFilters,
+} from 'core/Offers/utils'
 import { Audience } from 'core/shared'
 import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
 import { SelectOption } from 'custom_types/form'
@@ -22,7 +24,7 @@ import OffersScreen from 'screens/Offers'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { sortByLabel } from 'utils/strings'
 
-import { getFilteredOffersAdapter } from './adapters/getFilteredOffersAdapter'
+export const GET_OFFERS_QUERY_KEY = 'listOffers'
 
 export const OffersRoute = (): JSX.Element => {
   const urlSearchFilters = useQuerySearchFilters()
@@ -32,8 +34,6 @@ export const OffersRoute = (): JSX.Element => {
   const { currentUser } = useCurrentUser()
 
   const [offerer, setOfferer] = useState<GetOffererResponseModel | null>(null)
-  const [offers, setOffers] = useState<ListOffersOfferResponseModel[]>([])
-  const [isLoading, setIsLoading] = useState(true)
   const [initialSearchFilters, setInitialSearchFilters] =
     useState<SearchFiltersParams | null>(null)
   const [venues, setVenues] = useState<SelectOption[]>([])
@@ -59,26 +59,6 @@ export const OffersRoute = (): JSX.Element => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadOfferer()
   }, [urlSearchFilters.offererId, notify])
-
-  const loadAndUpdateOffers = useCallback(
-    async (filters: SearchFiltersParams) => {
-      const apiFilters = {
-        ...DEFAULT_SEARCH_FILTERS,
-        ...filters,
-      }
-      const { isOk, message, payload } =
-        await getFilteredOffersAdapter(apiFilters)
-
-      if (!isOk) {
-        setIsLoading(false)
-        return notify.error(message)
-      }
-
-      setIsLoading(false)
-      setOffers(payload.offers)
-    },
-    [notify]
-  )
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -133,9 +113,43 @@ export const OffersRoute = (): JSX.Element => {
     loadAllVenuesByProUser()
   }, [offerer?.id])
 
+  const apiFilters = {
+    ...DEFAULT_SEARCH_FILTERS,
+    ...urlSearchFilters,
+  }
+  delete apiFilters.page
+
+  const offersQuery = useSWR(
+    [GET_OFFERS_QUERY_KEY, apiFilters],
+    () => {
+      const {
+        nameOrIsbn,
+        offererId,
+        venueId,
+        categoryId,
+        status,
+        creationMode,
+        periodBeginningDate,
+        periodEndingDate,
+      } = serializeApiFilters(apiFilters)
+
+      return api.listOffers(
+        nameOrIsbn,
+        offererId,
+        status,
+        venueId,
+        categoryId,
+        creationMode,
+        periodBeginningDate,
+        periodEndingDate
+      )
+    },
+    { fallbackData: [] }
+  )
+
   return (
     <AppLayout>
-      {!initialSearchFilters ? (
+      {!initialSearchFilters || offersQuery.isLoading ? (
         <Spinner />
       ) : (
         <OffersScreen
@@ -144,10 +158,9 @@ export const OffersRoute = (): JSX.Element => {
           currentPageNumber={currentPageNumber}
           currentUser={currentUser}
           initialSearchFilters={initialSearchFilters}
-          isLoading={isLoading}
-          loadAndUpdateOffers={loadAndUpdateOffers}
+          isLoading={offersQuery.isLoading}
           offerer={offerer}
-          offers={offers}
+          offers={offersQuery.data}
           redirectWithUrlFilters={redirectWithUrlFilters}
           setOfferer={setOfferer}
           urlSearchFilters={urlSearchFilters}

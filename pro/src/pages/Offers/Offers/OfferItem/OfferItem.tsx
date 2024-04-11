@@ -24,7 +24,6 @@ export type OfferItemProps = {
   offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
   selectOffer: (offerId: number, selected: boolean, isTemplate: boolean) => void
   audience: Audience
-  refreshOffers: () => void
 }
 
 const OfferItem = ({
@@ -33,7 +32,6 @@ const OfferItem = ({
   isSelected = false,
   selectOffer,
   audience,
-  refreshOffers,
 }: OfferItemProps) => {
   const { venue, isEducational, isShowcase, status, id } = offer
   const editionOfferLink = useOfferEditionURL(
@@ -72,7 +70,6 @@ const OfferItem = ({
           editionOfferLink={editionOfferLink}
           editionStockLink={editionStockLink}
           venue={venue}
-          refreshOffers={refreshOffers}
           audience={audience}
         />
       )}
