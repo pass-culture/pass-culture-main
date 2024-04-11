@@ -5,6 +5,7 @@ import factory
 
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.core.factories import BaseFactory
+import pcapi.core.geography.factories as geography_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import crypto
@@ -440,3 +441,12 @@ class AccessibilityProviderFactory(BaseFactory):
         lambda p: f"https://site-d-accessibilite.com/erps/{p.externalAccessibilityId}/"
     )
     lastUpdateAtProvider = datetime.datetime(2024, 3, 1, 0, 0)
+
+
+class OffererAddressFactory(BaseFactory):
+    label = factory.Sequence("Address label {}".format)
+    address = factory.SubFactory(geography_factories.AddressFactory)
+    offerer = factory.SubFactory(OffererFactory)
+
+    class Meta:
+        model = models.OffererAddress
