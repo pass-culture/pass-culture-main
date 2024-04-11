@@ -373,6 +373,7 @@ class ChangeUserEmailTest:
     def test_change_user_email(self):
         # Given
         user = users_factories.UserFactory(email=self.old_email, firstName="UniqueNameForEmailChangeTest")
+        users_factories.SingleSignOnFactory(user=user)
         users_factories.UserSessionFactory(user=user)
 
         token = self._init_token(user)
@@ -385,6 +386,7 @@ class ChangeUserEmailTest:
         assert reloaded_user.email == self.new_email
         assert users_models.User.query.filter_by(email=self.old_email).first() is None
         assert users_models.UserSession.query.filter_by(userId=reloaded_user.id).first() is None
+        assert users_models.SingleSignOn.query.filter_by(userId=reloaded_user.id).first() is None
 
         assert len(reloaded_user.email_history) == 1
 
@@ -397,6 +399,7 @@ class ChangeUserEmailTest:
     def test_change_user_email_new_email_already_existing(self):
         # Given
         user = users_factories.UserFactory(email=self.old_email, firstName="UniqueNameForEmailChangeTest")
+        users_factories.SingleSignOnFactory(user=user)
         other_user = users_factories.UserFactory(email=self.new_email)
         token = self._init_token(user)
 
@@ -410,6 +413,11 @@ class ChangeUserEmailTest:
 
         other_user = users_models.User.query.get(other_user.id)
         assert other_user.email == self.new_email
+
+        single_sign_on = users_models.SingleSignOn.query.filter(
+            users_models.SingleSignOn.userId == user.id
+        ).one_or_none()
+        assert single_sign_on is not None
 
     def test_change_user_email_expired_token(self, app):
         # Given
