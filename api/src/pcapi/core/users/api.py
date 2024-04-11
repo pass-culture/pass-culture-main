@@ -569,6 +569,7 @@ def change_email(
         raise
 
     models.UserSession.query.filter_by(userId=current_user.id).delete(synchronize_session=False)
+    models.SingleSignOn.query.filter_by(userId=current_user.id).delete(synchronize_session=False)
     db.session.commit()
 
     logger.info("User has changed their email", extra={"user": current_user.id})
