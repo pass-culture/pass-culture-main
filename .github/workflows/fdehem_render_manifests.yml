@@ -67,6 +67,8 @@ jobs:
           PCAPI_VALUES_FILE=./pass-culture-deployment/helm/pcapi/values.testing.yaml \
           PCAPI_SECRETS_FILE=<(echo '${{ needs.generate-pcapi-helm-secrets-file.outputs.pcapi_helm_secrets_file_base64 }}' | base64 -d) \
           helmfile -e testing template --set image.tag=xxx.xxx --output-dir ./rendered-manifests/ --output-dir-template "{{ .OutputDir }}/{{ .State.BaseName }}-{{ .Release.Name}}"
+      - name: "Delete a single file for testing"
+        run: rm ./rendered-manifests/helmfile-testing/pcapi/templates/configmap-api-specific.yaml
       - name: "Push manifests to rendered-manifests repository"
         id: push_manifests
         uses: cpina/github-action-push-to-another-repository@main
