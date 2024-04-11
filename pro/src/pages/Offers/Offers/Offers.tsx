@@ -44,7 +44,6 @@ type OffersProps = {
   setSelectedOfferIds: React.Dispatch<React.SetStateAction<string[]>>
   toggleSelectAllCheckboxes: () => void
   urlSearchFilters: SearchFiltersParams
-  refreshOffers: () => void
   isAtLeastOneOfferChecked: boolean
 }
 
@@ -67,7 +66,6 @@ const Offers = ({
   toggleSelectAllCheckboxes,
   urlSearchFilters,
   audience,
-  refreshOffers,
   isAtLeastOneOfferChecked,
 }: OffersProps) => {
   const isAdminForbidden = (searchFilters: Partial<SearchFiltersParams>) => {
@@ -181,7 +179,6 @@ const Offers = ({
                   selectOffer={selectOffer}
                   selectedOfferIds={selectedOfferIds}
                   audience={audience}
-                  refreshOffers={refreshOffers}
                 />
               </table>
             </>

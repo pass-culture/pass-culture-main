@@ -8,17 +8,7 @@ import {
   UserRole,
 } from 'apiClient/v1'
 import {
-  ALL_CATEGORIES,
-  ALL_COLLECTIVE_OFFER_TYPE,
-  ALL_CREATION_MODES,
-  ALL_EVENT_PERIODS,
-  ALL_FORMATS,
-  ALL_OFFERERS,
-  ALL_OFFERS,
-  ALL_STATUS,
-  ALL_VENUES,
   ALL_VENUES_OPTION,
-  DEFAULT_PAGE,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { Audience } from 'core/shared'
@@ -126,13 +116,10 @@ describe('screen Offers', () => {
       currentPageNumber: 1,
       currentUser,
       isLoading: false,
-      loadAndUpdateOffers: vi.fn().mockResolvedValue(offersRecap),
       offerer: { ...defaultGetOffererResponseModel },
       offers: offersRecap,
-      setIsLoading: vi.fn(),
       setOfferer: vi.fn(),
       urlSearchFilters: DEFAULT_SEARCH_FILTERS,
-      separateIndividualAndCollectiveOffers: false,
       initialSearchFilters: DEFAULT_SEARCH_FILTERS,
       audience: Audience.INDIVIDUAL,
       redirectWithUrlFilters: vi.fn(),
@@ -140,7 +127,7 @@ describe('screen Offers', () => {
       categories: categoriesAndSubcategories.categories.map(
         ({ id, proLabel }) => ({ value: id, label: proLabel })
       ),
-    } as OffersProps
+    }
 
     const notifsImport = (await vi.importActual(
       'hooks/useNotification'
@@ -150,24 +137,6 @@ describe('screen Offers', () => {
       error: mockNotifyError,
       pending: mockNotifyPending,
     }))
-  })
-
-  it('should load offers from API with defaults props', () => {
-    renderOffers(props)
-
-    expect(props.loadAndUpdateOffers).toHaveBeenCalledWith({
-      nameOrIsbn: ALL_OFFERS,
-      venueId: ALL_VENUES,
-      categoryId: ALL_CATEGORIES,
-      offererId: ALL_OFFERERS,
-      status: ALL_STATUS,
-      creationMode: ALL_CREATION_MODES,
-      page: DEFAULT_PAGE,
-      periodBeginningDate: ALL_EVENT_PERIODS,
-      periodEndingDate: ALL_EVENT_PERIODS,
-      collectiveOfferType: ALL_COLLECTIVE_OFFER_TYPE,
-      format: ALL_FORMATS,
-    })
   })
 
   it('should display column titles when offers are returned', () => {
@@ -544,26 +513,6 @@ describe('screen Offers', () => {
     expect(screen.queryByLabelText(offers[0].name)).toBeDisabled()
     expect(screen.queryByLabelText(offers[1].name)).toBeDisabled()
     expect(screen.queryByLabelText(offers[2].name)).toBeEnabled()
-  })
-
-  it('should load offers on click on search button with default filters when no changes where made', async () => {
-    renderOffers(props)
-
-    await userEvent.click(screen.getByText('Rechercher'))
-
-    expect(props.loadAndUpdateOffers).toHaveBeenCalledWith({
-      nameOrIsbn: DEFAULT_SEARCH_FILTERS.nameOrIsbn,
-      venueId: DEFAULT_SEARCH_FILTERS.venueId,
-      categoryId: DEFAULT_SEARCH_FILTERS.categoryId,
-      offererId: DEFAULT_SEARCH_FILTERS.offererId,
-      status: DEFAULT_SEARCH_FILTERS.status,
-      creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
-      page: DEFAULT_SEARCH_FILTERS.page,
-      periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
-      periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
-      collectiveOfferType: ALL_COLLECTIVE_OFFER_TYPE,
-      format: ALL_FORMATS,
-    })
   })
 
   it('should not display the button to create an offer when user is an admin', () => {

@@ -1,6 +1,9 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -73,7 +76,6 @@ const renderOffers = async (
   )
 
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-  vi.clearAllMocks()
 }
 
 vi.mock('repository/venuesService', async () => ({
@@ -107,11 +109,13 @@ describe('route Offers', () => {
       },
     }
     offersRecap = [listOffersOfferFactory({ venue: proVenues[0] })]
-    vi.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
+    vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
     vi.spyOn(api, 'getCategories').mockResolvedValueOnce(
       categoriesAndSubcategories
     )
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [],
+    })
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
   })
 
@@ -147,16 +151,18 @@ describe('route Offers', () => {
           await userEvent.click(screen.getByLabelText('Expirée'))
           await userEvent.click(screen.getByText('Appliquer'))
 
-          expect(api.listOffers).toHaveBeenLastCalledWith(
-            undefined,
-            undefined,
-            'EXPIRED',
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined
-          )
+          await waitFor(() => {
+            expect(api.listOffers).toHaveBeenLastCalledWith(
+              undefined,
+              undefined,
+              'EXPIRED',
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined
+            )
+          })
         })
 
         it('should filter draft offers given status filter when clicking on "Appliquer"', async () => {
@@ -171,17 +177,18 @@ describe('route Offers', () => {
 
           await userEvent.click(screen.getByText('Appliquer'))
 
-          expect(api.listOffers).toHaveBeenCalledTimes(1)
-          expect(api.listOffers).toHaveBeenLastCalledWith(
-            undefined,
-            undefined,
-            'DRAFT',
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined
-          )
+          await waitFor(() => {
+            expect(api.listOffers).toHaveBeenLastCalledWith(
+              undefined,
+              undefined,
+              'DRAFT',
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined
+            )
+          })
         })
 
         it('should indicate that no offers match selected filters', async () => {
@@ -197,6 +204,7 @@ describe('route Offers', () => {
           )
           await userEvent.click(screen.getByLabelText('Expirée'))
           await userEvent.click(screen.getByText('Appliquer'))
+          await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
           const noOffersForSearchFiltersText = screen.getByText(
             'Aucune offre trouvée pour votre recherche'
@@ -216,6 +224,7 @@ describe('route Offers', () => {
 
       describe('when user is admin', () => {
         beforeEach(() => {
+          vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
           store = {
             user: {
               initialized: true,
@@ -239,6 +248,9 @@ describe('route Offers', () => {
             )
 
             await userEvent.click(screen.getByText('Rechercher'))
+            await waitForElementToBeRemoved(() =>
+              screen.queryByTestId('spinner')
+            )
 
             expect(
               screen.getByRole('button', {
@@ -248,7 +260,7 @@ describe('route Offers', () => {
             expect(api.listOffers).toHaveBeenLastCalledWith(
               undefined,
               undefined,
-              undefined,
+              OfferStatus.INACTIVE,
               undefined,
               undefined,
               undefined,
@@ -271,6 +283,9 @@ describe('route Offers', () => {
             )
 
             await userEvent.click(screen.getByText('Rechercher'))
+            await waitForElementToBeRemoved(() =>
+              screen.queryByTestId('spinner')
+            )
 
             expect(
               screen.getByRole('button', {
@@ -304,6 +319,9 @@ describe('route Offers', () => {
             await renderOffers(store, filters)
 
             await userEvent.click(screen.getByTestId('remove-offerer-filter'))
+            await waitForElementToBeRemoved(() =>
+              screen.queryByTestId('spinner')
+            )
 
             expect(
               screen.getByRole('button', {
@@ -339,6 +357,9 @@ describe('route Offers', () => {
             await renderOffers(store, filters)
 
             await userEvent.click(screen.getByTestId('remove-offerer-filter'))
+            await waitForElementToBeRemoved(() =>
+              screen.queryByTestId('spinner')
+            )
 
             expect(
               screen.getByRole('button', {
@@ -395,6 +416,7 @@ describe('route Offers', () => {
 
           await userEvent.click(screen.getByText('Rechercher'))
 
+          await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
           expect(api.listOffers).toHaveBeenCalledWith(
             'Any word',
             undefined,
@@ -417,6 +439,7 @@ describe('route Offers', () => {
 
           await userEvent.click(screen.getByText('Rechercher'))
 
+          await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
           expect(api.listOffers).toHaveBeenCalledWith(
             undefined,
             undefined,
@@ -441,6 +464,7 @@ describe('route Offers', () => {
 
           await userEvent.click(screen.getByText('Rechercher'))
 
+          await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
           expect(api.listOffers).toHaveBeenLastCalledWith(
             undefined,
             undefined,
@@ -464,6 +488,7 @@ describe('route Offers', () => {
 
           await userEvent.click(screen.getByText('Rechercher'))
 
+          await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
           expect(api.listOffers).toHaveBeenLastCalledWith(
             undefined,
             undefined,
@@ -486,6 +511,7 @@ describe('route Offers', () => {
 
           await userEvent.click(screen.getByText('Rechercher'))
 
+          await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
           expect(api.listOffers).toHaveBeenLastCalledWith(
             undefined,
             undefined,
@@ -507,6 +533,7 @@ describe('route Offers', () => {
           )
           await userEvent.click(screen.getByText('Rechercher'))
 
+          await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
           expect(api.listOffers).toHaveBeenLastCalledWith(
             undefined,
             undefined,
@@ -545,6 +572,7 @@ describe('route Offers', () => {
       await userEvent.type(searchInput, 'search string')
       await userEvent.click(screen.getByText('Rechercher'))
 
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
       expect(api.listOffers).toHaveBeenCalledWith(
         'search string',
         undefined,
@@ -587,6 +615,7 @@ describe('route Offers', () => {
       await userEvent.selectOptions(venueSelect, firstVenueOption)
       await userEvent.click(screen.getByText('Rechercher'))
 
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
       expect(api.listOffers).toHaveBeenCalledWith(
         undefined,
         undefined,
@@ -620,6 +649,7 @@ describe('route Offers', () => {
       await userEvent.selectOptions(typeSelect, firstTypeOption)
       await userEvent.click(screen.getByText('Rechercher'))
 
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
       expect(api.listOffers).toHaveBeenCalledWith(
         undefined,
         undefined,
@@ -649,6 +679,7 @@ describe('route Offers', () => {
       await userEvent.click(screen.getByLabelText('Épuisée'))
       await userEvent.click(screen.getByText('Appliquer'))
 
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
       expect(api.listOffers).toHaveBeenCalledWith(
         undefined,
         undefined,
@@ -726,6 +757,7 @@ describe('route Offers', () => {
       await userEvent.selectOptions(screen.getByDisplayValue('Tous'), 'manual')
       await userEvent.click(screen.getByText('Rechercher'))
 
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
       expect(api.listOffers).toHaveBeenCalledWith(
         undefined,
         undefined,
@@ -744,6 +776,7 @@ describe('route Offers', () => {
       await userEvent.selectOptions(screen.getByDisplayValue('Tous'), 'manual')
       await userEvent.click(searchButton)
 
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
       await userEvent.selectOptions(
         screen.getByDisplayValue('Manuel'),
         ALL_CREATION_MODES
@@ -756,7 +789,7 @@ describe('route Offers', () => {
         undefined,
         undefined,
         undefined,
-        undefined,
+        'manual',
         undefined,
         undefined
       )
@@ -843,7 +876,14 @@ describe('route Offers', () => {
       vi.spyOn(api, 'listOffers')
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
-      await renderOffers(store)
+        .mockResolvedValueOnce([])
+
+      // 3rd call is not made if filters are strictly the same
+      const filters = {
+        venueId: '666',
+      }
+
+      await renderOffers(store, filters)
 
       const firstVenueOption = screen.getByRole('option', {
         name: proVenues[0].name,
@@ -854,9 +894,9 @@ describe('route Offers', () => {
       await userEvent.selectOptions(venueSelect, firstVenueOption)
       await userEvent.click(screen.getByText('Rechercher'))
 
-      expect(api.listOffers).toHaveBeenCalledTimes(1)
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
       expect(api.listOffers).toHaveBeenNthCalledWith(
-        1,
+        2,
         undefined,
         undefined,
         undefined,
@@ -870,10 +910,11 @@ describe('route Offers', () => {
       screen.getByText('Aucune offre trouvée pour votre recherche')
 
       await userEvent.click(screen.getByText('Afficher toutes les offres'))
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-      expect(api.listOffers).toHaveBeenCalledTimes(2)
+      expect(api.listOffers).toHaveBeenCalledTimes(3)
       expect(api.listOffers).toHaveBeenNthCalledWith(
-        2,
+        3,
         undefined,
         undefined,
         undefined,
@@ -890,7 +931,11 @@ describe('route Offers', () => {
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
 
-      await renderOffers(store)
+      // 3rd call is not made if filters are strictly the same
+      const filters = {
+        venueId: '666',
+      }
+      await renderOffers(store, filters)
 
       const venueOptionToSelect = screen.getByRole('option', {
         name: proVenues[0].name,
@@ -901,9 +946,10 @@ describe('route Offers', () => {
       await userEvent.selectOptions(venueSelect, venueOptionToSelect)
       await userEvent.click(screen.getByText('Rechercher'))
 
-      expect(api.listOffers).toHaveBeenCalledTimes(1)
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+      expect(api.listOffers).toHaveBeenCalledTimes(2)
       expect(api.listOffers).toHaveBeenNthCalledWith(
-        1,
+        2,
         undefined,
         undefined,
         undefined,
@@ -915,9 +961,11 @@ describe('route Offers', () => {
       )
 
       await userEvent.click(screen.getByText('Réinitialiser les filtres'))
-      expect(api.listOffers).toHaveBeenCalledTimes(2)
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+      expect(api.listOffers).toHaveBeenCalledTimes(3)
       expect(api.listOffers).toHaveBeenNthCalledWith(
-        2,
+        3,
         undefined,
         undefined,
         undefined,

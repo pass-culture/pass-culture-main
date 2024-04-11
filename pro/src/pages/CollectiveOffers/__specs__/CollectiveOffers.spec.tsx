@@ -43,10 +43,6 @@ const renderOffers = async (
   })
 
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-  return {
-    history,
-  }
 }
 
 vi.mock('repository/venuesService', async () => ({
@@ -95,6 +91,7 @@ describe('route CollectiveOffers', () => {
       describe('status filters', () => {
         it('should filter offers given status filter when clicking on "Appliquer"', async () => {
           await renderOffers(store)
+
           await userEvent.click(
             screen.getByRole('button', {
               name: 'Statut Afficher ou masquer le filtre par statut',
@@ -103,6 +100,7 @@ describe('route CollectiveOffers', () => {
           await userEvent.click(screen.getByLabelText('Expirée'))
 
           await userEvent.click(screen.getByText('Appliquer'))
+          await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
@@ -131,6 +129,7 @@ describe('route CollectiveOffers', () => {
           )
           await userEvent.click(screen.getByLabelText('Expirée'))
           await userEvent.click(screen.getByText('Appliquer'))
+          await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
           const noOffersForSearchFiltersText = screen.getByText(
             'Aucune offre trouvée pour votre recherche'
@@ -171,6 +170,9 @@ describe('route CollectiveOffers', () => {
             )
 
             await userEvent.click(screen.getByText('Rechercher'))
+            await waitForElementToBeRemoved(() =>
+              screen.queryByTestId('spinner')
+            )
 
             expect(
               screen.getByRole('button', {
@@ -180,7 +182,7 @@ describe('route CollectiveOffers', () => {
             expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
               undefined,
               undefined,
-              undefined,
+              OfferStatus.INACTIVE,
               undefined,
               undefined,
               undefined,
@@ -205,6 +207,9 @@ describe('route CollectiveOffers', () => {
             )
 
             await userEvent.click(screen.getByText('Rechercher'))
+            await waitForElementToBeRemoved(() =>
+              screen.queryByTestId('spinner')
+            )
 
             expect(
               screen.getByRole('button', {
@@ -236,6 +241,9 @@ describe('route CollectiveOffers', () => {
             await renderOffers(store, filters)
 
             await userEvent.click(screen.getByTestId('remove-offerer-filter'))
+            await waitForElementToBeRemoved(() =>
+              screen.queryByTestId('spinner')
+            )
 
             expect(
               screen.getByRole('button', {
@@ -269,6 +277,9 @@ describe('route CollectiveOffers', () => {
             await renderOffers(store, filters)
 
             await userEvent.click(screen.getByTestId('remove-offerer-filter'))
+            await waitForElementToBeRemoved(() =>
+              screen.queryByTestId('spinner')
+            )
 
             expect(
               screen.getByRole('button', {
@@ -324,6 +335,7 @@ describe('route CollectiveOffers', () => {
           )
 
           await userEvent.click(screen.getByText('Rechercher'))
+          await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
           expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             'Any word',
@@ -347,6 +359,7 @@ describe('route CollectiveOffers', () => {
 
           await userEvent.type(searchInput, 'search string')
           await userEvent.click(screen.getByText('Rechercher'))
+          await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
           expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             'search string',
@@ -371,6 +384,7 @@ describe('route CollectiveOffers', () => {
           await userEvent.selectOptions(venueSelect, firstVenueOption)
 
           await userEvent.click(screen.getByText('Rechercher'))
+          await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
           expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             undefined,
@@ -395,6 +409,7 @@ describe('route CollectiveOffers', () => {
           )
 
           await userEvent.click(screen.getByText('Rechercher'))
+          await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
@@ -418,6 +433,7 @@ describe('route CollectiveOffers', () => {
           )
 
           await userEvent.click(screen.getByText('Rechercher'))
+          await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
@@ -439,6 +455,7 @@ describe('route CollectiveOffers', () => {
           await userEvent.selectOptions(offerTypeSelect, 'template')
 
           await userEvent.click(screen.getByText('Rechercher'))
+          await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
@@ -525,7 +542,11 @@ describe('route CollectiveOffers', () => {
       vi.spyOn(api, 'getCollectiveOffers')
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
-      await renderOffers(store)
+      // 3rd call is not made if filters are strictly the same
+      const filters = {
+        venueId: '666',
+      }
+      await renderOffers(store, filters)
 
       const firstVenueOption = screen.getByRole('option', {
         name: proVenues[0].name,
@@ -541,7 +562,7 @@ describe('route CollectiveOffers', () => {
         undefined,
         undefined,
         undefined,
-        undefined,
+        '666',
         undefined,
         undefined,
         undefined,
@@ -551,6 +572,7 @@ describe('route CollectiveOffers', () => {
       )
 
       await userEvent.click(screen.getByText('Rechercher'))
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(2)
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
@@ -570,6 +592,7 @@ describe('route CollectiveOffers', () => {
       screen.getByText('Aucune offre trouvée pour votre recherche')
 
       await userEvent.click(screen.getByText('Afficher toutes les offres'))
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(3)
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
@@ -591,8 +614,12 @@ describe('route CollectiveOffers', () => {
       vi.spyOn(api, 'getCollectiveOffers')
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
+      // 3rd call is not made if filters are strictly the same
+      const filters = {
+        venueId: '666',
+      }
 
-      await renderOffers(store)
+      await renderOffers(store, filters)
 
       const venueOptionToSelect = screen.getByRole('option', {
         name: proVenues[0].name,
@@ -608,7 +635,7 @@ describe('route CollectiveOffers', () => {
         undefined,
         undefined,
         undefined,
-        undefined,
+        '666',
         undefined,
         undefined,
         undefined,
@@ -618,6 +645,7 @@ describe('route CollectiveOffers', () => {
       )
 
       await userEvent.click(screen.getByText('Rechercher'))
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(2)
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         2,
@@ -634,6 +662,8 @@ describe('route CollectiveOffers', () => {
       )
 
       await userEvent.click(screen.getByText('Réinitialiser les filtres'))
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(3)
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         3,

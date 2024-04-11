@@ -1,6 +1,5 @@
 import { screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
 import { api } from 'apiClient/api'
 import {
@@ -35,8 +34,6 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-const mockRefreshOffer = vi.fn()
-
 const renderOfferItem = (props: OfferItemProps) =>
   renderWithProviders(
     <>
@@ -63,7 +60,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
     })
 
     props = {
-      refreshOffers: mockRefreshOffer,
       offer,
       selectOffer: vi.fn(),
       audience: Audience.INDIVIDUAL,
@@ -122,7 +118,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
           expect(api.deleteDraftOffers).toHaveBeenCalledWith({
             ids: [offerId.toString()],
           })
-          expect(mockRefreshOffer).toHaveBeenCalledTimes(1)
           expect(
             screen.getByText('1 brouillon a bien été supprimé')
           ).toBeInTheDocument()
