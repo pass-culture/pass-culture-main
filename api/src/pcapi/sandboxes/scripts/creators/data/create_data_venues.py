@@ -83,8 +83,9 @@ def create_data_venues(offerers_by_name: dict) -> dict[str, Venue]:
             siret=siret,
             venueTypeCode=offerers_models.VenueTypeCode.MUSEUM,
             pricing_point="self" if siret else None,
-            reimbursement_point="self" if siret else None,
         )
+        bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
+        offerers_factories.VenueBankAccountLinkFactory(bankAccount=bank_account, venue=venue)
 
         if image_venue_counter < DEFAULT_VENUE_IMAGES:
             add_default_image_to_venue(image_venue_counter, offerer, venue)
