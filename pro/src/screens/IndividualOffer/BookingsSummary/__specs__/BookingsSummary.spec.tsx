@@ -1,4 +1,5 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
@@ -76,5 +77,99 @@ describe('BookingsSummary', () => {
     expect(
       screen.getByText('Vous n’avez pas encore de réservations')
     ).toBeInTheDocument()
+  })
+
+  it('should open a download modal', async () => {
+    const offer = getIndividualOfferFactory({ name: 'Offre de test' })
+
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
+      bookingsRecap: [
+        bookingRecapFactory({
+          stock: bookingRecapStockFactory({ offerName: 'Offre de test' }),
+        }),
+        bookingRecapFactory({
+          stock: bookingRecapStockFactory({ offerName: 'Offre de test' }),
+        }),
+        bookingRecapFactory({
+          stock: bookingRecapStockFactory({ offerName: 'Offre de test' }),
+        }),
+      ],
+      page: 1,
+      pages: 1,
+      total: 3,
+    })
+
+    render(offer)
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    const downloadButton = screen.getByRole('button', {
+      name: 'Télécharger les réservations',
+    })
+
+    expect(downloadButton).toBeInTheDocument()
+
+    await userEvent.click(downloadButton)
+
+    expect(screen.getByText('Télécharger vos réservations')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Annuler' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Format CSV (.csv)' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Format Excel (.xslx)' })
+    ).toBeInTheDocument()
+  })
+
+  it('should close an open download modal', async () => {
+    const offer = getIndividualOfferFactory({ name: 'Offre de test' })
+
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
+      bookingsRecap: [
+        bookingRecapFactory({
+          stock: bookingRecapStockFactory({ offerName: 'Offre de test' }),
+        }),
+        bookingRecapFactory({
+          stock: bookingRecapStockFactory({ offerName: 'Offre de test' }),
+        }),
+        bookingRecapFactory({
+          stock: bookingRecapStockFactory({ offerName: 'Offre de test' }),
+        }),
+      ],
+      page: 1,
+      pages: 1,
+      total: 3,
+    })
+
+    render(offer)
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    const downloadButton = screen.getByRole('button', {
+      name: 'Télécharger les réservations',
+    })
+
+    await userEvent.click(downloadButton)
+
+    const cancelModal = screen.getByRole('button', {
+      name: 'Annuler',
+    })
+
+    expect(downloadButton).toBeInTheDocument()
+
+    await userEvent.click(cancelModal)
+
+    expect(
+      screen.queryByRole('Télécharger vos réservations')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Annuler' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Format CSV (.csv)' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Format Excel (.xslx)' })
+    ).not.toBeInTheDocument()
   })
 })
