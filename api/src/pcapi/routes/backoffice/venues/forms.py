@@ -67,6 +67,10 @@ class EditVenueForm(EditVirtualVenueForm):
         "Activité principale", choices=utils.choices_from_enum(offerers_models.VenueTypeCode)
     )
     is_permanent = fields.PCSwitchBooleanField("Lieu permanent")
+    acceslibre_url = fields.PCOptStringField(
+        "URL chez acceslibre",
+        validators=(wtforms.validators.Optional(), wtforms.validators.URL()),
+    )
 
     def __init__(self, venue: offerers_models.Venue, *args: typing.Any, **kwargs: typing.Any) -> None:
         """
@@ -107,6 +111,30 @@ class EditVenueForm(EditVirtualVenueForm):
                 )
 
         return siret
+
+    def validate_acceslibre_url(self, acceslibre_url: fields.PCOptStringField) -> fields.PCOptStringField:
+        if acceslibre_url.data and not (
+            acceslibre_url.data.startswith("https://") or acceslibre_url.data.startswith("http://")
+        ):
+            raise validators.ValidationError("L'URL doit commencer par https:// ou http://")
+        if acceslibre_url.data and len(acceslibre_url.data.split("/")) < 5:
+            raise validators.ValidationError("L'URL doit contenir au moins cinq parties séparées par '/'")
+        if acceslibre_url.data and (
+            acceslibre_url.data.split("/")[-2] == "" or not utils.is_slug(acceslibre_url.data.split("/")[-2])
+        ):
+            raise validators.ValidationError(
+                "L'URL doit se terminer par /<slug-chez-acceslibre>/ (un slug n'est composé que de minuscules et de tirets du milieu)"
+            )
+
+        if self.is_permanent.data is False and acceslibre_url.data:
+            if self.venue.isPermanent:
+                acceslibre_url.data = None
+            else:
+                raise validators.ValidationError(
+                    "Vous ne pouvez pas ajouter d'url à ce lieu car il n'est pas permanent"
+                )
+
+        return acceslibre_url
 
 
 class CommentForm(FlaskForm):

@@ -274,6 +274,20 @@
                   {{ venue.criteria | format_criteria | safe }}
                 </p>
               {% endif %}
+              {% if venue.accessibilityProvider %}
+                <p class="mb-1">
+                  <span class="fw-bold">Page Acceslibre :</span>
+                  {% if venue.accessibilityProvider.externalAccessibilityUrl %}
+                    <a href="{{ venue.accessibilityProvider.externalAccessibilityUrl | format_website }}"
+                       target="_blank"
+                       class="link-primary">{{ venue.accessibilityProvider.externalAccessibilityUrl | format_website }} <i class="bi bi-box-arrow-up-right"></i></a>
+                  {% elif venue.accessibilityProvider.externalAccessibilityId and not venue.accessibilityProvider.externalAccessibilityUrl %}
+                    Attention, l'URL pour l'identifiant Acceslibre <i>{{ venue.accessibilityProvider.externalAccessibilityId }}</i> n'est pas renseignée
+                  {% elif not venue.accessibilityProvider.externalAccessibilityId and not venue.accessibilityProvider.externalAccessibilityUrl %}
+                    Attention, l'URL et l'identifiant Acceslibre ne sont pas renseignés alors que le lieu est synchronisé
+                  {% endif %}
+                </p>
+              {% endif %}
             </div>
             <div class="col-4">
               {% for venue_provider in venue.venueProviders %}

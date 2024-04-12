@@ -194,6 +194,9 @@ def get_venue(venue_id: int) -> offerers_models.Venue:
             providers_models.Provider.apiUrl,
             providers_models.Provider.isActive,
         ),
+        sa.orm.joinedload(offerers_models.Venue.accessibilityProvider).load_only(
+            offerers_models.AccessibilityProvider.externalAccessibilityId
+        ),
     )
 
     venue = venue_query.one_or_none()
@@ -230,6 +233,7 @@ def render_venue_details(
                 postal_code=venue.postalCode,
                 address=venue.street,
                 ban_id=venue.banId,
+                acceslibre_url=venue.external_accessibility_url,
                 booking_email=venue.bookingEmail,
                 phone_number=venue.contact.phone_number if venue.contact else None,
                 is_permanent=venue.isPermanent,
@@ -561,7 +565,6 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
 
     venue_was_permanent = venue.isPermanent
     new_permanent = attrs.get("isPermanent")
-
     update_siret = False
     if not venue.isVirtual and venue.siret != form.siret.data:
         new_siret = form.siret.data
@@ -622,7 +625,13 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
 
     try:
         offerers_api.update_venue(
-            venue, author=current_user, contact_data=contact_data, criteria=criteria, admin_update=True, **attrs
+            venue,
+            author=current_user,
+            contact_data=contact_data,
+            criteria=criteria,
+            external_accessibility_url=form.acceslibre_url.data if hasattr(form, "acceslibre_url") else "",
+            admin_update=True,
+            **attrs,
         )
     except ApiErrors as api_errors:
         for error_key, error_details in api_errors.errors.items():

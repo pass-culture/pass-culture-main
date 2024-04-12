@@ -91,6 +91,7 @@ def update_venue(
     opening_days: list[serialize_base.OpeningHoursModel] | None = None,
     contact_data: serialize_base.VenueContactModel | None = None,
     criteria: list[criteria_models.Criterion] | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
+    external_accessibility_url: str | None | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     admin_update: bool = False,
     **attrs: typing.Any,
 ) -> models.Venue:
@@ -122,6 +123,24 @@ def update_venue(
             )
             upsert_venue_opening_hours(venue, opening_hours_data)
 
+    if external_accessibility_url is not offerers_constants.UNCHANGED:
+        external_accessibility_id = external_accessibility_url.split("/")[-2] if external_accessibility_url else None
+        external_accessibility_infos = {
+            "externalAccessibilityId": external_accessibility_id,
+            "externalAccessibilityUrl": external_accessibility_url,
+        }
+        venue_snapshot.trace_update(
+            external_accessibility_infos,
+            target=venue.accessibilityProvider or offerers_models.AccessibilityProvider(),
+            field_name_template="accessibilityProvider.{}",
+        )
+        if external_accessibility_id:
+            set_accessibility_provider_id(venue, external_accessibility_id, external_accessibility_url)
+            set_accessibility_last_update_at_provider(venue)
+            set_accessibility_infos_from_provider_id(venue)
+        else:
+            delete_venue_accessibility_provider(venue)
+
     if criteria is not offerers_constants.UNCHANGED:
         if set(venue.criteria) != set(criteria):
             modifications["criteria"] = criteria
@@ -144,7 +163,6 @@ def update_venue(
 
     # keep commit with repository.save() as long as venue is validated in pcapi.validation.models.venue
     repository.save(venue)
-
     search.async_index_venue_ids(
         [venue.id],
         reason=search.IndexationReason.VENUE_UPDATE,
@@ -2095,25 +2113,34 @@ def get_venue_opening_hours_by_weekday(venue: models.Venue, weekday: models.Week
     return models.OpeningHours(weekday=weekday)
 
 
-def set_accessibility_provider_id(venue: models.Venue) -> None:
-    id_and_url_at_provider = accessibility_provider.get_id_at_accessibility_provider(
-        name=venue.name,
-        public_name=venue.publicName,
-        siret=venue.siret,
-        ban_id=venue.banId,
-        city=venue.city,
-        postal_code=venue.postalCode,
-        address=venue.street,
-    )
-    if id_and_url_at_provider:
+def delete_venue_accessibility_provider(venue: models.Venue) -> None:
+    models.AccessibilityProvider.query.filter_by(venueId=venue.id).delete(synchronize_session=False)
+
+
+def set_accessibility_provider_id(
+    venue: models.Venue, id_at_provider: str | None = None, url_at_provider: str | None = None
+) -> None:
+    if not (id_at_provider and url_at_provider):
+        if id_and_url_at_provider := accessibility_provider.get_id_at_accessibility_provider(
+            name=venue.name,
+            public_name=venue.publicName,
+            siret=venue.siret,
+            ban_id=venue.banId,
+            city=venue.city,
+            postal_code=venue.postalCode,
+            address=venue.street,
+        ):
+            id_at_provider = id_and_url_at_provider["slug"]
+            url_at_provider = id_and_url_at_provider["url"]
+    if id_at_provider and url_at_provider:
         if not venue.accessibilityProvider:
             venue.accessibilityProvider = models.AccessibilityProvider(
-                externalAccessibilityId=id_and_url_at_provider["slug"],
-                externalAccessibilityUrl=id_and_url_at_provider["url"],
+                externalAccessibilityId=id_at_provider,
+                externalAccessibilityUrl=url_at_provider,
             )
         else:
-            venue.accessibilityProvider.externalAccessibilityId = id_and_url_at_provider["slug"]
-            venue.accessibilityProvider.externalAccessibilityUrl = id_and_url_at_provider["url"]
+            venue.accessibilityProvider.externalAccessibilityId = id_at_provider
+            venue.accessibilityProvider.externalAccessibilityUrl = url_at_provider
         db.session.add(venue.accessibilityProvider)
 
 

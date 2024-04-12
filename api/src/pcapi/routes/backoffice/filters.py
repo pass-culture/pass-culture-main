@@ -664,6 +664,10 @@ def format_modified_info_name(info_name: str) -> str:
             return "Activité principale"
         case "label":
             return "Intitulé"
+        case "accessibilityProvider.externalAccessibilityId":
+            return "Id chez Acceslibre"
+        case "accessibilityProvider.externalAccessibilityUrl":
+            return "Url chez Acceslibre"
         case _:
             return info_name.replace("_", " ").capitalize()
 
