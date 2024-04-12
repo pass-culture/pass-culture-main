@@ -43,7 +43,7 @@ describe('BookingsSummary', () => {
       ],
       page: 1,
       pages: 1,
-      total: 3,
+      total: 12,
     })
 
     render(offer)
@@ -51,11 +51,40 @@ describe('BookingsSummary', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(screen.getByText(/Réservations/)).toBeInTheDocument()
+    expect(screen.getByText('12 réservations')).toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: 'Télécharger les réservations' })
     ).toBeInTheDocument()
     expect(screen.getAllByRole('link', { name: 'Offre de test' })).toHaveLength(
       3
+    )
+  })
+
+  it('should render 1 bookings', async () => {
+    const offer = getIndividualOfferFactory({ name: 'Offre de test' })
+
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
+      bookingsRecap: [
+        bookingRecapFactory({
+          stock: bookingRecapStockFactory({ offerName: 'Offre de test' }),
+        }),
+      ],
+      page: 1,
+      pages: 1,
+      total: 1,
+    })
+
+    render(offer)
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(screen.getByText(/Réservations/)).toBeInTheDocument()
+    expect(screen.getByText('1 réservation')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Télécharger les réservations' })
+    ).toBeInTheDocument()
+    expect(screen.getAllByRole('link', { name: 'Offre de test' })).toHaveLength(
+      1
     )
   })
 
@@ -76,5 +105,7 @@ describe('BookingsSummary', () => {
     expect(
       screen.getByText('Vous n’avez pas encore de réservations')
     ).toBeInTheDocument()
+
+    expect(screen.queryByText(/\d réservation.?/)).not.toBeInTheDocument()
   })
 })
