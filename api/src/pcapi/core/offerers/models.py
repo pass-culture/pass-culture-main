@@ -757,6 +757,18 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
         return opening_days
 
+    @property
+    def external_accessibility_id(self) -> str | None:
+        if not self.accessibilityProvider:
+            return None
+        return self.accessibilityProvider.externalAccessibilityId
+
+    @property
+    def external_accessibility_url(self) -> str | None:
+        if not self.accessibilityProvider:
+            return None
+        return self.accessibilityProvider.externalAccessibilityUrl
+
 
 class GooglePlacesInfo(PcObject, Base, Model):
     __tablename__ = "google_places_info"

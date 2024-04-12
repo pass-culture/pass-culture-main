@@ -889,10 +889,13 @@ class UpdateVenueTest(PostEndpointHelper):
             "postal_code": venue.postalCode or "",
             "street": venue.street or "",
             "ban_id": venue.banId or "",
+            "acceslibre_url": venue.external_accessibility_url or "",
+            "acceslibre_id": venue.external_accessibility_id or "",
             "booking_email": venue.bookingEmail or "",
             "phone_number": venue.contact.phone_number or "",
             "longitude": venue.longitude,
             "latitude": venue.latitude,
+            "is_permanent": venue.isPermanent,
             "venue_type_code": venue.venueTypeCode.name,
         }
 
@@ -1269,9 +1272,6 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.siret == original_siret
 
     def test_update_venue_ban_id(self, authenticated_client):
-        bo_user = users_factories.AdminFactory()
-        backoffice_api.upsert_roles(bo_user, [perm_models.Roles.SUPPORT_PRO])
-
         venue = offerers_factories.VenueFactory()
 
         data = self._get_current_data(venue)
@@ -1291,6 +1291,186 @@ class UpdateVenueTest(PostEndpointHelper):
             "modified_info": {
                 "banId": {"new_info": "15152_0024_00003", "old_info": "75102_7560_00001"},
                 "isPermanent": {"new_info": True, "old_info": False},
+            }
+        }
+
+    def test_update_venue_accessibility_provider_with_url(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.LIBRARY)
+        assert not venue.accessibilityProvider
+        data = self._get_current_data(venue)
+
+        data["acceslibre_url"] = "https://acceslibre.beta.gouv.fr/des/trucs/et/&/enfin/mon-slug/"
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+        assert response.status_code == 303
+
+        db.session.refresh(venue)
+        assert venue.external_accessibility_id == "mon-slug"
+        assert venue.external_accessibility_url == data["acceslibre_url"]
+        assert venue.accessibilityProvider
+        assert venue.accessibilityProvider.externalAccessibilityData
+        assert venue.action_history[0].extraData == {
+            "modified_info": {
+                "accessibilityProvider.externalAccessibilityId": {"new_info": "mon-slug", "old_info": None},
+                "accessibilityProvider.externalAccessibilityUrl": {
+                    "new_info": "https://acceslibre.beta.gouv.fr/des/trucs/et/&/enfin/mon-slug/",
+                    "old_info": None,
+                },
+            }
+        }
+
+    def test_update_venue_accessibility_provider_id(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.LIBRARY)
+        offerers_factories.AccessibilityProviderFactory(
+            venue=venue,
+            externalAccessibilityId="old-slug",
+            externalAccessibilityUrl="https://acceslibre.beta.gouv.fr/my/old-slug/",
+        )
+        data = self._get_current_data(venue)
+
+        data["acceslibre_url"] = "https://acceslibre.beta.gouv.fr/my/new-slug/"
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+        assert response.status_code == 303
+
+        db.session.refresh(venue)
+        assert venue.external_accessibility_id == "new-slug"
+        assert venue.action_history[0].extraData == {
+            "modified_info": {
+                "accessibilityProvider.externalAccessibilityId": {"new_info": "new-slug", "old_info": "old-slug"},
+                "accessibilityProvider.externalAccessibilityUrl": {
+                    "new_info": "https://acceslibre.beta.gouv.fr/my/new-slug/",
+                    "old_info": "https://acceslibre.beta.gouv.fr/my/old-slug/",
+                },
+            }
+        }
+
+    def test_delete_venue_accessibility_provider(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.LIBRARY)
+        offerers_factories.AccessibilityProviderFactory(
+            venue=venue,
+            externalAccessibilityId="mon-slug",
+            externalAccessibilityUrl="https://acceslibre.beta.gouv.fr/erps/mon-slug/",
+        )
+        data = self._get_current_data(venue)
+
+        data["acceslibre_url"] = None
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+        assert response.status_code == 303
+        db.session.refresh(venue)
+        assert not venue.accessibilityProvider
+        assert venue.action_history[0].extraData == {
+            "modified_info": {
+                "accessibilityProvider.externalAccessibilityId": {
+                    "new_info": None,
+                    "old_info": "mon-slug",
+                },
+                "accessibilityProvider.externalAccessibilityUrl": {
+                    "new_info": None,
+                    "old_info": "https://acceslibre.beta.gouv.fr/erps/mon-slug/",
+                },
+            }
+        }
+
+    def test_update_venue_accessibility_provider_id_bad_url(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.LIBRARY)
+        offerers_factories.AccessibilityProviderFactory(venue=venue, externalAccessibilityUrl="https://good.url")
+        data = self._get_current_data(venue)
+
+        data["acceslibre_url"] = "https://bad.url/"
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+        assert response.status_code == 400
+        assert "Les données envoyées comportent des erreurs." in html_parser.extract_alert(response.data)
+        db.session.refresh(venue)
+        assert venue.accessibilityProvider.externalAccessibilityUrl == "https://good.url"
+
+    def test_update_venue_accessibility_provider_id_empty_slug(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.LIBRARY)
+        offerers_factories.AccessibilityProviderFactory(
+            venue=venue, externalAccessibilityUrl="https://acceslibre.beta.gouv.fr/erps/mon-slug/"
+        )
+
+        data = self._get_current_data(venue)
+        data["acceslibre_url"] = "https://acceslibre.beta.gouv.fr/erps//"
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 400
+        assert "Les données envoyées comportent des erreurs." in html_parser.extract_alert(response.data)
+        db.session.refresh(venue)
+        assert venue.accessibilityProvider.externalAccessibilityUrl == "https://acceslibre.beta.gouv.fr/erps/mon-slug/"
+
+    def test_should_update_permanent_venue_accessibility_provider(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.TRAVELING_CINEMA)
+
+        data = self._get_current_data(venue)
+        data["acceslibre_url"] = "https://acceslibre.beta.gouv.fr/erps/mon-slug/"
+        data["is_permanent"] = True
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 303
+        db.session.refresh(venue)
+        assert venue.accessibilityProvider
+        assert venue.action_history[0].extraData == {
+            "modified_info": {
+                "accessibilityProvider.externalAccessibilityId": {
+                    "new_info": "mon-slug",
+                    "old_info": None,
+                },
+                "accessibilityProvider.externalAccessibilityUrl": {
+                    "new_info": "https://acceslibre.beta.gouv.fr/erps/mon-slug/",
+                    "old_info": None,
+                },
+                "isPermanent": {
+                    "new_info": True,
+                    "old_info": False,
+                },
+            }
+        }
+
+    def test_should_not_update_non_permanent_venue_accessibility_provider(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.TRAVELING_CINEMA)
+
+        data = self._get_current_data(venue)
+        data["acceslibre_url"] = "https://acceslibre.beta.gouv.fr/erps/mon-slug/"
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 400
+        assert "Les données envoyées comportent des erreurs." in html_parser.extract_alert(response.data)
+        db.session.refresh(venue)
+        assert venue.accessibilityProvider == None
+
+    def test_should_delete_accessibility_provider_when_venue_becomes_non_permanent(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.LIBRARY)
+        offerers_factories.AccessibilityProviderFactory(
+            venue=venue,
+            externalAccessibilityId="mon-slug",
+            externalAccessibilityUrl="https://acceslibre.beta.gouv.fr/erps/mon-slug/",
+        )
+        data = self._get_current_data(venue)
+        data["acceslibre_url"] = "https://acceslibre.beta.gouv.fr/erps/mon-nouveau-slug/"
+        data["is_permanent"] = False
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 303
+        db.session.refresh(venue)
+        assert not venue.accessibilityProvider
+        assert venue.action_history[0].extraData == {
+            "modified_info": {
+                "accessibilityProvider.externalAccessibilityId": {
+                    "new_info": None,
+                    "old_info": "mon-slug",
+                },
+                "accessibilityProvider.externalAccessibilityUrl": {
+                    "new_info": None,
+                    "old_info": "https://acceslibre.beta.gouv.fr/erps/mon-slug/",
+                },
+                "isPermanent": {
+                    "new_info": False,
+                    "old_info": True,
+                },
             }
         }
 

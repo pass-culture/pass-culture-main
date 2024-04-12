@@ -1,4 +1,5 @@
 import enum
+import re
 import typing
 
 from flask_wtf import FlaskForm
@@ -23,3 +24,8 @@ def choices_from_enum(
     exclude_opts: typing.Iterable[enum.Enum] = (),
 ) -> list[tuple]:
     return [(opt.name, formatter(opt) if formatter else opt.value) for opt in enum_cls if opt not in exclude_opts]
+
+
+def is_slug(string: str) -> bool:
+    pattern = r"^[a-z0-9\-]+$"
+    return bool(re.match(pattern, string))
