@@ -244,6 +244,7 @@ def _get_collective_offers(form: forms.InternalSearchForm) -> list[educational_m
             ),
             sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).load_only(
                 educational_models.CollectiveStock.beginningDatetime,
+                educational_models.CollectiveStock.price,
             ),
             sa.orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True).load_only(
                 offerers_models.Venue.managingOffererId,
