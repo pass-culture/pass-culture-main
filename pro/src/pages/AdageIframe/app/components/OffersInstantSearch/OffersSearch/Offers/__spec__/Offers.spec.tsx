@@ -263,7 +263,7 @@ describe('offers', () => {
     expect(listItemsInOffer).toHaveLength(2)
     expect(screen.getByText(offerInParis.name)).toBeInTheDocument()
     expect(screen.getByText(offerInCayenne.name)).toBeInTheDocument()
-    expect(screen.getByText('2 résultats')).toBeInTheDocument()
+    expect(screen.getByText('2 offres au total')).toBeInTheDocument()
   })
 
   it('should display non bookable offers', async () => {
@@ -319,7 +319,7 @@ describe('offers', () => {
     expect(screen.queryByText(offerInParis.name)).not.toBeInTheDocument()
     expect(screen.queryByText(offerInCayenne.name)).not.toBeInTheDocument()
 
-    expect(screen.getByText('1 résultat')).toBeInTheDocument()
+    expect(screen.getByText('1 offre au total')).toBeInTheDocument()
   })
 
   it('should show most recent results and cancel previous request', async () => {
