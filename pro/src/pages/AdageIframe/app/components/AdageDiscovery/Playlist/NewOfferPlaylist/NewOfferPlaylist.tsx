@@ -71,7 +71,7 @@ export const NewOfferPlaylist = ({
       }
       elements={offers.map((offer, index) => (
         <OfferCardComponent
-          handlePlaylistElementTracking={() =>
+          handleTracking={() =>
             trackPlaylistElementClicked({
               playlistId: NEW_OFFER_PLAYLIST,
               playlistType: AdagePlaylistType.OFFER,

@@ -101,6 +101,15 @@ vi.mock('@algolia/autocomplete-plugin-query-suggestions', () => {
   }
 })
 
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: () => ({
+    matches: false,
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+  }),
+})
+
 const renderApp = (options?: RenderWithProvidersOptions) => {
   renderWithProviders(
     <>

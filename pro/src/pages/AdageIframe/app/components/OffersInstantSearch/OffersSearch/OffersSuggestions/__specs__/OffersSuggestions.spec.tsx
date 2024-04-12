@@ -39,6 +39,15 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: () => ({
+    matches: false,
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+  }),
+})
+
 const renderOffersSuggestionsComponent = (
   props: OffersSuggestionsProps,
   user: AuthenticatedResponse,

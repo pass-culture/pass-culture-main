@@ -14,13 +14,10 @@ import styles from './OfferCard.module.scss'
 
 export interface CardComponentProps {
   offer: CollectiveOfferTemplateResponseModel
-  handlePlaylistElementTracking: () => void
+  handleTracking: () => void
 }
 
-const OfferCardComponent = ({
-  offer,
-  handlePlaylistElementTracking,
-}: CardComponentProps) => {
+const OfferCardComponent = ({ offer, handleTracking }: CardComponentProps) => {
   const location = useLocation()
 
   const currentPathname = location.pathname.split('/')[2]
@@ -36,7 +33,7 @@ const OfferCardComponent = ({
         to={`/adage-iframe/${currentPathname}/offre/${offer.id}?token=${adageAuthToken}`}
         state={{ offer }}
         onClick={() => {
-          handlePlaylistElementTracking()
+          handleTracking()
         }}
       >
         <div className={styles['offer-image-container']}>
