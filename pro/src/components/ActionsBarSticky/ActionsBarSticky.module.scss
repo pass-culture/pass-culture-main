@@ -62,10 +62,21 @@
     box-shadow: 0 2px rem.torem(16px) var(--color-large-shadow);
     border-top: unset;
 
+    &-new-interface {
+      margin-left: calc(rem.torem(size.$side-nav-width));
+      justify-content: flex-start;
+      padding-left: rem.torem(32px);
+    }
+
     .actions-bar-content {
       justify-content: space-between;
       flex-flow: row wrap;
       margin-top: unset;
+
+      &-new-interface {
+        justify-content: flex-start;
+        margin: 0;
+      }
 
       .left {
         margin: 0;

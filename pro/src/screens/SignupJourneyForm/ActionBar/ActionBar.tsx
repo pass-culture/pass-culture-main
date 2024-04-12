@@ -89,7 +89,7 @@ const ActionBar = ({
   }
 
   return (
-    <ActionsBarSticky>
+    <ActionsBarSticky hasSideNav={false}>
       <ActionsBarSticky.Left>{Left()}</ActionsBarSticky.Left>
       <ActionsBarSticky.Right>{Right()}</ActionsBarSticky.Right>
     </ActionsBarSticky>
