@@ -9,7 +9,6 @@ import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
-import { Card } from '../Card'
 import {
   getVirtualVenueFromOfferer,
   getPhysicalVenuesFromOfferer,
@@ -39,11 +38,11 @@ export const VenueCreationLinks = ({ offerer }: VenueCreationLinksProps) => {
     ? `/structures/${offerer?.id}/lieux/creation`
     : UNAVAILABLE_ERROR_PAGE
 
-  const renderLinks = (insideCard: boolean) => {
-    return (
+  return (
+    <div className={styles['container']}>
       <div className={styles['add-venue-button']}>
         <ButtonLink
-          variant={insideCard ? ButtonVariant.PRIMARY : ButtonVariant.SECONDARY}
+          variant={ButtonVariant.SECONDARY}
           link={{
             to: venueCreationUrl,
             isExternal: false,
@@ -58,25 +57,6 @@ export const VenueCreationLinks = ({ offerer }: VenueCreationLinksProps) => {
           Ajouter un lieu
         </ButtonLink>
       </div>
-    )
-  }
-
-  const renderCard = () => (
-    <Card data-testid="offerers-creation-links-card">
-      <h3 className={styles['title']}>Lieux</h3>
-
-      <div className={styles['content']}>
-        <p>
-          Avant de créer votre première offre physique vous devez avoir un lieu
-        </p>
-        {renderLinks(true)}
-      </div>
-    </Card>
-  )
-
-  return (
-    <div className={styles['container']}>
-      {!hasVirtualOffers ? renderCard() : renderLinks(false)}
     </div>
   )
 }
