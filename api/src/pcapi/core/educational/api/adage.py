@@ -15,6 +15,7 @@ from pcapi.core.mails.transactional import send_eac_offerer_activation_email
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.repository import get_emails_by_venue
+from pcapi.models import db
 from pcapi.repository import atomic
 from pcapi.routes.serialization import venues_serialize
 from pcapi.utils.cache import get_from_cache
@@ -162,6 +163,7 @@ def synchronize_adage_ids_on_venues(debug: bool = False) -> None:
     with atomic():
         for venue in deactivated_venues:
             _remove_venue_from_eac(venue)
+            db.session.add(venue)
 
         for venue in venues:
             if not venue.adageId:
@@ -179,6 +181,7 @@ def synchronize_adage_ids_on_venues(debug: bool = False) -> None:
                 adage_id_updates[venue.id] = adage_id
 
             venue.adageId = adage_id
+            db.session.add(venue)
 
         # filter adage_ids_venues rows that are linked to an unexisting
         # venue. This can happen since the base data comes from an
