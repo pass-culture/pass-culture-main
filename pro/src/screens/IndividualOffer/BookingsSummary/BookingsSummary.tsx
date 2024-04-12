@@ -5,16 +5,18 @@ import {
   BookingRecapResponseModel,
   GetIndividualOfferResponseModel,
 } from 'apiClient/v1'
-import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import {
   DEFAULT_PRE_FILTERS,
   EMPTY_FILTER_VALUE,
 } from 'core/Bookings/constants'
+import useActiveFeature from 'hooks/useActiveFeature'
 import strokeBookingHold from 'icons/stroke-booking-hold.svg'
 import { getFilteredBookingsRecapAdapter } from 'pages/Bookings/adapters'
 import { IndividualBookingsTable } from 'screens/Bookings/BookingsRecapTable/BookingsTable/IndividualBookingsTable'
 import { DEFAULT_OMNISEARCH_CRITERIA } from 'screens/Bookings/BookingsRecapTable/Filters'
 import filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
+import { Button } from 'ui-kit/Button'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
@@ -33,6 +35,10 @@ export const BookingsSummaryScreen = ({
   )
   const [bookingsStatusFilters, setBookingsStatusFilter] = useState<string[]>(
     []
+  )
+
+  const isDownloadBookingsFeatureEnabled = useActiveFeature(
+    'WIP_ENABLE_DOWNLOAD_BOOKINGS'
   )
 
   useEffect(() => {
@@ -85,7 +91,15 @@ export const BookingsSummaryScreen = ({
   })
 
   return (
-    <SummarySection title="Réservations">
+    <>
+      <div className={styles['header']}>
+        <h2 className={styles['header-title']}>Réservations</h2>
+        {isDownloadBookingsFeatureEnabled && (
+          <Button variant={ButtonVariant.PRIMARY}>
+            Télécharger les réservations
+          </Button>
+        )}
+      </div>
       {bookings !== null ? (
         <>
           <IndividualBookingsTable
@@ -100,6 +114,6 @@ export const BookingsSummaryScreen = ({
       ) : (
         <Spinner />
       )}
-    </SummarySection>
+    </>
   )
 }
