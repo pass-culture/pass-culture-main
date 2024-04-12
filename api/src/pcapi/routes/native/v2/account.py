@@ -119,3 +119,7 @@ def select_new_email(user: users_models.User, body: serializers.NewEmailSelectio
             {"code": "INVALID_TOKEN", "message": "Aucune demande de changement d'email en cours"},
             status_code=401,
         ) from e
+    except exceptions.EmailExistsError:
+        # Returning an error message might help the end client find
+        # existing email addresses through user enumeration attacks.
+        pass

@@ -163,7 +163,7 @@ def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> seriali
         )
     except exceptions.EmailExistsError:
         # Returning an error message might help the end client find
-        # existing email addresses.
+        # existing email addresses through user enumeration attacks.
         token = token_utils.Token.load_without_checking(body.token)
         user = users_models.User.query.get(token.user_id)
     return serializers.ChangeBeneficiaryEmailResponse(
