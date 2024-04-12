@@ -10,6 +10,7 @@ $offer-image-width: rem.torem(216px);
   flex-direction: column;
   width: $offer-image-width;
   gap: rem.torem(16px);
+  z-index: 0;
 }
 
 .offer-link {

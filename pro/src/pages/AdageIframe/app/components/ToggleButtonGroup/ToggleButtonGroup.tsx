@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { MouseEvent } from 'react'
 
 import styles from './ToggleButtonGroup.module.scss'
@@ -15,18 +16,20 @@ type ToggleButtonGroupProps = {
   groupLabel: string
   buttons: ToggleButton[]
   activeButton: string
+  className?: string
 }
 
 export default function ToggleButtonGroup({
   groupLabel,
   buttons,
   activeButton,
+  className,
 }: ToggleButtonGroupProps) {
   return (
     <div
       role="group"
       aria-label={groupLabel}
-      className={styles['button-group']}
+      className={cn(styles['button-group'], className)}
     >
       {buttons.map((button) => (
         <ToggleButtonGroupButton

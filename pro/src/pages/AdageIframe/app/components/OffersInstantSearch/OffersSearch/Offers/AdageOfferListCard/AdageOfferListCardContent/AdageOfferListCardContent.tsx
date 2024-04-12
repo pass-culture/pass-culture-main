@@ -44,7 +44,10 @@ export function AdageOfferListCardContent({
         </div>
       )}
       {description && (
-        <p className={styles['offer-description']}>
+        <p
+          className={styles['offer-description']}
+          data-testid="offer-description"
+        >
           {formatDescription(description)}
         </p>
       )}

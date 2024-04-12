@@ -47,6 +47,15 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: () => ({
+    matches: false,
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+  }),
+})
+
 const searchFakeResults = [
   {
     objectID: '479',
@@ -782,5 +791,50 @@ describe('offers', () => {
     expect(
       screen.getByRole('link', { name: offerInCayenne.name })
     ).toBeInTheDocument()
+  })
+
+  it('should enable grid vue on toggle click', async () => {
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(offerInParis)
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+      offerInCayenne
+    )
+    renderOffers({ ...offersProps, isBackToTopVisibile: true }, adageUser, {
+      features: ['WIP_ENABLE_ADAGE_VISUALIZATION'],
+    })
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(screen.getByText('Une offre vraiment chouette')).toBeInTheDocument()
+
+    const gridVue = screen.getByTestId('toggle-button')
+
+    await userEvent.click(gridVue)
+
+    expect(
+      screen.queryByText('Une offre vraiment chouette')
+    ).not.toBeInTheDocument()
+  })
+
+  it('should change to grid vue when breakpoint active', async () => {
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: () => ({
+        matches: true,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+      }),
+    })
+
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(offerInParis)
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+      offerInCayenne
+    )
+    renderOffers({ ...offersProps, isBackToTopVisibile: true }, adageUser, {
+      features: ['WIP_ENABLE_ADAGE_VISUALIZATION'],
+    })
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(
+      screen.queryByText('Une offre vraiment chouette')
+    ).not.toBeInTheDocument()
   })
 })
