@@ -9,7 +9,7 @@ describe('Adage discovery', () => {
     }).as('getNewTemplateOffersPlaylist')
   })
 
-  it.only('should redirect to adage discovery', () => {
+  it('should redirect to adage discovery', () => {
     const adageToken = Cypress.env('adageToken')
     cy.visit(`/adage-iframe?token=${adageToken}`)
 
@@ -19,7 +19,7 @@ describe('Adage discovery', () => {
       'aria-current',
       'page'
     )
-    cy.contains('Découvrez la part collective du pass ulture')
+    cy.contains('Découvrez la part collective du pass Culture')
   })
 
   it('should redirect to adage search page with filtered venue', () => {
