@@ -111,9 +111,33 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Date de l'évènement"] == (datetime.date.today() + datetime.timedelta(days=1)).strftime(
             "%d/%m/%Y"
         )
+        assert rows[0]["Tarif"] == "10,10 €"
         assert rows[0]["Formats"] == ", ".join([fmt.value for fmt in collective_offers[0].formats])
         assert rows[0]["Structure"] == collective_offers[0].venue.managingOfferer.name
         assert rows[0]["Lieu"] == collective_offers[0].venue.name
+
+    def test_list_collective_offers_without_fraud_permission(
+        self,
+        client,
+        read_only_bo_user,
+        collective_offers,
+    ):
+        user = offerers_factories.UserOffererFactory().user
+
+        searched_id = str(collective_offers[0].id)
+
+        response = client.with_bo_session_auth(read_only_bo_user).get(
+            url_for(
+                self.endpoint,
+                q=searched_id,
+                user_id=user.id,
+            )
+        )
+        assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert "Tarif" not in rows[0]
+        assert "Règles de conformité" not in rows[0]
 
     def test_list_collective_offers_by_name(self, authenticated_client, collective_offers):
         searched_name = collective_offers[1].name
@@ -132,6 +156,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Date de l'évènement"] == (datetime.date.today() + datetime.timedelta(days=3)).strftime(
             "%d/%m/%Y"
         )
+        assert rows[0]["Tarif"] == "11,00 €"
         assert rows[0]["Structure"] == collective_offers[1].venue.managingOfferer.name
         assert rows[0]["Lieu"] == collective_offers[1].venue.name
 
