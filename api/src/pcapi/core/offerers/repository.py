@@ -2,6 +2,7 @@ from datetime import date
 from datetime import datetime
 from datetime import timedelta
 import logging
+from typing import Collection
 from typing import Iterable
 
 from flask_sqlalchemy import BaseQuery
@@ -376,6 +377,12 @@ def get_venues_educational_statuses() -> list[models.VenueEducationalStatus]:
 
 def get_venue_by_id(venue_id: int) -> models.Venue:
     return models.Venue.query.get(venue_id)
+
+
+def get_venues_by_ids(ids: Collection[int]) -> Collection[models.Venue]:
+    return models.Venue.query.filter(models.Venue.id.in_(ids)).options(
+        sqla.orm.joinedload(models.Venue.googlePlacesInfo)
+    )
 
 
 def find_offerers_validated_3_days_ago_with_no_venues() -> list[models.Offerer]:
