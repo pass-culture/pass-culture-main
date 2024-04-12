@@ -8,5 +8,6 @@ export type TrackingCTAShareBody = {
   offerId: number;
   queryId?: string | null;
   source: string;
+  vueType?: string | null;
 };
 

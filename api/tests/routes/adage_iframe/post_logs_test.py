@@ -140,6 +140,7 @@ class LogsTest:
                     "stockId": 1,
                     "iframeFrom": "for_my_institution",
                     "queryId": "1234a",
+                    "vueType": "vt",
                 },
             )
 
@@ -153,13 +154,14 @@ class LogsTest:
             "userId": get_hashed_user_id(EMAIL),
             "uai": UAI,
             "user_role": AdageFrontRoles.READONLY,
+            "vueType": "vt",
         }
 
     def test_log_offer_template_details_button_click(self, test_client, caplog):
         with caplog.at_level(logging.INFO):
             response = test_client.post(
                 url_for("adage_iframe.log_offer_template_details_button_click"),
-                json={"offerId": 1, "iframeFrom": "for_my_institution"},
+                json={"offerId": 1, "iframeFrom": "for_my_institution", "vueType": "vt"},
             )
 
         assert response.status_code == 204
@@ -172,6 +174,7 @@ class LogsTest:
             "userId": get_hashed_user_id(EMAIL),
             "uai": UAI,
             "user_role": AdageFrontRoles.READONLY,
+            "vueType": "vt",
         }
 
     def test_log_booking_modal_button_click(self, test_client, caplog):
@@ -221,7 +224,7 @@ class LogsTest:
         with caplog.at_level(logging.INFO):
             response = test_client.post(
                 url_for("adage_iframe.log_fav_offer_button_click"),
-                json={"offerId": 1, "iframeFrom": "for_my_institution", "isFavorite": True},
+                json={"offerId": 1, "iframeFrom": "for_my_institution", "isFavorite": True, "vueType": "vt"},
             )
 
         assert response.status_code == 204
@@ -236,6 +239,7 @@ class LogsTest:
             "uai": UAI,
             "user_role": AdageFrontRoles.READONLY,
             "isFromNoResult": None,
+            "vueType": "vt",
         }
 
     def test_log_header_link_click(self, test_client, caplog):
@@ -451,6 +455,7 @@ class LogsTest:
             "source": "source",
             "offerId": 1,
             "iframeFrom": "some_iframe",
+            "vueType": "vt",
         }
 
         with caplog.at_level(logging.INFO):
@@ -473,6 +478,7 @@ class LogsTest:
             "uai": UAI,
             "userId": utils.get_hashed_user_id(EMAIL),
             "analyticsSource": "adage",
+            "vueType": "vt",
         }
 
     def test_log_contact_url_button_click(self, test_client, caplog):
