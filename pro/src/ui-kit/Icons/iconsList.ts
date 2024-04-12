@@ -4,6 +4,7 @@ import fullArrowLeftIcon from 'icons/full-arrow-left.svg'
 import fullArrowRightIcon from 'icons/full-arrow-right.svg'
 import fullBackIcon from 'icons/full-back.svg'
 import fullBurgerkIcon from 'icons/full-burger.svg'
+import fullCheckIcon from 'icons/full-check.svg'
 import fullClearIcon from 'icons/full-clear.svg'
 import fullCodeIcon from 'icons/full-code.svg'
 import fullDeskIcon from 'icons/full-desk.svg'
@@ -15,6 +16,7 @@ import fullDuplicateIcon from 'icons/full-duplicate.svg'
 import fullEditIcon from 'icons/full-edit.svg'
 import fullErrorIcon from 'icons/full-error.svg'
 import fullGoTop from 'icons/full-go-top.svg'
+import fullGridIcon from 'icons/full-grid.svg'
 import fullHelpIcon from 'icons/full-help.svg'
 import fullHideIcon from 'icons/full-hide.svg'
 import fullInfoIcon from 'icons/full-info.svg'
@@ -23,6 +25,7 @@ import fullLeftIcon from 'icons/full-left.svg'
 import fullLessIcon from 'icons/full-less.svg'
 import fullLikeIcon from 'icons/full-like.svg'
 import fullLinkIcon from 'icons/full-link.svg'
+import fullListIcon from 'icons/full-list.svg'
 import fullLogoutIcon from 'icons/full-logout.svg'
 import fullMailIcon from 'icons/full-mail.svg'
 import fullMoreIcon from 'icons/full-more.svg'
@@ -171,6 +174,9 @@ export const fullIcons: IconListItem[] = [
   { src: fullDeskIcon },
   { src: fullBurgerkIcon },
   { src: fullWarningIcon },
+  { src: fullGridIcon },
+  { src: fullListIcon },
+  { src: fullCheckIcon },
   { src: fullDisclosureCloseIcon, viewBox: '0 0 16 16' }, // TODO clean viewbox
   { src: fullDisclosureOpenIcon, viewBox: '0 0 16 16' }, // TODO clean viewbox
 ]
