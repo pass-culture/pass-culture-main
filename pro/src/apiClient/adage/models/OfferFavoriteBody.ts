@@ -8,5 +8,6 @@ export type OfferFavoriteBody = {
   isFromNoResult?: boolean | null;
   offerId: number;
   queryId?: string | null;
+  vueType?: string | null;
 };
 
