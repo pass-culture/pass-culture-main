@@ -10,7 +10,7 @@ import {
   renderWithProviders,
 } from 'utils/renderWithProviders'
 
-import Offerers, { OfferersProps } from '../Offerers'
+import { Offerers, OfferersProps } from '../Offerers'
 
 vi.mock('react-router-dom', async () => ({
   ...(await vi.importActual('react-router-dom')),
@@ -30,7 +30,6 @@ const renderOfferers = (
       selectedOfferer={defaultGetOffererResponseModel}
       isLoading={false}
       isUserOffererValidated
-      setSelectedOfferer={vi.fn()}
       {...props}
     />,
     options
