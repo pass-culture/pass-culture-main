@@ -37,6 +37,7 @@ export default function ToggleButtonGroupButton({
           disabled={button.disabled}
           onClick={(e) => button.onClick(button, e)}
           type="button"
+          data-testid={`toggle-button${isActive ? '-active' : ''}`}
         >
           {isActive && <SvgIcon alt="" src={fullCheck} width="20" />}
           {button.content}
