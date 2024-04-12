@@ -23,6 +23,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 
 import styles from './BookingsSummary.module.scss'
+import { DownloadBookingsModal } from './DownloadBookingsModal/DownloadBookingsModal'
 
 interface BookingsSummaryScreenProps {
   offer: GetIndividualOfferResponseModel
@@ -38,6 +39,8 @@ export const BookingsSummaryScreen = ({
   const [bookingsStatusFilters, setBookingsStatusFilter] = useState<string[]>(
     []
   )
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const isDownloadBookingsFeatureEnabled = useActiveFeature(
     'WIP_ENABLE_DOWNLOAD_BOOKINGS'
@@ -95,13 +98,25 @@ export const BookingsSummaryScreen = ({
 
   return (
     <>
+      {isModalOpen && (
+        <DownloadBookingsModal
+          offerId={offer.id}
+          onDimiss={() => setIsModalOpen(false)}
+        />
+      )}
+
       <div className={styles['header']}>
         <h2 className={styles['header-title']}>Réservations</h2>
-        {isDownloadBookingsFeatureEnabled && (
-          <Button variant={ButtonVariant.PRIMARY}>
-            Télécharger les réservations
-          </Button>
-        )}
+        {isDownloadBookingsFeatureEnabled &&
+          bookings !== null &&
+          bookings.length && (
+            <Button
+              variant={ButtonVariant.PRIMARY}
+              onClick={() => setIsModalOpen(true)}
+            >
+              Télécharger les réservations
+            </Button>
+          )}
       </div>
       {bookings !== null ? (
         <>
