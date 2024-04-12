@@ -15,6 +15,8 @@
 .header {
   display: flex;
   justify-content: space-between;
+  gap: rem.torem(16px);
+  flex-wrap: wrap;
   margin-bottom: rem.torem(16px);
   
   &-title {

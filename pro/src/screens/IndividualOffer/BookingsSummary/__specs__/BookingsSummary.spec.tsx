@@ -1,4 +1,5 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
@@ -29,7 +30,7 @@ describe('BookingsSummary', () => {
   it('should render a list of bookings', async () => {
     const offer = getIndividualOfferFactory({ name: 'Offre de test' })
 
-    vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValueOnce({
       bookingsRecap: [
         bookingRecapFactory({
           stock: bookingRecapStockFactory({ offerName: 'Offre de test' }),
@@ -62,7 +63,7 @@ describe('BookingsSummary', () => {
   it('should render a message when no bookings', async () => {
     const offer = getIndividualOfferFactory({ name: 'Offre de test' })
 
-    vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValueOnce({
       bookingsRecap: [],
       page: 1,
       pages: 1,
@@ -75,6 +76,48 @@ describe('BookingsSummary', () => {
 
     expect(
       screen.getByText('Vous n’avez pas encore de réservations')
+    ).toBeInTheDocument()
+  })
+
+  it('should open a download modal', async () => {
+    const offer = getIndividualOfferFactory({ name: 'Offre de test' })
+
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValueOnce({
+      bookingsRecap: [
+        bookingRecapFactory({
+          stock: bookingRecapStockFactory({ offerName: 'Offre de test' }),
+        }),
+        bookingRecapFactory({
+          stock: bookingRecapStockFactory({ offerName: 'Offre de test' }),
+        }),
+        bookingRecapFactory({
+          stock: bookingRecapStockFactory({ offerName: 'Offre de test' }),
+        }),
+      ],
+      page: 1,
+      pages: 1,
+      total: 3,
+    })
+
+    render(offer)
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    const downloadButton = screen.getByRole('button', {
+      name: 'Télécharger les réservations',
+    })
+
+    expect(downloadButton).toBeInTheDocument()
+
+    await userEvent.click(downloadButton)
+
+    expect(screen.getByText('Télécharger vos réservations')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Annuler' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Télécharger au format CSV' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Télécharger au format Excel' })
     ).toBeInTheDocument()
   })
 })
