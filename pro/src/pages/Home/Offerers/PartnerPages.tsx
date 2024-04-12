@@ -37,14 +37,9 @@ const getSavedVenueId = (
 export interface PartnerPagesProps {
   offerer: GetOffererResponseModel
   venues: GetOffererVenueResponseModel[]
-  setSelectedOfferer: (offerer: GetOffererResponseModel) => void
 }
 
-export const PartnerPages = ({
-  venues,
-  offerer,
-  setSelectedOfferer,
-}: PartnerPagesProps) => {
+export const PartnerPages = ({ venues, offerer }: PartnerPagesProps) => {
   const [selectedVenueId, setSelectedVenueId] = useState<string>(
     venues.length > 0 ? getSavedVenueId(venues) ?? venues[0].id.toString() : ''
   )
@@ -92,7 +87,6 @@ export const PartnerPages = ({
         <PartnerPage
           offerer={offerer}
           venue={selectedVenue}
-          setSelectedOfferer={setSelectedOfferer}
           // In order to have the image state changing in PartnerPage,
           // we wanna the state reset when the venue change, see :
           // https://react.dev/learn/preserving-and-resetting-state#option-2-resetting-state-with-a-key

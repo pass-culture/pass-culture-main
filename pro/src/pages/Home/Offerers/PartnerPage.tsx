@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useLoaderData } from 'react-router-dom'
+import { useSWRConfig } from 'swr'
 
 import {
   GetOffererResponseModel,
@@ -18,7 +19,7 @@ import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { Card } from '../Card'
-import { HomepageLoaderData } from '../Homepage'
+import { GET_HOMEPAGE_OFFERER_QUERY_KEY, HomepageLoaderData } from '../Homepage'
 import { VenueOfferSteps } from '../VenueOfferSteps/VenueOfferSteps'
 
 import styles from './PartnerPage.module.scss'
@@ -28,15 +29,11 @@ import { PartnerPageIndividualSection } from './PartnerPageIndividualSection'
 export interface PartnerPageProps {
   offerer: GetOffererResponseModel
   venue: GetOffererVenueResponseModel
-  setSelectedOfferer: (offerer: GetOffererResponseModel) => void
 }
 
-export const PartnerPage = ({
-  offerer,
-  venue,
-  setSelectedOfferer,
-}: PartnerPageProps) => {
+export const PartnerPage = ({ offerer, venue }: PartnerPageProps) => {
   const { logEvent } = useAnalytics()
+  const { mutate } = useSWRConfig()
   const notify = useNotification()
   const { venueTypes } = useLoaderData() as HomepageLoaderData
   const venueType = venueTypes.find(
@@ -64,20 +61,8 @@ export const PartnerPage = ({
       setImageValues(
         buildInitialValues(editedVenue.bannerUrl, editedVenue.bannerMeta)
       )
-      // we update the offerer state to keep venue with its new image
-      // TODO replace with SWR mutation refresh instead of passing down the setSelectedOfferer function
-      setSelectedOfferer({
-        ...offerer,
-        managedVenues: (offerer.managedVenues ?? []).map((iteratedVenue) =>
-          iteratedVenue.id === venue.id
-            ? {
-                ...venue,
-                bannerUrl: editedVenue.bannerUrl,
-                bannerMeta: editedVenue.bannerMeta,
-              }
-            : iteratedVenue
-        ),
-      })
+
+      await mutate([GET_HOMEPAGE_OFFERER_QUERY_KEY, String(offerer.id)])
 
       notify.success('Vos modifications ont bien été prises en compte')
     } catch {

@@ -25,15 +25,13 @@ export interface OfferersProps {
   isLoading: boolean
   isUserOffererValidated: boolean
   offererOptions: SelectOption[]
-  setSelectedOfferer: (offerer: GetOffererResponseModel) => void
 }
 
-const Offerers = ({
+export const Offerers = ({
   offererOptions,
   selectedOfferer,
   isLoading,
   isUserOffererValidated,
-  setSelectedOfferer,
 }: OfferersProps) => {
   const [openSuccessDialog, setOpenSuccessDialog] = useState(false)
 
@@ -109,11 +107,7 @@ const Offerers = ({
           />
 
           {permanentVenues.length > 0 && (
-            <PartnerPages
-              venues={permanentVenues}
-              offerer={selectedOfferer}
-              setSelectedOfferer={setSelectedOfferer}
-            />
+            <PartnerPages venues={permanentVenues} offerer={selectedOfferer} />
           )}
 
           {!isOffererSoftDeleted && (
@@ -152,5 +146,3 @@ const Offerers = ({
     </>
   )
 }
-
-export default Offerers
