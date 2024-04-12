@@ -81,7 +81,7 @@ describe('Create an individual offer (thing)', () => {
     cy.findByText('Voir la liste des offres').click()
     cy.wait('@getOffers')
     // findByText() passe pas ici, je n'ai pas compris pourquoi
-    cy.contains('H2G2 Le Guide du voyageur galactique').should('exist')
-    cy.contains(ean).should('exist')
+    cy.contains('H2G2 Le Guide du voyageur galactique')
+    cy.contains(ean)
   })
 })
