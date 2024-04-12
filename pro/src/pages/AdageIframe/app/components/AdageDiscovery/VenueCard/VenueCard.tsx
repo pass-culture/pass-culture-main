@@ -40,7 +40,10 @@ const VenueCard = ({
         </div>
       )}
       <div className={styles['venue-infos']}>
-        <div className={styles['venue-infos-name']}>
+        <div
+          data-testid="venue-infos-name"
+          className={styles['venue-infos-name']}
+        >
           {venue.publicName || venue.name}
         </div>
         <div
