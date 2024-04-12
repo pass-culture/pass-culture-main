@@ -141,6 +141,28 @@ export class DefaultService {
     });
   }
   /**
+   * get_collective_offer_templates <GET>
+   * @param ids
+   * @returns ListCollectiveOfferTemplateResponseModel OK
+   * @throws ApiError
+   */
+  public getCollectiveOfferTemplates(
+    ids: Array<number>,
+  ): CancelablePromise<ListCollectiveOfferTemplateResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/adage-iframe/collective/offers-template/',
+      query: {
+        'ids': ids,
+      },
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
    * get_collective_offer_template <GET>
    * @param offerId
    * @returns CollectiveOfferTemplateResponseModel OK

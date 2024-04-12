@@ -1033,25 +1033,33 @@ def get_collective_offer_by_id_for_adage(offer_id: int) -> educational_models.Co
     return query.filter(educational_models.CollectiveOffer.id == offer_id).one()
 
 
-def get_collective_offer_template_by_id_for_adage(offer_id: int) -> educational_models.CollectiveOffer:
-    return (
-        educational_models.CollectiveOfferTemplate.query.filter(
-            educational_models.CollectiveOfferTemplate.id == offer_id,
-            educational_models.CollectiveOfferTemplate.validation == offer_mixin.OfferValidationStatus.APPROVED,
-        )
-        .options(
-            sa.orm.joinedload(educational_models.CollectiveOfferTemplate.nationalProgram),
-            sa.orm.joinedload(educational_models.CollectiveOfferTemplate.venue)
-            .joinedload(offerers_models.Venue.managingOfferer)
-            .load_only(
-                offerers_models.Offerer.name,
-                offerers_models.Offerer.validationStatus,
-                offerers_models.Offerer.isActive,
-            ),
-            sa.orm.joinedload(educational_models.CollectiveOfferTemplate.domains),
-        )
-        .one()
+def _get_collective_offer_template_by_id_for_adage_base_query() -> BaseQuery:
+    return educational_models.CollectiveOfferTemplate.query.filter(
+        educational_models.CollectiveOfferTemplate.validation == offer_mixin.OfferValidationStatus.APPROVED,
+    ).options(
+        sa.orm.joinedload(educational_models.CollectiveOfferTemplate.nationalProgram),
+        sa.orm.joinedload(educational_models.CollectiveOfferTemplate.venue)
+        .joinedload(offerers_models.Venue.managingOfferer)
+        .load_only(
+            offerers_models.Offerer.name,
+            offerers_models.Offerer.validationStatus,
+            offerers_models.Offerer.isActive,
+        ),
+        sa.orm.joinedload(educational_models.CollectiveOfferTemplate.venue).joinedload(
+            offerers_models.Venue.googlePlacesInfo
+        ),
+        sa.orm.joinedload(educational_models.CollectiveOfferTemplate.domains),
     )
+
+
+def get_collective_offer_template_by_id_for_adage(offer_id: int) -> educational_models.CollectiveOffer:
+    query = _get_collective_offer_template_by_id_for_adage_base_query()
+    return query.filter(educational_models.CollectiveOfferTemplate.id == offer_id).one()
+
+
+def get_collective_offer_templates_by_ids_for_adage(offer_ids: typing.Collection[int]) -> BaseQuery:
+    query = _get_collective_offer_template_by_id_for_adage_base_query()
+    return query.filter(educational_models.CollectiveOfferTemplate.id.in_(offer_ids))
 
 
 def get_query_for_collective_offers_by_ids_for_user(user: User, ids: typing.Iterable[int]) -> BaseQuery:
