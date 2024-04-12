@@ -121,9 +121,9 @@ describe('Create an individual offer (event)', () => {
     cy.wait(['@postStocks'])
 
     cy.findByText('Enregistrer et continuer').click()
+    cy.contains('Accepter les réservations "Duo" : Oui')
 
     // Publish offer
-    cy.findByText('Accepter les réservations "Duo" : Oui').should('exist')
     cy.intercept({ method: 'PATCH', url: '/offers/publish' }).as('publishOffer')
     cy.findByText('Publier l’offre').click()
     cy.wait(['@publishOffer', '@getOffer'])
@@ -131,9 +131,10 @@ describe('Create an individual offer (event)', () => {
     // Go to offer list and check that the offer is there
     cy.intercept({ method: 'GET', url: '/offers' }).as('getOffers')
     cy.findByText('Voir la liste des offres').click()
+
     cy.wait('@getOffers')
     cy.url().should('contain', '/offres')
-    cy.findByText('Le Diner de Devs').should('exist')
-    cy.findByText('396 dates').should('exist')
+    cy.contains('Le Diner de Devs')
+    cy.contains('396 dates')
   })
 })

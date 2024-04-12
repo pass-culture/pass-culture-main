@@ -80,7 +80,6 @@ describe('Create an individual offer (thing)', () => {
     cy.intercept({ method: 'GET', url: '/offers' }).as('getOffers')
     cy.findByText('Voir la liste des offres').click()
     cy.wait('@getOffers')
-    // findByText() passe pas ici, je n'ai pas compris pourquoi
     cy.contains('H2G2 Le Guide du voyageur galactique')
     cy.contains(ean)
   })
