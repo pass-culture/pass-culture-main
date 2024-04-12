@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   useInfiniteHits,
   useInstantSearch,
@@ -15,6 +15,8 @@ import {
 import { apiAdage } from 'apiClient/api'
 import useActiveFeature from 'hooks/useActiveFeature'
 import fullGoTop from 'icons/full-go-top.svg'
+import fullGrid from 'icons/full-grid.svg'
+import fullList from 'icons/full-list.svg'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -24,6 +26,9 @@ import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
 import { DiffuseHelp } from '../../../DiffuseHelp/DiffuseHelp'
 import { SurveySatisfaction } from '../../../SurveySatisfaction/SurveySatisfaction'
+import ToggleButtonGroup, {
+  ToggleButton,
+} from '../../../ToggleButtonGroup/ToggleButtonGroup'
 
 import { AdageOfferListCard } from './AdageOfferListCard/AdageOfferListCard'
 import { NoResultsPage } from './NoResultsPage/NoResultsPage'
@@ -75,6 +80,7 @@ export const Offers = ({
 
   const [queriesAreLoading, setQueriesAreLoading] = useState(false)
   const [fetchedOffers, setFetchedOffers] = useState<OfferMap>(new Map())
+  const [viewType, setViewType] = useState<'grille' | 'liste'>('liste')
 
   const showDiffuseHelp = (submitCount ?? 0) > 0
 
@@ -179,12 +185,37 @@ export const Offers = ({
     ) : null
   }
 
+  function toggleButtonClicked(button: ToggleButton) {
+    setViewType(button.id === 'liste' ? 'liste' : 'grille')
+  }
+
   return (
     <>
       {displayStats && (
         <div className={styles['offers-stats']}>
-          {`${nbHits} résultat${nbHits > 1 ? 's' : ''}`}
+          {new Intl.NumberFormat('fr-FR').format(nbHits)}{' '}
+          {nbHits === 1 ? 'offre' : 'offres'} au total
         </div>
+      )}
+      {isNewOfferCardEnabled && (
+        <ToggleButtonGroup
+          groupLabel="Choix du type de vue des offres"
+          buttons={[
+            {
+              label: 'Vue liste',
+              id: 'liste',
+              content: <SvgIcon width="24" src={fullList} alt="" />,
+              onClick: toggleButtonClicked,
+            },
+            {
+              label: 'Vue grille',
+              id: 'grille',
+              content: <SvgIcon width="24" src={fullGrid} alt="" />,
+              onClick: toggleButtonClicked,
+            },
+          ]}
+          activeButton={viewType}
+        />
       )}
       <ul className={styles['offers-list']}>
         {offers.map((offer, index) => (
