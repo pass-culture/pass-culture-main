@@ -29,6 +29,7 @@ export type GetFilteredBookingsRecapAdapterPayload = {
   bookings: BookingRecapResponseModel[]
   pages: number
   currentPage: number
+  total: number
 }
 
 export type GetFilteredCollectiveBookingsRecapAdapterPayload = {
