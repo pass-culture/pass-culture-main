@@ -1,18 +1,22 @@
 import logging
+from typing import Collection
+from typing import Mapping
 
+from sqlalchemy import exc as sa_exc
 from sqlalchemy.orm import exc as orm_exc
 
 import pcapi.core.categories.subcategories_v2 as subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api.categories import get_educational_categories
-import pcapi.core.educational.api.favorites as educational_api_favorites
+import pcapi.core.educational.api.favorites as favorites_api
 import pcapi.core.educational.api.institution as educational_institution_api
 import pcapi.core.educational.api.offer as educational_api_offer
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import EducationalRedactor
 import pcapi.core.educational.utils as educational_utils
+from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.repository import get_venue_by_id
 from pcapi.models.api_errors import ApiErrors
@@ -72,7 +76,7 @@ def get_collective_offer(
 
     redactor = _get_redactor(authenticated_information)
     if redactor:
-        is_favorite = educational_api_favorites.is_offer_a_redactor_favorite(offer.id, redactor.id)
+        is_favorite = favorites_api.is_offer_a_redactor_favorite(offer.id, redactor.id)
     else:
         is_favorite = False
 
@@ -99,7 +103,7 @@ def get_collective_offer_template(
 
     redactor = _get_redactor(authenticated_information)
     if redactor:
-        is_favorite = educational_api_favorites.is_offer_template_a_redactor_favorite(offer.id, redactor.id)
+        is_favorite = favorites_api.is_offer_template_a_redactor_favorite(offer.id, redactor.id)
     else:
         is_favorite = False
 
@@ -107,6 +111,47 @@ def get_collective_offer_template(
 
     return serializers.CollectiveOfferTemplateResponseModel.build(
         offer=offer, is_favorite=is_favorite, offerVenue=offer_venue
+    )
+
+
+@blueprint.adage_iframe.route("/collective/offers-template/", methods=["GET"])
+@spectree_serialize(
+    response_model=serializers.ListCollectiveOfferTemplateResponseModel,
+    api=blueprint.api,
+    on_error_statuses=[404],
+    flatten=True,
+)
+@adage_jwt_required
+def get_collective_offer_templates(
+    authenticated_information: AuthenticatedInformation, query: serializers.GetTemplateIdsModel
+) -> serializers.ListCollectiveOfferTemplateResponseModel:
+    if not query.ids:
+        return serializers.ListCollectiveOfferTemplateResponseModel(collectiveOffers=[])
+
+    try:
+        offers = educational_repository.get_collective_offer_templates_by_ids_for_adage(query.ids).all()
+    except sa_exc.SQLAlchemyError:
+        raise ApiErrors({"code": "COLLECTIVE_OFFER_TEMPLATES_NOT_FOUND"}, status_code=400)
+
+    if not offers:
+        return serializers.ListCollectiveOfferTemplateResponseModel(collectiveOffers=[])
+
+    redactor = _get_redactor(authenticated_information)
+    if redactor:
+        favorites = favorites_api.get_redactors_favorite_templates_subset(redactor, {offer.id for offer in offers})
+        is_favorite = {offer.id: offer.id in favorites for offer in offers}
+    else:
+        is_favorite = {offer.id: False for offer in offers}
+
+    offers_venues = _get_all_offer_venues(offers)
+
+    return serializers.ListCollectiveOfferTemplateResponseModel(
+        collectiveOffers=[
+            serializers.CollectiveOfferTemplateResponseModel.build(
+                offer=offer, is_favorite=is_favorite[offer.id], offerVenue=offers_venues[offer.id]
+            )
+            for offer in offers
+        ]
     )
 
 
@@ -167,6 +212,17 @@ def _get_offer_venue(offer: CollectiveOffer | CollectiveOfferTemplate) -> Venue 
     if offer_venue_id:
         return get_venue_by_id(offer_venue_id)
     return None
+
+
+def _get_all_offer_venues(
+    offers: Collection[CollectiveOffer] | Collection[CollectiveOfferTemplate],
+) -> Mapping[int, Venue | None]:
+    offers_venues = {offer.id: offer.offerVenue.get("venueId", None) for offer in offers}
+
+    venue_ids = {venue_id for venue_id in offers_venues.values() if venue_id}
+    venues = {venue.id: venue for venue in offerers_repository.get_venues_by_ids(venue_ids)}
+
+    return {offer_id: venues.get(venue_id) for offer_id, venue_id in offers_venues.items()}
 
 
 @blueprint.adage_iframe.route("/collective/offers/my_institution", methods=["GET"])
