@@ -20,7 +20,8 @@ const render = (offer: GetIndividualOfferResponseModel) => {
   renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
       <BookingsSummaryScreen offer={offer} />
-    </IndividualOfferContext.Provider>
+    </IndividualOfferContext.Provider>,
+    { features: ['WIP_ENABLE_DOWNLOAD_BOOKINGS'] }
   )
 }
 
@@ -50,6 +51,9 @@ describe('BookingsSummary', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(screen.getByText(/Réservations/)).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Télécharger les réservations' })
+    ).toBeInTheDocument()
     expect(screen.getAllByRole('link', { name: 'Offre de test' })).toHaveLength(
       3
     )

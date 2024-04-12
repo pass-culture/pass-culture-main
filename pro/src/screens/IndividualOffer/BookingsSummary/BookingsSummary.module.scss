@@ -1,4 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .no-data {
   text-align: center;
@@ -8,5 +9,15 @@
     width: rem.torem(128px);
     height: rem.torem(100px);
     margin-bottom: rem.torem(16px);
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: rem.torem(16px);
+  
+  &-title {
+    @include fonts.title3;
   }
 }
