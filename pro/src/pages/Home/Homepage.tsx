@@ -6,11 +6,11 @@ import {
   useNavigate,
   useSearchParams,
 } from 'react-router-dom'
+import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import {
   GetOffererNameResponseModel,
-  GetOffererResponseModel,
   VenueTypeResponseModel,
 } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
@@ -40,7 +40,7 @@ import { sortByLabel } from 'utils/strings'
 
 import styles from './Homepage.module.scss'
 import { OffererBanners } from './Offerers/OffererBanners'
-import Offerers from './Offerers/Offerers'
+import { Offerers } from './Offerers/Offerers'
 import { ProfileAndSupport } from './ProfileAndSupport/ProfileAndSupport'
 import { StatisticsDashboard } from './StatisticsDashboard/StatisticsDashboard'
 import { VenueOfferSteps } from './VenueOfferSteps/VenueOfferSteps'
@@ -66,6 +66,8 @@ const getSavedOffererId = (offererOptions: SelectOption[]): string | null => {
   return savedOffererId
 }
 
+export const GET_HOMEPAGE_OFFERER_QUERY_KEY = 'getOfferer'
+
 export const Homepage = (): JSX.Element => {
   const HAS_CLOSED_BETA_TEST_BANNER = 'HAS_CLOSED_BETA_TEST_BANNER'
   const NEW_NAV_ENABLED = 'NEW_NAV_ENABLED'
@@ -88,9 +90,6 @@ export const Homepage = (): JSX.Element => {
     new Date(currentUser.navState.eligibilityDate) <=
       new Date(formatBrowserTimezonedDateAsUTC(new Date()))
 
-  const [selectedOfferer, setSelectedOfferer] =
-    useState<GetOffererResponseModel | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
   const [isUserOffererValidated, setIsUserOffererValidated] = useState(false)
   const [seesNewNavAvailableBanner, setSeesNewNavAvailableBanner] = useState(
     userClosedBetaTestBanner &&
@@ -102,13 +101,6 @@ export const Homepage = (): JSX.Element => {
   const [isNewNavEnabled, setIsNewNavEnabled] = useState(false)
   const { remoteConfigData } = useRemoteConfig()
   const dispatch = useDispatch()
-
-  const hasNoVenueVisible = useMemo(() => {
-    const physicalVenues = getPhysicalVenuesFromOfferer(selectedOfferer)
-    const virtualVenue = getVirtualVenueFromOfferer(selectedOfferer)
-
-    return physicalVenues.length === 0 && !virtualVenue
-  }, [selectedOfferer])
 
   async function showNewNav() {
     try {
@@ -153,20 +145,20 @@ export const Homepage = (): JSX.Element => {
     offererOptions[0]?.value ??
     ''
 
-  useEffect(() => {
-    async function loadOfferer(offererId: string) {
-      setIsLoading(true)
-
+  const selectedOffererQuery = useSWR(
+    [GET_HOMEPAGE_OFFERER_QUERY_KEY, selectedOffererId],
+    async ([, offererIdParam]) => {
       try {
-        const offerer = await api.getOfferer(Number(offererId))
-        setSelectedOfferer(offerer)
-        localStorage.setItem(SAVED_OFFERER_ID_KEY, offererId)
-        dispatch(updateSelectedOffererId(Number(offererId)))
+        const offerer = await api.getOfferer(Number(offererIdParam))
+        localStorage.setItem(SAVED_OFFERER_ID_KEY, offererIdParam)
+        dispatch(updateSelectedOffererId(Number(offererIdParam)))
         setIsUserOffererValidated(true)
+
+        return offerer
       } catch (error) {
-        /* istanbul ignore next: DEBT, TO FIX */
         if (hasStatusCode(error) && error.status === HTTP_STATUS.FORBIDDEN) {
-          setSelectedOfferer({
+          setIsUserOffererValidated(false)
+          return {
             apiKey: {
               maxAllowed: 0,
               prefixes: [],
@@ -185,22 +177,25 @@ export const Homepage = (): JSX.Element => {
             managedVenues: [],
             hasActiveOffer: false,
             name: '',
-            id: Number(offererId),
+            id: Number(offererIdParam),
             postalCode: '',
             allowedOnAdage: false,
-          })
-          setIsUserOffererValidated(false)
+          }
         }
       }
 
-      setIsLoading(false)
-    }
+      return null
+    },
+    { fallbackData: null }
+  )
+  const selectedOfferer = selectedOffererQuery.data
 
-    if (selectedOffererId) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      loadOfferer(selectedOffererId)
-    }
-  }, [selectedOffererId, dispatch])
+  const hasNoVenueVisible = useMemo(() => {
+    const physicalVenues = getPhysicalVenuesFromOfferer(selectedOfferer)
+    const virtualVenue = getVirtualVenueFromOfferer(selectedOfferer)
+
+    return physicalVenues.length === 0 && !virtualVenue
+  }, [selectedOfferer])
 
   useEffect(() => {
     async function logProFlags() {
@@ -268,10 +263,9 @@ export const Homepage = (): JSX.Element => {
       <section className={styles['section']} ref={offerersRef}>
         <Offerers
           selectedOfferer={selectedOfferer}
-          isLoading={isLoading}
+          isLoading={selectedOffererQuery.isLoading}
           offererOptions={offererOptions}
           isUserOffererValidated={isUserOffererValidated}
-          setSelectedOfferer={setSelectedOfferer}
         />
       </section>
 

@@ -20,7 +20,6 @@ const renderPartnerPages = (props: Partial<PartnerPagesProps> = {}) => {
     <PartnerPages
       venues={[defaultGetOffererVenueResponseModel]}
       offerer={defaultGetOffererResponseModel}
-      setSelectedOfferer={vi.fn()}
       {...props}
     />
   )
