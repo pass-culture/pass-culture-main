@@ -179,6 +179,28 @@ class NewEmailSelectionTest:
 
         assert response.status_code == 401, response.json
 
+    def test_email_selection_with_existing_email(self, client):
+        another_user = users_factories.UserFactory()
+        user = users_factories.BeneficiaryGrant18Factory()
+        token = token_utils.Token.create(
+            type_=token_utils.TokenType.EMAIL_CHANGE_NEW_EMAIL_SELECTION,
+            ttl=users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME,
+            user_id=user.id,
+        ).encoded_token
+
+        response = client.with_token(user.email).post(
+            "/native/v2/profile/email_update/new_email", json={"token": token, "newEmail": another_user.email}
+        )
+
+        # to prevent user enumeration attacks, no error is raised
+        assert response.status_code == 204, response.json
+
+        # confirmation email is not sent
+        assert len(mails_testing.outbox) == 0
+
+        # token is not deleted
+        assert token_utils.Token.token_exists(token_utils.TokenType.EMAIL_CHANGE_NEW_EMAIL_SELECTION, user.id)
+
 
 class EmailUpdateStatusTest:
     def test_update_request_status(self, client):
