@@ -2776,6 +2776,11 @@
   resolved "https://registry.yarnpkg.com/@storybook/react-dom-shim/-/react-dom-shim-8.0.6.tgz#5d359455960f7c3e4cdaa548ac1b657cb028d47c"
   integrity sha512-NC4k0dBIypvVqwqnMhKDUxNc1OeL6lgspn8V26PnmCYbvY97ZqoGQ7n2a5Kw/kubN6yWX1nxNkV6HcTRgEnYTw==
 
+"@storybook/react-dom-shim@8.0.8":
+  version "8.0.8"
+  resolved "https://registry.yarnpkg.com/@storybook/react-dom-shim/-/react-dom-shim-8.0.8.tgz#28370b050be3e5ebea296efa6bde01a792ac96fd"
+  integrity sha512-vOMlAz2HH/xfgZmSO28fCEmp5/tPxINDEdBDVLdZeYG6R1j5jlMRyaNcXt4cPNDkyc///PkB/K767hg4goca/Q==
+
 "@storybook/react-vite@^8.0.6":
   version "8.0.6"
   resolved "https://registry.yarnpkg.com/@storybook/react-vite/-/react-vite-8.0.6.tgz#52f8bd0ae6b3b8b21d7cb5ac713f690d8f4dcd33"
@@ -2792,7 +2797,7 @@
     resolve "^1.22.8"
     tsconfig-paths "^4.2.0"
 
-"@storybook/react@8.0.6", "@storybook/react@^8.0.6":
+"@storybook/react@8.0.6":
   version "8.0.6"
   resolved "https://registry.yarnpkg.com/@storybook/react/-/react-8.0.6.tgz#22c5e8959e32bb5e324deca66be1a1880b0bd9e6"
   integrity sha512-A1zivNti15nHkJ6EcVKpxKwlDkyMb5MlJMUb8chX/xBWxoR1f5R8eI484rhdPRYUzBY7JwvgZfy4y/murqg6hA==
@@ -2803,6 +2808,33 @@
     "@storybook/preview-api" "8.0.6"
     "@storybook/react-dom-shim" "8.0.6"
     "@storybook/types" "8.0.6"
+    "@types/escodegen" "^0.0.6"
+    "@types/estree" "^0.0.51"
+    "@types/node" "^18.0.0"
+    acorn "^7.4.1"
+    acorn-jsx "^5.3.1"
+    acorn-walk "^7.2.0"
+    escodegen "^2.1.0"
+    html-tags "^3.1.0"
+    lodash "^4.17.21"
+    prop-types "^15.7.2"
+    react-element-to-jsx-string "^15.0.0"
+    semver "^7.3.7"
+    ts-dedent "^2.0.0"
+    type-fest "~2.19"
+    util-deprecate "^1.0.2"
+
+"@storybook/react@^8.0.8":
+  version "8.0.8"
+  resolved "https://registry.yarnpkg.com/@storybook/react/-/react-8.0.8.tgz#04374fd813e87763678c0c34eb1f2b91b01525e4"
+  integrity sha512-pPTlQntl09kv7qkAFYsxUq6qCLeeZC/K3yGFBGMy2Dc+PFjBYdT6mt2I8GB3twK0Cq5gJESlLj48QnYLQ/9PbA==
+  dependencies:
+    "@storybook/client-logger" "8.0.8"
+    "@storybook/docs-tools" "8.0.8"
+    "@storybook/global" "^5.0.0"
+    "@storybook/preview-api" "8.0.8"
+    "@storybook/react-dom-shim" "8.0.8"
+    "@storybook/types" "8.0.8"
     "@types/escodegen" "^0.0.6"
     "@types/estree" "^0.0.51"
     "@types/node" "^18.0.0"
