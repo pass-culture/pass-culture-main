@@ -37,7 +37,11 @@
   }
 
   &-sticky-actions {
-    padding-bottom: rem.torem(32px);
+    padding-bottom: calc(rem.torem(32px) + size.$action-bar-sticky-height);
+
+    &-new-interface {
+      padding-bottom: rem.torem(32px);
+    }
   }
 }
 
