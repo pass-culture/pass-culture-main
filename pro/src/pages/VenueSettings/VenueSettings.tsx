@@ -4,7 +4,6 @@ import useSWR from 'swr'
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
-import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import { useAdapter } from 'hooks'
@@ -24,6 +23,7 @@ import { VenueSettingsFormScreen } from './VenueSettingsScreen'
 
 const GET_VENUE_QUERY_KEY = 'getVenue'
 const GET_VENUE_LABELS_QUERY_KEY = 'getVenueLabels'
+export const GET_OFFERER_QUERY_KEY = 'getOfferer'
 
 const VenueSettings = (): JSX.Element | null => {
   const homePath = '/accueil'
@@ -45,16 +45,17 @@ const VenueSettings = (): JSX.Element | null => {
     { fallbackData: [] }
   )
 
+  const offererQuery = useSWR(
+    [GET_OFFERER_QUERY_KEY, offererId],
+    ([, offererIdParam]) => api.getOfferer(Number(offererIdParam))
+  )
+  const offerer = offererQuery.data
+
   const {
     isLoading: isLoadingVenueTypes,
     error: errorVenueTypes,
     data: venueTypes,
   } = useGetVenueTypes()
-  const {
-    isLoading: isLoadingOfferer,
-    error: errorOfferer,
-    data: offerer,
-  } = useGetOfferer(offererId)
   const {
     isLoading: isLoadingProviders,
     error: errorProviders,
@@ -80,7 +81,7 @@ const VenueSettings = (): JSX.Element | null => {
   const hasBookingQuantity = offerHasBookingQuantity(venueOffers?.offers)
 
   if (
-    errorOfferer ||
+    offererQuery.error ||
     venueQuery.error ||
     venueLabelsQuery.error ||
     errorVenueTypes ||
@@ -88,7 +89,7 @@ const VenueSettings = (): JSX.Element | null => {
     errorProviders
   ) {
     const loadingError = [
-      errorOfferer,
+      offererQuery.error,
       venueLabelsQuery.error,
       errorVenueTypes,
     ].find((error) => error !== undefined)
@@ -110,7 +111,7 @@ const VenueSettings = (): JSX.Element | null => {
     isLoadingVenueTypes ||
     isLoadingProviders ||
     isLoadingVenueProviders ||
-    isLoadingOfferer ||
+    offererQuery.isLoading ||
     isLoadingVenueOffers
   ) {
     return (
@@ -120,7 +121,7 @@ const VenueSettings = (): JSX.Element | null => {
     )
   }
 
-  if (!venue) {
+  if (!venue || !offerer) {
     return null
   }
 
