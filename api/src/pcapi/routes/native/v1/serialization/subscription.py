@@ -37,6 +37,21 @@ class SubscriptionMessage(BaseModel):
         use_enum_values = True
 
 
+class SubscriptionMessageV2(BaseModel):
+    user_message: str
+    message_summary: str | None = None
+    call_to_action: CallToActionMessage | None
+    pop_over_icon: subscription_models.PopOverIcon | None
+    updated_at: datetime.datetime | None
+
+    class Config:
+        orm_mode = True
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        json_encoders = {datetime.datetime: format_into_utc_date}
+        use_enum_values = True
+
+
 class NextSubscriptionStepResponse(BaseModel):
     next_subscription_step: subscription_models.SubscriptionStep | None
     maintenance_page_type: subscription_models.MaintenancePageType | None
@@ -68,6 +83,21 @@ class SubscriptionStepperResponse(BaseModel):
     title: str
     subtitle: str | None
     error_message: str | None
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+
+
+class SubscriptionStepperResponseV2(BaseModel):
+    subscription_steps_to_display: list[SubscriptionStepDetailsResponse]
+    allowed_identity_check_methods: list[subscription_models.IdentityCheckMethod]
+    has_identity_check_pending: bool
+    maintenance_page_type: subscription_models.MaintenancePageType | None
+    next_subscription_step: subscription_models.SubscriptionStep | None
+    title: str
+    subtitle: str | None
+    subscription_message: SubscriptionMessageV2 | None
 
     class Config:
         alias_generator = to_camel

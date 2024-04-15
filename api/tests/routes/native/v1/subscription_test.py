@@ -567,7 +567,7 @@ class StepperTest:
         )
 
         client.with_token(user.email)
-        response = client.get("/native/v1/subscription/stepper")
+        response = client.get("/native/v2/subscription/stepper")
 
         assert response.status_code == 200
         assert response.json["subscriptionStepsToDisplay"] == [
@@ -587,7 +587,7 @@ class StepperTest:
         )
 
         client.with_token(user.email)
-        response = client.get("/native/v1/subscription/stepper")
+        response = client.get("/native/v2/subscription/stepper")
 
         assert response.status_code == 200
 
@@ -613,7 +613,7 @@ class StepperTest:
         )
 
         client.with_token(user.email)
-        response = client.get("/native/v1/subscription/stepper")
+        response = client.get("/native/v2/subscription/stepper")
 
         assert response.json["subscriptionStepsToDisplay"] == [
             self.get_step("phone_validation_step", SubscriptionStepCompletionState.CURRENT.value),
@@ -633,7 +633,7 @@ class StepperTest:
         )
 
         client.with_token(user.email)
-        response = client.get("/native/v1/subscription/stepper")
+        response = client.get("/native/v2/subscription/stepper")
 
         assert response.json["subscriptionStepsToDisplay"] == [
             self.get_step("phone_validation_step", SubscriptionStepCompletionState.CURRENT.value),
@@ -653,7 +653,7 @@ class StepperTest:
         user = users_factories.BaseUserFactory(age=age)
 
         client.with_token(user.email)
-        response = client.get("/native/v1/subscription/stepper")
+        response = client.get("/native/v2/subscription/stepper")
 
         assert response.status_code == 200
         assert response.json["allowedIdentityCheckMethods"] == []
@@ -670,7 +670,7 @@ class StepperTest:
         user = users_factories.BaseUserFactory(age=age)
 
         client.with_token(user.email)
-        response = client.get("/native/v1/subscription/stepper")
+        response = client.get("/native/v2/subscription/stepper")
 
         assert response.status_code == 200
         assert response.json["allowedIdentityCheckMethods"] == []
@@ -687,7 +687,7 @@ class StepperTest:
         user = users_factories.BaseUserFactory(age=age)
 
         client.with_token(user.email)
-        response = client.get("/native/v1/subscription/stepper")
+        response = client.get("/native/v2/subscription/stepper")
 
         assert response.status_code == 200
         assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
@@ -721,7 +721,7 @@ class StepperTest:
         )
 
         client.with_token(user.email)
-        response = client.get("/native/v1/subscription/stepper")
+        response = client.get("/native/v2/subscription/stepper")
 
         assert response.json["subscriptionStepsToDisplay"] == [
             self.get_step("phone_validation_step", SubscriptionStepCompletionState.COMPLETED.value),
@@ -739,7 +739,7 @@ class StepperTest:
         user = users_factories.EligibleUnderageFactory()
 
         client.with_token(user.email)
-        response = client.get("/native/v1/subscription/stepper")
+        response = client.get("/native/v2/subscription/stepper")
         assert "educonnect" in response.json["allowedIdentityCheckMethods"]
 
     def should_have_subtitle_for_profile_when_autocompleted(self, client):
@@ -755,7 +755,7 @@ class StepperTest:
         user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
 
         client.with_token(user.email)
-        response = client.get("/native/v1/subscription/stepper")
+        response = client.get("/native/v2/subscription/stepper")
 
         assert response.json["subscriptionStepsToDisplay"] == [
             self.get_step("phone_validation_step", SubscriptionStepCompletionState.COMPLETED.value),
@@ -782,13 +782,518 @@ class StepperTest:
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
 
         client.with_token(user.email)
-        response = client.get("/native/v1/subscription/stepper")
+        response = client.get("/native/v2/subscription/stepper")
 
         assert response.json["subscriptionStepsToDisplay"] == [
             self.get_step("phone_validation_step", SubscriptionStepCompletionState.COMPLETED.value),
             self.get_step("profile_completion_step", SubscriptionStepCompletionState.COMPLETED.value),
             self.get_step("honor_statement_step", SubscriptionStepCompletionState.CURRENT.value),
         ]
+
+    @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=False)
+    def test_next_subscription(self, client):
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+            - relativedelta(years=18, months=5),
+        )
+
+        client.with_token(user.email)
+
+        response = client.get("/native/v2/subscription/stepper")
+
+        assert response.status_code == 200
+        assert response.json["nextSubscriptionStep"] == "phone-validation"
+        assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
+        assert response.json["maintenancePageType"] is None
+        assert response.json["hasIdentityCheckPending"] is False
+        assert response.json["subscriptionMessage"] is None
+
+    @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=False)
+    def test_next_subscription_test_profile_completion(self, client):
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+            - relativedelta(years=18, months=5),
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        )
+
+        client.with_token(user.email)
+
+        response = client.get("/native/v2/subscription/stepper")
+
+        assert response.status_code == 200
+        assert response.json["nextSubscriptionStep"] == "profile-completion"
+        assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
+        assert response.json["maintenancePageType"] is None
+        assert not response.json["hasIdentityCheckPending"]
+        assert response.json["subscriptionMessage"] is None
+
+    @override_features(
+        ENABLE_EDUCONNECT_AUTHENTICATION=False,
+        ENABLE_UBBLE=False,
+        ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE=True,
+    )
+    @time_machine.travel("2022-09-08 11:54:22")
+    def test_next_subscription_maintenance_page(self, client):
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+            - relativedelta(years=15, months=5),
+            activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
+        )
+        # User completed profile
+        fraud_factories.ProfileCompletionFraudCheckFactory(
+            user=user, eligibilityType=users_models.EligibilityType.UNDERAGE
+        )
+
+        client.with_token(user.email)
+
+        response = client.get("/native/v2/subscription/stepper")
+
+        assert response.status_code == 200
+        assert response.json["nextSubscriptionStep"] == "maintenance"
+        assert response.json["allowedIdentityCheckMethods"] == []
+        assert response.json["maintenancePageType"] == "with-dms"
+        assert response.json["hasIdentityCheckPending"] is False
+        assert response.json["subscriptionMessage"] == {
+            "callToAction": None,
+            "messageSummary": None,
+            "popOverIcon": "CLOCK",
+            "updatedAt": None,
+            "userMessage": "La vérification d'identité est "
+            "momentanément indisponible. L'équipe "
+            "du pass Culture met tout en oeuvre "
+            "pour la rétablir au plus vite.",
+        }
+
+    @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=False)
+    @pytest.mark.parametrize(
+        "fraud_check_status,reason_code,ubble_status,next_step,pending_idcheck,subscription_message",
+        [
+            (
+                fraud_models.FraudCheckStatus.STARTED,
+                None,
+                ubble_fraud_models.UbbleIdentificationStatus.INITIATED,
+                "identity-check",
+                False,
+                None,
+            ),
+            (
+                fraud_models.FraudCheckStatus.PENDING,
+                None,
+                ubble_fraud_models.UbbleIdentificationStatus.PROCESSING,
+                "honor-statement",
+                True,
+                None,
+            ),
+            (
+                fraud_models.FraudCheckStatus.OK,
+                None,
+                ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
+                "honor-statement",
+                False,
+                None,
+            ),
+            (
+                fraud_models.FraudCheckStatus.KO,
+                fraud_models.FraudReasonCode.AGE_TOO_OLD,
+                ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
+                None,
+                False,
+                {
+                    "callToAction": None,
+                    "messageSummary": None,
+                    "popOverIcon": "ERROR",
+                    "userMessage": "Ton dossier a été refusé\xa0: tu ne peux pas bénéficier du pass Culture. Il est réservé aux jeunes de 15 à 18 ans.",
+                },
+            ),
+            (
+                fraud_models.FraudCheckStatus.CANCELED,
+                None,
+                ubble_fraud_models.UbbleIdentificationStatus.ABORTED,
+                "identity-check",
+                False,
+                None,
+            ),
+            (
+                fraud_models.FraudCheckStatus.SUSPICIOUS,
+                fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED,
+                ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
+                "identity-check",  # User can retry
+                False,
+                {
+                    "callToAction": {
+                        "callToActionIcon": "RETRY",
+                        "callToActionLink": "passculture://verification-identite",
+                        "callToActionTitle": "Réessayer la vérification de mon identité",
+                    },
+                    "messageSummary": "Tu n’as pas déposé le bon type de document.",
+                    "popOverIcon": None,
+                    "userMessage": "Le document d'identité que tu as présenté n'est pas accepté. S’il s’agit d’une pièce d’identité étrangère ou d’un titre de séjour français, tu dois passer par le site demarches-simplifiees.fr. Si non, tu peux réessayer avec un passeport ou une carte d’identité française en cours de validité.",
+                },
+            ),
+        ],
+    )
+    @override_features(ENABLE_UBBLE=True)
+    @time_machine.travel("2022-09-08 12:01:12")
+    def test_next_subscription_test_ubble(
+        self, client, fraud_check_status, reason_code, ubble_status, next_step, pending_idcheck, subscription_message
+    ):
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+            - relativedelta(years=18, months=5),
+            activity="Étudiant",
+        )
+
+        client.with_token(user.email)
+
+        response = client.get("/native/v2/subscription/stepper")
+
+        assert response.status_code == 200
+        assert response.json["nextSubscriptionStep"] == "phone-validation"
+        assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
+        assert response.json["maintenancePageType"] is None
+        assert response.json["hasIdentityCheckPending"] is False
+        assert response.json["subscriptionMessage"] is None
+
+        # Perform phone validation
+        user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
+
+        response = client.get("/native/v2/subscription/stepper")
+
+        assert response.status_code == 200
+        assert response.json["nextSubscriptionStep"] == "profile-completion"
+        assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
+        assert response.json["maintenancePageType"] is None
+        assert response.json["hasIdentityCheckPending"] is False
+        assert response.json["subscriptionMessage"] is None
+
+        # Perform profile completion
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        response = client.get("/native/v2/subscription/stepper")
+
+        assert response.status_code == 200
+        assert response.json["nextSubscriptionStep"] == "identity-check"
+        assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
+        assert response.json["maintenancePageType"] is None
+        assert response.json["hasIdentityCheckPending"] is False
+        assert response.json["subscriptionMessage"] is None
+
+        # Perform first id check with Ubble
+        ubble_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_check_status,
+            reasonCodes=[reason_code],
+            resultContent=fraud_factories.UbbleContentFactory(status=ubble_status),
+        )
+        if subscription_message:
+            subscription_message["updatedAt"] = ubble_fraud_check.updatedAt.isoformat()
+
+        # Check next step: only a single non-aborted Ubble identification is allowed
+        response = client.get("/native/v2/subscription/stepper")
+
+        assert response.status_code == 200
+        assert response.json["nextSubscriptionStep"] == next_step
+        assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
+        assert response.json["maintenancePageType"] is None
+        assert response.json["hasIdentityCheckPending"] == pending_idcheck
+        assert response.json["subscriptionMessage"] == subscription_message
+
+    @override_features(
+        ENABLE_EDUCONNECT_AUTHENTICATION=False,
+        ENABLE_UBBLE=True,
+    )
+    @time_machine.travel("2022-09-08 12:39:04")
+    def test_underage_not_ok_turned_18(self, client):
+        # User has already performed id check with Ubble for underage credit (successfully or not), 2 years ago
+        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=2)):
+            user = users_factories.UserFactory(
+                dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+                - relativedelta(years=16, days=5),
+                activity="Employé",
+            )
+            # 15-17: no phone validation
+
+            # Perform profile completion
+            fraud_factories.ProfileCompletionFraudCheckFactory(
+                user=user,
+                eligibilityType=users_models.EligibilityType.UNDERAGE,
+            )
+
+            # Perform first id check with Ubble
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                type=fraud_models.FraudCheckType.UBBLE,
+                status=fraud_models.FraudCheckStatus.KO,
+                eligibilityType=users_models.EligibilityType.UNDERAGE,
+            )
+
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+                status=fraud_models.FraudCheckStatus.OK,
+                eligibilityType=users_models.EligibilityType.UNDERAGE,
+            )
+
+        # Now user turned 18, phone validation and profile completion are requested and Ubble identification is requested again
+        # Process should not depend on Ubble result performed when underage
+        client.with_token(user.email)
+
+        response = client.get("/native/v2/subscription/stepper")
+
+        assert response.status_code == 200
+        assert response.json["nextSubscriptionStep"] == "phone-validation"
+        assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
+        assert response.json["maintenancePageType"] is None
+        assert response.json["hasIdentityCheckPending"] is False
+        assert response.json["subscriptionMessage"] is None
+
+        # Perform phone validation
+        user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
+
+        response = client.get("/native/v2/subscription/stepper")
+
+        assert response.status_code == 200
+        assert response.json["nextSubscriptionStep"] == "profile-completion"
+        assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
+        assert response.json["maintenancePageType"] is None
+        assert response.json["hasIdentityCheckPending"] is False
+        assert response.json["subscriptionMessage"] is None
+
+        response = client.get("/native/v2/subscription/stepper")
+
+        assert response.status_code == 200
+        assert response.json["nextSubscriptionStep"] == "profile-completion"
+        assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
+        assert response.json["maintenancePageType"] is None
+        assert response.json["hasIdentityCheckPending"] is False
+        assert response.json["subscriptionMessage"] is None
+
+        # Perform profile completion
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+
+        response = client.get("/native/v2/subscription/stepper")
+
+        assert response.status_code == 200
+        assert response.json["nextSubscriptionStep"] == "identity-check"
+        assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
+        assert response.json["maintenancePageType"] is None
+        assert response.json["hasIdentityCheckPending"] is False
+        assert response.json["subscriptionMessage"] is None
+
+        # Perform id check with Ubble
+        ubble_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.PENDING,
+            resultContent=fraud_factories.UbbleContentFactory(
+                status=ubble_fraud_models.UbbleIdentificationStatus.PROCESSING
+            ),
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+
+        response = client.get("/native/v2/subscription/stepper")
+
+        assert response.status_code == 200
+        assert response.json["nextSubscriptionStep"] == "honor-statement"
+        assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
+        assert response.json["maintenancePageType"] is None
+        assert response.json["hasIdentityCheckPending"] is True
+        assert response.json["subscriptionMessage"] is None
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+
+        response = client.get("/native/v2/subscription/stepper")
+
+        assert response.status_code == 200
+        assert response.json["nextSubscriptionStep"] is None
+        assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
+        assert response.json["maintenancePageType"] is None
+        assert response.json["hasIdentityCheckPending"] is True
+        assert response.json["subscriptionMessage"]["callToAction"] is None
+        assert response.json["subscriptionMessage"]["popOverIcon"] == "CLOCK"
+        assert response.json["subscriptionMessage"]["updatedAt"] == ubble_fraud_check.updatedAt.isoformat()
+        assert (
+            response.json["subscriptionMessage"]["userMessage"]
+            == "Ton document d'identité est en cours de vérification."
+        )
+
+        # ubble now confirms the status
+        ubble_fraud_check.status = fraud_models.FraudCheckStatus.OK
+        ubble_fraud_check.resultContent = fraud_factories.UbbleContentFactory(
+            status=ubble_fraud_models.UbbleIdentificationStatus.PROCESSED
+        )
+        pcapi.repository.repository.save(ubble_fraud_check)
+        response = client.get("/native/v2/subscription/stepper")
+
+        assert response.status_code == 200
+        assert response.json["nextSubscriptionStep"] is None
+        assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
+        assert response.json["maintenancePageType"] is None
+        assert response.json["hasIdentityCheckPending"] is False
+        assert response.json["subscriptionMessage"] is None
+
+    @override_features(
+        ENABLE_EDUCONNECT_AUTHENTICATION=False,
+        ENABLE_UBBLE=True,
+    )
+    def test_underage_ubble_ok_turned_18(self, client):
+        # User has already performed id check with Ubble for underage credit, 2 years ago
+        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=2)):
+            user = users_factories.UserFactory(
+                dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+                - relativedelta(years=16, days=5),
+                activity="Employé",
+            )
+            # 15-17: no phone validation
+
+            # Perform profile completion
+            fraud_factories.ProfileCompletionFraudCheckFactory(
+                user=user,
+                eligibilityType=users_models.EligibilityType.UNDERAGE,
+            )
+
+            # Perform first id check with Ubble
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                type=fraud_models.FraudCheckType.UBBLE,
+                status=fraud_models.FraudCheckStatus.OK,
+                eligibilityType=users_models.EligibilityType.UNDERAGE,
+            )
+
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+                status=fraud_models.FraudCheckStatus.OK,
+                eligibilityType=users_models.EligibilityType.UNDERAGE,
+            )
+
+        user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+
+        client.with_token(user.email)
+        response = client.get("/native/v2/subscription/stepper")
+
+        assert response.status_code == 200
+        assert response.json["nextSubscriptionStep"] == "honor-statement"
+        assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
+        assert response.json["maintenancePageType"] is None
+        assert response.json["hasIdentityCheckPending"] is False
+        assert response.json["subscriptionMessage"] is None
+
+    @override_features(
+        ENABLE_UBBLE_SUBSCRIPTION_LIMITATION=True,
+        ENABLE_UBBLE=True,
+        ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18=False,
+        ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE=False,
+        ENABLE_EDUCONNECT_AUTHENTICATION=False,
+    )
+    @pytest.mark.parametrize("age", [15, 16, 17, 18])
+    @time_machine.travel("2022-09-08 12:45:13")
+    def test_ubble_subscription_limited(self, client, age):
+        birth_date = datetime.datetime.utcnow() - relativedelta(years=age + 1)
+        birth_date += relativedelta(days=settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS - 1)
+        # the user has:
+        # 1. Email Validated
+        # 2. Phone Validated
+        # 3. Profile Completed
+        user_approching_birthday = users_factories.UserFactory(
+            dateOfBirth=birth_date,
+            isEmailValidated=True,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            city="Paris",
+            firstName="Jean",
+            lastName="Neige",
+            address="1 rue des prés",
+            postalCode="75001",
+            activity="Lycéen",
+            phoneNumber="+33609080706",
+        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(
+            user=user_approching_birthday, eligibilityType=user_approching_birthday.eligibility
+        )
+
+        client.with_token(user_approching_birthday.email)
+        response = client.get("/native/v2/subscription/stepper")
+
+        assert response.status_code == 200
+        assert response.json["nextSubscriptionStep"] == "identity-check"
+        assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
+        assert response.json["maintenancePageType"] is None
+        assert response.json["hasIdentityCheckPending"] is False
+        assert response.json["subscriptionMessage"] is None
+
+        user_not_eligible_for_ubble = users_factories.UserFactory(
+            dateOfBirth=birth_date + relativedelta(days=10),
+            isEmailValidated=True,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            city="Paris",
+            firstName="Jean",
+            lastName="Neige",
+            address="1 rue des prés",
+            postalCode="75001",
+            activity="Lycéen",
+            phoneNumber="+33609080706",
+        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(
+            user=user_not_eligible_for_ubble, eligibilityType=user_not_eligible_for_ubble.eligibility
+        )
+
+        client.with_token(user_not_eligible_for_ubble.email)
+        response = client.get("/native/v2/subscription/stepper")
+        assert response.status_code == 200
+        assert response.json["nextSubscriptionStep"] == "maintenance"
+        assert response.json["allowedIdentityCheckMethods"] == []
+        assert response.json["maintenancePageType"] == "without-dms"
+        assert response.json["hasIdentityCheckPending"] is False
+        assert response.json["subscriptionMessage"] == {
+            "callToAction": None,
+            "messageSummary": None,
+            "popOverIcon": "CLOCK",
+            "updatedAt": None,
+            "userMessage": "La vérification d'identité est momentanément indisponible. L'équipe du pass Culture met tout en oeuvre pour la rétablir au plus vite.",
+        }
+
+    @override_features(ENABLE_UBBLE=True)
+    @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=False)
+    def test_ubble_restart_workflow(self, client):
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+            - relativedelta(years=18, months=5),
+            isEmailValidated=True,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            city="Paris",
+            firstName="Jean",
+            lastName="Neige",
+            address="1 rue des prés",
+            postalCode="75001",
+            activity="Lycéen",
+            phoneNumber="+33609080706",
+        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+
+        ubble_content = fraud_factories.UbbleContentFactory(
+            status=ubble_fraud_models.UbbleIdentificationStatus.INITIATED
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            user=user,
+            resultContent=ubble_content,
+            status=fraud_models.FraudCheckStatus.STARTED,
+        )
+
+        client.with_token(user.email)
+        response = client.get("/native/v2/subscription/stepper")
+        assert response.status_code == 200
+        assert response.json["nextSubscriptionStep"] == "identity-check"
+        assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
+        assert response.json["maintenancePageType"] is None
+        assert response.json["hasIdentityCheckPending"] is False
+        assert response.json["subscriptionMessage"] is None
 
 
 class GetProfileTest:
