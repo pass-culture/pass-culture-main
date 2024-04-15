@@ -2,6 +2,7 @@ import { FormikContext, useFormik } from 'formik'
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 import { useInstantSearch } from 'react-instantsearch'
 import { useDispatch, useSelector } from 'react-redux'
+import { useSearchParams } from 'react-router-dom'
 
 import { AdageFrontRoles, VenueResponse } from 'apiClient/adage'
 import { api, apiAdage } from 'apiClient/api'
@@ -60,6 +61,8 @@ export const OffersSearch = ({
 }: SearchProps): JSX.Element => {
   const dispatch = useDispatch()
 
+  const [searchParams, setSearchParams] = useSearchParams()
+
   const { adageUser } = useAdageUser()
   const isUserAdmin = adageUser.role === AdageFrontRoles.READONLY
 
@@ -106,6 +109,7 @@ export const OffersSearch = ({
   }, [notification])
 
   function handleSubmit() {
+    resetUrlSearchFilterParams()
     dispatch(setAdageFilter(formik.values))
     const updatedFilters = adageFiltersToFacetFilters({
       ...formik.values,
@@ -123,6 +127,15 @@ export const OffersSearch = ({
           : DEFAULT_GEO_RADIUS
       )
     }
+  }
+
+  function resetUrlSearchFilterParams() {
+    searchParams.delete('domain')
+    searchParams.delete('venue')
+    searchParams.delete('siret')
+    searchParams.delete('program')
+    searchParams.delete('all')
+    setSearchParams(searchParams)
   }
 
   const resetForm = async () => {
