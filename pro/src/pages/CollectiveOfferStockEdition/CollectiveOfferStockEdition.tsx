@@ -1,25 +1,26 @@
-import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
+import { isErrorAPIError } from 'apiClient/helpers'
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import {
   Mode,
   OfferEducationalStockFormValues,
+  createPatchStockDataPayload,
   extractInitialStockValues,
   getStockCollectiveOfferAdapter,
   isCollectiveOfferTemplate,
 } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
+import { FORM_ERROR_MESSAGE, PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import useNotification from 'hooks/useNotification'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
 } from 'screens/OfferEducational/useCollectiveOfferFromParams'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
-
-import patchCollectiveStockAdapter from './adapters/patchCollectiveStockAdapter'
 
 const CollectiveOfferStockEdition = ({
   offer,
@@ -43,17 +44,23 @@ const CollectiveOfferStockEdition = ({
       return notify.error('Impossible de mettre à jour le stock.')
     }
 
-    const stockResponse = await patchCollectiveStockAdapter({
-      offer,
-      stockId: offer.collectiveStock.id,
+    const stockPayload = createPatchStockDataPayload(
       values,
-      initialValues,
-    })
-    const offerResponse = await getStockCollectiveOfferAdapter(offer.id)
-
-    if (!stockResponse.isOk) {
-      return notify.error(stockResponse.message)
+      offer.venue.departementCode ?? '',
+      initialValues
+    )
+    try {
+      await api.editCollectiveStock(offer.collectiveStock.id, stockPayload)
+    } catch (error) {
+      if (isErrorAPIError(error) && error.status === 400) {
+        notify.error(FORM_ERROR_MESSAGE)
+      } else {
+        notify.error(
+          'Une erreur est survenue lors de la mise à jour de votre stock.'
+        )
+      }
     }
+    const offerResponse = await getStockCollectiveOfferAdapter(offer.id)
 
     if (!offerResponse.isOk) {
       return notify.error(offerResponse.message)
@@ -66,7 +73,7 @@ const CollectiveOfferStockEdition = ({
         false
       )}/collectif/recapitulatif`
     )
-    notify.success(stockResponse.message)
+    notify.success(PATCH_SUCCESS_MESSAGE)
   }
 
   return (

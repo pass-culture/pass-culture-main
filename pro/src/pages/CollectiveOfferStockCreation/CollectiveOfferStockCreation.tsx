@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
+import { isErrorAPIError } from 'apiClient/helpers'
 import {
+  CollectiveStockResponseModel,
   GetCollectiveOfferRequestResponseModel,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
@@ -10,6 +13,7 @@ import { AppLayout } from 'app/AppLayout'
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import {
+  createPatchStockDataPayload,
   EducationalOfferType,
   extractInitialStockValues,
   isCollectiveOffer,
@@ -19,9 +23,9 @@ import {
 } from 'core/OfferEducational'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
+import { FORM_ERROR_MESSAGE } from 'core/shared'
 import useNotification from 'hooks/useNotification'
 import getOfferRequestInformationsAdapter from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
-import patchCollectiveStockAdapter from 'pages/CollectiveOfferStockEdition/adapters/patchCollectiveStockAdapter'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 import {
   MandatoryCollectiveOfferFromParamsProps,
@@ -108,37 +112,53 @@ export const CollectiveOfferStockCreation = ({
       })
       isOk = response.isOk
       message = response.message
+      if (!isOk) {
+        return notify.error(message)
+      }
       createdOfferTemplateId = response.payload ? response.payload.id : null
     } else {
-      const response = offer.collectiveStock
-        ? await patchCollectiveStockAdapter({
-            offer,
-            stockId: offer.collectiveStock.id,
-            values,
-            initialValues,
-          })
-        : await postCollectiveStockAdapter({
-            offer,
-            values,
-          })
-      isOk = response.isOk
-      message = response.message
-
-      if (response.payload !== null) {
+      let payload: CollectiveStockResponseModel | null = null
+      if (offer.collectiveStock) {
+        const stockPayload = createPatchStockDataPayload(
+          values,
+          offer.venue.departementCode ?? '',
+          initialValues
+        )
+        try {
+          payload = await api.editCollectiveStock(
+            offer.collectiveStock.id,
+            stockPayload
+          )
+        } catch (error) {
+          if (isErrorAPIError(error) && error.status === 400) {
+            notify.error(FORM_ERROR_MESSAGE)
+          } else {
+            notify.error(
+              'Une erreur est survenue lors de la mise à jour de votre stock.'
+            )
+          }
+        }
+      } else {
+        const response = await postCollectiveStockAdapter({
+          offer,
+          values,
+        })
+        if (!response.isOk) {
+          return notify.error(response.message)
+        }
+        payload = response.payload
+      }
+      if (payload !== null) {
         setOffer({
           ...offer,
           collectiveStock: {
             ...offer.collectiveStock,
-            ...response.payload,
+            ...payload,
             isBooked: false,
             isCancellable: offer.isCancellable,
           },
         })
       }
-    }
-
-    if (!isOk) {
-      return notify.error(message)
     }
 
     let url = `/offre/${computeURLCollectiveOfferId(
