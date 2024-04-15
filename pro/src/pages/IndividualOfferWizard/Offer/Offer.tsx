@@ -59,7 +59,6 @@ export const Offer = (): JSX.Element | null => {
     return <Spinner />
   }
 
-  venuesQuery.data
   return (
     <IndivualOfferLayout offer={offer} title={getTitle(mode)} mode={mode}>
       {showAdminCreationBanner ? (
