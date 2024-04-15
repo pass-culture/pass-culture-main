@@ -5,10 +5,9 @@ import typing
 import flask
 from jwt import ExpiredSignatureError
 from jwt import InvalidSignatureError
-from jwt import InvalidTokenError
 
 from pcapi.core.users import utils as user_utils
-from pcapi.models.api_errors import ForbiddenError
+from pcapi.models.api_errors import UnauthorizedError
 from pcapi.routes.adage_iframe.blueprint import JWT_AUTH
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.serialization.spec_tree import add_security_scheme
@@ -31,19 +30,19 @@ def adage_jwt_required(route_function: typing.Callable) -> typing.Callable:
                 adage_jwt_decoded = user_utils.decode_jwt_token_rs256(adage_jwt)
             except InvalidSignatureError as invalid_signature_error:
                 logger.error("Signature of adage jwt cannot be verified", extra={"error": invalid_signature_error})
-                raise ForbiddenError({"Authorization": "Unrecognized token"})
+                raise UnauthorizedError("Unrecognized token")
             except ExpiredSignatureError as expired_signature_error:
                 logger.warning("Token has expired", extra={"error": expired_signature_error})
-                raise InvalidTokenError("Token expired")
+                raise UnauthorizedError("Token expired")
 
             if not adage_jwt_decoded.get("exp"):
                 logger.warning("Token does not contain an expiration date")
-                raise InvalidTokenError("No expiration date provided")
+                raise UnauthorizedError("No expiration date provided")
 
             email = adage_jwt_decoded.get("mail")
             if not email:
                 logger.warning("Token does not contain an email")
-                raise ForbiddenError({"Authorization": "Unrecognized token"})
+                raise UnauthorizedError("Unrecognized token")
 
             authenticated_information = AuthenticatedInformation(
                 civility=adage_jwt_decoded.get("civilite"),
@@ -57,6 +56,6 @@ def adage_jwt_required(route_function: typing.Callable) -> typing.Callable:
             kwargs["authenticated_information"] = authenticated_information
             return route_function(*args, **kwargs)
 
-        raise ForbiddenError({"Authorization": "Unrecognized token"})
+        raise UnauthorizedError("Unrecognized token")
 
     return wrapper
