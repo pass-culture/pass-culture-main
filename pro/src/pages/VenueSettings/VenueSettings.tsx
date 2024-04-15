@@ -80,29 +80,24 @@ const VenueSettings = (): JSX.Element | null => {
 
   if (
     errorOfferer ||
-    venueQuery.error ||
     errorVenueLabels ||
     errorVenueTypes ||
     errorVenueProviders ||
     errorProviders
   ) {
-    const loadingError = [
-      errorOfferer,
-      venueQuery.error
-        ? {
-            message:
-              'Une erreur est survenue lors de la récupération de votre lieu',
-          }
-        : undefined,
-      errorVenueLabels,
-      errorVenueTypes,
-    ].find((error) => error !== undefined)
+    const loadingError = [errorOfferer, errorVenueLabels, errorVenueTypes].find(
+      (error) => error !== undefined
+    )
     if (loadingError !== undefined) {
       notify.error(loadingError.message)
       return <Navigate to={homePath} />
     }
     /* istanbul ignore next: Never */
     return null
+  }
+
+  if (venueQuery.error) {
+    return <Navigate to={homePath} />
   }
 
   if (

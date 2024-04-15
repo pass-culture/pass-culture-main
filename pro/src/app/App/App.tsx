@@ -2,12 +2,14 @@ import { setUser as setSentryUser } from '@sentry/browser'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import { SWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { findCurrentRoute } from 'app/AppRouter/findCurrentRoute'
 import Notification from 'components/Notification/Notification'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { useConfigureFirebase } from 'hooks/useAnalytics'
+import useNotification from 'hooks/useNotification'
 import { updateUser } from 'store/user/reducer'
 import { selectCurrentUser } from 'store/user/selectors'
 import { Consents, initCookieConsent } from 'utils/cookieConsentModal'
@@ -26,6 +28,7 @@ const App = (): JSX.Element | null => {
   const [consentedToFirebase, setConsentedToFirebase] = useState(false)
   const [consentedToBeamer, setConsentedToBeamer] = useState(false)
   const dispatch = useDispatch()
+  const notify = useNotification()
 
   useEffect(() => {
     // Initialize cookie consent modal
@@ -125,7 +128,18 @@ const App = (): JSX.Element | null => {
 
   return (
     <>
-      <Outlet />
+      <SWRConfig
+        value={{
+          onError: () => {
+            notify.error(
+              'Nous avons rencontré un problème lors de la récupération des données.'
+            )
+          },
+          revalidateOnFocus: false,
+        }}
+      >
+        <Outlet />
+      </SWRConfig>
       <Notification />
     </>
   )

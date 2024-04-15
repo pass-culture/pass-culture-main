@@ -61,8 +61,8 @@ export const VenueEdition = (): JSX.Element | null => {
     }
   }, [offererId, dispatch])
 
-  if (errorOfferer || venueQuery.error || errorVenueTypes) {
-    const loadingError = [errorOfferer, venueQuery.error, errorVenueTypes].find(
+  if (errorOfferer || errorVenueTypes) {
+    const loadingError = [errorOfferer, errorVenueTypes].find(
       (error) => error !== undefined
     )
     if (loadingError !== undefined) {
@@ -73,6 +73,10 @@ export const VenueEdition = (): JSX.Element | null => {
     }
     /* istanbul ignore next: Never */
     return null
+  }
+
+  if (venueQuery.error) {
+    return <Navigate to={homePath} />
   }
 
   const venue = venueQuery.data

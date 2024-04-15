@@ -10,7 +10,6 @@ import {
   SummaryDescriptionList,
 } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
-import useNotification from 'hooks/useNotification'
 import { getInterventionAreaLabels } from 'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea/OfferInterventionArea'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -27,8 +26,6 @@ interface CollectiveOfferLocationSectionProps {
 export default function CollectiveOfferLocationSection({
   offer,
 }: CollectiveOfferLocationSectionProps) {
-  const notify = useNotification()
-
   const venueQuery = useSWR(
     [GET_VENUE_QUERY_KEY, offer.venue.id],
     ([, venueIdParam]) => api.getVenue(venueIdParam)
@@ -43,9 +40,6 @@ export default function CollectiveOfferLocationSection({
   }
 
   if (venueQuery.error) {
-    notify.error(
-      'Une erreur est survenue lors de la récupération de votre lieu'
-    )
     return null
   }
 
