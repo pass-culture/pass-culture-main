@@ -1,0 +1,75 @@
+{% extends "layouts/connected.html" %}
+{% block page %}
+  <div class="py-4 px-5">
+    <h1 class="text-muted mt-5">Clic sur un lien pointant vers un site externe</h1>
+    <div class="row">
+      <div class="col-2"></div>
+      <div class="col-8">
+        {% if reason == "NOT_FOUND" %}
+          <div class="alert alert-info my-5 p-5"
+               role="alert">
+            <h3>
+              <i class="bi bi-hourglass-split"></i> Attention !
+            </h3>
+            <p>L'adresse {{ url }} n'a pas encore été analysée, la confiance dans ce lien est donc incertaine.</p>
+            <p>
+              Cependant, une analyse vient d'être demandée à VirusTotal.
+              Le temps de recherche de virus et programmes malveillants peut être très variable selon la taille du site, ses liens et la charge du service.
+              Mais peut-être est-ce déjà terminé le temps de lire ce message...
+            </p>
+            <p>Si le site s'ouvre en rechargeant cette page, alors tout va bien !</p>
+            <p>
+              <a href="{{ url_for('backoffice_web.safe_redirect', url=url) }}"
+                 class="btn btn-md btn-primary fw-bold"><i class="bi bi-arrow-clockwise"></i> Recharger</a>
+            </p>
+            <p>
+              Si vous avez confiance et souhaitez poursuivre sans attendre la fin de l'analyse, cliquez sur ce lien :
+              <br />
+              <a href="{{ url_for('backoffice_web.safe_redirect', ignore=reason, url=url) }}">{{ url }}</a>
+            </p>
+          </div>
+        {% elif reason == "MALICIOUS" %}
+          <div class="alert alert-danger my-5 p-5"
+               role="alert">
+            <h3>
+              <i class="bi bi-exclamation-triangle-fill"></i> Attention !
+            </h3>
+            <p>
+              L'analyse de l'adresse {{ url }} a détecté un risque de sécurité. Le site vers lequel conduit ce lien peut contenir un virus, cheval de Troie ou un logiciel malveillant.
+              {% if url_id %}
+                Le détail de l'analyse est consultable dans l'interface de VirusTotal.
+                <p>
+                  <a href="https://www.virustotal.com/gui/url/{{ url_id }}"
+                     class="btn btn-md btn-primary fw-bold"><i class="bi bi-clipboard-fill"></i> Consulter le rapport</a>
+                </p>
+              {% endif %}
+            </p>
+            <p class="lead fw-bold">Il n'est pas recommandé de poursuivre la navigation (si besoin, rapprochez-vous du SSI).</p>
+            <p>
+              Pour toute question, contactez <strong>#hello-it</strong> en mentionnant le lien complet et son origine.
+            </p>
+            <p>
+              Si vous savez (vraiment) ce que vous faites et souhaitez ignorer cet avertissement, cliquez sur ce lien :
+              <br />
+              <a href="{{ url_for('backoffice_web.safe_redirect', ignore=reason, url=url) }}">{{ url }}</a>
+            </p>
+          </div>
+        {% elif reason == "ERROR" %}
+          <div class="alert alert-warning my-5 p-5"
+               role="alert">
+            <h3>
+              <i class="bi bi-exclamation-circle-fill"></i> Attention !
+            </h3>
+            <p>Une erreur s'est produite lors de la vérification du lien. L'alerte a été remontée à l'équipe technique.</p>
+            <p>
+              Si vous avez confiance et souhaitez poursuivre, cliquez sur ce lien :
+              <br />
+              <a href="{{ url_for('backoffice_web.safe_redirect', ignore=reason, url=url) }}">{{ url }}</a>
+            </p>
+          </div>
+        {% endif %}
+      </div>
+      <div class="col-2"></div>
+    </div>
+  </div>
+{% endblock page %}

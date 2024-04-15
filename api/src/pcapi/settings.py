@@ -521,3 +521,7 @@ ACCESLIBRE_API_URL = "https://acceslibre.beta.gouv.fr/api/erps/"
 RECOMMENDATION_BACKEND = os.environ.get("RECOMMENDATION_BACKEND", "pcapi.connectors.recommendation.TestingBackend")
 RECOMMENDATION_API_AUTHENTICATION_TOKEN = os.environ.get("RECOMMENDATION_API_AUTHENTICATION_TOKEN", "")
 RECOMMENDATION_API_URL = os.environ.get("RECOMMENDATION_API_URL", "")
+
+# VIRUSTOTAL
+VIRUSTOTAL_BACKEND = os.environ.get("VIRUSTOTAL_BACKEND", "pcapi.connectors.virustotal.LoggerBackend")
+VIRUSTOTAL_API_KEY = secrets_utils.get("VIRUSTOTAL_API_KEY")

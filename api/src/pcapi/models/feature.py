@@ -68,6 +68,7 @@ class FeatureToggle(enum.Enum):
 
     ENABLE_UBBLE = "Active la vérification d'identité par Ubble"
     ENABLE_UBBLE_SUBSCRIPTION_LIMITATION = "Active la limitation en fonction de l'âge lors de pic d'inscription"
+    ENABLE_VIRUSTOTAL = "Active la vérification des liens externes par VirusTotal"
     GENERATE_CASHFLOWS_BY_CRON = (
         "Active la génération automatique (via cron) des flux monétaires et fichiers de remboursement"
     )
@@ -171,6 +172,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC,
     FeatureToggle.ENABLE_TITELIVE_MUSIC_TYPES_IN_API_OUTPUT,
     FeatureToggle.ENABLE_UBBLE_SUBSCRIPTION_LIMITATION,
+    FeatureToggle.ENABLE_VIRUSTOTAL,
     FeatureToggle.ENABLE_ZENDESK_SELL_CREATION,
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
     FeatureToggle.LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC,

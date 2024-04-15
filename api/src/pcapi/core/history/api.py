@@ -139,16 +139,19 @@ class ObjectUpdateSnapshot:
     def to_dict(self) -> typing.Mapping[str, typing.Any]:
         return self.snapshot.to_dict()
 
+    @property
+    def is_empty(self) -> bool:
+        return self.snapshot.is_empty
+
     def add_action(self) -> models.ActionHistory | None:
-        modified_info = self.to_dict()
-        if not modified_info:
+        if self.is_empty:
             return None
 
         return add_action(
             models.ActionType.INFO_MODIFIED,
             self.author,
             **self.add_action_target,
-            modified_info=modified_info,
+            modified_info=self.to_dict(),
         )
 
 
@@ -175,6 +178,10 @@ class UpdateSnapshot:
 
     def to_dict(self) -> typing.Mapping[str, typing.Any]:
         return serialize_fields(self._fields)
+
+    @property
+    def is_empty(self) -> bool:
+        return not self._fields
 
 
 def _serialize_value(data: typing.Any) -> typing.Any:

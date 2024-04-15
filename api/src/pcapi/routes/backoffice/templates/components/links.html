@@ -120,3 +120,9 @@
      title="Visualiser le dossier Démarches Simplifiées Adage"
      class="link-primary">{{ venue.last_collective_dms_application.application }} <i class="bi bi-box-arrow-up-right"></i></a>
 {% endmacro %}
+{% macro build_safe_redirect_link(url) %}
+  <a href="{{ url_for('backoffice_web.safe_redirect', url=url) }}"
+     target="_blank"
+     title="Vérifier et ouvrir le site web externe"
+     class="link-primary">{{ url }}</a>
+{% endmacro %}
