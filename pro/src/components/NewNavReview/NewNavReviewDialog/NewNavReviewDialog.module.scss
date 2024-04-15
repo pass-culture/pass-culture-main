@@ -1,0 +1,57 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_size.scss" as size;
+
+.dialog {
+  max-width: rem.torem(300px);
+
+  &-title {
+    @include fonts.title3;
+
+    margin-bottom: rem.torem(24px);
+  }
+
+  &-buttons {
+    display: flex;
+    gap: rem.torem(16px);
+    justify-content: flex-end;
+  }
+
+  @media (min-width: size.$tablet) {
+    max-width: rem.torem(592px);
+    width: rem.torem(592px);
+  }
+
+  @media (min-width: size.$mobile) {
+    max-width: rem.torem(592px);
+  }
+}
+
+.radio-legend {
+  margin-bottom: rem.torem(16px);
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: rem.torem(16px);
+  margin-bottom: rem.torem(24px);
+
+  &-label {
+    width: rem.torem(16px);
+  }
+}
+
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: rem.torem(16px);
+
+  @media (min-width: size.$mobile) {
+    flex-wrap: nowrap;
+  }
+}
+
+.radio-button {
+  text-align: center;
+}
