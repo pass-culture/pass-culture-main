@@ -1,20 +1,20 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
+import { apiContremarque } from 'apiClient/api'
+import { ApiError } from 'apiClient/v1'
+import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { defaultGetBookingResponse } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import * as getBookingAdapter from '../adapters/getBooking'
-import * as submitTokenAdapter from '../adapters/submitToken'
 import { Desk } from '../Desk'
-import { MESSAGE_VARIANT } from '../types'
 
 const renderDesk = () => {
   renderWithProviders(<Desk />)
 }
 
-describe('src | components | Desk', () => {
+describe(' Desk', () => {
   describe('should validate while user is typing', () => {
     it('should remove QRcode prefix', async () => {
       renderDesk()
@@ -62,13 +62,13 @@ describe('src | components | Desk', () => {
     })
 
     it('should check that token is valid and display booking details', async () => {
-      vi.spyOn(getBookingAdapter, 'getBooking').mockResolvedValue({
-        booking: defaultGetBookingResponse,
-      })
+      vi.spyOn(apiContremarque, 'getBookingByTokenV2').mockResolvedValue(
+        defaultGetBookingResponse
+      )
       renderDesk()
       const contremarque = screen.getByLabelText('Contremarque')
       await userEvent.type(contremarque, 'AAAAAA')
-      expect(getBookingAdapter.getBooking).toHaveBeenCalledWith('AAAAAA')
+      expect(apiContremarque.getBookingByTokenV2).toHaveBeenCalledWith('AAAAAA')
       expect(
         await screen.findByText(
           'Coupon vérifié, cliquez sur "Valider" pour enregistrer'
@@ -80,28 +80,36 @@ describe('src | components | Desk', () => {
     })
 
     it('should display error message when validation fails', async () => {
-      vi.spyOn(getBookingAdapter, 'getBooking').mockResolvedValue({
-        error: {
-          message: 'Erreur',
-          isTokenValidated: false,
-          variant: MESSAGE_VARIANT.ERROR,
-        },
-      })
+      vi.spyOn(apiContremarque, 'getBookingByTokenV2').mockRejectedValue(
+        new ApiError(
+          {} as ApiRequestOptions,
+          {
+            body: {},
+            status: 503,
+          } as ApiResult,
+          'Oups, an error occured'
+        )
+      )
       renderDesk()
       const contremarque = screen.getByLabelText('Contremarque')
       await userEvent.type(contremarque, 'AAAAAA')
-      expect(await screen.findByText(/Erreur/)).toBeInTheDocument()
+      expect(
+        await screen.findByText(/Oups, an error occured/)
+      ).toBeInTheDocument()
     })
   })
 
   describe('should validate contremarque when the user submits the form', () => {
     beforeEach(() => {
-      vi.spyOn(getBookingAdapter, 'getBooking').mockResolvedValueOnce({
-        booking: defaultGetBookingResponse,
-      })
+      vi.spyOn(apiContremarque, 'getBookingByTokenV2').mockResolvedValueOnce(
+        defaultGetBookingResponse
+      )
     })
     it('should display confirmation message and empty field when contremarque is validated', async () => {
-      vi.spyOn(submitTokenAdapter, 'submitValidate').mockResolvedValueOnce({})
+      vi.spyOn(
+        apiContremarque,
+        'patchBookingUseByToken'
+      ).mockResolvedValueOnce()
       renderDesk()
       const contremarque = screen.getByLabelText('Contremarque')
       await userEvent.type(contremarque, 'AAAAAA')
@@ -113,12 +121,18 @@ describe('src | components | Desk', () => {
     })
 
     it('should display error message and empty field when contremarque could not be validated', async () => {
-      vi.spyOn(submitTokenAdapter, 'submitValidate').mockResolvedValueOnce({
-        error: {
-          message: 'Erreur',
-          variant: MESSAGE_VARIANT.ERROR,
-        },
-      })
+      vi.spyOn(apiContremarque, 'patchBookingUseByToken').mockRejectedValue(
+        new ApiError(
+          {} as ApiRequestOptions,
+          {
+            body: {
+              global: 'Erreur',
+            },
+            status: 503,
+          } as ApiResult,
+          'api error'
+        )
+      )
       renderDesk()
       const contremarque = screen.getByLabelText('Contremarque')
       await userEvent.type(contremarque, 'AAAAAA')
@@ -130,16 +144,23 @@ describe('src | components | Desk', () => {
 
   describe('should invalidate contremarque when the user submits the form', () => {
     beforeEach(() => {
-      vi.spyOn(getBookingAdapter, 'getBooking').mockResolvedValueOnce({
-        error: {
-          isTokenValidated: true,
-          message: '',
-          variant: MESSAGE_VARIANT.ERROR,
-        },
-      })
+      vi.spyOn(apiContremarque, 'getBookingByTokenV2').mockRejectedValue(
+        new ApiError(
+          {} as ApiRequestOptions,
+          {
+            body: {},
+            status: 410,
+          } as ApiResult,
+          'api error'
+        )
+      )
     })
 
     it('should display invalidating message when waiting for invalidation and display invalidation confirmation', async () => {
+      vi.spyOn(
+        apiContremarque,
+        'patchBookingKeepByToken'
+      ).mockResolvedValueOnce()
       renderDesk()
 
       await userEvent.type(screen.getByLabelText('Contremarque'), 'AAAAAA')
@@ -156,12 +177,16 @@ describe('src | components | Desk', () => {
     })
 
     it('should display error message when invalidation failed', async () => {
-      vi.spyOn(submitTokenAdapter, 'submitInvalidate').mockResolvedValueOnce({
-        error: {
-          message: 'Erreur lors de la validation de la contremarque',
-          variant: MESSAGE_VARIANT.ERROR,
-        },
-      })
+      vi.spyOn(apiContremarque, 'patchBookingKeepByToken').mockRejectedValue(
+        new ApiError(
+          {} as ApiRequestOptions,
+          {
+            body: {},
+            status: 500,
+          } as ApiResult,
+          'Erreur lors de la validation de la contremarque'
+        )
+      )
 
       renderDesk()
 
