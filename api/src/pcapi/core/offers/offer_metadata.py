@@ -5,6 +5,7 @@ from pcapi.core.categories import subcategories_v2
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.utils import offer_app_link
+from pcapi.core.providers import constants as providers_constants
 
 
 Metadata = dict[str, typing.Any]
@@ -109,7 +110,7 @@ def _get_book_metadata_from_offer(offer: offers_models.Offer) -> Metadata:
         book_metadata["gtin13"] = ean
         work_example["isbn"] = ean
 
-    if extra_data.get("bookFormat") == offers_models.BookFormat.POCHE.value:
+    if extra_data.get("bookFormat") == providers_constants.BookFormat.POCHE.value:
         work_example["bookFormat"] = "https://schema.org/Paperback"
     else:
         work_example["bookFormat"] = book_subcategories[offer.subcategoryId]

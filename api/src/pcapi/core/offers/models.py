@@ -51,16 +51,6 @@ if typing.TYPE_CHECKING:
     from pcapi.core.users.models import User
 
 
-class BookFormat(enum.Enum):
-    BANDE_DESSINEE = "BANDE DESSINEE "
-    BEAUX_LIVRES = "BEAUX LIVRES"
-    LIVRE_AUDIO = "LIVRE + CD AUDIO"
-    LIVRE_CASSETTE = "LIVRE + CASSETTE"
-    MOYEN_FORMAT = "MOYEN FORMAT"
-    POCHE = "POCHE"
-    REVUE = "REVUE"
-
-
 UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER = "xxx"
 
 

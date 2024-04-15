@@ -12,6 +12,7 @@ from pcapi.core.offers.factories import ThingOfferFactory
 from pcapi.core.offers.factories import ThingProductFactory
 from pcapi.core.offers.factories import ThingStockFactory
 import pcapi.core.offers.models as offers_models
+from pcapi.core.providers import constants as providers_constants
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 import pcapi.core.users.factories as users_factories
@@ -133,7 +134,7 @@ class TiteliveThingsTest:
 
         # Then
         product = offers_models.Product.query.one()
-        assert product.extraData.get("bookFormat") == offers_models.BookFormat.BEAUX_LIVRES.value
+        assert product.extraData.get("bookFormat") == providers_constants.BookFormat.BEAUX_LIVRES.value
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert product.extraData.get("ean") == EAN_TEST
         assert product.extraData.get("gtl_id") == GTL_ID_TEST
@@ -163,7 +164,7 @@ class TiteliveThingsTest:
 
         # Then
         product = offers_models.Product.query.one()
-        assert product.extraData.get("bookFormat") == offers_models.BookFormat.BEAUX_LIVRES.value
+        assert product.extraData.get("bookFormat") == providers_constants.BookFormat.BEAUX_LIVRES.value
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert product.extraData.get("ean") == EAN_TEST
         assert product.extraData.get("gtl_id") == GTL_ID_TEST
@@ -403,7 +404,7 @@ class TiteliveThingsTest:
         # Then
         updated_product = offers_models.Product.query.first()
         assert updated_product.name == EAN_TEST_TITLE
-        assert updated_product.extraData.get("bookFormat") == offers_models.BookFormat.BEAUX_LIVRES.value
+        assert updated_product.extraData.get("bookFormat") == providers_constants.BookFormat.BEAUX_LIVRES.value
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
