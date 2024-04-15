@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
 
-import Dialog from 'components/Dialog/Dialog'
 import strokeShoutIcon from 'icons/stroke-shout.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './NewNavReview.module.scss'
+import NewNavReviewDialog from './NewNavReviewDialog/NewNavReviewDialog'
 
 const NewNavReview = () => {
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false)
@@ -33,11 +33,7 @@ const NewNavReview = () => {
         </Button>
       </div>
       {isReviewDialogOpen && (
-        <Dialog
-          title="Votre avis compte"
-          onCancel={() => setIsReviewDialogOpen(false)}
-          hideIcon
-        ></Dialog>
+        <NewNavReviewDialog setIsReviewDialogOpen={setIsReviewDialogOpen} />
       )}
     </>
   )
