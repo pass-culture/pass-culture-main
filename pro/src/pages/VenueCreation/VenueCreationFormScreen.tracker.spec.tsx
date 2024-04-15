@@ -4,8 +4,8 @@ import { Route, Routes } from 'react-router-dom'
 import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from 'apiClient/api'
+import { VenueTypeResponseModel } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
-import { SelectOption } from 'custom_types/form'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -16,9 +16,9 @@ import { VenueCreationFormScreen } from './VenueCreationFormScreen'
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 
-const venueTypes: SelectOption[] = [
-  { value: 'ARTISTIC_COURSE', label: 'Cours et pratique artistiques' },
-  { value: 'SCIENTIFIC_CULTURE', label: 'Culture scientifique' },
+const venueTypes: VenueTypeResponseModel[] = [
+  { id: 'ARTISTIC_COURSE', label: 'Cours et pratique artistiques' },
+  { id: 'SCIENTIFIC_CULTURE', label: 'Culture scientifique' },
 ]
 
 const formValues: VenueCreationFormValues = {

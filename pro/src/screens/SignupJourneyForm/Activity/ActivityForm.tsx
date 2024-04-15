@@ -2,10 +2,11 @@ import cn from 'classnames'
 import { FieldArray, useFormikContext } from 'formik'
 import React from 'react'
 
+import { VenueTypeResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
-import { SelectOption } from 'custom_types/form'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
+import { buildVenueTypesOptions } from 'pages/VenueCreation/buildVenueTypesOptions'
 import { Button, CheckboxGroup, Select, TextInput } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import ListIconButton from 'ui-kit/ListIconButton'
@@ -23,11 +24,12 @@ export interface ActivityFormValues {
 }
 
 export interface ActivityFormProps {
-  venueTypes: SelectOption[]
+  venueTypes: VenueTypeResponseModel[]
 }
 
 const ActivityForm = ({ venueTypes }: ActivityFormProps): JSX.Element => {
   const { values } = useFormikContext<ActivityFormValues>()
+  const venueTypesOptions = buildVenueTypesOptions(venueTypes)
 
   return (
     <FormLayout.Section
@@ -41,7 +43,7 @@ const ActivityForm = ({ venueTypes }: ActivityFormProps): JSX.Element => {
               value: '',
               label: 'Sélectionnez votre activité principale',
             },
-            ...venueTypes,
+            ...venueTypesOptions,
           ]}
           name="venueTypeCode"
           label="Activité principale"

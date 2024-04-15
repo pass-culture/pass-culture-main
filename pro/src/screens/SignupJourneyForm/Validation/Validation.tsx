@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { SaveNewOnboardingDataQueryModel, Target } from 'apiClient/v1'
@@ -12,12 +13,12 @@ import {
   useSignupJourneyContext,
 } from 'context/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
-import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useInitReCaptcha from 'hooks/useInitReCaptcha'
 import useNotification from 'hooks/useNotification'
 import fullEditIcon from 'icons/full-edit.svg'
+import { GET_VENUE_TYPES_QUERY_KEY } from 'pages/VenueSettings/VenueSettings'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { updateUser } from 'store/user/reducer'
 import { Banner, ButtonLink } from 'ui-kit'
@@ -34,12 +35,12 @@ const Validation = (): JSX.Element => {
   const notify = useNotification()
   const navigate = useNavigate()
   const { activity, offerer } = useSignupJourneyContext()
-  const {
-    isLoading: isLoadingVenueTypes,
-    error: errorVenueTypes,
-    data: venueTypes,
-  } = useGetVenueTypes()
   useInitReCaptcha()
+
+  const venueTypesQuery = useSWR([GET_VENUE_TYPES_QUERY_KEY], () =>
+    api.getVenueTypes()
+  )
+  const venueTypes = venueTypesQuery.data
 
   const dispatch = useDispatch()
   const { currentUser } = useCurrentUser()
@@ -68,11 +69,11 @@ const Validation = (): JSX.Element => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activity, offerer])
 
-  if (isLoadingVenueTypes) {
+  if (venueTypesQuery.isLoading) {
     return <Spinner />
   }
 
-  if (errorVenueTypes) {
+  if (!venueTypes) {
     return <></>
   }
 
@@ -189,7 +190,7 @@ const Validation = (): JSX.Element => {
           <div className={styles['data-line']}>
             {
               venueTypes.find(
-                (venueType) => venueType.value === activity.venueTypeCode
+                (venueType) => venueType.id === activity.venueTypeCode
               )?.label
             }
           </div>
