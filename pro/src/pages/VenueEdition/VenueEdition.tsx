@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import {
   generatePath,
-  Navigate,
   Route,
   Routes,
   useLocation,
@@ -14,7 +13,6 @@ import { api } from 'apiClient/api'
 import { AppLayout } from 'app/AppLayout'
 import { SAVED_OFFERER_ID_KEY } from 'core/shared'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
-import useNotification from 'hooks/useNotification'
 import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
 import { GET_OFFERER_QUERY_KEY } from 'pages/VenueSettings/VenueSettings'
 import { updateSelectedOffererId } from 'store/user/reducer'
@@ -28,12 +26,10 @@ import { VenueEditionHeader } from './VenueEditionHeader'
 export const GET_VENUE_QUERY_KEY = 'getVenue'
 
 export const VenueEdition = (): JSX.Element | null => {
-  const homePath = '/accueil'
   const { offererId, venueId } = useParams<{
     offererId: string
     venueId: string
   }>()
-  const notify = useNotification()
   const location = useLocation()
   const dispatch = useDispatch()
 
@@ -41,6 +37,7 @@ export const VenueEdition = (): JSX.Element | null => {
     [GET_VENUE_QUERY_KEY, venueId],
     ([, venueIdParam]) => api.getVenue(Number(venueIdParam))
   )
+  const venue = venueQuery.data
 
   const offererQuery = useSWR(
     [GET_OFFERER_QUERY_KEY, offererId],
@@ -48,11 +45,8 @@ export const VenueEdition = (): JSX.Element | null => {
   )
   const offerer = offererQuery.data
 
-  const {
-    isLoading: isLoadingVenueTypes,
-    error: errorVenueTypes,
-    data: venueTypes,
-  } = useGetVenueTypes()
+  const { isLoading: isLoadingVenueTypes, data: venueTypes } =
+    useGetVenueTypes()
 
   useEffect(() => {
     if (offererId) {
@@ -61,32 +55,13 @@ export const VenueEdition = (): JSX.Element | null => {
     }
   }, [offererId, dispatch])
 
-  if (offererQuery.error || errorVenueTypes) {
-    const loadingError = [offererQuery.error, errorVenueTypes].find(
-      (error) => error !== undefined
-    )
-    if (loadingError !== undefined) {
-      notify.error(
-        'Une erreur est survenue lors de la récupération de votre lieu'
-      )
-      return <Navigate to={homePath} />
-    }
-    /* istanbul ignore next: Never */
-    return null
-  }
-
-  if (venueQuery.error) {
-    return <Navigate to={homePath} />
-  }
-
-  const venue = venueQuery.data
-
   if (
     venueQuery.isLoading ||
     isLoadingVenueTypes ||
     offererQuery.isLoading ||
     !venue ||
-    !offerer
+    !offerer ||
+    !venueTypes
   ) {
     return (
       <AppLayout>

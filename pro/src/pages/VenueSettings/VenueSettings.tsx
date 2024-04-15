@@ -1,4 +1,4 @@
-import { Navigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -7,7 +7,6 @@ import { AppLayout } from 'app/AppLayout'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import { useAdapter } from 'hooks'
-import useNotification from 'hooks/useNotification'
 import {
   getFilteredOffersAdapter,
   Payload,
@@ -26,12 +25,10 @@ const GET_VENUE_LABELS_QUERY_KEY = 'getVenueLabels'
 export const GET_OFFERER_QUERY_KEY = 'getOfferer'
 
 const VenueSettings = (): JSX.Element | null => {
-  const homePath = '/accueil'
   const { offererId, venueId } = useParams<{
     offererId: string
     venueId: string
   }>()
-  const notify = useNotification()
 
   const venueQuery = useSWR(
     [GET_VENUE_QUERY_KEY, venueId],
@@ -51,21 +48,13 @@ const VenueSettings = (): JSX.Element | null => {
   )
   const offerer = offererQuery.data
 
-  const {
-    isLoading: isLoadingVenueTypes,
-    error: errorVenueTypes,
-    data: venueTypes,
-  } = useGetVenueTypes()
-  const {
-    isLoading: isLoadingProviders,
-    error: errorProviders,
-    data: providers,
-  } = useGetProviders(Number(venueId))
-  const {
-    isLoading: isLoadingVenueProviders,
-    error: errorVenueProviders,
-    data: venueProviders,
-  } = useGetVenueProviders(Number(venueId))
+  const { isLoading: isLoadingVenueTypes, data: venueTypes } =
+    useGetVenueTypes()
+  const { isLoading: isLoadingProviders, data: providers } = useGetProviders(
+    Number(venueId)
+  )
+  const { isLoading: isLoadingVenueProviders, data: venueProviders } =
+    useGetVenueProviders(Number(venueId))
 
   const apiFilters = {
     ...DEFAULT_SEARCH_FILTERS,
@@ -81,48 +70,22 @@ const VenueSettings = (): JSX.Element | null => {
   const hasBookingQuantity = offerHasBookingQuantity(venueOffers?.offers)
 
   if (
-    offererQuery.error ||
-    venueQuery.error ||
-    venueLabelsQuery.error ||
-    errorVenueTypes ||
-    errorVenueProviders ||
-    errorProviders
-  ) {
-    const loadingError = [
-      offererQuery.error,
-      venueLabelsQuery.error,
-      errorVenueTypes,
-    ].find((error) => error !== undefined)
-    if (loadingError !== undefined) {
-      notify.error(loadingError.message)
-      return <Navigate to={homePath} />
-    }
-    /* istanbul ignore next: Never */
-    return null
-  }
-
-  if (venueQuery.error) {
-    return <Navigate to={homePath} />
-  }
-
-  if (
     venueQuery.isLoading ||
     venueLabelsQuery.isLoading ||
     isLoadingVenueTypes ||
     isLoadingProviders ||
     isLoadingVenueProviders ||
     offererQuery.isLoading ||
-    isLoadingVenueOffers
+    isLoadingVenueOffers ||
+    !venue ||
+    !offerer ||
+    !venueTypes
   ) {
     return (
       <AppLayout>
         <Spinner />
       </AppLayout>
     )
-  }
-
-  if (!venue || !offerer) {
-    return null
   }
 
   const venueLabels = venueLabelsQuery.data.map((type) => ({
