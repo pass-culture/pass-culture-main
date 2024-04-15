@@ -122,7 +122,11 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
     ) -> TiteliveProductSearchResponse[TiteliveSearchResultType]:
         """Filters out articles that were not updated since from_date."""
         for oeuvre in titelive_product_page.result:
-            oeuvre.article = [article for article in oeuvre.article if article.datemodification >= from_date]
+            oeuvre.article = [
+                article
+                for article in oeuvre.article
+                if article.datemodification is None or article.datemodification >= from_date
+            ]
         return titelive_product_page
 
     def filter_allowed_products(
