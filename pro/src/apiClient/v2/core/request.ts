@@ -374,6 +374,7 @@ export const request = <T>(
         ) {
           window.location.href = '/connexion'
         }
+        return
       }
       reject(error)
     }
