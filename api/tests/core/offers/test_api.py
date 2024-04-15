@@ -1524,7 +1524,7 @@ class RejectInappropriateProductTest:
             bookings_factories.BookingFactory(stock__offer=offer)
 
         # When
-        api.reject_inappropriate_product("ean-de-test", user, send_booking_cancellation_emails=False)
+        api.reject_inappropriate_products(["ean-de-test"], user, send_booking_cancellation_emails=False)
 
         # Then
         offers = models.Offer.query.all()
@@ -1580,7 +1580,7 @@ class RejectInappropriateProductTest:
         assert bookings_models.Booking.query.count() == len(offers)
 
         # When
-        api.reject_inappropriate_product("ean-de-test", user)
+        api.reject_inappropriate_products(["ean-de-test"], user)
 
         # Then
         mocked_send_booking_cancellation_emails_to_user_and_offerer.assert_called()
