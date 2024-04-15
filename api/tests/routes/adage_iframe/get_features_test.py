@@ -24,4 +24,4 @@ class FeaturesTest:
         response = client.get("/adage-iframe/features")
 
         # then
-        assert response.status_code == 403
+        assert response.status_code == 401

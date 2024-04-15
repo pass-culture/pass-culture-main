@@ -377,8 +377,8 @@ export const request = <T>(
           !error.url.includes('/users/signin')
         ) {
           window.location.href = '/connexion'
+          return
         }
-        return
       }
       reject(error)
     }
