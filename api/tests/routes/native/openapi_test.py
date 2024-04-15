@@ -580,6 +580,29 @@ def test_public_api(client):
                     "enum": ["GRANT_15_17", "GRANT_18"],
                     "title": "DepositType",
                 },
+                "SubscriptionStepperResponse": {
+                    "properties": {
+                        "allowedIdentityCheckMethods": {
+                            "items": {"$ref": "#/components/schemas/IdentityCheckMethod"},
+                            "type": "array",
+                        },
+                        "maintenancePageType": {
+                            "anyOf": [{"$ref": "#/components/schemas/MaintenancePageType"}],
+                            "nullable": True,
+                        },
+                        "errorMessage": {"nullable": True, "title": "Errormessage", "type": "string"},
+                        "subscriptionStepsToDisplay": {
+                            "items": {"$ref": "#/components/schemas/SubscriptionStepDetailsResponse"},
+                            "title": "Subscriptionstepstodisplay",
+                            "type": "array",
+                        },
+                        "subtitle": {"nullable": True, "title": "Subtitle", "type": "string"},
+                        "title": {"title": "Title", "type": "string"},
+                    },
+                    "required": ["subscriptionStepsToDisplay", "allowedIdentityCheckMethods", "title"],
+                    "title": "SubscriptionStepperResponse",
+                    "type": "object",
+                },
                 "DomainsCredit": {
                     "properties": {
                         "all": {"$ref": "#/components/schemas/Credit"},
@@ -1909,6 +1932,22 @@ def test_public_api(client):
                     "title": "SubscriptionMessage",
                     "type": "object",
                 },
+                "SubscriptionMessageV2": {
+                    "properties": {
+                        "callToAction": {
+                            "anyOf": [{"$ref": "#/components/schemas/CallToActionMessage"}],
+                            "nullable": True,
+                            "title": "CallToActionMessage",
+                        },
+                        "messageSummary": {"title": "Messagesummary", "type": "string", "nullable": True},
+                        "popOverIcon": {"anyOf": [{"$ref": "#/components/schemas/PopOverIcon"}], "nullable": True},
+                        "updatedAt": {"format": "date-time", "nullable": True, "title": "Updatedat", "type": "string"},
+                        "userMessage": {"title": "Usermessage", "type": "string"},
+                    },
+                    "required": ["userMessage"],
+                    "title": "SubscriptionMessageV2",
+                    "type": "object",
+                },
                 "SubscriptionStatus": {
                     "description": "An enumeration.",
                     "enum": ["has_to_complete_subscription", "has_subscription_pending", "has_subscription_issues"],
@@ -1947,17 +1986,26 @@ def test_public_api(client):
                     "enum": ["Numéro de téléphone", "Profil", "Identification", "Confirmation"],
                     "title": "SubscriptionStepTitle",
                 },
-                "SubscriptionStepperResponse": {
+                "SubscriptionStepperResponseV2": {
                     "properties": {
                         "allowedIdentityCheckMethods": {
                             "items": {"$ref": "#/components/schemas/IdentityCheckMethod"},
                             "type": "array",
                         },
+                        "hasIdentityCheckPending": {"title": "Hasidentitycheckpending", "type": "boolean"},
                         "maintenancePageType": {
                             "anyOf": [{"$ref": "#/components/schemas/MaintenancePageType"}],
                             "nullable": True,
                         },
-                        "errorMessage": {"nullable": True, "title": "Errormessage", "type": "string"},
+                        "nextSubscriptionStep": {
+                            "anyOf": [{"$ref": "#/components/schemas/SubscriptionStep"}],
+                            "nullable": True,
+                        },
+                        "subscriptionMessage": {
+                            "anyOf": [{"$ref": "#/components/schemas/SubscriptionMessageV2"}],
+                            "nullable": True,
+                            "title": "SubscriptionMessageV2",
+                        },
                         "subscriptionStepsToDisplay": {
                             "items": {"$ref": "#/components/schemas/SubscriptionStepDetailsResponse"},
                             "title": "Subscriptionstepstodisplay",
@@ -1966,8 +2014,13 @@ def test_public_api(client):
                         "subtitle": {"nullable": True, "title": "Subtitle", "type": "string"},
                         "title": {"title": "Title", "type": "string"},
                     },
-                    "required": ["subscriptionStepsToDisplay", "allowedIdentityCheckMethods", "title"],
-                    "title": "SubscriptionStepperResponse",
+                    "required": [
+                        "subscriptionStepsToDisplay",
+                        "allowedIdentityCheckMethods",
+                        "hasIdentityCheckPending",
+                        "title",
+                    ],
+                    "title": "SubscriptionStepperResponseV2",
                     "type": "object",
                 },
                 "SuspendAccountForSuspiciousLoginRequest": {
@@ -3904,6 +3957,7 @@ def test_public_api(client):
             },
             "/native/v1/subscription/next_step": {
                 "get": {
+                    "deprecated": True,
                     "description": "",
                     "operationId": "get__native_v1_subscription_next_step",
                     "parameters": [],
@@ -3975,6 +4029,7 @@ def test_public_api(client):
             },
             "/native/v1/subscription/stepper": {
                 "get": {
+                    "deprecated": True,
                     "description": "",
                     "operationId": "get__native_v1_subscription_stepper",
                     "parameters": [],
@@ -3996,7 +4051,7 @@ def test_public_api(client):
                         },
                     },
                     "security": [{"JWTAuth": []}],
-                    "summary": "get_subscription_stepper <GET>",
+                    "summary": "get_subscription_stepper_deprecated <GET>",
                     "tags": [],
                 }
             },
@@ -4278,6 +4333,33 @@ def test_public_api(client):
                     },
                     "security": [{"JWTAuth": []}],
                     "summary": "update_user_email <POST>",
+                    "tags": [],
+                }
+            },
+            "/native/v2/subscription/stepper": {
+                "get": {
+                    "description": "",
+                    "operationId": "get__native_v2_subscription_stepper",
+                    "parameters": [],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/SubscriptionStepperResponseV2"}
+                                }
+                            },
+                            "description": "OK",
+                        },
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "get_subscription_stepper <GET>",
                     "tags": [],
                 }
             },
