@@ -916,6 +916,9 @@ class GetOffererUsersTest(GetEndpointHelper):
             offerer=offerer, user=users_factories.ProFactory(firstName="Jean", lastName="Bon")
         )
         uo3 = offerers_factories.NotValidatedUserOffererFactory(offerer=offerer)
+        uo4 = offerers_factories.UserOffererFactory(
+            offerer=offerer, user=users_factories.ProFactory(firstName="Hang", lastName="Man", isActive=False)
+        )
 
         offerers_factories.UserOffererFactory()
 
@@ -925,7 +928,7 @@ class GetOffererUsersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == 3
+        assert len(rows) == 4
 
         assert rows[0]["ID"] == str(uo1.user.id)
         assert rows[0]["Statut"] == "Validé"
@@ -947,6 +950,13 @@ class GetOffererUsersTest(GetEndpointHelper):
         assert rows[2]["Email"] == uo3.user.email
         assert rows[2]["Invitation"] == ""
         assert "Connect as" not in rows[2]
+
+        assert rows[3]["ID"] == str(uo4.user.id)
+        assert rows[3]["Statut"] == "Validé Suspendu"
+        assert rows[3]["Prénom / Nom"] == uo4.user.full_name
+        assert rows[3]["Email"] == uo4.user.email
+        assert rows[3]["Invitation"] == ""
+        assert "Connect as" not in rows[3]
 
     @override_features(WIP_CONNECT_AS=True)
     @pytest.mark.parametrize(
