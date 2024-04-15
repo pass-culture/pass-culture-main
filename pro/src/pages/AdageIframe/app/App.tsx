@@ -1,5 +1,4 @@
 import { setUser as setSentryUser } from '@sentry/browser'
-import * as React from 'react'
 import { useEffect, useId, useState } from 'react'
 
 import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
