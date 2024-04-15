@@ -105,6 +105,7 @@ export const BookingsSummaryScreen = ({
       <div className={styles['header']}>
         <h2 className={styles['header-title']}>Réservations</h2>
         {isDownloadBookingsFeatureEnabled &&
+          offer.isEvent &&
           bookings !== null &&
           bookings.length && (
             <Button
