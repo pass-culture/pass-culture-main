@@ -98,8 +98,9 @@ export const OffersInstantSearch = (): JSX.Element | null => {
             : filterOnMarseilleStudents
               ? DEFAULT_MARSEILLE_STUDENTS
               : [],
-        venue: venue ?? null,
+        venue: venue ?? adageFilterFromSelector.venue,
       }
+
       setFacetFilters(
         adageFiltersToFacetFilters({
           ...adageFilterFromSelector,
