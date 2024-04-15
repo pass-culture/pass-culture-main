@@ -116,6 +116,7 @@
         <td class="text-muted">
           {% if row.id %}
             {{ build_user_offerer_status_badge(user_offerer) }}
+            {% if not row.isActive %}<span class="badge rounded-pill text-bg-danger align-middle">{{ row.isActive | format_state }}</span>{% endif %}
           {% else %}
             <span class="me-1 pb-1 badge rounded-pill text-bg-light">Invité</span>
           {% endif %}
