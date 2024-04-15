@@ -13,6 +13,7 @@ from pcapi.core.offers.api import deactivate_permanently_unavailable_products
 from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
 from pcapi.core.offers.exceptions import ProductNotFound
 import pcapi.core.offers.models as offers_models
+from pcapi.core.providers import constants as providers_constants
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
 from pcapi.domain.titelive import get_date_from_filename
@@ -448,9 +449,9 @@ def get_subcategory_and_extra_data_from_titelive_type(titelive_type: str) -> tup
     if titelive_type in ("A", "I", "LA"):  # obsolete codes
         return None, None
     if titelive_type == "BD":  # bande dessinée
-        return subcategories.LIVRE_PAPIER.id, offers_models.BookFormat.BANDE_DESSINEE.value
+        return subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.BANDE_DESSINEE.value
     if titelive_type == "BL":  # beaux livres
-        return subcategories.LIVRE_PAPIER.id, offers_models.BookFormat.BEAUX_LIVRES.value
+        return subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.BEAUX_LIVRES.value
     if titelive_type == "C":  # carte et plan
         return None, None
     if titelive_type == "CA":  # CD audio
@@ -470,9 +471,9 @@ def get_subcategory_and_extra_data_from_titelive_type(titelive_type: str) -> tup
     if titelive_type == "LA":  # obsolete code
         return None, None
     if titelive_type == "LC":  # livre + cassette
-        return subcategories.LIVRE_PAPIER.id, offers_models.BookFormat.LIVRE_CASSETTE.value  # TODO: verify
+        return subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.LIVRE_CASSETTE.value  # TODO: verify
     if titelive_type == "LD":  # livre + CD audio
-        return subcategories.LIVRE_PAPIER.id, offers_models.BookFormat.LIVRE_AUDIO.value  # TODO: verify
+        return subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.LIVRE_AUDIO.value  # TODO: verify
     if titelive_type == "LE":  # livre numérique
         return None, None
     if titelive_type == "LR":  # livre + CD-ROM
@@ -482,17 +483,17 @@ def get_subcategory_and_extra_data_from_titelive_type(titelive_type: str) -> tup
     if titelive_type == "LV":  # livre + DVD
         return None, None
     if titelive_type == "M":  # moyen format
-        return subcategories.LIVRE_PAPIER.id, offers_models.BookFormat.MOYEN_FORMAT.value
+        return subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.MOYEN_FORMAT.value
     if titelive_type == OBJECT_SUPPORT_CODE:  # objet
         return None, None
     if titelive_type == "P":  # poche
-        return subcategories.LIVRE_PAPIER.id, offers_models.BookFormat.POCHE.value
+        return subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.POCHE.value
     if titelive_type == PAPER_CONSUMABLE_SUPPORT_CODE:  # papeterie / consommable
         return None, None
     if titelive_type == POSTER_SUPPORT_CODE:  # poster
         return None, None
     if titelive_type == PAPER_PRESS_SUPPORT_CODE:  # revue
-        return subcategories.LIVRE_PAPIER.id, offers_models.BookFormat.REVUE.value  # TODO: verify
+        return subcategories.LIVRE_PAPIER.id, providers_constants.BookFormat.REVUE.value  # TODO: verify
     if titelive_type in ("T", "TL"):  # livre papier (hors spécificité)
         return subcategories.LIVRE_PAPIER.id, None
     if titelive_type == "TR":  # transparents

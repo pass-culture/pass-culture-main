@@ -1,6 +1,17 @@
+import enum
 import typing
 
 from pcapi.models.feature import FeatureToggle
+
+
+class BookFormat(enum.Enum):
+    BANDE_DESSINEE = "BANDE DESSINEE "  # TODO: remove trailing whitespace
+    BEAUX_LIVRES = "BEAUX LIVRES"
+    LIVRE_AUDIO = "LIVRE + CD AUDIO"
+    LIVRE_CASSETTE = "LIVRE + CASSETTE"
+    MOYEN_FORMAT = "MOYEN FORMAT"
+    POCHE = "POCHE"
+    REVUE = "REVUE"
 
 
 CINEMA_PROVIDER_NAMES = [

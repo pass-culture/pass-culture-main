@@ -4,8 +4,8 @@ import pytest
 
 from pcapi.core.categories import subcategories_v2
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.offers.models import BookFormat
 from pcapi.core.offers.offer_metadata import get_metadata_from_offer
+from pcapi.core.providers.constants import BookFormat
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
