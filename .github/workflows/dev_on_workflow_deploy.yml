@@ -163,16 +163,16 @@ jobs:
           commit-message: "pcapi(${{ inputs.environment }}) : pushed rendered manifests for app_version=${{ inputs.app_version }}"
           target-branch: ${{ inputs.environment }}
           create-target-branch-if-needed: true
-      - name: "Check deployments statuses"
-        id: check_deployments
+      - name: "Install argocd cli"
+        id: install_argocd_cli
         run: |
-          deployments=$(kubectl get deployment -n ${{ inputs.environment }} | awk '!/NAME/{print $1}')
-          for d in $deployments; do
-            kubectl rollout status deployment/"${d}" -n ${{ inputs.environment }}
-            if [[ "$?" -ne 0 ]]; then
-                exit 1
-            fi
-          done
+          curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+          rm argocd-linux-amd64
+      - name: "Check argocd application status"
+        id: check_status
+        run: |
+          argocd app wait pcapi-${{ inputs.environment }} --core --timeout 300
       - name: "Play post-migrations"
         run: |
           set -e
