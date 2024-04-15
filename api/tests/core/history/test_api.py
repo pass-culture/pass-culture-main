@@ -143,6 +143,7 @@ class ObjectUpdateSnapshotTest:
         snapshot = history_api.ObjectUpdateSnapshot(offerer, author)
         action = snapshot.trace_update({"name": new_name, "siren": new_siren}).add_action()
 
+        assert not snapshot.is_empty
         assert not action.id
 
         assert action.offerer.id == offerer.id
@@ -166,6 +167,7 @@ class ObjectUpdateSnapshotTest:
 
         action = history_models.ActionHistory.query.one()
 
+        assert not snapshot.is_empty
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
         assert action.venueId == venue.id
         assert action.authorUser.id == author.id
