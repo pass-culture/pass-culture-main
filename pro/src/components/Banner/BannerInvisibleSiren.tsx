@@ -3,6 +3,8 @@ import React from 'react'
 import Callout from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 
+import styles from './BannerInvisibleSiren.module.scss'
+
 interface BannerInvisibleSirenProps {
   isNewOnboarding?: boolean
 }
@@ -21,6 +23,7 @@ const BannerInvisibleSiren = ({
       },
     ]}
     variant={CalloutVariant.ERROR}
+    className={styles.banner}
   >
     Le {isNewOnboarding ? 'SIRET' : 'SIREN'} doit être rendu visible pour
     valider votre inscription. Vous pouvez effectuer cette démarche sur le site
