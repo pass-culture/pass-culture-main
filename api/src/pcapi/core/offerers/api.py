@@ -17,6 +17,7 @@ from sqlalchemy.dialects.postgresql import INTERVAL
 import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
+from pcapi.connectors import virustotal
 import pcapi.connectors.acceslibre as accessibility_provider
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.connectors.entreprise import models as sirene_models
@@ -145,43 +146,46 @@ def update_venue(
         if set(venue.criteria) != set(criteria):
             modifications["criteria"] = criteria
 
-    if not modifications:
-        # avoid any contact information update loss
-        venue_snapshot.add_action()
-        db.session.commit()
-        return venue
-
     old_booking_email = venue.bookingEmail if modifications.get("bookingEmail") else None
 
-    venue_snapshot.trace_update(modifications)
-    if venue.is_soft_deleted():
-        raise pc_object.DeletedRecordException()
-    for key, value in modifications.items():
-        setattr(venue, key, value)
+    if modifications:
+        venue_snapshot.trace_update(modifications)
+        if venue.is_soft_deleted():
+            raise pc_object.DeletedRecordException()
+        for key, value in modifications.items():
+            setattr(venue, key, value)
+    elif venue_snapshot.is_empty:
+        return venue
 
     venue_snapshot.add_action()
 
     # keep commit with repository.save() as long as venue is validated in pcapi.validation.models.venue
     repository.save(venue)
-    search.async_index_venue_ids(
-        [venue.id],
-        reason=search.IndexationReason.VENUE_UPDATE,
-        log_extra={"changes": set(modifications.keys())},
-    )
 
-    indexing_modifications_fields = set(modifications.keys()) & set(VENUE_ALGOLIA_INDEXED_FIELDS)
-    if indexing_modifications_fields:
-        search.async_index_offers_of_venue_ids(
+    if modifications:
+        search.async_index_venue_ids(
             [venue.id],
             reason=search.IndexationReason.VENUE_UPDATE,
-            log_extra={"changes": set(indexing_modifications_fields)},
+            log_extra={"changes": set(modifications.keys())},
         )
 
-    # Former booking email address shall no longer receive emails about data related to this venue.
-    # If booking email was only in this object, this will clear all columns here and it will never be updated later.
-    external_attributes_api.update_external_pro(old_booking_email)
-    external_attributes_api.update_external_pro(venue.bookingEmail)
+        indexing_modifications_fields = set(modifications.keys()) & set(VENUE_ALGOLIA_INDEXED_FIELDS)
+        if indexing_modifications_fields:
+            search.async_index_offers_of_venue_ids(
+                [venue.id],
+                reason=search.IndexationReason.VENUE_UPDATE,
+                log_extra={"changes": set(indexing_modifications_fields)},
+            )
+
+        # Former booking email address shall no longer receive emails about data related to this venue.
+        # If booking email was only in this object, this will clear all columns here and it will never be updated later.
+        external_attributes_api.update_external_pro(old_booking_email)
+        external_attributes_api.update_external_pro(venue.bookingEmail)
+
     zendesk_sell.update_venue(venue)
+
+    if contact_data and contact_data.website:
+        virustotal.request_url_scan(contact_data.website, skip_if_recent_scan=True)
 
     return venue
 
@@ -1737,6 +1741,10 @@ def get_metabase_stats_iframe_url(
 def create_venue_registration(venue_id: int, target: offerers_models.Target, web_presence: str | None) -> None:
     venue_registration = offerers_models.VenueRegistration(venueId=venue_id, target=target, webPresence=web_presence)
     repository.save(venue_registration)
+
+    if web_presence:
+        for url in web_presence.split(", "):
+            virustotal.request_url_scan(url, skip_if_recent_scan=True)
 
 
 def create_from_onboarding_data(

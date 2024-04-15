@@ -263,9 +263,7 @@
               {% if venue.contact and venue.contact.website %}
                 <p class="mb-1">
                   <span class="fw-bold">Site web :</span>
-                  <a href="{{ venue.contact.website | format_website }}"
-                     target="_blank"
-                     class="link-primary">{{ venue.contact.website | format_website }}</a>
+                  {{ links.build_safe_redirect_link(venue.contact.website | format_website) }}
                 </p>
               {% endif %}
               {% if venue.criteria %}

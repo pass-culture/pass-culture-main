@@ -637,7 +637,8 @@ class EditVenueTest:
 
         assert history_models.ActionHistory.query.count() == 0
 
-    def test_update_only_venue_contact(self, app):
+    @patch("pcapi.connectors.virustotal.request_url_scan")
+    def test_update_only_venue_contact(self, mock_request_url_scan):
         user_offerer = offerers_factories.UserOffererFactory(
             user__email="user.pro@test.com",
         )
@@ -651,6 +652,26 @@ class EditVenueTest:
         assert venue.contact
         assert venue.contact.phone_number == contact_data.phone_number
         assert venue.contact.email == contact_data.email
+        mock_request_url_scan.assert_not_called()
+
+    @patch("pcapi.connectors.virustotal.request_url_scan")
+    def test_update_only_venue_website(self, mock_request_url_scan):
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__email="user.pro@test.com",
+        )
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+
+        contact_data = serialize_base.VenueContactModel(
+            email=venue.contact.email, phone_number=venue.contact.phone_number, website="https://new.website.com"
+        )
+
+        offerers_api.update_venue(venue, contact_data=contact_data, author=user_offerer.user)
+
+        venue = offerers_models.Venue.query.get(venue.id)
+        assert venue.contact.phone_number == "+33102030405"
+        assert venue.contact.email == "contact@venue.com"
+        assert venue.contact.website == "https://new.website.com"
+        mock_request_url_scan.assert_called_once_with(contact_data.website, skip_if_recent_scan=True)
 
     def test_no_venue_contact_created_if_no_data(self, app):
         user_offerer = offerers_factories.UserOffererFactory(
@@ -675,7 +696,8 @@ class EditVenueTest:
         msg = "Vous ne pouvez pas modifier un lieu Offre Numérique."
         assert error.value.errors == {"venue": [msg]}
 
-    def test_no_venue_contact_no_modification(self, app) -> None:
+    @patch("pcapi.connectors.virustotal.request_url_scan")
+    def test_no_venue_contact_no_modification(self, mock_request_url_scan) -> None:
         # given
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory(contact=None)
@@ -693,8 +715,10 @@ class EditVenueTest:
         # then
         # nothing has changed => nothing to save nor update
         assert history_models.ActionHistory.query.count() == 0
+        mock_request_url_scan.assert_not_called()
 
-    def test_no_venue_contact_add_contact(self, app) -> None:
+    @patch("pcapi.connectors.virustotal.request_url_scan")
+    def test_no_venue_contact_add_contact(self, mock_request_url_scan) -> None:
         # given
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory(contact=None)
@@ -725,6 +749,7 @@ class EditVenueTest:
             "contact.email": {"new_info": contact_data.email, "old_info": None},
             "contact.website": {"new_info": contact_data.website, "old_info": None},
         }
+        mock_request_url_scan.assert_called_once_with(contact_data.website, skip_if_recent_scan=True)
 
 
 class EditVenueContactTest:
@@ -2461,6 +2486,22 @@ class CreateFromOnboardingDataTest:
         assert created_venue.latitude == decimal.Decimal("2.30829")
         assert created_venue.longitude == decimal.Decimal("48.87171")
         assert created_venue.postalCode == "75001"
+
+    @patch("pcapi.connectors.virustotal.request_url_scan")
+    def test_web_presence_url_scanned(self, mock_request_url_scan):
+        user = users_factories.UserFactory(email="pro@example.com")
+        user.add_non_attached_pro_role()
+
+        onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
+        offerers_api.create_from_onboarding_data(user, onboarding_data)
+
+        mock_request_url_scan.assert_called()
+        assert mock_request_url_scan.call_count == 3
+        assert {item[0][0] for item in mock_request_url_scan.call_args_list} == {
+            "https://www.example.com",
+            "https://instagram.com/example",
+            "https://mastodon.social/@example",
+        }
 
 
 class InviteMembersTest:
