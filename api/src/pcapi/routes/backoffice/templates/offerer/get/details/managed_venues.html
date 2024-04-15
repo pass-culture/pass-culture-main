@@ -30,11 +30,7 @@
           {% if venue.web_presence %}
             {% for link in venue.web_presence.split(", ") %}
               <div class="text-truncate"
-                   style="max-width: 9ch">
-                <a href="{{ link }}"
-                   class="link-primary"
-                   target="_blank">{{ link }}</a>
-              </div>
+                   style="max-width: 9ch">{{ links.build_safe_redirect_link(link) }}</div>
             {% endfor %}
           {% endif %}
         </td>
