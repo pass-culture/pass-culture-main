@@ -1,5 +1,6 @@
 import pytest
 
+from pcapi.connectors.serialization.titelive_serializers import _format_gtl_code
 from pcapi.core.providers.titelive_gtl import get_gtl
 
 
@@ -56,3 +57,11 @@ def test_get_gtl_not_found():
     non_existing_gtl_id = "03040202"
     gtl = get_gtl(non_existing_gtl_id)
     assert gtl is None
+
+
+@pytest.mark.parametrize(
+    "input_, output",
+    [("50300", "05030000"), ("110400", "11040000"), ("2050000", "02050000")],
+)
+def test_format_gtl_code(input_, output):
+    assert _format_gtl_code(input_) == output
