@@ -89,3 +89,4 @@ jobs:
         id: check_status
         run: |
           kubectl config set-context --current --namespace=argocd
+          argocd app wait pcapi-testing --core --timeout 300
