@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 import { UserPhoneBodyModel } from 'apiClient/v1'
 import { BannerRGS } from 'components/Banner'

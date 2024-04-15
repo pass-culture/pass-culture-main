@@ -1,13 +1,11 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
+import { api } from 'apiClient/api'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { UserEmailForm } from '..'
 import { UserEmailFormProps } from '../UserEmailForm'
-
-const postEmailAdapterMock = vi.fn()
 
 const renderUserEmailForm = (props: UserEmailFormProps) => {
   const storeOverrides = {
@@ -29,10 +27,9 @@ const renderUserEmailForm = (props: UserEmailFormProps) => {
 describe('components:UserEmailForm', () => {
   let props: UserEmailFormProps
   beforeEach(() => {
-    postEmailAdapterMock.mockResolvedValue({})
+    vi.spyOn(api, 'postUserEmail').mockResolvedValue()
     props = {
       closeForm: vi.fn(),
-      postEmailAdapter: postEmailAdapterMock,
       getPendingEmailRequest: vi.fn(),
     }
   })
@@ -56,6 +53,6 @@ describe('components:UserEmailForm', () => {
     )
     await userEvent.tab()
     await userEvent.click(screen.getByText('Enregistrer'))
-    expect(postEmailAdapterMock).toHaveBeenCalledTimes(1)
+    expect(api.postUserEmail).toHaveBeenCalledTimes(1)
   })
 })

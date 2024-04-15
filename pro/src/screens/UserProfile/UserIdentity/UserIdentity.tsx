@@ -1,7 +1,6 @@
 import { BoxFormLayout } from 'components/BoxFormLayout'
 import { UserIdentityForm } from 'components/UserIdentityForm'
 import { UserIdentityFormValues } from 'components/UserIdentityForm/types'
-import patchIdentityAdapter from 'pages/User/adapters/patchIdentityAdapter'
 import { BoxRounded } from 'ui-kit/BoxRounded'
 
 import { Forms } from '../constants'
@@ -26,7 +25,6 @@ const UserIdentity = ({
           <UserIdentityForm
             closeForm={resetForm}
             initialValues={initialValues}
-            patchIdentityAdapter={patchIdentityAdapter}
           />
         ) : (
           <BoxFormLayout.Header
