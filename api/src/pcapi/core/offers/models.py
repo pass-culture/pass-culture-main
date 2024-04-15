@@ -716,11 +716,11 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return None
 
     @property
-    def max_price(self) -> float:  # used in validation rule, do not remove
+    def max_price(self) -> decimal.Decimal:
         try:
             return max(stock.price for stock in self.stocks if not stock.isSoftDeleted)
         except ValueError:  # if no non-deleted stocks
-            return 0
+            return decimal.Decimal(0)
 
     @property
     def showSubType(self) -> str | None:  # used in validation rule, do not remove

@@ -300,71 +300,103 @@ def _get_offer_ids_query(form: forms.InternalSearchForm) -> BaseQuery:
 
 
 def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
-    # Compute displayed information in remaining stock column directly, don't joinedload/fetch huge stock data
-    booked_quantity_subquery = (
-        sa.select(sa.func.coalesce(sa.func.sum(offers_models.Stock.dnBookedQuantity), 0))
-        .select_from(offers_models.Stock)
-        .filter(offers_models.Stock.offerId == offers_models.Offer.id)
-        .correlate(offers_models.Offer)
-        .scalar_subquery()
-    )
-    remaining_quantity_subquery = (
-        sa.select(
-            sa.case(
-                (
-                    sa.func.coalesce(
-                        sa.func.max(sa.case((offers_models.Stock.remainingStock.is_(None), 1), else_=0)), 0  # type: ignore [attr-defined]
-                    )
-                    == 0,
-                    sa.func.coalesce(sa.func.sum(offers_models.Stock.remainingStock), 0).cast(sa.String),
-                ),
-                else_="Illimité",
-            )
+    if utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
+        # Those columns are not shown to fraud pro users
+        booked_quantity_subquery: sa.sql.selectable.ScalarSelect | sa.sql.elements.Null = sa.null()
+        remaining_quantity_case: sa.sql.elements.Case | sa.sql.elements.Null = sa.null()
+
+        # Aggregate validation rules as an array of names returned in a single row
+        rules_subquery: sa.sql.selectable.ScalarSelect | sa.sql.elements.Null = (
+            sa.select(sa.func.array_agg(offers_models.OfferValidationRule.name))
+            .select_from(offers_models.OfferValidationRule)
+            .join(offers_models.ValidationRuleOfferLink)
+            .filter(offers_models.ValidationRuleOfferLink.offerId == offers_models.Offer.id)
+            .correlate(offers_models.Offer)
+            .scalar_subquery()
         )
-        .select_from(offers_models.Stock)
-        .filter(offers_models.Stock.offerId == offers_models.Offer.id)
-        .correlate(offers_models.Offer)
-        .scalar_subquery()
-    )
+
+        # Aggregate min and max prices as dict returned in a single row
+        min_max_prices_subquery: sa.sql.selectable.ScalarSelect | sa.sql.elements.Null = (
+            sa.select(
+                sa.func.jsonb_build_object(
+                    "min_price",
+                    sa.func.min(offers_models.Stock.price),
+                    "max_price",
+                    sa.func.max(offers_models.Stock.price),
+                )
+            )
+            .select_from(offers_models.Stock)
+            .filter(offers_models.Stock.offerId == offers_models.Offer.id, ~offers_models.Stock.isSoftDeleted)
+            .correlate(offers_models.Offer)
+            .scalar_subquery()
+        )
+
+    else:
+        # Compute displayed information in remaining stock column directly, don't joinedload/fetch huge stock data
+        booked_quantity_subquery = (
+            sa.select(sa.func.coalesce(sa.func.sum(offers_models.Stock.dnBookedQuantity), 0))
+            .select_from(offers_models.Stock)
+            .filter(offers_models.Stock.offerId == offers_models.Offer.id)
+            .correlate(offers_models.Offer)
+            .scalar_subquery()
+        )
+
+        remaining_quantity_case = sa.case(
+            (
+                # Same as Offer.isReleased which is not an hybrid property
+                sa.and_(  # type: ignore [type-var]
+                    offers_models.Offer._released,
+                    offerers_models.Offerer.isActive,
+                    offerers_models.Offerer.isValidated,
+                ),
+                (
+                    sa.select(
+                        sa.case(
+                            (
+                                sa.func.coalesce(
+                                    sa.func.max(sa.case((offers_models.Stock.remainingStock.is_(None), 1), else_=0)), 0  # type: ignore [attr-defined]
+                                )
+                                == 0,
+                                sa.func.coalesce(sa.func.sum(offers_models.Stock.remainingStock), 0).cast(sa.String),
+                            ),
+                            else_="Illimité",
+                        )
+                    )
+                    .select_from(offers_models.Stock)
+                    .filter(offers_models.Stock.offerId == offers_models.Offer.id)
+                    .correlate(offers_models.Offer)
+                    .scalar_subquery()
+                ),
+            ),
+            else_="-",
+        )
+
+        # Those columns are not shown to non fraud pro users
+        rules_subquery = sa.null()
+        min_max_prices_subquery = sa.null()
 
     # Aggregate tags as an array of names returned in a single row (joinedload would fetch 1 result row per tag)
     tags_subquery = (
-        sa.select(sa.func.array_agg(criteria_models.Criterion.name))
-        .select_from(criteria_models.Criterion)
-        .join(criteria_models.OfferCriterion)
-        .filter(criteria_models.OfferCriterion.offerId == offers_models.Offer.id)
-        .correlate(offers_models.Offer)
-        .scalar_subquery()
-    )
-
-    # Aggregate validation rules as an array of names returned in a single row
-    rules_subquery = (
-        sa.select(sa.func.array_agg(offers_models.OfferValidationRule.name))
-        .select_from(offers_models.OfferValidationRule)
-        .join(offers_models.ValidationRuleOfferLink)
-        .filter(offers_models.ValidationRuleOfferLink.offerId == offers_models.Offer.id)
-        .correlate(offers_models.Offer)
-        .scalar_subquery()
+        (
+            sa.select(sa.func.array_agg(criteria_models.Criterion.name))
+            .select_from(criteria_models.Criterion)
+            .join(criteria_models.OfferCriterion)
+            .filter(criteria_models.OfferCriterion.offerId == offers_models.Offer.id)
+            .correlate(offers_models.Offer)
+            .scalar_subquery()
+        )
+        if utils.has_current_user_permission(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
+        else sa.null()
     )
 
     query = (
         db.session.query(
             offers_models.Offer,
             booked_quantity_subquery.label("booked_quantity"),
-            sa.case(
-                (
-                    # Same as Offer.isReleased which is not an hybrid property
-                    sa.and_(  # type: ignore [type-var]
-                        offers_models.Offer._released,
-                        offerers_models.Offerer.isActive,
-                        offerers_models.Offerer.isValidated,
-                    ),
-                    remaining_quantity_subquery,
-                ),
-                else_="-",
-            ).label("remaining_quantity"),
+            remaining_quantity_case.label("remaining_quantity"),
             tags_subquery.label("tags"),
             rules_subquery.label("rules"),
+            min_max_prices_subquery.label("prices"),
         )
         .filter(offers_models.Offer.id.in_(_get_offer_ids_query(form)))
         # 1-1 relationships so join will not increase the number of SQL rows

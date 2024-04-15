@@ -74,16 +74,19 @@
               <th scope="col">Nom de l'offre</th>
               <th scope="col">Catégorie</th>
               <th scope="col">Sous-catégorie</th>
-              <th scope="col"
-                  class="text-center">Stock réservé</th>
-              <th scope="col"
-                  class="text-center">Stock restant</th>
+              {% if not has_permission("PRO_FRAUD_ACTIONS") %}
+                <th scope="col"
+                    class="text-center">Stock réservé</th>
+                <th scope="col"
+                    class="text-center">Stock restant</th>
+              {% endif %}
               {% if has_permission("PRO_FRAUD_ACTIONS") %}
                 <th scope="col">Règles de conformité</th>
                 <th scope="col">Score data</th>
+                <th scope="col">Tarif</th>
               {% endif %}
               {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<th scope="col">Tag</th>{% endif %}
-              <th scope="col">Créateur de l'offre</th>
+              {% if not has_permission("PRO_FRAUD_ACTIONS") %}<th scope="col">Créateur de l'offre</th>{% endif %}
               {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<th scope="col">Pond.</th>{% endif %}
               <th scope="col">État</th>
               <th scope="col">
@@ -150,8 +153,10 @@
                 <td>{{ links.build_offer_name_to_pc_pro_link(offer) }}</td>
                 <td>{{ offer.subcategoryId | format_offer_category }}</td>
                 <td>{{ offer.subcategoryId | format_offer_subcategory }}</td>
-                <td class="text-nowrap text-center">{{ row.booked_quantity }}</td>
-                <td class="text-nowrap text-center">{{ row.remaining_quantity }}</td>
+                {% if not has_permission("PRO_FRAUD_ACTIONS") %}
+                  <td class="text-nowrap text-center">{{ row.booked_quantity }}</td>
+                  <td class="text-nowrap text-center">{{ row.remaining_quantity }}</td>
+                {% endif %}
                 {% if has_permission("PRO_FRAUD_ACTIONS") %}
                   <td>
                     {% if row.rules %}{{ row.rules | join(", ") | escape }}{% endif %}
@@ -169,9 +174,20 @@
                          data-bs-title="Raison de score faible : {{ compliance_reasons | format_compliance_reasons }}"></i>
                     {% endif %}
                   </td>
+                  <td>
+                    {% if row.prices.min_price == row.prices.max_price %}
+                      <span class="text-nowrap">{{ row.prices.min_price | format_amount }}</span>
+                    {% else %}
+                      <span class="text-nowrap">{{ row.prices.min_price | format_amount }}</span>
+                      -
+                      <span class="text-nowrap">{{ row.prices.max_price | format_amount }}</span>
+                    {% endif %}
+                  </td>
                 {% endif %}
                 {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<td>{{ row.tags | format_as_badges | safe }}</td>{% endif %}
-                <td>{{ links.build_pro_user_name_to_details_link(offer.author.id, offer.author.full_name) }}</td>
+                {% if not has_permission("PRO_FRAUD_ACTIONS") %}
+                  <td>{{ links.build_pro_user_name_to_details_link(offer.author.id, offer.author.full_name) }}</td>
+                {% endif %}
                 {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<td>{{ offer.rankingWeight | empty_string_if_null }}</td>{% endif %}
                 <td>{{ offer.validation | format_offer_validation_status }}</td>
                 <td>{{ offer.dateCreated | format_date("%d/%m/%Y") }}</td>
