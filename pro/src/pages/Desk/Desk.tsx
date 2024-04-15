@@ -1,17 +1,19 @@
-import cx from 'classnames'
+import cn from 'classnames'
 import { FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
 
+import { apiContremarque } from 'apiClient/api'
+import { isErrorAPIError } from 'apiClient/helpers'
 import { GetBookingResponse } from 'apiClient/v2'
 import { AppLayout } from 'app/AppLayout'
 import Callout from 'components/Callout/Callout'
 import { SubmitButton, TextInput } from 'ui-kit'
 import Titles from 'ui-kit/Titles/Titles'
 
-import { submitValidate, getBooking, submitInvalidate } from './adapters'
 import { BookingDetails } from './BookingDetails'
 import { ButtonInvalidateToken } from './ButtonInvalidateToken'
 import styles from './Desk.module.scss'
+import { getBookingFailure } from './getBookingFailure'
 import { ErrorMessage, MESSAGE_VARIANT } from './types'
 import { validateToken } from './validation'
 
@@ -41,12 +43,16 @@ export const Desk = (): JSX.Element => {
       variant: MESSAGE_VARIANT.DEFAULT,
     })
 
-    const validateResponse = await submitValidate(formValues.token)
-
-    if (validateResponse.error) {
-      setMessage(validateResponse.error)
-    } else {
+    try {
+      await apiContremarque.patchBookingUseByToken(formValues.token)
       onSubmitSuccess('Contremarque validée !')
+    } catch (error) {
+      if (isErrorAPIError(error)) {
+        setMessage({
+          message: error.body['global'],
+          variant: MESSAGE_VARIANT.ERROR,
+        })
+      }
     }
   }
 
@@ -80,20 +86,23 @@ export const Desk = (): JSX.Element => {
       setBooking(null)
     } else {
       resetMessage()
-      const responseBooking = await getBooking(token)
-
-      if (responseBooking.error) {
-        setIsTokenValidated(responseBooking.error.isTokenValidated)
-        setBooking(null)
-        setMessage(responseBooking.error)
-      }
-
-      if (responseBooking.booking) {
-        setBooking(responseBooking.booking)
+      try {
+        const response = await apiContremarque.getBookingByTokenV2(token)
+        setBooking(response)
         setMessage({
           message: 'Coupon vérifié, cliquez sur "Valider" pour enregistrer',
           variant: MESSAGE_VARIANT.DEFAULT,
         })
+      } catch (e) {
+        if (isErrorAPIError(e)) {
+          const failure = getBookingFailure(e)
+          setIsTokenValidated(failure.isTokenValidated)
+          setBooking(null)
+          setMessage({
+            message: failure.message,
+            variant: MESSAGE_VARIANT.ERROR,
+          })
+        }
       }
     }
   }
@@ -114,12 +123,19 @@ export const Desk = (): JSX.Element => {
       variant: MESSAGE_VARIANT.DEFAULT,
     })
 
-    const submitResponse = await submitInvalidate(token)
-
-    if (submitResponse.error) {
-      setMessage(submitResponse.error)
-    } else {
+    try {
+      await apiContremarque.patchBookingKeepByToken(token)
       onSubmitSuccess('Contremarque invalidée !')
+    } catch (error) {
+      if (isErrorAPIError(error)) {
+        const failure = getBookingFailure(error)
+        setIsTokenValidated(failure.isTokenValidated)
+        setBooking(null)
+        setMessage({
+          message: failure.message,
+          variant: MESSAGE_VARIANT.ERROR,
+        })
+      }
     }
   }
 
@@ -161,7 +177,7 @@ export const Desk = (): JSX.Element => {
           <div
             aria-live="assertive"
             aria-relevant="all"
-            className={cx(styles['desk-message'], {
+            className={cn(styles['desk-message'], {
               [styles['error']]: message.variant === MESSAGE_VARIANT.ERROR,
             })}
             data-testid="desk-message"
