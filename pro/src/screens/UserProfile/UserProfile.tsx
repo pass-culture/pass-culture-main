@@ -26,7 +26,7 @@ const UserProfile = ({
   return (
     <>
       <h1 className={styles['profil-title']}>Profil</h1>
-      <BannerRGS />
+      <BannerRGS className={styles.banner} />
       <UserIdentity
         setCurrentForm={(value: Forms | null) => setCurrentForm(value)}
         initialValues={userIdentityInitialValues}
