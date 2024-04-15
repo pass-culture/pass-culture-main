@@ -29,6 +29,7 @@ logger = logging.getLogger(__name__)
     response_model=serializers.NextSubscriptionStepResponse,
     on_success_status=200,
     api=blueprint.api,
+    deprecated=True,
 )
 @authenticated_and_active_user_required
 def next_subscription_step(
@@ -57,9 +58,10 @@ def next_subscription_step(
     response_model=serializers.SubscriptionStepperResponse,
     on_success_status=200,
     api=blueprint.api,
+    deprecated=True,
 )
 @authenticated_and_active_user_required
-def get_subscription_stepper(user: users_models.User) -> serializers.SubscriptionStepperResponse:
+def get_subscription_stepper_deprecated(user: users_models.User) -> serializers.SubscriptionStepperResponse:
     user_subscription_state = subscription_api.get_user_subscription_state(user)
     stepper_header = subscription_api.get_stepper_title_and_subtitle(user, user_subscription_state)
     subscription_steps_to_display = subscription_api.get_subscription_steps_to_display(user, user_subscription_state)
@@ -83,6 +85,38 @@ def get_subscription_stepper(user: users_models.User) -> serializers.Subscriptio
             if user_subscription_state.subscription_message
             else None
         ),
+    )
+
+
+@blueprint.native_route("/subscription/stepper", version="v2", methods=["GET"])
+@spectree_serialize(
+    response_model=serializers.SubscriptionStepperResponseV2,
+    on_success_status=200,
+    api=blueprint.api,
+)
+@authenticated_and_active_user_required
+def get_subscription_stepper(user: users_models.User) -> serializers.SubscriptionStepperResponseV2:
+    user_subscription_state = subscription_api.get_user_subscription_state(user)
+    stepper_header = subscription_api.get_stepper_title_and_subtitle(user, user_subscription_state)
+    subscription_steps_to_display = subscription_api.get_subscription_steps_to_display(user, user_subscription_state)
+
+    return serializers.SubscriptionStepperResponseV2(
+        subscription_steps_to_display=[
+            serializers.SubscriptionStepDetailsResponse(
+                title=step.title,
+                subtitle=step.subtitle,
+                completion_state=step.completion_state,
+                name=step.name,
+            )
+            for step in subscription_steps_to_display
+        ],
+        allowed_identity_check_methods=subscription_api.get_allowed_identity_check_methods(user),
+        has_identity_check_pending=fraud_api.has_user_pending_identity_check(user),
+        maintenance_page_type=subscription_api.get_maintenance_page_type(user),
+        next_subscription_step=user_subscription_state.next_step,
+        title=stepper_header.title,
+        subtitle=stepper_header.subtitle,
+        subscription_message=user_subscription_state.subscription_message,  # type: ignore [arg-type]
     )
 
 
