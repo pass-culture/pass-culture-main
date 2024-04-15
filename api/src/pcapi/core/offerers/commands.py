@@ -206,6 +206,13 @@ def synchronize_accessibility_with_acceslibre(dry_run: bool = False, force_sync:
                         venue.accessibilityProvider.id,
                     )
                     db.session.delete(venue.accessibilityProvider)
+            # In case a venue is synchronized but has no data, we want to be informed
+            if venue.accessibilityProvider and not venue.accessibilityProvider.externalAccessibilityData:
+                logger.error(
+                    "Venue %s is synchronized with Acceslibre at %s but has no data",
+                    venue.id,
+                    venue.accessibilityProvider.externalAccessibilityData,
+                )
         if not dry_run:
             try:
                 db.session.commit()
