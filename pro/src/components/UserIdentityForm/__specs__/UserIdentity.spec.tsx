@@ -2,12 +2,11 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
+import { api } from 'apiClient/api'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { UserIdentityForm } from '../'
 import { UserIdentityFormProps } from '../UserIdentityForm'
-
-const patchIdentityAdapterMock = vi.fn()
 
 const renderUserIdentityForm = (props: UserIdentityFormProps) => {
   const storeOverrides = {
@@ -31,15 +30,17 @@ const renderUserIdentityForm = (props: UserIdentityFormProps) => {
 describe('components:UserIdentityForm', () => {
   let props: UserIdentityFormProps
   beforeEach(() => {
-    patchIdentityAdapterMock.mockResolvedValue({})
     props = {
       closeForm: vi.fn(),
       initialValues: {
         firstName: 'FirstName',
         lastName: 'lastName',
       },
-      patchIdentityAdapter: patchIdentityAdapterMock,
     }
+    vi.spyOn(api, 'patchUserIdentity').mockResolvedValue({
+      firstName: 'Jean',
+      lastName: 'Dupont',
+    })
   })
   it('renders component successfully', () => {
     renderUserIdentityForm(props)
@@ -51,6 +52,6 @@ describe('components:UserIdentityForm', () => {
     await userEvent.type(screen.getByLabelText('Prénom *'), 'Harry')
     await userEvent.tab()
     await userEvent.click(screen.getByText('Enregistrer'))
-    expect(patchIdentityAdapterMock).toHaveBeenCalledTimes(1)
+    expect(api.patchUserIdentity).toHaveBeenCalledTimes(1)
   })
 })
