@@ -12,11 +12,11 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { AppLayout } from 'app/AppLayout'
-import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
 import { SAVED_OFFERER_ID_KEY } from 'core/shared'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import useNotification from 'hooks/useNotification'
 import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
+import { GET_OFFERER_QUERY_KEY } from 'pages/VenueSettings/VenueSettings'
 import { updateSelectedOffererId } from 'store/user/reducer'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import Tabs, { Tab } from 'ui-kit/Tabs/Tabs'
@@ -42,17 +42,17 @@ export const VenueEdition = (): JSX.Element | null => {
     ([, venueIdParam]) => api.getVenue(Number(venueIdParam))
   )
 
+  const offererQuery = useSWR(
+    [GET_OFFERER_QUERY_KEY, offererId],
+    ([, offererIdParam]) => api.getOfferer(Number(offererIdParam))
+  )
+  const offerer = offererQuery.data
+
   const {
     isLoading: isLoadingVenueTypes,
     error: errorVenueTypes,
     data: venueTypes,
   } = useGetVenueTypes()
-
-  const {
-    isLoading: isLoadingOfferer,
-    error: errorOfferer,
-    data: offerer,
-  } = useGetOfferer(offererId)
 
   useEffect(() => {
     if (offererId) {
@@ -61,8 +61,8 @@ export const VenueEdition = (): JSX.Element | null => {
     }
   }, [offererId, dispatch])
 
-  if (errorOfferer || errorVenueTypes) {
-    const loadingError = [errorOfferer, errorVenueTypes].find(
+  if (offererQuery.error || errorVenueTypes) {
+    const loadingError = [offererQuery.error, errorVenueTypes].find(
       (error) => error !== undefined
     )
     if (loadingError !== undefined) {
@@ -84,8 +84,9 @@ export const VenueEdition = (): JSX.Element | null => {
   if (
     venueQuery.isLoading ||
     isLoadingVenueTypes ||
-    isLoadingOfferer ||
-    !venue
+    offererQuery.isLoading ||
+    !venue ||
+    !offerer
   ) {
     return (
       <AppLayout>
