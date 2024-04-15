@@ -212,17 +212,14 @@ def synchronise_rurality_level() -> None:
     db.session.commit()
 
 
-def get_offers_count_for_my_institution(uai: str) -> int:
+def get_offers_count_for_my_institution(institution_id: int) -> int:
     offer_query = (
-        educational_models.CollectiveOffer.query.join(
-            educational_models.EducationalInstitution, educational_models.CollectiveOffer.institution
-        )
-        .options(
+        educational_models.CollectiveOffer.query.options(
             sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
                 educational_models.CollectiveStock.collectiveBookings
             ),
         )
-        .filter(educational_models.EducationalInstitution.institutionId == uai)
+        .filter(educational_models.CollectiveOffer.institutionId == institution_id)
     )
     offer_count = len([query for query in offer_query if query.isBookable])
     return offer_count

@@ -160,12 +160,22 @@ def find_educational_year_by_date(date_searched: datetime) -> educational_models
     ).one_or_none()
 
 
-def find_educational_institution_by_uai_code(uai_code: str | None) -> educational_models.EducationalInstitution | None:
-    return (
-        educational_models.EducationalInstitution.query.filter_by(institutionId=uai_code)
-        .options(sa.orm.joinedload(educational_models.EducationalInstitution.programs))
-        .one_or_none()
-    )
+def find_educational_institution(uai: str | None, institution_id: int | None) -> educational_models.EducationalInstitution | None:
+    if uai:
+        return (
+            educational_models.EducationalInstitution.query.filter(
+                educational_models.EducationalInstitution.institutionId==uai
+            ).options(sa.orm.joinedload(educational_models.EducationalInstitution.programs))
+            .one_or_none()
+        )
+    if institution_id:
+        return (
+            educational_models.EducationalInstitution.query.filter(
+                educational_models.EducationalInstitution.id==institution_id
+            ).options(sa.orm.joinedload(educational_models.EducationalInstitution.programs))
+            .one_or_none()
+        )
+    return None
 
 
 def find_educational_deposit_by_institution_id_and_year(

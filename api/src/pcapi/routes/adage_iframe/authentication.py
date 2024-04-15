@@ -4,7 +4,7 @@ from pcapi.core.educational.api import favorites as educational_api_favorite
 from pcapi.core.educational.api.institution import get_educational_institution_department_code
 from pcapi.core.educational.api.institution import get_offers_count_for_my_institution
 from pcapi.core.educational.exceptions import MissingRequiredRedactorInformation
-from pcapi.core.educational.repository import find_educational_institution_by_uai_code
+from pcapi.core.educational import repository as educational_repository
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization.adage_authentication import (
@@ -26,33 +26,35 @@ OptionalInstitution = educational_models.EducationalInstitution | None
 @spectree_serialize(api=blueprint.api, response_model=AuthenticatedResponse)
 @adage_jwt_required
 def authenticate(authenticated_information: AuthenticatedInformation) -> AuthenticatedResponse:
-    if authenticated_information.uai is not None:
-        institution = find_educational_institution_by_uai_code(authenticated_information.uai)
-        department_code = get_educational_institution_department_code(institution) if institution else None
-        institution_full_name = institution.full_name if institution else None
+    if authenticated_information.uai is None and authenticated_information.institution_id is None:
+        return AuthenticatedResponse(role=AdageFrontRoles.READONLY)
+    institution = educational_repository.find_educational_institution(
+        uai=authenticated_information.uai, institution_id=authenticated_information.institution_id
+    )
+    department_code = get_educational_institution_department_code(institution) if institution else None
+    institution_full_name = institution.full_name if institution else None
 
-        redactor = _get_redactor(authenticated_information)
-        preferences = _get_preferences(redactor)
-        favorites_count = _get_favorites_count(redactor)
-        offer_count = get_offers_count_for_my_institution(authenticated_information.uai)
-        programs = _get_programs(institution)
+    redactor = _get_redactor(authenticated_information)
+    preferences = _get_preferences(redactor)
+    favorites_count = _get_favorites_count(redactor)
+    offer_count = get_offers_count_for_my_institution(institution.id)
+    programs = _get_programs(institution)
 
-        return AuthenticatedResponse(
-            role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
-            uai=authenticated_information.uai,
-            departmentCode=department_code,
-            institutionName=institution_full_name,
-            institutionCity=institution.city if institution else None,
-            email=authenticated_information.email,
-            preferences=preferences,
-            lat=authenticated_information.lat,
-            lon=authenticated_information.lon,
-            favoritesCount=favorites_count,
-            offersCount=offer_count,
-            institution_rural_level=institution.ruralLevel if institution else None,
-            programs=programs,
-        )
-    return AuthenticatedResponse(role=AdageFrontRoles.READONLY)
+    return AuthenticatedResponse(
+        role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
+        uai=authenticated_information.uai,
+        departmentCode=department_code,
+        institutionName=institution_full_name,
+        institutionCity=institution.city if institution else None,
+        email=authenticated_information.email,
+        preferences=preferences,
+        lat=authenticated_information.lat,
+        lon=authenticated_information.lon,
+        favoritesCount=favorites_count,
+        offersCount=offer_count,
+        institution_rural_level=institution.ruralLevel if institution else None,
+        programs=programs,
+    )
 
 
 def _get_redactor(authenticated_information: AuthenticatedInformation) -> OptionalRedactor:

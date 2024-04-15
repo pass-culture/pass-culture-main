@@ -3,7 +3,7 @@ import logging
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational.api import booking as educational_api_booking
-from pcapi.core.educational.repository import find_educational_institution_by_uai_code
+from pcapi.core.educational.repository import find_educational_institution
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage_iframe import blueprint
@@ -28,7 +28,7 @@ def book_collective_offer(
     body: BookCollectiveOfferRequest,
     authenticated_information: AuthenticatedInformation,
 ) -> BookCollectiveOfferResponse:
-    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
+    institution = find_educational_institution(uai=authenticated_information.uai)
     educational_utils.log_information_for_data_purpose(
         event_name="BookingConfirmationButtonClick",
         extra_data={"stockId": body.stockId},

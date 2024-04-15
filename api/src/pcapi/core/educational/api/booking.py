@@ -39,7 +39,7 @@ def book_collective_offer(
 ) -> educational_models.CollectiveBooking:
     redactor = educational_repository.find_or_create_redactor(redactor_informations)
 
-    educational_institution = educational_repository.find_educational_institution_by_uai_code(redactor_informations.uai)
+    educational_institution = educational_repository.find_educational_institution(uai=redactor_informations.uai)
     if not educational_institution:
         raise exceptions.EducationalInstitutionUnknown()
 

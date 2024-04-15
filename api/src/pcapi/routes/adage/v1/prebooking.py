@@ -118,11 +118,11 @@ def get_all_bookings_per_year(
 )
 @adage_api_key_required
 def merge_institution_prebookings(body: prebooking_serialization.MergeInstitutionPrebookingsQueryModel) -> None:
-    institution_source = educational_repository.find_educational_institution_by_uai_code(body.source_uai)
+    institution_source = educational_repository.find_educational_institution(uai=body.source_uai)
     if not institution_source:
         raise ApiErrors({"code": "Source institution not found"}, status_code=404)
 
-    institution_destination = educational_repository.find_educational_institution_by_uai_code(body.destination_uai)
+    institution_destination = educational_repository.find_educational_institution(uai=body.destination_uai)
     if not institution_destination:
         try:
             institution_destination = create_missing_educational_institution_from_adage(

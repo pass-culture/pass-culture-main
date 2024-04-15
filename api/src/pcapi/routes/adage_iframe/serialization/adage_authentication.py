@@ -26,6 +26,7 @@ class AuthenticatedInformation(BaseModel):
     firstname: str | None
     email: str
     uai: str | None
+    institution_id: int | None
     lat: float | None
     lon: float | None
 

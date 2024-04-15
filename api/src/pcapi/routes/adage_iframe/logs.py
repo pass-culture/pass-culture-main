@@ -2,7 +2,7 @@ import hashlib
 
 from flask import current_app as app
 
-from pcapi.core.educational.repository import find_educational_institution_by_uai_code
+from pcapi.core.educational.repository import find_educational_institution
 import pcapi.core.educational.utils as educational_utils
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
@@ -19,7 +19,7 @@ def log_catalog_view(
     authenticated_information: AuthenticatedInformation,
     body: serialization.CatalogViewBody,
 ) -> None:
-    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
+    institution = find_educational_institution(uai=authenticated_information.uai)
     educational_utils.log_information_for_data_purpose(
         event_name="CatalogView",
         extra_data={
@@ -41,7 +41,7 @@ def log_search_button_click(
     authenticated_information: AuthenticatedInformation,
     body: serialization.SearchBody,
 ) -> None:
-    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
+    institution = find_educational_institution(uai=authenticated_information.uai)
     extra_data = body.dict()
     extra_data["from"] = extra_data.pop("iframeFrom")
     educational_utils.log_information_for_data_purpose(
@@ -61,7 +61,7 @@ def log_offer_details_button_click(
     authenticated_information: AuthenticatedInformation,
     body: serialization.StockIdBody,
 ) -> None:
-    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
+    institution = find_educational_institution(uai=authenticated_information.uai)
     educational_utils.log_information_for_data_purpose(
         event_name="OfferDetailButtonClick",
         extra_data={"stockId": body.stockId, "from": body.iframeFrom, "queryId": body.queryId},
@@ -79,7 +79,7 @@ def log_offer_template_details_button_click(
     authenticated_information: AuthenticatedInformation,
     body: serialization.OfferIdBody,
 ) -> None:
-    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
+    institution = find_educational_institution(uai=authenticated_information.uai)
     educational_utils.log_information_for_data_purpose(
         event_name="TemplateOfferDetailButtonClick",
         extra_data={"offerId": body.offerId, "from": body.iframeFrom, "queryId": body.queryId},
@@ -97,7 +97,7 @@ def log_booking_modal_button_click(
     authenticated_information: AuthenticatedInformation,
     body: serialization.StockIdBody,
 ) -> None:
-    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
+    institution = find_educational_institution(uai=authenticated_information.uai)
     educational_utils.log_information_for_data_purpose(
         event_name="BookingModalButtonClick",
         extra_data={
@@ -120,7 +120,7 @@ def log_contact_modal_button_click(
     authenticated_information: AuthenticatedInformation,
     body: serialization.OfferIdBody,
 ) -> None:
-    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
+    institution = find_educational_institution(uai=authenticated_information.uai)
     educational_utils.log_information_for_data_purpose(
         event_name="ContactModalButtonClick",
         extra_data={
@@ -143,7 +143,7 @@ def log_consult_playlist_element(
     authenticated_information: AuthenticatedInformation,
     body: serialization.PlaylistBody,
 ) -> None:
-    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
+    institution = find_educational_institution(uai=authenticated_information.uai)
     educational_utils.log_information_for_data_purpose(
         event_name="ConsultPlaylistElement",
         extra_data={
@@ -168,7 +168,7 @@ def log_fav_offer_button_click(
     authenticated_information: AuthenticatedInformation,
     body: serialization.OfferFavoriteBody,
 ) -> None:
-    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
+    institution = find_educational_institution(uai=authenticated_information.uai)
     educational_utils.log_information_for_data_purpose(
         event_name="FavOfferButtonClick",
         extra_data={
@@ -192,7 +192,7 @@ def log_has_seen_whole_playlist(
     authenticated_information: AuthenticatedInformation,
     body: serialization.PlaylistBody,
 ) -> None:
-    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
+    institution = find_educational_institution(uai=authenticated_information.uai)
     educational_utils.log_information_for_data_purpose(
         event_name="HasSeenWholePlaylist",
         extra_data={
@@ -214,7 +214,7 @@ def log_header_link_click(
     authenticated_information: AuthenticatedInformation,
     body: serialization.AdageHeaderLogBody,
 ) -> None:
-    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
+    institution = find_educational_institution(uai=authenticated_information.uai)
     educational_utils.log_information_for_data_purpose(
         event_name="HeaderLinkClick",
         extra_data={"header_link_name": body.header_link_name.value, "from": body.iframeFrom, "queryId": body.queryId},
@@ -231,7 +231,7 @@ def log_request_form_popin_dismiss(
     authenticated_information: AuthenticatedInformation,
     body: serialization.CollectiveRequestBody,
 ) -> None:
-    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
+    institution = find_educational_institution(uai=authenticated_information.uai)
     extra_data = body.dict()
     extra_data["from"] = extra_data.pop("iframeFrom")
     educational_utils.log_information_for_data_purpose(
@@ -267,7 +267,7 @@ def log_tracking_filter(
     else:
         return
 
-    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
+    institution = find_educational_institution(uai=authenticated_information.uai)
     extra_data["from"] = extra_data.pop("iframeFrom")
     educational_utils.log_information_for_data_purpose(
         event_name="TrackingFilter",
@@ -286,7 +286,7 @@ def log_open_satisfaction_survey(
     authenticated_information: AuthenticatedInformation,
     body: serialization.AdageBaseModel,
 ) -> None:
-    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
+    institution = find_educational_institution(uai=authenticated_information.uai)
     educational_utils.log_information_for_data_purpose(
         event_name="OpenSatisfactionSurvey",
         extra_data={
@@ -307,7 +307,7 @@ def log_tracking_autocomplete_suggestion_click(
     authenticated_information: AuthenticatedInformation,
     body: serialization.TrackingAutocompleteSuggestionBody,
 ) -> None:
-    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
+    institution = find_educational_institution(uai=authenticated_information.uai)
     educational_utils.log_information_for_data_purpose(
         event_name="logAutocompleteSuggestionClicked",
         extra_data={
@@ -330,7 +330,7 @@ def log_tracking_map(
     authenticated_information: AuthenticatedInformation,
     body: serialization.AdageBaseModel,
 ) -> None:
-    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
+    institution = find_educational_institution(uai=authenticated_information.uai)
     educational_utils.log_information_for_data_purpose(
         event_name="adageMapClicked",
         extra_data={"from": body.iframeFrom, "queryId": body.queryId, "isFromNoResult": body.isFromNoResult},
@@ -348,7 +348,7 @@ def log_has_seen_all_playlist(
     authenticated_information: AuthenticatedInformation,
     body: serialization.AdageBaseModel,
 ) -> None:
-    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
+    institution = find_educational_institution(uai=authenticated_information.uai)
     educational_utils.log_information_for_data_purpose(
         event_name="HasSeenAllPlaylist",
         extra_data={
@@ -369,7 +369,7 @@ def log_search_show_more(
     authenticated_information: AuthenticatedInformation,
     body: serialization.TrackingShowMoreBody,
 ) -> None:
-    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
+    institution = find_educational_institution(uai=authenticated_information.uai)
     educational_utils.log_information_for_data_purpose(
         event_name="SearchShowMore",
         extra_data={
@@ -391,7 +391,7 @@ def log_tracking_cta_share(
     authenticated_information: AuthenticatedInformation,
     body: serialization.TrackingCTAShareBody,
 ) -> None:
-    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
+    institution = find_educational_institution(uai=authenticated_information.uai)
     extra_data = body.dict()
     extra_data["from"] = extra_data.pop("iframeFrom")
     educational_utils.log_information_for_data_purpose(
@@ -410,7 +410,7 @@ def log_contact_url_click(
     authenticated_information: AuthenticatedInformation,
     body: serialization.OfferIdBody,
 ) -> None:
-    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
+    institution = find_educational_institution(uai=authenticated_information.uai)
     educational_utils.log_information_for_data_purpose(
         event_name="ContactUrlClick",
         extra_data={

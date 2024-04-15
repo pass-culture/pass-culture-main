@@ -124,7 +124,7 @@ def new_template_offers_playlist(
     if authenticated_information.uai is None:
         raise ApiErrors({"message": "institutionId is mandatory"}, status_code=403)
 
-    institution = repository.find_educational_institution_by_uai_code(authenticated_information.uai)
+    institution = repository.find_educational_institution(uai=authenticated_information.uai)
     if not institution:
         raise ApiErrors({"message": "institutionId is mandatory"}, status_code=403)
 
