@@ -6,7 +6,6 @@ import { OfferStatus } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import useGetOfferer from 'core/Offerers/getOffererAdapter/useGetOfferer'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
-import { useGetVenueLabels } from 'core/Venue/adapters/getVenueLabelsAdapter'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import { useAdapter } from 'hooks'
 import useNotification from 'hooks/useNotification'
@@ -24,6 +23,7 @@ import { setInitialFormValues } from './setInitialFormValues'
 import { VenueSettingsFormScreen } from './VenueSettingsScreen'
 
 const GET_VENUE_QUERY_KEY = 'getVenue'
+const GET_VENUE_LABELS_QUERY_KEY = 'getVenueLabels'
 
 const VenueSettings = (): JSX.Element | null => {
   const homePath = '/accueil'
@@ -39,11 +39,12 @@ const VenueSettings = (): JSX.Element | null => {
   )
   const venue = venueQuery.data
 
-  const {
-    isLoading: isLoadingVenueLabels,
-    error: errorVenueLabels,
-    data: venueLabels,
-  } = useGetVenueLabels()
+  const venueLabelsQuery = useSWR(
+    [GET_VENUE_LABELS_QUERY_KEY],
+    () => api.fetchVenueLabels(),
+    { fallbackData: [] }
+  )
+
   const {
     isLoading: isLoadingVenueTypes,
     error: errorVenueTypes,
@@ -80,14 +81,17 @@ const VenueSettings = (): JSX.Element | null => {
 
   if (
     errorOfferer ||
-    errorVenueLabels ||
+    venueQuery.error ||
+    venueLabelsQuery.error ||
     errorVenueTypes ||
     errorVenueProviders ||
     errorProviders
   ) {
-    const loadingError = [errorOfferer, errorVenueLabels, errorVenueTypes].find(
-      (error) => error !== undefined
-    )
+    const loadingError = [
+      errorOfferer,
+      venueLabelsQuery.error,
+      errorVenueTypes,
+    ].find((error) => error !== undefined)
     if (loadingError !== undefined) {
       notify.error(loadingError.message)
       return <Navigate to={homePath} />
@@ -102,7 +106,7 @@ const VenueSettings = (): JSX.Element | null => {
 
   if (
     venueQuery.isLoading ||
-    isLoadingVenueLabels ||
+    venueLabelsQuery.isLoading ||
     isLoadingVenueTypes ||
     isLoadingProviders ||
     isLoadingVenueProviders ||
@@ -119,6 +123,11 @@ const VenueSettings = (): JSX.Element | null => {
   if (!venue) {
     return null
   }
+
+  const venueLabels = venueLabelsQuery.data.map((type) => ({
+    value: type.id.toString(),
+    label: type.label,
+  }))
 
   return (
     <AppLayout>
