@@ -1,5 +1,4 @@
 import datetime
-import decimal
 import typing
 
 import pydantic.v1 as pydantic_v1
@@ -46,14 +45,11 @@ class TiteliveArticle(BaseModel):
     image: str
     imagesUrl: TiteliveImage
     dispo: str
-    prix: decimal.Decimal | None
+    prix: str | None
     resume: str | None
     datemodification: datetime.date | None
 
-    _convert_dateparution = pydantic_v1.validator("dateparution", pre=True, allow_reuse=True)(
-        date_utils.parse_french_date
-    )
-    _convert_datemodification = pydantic_v1.validator("datemodification", pre=True, allow_reuse=True)(
+    _convert_dates = pydantic_v1.validator("dateparution", "datemodification", pre=True, allow_reuse=True)(
         date_utils.parse_french_date
     )
 
@@ -62,6 +58,34 @@ class TiteliveArticle(BaseModel):
         if isinstance(gtl, list):
             return None
         return gtl
+
+    @pydantic_v1.validator("*", pre=True)
+    def parse_empty_string_as_none(cls, value: str | None) -> str | None:
+        if value == "":
+            return None
+        return value
+
+
+class TiteLiveBookArticle(TiteliveArticle):
+    code_clil: str | None
+    code_tva: str | None
+    taux_tva: str | None
+    collection_no: str | None
+    collection: str | None
+    distributeur: str | None
+    scolaire: str | None
+    id_lectorat: str | None
+    pages: str | None
+    langue: str | None
+    langueiso: str | None
+    langueorigine: str | None
+    libelledispo: str | None
+
+    @pydantic_v1.validator("code_tva", "taux_tva", "scolaire", "pages", pre=True)
+    def validate_code_tva(cls, value: typing.Literal[0] | str | None) -> str | None:
+        if value == 0:
+            return None
+        return value
 
 
 class TiteliveMusicArticle(TiteliveArticle):
@@ -83,6 +107,12 @@ class BaseTiteliveOeuvre(generics.GenericModel, typing.Generic[TiteliveArticleTy
         if isinstance(article, dict):
             return list(article.values())
         return article
+
+
+class TiteLiveBookOeuvre(BaseTiteliveOeuvre[TiteLiveBookArticle]):
+    article: list[TiteLiveBookArticle]  # repeated without generics so mypy understands
+    auteurs_multi: list[str]
+    titre: str
 
 
 class TiteliveMusicOeuvre(BaseTiteliveOeuvre[TiteliveMusicArticle]):
