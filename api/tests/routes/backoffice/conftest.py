@@ -65,6 +65,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     "support_pro_n2": [
         perm_models.Permissions.MOVE_SIRET,
         perm_models.Permissions.ADVANCED_PRO_SUPPORT,
+        perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS,
     ],
     "fraude_conformite": [
         perm_models.Permissions.PRO_FRAUD_ACTIONS,
@@ -107,6 +108,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_OFFERS,
         perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS,
         perm_models.Permissions.READ_TAGS,
+        perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS,
     ],
     "homologation": [
         perm_models.Permissions.READ_PRO_ENTITY,
@@ -116,7 +118,9 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.VALIDATE_OFFERER,
     ],
     "product_management": [perm_models.Permissions.FEATURE_FLIPPING],
-    "charge_developpement": [],
+    "charge_developpement": [
+        perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS,
+    ],
     "lecture_seule": [
         perm_models.Permissions.READ_ADMIN_ACCOUNTS,
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
@@ -214,6 +218,22 @@ def read_only_bo_user_fixture(roles_with_permissions: None) -> users_models.User
     user = users_factories.UserFactory(roles=["ADMIN"])
     user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
     backoffice_api.upsert_roles(user, {perm_models.Roles.LECTURE_SEULE})
+    db.session.flush()
+    return user
+
+
+@pytest.fixture(scope="function", name="support_pro_n2_admin")
+def support_pro_n2_fixture(roles_with_permissions: None) -> users_models.User:
+    user = users_factories.UserFactory(roles=["ADMIN"])
+    backoffice_api.upsert_roles(user, {perm_models.Roles.SUPPORT_PRO, perm_models.Roles.SUPPORT_PRO_N2})
+    db.session.flush()
+    return user
+
+
+@pytest.fixture(scope="function", name="pro_fraud_admin")
+def pro_fraud_admin_fixture(roles_with_permissions: None) -> users_models.User:
+    user = users_factories.UserFactory(roles=["ADMIN"])
+    backoffice_api.upsert_roles(user, {perm_models.Roles.FRAUDE_CONFORMITE})
     db.session.flush()
     return user
 
