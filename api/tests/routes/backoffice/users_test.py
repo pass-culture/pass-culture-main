@@ -35,14 +35,6 @@ def beneficiary_fraud_admin_fixture(roles_with_permissions: None) -> users_model
     return user
 
 
-@pytest.fixture(scope="function", name="pro_fraud_admin")
-def pro_fraud_admin_fixture(roles_with_permissions: None) -> users_models.User:
-    user = users_factories.UserFactory(roles=["ADMIN"])
-    backoffice_api.upsert_roles(user, {perm_models.Roles.FRAUDE_CONFORMITE})
-    db.session.flush()
-    return user
-
-
 @pytest.fixture(scope="function", name="fraude_jeunes_admin")
 def fraude_jeunes_admin_fixture(roles_with_permissions: None) -> users_models.User:
     user = users_factories.UserFactory(roles=["ADMIN"])

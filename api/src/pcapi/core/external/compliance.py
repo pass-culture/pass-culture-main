@@ -68,7 +68,7 @@ def _get_payload_for_compliance_api(offer: offers_models.Offer) -> GetCompliance
         offer_subcategoryid=offer.subcategoryId,
         rayon=rayon,
         macro_rayon=macro_rayon,
-        stock_price=offer.max_price,
+        stock_price=float(offer.max_price),
         thumb_url=offer.thumbUrl,
         offer_type_label=offer_type_label,
         offer_sub_type_label=offer_sub_type_label,
