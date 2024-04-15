@@ -362,6 +362,10 @@ export const request = <T>(
       }
     } catch (error) {
       if (error instanceof ApiError && error.status === 401) {
+        if(error.url.includes('/adage-iframe')) {
+          window.location.href = '/adage-iframe/erreur'
+          return
+        }
         // A call to users/current is made on all routes
         // including public routes
         // when user is not connected we always recieve a 401 error
