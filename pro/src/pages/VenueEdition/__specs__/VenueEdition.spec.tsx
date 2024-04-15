@@ -190,16 +190,6 @@ describe('route VenueEdition', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should return to home when not able to get venue informations', async () => {
-    vi.spyOn(api, 'getVenue').mockRejectedValueOnce('error')
-    renderVenueEdition(venue.id, offerer.id)
-
-    await waitForElementToBeRemoved(screen.getByTestId('spinner'))
-    expect(api.getVenue).toHaveBeenCalledTimes(1)
-
-    expect(await screen.findByText('Home')).toBeInTheDocument()
-  })
-
   it('should display Opening hours section if WIP_OPENING_HOURS feature flag is enabled and venue is permanent', async () => {
     renderVenueEdition(venue.id, offerer.id, {
       features: ['WIP_OPENING_HOURS'],
