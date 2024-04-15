@@ -1,9 +1,9 @@
 import { Form, FormikProvider, useFormik } from 'formik'
-import React from 'react'
 
+import { api } from 'apiClient/api'
+import { isErrorAPIError } from 'apiClient/helpers'
 import { BoxFormLayout } from 'components/BoxFormLayout'
 import FormLayout from 'components/FormLayout'
-import { PostPasswordAdapter } from 'pages/User/adapters/postPasswordAdapter'
 import { Button, SubmitButton, PasswordInput } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -12,7 +12,6 @@ import validationSchema from './validationSchema'
 
 export interface UserPasswordFormProps {
   closeForm: () => void
-  postPasswordAdapter: PostPasswordAdapter
 }
 
 type UserPasswordFormValues = {
@@ -23,15 +22,16 @@ type UserPasswordFormValues = {
 
 const UserPasswordForm = ({
   closeForm,
-  postPasswordAdapter,
 }: UserPasswordFormProps): JSX.Element => {
   const onSubmit = async (values: UserPasswordFormValues) => {
-    const response = await postPasswordAdapter(values)
-    if (response.isOk) {
+    try {
+      await api.postChangePassword(values)
       closeForm()
-    } else {
-      for (const field in response.payload) {
-        formik.setFieldError(field, response.payload[field])
+    } catch (error) {
+      if (isErrorAPIError(error)) {
+        for (const field in error.body) {
+          formik.setFieldError(field, error.body[field])
+        }
       }
     }
     formik.setSubmitting(false)
