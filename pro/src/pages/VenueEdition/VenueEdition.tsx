@@ -12,9 +12,11 @@ import useSWR from 'swr'
 import { api } from 'apiClient/api'
 import { AppLayout } from 'app/AppLayout'
 import { SAVED_OFFERER_ID_KEY } from 'core/shared'
-import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
-import { GET_OFFERER_QUERY_KEY } from 'pages/VenueSettings/VenueSettings'
+import {
+  GET_OFFERER_QUERY_KEY,
+  GET_VENUE_TYPES_QUERY_KEY,
+} from 'pages/VenueSettings/VenueSettings'
 import { updateSelectedOffererId } from 'store/user/reducer'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import Tabs, { Tab } from 'ui-kit/Tabs/Tabs'
@@ -45,8 +47,10 @@ export const VenueEdition = (): JSX.Element | null => {
   )
   const offerer = offererQuery.data
 
-  const { isLoading: isLoadingVenueTypes, data: venueTypes } =
-    useGetVenueTypes()
+  const venueTypesQuery = useSWR([GET_VENUE_TYPES_QUERY_KEY], () =>
+    api.getVenueTypes()
+  )
+  const venueTypes = venueTypesQuery.data
 
   useEffect(() => {
     if (offererId) {
@@ -57,7 +61,7 @@ export const VenueEdition = (): JSX.Element | null => {
 
   if (
     venueQuery.isLoading ||
-    isLoadingVenueTypes ||
+    venueTypesQuery.isLoading ||
     offererQuery.isLoading ||
     !venue ||
     !offerer ||

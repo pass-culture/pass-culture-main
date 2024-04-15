@@ -10,6 +10,7 @@ import {
   EditVenueBodyModel,
   GetVenueResponseModel,
   VenueTypeCode,
+  VenueTypeResponseModel,
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
@@ -34,9 +35,9 @@ const venueLabels: SelectOption[] = [
   },
 ]
 
-const venueTypes: SelectOption[] = [
-  { value: 'ARTISTIC_COURSE', label: 'Cours et pratique artistiques' },
-  { value: 'SCIENTIFIC_CULTURE', label: 'Culture scientifique' },
+const venueTypes: VenueTypeResponseModel[] = [
+  { id: 'ARTISTIC_COURSE', label: 'Cours et pratique artistiques' },
+  { id: 'SCIENTIFIC_CULTURE', label: 'Culture scientifique' },
 ]
 
 const renderForm = (

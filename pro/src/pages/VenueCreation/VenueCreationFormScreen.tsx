@@ -4,10 +4,9 @@ import { useLocation, useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
-import { GetOffererResponseModel } from 'apiClient/v1'
+import { GetOffererResponseModel, VenueTypeResponseModel } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
-import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
@@ -24,7 +23,7 @@ import { venueSubmitRedirectUrl } from './venueSubmitRedirectUrl'
 interface VenueEditionProps {
   initialValues: VenueCreationFormValues
   offerer: GetOffererResponseModel
-  venueTypes: SelectOption[]
+  venueTypes: VenueTypeResponseModel[]
 }
 
 export const VenueCreationFormScreen = ({

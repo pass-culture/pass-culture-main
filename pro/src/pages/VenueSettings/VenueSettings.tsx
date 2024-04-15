@@ -5,7 +5,6 @@ import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
-import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import { useAdapter } from 'hooks'
 import {
   getFilteredOffersAdapter,
@@ -23,6 +22,7 @@ import { VenueSettingsFormScreen } from './VenueSettingsScreen'
 const GET_VENUE_QUERY_KEY = 'getVenue'
 const GET_VENUE_LABELS_QUERY_KEY = 'getVenueLabels'
 export const GET_OFFERER_QUERY_KEY = 'getOfferer'
+export const GET_VENUE_TYPES_QUERY_KEY = 'getVenueTypes'
 
 const VenueSettings = (): JSX.Element | null => {
   const { offererId, venueId } = useParams<{
@@ -48,8 +48,11 @@ const VenueSettings = (): JSX.Element | null => {
   )
   const offerer = offererQuery.data
 
-  const { isLoading: isLoadingVenueTypes, data: venueTypes } =
-    useGetVenueTypes()
+  const venueTypesQuery = useSWR([GET_VENUE_TYPES_QUERY_KEY], () =>
+    api.getVenueTypes()
+  )
+  const venueTypes = venueTypesQuery.data
+
   const { isLoading: isLoadingProviders, data: providers } = useGetProviders(
     Number(venueId)
   )
@@ -72,7 +75,7 @@ const VenueSettings = (): JSX.Element | null => {
   if (
     venueQuery.isLoading ||
     venueLabelsQuery.isLoading ||
-    isLoadingVenueTypes ||
+    venueTypesQuery.isLoading ||
     isLoadingProviders ||
     isLoadingVenueProviders ||
     offererQuery.isLoading ||

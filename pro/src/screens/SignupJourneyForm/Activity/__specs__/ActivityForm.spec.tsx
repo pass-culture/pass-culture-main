@@ -4,13 +4,13 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 
 import { api } from 'apiClient/api'
+import { VenueTypeResponseModel } from 'apiClient/v1'
 import {
   DEFAULT_ACTIVITY_VALUES,
   SignupJourneyContext,
   SignupJourneyContextValues,
 } from 'context/SignupJourneyContext'
 import { ActivityContext } from 'context/SignupJourneyContext/SignupJourneyContext'
-import { SelectOption } from 'custom_types/form'
 import { SubmitButton } from 'ui-kit'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -27,9 +27,9 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-const venueTypes: SelectOption[] = [
-  { value: 'ARTISTIC_COURSE', label: 'Cours et pratique artistiques' },
-  { value: 'SCIENTIFIC_CULTURE', label: 'Culture scientifique' },
+const venueTypes: VenueTypeResponseModel[] = [
+  { id: 'ARTISTIC_COURSE', label: 'Cours et pratique artistiques' },
+  { id: 'SCIENTIFIC_CULTURE', label: 'Culture scientifique' },
 ]
 
 const renderActivityForm = ({
