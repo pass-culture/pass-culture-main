@@ -22,7 +22,7 @@ const renderPartnerPages = (props: Partial<VenueEditionHeaderProps>) => {
     <VenueEditionHeader
       offerer={{ ...defaultGetOffererResponseModel }}
       venue={{ ...defaultGetVenue }}
-      venueTypes={[{ value: VenueTypeCode.FESTIVAL, label: 'Festival' }]}
+      venueTypes={[{ id: VenueTypeCode.FESTIVAL, label: 'Festival' }]}
       {...props}
     />
   )

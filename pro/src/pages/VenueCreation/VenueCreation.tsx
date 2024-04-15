@@ -4,9 +4,11 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { AppLayout } from 'app/AppLayout'
-import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import { DEFAULT_FORM_VALUES } from 'pages/VenueCreation/constants'
-import { GET_OFFERER_QUERY_KEY } from 'pages/VenueSettings/VenueSettings'
+import {
+  GET_OFFERER_QUERY_KEY,
+  GET_VENUE_TYPES_QUERY_KEY,
+} from 'pages/VenueSettings/VenueSettings'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import { VenueCreationFormScreen } from './VenueCreationFormScreen'
@@ -22,12 +24,14 @@ export const VenueCreation = (): JSX.Element | null => {
   )
   const offerer = offererQuery.data
 
-  const { isLoading: isLoadingVenueTypes, data: venueTypes } =
-    useGetVenueTypes()
+  const venueTypesQuery = useSWR([GET_VENUE_TYPES_QUERY_KEY], () =>
+    api.getVenueTypes()
+  )
+  const venueTypes = venueTypesQuery.data
 
   if (
     offererQuery.isLoading ||
-    isLoadingVenueTypes ||
+    venueTypesQuery.isLoading ||
     !offerer ||
     !venueTypes
   ) {

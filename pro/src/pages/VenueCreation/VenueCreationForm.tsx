@@ -4,12 +4,12 @@ import { useState } from 'react'
 import {
   GetOffererResponseModel,
   SharedCurrentUserResponseModel,
+  VenueTypeResponseModel,
 } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import { AddressSelect } from 'components/Address'
 import FormLayout from 'components/FormLayout'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import { SelectOption } from 'custom_types/form'
 import {
   TextInput,
   InfoBox,
@@ -26,6 +26,7 @@ import RouteLeavingGuard, {
 import useCurrentUser from '../../hooks/useCurrentUser'
 
 import { Accessibility } from './Accessibility/Accessibility'
+import { buildVenueTypesOptions } from './buildVenueTypesOptions'
 import { SiretOrCommentFields } from './SiretOrCommentFields/SiretOrCommentFields'
 import { VenueCreationFormValues } from './types'
 import styles from './VenueCreationForm.module.scss'
@@ -34,7 +35,7 @@ import { venueSubmitRedirectUrl } from './venueSubmitRedirectUrl'
 type VenueFormProps = {
   offerer: GetOffererResponseModel
   updateIsSiretValued: (isSiretValued: boolean) => void
-  venueTypes: SelectOption[]
+  venueTypes: VenueTypeResponseModel[]
 }
 
 type ShouldBlockVenueNavigationProps = {
@@ -67,6 +68,7 @@ export const VenueCreationForm = ({
   const [isFieldNameFrozen, setIsFieldNameFrozen] = useState(false)
   const [isSiretValued, setIsSiretValued] = useState(true)
   const canOffererCreateCollectiveOffer = offerer.allowedOnAdage
+  const venueTypesOptions = buildVenueTypesOptions(venueTypes)
 
   return (
     <div>
@@ -128,7 +130,7 @@ export const VenueCreationForm = ({
                   value: '',
                   label: 'Sélectionnez celui qui correspond à votre lieu',
                 },
-                ...venueTypes,
+                ...venueTypesOptions,
               ]}
               name="venueType"
               label="Activité principale"

@@ -5,6 +5,7 @@ import {
   GetOffererResponseModel,
   VenueProviderResponse,
   GetVenueResponseModel,
+  VenueTypeResponseModel,
 } from 'apiClient/v1'
 import { AddressSelect } from 'components/Address'
 import FormLayout from 'components/FormLayout'
@@ -13,6 +14,7 @@ import { Providers } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
 import BankAccountInfos from 'pages/VenueCreation/BankAccountInfos/BankAccountInfos'
+import { buildVenueTypesOptions } from 'pages/VenueCreation/buildVenueTypesOptions'
 import { SiretOrCommentFields } from 'pages/VenueCreation/SiretOrCommentFields/SiretOrCommentFields'
 import { VenueFormActionBar } from 'pages/VenueCreation/VenueFormActionBar/VenueFormActionBar'
 import { WithdrawalDetails } from 'pages/VenueCreation/WithdrawalDetails'
@@ -25,7 +27,7 @@ interface VenueFormProps {
   offerer: GetOffererResponseModel
   updateIsSiretValued: (isSiretValued: boolean) => void
   venueLabels: SelectOption[]
-  venueTypes: SelectOption[]
+  venueTypes: VenueTypeResponseModel[]
   provider?: Providers[]
   venueProvider?: VenueProviderResponse[]
   venue: GetVenueResponseModel
@@ -42,6 +44,7 @@ export const VenueSettingsForm = ({
 }: VenueFormProps) => {
   const { initialValues } = useFormikContext<VenueSettingsFormValues>()
   const location = useLocation()
+  const venueTypesOptions = buildVenueTypesOptions(venueTypes)
 
   return (
     <>
@@ -106,7 +109,7 @@ export const VenueSettingsForm = ({
                   value: '',
                   label: 'Sélectionnez celui qui correspond à votre lieu',
                 },
-                ...venueTypes,
+                ...venueTypesOptions,
               ]}
               name="venueType"
               label="Activité principale"

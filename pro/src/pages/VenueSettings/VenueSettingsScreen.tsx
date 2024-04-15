@@ -8,6 +8,7 @@ import {
   VenueProviderResponse,
   GetOffererResponseModel,
   GetVenueResponseModel,
+  VenueTypeResponseModel,
 } from 'apiClient/v1'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { Events } from 'core/FirebaseEvents/constants'
@@ -33,7 +34,7 @@ interface VenueSettingsFormScreenProps {
   initialValues: VenueSettingsFormValues
   offerer: GetOffererResponseModel
   venueLabels: SelectOption[]
-  venueTypes: SelectOption[]
+  venueTypes: VenueTypeResponseModel[]
   providers?: Providers[]
   venueProviders?: VenueProviderResponse[]
   venue: GetVenueResponseModel
