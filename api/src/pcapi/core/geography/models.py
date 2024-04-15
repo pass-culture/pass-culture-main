@@ -1,5 +1,3 @@
-from typing import TYPE_CHECKING
-
 from geoalchemy2 import Geometry
 import sqlalchemy as sa
 
@@ -7,10 +5,6 @@ from pcapi.core.geography.constants import WGS_SPATIAL_REFERENCE_IDENTIFIER
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
-
-
-if TYPE_CHECKING:
-    from pcapi.core.offerers import models as offerer_models
 
 
 class IrisFrance(PcObject, Base, Model):
@@ -44,12 +38,3 @@ class Address(PcObject, Base, Model):
         sa.CheckConstraint('length("city") <= 50'),
         sa.CheckConstraint('length("country") <= 50'),
     )
-
-
-class OffererAddress(PcObject, Base, Model):
-    __tablename__ = "offerer_address"
-    label: str = sa.Column(sa.Text(), nullable=False)
-    addressId = sa.Column(sa.BigInteger, sa.ForeignKey("address.id"), index=True)
-    address: sa.orm.Mapped["Address"] = sa.orm.relationship("Address", foreign_keys=[addressId])
-    offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), index=True)
-    offerer: sa.orm.Mapped["offerer_models.Offerer"] = sa.orm.relationship("Offerer", foreign_keys=[offererId])
