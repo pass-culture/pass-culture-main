@@ -98,6 +98,7 @@ class OfferExtraData(typing.TypedDict, total=False):
     date_parution: str | None
     dewey: str | None
     dispo: str | None
+    dispo_label: str | None
     distributeur: str | None
     editeur: str | None
     music_label: str | None
@@ -114,6 +115,9 @@ class OfferExtraData(typing.TypedDict, total=False):
     csr_id: str | None
     gtl_id: str | None
     code_clil: str | None
+    nb_pages: str | None
+    langue: str | None
+    langueiso: str | None
 
 
 class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
