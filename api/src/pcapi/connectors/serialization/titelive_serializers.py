@@ -17,8 +17,33 @@ class GenreTitelive(BaseModel):
 
     @pydantic_v1.validator("code", pre=True)
     def validate_code(cls, code: str) -> str:
-        # '50300' -> '05030000'; '110400' -> '11040000'
-        return code.zfill(6).ljust(8, "0")
+        return _format_gtl_code(code)
+
+
+def _format_gtl_code(code: str) -> str:
+    # A GTL id is 8 characters long.
+    # Each pair represents a GTL level.
+    # The first 2 characters are level 1, the next 2 are level 2, etc.
+    #  - example: 05030000 corresponds to a level 1 GTL of 05 and a level 2 of 03. So "Tourism & Travel World".
+
+    # We receive gtl_ids without leading zeros, and sometimes without trailing ones.
+    # We must add them to have an 8-character code.
+
+    # We start by adding the missing zeros to the left.
+    # If we receive a code with an odd number of characters, we must add a zero to the left.
+    # '5030000'  -> '05030000'
+    # Otherwise, we don't add anything.
+    # '110400' -> '110400'
+
+    if len(code) % 2 == 1:
+        code = "0" + code
+
+    # Then we add the missing zeros to the right to have 8 characters.
+    # '050300' -> '05030000'
+    # '110400' -> '11040000'
+    code = code.ljust(8, "0")
+
+    return code
 
 
 class TiteliveGtl(BaseModel):
