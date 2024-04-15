@@ -46,6 +46,7 @@ from pcapi.connectors.big_query.queries.offerer_stats import OffererViewsModel
 from pcapi.connectors.big_query.queries.offerer_stats import TopOffersData
 from pcapi.core.educational import models as educational_models
 import pcapi.core.finance.models as finance_models
+from pcapi.core.geography import models as geography_models
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
@@ -1264,3 +1265,12 @@ class OffererStats(PcObject, Base, Model):
         server_default="{}",
         nullable=False,
     )
+
+
+class OffererAddress(PcObject, Base, Model):
+    __tablename__ = "offerer_address"
+    label: str = sa.Column(sa.Text(), nullable=False)
+    addressId = sa.Column(sa.BigInteger, sa.ForeignKey("address.id"), index=True)
+    address: sa.orm.Mapped[geography_models.Address] = sa.orm.relationship("Address", foreign_keys=[addressId])
+    offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), index=True)
+    offerer: sa.orm.Mapped["Offerer"] = sa.orm.relationship("Offerer", foreign_keys=[offererId])
