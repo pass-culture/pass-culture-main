@@ -167,7 +167,7 @@ jobs:
         env:
           SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
       - name: "Post success on #shérif"
-        if: success()
+        if: env.WORKFLOW_CONCLUSION == 'success'
         uses: slackapi/slack-github-action@v1.25.0
         with:
           channel-id: "CU0SQ8Y58"
