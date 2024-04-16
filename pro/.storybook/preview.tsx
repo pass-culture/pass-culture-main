@@ -1,4 +1,19 @@
 import '../src/styles/index.scss'
+import React from 'react';
+
+import { Preview } from '@storybook/react';
+
+const preview: Preview = {
+  decorators: [
+    (Story) => (
+      <div data-theme-storybook="pink">
+        <Story />
+      </div>
+    ),
+  ],
+};
+
+export default preview;
 
 export const parameters = {
   backgrounds: {
@@ -19,3 +34,5 @@ export const parameters = {
     },
   },
 }
+
+
