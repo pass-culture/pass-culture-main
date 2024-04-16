@@ -9,7 +9,7 @@ from pcapi.serialization.decorator import spectree_serialize
 from . import blueprint
 
 
-@blueprint.pro_private_api.route("/providers/<int:venue_id>", methods=["GET"])
+@blueprint.pro_private_api.route("/venueProviders/<int:venue_id>", methods=["GET"])
 @login_required
 @spectree_serialize(
     response_model=ListProviderResponse,  # type: ignore [arg-type]

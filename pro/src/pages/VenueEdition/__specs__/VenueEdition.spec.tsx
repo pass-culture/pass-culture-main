@@ -8,8 +8,6 @@ import {
   GetVenueResponseModel,
   VenueProviderResponse,
 } from 'apiClient/v1'
-import { Providers } from 'core/Venue/types'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { defaultGetVenue } from 'utils/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
@@ -51,10 +49,6 @@ const renderVenueEdition = (
   )
 }
 
-vi.mock('repository/pcapi/pcapi', () => ({
-  loadProviders: vi.fn(),
-}))
-
 vi.mock('react-router-dom', async () => ({
   ...(await vi.importActual('react-router-dom')),
   useParams: () => ({
@@ -67,7 +61,6 @@ vi.mock('react-router-dom', async () => ({
 describe('route VenueEdition', () => {
   let venue: GetVenueResponseModel
   let venueProviders: VenueProviderResponse[]
-  let providers: Providers[]
   let offerer: GetOffererResponseModel
 
   beforeEach(() => {
@@ -99,20 +92,11 @@ describe('route VenueEdition', () => {
       },
     ]
 
-    providers = [
-      {
-        id: 12,
-        isActive: true,
-        name: 'name',
-      },
-    ] as Providers[]
-
     offerer = {
       id: 13,
     } as GetOffererResponseModel
 
     vi.spyOn(api, 'getVenue').mockResolvedValue(venue)
-    vi.spyOn(pcapi, 'loadProviders').mockResolvedValue(providers)
     vi.spyOn(api, 'listVenueProviders').mockResolvedValue({
       venue_providers: venueProviders,
     })

@@ -13,7 +13,6 @@ import {
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { Events } from 'core/FirebaseEvents/constants'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
-import { Providers } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
@@ -35,7 +34,6 @@ interface VenueSettingsFormScreenProps {
   offerer: GetOffererResponseModel
   venueLabels: SelectOption[]
   venueTypes: VenueTypeResponseModel[]
-  providers?: Providers[]
   venueProviders?: VenueProviderResponse[]
   venue: GetVenueResponseModel
   hasBookingQuantity?: boolean
@@ -48,7 +46,6 @@ export const VenueSettingsFormScreen = ({
   venueTypes,
   venueProviders,
   venue,
-  providers,
   hasBookingQuantity,
 }: VenueSettingsFormScreenProps): JSX.Element => {
   const navigate = useNavigate()
@@ -190,7 +187,6 @@ export const VenueSettingsFormScreen = ({
             venueLabels={venueLabels}
             venueTypes={venueTypes}
             venueProvider={venueProviders}
-            provider={providers}
             venue={venue}
             offerer={offerer}
           />

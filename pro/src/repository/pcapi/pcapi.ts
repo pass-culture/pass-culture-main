@@ -135,15 +135,6 @@ export const postCollectiveOfferTemplateImage: PostImageMethodType<
   postImage(`/collective/offers-template/${offerId}/image`, offerId, ...args)
 
 //
-// Providers
-//
-
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'venueId' implicitly has an 'any' type.
-export const loadProviders = (venueId) => {
-  return client.get(`/providers/${venueId}`)
-}
-
-//
 // BookingsRecap
 //
 export const buildBookingsRecapQuery = ({

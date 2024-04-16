@@ -16,7 +16,7 @@ def test_venue_has_known_allocine_id(client):
     other_provider = providers_factories.ProviderFactory(localClass="B provider")
 
     # When
-    response = client.with_session_auth(email=user.email).get(f"/providers/{venue.id}")
+    response = client.with_session_auth(email=user.email).get(f"/venueProviders/{venue.id}")
 
     # Then
     assert response.status_code == 200
@@ -47,7 +47,7 @@ def test_venue_has_no_allocine_id(client):
     other_provider = providers_factories.ProviderFactory(localClass="B provider")
 
     # When
-    response = client.with_session_auth(email=user.email).get(f"/providers/{venue.id}")
+    response = client.with_session_auth(email=user.email).get(f"/venueProviders/{venue.id}")
 
     # Then
     assert response.status_code == 200
@@ -80,7 +80,7 @@ def test_venue_has_offerer_provider(client):
     providers_factories.VenueProviderFactory(venue=venue, provider=provider)
 
     # When
-    response = client.with_session_auth(email=user.email).get(f"/providers/{venue.id}")
+    response = client.with_session_auth(email=user.email).get(f"/venueProviders/{venue.id}")
 
     # Then
     assert response.status_code == 200
@@ -101,13 +101,13 @@ def test_venue_has_offerer_provider(client):
 def test_venue_does_not_exist(client):
     user = users_factories.UserFactory()
 
-    response = client.with_session_auth(email=user.email).get("/providers/1234")
+    response = client.with_session_auth(email=user.email).get("/venueProviders/1234")
 
     assert response.status_code == 404
 
 
 @pytest.mark.usefixtures("db_session")
 def test_user_is_not_logged_in(client):
-    response = client.get("/providers/1234")
+    response = client.get("/venueProviders/1234")
 
     assert response.status_code == 401

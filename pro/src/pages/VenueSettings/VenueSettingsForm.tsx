@@ -10,7 +10,6 @@ import {
 import { AddressSelect } from 'components/Address'
 import FormLayout from 'components/FormLayout'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import { Providers } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
 import BankAccountInfos from 'pages/VenueCreation/BankAccountInfos/BankAccountInfos'
@@ -28,7 +27,6 @@ interface VenueFormProps {
   updateIsSiretValued: (isSiretValued: boolean) => void
   venueLabels: SelectOption[]
   venueTypes: VenueTypeResponseModel[]
-  provider?: Providers[]
   venueProvider?: VenueProviderResponse[]
   venue: GetVenueResponseModel
 }
@@ -38,7 +36,6 @@ export const VenueSettingsForm = ({
   updateIsSiretValued,
   venueLabels,
   venueTypes,
-  provider,
   venueProvider,
   venue,
 }: VenueFormProps) => {
@@ -50,12 +47,8 @@ export const VenueSettingsForm = ({
     <>
       <ScrollToFirstErrorAfterSubmit />
 
-      {!venue.isVirtual && provider && venueProvider && (
-        <OffersSynchronization
-          provider={provider}
-          venueProvider={venueProvider}
-          venue={venue}
-        />
+      {!venue.isVirtual && venueProvider && (
+        <OffersSynchronization venueProvider={venueProvider} venue={venue} />
       )}
 
       <FormLayout fullWidthActions>
