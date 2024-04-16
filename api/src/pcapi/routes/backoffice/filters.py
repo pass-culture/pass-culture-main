@@ -79,6 +79,13 @@ def format_deposit_type(deposit_type: finance_models.DepositType) -> str:
             return "Aucune information"
 
 
+def format_active_deposit(deposit: finance_models.Deposit | None) -> str:
+    if deposit:
+        if not deposit.expirationDate or deposit.expirationDate > datetime.datetime.utcnow():
+            return Markup('<span class="visually-hidden">Oui</span><i class="bi bi-check-circle-fill"></i>')
+    return Markup('<span class="visually-hidden">Non</span><i class="bi bi-x-circle-fill"></i>')
+
+
 def empty_string_if_null(data: typing.Any | None) -> str:
     if data is None:
         return ""
@@ -1093,6 +1100,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_cutoff_date"] = format_cutoff_date
     app.jinja_env.filters["format_timespan"] = format_timespan
     app.jinja_env.filters["format_deposit_type"] = format_deposit_type
+    app.jinja_env.filters["format_active_deposit"] = format_active_deposit
     app.jinja_env.filters["format_validation_status"] = format_validation_status
     app.jinja_env.filters["format_offer_validation_status"] = format_offer_validation_status
     app.jinja_env.filters["format_offer_status"] = format_offer_status

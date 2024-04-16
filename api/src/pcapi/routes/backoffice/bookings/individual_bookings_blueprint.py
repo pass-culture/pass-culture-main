@@ -74,6 +74,9 @@ def _get_individual_bookings(
                 offers_models.Offer.isDuo,
                 offers_models.Offer.subcategoryId,
             ),
+            sa.orm.joinedload(bookings_models.Booking.deposit).load_only(
+                finance_models.Deposit.expirationDate,
+            ),
             sa.orm.joinedload(bookings_models.Booking.user).load_only(
                 users_models.User.id, users_models.User.firstName, users_models.User.lastName
             ),
