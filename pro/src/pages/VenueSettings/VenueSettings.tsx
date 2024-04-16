@@ -7,6 +7,7 @@ import { AppLayout } from 'app/AppLayout'
 import {
   GET_OFFERER_QUERY_KEY,
   GET_VENUE_LABELS_QUERY_KEY,
+  GET_VENUE_PROVIDERS_QUERY_KEY,
   GET_VENUE_QUERY_KEY,
   GET_VENUE_TYPES_QUERY_KEY,
 } from 'config/swrQueryKeys'
@@ -19,7 +20,6 @@ import {
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import useGetProviders from '../../core/Venue/adapters/getProviderAdapter/useGetProvider'
-import useGetVenueProviders from '../../core/Venue/adapters/getVenueProviderAdapter/useGetVenueProvider'
 
 import { offerHasBookingQuantity } from './offerHasBookingQuantity'
 import { setInitialFormValues } from './setInitialFormValues'
@@ -54,36 +54,42 @@ const VenueSettings = (): JSX.Element | null => {
   )
   const venueTypes = venueTypesQuery.data
 
-  const { isLoading: isLoadingProviders, data: providers } = useGetProviders(
-    Number(venueId)
+  const venueProvidersQuery = useSWR(
+    [GET_VENUE_PROVIDERS_QUERY_KEY, Number(venueId)],
+    ([, venueIdParam]) => api.listVenueProviders(venueIdParam)
   )
-  const { isLoading: isLoadingVenueProviders, data: venueProviders } =
-    useGetVenueProviders(Number(venueId))
+  const venueProviders = venueProvidersQuery.data?.venue_providers
 
+  // TODO This is a bug!!! The /offers route is paginated so there is no guarantee that
+  // hasBookingQuantity is exactly what we want
   const apiFilters = {
     ...DEFAULT_SEARCH_FILTERS,
     status: OfferStatus.ACTIVE,
     venueId: venue?.id.toString() ?? '',
   }
-
   const { isLoading: isLoadingVenueOffers, data: venueOffers } = useAdapter<
     Payload,
     Payload
   >(() => getFilteredOffersAdapter(apiFilters))
-
   const hasBookingQuantity = offerHasBookingQuantity(venueOffers?.offers)
 
+  // TODO this adapter uses the old pcapi client, to clean using the new client
+  const { isLoading: isLoadingProviders, data: providers } = useGetProviders(
+    Number(venueId)
+  )
+
   if (
+    offererQuery.isLoading ||
     venueQuery.isLoading ||
     venueLabelsQuery.isLoading ||
     venueTypesQuery.isLoading ||
-    isLoadingProviders ||
-    isLoadingVenueProviders ||
-    offererQuery.isLoading ||
-    isLoadingVenueOffers ||
-    !venue ||
+    venueProvidersQuery.isLoading ||
     !offerer ||
-    !venueTypes
+    !venue ||
+    !venueTypes ||
+    !venueProviders ||
+    isLoadingProviders ||
+    isLoadingVenueOffers
   ) {
     return (
       <AppLayout>
