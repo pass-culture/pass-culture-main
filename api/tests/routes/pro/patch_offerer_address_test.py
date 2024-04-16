@@ -80,3 +80,32 @@ class PatchOffererAddressTest:
 
         offerer_address = offerers_models.OffererAddress.query.filter_by(id=offerer_address_2_id)
         assert offerer_address.label != new_label["label"]
+
+    @pytest.mark.usefixtures("db_session")
+    def test_user_cant_change_for_a_label_already_used_for_same_addres(self, client):
+        pro_user = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerer_id = offerer.id
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=offerer)
+        same_offerer_address_with_different_label = offerers_factories.OffererAddressFactory(
+            offerer=offerer, address=offerer_address.address, label="Different label"
+        )
+        offerer_address_id = same_offerer_address_with_different_label.id
+        new_label = {"label": offerer_address.label}
+
+        http_client = client.with_session_auth(pro_user.email)
+
+        # Fetch the session
+        # Fetch the user
+        # Check permission
+        # Check offerer address exists
+        # rollback
+        with assert_num_queries(5):
+            response = http_client.patch(f"/offerers/{offerer_id}/address/{offerer_address_id}", json=new_label)
+            assert response.status_code == 400
+
+        assert response.json == {"label": "Une adresse identique utilise déjà ce libellé"}
+
+        offerer_address = offerers_models.OffererAddress.query.filter_by(id=offerer_address_id)
+        assert offerer_address.label != new_label["label"]
