@@ -10,9 +10,7 @@ from pcapi.connectors.serialization.titelive_serializers import TiteliveProductS
 from pcapi.connectors.titelive import TiteliveBase
 from pcapi.core.categories.subcategories_v2 import LIVRE_PAPIER
 import pcapi.core.fraud.models as fraud_models
-from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models as offers_models
-from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
 from pcapi.core.providers import constants
 from pcapi.utils.csr import get_closest_csr
 
@@ -95,14 +93,7 @@ class TiteliveBookSearch(TiteliveSearch[TiteLiveBookOeuvre]):
         product.name = title
         product.subcategoryId = LIVRE_PAPIER.id
 
-        # If the product is updated to eligible, it is because the offers must be approved to become ineligible due to gcu
-        is_product_newly_eligible = not product.isGcuCompatible
-        if is_product_newly_eligible:
-            product.isGcuCompatible = True
-            try:
-                offers_api.approves_provider_product_and_rejected_offers(ean)
-            except NotUpdateProductOrOffers as exception:
-                logger.error("Product with ean cannot be approved", extra={"ean": ean, "exc": str(exception)})
+        self.activate_newly_eligible_product_and_offers(product)
 
         return product
 
