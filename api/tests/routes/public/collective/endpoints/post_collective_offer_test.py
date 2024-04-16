@@ -1,4 +1,6 @@
-import datetime
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
 from pathlib import Path
 from unittest.mock import patch
 
@@ -54,39 +56,49 @@ def institution_fixture():
 
 
 @pytest.fixture(name="payload")
-def payload_fixture(venue_provider, domain, institution, national_program, venue):
+def payload_fixture(minimal_payload, venue_provider, domain, institution, national_program, venue):
+    return {
+        **minimal_payload,
+        "name": "Some offer",
+        "description": "une description d'offre",
+        "durationMinutes": 183,
+        "audioDisabilityCompliant": True,
+        "mentalDisabilityCompliant": True,
+        "motorDisabilityCompliant": False,
+        "visualDisabilityCompliant": False,
+        "nationalProgramId": national_program.id,
+        "educationalPriceDetail": "Justification du prix",
+        "imageCredit": "pouet",
+        "imageFile": image_data.GOOD_IMAGE,
+    }
+
+
+@pytest.fixture(name="minimal_payload")
+def minimal_payload_fixture(domain, institution, venue):
+    booking_beginning = datetime.now(timezone.utc) + timedelta(days=10)  # pylint: disable=datetime-now
+    booking_limit = booking_beginning - timedelta(days=2)
+
     return {
         "venueId": venue.id,
-        "name": "Un nom en français ævœc des diàcrtîtïqués",
-        "description": "une description d'offre",
+        "name": "Some offer with minimal payload",
+        "description": "description",
         "formats": [subcategories.EacFormat.CONCERT.value],
         "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
         "contactEmail": "offerer-contact@example.com",
         "contactPhone": "+33100992798",
         "domains": [domain.id],
-        "durationMinutes": 183,
         "students": [educational_models.StudentLevels.COLLEGE4.name],
-        "audioDisabilityCompliant": True,
-        "mentalDisabilityCompliant": True,
-        "motorDisabilityCompliant": False,
-        "visualDisabilityCompliant": False,
         "offerVenue": {
             "venueId": venue.id,
             "addressType": "offererVenue",
             "otherAddress": "",
         },
         "isActive": True,
-        "nationalProgramId": national_program.id,
-        # stock part
-        "beginningDatetime": (datetime.datetime.utcnow() + datetime.timedelta(days=2)).isoformat(timespec="seconds"),
-        "bookingLimitDatetime": (datetime.datetime.utcnow() + datetime.timedelta(days=2)).isoformat(timespec="seconds"),
-        "totalPrice": 35621,
+        "beginningDatetime": booking_beginning.isoformat(timespec="seconds"),
+        "bookingLimitDatetime": booking_limit.isoformat(timespec="seconds"),
+        "totalPrice": 600,
         "numberOfTickets": 30,
-        "educationalPriceDetail": "Justification du prix",
-        # link to educational institution
         "educationalInstitutionId": institution.id,
-        "imageCredit": "pouet",
-        "imageFile": image_data.GOOD_IMAGE,
     }
 
 
@@ -294,3 +306,44 @@ class CollectiveOffersPublicPostOfferTest:
 
         assert response.status_code == 400
         assert response.json == {"__root__": ["subcategory_id & formats: at least one should not be null"]}
+
+
+@pytest.mark.usefixtures("db_session")
+class CollectiveOffersPublicPostOfferMinimalTest:
+    def test_mandatory_information_only(self, public_client, minimal_payload):
+        self.assert_expected_offer_is_created(public_client, minimal_payload)
+
+    def test_institution_instead_of_institution_id(self, public_client, minimal_payload, institution):
+        del minimal_payload["educationalInstitutionId"]
+
+        minimal_payload["name"] = "Some offer with minimal payload (institution)"
+        minimal_payload["educationalInstitution"] = institution.institutionId
+
+        self.assert_expected_offer_is_created(public_client, minimal_payload)
+
+    def test_subcategory_instead_of_formats(self, public_client, minimal_payload, institution):
+        del minimal_payload["formats"]
+        minimal_payload["subcategoryId"] = subcategories.SEANCE_CINE.id
+
+        self.assert_expected_offer_is_created(public_client, minimal_payload)
+
+    def test_missing_field(self, public_client, minimal_payload):
+        for key in minimal_payload:
+            payload = {k: v for k, v in minimal_payload.items() if k != key}
+
+            with patch("pcapi.core.educational.adage_backends.get_adage_offerer") as mock:
+                mock.return_value = ["anything", "it does not matter"]
+                response = public_client.post("/v2/collective/offers/", json=payload)
+
+            assert response.status_code == 400
+            assert key in response.json or "__root__" in response.json
+
+    def assert_expected_offer_is_created(self, public_client, payload):
+        with patch("pcapi.core.educational.adage_backends.get_adage_offerer") as mock:
+            mock.return_value = ["anything", "it does not matter"]
+            response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 200
+
+        offer = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        assert offer.name == payload["name"]
