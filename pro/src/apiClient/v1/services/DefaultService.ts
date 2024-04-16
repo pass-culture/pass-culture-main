@@ -34,6 +34,7 @@ import type { EditVenueCollectiveDataBodyModel } from '../models/EditVenueCollec
 import type { EducationalDomainsResponseModel } from '../models/EducationalDomainsResponseModel';
 import type { EducationalInstitutionsResponseModel } from '../models/EducationalInstitutionsResponseModel';
 import type { EducationalRedactors } from '../models/EducationalRedactors';
+import type { EventDatesInfos } from '../models/EventDatesInfos';
 import type { FinanceBankAccountListResponseModel } from '../models/FinanceBankAccountListResponseModel';
 import type { GenerateOffererApiKeyResponse } from '../models/GenerateOffererApiKeyResponse';
 import type { GetCollectiveOfferRequestResponseModel } from '../models/GetCollectiveOfferRequestResponseModel';
@@ -155,6 +156,27 @@ export class DefaultService {
         'bookingPeriodEndingDate': bookingPeriodEndingDate,
         'offerType': offerType,
         'exportType': exportType,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * get_offer_price_categories_and_schedules_by_dates <GET>
+   * @param offerId
+   * @returns EventDatesInfos OK
+   * @throws ApiError
+   */
+  public getOfferPriceCategoriesAndSchedulesByDates(
+    offerId: number,
+  ): CancelablePromise<EventDatesInfos> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/bookings/dates/{offer_id}',
+      path: {
+        'offer_id': offerId,
       },
       errors: {
         403: `Forbidden`,
