@@ -42,7 +42,7 @@ export class DefaultService {
    * @returns AuthenticatedResponse OK
    * @throws ApiError
    */
-  public authenticate(): CancelablePromise<AuthenticatedResponse> {
+  public getAdageIframeAuthenticate(): CancelablePromise<AuthenticatedResponse> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/authenticate',
@@ -57,7 +57,7 @@ export class DefaultService {
    * @returns AcademiesResponseModel OK
    * @throws ApiError
    */
-  public getAcademies(): CancelablePromise<AcademiesResponseModel> {
+  public getAdageIframeCollectiveAcademies(): CancelablePromise<AcademiesResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/collective/academies',
@@ -73,7 +73,7 @@ export class DefaultService {
    * @returns BookCollectiveOfferResponse OK
    * @throws ApiError
    */
-  public bookCollectiveOffer(
+  public postAdageIframeCollectiveBookings(
     requestBody?: BookCollectiveOfferRequest,
   ): CancelablePromise<BookCollectiveOfferResponse> {
     return this.httpRequest.request({
@@ -93,7 +93,7 @@ export class DefaultService {
    * @returns FavoritesResponseModel OK
    * @throws ApiError
    */
-  public getCollectiveFavorites(): CancelablePromise<FavoritesResponseModel> {
+  public getAdageIframeCollectiveFavorites(): CancelablePromise<FavoritesResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/collective/favorites',
@@ -108,7 +108,7 @@ export class DefaultService {
    * @returns EducationalInstitutionWithBudgetResponseModel OK
    * @throws ApiError
    */
-  public getEducationalInstitutionWithBudget(): CancelablePromise<EducationalInstitutionWithBudgetResponseModel> {
+  public getAdageIframeCollectiveInstitution(): CancelablePromise<EducationalInstitutionWithBudgetResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/collective/institution',
@@ -124,7 +124,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public deleteFavoriteForCollectiveOffer(
+  public deleteAdageIframeCollectiveOfferOfferIdFavorites(
     offerId: number,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -145,7 +145,7 @@ export class DefaultService {
    * @returns CollectiveOfferTemplateResponseModel OK
    * @throws ApiError
    */
-  public getCollectiveOfferTemplate(
+  public getAdageIframeCollectiveOffersTemplateOfferId(
     offerId: number,
   ): CancelablePromise<CollectiveOfferTemplateResponseModel> {
     return this.httpRequest.request({
@@ -168,7 +168,7 @@ export class DefaultService {
    * @returns CollectiveRequestResponseModel OK
    * @throws ApiError
    */
-  public createCollectiveRequest(
+  public postAdageIframeCollectiveOffersTemplateOfferIdRequest(
     offerId: number,
     requestBody?: PostCollectiveRequestBodyModel,
   ): CancelablePromise<CollectiveRequestResponseModel> {
@@ -192,7 +192,7 @@ export class DefaultService {
    * @returns ListCollectiveOffersResponseModel OK
    * @throws ApiError
    */
-  public getCollectiveOffersForMyInstitution(): CancelablePromise<ListCollectiveOffersResponseModel> {
+  public getAdageIframeCollectiveOffersMyInstitution(): CancelablePromise<ListCollectiveOffersResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/collective/offers/my_institution',
@@ -208,7 +208,7 @@ export class DefaultService {
    * @returns CollectiveOfferResponseModel OK
    * @throws ApiError
    */
-  public getCollectiveOffer(
+  public getAdageIframeCollectiveOffersOfferId(
     offerId: number,
   ): CancelablePromise<CollectiveOfferResponseModel> {
     return this.httpRequest.request({
@@ -230,7 +230,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public postCollectiveOfferFavorites(
+  public postAdageIframeCollectiveOffersOfferIdFavorites(
     offerId: number,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -251,7 +251,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public deleteFavoriteForCollectiveOfferTemplate(
+  public deleteAdageIframeCollectiveTemplateOfferTemplateIdFavorites(
     offerTemplateId: number,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -272,7 +272,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public postCollectiveTemplateFavorites(
+  public postAdageIframeCollectiveTemplatesOfferIdFavorites(
     offerId: number,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -292,7 +292,7 @@ export class DefaultService {
    * @returns ListFeatureResponseModel OK
    * @throws ApiError
    */
-  public listFeatures(): CancelablePromise<ListFeatureResponseModel> {
+  public getAdageIframeFeatures(): CancelablePromise<ListFeatureResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/features',
@@ -309,7 +309,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public logBookingModalButtonClick(
+  public postAdageIframeLogsBookingModalButton(
     requestBody?: StockIdBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -330,7 +330,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public logCatalogView(
+  public postAdageIframeLogsCatalogView(
     requestBody?: CatalogViewBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -351,7 +351,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public logConsultPlaylistElement(
+  public postAdageIframeLogsConsultPlaylistElement(
     requestBody?: PlaylistBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -372,7 +372,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public logContactModalButtonClick(
+  public postAdageIframeLogsContactModalButton(
     requestBody?: OfferIdBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -393,7 +393,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public logContactUrlClick(
+  public postAdageIframeLogsContactUrlClick(
     requestBody?: OfferIdBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -414,7 +414,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public logFavOfferButtonClick(
+  public postAdageIframeLogsFavOffer(
     requestBody?: OfferFavoriteBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -435,7 +435,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public logHasSeenWholePlaylist(
+  public postAdageIframeLogsHasSeenWholePlaylist(
     requestBody?: PlaylistBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -456,7 +456,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public logHeaderLinkClick(
+  public postAdageIframeLogsHeaderLinkClick(
     requestBody?: AdageHeaderLogBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -477,7 +477,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public logOfferDetailsButtonClick(
+  public postAdageIframeLogsOfferDetail(
     requestBody?: StockIdBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -498,7 +498,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public logOfferTemplateDetailsButtonClick(
+  public postAdageIframeLogsOfferTemplateDetail(
     requestBody?: OfferIdBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -519,7 +519,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public logHasSeenAllPlaylist(
+  public postAdageIframeLogsPlaylist(
     requestBody?: AdageBaseModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -540,7 +540,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public logRequestFormPopinDismiss(
+  public postAdageIframeLogsRequestPopinDismiss(
     requestBody?: CollectiveRequestBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -561,7 +561,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public logOpenSatisfactionSurvey(
+  public postAdageIframeLogsSatSurvey(
     requestBody?: AdageBaseModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -582,7 +582,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public logSearchButtonClick(
+  public postAdageIframeLogsSearchButton(
     requestBody?: SearchBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -603,7 +603,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public logSearchShowMore(
+  public postAdageIframeLogsSearchShowMore(
     requestBody?: TrackingShowMoreBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -624,7 +624,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public logTrackingAutocompleteSuggestionClick(
+  public postAdageIframeLogsTrackingAutocompletion(
     requestBody?: TrackingAutocompleteSuggestionBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -645,7 +645,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public logTrackingCtaShare(
+  public postAdageIframeLogsTrackingCtaShare(
     requestBody?: TrackingCTAShareBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -666,7 +666,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public logTrackingFilter(
+  public postAdageIframeLogsTrackingFilter(
     requestBody?: TrackingFilterBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -687,7 +687,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public logTrackingMap(
+  public postAdageIframeLogsTrackingMap(
     requestBody?: AdageBaseModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -707,7 +707,7 @@ export class DefaultService {
    * @returns CategoriesResponseModel OK
    * @throws ApiError
    */
-  public getEducationalOffersCategories(): CancelablePromise<CategoriesResponseModel> {
+  public getAdageIframeOffersCategories(): CancelablePromise<CategoriesResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/offers/categories',
@@ -722,7 +722,7 @@ export class DefaultService {
    * @returns EacFormatsResponseModel OK
    * @throws ApiError
    */
-  public getEducationalOffersFormats(): CancelablePromise<EacFormatsResponseModel> {
+  public getAdageIframeOffersFormats(): CancelablePromise<EacFormatsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/offers/formats',
@@ -737,7 +737,7 @@ export class DefaultService {
    * @returns ListCollectiveOfferTemplateResponseModel OK
    * @throws ApiError
    */
-  public getClassroomPlaylist(): CancelablePromise<ListCollectiveOfferTemplateResponseModel> {
+  public getAdageIframePlaylistsClassroom(): CancelablePromise<ListCollectiveOfferTemplateResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/playlists/classroom',
@@ -752,7 +752,7 @@ export class DefaultService {
    * @returns LocalOfferersPlaylist OK
    * @throws ApiError
    */
-  public getLocalOfferersPlaylist(): CancelablePromise<LocalOfferersPlaylist> {
+  public getAdageIframePlaylistsLocalOfferers(): CancelablePromise<LocalOfferersPlaylist> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/playlists/local-offerers',
@@ -767,7 +767,7 @@ export class DefaultService {
    * @returns ListCollectiveOfferTemplateResponseModel OK
    * @throws ApiError
    */
-  public newTemplateOffersPlaylist(): CancelablePromise<ListCollectiveOfferTemplateResponseModel> {
+  public getAdageIframePlaylistsNewTemplateOffers(): CancelablePromise<ListCollectiveOfferTemplateResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/playlists/new_template_offers',
@@ -784,7 +784,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public saveRedactorPreferences(
+  public postAdageIframeRedactorPreferences(
     requestBody?: RedactorPreferences,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -803,7 +803,7 @@ export class DefaultService {
    * @returns any OK
    * @throws ApiError
    */
-  public createAdageJwtFakeToken(): CancelablePromise<any> {
+  public getAdageIframeTestingToken(): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/testing/token',
@@ -821,7 +821,7 @@ export class DefaultService {
    * @returns VenueResponse OK
    * @throws ApiError
    */
-  public getVenueBySiret(
+  public getAdageIframeVenuesSiretSiret(
     siret: string,
     getRelative: boolean = false,
   ): CancelablePromise<VenueResponse> {
@@ -847,7 +847,7 @@ export class DefaultService {
    * @returns VenueResponse OK
    * @throws ApiError
    */
-  public getVenueById(
+  public getAdageIframeVenuesVenueId(
     venueId: number,
     getRelative: boolean = false,
   ): CancelablePromise<VenueResponse> {

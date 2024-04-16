@@ -6,8 +6,6 @@ from pydantic.v1 import BaseModel
 from spectree import Response
 from spectree import SpecTree
 
-from pcapi import settings
-
 
 def get_model_key(model: type[BaseModel]) -> str:
     return model.__name__
@@ -33,22 +31,6 @@ def build_operation_id(func: Callable) -> str:
 
 
 class ExtendedSpecTree(SpecTree):
-    def __init__(self, *args: Any, humanize_operation_id: bool = False, **kwargs: Any):
-        super().__init__(*args, **kwargs)
-        self.humanize_operation_id = humanize_operation_id
-
-    def _generate_spec(self) -> dict:
-        spec = super()._generate_spec()
-        if self.humanize_operation_id:
-            for route in self.backend.find_routes():
-                for method, func in self.backend.parse_func(route):
-                    if self.backend.bypass(func, method) or self.bypass(func):
-                        continue
-                    path_parameter_descriptions = getattr(func, "path_parameter_descriptions", None)
-                    path, _parameters = self.backend.parse_path(route, path_parameter_descriptions)
-                    spec["paths"][path][method.lower()]["operationId"] = build_operation_id(func)
-                    spec["servers"] = [{"url": settings.API_URL}]
-        return spec
 
     def _add_model(self, model: type[BaseModel]) -> str:
         model_key = get_model_key(model=model)

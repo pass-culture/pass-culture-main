@@ -33,7 +33,6 @@ v2_prefixed_public_api_schema = ExtendedSpecTree(
             name=users_authentifications.COOKIE_AUTH_NAME, data={"type": "apiKey", "in": "cookie", "name": "session"}  # type: ignore [arg-type]
         ),
     ],
-    humanize_operation_id=True,
     version=2,
 )
 v2_prefixed_public_api_schema.register(v2_prefixed_public_api)

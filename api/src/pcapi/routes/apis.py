@@ -21,7 +21,6 @@ api = ExtendedSpecTree(
     MODE="strict",
     before=before_handler,
     version=1,
-    humanize_operation_id=True,
 )
 # This will register all routes from the 2 Blueprints in this file
 api.register(public_api)

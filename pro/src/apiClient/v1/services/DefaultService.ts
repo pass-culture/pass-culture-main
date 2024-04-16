@@ -123,7 +123,7 @@ export class DefaultService {
    * @returns any OK
    * @throws ApiError
    */
-  public exportBookingsForOfferAsCsv(
+  public getBookingsOfferOfferIdCsv(
     offerId: number,
     status: BookingsExportStatusFilter,
     eventDate: string,
@@ -152,7 +152,7 @@ export class DefaultService {
    * @returns any OK
    * @throws ApiError
    */
-  public exportBookingsForOfferAsExcel(
+  public getBookingsOfferOfferIdExcel(
     offerId: number,
     status: BookingsExportStatusFilter,
     eventDate: string,
@@ -223,7 +223,7 @@ export class DefaultService {
    * @returns UserHasBookingResponse OK
    * @throws ApiError
    */
-  public getUserHasBookings(): CancelablePromise<UserHasBookingResponse> {
+  public getBookingsProUserHasBookings(): CancelablePromise<UserHasBookingResponse> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/bookings/pro/userHasBookings',
@@ -274,7 +274,7 @@ export class DefaultService {
    * @returns UserHasBookingResponse OK
    * @throws ApiError
    */
-  public getUserHasCollectiveBookings(): CancelablePromise<UserHasBookingResponse> {
+  public getCollectiveBookingsProUserHasBookings(): CancelablePromise<UserHasBookingResponse> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/collective/bookings/pro/userHasBookings',
@@ -290,7 +290,7 @@ export class DefaultService {
    * @returns CollectiveBookingByIdResponseModel OK
    * @throws ApiError
    */
-  public getCollectiveBookingById(
+  public getCollectiveBookingsBookingId(
     bookingId: number,
   ): CancelablePromise<CollectiveBookingByIdResponseModel> {
     return this.httpRequest.request({
@@ -310,7 +310,7 @@ export class DefaultService {
    * @returns EducationalDomainsResponseModel OK
    * @throws ApiError
    */
-  public listEducationalDomains(): CancelablePromise<EducationalDomainsResponseModel> {
+  public getCollectiveEducationalDomains(): CancelablePromise<EducationalDomainsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/collective/educational-domains',
@@ -374,7 +374,7 @@ export class DefaultService {
    * @returns CollectiveOfferResponseIdModel Created
    * @throws ApiError
    */
-  public createCollectiveOffer(
+  public postCollectiveOffers(
     requestBody?: PostCollectiveOfferBodyModel,
   ): CancelablePromise<CollectiveOfferResponseIdModel> {
     return this.httpRequest.request({
@@ -394,7 +394,7 @@ export class DefaultService {
    * @returns CollectiveOfferResponseIdModel Created
    * @throws ApiError
    */
-  public createCollectiveOfferTemplate(
+  public postCollectiveOffersTemplate(
     requestBody?: PostCollectiveOfferTemplateBodyModel,
   ): CancelablePromise<CollectiveOfferResponseIdModel> {
     return this.httpRequest.request({
@@ -434,7 +434,7 @@ export class DefaultService {
    * @returns GetCollectiveOfferRequestResponseModel OK
    * @throws ApiError
    */
-  public getCollectiveOfferRequest(
+  public getCollectiveOffersTemplateRequestRequestId(
     requestId: number,
   ): CancelablePromise<GetCollectiveOfferRequestResponseModel> {
     return this.httpRequest.request({
@@ -455,7 +455,7 @@ export class DefaultService {
    * @returns GetCollectiveOfferTemplateResponseModel OK
    * @throws ApiError
    */
-  public getCollectiveOfferTemplate(
+  public getCollectiveOffersTemplateOfferId(
     offerId: number,
   ): CancelablePromise<GetCollectiveOfferTemplateResponseModel> {
     return this.httpRequest.request({
@@ -477,7 +477,7 @@ export class DefaultService {
    * @returns GetCollectiveOfferTemplateResponseModel OK
    * @throws ApiError
    */
-  public editCollectiveOfferTemplate(
+  public patchCollectiveOffersTemplateOfferId(
     offerId: number,
     requestBody?: PatchCollectiveOfferTemplateBodyModel,
   ): CancelablePromise<GetCollectiveOfferTemplateResponseModel> {
@@ -502,7 +502,7 @@ export class DefaultService {
    * @returns CollectiveOfferTemplateResponseIdModel Created
    * @throws ApiError
    */
-  public createCollectiveOfferTemplateFromCollectiveOffer(
+  public postCollectiveOffersTemplateOfferId(
     offerId: number,
     requestBody?: CollectiveOfferTemplateBodyModel,
   ): CancelablePromise<CollectiveOfferTemplateResponseIdModel> {
@@ -528,7 +528,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public deleteOfferTemplateImage(
+  public deleteCollectiveOffersTemplateOfferIdImage(
     offerId: number,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -550,7 +550,7 @@ export class DefaultService {
    * @returns AttachImageResponseModel OK
    * @throws ApiError
    */
-  public attachOfferTemplateImage(
+  public postCollectiveOffersTemplateOfferIdImage(
     offerId: string,
     formData?: AttachImageFormModel,
   ): CancelablePromise<AttachImageResponseModel> {
@@ -574,7 +574,7 @@ export class DefaultService {
    * @returns GetCollectiveOfferTemplateResponseModel OK
    * @throws ApiError
    */
-  public patchCollectiveOfferTemplatePublication(
+  public patchCollectiveOffersTemplateOfferIdPublish(
     offerId: number,
   ): CancelablePromise<GetCollectiveOfferTemplateResponseModel> {
     return this.httpRequest.request({
@@ -616,7 +616,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public patchAllCollectiveOffersActiveStatus(
+  public patchCollectiveOffersAllActiveStatus(
     requestBody?: PatchAllCollectiveOffersActiveStatusBodyModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -637,7 +637,7 @@ export class DefaultService {
    * @returns EducationalRedactors OK
    * @throws ApiError
    */
-  public getAutocompleteEducationalRedactorsForUai(
+  public getCollectiveOffersRedactors(
     uai: string,
     candidate: string,
   ): CancelablePromise<EducationalRedactors> {
@@ -660,7 +660,7 @@ export class DefaultService {
    * @returns GetCollectiveOfferResponseModel OK
    * @throws ApiError
    */
-  public getCollectiveOffer(
+  public getCollectiveOffersOfferId(
     offerId: number,
   ): CancelablePromise<GetCollectiveOfferResponseModel> {
     return this.httpRequest.request({
@@ -682,7 +682,7 @@ export class DefaultService {
    * @returns GetCollectiveOfferResponseModel OK
    * @throws ApiError
    */
-  public editCollectiveOffer(
+  public patchCollectiveOffersOfferId(
     offerId: number,
     requestBody?: PatchCollectiveOfferBodyModel,
   ): CancelablePromise<GetCollectiveOfferResponseModel> {
@@ -706,7 +706,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public cancelCollectiveOfferBooking(
+  public patchCollectiveOffersOfferIdCancelBooking(
     offerId: number,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -729,7 +729,7 @@ export class DefaultService {
    * @returns GetCollectiveOfferResponseModel Created
    * @throws ApiError
    */
-  public duplicateCollectiveOffer(
+  public postCollectiveOffersOfferIdDuplicate(
     offerId: number,
   ): CancelablePromise<GetCollectiveOfferResponseModel> {
     return this.httpRequest.request({
@@ -751,7 +751,7 @@ export class DefaultService {
    * @returns GetCollectiveOfferResponseModel OK
    * @throws ApiError
    */
-  public patchCollectiveOffersEducationalInstitution(
+  public patchCollectiveOffersOfferIdEducationalInstitution(
     offerId: number,
     requestBody?: PatchCollectiveOfferEducationalInstitution,
   ): CancelablePromise<GetCollectiveOfferResponseModel> {
@@ -776,7 +776,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public deleteOfferImage(
+  public deleteCollectiveOffersOfferIdImage(
     offerId: number,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -798,7 +798,7 @@ export class DefaultService {
    * @returns AttachImageResponseModel OK
    * @throws ApiError
    */
-  public attachOfferImage(
+  public postCollectiveOffersOfferIdImage(
     offerId: number,
     formData?: AttachImageFormModel,
   ): CancelablePromise<AttachImageResponseModel> {
@@ -822,7 +822,7 @@ export class DefaultService {
    * @returns GetCollectiveOfferResponseModel OK
    * @throws ApiError
    */
-  public patchCollectiveOfferPublication(
+  public patchCollectiveOffersOfferIdPublish(
     offerId: number,
   ): CancelablePromise<GetCollectiveOfferResponseModel> {
     return this.httpRequest.request({
@@ -844,7 +844,7 @@ export class DefaultService {
    * @returns CollectiveStockResponseModel Created
    * @throws ApiError
    */
-  public createCollectiveStock(
+  public postCollectiveStocks(
     requestBody?: CollectiveStockCreationBodyModel,
   ): CancelablePromise<CollectiveStockResponseModel> {
     return this.httpRequest.request({
@@ -865,7 +865,7 @@ export class DefaultService {
    * @returns CollectiveStockResponseModel OK
    * @throws ApiError
    */
-  public editCollectiveStock(
+  public patchCollectiveStocksCollectiveStockId(
     collectiveStockId: number,
     requestBody?: CollectiveStockEditionBodyModel,
   ): CancelablePromise<CollectiveStockResponseModel> {
@@ -891,7 +891,7 @@ export class DefaultService {
    * @returns AdageCulturalPartnersResponseModel OK
    * @throws ApiError
    */
-  public getEducationalPartners(): CancelablePromise<AdageCulturalPartnersResponseModel> {
+  public getCulturalPartners(): CancelablePromise<AdageCulturalPartnersResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/cultural-partners',
@@ -932,7 +932,7 @@ export class DefaultService {
    * @returns ListFeatureResponseModel OK
    * @throws ApiError
    */
-  public listFeatures(): CancelablePromise<ListFeatureResponseModel> {
+  public getFeatures(): CancelablePromise<ListFeatureResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/features',
@@ -947,7 +947,7 @@ export class DefaultService {
    * @returns FinanceBankAccountListResponseModel OK
    * @throws ApiError
    */
-  public getBankAccounts(): CancelablePromise<FinanceBankAccountListResponseModel> {
+  public getFinanceBankAccounts(): CancelablePromise<FinanceBankAccountListResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/finance/bank-accounts',
@@ -978,7 +978,7 @@ export class DefaultService {
    * @returns PostOffererResponseModel Created
    * @throws ApiError
    */
-  public createOfferer(
+  public postOfferers(
     requestBody?: CreateOffererQueryModel,
   ): CancelablePromise<PostOffererResponseModel> {
     return this.httpRequest.request({
@@ -998,7 +998,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public deleteApiKey(
+  public deleteOfferersApiKeysApiKeyPrefix(
     apiKeyPrefix: string,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -1019,7 +1019,7 @@ export class DefaultService {
    * @returns GetEducationalOfferersResponseModel OK
    * @throws ApiError
    */
-  public listEducationalOfferers(
+  public getOfferersEducational(
     offererId?: number | null,
   ): CancelablePromise<GetEducationalOfferersResponseModel> {
     return this.httpRequest.request({
@@ -1042,7 +1042,7 @@ export class DefaultService {
    * @returns GetOfferersNamesResponseModel OK
    * @throws ApiError
    */
-  public listOfferersNames(
+  public getOfferersNames(
     validated?: boolean | null,
     validatedForUser?: boolean | null,
     offererId?: number | null,
@@ -1067,7 +1067,7 @@ export class DefaultService {
    * @returns PostOffererResponseModel Created
    * @throws ApiError
    */
-  public saveNewOnboardingData(
+  public postOfferersNew(
     requestBody?: SaveNewOnboardingDataQueryModel,
   ): CancelablePromise<PostOffererResponseModel> {
     return this.httpRequest.request({
@@ -1087,7 +1087,7 @@ export class DefaultService {
    * @returns GetOffererResponseModel OK
    * @throws ApiError
    */
-  public getOfferer(
+  public getOfferersOffererId(
     offererId: number,
   ): CancelablePromise<GetOffererResponseModel> {
     return this.httpRequest.request({
@@ -1108,7 +1108,7 @@ export class DefaultService {
    * @returns GenerateOffererApiKeyResponse OK
    * @throws ApiError
    */
-  public generateApiKeyRoute(
+  public postOfferersOffererIdApiKeys(
     offererId: number,
   ): CancelablePromise<GenerateOffererApiKeyResponse> {
     return this.httpRequest.request({
@@ -1129,7 +1129,7 @@ export class DefaultService {
    * @returns GetOffererBankAccountsResponseModel OK
    * @throws ApiError
    */
-  public getOffererBankAccountsAndAttachedVenues(
+  public getOfferersOffererIdBankAccounts(
     offererId: number,
   ): CancelablePromise<GetOffererBankAccountsResponseModel> {
     return this.httpRequest.request({
@@ -1152,7 +1152,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public linkVenueToBankAccount(
+  public patchOfferersOffererIdBankAccountsBankAccountId(
     offererId: number,
     bankAccountId: number,
     requestBody?: LinkVenueToBankAccountBodyModel,
@@ -1178,7 +1178,7 @@ export class DefaultService {
    * @returns OffererStatsResponseModel OK
    * @throws ApiError
    */
-  public getOffererStatsDashboardUrl(
+  public getOfferersOffererIdDashboard(
     offererId: number,
   ): CancelablePromise<OffererStatsResponseModel> {
     return this.httpRequest.request({
@@ -1200,7 +1200,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public inviteMember(
+  public postOfferersOffererIdInvite(
     offererId: number,
     requestBody?: InviteMemberQueryModel,
   ): CancelablePromise<void> {
@@ -1224,7 +1224,7 @@ export class DefaultService {
    * @returns GetOffererMembersResponseModel OK
    * @throws ApiError
    */
-  public getOffererMembers(
+  public getOfferersOffererIdMembers(
     offererId: number,
   ): CancelablePromise<GetOffererMembersResponseModel> {
     return this.httpRequest.request({
@@ -1245,7 +1245,7 @@ export class DefaultService {
    * @returns GetOffererStatsResponseModel OK
    * @throws ApiError
    */
-  public getOffererStats(
+  public getOfferersOffererIdStats(
     offererId: number,
   ): CancelablePromise<GetOffererStatsResponseModel> {
     return this.httpRequest.request({
@@ -1266,7 +1266,7 @@ export class DefaultService {
    * @returns GetOffererV2StatsResponseModel OK
    * @throws ApiError
    */
-  public getOffererV2Stats(
+  public getOfferersOffererIdV2Stats(
     offererId: number,
   ): CancelablePromise<GetOffererV2StatsResponseModel> {
     return this.httpRequest.request({
@@ -1295,7 +1295,7 @@ export class DefaultService {
    * @returns ListOffersResponseModel OK
    * @throws ApiError
    */
-  public listOffers(
+  public getOffers(
     nameOrIsbn?: string | null,
     offererId?: number | null,
     status?: (OfferStatus | CollectiveOfferDisplayedStatus) | null,
@@ -1332,7 +1332,7 @@ export class DefaultService {
    * @returns GetIndividualOfferResponseModel Created
    * @throws ApiError
    */
-  public postOffer(
+  public postOffers(
     requestBody?: PostOfferBodyModel,
   ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
@@ -1372,7 +1372,7 @@ export class DefaultService {
    * @returns any Accepted
    * @throws ApiError
    */
-  public patchAllOffersActiveStatus(
+  public patchOffersAllActiveStatus(
     requestBody?: PatchAllOffersActiveStatusBodyModel,
   ): CancelablePromise<any> {
     return this.httpRequest.request({
@@ -1391,7 +1391,7 @@ export class DefaultService {
    * @returns CategoriesResponseModel OK
    * @throws ApiError
    */
-  public getCategories(): CancelablePromise<CategoriesResponseModel> {
+  public getOffersCategories(): CancelablePromise<CategoriesResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offers/categories',
@@ -1407,7 +1407,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public deleteDraftOffers(
+  public postOffersDeleteDraft(
     requestBody?: DeleteOfferRequestBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -1426,7 +1426,7 @@ export class DefaultService {
    * @returns GetMusicTypesResponse OK
    * @throws ApiError
    */
-  public getMusicTypes(): CancelablePromise<GetMusicTypesResponse> {
+  public getOffersMusicTypes(): CancelablePromise<GetMusicTypesResponse> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offers/music-types',
@@ -1442,7 +1442,7 @@ export class DefaultService {
    * @returns GetIndividualOfferResponseModel OK
    * @throws ApiError
    */
-  public patchPublishOffer(
+  public patchOffersPublish(
     requestBody?: PatchOfferPublishBodyModel,
   ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
@@ -1463,7 +1463,7 @@ export class DefaultService {
    * @returns CreateThumbnailResponseModel Created
    * @throws ApiError
    */
-  public createThumbnail(
+  public postOffersThumbnails(
     formData?: CreateThumbnailBodyModel,
   ): CancelablePromise<CreateThumbnailResponseModel> {
     return this.httpRequest.request({
@@ -1483,7 +1483,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public deleteThumbnail(
+  public deleteOffersThumbnailsOfferId(
     offerId: number,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -1504,7 +1504,7 @@ export class DefaultService {
    * @returns GetIndividualOfferResponseModel OK
    * @throws ApiError
    */
-  public getOffer(
+  public getOffersOfferId(
     offerId: number,
   ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
@@ -1526,7 +1526,7 @@ export class DefaultService {
    * @returns GetIndividualOfferResponseModel OK
    * @throws ApiError
    */
-  public patchOffer(
+  public patchOffersOfferId(
     offerId: number,
     requestBody?: PatchOfferBodyModel,
   ): CancelablePromise<GetIndividualOfferResponseModel> {
@@ -1551,7 +1551,7 @@ export class DefaultService {
    * @returns GetIndividualOfferResponseModel OK
    * @throws ApiError
    */
-  public postPriceCategories(
+  public postOffersOfferIdPriceCategories(
     offerId: number,
     requestBody?: PriceCategoryBody,
   ): CancelablePromise<GetIndividualOfferResponseModel> {
@@ -1576,7 +1576,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public deletePriceCategory(
+  public deleteOffersOfferIdPriceCategoriesPriceCategoryId(
     offerId: number,
     priceCategoryId: number,
   ): CancelablePromise<void> {
@@ -1599,7 +1599,7 @@ export class DefaultService {
    * @returns StockStatsResponseModel OK
    * @throws ApiError
    */
-  public getStocksStats(
+  public getOffersOfferIdStocksStats(
     offerId: number,
   ): CancelablePromise<StockStatsResponseModel> {
     return this.httpRequest.request({
@@ -1627,7 +1627,7 @@ export class DefaultService {
    * @returns GetStocksResponseModel OK
    * @throws ApiError
    */
-  public getStocks(
+  public getOffersOfferIdStocks(
     offerId: number,
     date?: string | null,
     time?: string | null,
@@ -1665,7 +1665,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public deleteAllFilteredStocks(
+  public postOffersOfferIdStocksAllDelete(
     offerId: number,
     requestBody?: DeleteFilteredStockListBody,
   ): CancelablePromise<void> {
@@ -1690,7 +1690,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public deleteStocks(
+  public postOffersOfferIdStocksDelete(
     offerId: number,
     requestBody?: DeleteStockListBody,
   ): CancelablePromise<void> {
@@ -1741,7 +1741,7 @@ export class DefaultService {
    * @returns SirenInfo OK
    * @throws ApiError
    */
-  public getSirenInfo(
+  public getSireneSirenSiren(
     siren: string,
   ): CancelablePromise<SirenInfo> {
     return this.httpRequest.request({
@@ -1762,7 +1762,7 @@ export class DefaultService {
    * @returns SiretInfo OK
    * @throws ApiError
    */
-  public getSiretInfo(
+  public getSireneSiretSiret(
     siret: string,
   ): CancelablePromise<SiretInfo> {
     return this.httpRequest.request({
@@ -1783,7 +1783,7 @@ export class DefaultService {
    * @returns StocksResponseModel Created
    * @throws ApiError
    */
-  public upsertStocks(
+  public postStocksBulk(
     requestBody?: StocksUpsertBodyModel,
   ): CancelablePromise<StocksResponseModel> {
     return this.httpRequest.request({
@@ -1803,7 +1803,7 @@ export class DefaultService {
    * @returns StockIdResponseModel OK
    * @throws ApiError
    */
-  public deleteStock(
+  public deleteStocksStockId(
     stockId: number,
   ): CancelablePromise<StockIdResponseModel> {
     return this.httpRequest.request({
@@ -1824,7 +1824,7 @@ export class DefaultService {
    * @returns any OK
    * @throws ApiError
    */
-  public connectAs(
+  public getUsersConnectAsToken(
     token: string,
   ): CancelablePromise<any> {
     return this.httpRequest.request({
@@ -1845,7 +1845,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public cookiesConsent(
+  public postUsersCookies(
     requestBody?: CookieConsentRequest,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -1865,7 +1865,7 @@ export class DefaultService {
    * @returns SharedCurrentUserResponseModel OK
    * @throws ApiError
    */
-  public getProfile(): CancelablePromise<SharedCurrentUserResponseModel> {
+  public getUsersCurrent(): CancelablePromise<SharedCurrentUserResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/users/current',
@@ -1881,7 +1881,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public postUserEmail(
+  public postUsersEmail(
     requestBody?: UserResetEmailBodyModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -1900,7 +1900,7 @@ export class DefaultService {
    * @returns UserEmailValidationResponseModel OK
    * @throws ApiError
    */
-  public getUserEmailPendingValidation(): CancelablePromise<UserEmailValidationResponseModel> {
+  public getUsersEmailPendingValidation(): CancelablePromise<UserEmailValidationResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/users/email_pending_validation',
@@ -1916,7 +1916,7 @@ export class DefaultService {
    * @returns UserIdentityResponseModel OK
    * @throws ApiError
    */
-  public patchUserIdentity(
+  public patchUsersIdentity(
     requestBody?: UserIdentityBodyModel,
   ): CancelablePromise<UserIdentityResponseModel> {
     return this.httpRequest.request({
@@ -1936,7 +1936,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public postNewPassword(
+  public postUsersNewPassword(
     requestBody?: NewPasswordBodyModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -1956,7 +1956,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public postNewProNav(): CancelablePromise<void> {
+  public postUsersNewProNav(): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/users/new-pro-nav',
@@ -1973,7 +1973,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public postChangePassword(
+  public postUsersPassword(
     requestBody?: ChangePasswordBodyModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -1994,7 +1994,7 @@ export class DefaultService {
    * @returns UserPhoneResponseModel OK
    * @throws ApiError
    */
-  public patchUserPhone(
+  public patchUsersPhone(
     requestBody?: UserPhoneBodyModel,
   ): CancelablePromise<UserPhoneResponseModel> {
     return this.httpRequest.request({
@@ -2014,7 +2014,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public postProFlags(
+  public postUsersProFlags(
     requestBody?: ProFlagsQueryModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -2035,7 +2035,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public resetPassword(
+  public postUsersResetPassword(
     requestBody?: ResetPasswordBodyModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -2054,7 +2054,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public patchProUserRgsSeen(): CancelablePromise<void> {
+  public patchUsersRgsSeen(): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/users/rgs-seen',
@@ -2070,7 +2070,7 @@ export class DefaultService {
    * @returns SharedLoginUserResponseModel OK
    * @throws ApiError
    */
-  public signin(
+  public postUsersSignin(
     requestBody?: LoginUserBodyModel,
   ): CancelablePromise<SharedLoginUserResponseModel> {
     return this.httpRequest.request({
@@ -2089,7 +2089,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public signout(): CancelablePromise<void> {
+  public getUsersSignout(): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/users/signout',
@@ -2105,7 +2105,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public checkActivationTokenExists(
+  public getUsersTokenToken(
     token: string,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -2126,7 +2126,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public patchUserTutoSeen(): CancelablePromise<void> {
+  public patchUsersTutoSeen(): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/users/tuto-seen',
@@ -2142,7 +2142,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public patchValidateEmail(
+  public patchUsersValidateEmail(
     requestBody?: ChangeProEmailBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -2162,7 +2162,7 @@ export class DefaultService {
    * @returns HasInvoiceResponseModel OK
    * @throws ApiError
    */
-  public hasInvoice(
+  public getV2FinanceHasInvoice(
     offererId: number,
   ): CancelablePromise<HasInvoiceResponseModel> {
     return this.httpRequest.request({
@@ -2186,7 +2186,7 @@ export class DefaultService {
    * @returns InvoiceListV2ResponseModel OK
    * @throws ApiError
    */
-  public getInvoicesV2(
+  public getV2FinanceInvoices(
     periodBeginningDate?: string | null,
     periodEndingDate?: string | null,
     bankAccountId?: number | null,
@@ -2213,7 +2213,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public signupProV2(
+  public postV2UsersSignupPro(
     requestBody?: ProUserCreationBodyV2Model,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -2233,7 +2233,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public validateUser(
+  public patchValidateUserToken(
     token: string,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -2253,7 +2253,7 @@ export class DefaultService {
    * @returns VenueLabelListResponseModel OK
    * @throws ApiError
    */
-  public fetchVenueLabels(): CancelablePromise<VenueLabelListResponseModel> {
+  public getVenueLabels(): CancelablePromise<VenueLabelListResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/venue-labels',
@@ -2284,7 +2284,7 @@ export class DefaultService {
    * @returns ListVenueProviderResponse OK
    * @throws ApiError
    */
-  public listVenueProviders(
+  public getVenueProviders(
     venueId: number,
   ): CancelablePromise<ListVenueProviderResponse> {
     return this.httpRequest.request({
@@ -2305,7 +2305,7 @@ export class DefaultService {
    * @returns VenueProviderResponse Created
    * @throws ApiError
    */
-  public createVenueProvider(
+  public postVenueProviders(
     requestBody?: PostVenueProviderBody,
   ): CancelablePromise<VenueProviderResponse> {
     return this.httpRequest.request({
@@ -2325,7 +2325,7 @@ export class DefaultService {
    * @returns VenueProviderResponse OK
    * @throws ApiError
    */
-  public updateVenueProvider(
+  public putVenueProviders(
     requestBody?: PostVenueProviderBody,
   ): CancelablePromise<VenueProviderResponse> {
     return this.httpRequest.request({
@@ -2345,7 +2345,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public deleteVenueProvider(
+  public deleteVenueProvidersVenueProviderId(
     venueProviderId: number,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -2393,7 +2393,7 @@ export class DefaultService {
    * @returns VenueResponseModel Created
    * @throws ApiError
    */
-  public postCreateVenue(
+  public postVenues(
     requestBody?: PostVenueBodyModel,
   ): CancelablePromise<VenueResponseModel> {
     return this.httpRequest.request({
@@ -2428,7 +2428,7 @@ export class DefaultService {
    * @returns GetVenuesOfOffererFromSiretResponseModel OK
    * @throws ApiError
    */
-  public getVenuesOfOffererFromSiret(
+  public getVenuesSiretSiret(
     siret: string,
   ): CancelablePromise<GetVenuesOfOffererFromSiretResponseModel> {
     return this.httpRequest.request({
@@ -2449,7 +2449,7 @@ export class DefaultService {
    * @returns GetVenueResponseModel OK
    * @throws ApiError
    */
-  public getVenue(
+  public getVenuesVenueId(
     venueId: number,
   ): CancelablePromise<GetVenueResponseModel> {
     return this.httpRequest.request({
@@ -2471,7 +2471,7 @@ export class DefaultService {
    * @returns GetVenueResponseModel OK
    * @throws ApiError
    */
-  public editVenue(
+  public patchVenuesVenueId(
     venueId: number,
     requestBody?: EditVenueBodyModel,
   ): CancelablePromise<GetVenueResponseModel> {
@@ -2495,7 +2495,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public deleteVenueBanner(
+  public deleteVenuesVenueIdBanner(
     venueId: number,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -2517,7 +2517,7 @@ export class DefaultService {
    * @returns GetVenueResponseModel OK
    * @throws ApiError
    */
-  public editVenueCollectiveData(
+  public patchVenuesVenueIdCollectiveData(
     venueId: number,
     requestBody?: EditVenueCollectiveDataBodyModel,
   ): CancelablePromise<GetVenueResponseModel> {
@@ -2541,7 +2541,7 @@ export class DefaultService {
    * @returns OffererStatsResponseModel OK
    * @throws ApiError
    */
-  public getVenueStatsDashboardUrl(
+  public getVenuesVenueIdDashboard(
     venueId: number,
   ): CancelablePromise<OffererStatsResponseModel> {
     return this.httpRequest.request({
@@ -2563,7 +2563,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public linkVenueToPricingPoint(
+  public postVenuesVenueIdPricingPoint(
     venueId: number,
     requestBody?: LinkVenueToPricingPointBodyModel,
   ): CancelablePromise<void> {
@@ -2587,7 +2587,7 @@ export class DefaultService {
    * @returns VenueStatsResponseModel OK
    * @throws ApiError
    */
-  public getVenueStats(
+  public getVenuesVenueIdStats(
     venueId: number,
   ): CancelablePromise<VenueStatsResponseModel> {
     return this.httpRequest.request({

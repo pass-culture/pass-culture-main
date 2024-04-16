@@ -13,7 +13,7 @@ export class DPrCiEApiContremarqueService {
    * @returns void
    * @throws ApiError
    */
-  public patchCancelBookingByToken(
+  public patchV2BookingsCancelTokenToken(
     token: string,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -37,7 +37,7 @@ export class DPrCiEApiContremarqueService {
    * @returns void
    * @throws ApiError
    */
-  public patchBookingKeepByToken(
+  public patchV2BookingsKeepTokenToken(
     token: string,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -61,7 +61,7 @@ export class DPrCiEApiContremarqueService {
    * @returns GetBookingResponse La contremarque existe et n’est pas validée
    * @throws ApiError
    */
-  public getBookingByTokenV2(
+  public getV2BookingsTokenToken(
     token: string,
   ): CancelablePromise<GetBookingResponse> {
     return this.httpRequest.request({
@@ -86,7 +86,7 @@ export class DPrCiEApiContremarqueService {
    * @returns void
    * @throws ApiError
    */
-  public patchBookingUseByToken(
+  public patchV2BookingsUseTokenToken(
     token: string,
   ): CancelablePromise<void> {
     return this.httpRequest.request({

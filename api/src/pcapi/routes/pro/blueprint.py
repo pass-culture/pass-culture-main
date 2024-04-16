@@ -34,7 +34,6 @@ pro_private_schema = ExtendedSpecTree(
     before=before_handler,
     PATH="pro",
     security_schemes=SECURITY_SCHEMES,
-    humanize_operation_id=True,
     version=1,
 )
 pro_private_schema.register(pro_private_api)

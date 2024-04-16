@@ -33,7 +33,6 @@ backoffice_web_schema = ExtendedSpecTree(
     before=before_handler,
     PATH="bo",
     security_schemes=SECURITY_SCHEMES,
-    humanize_operation_id=True,
     version=1,
 )
 backoffice_web_schema.register(backoffice_web)

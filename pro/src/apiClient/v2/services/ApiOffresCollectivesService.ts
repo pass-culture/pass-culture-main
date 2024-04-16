@@ -25,7 +25,7 @@ export class ApiOffresCollectivesService {
    * @returns void
    * @throws ApiError
    */
-  public cancelCollectiveBooking(
+  public patchV2CollectiveBookingsBookingId(
     bookingId: number,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
@@ -45,7 +45,7 @@ export class ApiOffresCollectivesService {
    * @returns CollectiveOffersListCategoriesResponseModel La liste des catégories éligibles existantes.
    * @throws ApiError
    */
-  public listCategories(): CancelablePromise<CollectiveOffersListCategoriesResponseModel> {
+  public getV2CollectiveCategories(): CancelablePromise<CollectiveOffersListCategoriesResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/v2/collective/categories',
@@ -60,7 +60,7 @@ export class ApiOffresCollectivesService {
    * @returns CollectiveOffersListDomainsResponseModel La liste des domaines d'éducation.
    * @throws ApiError
    */
-  public listEducationalDomains(): CancelablePromise<CollectiveOffersListDomainsResponseModel> {
+  public getV2CollectiveEducationalDomains(): CancelablePromise<CollectiveOffersListDomainsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/v2/collective/educational-domains',
@@ -82,7 +82,7 @@ export class ApiOffresCollectivesService {
    * @returns CollectiveOffersListEducationalInstitutionResponseModel La liste des établissement scolaires éligibles.
    * @throws ApiError
    */
-  public listEducationalInstitutions(
+  public getV2CollectiveEducationalInstitutions(
     id?: number | null,
     name?: string | null,
     institutionType?: string | null,
@@ -115,7 +115,7 @@ export class ApiOffresCollectivesService {
    * @returns ListNationalProgramsResponseModel Il n'y a pas de dispositifs nationaux
    * @throws ApiError
    */
-  public getNationalPrograms(): CancelablePromise<ListNationalProgramsResponseModel> {
+  public getV2CollectiveNationalPrograms(): CancelablePromise<ListNationalProgramsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/v2/collective/national-programs/',
@@ -133,7 +133,7 @@ export class ApiOffresCollectivesService {
    * @returns GetOfferersVenuesResponse La liste des lieux, groupés par structures
    * @throws ApiError
    */
-  public getOffererVenues(
+  public getV2CollectiveOffererVenues(
     siren?: string | null,
   ): CancelablePromise<GetOfferersVenuesResponse> {
     return this.httpRequest.request({
@@ -157,7 +157,7 @@ export class ApiOffresCollectivesService {
    * @returns CollectiveOffersListResponseModel L'offre collective existe
    * @throws ApiError
    */
-  public getCollectiveOffersPublic(
+  public getV2CollectiveOffers(
     status?: OfferStatus | null,
     venueId?: number | null,
     periodBeginningDate?: string | null,
@@ -186,7 +186,7 @@ export class ApiOffresCollectivesService {
    * @returns GetPublicCollectiveOfferResponseModel L'offre collective à été créée avec succes
    * @throws ApiError
    */
-  public postCollectiveOfferPublic(
+  public postV2CollectiveOffers(
     requestBody?: PostCollectiveOfferBodyModel,
   ): CancelablePromise<GetPublicCollectiveOfferResponseModel> {
     return this.httpRequest.request({
@@ -208,7 +208,7 @@ export class ApiOffresCollectivesService {
    * @returns void
    * @throws ApiError
    */
-  public getOffersFormats(): CancelablePromise<void> {
+  public getV2CollectiveOffersFormats(): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/v2/collective/offers/formats',
@@ -226,7 +226,7 @@ export class ApiOffresCollectivesService {
    * @returns GetPublicCollectiveOfferResponseModel L'offre collective existe
    * @throws ApiError
    */
-  public getCollectiveOfferPublic(
+  public getV2CollectiveOffersOfferId(
     offerId: number,
   ): CancelablePromise<GetPublicCollectiveOfferResponseModel> {
     return this.httpRequest.request({
@@ -250,7 +250,7 @@ export class ApiOffresCollectivesService {
    * @returns GetPublicCollectiveOfferResponseModel L'offre collective à été édité avec succes
    * @throws ApiError
    */
-  public patchCollectiveOfferPublic(
+  public patchV2CollectiveOffersOfferId(
     offerId: number,
     requestBody?: PatchCollectiveOfferBodyModel,
   ): CancelablePromise<GetPublicCollectiveOfferResponseModel> {
@@ -276,7 +276,7 @@ export class ApiOffresCollectivesService {
    * @returns CollectiveOffersListStudentLevelsResponseModel La liste des domaines d'éducation.
    * @throws ApiError
    */
-  public listStudentsLevels(): CancelablePromise<CollectiveOffersListStudentLevelsResponseModel> {
+  public getV2CollectiveStudentLevels(): CancelablePromise<CollectiveOffersListStudentLevelsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/v2/collective/student-levels',
@@ -291,7 +291,7 @@ export class ApiOffresCollectivesService {
    * @returns CollectiveOffersListSubCategoriesResponseModel La liste des sous-catégories éligibles existantes.
    * @throws ApiError
    */
-  public listSubcategories(): CancelablePromise<CollectiveOffersListSubCategoriesResponseModel> {
+  public getV2CollectiveSubcategories(): CancelablePromise<CollectiveOffersListSubCategoriesResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/v2/collective/subcategories',
@@ -307,7 +307,7 @@ export class ApiOffresCollectivesService {
    * @returns CollectiveOffersListVenuesResponseModel La liste des lieux ou vous pouvez créer une offre.
    * @throws ApiError
    */
-  public listVenues(): CancelablePromise<CollectiveOffersListVenuesResponseModel> {
+  public getV2CollectiveVenues(): CancelablePromise<CollectiveOffersListVenuesResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/v2/collective/venues',

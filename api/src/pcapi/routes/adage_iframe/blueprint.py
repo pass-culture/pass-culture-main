@@ -27,6 +27,5 @@ api = ExtendedSpecTree(
     before=before_handler,
     PATH="/",
     security_schemes=SECURITY_SCHEMES,
-    humanize_operation_id=True,
 )
 api.register(adage_iframe)
