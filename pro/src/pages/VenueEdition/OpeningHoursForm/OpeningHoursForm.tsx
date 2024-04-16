@@ -23,6 +23,7 @@ export function OpeningHoursForm() {
   const {
     values: { days },
     setFieldValue,
+    setFieldTouched,
   } = useFormikContext<VenueEditionFormValues>()
 
   return (
@@ -47,6 +48,10 @@ export function OpeningHoursForm() {
                 await setFieldValue(`${day}.morningEndingHour`, '')
                 await setFieldValue(`${day}.afternoonStartingHour`, '')
                 await setFieldValue(`${day}.afternoonEndingHour`, '')
+                await setFieldTouched(`${day}.morningStartingHour`, false)
+                await setFieldTouched(`${day}.morningEndingHour`, false)
+                await setFieldTouched(`${day}.afternoonStartingHour`, false)
+                await setFieldTouched(`${day}.afternoonEndingHour`, false)
               }}
             />
           )
