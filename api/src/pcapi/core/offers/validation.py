@@ -634,7 +634,7 @@ class MissingDomains(OfferValidationError):
 def validate_national_program(
     nationalProgramId: int | None, domains: typing.Sequence[educational_models.EducationalDomain] | None
 ) -> None:
-    if not domains and not nationalProgramId:
+    if not nationalProgramId:
         return
 
     if not domains:
