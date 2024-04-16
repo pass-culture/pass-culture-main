@@ -67,7 +67,7 @@ class TiteliveArticle(BaseModel):
     else:
         gencod: pydantic_v1.constr(min_length=13, max_length=13)
     gtl: TiteliveGtl | None
-    image: str
+    has_image: bool = pydantic_v1.Field(alias="image")
     imagesUrl: TiteliveImage
     # TODO: (lixxday, 2024-04-17): titlelive sends an int for dispo, casting to str works ; but we probably want to change this
     dispo: str
@@ -85,6 +85,20 @@ class TiteliveArticle(BaseModel):
         if isinstance(gtl, list):
             return None
         return gtl
+
+    @pydantic_v1.validator("has_image", pre=True)
+    def validate_image(cls, image: str | int | None) -> bool:
+        # The API currently sends 0 (int) if no image is available, and "1" (str) if an image is available.
+        # Because it has been famously flaky in the past, we are being defensive here and consider:
+        # - all forms of 0 and None as False.
+        # - all forms of "1" as True.
+        if image is None:
+            return False
+        if int(image) == 0:
+            return False
+        if int(image) == 1:
+            return True
+        raise ValueError(f"unhandled image value {image}")
 
     @pydantic_v1.validator("*", pre=True)
     def parse_empty_string_as_none(cls, value: str | None) -> str | None:
