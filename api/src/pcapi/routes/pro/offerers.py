@@ -5,6 +5,7 @@ from flask_login import login_required
 import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
+from pcapi.connectors import api_adresse
 from pcapi.connectors.api_recaptcha import ReCaptchaException
 from pcapi.connectors.api_recaptcha import check_web_recaptcha_token
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
@@ -323,5 +324,28 @@ def patch_offerer_address(
                 raise ResourceNotFoundError()
             try:
                 api.update_offerer_address_label(offerer_address_id, body.label)
-            except offerers_exceptions.OffererAddressAlreadyExists:
+            except offerers_exceptions.OffererAddressLabelAlreadyUsed:
                 raise ApiErrors({"label": "Une adresse identique utilise déjà ce libellé"}, status_code=400)
+
+
+@private_api.route("/offerers/<int:offerer_id>/addresses", methods=["POST"])
+@login_required
+@spectree_serialize(
+    on_success_status=201,
+    api=blueprint.pro_private_schema,
+    response_model=offerers_serialize.OffererAddressResponseModel,
+)
+def create_offerer_address(
+    offerer_id: int, body: offerers_serialize.OffererAddressRequestModel
+) -> offerers_serialize.OffererAddressResponseModel:
+    check_user_has_access_to_offerer(current_user, offerer_id)
+    try:
+        address_info = api_adresse.get_address(address=body.street, citycode=body.inseeCode)
+    except api_adresse.NoResultException:
+        raise ApiErrors({"address": "Cette adresse n'existe pas"})
+
+    with transaction():
+        with db.session.no_autoflush:
+            address = api.get_or_create_address(address_info)
+            offerer_address = api.get_or_create_offerer_address(offerer_id, body.label, address.id)
+            return offerers_serialize.OffererAddressResponseModel.from_orm(offerer_address)
