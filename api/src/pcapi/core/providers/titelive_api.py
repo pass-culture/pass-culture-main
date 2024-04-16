@@ -16,6 +16,7 @@ from pcapi.connectors.serialization.titelive_serializers import TiteliveProductS
 from pcapi.connectors.serialization.titelive_serializers import TiteliveSearchResultType
 from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.api as offers_api
+from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
 import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
@@ -205,6 +206,17 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
         self, titelive_search_result: TiteliveSearchResultType, products_by_ean: dict[str, offers_models.Product]
     ) -> dict[str, offers_models.Product]:
         raise NotImplementedError()
+
+    def activate_newly_eligible_product_and_offers(self, product: offers_models.Product) -> None:
+        is_product_newly_eligible = not product.isGcuCompatible
+        ean = product.extraData.get("ean") if product.extraData else None
+        if ean is None:
+            return
+        if is_product_newly_eligible:
+            try:
+                offers_api.approves_provider_product_and_rejected_offers(ean)
+            except NotUpdateProductOrOffers as exception:
+                logger.error("Product with ean cannot be approved", extra={"ean": ean, "exc": str(exception)})
 
     def update_product_thumbnails(
         self,

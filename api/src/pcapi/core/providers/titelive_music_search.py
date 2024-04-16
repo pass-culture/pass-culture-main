@@ -95,6 +95,7 @@ class TiteliveMusicSearch(TiteliveSearch[TiteliveMusicOeuvre]):
         product.name = common_article_fields["titre"]
         product.subcategoryId = parse_titelive_music_codesupport(article.codesupport).id
 
+        self.activate_newly_eligible_product_and_offers(product)
         return product
 
 
