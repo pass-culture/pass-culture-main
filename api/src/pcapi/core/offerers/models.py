@@ -1272,5 +1272,5 @@ class OffererAddress(PcObject, Base, Model):
     label: str = sa.Column(sa.Text(), nullable=False)
     addressId = sa.Column(sa.BigInteger, sa.ForeignKey("address.id"), index=True)
     address: sa.orm.Mapped[geography_models.Address] = sa.orm.relationship("Address", foreign_keys=[addressId])
-    offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), index=True)
+    offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True)
     offerer: sa.orm.Mapped["Offerer"] = sa.orm.relationship("Offerer", foreign_keys=[offererId])
