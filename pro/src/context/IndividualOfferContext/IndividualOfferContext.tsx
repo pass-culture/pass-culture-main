@@ -10,6 +10,10 @@ import {
   MusicTypeResponse,
   SubcategoryResponseModel,
 } from 'apiClient/v1'
+import {
+  GET_CATEGORIES_QUERY_KEY,
+  GET_MUSIC_TYPES_QUERY_KEY,
+} from 'config/swrQueryKeys'
 import { IndividualOfferWizardLoaderData } from 'pages/IndividualOfferWizard/IndividualOfferWizard'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -41,9 +45,6 @@ export const useIndividualOfferContext = () => {
 interface IndividualOfferContextProviderProps {
   children: React.ReactNode
 }
-
-const GET_CATEGORIES_QUERY_KEY = 'getCategories'
-const GET_MUSIC_TYPES_QUERY_KEY = 'getMusicTypes'
 
 export function IndividualOfferContextProvider({
   children,

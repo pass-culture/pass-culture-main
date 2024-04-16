@@ -8,6 +8,7 @@ import { SaveNewOnboardingDataQueryModel, Target } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
+import { GET_VENUE_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
 import {
   DEFAULT_ACTIVITY_VALUES,
   useSignupJourneyContext,
@@ -18,7 +19,6 @@ import useCurrentUser from 'hooks/useCurrentUser'
 import useInitReCaptcha from 'hooks/useInitReCaptcha'
 import useNotification from 'hooks/useNotification'
 import fullEditIcon from 'icons/full-edit.svg'
-import { GET_VENUE_TYPES_QUERY_KEY } from 'pages/VenueSettings/VenueSettings'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { updateUser } from 'store/user/reducer'
 import { Banner, ButtonLink } from 'ui-kit'

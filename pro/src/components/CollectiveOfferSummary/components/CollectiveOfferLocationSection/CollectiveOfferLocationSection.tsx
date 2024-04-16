@@ -10,12 +10,11 @@ import {
   SummaryDescriptionList,
 } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
+import { GET_VENUE_QUERY_KEY } from 'config/swrQueryKeys'
 import { getInterventionAreaLabels } from 'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea/OfferInterventionArea'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import { formatOfferEventAddress } from '../utils/formatOfferEventAddress'
-
-const GET_VENUE_QUERY_KEY = 'getVenue'
 
 interface CollectiveOfferLocationSectionProps {
   offer:

@@ -7,6 +7,7 @@ import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { GetVenueResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { GET_VENUE_QUERY_KEY } from 'config/swrQueryKeys'
 import { Events } from 'core/FirebaseEvents/constants'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -25,7 +26,6 @@ import { serializeEditVenueBodyModel } from './serializers'
 import { setInitialFormValues } from './setInitialFormValues'
 import { VenueEditionFormValues } from './types'
 import { getValidationSchema } from './validationSchema'
-import { GET_VENUE_QUERY_KEY } from './VenueEdition'
 
 interface VenueFormProps {
   venue: GetVenueResponseModel

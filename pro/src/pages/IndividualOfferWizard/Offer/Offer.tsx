@@ -4,6 +4,10 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { BannerCreateOfferAdmin } from 'components/Banner'
+import {
+  GET_VENUES_QUERY_KEY,
+  GET_OFFERER_NAMES_QUERY_KEY,
+} from 'config/swrQueryKeys'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { useOfferWizardMode } from 'hooks'
@@ -13,9 +17,6 @@ import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getT
 import InformationsScreen from 'screens/IndividualOffer/InformationsScreen/InformationsScreen'
 import { selectCurrentOffererId } from 'store/user/selectors'
 import Spinner from 'ui-kit/Spinner/Spinner'
-
-const GET_VENUES_QUERY_KEY = 'getVenues'
-const GET_OFFERER_NAMES_QUERY_KEY = 'getOffererNames'
 
 export const Offer = (): JSX.Element | null => {
   const mode = useOfferWizardMode()

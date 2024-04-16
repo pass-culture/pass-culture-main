@@ -4,6 +4,12 @@ import useSWR from 'swr'
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
+import {
+  GET_OFFERER_QUERY_KEY,
+  GET_VENUE_LABELS_QUERY_KEY,
+  GET_VENUE_QUERY_KEY,
+  GET_VENUE_TYPES_QUERY_KEY,
+} from 'config/swrQueryKeys'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useAdapter } from 'hooks'
 import {
@@ -18,11 +24,6 @@ import useGetVenueProviders from '../../core/Venue/adapters/getVenueProviderAdap
 import { offerHasBookingQuantity } from './offerHasBookingQuantity'
 import { setInitialFormValues } from './setInitialFormValues'
 import { VenueSettingsFormScreen } from './VenueSettingsScreen'
-
-const GET_VENUE_QUERY_KEY = 'getVenue'
-const GET_VENUE_LABELS_QUERY_KEY = 'getVenueLabels'
-export const GET_OFFERER_QUERY_KEY = 'getOfferer'
-export const GET_VENUE_TYPES_QUERY_KEY = 'getVenueTypes'
 
 const VenueSettings = (): JSX.Element | null => {
   const { offererId, venueId } = useParams<{

@@ -19,6 +19,7 @@ import BankAccountHasPendingCorrectionCallout from 'components/Callout/BankAccou
 import LinkVenueCallout from 'components/Callout/LinkVenueCallout'
 import { Newsletter } from 'components/Newsletter'
 import TutorialDialog from 'components/TutorialDialog'
+import { GET_OFFERER_QUERY_KEY } from 'config/swrQueryKeys'
 import { hasStatusCode } from 'core/OfferEducational'
 import { SAVED_OFFERER_ID_KEY } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
@@ -65,8 +66,6 @@ const getSavedOffererId = (offererOptions: SelectOption[]): string | null => {
 
   return savedOffererId
 }
-
-export const GET_HOMEPAGE_OFFERER_QUERY_KEY = 'getOfferer'
 
 export const Homepage = (): JSX.Element => {
   const HAS_CLOSED_BETA_TEST_BANNER = 'HAS_CLOSED_BETA_TEST_BANNER'
@@ -146,7 +145,7 @@ export const Homepage = (): JSX.Element => {
     ''
 
   const selectedOffererQuery = useSWR(
-    [GET_HOMEPAGE_OFFERER_QUERY_KEY, selectedOffererId],
+    [GET_OFFERER_QUERY_KEY, selectedOffererId],
     async ([, offererIdParam]) => {
       try {
         const offerer = await api.getOfferer(Number(offererIdParam))
