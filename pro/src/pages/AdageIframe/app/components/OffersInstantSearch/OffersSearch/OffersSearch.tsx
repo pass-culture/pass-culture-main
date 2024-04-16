@@ -4,7 +4,7 @@ import { useInstantSearch } from 'react-instantsearch'
 import { useDispatch, useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
 
-import { AdageFrontRoles, VenueResponse } from 'apiClient/adage'
+import { AdageFrontRoles } from 'apiClient/adage'
 import { api, apiAdage } from 'apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -12,16 +12,16 @@ import useIsElementVisible from 'hooks/useIsElementVisible'
 import useNotification from 'hooks/useNotification'
 import { MARSEILLE_EN_GRAND } from 'pages/AdageIframe/app/constants'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
-import { Facets, Option } from 'pages/AdageIframe/app/types'
+import { Option } from 'pages/AdageIframe/app/types'
 import { setAdageFilter } from 'store/adageFilter/reducer'
 import { adageQuerySelector } from 'store/adageFilter/selectors'
 
-import { DEFAULT_GEO_RADIUS, MAIN_INDEX_ID } from '../OffersInstantSearch'
 import {
-  ADAGE_FILTERS_DEFAULT_VALUES,
-  adageFiltersToFacetFilters,
-  serializeFiltersForData,
-} from '../utils'
+  DEFAULT_GEO_RADIUS,
+  MAIN_INDEX_ID,
+  SearchFormValues,
+} from '../OffersInstantSearch'
+import { ADAGE_FILTERS_DEFAULT_VALUES, serializeFiltersForData } from '../utils'
 
 import { Autocomplete } from './Autocomplete/Autocomplete'
 import FiltersTags from './FiltersTags/FiltersTags'
@@ -38,24 +38,13 @@ export enum LocalisationFilterStates {
 }
 
 export interface SearchProps {
-  setFacetFilters: Dispatch<SetStateAction<Facets | null>>
+  setFilters: Dispatch<SetStateAction<SearchFormValues>>
   initialFilters: Partial<SearchFormValues>
   setGeoRadius: (geoRadius: number) => void
 }
 
-export interface SearchFormValues {
-  domains: number[]
-  students: string[]
-  departments: string[]
-  academies: string[]
-  eventAddressType: string
-  geolocRadius: number
-  formats: string[]
-  venue: VenueResponse | null
-}
-
 export const OffersSearch = ({
-  setFacetFilters,
+  setFilters,
   setGeoRadius,
   initialFilters,
 }: SearchProps): JSX.Element => {
@@ -84,10 +73,7 @@ export const OffersSearch = ({
   )
 
   const formik = useFormik<SearchFormValues>({
-    initialValues: {
-      ...ADAGE_FILTERS_DEFAULT_VALUES,
-      ...initialFilters,
-    },
+    initialValues: { ...ADAGE_FILTERS_DEFAULT_VALUES, ...initialFilters },
     enableReinitialize: true,
     onSubmit: handleSubmit,
   })
@@ -111,11 +97,7 @@ export const OffersSearch = ({
   function handleSubmit() {
     resetUrlSearchFilterParams()
     dispatch(setAdageFilter(formik.values))
-    const updatedFilters = adageFiltersToFacetFilters({
-      ...formik.values,
-      uai: adageUser.uai ? ['all', adageUser.uai] : ['all'],
-    })
-    setFacetFilters(updatedFilters.queryFilters)
+    setFilters(formik.values)
 
     const adageUserHasValidGeoloc =
       (adageUser.lat || adageUser.lat === 0) &&

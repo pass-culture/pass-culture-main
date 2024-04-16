@@ -2,8 +2,8 @@ import { VenueResponse } from 'apiClient/adage'
 import { OfferAddressType } from 'apiClient/v1'
 import { Facets, Option } from 'pages/AdageIframe/app/types'
 
+import { SearchFormValues } from './OffersInstantSearch'
 import { studentsForData } from './OffersSearch/OfferFilters/studentsOptions'
-import { SearchFormValues } from './OffersSearch/OffersSearch'
 
 export const ADAGE_FILTERS_DEFAULT_VALUES: SearchFormValues = {
   domains: [],

@@ -20,7 +20,6 @@ import { isNumber } from 'utils/types'
 import { MARSEILLE_EN_GRAND } from '../../constants'
 import useAdageUser from '../../hooks/useAdageUser'
 import { AnalyticsContextProvider } from '../../providers/AnalyticsContextProvider'
-import { Facets } from '../../types'
 
 import { OffersSearch } from './OffersSearch/OffersSearch'
 import {
@@ -51,6 +50,17 @@ const DEFAULT_MARSEILLE_STUDENTS = [
   StudentLevels._COLES_MARSEILLE_CM1_CM2,
 ]
 
+export interface SearchFormValues {
+  domains: number[]
+  students: string[]
+  departments: string[]
+  academies: string[]
+  eventAddressType: string
+  geolocRadius: number
+  formats: string[]
+  venue: VenueResponse | null
+}
+
 export const OffersInstantSearch = (): JSX.Element | null => {
   const { adageUser } = useAdageUser()
 
@@ -73,8 +83,6 @@ export const OffersInstantSearch = (): JSX.Element | null => {
   const filterOnMarseilleStudents =
     isMarseilleEnabled && isUserInMarseilleProgram && programParam
 
-  const [facetFilters, setFacetFilters] = useState<Facets | null>(null)
-
   const [geoRadius, setGeoRadius] = useState<number>(
     adageFilterFromSelector.geolocRadius ===
       ADAGE_FILTERS_DEFAULT_VALUES.geolocRadius
@@ -82,39 +90,33 @@ export const OffersInstantSearch = (): JSX.Element | null => {
       : adageFilterFromSelector.geolocRadius * 1000
   )
 
-  const [venueFilter, setVenueFilter] = useState<VenueResponse | null>(null)
-  const [loadingVenue, setLoadingVenue] = useState<boolean>(false)
+  const [isLoadingVenue, setIsLoadingVenue] = useState(Boolean(venueParam))
 
-  const hasQueryParams = venueFilter || domainParam || filterOnMarseilleStudents
+  const hasQueryParams = venueParam || domainParam || filterOnMarseilleStudents
+
+  const filtersFromParams = {
+    ...ADAGE_FILTERS_DEFAULT_VALUES,
+    domains: domainParam ? [domainParam] : adageFilterFromSelector.domains,
+    students:
+      adageFilterFromSelector.students.length > 0
+        ? adageFilterFromSelector.students
+        : filterOnMarseilleStudents
+          ? DEFAULT_MARSEILLE_STUDENTS
+          : [],
+    venue: adageFilterFromSelector.venue,
+  }
+
+  const [filters, setFilters] = useState<SearchFormValues>(
+    hasQueryParams ? filtersFromParams : adageFilterFromSelector
+  )
 
   useEffect(() => {
-    function setFacetFiltersFromParams(venue?: VenueResponse | null) {
-      const filtersFromParams = {
-        uai: adageUser.uai ? [adageUser.uai, 'all'] : ['all'],
-        domains: domainParam ? [domainParam] : adageFilterFromSelector.domains,
-        students:
-          adageFilterFromSelector.students.length > 0
-            ? adageFilterFromSelector.students
-            : filterOnMarseilleStudents
-              ? DEFAULT_MARSEILLE_STUDENTS
-              : [],
-        venue: venue ?? adageFilterFromSelector.venue,
-      }
-
-      setFacetFilters(
-        adageFiltersToFacetFilters({
-          ...adageFilterFromSelector,
-          ...filtersFromParams,
-        }).queryFilters
-      )
-    }
-
     async function setVenueFromUrl() {
       if (!siretParam && !venueParam) {
         return
       }
 
-      setLoadingVenue(true)
+      setIsLoadingVenue(true)
 
       try {
         const result = siretParam
@@ -124,37 +126,25 @@ export const OffersInstantSearch = (): JSX.Element | null => {
             )
           : await apiAdage.getVenueById(venueParam, relativeOffersIncludedParam)
 
-        setVenueFilter(result)
-        setFacetFiltersFromParams(result)
+        setFilters({ ...ADAGE_FILTERS_DEFAULT_VALUES, venue: result })
       } catch {
         notification.error('Lieu inconnu. Tous les résultats sont affichés.')
-        setFacetFiltersFromParams()
       } finally {
-        setLoadingVenue(false)
+        setIsLoadingVenue(false)
       }
     }
 
     if (siretParam || venueParam) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       setVenueFromUrl()
-    } else {
-      //  If a venue has to be fetched, the params will be set when that's done. Otherwise, we can set the filters directy.
-      setFacetFiltersFromParams()
     }
-  }, [
-    venueParam,
-    siretParam,
-    relativeOffersIncludedParam,
-    notification,
-    adageUser,
-    domainParam,
-    filterOnMarseilleStudents,
-    adageFilterFromSelector,
-  ])
+  }, [venueParam, siretParam, relativeOffersIncludedParam, notification])
 
-  return loadingVenue ? (
-    <Spinner />
-  ) : facetFilters ? (
+  if (isLoadingVenue) {
+    return <Spinner />
+  }
+
+  return (
     <InstantSearch
       indexName={ALGOLIA_COLLECTIVE_OFFERS_INDEX}
       searchClient={searchClient}
@@ -168,7 +158,12 @@ export const OffersInstantSearch = (): JSX.Element | null => {
           attributesToHighlight={[]}
           attributesToRetrieve={algoliaSearchDefaultAttributesToRetrieve}
           clickAnalytics
-          facetFilters={facetFilters}
+          facetFilters={
+            adageFiltersToFacetFilters({
+              ...filters,
+              uai: adageUser.uai ? ['all', adageUser.uai] : ['all'],
+            }).queryFilters
+          }
           filters={
             'offer.eventAddressType:offererVenue<score=3> OR offer.eventAddressType:school<score=2> OR offer.eventAddressType:other<score=1>'
           }
@@ -184,22 +179,12 @@ export const OffersInstantSearch = (): JSX.Element | null => {
 
         <AnalyticsContextProvider>
           <OffersSearch
-            setFacetFilters={setFacetFilters}
-            initialFilters={
-              hasQueryParams
-                ? {
-                    venue: venueFilter,
-                    domains: domainParam ? [domainParam] : [],
-                    students: filterOnMarseilleStudents
-                      ? DEFAULT_MARSEILLE_STUDENTS
-                      : [],
-                  }
-                : adageFilterFromSelector
-            }
+            setFilters={setFilters}
+            initialFilters={filters}
             setGeoRadius={setGeoRadius}
           />
         </AnalyticsContextProvider>
       </Index>
     </InstantSearch>
-  ) : null
+  )
 }

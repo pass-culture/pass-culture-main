@@ -17,7 +17,8 @@ import AdageMultiselect from 'ui-kit/form/AdageMultiselect/AdageMultiselect'
 import Slider from 'ui-kit/form/Slider/Slider'
 import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
-import { LocalisationFilterStates, SearchFormValues } from '../OffersSearch'
+import { SearchFormValues } from '../../OffersInstantSearch'
+import { LocalisationFilterStates } from '../OffersSearch'
 
 import ModalFilterLayout from './ModalFilterLayout/ModalFilterLayout'
 import styles from './OfferFilters.module.scss'

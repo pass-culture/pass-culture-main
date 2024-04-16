@@ -8,7 +8,8 @@ import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageU
 import { defaultAdageUser } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { LocalisationFilterStates, SearchFormValues } from '../../OffersSearch'
+import { SearchFormValues } from '../../../OffersInstantSearch'
+import { LocalisationFilterStates } from '../../OffersSearch'
 import { OfferFilters } from '../OfferFilters'
 
 const handleSubmit = vi.fn()
