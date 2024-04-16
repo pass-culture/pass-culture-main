@@ -69,7 +69,9 @@ class TiteliveArticle(BaseModel):
     gtl: TiteliveGtl | None
     image: str
     imagesUrl: TiteliveImage
+    # TODO: (lixxday, 2024-04-17): titlelive sends an int for dispo, casting to str works ; but we probably want to change this
     dispo: str
+    # TODO: (lixxday, 2024-04-17): titlelive sends a float for prix, casting to str works ; but we probably want to change this
     prix: str | None
     resume: str | None
     datemodification: datetime.date | None
