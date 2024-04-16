@@ -230,9 +230,8 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
             }
             for result in titelive_page.result
             for article in result.article
-            if article.image != "0"
+            if article.has_image
         }
-
         for product in products:
             assert product.extraData, "product %s initialized without extra data" % product.id
 
