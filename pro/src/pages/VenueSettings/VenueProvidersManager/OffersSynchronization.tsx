@@ -2,20 +2,17 @@ import React, { useState } from 'react'
 
 import { VenueProviderResponse, GetVenueResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
-import { Providers } from 'core/Venue/types'
 
 import { AddVenueProviderButton } from './AddVenueProviderButton'
 import { VenueProviderList } from './VenueProviderList/VenueProviderList'
 
 interface OffersSynchronization {
-  provider: Providers[]
   venueProvider: VenueProviderResponse[]
   venue: GetVenueResponseModel
 }
 
 export const OffersSynchronization = ({
   venue,
-  provider,
   venueProvider,
 }: OffersSynchronization) => {
   const [venueProviders, setVenueProviders] =
@@ -53,7 +50,6 @@ export const OffersSynchronization = ({
           />
         ) : (
           <AddVenueProviderButton
-            providers={provider}
             setVenueProviders={setVenueProviders}
             venue={venue}
           />

@@ -6,9 +6,9 @@ import {
   PostVenueProviderBody,
   VenueProviderResponse,
   GetVenueResponseModel,
+  ProviderResponse,
 } from 'apiClient/v1'
 import { isAllocineProvider, isCinemaProvider } from 'core/Providers'
-import { Providers } from 'core/Venue/types'
 import useNotification from 'hooks/useNotification'
 
 import { AllocineProviderForm } from './AllocineProviderForm/AllocineProviderForm'
@@ -17,7 +17,7 @@ import { StocksProviderForm } from './StocksProviderForm/StocksProviderForm'
 
 interface VenueProviderFormProps {
   afterSubmit: (createdVenueProvider?: VenueProviderResponse) => void
-  provider: Providers
+  provider: ProviderResponse
   venue: GetVenueResponseModel
 }
 

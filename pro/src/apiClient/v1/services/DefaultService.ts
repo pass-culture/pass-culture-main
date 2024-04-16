@@ -63,6 +63,7 @@ import type { ListCollectiveOffersResponseModel } from '../models/ListCollective
 import type { ListFeatureResponseModel } from '../models/ListFeatureResponseModel';
 import type { ListNationalProgramsResponseModel } from '../models/ListNationalProgramsResponseModel';
 import type { ListOffersResponseModel } from '../models/ListOffersResponseModel';
+import type { ListProviderResponse } from '../models/ListProviderResponse';
 import type { ListVenueProviderResponse } from '../models/ListVenueProviderResponse';
 import type { LoginUserBodyModel } from '../models/LoginUserBodyModel';
 import type { NewPasswordBodyModel } from '../models/NewPasswordBodyModel';
@@ -2335,6 +2336,29 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * get_providers_by_venue <GET>
+   * @param venueId
+   * @returns ListProviderResponse OK
+   * @throws ApiError
+   */
+  public getProvidersByVenue(
+    venueId: number,
+  ): CancelablePromise<ListProviderResponse> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/venueProviders/{venue_id}',
+      path: {
+        'venue_id': venueId,
+      },
+      errors: {
+        401: `Unauthorized`,
+        403: `Forbidden`,
+        404: `Not Found`,
         422: `Unprocessable Entity`,
       },
     });

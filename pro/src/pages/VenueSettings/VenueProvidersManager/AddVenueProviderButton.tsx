@@ -1,35 +1,47 @@
 import React, { useState } from 'react'
+import useSWR from 'swr'
 
+import { api } from 'apiClient/api'
 import { VenueProviderResponse, GetVenueResponseModel } from 'apiClient/v1'
+import { GET_PROVIDERS_QUERY_KEY } from 'config/swrQueryKeys'
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
-import { Providers } from 'core/Venue/types'
 import useAnalytics from 'hooks/useAnalytics'
 import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared'
+import Spinner from 'ui-kit/Spinner/Spinner'
 import { sortByLabel } from 'utils/strings'
 
 import { DEFAULT_PROVIDER_OPTION } from './utils/_constants'
 import { VenueProviderForm } from './VenueProviderForm'
 
 interface AddVenueProviderButtonProps {
-  providers: Providers[]
   setVenueProviders: (venueProviders: VenueProviderResponse[]) => void
   venue: GetVenueResponseModel
 }
 
 export const AddVenueProviderButton = ({
-  providers,
   setVenueProviders,
   venue,
 }: AddVenueProviderButtonProps) => {
+  const providersQuery = useSWR(
+    [GET_PROVIDERS_QUERY_KEY, venue.id],
+    ([, venueIdParam]) => api.getProvidersByVenue(venueIdParam)
+  )
+  const providers = providersQuery.data
+
   const { logEvent } = useAnalytics()
   const [isCreationMode, setIsCreationMode] = useState(false)
   const [selectedProviderId, setSelectedProviderId] = useState(
     DEFAULT_PROVIDER_OPTION.value
   )
+
+  if (providersQuery.isLoading || !providers) {
+    return <Spinner />
+  }
+
   const selectedProvider = providers.find(
     (provider) => provider.id.toString() === selectedProviderId
   )

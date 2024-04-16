@@ -73,7 +73,6 @@ const renderForm = (
                 }}
                 venueLabels={venueLabels}
                 venueTypes={venueTypes}
-                providers={[]}
                 venue={venue}
                 venueProviders={[]}
                 hasBookingQuantity={hasBookingQuantity}
