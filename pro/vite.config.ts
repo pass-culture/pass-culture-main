@@ -38,7 +38,7 @@ export default defineConfig(({ mode }) => {
       setupFiles: './vitest.setup.ts',
       clearMocks: true,
       restoreMocks: true,
-      cache: { dir: '../.vitest_cache' },
+      cacheDir: '../.vitest_cache',
       css: { modules: { classNameStrategy: 'non-scoped' } },
       coverage: {
         reportsDirectory: '../coverage',
