@@ -10,6 +10,7 @@ import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/Moda
 import { UploadImageValues } from 'components/ImageUploader/ButtonImageEdit/types'
 import { ImageUploader } from 'components/ImageUploader/ImageUploader'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
+import { GET_OFFERER_QUERY_KEY } from 'config/swrQueryKeys'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
@@ -19,7 +20,7 @@ import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { Card } from '../Card'
-import { GET_HOMEPAGE_OFFERER_QUERY_KEY, HomepageLoaderData } from '../Homepage'
+import { HomepageLoaderData } from '../Homepage'
 import { VenueOfferSteps } from '../VenueOfferSteps/VenueOfferSteps'
 
 import styles from './PartnerPage.module.scss'
@@ -62,7 +63,7 @@ export const PartnerPage = ({ offerer, venue }: PartnerPageProps) => {
         buildInitialValues(editedVenue.bannerUrl, editedVenue.bannerMeta)
       )
 
-      await mutate([GET_HOMEPAGE_OFFERER_QUERY_KEY, String(offerer.id)])
+      await mutate([GET_OFFERER_QUERY_KEY, String(offerer.id)])
 
       notify.success('Vos modifications ont bien été prises en compte')
     } catch {

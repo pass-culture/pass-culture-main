@@ -6,6 +6,11 @@ import useSWR from 'swr'
 import { api } from 'apiClient/api'
 import { GetVenueResponseModel } from 'apiClient/v1'
 import Callout from 'components/Callout/Callout'
+import {
+  GET_CULTURAL_PARTNERS_QUERY_KEY,
+  GET_EDUCATIONAL_DOMAINS_QUERY_KEY,
+  GET_EDUCATIONAL_STATUSES_QUERY_KEY,
+} from 'config/swrQueryKeys'
 import { SelectOption } from 'custom_types/form'
 import { PartnerPageCollectiveSection } from 'pages/Home/Offerers/PartnerPageCollectiveSection'
 import { CollectiveDmsTimeline } from 'pages/VenueCreation/CollectiveDmsTimeline/CollectiveDmsTimeline'
@@ -19,10 +24,6 @@ import { CollectiveDataForm } from './CollectiveDataForm/CollectiveDataForm'
 export interface CollectiveDataEditionProps {
   venue?: GetVenueResponseModel
 }
-
-const GET_EDUCATIONAL_DOMAINS_QUERY_KEY = 'listEducationalDomains'
-const GET_EDUCATIONAL_STATUSES_QUERY_KEY = 'getVenuesEducationalStatuses'
-const GET_CULTURAL_PARTNERS_QUERY_KEY = 'getEducationalPartners'
 
 export const CollectiveDataEdition = ({
   venue,
