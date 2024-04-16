@@ -4,6 +4,7 @@ from dateutil import parser
 import pytest
 
 from pcapi.connectors import acceslibre
+from pcapi.connectors.acceslibre import AcceslibreActivity
 from pcapi.connectors.acceslibre import AcceslibreWidgetData
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.core.testing import override_settings
@@ -165,3 +166,50 @@ class AcceslibreTest:
             acceslibre_enum.DEAF_AND_HARD_OF_HEARING_CUED_SPEECH,
             acceslibre_enum.DEAF_AND_HARD_OF_HEARING_SIGN_LANGUAGE,
         ]
+
+    def test_get_last_entries_by_activity(self, requests_mock):
+        activity = AcceslibreActivity.BIBLIOTHEQUE
+        requests_mock.get(
+            "https://acceslibre.beta.gouv.fr/api/erps/?activite=bibliotheque-mediatheque&created_or_updated_in_last_days=7&page_size=50&page=1",
+            json=fixtures.ACCESLIBRE_ACTIVITY_RESULT,
+        )
+        requests_mock.get(
+            "https://acceslibre.beta.gouv.fr/api/erps/?activite=bibliotheque-mediatheque&created_or_updated_in_last_days=7&page_size=1",
+            json=fixtures.ACCESLIBRE_ACTIVITY_RESULT,
+        )
+
+        activity_results = acceslibre.find_new_entries_by_activity(activity)
+        assert activity_results
+        matching_venue = acceslibre.match_venue_with_acceslibre(
+            acceslibre_results=activity_results,
+            venue_address="2 Place des Thermes",
+            venue_name="Bibliothèque Municipale de Truchan-les-Bains",
+        )
+        assert (
+            matching_venue.web_url
+            == "https://acceslibre.info/app/11-tuchan/a/bibliotheque-mediatheque/erp/bibliotheque-municipale-de-truchan-les-bains/"
+        )
+
+    def test_should_raise_error_when_slug_is_none(self, requests_mock):
+        name = "Le Livre Bateau"
+        public_name = ""
+        ban_id = "59350_5513_abcde"
+        requests_mock.get(
+            f"https://acceslibre.beta.gouv.fr/api/erps/?ban_id={ban_id}",
+            json=fixtures.ACCESLIBRE_BAD_SLUG,
+        )
+        with pytest.raises(acceslibre.AccesLibreApiException) as exception:
+            acceslibre.get_id_at_accessibility_provider(name=name, public_name=public_name, ban_id=ban_id)
+        assert str(exception.value) == "Acceslibre returned None for: slug"
+
+    def test_should_raise_error_when_activity_is_not_a_dict(self, requests_mock):
+        name = "Le Livre Bateau"
+        public_name = ""
+        ban_id = "59350_5513_abcde"
+        requests_mock.get(
+            f"https://acceslibre.beta.gouv.fr/api/erps/?ban_id={ban_id}",
+            json=fixtures.ACCESLIBRE_BAD_ACTIVITY,
+        )
+        with pytest.raises(acceslibre.AccesLibreApiException) as exception:
+            acceslibre.get_id_at_accessibility_provider(name=name, public_name=public_name, ban_id=ban_id)
+        assert str(exception.value) == "Acceslibre activite should be a dict, but received: Chaîne de caracteres"

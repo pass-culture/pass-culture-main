@@ -152,17 +152,17 @@ def run_matching(export_not_matching_venues: bool = False) -> None:
                 match_list.append(
                     {
                         "Venue ID": venue["Venue ID"],
-                        "slug AccesLibre": acceslibre_venue["slug"],
+                        "slug AccesLibre": acceslibre_venue.slug,
                         "Nom PassCulture": venue["Venue Name"],
                         "Nom Publique PassCulture": venue["Venue Public Name"],
-                        "Nom AccesLibre": acceslibre_venue["nom"],
+                        "Nom AccesLibre": acceslibre_venue.nom,
                         "Ban ID PassCulture": venue["Ban ID"],
                         "Adresse PassCulture": f"{venue['Venue Address']} {venue['Venue Postal Code']} {venue['Venue City']}",
-                        "Adresse AccesLibre": acceslibre_venue["adresse"],
+                        "Adresse AccesLibre": acceslibre_venue.adresse,
                         "Activite PassCulture": venue["Venue Type Code"],
-                        "Activite AccesLibre": acceslibre_venue["activite"]["nom"],
+                        "Activite AccesLibre": acceslibre_venue.activite["nom"],
                         "Siret PassCulture": venue["Venue Siret"],
-                        "Siret AccesLibre": acceslibre_venue["siret"],
+                        "Siret AccesLibre": acceslibre_venue.siret,
                     }
                 )
                 matching_venue_ids.add(venue["Venue ID"])
