@@ -13,3 +13,8 @@ class IrisFranceFactory(factory.Factory):
 class AddressFactory(BaseFactory):
     class Meta:
         model = models.Address
+
+
+class OffererAddressFactory(BaseFactory):
+    class Meta:
+        model = models.OffererAddress

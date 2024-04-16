@@ -33,6 +33,7 @@ import pcapi.core.educational.api.address as educational_address_api
 from pcapi.core.external import zendesk_sell
 from pcapi.core.external.attributes import api as external_attributes_api
 import pcapi.core.finance.models as finance_models
+from pcapi.core.geography import models as geography_models
 import pcapi.core.history.api as history_api
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
@@ -2134,3 +2135,48 @@ def set_accessibility_infos_from_provider_id(venue: models.Venue) -> None:
             accessibility_data.dict() if accessibility_data else None
         )
         db.session.add(venue.accessibilityProvider)
+
+
+def get_or_create_address(serializer: offerers_serialize.OffererAddressRequestModel) -> geography_models.Address:
+    try:
+        address = geography_models.Address(
+            banId=serializer.banId,
+            inseeCode=serializer.inseeCode,
+            street=serializer.street,
+            postalCode=serializer.postalCode,
+            city=serializer.city,
+            country=serializer.country,
+            latitude=serializer.latitude,
+            longitude=serializer.longitude,
+        )
+        db.session.add(address)
+        db.session.flush()
+    except sa.exc.IntegrityError:
+        db.session.rollback()
+        address = geography_models.Address.query.filter(
+            geography_models.Address.street == serializer.street,
+            geography_models.Address.inseeCode == serializer.inseeCode,
+        ).one()
+
+    return address
+
+
+def get_or_create_offerer_address(offerer_id: int, label: str, address_id: int) -> geography_models.OffererAddress:
+    try:
+        offerer_address = geography_models.OffererAddress(offererId=offerer_id, label=label, addressId=address_id)
+        db.session.add(offerer_address)
+        db.session.flush()
+    except sa.exc.IntegrityError:
+        db.session.rollback()
+
+    offerer_address = (
+        geography_models.OffererAddress.query.filter(
+            geography_models.OffererAddress.offererId == offerer_id,
+            geography_models.OffererAddress.label == label,
+            geography_models.OffererAddress.addressId == address_id,
+        )
+        .options(sa_orm.joinedload(geography_models.OffererAddress.address))
+        .one()
+    )
+
+    return offerer_address

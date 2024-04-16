@@ -354,3 +354,40 @@ class GetOffererV2StatsResponseModel(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class OffererAddressRequestModel(BaseModel):
+    label: str
+    banId: str | None
+    inseeCode: str
+    postalCode: str
+    street: str
+    city: str
+    country: str
+    latitude: float
+    longitude: float
+
+
+class AddressResponseModel(BaseModel):
+    id: int
+    banId: str | None
+    inseeCode: str
+    postalCode: str
+    street: str
+    city: str
+    country: str
+    latitude: float
+    longitude: float
+
+    class Config:
+        orm_mode = True
+
+
+class OffererAddressResponseModel(BaseModel):
+    id: int
+    label: str
+    offererId: int
+    address: AddressResponseModel
+
+    class Config:
+        orm_mode = True

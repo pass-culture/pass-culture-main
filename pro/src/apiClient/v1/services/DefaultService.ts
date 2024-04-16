@@ -66,6 +66,8 @@ import type { ListOffersResponseModel } from '../models/ListOffersResponseModel'
 import type { ListVenueProviderResponse } from '../models/ListVenueProviderResponse';
 import type { LoginUserBodyModel } from '../models/LoginUserBodyModel';
 import type { NewPasswordBodyModel } from '../models/NewPasswordBodyModel';
+import type { OffererAddressRequestModel } from '../models/OffererAddressRequestModel';
+import type { OffererAddressResponseModel } from '../models/OffererAddressResponseModel';
 import type { OffererStatsResponseModel } from '../models/OffererStatsResponseModel';
 import type { OfferStatus } from '../models/OfferStatus';
 import type { OfferType } from '../models/OfferType';
@@ -1096,6 +1098,31 @@ export class DefaultService {
       path: {
         'offerer_id': offererId,
       },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * create_offerer_address <POST>
+   * @param offererId
+   * @param requestBody
+   * @returns OffererAddressResponseModel Created
+   * @throws ApiError
+   */
+  public createOffererAddress(
+    offererId: number,
+    requestBody?: OffererAddressRequestModel,
+  ): CancelablePromise<OffererAddressResponseModel> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/offerers/{offerer_id}/addresses',
+      path: {
+        'offerer_id': offererId,
+      },
+      body: requestBody,
+      mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,

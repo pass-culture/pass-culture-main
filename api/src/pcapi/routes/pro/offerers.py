@@ -19,6 +19,7 @@ import pcapi.core.offerers.exceptions as offerers_exceptions
 import pcapi.core.offerers.models as offerers_models
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
+from pcapi.repository import db
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offerers_serialize
@@ -289,3 +290,21 @@ def get_offerer_v2_stats(offerer_id: int) -> offerers_serialize.GetOffererV2Stat
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ResourceNotFoundError()
     return offerers_serialize.GetOffererV2StatsResponseModel.from_orm(stats)
+
+
+@private_api.route("/offerers/<int:offerer_id>/addresses", methods=["POST"])
+@login_required
+@spectree_serialize(
+    on_success_status=201,
+    api=blueprint.pro_private_schema,
+    response_model=offerers_serialize.OffererAddressResponseModel,
+)
+def create_offerer_address(
+    offerer_id: int, body: offerers_serialize.OffererAddressRequestModel
+) -> offerers_serialize.OffererAddressResponseModel:
+    with transaction():
+        with db.session.no_autoflush:
+            check_user_has_access_to_offerer(current_user, offerer_id)
+            address = api.get_or_create_address(body)
+            offerer_address = api.get_or_create_offerer_address(offerer_id, body.label, address.id)
+            return offerers_serialize.OffererAddressResponseModel.from_orm(offerer_address)
