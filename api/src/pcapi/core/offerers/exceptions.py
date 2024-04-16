@@ -65,7 +65,7 @@ class InactiveSirenException(Exception):
     pass
 
 
-class OffererAddressAlreadyExists(Exception):
+class OffererAddressLabelAlreadyUsed(Exception):
     pass
 
 
