@@ -19,8 +19,6 @@ import {
 } from 'pages/Offers/adapters/getFilteredOffersAdapter'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
-import useGetProviders from '../../core/Venue/adapters/getProviderAdapter/useGetProvider'
-
 import { offerHasBookingQuantity } from './offerHasBookingQuantity'
 import { setInitialFormValues } from './setInitialFormValues'
 import { VenueSettingsFormScreen } from './VenueSettingsScreen'
@@ -73,11 +71,6 @@ const VenueSettings = (): JSX.Element | null => {
   >(() => getFilteredOffersAdapter(apiFilters))
   const hasBookingQuantity = offerHasBookingQuantity(venueOffers?.offers)
 
-  // TODO this adapter uses the old pcapi client, to clean using the new client
-  const { isLoading: isLoadingProviders, data: providers } = useGetProviders(
-    Number(venueId)
-  )
-
   if (
     offererQuery.isLoading ||
     venueQuery.isLoading ||
@@ -88,7 +81,6 @@ const VenueSettings = (): JSX.Element | null => {
     !venue ||
     !venueTypes ||
     !venueProviders ||
-    isLoadingProviders ||
     isLoadingVenueOffers
   ) {
     return (
@@ -110,7 +102,6 @@ const VenueSettings = (): JSX.Element | null => {
         offerer={offerer}
         venueLabels={venueLabels}
         venueTypes={venueTypes}
-        providers={providers}
         venue={venue}
         venueProviders={venueProviders}
         hasBookingQuantity={venue.id ? hasBookingQuantity : false}
