@@ -11,6 +11,7 @@ import typing
 from flask_sqlalchemy import BaseQuery
 import jwt
 from psycopg2.extras import NumericRange
+import pytz
 import schwifty
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import INTERVAL
@@ -2136,9 +2137,9 @@ def set_accessibility_infos_from_provider_id(venue: models.Venue) -> None:
         db.session.add(venue.accessibilityProvider)
 
 
-def count_permanent_venues_with_accessibility_provider() -> int:
-    return (
-        offerers_models.Venue.query.join(offerers_models.AccessibilityProvider)
+def count_permanent_venues_with_or_without_accessibility_provider(has_accessibility_provider: bool) -> int:
+    query = (
+        offerers_models.Venue.query.outer(offerers_models.AccessibilityProvider)
         .options(
             sa.orm.load_only(
                 offerers_models.Venue.isPermanent,
@@ -2149,46 +2150,135 @@ def count_permanent_venues_with_accessibility_provider() -> int:
         .filter(
             offerers_models.Venue.isPermanent == True,
             offerers_models.Venue.isVirtual == False,
-            offerers_models.AccessibilityProvider.externalAccessibilityId.isnot(None),
         )
-        .count()
     )
 
+    if has_accessibility_provider:
+        query = query.filter(offerers_models.AccessibilityProvider.externalAccessibilityId.isnot(None))
+    else:
+        query = query.filter(offerers_models.AccessibilityProvider.externalAccessibilityId.is_(None))
 
-def count_permanent_venues_without_accessibility_provider() -> int:
-    return (
-        db.session.query(sa.func.count("*"))
-        .select_from(sa.join(offerers_models.Venue, offerers_models.AccessibilityProvider))
-        .filter(
-            offerers_models.Venue.isPermanent == True,
-            offerers_models.Venue.isVirtual == False,
-            offerers_models.AccessibilityProvider.is_(None),
-        )
-        .scalar()
-    )
+    return query.count()
 
 
-def get_permanent_venues_without_accessibility_provider(batch_size: int, batch_num: int) -> list[models.Venue]:
+def get_permanent_venues_with_accessibility_provider(batch_size: int, batch_num: int) -> list[models.Venue]:
     return (
         offerers_models.Venue.query.join(offerers_models.Venue.accessibilityProvider)
         .filter(
             offerers_models.Venue.isPermanent == True,
             offerers_models.Venue.isVirtual == False,
-            offerers_models.AccessibilityProvider.is_(None),
+            offerers_models.AccessibilityProvider.externalAccessibilityId.isnot(None),
         )
         .options(sa.orm.contains_eager(offerers_models.Venue.accessibilityProvider))
-        .load_only(
-            offerers_models.Venue.name,
-            offerers_models.Venue.publicName,
-            offerers_models.Venue.address,
-            offerers_models.Venue.banId,
-            offerers_models.Venue.siret,
-            offerers_models.Venue.accessibilityProvider,
-        )
+        .order_by(offerers_models.Venue.id.asc())
         .limit(batch_size)
         .offset(batch_num * batch_size)
         .all()
     )
+
+
+def get_permanent_venues_without_accessibility_provider(batch_size: int, batch_num: int) -> list[models.Venue]:
+    return (
+        offerers_models.Venue.query.outerjoin(offerers_models.Venue.accessibilityProvider)
+        .filter(
+            offerers_models.Venue.isPermanent == True,
+            offerers_models.Venue.isVirtual == False,
+            offerers_models.AccessibilityProvider.id.is_(None),
+        )
+        .options(
+            sa.orm.load_only(
+                offerers_models.Venue.name,
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.street,
+                offerers_models.Venue.banId,
+                offerers_models.Venue.siret,
+            )
+        )
+        .order_by(offerers_models.Venue.id.asc())
+        .limit(batch_size)
+        .offset(batch_num * batch_size)
+        .all()
+    )
+
+
+def synchronize_accessibility_provider(venue: models.Venue, force_sync: bool = False) -> None:
+    slug = venue.accessibilityProvider.externalAccessibilityId
+    try:
+        last_update = accessibility_provider.get_last_update_at_provider(slug=slug)
+    except accessibility_provider.AccesLibreApiException as e:
+        logger.exception("An error occurred while processing venue: %s, Error: %s", venue, e)
+        return
+
+    # If last_update is not None: match still exist
+    # Then we update accessibility data if :
+    # 1. accessibility data is None
+    # 2. we have forced the synchronization
+    # 3. accessibility data has been updated on acceslibre side
+    if last_update and (
+        not venue.accessibilityProvider.externalAccessibilityData
+        or force_sync
+        or venue.accessibilityProvider.lastUpdateAtProvider.astimezone(pytz.utc) < last_update.astimezone(pytz.utc)
+    ):
+        venue.accessibilityProvider.lastUpdateAtProvider = last_update
+        try:
+            accessibility_data = accessibility_provider.get_accessibility_infos(
+                slug=venue.accessibilityProvider.externalAccessibilityId
+            )
+        except accessibility_provider.AccesLibreApiException as e:
+            logger.exception("An error occurred while processing venue: %s, Error: %s", venue, e)
+            return
+        venue.accessibilityProvider.externalAccessibilityData = (
+            accessibility_data.dict() if accessibility_data else None
+        )
+        db.session.add(venue.accessibilityProvider)
+
+    # if last_update is None, the slug has been removed from acceslibre, we try a new match
+    # and save accessibility data to DB
+    elif not last_update:
+        try:
+            id_and_url_at_provider = accessibility_provider.get_id_at_accessibility_provider(
+                name=venue.name,
+                public_name=venue.publicName,
+                siret=venue.siret,
+                ban_id=venue.banId,
+                city=venue.city,
+                postal_code=venue.postalCode,
+                address=venue.street,
+            )
+        except accessibility_provider.AccesLibreApiException as e:
+            logger.exception("An error occurred while processing venue: %s, Error: %s", venue, e)
+            return
+        if id_and_url_at_provider:
+            new_slug = id_and_url_at_provider["slug"]
+            new_url = id_and_url_at_provider["url"]
+            if last_update := accessibility_provider.get_last_update_at_provider(slug=new_slug):
+                try:
+                    accessibility_data = accessibility_provider.get_accessibility_infos(slug=new_slug)
+                except accessibility_provider.AccesLibreApiException as e:
+                    logger.exception("An error occurred while processing venue: %s, Error: %s", venue, e)
+                    return
+                venue.accessibilityProvider.externalAccessibilityId = new_slug
+                venue.accessibilityProvider.externalAccessibilityUrl = new_url
+                venue.accessibilityProvider.lastUpdateAtProvider = last_update
+                venue.accessibilityProvider.externalAccessibilityData = (
+                    accessibility_data.dict() if accessibility_data else None
+                )
+                db.session.add(venue.accessibilityProvider)
+        else:
+            logger.info(
+                "Slug %s has not been found at acceslibre. Removing AccessibilityProvider %d",
+                slug,
+                venue.accessibilityProvider.id,
+            )
+            db.session.delete(venue.accessibilityProvider)
+
+    # In case a venue is synchronized but has no data, we want to be informed
+    if venue.accessibilityProvider and not venue.accessibilityProvider.externalAccessibilityData:
+        logger.error(
+            "Venue %s is synchronized with Acceslibre at %s but has no data",
+            venue.id,
+            venue.accessibilityProvider.externalAccessibilityData,
+        )
 
 
 def match_venue_with_new_entries(

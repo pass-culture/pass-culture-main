@@ -9,6 +9,7 @@ import jwt
 import pytest
 import time_machine
 
+from pcapi.connectors.acceslibre import AcceslibreInfos
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.connectors.entreprise import models as sirene_models
 from pcapi.core import search
@@ -2687,3 +2688,61 @@ class AccessibilityProviderTest:
             acceslibre_enum.EXTERIOR_ONE_LEVEL,
             acceslibre_enum.ENTRANCE_ONE_LEVEL,
         ]
+
+    def test_synchronize_accessibility_provider_no_data(self):
+        venue = offerers_factories.VenueFactory(
+            name="Une librairie de test",
+            postalCode="75001",
+            city="Paris",
+        )
+        accessibility_provider = offerers_factories.AccessibilityProviderFactory(
+            venue=venue, externalAccessibilityData=None
+        )
+        offerers_api.synchronize_accessibility_provider(venue)
+        assert accessibility_provider.externalAccessibilityData is not None
+
+    def test_synchronize_accessibility_provider_with_new_update(self):
+        venue = offerers_factories.VenueFactory(
+            name="Une librairie de test",
+            postalCode="75001",
+            city="Paris",
+        )
+        accessibility_provider = offerers_factories.AccessibilityProviderFactory(
+            venue=venue, lastUpdateAtProvider=datetime.datetime(2023, 2, 1)
+        )
+        # TestingBackend for acceslibre get_last_update_at_provider returns datetime(2024, 3, 1, 0, 0)
+        accessibility_provider.externalAccessibilityData["audio_description"] = (
+            acceslibre_enum.AUDIODESCRIPTION_NO_DEVICE
+        )
+
+        # Synchronize should happen as provider last update is more recent than accessibility_provider.lastUpdateAtProvider
+        offerers_api.synchronize_accessibility_provider(venue)
+        assert accessibility_provider.externalAccessibilityData["audio_description"] == [
+            acceslibre_enum.AUDIODESCRIPTION_OCCASIONAL
+        ]
+
+    @patch("pcapi.connectors.acceslibre.get_last_update_at_provider")
+    @patch("pcapi.connectors.acceslibre.get_id_at_accessibility_provider")
+    def test_synchronize_accessibility_provider_with_new_slug(
+        self, mock_get_id_at_accessibility_provider, mock_get_last_update_at_provider
+    ):
+        venue = offerers_factories.VenueFactory(
+            name="Une librairie de test",
+            postalCode="75001",
+            city="Paris",
+        )
+        mock_get_id_at_accessibility_provider.side_effect = [
+            AcceslibreInfos(slug="nouveau-slug", url="https://nouvelle.adresse/nouveau-slug")
+        ]
+        # While trying to synchronize venue with acceslibre, we receive None when fetching last update
+        # This means the entry with this slug (ie. externalAccessibilityId) has been removed
+        # from acceslibre database (usualy because of deduplication);
+        # In that case, we try a new match and look for the new slug
+        mock_get_last_update_at_provider.side_effect = [None, datetime.datetime(2024, 3, 1, 0, 0)]
+
+        accessibility_provider = offerers_factories.AccessibilityProviderFactory(
+            venue=venue, externalAccessibilityId="slug-qui-n-existe-plus"
+        )
+        offerers_api.synchronize_accessibility_provider(venue, force_sync=True)
+        assert accessibility_provider.externalAccessibilityId == "nouveau-slug"
+        assert accessibility_provider.externalAccessibilityUrl == "https://nouvelle.adresse/nouveau-slug"
