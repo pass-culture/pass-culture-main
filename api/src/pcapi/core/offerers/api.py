@@ -2321,5 +2321,8 @@ def match_venue_with_new_entries(
 
 
 def update_offerer_address_label(offerer_address_id: int, new_label: str) -> None:
-    models.OffererAddress.query.filter_by(id=offerer_address_id).update({"label": new_label})
-    db.session.flush()
+    try:
+        models.OffererAddress.query.filter_by(id=offerer_address_id).update({"label": new_label})
+        db.session.flush()
+    except sa.exc.IntegrityError:
+        raise exceptions.OffererAddressAlreadyExists()

@@ -321,4 +321,7 @@ def patch_offerer_address(
             check_user_has_access_to_offerer(current_user, offerer_id)
             if not repository.offerer_address_exists(offerer_id, offerer_address_id):
                 raise ResourceNotFoundError()
-            api.update_offerer_address_label(offerer_address_id, body.label)
+            try:
+                api.update_offerer_address_label(offerer_address_id, body.label)
+            except offerers_exceptions.OffererAddressAlreadyExists:
+                raise ApiErrors({"label": "Une adresse identique utilise déjà ce libellé"}, status_code=400)
