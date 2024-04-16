@@ -35,8 +35,6 @@ describe('Create an individual offer (event)', () => {
     cy.findByText('Enregistrer et continuer').click()
     cy.wait(['@getOffer', '@postOffer'])
 
-    //cy.pause()
-
     // Fill in second step: prices
     cy.findByLabelText('Intitulé du tarif *').should('have.value', 'Tarif unique')
     cy.findByText('Ajouter un tarif').click()
@@ -51,7 +49,6 @@ describe('Create an individual offer (event)', () => {
       cy.findByLabelText('Prix par personne *').type('100')
     })
 
-    // besoin de tester celui-là qui fait la même chose que le précédent?
     cy.findByTestId('wrapper-priceCategories[1].label').within(() => {
       // trouve le deuxième champ avec le label:      
       cy.findByLabelText('Intitulé du tarif *').type('Fosse Debout')
@@ -114,7 +111,7 @@ describe('Create an individual offer (event)', () => {
        cy.findByLabelText('Tarif *').select('100,00\xa0€ - Carré Or')
     })
 
-    // manque un data-testid ou un placeholder
+    // manque un data-testid ou un placeholder ou un label accessible
     cy.get('[name="bookingLimitDateInterval"]').type('3')
     cy.intercept({ method: 'POST', url: '/stocks/bulk' }).as('postStocks')
     cy.findByText('Valider').click()
