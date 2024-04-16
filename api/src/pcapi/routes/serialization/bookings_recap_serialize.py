@@ -226,3 +226,17 @@ def build_booking_status(booking: Booking) -> BookingRecapStatus:
     if booking.isConfirmed:
         return BookingRecapStatus.confirmed
     return BookingRecapStatus.booked
+
+
+class EventDateScheduleAndPriceCategoriesCountModel(BaseModel):
+    event_date: date
+    schedule_count: int
+    price_categories_count: int
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+
+
+class EventDatesInfos(BaseModel):
+    __root__: list[EventDateScheduleAndPriceCategoriesCountModel]
