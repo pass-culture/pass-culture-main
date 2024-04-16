@@ -9,10 +9,10 @@ import { isNumber } from 'utils/types'
 import {
   algoliaSearchDefaultAttributesToRetrieve,
   DEFAULT_GEO_RADIUS,
+  SearchFormValues,
 } from '../../OffersInstantSearch'
 import { adageFiltersToFacetFilters } from '../../utils'
 import { Offers } from '../Offers/Offers'
-import { SearchFormValues } from '../OffersSearch'
 
 import styles from './OffersSuggestions.module.scss'
 import { OffersSuggestionsHeader } from './OffersSuggestionsHeader/OffersSuggestionsHeader'

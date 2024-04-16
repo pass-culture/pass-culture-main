@@ -5,8 +5,9 @@ import { Formik } from 'formik'
 import { OfferAddressType } from 'apiClient/adage'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
+import { SearchFormValues } from '../../../OffersInstantSearch'
 import { ADAGE_FILTERS_DEFAULT_VALUES } from '../../../utils'
-import { LocalisationFilterStates, SearchFormValues } from '../../OffersSearch'
+import { LocalisationFilterStates } from '../../OffersSearch'
 import FiltersTags from '../FiltersTags'
 
 const domainsOptions = [
