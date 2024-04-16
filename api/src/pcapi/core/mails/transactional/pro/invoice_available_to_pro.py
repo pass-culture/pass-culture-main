@@ -19,6 +19,15 @@ def send_invoice_available_to_pro_email(invoice: finance_models.Invoice, batch: 
         start=datetime.datetime.combine(period_start, datetime.datetime.min.time()),
         end=datetime.datetime.combine(period_end, datetime.datetime.min.time()),
     )
+    if period_start == period_end:
+        # Usually cashflows and invoices are generated every two weeks. However, in practice nothing
+        # forbid to set a cutoff at every date. In this case, if the cashflows and the invoices where
+        # generated on the same day, a 16th of the month, this could lead to have a lower and an upper
+        # bound strictly equals due to the behavior of `get_invoice_period`, therefor we would have no interval to match on.
+        invoice_timespan = db_utils.make_timerange(
+            start=datetime.datetime.combine(period_start, datetime.datetime.min.time()), end=batch.cutoff
+        )
+
     data = models.TransactionalEmailData(
         template=TransactionalEmail.INVOICE_AVAILABLE_TO_PRO.value,
         params={
