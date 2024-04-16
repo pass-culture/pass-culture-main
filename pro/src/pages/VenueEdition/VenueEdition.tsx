@@ -11,12 +11,13 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { AppLayout } from 'app/AppLayout'
-import { SAVED_OFFERER_ID_KEY } from 'core/shared'
-import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
 import {
   GET_OFFERER_QUERY_KEY,
+  GET_VENUE_QUERY_KEY,
   GET_VENUE_TYPES_QUERY_KEY,
-} from 'pages/VenueSettings/VenueSettings'
+} from 'config/swrQueryKeys'
+import { SAVED_OFFERER_ID_KEY } from 'core/shared'
+import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
 import { updateSelectedOffererId } from 'store/user/reducer'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import Tabs, { Tab } from 'ui-kit/Tabs/Tabs'
@@ -24,8 +25,6 @@ import Tabs, { Tab } from 'ui-kit/Tabs/Tabs'
 import styles from './VenueEdition.module.scss'
 import { VenueEditionFormScreen } from './VenueEditionFormScreen'
 import { VenueEditionHeader } from './VenueEditionHeader'
-
-export const GET_VENUE_QUERY_KEY = 'getVenue'
 
 export const VenueEdition = (): JSX.Element | null => {
   const { offererId, venueId } = useParams<{

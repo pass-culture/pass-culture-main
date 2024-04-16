@@ -4,11 +4,11 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { AppLayout } from 'app/AppLayout'
-import { DEFAULT_FORM_VALUES } from 'pages/VenueCreation/constants'
 import {
   GET_OFFERER_QUERY_KEY,
   GET_VENUE_TYPES_QUERY_KEY,
-} from 'pages/VenueSettings/VenueSettings'
+} from 'config/swrQueryKeys'
+import { DEFAULT_FORM_VALUES } from 'pages/VenueCreation/constants'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 import { VenueCreationFormScreen } from './VenueCreationFormScreen'
