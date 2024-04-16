@@ -145,6 +145,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert rows[0]["Stock"] == "212"
         assert rows[0]["Montant"] == "30,40 €"
         assert rows[0]["Statut"] == "Validée"
+        assert rows[0]["Crédit actif"] == "Oui"
         assert rows[0]["Auteur de la validation"] == "Backoffice"
         assert rows[0]["Date de réservation"].startswith(
             (datetime.date.today() - datetime.timedelta(days=4)).strftime("%d/%m/%Y")
@@ -160,6 +161,26 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert "Date d'annulation" not in extra_data
 
         assert html_parser.extract_pagination_info(response.data) == (1, 1, 1)
+
+    def test_list_bookings_with_expired_deposit(self, authenticated_client):
+        user = users_factories.BeneficiaryGrant18Factory()
+        booking = bookings_factories.UsedBookingFactory(
+            user=user,
+            token="WTRL00",
+        )
+
+        users_factories.DepositGrantFactory(
+            bookings=[booking],
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=5),
+            expirationDate=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        )
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q="WTRL00"))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert rows[0]["Crédit actif"] == "Non"
 
     def test_list_bookings_by_list_of_tokens(self, authenticated_client, bookings):
         with assert_num_queries(self.expected_num_queries):

@@ -86,6 +86,7 @@
               <th scope="col">Stock</th>
               <th scope="col">Montant</th>
               <th scope="col">Statut</th>
+              <th scope="col">Crédit actif</th>
               <th scope="col">Auteur de la validation</th>
               {% if is_feature_active("WIP_ENABLE_FINANCE_INCIDENT") %}<th scope="col">Évènement comptable</th>{% endif %}
               <th scope="col">Date de réservation</th>
@@ -199,6 +200,7 @@
                 <td>{{ booking.stock.quantity }}</td>
                 <td>{{ booking.total_amount | format_amount }}</td>
                 <td>{{ booking | format_booking_status(with_badge=True) | safe }}</td>
+                <td>{{ booking.deposit | format_active_deposit }}</td>
                 <td>{{ booking.validationAuthorType | format_booking_validation_author_type }}</td>
                 {% if is_feature_active("WIP_ENABLE_FINANCE_INCIDENT") %}
                   <td class="text-center">
