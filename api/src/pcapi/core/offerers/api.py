@@ -2178,3 +2178,79 @@ def set_accessibility_infos_from_provider_id(venue: models.Venue) -> None:
             accessibility_data.dict() if accessibility_data else None
         )
         db.session.add(venue.accessibilityProvider)
+
+
+def count_permanent_venues_with_accessibility_provider() -> int:
+    return (
+        offerers_models.Venue.query.join(offerers_models.AccessibilityProvider)
+        .options(
+            sa.orm.load_only(
+                offerers_models.Venue.isPermanent,
+                offerers_models.Venue.isVirtual,
+                offerers_models.AccessibilityProvider.externalAccessibilityId,
+            )
+        )
+        .filter(
+            offerers_models.Venue.isPermanent == True,
+            offerers_models.Venue.isVirtual == False,
+            offerers_models.AccessibilityProvider.externalAccessibilityId.isnot(None),
+        )
+        .count()
+    )
+
+
+def count_permanent_venues_without_accessibility_provider() -> int:
+    return (
+        db.session.query(sa.func.count("*"))
+        .select_from(sa.join(offerers_models.Venue, offerers_models.AccessibilityProvider))
+        .filter(
+            offerers_models.Venue.isPermanent == True,
+            offerers_models.Venue.isVirtual == False,
+            offerers_models.AccessibilityProvider.is_(None),
+        )
+        .scalar()
+    )
+
+
+def get_permanent_venues_without_accessibility_provider(batch_size: int, batch_num: int) -> list[models.Venue]:
+    return (
+        offerers_models.Venue.query.join(offerers_models.Venue.accessibilityProvider)
+        .filter(
+            offerers_models.Venue.isPermanent == True,
+            offerers_models.Venue.isVirtual == False,
+            offerers_models.AccessibilityProvider.is_(None),
+        )
+        .options(sa.orm.contains_eager(offerers_models.Venue.accessibilityProvider))
+        .load_only(
+            offerers_models.Venue.name,
+            offerers_models.Venue.publicName,
+            offerers_models.Venue.address,
+            offerers_models.Venue.banId,
+            offerers_models.Venue.siret,
+            offerers_models.Venue.accessibilityProvider,
+        )
+        .limit(batch_size)
+        .offset(batch_num * batch_size)
+        .all()
+    )
+
+
+def match_venue_with_new_entries(
+    venues_list: list[models.Venue], results: dict[str, list[accessibility_provider.AcceslibreResult] | None]
+) -> None:
+    for activity in accessibility_provider.AcceslibreActivity:
+        if activity_results := results[activity.value]:
+            for venue in venues_list:
+                if matching_venue := accessibility_provider.match_venue_with_acceslibre(
+                    acceslibre_results=activity_results,
+                    venue_name=venue.name,
+                    venue_public_name=venue.publicName,
+                    venue_address=venue.address,
+                    venue_ban_id=venue.banId,
+                    venue_siret=venue.siret,
+                ):
+                    venue.accessibilityProvider = offerers_models.AccessibilityProvider(
+                        externalAccessibilityId=matching_venue.slug,
+                        externalAccessibilityUrl=matching_venue.web_url,
+                    )
+                    db.session.add(venue.accessibilityProvider)

@@ -241,3 +241,32 @@ def synchronize_venue_with_acceslibre(venue_ids: list[int]) -> None:
         offerers_api.set_accessibility_infos_from_provider_id(venue)
         db.session.add(venue)
     db.session.commit()
+
+
+@blueprint.cli.command("acceslibre_matching")
+@click.option("--dry-run", type=bool, default=False)
+def acceslibre_matching(dry_run: bool = False, force_sync: bool = False) -> None:
+    """
+    For all permanent venues, we are looking for a match at acceslibre
+    """
+    venues_count = offerers_api.count_permanent_venues_without_accessibility_provider()
+    num_batches = ceil(venues_count / BATCH_SIZE)
+    results_by_activity: dict[str, list[accessibility_provider.AcceslibreResult] | None] = dict()
+
+    for activity in accessibility_provider.AcceslibreActivity:
+        results_by_activity[activity.value] = accessibility_provider.find_new_entries_by_activity(activity)
+
+    for i in range(num_batches):
+        venues_list = offerers_api.get_permanent_venues_without_accessibility_provider(
+            batch_size=BATCH_SIZE, batch_num=i
+        )
+        offerers_api.match_venue_with_new_entries(venues_list, results_by_activity)
+
+        if not dry_run:
+            try:
+                db.session.commit()
+            except sa.exc.SQLAlchemyError:
+                logger.exception("Could not update batch %d", i)
+                db.session.rollback()
+        else:
+            db.session.rollback()
