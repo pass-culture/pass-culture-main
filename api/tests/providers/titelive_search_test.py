@@ -6,6 +6,7 @@ import re
 import pytest
 import time_machine
 
+from pcapi import settings
 from pcapi.connectors import titelive
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import BookingStatus
@@ -35,7 +36,7 @@ from tests.connectors.titelive import fixtures
 
 def _configure_login_and_images(requests_mock):
     requests_mock.post(
-        "https://login.epagine.fr/v1/login/test@example.com/token",
+        f"{settings.TITELIVE_EPAGINE_API_AUTH_URL}/login/test@example.com/token",
         json={"token": "XYZ"},
     )
     image_path = pathlib.Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
@@ -49,8 +50,10 @@ def _configure_login_and_images(requests_mock):
 class TiteliveSearchTest:
     def test_titelive_music_sync(self, requests_mock):
         _configure_login_and_images(requests_mock)
-        requests_mock.get("https://catsearch.epagine.fr/v1/search?page=1", json=fixtures.MUSIC_SEARCH_FIXTURE)
-        requests_mock.get("https://catsearch.epagine.fr/v1/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE)
+        requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=1", json=fixtures.MUSIC_SEARCH_FIXTURE)
+        requests_mock.get(
+            f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE
+        )
         titelive_epagine_provider = providers_repository.get_provider_by_name(
             providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME
         )
@@ -146,7 +149,7 @@ class TiteliveSearchTest:
     @time_machine.travel("2023-01-01", tick=False)
     def test_titelive_sync_event(self, requests_mock):
         _configure_login_and_images(requests_mock)
-        requests_mock.get("https://catsearch.epagine.fr/v1/search", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE)
+        requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/search", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE)
         titelive_epagine_provider = providers_repository.get_provider_by_name(
             providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME
         )
@@ -172,7 +175,7 @@ class TiteliveSearchTest:
 
     def test_titelive_sync_failure_event(self, requests_mock):
         _configure_login_and_images(requests_mock)
-        requests_mock.get("https://catsearch.epagine.fr/v1/search", exc=requests.exceptions.RequestException)
+        requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/search", exc=requests.exceptions.RequestException)
         titelive_epagine_provider = providers_repository.get_provider_by_name(
             providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME
         )
@@ -207,8 +210,10 @@ class TiteliveSearchTest:
 
     def test_sync_skips_products_already_synced_by_other_provider(self, requests_mock):
         _configure_login_and_images(requests_mock)
-        requests_mock.get("https://catsearch.epagine.fr/v1/search?page=1", json=fixtures.MUSIC_SEARCH_FIXTURE)
-        requests_mock.get("https://catsearch.epagine.fr/v1/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE)
+        requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=1", json=fixtures.MUSIC_SEARCH_FIXTURE)
+        requests_mock.get(
+            f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE
+        )
         other_provider = providers_factories.ProviderFactory()
         offers_factories.ProductFactory(extraData={"ean": "3700187679323"}, lastProvider=other_provider)
 
@@ -229,8 +234,10 @@ class TiteliveSearchTest:
 
     def test_sync_thumbnails(self, requests_mock):
         _configure_login_and_images(requests_mock)
-        requests_mock.get("https://catsearch.epagine.fr/v1/search?page=1", json=fixtures.MUSIC_SEARCH_FIXTURE)
-        requests_mock.get("https://catsearch.epagine.fr/v1/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE)
+        requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=1", json=fixtures.MUSIC_SEARCH_FIXTURE)
+        requests_mock.get(
+            f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE
+        )
 
         TiteliveMusicSearch().synchronize_products(datetime.date(2022, 12, 1))
 
@@ -265,8 +272,10 @@ class TiteliveSearchTest:
 
     def test_sync_thumbnails_network_failure_is_silent(self, requests_mock):
         _configure_login_and_images(requests_mock)
-        requests_mock.get("https://catsearch.epagine.fr/v1/search?page=1", json=fixtures.MUSIC_SEARCH_FIXTURE)
-        requests_mock.get("https://catsearch.epagine.fr/v1/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE)
+        requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=1", json=fixtures.MUSIC_SEARCH_FIXTURE)
+        requests_mock.get(
+            f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE
+        )
         requests_mock.get("https://images.epagine.fr/323/3700187679324.jpg", exc=requests.exceptions.RequestException)
         requests_mock.get("https://images.epagine.fr/738/5054197199738_2.jpg", exc=requests.exceptions.RequestException)
 
@@ -300,8 +309,10 @@ class TiteliveSearchTest:
 
     def test_sync_thumbnails_open_failure_is_silent(self, requests_mock):
         _configure_login_and_images(requests_mock)
-        requests_mock.get("https://catsearch.epagine.fr/v1/search?page=1", json=fixtures.MUSIC_SEARCH_FIXTURE)
-        requests_mock.get("https://catsearch.epagine.fr/v1/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE)
+        requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=1", json=fixtures.MUSIC_SEARCH_FIXTURE)
+        requests_mock.get(
+            f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE
+        )
         requests_mock.get("https://images.epagine.fr/323/3700187679324.jpg", body=b"")
 
         assert TiteliveMusicSearch().synchronize_products(datetime.date(2022, 12, 1)) is None
@@ -325,9 +336,9 @@ class TiteliveSearchTest:
         not_fully_allowed_response = copy.deepcopy(fixtures.MUSIC_SEARCH_FIXTURE)
         not_fully_allowed_response["result"][-1]["article"]["1"]["codesupport"] = 35
         del not_fully_allowed_response["result"][0]["article"]["2"]["codesupport"]
-        requests_mock.get("https://catsearch.epagine.fr/v1/search?page=1", json=not_fully_allowed_response)
+        requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=1", json=not_fully_allowed_response)
         requests_mock.get(
-            "https://catsearch.epagine.fr/v1/search?page=2",
+            f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=2",
             json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE,
         )
 
@@ -338,8 +349,10 @@ class TiteliveSearchTest:
 
     def test_titelive_music_sync_from_page(self, requests_mock):
         _configure_login_and_images(requests_mock)
-        requests_mock.get("https://catsearch.epagine.fr/v1/search?page=1", json=fixtures.MUSIC_SEARCH_FIXTURE)
-        requests_mock.get("https://catsearch.epagine.fr/v1/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE)
+        requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=1", json=fixtures.MUSIC_SEARCH_FIXTURE)
+        requests_mock.get(
+            f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE
+        )
 
         TiteliveMusicSearch().synchronize_products(datetime.date(2022, 12, 1), 2)
 
@@ -356,8 +369,10 @@ class TiteliveBookSearchTest:
 
     def setup_api_response_fixture(self, requests_mock, fixture):
         _configure_login_and_images(requests_mock)
-        requests_mock.get("https://catsearch.epagine.fr/v1/search?page=1", json=fixture)
-        requests_mock.get("https://catsearch.epagine.fr/v1/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE)
+        requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=1", json=fixture)
+        requests_mock.get(
+            f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE
+        )
 
     def build_previously_synced_book_product(
         self, ean=None, name=None, extra_data=None, isGcuCompatible=True
