@@ -10,8 +10,9 @@ import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
+import { SearchFormValues } from '../../OffersInstantSearch'
 import { ADAGE_FILTERS_DEFAULT_VALUES } from '../../utils'
-import { LocalisationFilterStates, SearchFormValues } from '../OffersSearch'
+import { LocalisationFilterStates } from '../OffersSearch'
 
 import styles from './FiltersTags.module.scss'
 
