@@ -21,7 +21,7 @@ import { PartnerPages } from './PartnerPages'
 import { VenueCreationLinks } from './VenueCreationLinks'
 
 export interface OfferersProps {
-  selectedOfferer?: GetOffererResponseModel | null
+  selectedOfferer: GetOffererResponseModel | null
   isLoading: boolean
   isUserOffererValidated: boolean
   offererOptions: SelectOption[]
@@ -67,9 +67,9 @@ export const Offerers = ({
 
   return (
     <>
-      {userHasOfferers && selectedOfferer && (
+      {userHasOfferers && (
         <>
-          {openSuccessDialog && (
+          {selectedOfferer && openSuccessDialog && (
             <RedirectDialog
               icon={strokePartyIcon}
               redirectText="Créer une offre"
@@ -103,14 +103,13 @@ export const Offerers = ({
           <OffererDetails
             isUserOffererValidated={isUserOffererValidated}
             offererOptions={offererOptions}
-            selectedOfferer={selectedOfferer}
           />
 
-          {permanentVenues.length > 0 && (
+          {selectedOfferer && permanentVenues.length > 0 && (
             <PartnerPages venues={permanentVenues} offerer={selectedOfferer} />
           )}
 
-          {!isOffererSoftDeleted && (
+          {selectedOfferer && !isOffererSoftDeleted && (
             <>
               {/*
                * The whole sectionning of the homepage should be refactored to account

@@ -10,7 +10,7 @@ import styles from './OffererBanners.module.scss'
 
 export interface OffererBannersProps {
   isUserOffererValidated: boolean
-  offerer: GetOffererResponseModel
+  offerer: GetOffererResponseModel | null
 }
 
 export const OffererBanners = ({
@@ -46,7 +46,7 @@ export const OffererBanners = ({
     )
   }
 
-  if (!offerer.isValidated) {
+  if (!offerer?.isValidated) {
     return (
       <Callout
         variant={CalloutVariant.INFO}

@@ -24,9 +24,13 @@ const renderOffererDetails = (props: Partial<OffererDetailsProps> = {}) => {
           label: defaultGetOffererResponseModel.name,
         },
       ]}
-      selectedOfferer={defaultGetOffererResponseModel}
       {...props}
-    />
+    />,
+    {
+      storeOverrides: {
+        user: { selectedOffererId: defaultGetOffererResponseModel.id },
+      },
+    }
   )
 }
 
@@ -40,7 +44,7 @@ describe('OffererDetails', () => {
   })
 
   it('should display offerer select', () => {
-    renderOffererDetails({ selectedOfferer: defaultGetOffererResponseModel })
+    renderOffererDetails()
 
     expect(
       screen.getByText(defaultGetOffererResponseModel.name)

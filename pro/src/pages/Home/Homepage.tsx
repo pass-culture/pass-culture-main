@@ -158,29 +158,7 @@ export const Homepage = (): JSX.Element => {
       } catch (error) {
         if (hasStatusCode(error) && error.status === HTTP_STATUS.FORBIDDEN) {
           setIsUserOffererValidated(false)
-          return {
-            apiKey: {
-              maxAllowed: 0,
-              prefixes: [],
-            },
-            city: '',
-            dateCreated: '',
-            hasAvailablePricingPoints: false,
-            hasDigitalVenueAtLeastOneOffer: false,
-            hasValidBankAccount: true,
-            hasBankAccountWithPendingCorrections: false,
-            hasPendingBankAccount: false,
-            hasNonFreeOffer: true,
-            venuesWithNonFreeOffersWithoutBankAccounts: [],
-            isActive: false,
-            isValidated: false,
-            managedVenues: [],
-            hasActiveOffer: false,
-            name: '',
-            id: Number(offererIdParam),
-            postalCode: '',
-            allowedOnAdage: false,
-          }
+          return null
         }
       }
 
@@ -247,12 +225,10 @@ export const Homepage = (): JSX.Element => {
         <BankAccountHasPendingCorrectionCallout offerer={selectedOfferer} />
       </div>
 
-      {selectedOfferer !== null && (
-        <OffererBanners
-          isUserOffererValidated={isUserOffererValidated}
-          offerer={selectedOfferer}
-        />
-      )}
+      <OffererBanners
+        isUserOffererValidated={isUserOffererValidated}
+        offerer={selectedOfferer}
+      />
 
       {selectedOfferer?.isValidated && selectedOfferer.isActive && (
         <section className={styles['section']}>
