@@ -22,7 +22,7 @@ class IrisFrance(PcObject, Base, Model):
 class Address(PcObject, Base, Model):
     __tablename__ = "address"
     banId: str | None = sa.Column(sa.Text(), nullable=True, unique=True)
-    inseeCode: str | None = sa.Column(sa.Text(), nullable=False)
+    inseeCode: str = sa.Column(sa.Text(), nullable=False)
     street: str = sa.Column(sa.Text(), nullable=False)
     postalCode: str = sa.Column(sa.Text(), nullable=False)
     city: str = sa.Column(sa.Text(), nullable=False)
@@ -53,3 +53,5 @@ class OffererAddress(PcObject, Base, Model):
     address: sa.orm.Mapped["Address"] = sa.orm.relationship("Address", foreign_keys=[addressId])
     offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), index=True)
     offerer: sa.orm.Mapped["offerer_models.Offerer"] = sa.orm.relationship("Offerer", foreign_keys=[offererId])
+
+    __table_args__ = (sa.Index("ix_unique_offerer_address_per_label", "offererId", "addressId", "label", unique=True),)
