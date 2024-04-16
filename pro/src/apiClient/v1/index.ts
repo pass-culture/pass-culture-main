@@ -12,6 +12,7 @@ export type { OpenAPIConfig } from './core/OpenAPI';
 
 export type { AdageCulturalPartnersResponseModel } from './models/AdageCulturalPartnersResponseModel';
 export type { Address } from './models/Address';
+export type { AddressResponseModel } from './models/AddressResponseModel';
 export type { AttachImageFormModel } from './models/AttachImageFormModel';
 export type { AttachImageResponseModel } from './models/AttachImageResponseModel';
 export type { AudioDisabilityModel } from './models/AudioDisabilityModel';
@@ -164,6 +165,8 @@ export type { NewPasswordBodyModel } from './models/NewPasswordBodyModel';
 export { OfferAddressType } from './models/OfferAddressType';
 export { OfferContactFormEnum } from './models/OfferContactFormEnum';
 export type { OfferDomain } from './models/OfferDomain';
+export type { OffererAddressRequestModel } from './models/OffererAddressRequestModel';
+export type { OffererAddressResponseModel } from './models/OffererAddressResponseModel';
 export type { OffererApiKey } from './models/OffererApiKey';
 export { OffererMemberStatus } from './models/OffererMemberStatus';
 export type { OffererStatsDataModel } from './models/OffererStatsDataModel';

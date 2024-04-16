@@ -82,7 +82,7 @@ class PatchOffererAddressTest:
         assert offerer_address.label != new_label["label"]
 
     @pytest.mark.usefixtures("db_session")
-    def test_user_cant_change_for_a_label_already_used_for_same_addres(self, client):
+    def test_user_cant_change_for_a_label_already_used_for_same_address(self, client):
         pro_user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerer_id = offerer.id

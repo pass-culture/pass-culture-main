@@ -20,6 +20,7 @@ import sqlalchemy.orm as sa_orm
 from pcapi import settings
 from pcapi.connectors import virustotal
 import pcapi.connectors.acceslibre as accessibility_provider
+from pcapi.connectors.api_adresse import AddressInfo
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.connectors.entreprise import models as sirene_models
 from pcapi.connectors.entreprise import sirene
@@ -35,6 +36,7 @@ import pcapi.core.educational.api.address as educational_address_api
 from pcapi.core.external import zendesk_sell
 from pcapi.core.external.attributes import api as external_attributes_api
 import pcapi.core.finance.models as finance_models
+from pcapi.core.geography import models as geography_models
 import pcapi.core.history.api as history_api
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
@@ -2325,4 +2327,53 @@ def update_offerer_address_label(offerer_address_id: int, new_label: str) -> Non
         models.OffererAddress.query.filter_by(id=offerer_address_id).update({"label": new_label})
         db.session.flush()
     except sa.exc.IntegrityError:
-        raise exceptions.OffererAddressAlreadyExists()
+        raise exceptions.OffererAddressLabelAlreadyUsed()
+
+
+def get_or_create_address(address_info: AddressInfo) -> geography_models.Address:
+    try:
+        address = geography_models.Address(
+            banId=address_info.id,
+            inseeCode=address_info.citycode,
+            street=address_info.street,
+            postalCode=address_info.postcode,
+            city=address_info.city,
+            latitude=address_info.latitude,
+            longitude=address_info.longitude,
+        )
+        db.session.add(address)
+        db.session.flush()
+    except sa.exc.IntegrityError:
+        db.session.rollback()
+        address = geography_models.Address.query.filter(
+            geography_models.Address.street == address_info.street,
+            geography_models.Address.inseeCode == address_info.citycode,
+        ).one()
+        if (address.latitude, address.longitude) != (round(address_info.latitude, 5), round(address_info.longitude, 5)):
+            logger.error(
+                "Unique constraint over street and inseeCode matched different coordinates",
+                extra={"address_id": address.id, "address_info_banId": address_info.id},
+            )
+
+    return address
+
+
+def get_or_create_offerer_address(offerer_id: int, label: str, address_id: int) -> models.OffererAddress:
+    try:
+        offerer_address = models.OffererAddress(offererId=offerer_id, label=label, addressId=address_id)
+        db.session.add(offerer_address)
+        db.session.flush()
+    except sa.exc.IntegrityError:
+        db.session.rollback()
+
+    offerer_address = (
+        models.OffererAddress.query.filter(
+            models.OffererAddress.offererId == offerer_id,
+            models.OffererAddress.label == label,
+            models.OffererAddress.addressId == address_id,
+        )
+        .options(sa_orm.joinedload(models.OffererAddress.address))
+        .one()
+    )
+
+    return offerer_address
