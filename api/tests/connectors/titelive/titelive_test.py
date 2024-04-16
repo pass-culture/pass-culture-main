@@ -4,6 +4,7 @@ import html
 
 import pytest
 
+from pcapi import settings
 from pcapi.connectors import titelive
 from pcapi.connectors.titelive import GtlIdError
 from pcapi.core.categories import subcategories_v2 as subcategories
@@ -19,12 +20,12 @@ from tests.connectors.titelive import fixtures
 class TiteliveTest:
     def _configure_mock(self, requests_mock, **kwargs):
         requests_mock.post(
-            "https://login.epagine.fr/v1/login/test@example.com/token",
+            f"{settings.TITELIVE_EPAGINE_API_AUTH_URL}/login/test@example.com/token",
             json={"token": "XYZ"},
         )
         if "ean" in kwargs:
             requests_mock.get(
-                f"https://catsearch.epagine.fr/v1/ean/{kwargs['ean']}",
+                f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{kwargs['ean']}",
                 json=kwargs.get("fixture", fixtures.BOOK_BY_EAN_FIXTURE),
             )
 
@@ -95,7 +96,7 @@ class TiteliveTest:
 
     def test_titelive_search_query_params(self, requests_mock):
         self._configure_mock(requests_mock)
-        requests_mock.get("https://catsearch.epagine.fr/v1/search", json={})
+        requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/search", json={})
 
         titelive.search_products(titelive.TiteliveBase.MUSIC, datetime.date(2022, 12, 1), 2)
 

@@ -13,6 +13,7 @@ from unittest.mock import patch
 import pytest
 import time_machine
 
+from pcapi import settings
 from pcapi.core import search
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
@@ -2134,11 +2135,11 @@ class WhitelistExistingProductTest:
     def test_modify_product_if_existing_and_not_cgu_compatible(self, requests_mock):
         ean = "9782070455379"
         requests_mock.post(
-            "https://login.epagine.fr/v1/login/test@example.com/token",
+            f"{settings.TITELIVE_EPAGINE_API_AUTH_URL}/login/test@example.com/token",
             json={"token": "XYZ"},
         )
         requests_mock.get(
-            f"https://catsearch.epagine.fr/v1/ean/{ean}",
+            f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{ean}",
             json=fixtures.BOOK_BY_EAN_FIXTURE,
         )
 
@@ -2192,11 +2193,11 @@ class WhitelistExistingProductTest:
     def test_create_product_if_not_existing(self, requests_mock):
         ean = "9782070455379"
         requests_mock.post(
-            "https://login.epagine.fr/v1/login/test@example.com/token",
+            f"{settings.TITELIVE_EPAGINE_API_AUTH_URL}/login/test@example.com/token",
             json={"token": "XYZ"},
         )
         requests_mock.get(
-            f"https://catsearch.epagine.fr/v1/ean/{ean}",
+            f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{ean}",
             json=fixtures.BOOK_BY_EAN_FIXTURE,
         )
         assert not models.Product.query.filter(models.Product.idAtProviders == ean).one_or_none()
