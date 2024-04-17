@@ -23,9 +23,12 @@ const BannerReimbursementsInfo = (): JSX.Element => {
       <p>
         Nous remboursons en un virement toutes les réservations validées entre
         le 1ᵉʳ et le 15 du mois, et lors d’un second toutes celles validées
-        entre le 16 et le 31 du mois. Les offres de type événement se valident
-        automatiquement 48h à 72h après leur date de réalisation, leurs
-        remboursements peuvent se faire sur la quinzaine suivante.
+        entre le 16 et le 31 du mois.
+      </p>
+      <p>
+        Les offres de type événement se valident automatiquement 48h à 72h après
+        leur date de réalisation, leurs remboursements peuvent se faire sur la
+        quinzaine suivante.
       </p>
     </Callout>
   )
