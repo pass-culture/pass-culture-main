@@ -107,11 +107,6 @@ SEARCH_FIELD_TO_PYTHON = {
         "field": "price",
         "column": aliased_stock.price,
         "inner_join": "stock",
-        "custom_filter_all_operators": sa.and_(
-            aliased_stock.isEventExpired.is_(False),
-            aliased_stock.hasBookingLimitDatetimePassed.is_(False),
-            educational_models.CollectiveOffer.isActive.is_(True),
-        ),
     },
 }
 

@@ -526,11 +526,6 @@ class ListOffersTest(GetEndpointHelper):
 
     def test_list_offers_advanced_search_by_price(self, authenticated_client, offers):
 
-        offers_factories.StockFactory(
-            price=15,
-            beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
-        )
-
         query_args = {
             "search-3-search_field": "PRICE",
             "search-3-operator": "GREATER_THAN_OR_EQUAL_TO",

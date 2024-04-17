@@ -522,8 +522,6 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
     def test_list_collective_offers_advanced_search_by_price(self, authenticated_client, collective_offers):
 
-        collective_stock = educational_factories.CollectiveStockFactory()
-
         query_args = {
             "search-3-search_field": "PRICE",
             "search-3-operator": "GREATER_THAN_OR_EQUAL_TO",
@@ -536,7 +534,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
-        assert rows[0]["ID"] == str(collective_stock.collectiveOffer.id)
+        assert rows[0]["ID"] == str(collective_offers[2].id)
 
     def test_list_collective_offers_advanced_search_by_price_no_offer_found(
         self, authenticated_client, collective_offers
@@ -545,7 +543,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         query_args = {
             "search-3-search_field": "PRICE",
             "search-3-operator": "GREATER_THAN_OR_EQUAL_TO",
-            "search-3-price": 12.20,
+            "search-3-price": 21.20,
         }
 
         with assert_num_queries(self.expected_num_queries):
