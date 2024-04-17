@@ -8,10 +8,10 @@ import useAnalytics from 'hooks/useAnalytics'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
 import { BaseInput } from 'ui-kit/form/shared'
 
-import { BookingsFilters } from '../../types'
-import { EMPTY_FILTER_VALUE } from '../_constants'
+import { BookingsFilters } from '../types'
 
 import {
+  EMPTY_FILTER_VALUE,
   COLLECTIVE_OMNISEARCH_FILTERS,
   INDIVIDUAL_OMNISEARCH_FILTERS,
 } from './constants'
@@ -29,7 +29,7 @@ export interface FilterByOmniSearchProps {
   audience: Audience
 }
 
-const FilterByOmniSearch = ({
+export const FilterByOmniSearch = ({
   isDisabled,
   keywords,
   selectedOmniSearchCriteria,
@@ -135,5 +135,3 @@ const FilterByOmniSearch = ({
     </fieldset>
   )
 }
-
-export default FilterByOmniSearch

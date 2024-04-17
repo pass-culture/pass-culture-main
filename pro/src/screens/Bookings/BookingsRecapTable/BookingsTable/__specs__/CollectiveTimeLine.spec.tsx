@@ -22,7 +22,7 @@ import {
   renderWithProviders,
 } from 'utils/renderWithProviders'
 
-import CollectiveTimeLine from '../CollectiveTimeLine'
+import { CollectiveTimeLine } from '../CollectiveTimeLine'
 
 const renderCollectiveTimeLine = (
   bookingRecap: CollectiveBookingResponseModel,

@@ -18,7 +18,7 @@ export interface CollectiveActionButtonsProps {
   isCancellable: boolean
 }
 
-const CollectiveActionButtons = ({
+export const CollectiveActionButtons = ({
   bookingRecap,
   reloadBookings,
   isCancellable,
@@ -75,5 +75,3 @@ const CollectiveActionButtons = ({
     </>
   )
 }
-
-export default CollectiveActionButtons

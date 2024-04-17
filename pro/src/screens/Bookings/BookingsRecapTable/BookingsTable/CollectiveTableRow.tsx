@@ -9,15 +9,13 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
 import styles from './BookingsTable.module.scss'
-import {
-  BookingIdCell,
-  BookingOfferCell,
-  InstitutionCell,
-  NumberOfTicketsAndPriceCell,
-  DetailsButtonCell,
-} from './Cells'
+import { BookingIdCell } from './Cells/BookingIdCell'
+import { BookingOfferCell } from './Cells/BookingOfferCell'
 import { CollectiveBookingStatusCell } from './Cells/CollectiveBookingStatusCell'
-import CollectiveBookingDetails from './CollectiveBookingDetails'
+import { DetailsButtonCell } from './Cells/DetailsButtonCell'
+import { InstitutionCell } from './Cells/InstitutionCell'
+import { NumberOfTicketsAndPriceCell } from './Cells/NumberOfTicketsAndPriceCell'
+import { CollectiveBookingDetails } from './CollectiveBookingDetails'
 import getCollectiveBookingAdapter from './getCollectiveBookingAdapter'
 
 export interface CollectiveTableRowProps {

@@ -9,8 +9,10 @@ import {
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import CollectiveActionButtons from '..'
-import { CollectiveActionButtonsProps } from '../CollectiveActionButtons'
+import {
+  CollectiveActionButtons,
+  CollectiveActionButtonsProps,
+} from '../CollectiveActionButtons'
 
 const renderCollectiveActionButtons = (props: CollectiveActionButtonsProps) => {
   renderWithProviders(<CollectiveActionButtons {...props} />)

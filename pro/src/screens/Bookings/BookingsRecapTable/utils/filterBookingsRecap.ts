@@ -3,7 +3,7 @@ import {
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
 
-import { EMPTY_FILTER_VALUE } from '../Filters/_constants'
+import { EMPTY_FILTER_VALUE } from '../Filters/constants'
 import { BookingsFilters } from '../types'
 
 const doesOfferNameMatchFilter = <

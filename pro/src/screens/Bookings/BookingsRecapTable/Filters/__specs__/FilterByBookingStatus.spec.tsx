@@ -14,8 +14,10 @@ import {
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import FilterByBookingStatus from '../FilterByBookingStatus'
-import { FilterByBookingStatusProps } from '../FilterByBookingStatus/FilterByBookingStatus'
+import {
+  FilterByBookingStatus,
+  FilterByBookingStatusProps,
+} from '../FilterByBookingStatus'
 
 const renderFilterByBookingStatus = (
   props: FilterByBookingStatusProps<

@@ -47,7 +47,7 @@ const cancellationReasonTitle = (
   }
 }
 
-const CollectiveTimeLine = ({
+export const CollectiveTimeLine = ({
   bookingRecap,
   bookingDetails,
 }: CollectiveTimeLineProps) => {
@@ -535,5 +535,3 @@ const CollectiveTimeLine = ({
       throw new Error('Invalid booking status')
   }
 }
-
-export default CollectiveTimeLine
