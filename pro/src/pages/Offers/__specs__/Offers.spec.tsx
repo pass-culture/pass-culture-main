@@ -319,25 +319,24 @@ describe('route Offers', () => {
             await renderOffers(store, filters)
 
             await userEvent.click(screen.getByTestId('remove-offerer-filter'))
-            await waitForElementToBeRemoved(() =>
-              screen.queryByTestId('spinner')
-            )
 
+            await waitFor(() => {
+              expect(api.listOffers).toHaveBeenLastCalledWith(
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined
+              )
+            })
             expect(
               screen.getByRole('button', {
                 name: 'Statut Afficher ou masquer le filtre par statut',
               })
             ).toBeDisabled()
-            expect(api.listOffers).toHaveBeenLastCalledWith(
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              undefined
-            )
           })
 
           it('should not reset or disable status filter when offerer filter is removed while venue filter is applied', async () => {
@@ -357,25 +356,23 @@ describe('route Offers', () => {
             await renderOffers(store, filters)
 
             await userEvent.click(screen.getByTestId('remove-offerer-filter'))
-            await waitForElementToBeRemoved(() =>
-              screen.queryByTestId('spinner')
-            )
-
+            await waitFor(() => {
+              expect(api.listOffers).toHaveBeenLastCalledWith(
+                undefined,
+                undefined,
+                'INACTIVE',
+                venueId.toString(),
+                undefined,
+                undefined,
+                undefined,
+                undefined
+              )
+            })
             expect(
               screen.getByRole('button', {
                 name: /Afficher ou masquer le filtre par statut/,
               })
             ).not.toBeDisabled()
-            expect(api.listOffers).toHaveBeenLastCalledWith(
-              undefined,
-              undefined,
-              'INACTIVE',
-              venueId.toString(),
-              undefined,
-              undefined,
-              undefined,
-              undefined
-            )
           })
 
           it('should enable status filters when venue filter is applied', async () => {
@@ -680,17 +677,18 @@ describe('route Offers', () => {
       await userEvent.click(screen.getByLabelText('Épuisée'))
       await userEvent.click(screen.getByText('Appliquer'))
 
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-      expect(api.listOffers).toHaveBeenCalledWith(
-        undefined,
-        undefined,
-        'SOLD_OUT',
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined
-      )
+      await waitFor(() => {
+        expect(api.listOffers).toHaveBeenCalledWith(
+          undefined,
+          undefined,
+          'SOLD_OUT',
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined
+        )
+      })
     })
 
     it('should have status value be removed when user ask for all status', async () => {
@@ -895,25 +893,27 @@ describe('route Offers', () => {
       await userEvent.selectOptions(venueSelect, firstVenueOption)
       await userEvent.click(screen.getByText('Rechercher'))
 
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-      expect(api.listOffers).toHaveBeenNthCalledWith(
-        2,
-        undefined,
-        undefined,
-        undefined,
-        proVenues[0].id.toString(),
-        undefined,
-        undefined,
-        undefined,
-        undefined
-      )
+      await waitFor(() => {
+        expect(api.listOffers).toHaveBeenNthCalledWith(
+          2,
+          undefined,
+          undefined,
+          undefined,
+          proVenues[0].id.toString(),
+          undefined,
+          undefined,
+          undefined,
+          undefined
+        )
+      })
 
       screen.getByText('Aucune offre trouvée pour votre recherche')
 
       await userEvent.click(screen.getByText('Afficher toutes les offres'))
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-      expect(api.listOffers).toHaveBeenCalledTimes(3)
+      await waitFor(() => {
+        expect(api.listOffers).toHaveBeenCalledTimes(3)
+      })
       expect(api.listOffers).toHaveBeenNthCalledWith(
         3,
         undefined,
