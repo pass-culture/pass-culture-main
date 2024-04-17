@@ -98,6 +98,7 @@ import type { StocksOrderedBy } from '../models/StocksOrderedBy';
 import type { StocksResponseModel } from '../models/StocksResponseModel';
 import type { StockStatsResponseModel } from '../models/StockStatsResponseModel';
 import type { StocksUpsertBodyModel } from '../models/StocksUpsertBodyModel';
+import type { SubmitReviewRequestModel } from '../models/SubmitReviewRequestModel';
 import type { UserEmailValidationResponseModel } from '../models/UserEmailValidationResponseModel';
 import type { UserHasBookingResponse } from '../models/UserHasBookingResponse';
 import type { UserIdentityBodyModel } from '../models/UserIdentityBodyModel';
@@ -1922,6 +1923,26 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/users/identity',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * submit_new_nav_review <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public submitNewNavReview(
+    requestBody?: SubmitReviewRequestModel,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/users/log-new-nav-review',
       body: requestBody,
       mediaType: 'application/json',
       errors: {

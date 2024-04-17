@@ -32,6 +32,7 @@ from pcapi.routes.shared.cookies_consent import CookieConsentRequest
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.login_manager import discard_session
 from pcapi.utils.login_manager import stamp_session
+from pcapi.utils.rest import check_user_has_access_to_offerer
 
 from . import blueprint
 
@@ -349,3 +350,24 @@ def post_new_pro_nav() -> None:
     except (users_exceptions.ProUserNotEligibleForNewNav, users_exceptions.ProUserNotYetEligibleForNewNav) as exc:
         errors.add_error("global", "Vous n'êtes pas éligible à la nouvelle navigation")
         raise errors from exc
+
+
+@blueprint.pro_private_api.route("/users/log-new-nav-review", methods=["POST"])
+@login_required
+@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
+def submit_new_nav_review(body: users_serializers.SubmitReviewRequestModel) -> None:
+    check_user_has_access_to_offerer(current_user, body.offererId)
+    if not users_repo.user_has_new_nav_activated(current_user):
+        raise ForbiddenError()
+
+    logging.info(
+        "User with new nav activated submitting review",
+        extra={
+            "user_id": current_user.id,
+            "offerer_id": body.offererId,
+            "isConvenient": body.isConvenient,
+            "isPleasant": body.isPleasant,
+            "comment": body.comment,
+            "source_page": body.location,
+        },
+    )
