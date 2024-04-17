@@ -29,7 +29,7 @@ class SendinblueProAvailableInvoiceEmailDataTest:
         )
 
         invoice = factories.InvoiceFactory(bankAccount=bank_account, amount=-1000, date=datetime.date(2023, 3, 7))
-        batch = factories.CashflowBatchFactory(cutoff=datetime.date(2023, 2, 28))
+        batch = factories.CashflowBatchFactory(cutoff=datetime.datetime(2023, 2, 28, 23))  # winter time
 
         send_invoice_available_to_pro_email(invoice, batch)
 
@@ -59,14 +59,14 @@ class SendinblueProAvailableInvoiceEmailDataTest:
         )
 
         invoice = factories.InvoiceFactory(bankAccount=bank_account, amount=-1000, date=datetime.date(2023, 7, 20))
-        batch = factories.CashflowBatchFactory(cutoff=datetime.date(2023, 7, 15))
+        batch = factories.CashflowBatchFactory(cutoff=datetime.datetime(2023, 7, 15, 22))  # summer time
 
         send_invoice_available_to_pro_email(invoice, batch)
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["template"] == TransactionalEmail.INVOICE_AVAILABLE_TO_PRO.value.__dict__
-        assert len(mails_testing.outbox[0]["To"].split(", ")) == 2
-        assert set(mails_testing.outbox[0]["To"].split(", ")) == {"other_pro@example.com", "pro@example.com"}
+        assert len(mails_testing.outbox[0]["To"].split(", ")) == 1
+        assert set(mails_testing.outbox[0]["To"].split(", ")) == {"pro@example.com"}
         assert mails_testing.outbox[0]["params"] == {
             "MONTANT_REMBOURSEMENT": 10,
             "PERIODE_DEBUT": "01-07-2023",
