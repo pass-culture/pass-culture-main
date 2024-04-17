@@ -208,6 +208,7 @@ export type { StocksUpsertBodyModel } from './models/StocksUpsertBodyModel';
 export { StudentLevels } from './models/StudentLevels';
 export { SubcategoryIdEnum } from './models/SubcategoryIdEnum';
 export type { SubcategoryResponseModel } from './models/SubcategoryResponseModel';
+export type { SubmitReviewRequestModel } from './models/SubmitReviewRequestModel';
 export { Target } from './models/Target';
 export type { TemplateDatesModel } from './models/TemplateDatesModel';
 export type { TopOffersResponseData } from './models/TopOffersResponseData';
