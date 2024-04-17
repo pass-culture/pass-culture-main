@@ -3,10 +3,11 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
+import { Audience } from 'core/shared'
 import { getOfferVenueFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import PreFilters, { PreFiltersProps } from '../../PreFilters'
+import { PreFilters, PreFiltersProps } from '../../PreFilters'
 
 vi.mock('utils/date', async () => {
   return {
@@ -30,12 +31,11 @@ describe('filter bookings by bookings period', () => {
     props = {
       appliedPreFilters: { ...DEFAULT_PRE_FILTERS },
       applyPreFilters: vi.fn(),
+      audience: Audience.INDIVIDUAL,
       venues: [getOfferVenueFactory()].map(({ id, name }) => ({
         id: id.toString(),
         displayName: name,
       })),
-      getBookingsCSVFileAdapter: vi.fn(),
-      getBookingsXLSFileAdapter: vi.fn(),
       hasResult: true,
       resetPreFilters: vi.fn(),
       isFiltersDisabled: false,
