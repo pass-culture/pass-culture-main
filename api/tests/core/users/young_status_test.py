@@ -1,6 +1,6 @@
+import dataclasses
 import datetime
 
-import attrs
 from dateutil.relativedelta import relativedelta
 import pytest
 
@@ -201,7 +201,7 @@ class YoungStatusTest:
 
     def test_is_not_mutable(self):
         status = young_status.Suspended()
-        with pytest.raises(attrs.exceptions.FrozenInstanceError):
+        with pytest.raises(dataclasses.FrozenInstanceError):
             status.status_type = young_status.YoungStatusType.BENEFICIARY
 
     @pytest.mark.parametrize(
