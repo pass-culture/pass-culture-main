@@ -112,7 +112,7 @@ def get_show_types() -> serialization.GetShowTypesResponse:
 @api_key_required
 def get_music_types() -> serialization.GetMusicTypesResponse:
     """
-    Get all the music types.
+    OLD, deprecated, get all music types.
     """
     # Individual offers API only relies on music subtypes, not music types.
     # To make it simpler for the provider using this API, we only expose music subtypes and call them music types.
@@ -142,7 +142,7 @@ def get_music_types() -> serialization.GetMusicTypesResponse:
 @api_key_required
 def get_all_titelive_music_types() -> serialization.GetMusicTypesResponse:
     """
-    Get all titelive music types.
+    Get all music types.
     """
     return serialization.GetMusicTypesResponse(
         __root__=[
