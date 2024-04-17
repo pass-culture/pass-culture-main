@@ -4473,22 +4473,6 @@ click = ">=5"
 redis = ">=3.5"
 
 [[package]]
-name = "rq-exporter"
-version = "2.1.2"
-description = "Prometheus exporter for Python RQ (Redis Queue)"
-optional = false
-python-versions = ">=3.6"
-files = [
-    {file = "rq-exporter-2.1.2.tar.gz", hash = "sha256:41ed9e833e2d7f6e1f35c4ffec6a7921cc7ab4d0ff26925d4d2fadb8843321fe"},
-    {file = "rq_exporter-2.1.2-py3-none-any.whl", hash = "sha256:79fd7c3fb6d047b884a3b2c27c8ec863c48d1cbca6025d76a78d2014bef7a174"},
-]
-
-[package.dependencies]
-prometheus-client = ">=0.8.0"
-redis = ">=3.5.3"
-rq = ">=1.8.0"
-
-[[package]]
 name = "rsa"
 version = "4.9"
 description = "Pure-Python RSA implementation"
@@ -5625,4 +5609,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "57c46450b9a3f003b111c30f6fe12cc62daac3c22d63375516a925fb9c5c4ebc"
+content-hash = "7175c2cdcf6793436be13ad31d13d0820fd86f549db7b91ae4f44fc476454593"
