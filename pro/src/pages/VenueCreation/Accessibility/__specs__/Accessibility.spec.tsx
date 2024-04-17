@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
 import React from 'react'
 
-import { AccessiblityEnum } from 'core/shared'
+import { AccessibilityEnum } from 'core/shared'
 import { VenueCreationFormValues } from 'pages/VenueCreation/types'
 import { SubmitButton } from 'ui-kit'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -37,11 +37,11 @@ describe('Accessibility', () => {
   beforeEach(() => {
     initialValues = {
       accessibility: {
-        [AccessiblityEnum.VISUAL]: false,
-        [AccessiblityEnum.MENTAL]: false,
-        [AccessiblityEnum.AUDIO]: false,
-        [AccessiblityEnum.MOTOR]: false,
-        [AccessiblityEnum.NONE]: false,
+        [AccessibilityEnum.VISUAL]: false,
+        [AccessibilityEnum.MENTAL]: false,
+        [AccessibilityEnum.AUDIO]: false,
+        [AccessibilityEnum.MOTOR]: false,
+        [AccessibilityEnum.NONE]: false,
       },
     }
     isCreatingVenue = true
@@ -136,11 +136,11 @@ describe('Accessibility', () => {
     isCreatingVenue = false
     initialValues = {
       accessibility: {
-        [AccessiblityEnum.VISUAL]: false,
-        [AccessiblityEnum.MENTAL]: false,
-        [AccessiblityEnum.AUDIO]: false,
-        [AccessiblityEnum.MOTOR]: false,
-        [AccessiblityEnum.NONE]: true,
+        [AccessibilityEnum.VISUAL]: false,
+        [AccessibilityEnum.MENTAL]: false,
+        [AccessibilityEnum.AUDIO]: false,
+        [AccessibilityEnum.MOTOR]: false,
+        [AccessibilityEnum.NONE]: true,
       },
     }
     renderAccessibility({ initialValues, isCreatingVenue, onSubmit })

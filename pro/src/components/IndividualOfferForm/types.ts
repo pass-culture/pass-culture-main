@@ -1,7 +1,7 @@
 import type { FormikProps } from 'formik'
 
 import { WithdrawalTypeEnum } from 'apiClient/v1'
-import { AccessibiltyFormValues } from 'core/shared'
+import { AccessibilityFormValues } from 'core/shared'
 
 export interface IndividualOfferFormValues {
   isEvent?: boolean
@@ -21,7 +21,7 @@ export interface IndividualOfferFormValues {
   gtl_id?: string
   withdrawalDelay?: number | null
   withdrawalType?: WithdrawalTypeEnum | null
-  accessibility: AccessibiltyFormValues
+  accessibility: AccessibilityFormValues
   author?: string
   performer?: string
   ean?: string

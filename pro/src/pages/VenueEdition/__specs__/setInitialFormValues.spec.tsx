@@ -1,4 +1,4 @@
-import { AccessiblityEnum } from 'core/shared/types'
+import { AccessibilityEnum } from 'core/shared/types'
 import { defaultGetVenue } from 'utils/collectiveApiFactories'
 
 import { buildAccessibilityFormValues } from '../setInitialFormValues'
@@ -15,11 +15,11 @@ describe('buildAccessibilityFormValues', () => {
         externalAccessibilityData: null,
       })
     ).toEqual({
-      [AccessiblityEnum.AUDIO]: false,
-      [AccessiblityEnum.MENTAL]: false,
-      [AccessiblityEnum.MOTOR]: false,
-      [AccessiblityEnum.VISUAL]: false,
-      [AccessiblityEnum.NONE]: false,
+      [AccessibilityEnum.AUDIO]: false,
+      [AccessibilityEnum.MENTAL]: false,
+      [AccessibilityEnum.MOTOR]: false,
+      [AccessibilityEnum.VISUAL]: false,
+      [AccessibilityEnum.NONE]: false,
     })
   })
 
@@ -34,11 +34,11 @@ describe('buildAccessibilityFormValues', () => {
         externalAccessibilityData: null,
       })
     ).toEqual({
-      [AccessiblityEnum.AUDIO]: true,
-      [AccessiblityEnum.MENTAL]: true,
-      [AccessiblityEnum.MOTOR]: true,
-      [AccessiblityEnum.VISUAL]: true,
-      [AccessiblityEnum.NONE]: false,
+      [AccessibilityEnum.AUDIO]: true,
+      [AccessibilityEnum.MENTAL]: true,
+      [AccessibilityEnum.MOTOR]: true,
+      [AccessibilityEnum.VISUAL]: true,
+      [AccessibilityEnum.NONE]: false,
     })
   })
 
@@ -58,11 +58,11 @@ describe('buildAccessibilityFormValues', () => {
         },
       })
     ).toEqual({
-      [AccessiblityEnum.AUDIO]: true,
-      [AccessiblityEnum.MENTAL]: true,
-      [AccessiblityEnum.MOTOR]: true,
-      [AccessiblityEnum.VISUAL]: true,
-      [AccessiblityEnum.NONE]: false,
+      [AccessibilityEnum.AUDIO]: true,
+      [AccessibilityEnum.MENTAL]: true,
+      [AccessibilityEnum.MOTOR]: true,
+      [AccessibilityEnum.VISUAL]: true,
+      [AccessibilityEnum.NONE]: false,
     })
   })
 
@@ -82,11 +82,11 @@ describe('buildAccessibilityFormValues', () => {
         },
       })
     ).toEqual({
-      [AccessiblityEnum.AUDIO]: false,
-      [AccessiblityEnum.MENTAL]: false,
-      [AccessiblityEnum.MOTOR]: false,
-      [AccessiblityEnum.VISUAL]: false,
-      [AccessiblityEnum.NONE]: true,
+      [AccessibilityEnum.AUDIO]: false,
+      [AccessibilityEnum.MENTAL]: false,
+      [AccessibilityEnum.MOTOR]: false,
+      [AccessibilityEnum.VISUAL]: false,
+      [AccessibilityEnum.NONE]: true,
     })
   })
 })

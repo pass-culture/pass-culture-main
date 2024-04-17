@@ -1,5 +1,5 @@
 import { GetVenueResponseModel, VenueListItemResponseModel } from 'apiClient/v1'
-import { AccessiblityEnum } from 'core/shared'
+import { AccessibilityEnum } from 'core/shared'
 import { DEFAULT_INTITIAL_OPENING_HOURS } from 'pages/VenueCreation/constants'
 
 import { DayValues, VenueEditionFormValues, Day } from './types'
@@ -9,19 +9,19 @@ export const buildAccessibilityFormValues = (
 ) => {
   if (venue.externalAccessibilityData) {
     return {
-      [AccessiblityEnum.VISUAL]: Boolean(
+      [AccessibilityEnum.VISUAL]: Boolean(
         venue.externalAccessibilityData.isAccessibleVisualDisability
       ),
-      [AccessiblityEnum.MENTAL]: Boolean(
+      [AccessibilityEnum.MENTAL]: Boolean(
         venue.externalAccessibilityData.isAccessibleMentalDisability
       ),
-      [AccessiblityEnum.AUDIO]: Boolean(
+      [AccessibilityEnum.AUDIO]: Boolean(
         venue.externalAccessibilityData.isAccessibleAudioDisability
       ),
-      [AccessiblityEnum.MOTOR]: Boolean(
+      [AccessibilityEnum.MOTOR]: Boolean(
         venue.externalAccessibilityData.isAccessibleMotorDisability
       ),
-      [AccessiblityEnum.NONE]: [
+      [AccessibilityEnum.NONE]: [
         venue.externalAccessibilityData.isAccessibleVisualDisability,
         venue.externalAccessibilityData.isAccessibleMentalDisability,
         venue.externalAccessibilityData.isAccessibleAudioDisability,
@@ -31,11 +31,11 @@ export const buildAccessibilityFormValues = (
   }
 
   return {
-    [AccessiblityEnum.VISUAL]: venue.visualDisabilityCompliant || false,
-    [AccessiblityEnum.MENTAL]: venue.mentalDisabilityCompliant || false,
-    [AccessiblityEnum.AUDIO]: venue.audioDisabilityCompliant || false,
-    [AccessiblityEnum.MOTOR]: venue.motorDisabilityCompliant || false,
-    [AccessiblityEnum.NONE]: [
+    [AccessibilityEnum.VISUAL]: venue.visualDisabilityCompliant || false,
+    [AccessibilityEnum.MENTAL]: venue.mentalDisabilityCompliant || false,
+    [AccessibilityEnum.AUDIO]: venue.audioDisabilityCompliant || false,
+    [AccessibilityEnum.MOTOR]: venue.motorDisabilityCompliant || false,
+    [AccessibilityEnum.NONE]: [
       venue.visualDisabilityCompliant,
       venue.mentalDisabilityCompliant,
       venue.audioDisabilityCompliant,
