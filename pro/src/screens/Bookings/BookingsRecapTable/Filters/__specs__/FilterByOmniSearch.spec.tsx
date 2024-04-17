@@ -4,8 +4,10 @@ import React from 'react'
 
 import { Audience } from 'core/shared'
 
-import FilterByOmniSearch from '../FilterByOmniSearch'
-import { FilterByOmniSearchProps } from '../FilterByOmniSearch/FilterByOmniSearch'
+import {
+  FilterByOmniSearch,
+  FilterByOmniSearchProps,
+} from '../FilterByOmniSearch'
 
 describe('components | FilterByOmniSearch', () => {
   let props: FilterByOmniSearchProps

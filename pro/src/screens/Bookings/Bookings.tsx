@@ -32,7 +32,7 @@ import Titles from 'ui-kit/Titles/Titles'
 
 import { stringify } from '../../utils/query-string'
 
-import BookingsRecapTable from './BookingsRecapTable'
+import { BookingsRecapTable } from './BookingsRecapTable/BookingsRecapTable'
 import { PreFilters } from './PreFilters/PreFilters'
 
 interface BookingsProps {

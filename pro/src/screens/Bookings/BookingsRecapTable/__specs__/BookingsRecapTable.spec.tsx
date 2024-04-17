@@ -14,8 +14,11 @@ import {
 import { bookingRecapFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import BookingsRecapTable from '../BookingsRecapTable'
-import { EMPTY_FILTER_VALUE, DEFAULT_OMNISEARCH_CRITERIA } from '../Filters'
+import { BookingsRecapTable } from '../BookingsRecapTable'
+import {
+  EMPTY_FILTER_VALUE,
+  DEFAULT_OMNISEARCH_CRITERIA,
+} from '../Filters/constants'
 
 vi.mock('utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
