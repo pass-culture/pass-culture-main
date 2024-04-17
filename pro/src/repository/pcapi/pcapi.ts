@@ -1,10 +1,7 @@
 // This file will be replace by apiClient
 /* istanbul ignore file */
 
-import {
-  AttachImageResponseModel,
-  CreateThumbnailResponseModel,
-} from 'apiClient/v1'
+import { AttachImageResponseModel } from 'apiClient/v1'
 import { client } from 'repository/pcapi/pcapiClient'
 import { stringify } from 'utils/query-string'
 
@@ -45,45 +42,6 @@ export const postImageToVenue = async (
   )
 }
 
-//
-// thumbnail
-//
-
-type LegacyPostImageMethodType<T> = (
-  offerId: string,
-  thumb: File,
-  credit: string | null,
-  thumbUrl?: string,
-  x?: number,
-  y?: number,
-  height?: number,
-  width?: number
-) => Promise<T>
-
-export const legacyPostImage = (
-  url: string,
-  offerId: string,
-  thumb: File,
-  credit?: string | null,
-  thumbUrl?: string,
-  x?: number,
-  y?: number,
-  height?: number,
-  width?: number
-) => {
-  const body = new FormData()
-  body.append('offerId', offerId)
-  body.append('thumb', thumb)
-  body.append('credit', credit ?? '')
-  body.append('croppingRectX', x !== undefined ? String(x) : '')
-  body.append('croppingRectY', y !== undefined ? String(y) : '')
-  body.append('croppingRectHeight', height !== undefined ? String(height) : '')
-  body.append('croppingRectWidth', width !== undefined ? String(width) : '')
-  body.append('thumbUrl', thumbUrl ?? '')
-
-  return client.postWithFormData(url, body)
-}
-
 type PostImageMethodType<T> = (
   offerId: number,
   thumb: File,
@@ -118,10 +76,6 @@ export const postImage = (
 
   return client.postWithFormData(url, body)
 }
-
-export const postThumbnail: LegacyPostImageMethodType<
-  CreateThumbnailResponseModel
-> = (...args) => legacyPostImage('/offers/thumbnails', ...args)
 
 export const postCollectiveOfferImage: PostImageMethodType<
   AttachImageResponseModel
