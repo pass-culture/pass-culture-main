@@ -13,3 +13,5 @@ export const GET_VENUE_LABELS_QUERY_KEY = 'getVenueLabels'
 export const GET_VENUE_PROVIDERS_QUERY_KEY = 'getVenueProviders'
 export const GET_VENUE_TYPES_QUERY_KEY = 'getVenueTypes'
 export const GET_VENUES_QUERY_KEY = 'getVenues'
+export const GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DAYE_QUERY_KEY =
+  'getPriceCategoriesAndSchedulesByDate'
