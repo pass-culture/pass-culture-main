@@ -1,6 +1,6 @@
 <div class="form-floating pc-field-{{ field.name }}">
   {% set date_field_id = random_hash() %}
-  <input type="date"
+  <input type="{{ field.input_type }}"
          id="{{ date_field_id }}"
          name="{{ field.name }}"
          data-original-name="{{ field.name }}"

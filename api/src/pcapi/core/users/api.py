@@ -614,6 +614,8 @@ def update_user_info(
     validated_birth_date: datetime.date | T_UNCHANGED = UNCHANGED,
     id_piece_number: str | T_UNCHANGED = UNCHANGED,
     marketing_email_subscription: bool | T_UNCHANGED = UNCHANGED,
+    new_nav_pro_date: datetime.datetime | None | T_UNCHANGED = UNCHANGED,
+    new_nav_pro_eligibility_date: datetime.datetime | None | T_UNCHANGED = UNCHANGED,
     commit: bool = True,
 ) -> history_api.ObjectUpdateSnapshot:
     old_email = None
@@ -669,6 +671,24 @@ def update_user_info(
             field_name_template="notificationSubscriptions.{}",
         )
         user.set_marketing_email_subscription(marketing_email_subscription)
+    if (
+        new_nav_pro_date is not UNCHANGED or new_nav_pro_eligibility_date is not UNCHANGED
+    ) and feature.FeatureToggle.ENABLE_PRO_NEW_NAV_MODIFICATION.is_active():
+        pro_new_nav_state = user.pro_new_nav_state
+        if not pro_new_nav_state:
+            pro_new_nav_state = models.UserProNewNavState(userId=user.id)
+            user.pro_new_nav_state = pro_new_nav_state
+        if new_nav_pro_date is not UNCHANGED:
+            snapshot.set("pro_new_nav_state.newNavDate", old=pro_new_nav_state.newNavDate, new=new_nav_pro_date)
+            pro_new_nav_state.newNavDate = new_nav_pro_date
+        if new_nav_pro_eligibility_date is not UNCHANGED:
+            snapshot.set(
+                "pro_new_nav_state.eligibilityDate",
+                old=pro_new_nav_state.eligibilityDate,
+                new=new_nav_pro_eligibility_date,
+            )
+            pro_new_nav_state.eligibilityDate = new_nav_pro_eligibility_date
+        db.session.add(pro_new_nav_state)
 
     # keep using repository as long as user is validated in pcapi.validation.models.user
     if commit:
