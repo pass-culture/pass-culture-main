@@ -1,0 +1,10 @@
+import{j as t}from"./jsx-runtime-CKrituN3.js";import{b as s}from"./formik.esm-BvpVdGSF.js";import{a}from"./Thumb-DBUBUG5m.js";import"./index-CBqU2yxZ.js";import"./_commonjsHelpers-BosuxZz1.js";import"./full-next-DBJ5r-A4.js";import"./ButtonLink-BL2xBbQK.js";import"./index-BpvXyOxN.js";import"./index-D-qxk1LK.js";import"./index-Bc47ZfBr.js";import"./SvgIcon-B4BQC89V.js";import"./Button.module-D1-_wviZ.js";import"./Button-D5o8syaZ.js";import"./stroke-pass-C0Oiu4_F.js";import"./Tooltip-DQk13cIf.js";import"./useTooltipProps-DrCYBs0a.js";import"./stroke-offer-Dcn8dcIZ.js";import"./BaseInput-DYA9YpR4.js";import"./BaseRadio-Ba86le1p.js";import"./FieldError-JTJv5SQU.js";import"./stroke-error-BKdTEWJV.js";import"./FieldSuccess-CpHTDnww.js";import"./stroke-valid-D5TrCdxa.js";import"./full-clear-CvNWe6Ae.js";import"./Divider-BgRDNfKi.js";import"./SubmitButton-C9pj-b16.js";import"./index-Dk74W0Oi.js";import"./SelectInput-B3vLyJOl.js";import"./stroke-down-DYCZHAeS.js";import"./BaseCheckbox-CMtHdr2j.js";import"./date-D02WmG9y.js";import"./typeof-QjJsDpFa.js";import"./Banner-DYy_m0_A.js";import"./shadow-tips-help-BWD8Tj4_.js";import"./shadow-tips-warning-Cyw-iOmq.js";import"./stroke-close-C6KSko98.js";import"./LinkNodes-BF1tz7k1.js";import"./full-link-Ct7SQyQr.js";import"./InfoBox-B7861y31.js";const Q={title:"ui-kit/forms/CheckboxGroup",component:a,decorators:[o=>t.jsx(s,{initialValues:{accessibility:!1},onSubmit:()=>{},children:({getFieldProps:e})=>t.jsx(o,{...e("group")})})]},r={args:{group:["foo","bar","baz"].map(o=>({label:o,name:`checkBoxes.${o}`})),groupName:"checkBoxes",legend:"This is the legend"}};var i,m,p;r.parameters={...r.parameters,docs:{...(i=r.parameters)==null?void 0:i.docs,source:{originalSource:`{
+  args: {
+    group: ['foo', 'bar', 'baz'].map(item => ({
+      label: item,
+      name: \`checkBoxes.\${item}\`
+    })),
+    groupName: 'checkBoxes',
+    legend: 'This is the legend'
+  }
+}`,...(p=(m=r.parameters)==null?void 0:m.docs)==null?void 0:p.source}}};const U=["Default"];export{r as Default,U as __namedExportsOrder,Q as default};
