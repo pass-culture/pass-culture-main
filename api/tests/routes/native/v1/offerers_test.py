@@ -2,6 +2,7 @@ import pytest
 
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 import pcapi.core.offerers.factories as offerer_factories
+from pcapi.core.offerers.models import VenueTypeCode
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -107,3 +108,9 @@ class VenuesTest:
     def test_get_non_existing_venue(self, client):
         response = client.get("/native/v1/venue/123456789")
         assert response.status_code == 404
+
+    def test_get_venue_always_has_banner_url(self, client):
+        venue = offerer_factories.VenueFactory(venueTypeCode=VenueTypeCode.BOOKSTORE)
+        response = client.get(f"/native/v1/venue/{venue.id}")
+        assert response.status_code == 200
+        assert response.json["bannerUrl"] is not None
