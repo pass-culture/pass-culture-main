@@ -1,11 +1,10 @@
-import { getFilteredBookingsCSV, postThumbnail } from 'repository/pcapi/pcapi'
+import { postThumbnail } from 'repository/pcapi/pcapi'
 import { client } from 'repository/pcapi/pcapiClient'
 
 vi.mock('repository/pcapi/pcapiClient', () => ({
   client: {
     delete: vi.fn(),
     get: vi.fn().mockResolvedValue({}),
-    getPlainText: vi.fn().mockResolvedValue(''),
     patch: vi.fn(),
     post: vi.fn().mockResolvedValue({}),
     postWithFormData: vi.fn(),
@@ -38,44 +37,6 @@ describe('pcapi', () => {
       expect(client.postWithFormData).toHaveBeenCalledWith(
         `/offers/thumbnails`,
         body
-      )
-    })
-  })
-
-  describe('getFilteredBookingsCSV', () => {
-    const returnedResponse = "i'm a text response"
-
-    beforeEach(() => {
-      vi.spyOn(client, 'getPlainText').mockResolvedValue(returnedResponse)
-    })
-
-    it('should return api response', async () => {
-      const response = await getFilteredBookingsCSV({})
-      expect(response).toBe(returnedResponse)
-    })
-
-    it('should call bookings csv route with "page=1" and default period when no other filters are provided', async () => {
-      await getFilteredBookingsCSV({ page: 1 })
-
-      expect(client.getPlainText).toHaveBeenCalledWith(
-        '/bookings/csv?page=1&bookingPeriodBeginningDate=2020-08-13&bookingPeriodEndingDate=2020-09-12&bookingStatusFilter=booked'
-      )
-    })
-
-    it('should call offers route with filters when provided', async () => {
-      const filters = {
-        venueId: 'AA',
-        eventDate: '2020-09-13',
-        page: 2,
-        bookingPeriodBeginningDate: '2020-07-08',
-        bookingPeriodEndingDate: '2020-09-04',
-        bookingStatusFilter: 'validated',
-      }
-
-      await getFilteredBookingsCSV(filters)
-
-      expect(client.getPlainText).toHaveBeenCalledWith(
-        '/bookings/csv?page=2&venueId=AA&eventDate=2020-09-13&bookingPeriodBeginningDate=2020-07-08&bookingPeriodEndingDate=2020-09-04&bookingStatusFilter=validated'
       )
     })
   })
