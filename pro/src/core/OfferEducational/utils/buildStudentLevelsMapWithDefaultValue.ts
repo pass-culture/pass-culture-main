@@ -1,4 +1,5 @@
 import { StudentLevels } from 'apiClient/v1'
+import { DEFAULT_MARSEILLE_STUDENTS } from 'core/shared/constants'
 
 export const buildStudentLevelsMapWithDefaultValue = (
   value: boolean | ((studentKey: StudentLevels) => boolean),
@@ -7,14 +8,7 @@ export const buildStudentLevelsMapWithDefaultValue = (
   const mappedLavels = {} as Record<StudentLevels, boolean>
 
   for (const level of Object.values(StudentLevels)) {
-    if (
-      !isMarseilleEnabled &&
-      [
-        StudentLevels._COLES_MARSEILLE_MATERNELLE,
-        StudentLevels._COLES_MARSEILLE_CP_CE1_CE2,
-        StudentLevels._COLES_MARSEILLE_CM1_CM2,
-      ].includes(level)
-    ) {
+    if (!isMarseilleEnabled && DEFAULT_MARSEILLE_STUDENTS.includes(level)) {
       continue
     }
 
