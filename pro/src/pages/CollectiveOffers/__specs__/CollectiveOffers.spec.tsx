@@ -1,5 +1,9 @@
 import { Store } from '@reduxjs/toolkit'
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
@@ -131,10 +135,11 @@ describe('route CollectiveOffers', () => {
           await userEvent.click(screen.getByText('Appliquer'))
           await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-          const noOffersForSearchFiltersText = screen.getByText(
-            'Aucune offre trouvée pour votre recherche'
-          )
-          expect(noOffersForSearchFiltersText).toBeInTheDocument()
+          await waitFor(() => {
+            expect(
+              screen.getByText('Aucune offre trouvée pour votre recherche')
+            ).toBeInTheDocument()
+          })
         })
 
         it('should not display column titles when no offers are returned', async () => {
