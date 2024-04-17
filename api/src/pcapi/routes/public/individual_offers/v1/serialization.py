@@ -767,14 +767,10 @@ class ProductOfferResponse(OfferResponse):
         )
 
 
-def _serialize_has_ticket(
-    offer: offers_models.Offer,
-) -> bool:
+def _serialize_has_ticket(offer: offers_models.Offer) -> bool:
     # hasTicket is True only if the bookings are linked to an externalBooking
     # This is the case for offers with withdrawalType IN_APP.
-    if offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP:
-        return True
-    return False
+    return offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
 
 
 class EventOfferResponse(OfferResponse, PriceCategoriesResponse):
@@ -785,7 +781,6 @@ class EventOfferResponse(OfferResponse, PriceCategoriesResponse):
     @classmethod
     def build_event_offer(cls, offer: offers_models.Offer) -> "EventOfferResponse":
         base_offer_response = OfferResponse.build_offer(offer)
-
         return cls(
             category_related_fields=serialize_extra_data(offer),
             duration_minutes=offer.durationMinutes,
