@@ -1,8 +1,6 @@
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import * as yup from 'yup'
 
-import { urlRegex } from 'core/shared'
-
 const isPhoneValid = (phone: string | undefined): boolean => {
   if (!phone) {
     return true
@@ -16,11 +14,9 @@ const isPhoneValid = (phone: string | undefined): boolean => {
 export const validationSchema = yup.object().shape({
   collectiveDescription: yup.string(),
   collectiveStudents: yup.array(),
-  collectiveWebsite: yup.string().test({
-    name: 'matchWebsiteUrl',
-    message: 'Veuillez renseigner une URL valide. Ex : https://exemple.com',
-    test: (url?: string) => (url ? url.match(urlRegex) !== null : true),
-  }),
+  collectiveWebsite: yup
+    .string()
+    .url('Veuillez renseigner une URL valide. Ex : https://exemple.com'),
   collectivePhone: yup.string().test({
     name: 'is-phone-valid',
     message:
