@@ -106,6 +106,29 @@ def synchronize_adage_ids_on_offerers(partners_from_adage: list[venues_serialize
     sirens_to_add = adage_sirens - existing_adage_sirens
     sirens_to_delete = existing_adage_sirens - adage_sirens
 
+    # Tricky part here and hopefully this will be removed at some point.
+    # We have some weird cases where the SIRET from Adage does not match the SIRET from
+    # our linked venue.
+
+    logger.info("SIRENs to add from SIRET: %s", sirens_to_add)
+    logger.info("SIRENs to delete from SIRET: %s", sirens_to_delete)
+
+    # check we don't remove offerers that do have valid venues
+    existing_sirens_from_synchronized_venues: dict[str, bool] = dict(
+        offerers_models.Offerer.query.join(offerers_models.Venue)
+        .filter(
+            offerers_models.Offerer.siren != None,
+            offerers_models.Venue.adageId.is_not(None),
+        )
+        .with_entities(offerers_models.Offerer.siren, offerers_models.Offerer.allowedOnAdage)
+    )
+    sirens_to_delete = sirens_to_delete - set(existing_sirens_from_synchronized_venues)
+    sirens_to_add = sirens_to_add | {k for k, v in existing_sirens_from_synchronized_venues.items() if not v}
+
+    logger.info("SIRENs to add: %s", sirens_to_add)
+    logger.info("SIRENs to delete: %s", sirens_to_delete)
+    logger.info("existing SIRENs from synchronized venues: %s", existing_sirens_from_synchronized_venues)
+
     offerers_models.Offerer.query.filter(offerers_models.Offerer.siren.in_(list(sirens_to_add))).update(
         {offerers_models.Offerer.allowedOnAdage: True}, synchronize_session=False
     )
