@@ -6,7 +6,10 @@ import { useSWRConfig } from 'swr'
 import { GetVenueResponseModel, StudentLevels } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { GET_VENUE_QUERY_KEY } from 'config/swrQueryKeys'
-import { handleAllFranceDepartmentOptions } from 'core/shared'
+import {
+  DEFAULT_MARSEILLE_STUDENTS,
+  handleAllFranceDepartmentOptions,
+} from 'core/shared'
 import { venueInterventionOptions } from 'core/shared/interventionOptions'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -55,7 +58,9 @@ export const CollectiveDataForm = ({
   const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
   const studentOptions = isMarseilleEnabled
     ? studentLevels
-    : studentLevels.filter((level) => !level.label.includes('Marseille'))
+    : studentLevels.filter(
+        (level) => !DEFAULT_MARSEILLE_STUDENTS.includes(level.label)
+      )
 
   const onSubmit = async (values: CollectiveDataFormValues) => {
     const response = await editVenueCollectiveDataAdapter({

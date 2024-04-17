@@ -1,3 +1,5 @@
+import { StudentLevels } from 'apiClient/v1'
+
 export const urlRegex = new RegExp(
   // eslint-disable-next-line no-useless-escape
   /^(?:http(s)?:\/\/)?[\w.-\.-\.@]+(?:\.[\w\.-\.@]+)+[\w\-\._~:\/?#[\]@%!\$&'\(\)\*\+,;=.]+$/,
@@ -22,3 +24,9 @@ export const FORM_ERROR_MESSAGE =
 export const NBSP = '\u00a0'
 
 export const SAVED_OFFERER_ID_KEY = 'homepageSelectedOffererId'
+
+export const DEFAULT_MARSEILLE_STUDENTS = [
+  StudentLevels._COLES_MARSEILLE_MATERNELLE,
+  StudentLevels._COLES_MARSEILLE_CP_CE1_CE2,
+  StudentLevels._COLES_MARSEILLE_CM1_CM2,
+]

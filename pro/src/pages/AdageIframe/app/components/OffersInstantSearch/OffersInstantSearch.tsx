@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux'
 
 import { VenueResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { StudentLevels } from 'apiClient/v1'
+import { DEFAULT_MARSEILLE_STUDENTS } from 'core/shared'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import { adageFilterSelector } from 'store/adageFilter/selectors'
@@ -43,12 +43,6 @@ export const algoliaSearchDefaultAttributesToRetrieve = [
 ]
 
 export const DEFAULT_GEO_RADIUS = 30000000 // 30 000 km ensure we get all results in the world
-
-const DEFAULT_MARSEILLE_STUDENTS = [
-  StudentLevels._COLES_MARSEILLE_MATERNELLE,
-  StudentLevels._COLES_MARSEILLE_CP_CE1_CE2,
-  StudentLevels._COLES_MARSEILLE_CM1_CM2,
-]
 
 export interface SearchFormValues {
   domains: number[]
