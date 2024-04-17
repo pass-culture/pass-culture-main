@@ -50,7 +50,7 @@ def print_secret_keys() -> None:
     Prints secret's keys list in yaml format.
     This output is used in deployment steps.
     """
-    print(dump_secret_keys(), file=sys.stdout)
+    print(dump_secret_keys())
 
 
 @blueprint.cli.command("check_secrets")
