@@ -954,7 +954,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
             "birth_date": user_to_edit.birth_date,
             "phone_number": new_phone_number,
             "id_piece_number": user_to_edit.idPieceNumber,
-            "address": user_to_edit.address,
+            "street": user_to_edit.address,
             "postal_code": expected_new_postal_code,
             "city": expected_city,
         }
@@ -1013,7 +1013,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
             "birth_date": datetime.date.today() - relativedelta(years=18, months=3, days=5),
             "phone_number": "",
             "id_piece_number": "A123B456C\n",
-            "address": "Chemin du Haut des Ormes",
+            "street": "Chemin du Haut des Ormes",
             "postal_code": "78560\t",
             "city": "Port-Marly",
         }
@@ -1033,7 +1033,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         assert user.dateOfBirth == date_of_birth
         assert user.validatedBirthDate == base_form["birth_date"]
         assert user.idPieceNumber == base_form["id_piece_number"].strip()
-        assert user.address == base_form["address"]
+        assert user.address == base_form["street"]
         assert user.postalCode == base_form["postal_code"].strip()
         assert user.departementCode == base_form["postal_code"][:2]
         assert user.city == base_form["city"]

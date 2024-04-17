@@ -231,7 +231,7 @@ def render_venue_details(
                     else None
                 ),
                 postal_code=venue.postalCode,
-                address=venue.street,
+                street=venue.street,
                 ban_id=venue.banId,
                 acceslibre_url=venue.external_accessibility_url,
                 booking_email=venue.bookingEmail,

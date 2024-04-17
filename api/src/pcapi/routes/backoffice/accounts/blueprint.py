@@ -331,7 +331,7 @@ def render_public_account_details(
                     if user.address is not None and user.city is not None and user.postalCode is not None
                     else None
                 ),
-                address=user.address,
+                street=user.address,
                 postal_code=user.postalCode,
                 city=user.city,
             )
@@ -900,7 +900,7 @@ def update_public_account(user_id: int) -> utils.BackofficeResponse:
             validated_birth_date=form.birth_date.data,
             phone_number=form.phone_number.data,
             id_piece_number=form.id_piece_number.data,
-            address=form.address.data,
+            address=form.street.data,
             postal_code=form.postal_code.data,
             city=form.city.data,
             commit=False,
