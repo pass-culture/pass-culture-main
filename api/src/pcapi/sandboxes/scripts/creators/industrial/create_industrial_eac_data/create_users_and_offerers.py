@@ -20,6 +20,10 @@ def create_users_offerers() -> list[offerers_models.Offerer]:
     )
     offerers.append(user_offerer.offerer)
     user_offerer = offerers_factories.UserOffererFactory(
+        user__email="retention_structures@example.com",
+        offerer=user_offerer.offerer,
+    )
+    user_offerer = offerers_factories.UserOffererFactory(
         user__email="squad-eac@passculture.app",
         offerer=user_offerer.offerer,
     )
