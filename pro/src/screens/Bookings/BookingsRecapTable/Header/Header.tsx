@@ -14,7 +14,7 @@ export interface HeaderProps {
   resetBookings: () => void
 }
 
-const Header = ({
+export const Header = ({
   bookingsRecapFilteredLength,
   isLoading,
   queryBookingId,
@@ -47,5 +47,3 @@ const Header = ({
     )
   }
 }
-
-export default Header

@@ -8,10 +8,9 @@ import strokePhoneIcon from 'icons/stroke-phone.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import CollectiveActionButtons from '../CollectiveActionButtons'
-import CollectiveTimeLine from '../CollectiveTimeLine'
-
+import { CollectiveActionButtons } from './CollectiveActionButtons'
 import styles from './CollectiveBookingDetails.module.scss'
+import { CollectiveTimeLine } from './CollectiveTimeLine'
 
 interface CollectiveBookingDetailsProps {
   bookingDetails: CollectiveBookingByIdResponseModel
@@ -19,7 +18,7 @@ interface CollectiveBookingDetailsProps {
   reloadBookings: () => void
 }
 
-const CollectiveBookingDetails = ({
+export const CollectiveBookingDetails = ({
   bookingDetails,
   bookingRecap,
   reloadBookings,
@@ -110,5 +109,3 @@ const CollectiveBookingDetails = ({
     </>
   )
 }
-
-export default CollectiveBookingDetails

@@ -13,11 +13,11 @@ import fullSortIcon from 'icons/full-sort.svg'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import { BookingsFilters } from '../../types'
+import { BookingsFilters } from '../types'
 import {
   INDIVIDUAL_BOOKING_STATUS_DISPLAY_INFORMATIONS,
   COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS,
-} from '../../utils/bookingStatusConverter'
+} from '../utils/bookingStatusConverter'
 
 const getAvailableBookingStatuses = (audience: Audience) => {
   const statuses =
@@ -51,7 +51,7 @@ export interface FilterByBookingStatusProps<
   audience: Audience
 }
 
-const FilterByBookingStatus = <
+export const FilterByBookingStatus = <
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >({
   bookingStatuses,
@@ -161,5 +161,3 @@ const FilterByBookingStatus = <
     </div>
   )
 }
-
-export default FilterByBookingStatus

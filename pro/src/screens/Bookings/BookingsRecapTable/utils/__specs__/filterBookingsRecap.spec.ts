@@ -1,6 +1,6 @@
 import { bookingRecapFactory } from 'utils/individualApiFactories'
 
-import { EMPTY_FILTER_VALUE } from '../../Filters/_constants'
+import { EMPTY_FILTER_VALUE } from '../../Filters/constants'
 import { BookingsFilters } from '../../types'
 import filterBookingsRecap from '../filterBookingsRecap'
 

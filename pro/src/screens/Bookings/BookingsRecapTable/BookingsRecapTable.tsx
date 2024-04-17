@@ -11,13 +11,13 @@ import { isCollectiveBooking } from './BookingsTable/Cells/BookingOfferCell'
 import { CollectiveBookingsTable } from './BookingsTable/CollectiveBookingsTable'
 import { IndividualBookingsTable } from './BookingsTable/IndividualBookingsTable'
 import {
-  EMPTY_FILTER_VALUE,
   ALL_BOOKING_STATUS,
   DEFAULT_OMNISEARCH_CRITERIA,
-  FilterByOmniSearch,
-} from './Filters'
-import { bookingIdOmnisearchFilter } from './Filters/FilterByOmniSearch/constants'
-import Header from './Header'
+  EMPTY_FILTER_VALUE,
+  bookingIdOmnisearchFilter,
+} from './Filters/constants'
+import { FilterByOmniSearch } from './Filters/FilterByOmniSearch'
+import { Header } from './Header/Header'
 import { BookingsFilters } from './types'
 import { filterBookingsRecap } from './utils/filterBookingsRecap'
 
@@ -44,7 +44,7 @@ interface BookingsRecapTableProps<
   resetBookings: () => void
 }
 
-const BookingsRecapTable = <
+export const BookingsRecapTable = <
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >({
   bookingsRecap,
@@ -182,5 +182,3 @@ const BookingsRecapTable = <
     </div>
   )
 }
-
-export default BookingsRecapTable
